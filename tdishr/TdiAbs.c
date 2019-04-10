@@ -29,37 +29,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Type:    C function
 
        Author:  Mark London
-               MIT Plasma Fusion Center
+	       MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose:
-        Routine for simple operations on one VMS data types and classes.
-        BU-H    = ABS(BU-HC)    absolute value, abs(x)=sqrt(real**2+imag**2)
-        BU-H    = ABS1(BU-HC)   absolute value, abs1(x)=abs(real)+abs(imag)
-        BU-H    = ABSSQ(BU-HC)  absolute value squared, abssq(x)=abs(x)**2=x*conjg(x)
-        BU-H    = AIMAG(BU-HC)  imaginary part of complex
-        BU-HC   = CONJG(BU-HC)  complex conjugate
-        BU-OU   = INOT(BU-O)    complement of integer
-        BU      = LOGICAL(BU-O) low bit of integer, 0 or 1
-        BU      = NOT(BU-O)     reverse of low bit of integer
-        BU-O    = NINT(BU-HC)   nearest integer, LONG used for DGH
-        B-HC    = - (BU-HC)     negative
+	Routine for simple operations on one VMS data types and classes.
+	BU-H    = ABS(BU-HC)    absolute value, abs(x)=sqrt(real**2+imag**2)
+	BU-H    = ABS1(BU-HC)   absolute value, abs1(x)=abs(real)+abs(imag)
+	BU-H    = ABSSQ(BU-HC)  absolute value squared, abssq(x)=abs(x)**2=x*conjg(x)
+	BU-H    = AIMAG(BU-HC)  imaginary part of complex
+	BU-HC   = CONJG(BU-HC)  complex conjugate
+	BU-OU   = INOT(BU-O)    complement of integer
+	BU      = LOGICAL(BU-O) low bit of integer, 0 or 1
+	BU      = NOT(BU-O)     reverse of low bit of integer
+	BU-O    = NINT(BU-HC)   nearest integer, LONG used for DGH
+	B-HC    = - (BU-HC)     negative
 
-        Unsupported: LOGICAL, NOT, or INOT for real or complex.
-        Input and output memory overlap produces UNDEFIINOTD results.
-        Coincidence of input and output, however, will work here. WATCH THIS!!!!
-        Lengths must be correct for all classes.
+	Unsupported: LOGICAL, NOT, or INOT for real or complex.
+	Input and output memory overlap produces UNDEFIINOTD results.
+	Coincidence of input and output, however, will work here. WATCH THIS!!!!
+	Lengths must be correct for all classes.
 
        Call sequence:
-               struct descriptor *in_ptr;
-               struct descriptor *out_ptr;
+	       struct descriptor *in_ptr;
+	       struct descriptor *out_ptr;
 
-               status = Tdi3Abs(in,out)
-               status = Tdi3UnaryMinus(in,out)
+	       status = Tdi3Abs(in,out)
+	       status = Tdi3UnaryMinus(in,out)
        returns:
-                TdiINVDTYDSC - if unsupported data type
-                1 - if supported data type
+	        TdiINVDTYDSC - if unsupported data type
+	        1 - if supported data type
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -162,7 +162,7 @@ STATIC_CONSTANT const int roprand = 0x8000;
      double imag;\
      double ans;\
      if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) && \
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0)) \
+	 CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0)) \
      {\
        ans = r * r + imag * imag;\
        CvtConvertFloat(&ans,DTYPE_NATIVE_DOUBLE,&out[i],dtype,0);\
@@ -190,16 +190,16 @@ STATIC_CONSTANT const int roprand = 0x8000;
      double ans;\
      int bad=0;\
      if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) &&\
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
+	 CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
      {\
        r = r > 0 ? r : -r;\
        imag = imag > 0 ? imag : -imag;\
        mx = r >  imag ? r : imag;\
        mn = r <= imag ? r : imag;\
        if (mx > 0)\
-         ans = mx * sqrt((mn*mn)/(mx*mx) + 1.);\
+	 ans = mx * sqrt((mn*mn)/(mx*mx) + 1.);\
        else\
-         ans=0.0;\
+	 ans=0.0;\
      }\
      else\
        bad = 1;\
@@ -214,7 +214,7 @@ STATIC_CONSTANT const int roprand = 0x8000;
      double ans;\
      int bad=0;\
      if (CvtConvertFloat(&in[i*2],dtype,&r,DTYPE_NATIVE_DOUBLE,0) &&\
-         CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
+	 CvtConvertFloat(&in[i*2+1],dtype,&imag,DTYPE_NATIVE_DOUBLE,0))\
      {\
        r = r > 0 ? r : -r;\
        imag = imag > 0 ? imag : -imag;\
@@ -249,7 +249,7 @@ int Tdi3Abs(struct descriptor *in_ptr, struct descriptor *out_ptr)
     end_operate case DTYPE_OU:start_operate(uint128_t); memcpy(&out[i],&in[i],sizeof(uint128_t));
     end_operate case DTYPE_B:start_operate(int8_t) out[i] = (int8_t)(in[i] > 0 ? in[i] : -in[i]);
     end_operate case DTYPE_W:start_operate(int16_t)
-        out[i] = (int16_t)(in[i] > 0 ? in[i] : -in[i]);
+	out[i] = (int16_t)(in[i] > 0 ? in[i] : -in[i]);
     end_operate case DTYPE_L:start_operate(int32_t) out[i] = in[i] > 0 ? in[i] : -in[i];
     end_operate case DTYPE_Q:start_operate(int64_t) out[i] = in[i] > 0 ? in[i] : -in[i];
     end_operate case DTYPE_O:start_operate(int128_t) int128_abs(&in[i],&out[i]);
@@ -396,7 +396,7 @@ int Tdi3Conjg(struct descriptor *in_ptr, struct descriptor *out_ptr)
   if STATUS_NOT_OK
     return status;
   switch (in_ptr->dtype) {
-                case DTYPE_BU:case DTYPE_B:start_operate( uint8_t) out[i] = in[i];
+	        case DTYPE_BU:case DTYPE_B:start_operate( uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU:case DTYPE_W:start_operate(uint16_t) out[i] = in[i];
     end_operate case DTYPE_LU:case DTYPE_L:start_operate(uint32_t) out[i] = in[i];
     end_operate case DTYPE_QU:case DTYPE_Q:start_operate(uint64_t) out[i] = in[i];
@@ -422,7 +422,7 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
   if STATUS_NOT_OK
     return status;
   switch (in_ptr->dtype) {
-                case DTYPE_B:case DTYPE_BU:start_operate(  uint8_t) out[i] = ~in[i];
+	        case DTYPE_B:case DTYPE_BU:start_operate(  uint8_t) out[i] = ~in[i];
     end_operate case DTYPE_W:case DTYPE_WU:start_operate( uint16_t) out[i] = ~in[i];
     end_operate case DTYPE_L:case DTYPE_LU:start_operate( uint32_t) out[i] = ~in[i];
     end_operate case DTYPE_Q:case DTYPE_QU:start_operate( uint64_t) out[i] = ~in[i];
@@ -441,7 +441,7 @@ int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind __attribute__
   if STATUS_NOT_OK
     return status;
   switch (in_ptr->dtype) {
-                case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
+	        case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
     end_operate case DTYPE_W:case DTYPE_WU:start_operate1( uint16_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
     end_operate case DTYPE_L:case DTYPE_LU:start_operate1( uint32_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
     end_operate case DTYPE_Q:case DTYPE_QU:start_operate1( uint64_t, uint8_t) out[i] = (uint8_t)(1 & in[i]);
@@ -460,7 +460,7 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
   if STATUS_NOT_OK
     return status;
   switch (in_ptr->dtype) {
-                case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
+	        case DTYPE_B:case DTYPE_BU:start_operate1(  uint8_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
     end_operate case DTYPE_W:case DTYPE_WU:start_operate1( uint16_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
     end_operate case DTYPE_L:case DTYPE_LU:start_operate1( uint32_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
     end_operate case DTYPE_Q:case DTYPE_QU:start_operate1( uint64_t,uint8_t) out[i] = (uint8_t)!(in[i] & 1);
@@ -482,7 +482,7 @@ int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((
     return status;
 
   switch (in_ptr->dtype) {
-                case DTYPE_BU: start_operate(  uint8_t) out[i] = in[i];
+	        case DTYPE_BU: start_operate(  uint8_t) out[i] = in[i];
     end_operate case DTYPE_WU: start_operate( uint16_t) out[i] = in[i];
     end_operate case DTYPE_LU: start_operate( uint32_t) out[i] = in[i];
     end_operate case DTYPE_QU: start_operate( uint64_t) out[i] = in[i];
@@ -519,7 +519,7 @@ int Tdi3UnaryMinus(struct descriptor *in_ptr, struct descriptor *out_ptr)
     return status;
 
   switch (in_ptr->dtype) {
-                case DTYPE_BU: start_operate(  int8_t) out[i] = -in[i];
+	        case DTYPE_BU: start_operate(  int8_t) out[i] = -in[i];
     end_operate case DTYPE_WU: start_operate( int16_t) out[i] = -in[i];
     end_operate case DTYPE_LU: start_operate( int32_t) out[i] = -in[i];
     end_operate case DTYPE_QU: start_operate( int64_t) out[i] = -in[i];

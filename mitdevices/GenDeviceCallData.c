@@ -35,10 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Purpose:    Calls TDI$DATA for INCAA CADF.
 
 --------------------------------------------------------------------------------
-	
-Work done by 1999 Informatica Ricerca Sviluppo, s.c.r.l.,	
-under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)	
-	
+
+Work done by 1999 Informatica Ricerca Sviluppo, s.c.r.l.,
+under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)
+
 --------------------------------------------------------------------------------
 
  Call sequence:
@@ -68,7 +68,7 @@ under contract from Istituto Gas Ionizzati del CNR - Padova (Italy)
 Calls TDI$DATA for INCAA CADF.
 
 ------------------------------------------------------------------------------*/
-
+
 #include <mdsdescrip.h>
 #include <mds_gendevice.h>
 #include <mdsshr.h>

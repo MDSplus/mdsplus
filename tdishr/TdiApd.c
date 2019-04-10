@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Apd.C
-        Converts a list of Descriptors into a List Dict or Tuple.
-        Timo Schröder, IPP      2017
+	Converts a list of Descriptors into a List Dict or Tuple.
+	Timo Schröder, IPP      2017
 */
 
 #include "STATICdef.h"
@@ -106,7 +106,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
     for (i=1 ; i<alen ; i+=2) {
       if (alist[i]->class!=CLASS_S) {
 	status = ApdDICT_KEYCLS;
-        goto free_alist;
+	goto free_alist;
       }
     }
   }//TODO: Dict requires unique keys

@@ -29,7 +29,7 @@
 // * Used for MSVC to create the export attribute
 // * CK_DLL_EXP is defined during the compilation of the library
 // * on the command line.
- 
+
 #ifndef CK_DLL_EXP
 #define CK_DLL_EXP
 #endif
@@ -153,7 +153,7 @@ struct timespec
 #endif /* STRUCT_TIMESPEC_DEFINITION_MISSING */
 
 #ifdef STRUCT_ITIMERSPEC_DEFINITION_MISSING
-/* 
+/*
  * The following structure is defined in POSIX.1b for timer start values and intervals.
  * If it is not defined in time.h, then we need to define it here.
  */
@@ -164,7 +164,7 @@ struct itimerspec
 };
 #endif /* STRUCT_ITIMERSPEC_DEFINITION_MISSING */
 
-/* 
+/*
  * Do a simple forward declaration in case the struct is not defined.
  * In the versions of timer_create in libcompat, sigevent is never
  * used.
@@ -179,10 +179,10 @@ typedef struct __timer_t timer_t;
 
 CK_DLL_EXP int clock_gettime(clockid_t clk_id, struct timespec *ts);
 CK_DLL_EXP int timer_create(clockid_t clockid, struct sigevent *sevp,
-                            timer_t * timerid);
+	                    timer_t * timerid);
 CK_DLL_EXP int timer_settime(timer_t timerid, int flags,
-                             const struct itimerspec *new_value,
-                             struct itimerspec *old_value);
+	                     const struct itimerspec *new_value,
+	                     struct itimerspec *old_value);
 CK_DLL_EXP int timer_delete(timer_t timerid);
 #endif /* HAVE_LIBRT */
 

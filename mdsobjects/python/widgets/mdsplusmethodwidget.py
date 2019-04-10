@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,7 @@ def adj_changed(adj):
     newstep=adj.upper/8
     if adj.step_increment != newstep:
         adj.step_increment = newstep
-        
+
 class MDSplusMethodWidget(Table):
 
     def __init__(self,value=None):
@@ -101,7 +101,7 @@ class MDSplusMethodWidget(Table):
                 found=True
             idx=idx-1
         return ans
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()
@@ -129,7 +129,7 @@ class MDSplusMethodWidget(Table):
                 arg.set_text('')
 
     value=property(getValue,setValue)
-        
+
 
     def show(self):
         old=self.get_no_show_all()

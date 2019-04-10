@@ -70,7 +70,7 @@ class SaveFrame {
 		this->timebaseNid = timebaseNid;
 		this->frameTime = frameTime;
 
-        hasMetadata = true;
+	hasMetadata = true;
 		this->frameMetadata = frameMetadata;
 		this->metaSize = metaSize;
 		this->metaNid = metaNid;
@@ -90,7 +90,7 @@ class SaveFrame {
 		this->timebaseNid = timebaseNid;
 		this->frameTime = frameTime;
 
-        hasMetadata = false;
+	hasMetadata = false;
 		this->frameMetadata = 0;
 		this->metaSize = 0;
 		this->metaNid = -1;
@@ -118,14 +118,14 @@ class SaveFrame {
 
 	    TreeNode *dataNode = new TreeNode(dataNid, (Tree *)treePtr);
 	    TreeNode *metaNode;
-        if(hasMetadata)
-            metaNode = new TreeNode(metaNid, (Tree *)treePtr);
+	if(hasMetadata)
+	    metaNode = new TreeNode(metaNid, (Tree *)treePtr);
 	    TreeNode *tBase = new TreeNode(timebaseNid, (Tree *)treePtr);
 
 	    Data *data;
 	    Data *metaData = 0;
-        if(hasMetadata)
-	        metaData = new Int8Array((char *)frameMetadata, 2, metaDims);
+	if(hasMetadata)
+		metaData = new Int8Array((char *)frameMetadata, 2, metaDims);
 
 	//check pixel size format
 	    if(pixelSize<=8)
@@ -169,7 +169,7 @@ class SaveFrame {
 			    dataNode->makeSegment(time, time, dim, (Array *)data);
 			    if(hasMetadata && metaSize>0)
 			    {
-		  		    metaNode->makeSegment(time, time, dim, (Array *)metaData);
+				    metaNode->makeSegment(time, time, dim, (Array *)metaData);
 			    }
 		    }
 		    catch(MdsException *exc)
@@ -198,7 +198,7 @@ class SaveFrame {
 
 		    try
 		    {
-		        dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
+			dim = compileWithArgs("[$1]", (Tree *)treePtr, 1, time);
 		    }
 		    catch(MdsException *exc)
 		    {
@@ -212,7 +212,7 @@ class SaveFrame {
 			dataNode->makeSegment(time, time, dim, (Array *)data);
 			if(hasMetadata && metaSize>0)
 			{
-		  		metaNode->makeSegment(time, time, dim, (Array *)metaData);
+				metaNode->makeSegment(time, time, dim, (Array *)metaData);
 			}
 
 		}
@@ -252,12 +252,12 @@ class SaveFrameList
 		bool threadCreated;
 		SaveFrame *saveHead, *saveTail;
 		bool stopReq;
-        bool deferredSave;
+	bool deferredSave;
 		pthread_mutex_t mutex;
 	public:
     void setDeferredSave(bool deferredSave)
     {
-        this->deferredSave = deferredSave;
+	this->deferredSave = deferredSave;
     }
     SaveFrameList()
     {
@@ -265,7 +265,7 @@ class SaveFrameList
 		pthread_cond_init(&itemAvailable, NULL);
 		saveHead = saveTail = NULL;
 		stopReq = false;
-        deferredSave = false;
+	deferredSave = false;
 		threadCreated = false;
     }
 
@@ -287,18 +287,18 @@ class SaveFrameList
     }
 
     void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
-        int frameIdx,    void *frameMetadata, int metaSize, int metaNid)
+	int frameIdx,    void *frameMetadata, int metaSize, int metaNid)
     {
 		SaveFrame *newItem = new SaveFrame(frame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx,
-             frameMetadata,  metaSize,  metaNid);
-        addFrame(newItem);
+	     frameMetadata,  metaSize,  metaNid);
+	addFrame(newItem);
     }
 
     void addFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
-        int frameIdx)
+	int frameIdx)
     {
 		SaveFrame *newItem = new SaveFrame(frame,  width,  height,  frameTime,  pixelSize,  treePtr,  dataNid,  timebaseNid,  frameIdx);
-        addFrame(newItem);
+	addFrame(newItem);
     }
 
 
@@ -313,34 +313,34 @@ class SaveFrameList
 			    pthread_mutex_unlock(&mutex);
 			    pthread_exit(NULL);
 			}
-            if(deferredSave)
-            {
+	    if(deferredSave)
+	    {
 			    pthread_cond_wait(&itemAvailable, &mutex);
-                if(!stopReq)
-                {
+	        if(!stopReq)
+	        {
 				    pthread_mutex_unlock(&mutex);
-                    continue;
-                }
-                else
-                {
-                //Empty pending queue
-                    while(saveHead)
-                    {
-			            SaveFrame *currItem = saveHead;
-			            saveHead = saveHead->getNext();
+	            continue;
+	        }
+	        else
+	        {
+	        //Empty pending queue
+	            while(saveHead)
+	            {
+				    SaveFrame *currItem = saveHead;
+				    saveHead = saveHead->getNext();
 
 #ifdef DEBUG
-			            int nItems = 0;
-			            for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
-			            if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
+				    int nItems = 0;
+				    for(SaveFrame *itm = saveHead; itm; itm = itm->getNext(), nItems++);
+				    if( nItems > 0 && (nItems % 20 ) == 0 ) printf("THREAD ACTIVATED: %d store frame items pending\n", nItems);
 #endif
-			            currItem->save();
-			            delete currItem;
-                    }
-			        pthread_mutex_unlock(&mutex);
-			        pthread_exit(NULL);
-                }
-            }
+				    currItem->save();
+				    delete currItem;
+	            }
+				pthread_mutex_unlock(&mutex);
+				pthread_exit(NULL);
+	        }
+	    }
 
 
 
@@ -412,9 +412,9 @@ void camStopSave(void *listPtr)
 {
     if(listPtr)
     {
-        SaveFrameList *list = (SaveFrameList *)listPtr;
-        list->stop();
-        delete list;
+	SaveFrameList *list = (SaveFrameList *)listPtr;
+	list->stop();
+	delete list;
     }
 }
 
@@ -465,7 +465,7 @@ int metaNid			MdsPlus NodeID for the metadata
 */
 
 void camSaveFrame(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid, int frameIdx,
-         void *frameMetadata, int metaSize, int metaNid, void *saveListPtr)
+	 void *frameMetadata, int metaSize, int metaNid, void *saveListPtr)
 {
 
     void *bufFrame;
@@ -475,17 +475,17 @@ void camSaveFrame(void *frame, int width, int height, float frameTime, int pixel
     if(pixelSize<=8)
     {
 	     bufFrame = new char[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(char));
+	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
 	     bufFrame = new short[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(short));
+	 memcpy(bufFrame, frame, frameSize * sizeof(short));
     }
     else if(pixelSize<=32)
     {
 	     bufFrame = new int[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(int));
+	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
 
     bufMdata = new char[metaSize];
@@ -496,7 +496,7 @@ void camSaveFrame(void *frame, int width, int height, float frameTime, int pixel
 }
 
 void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int pixelSize, void *treePtr, int dataNid, int timebaseNid,
-        int frameIdx, void *saveListPtr)
+	int frameIdx, void *saveListPtr)
 {
 
     void *bufFrame;
@@ -504,17 +504,17 @@ void camSaveFrameDirect(void *frame, int width, int height, float frameTime, int
     if(pixelSize<=8)
     {
 	     bufFrame = new char[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(char));
+	 memcpy(bufFrame, frame, frameSize * sizeof(char));
     }
     else if(pixelSize<=16)
     {
 	     bufFrame = new short[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(short));
+	 memcpy(bufFrame, frame, frameSize * sizeof(short));
     }
     else if(pixelSize<=32)
     {
 	     bufFrame = new int[frameSize];
-    	 memcpy(bufFrame, frame, frameSize * sizeof(int));
+	 memcpy(bufFrame, frame, frameSize * sizeof(int));
     }
 
     SaveFrameList *saveList = (SaveFrameList *)saveListPtr;

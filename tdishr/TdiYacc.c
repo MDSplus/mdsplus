@@ -25,35 +25,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 //#line 2 "TdiYacc.y"
 /*      TdiYacc.Y
-        YACC converts this to TdiYacc.C to compile TDI statements.
-        Each YACC-LEX symbol has a returned token and a tdiyylval value.
-        Precedence is associated with a token and is set left and right below.
-        TdiLex_... routines and TdiRefFunction depend on tokens from TdiYacc.
-        Tdi0Decompile depends on TdiRefFunction and precedence.
+	YACC converts this to TdiYacc.C to compile TDI statements.
+	Each YACC-LEX symbol has a returned token and a tdiyylval value.
+	Precedence is associated with a token and is set left and right below.
+	TdiLex_... routines and TdiRefFunction depend on tokens from TdiYacc.
+	Tdi0Decompile depends on TdiRefFunction and precedence.
 
-        Josh Stillerman and Thomas W. Fredian, MIT PFC, TDI$PARSE.Y.
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Josh Stillerman and Thomas W. Fredian, MIT PFC, TDI$PARSE.Y.
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 
-        Note statements like    {;} {a;} {a,b,c;}
-        Watch -3^4*5    Fortran says -((3^4)*5), CC/high-unary-precedence would give ((-3)^4)*5
-        Watch 3^-4*5    Fortran illegal, Vax 3^(-(4*5)), CC would give (3^(-4))*5
-        NEED x^float    where float=int(float) to be x^int.
-        NEED x^2        square(x) and x^.5 to be sqrt(x).
-        Limitations:
-                () implies no arguments. Use (*) for one. (x,*,y) is permitted, (x,,y) may be.
-                255 statements, 253 commas and arguments. NEED to check, done in RESOLVE.
-                Recursion will not work as coded, could happen in IMMEDIATE of compile.
-                (YYMAXDEPTH - something) arguments.
-                All binary stores are allowed, watch a > = b, it is not (a (>=) b), it is (a = (a > b)).
+	Note statements like    {;} {a;} {a,b,c;}
+	Watch -3^4*5    Fortran says -((3^4)*5), CC/high-unary-precedence would give ((-3)^4)*5
+	Watch 3^-4*5    Fortran illegal, Vax 3^(-(4*5)), CC would give (3^(-4))*5
+	NEED x^float    where float=int(float) to be x^int.
+	NEED x^2        square(x) and x^.5 to be sqrt(x).
+	Limitations:
+	        () implies no arguments. Use (*) for one. (x,*,y) is permitted, (x,,y) may be.
+	        255 statements, 253 commas and arguments. NEED to check, done in RESOLVE.
+	        Recursion will not work as coded, could happen in IMMEDIATE of compile.
+	        (YYMAXDEPTH - something) arguments.
+	        All binary stores are allowed, watch a > = b, it is not (a (>=) b), it is (a = (a > b)).
 
-        Sneaky "neat" tricks:
-        F90 style constructors: [scalars,vectors,etc] become vector or compound to become array.
-        a//b//c generates CONCAT(a,b,c).
-        Could NEED: Also a MIN b MIN c gives MIN(a,b,c).
-        path(a) is function described at node. Not after 9/25/89.
-                May require (path)(a) if path-ness not clear.
-        path[b] subscripts whatever is at node. Same problem.
-        NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
+	Sneaky "neat" tricks:
+	F90 style constructors: [scalars,vectors,etc] become vector or compound to become array.
+	a//b//c generates CONCAT(a,b,c).
+	Could NEED: Also a MIN b MIN c gives MIN(a,b,c).
+	path(a) is function described at node. Not after 9/25/89.
+	        May require (path)(a) if path-ness not clear.
+	path[b] subscripts whatever is at node. Same problem.
+	NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 -*/
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
@@ -87,8 +87,8 @@ extern int TdiLexPath();
 #define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
 #define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
 	/*****************************
-        Two args for image->routine.
-        *****************************/
+	Two args for image->routine.
+	*****************************/
 #define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL ))
 #define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
 #define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
@@ -432,7 +432,7 @@ typedef struct {
     int i;\
     for (i = 0; tdiyytoks[i].t_val >= 0; i++)\
       if (tdiyytoks[i].t_val == tdiyychar)\
-        break;\
+	break;\
     printf("%s\n", tdiyytoks[i].t_name);\
   }
 /*
@@ -1348,9 +1348,9 @@ int TdiYacc(){
       else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == LEX_ERROR) {
 	TdiRefZone.l_ok = tdiyypvt[-1].mark.w_ok;
 	TdiRefZone.a_cur = TdiRefZone.a_begin + TdiRefZone.l_ok + tdiyypvt[-0].mark.rptr->length;
-        return MDSplusERROR;
+	return MDSplusERROR;
       } else
-        TdiRefZone.l_ok = tdiyypvt[-0].mark.w_ok;
+	TdiRefZone.l_ok = tdiyypvt[-0].mark.w_ok;
     }
     break;
   case 95:

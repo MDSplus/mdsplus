@@ -792,7 +792,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
   dtype = (*env)->GetIntField(env, obj, dtype_fid),
       dclass = (*env)->GetIntField(env, obj, dclass_fid);
 
-//      printf("%d %d\n", dtype, dclass); 
+//      printf("%d %d\n", dtype, dclass);
 
   getUnitsFid = (*env)->GetFieldID(env, cls, "units", "LMDSplus/Data;");
   getHelpFid = (*env)->GetFieldID(env, cls, "help", "LMDSplus/Data;");
@@ -1057,11 +1057,11 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
 //printf("CLASS_R\n");
 
     opcode_fid = (*env)->GetFieldID(env, cls, "opcode", "I");
-//printf("%x\n", opcode_fid); 
+//printf("%x\n", opcode_fid);
     opcode = (*env)->GetIntField(env, obj, opcode_fid);
-//printf("%d\n", opcode); 
+//printf("%d\n", opcode);
     descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
-//printf("%x\n", descs_fid); 
+//printf("%x\n", descs_fid);
 
     jdescs = (*env)->GetObjectField(env, obj, descs_fid);
     ndescs = (*env)->GetArrayLength(env, jdescs);
@@ -3220,7 +3220,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
     return NULL;
   }
-//   printf("RECEIVED dtype: %d length: %d ndims: %d dim1: %d dim2: %d numBytes: %d\n", 
+//   printf("RECEIVED dtype: %d length: %d ndims: %d dim1: %d dim2: %d numBytes: %d\n",
 //	dtype, length, nDims, dims[0], dims[1], numBytes);
   if (nDims == 0) {
     scalarDsc.length = numBytes;

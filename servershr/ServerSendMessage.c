@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Send message to server.
+		Purpose: Send message to server.
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int ServerSendMessage();
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #define LOAD_INITIALIZESOCKETS
@@ -213,31 +213,31 @@ int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_
     strcat(cmd, ",");
     arg = va_arg(vlist, struct descrip *);
     if (op == SrvMonitor && numargs == 8 && i == 5 && arg->dtype == DTYPE_LONG
-        && *(int *)arg->ptr == MonitorCheckin)
+	&& *(int *)arg->ptr == MonitorCheckin)
       MonJob = jobid;
     switch (arg->dtype) {
       case DTYPE_CSTRING: {
-        int j, k;
-        char *c = (char *)arg->ptr;
-        int len = strlen(c);
-        strcat(cmd, "\"");
-        for (j = 0, k = strlen(cmd); j < len; j++, k++) {
-          if (c[j] == '"' || c[j] == '\\')
-              cmd[k++] = '\\';
-            cmd[k] = c[j];
-          }
-          cmd[k] = 0;
-          strcat(cmd, "\"");
-          break;
-        }
+	int j, k;
+	char *c = (char *)arg->ptr;
+	int len = strlen(c);
+	strcat(cmd, "\"");
+	for (j = 0, k = strlen(cmd); j < len; j++, k++) {
+	  if (c[j] == '"' || c[j] == '\\')
+	      cmd[k++] = '\\';
+	    cmd[k] = c[j];
+	  }
+	  cmd[k] = 0;
+	  strcat(cmd, "\"");
+	  break;
+	}
       case DTYPE_LONG:
-        sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
-        break;
+	sprintf(&cmd[strlen(cmd)], "%d", *(int *)arg->ptr);
+	break;
       case DTYPE_CHAR:
-        sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
-        break;
+	sprintf(&cmd[strlen(cmd)], "%d", (int)*(char *)arg->ptr);
+	break;
       default:
-        fprintf(stderr,"shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
+	fprintf(stderr,"shouldn't get here! ServerSendMessage dtype = %d\n", arg->dtype);
     }
   }
   strcat(cmd, ")");
@@ -458,13 +458,13 @@ static SOCKET CreatePort(uint16_t *port_out) {
       char* dash;
       for (dash=range; *dash && *dash!='-' ; dash++);
       if (dash)
-        *(dash++)=0;
+	*(dash++)=0;
       start_port = (uint16_t)(strtol(range,NULL,0)&0xffff);
       int end = strtol(dash,NULL,0);
       if (end>0 && end<65536)
-        range_port = (uint16_t)end-start_port+1;
+	range_port = (uint16_t)end-start_port+1;
       else
-        range_port = 100;
+	range_port = 100;
     }
     TranslateLogicalFree(range);
     if (!start_port) {
@@ -558,10 +558,10 @@ static void ResetFdactive(int rep, SOCKET sock, fd_set* active){
     for (c = Clients; c;) {
       if (is_broken_socket(c->reply_sock)) {
 	DBG("removed client in ResetFdactive\n");
-        _RemoveClient(c);
-        c = Clients;
+	_RemoveClient(c);
+	c = Clients;
       } else
-        c = c->next;
+	c = c->next;
     }
   }
   FD_ZERO(active);
@@ -603,25 +603,25 @@ static void ReceiverThread(void *sockptr){
       if (num <0) break;
       if (num==0) continue;
       if (FD_ISSET(sock, &readfds)) {
-          socklen_t len = sizeof(struct sockaddr_in);
-          AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
+	  socklen_t len = sizeof(struct sockaddr_in);
+	  AcceptClient(accept(sock, (struct sockaddr *)&sin, &len), &sin, &fdactive);
       } else {
-        Client *c, *next;
-        for (;;) {
-          LOCK_CLIENTS;
-          for (c = Clients, next = c ? c->next : 0;
-               c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
-               c = next, next = c ? c->next : 0);
-          UNLOCK_CLIENTS;
-          if (c) {
-            SOCKET reply_sock = c->reply_sock;
-            last_client_addr = c->addr;
-            last_client_port = c->port;
-            DoMessage(c, &fdactive);
-            FD_CLR(reply_sock, &readfds);
-          } else
-            break;
-        }
+	Client *c, *next;
+	for (;;) {
+	  LOCK_CLIENTS;
+	  for (c = Clients, next = c ? c->next : 0;
+	       c && (c->reply_sock == INVALID_SOCKET || !FD_ISSET(c->reply_sock, &readfds));
+	       c = next, next = c ? c->next : 0);
+	  UNLOCK_CLIENTS;
+	  if (c) {
+	    SOCKET reply_sock = c->reply_sock;
+	    last_client_addr = c->addr;
+	    last_client_port = c->port;
+	    DoMessage(c, &fdactive);
+	    FD_CLR(reply_sock, &readfds);
+	  } else
+	    break;
+	}
       }
     }
     SOCKERROR("Dispatcher select loop failed\nLast client: %u.%u.%u.%u:%u\n",ADDR2IP(last_client_addr),last_client_port);

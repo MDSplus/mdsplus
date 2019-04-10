@@ -117,7 +117,7 @@ static int findtag(PINO_DATABASE *dblist, TAG_SEARCH **ctx) {
       if STATUS_OK
 	(*ctx)->next_tag = -1;
       else {
-        done = 1;
+	done = 1;
 	break;
       }
     } else {

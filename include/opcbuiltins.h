@@ -52,7 +52,7 @@ OPC (	Rydberg,	$RYDBERG ,	Constant, undef,	Rydberg,	F,HC,	F,HC,	0,0,	CONST	)/*;	
 OPC (	T0,		$T0 ,		Constant, undef,	T0,		F,HC,	F,HC,	0,0,	CONST	)/*;	standard temp.	*/
 OPC (	Torr,		$TORR ,		Constant, undef,	Torr,		F,HC,	F,HC,	0,0,	CONST	)/*;	1mm Hg pressure	*/
 OPC (	True,		$TRUE ,		Constant, undef,	True,		VV,VV,	VV,VV,	0,0,	CONST	)/*;	1bu		*/
-OPC (	Value,		$VALUE ,	Value,	undef,	        undef,		XX,YY,	XX,YY,	0,0,	CONST	)/*;	raw value in sig*/
+OPC (	Value,		$VALUE ,	Value,	undef,		undef,		XX,YY,	XX,YY,	0,0,	CONST	)/*;	raw value in sig*/
 OPC (	Abort,		ABORT ,		Abort,	undef,		undef,		XX,YY,	XX,YY,	0,255,	OK+U	)/*;	() 		*/
 OPC (	Abs,		ABS ,		Same,	Abs,		Abs,		BU,HC,	BU,H,	1,1,	OK	)/*;f9	(a)		*/
 OPC (	Abs1,		ABS1 ,		Same,	Abs,		Abs1,		BU,HC,	BU,H,	1,1,	OK	)/*;	(a) 1-norm	*/

@@ -13,7 +13,7 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
      * Creates new form MARTE_CONFIGSetup
      */
     public MARTE_CONFIGSetup() {
-        initComponents();
+	initComponents();
     }
 
     /**
@@ -25,155 +25,155 @@ public class MARTE_CONFIGSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        jPanel2 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField8 = new DeviceField();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField13 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel5 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	jPanel2 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	deviceChoice2 = new DeviceChoice();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField4 = new DeviceField();
+	deviceField5 = new DeviceField();
+	deviceField6 = new DeviceField();
+	deviceField7 = new DeviceField();
+	jPanel6 = new javax.swing.JPanel();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField8 = new DeviceField();
+	deviceField9 = new DeviceField();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField12 = new DeviceField();
+	jPanel8 = new javax.swing.JPanel();
+	deviceField13 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("MARTe Configuration");
-        setDeviceType("MARTE_CONFIG");
-        setHeight(300);
-        setWidth(800);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+	setDeviceProvider("localhost");
+	setDeviceTitle("MARTe Configuration");
+	setDeviceType("MARTE_CONFIG");
+	setHeight(300);
+	setWidth(800);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
+	jPanel1.setLayout(new java.awt.GridLayout(4, 1));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment");
-        deviceField1.setNumCols(40);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel5.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment");
+	deviceField1.setNumCols(40);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel5.add(deviceField1);
 
-        jPanel1.add(jPanel5);
+	jPanel1.add(jPanel5);
 
-        deviceChoice1.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice1.setChoiceItems(new String[] {"4-4-4", "8-3-1", "8-2-2"});
-        deviceChoice1.setConvert(true);
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Configuration: ");
-        deviceChoice1.setOffsetNid(2);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel2.add(deviceChoice1);
+	deviceChoice1.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice1.setChoiceItems(new String[] {"4-4-4", "8-3-1", "8-2-2"});
+	deviceChoice1.setConvert(true);
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Configuration: ");
+	deviceChoice1.setOffsetNid(2);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel2.add(deviceChoice1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Decoupler Gain: ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(3);
-        jPanel2.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Decoupler Gain: ");
+	deviceField2.setNumCols(4);
+	deviceField2.setOffsetNid(3);
+	jPanel2.add(deviceField2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("CompRes Gain: ");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(4);
-        jPanel2.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("CompRes Gain: ");
+	deviceField3.setNumCols(4);
+	deviceField3.setOffsetNid(4);
+	jPanel2.add(deviceField3);
 
-        deviceChoice2.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice2.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice2.setConvert(true);
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Check Disruption:");
-        deviceChoice2.setOffsetNid(14);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel2.add(deviceChoice2);
+	deviceChoice2.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice2.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice2.setConvert(true);
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Check Disruption:");
+	deviceChoice2.setOffsetNid(14);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel2.add(deviceChoice2);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Kp: ");
-        deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(5);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Kp: ");
+	deviceField4.setNumCols(4);
+	deviceField4.setOffsetNid(5);
+	jPanel3.add(deviceField4);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Ki: ");
-        deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(6);
-        jPanel3.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Ki: ");
+	deviceField5.setNumCols(4);
+	deviceField5.setOffsetNid(6);
+	jPanel3.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("minIpCurr: ");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(7);
-        jPanel3.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("minIpCurr: ");
+	deviceField6.setNumCols(4);
+	deviceField6.setOffsetNid(7);
+	jPanel3.add(deviceField6);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("equiNonLinearFactorSaturation: ");
-        deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(8);
-        jPanel3.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("equiNonLinearFactorSaturation: ");
+	deviceField7.setNumCols(4);
+	deviceField7.setOffsetNid(8);
+	jPanel3.add(deviceField7);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        jPanel6.setLayout(new java.awt.GridLayout(2, 0));
+	jPanel6.setLayout(new java.awt.GridLayout(2, 0));
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("ffwdOn: ");
-        deviceField8.setNumCols(4);
-        deviceField8.setOffsetNid(9);
-        jPanel4.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("ffwdOn: ");
+	deviceField8.setNumCols(4);
+	deviceField8.setOffsetNid(9);
+	jPanel4.add(deviceField8);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("fdbkOn: ");
-        deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(10);
-        jPanel4.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("fdbkOn: ");
+	deviceField9.setNumCols(4);
+	deviceField9.setOffsetNid(10);
+	jPanel4.add(deviceField9);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("voltageControl: ");
-        deviceField10.setNumCols(4);
-        deviceField10.setOffsetNid(11);
-        jPanel4.add(deviceField10);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("voltageControl: ");
+	deviceField10.setNumCols(4);
+	deviceField10.setOffsetNid(11);
+	jPanel4.add(deviceField10);
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("equiFlux");
-        deviceField11.setNumCols(4);
-        deviceField11.setOffsetNid(12);
-        jPanel4.add(deviceField11);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("equiFlux");
+	deviceField11.setNumCols(4);
+	deviceField11.setOffsetNid(12);
+	jPanel4.add(deviceField11);
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("strainAlarmLatchTime: ");
-        deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(13);
-        jPanel4.add(deviceField12);
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("strainAlarmLatchTime: ");
+	deviceField12.setNumCols(4);
+	deviceField12.setOffsetNid(13);
+	jPanel4.add(deviceField12);
 
-        jPanel6.add(jPanel4);
+	jPanel6.add(jPanel4);
 
-        jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("TOKAMAK Vertical Shift Ctrl : ");
-        deviceField13.setNumCols(4);
-        deviceField13.setOffsetNid(15);
-        jPanel8.add(deviceField13);
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("TOKAMAK Vertical Shift Ctrl : ");
+	deviceField13.setNumCols(4);
+	deviceField13.setOffsetNid(15);
+	jPanel8.add(deviceField13);
 
-        jPanel6.add(jPanel8);
+	jPanel6.add(jPanel8);
 
-        jPanel1.add(jPanel6);
+	jPanel1.add(jPanel6);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        getAccessibleContext().setAccessibleName("");
+	getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;

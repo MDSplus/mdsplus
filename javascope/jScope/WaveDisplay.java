@@ -37,35 +37,35 @@ public class WaveDisplay
     setBackground(Color.lightGray);
     profDialog = new ProfileDialog(null, null);
     wave_popup = new WavePopup(new SetupWaveformParams(null, "Waveform Params"),
-                               profDialog);
+	                       profDialog);
     getContentPane().add(wave_popup);
     panel.addMouseListener(new MouseAdapter() {
       public void mousePressed(MouseEvent e) {
-        Waveform w = (Waveform) e.getSource();
-        if (wave_popup != null && w.GetMode() != Waveform.MODE_COPY) {
-          wave_popup.Show(w, e.getX(), e.getY(), 0, 0);
-        }
+	Waveform w = (Waveform) e.getSource();
+	if (wave_popup != null && w.GetMode() != Waveform.MODE_COPY) {
+	  wave_popup.Show(w, e.getX(), e.getY(), 0, 0);
+	}
       }
     });
 
     JRadioButton point = new JRadioButton("Point", false);
     point.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        w.SetMode(Waveform.MODE_POINT);
+	w.SetMode(Waveform.MODE_POINT);
       }
     });
 
     JRadioButton zoom = new JRadioButton("Zoom", true);
     zoom.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        w.SetMode(Waveform.MODE_ZOOM);
+	w.SetMode(Waveform.MODE_ZOOM);
       }
     });
 
     JRadioButton pan = new JRadioButton("Pan", false);
     pan.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
-        w.SetMode(Waveform.MODE_PAN);
+	w.SetMode(Waveform.MODE_PAN);
       }
     });
 
@@ -111,23 +111,23 @@ public class WaveDisplay
       case WaveformEvent.MEASURE_UPDATE :
       case WaveformEvent.POINT_UPDATE:
       case WaveformEvent.POINT_IMAGE_UPDATE:
-        String s = we.toString();
-        if (wi.shots != null) {
-          s = (s +
-               " Expr : " + w.getSignalName(we.signal_idx) +
-               " Shot = " + wi.shots[we.signal_idx]);
-        }
-        else {
-          s = (s +
-               " Expr : " + w.getSignalName(we.signal_idx));
-        }
-        showStatus(s);
-        break;
+	String s = we.toString();
+	if (wi.shots != null) {
+	  s = (s +
+	       " Expr : " + w.getSignalName(we.signal_idx) +
+	       " Shot = " + wi.shots[we.signal_idx]);
+	}
+	else {
+	  s = (s +
+	       " Expr : " + w.getSignalName(we.signal_idx));
+	}
+	showStatus(s);
+	break;
       case WaveformEvent.STATUS_INFO:
-        showStatus(we.status_info);
-        break;
+	showStatus(we.status_info);
+	break;
       default:
-        showStatus(we.toString());
+	showStatus(we.toString());
     }
   }
 
@@ -139,218 +139,218 @@ public class WaveDisplay
       return false;
     }
   }
-  
+
 //  public void addSignals( String url, boolean isImage )
    public void addSignals()
   {
       String url = "mds://150.178.3.242/a/14000/\\emra_it";
       boolean isImage = false;
-              
+
     try
     {
-        System.out.println("Add signal : " + url);
-        DataAccess da = DataAccessURL.getDataAccess(url);
-        if (da != null) 
-        {
-                  
+	System.out.println("Add signal : " + url);
+	DataAccess da = DataAccessURL.getDataAccess(url);
+	if (da != null)
+	{
+
 //       da.setPassword(autentication);
-          da.setProvider(url);
+	  da.setProvider(url);
 
-          WaveInterface wi = w.getWaveInterface();
-          wi.SetDataProvider(da.getDataProvider());
-          wi.setExperiment(da.getExperiment());
+	  WaveInterface wi = w.getWaveInterface();
+	  wi.SetDataProvider(da.getDataProvider());
+	  wi.setExperiment(da.getExperiment());
 
-          System.out.println("Signal Name : " + da.getSignalName() );
+	  System.out.println("Signal Name : " + da.getSignalName() );
 
-          if( !isImage )
-          {
-            wi.AddSignal(da.getSignalName());
- 
-            System.out.println("Shots : "+da.getShot());
-            wi.setShotArray(da.getShot());
-          
-            if( wi.StartEvaluate() == 1 )
-                wi.EvaluateOthers();
+	  if( !isImage )
+	  {
+	    wi.AddSignal(da.getSignalName());
 
-            if (  wi.signals != null && (wi.signals[0]) != null ) 
-            {
-                w.Update(wi.signals);
-            } else {
-                JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
-                                          JOptionPane.ERROR_MESSAGE);
-            }           
-        } else {
-              Frames f = new Frames();
-              DataAccessURL.getImages(url, f);
-              if (f != null) {
-                w.UpdateImage(f);
-              }
-            }
-          }
-        }
-        catch (Exception e) {
-          if (e instanceof AccessControlException) {
-            JOptionPane.showMessageDialog(this,
-                                          e.toString() + "\n url " + url +
-                                          "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
-                                          "alert",
-                                          JOptionPane.ERROR_MESSAGE);
-          }
-          else {
-            e.printStackTrace();  
-            JOptionPane.showMessageDialog(this,
-                                          e.toString(),
-                                          "alert",
-                                          JOptionPane.ERROR_MESSAGE);
-          }
-         }     
+	    System.out.println("Shots : "+da.getShot());
+	    wi.setShotArray(da.getShot());
+
+	    if( wi.StartEvaluate() == 1 )
+	        wi.EvaluateOthers();
+
+	    if (  wi.signals != null && (wi.signals[0]) != null )
+	    {
+	        w.Update(wi.signals);
+	    } else {
+	        JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
+	                                  JOptionPane.ERROR_MESSAGE);
+	    }
+	} else {
+	      Frames f = new Frames();
+	      DataAccessURL.getImages(url, f);
+	      if (f != null) {
+	        w.UpdateImage(f);
+	      }
+	    }
+	  }
+	}
+	catch (Exception e) {
+	  if (e instanceof AccessControlException) {
+	    JOptionPane.showMessageDialog(this,
+	                                  e.toString() + "\n url " + url +
+	                                  "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
+	                                  "alert",
+	                                  JOptionPane.ERROR_MESSAGE);
+	  }
+	  else {
+	    e.printStackTrace();
+	    JOptionPane.showMessageDialog(this,
+	                                  e.toString(),
+	                                  "alert",
+	                                  JOptionPane.ERROR_MESSAGE);
+	  }
+	 }
       }
 
    public void resetSignal()
    {
-          WaveInterface wi = w.getWaveInterface();
-          
-          if( wi.signals != null)
-          {
-            wi.Erase();
-          }
-          w.Erase();
+	  WaveInterface wi = w.getWaveInterface();
+
+	  if( wi.signals != null)
+	  {
+	    wi.Erase();
+	  }
+	  w.Erase();
    }
-   
+
    public void addSignal(String signalParams, String globalAutentication, boolean image)
    {
-        String url = null, color, marker, name, title;
-        String signalAutentication, autentication;
-        
-        if( signalParams == null ) return ;
+	String url = null, color, marker, name, title;
+	String signalAutentication, autentication;
+
+	if( signalParams == null ) return ;
 
     try {
       if ( !image  ) {
 
-        signalAutentication = getParameterValue(signalParams, "autentication");
-        if (signalAutentication != null) {
-          autentication = signalAutentication;
-        }
-        else {
-          autentication = globalAutentication;
-        }
-         
-        
-        url = getParameterValue(signalParams, "url");
+	signalAutentication = getParameterValue(signalParams, "autentication");
+	if (signalAutentication != null) {
+	  autentication = signalAutentication;
+	}
+	else {
+	  autentication = globalAutentication;
+	}
 
-        DataAccess da = DataAccessURL.getDataAccess(url);
-        if (da != null) 
-        {
-                    
-          da.setPassword(autentication);
-          da.setProvider(url);
 
-          WaveInterface wi = w.getWaveInterface();
-          
-          if( wi.signals != null)
-            wi.Erase();
-          
-          wi.SetDataProvider(da.getDataProvider());
-          wi.setExperiment(da.getExperiment());
+	url = getParameterValue(signalParams, "url");
 
-          System.out.println("Signal Name : " + da.getSignalName() );
-          System.out.println("Shots : "+da.getShot());
+	DataAccess da = DataAccessURL.getDataAccess(url);
+	if (da != null)
+	{
 
-          wi.AddSignal(da.getSignalName());
- 
-          wi.setShotArray(da.getShot());
-          
-          if( wi.StartEvaluate() == 1 )
-            wi.EvaluateOthers();
-          
-          Signal s;
-          if (wi.signals != null && (s = wi.signals[0]) != null) 
-          {
-            color = getParameterValue(signalParams, "color");
-            if (color != null) {
-              s.setColor(new Color(Integer.decode(color).intValue()));
+	  da.setPassword(autentication);
+	  da.setProvider(url);
 
-            }
-            marker = getParameterValue(signalParams, "marker");
-            s.setMarker(marker);
+	  WaveInterface wi = w.getWaveInterface();
 
-            name = getParameterValue(signalParams, "name");
-            if (name != null) {
-              s.setName(name);
-            }
-            else {
-              s.setName(wi.in_y[0]);
-            }
-            title = getParameterValue(signalParams, "title");
-            if (title != null) {
-              w.SetTitle(title);
-            }
-          }
-          else
-          {
-            JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
-                                          JOptionPane.ERROR_MESSAGE);
-             
-          }          
-          w.Update(wi.signals);
-        }
+	  if( wi.signals != null)
+	    wi.Erase();
+
+	  wi.SetDataProvider(da.getDataProvider());
+	  wi.setExperiment(da.getExperiment());
+
+	  System.out.println("Signal Name : " + da.getSignalName() );
+	  System.out.println("Shots : "+da.getShot());
+
+	  wi.AddSignal(da.getSignalName());
+
+	  wi.setShotArray(da.getShot());
+
+	  if( wi.StartEvaluate() == 1 )
+	    wi.EvaluateOthers();
+
+	  Signal s;
+	  if (wi.signals != null && (s = wi.signals[0]) != null)
+	  {
+	    color = getParameterValue(signalParams, "color");
+	    if (color != null) {
+	      s.setColor(new Color(Integer.decode(color).intValue()));
+
+	    }
+	    marker = getParameterValue(signalParams, "marker");
+	    s.setMarker(marker);
+
+	    name = getParameterValue(signalParams, "name");
+	    if (name != null) {
+	      s.setName(name);
+	    }
+	    else {
+	      s.setName(wi.in_y[0]);
+	    }
+	    title = getParameterValue(signalParams, "title");
+	    if (title != null) {
+	      w.SetTitle(title);
+	    }
+	  }
+	  else
+	  {
+	    JOptionPane.showMessageDialog(this, "Evaluation Error : " + wi.getErrorTitle(false), "alert",
+	                                  JOptionPane.ERROR_MESSAGE);
+
+	  }
+	  w.Update(wi.signals);
+	}
       }
       else {
-        String aspect_ratio, horizontal_flip, vertical_flip;
-        
-          url = getParameterValue(signalParams, "url");
-          Frames f = new Frames();
+	String aspect_ratio, horizontal_flip, vertical_flip;
 
-          horizontal_flip = getParameterValue(signalParams, "h_flip");
-          if (horizontal_flip != null &&
-              horizontal_flip.toLowerCase().equals("true")) {
-            f.setHorizontalFlip(true);
+	  url = getParameterValue(signalParams, "url");
+	  Frames f = new Frames();
 
-          }
-          vertical_flip = getParameterValue(signalParams, "v_flip");
-          if (vertical_flip != null &&
-              vertical_flip.toLowerCase().equals("true")) {
-            f.setVerticalFlip(true);
+	  horizontal_flip = getParameterValue(signalParams, "h_flip");
+	  if (horizontal_flip != null &&
+	      horizontal_flip.toLowerCase().equals("true")) {
+	    f.setHorizontalFlip(true);
 
-          }
+	  }
+	  vertical_flip = getParameterValue(signalParams, "v_flip");
+	  if (vertical_flip != null &&
+	      vertical_flip.toLowerCase().equals("true")) {
+	    f.setVerticalFlip(true);
 
-          DataAccessURL.getImages(url, f);
-          if (f != null) {
-            name = getParameterValue(signalParams, "name");
-            if (name != null) {
-              f.setName(name);
+	  }
 
-            }
-            aspect_ratio = getParameterValue(signalParams, "ratio");
-            if (aspect_ratio != null &&
-                aspect_ratio.toLowerCase().equals("false")) {
-              f.setAspectRatio(false);
+	  DataAccessURL.getImages(url, f);
+	  if (f != null) {
+	    name = getParameterValue(signalParams, "name");
+	    if (name != null) {
+	      f.setName(name);
 
-            
-            w.UpdateImage(f);
-          }
-        }
+	    }
+	    aspect_ratio = getParameterValue(signalParams, "ratio");
+	    if (aspect_ratio != null &&
+	        aspect_ratio.toLowerCase().equals("false")) {
+	      f.setAspectRatio(false);
+
+
+	    w.UpdateImage(f);
+	  }
+	}
       }
     }
     catch (Exception e) {
       if (e instanceof AccessControlException) {
-        JOptionPane.showMessageDialog(this,
-                                      e.toString() + "\n url " + url +
-                                      "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
-                                      "alert",
-                                      JOptionPane.ERROR_MESSAGE);
+	JOptionPane.showMessageDialog(this,
+	                              e.toString() + "\n url " + url +
+	                              "\nUse policytool.exe in  JDK or JRE installation directory to add socket access permission\n",
+	                              "alert",
+	                              JOptionPane.ERROR_MESSAGE);
       }
       else {
-        e.printStackTrace();  
-        JOptionPane.showMessageDialog(this,
-                                      e.toString(),
-                                      "alert",
-                                      JOptionPane.ERROR_MESSAGE);
+	e.printStackTrace();
+	JOptionPane.showMessageDialog(this,
+	                              e.toString(),
+	                              "alert",
+	                              JOptionPane.ERROR_MESSAGE);
       }
-    }                
+    }
    }
-   
-   
+
+
   private void getSignalsParameter() {
     String sig_param;
     String global_autentication;
@@ -358,18 +358,18 @@ public class WaveDisplay
 
     global_autentication = getParameter("AUTENTICATION");
 
-        
+
     if ( (sig_param = getParameter("SIGNAL")) == null)
     {
-        sig_param = getParameter("IMAGE");
-        image = true;
-    }   
-    
+	sig_param = getParameter("IMAGE");
+	image = true;
+    }
+
     addSignal(sig_param, global_autentication, image);
 
   }
 
-  protected String getParameterValue(String context, String param) 
+  protected String getParameterValue(String context, String param)
   {
     String value = null;
 
@@ -377,13 +377,13 @@ public class WaveDisplay
     while (st.hasMoreTokens()) {
       value = st.nextToken();
       if (value.equals(param)) {
-        if (st.nextToken().equals("=")) {
-          value = st.nextToken();
-          break;
-        }
-        else {
-          return null;
-        }
+	if (st.nextToken().equals("=")) {
+	  value = st.nextToken();
+	  break;
+	}
+	else {
+	  return null;
+	}
       }
       value = null;
     }
@@ -397,17 +397,17 @@ public class WaveDisplay
   public void print_xxx(Graphics g) {
     Dimension dim = new Dimension();
     /*
-             Dimension applet_size = getSize();
-             if(print_scaling != 100)
-             {
+	     Dimension applet_size = getSize();
+	     if(print_scaling != 100)
+	     {
      System.out.println("Proporzionale " + this.getBounds());
      float ratio = (float)applet_size.width/applet_size.height;
      dim.width = (int)(applet_size.width/100.* print_scaling);
      dim.height = (int)(ratio * dim.width);
-             } else {
+	     } else {
      dim.width = 530;
      dim.height = 816;
-             }
+	     }
      */
     dim.width = 530;
     dim.height = 816;

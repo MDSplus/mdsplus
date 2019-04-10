@@ -15,7 +15,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
     Data units;
     boolean editable = true;
     TreeDialog dialog;
-    
+
     public AxisEditor(Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
@@ -45,7 +45,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	    else
 		mode_idx = 2;
 	}
-    	curr_mode_idx = mode_idx;
+	curr_mode_idx = mode_idx;
 	String names[] = {"Undefined", "Range", "Expression"};
 	combo = new JComboBox(names);
 	combo.setEditable(false);
@@ -56,18 +56,18 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	setLayout(new BorderLayout());
 	add(mode_panel, "North");
 	addEditor();
-    }    
+    }
     private void addEditor()
     {
 	switch(curr_mode_idx) {
 	    case 0: return;
-	    case 1: 
+	    case 1:
 		range_edit = new RangeEditor(range);
 		units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
 		mode_panel.add(units_edit);
 		add(range_edit, "Center");
 		break;
-	    case 2: 
+	    case 2:
 		expr_edit = new LabeledExprEditor(data);
 		units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
 		mode_panel.add(units_edit);
@@ -75,8 +75,8 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 		break;
 	}
     }
-    
-		    
+
+
     public void actionPerformed(ActionEvent e)
     {
 	if(!editable)
@@ -87,7 +87,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	int idx = combo.getSelectedIndex();
 	if(idx == curr_mode_idx)  return;
 	switch(curr_mode_idx)  {
-	    case 1: 
+	    case 1:
 		mode_panel.remove(units_edit);
 		remove(range_edit);
 		break;
@@ -102,11 +102,11 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	dialog.repack();
     }
 
-		
+
     public void reset()
     {
 	switch(curr_mode_idx)  {
-		case 1: 
+		case 1:
 		    mode_panel.remove(units_edit);
 		    units_edit = null;
 		    remove(range_edit);
@@ -123,18 +123,18 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	validate();
 	repaint();
     }
-    
+
     public Data getData()
     {
 	switch(curr_mode_idx)  {
 	    case 0: return null;
-	    case 1: 
+	    case 1:
 		Data units = units_edit.getData();
 		if(units != null)
 		    return new WithUnitsData(range_edit.getData(), units);
 		else
 		    return range_edit.getData();
-	    case 2: 
+	    case 2:
 		units = units_edit.getData();
 		if(units != null)
 		    return new WithUnitsData(expr_edit.getData(), units);
@@ -143,7 +143,7 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	}
 	return null;
     }
-    
+
     public void setData(Data data)
     {
 	this.data = data;
@@ -174,15 +174,15 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	}
 	reset();
     }
-    
+
     public void setEditable(boolean editable)
     {
 	this.editable = editable;
-        if(expr_edit != null) expr_edit.setEditable(editable);
+	if(expr_edit != null) expr_edit.setEditable(editable);
 	if(range_edit != null) range_edit.setEditable(editable);
 	if(units_edit != null) units_edit.setEditable(editable);
    }
 
-    
-	
-}	
+
+
+}

@@ -194,8 +194,8 @@ EXPORT int mdsdcl_type(void *ctx, char **error __attribute__ ((unused)), char **
 }
 
 	/****************************************************************
-         * mdsdcl_set_hyphen:
-         ****************************************************************/
+	 * mdsdcl_set_hyphen:
+	 ****************************************************************/
 
 EXPORT int mdsdcl_set_hyphen(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
 {
@@ -261,12 +261,12 @@ EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unu
   if (value[0]=='\0') {
       value = getenv(name);
       if (value){
-         *output = malloc(strlen(name)+strlen(value)+7);
-         sprintf(*output, "%s=%s\n",name,value);
-         //free(value);
+	 *output = malloc(strlen(name)+strlen(value)+7);
+	 sprintf(*output, "%s=%s\n",name,value);
+	 //free(value);
       } else {
-         *error = malloc(strlen(name)+19);
-         sprintf(*error, "\"%s\" not defined\n",name);
+	 *error = malloc(strlen(name)+19);
+	 sprintf(*error, "\"%s\" not defined\n",name);
       }
   } else {
     value[0] = '\0'; value++;

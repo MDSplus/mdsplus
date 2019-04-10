@@ -7,8 +7,8 @@ def sleep(secs):
 
 class ExitCommand(Exception):
     pass
-    
-    
+
+
 def signal_handler(signal, frame):
     raise ExitCommand()
 

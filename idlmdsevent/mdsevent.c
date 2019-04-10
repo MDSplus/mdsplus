@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   MDSEVENTV5
+	        Name:   MDSEVENTV5
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   14-DEC-1993
+	        Date:   14-DEC-1993
 
-                Purpose:  Implement MDS events in IDL Widget applications
+	        Purpose:  Implement MDS events in IDL Widget applications
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
 
@@ -48,7 +48,7 @@ EventStruct *MDSEVENT(int *base_id, int *stub_id, struct dsc$descriptor *name)
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 Invoked from MDSEVENT.PRO
 

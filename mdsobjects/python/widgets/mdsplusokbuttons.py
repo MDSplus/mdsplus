@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,16 +30,16 @@ from mdspluswidget import MDSplusWidget
 class MDSplusOkButtons(HButtonBox):
 
     __gtype_name__ = 'MDSplusOkButtons'
-    
+
     def do_apply(self):
         return MDSplusWidget.doToAll(self.get_toplevel(),"apply")
-        
+
     def do_reset(self):
         return MDSplusWidget.doToAll(self.get_toplevel(),"reset")
 
     def closeTop(self):
         self.get_toplevel().destroy()
-        
+
     def ok_pressed(self,button):
         if self.do_apply():
             self.closeTop()
@@ -49,7 +49,7 @@ class MDSplusOkButtons(HButtonBox):
 
     def reset_pressed(self,button):
         self.do_reset()
-    
+
     def cancel_pressed(self,button):
         self.closeTop()
 
@@ -68,4 +68,4 @@ class MDSplusOkButtons(HButtonBox):
         self.add(reset)
         self.add(cancel)
 
-gobject.type_register(MDSplusOkButtons) 
+gobject.type_register(MDSplusOkButtons)

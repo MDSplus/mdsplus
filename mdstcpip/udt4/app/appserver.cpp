@@ -85,8 +85,8 @@ int main(int argc, char* argv[])
    {
       if (UDT::INVALID_SOCK == (recver = UDT::accept(serv, (sockaddr*)&clientaddr, &addrlen)))
       {
-         cout << "accept: " << UDT::getlasterror().getErrorMessage() << endl;
-         return 0;
+	 cout << "accept: " << UDT::getlasterror().getErrorMessage() << endl;
+	 return 0;
       }
 
       char clienthost[NI_MAXHOST];
@@ -95,11 +95,11 @@ int main(int argc, char* argv[])
       cout << "new connection: " << clienthost << ":" << clientservice << endl;
 
       #ifndef WIN32
-         pthread_t rcvthread;
-         pthread_create(&rcvthread, NULL, recvdata, new UDTSOCKET(recver));
-         pthread_detach(rcvthread);
+	 pthread_t rcvthread;
+	 pthread_create(&rcvthread, NULL, recvdata, new UDTSOCKET(recver));
+	 pthread_detach(rcvthread);
       #else
-         CreateThread(NULL, 0, recvdata, new UDTSOCKET(recver), 0, NULL);
+	 CreateThread(NULL, 0, recvdata, new UDTSOCKET(recver), 0, NULL);
       #endif
    }
 
@@ -127,20 +127,20 @@ DWORD WINAPI recvdata(LPVOID usocket)
       int rs;
       while (rsize < size)
       {
-         int rcv_size;
-         int var_size = sizeof(int);
-         UDT::getsockopt(recver, 0, UDT_RCVDATA, &rcv_size, &var_size);
-         if (UDT::ERROR == (rs = UDT::recv(recver, data + rsize, size - rsize, 0)))
-         {
-            cout << "recv:" << UDT::getlasterror().getErrorMessage() << endl;
-            break;
-         }
+	 int rcv_size;
+	 int var_size = sizeof(int);
+	 UDT::getsockopt(recver, 0, UDT_RCVDATA, &rcv_size, &var_size);
+	 if (UDT::ERROR == (rs = UDT::recv(recver, data + rsize, size - rsize, 0)))
+	 {
+	    cout << "recv:" << UDT::getlasterror().getErrorMessage() << endl;
+	    break;
+	 }
 
-         rsize += rs;
+	 rsize += rs;
       }
 
       if (rsize < size)
-         break;
+	 break;
    }
 
    delete [] data;

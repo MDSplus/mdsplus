@@ -23,7 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /***************************************************************************
- *This file created using Driver Wizard version 1.8 and instrtmp.c 
+ *This file created using Driver Wizard version 1.8 and instrtmp.c
  */
 
 #include <string.h>		/* ANSI C string support */
@@ -38,17 +38,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright Tektronix Inc. 1996, 1998
  * Originally written in C
  * Driver version 2.1.0
- * VXIPlug&Play WIN/WIN95/WINNT Frameworks Revision  4.0 
+ * VXIPlug&Play WIN/WIN95/WINNT Frameworks Revision  4.0
  * Compatible with Instrument Firmware Version 1.4 or later
  *
  */
  /***************************************************************************
   * Revision History: Original release 2.0.1
   * Revision 2.1.0:Nv 1998.
-  * 1. Wrote a new function named tkvx4244_getBinaryData to retrieve binary data. 
+  * 1. Wrote a new function named tkvx4244_getBinaryData to retrieve binary data.
   * (solves the  LabView transfer problem). Maintained the old function
   * for backward compatibility. Old function is not in the function panel file.
-  * 2. Wrote a new function named tkvx4244_getFDCData to retrieve FDC data. 
+  * 2. Wrote a new function named tkvx4244_getFDCData to retrieve FDC data.
   * (solves the  LabView transfer problem). Maintained the old function
   * for backward compatibility. Old function is not in the function panel file.
   * 3. Eliminated all references to VTL or vtl in comments.
@@ -70,7 +70,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /***************************************************************************
  * The following array is used to support multiple model codes with a
- * single driver.  
+ * single driver.
  */
 
 ViUInt16 tkvx4244_modelCodes[] = { 0x70b };
@@ -666,7 +666,7 @@ ViStatus _VI_FUNC tkvx4244_close(ViSession instrumentHandle)
  *	in, queries for ID and initializes the instrument to a known state.
  *
  * Parameters:
- *	ViRsrc resourceName: Instrument search expression, 
+ *	ViRsrc resourceName: Instrument search expression,
  *	ViBoolean IDQuery: Boolean flag, VI_TRUE -> verify correct instrument
  *	ViBoolean resetDevice: Boolean flag, VI_TRUE -> reset instrument
  *	ViPSession instrumentHandle: VISA instrument handle used to access instrument
@@ -1503,11 +1503,11 @@ ViStatus _VI_FUNC tkvx4244_read(ViSession instrumentHandle, ViChar message[])
  * Function: tkvx4244_confGpOneTrigSrcLogic
  *
  * Purpose:
- *  This function captures data on a selected channel and returns 
+ *  This function captures data on a selected channel and returns
  *  the data in a character array.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to 
- *  access instrument specific data. Must be initialized by 
+ *	ViSession instrumentHandle: VISA instrument handle used to
+ *  access instrument specific data. Must be initialized by
  *  tkvx4244_init() prior to use.
  *  ViInt16 channel:
  *	ViInt16 voltageRange:
@@ -1941,11 +1941,11 @@ ViStatus _VI_FUNC tkvx4244_confTriggerSrcAndLogic(ViSession instrumentHandle, Vi
  * Function: tkvx4244_confGpOneTrigSrcLogic
  *
  * Purpose:
- *  This function sets various trigger parameters for logic 
+ *  This function sets various trigger parameters for logic
  *  and source for Group 1.
  * Parameters:
- *	ViSession instrumentHandle: VISA instrument handle used to 
- *  access instrument specific data. Must be initialized by 
+ *	ViSession instrumentHandle: VISA instrument handle used to
+ *  access instrument specific data. Must be initialized by
  *  tkvx4244_init() prior to use.
  *  ViInt16 external,immediate,threshold,
  *  vxicmd-- ttl0,ttl1,ttl2,ttl3,ttl4,ttl5,ttl6,ttl7:
@@ -2166,7 +2166,7 @@ tkvx4244_confGpOneTrigSrcLogic(ViSession instrumentHandle,
  * Function: tkvx4244_confGpTwoTrigSrcLogic
  *
  * Purpose:
- *  This function sets various trigger parameters for logic 
+ *  This function sets various trigger parameters for logic
  *  and source for Group 2.
  * Parameters:
  *	ViSession instrumentHandle: VISA instrument handle used to access instrument
@@ -2390,7 +2390,7 @@ tkvx4244_confGpTwoTrigSrcLogic(ViSession instrumentHandle,
  * Function: tkvx4244_confGpThreeTrigSrcLogic
  *
  * Purpose:
- *  This function sets various trigger parameters for logic 
+ *  This function sets various trigger parameters for logic
  *  and source for Group 3.
  * Parameters:
  *	ViSession instrumentHandle: VISA instrument handle used to access instrument
@@ -2614,7 +2614,7 @@ tkvx4244_confGpThreeTrigSrcLogic(ViSession instrumentHandle,
  * Function: tkvx4244_confGpFourTrigSrcLogic
  *
  * Purpose:
- *  This function sets various trigger parameters for logic 
+ *  This function sets various trigger parameters for logic
  *  and source for Group 4.
  * Parameters:
  *	ViSession instrumentHandle: VISA instrument handle used to access instrument
@@ -3105,7 +3105,7 @@ ViStatus _VI_FUNC tkvx4244_getBinaryDataSFP(ViSession instrumentHandle,
 
 /***************************************************************************
  * Function: tkvx4244_readBinaryData
- * NOTE:This function has been replaced by tkvx4244_getBinaryData. The use 
+ * NOTE:This function has been replaced by tkvx4244_getBinaryData. The use
  * of a ViChar array to transfer data causes major problems when using
  * LabView. Therefore, this function is being kept for backward compatibility
  * only.
@@ -4090,7 +4090,7 @@ tkvx4244_initStopMeasurementCycle(ViSession instrumentHandle,
  *  This function controls the master trig output of the module.
  * Parameters:
  *	ViSession instrumentHandle: VISA instrument handle used to
- *  access instrument specific data. Must be initialized by 
+ *  access instrument specific data. Must be initialized by
  *  tkvx4244_init()	prior to use.
  *  ViInt16 outputSelect:Which TTLtrg line to use.
  *  ViInt16 logic: Logic AND or OR.
@@ -4235,7 +4235,7 @@ tkvx4244_confMastertrigOut(ViSession instrumentHandle,
  *  This function sets trigger threshold settings.
  * Parameters:
  *	ViSession instrumentHandle: VISA instrument handle used to
- *  access instrument specific data. Must be initialized by 
+ *  access instrument specific data. Must be initialized by
  *  tkvx4244_init()	prior to use.
  *  ViInt16 thresholdDescriptor
  *  ViReal64 voltageLevel

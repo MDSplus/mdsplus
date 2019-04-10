@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ class MDSplusOnOffWidget(props,MDSplusWidget,gtk.CheckButton):
 
     __gtype_name__ = 'MDSplusOnOffWidget'
     __gproperties__ = props.__gproperties__
-    
+
     def reset(self):
         try:
             self.set_active(self.getNode().on)
@@ -80,14 +80,14 @@ class MDSplusOnOffWidget(props,MDSplusWidget,gtk.CheckButton):
                         state='off'
                     MDSplusErrorMsg('Error setting node on/off state','Error turning node %s %s\n\n%s' % (self.getNode.minpath,state,sys.exc_info()))
                     raise
-        
+
     def __init__(self):
         gtk.CheckButton.__init__(self)
         MDSplusWidget.__init__(self)
         self.showPath = False
-        
 
-gobject.type_register(MDSplusOnOffWidget) 
+
+gobject.type_register(MDSplusOnOffWidget)
 
 if guibuilder:
     class MDSplusOnOffWidgetAdaptor(glade.get_adaptor_for_type('GtkCheckButton')):

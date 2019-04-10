@@ -344,7 +344,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
 	strcat(msg, "compress segments\n");
-	
+
       if (strlen(msg) > 0) {
 	tclAppend(output, "      ");
 	tclAppend(output, msg);
@@ -402,7 +402,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
 	free(help);
       }
       MdsFree1Dx(&help_d,0);
-      
+
     }
   }
   return status;

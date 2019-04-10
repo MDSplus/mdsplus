@@ -9,11 +9,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   23-NOV-1989
 
-    		Purpose: Public declarations for  XmdsExprField widget
+		Purpose: Public declarations for  XmdsExprField widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

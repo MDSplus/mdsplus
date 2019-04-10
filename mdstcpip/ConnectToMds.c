@@ -171,9 +171,9 @@ int ConnectToMds(char *hostin)
     if (c->io && c->io->connect) {
       c->compression_level = GetCompressionLevel();
       if (c->io->connect(c, protocol, host)<0 || IS_NOT_OK(doLogin(c))) {
-        DisconnectConnectionC(c);
+	DisconnectConnectionC(c);
       } else {
-        id = AddConnection(c);
+	id = AddConnection(c);
       }
     }
   }

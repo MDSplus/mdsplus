@@ -102,7 +102,7 @@ def messageContent(issues,user):
       return content
     else:
       return none
-  
+
 
 def getIssuesFromGithub():
     issues=list()

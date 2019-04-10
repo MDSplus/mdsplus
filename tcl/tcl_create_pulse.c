@@ -66,8 +66,8 @@ typedef struct _server {
 extern int TdiExecute();
 
 	/****************************************************************
-         * CheckCondtion:
-         ****************************************************************/
+	 * CheckCondtion:
+	 ****************************************************************/
 static int CheckCondition(int nid)
 {
   int ans = 1;
@@ -137,14 +137,14 @@ EXPORT int TclCreatePulse(void *ctx, char **error, char **output __attribute__ (
 	}
       } else {
 	void *fctx = 0;
-        while (num < 256 && TreeFindTagWild("TOP", &nid, &fctx))
+	while (num < 256 && TreeFindTagWild("TOP", &nid, &fctx))
 	  if (nid ? (!conditional || CheckCondition(nid)) : !nomain)
 	    nids[num++] = nid;
       }
       if (exclude) {
 	char *nodename = 0;
 	while (cli_get_value(ctx, "EXCLUDE", &nodename) & 1) {
-          void *fctx = 0;
+	  void *fctx = 0;
 	  while (TreeFindNodeWild(nodename, &nid, &fctx, (1 << TreeUSAGE_SUBTREE)) & 1) {
 	    for (i = 0; i < num; i++) {
 	      if (nids[i] == nid) {

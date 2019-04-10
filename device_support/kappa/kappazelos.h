@@ -11,9 +11,9 @@ int kappaClose(void *cameraHandle);
 
 //settings
 int kappaSetColorCoding(void *cameraHandle, SDK4_ENUM_COLORCODING color_coding);
-int kappaSetExposureMode(void *cameraHandle, SDK4_ENUM_EXPOSUREMODE expmode); 
-int kappaSetExposure(void *cameraHandle, float expTime); 
-int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet); 
+int kappaSetExposureMode(void *cameraHandle, SDK4_ENUM_EXPOSUREMODE expmode);
+int kappaSetExposure(void *cameraHandle, float expTime);
+int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet);
 int kappaSetAutoExposureLevel(void *cameraHandle, uint32_t lev);
 int kappaSetGain(void *cameraHandle, uint32_t gain);
 int kappaSetAGC(void *cameraHandle, SDK4_ENUM_AGC agc);

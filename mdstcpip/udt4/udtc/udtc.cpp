@@ -74,10 +74,10 @@ int udt_startup()
 
     rc = UDT::startup();
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -87,10 +87,10 @@ int udt_cleanup()
 
     rc = UDT::cleanup();
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -100,10 +100,10 @@ UDTSOCKET udt_socket(int af, int type, int protocol)
 
     rc = UDT::socket(af, type, protocol);
     if (rc == UDT::INVALID_SOCK) {
-        // error happen
-        return UDT_INVALID_SOCK;
+	// error happen
+	return UDT_INVALID_SOCK;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -113,10 +113,10 @@ int udt_bind(UDTSOCKET u, const struct sockaddr * name, int namelen)
 
     rc = UDT::bind(u, name, namelen);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -126,10 +126,10 @@ int udt_bind2(UDTSOCKET u, UDPSOCKET udpsock)
 
     rc = UDT::bind2(u, udpsock);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -139,10 +139,10 @@ int udt_listen(UDTSOCKET u, int backlog)
 
     rc = UDT::listen(u, backlog);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -152,10 +152,10 @@ UDTSOCKET udt_accept(UDTSOCKET u, struct sockaddr * addr, int * addrlen)
 
     rc = UDT::accept(u, addr, addrlen);
     if (rc == UDT::INVALID_SOCK) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -165,10 +165,10 @@ int udt_connect(UDTSOCKET u, const struct sockaddr * name, int namelen)
 
     rc = UDT::connect(u, name, namelen);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -178,19 +178,19 @@ int udt_close(UDTSOCKET u)
     int st = udt_getsockstate(u);
 
     if ((st == UDT_NONEXIST) ||
-        (st == UDT_CLOSED)   ||
-        (st == UDT_CLOSING)  ||
-        (st == UDT_BROKEN)) {
-        // nothing to do on closed or not existed socket
-        return 0;
+	(st == UDT_CLOSED)   ||
+	(st == UDT_CLOSING)  ||
+	(st == UDT_BROKEN)) {
+	// nothing to do on closed or not existed socket
+	return 0;
     } else {
-        rc = UDT::close(u);
-        if (rc == UDT::ERROR) {
-            // error happen
-            return -1;
-        } else {
-            return 0;
-        }
+	rc = UDT::close(u);
+	if (rc == UDT::ERROR) {
+	    // error happen
+	    return -1;
+	} else {
+	    return 0;
+	}
     }
 }
 
@@ -200,10 +200,10 @@ int udt_getpeername(UDTSOCKET u, struct sockaddr * name, int * namelen)
 
     rc = UDT::getpeername(u, name, namelen);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -213,10 +213,10 @@ int udt_getsockname(UDTSOCKET u, struct sockaddr * name, int * namelen)
 
     rc = UDT::getsockname(u, name, namelen);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -226,10 +226,10 @@ int udt_getsockopt(UDTSOCKET u, int level, int optname, void * optval, int * opt
 
     rc = UDT::getsockopt(u, level, (UDT::SOCKOPT)optname, optval, optlen);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -258,10 +258,10 @@ int udt_send(UDTSOCKET u, const char * buf, int len, int flags)
 
     rc = UDT::send(u, buf, len, flags);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -271,10 +271,10 @@ int udt_recv(UDTSOCKET u, char * buf, int len, int flags)
 
     rc = UDT::recv(u, buf, len, flags);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -284,10 +284,10 @@ int udt_sendmsg(UDTSOCKET u, const char * buf, int len, int ttl, int inorder)
 
     rc = UDT::sendmsg(u, buf, len, ttl, inorder);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -297,10 +297,10 @@ int udt_recvmsg(UDTSOCKET u, char * buf, int len)
 
     rc = UDT::recvmsg(u, buf, len);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -310,10 +310,10 @@ int64_t udt_sendfile2(UDTSOCKET u, const char* path, int64_t* offset, int64_t si
 
     rc = UDT::sendfile2(u, path, offset, size, block);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -323,10 +323,10 @@ int64_t udt_recvfile2(UDTSOCKET u, const char* path, int64_t* offset, int64_t si
 
     rc = UDT::recvfile2(u, path, offset, size, block);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return rc;
+	return rc;
     }
 }
 
@@ -351,10 +351,10 @@ int udt_perfmon(UDTSOCKET u, UDT_TRACEINFO * perf, int clear)
 
     rc = UDT::perfmon(u, (UDT::TRACEINFO *)perf, clear);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        return 0;
+	return 0;
     }
 }
 
@@ -370,7 +370,7 @@ int udt_getsockstate(UDTSOCKET u)
 	case    CLOSING: return UDT_CLOSING;
 	case     CLOSED: return UDT_CLOSED;
 	case   NONEXIST: return UDT_NONEXIST;
-	        default: return UDT_NONEXIST;
+		default: return UDT_NONEXIST;
 	}
 }
 
@@ -381,11 +381,11 @@ int udt_epoll_create()
 
     rc = UDT::epoll_create();
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return rc;
+	// success
+	return rc;
     }
 }
 
@@ -425,7 +425,7 @@ int udt_epoll_add_usock(int eid, UDTSOCKET u, const int * events)
 		if (*events & UDT_UDT_EPOLL_OUT) flag |= UDT_EPOLL_OUT;
 		if (*events & UDT_UDT_EPOLL_ERR) flag |= UDT_EPOLL_ERR;
 	} else {
-        flag = UDT_EPOLL_IN | UDT_EPOLL_OUT | UDT_EPOLL_ERR;
+	flag = UDT_EPOLL_IN | UDT_EPOLL_OUT | UDT_EPOLL_ERR;
     }
 #else
     flag = UDT_EPOLL_IN | UDT_EPOLL_OUT | UDT_EPOLL_ERR;
@@ -434,11 +434,11 @@ int udt_epoll_add_usock(int eid, UDTSOCKET u, const int * events)
     // call UDT native function
     rc = UDT::epoll_add_ssock(eid, s, &flag);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return 0;
+	// success
+	return 0;
     }
 }
 
@@ -449,11 +449,11 @@ int udt_epoll_remove_usock(int eid, UDTSOCKET u)
     // call UDT native function
     rc = UDT::epoll_remove_usock(eid, u);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return 0;
+	// success
+	return 0;
     }
 }
 
@@ -464,11 +464,11 @@ int udt_epoll_remove_ssock(int eid, SYSSOCKET s)
     // call UDT native function
     rc = UDT::epoll_remove_ssock(eid, s);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return 0;
+	// success
+	return 0;
     }
 }
 
@@ -476,22 +476,22 @@ int udt_epoll_wait2(
 		int eid,
 		UDTSOCKET* readfds, int* rnum, UDTSOCKET* writefds, int* wnum,
 		int64_t msTimeOut,
-        SYSSOCKET* lrfds, int* lrnum, SYSSOCKET* lwfds, int* lwnum)
+	SYSSOCKET* lrfds, int* lrnum, SYSSOCKET* lwfds, int* lwnum)
 {
     int rc;
 
     // call UDT native function
     rc = UDT::epoll_wait2(
-    		eid,
-    		readfds, rnum, writefds, wnum,
-    		msTimeOut,
-    		lrfds, lrnum, lwfds, lwnum);
+		eid,
+		readfds, rnum, writefds, wnum,
+		msTimeOut,
+		lrfds, lrnum, lwfds, lwnum);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return 0;
+	// success
+	return 0;
     }
 }
 
@@ -502,11 +502,11 @@ int udt_epoll_release(int eid)
     // call UDT native function
     rc = UDT::epoll_release(eid);
     if (rc == UDT::ERROR) {
-        // error happen
-        return -1;
+	// error happen
+	return -1;
     } else {
-        // success
-        return 0;
+	// success
+	return 0;
     }
 }
 

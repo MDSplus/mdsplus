@@ -758,7 +758,7 @@ void AddListTree(Widget w, XtPointer client_data __attribute__ ((unused)), XtPoi
 /*      Function Name:	BxExitCB
  *
  *      Description:   	This functions expects an integer to be passed in
- *		       	client data.  It calls the exit() system call with
+ *			client data.  It calls the exit() system call with
  *			the integer value as the argument to the function.
  *
  *      Arguments:      Widget		w: 	the activating widget.
@@ -779,17 +779,17 @@ BxExitCB ARGLIST((w, client, call)) UARG(Widget, w) ARG(XtPointer, client) GRAU(
 /*      Function Name: 	BxManageCB
  *
  *      Description:   	Given a string of the form:
- *		       	"(WL)[widgetName, widgetName, ...]"
+ *			"(WL)[widgetName, widgetName, ...]"
  *			BxManageCB attempts to convert the name to a Widget
  *			ID and manage the widget.
  *
  *      Arguments:     	Widget	    w:      the widget activating the callback.
- *		       	XtPointer   client: the list of widget names to attempt
+ *			XtPointer   client: the list of widget names to attempt
  *					    to find and manage.
- *		       	XtPointer   call:   the call data (unused).
+ *			XtPointer   call:   the call data (unused).
  *
  *      Notes:        *	This function expects that there is an application
- *		       	shell from which all other widgets are descended.
+ *			shell from which all other widgets are descended.
  */
 
 /* ARGSUSED */

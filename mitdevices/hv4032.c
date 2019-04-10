@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   HV4032   
+		Name:   HV4032
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:   12-MAY-1992
 
-    		Purpose: Support for Lecroy HV4032 power supply 
+		Purpose: Support for Lecroy HV4032 power supply
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 		DO/METHOD module INIT
 		DO/METHOD module ON
 		DO/METHOD module STORE
@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 service for LeCroy HV4032 High Voltage mainframe.
 module services up to 8 pods of 4 chans each.
@@ -64,59 +64,59 @@ Assumptions:
       -- Jeff Casey    8/5/91  (FORTRAN VERSION, perhaps diff in C version)
 
 		HV4032 communication protocols:
-	           C_S is HV channel number (0-31 for HV pod channels,
-	              32 for chan33 (all lo-volt pods), 33 for chan43,
-	              34 for chan47 (all hi-volt pods), 35 for chan70,
-	              36 for chan70c, 37 for chan99 (ramp rate).
-	           C_S is also for switch value (on/off items, such as 
-	              HV on/off status, etc.)
-	           V_M is mainframe number (1-16 or 0 for all), or voltage
-	              value (in volts for 3.3 kV pods, in 2volts for 7kV)
-	           T is tag word:   (command or data type)
+		   C_S is HV channel number (0-31 for HV pod channels,
+		      32 for chan33 (all lo-volt pods), 33 for chan43,
+		      34 for chan47 (all hi-volt pods), 35 for chan70,
+		      36 for chan70c, 37 for chan99 (ramp rate).
+		   C_S is also for switch value (on/off items, such as
+		      HV on/off status, etc.)
+		   V_M is mainframe number (1-16 or 0 for all), or voltage
+		      value (in volts for 3.3 kV pods, in 2volts for 7kV)
+		   T is tag word:   (command or data type)
  C-M-0   modify one channel voltage (Chan/Mainframe Select)
-              no response, waiting for V-1 command
+	      no response, waiting for V-1 command
    V-1   Set value.  3.3kV voltages, 7kV voltage/2, 7kV current*8
-              must follow T=0, T=2, T=7, T=12.  responds T=11 if enabled.
+	      must follow T=0, T=2, T=7, T=12.  responds T=11 if enabled.
  X-M-2   modify all 3.3 kV channels (Mainframe Select)
-             no response, waiting for N V-1 commands, N=# 3.3kV/empty channels
+	     no response, waiting for N V-1 commands, N=# 3.3kV/empty channels
  C-M-3   Read true voltage of addressed channel, responds with V-3 data
  X-M-4   Read true voltage of all 32 channels, responds with 32 V-3 words.
  S-M-5   HV on/off status set, responds T=11 if enabled.
  C-M-6   Restore addressed channel, (see zero), responds T=11 if enabled.
  X-M-7   Preset all 3.3 kV channels (mainframe select) if HV off
-             no response, waiting for V-1 data.
+	     no response, waiting for V-1 data.
  C-M-8   Read demand value of addressed channel, responds V-8 data.
- X-M-9   Status request, responds one T=9 word (C-M-9), no L2, for each 
-             failed channel in module, followed by T=5 (S-M-5) with L2.
-             S for T=5:  bit1=HV on/off, bit2=calib/regulate, 
-             bit3=idle down/normal.
+ X-M-9   Status request, responds one T=9 word (C-M-9), no L2, for each
+	     failed channel in module, followed by T=5 (S-M-5) with L2.
+	     S for T=5:  bit1=HV on/off, bit2=calib/regulate,
+	     bit3=idle down/normal.
  X-M-10  Read demand value of all 32 channels, responds 32 V-8 voltages.
  S-M-11  Enable/Disable FINISH response, no response.
  N-M-12  Preset all 7kV channels.  no response, waiting for V-1 data.
-             (received X-M-12 at any time is a parity error.)
+	     (received X-M-12 at any time is a parity error.)
  N-M-13  Set individual voltage/current demands for all 7kV channels.
-             no response, waiting for X V-1 data, X=# 7kV channels.
+	     no response, waiting for X V-1 data, X=# 7kV channels.
  C-M-14  Zero addressed element (see restore), responds T=11 if enabled.
-             (received X-M-14 at any time is an interlock trip or panic off).
+	     (received X-M-14 at any time is an interlock trip or panic off).
  X-M-15  Identify Pod complement, responds P-10.
-             (received X-X-15 at any time is transmission error).
+	     (received X-X-15 at any time is transmission error).
   where          C=bits 11-16, channel address
-                 X=don't care bits 11-16
-                 S=Switch bit 11
-                 N=Switch bit 11 (1=current, 0=voltage)
-                 M=bits 5-10, mainframe address
-                 V=bits 5-16, voltage (or current, ramp, etc.)
-                 P=bits 5-12, pod ID 1-8, each bit 0=3.3kV, 1=7kV
-                 #=bits 1-4, tag bit
+	         X=don't care bits 11-16
+	         S=Switch bit 11
+	         N=Switch bit 11 (1=current, 0=voltage)
+	         M=bits 5-10, mainframe address
+	         V=bits 5-16, voltage (or current, ramp, etc.)
+	         P=bits 5-12, pod ID 1-8, each bit 0=3.3kV, 1=7kV
+	         #=bits 1-4, tag bit
 
     CAMAC:   F0 A0 - read LAM register, bit0=lam1 (serious), bit1=lam2 (done)
-             F2 A0 - read DATA buffer, valid if Q
-             F9 A0 - clear buffers, LAM1, LAM2
-             F10   - clear LAM, A0 LAM1, A1 LAM2
-             F16 A0 - write to output buffer, Q if accepted, see above formats
-             F24   - disable LAM, A0 LAM1, A1 LAM2
-             F26   - enable LAM, A0 LAM1, A1 LAM2
-             F27   - test LAM, A0 LAM1, A1 LAM2, Q if on
+	     F2 A0 - read DATA buffer, valid if Q
+	     F9 A0 - clear buffers, LAM1, LAM2
+	     F10   - clear LAM, A0 LAM1, A1 LAM2
+	     F16 A0 - write to output buffer, Q if accepted, see above formats
+	     F24   - disable LAM, A0 LAM1, A1 LAM2
+	     F26   - enable LAM, A0 LAM1, A1 LAM2
+	     F27   - test LAM, A0 LAM1, A1 LAM2, Q if on
 
 ------------------------------------------------------------------------------*/
 
@@ -151,7 +151,7 @@ static void GetPodSettings(int nid, int *settings);
 				}
 
 #define wait_hv2 {\
-        int buf[33];\
+	int buf[33];\
 	lamwait;\
 	stopw(2,0,33,buf);\
 	}

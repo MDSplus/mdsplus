@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -182,7 +182,7 @@ class MDSplusNidOptionWidget(props,MDSplusWidget,ComboBox):
 
     value=property(getValue)
 
-gobject.type_register(MDSplusNidOptionWidget) 
+gobject.type_register(MDSplusNidOptionWidget)
 
 if guibuilder:
     class MDSplusNidOptionWidgetAdaptor(glade.get_adaptor_for_type('GtkComboBox')):

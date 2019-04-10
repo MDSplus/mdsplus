@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ class MDSplusWidget(object):
     def doToAll(cls,obj,method):
         status = True
         if hasattr(obj,"get_children"):
-            for child in obj.get_children():                
+            for child in obj.get_children():
                 stat = MDSplusWidget.doToAll(child,method)
                 status = status and stat
                 if isinstance(child,MDSplusWidget):
@@ -64,19 +64,19 @@ class MDSplusWidget(object):
     def getTimer(self):
         now=os.times()
         return (now[0]-self._timer[0],now[4]-self._timer[4])
-    
+
     def reset(self):
         pass
-    
+
     def getRecord(self):
         try:
             return self.node.record
         except:
             return None
-        
+
     def setRecord(self,value):
         self.node.record=value
-        
+
     record=property(getRecord,setRecord)
 
     def originalPartNames(self):
@@ -131,7 +131,7 @@ class MDSplusWidget(object):
         self._node=value
 
     node=property(getNode,setNode)
-    
+
     def do_set_property(self, property, value):
         if property.name in dir(self.props):
             self.__dict__[property.name]=value

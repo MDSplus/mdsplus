@@ -134,7 +134,7 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 	      strcpy(move.to_d + strlen(info1->filespec) - 4, "datafile");
 	    }
 	  }
-          pthread_cleanup_pop(1);//treeclose(&dbid2)
+	  pthread_cleanup_pop(1);//treeclose(&dbid2)
 	}
       }
     }

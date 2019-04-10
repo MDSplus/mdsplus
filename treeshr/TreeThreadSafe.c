@@ -51,7 +51,7 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
       perror("privateCtx share globalCtx on Threadexit! -> memory leak");
     } else {
       for (p_dbid=P_DBID ; p_dbid->next ; p_dbid=p_dbid->next) {
-        if (p_dbid->next==G_DBID) {
+	if (p_dbid->next==G_DBID) {
 	  //clip private context if extension of global
 	  p_dbid->next = NULL;
 	  break;

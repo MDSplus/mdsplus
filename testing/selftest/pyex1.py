@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ class TestStringMethods(unittest.TestCase):
   def test_isupper(self):
       self.assertTrue('FOO'.isupper())
       self.assertFalse('Foo'.isupper())
-      
+
   def test_split(self):
       s = 'hello world'
       self.assertEqual(s.split(), ['hello', 'world'])

@@ -9,8 +9,8 @@ package MdsPlus;
 	/** the interface that must be supported to be an MdsPlusEvent target.
 	* The EventAction method is invoked in a separate thread when a specified
 	* MdsPlusEvent occurrs.
-	*/																	   
-public interface MdsPlusEvents 
+	*/
+public interface MdsPlusEvents
 {
 
 	/** the method that is invoked when the specified MdsPlus event occurs on the

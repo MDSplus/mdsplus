@@ -17,11 +17,11 @@ public class UpdateEvent extends AWTEvent{
     String name;
 
     public UpdateEvent(final Object source, final String event){
-        super(source, 0);
-        this.name = event;
+	super(source, 0);
+	this.name = event;
     }
 
     public String getName() {
-        return this.name;
+	return this.name;
     }
 }

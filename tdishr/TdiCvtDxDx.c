@@ -23,13 +23,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiCvtDxDx
-        Convert to desired data type.
+	Convert to desired data type.
 
-        status = TdiCvtDxDx(&in_dsc,&dtype,&out_dsc)
+	status = TdiCvtDxDx(&in_dsc,&dtype,&out_dsc)
 
-        Thomas W. Fredian, MIT-PFC      07-MAR-1989     Copyrighted
-        Ken Klare, LANL CTR-7   (c)1989,1990
-        NEED to handle array of descriptors.
+	Thomas W. Fredian, MIT-PFC      07-MAR-1989     Copyrighted
+	Ken Klare, LANL CTR-7   (c)1989,1990
+	NEED to handle array of descriptors.
 */
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -46,20 +46,20 @@ int TdiCvtDxDx(struct descriptor *in_ptr, unsigned char *dtype_ptr, struct descr
   INIT_STATUS;
 
 	/*********************************
-        No conversion needed, just memory.
-        *********************************/
+	No conversion needed, just memory.
+	*********************************/
   if (in_ptr->dtype == *dtype_ptr)
     status = MdsCopyDxXd(in_ptr, out_ptr);
 
 	/*******************
-        Remove a descriptor.
-        *******************/
+	Remove a descriptor.
+	*******************/
   else if (in_ptr->dtype == DTYPE_DSC)
     status = TdiCvtDxDx((struct descriptor *)in_ptr->pointer, dtype_ptr, out_ptr);
 
 	/******************************
-        Make space and convert into it.
-        ******************************/
+	Make space and convert into it.
+	******************************/
   else {
     int mode = -1;
     struct descriptor_xd xs = { 0, DTYPE_DSC, CLASS_XS, 0, 0 };

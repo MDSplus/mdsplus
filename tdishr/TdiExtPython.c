@@ -453,10 +453,10 @@ static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,
       int status = (int)PyLong_AsLong(status_obj);
       Py_DecRef(status_obj);
       if STATUS_NOT_OK {
-        char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
-        const char *f = "WSEIF???";
-        MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
-        printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
+	char *fac_out=NULL, *msgnam_out=NULL, *text_out=NULL;
+	const char *f = "WSEIF???";
+	MdsGetStdMsg(status,(const char **)&fac_out,(const char **)&msgnam_out,(const char **)&text_out);
+	printf("%%%s-%c-%s: %s\n",fac_out,f[status&7],msgnam_out,text_out);
       }
       return status;
     } else {

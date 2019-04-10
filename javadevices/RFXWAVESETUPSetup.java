@@ -185,11 +185,11 @@ public class RFXWAVESETUPSetup extends DeviceSetup
 
 
 
-    jTabbedPane1.add(jPanel3,   "WAVE 1");	
+    jTabbedPane1.add(jPanel3,   "WAVE 1");
     jTabbedPane1.add(jPanel4,   "WAVE 2");
-    jTabbedPane1.add(jPanel5,   "WAVE 3");	
+    jTabbedPane1.add(jPanel5,   "WAVE 3");
     jTabbedPane1.add(jPanel6,   "WAVE 4");
-    jTabbedPane1.add(jPanel7,   "WAVE 5");	
+    jTabbedPane1.add(jPanel7,   "WAVE 5");
     jTabbedPane1.add(jPanel8,   "WAVE 6");
 
 

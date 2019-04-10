@@ -11,7 +11,7 @@
 #define IsRoprandT(val) (t_float_exp(val) == 2047)
 
 #define IsRoprand(dtype,val) ((dtype == DTYPE_F) ? IsRoprandF(val) : \
-                              ((dtype == DTYPE_D) ? IsRoprandD(val) : \
-                               ((dtype == DTYPE_FS) ? IsRoprandS(val) : \
-                                ((dtype == DTYPE_G) ? IsRoprandG(val) : \
-                                 ((dtype == DTYPE_FT) ? IsRoprandT(val) : 1)))))
+	                      ((dtype == DTYPE_D) ? IsRoprandD(val) : \
+	                       ((dtype == DTYPE_FS) ? IsRoprandS(val) : \
+	                        ((dtype == DTYPE_G) ? IsRoprandG(val) : \
+	                         ((dtype == DTYPE_FT) ? IsRoprandT(val) : 1)))))

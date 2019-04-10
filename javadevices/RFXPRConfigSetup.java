@@ -164,7 +164,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable115.setIdentifier("");
     deviceTable115.setColumnNames(new String[] {"97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108"});
     deviceTable115.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable115.setDisplayRowNumber(true);
     jPanel27.setLayout(borderLayout27);
     deviceTable1110.setOffsetNid(23);
@@ -173,7 +173,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable1110.setIdentifier("");
     deviceTable1110.setColumnNames(new String[] {"157", "158", "159", "160", "161", "162", "163", "164", "165", "16", "167", "168"});
     deviceTable1110.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1110.setDisplayRowNumber(true);
     jPanel215.setLayout(borderLayout215);
     deviceTable111.setOffsetNid(14);
@@ -182,7 +182,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable111.setIdentifier("");
     deviceTable111.setColumnNames(new String[] {"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"});
     deviceTable111.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable111.setDisplayRowNumber(true);
     jPanel28.setLayout(borderLayout28);
     deviceTable110.setOffsetNid(13);
@@ -191,7 +191,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable110.setIdentifier("");
     deviceTable110.setColumnNames(new String[] {"37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
     deviceTable110.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable110.setDisplayRowNumber(true);
     deviceTable1111.setOffsetNid(24);
     deviceTable1111.setNumCols(12);
@@ -199,7 +199,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable1111.setIdentifier("");
     deviceTable1111.setColumnNames(new String[] {"169", "170", "171", "172", "173", "174", "175", "175", "177", "178", "179", "180"});
     deviceTable1111.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1111.setDisplayRowNumber(true);
     jPanel214.setLayout(borderLayout214);
     jPanel213.setLayout(borderLayout213);
@@ -210,7 +210,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable113.setIdentifier("");
     deviceTable113.setColumnNames(new String[] {"73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84"});
     deviceTable113.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable113.setDisplayRowNumber(true);
     jPanel25.setLayout(borderLayout25);
     deviceTable116.setOffsetNid(19);
@@ -219,7 +219,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable116.setIdentifier("");
     deviceTable116.setColumnNames(new String[] {"109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"});
     deviceTable116.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable116.setDisplayRowNumber(true);
     jPanel3.setLayout(borderLayout19);
     jPanel24.setLayout(borderLayout24);
@@ -230,7 +230,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable114.setIdentifier("");
     deviceTable114.setColumnNames(new String[] {"85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"});
     deviceTable114.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable114.setDisplayRowNumber(true);
     jPanel212.setLayout(borderLayout212);
     deviceTable117.setOffsetNid(20);
@@ -239,7 +239,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable117.setIdentifier("");
     deviceTable117.setColumnNames(new String[] {"121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132"});
     deviceTable117.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable117.setDisplayRowNumber(true);
     jPanel22.setLayout(borderLayout22);
     deviceTable112.setOffsetNid(15);
@@ -248,7 +248,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable112.setIdentifier("");
     deviceTable112.setColumnNames(new String[] {"61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"});
     deviceTable112.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable112.setDisplayRowNumber(true);
     jPanel21.setLayout(borderLayout21);
     deviceTable18.setOffsetNid(11);
@@ -257,7 +257,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable18.setIdentifier("");
     deviceTable18.setColumnNames(new String[] {"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"});
     deviceTable18.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable18.setDisplayRowNumber(true);
     deviceTable19.setOffsetNid(12);
     deviceTable19.setNumCols(12);
@@ -265,7 +265,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable19.setIdentifier("");
     deviceTable19.setColumnNames(new String[] {"25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"});
     deviceTable19.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable19.setDisplayRowNumber(true);
     jPanel29.setLayout(borderLayout29);
     deviceTable119.setOffsetNid(22);
@@ -274,7 +274,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable119.setIdentifier("");
     deviceTable119.setColumnNames(new String[] {"145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156"});
     deviceTable119.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable119.setDisplayRowNumber(true);
     jPanel20.setLayout(borderLayout20);
     deviceTable17.setOffsetNid(10);
@@ -283,7 +283,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable17.setIdentifier("");
     deviceTable17.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     deviceTable17.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable17.setDisplayRowNumber(true);
     deviceTable118.setOffsetNid(21);
     deviceTable118.setNumCols(12);
@@ -291,7 +291,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable118.setIdentifier("");
     deviceTable118.setColumnNames(new String[] {"133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144"});
     deviceTable118.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable118.setDisplayRowNumber(true);
     jPanel23.setLayout(borderLayout23);
     deviceTable1112.setOffsetNid(25);
@@ -300,7 +300,7 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable1112.setIdentifier("");
     deviceTable1112.setColumnNames(new String[] {"181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192"});
     deviceTable1112.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
+	"Rif_continuo", "Limite_corrente", "Amp_rif_interno", "Freq_rif_interno", "Sfasamento", "Offset_rif_interno"});
     deviceTable1112.setDisplayRowNumber(true);
     jPanel16.setLayout(borderLayout15);
     jPanel19.setLayout(borderLayout18);
@@ -310,12 +310,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable10.setIdentifier("");
     deviceTable10.setColumnNames(new String[] {"109", "110", "111", "112", "113", "114", "115", "116", "117", "118", "119", "120"});
     deviceTable10.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable10.setEditable(false);
     deviceTable10.setDisplayRowNumber(true);
     deviceTable6.setOffsetNid(32);
@@ -324,12 +324,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable6.setIdentifier("");
     deviceTable6.setColumnNames(new String[] {"61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72"});
     deviceTable6.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable6.setEditable(false);
     deviceTable6.setDisplayRowNumber(true);
     jPanel13.setLayout(borderLayout12);
@@ -339,12 +339,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable9.setIdentifier("");
     deviceTable9.setColumnNames(new String[] {"97", "98", "99", "100", "101", "102", "103", "104", "105", "106", "107", "108"});
     deviceTable9.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable9.setEditable(false);
     deviceTable9.setDisplayRowNumber(true);
     jPanel10.setLayout(borderLayout9);
@@ -355,12 +355,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable3.setIdentifier("");
     deviceTable3.setColumnNames(new String[] {"25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36"});
     deviceTable3.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable3.setEditable(false);
     deviceTable3.setDisplayRowNumber(true);
     deviceTable1.setOffsetNid(27);
@@ -369,12 +369,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"});
     deviceTable1.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable1.setEditable(false);
     deviceTable1.setDisplayRowNumber(true);
     deviceTable16.setOffsetNid(42);
@@ -383,12 +383,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable16.setIdentifier("");
     deviceTable16.setColumnNames(new String[] {"181", "182", "183", "184", "185", "186", "187", "188", "189", "190", "191", "192"});
     deviceTable16.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable16.setEditable(false);
     deviceTable16.setDisplayRowNumber(true);
     jPanel7.setLayout(borderLayout6);
@@ -398,12 +398,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable11.setIdentifier("");
     deviceTable11.setColumnNames(new String[] {"121", "122", "123", "124", "125", "126", "127", "128", "129", "130", "131", "132"});
     deviceTable11.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable11.setEditable(false);
     deviceTable11.setDisplayRowNumber(true);
     deviceTable5.setOffsetNid(31);
@@ -412,12 +412,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable5.setIdentifier("");
     deviceTable5.setColumnNames(new String[] {"49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60"});
     deviceTable5.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable5.setEditable(false);
     deviceTable5.setDisplayRowNumber(true);
     jPanel6.setLayout(borderLayout5);
@@ -428,12 +428,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable8.setIdentifier("");
     deviceTable8.setColumnNames(new String[] {"85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96"});
     deviceTable8.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable8.setEditable(false);
     deviceTable8.setDisplayRowNumber(true);
     deviceTable7.setOffsetNid(33);
@@ -442,12 +442,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable7.setIdentifier("");
     deviceTable7.setColumnNames(new String[] {"73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83", "84"});
     deviceTable7.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable7.setEditable(false);
     deviceTable7.setDisplayRowNumber(true);
     jPanel4.setLayout(borderLayout3);
@@ -457,12 +457,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable15.setIdentifier("");
     deviceTable15.setColumnNames(new String[] {"169", "170", "171", "172", "173", "174", "175", "176", "177", "178", "179", "180"});
     deviceTable15.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable15.setEditable(false);
     deviceTable15.setDisplayRowNumber(true);
     deviceTable14.setOffsetNid(40);
@@ -471,12 +471,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable14.setIdentifier("");
     deviceTable14.setColumnNames(new String[] {"157", "158", "159", "160", "161", "162", "163", "164", "165", "166", "167", "168"});
     deviceTable14.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable14.setEditable(false);
     deviceTable14.setDisplayRowNumber(true);
     jPanel2.setLayout(borderLayout2);
@@ -488,12 +488,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable4.setIdentifier("");
     deviceTable4.setColumnNames(new String[] {"37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"});
     deviceTable4.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable4.setEditable(false);
     deviceTable4.setDisplayRowNumber(true);
     deviceTable12.setOffsetNid(38);
@@ -502,12 +502,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable12.setIdentifier("");
     deviceTable12.setColumnNames(new String[] {"133", "134", "135", "136", "137", "138", "139", "140", "141", "142", "143", "144"});
     deviceTable12.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable12.setEditable(false);
     deviceTable12.setDisplayRowNumber(true);
     deviceTable13.setOffsetNid(39);
@@ -516,12 +516,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable13.setIdentifier("");
     deviceTable13.setColumnNames(new String[] {"145", "146", "147", "148", "149", "150", "151", "152", "153", "154", "155", "156"});
     deviceTable13.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable13.setEditable(false);
     deviceTable13.setDisplayRowNumber(true);
     jPanel8.setLayout(borderLayout7);
@@ -533,12 +533,12 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable2.setIdentifier("");
     deviceTable2.setColumnNames(new String[] {"13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24"});
     deviceTable2.setRowNames(new String[] {"Start_seriale", "Anello_corrente", "Anello_flusso", "Anello_aperto", "Rif_interno", "Rif_sinusoidale", "Retr_tens_uscita",
-        "Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
-        "Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
-        "FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
-        "K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
-        "KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
-        "Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
+	"Rif_continuo", "PWM_5kHz", "Not_used", "Corr_massima", "Corr_nominale", "FS_lett_tens_barra", "Tens_max_barra", "Tens_min_barra",
+	"Maschera_uscita_KD", "Maschera_uscita_KE", "Offset_comp_tens_V0", "Resist_int_IGBT", "Corrente_minima", "Limite_corrente",
+	"FS_offset_tensione", "Res_interna_massima", "Temp_termica", "K_adatt_limite_flusso", "K_adatt_windup", "K_integ_flusso",
+	"K_A", "K_prop_flusso", "K_adatt_rif_corrente", "K_adatt_rif_flusso", "K_PI", "K_II", "K_AI", "KC_anello_flusso", "KB_anello_flusso",
+	"KC_anello_corrente", "KB_anello_corrente", "KP_comp_anello_flusso", "KP_comp_anello_corr", "KP_adj_riferimento",
+	"Amp_riferimento_int", "Freq_riferimento_int", "Sfasamento", "Offset_val_rif_int"});
     deviceTable2.setEditable(false);
     deviceTable2.setDisplayRowNumber(true);
     jPanel15.setLayout(borderLayout14);
@@ -550,14 +550,14 @@ public class RFXPRConfigSetup extends DeviceSetup {
     deviceTable20.setNumRows(48);
     deviceTable20.setIdentifier("");
     deviceTable20.setRowNames(new String[] {"1(1,2,9,10)", "2(3,4,11,12)", "3(5,6,13,14)", "4(7,8,15,16)", "5(17,18,25,26)", "6(19,20,27,28)", "7(21,22,29,30)", "8(23,24,31,32)",
-        "9(33,34,41,42)", "10(35,36,43,44)", "11(37,38,45,46)", "12(39,40,47,48)", "13(49,50,57,58)", "14(51,52,59,60)", "15(53,54,61,62)",
-        "16(55,56,63,64)", "17(65,66,73,74)", "18(67,68,75,76)", "19(69,70,77,78)", "20(71,72,79,80)", "21(81,82,89,90)", "22(83,84,91,92)",
-        "23(85,86,93,94)", "24(87,88,95,96)", "25(97,98,105,106)", "26(99,100,107,108)", "27(101,102,109,110)", "28(103,104,111,112)",
-        "29(113,114,121,122)", "30(115,116,123,124)", "31(117,118,125,126)", "32(119,120,127,128)", "33(129,130,137,138)",
-        "34(131,132,139,140)", "35(133,134,141,142)", "36(135,136,143,144)", "37(145,146,153,154)", "38(147,148,155,156)",
-        "39(149,150,157,158)", "40(151,152,159,160)", "41(161,162,169,170)", "42(163,164,171,172)", "43(165,166,173,174)",
-        "44(167,168,175,176)", "45(177,178,185,186)", "46(179,180,187,188)", "47(181,182,189,190)", "48(183,184,191,192)"
-        });
+	"9(33,34,41,42)", "10(35,36,43,44)", "11(37,38,45,46)", "12(39,40,47,48)", "13(49,50,57,58)", "14(51,52,59,60)", "15(53,54,61,62)",
+	"16(55,56,63,64)", "17(65,66,73,74)", "18(67,68,75,76)", "19(69,70,77,78)", "20(71,72,79,80)", "21(81,82,89,90)", "22(83,84,91,92)",
+	"23(85,86,93,94)", "24(87,88,95,96)", "25(97,98,105,106)", "26(99,100,107,108)", "27(101,102,109,110)", "28(103,104,111,112)",
+	"29(113,114,121,122)", "30(115,116,123,124)", "31(117,118,125,126)", "32(119,120,127,128)", "33(129,130,137,138)",
+	"34(131,132,139,140)", "35(133,134,141,142)", "36(135,136,143,144)", "37(145,146,153,154)", "38(147,148,155,156)",
+	"39(149,150,157,158)", "40(151,152,159,160)", "41(161,162,169,170)", "42(163,164,171,172)", "43(165,166,173,174)",
+	"44(167,168,175,176)", "45(177,178,185,186)", "46(179,180,187,188)", "47(181,182,189,190)", "48(183,184,191,192)"
+	});
     deviceTable20.setColumnNames(new String[] {"EXTERNAL", "TOP", "INTERNAL", "BOTTOM"});
     deviceTable20.setBinary(true);
     deviceTable20.setDisplayRowNumber(true);

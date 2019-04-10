@@ -24,16 +24,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$FREE   
+		Name:   GEN_DEVICE$FREE
 
 		Type:   C function
 
-     		Author:	Gabriele Manduchi
+		Author:	Gabriele Manduchi
 			Istituto Gas Ionizzati del CNR - Padova (Italy)
 
 		Date:   17-SEP-1993
 
-    		Purpose: Free dynamic data structures allocated by routines generatted by GEN_DEVICE 
+		Purpose: Free dynamic data structures allocated by routines generatted by GEN_DEVICE
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>

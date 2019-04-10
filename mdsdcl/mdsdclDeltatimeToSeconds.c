@@ -77,7 +77,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
+ * if you want the limit (max/min) macros for int types.
  */
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS 1
@@ -94,7 +94,7 @@ typedef uint32_t flex_uint32_t;
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
-typedef unsigned char flex_uint8_t; 
+typedef unsigned char flex_uint8_t;
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
 #endif /* ! C99 */
@@ -205,14 +205,14 @@ extern FILE *mdsdclDelta_in, *mdsdclDelta_out;
 #define EOB_ACT_LAST_MATCH 2
 
     #define YY_LESS_LINENO(n)
-    
+
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
 		/* Undo effects of setting up mdsdclDelta_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	int yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = (yy_hold_char); \
 		YY_RESTORE_YY_MORE_OFFSET \
 		(yy_c_buf_p) = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
@@ -267,7 +267,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -304,8 +304,8 @@ static YY_BUFFER_STATE * yy_buffer_stack = 0; /**< Stack as an array. */
  * Returns the top of the stack, or NULL.
  */
 #define YY_CURRENT_BUFFER ( (yy_buffer_stack) \
-                          ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
-                          : NULL)
+	                  ? (yy_buffer_stack)[(yy_buffer_stack_top)] \
+	                  : NULL)
 
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
@@ -354,9 +354,9 @@ void mdsdclDelta_free (void *  );
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        mdsdclDelta_ensure_buffer_stack (); \
+	mdsdclDelta_ensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
@@ -364,9 +364,9 @@ void mdsdclDelta_free (void *  );
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        mdsdclDelta_ensure_buffer_stack (); \
+	mdsdclDelta_ensure_buffer_stack (); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE ); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
@@ -418,60 +418,60 @@ struct yy_trans_info
 static yyconst flex_int16_t yy_acclist[32] =
     {   0,
     16386,    8,    6,    7,    1,    6,    7,    7,    4,    6,
-        7,    5,    6,    7,    1,    6,    7,16386,    4,    6,
-        7,    3,    7,    1,    4,    1,16386,    4,    3, 8194,
+	7,    5,    6,    7,    1,    6,    7,16386,    4,    6,
+	7,    3,    7,    1,    4,    1,16386,    4,    3, 8194,
      8194
     } ;
 
 static yyconst flex_int16_t yy_accept[25] =
     {   0,
-        1,    1,    2,    2,    2,    3,    5,    8,    9,   12,
+	1,    1,    2,    2,    2,    3,    5,    8,    9,   12,
        15,   19,   22,   24,   25,   26,   28,   28,   28,   29,
        30,   31,   32,   32
     } ;
 
 static yyconst flex_int32_t yy_ec[256] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    4,    4,    4,
-        4,    4,    4,    4,    4,    4,    4,    5,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    2,    3,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    2,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    4,    4,    4,
+	4,    4,    4,    4,    4,    4,    4,    5,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1
     } ;
 
 static yyconst flex_int32_t yy_meta[6] =
     {   0,
-        1,    2,    1,    3,    1
+	1,    2,    1,    3,    1
     } ;
 
 static yyconst flex_int16_t yy_base[29] =
     {   0,
-        0,    4,   21,   20,   23,   26,    0,   26,    0,   26,
-        7,   10,    0,    0,    0,    0,   20,   13,    0,    0,
-        0,   26,   26,   18,   14,   10,    7,    4
+	0,    4,   21,   20,   23,   26,    0,   26,    0,   26,
+	7,   10,    0,    0,    0,    0,   20,   13,    0,    0,
+	0,   26,   26,   18,   14,   10,    7,    4
     } ;
 
 static yyconst flex_int16_t yy_def[29] =
@@ -483,15 +483,15 @@ static yyconst flex_int16_t yy_def[29] =
 
 static yyconst flex_int16_t yy_nxt[32] =
     {   0,
-        6,    7,    8,    9,   10,   11,   21,   12,   16,   20,
+	6,    7,    8,    9,   10,   11,   21,   12,   16,   20,
        17,   18,   15,   19,   18,   14,   21,   22,    8,    8,
-        8,   18,   23,   13,   13,    5,   23,   23,   23,   23,
+	8,   18,   23,   13,   13,    5,   23,   23,   23,   23,
        23
     } ;
 
 static yyconst flex_int16_t yy_chk[32] =
     {   0,
-        1,    1,    1,    1,    1,    2,   28,    2,   11,   27,
+	1,    1,    1,    1,    1,    2,   28,    2,   11,   27,
        11,   12,   26,   12,   18,   25,   18,   18,   24,   24,
        24,   17,    5,    4,    3,   23,   23,   23,   23,   23,
        23
@@ -719,7 +719,7 @@ YY_DECL
 	register yy_state_type yy_current_state;
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
-    
+
 #line 17 "mdsdclDeltatimeToSeconds.x"
 
 #line 702 "mdsdclDeltatimeToSeconds.c"
@@ -732,11 +732,11 @@ YY_DECL
 		YY_USER_INIT;
 #endif
 
-        /* Create the reject buffer large enough to save one state per allowed character. */
-        if ( ! (yy_state_buf) )
-            (yy_state_buf) = (yy_state_type *)mdsdclDelta_alloc(YY_STATE_BUF_SIZE  );
-            if ( ! (yy_state_buf) )
-                YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta_lex()" );
+	/* Create the reject buffer large enough to save one state per allowed character. */
+	if ( ! (yy_state_buf) )
+	    (yy_state_buf) = (yy_state_type *)mdsdclDelta_alloc(YY_STATE_BUF_SIZE  );
+	    if ( ! (yy_state_buf) )
+	        YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta_lex()" );
 
 		if ( ! (yy_start) )
 			(yy_start) = 1;	/* first start state */
@@ -1013,7 +1013,7 @@ ECHO;
  */
 static int yy_get_next_buffer (void)
 {
-    	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
+	register char *dest = YY_CURRENT_BUFFER_LVALUE->yy_ch_buf;
 	register char *source = (yytext_ptr);
 	register int number_to_move, i;
 	int ret_val;
@@ -1120,7 +1120,7 @@ static int yy_get_next_buffer (void)
 {
 	register yy_state_type yy_current_state;
 	register char *yy_cp;
-    
+
 	yy_current_state = (yy_start);
 	yy_current_state += YY_AT_BOL();
 
@@ -1151,7 +1151,7 @@ static int yy_get_next_buffer (void)
     static yy_state_type yy_try_NUL_trans  (yy_state_type yy_current_state )
 {
 	register int yy_is_jam;
-    
+
 	register YY_CHAR yy_c = 1;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
@@ -1176,7 +1176,7 @@ static int yy_get_next_buffer (void)
 
 {
 	int c;
-    
+
 	*(yy_c_buf_p) = (yy_hold_char);
 
 	if ( *(yy_c_buf_p) == YY_END_OF_BUFFER_CHAR )
@@ -1245,16 +1245,16 @@ static int yy_get_next_buffer (void)
 
 /** Immediately switch to a different input stream.
  * @param input_file A readable stream.
- * 
+ *
  * @note This function does not reset the start condition to @c INITIAL .
  */
     void mdsdclDelta_restart  (FILE * input_file )
 {
-    
+
 	if ( ! YY_CURRENT_BUFFER ){
-        mdsdclDelta_ensure_buffer_stack ();
+	mdsdclDelta_ensure_buffer_stack ();
 		YY_CURRENT_BUFFER_LVALUE =
-            mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE );
+	    mdsdclDelta__create_buffer(mdsdclDelta_in,YY_BUF_SIZE );
 	}
 
 	mdsdclDelta__init_buffer(YY_CURRENT_BUFFER,input_file );
@@ -1263,11 +1263,11 @@ static int yy_get_next_buffer (void)
 
 /** Switch to a different input buffer.
  * @param new_buffer The new input buffer.
- * 
+ *
  */
     void mdsdclDelta__switch_to_buffer  (YY_BUFFER_STATE  new_buffer )
 {
-    
+
 	/* TODO. We should be able to replace this entire function body
 	 * with
 	 *		mdsdclDelta_pop_buffer_state();
@@ -1298,7 +1298,7 @@ static int yy_get_next_buffer (void)
 
 static void mdsdclDelta__load_buffer_state  (void)
 {
-    	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
+	(yy_n_chars) = YY_CURRENT_BUFFER_LVALUE->yy_n_chars;
 	(yytext_ptr) = (yy_c_buf_p) = YY_CURRENT_BUFFER_LVALUE->yy_buf_pos;
 	mdsdclDelta_in = YY_CURRENT_BUFFER_LVALUE->yy_input_file;
 	(yy_hold_char) = *(yy_c_buf_p);
@@ -1307,13 +1307,13 @@ static void mdsdclDelta__load_buffer_state  (void)
 /** Allocate and initialize an input buffer state.
  * @param file A readable stream.
  * @param size The character buffer size in bytes. When in doubt, use @c YY_BUF_SIZE.
- * 
+ *
  * @return the allocated buffer state.
  */
     YY_BUFFER_STATE mdsdclDelta__create_buffer  (FILE * file, int  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	b = (YY_BUFFER_STATE) mdsdclDelta_alloc(sizeof( struct yy_buffer_state )  );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta__create_buffer()" );
@@ -1336,11 +1336,11 @@ static void mdsdclDelta__load_buffer_state  (void)
 
 /** Destroy the buffer.
  * @param b a buffer created with mdsdclDelta__create_buffer()
- * 
+ *
  */
     void mdsdclDelta__delete_buffer (YY_BUFFER_STATE  b )
 {
-    
+
 	if ( ! b )
 		return;
 
@@ -1356,7 +1356,7 @@ static void mdsdclDelta__load_buffer_state  (void)
 #ifndef __cplusplus
 extern int isatty (int );
 #endif /* __cplusplus */
-    
+
 /* Initializes or reinitializes a buffer.
  * This function is sometimes called more than once on the same buffer,
  * such as during a mdsdclDelta_restart() or at EOF.
@@ -1365,7 +1365,7 @@ extern int isatty (int );
 
 {
 	int oerrno = errno;
-    
+
 	mdsdclDelta__flush_buffer(b );
 
 	b->yy_input_file = file;
@@ -1376,22 +1376,22 @@ extern int isatty (int );
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
-        b->yy_bs_lineno = 1;
-        b->yy_bs_column = 0;
+	b->yy_bs_lineno = 1;
+	b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
-    
+	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+
 	errno = oerrno;
 }
 
 /** Discard all buffered characters. On the next scan, YY_INPUT will be called.
  * @param b the buffer state to be flushed, usually @c YY_CURRENT_BUFFER.
- * 
+ *
  */
     void mdsdclDelta__flush_buffer (YY_BUFFER_STATE  b )
 {
-    	if ( ! b )
+	if ( ! b )
 		return;
 
 	b->yy_n_chars = 0;
@@ -1416,11 +1416,11 @@ extern int isatty (int );
  *  the current state. This function will allocate the stack
  *  if necessary.
  *  @param new_buffer The new state.
- *  
+ *
  */
 void mdsdclDelta_push_buffer_state (YY_BUFFER_STATE new_buffer )
 {
-    	if (new_buffer == NULL)
+	if (new_buffer == NULL)
 		return;
 
 	mdsdclDelta_ensure_buffer_stack();
@@ -1446,11 +1446,11 @@ void mdsdclDelta_push_buffer_state (YY_BUFFER_STATE new_buffer )
 
 /** Removes and deletes the top of the stack, if present.
  *  The next element becomes the new top.
- *  
+ *
  */
 void mdsdclDelta_pop_buffer_state (void)
 {
-    	if (!YY_CURRENT_BUFFER)
+	if (!YY_CURRENT_BUFFER)
 		return;
 
 	mdsdclDelta__delete_buffer(YY_CURRENT_BUFFER );
@@ -1470,22 +1470,22 @@ void mdsdclDelta_pop_buffer_state (void)
 static void mdsdclDelta_ensure_buffer_stack (void)
 {
 	int num_to_alloc;
-    
+
 	if (!(yy_buffer_stack)) {
 
 		/* First allocation is just for 2 elements, since we don't know if this
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
-         */
+	 */
 		num_to_alloc = 1;
 		(yy_buffer_stack) = (struct yy_buffer_state**)mdsdclDelta_alloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								);
 		if ( ! (yy_buffer_stack) )
 			YY_FATAL_ERROR( "out of dynamic memory in mdsdclDelta_ensure_buffer_stack()" );
-								  
+
 		memset((yy_buffer_stack), 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		(yy_buffer_stack_max) = num_to_alloc;
 		(yy_buffer_stack_top) = 0;
 		return;
@@ -1513,13 +1513,13 @@ static void mdsdclDelta_ensure_buffer_stack (void)
 /** Setup the input buffer state to scan directly from a user-specified character buffer.
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
- * 
- * @return the newly allocated buffer state object. 
+ *
+ * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE mdsdclDelta__scan_buffer  (char * base, yy_size_t  size )
 {
 	YY_BUFFER_STATE b;
-    
+
 	if ( size < 2 ||
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
@@ -1548,14 +1548,14 @@ YY_BUFFER_STATE mdsdclDelta__scan_buffer  (char * base, yy_size_t  size )
 /** Setup the input buffer state to scan a string. The next call to mdsdclDelta_lex() will
  * scan from a @e copy of @a str.
  * @param yystr a NUL-terminated string to scan
- * 
+ *
  * @return the newly allocated buffer state object.
  * @note If you want to scan bytes that may contain NUL values, then use
  *       mdsdclDelta__scan_bytes() instead.
  */
 YY_BUFFER_STATE mdsdclDelta__scan_string (yyconst char * yystr )
 {
-    
+
 	return mdsdclDelta__scan_bytes(yystr,strlen(yystr) );
 }
 
@@ -1563,7 +1563,7 @@ YY_BUFFER_STATE mdsdclDelta__scan_string (yyconst char * yystr )
  * scan from a @e copy of @a bytes.
  * @param bytes the byte buffer to scan
  * @param len the number of bytes in the buffer pointed to by @a bytes.
- * 
+ *
  * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE mdsdclDelta__scan_bytes  (yyconst char * yybytes, int  _yybytes_len )
@@ -1572,7 +1572,7 @@ YY_BUFFER_STATE mdsdclDelta__scan_bytes  (yyconst char * yybytes, int  _yybytes_
 	char *buf;
 	yy_size_t n;
 	int i;
-    
+
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = _yybytes_len + 2;
 	buf = (char *) mdsdclDelta_alloc(n  );
@@ -1602,7 +1602,7 @@ YY_BUFFER_STATE mdsdclDelta__scan_bytes  (yyconst char * yybytes, int  _yybytes_
 
 static void yy_fatal_error (yyconst char* msg )
 {
-    	(void) fprintf( stderr, "%s\n", msg );
+	(void) fprintf( stderr, "%s\n", msg );
 	exit( YY_EXIT_FAILURE );
 }
 
@@ -1613,8 +1613,8 @@ static void yy_fatal_error (yyconst char* msg )
 	do \
 		{ \
 		/* Undo effects of setting up mdsdclDelta_text. */ \
-        int yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	int yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		mdsdclDelta_text[mdsdclDelta_leng] = (yy_hold_char); \
 		(yy_c_buf_p) = mdsdclDelta_text + yyless_macro_arg; \
 		(yy_hold_char) = *(yy_c_buf_p); \
@@ -1626,86 +1626,86 @@ static void yy_fatal_error (yyconst char* msg )
 /* Accessor  methods (get/set functions) to struct members. */
 
 /** Get the current line number.
- * 
+ *
  */
 int mdsdclDelta_get_lineno  (void)
 {
-        
+
     return mdsdclDelta_lineno;
 }
 
 /** Get the input stream.
- * 
+ *
  */
 FILE *mdsdclDelta_get_in  (void)
 {
-        return mdsdclDelta_in;
+	return mdsdclDelta_in;
 }
 
 /** Get the output stream.
- * 
+ *
  */
 FILE *mdsdclDelta_get_out  (void)
 {
-        return mdsdclDelta_out;
+	return mdsdclDelta_out;
 }
 
 /** Get the length of the current token.
- * 
+ *
  */
 int mdsdclDelta_get_leng  (void)
 {
-        return mdsdclDelta_leng;
+	return mdsdclDelta_leng;
 }
 
 /** Get the current token.
- * 
+ *
  */
 
 char *mdsdclDelta_get_text  (void)
 {
-        return mdsdclDelta_text;
+	return mdsdclDelta_text;
 }
 
 /** Set the current line number.
  * @param line_number
- * 
+ *
  */
 void mdsdclDelta_set_lineno (int  line_number )
 {
-    
+
     mdsdclDelta_lineno = line_number;
 }
 
 /** Set the input stream. This does not discard the current
  * input buffer.
  * @param in_str A readable stream.
- * 
+ *
  * @see mdsdclDelta__switch_to_buffer
  */
 void mdsdclDelta_set_in (FILE *  in_str )
 {
-        mdsdclDelta_in = in_str ;
+	mdsdclDelta_in = in_str ;
 }
 
 void mdsdclDelta_set_out (FILE *  out_str )
 {
-        mdsdclDelta_out = out_str ;
+	mdsdclDelta_out = out_str ;
 }
 
 int mdsdclDelta_get_debug  (void)
 {
-        return mdsdclDelta__flex_debug;
+	return mdsdclDelta__flex_debug;
 }
 
 void mdsdclDelta_set_debug (int  bdebug )
 {
-        mdsdclDelta__flex_debug = bdebug ;
+	mdsdclDelta__flex_debug = bdebug ;
 }
 
 static int yy_init_globals (void)
 {
-        /* Initialization is the same as for the non-reentrant scanner.
+	/* Initialization is the same as for the non-reentrant scanner.
      * This function is called from mdsdclDelta_lex_destroy(), so don't allocate here.
      */
 
@@ -1739,7 +1739,7 @@ static int yy_init_globals (void)
 /* mdsdclDelta_lex_destroy is for both reentrant and non-reentrant scanners. */
 int mdsdclDelta_lex_destroy  (void)
 {
-    
+
     /* Pop the buffer stack, destroying each element. */
 	while(YY_CURRENT_BUFFER){
 		mdsdclDelta__delete_buffer(YY_CURRENT_BUFFER  );
@@ -1831,6 +1831,6 @@ int mdsdclDeltatimeToSeconds(char *deltatime) {
     case 1: min=times[0]; sec=times[1]; break;
     case 2: hour=times[0]; min=times[1]; sec=times[2]; break;
     };
-    return day * 24 * 60 *60 + hour * 60 * 60 + min * 60 + sec; 
+    return day * 24 * 60 *60 + hour * 60 * 60 + min * 60 + sec;
 }
 

@@ -438,7 +438,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
 				MdsFree1Dx(&float_xd, 0);
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-			case DTYPE_DOUBLE: 
+			case DTYPE_DOUBLE:
 				cls = (*env)->FindClass(env, "DoubleArray");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
 				jdoubles = (*env)->NewDoubleArray(env, length);

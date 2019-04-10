@@ -104,7 +104,7 @@ class Scalar(_dat.Data):
             value = value.value
         if _ver.ispy3 and self._ntype is _N.bytes_:
             self._value = self._ntype(_ver.tobytes(value))
-        else:   
+        else:
             self._value = self._ntype(value)
 
     def _str_bad_ref(self):

@@ -3,7 +3,7 @@ from MDSplus import *
 import subprocess
 import numpy as np
 import time
-   
+
 class MARTE2_SUPERVISOR(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
     parts = [{'path':':NAME', 'type':'text'},{'path':':COMMENT', 'type':'text'}, {'path':':NUM_STATES', 'type':'numeric'}]
@@ -36,7 +36,7 @@ class MARTE2_SUPERVISOR(Device):
       retGams = []
       gamNids = []
       threadMap = {}
-      
+
       #first iteration to get threadMap
       for state in range(numStates):
         numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
@@ -51,7 +51,7 @@ class MARTE2_SUPERVISOR(Device):
 	    else:
 	      threadMap[nid] = [threadName]
 
-      
+
       #Second iteration, build the remaining
       for state in range(numStates):
 	stateInfo = {}
@@ -87,27 +87,27 @@ class MARTE2_SUPERVISOR(Device):
                 gamNames += gamList
 #              except:
 #	        print('Cannot Get GAM/DataSource information from '+str(gamClass))
-	    
+
 	  threadInfo['gams'] = gamNames
 	  stateThreads.append(threadInfo)
         stateInfo['threads'] = stateThreads
         statesInfo.append(stateInfo)
       info['states'] = statesInfo
-      
+
       info['gams'] = retGams
       info['data_sources'] = retData
       info['name'] = self.getNode('name').data()
-      
+
       print('#######################')
       print(info)
       print('@@@@@@@@@@@@@@@@@@@@@@@')
       print(threadMap)
       return info, threadMap
-    
-                    
-              
-          
-    
+
+
+
+
+
 
     def buildConfiguration(self):
       info, threadMap = self.getInfo()
@@ -148,7 +148,7 @@ class MARTE2_SUPERVISOR(Device):
       confText += '      }\n'
       confText += '    }\n'
       confText += '  }\n'
-      
+
       for gam in info['gams']:
         confText += gam
       confText += ' }\n'
@@ -176,7 +176,7 @@ class MARTE2_SUPERVISOR(Device):
       for dataSource in info['data_sources']:
 	confText += dataSource
       confText += '  }\n'
-      
+
       confText += ' +States = {\n'
       confText += '  Class = ReferenceContainer\n'
       confText += '  +IDLE = {\n'
@@ -189,7 +189,7 @@ class MARTE2_SUPERVISOR(Device):
       confText += '        }\n'
       confText += '      }\n'
       confText += '    }\n'
-      
+
       for state in info['states']:
 	confText += '  +'+state['name'] + ' = {\n'
 	confText += '  Class = RealTimeState\n'
@@ -218,13 +218,13 @@ class MARTE2_SUPERVISOR(Device):
       f.write(confText)
       f.close()
       return 1
-    
-    
+
+
     def startMarte(self):
        self.buildConfiguration()
        subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode('name').data()+'_marte_configuration.cfg -s IDLE'], shell=True)
        return 1
-    
+
     def doState(self, state):
       marteName = self.getNode('name').data()
       stateName = getattr(self, 'state_%d_name'%(state)).data()
@@ -237,7 +237,7 @@ class MARTE2_SUPERVISOR(Device):
       time.sleep(.1)
       Event.seteventRaw(marteName, np.frombuffer(eventString3, dtype = np.uint8))
       return 1
-      
+
     def doState1(self):
       return self.doState(1)
 
@@ -249,10 +249,10 @@ class MARTE2_SUPERVISOR(Device):
 
     def doState4(self):
       return self.doState(2)
-      
+
     def doState5(self):
       return self.doState(2)
-    
+
     def suspendMarte(self):
       marteName = self.getNode('name').data()
       eventString1 = marteName+':StopCurrentStateExecution:XX'
@@ -266,9 +266,9 @@ class MARTE2_SUPERVISOR(Device):
       time.sleep(0.1)
       Event.seteventRaw(marteName, np.frombuffer(eventString3, dtype = np.uint8))
       return 1
-      
+
     def stopMarte(self):
       marteName = self.getNode('name').data()
       Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype = np.uint8))
       return 1
-      
+

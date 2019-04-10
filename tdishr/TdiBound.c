@@ -23,22 +23,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Bound.C
-        Give bound or shape of an array dimension or as whole.
-                integer = LBOUND(array, [dim])
-                integer = UBOUND(array, [dim])
-                integer = SHAPE(array, [dim]) dim is not F90
-                scalar number_of_elements = SIZE(array, [dim])
-        These routines give the same as above for array, but for valid dimension give that info.
-                bound = ELBOUND(signal, [dim])
-                bound = EUBOUND(signal, [dim])
-                extent = ESHAPE(signal, [dim]) dim is not F90
-                scalar volume = ESIZE(signal, [dim])
-        Shape of scalar is null vector.
-        Result is scalar if dim is given or size is asked, else rank-one vector of length rank(array).
-        ESHAPE and ESIZE for dimensions give the extent and thus do not include the both endpoints for integer values.
-        We permit, non-F90: Bound of scalar as null vector.
+	Give bound or shape of an array dimension or as whole.
+	        integer = LBOUND(array, [dim])
+	        integer = UBOUND(array, [dim])
+	        integer = SHAPE(array, [dim]) dim is not F90
+	        scalar number_of_elements = SIZE(array, [dim])
+	These routines give the same as above for array, but for valid dimension give that info.
+	        bound = ELBOUND(signal, [dim])
+	        bound = EUBOUND(signal, [dim])
+	        extent = ESHAPE(signal, [dim]) dim is not F90
+	        scalar volume = ESIZE(signal, [dim])
+	Shape of scalar is null vector.
+	Result is scalar if dim is given or size is asked, else rank-one vector of length rank(array).
+	ESHAPE and ESIZE for dimensions give the extent and thus do not include the both endpoints for integer values.
+	We permit, non-F90: Bound of scalar as null vector.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -121,7 +121,7 @@ int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descr
 }
 
 /*--------------------------------------------------------------
-        F90 inquiry for declared lower bound(s) of an array.
+	F90 inquiry for declared lower bound(s) of an array.
 */
 void Tdi3Lbound(array_bounds * pa, int dim, int *pbound)
 {
@@ -148,7 +148,7 @@ void Tdi3Lbound(array_bounds * pa, int dim, int *pbound)
 }
 
 /*--------------------------------------------------------------
-        F90 inquiry for declared shape of an array.
+	F90 inquiry for declared shape of an array.
 */
 void Tdi3Shape(array_bounds * pa, int dim, int *pbound)
 {
@@ -177,7 +177,7 @@ void Tdi3Shape(array_bounds * pa, int dim, int *pbound)
 }
 
 /*--------------------------------------------------------------
-        F90 inquiry for the size of one axis or the total of all axes.
+	F90 inquiry for the size of one axis or the total of all axes.
 */
 int Tdi3Size(array_bounds * pa, int dim, int *pbound)
 {
@@ -209,7 +209,7 @@ int Tdi3Size(array_bounds * pa, int dim, int *pbound)
 }
 
 /*--------------------------------------------------------------
-        F90 inquiry for declared upper bound(s) of an array.
+	F90 inquiry for declared upper bound(s) of an array.
 */
 void Tdi3Ubound(array_bounds * pa, int dim, int *pbound)
 {
@@ -236,7 +236,7 @@ void Tdi3Ubound(array_bounds * pa, int dim, int *pbound)
 }
 
 /***************************************************************
-        Non-F90 inquiry for Effective bounds.
+	Non-F90 inquiry for Effective bounds.
 */
 int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -297,7 +297,7 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct desc
 }
 
 /*--------------------------------------------------------------
-        Effective lower bound.
+	Effective lower bound.
 */
 int Tdi3Elbound(struct descriptor_signal *psig,
 		array_bounds * pa, int dim, struct descriptor_xd *pout)
@@ -316,7 +316,7 @@ int Tdi3Elbound(struct descriptor_signal *psig,
 }
 
 /*--------------------------------------------------------------
-        Effective upper bound.
+	Effective upper bound.
 */
 int Tdi3Eubound(struct descriptor_signal *psig,
 		array_bounds * pa, int dim, struct descriptor_xd *pout)
@@ -337,7 +337,7 @@ int Tdi3Eubound(struct descriptor_signal *psig,
 }
 
 /*--------------------------------------------------------------
-        Effective shape.
+	Effective shape.
 */
 int Tdi3Eshape(struct descriptor_signal *psig,
 	       array_bounds * pa, int dim, struct descriptor_xd *pout)
@@ -361,7 +361,7 @@ int Tdi3Eshape(struct descriptor_signal *psig,
 }
 
 /*--------------------------------------------------------------
-        Effective size.
+	Effective size.
 */
 int Tdi3Esize(struct descriptor_signal *psig,
 	      array_bounds * pa, int dim, struct descriptor_xd *pout)

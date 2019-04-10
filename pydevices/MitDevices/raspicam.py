@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ class RASPICAM(MDSplus.Device):
         {'path':':R_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
         {'path':':G_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
         {'path':':B_FRAMES','type':'numeric','options':('no_write_model','write_once',)},
-        {'path':':FRAMES','type':'signal','options':('no_write_model','write_once',)},        
+        {'path':':FRAMES','type':'signal','options':('no_write_model','write_once',)},
         {'path':':R_COEFF','type':'numeric','value':.299,'options':('no_write_shot',)},
         {'path':':G_COEFF','type':'numeric','value':.587,'options':('no_write_shot',)},
         {'path':':B_COEFF','type':'numeric','value':.114,'options':('no_write_shot',)},
@@ -80,12 +80,12 @@ class RASPICAM(MDSplus.Device):
         Init method for the raspberry pi camera device.
 
         Start by deleting any running subrocesses that may be left
-        over from previous inits, note the subprocess is stored in a 
+        over from previous inits, note the subprocess is stored in a
         class variable (ONLY one of these per server !)
 
         Read all of the settings and create a script to take the data.
 
-        Note:  This device supports at most 1 camera per server.  Which is 
+        Note:  This device supports at most 1 camera per server.  Which is
         OK since the raspberry pis only have one camera port.
         """
 
@@ -113,13 +113,13 @@ class RASPICAM(MDSplus.Device):
         cmds = []
         if compressed:
             cmds = [
-                "sudo /usr/local/bin/trig.py\n", 
+                "sudo /usr/local/bin/trig.py\n",
                 "raspivid -w %d -h %d -fps %d -t %d -ss %d -br %d -co %d %s -o %s.h264\n" % (width, height, fps, int(float(num_frames)/fps*1000), exposure, brightness, contrast, extra_raspivid, self.fileName())]
             print cmds
         else:
             cmds = [
                 "v4l2-ctl --set-fmt-video=width=%d,height=%d,pixelformat=2 --set-ctrl=exposure_time_absolute=%d,brightness=%d,contrast=%d,auto_exposure=1,white_balance_auto_preset=3\n"%(width, height, exposure, brightness, contrast,),
-                "sudo usr/local/bin/trig.py\n", 
+                "sudo usr/local/bin/trig.py\n",
                 "v4l2-ctl --stream-mmap=%d --stream-count=%d %s --stream-to=%s.rgb\n" % (num_frames, num_frames, extra_v4l2_ctl, self.fileName())]
 
 	RASPICAM.subproc = subprocess.Popen(['/bin/sh'], stdout=subprocess.PIPE, stdin=subprocess.PIPE, stderr=subprocess.PIPE,shell=False)

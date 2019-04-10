@@ -71,23 +71,23 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
 {
 
   /*------------------------------------------------------------------------------
-  
+
    External functions or symbols referenced:                                    */
 
   /*------------------------------------------------------------------------------
-  
+
    Subroutines referenced:                                                      */
 
   /*------------------------------------------------------------------------------
-  
+
    Macros:                                                                      */
 
   /*------------------------------------------------------------------------------
-  
+
    Global variables:                                                            */
 
   /*------------------------------------------------------------------------------
-  
+
    Local variables:                                                             */
 
   Widget hidden;
@@ -104,7 +104,7 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
   String new_name = XtMalloc(strlen(name) + 7);
 
   /*------------------------------------------------------------------------------
-  
+
    Executable:                                                                  */
 
   strcpy((char *)new_name, name);

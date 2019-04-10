@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiCvtArgs.C
-        Convert input and output categories to data types.
-        Convert input data as needed. Called by
-        Tdi1Build Tdi1Same Tdi1Scalar Tdi1Trans Tdi1Trim Tdi1RANGE Tdi1Vector
+	Convert input and output categories to data types.
+	Convert input data as needed. Called by
+	Tdi1Build Tdi1Same Tdi1Scalar Tdi1Trans Tdi1Trim Tdi1RANGE Tdi1Vector
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <stdlib.h>
 #include "tdirefcat.h"
@@ -53,12 +53,12 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
   struct TdiCatStruct *cptr;
 
 	/*************************
-        Find data type if changed.
-        Check output type also.
-        Make wide F/D into G/H.
-        Get length from table.
-        Keep old text length.
-        *************************/
+	Find data type if changed.
+	Check output type also.
+	Make wide F/D into G/H.
+	Get length from table.
+	Keep old text length.
+	*************************/
   for (j = 0, cptr = cats; STATUS_OK && j <= narg; ++j, ++cptr) {
     if (cptr->out_cat != cptr->in_cat) {
       if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat) {
@@ -122,8 +122,8 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
   }
 
 	/********************
-        Do input conversions.
-        ********************/
+	Do input conversions.
+	********************/
   for (j = 0, cptr = cats; STATUS_OK && j < narg; ++j, ++cptr) {
     struct descriptor_a *aptr = (struct descriptor_a *)dat[j].pointer;
 
@@ -131,19 +131,19 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
     }
 
 		/********************************************
-                Convert signed to unsigned by changing dtype.
-                ********************************************/
+	        Convert signed to unsigned by changing dtype.
+	        ********************************************/
     else if ((cptr->in_cat ^ cptr->out_cat) == SIGNEDNESS)
       aptr->dtype = cptr->out_dtype;
 
     else {
 			/*****************************************
-                        Convert overlay for same length.
-                        For example: L into F.
-                        Would need separate code of scalars.
-                        NEED to revise if other array classes.
-                        ASSUMES array-descriptor sized readable.
-                        *****************************************/
+	                Convert overlay for same length.
+	                For example: L into F.
+	                Would need separate code of scalars.
+	                NEED to revise if other array classes.
+	                ASSUMES array-descriptor sized readable.
+	                *****************************************/
       if (aptr->length == cptr->digits) {
 	if (aptr->class == CLASS_A) {
 	  struct descriptor_a arr = *aptr;
@@ -157,8 +157,8 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
       }
 
 			/**************************
-                        Make new space and convert.
-                        **************************/
+	                Make new space and convert.
+	                **************************/
       else {
 	struct descriptor_xd xd = EMPTY_XD;
 	status = TdiGetShape(1, &dat[j], cptr->digits, cptr->out_dtype, &cmode, &xd);

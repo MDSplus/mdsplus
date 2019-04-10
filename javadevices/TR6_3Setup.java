@@ -300,9 +300,9 @@ public class TR6_3Setup extends DeviceSetup {
     deviceChannel12.setLabelString("CH 6");
     jPanel10.setLayout(gridLayout3);
     deviceButtons1.setCheckExpressions(null);
-        deviceButtons1.setCheckMessages(null);
-        deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
-        this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
+	deviceButtons1.setCheckMessages(null);
+	deviceButtons1.setMethods(new String[] {"INIT", "TRIGGER", "STORE"});
+	this.getContentPane().add(deviceButtons1, BorderLayout.SOUTH);
     this.getContentPane().add(jPanel1, BorderLayout.NORTH);
     jPanel1.add(jPanel3, null);
     jPanel3.add(deviceField1, null);

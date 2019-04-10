@@ -24,22 +24,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GETNIDARRAY   
+		Name:   GETNIDARRAY
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:   21-AUG-1990
 
-    		Purpose: Return a C array of nids given a descriptor of a
-                      nid of a node which contains a vector of nids.
-                      (i.e. contains AS_IS([\A, \B, \C,...])
-                      uses malloc to get the space to hold the nids. 
+		Purpose: Return a C array of nids given a descriptor of a
+	              nid of a node which contains a vector of nids.
+	              (i.e. contains AS_IS([\A, \B, \C,...])
+	              uses malloc to get the space to hold the nids.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 int GetNidArray(struct dsc$descriptor *list, int **nids, int *num_nids)
 
@@ -51,7 +51,7 @@ int GetNidArray(struct dsc$descriptor *list, int **nids, int *num_nids)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

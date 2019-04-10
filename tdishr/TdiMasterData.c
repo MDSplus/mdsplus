@@ -23,19 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiMasterData.C
-        Use first units to enclose the data and
-        Find the correct signal to master the new data.
-        Note, cmode is -1 if none is a signal,
-        0 if signal 0 is chosen, 1 if signal 1, etc.
-        With all non-signals, we get non-signal result.
-        With one signal, that signal is used.
-        With multiple signals, use smaller array (TdiGetShape).
-        VMS*VMS => VMS, signal*VMS => signal, signal*param => signal.
-        THINK, signal*signal => smaller_signal
-        NEED, param*VMS?. Scalar-signal * vector-other => signal-vector?
-        Used by Tdi1Build Tdi1Same Tdi1Trim Tdi1SetRange Tdi1Vector
+	Use first units to enclose the data and
+	Find the correct signal to master the new data.
+	Note, cmode is -1 if none is a signal,
+	0 if signal 0 is chosen, 1 if signal 1, etc.
+	With all non-signals, we get non-signal result.
+	With one signal, that signal is used.
+	With multiple signals, use smaller array (TdiGetShape).
+	VMS*VMS => VMS, signal*VMS => signal, signal*param => signal.
+	THINK, signal*signal => smaller_signal
+	NEED, param*VMS?. Scalar-signal * vector-other => signal-vector?
+	Used by Tdi1Build Tdi1Same Tdi1Trim Tdi1SetRange Tdi1Vector
 
-        Ken Klare LANL P-4      (c)1989,1990,1991
+	Ken Klare LANL P-4      (c)1989,1990,1991
 */
 #include <STATICdef.h>
 #include <status.h>
@@ -56,13 +56,13 @@ int TdiMasterData(int nsig,
   int cmode = -1, j;
 
 	/******************
-        Kill units if none.
-        ******************/
+	Kill units if none.
+	******************/
   if (pdu && pdu->dtype == DTYPE_T && pdu->length == 1 && *pdu->pointer == ' ')
     pdu = 0;
 	/*************************************************
-        cmode = unsignaled, +n for signal
-        *************************************************/
+	cmode = unsignaled, +n for signal
+	*************************************************/
   for (j = 0; j < nsig; j++)
     if (sig[j].pointer) {
       if (cmode >= 0) {
@@ -74,8 +74,8 @@ int TdiMasterData(int nsig,
     }
 
 	/***************************************
-        If we have a signal, embed units or data.
-        ***************************************/
+	If we have a signal, embed units or data.
+	***************************************/
   if (cmode >= 0 && cmode < nsig) {
     struct descriptor_xd tmp;
     struct descriptor_signal *sig_ptr = (struct descriptor_signal *)sig[cmode].pointer;
@@ -85,8 +85,8 @@ int TdiMasterData(int nsig,
     tmp = emptyxd;
     sig_ptr->raw = 0;
 		/************************************
-                If we have units, embed data in them.
-                ************************************/
+	        If we have units, embed data in them.
+	        ************************************/
     if (pdu) {
       wu.data = out_ptr->pointer;
       wu.units = pdu;

@@ -2145,11 +2145,11 @@ EXPORT void mdsplus_treenode_makeSegment(const void *lvTreeNodePtr, const void *
 		  throw MdsException("startDataPtrIn NULL");
 		if(!endDataPtrIn)
 		  throw MdsException("startDataPtrIn NULL");
-		if(!timeDataPtrIn)  
+		if(!timeDataPtrIn)
 		  throw MdsException("timeDataPtrIn NULL");
 		if(!initialDataArrayPtrIn)
 		  throw MdsException("initialDataArrayPtrIn NULL");
-  		treeNodePtr->makeSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
+		treeNodePtr->makeSegment(startDataPtrIn, endDataPtrIn, timeDataPtrIn, initialDataArrayPtrIn);
 	}
 	catch (const MdsException &mdsE)
 	{
@@ -2164,7 +2164,7 @@ EXPORT void mdsplus_treenode_makeTimestampedSegment(const void *lvTreeNodePtr, c
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
-	int64_t *timesArrIn = NULL;	
+	int64_t *timesArrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = "";
@@ -2309,7 +2309,7 @@ EXPORT void mdsplus_treenode_putTimestampedSegment(const void *lvTreeNodePtr, co
 {
 	TreeNode *treeNodePtr = NULL;
 	Array *arrayPtrIn = NULL;
-	int64_t *timesArrIn = NULL;	
+	int64_t *timesArrIn = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = "";

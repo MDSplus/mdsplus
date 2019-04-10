@@ -13,7 +13,7 @@ public class ComplexData extends AtomicData
     {
 	    dtype = DTYPE_FTC;
 	    this.re = re;
-            this.im = im;
+	    this.im = im;
 	    this.flags = flags;
     }
 }

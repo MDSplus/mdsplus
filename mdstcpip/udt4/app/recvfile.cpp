@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
 
    // receive the file
    fstream ofs(argv[4], ios::out | ios::binary | ios::trunc);
-   int64_t recvsize; 
+   int64_t recvsize;
    int64_t offset = 0;
 
    if (UDT::ERROR == (recvsize = UDT::recvfile(fhandle, ofs, offset, size)))

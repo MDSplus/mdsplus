@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -100,7 +100,7 @@ class MDSplusRoutineWidget(Table):
                 found=True
             idx=idx-1
         return ans
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()

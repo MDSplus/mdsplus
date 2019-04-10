@@ -313,7 +313,7 @@ static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
       out_array[out_idx] = y[curr_idx];
     }
     out_points = out_idx;
-  } else {		      
+  } else {
 
     delta = (xmax - xmin) / (MAX_POINTS - 1);
     curr = x[start_idx] + delta;

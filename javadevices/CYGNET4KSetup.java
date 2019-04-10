@@ -14,7 +14,7 @@ public class CYGNET4KSetup extends DeviceSetup {
      * Creates new form CYGNET4KSetup
      */
     public CYGNET4KSetup() {
-        initComponents();
+	initComponents();
     }
 
     /**
@@ -26,165 +26,165 @@ public class CYGNET4KSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents()
     {
-        setDeviceProvider("localhost");
-        setDeviceTitle("Cygnet4K sCMOS Camera");
-        setDeviceType("CYGNET4K");
-        setHeight(400);
-        setWidth(700);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Cygnet4K sCMOS Camera");
+	setDeviceType("CYGNET4K");
+	setHeight(400);
+	setWidth(700);
 
 
 
-        deviceField3 = new DeviceField();
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Device ID:");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(3);
+	deviceField3 = new DeviceField();
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Device ID:");
+	deviceField3.setNumCols(4);
+	deviceField3.setOffsetNid(3);
 
-        deviceField1 = new DeviceField();
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Config. File:");
-        deviceField1.setNumCols(30);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
+	deviceField1 = new DeviceField();
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Config. File:");
+	deviceField1.setNumCols(30);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
 
-        deviceDispatch = new DeviceDispatch();
-
-
-        deviceField2 = new DeviceField();
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Comment:");
-        deviceField2.setNumCols(40);
-        deviceField2.setOffsetNid(2);
-        deviceField2.setTextOnly(true);
+	deviceDispatch = new DeviceDispatch();
 
 
-
-        deviceChoice = new DeviceChoice();
-        deviceChoice.setChoiceItems(new String[] {"EXTERNAL RISING", "EXTERNAL FALLING", "FIXED FRAME RATE", "INTEGRATE THEN READ"});
-        deviceChoice.setIdentifier("");
-        deviceChoice.setLabelString("Frame Mode:");
-        deviceChoice.setOffsetNid(7);
-        deviceChoice.setUpdateIdentifier("");
-
-        deviceField6 = new DeviceField();
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Exposure (ms):");
-        deviceField6.setNumCols(30);
-        deviceField6.setOffsetNid(6);
-
-        deviceField8 = new DeviceField();
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Frame Rate(Hz):");
-        deviceField8.setNumCols(30);
-        deviceField8.setOffsetNid(8);
-
-
-        deviceField4 = new DeviceField();
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Trigger Time:");
-        deviceField4.setNumCols(30);
-        deviceField4.setOffsetNid(4);
-
-        deviceField5 = new DeviceField();
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Duration (s):");
-        deviceField5.setNumCols(30);
-        deviceField5.setOffsetNid(5);
+	deviceField2 = new DeviceField();
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Comment:");
+	deviceField2.setNumCols(40);
+	deviceField2.setOffsetNid(2);
+	deviceField2.setTextOnly(true);
 
 
 
-        deviceField14 = new DeviceField();
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Trend Period");
-        deviceField14.setOffsetNid(14);
+	deviceChoice = new DeviceChoice();
+	deviceChoice.setChoiceItems(new String[] {"EXTERNAL RISING", "EXTERNAL FALLING", "FIXED FRAME RATE", "INTEGRATE THEN READ"});
+	deviceChoice.setIdentifier("");
+	deviceChoice.setLabelString("Frame Mode:");
+	deviceChoice.setOffsetNid(7);
+	deviceChoice.setUpdateIdentifier("");
 
-        deviceField10 = new DeviceField();
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Trend Tree:");
-        deviceField10.setOffsetNid(10);
-        deviceField10.setTextOnly(true);
+	deviceField6 = new DeviceField();
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Exposure (ms):");
+	deviceField6.setNumCols(30);
+	deviceField6.setOffsetNid(6);
 
-        deviceField11 = new DeviceField();
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Trend shot:");
-        deviceField11.setNumCols(2);
-        deviceField11.setOffsetNid(11);
-
-
-        deviceField12 = new DeviceField();
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("PCB Node:");
-        deviceField12.setNumCols(20);
-        deviceField12.setOffsetNid(12);
-        deviceField12.setTextOnly(true);
-
-        deviceField13 = new DeviceField();
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("CMOS Node:");
-        deviceField13.setNumCols(30);
-        deviceField13.setOffsetNid(13);
-        deviceField13.setTextOnly(true);
+	deviceField8 = new DeviceField();
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("Frame Rate(Hz):");
+	deviceField8.setNumCols(30);
+	deviceField8.setOffsetNid(8);
 
 
+	deviceField4 = new DeviceField();
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Trigger Time:");
+	deviceField4.setNumCols(30);
+	deviceField4.setOffsetNid(4);
 
-        jPanelN1 = new javax.swing.JPanel();
-        jPanelN1.add(deviceField3);
-        jPanelN1.add(deviceField1);
-        jPanelN1.add(deviceDispatch);
-
-        jPanelN2 = new javax.swing.JPanel();
-        jPanelN2.add(deviceField2);
-
-
-        jPanelTimeN = new javax.swing.JPanel();
-        jPanelTimeN.add(deviceChoice);
-        jPanelTimeN.add(deviceField6);
-        jPanelTimeN.add(deviceField8);
-
-        jPanelTimeS = new javax.swing.JPanel();
-        jPanelTimeS.add(deviceField4);
-        jPanelTimeS.add(deviceField5);
-
-        jPanelTime = new javax.swing.JPanel();
-        jPanelTime.setBorder(javax.swing.BorderFactory.createTitledBorder("Timing"));
-        jPanelTime.setLayout(new java.awt.GridLayout(2, 1));
-        jPanelTime.add(jPanelTimeN);
-        jPanelTime.add(jPanelTimeS);
+	deviceField5 = new DeviceField();
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Duration (s):");
+	deviceField5.setNumCols(30);
+	deviceField5.setOffsetNid(5);
 
 
-        jPanelTempN = new javax.swing.JPanel();
-        jPanelTempN.add(deviceField14);
-        jPanelTempN.add(deviceField10);
-        jPanelTempN.add(deviceField11);
 
-        jPanelTempS = new javax.swing.JPanel();
-        jPanelTempS.add(deviceField12);
-        jPanelTempS.add(deviceField13);
+	deviceField14 = new DeviceField();
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("Trend Period");
+	deviceField14.setOffsetNid(14);
 
-        jPanelTemp = new javax.swing.JPanel();
-        jPanelTemp.setBorder(javax.swing.BorderFactory.createTitledBorder("Temperature Trend"));
-        jPanelTemp.setLayout(new java.awt.BorderLayout());
-        jPanelTemp.add(jPanelTempN, java.awt.BorderLayout.NORTH);
-        jPanelTemp.add(jPanelTempS, java.awt.BorderLayout.SOUTH);
+	deviceField10 = new DeviceField();
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("Trend Tree:");
+	deviceField10.setOffsetNid(10);
+	deviceField10.setTextOnly(true);
+
+	deviceField11 = new DeviceField();
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("Trend shot:");
+	deviceField11.setNumCols(2);
+	deviceField11.setOffsetNid(11);
 
 
-        jPanelN = new javax.swing.JPanel();
-        jPanelN.setLayout(new java.awt.GridLayout(2, 2));
-        jPanelN.add(jPanelN1);
-        jPanelN.add(jPanelN2);
+	deviceField12 = new DeviceField();
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("PCB Node:");
+	deviceField12.setNumCols(20);
+	deviceField12.setOffsetNid(12);
+	deviceField12.setTextOnly(true);
 
-        jPanelC = new javax.swing.JPanel();
-        jPanelC.setLayout(new java.awt.BorderLayout());
-        jPanelC.add(jPanelTime, java.awt.BorderLayout.CENTER);
-        jPanelC.add(jPanelTemp, java.awt.BorderLayout.SOUTH);
+	deviceField13 = new DeviceField();
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("CMOS Node:");
+	deviceField13.setNumCols(30);
+	deviceField13.setOffsetNid(13);
+	deviceField13.setTextOnly(true);
 
-        deviceButtons = new DeviceButtons();
 
-        getContentPane().add(jPanelN, java.awt.BorderLayout.NORTH);
-        getContentPane().add(jPanelC, java.awt.BorderLayout.CENTER);
-        getContentPane().add(deviceButtons, java.awt.BorderLayout.PAGE_END);
 
-        getAccessibleContext().setAccessibleName("");
+	jPanelN1 = new javax.swing.JPanel();
+	jPanelN1.add(deviceField3);
+	jPanelN1.add(deviceField1);
+	jPanelN1.add(deviceDispatch);
+
+	jPanelN2 = new javax.swing.JPanel();
+	jPanelN2.add(deviceField2);
+
+
+	jPanelTimeN = new javax.swing.JPanel();
+	jPanelTimeN.add(deviceChoice);
+	jPanelTimeN.add(deviceField6);
+	jPanelTimeN.add(deviceField8);
+
+	jPanelTimeS = new javax.swing.JPanel();
+	jPanelTimeS.add(deviceField4);
+	jPanelTimeS.add(deviceField5);
+
+	jPanelTime = new javax.swing.JPanel();
+	jPanelTime.setBorder(javax.swing.BorderFactory.createTitledBorder("Timing"));
+	jPanelTime.setLayout(new java.awt.GridLayout(2, 1));
+	jPanelTime.add(jPanelTimeN);
+	jPanelTime.add(jPanelTimeS);
+
+
+	jPanelTempN = new javax.swing.JPanel();
+	jPanelTempN.add(deviceField14);
+	jPanelTempN.add(deviceField10);
+	jPanelTempN.add(deviceField11);
+
+	jPanelTempS = new javax.swing.JPanel();
+	jPanelTempS.add(deviceField12);
+	jPanelTempS.add(deviceField13);
+
+	jPanelTemp = new javax.swing.JPanel();
+	jPanelTemp.setBorder(javax.swing.BorderFactory.createTitledBorder("Temperature Trend"));
+	jPanelTemp.setLayout(new java.awt.BorderLayout());
+	jPanelTemp.add(jPanelTempN, java.awt.BorderLayout.NORTH);
+	jPanelTemp.add(jPanelTempS, java.awt.BorderLayout.SOUTH);
+
+
+	jPanelN = new javax.swing.JPanel();
+	jPanelN.setLayout(new java.awt.GridLayout(2, 2));
+	jPanelN.add(jPanelN1);
+	jPanelN.add(jPanelN2);
+
+	jPanelC = new javax.swing.JPanel();
+	jPanelC.setLayout(new java.awt.BorderLayout());
+	jPanelC.add(jPanelTime, java.awt.BorderLayout.CENTER);
+	jPanelC.add(jPanelTemp, java.awt.BorderLayout.SOUTH);
+
+	deviceButtons = new DeviceButtons();
+
+	getContentPane().add(jPanelN, java.awt.BorderLayout.NORTH);
+	getContentPane().add(jPanelC, java.awt.BorderLayout.CENTER);
+	getContentPane().add(deviceButtons, java.awt.BorderLayout.PAGE_END);
+
+	getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
 

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -30,7 +30,7 @@ class ACQ132(acq.Acq):
     """
     D-Tacq ACQ132  32 channel transient recorder
 
-    device support for d-tacq acq132 http://www.d-tacq.com/acq132cpci.shtml 
+    device support for d-tacq acq132 http://www.d-tacq.com/acq132cpci.shtml
     """
     from copy import copy
     parts=copy(acq.Acq.acq_parts)
@@ -42,11 +42,11 @@ class ACQ132(acq.Acq):
         parts.append({'path':':INPUT_%2.2d:INC'%(i+1,),'type':'NUMERIC', 'options':('no_write_shot')})
     del i
     parts.extend(acq.Acq.action_parts)
-    for part in parts:                
+    for part in parts:
         if part['path'] == ':ACTIVE_CHAN' :
-            part['value']=32                 
+            part['value']=32
     del part
-    
+
     def initftp(self, auto_store=None):
         """
         Initialize the device
@@ -136,12 +136,12 @@ class ACQ132(acq.Acq):
                 if self.debugging():
                     print("internal clock clock out is %s setDIOcmd = %s" % (clock_out, setDIOcmd))
                 fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
-                fd.write(setDIOcmd)         
+                fd.write(setDIOcmd)
         else:
             fd.write("acqcmd -- setExternalClock --fin %d --fout %d %s\n" % (clock_freq/1000, clock_freq/1000*clock_div, clock_src,))
 
         fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
-            
+
         self.addGenericJSON(fd)
 
         fd.write("add_cmd 'get.vin 1:32'>> $settingsf\n")

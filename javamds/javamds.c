@@ -862,14 +862,14 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
     memcpy(retDims, dims, dimct * sizeof(int));
     retDtype = dtype;
     switch(dtype) {
-        case DTYPE_B:
-        case DTYPE_BU: retPixelSize = 1; break;
-        case DTYPE_W:
-        case DTYPE_WU: retPixelSize = 2; break;
-        case DTYPE_L:
-        case DTYPE_LU: retPixelSize = 4; break;
-        case DTYPE_Q:
-        case DTYPE_QU: retPixelSize = 8; break;
+	case DTYPE_B:
+	case DTYPE_BU: retPixelSize = 1; break;
+	case DTYPE_W:
+	case DTYPE_WU: retPixelSize = 2; break;
+	case DTYPE_L:
+	case DTYPE_LU: retPixelSize = 4; break;
+	case DTYPE_Q:
+	case DTYPE_QU: retPixelSize = 8; break;
 	default: retPixelSize = 1;
     }
    } else {
@@ -1568,7 +1568,7 @@ EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootNa
   if (env == 0) {		/* Java virtual machine does not exist yet */
     vm_args.version = JNI_VERSION_1_2;	//0x00010001;
     options[0].optionString = "-Djava.compiler=NONE";	/* disable JIT */
-    options[1].optionString = "-Djava.class.path=.";	// /usr/local/mdsplus/java/classes/jTraverser.jar";           
+    options[1].optionString = "-Djava.class.path=.";	// /usr/local/mdsplus/java/classes/jTraverser.jar";
     options[2].optionString = "-verbose:jni";	/* print JNI-related messages */
 
     vm_args.nOptions = 2;

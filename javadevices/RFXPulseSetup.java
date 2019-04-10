@@ -86,7 +86,7 @@ public class RFXPulseSetup extends DeviceSetup
     deviceChoice3.setOffsetNid(14);
     deviceChoice3.setLabelString("Output mode: ");
     deviceChoice3.setChoiceItems(new String[] {"HIGH PULSE", "LOW PULSE", "SINGLE TOGGLE: INITIAL HIGH", "SINGLE TOGGLE: INITIAL LOW", "DOUBLE TOGGLE: INITIAL HIGH",
-        "DOUBLE TOGGLE: INITIAL LOW"});
+	"DOUBLE TOGGLE: INITIAL LOW"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     deviceField4.setOffsetNid(6);

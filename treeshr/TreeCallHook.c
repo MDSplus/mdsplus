@@ -70,7 +70,7 @@ static int isEnabled(char *hookName) {
       (_strcasestr(hookName,"full") == NULL)) return 1;
   if ((_strcasestr(enabledHooks,"fullhooks") != NULL) &&
       (_strcasestr(hookName,"full") != NULL)) return 1;
-      
+
   char *p=enabledHooks;
   while (p) {
     p=_strcasestr(p,hookName);
@@ -135,8 +135,8 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
 				      (struct descriptor *)&tree_d,
 				      (struct descriptor *)&shot_key_d,
 				      (struct descriptor *)&shot_d,
-                                      (struct descriptor *)&nid_key_d,
-                                      (struct descriptor *)&nid_d};
+	                              (struct descriptor *)&nid_key_d,
+	                              (struct descriptor *)&nid_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 8);
     dict = (struct descriptor *)&hook_d;
   } else if (strcmp(hookType,"TreeNidDataHook")==0) {
@@ -158,8 +158,8 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
 				      (struct descriptor *)&tree_d,
 				      (struct descriptor *)&shot_key_d,
 				      (struct descriptor *)&shot_d,
-                                      (struct descriptor *)&nid_key_d,
-                                      (struct descriptor *)&nid_d,
+	                              (struct descriptor *)&nid_key_d,
+	                              (struct descriptor *)&nid_d,
 				      (struct descriptor *)&data_key_d,
 				      data_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 10);

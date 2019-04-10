@@ -39,7 +39,7 @@ class Tests(_UnitTest.TreeTests):
     def ArrayDimensionOrder(self):
         from MDSplus import Tree,Float32,Float32Array,Int16Array
         from numpy import zeros
-        
+
         with Tree(self.tree,self.shot+0,'NEW') as ptree:
             node = ptree.addNode('IMM')
             ptree.write()
@@ -253,7 +253,7 @@ class Tests(_UnitTest.TreeTests):
         sig = node.record
         self.assertEqual(sig.data().tolist(),[3.5,5.,6.5])
         self.assertEqual(sig.dim_of().data().tolist(),[37.5,52.5,67.5]) # 35,45,65
-        
+
         node.setExtendedAttribute("ResampleMode","MinMax")
         sig = node.record
         self.assertEqual(sig.data().tolist(),[3,4,5,5,6,7])

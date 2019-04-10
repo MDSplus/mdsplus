@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot',)},
         {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot',)},
-        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot',)},        
+        {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot',)},
         {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot',)},
         {'path':':DEF_DCIM','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':SEG_LENGTH','type':'numeric', 'value': 8000, 'options':('no_write_shot',)},
@@ -95,7 +95,7 @@ class ACQ435ST(MDSplus.Device):
     class Worker(threading.Thread):
         """An async worker should be a proper class
            This ensures that the methods remian in memory
-           It should at least take one argument: teh device node  
+           It should at least take one argument: teh device node
         """
         def __init__(self,dev):
             super(ACQ435ST.Worker,self).__init__(name=dev.path)
@@ -146,7 +146,7 @@ class ACQ435ST(MDSplus.Device):
 #  Read the coeffients and offsets
 #  for each channel
 #    store its' coeff and offset
-#       
+#
 #        for chan in range(32):
 #
         coeffs =  map(float, uut.s1.AI_CAL_ESLO.split(" ")[3:] )

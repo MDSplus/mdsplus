@@ -20,11 +20,11 @@
 
 		Type:   C include
 
-     		Author:	Thomas W. Fredian
+		Author:	Thomas W. Fredian
 
 		Date:   29-MAY-1990
 
-    		Purpose: Public declarations for WAVEDRAW widget
+		Purpose: Public declarations for WAVEDRAW widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

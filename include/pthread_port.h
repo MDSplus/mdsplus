@@ -202,10 +202,10 @@ static char* _getUserName(){
     {
       user_p = getlogin();
       if (user_p && strlen(user_p)>0){
-        strcpy(user,user_p);
-        user_p = user;
+	strcpy(user,user_p);
+	user_p = user;
       } else
-        user_p = "Linux User";
+	user_p = "Linux User";
     }
 #endif
 #endif

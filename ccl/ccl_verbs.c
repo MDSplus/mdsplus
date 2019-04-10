@@ -195,7 +195,7 @@ static int ParseQualifiers(void *ctx, char **error)
 static void append(char **target, char *string) {
   if (*target == NULL)
     *target = strdup(string);
-  else 
+  else
     *target = strcat(realloc(*target,strlen(*target)+strlen(string)+1),string);
 }
 

@@ -17,7 +17,7 @@ public class NI6259AISetup extends DeviceSetup {
 
     /** Creates new form NI6259AISetup */
     public NI6259AISetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -29,1083 +29,1083 @@ public class NI6259AISetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceChoice99 = new DeviceChoice();
-        deviceChoice1 = new DeviceChoice();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceChoice100 = new DeviceChoice();
-        deviceField8 = new DeviceField();
-        jPanel40 = new javax.swing.JPanel();
-        deviceChoice101 = new DeviceChoice();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField7 = new DeviceField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jPanel39 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        deviceChoice3 = new DeviceChoice();
-        deviceChoice4 = new DeviceChoice();
-        deviceChoice5 = new DeviceChoice();
-        jPanel8 = new javax.swing.JPanel();
-        deviceChoice6 = new DeviceChoice();
-        deviceChoice7 = new DeviceChoice();
-        deviceChoice8 = new DeviceChoice();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChoice9 = new DeviceChoice();
-        deviceChoice10 = new DeviceChoice();
-        deviceChoice11 = new DeviceChoice();
-        jPanel10 = new javax.swing.JPanel();
-        deviceChoice12 = new DeviceChoice();
-        deviceChoice13 = new DeviceChoice();
-        deviceChoice14 = new DeviceChoice();
-        jPanel11 = new javax.swing.JPanel();
-        deviceChoice15 = new DeviceChoice();
-        deviceChoice16 = new DeviceChoice();
-        deviceChoice17 = new DeviceChoice();
-        jPanel12 = new javax.swing.JPanel();
-        deviceChoice18 = new DeviceChoice();
-        deviceChoice19 = new DeviceChoice();
-        deviceChoice20 = new DeviceChoice();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChoice21 = new DeviceChoice();
-        deviceChoice22 = new DeviceChoice();
-        deviceChoice23 = new DeviceChoice();
-        jPanel14 = new javax.swing.JPanel();
-        deviceChoice24 = new DeviceChoice();
-        deviceChoice25 = new DeviceChoice();
-        deviceChoice26 = new DeviceChoice();
-        jPanel15 = new javax.swing.JPanel();
-        deviceChoice27 = new DeviceChoice();
-        deviceChoice28 = new DeviceChoice();
-        deviceChoice29 = new DeviceChoice();
-        jPanel16 = new javax.swing.JPanel();
-        deviceChoice30 = new DeviceChoice();
-        deviceChoice31 = new DeviceChoice();
-        deviceChoice32 = new DeviceChoice();
-        jPanel17 = new javax.swing.JPanel();
-        deviceChoice33 = new DeviceChoice();
-        deviceChoice34 = new DeviceChoice();
-        deviceChoice35 = new DeviceChoice();
-        jPanel18 = new javax.swing.JPanel();
-        deviceChoice36 = new DeviceChoice();
-        deviceChoice37 = new DeviceChoice();
-        deviceChoice38 = new DeviceChoice();
-        jPanel19 = new javax.swing.JPanel();
-        deviceChoice39 = new DeviceChoice();
-        deviceChoice40 = new DeviceChoice();
-        deviceChoice41 = new DeviceChoice();
-        jPanel20 = new javax.swing.JPanel();
-        deviceChoice42 = new DeviceChoice();
-        deviceChoice43 = new DeviceChoice();
-        deviceChoice44 = new DeviceChoice();
-        jPanel21 = new javax.swing.JPanel();
-        deviceChoice45 = new DeviceChoice();
-        deviceChoice46 = new DeviceChoice();
-        deviceChoice47 = new DeviceChoice();
-        jPanel22 = new javax.swing.JPanel();
-        deviceChoice48 = new DeviceChoice();
-        deviceChoice49 = new DeviceChoice();
-        deviceChoice50 = new DeviceChoice();
-        jPanel23 = new javax.swing.JPanel();
-        deviceChoice51 = new DeviceChoice();
-        deviceChoice52 = new DeviceChoice();
-        deviceChoice53 = new DeviceChoice();
-        jPanel24 = new javax.swing.JPanel();
-        deviceChoice54 = new DeviceChoice();
-        deviceChoice55 = new DeviceChoice();
-        deviceChoice56 = new DeviceChoice();
-        jPanel25 = new javax.swing.JPanel();
-        deviceChoice57 = new DeviceChoice();
-        deviceChoice58 = new DeviceChoice();
-        deviceChoice59 = new DeviceChoice();
-        jPanel26 = new javax.swing.JPanel();
-        deviceChoice60 = new DeviceChoice();
-        deviceChoice61 = new DeviceChoice();
-        deviceChoice62 = new DeviceChoice();
-        jPanel27 = new javax.swing.JPanel();
-        deviceChoice63 = new DeviceChoice();
-        deviceChoice64 = new DeviceChoice();
-        deviceChoice65 = new DeviceChoice();
-        jPanel28 = new javax.swing.JPanel();
-        deviceChoice66 = new DeviceChoice();
-        deviceChoice67 = new DeviceChoice();
-        deviceChoice68 = new DeviceChoice();
-        jPanel29 = new javax.swing.JPanel();
-        deviceChoice69 = new DeviceChoice();
-        deviceChoice70 = new DeviceChoice();
-        deviceChoice71 = new DeviceChoice();
-        jPanel30 = new javax.swing.JPanel();
-        deviceChoice72 = new DeviceChoice();
-        deviceChoice73 = new DeviceChoice();
-        deviceChoice74 = new DeviceChoice();
-        jPanel31 = new javax.swing.JPanel();
-        deviceChoice75 = new DeviceChoice();
-        deviceChoice76 = new DeviceChoice();
-        deviceChoice77 = new DeviceChoice();
-        jPanel32 = new javax.swing.JPanel();
-        deviceChoice78 = new DeviceChoice();
-        deviceChoice79 = new DeviceChoice();
-        deviceChoice80 = new DeviceChoice();
-        jPanel33 = new javax.swing.JPanel();
-        deviceChoice81 = new DeviceChoice();
-        deviceChoice82 = new DeviceChoice();
-        deviceChoice83 = new DeviceChoice();
-        jPanel34 = new javax.swing.JPanel();
-        deviceChoice84 = new DeviceChoice();
-        deviceChoice85 = new DeviceChoice();
-        deviceChoice86 = new DeviceChoice();
-        jPanel35 = new javax.swing.JPanel();
-        deviceChoice87 = new DeviceChoice();
-        deviceChoice88 = new DeviceChoice();
-        deviceChoice89 = new DeviceChoice();
-        jPanel36 = new javax.swing.JPanel();
-        deviceChoice90 = new DeviceChoice();
-        deviceChoice91 = new DeviceChoice();
-        deviceChoice92 = new DeviceChoice();
-        jPanel37 = new javax.swing.JPanel();
-        deviceChoice93 = new DeviceChoice();
-        deviceChoice94 = new DeviceChoice();
-        deviceChoice95 = new DeviceChoice();
-        jPanel38 = new javax.swing.JPanel();
-        deviceChoice96 = new DeviceChoice();
-        deviceChoice97 = new DeviceChoice();
-        deviceChoice98 = new DeviceChoice();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	deviceChoice99 = new DeviceChoice();
+	deviceChoice1 = new DeviceChoice();
+	deviceField3 = new DeviceField();
+	deviceField4 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	deviceChoice2 = new DeviceChoice();
+	deviceField5 = new DeviceField();
+	deviceField6 = new DeviceField();
+	jPanel6 = new javax.swing.JPanel();
+	deviceChoice100 = new DeviceChoice();
+	deviceField8 = new DeviceField();
+	jPanel40 = new javax.swing.JPanel();
+	deviceChoice101 = new DeviceChoice();
+	deviceField9 = new DeviceField();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField7 = new DeviceField();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jPanel39 = new javax.swing.JPanel();
+	jPanel7 = new javax.swing.JPanel();
+	deviceChoice3 = new DeviceChoice();
+	deviceChoice4 = new DeviceChoice();
+	deviceChoice5 = new DeviceChoice();
+	jPanel8 = new javax.swing.JPanel();
+	deviceChoice6 = new DeviceChoice();
+	deviceChoice7 = new DeviceChoice();
+	deviceChoice8 = new DeviceChoice();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChoice9 = new DeviceChoice();
+	deviceChoice10 = new DeviceChoice();
+	deviceChoice11 = new DeviceChoice();
+	jPanel10 = new javax.swing.JPanel();
+	deviceChoice12 = new DeviceChoice();
+	deviceChoice13 = new DeviceChoice();
+	deviceChoice14 = new DeviceChoice();
+	jPanel11 = new javax.swing.JPanel();
+	deviceChoice15 = new DeviceChoice();
+	deviceChoice16 = new DeviceChoice();
+	deviceChoice17 = new DeviceChoice();
+	jPanel12 = new javax.swing.JPanel();
+	deviceChoice18 = new DeviceChoice();
+	deviceChoice19 = new DeviceChoice();
+	deviceChoice20 = new DeviceChoice();
+	jPanel13 = new javax.swing.JPanel();
+	deviceChoice21 = new DeviceChoice();
+	deviceChoice22 = new DeviceChoice();
+	deviceChoice23 = new DeviceChoice();
+	jPanel14 = new javax.swing.JPanel();
+	deviceChoice24 = new DeviceChoice();
+	deviceChoice25 = new DeviceChoice();
+	deviceChoice26 = new DeviceChoice();
+	jPanel15 = new javax.swing.JPanel();
+	deviceChoice27 = new DeviceChoice();
+	deviceChoice28 = new DeviceChoice();
+	deviceChoice29 = new DeviceChoice();
+	jPanel16 = new javax.swing.JPanel();
+	deviceChoice30 = new DeviceChoice();
+	deviceChoice31 = new DeviceChoice();
+	deviceChoice32 = new DeviceChoice();
+	jPanel17 = new javax.swing.JPanel();
+	deviceChoice33 = new DeviceChoice();
+	deviceChoice34 = new DeviceChoice();
+	deviceChoice35 = new DeviceChoice();
+	jPanel18 = new javax.swing.JPanel();
+	deviceChoice36 = new DeviceChoice();
+	deviceChoice37 = new DeviceChoice();
+	deviceChoice38 = new DeviceChoice();
+	jPanel19 = new javax.swing.JPanel();
+	deviceChoice39 = new DeviceChoice();
+	deviceChoice40 = new DeviceChoice();
+	deviceChoice41 = new DeviceChoice();
+	jPanel20 = new javax.swing.JPanel();
+	deviceChoice42 = new DeviceChoice();
+	deviceChoice43 = new DeviceChoice();
+	deviceChoice44 = new DeviceChoice();
+	jPanel21 = new javax.swing.JPanel();
+	deviceChoice45 = new DeviceChoice();
+	deviceChoice46 = new DeviceChoice();
+	deviceChoice47 = new DeviceChoice();
+	jPanel22 = new javax.swing.JPanel();
+	deviceChoice48 = new DeviceChoice();
+	deviceChoice49 = new DeviceChoice();
+	deviceChoice50 = new DeviceChoice();
+	jPanel23 = new javax.swing.JPanel();
+	deviceChoice51 = new DeviceChoice();
+	deviceChoice52 = new DeviceChoice();
+	deviceChoice53 = new DeviceChoice();
+	jPanel24 = new javax.swing.JPanel();
+	deviceChoice54 = new DeviceChoice();
+	deviceChoice55 = new DeviceChoice();
+	deviceChoice56 = new DeviceChoice();
+	jPanel25 = new javax.swing.JPanel();
+	deviceChoice57 = new DeviceChoice();
+	deviceChoice58 = new DeviceChoice();
+	deviceChoice59 = new DeviceChoice();
+	jPanel26 = new javax.swing.JPanel();
+	deviceChoice60 = new DeviceChoice();
+	deviceChoice61 = new DeviceChoice();
+	deviceChoice62 = new DeviceChoice();
+	jPanel27 = new javax.swing.JPanel();
+	deviceChoice63 = new DeviceChoice();
+	deviceChoice64 = new DeviceChoice();
+	deviceChoice65 = new DeviceChoice();
+	jPanel28 = new javax.swing.JPanel();
+	deviceChoice66 = new DeviceChoice();
+	deviceChoice67 = new DeviceChoice();
+	deviceChoice68 = new DeviceChoice();
+	jPanel29 = new javax.swing.JPanel();
+	deviceChoice69 = new DeviceChoice();
+	deviceChoice70 = new DeviceChoice();
+	deviceChoice71 = new DeviceChoice();
+	jPanel30 = new javax.swing.JPanel();
+	deviceChoice72 = new DeviceChoice();
+	deviceChoice73 = new DeviceChoice();
+	deviceChoice74 = new DeviceChoice();
+	jPanel31 = new javax.swing.JPanel();
+	deviceChoice75 = new DeviceChoice();
+	deviceChoice76 = new DeviceChoice();
+	deviceChoice77 = new DeviceChoice();
+	jPanel32 = new javax.swing.JPanel();
+	deviceChoice78 = new DeviceChoice();
+	deviceChoice79 = new DeviceChoice();
+	deviceChoice80 = new DeviceChoice();
+	jPanel33 = new javax.swing.JPanel();
+	deviceChoice81 = new DeviceChoice();
+	deviceChoice82 = new DeviceChoice();
+	deviceChoice83 = new DeviceChoice();
+	jPanel34 = new javax.swing.JPanel();
+	deviceChoice84 = new DeviceChoice();
+	deviceChoice85 = new DeviceChoice();
+	deviceChoice86 = new DeviceChoice();
+	jPanel35 = new javax.swing.JPanel();
+	deviceChoice87 = new DeviceChoice();
+	deviceChoice88 = new DeviceChoice();
+	deviceChoice89 = new DeviceChoice();
+	jPanel36 = new javax.swing.JPanel();
+	deviceChoice90 = new DeviceChoice();
+	deviceChoice91 = new DeviceChoice();
+	deviceChoice92 = new DeviceChoice();
+	jPanel37 = new javax.swing.JPanel();
+	deviceChoice93 = new DeviceChoice();
+	deviceChoice94 = new DeviceChoice();
+	deviceChoice95 = new DeviceChoice();
+	jPanel38 = new javax.swing.JPanel();
+	deviceChoice96 = new DeviceChoice();
+	deviceChoice97 = new DeviceChoice();
+	deviceChoice98 = new DeviceChoice();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("National Instruments 6259 ADC");
-        setDeviceType("NI6259AI");
-        setHeight(600);
-        setWidth(860);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	setDeviceProvider("localhost");
+	setDeviceTitle("National Instruments 6259 ADC");
+	setDeviceType("NI6259AI");
+	setHeight(600);
+	setWidth(860);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(6, 1));
+	jPanel1.setLayout(new java.awt.GridLayout(6, 1));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Board Id: ");
-        deviceField1.setNumCols(4);
-        deviceField1.setOffsetNid(1);
-        jPanel2.add(deviceField1);
-        jPanel2.add(deviceDispatch1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Board Id: ");
+	deviceField1.setNumCols(4);
+	deviceField1.setOffsetNid(1);
+	jPanel2.add(deviceField1);
+	jPanel2.add(deviceDispatch1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Comment: ");
-        deviceField2.setNumCols(70);
-        deviceField2.setOffsetNid(2);
-        deviceField2.setTextOnly(true);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Comment: ");
+	deviceField2.setNumCols(70);
+	deviceField2.setOffsetNid(2);
+	deviceField2.setTextOnly(true);
+	jPanel3.add(deviceField2);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        deviceChoice99.setChoiceItems(new String[] {"TRANSIENT REC.", "CONTINUOUS"});
-        deviceChoice99.setLabelString("Acq. Mode");
-        deviceChoice99.setOffsetNid(174);
-        jPanel4.add(deviceChoice99);
+	deviceChoice99.setChoiceItems(new String[] {"TRANSIENT REC.", "CONTINUOUS"});
+	deviceChoice99.setLabelString("Acq. Mode");
+	deviceChoice99.setOffsetNid(174);
+	jPanel4.add(deviceChoice99);
 
-        deviceChoice1.setChoiceItems(new String[] {"RSE", "NRSE", "DIFFERENTIAL"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Input Mode: ");
-        deviceChoice1.setOffsetNid(3);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice1);
+	deviceChoice1.setChoiceItems(new String[] {"RSE", "NRSE", "DIFFERENTIAL"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Input Mode: ");
+	deviceChoice1.setOffsetNid(3);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel4.add(deviceChoice1);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Buf. Size(Bytes): ");
-        deviceField3.setNumCols(5);
-        deviceField3.setOffsetNid(6);
-        jPanel4.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Buf. Size(Bytes): ");
+	deviceField3.setNumCols(5);
+	deviceField3.setOffsetNid(6);
+	jPanel4.add(deviceField3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Segment Size(Bytes): ");
-        deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(7);
-        jPanel4.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Segment Size(Bytes): ");
+	deviceField4.setNumCols(5);
+	deviceField4.setOffsetNid(7);
+	jPanel4.add(deviceField4);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Clock Mode: ");
-        deviceChoice2.setOffsetNid(4);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice2);
+	deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Clock Mode: ");
+	deviceChoice2.setOffsetNid(4);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel5.add(deviceChoice2);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Frequency(Hz): ");
-        deviceField5.setNumCols(8);
-        deviceField5.setOffsetNid(5);
-        jPanel5.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Frequency(Hz): ");
+	deviceField5.setNumCols(8);
+	deviceField5.setOffsetNid(5);
+	jPanel5.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Ext. Clock: ");
-        deviceField6.setNumCols(30);
-        deviceField6.setOffsetNid(8);
-        jPanel5.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Ext. Clock: ");
+	deviceField6.setNumCols(30);
+	deviceField6.setOffsetNid(8);
+	jPanel5.add(deviceField6);
 
-        jPanel1.add(jPanel5);
+	jPanel1.add(jPanel5);
 
-        deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
-        deviceChoice100.setLabelString("Trig. Mode:");
-        deviceChoice100.setOffsetNid(175);
-        jPanel6.add(deviceChoice100);
+	deviceChoice100.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+	deviceChoice100.setLabelString("Trig. Mode:");
+	deviceChoice100.setOffsetNid(175);
+	jPanel6.add(deviceChoice100);
 
-        deviceField8.setLabelString("Trig. Source:");
-        deviceField8.setNumCols(50);
-        deviceField8.setOffsetNid(176);
-        jPanel6.add(deviceField8);
+	deviceField8.setLabelString("Trig. Source:");
+	deviceField8.setNumCols(50);
+	deviceField8.setOffsetNid(176);
+	jPanel6.add(deviceField8);
 
-        jPanel1.add(jPanel6);
+	jPanel1.add(jPanel6);
 
-        deviceChoice101.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice101.setLabelString("Use Time:");
-        deviceChoice101.setOffsetNid(177);
-        jPanel40.add(deviceChoice101);
+	deviceChoice101.setChoiceItems(new String[] {"YES", "NO"});
+	deviceChoice101.setLabelString("Use Time:");
+	deviceChoice101.setOffsetNid(177);
+	jPanel40.add(deviceChoice101);
 
-        deviceField9.setLabelString("Start Time (s):");
-        deviceField9.setNumCols(6);
-        deviceField9.setOffsetNid(178);
-        jPanel40.add(deviceField9);
+	deviceField9.setLabelString("Start Time (s):");
+	deviceField9.setNumCols(6);
+	deviceField9.setOffsetNid(178);
+	jPanel40.add(deviceField9);
 
-        deviceField10.setLabelString("End Time (s):");
-        deviceField10.setNumCols(6);
-        deviceField10.setOffsetNid(179);
-        jPanel40.add(deviceField10);
+	deviceField10.setLabelString("End Time (s):");
+	deviceField10.setNumCols(6);
+	deviceField10.setOffsetNid(179);
+	jPanel40.add(deviceField10);
 
-        deviceField11.setLabelString("Start Idx:");
-        deviceField11.setNumCols(6);
-        deviceField11.setOffsetNid(173);
-        jPanel40.add(deviceField11);
+	deviceField11.setLabelString("Start Idx:");
+	deviceField11.setNumCols(6);
+	deviceField11.setOffsetNid(173);
+	jPanel40.add(deviceField11);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("End Idx: ");
-        deviceField7.setOffsetNid(169);
-        deviceField7.setNumCols(6);
-        jPanel40.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("End Idx: ");
+	deviceField7.setOffsetNid(169);
+	deviceField7.setNumCols(6);
+	jPanel40.add(deviceField7);
 
-        jPanel1.add(jPanel40);
+	jPanel1.add(jPanel40);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        jPanel39.setLayout(new java.awt.GridLayout(16, 2));
+	jPanel39.setLayout(new java.awt.GridLayout(16, 2));
 
-        jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 1"));
+	jPanel7.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 1"));
 
-        deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("State: ");
-        deviceChoice3.setOffsetNid(10);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice3);
+	deviceChoice3.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("State: ");
+	deviceChoice3.setOffsetNid(10);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice3);
 /*
-        deviceChoice4.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Polarity: ");
-        deviceChoice4.setOffsetNid(11);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice4);
+	deviceChoice4.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString("Polarity: ");
+	deviceChoice4.setOffsetNid(11);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice4);
 */
-        deviceChoice5.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Range +/-: ");
-        deviceChoice5.setOffsetNid(12);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice5);
+	deviceChoice5.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("Range +/-: ");
+	deviceChoice5.setOffsetNid(12);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice5);
 
-        jPanel39.add(jPanel7);
+	jPanel39.add(jPanel7);
 
-        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 2"));
+	jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 2"));
 
-        deviceChoice6.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("State: ");
-        deviceChoice6.setOffsetNid(15);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice6);
+	deviceChoice6.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString("State: ");
+	deviceChoice6.setOffsetNid(15);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice6);
 /*
-        deviceChoice7.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Polarity: ");
-        deviceChoice7.setOffsetNid(16);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice7);
+	deviceChoice7.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice7.setIdentifier("");
+	deviceChoice7.setLabelString("Polarity: ");
+	deviceChoice7.setOffsetNid(16);
+	deviceChoice7.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice7);
 */
-        deviceChoice8.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Range +/- : ");
-        deviceChoice8.setOffsetNid(17);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice8);
+	deviceChoice8.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString("Range +/- : ");
+	deviceChoice8.setOffsetNid(17);
+	deviceChoice8.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice8);
 
-        jPanel39.add(jPanel8);
+	jPanel39.add(jPanel8);
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 3"));
+	jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 3"));
 
-        deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("State: ");
-        deviceChoice9.setOffsetNid(20);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice9);
+	deviceChoice9.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice9.setIdentifier("");
+	deviceChoice9.setLabelString("State: ");
+	deviceChoice9.setOffsetNid(20);
+	deviceChoice9.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice9);
 /*
-        deviceChoice10.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("Polarity: ");
-        deviceChoice10.setOffsetNid(21);
-        deviceChoice10.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice10);
+	deviceChoice10.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice10.setIdentifier("");
+	deviceChoice10.setLabelString("Polarity: ");
+	deviceChoice10.setOffsetNid(21);
+	deviceChoice10.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice10);
 */
-        deviceChoice11.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("Range +/- : ");
-        deviceChoice11.setOffsetNid(22);
-        deviceChoice11.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice11);
+	deviceChoice11.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice11.setIdentifier("");
+	deviceChoice11.setLabelString("Range +/- : ");
+	deviceChoice11.setOffsetNid(22);
+	deviceChoice11.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice11);
 
-        jPanel39.add(jPanel9);
+	jPanel39.add(jPanel9);
 
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 4"));
+	jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 4"));
 
-        deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("State: ");
-        deviceChoice12.setOffsetNid(25);
-        deviceChoice12.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice12);
+	deviceChoice12.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice12.setIdentifier("");
+	deviceChoice12.setLabelString("State: ");
+	deviceChoice12.setOffsetNid(25);
+	deviceChoice12.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice12);
 /*
-        deviceChoice13.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("Polarity: ");
-        deviceChoice13.setOffsetNid(26);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice13);
+	deviceChoice13.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice13.setIdentifier("");
+	deviceChoice13.setLabelString("Polarity: ");
+	deviceChoice13.setOffsetNid(26);
+	deviceChoice13.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice13);
 */
-        deviceChoice14.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("Range +/- : ");
-        deviceChoice14.setOffsetNid(27);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice14);
+	deviceChoice14.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice14.setIdentifier("");
+	deviceChoice14.setLabelString("Range +/- : ");
+	deviceChoice14.setOffsetNid(27);
+	deviceChoice14.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice14);
 
-        jPanel39.add(jPanel10);
+	jPanel39.add(jPanel10);
 
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 5"));
+	jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 5"));
 
-        deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("State: ");
-        deviceChoice15.setOffsetNid(30);
-        deviceChoice15.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice15);
+	deviceChoice15.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice15.setIdentifier("");
+	deviceChoice15.setLabelString("State: ");
+	deviceChoice15.setOffsetNid(30);
+	deviceChoice15.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice15);
 /*
-        deviceChoice16.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("Polarity: ");
-        deviceChoice16.setOffsetNid(31);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice16);
+	deviceChoice16.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice16.setIdentifier("");
+	deviceChoice16.setLabelString("Polarity: ");
+	deviceChoice16.setOffsetNid(31);
+	deviceChoice16.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice16);
 */
-        deviceChoice17.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Range +/- : ");
-        deviceChoice17.setOffsetNid(32);
-        deviceChoice17.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice17);
+	deviceChoice17.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice17.setIdentifier("");
+	deviceChoice17.setLabelString("Range +/- : ");
+	deviceChoice17.setOffsetNid(32);
+	deviceChoice17.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice17);
 
-        jPanel39.add(jPanel11);
+	jPanel39.add(jPanel11);
 
-        jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 6"));
+	jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 6"));
 
-        deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("State: ");
-        deviceChoice18.setOffsetNid(35);
-        deviceChoice18.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice18);
+	deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice18.setIdentifier("");
+	deviceChoice18.setLabelString("State: ");
+	deviceChoice18.setOffsetNid(35);
+	deviceChoice18.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice18);
 /*
-        deviceChoice19.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("Polarity: ");
-        deviceChoice19.setOffsetNid(36);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice19);
+	deviceChoice19.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice19.setIdentifier("");
+	deviceChoice19.setLabelString("Polarity: ");
+	deviceChoice19.setOffsetNid(36);
+	deviceChoice19.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice19);
 */
-        deviceChoice20.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("Range +/- : ");
-        deviceChoice20.setOffsetNid(37);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice20);
+	deviceChoice20.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice20.setIdentifier("");
+	deviceChoice20.setLabelString("Range +/- : ");
+	deviceChoice20.setOffsetNid(37);
+	deviceChoice20.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice20);
 
-        jPanel39.add(jPanel12);
+	jPanel39.add(jPanel12);
 
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 7"));
+	jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 7"));
 
-        deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("State: ");
-        deviceChoice21.setOffsetNid(40);
-        deviceChoice21.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice21);
+	deviceChoice21.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice21.setIdentifier("");
+	deviceChoice21.setLabelString("State: ");
+	deviceChoice21.setOffsetNid(40);
+	deviceChoice21.setUpdateIdentifier("");
+	jPanel13.add(deviceChoice21);
 /*
-        deviceChoice22.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("Polarity: ");
-        deviceChoice22.setOffsetNid(41);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice22);
+	deviceChoice22.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice22.setIdentifier("");
+	deviceChoice22.setLabelString("Polarity: ");
+	deviceChoice22.setOffsetNid(41);
+	deviceChoice22.setUpdateIdentifier("");
+	jPanel13.add(deviceChoice22);
 */
-        deviceChoice23.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("Range +/- : ");
-        deviceChoice23.setOffsetNid(42);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice23);
+	deviceChoice23.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice23.setIdentifier("");
+	deviceChoice23.setLabelString("Range +/- : ");
+	deviceChoice23.setOffsetNid(42);
+	deviceChoice23.setUpdateIdentifier("");
+	jPanel13.add(deviceChoice23);
 
-        jPanel39.add(jPanel13);
+	jPanel39.add(jPanel13);
 
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 8"));
+	jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 8"));
 
-        deviceChoice24.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString("State: ");
-        deviceChoice24.setOffsetNid(45);
-        deviceChoice24.setUpdateIdentifier("");
-        jPanel14.add(deviceChoice24);
+	deviceChoice24.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice24.setIdentifier("");
+	deviceChoice24.setLabelString("State: ");
+	deviceChoice24.setOffsetNid(45);
+	deviceChoice24.setUpdateIdentifier("");
+	jPanel14.add(deviceChoice24);
 /*
-        deviceChoice25.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString("Polarity: ");
-        deviceChoice25.setOffsetNid(46);
-        deviceChoice25.setUpdateIdentifier("");
-        jPanel14.add(deviceChoice25);
+	deviceChoice25.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice25.setIdentifier("");
+	deviceChoice25.setLabelString("Polarity: ");
+	deviceChoice25.setOffsetNid(46);
+	deviceChoice25.setUpdateIdentifier("");
+	jPanel14.add(deviceChoice25);
 */
-        deviceChoice26.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString("Range +/- : ");
-        deviceChoice26.setOffsetNid(47);
-        deviceChoice26.setUpdateIdentifier("");
-        jPanel14.add(deviceChoice26);
+	deviceChoice26.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice26.setIdentifier("");
+	deviceChoice26.setLabelString("Range +/- : ");
+	deviceChoice26.setOffsetNid(47);
+	deviceChoice26.setUpdateIdentifier("");
+	jPanel14.add(deviceChoice26);
 
-        jPanel39.add(jPanel14);
+	jPanel39.add(jPanel14);
 
-        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 9"));
+	jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 9"));
 
-        deviceChoice27.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice27.setIdentifier("");
-        deviceChoice27.setLabelString("State: ");
-        deviceChoice27.setOffsetNid(50);
-        deviceChoice27.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice27);
+	deviceChoice27.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice27.setIdentifier("");
+	deviceChoice27.setLabelString("State: ");
+	deviceChoice27.setOffsetNid(50);
+	deviceChoice27.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice27);
 /*
-        deviceChoice28.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice28.setIdentifier("");
-        deviceChoice28.setLabelString("Polarity: ");
-        deviceChoice28.setOffsetNid(51);
-        deviceChoice28.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice28);
+	deviceChoice28.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice28.setIdentifier("");
+	deviceChoice28.setLabelString("Polarity: ");
+	deviceChoice28.setOffsetNid(51);
+	deviceChoice28.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice28);
 */
-        deviceChoice29.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString("Range +/- : ");
-        deviceChoice29.setOffsetNid(52);
-        deviceChoice29.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice29);
+	deviceChoice29.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice29.setIdentifier("");
+	deviceChoice29.setLabelString("Range +/- : ");
+	deviceChoice29.setOffsetNid(52);
+	deviceChoice29.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice29);
 
-        jPanel39.add(jPanel15);
+	jPanel39.add(jPanel15);
 
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 10"));
+	jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 10"));
 
-        deviceChoice30.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice30.setIdentifier("");
-        deviceChoice30.setLabelString("State: ");
-        deviceChoice30.setOffsetNid(55);
-        deviceChoice30.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice30);
+	deviceChoice30.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice30.setIdentifier("");
+	deviceChoice30.setLabelString("State: ");
+	deviceChoice30.setOffsetNid(55);
+	deviceChoice30.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice30);
 /*
-        deviceChoice31.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice31.setIdentifier("");
-        deviceChoice31.setLabelString("Polarity: ");
-        deviceChoice31.setOffsetNid(56);
-        deviceChoice31.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice31);
+	deviceChoice31.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice31.setIdentifier("");
+	deviceChoice31.setLabelString("Polarity: ");
+	deviceChoice31.setOffsetNid(56);
+	deviceChoice31.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice31);
 */
-        deviceChoice32.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice32.setIdentifier("");
-        deviceChoice32.setLabelString("Range +/- : ");
-        deviceChoice32.setOffsetNid(57);
-        deviceChoice32.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice32);
+	deviceChoice32.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice32.setIdentifier("");
+	deviceChoice32.setLabelString("Range +/- : ");
+	deviceChoice32.setOffsetNid(57);
+	deviceChoice32.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice32);
 
-        jPanel39.add(jPanel16);
+	jPanel39.add(jPanel16);
 
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 11"));
+	jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 11"));
 
-        deviceChoice33.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice33.setIdentifier("");
-        deviceChoice33.setLabelString("State: ");
-        deviceChoice33.setOffsetNid(60);
-        deviceChoice33.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice33);
+	deviceChoice33.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice33.setIdentifier("");
+	deviceChoice33.setLabelString("State: ");
+	deviceChoice33.setOffsetNid(60);
+	deviceChoice33.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice33);
 /*
-        deviceChoice34.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice34.setIdentifier("");
-        deviceChoice34.setLabelString("Polarity: ");
-        deviceChoice34.setOffsetNid(61);
-        deviceChoice34.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice34);
+	deviceChoice34.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice34.setIdentifier("");
+	deviceChoice34.setLabelString("Polarity: ");
+	deviceChoice34.setOffsetNid(61);
+	deviceChoice34.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice34);
 */
-        deviceChoice35.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice35.setIdentifier("");
-        deviceChoice35.setLabelString("Range +/- : ");
-        deviceChoice35.setOffsetNid(62);
-        deviceChoice35.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice35);
+	deviceChoice35.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice35.setIdentifier("");
+	deviceChoice35.setLabelString("Range +/- : ");
+	deviceChoice35.setOffsetNid(62);
+	deviceChoice35.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice35);
 
-        jPanel39.add(jPanel17);
+	jPanel39.add(jPanel17);
 
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 12"));
+	jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 12"));
 
-        deviceChoice36.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice36.setIdentifier("");
-        deviceChoice36.setLabelString("State: ");
-        deviceChoice36.setOffsetNid(65);
-        deviceChoice36.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice36);
+	deviceChoice36.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice36.setIdentifier("");
+	deviceChoice36.setLabelString("State: ");
+	deviceChoice36.setOffsetNid(65);
+	deviceChoice36.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice36);
 /*
-        deviceChoice37.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice37.setIdentifier("");
-        deviceChoice37.setLabelString("Polarity: ");
-        deviceChoice37.setOffsetNid(66);
-        deviceChoice37.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice37);
+	deviceChoice37.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice37.setIdentifier("");
+	deviceChoice37.setLabelString("Polarity: ");
+	deviceChoice37.setOffsetNid(66);
+	deviceChoice37.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice37);
 */
-        deviceChoice38.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice38.setIdentifier("");
-        deviceChoice38.setLabelString("Range +/- : ");
-        deviceChoice38.setOffsetNid(67);
-        deviceChoice38.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice38);
+	deviceChoice38.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice38.setIdentifier("");
+	deviceChoice38.setLabelString("Range +/- : ");
+	deviceChoice38.setOffsetNid(67);
+	deviceChoice38.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice38);
 
-        jPanel39.add(jPanel18);
+	jPanel39.add(jPanel18);
 
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 13"));
+	jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 13"));
 
-        deviceChoice39.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice39.setIdentifier("");
-        deviceChoice39.setLabelString("State: ");
-        deviceChoice39.setOffsetNid(70);
-        deviceChoice39.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice39);
+	deviceChoice39.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice39.setIdentifier("");
+	deviceChoice39.setLabelString("State: ");
+	deviceChoice39.setOffsetNid(70);
+	deviceChoice39.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice39);
 /*
-        deviceChoice40.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice40.setIdentifier("");
-        deviceChoice40.setLabelString("Polarity: ");
-        deviceChoice40.setOffsetNid(71);
-        deviceChoice40.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice40);
+	deviceChoice40.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice40.setIdentifier("");
+	deviceChoice40.setLabelString("Polarity: ");
+	deviceChoice40.setOffsetNid(71);
+	deviceChoice40.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice40);
 */
-        deviceChoice41.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice41.setIdentifier("");
-        deviceChoice41.setLabelString("Range +/- : ");
-        deviceChoice41.setOffsetNid(72);
-        deviceChoice41.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice41);
+	deviceChoice41.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice41.setIdentifier("");
+	deviceChoice41.setLabelString("Range +/- : ");
+	deviceChoice41.setOffsetNid(72);
+	deviceChoice41.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice41);
 
-        jPanel39.add(jPanel19);
+	jPanel39.add(jPanel19);
 
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 14"));
+	jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 14"));
 
-        deviceChoice42.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice42.setIdentifier("");
-        deviceChoice42.setLabelString("State: ");
-        deviceChoice42.setOffsetNid(75);
-        deviceChoice42.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice42);
+	deviceChoice42.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice42.setIdentifier("");
+	deviceChoice42.setLabelString("State: ");
+	deviceChoice42.setOffsetNid(75);
+	deviceChoice42.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice42);
 /*
-        deviceChoice43.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice43.setIdentifier("");
-        deviceChoice43.setLabelString("Polarity: ");
-        deviceChoice43.setOffsetNid(76);
-        deviceChoice43.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice43);
+	deviceChoice43.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice43.setIdentifier("");
+	deviceChoice43.setLabelString("Polarity: ");
+	deviceChoice43.setOffsetNid(76);
+	deviceChoice43.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice43);
 */
-        deviceChoice44.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice44.setIdentifier("");
-        deviceChoice44.setLabelString("Range +/- : ");
-        deviceChoice44.setOffsetNid(77);
-        deviceChoice44.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice44);
+	deviceChoice44.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice44.setIdentifier("");
+	deviceChoice44.setLabelString("Range +/- : ");
+	deviceChoice44.setOffsetNid(77);
+	deviceChoice44.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice44);
 
-        jPanel39.add(jPanel20);
+	jPanel39.add(jPanel20);
 
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 15"));
+	jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 15"));
 
-        deviceChoice45.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice45.setIdentifier("");
-        deviceChoice45.setLabelString("State: ");
-        deviceChoice45.setOffsetNid(80);
-        deviceChoice45.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice45);
+	deviceChoice45.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice45.setIdentifier("");
+	deviceChoice45.setLabelString("State: ");
+	deviceChoice45.setOffsetNid(80);
+	deviceChoice45.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice45);
 /*
-        deviceChoice46.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice46.setIdentifier("");
-        deviceChoice46.setLabelString("Polarity: ");
-        deviceChoice46.setOffsetNid(81);
-        deviceChoice46.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice46);
+	deviceChoice46.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice46.setIdentifier("");
+	deviceChoice46.setLabelString("Polarity: ");
+	deviceChoice46.setOffsetNid(81);
+	deviceChoice46.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice46);
 */
-        deviceChoice47.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice47.setIdentifier("");
-        deviceChoice47.setLabelString("Range +/- : ");
-        deviceChoice47.setOffsetNid(82);
-        deviceChoice47.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice47);
+	deviceChoice47.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice47.setIdentifier("");
+	deviceChoice47.setLabelString("Range +/- : ");
+	deviceChoice47.setOffsetNid(82);
+	deviceChoice47.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice47);
 
-        jPanel39.add(jPanel21);
+	jPanel39.add(jPanel21);
 
-        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 16"));
+	jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 16"));
 
-        deviceChoice48.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice48.setIdentifier("");
-        deviceChoice48.setLabelString("State: ");
-        deviceChoice48.setOffsetNid(85);
-        deviceChoice48.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice48);
+	deviceChoice48.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice48.setIdentifier("");
+	deviceChoice48.setLabelString("State: ");
+	deviceChoice48.setOffsetNid(85);
+	deviceChoice48.setUpdateIdentifier("");
+	jPanel22.add(deviceChoice48);
 /*
-        deviceChoice49.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice49.setIdentifier("");
-        deviceChoice49.setLabelString("Polarity: ");
-        deviceChoice49.setOffsetNid(86);
-        deviceChoice49.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice49);
+	deviceChoice49.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice49.setIdentifier("");
+	deviceChoice49.setLabelString("Polarity: ");
+	deviceChoice49.setOffsetNid(86);
+	deviceChoice49.setUpdateIdentifier("");
+	jPanel22.add(deviceChoice49);
 */
-        deviceChoice50.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice50.setIdentifier("");
-        deviceChoice50.setLabelString("Range +/- : ");
-        deviceChoice50.setOffsetNid(87);
-        deviceChoice50.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice50);
+	deviceChoice50.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice50.setIdentifier("");
+	deviceChoice50.setLabelString("Range +/- : ");
+	deviceChoice50.setOffsetNid(87);
+	deviceChoice50.setUpdateIdentifier("");
+	jPanel22.add(deviceChoice50);
 
-        jPanel39.add(jPanel22);
+	jPanel39.add(jPanel22);
 
-        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 17"));
+	jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 17"));
 
-        deviceChoice51.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice51.setIdentifier("");
-        deviceChoice51.setLabelString("State: ");
-        deviceChoice51.setOffsetNid(90);
-        deviceChoice51.setUpdateIdentifier("");
-        jPanel23.add(deviceChoice51);
+	deviceChoice51.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice51.setIdentifier("");
+	deviceChoice51.setLabelString("State: ");
+	deviceChoice51.setOffsetNid(90);
+	deviceChoice51.setUpdateIdentifier("");
+	jPanel23.add(deviceChoice51);
 /*
-        deviceChoice52.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice52.setIdentifier("");
-        deviceChoice52.setLabelString("Polarity: ");
-        deviceChoice52.setOffsetNid(91);
-        deviceChoice52.setUpdateIdentifier("");
-        jPanel23.add(deviceChoice52);
+	deviceChoice52.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice52.setIdentifier("");
+	deviceChoice52.setLabelString("Polarity: ");
+	deviceChoice52.setOffsetNid(91);
+	deviceChoice52.setUpdateIdentifier("");
+	jPanel23.add(deviceChoice52);
 */
-        deviceChoice53.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice53.setIdentifier("");
-        deviceChoice53.setLabelString("Range +/- : ");
-        deviceChoice53.setOffsetNid(92);
-        deviceChoice53.setUpdateIdentifier("");
-        jPanel23.add(deviceChoice53);
+	deviceChoice53.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice53.setIdentifier("");
+	deviceChoice53.setLabelString("Range +/- : ");
+	deviceChoice53.setOffsetNid(92);
+	deviceChoice53.setUpdateIdentifier("");
+	jPanel23.add(deviceChoice53);
 
-        jPanel39.add(jPanel23);
+	jPanel39.add(jPanel23);
 
-        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 18"));
+	jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 18"));
 
-        deviceChoice54.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice54.setIdentifier("");
-        deviceChoice54.setLabelString("State: ");
-        deviceChoice54.setOffsetNid(95);
-        deviceChoice54.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice54);
+	deviceChoice54.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice54.setIdentifier("");
+	deviceChoice54.setLabelString("State: ");
+	deviceChoice54.setOffsetNid(95);
+	deviceChoice54.setUpdateIdentifier("");
+	jPanel24.add(deviceChoice54);
 /*
-        deviceChoice55.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice55.setIdentifier("");
-        deviceChoice55.setLabelString("Polarity: ");
-        deviceChoice55.setOffsetNid(96);
-        deviceChoice55.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice55);
+	deviceChoice55.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice55.setIdentifier("");
+	deviceChoice55.setLabelString("Polarity: ");
+	deviceChoice55.setOffsetNid(96);
+	deviceChoice55.setUpdateIdentifier("");
+	jPanel24.add(deviceChoice55);
 */
-        deviceChoice56.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice56.setIdentifier("");
-        deviceChoice56.setLabelString("Range +/- : ");
-        deviceChoice56.setOffsetNid(97);
-        deviceChoice56.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice56);
+	deviceChoice56.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice56.setIdentifier("");
+	deviceChoice56.setLabelString("Range +/- : ");
+	deviceChoice56.setOffsetNid(97);
+	deviceChoice56.setUpdateIdentifier("");
+	jPanel24.add(deviceChoice56);
 
-        jPanel39.add(jPanel24);
+	jPanel39.add(jPanel24);
 
-        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 19"));
+	jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 19"));
 
-        deviceChoice57.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice57.setIdentifier("");
-        deviceChoice57.setLabelString("State: ");
-        deviceChoice57.setOffsetNid(100);
-        deviceChoice57.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice57);
+	deviceChoice57.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice57.setIdentifier("");
+	deviceChoice57.setLabelString("State: ");
+	deviceChoice57.setOffsetNid(100);
+	deviceChoice57.setUpdateIdentifier("");
+	jPanel25.add(deviceChoice57);
 /*
-        deviceChoice58.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice58.setIdentifier("");
-        deviceChoice58.setLabelString("Polarity: ");
-        deviceChoice58.setOffsetNid(101);
-        deviceChoice58.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice58);
+	deviceChoice58.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice58.setIdentifier("");
+	deviceChoice58.setLabelString("Polarity: ");
+	deviceChoice58.setOffsetNid(101);
+	deviceChoice58.setUpdateIdentifier("");
+	jPanel25.add(deviceChoice58);
 */
-        deviceChoice59.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice59.setIdentifier("");
-        deviceChoice59.setLabelString("Range +/- : ");
-        deviceChoice59.setOffsetNid(102);
-        deviceChoice59.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice59);
+	deviceChoice59.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice59.setIdentifier("");
+	deviceChoice59.setLabelString("Range +/- : ");
+	deviceChoice59.setOffsetNid(102);
+	deviceChoice59.setUpdateIdentifier("");
+	jPanel25.add(deviceChoice59);
 
-        jPanel39.add(jPanel25);
+	jPanel39.add(jPanel25);
 
-        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 20"));
+	jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 20"));
 
-        deviceChoice60.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice60.setIdentifier("");
-        deviceChoice60.setLabelString("State: ");
-        deviceChoice60.setOffsetNid(105);
-        deviceChoice60.setUpdateIdentifier("");
-        jPanel26.add(deviceChoice60);
+	deviceChoice60.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice60.setIdentifier("");
+	deviceChoice60.setLabelString("State: ");
+	deviceChoice60.setOffsetNid(105);
+	deviceChoice60.setUpdateIdentifier("");
+	jPanel26.add(deviceChoice60);
 /*
-        deviceChoice61.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice61.setIdentifier("");
-        deviceChoice61.setLabelString("Polarity: ");
-        deviceChoice61.setOffsetNid(106);
-        deviceChoice61.setUpdateIdentifier("");
-        jPanel26.add(deviceChoice61);
+	deviceChoice61.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice61.setIdentifier("");
+	deviceChoice61.setLabelString("Polarity: ");
+	deviceChoice61.setOffsetNid(106);
+	deviceChoice61.setUpdateIdentifier("");
+	jPanel26.add(deviceChoice61);
 */
-        deviceChoice62.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice62.setIdentifier("");
-        deviceChoice62.setLabelString("Range +/- : ");
-        deviceChoice62.setOffsetNid(107);
-        deviceChoice62.setUpdateIdentifier("");
-        jPanel26.add(deviceChoice62);
+	deviceChoice62.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice62.setIdentifier("");
+	deviceChoice62.setLabelString("Range +/- : ");
+	deviceChoice62.setOffsetNid(107);
+	deviceChoice62.setUpdateIdentifier("");
+	jPanel26.add(deviceChoice62);
 
-        jPanel39.add(jPanel26);
+	jPanel39.add(jPanel26);
 
-        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 21"));
+	jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 21"));
 
-        deviceChoice63.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice63.setIdentifier("");
-        deviceChoice63.setLabelString("State: ");
-        deviceChoice63.setOffsetNid(110);
-        deviceChoice63.setUpdateIdentifier("");
-        jPanel27.add(deviceChoice63);
+	deviceChoice63.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice63.setIdentifier("");
+	deviceChoice63.setLabelString("State: ");
+	deviceChoice63.setOffsetNid(110);
+	deviceChoice63.setUpdateIdentifier("");
+	jPanel27.add(deviceChoice63);
 /*
-        deviceChoice64.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice64.setIdentifier("");
-        deviceChoice64.setLabelString("Polarity: ");
-        deviceChoice64.setOffsetNid(111);
-        deviceChoice64.setUpdateIdentifier("");
-        jPanel27.add(deviceChoice64);
+	deviceChoice64.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice64.setIdentifier("");
+	deviceChoice64.setLabelString("Polarity: ");
+	deviceChoice64.setOffsetNid(111);
+	deviceChoice64.setUpdateIdentifier("");
+	jPanel27.add(deviceChoice64);
 */
-        deviceChoice65.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice65.setIdentifier("");
-        deviceChoice65.setLabelString("Range +/- : ");
-        deviceChoice65.setOffsetNid(112);
-        deviceChoice65.setUpdateIdentifier("");
-        jPanel27.add(deviceChoice65);
+	deviceChoice65.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice65.setIdentifier("");
+	deviceChoice65.setLabelString("Range +/- : ");
+	deviceChoice65.setOffsetNid(112);
+	deviceChoice65.setUpdateIdentifier("");
+	jPanel27.add(deviceChoice65);
 
-        jPanel39.add(jPanel27);
+	jPanel39.add(jPanel27);
 
-        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 22"));
+	jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 22"));
 
-        deviceChoice66.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice66.setIdentifier("");
-        deviceChoice66.setLabelString("State: ");
-        deviceChoice66.setOffsetNid(115);
-        deviceChoice66.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice66);
+	deviceChoice66.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice66.setIdentifier("");
+	deviceChoice66.setLabelString("State: ");
+	deviceChoice66.setOffsetNid(115);
+	deviceChoice66.setUpdateIdentifier("");
+	jPanel28.add(deviceChoice66);
 /*
-        deviceChoice67.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice67.setIdentifier("");
-        deviceChoice67.setLabelString("Polarity: ");
-        deviceChoice67.setOffsetNid(116);
-        deviceChoice67.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice67);
+	deviceChoice67.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice67.setIdentifier("");
+	deviceChoice67.setLabelString("Polarity: ");
+	deviceChoice67.setOffsetNid(116);
+	deviceChoice67.setUpdateIdentifier("");
+	jPanel28.add(deviceChoice67);
 */
-        deviceChoice68.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice68.setIdentifier("");
-        deviceChoice68.setLabelString("Range +/- : ");
-        deviceChoice68.setOffsetNid(117);
-        deviceChoice68.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice68);
+	deviceChoice68.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice68.setIdentifier("");
+	deviceChoice68.setLabelString("Range +/- : ");
+	deviceChoice68.setOffsetNid(117);
+	deviceChoice68.setUpdateIdentifier("");
+	jPanel28.add(deviceChoice68);
 
-        jPanel39.add(jPanel28);
+	jPanel39.add(jPanel28);
 
-        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 23"));
+	jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 23"));
 
-        deviceChoice69.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice69.setIdentifier("");
-        deviceChoice69.setLabelString("State: ");
-        deviceChoice69.setOffsetNid(120);
-        deviceChoice69.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice69);
+	deviceChoice69.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice69.setIdentifier("");
+	deviceChoice69.setLabelString("State: ");
+	deviceChoice69.setOffsetNid(120);
+	deviceChoice69.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice69);
 /*
-        deviceChoice70.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice70.setIdentifier("");
-        deviceChoice70.setLabelString("Polarity: ");
-        deviceChoice70.setOffsetNid(121);
-        deviceChoice70.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice70);
+	deviceChoice70.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice70.setIdentifier("");
+	deviceChoice70.setLabelString("Polarity: ");
+	deviceChoice70.setOffsetNid(121);
+	deviceChoice70.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice70);
 */
-        deviceChoice71.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice71.setIdentifier("");
-        deviceChoice71.setLabelString("Range +/- : ");
-        deviceChoice71.setOffsetNid(122);
-        deviceChoice71.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice71);
+	deviceChoice71.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice71.setIdentifier("");
+	deviceChoice71.setLabelString("Range +/- : ");
+	deviceChoice71.setOffsetNid(122);
+	deviceChoice71.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice71);
 
-        jPanel39.add(jPanel29);
+	jPanel39.add(jPanel29);
 
-        jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 24"));
+	jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 24"));
 
-        deviceChoice72.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice72.setIdentifier("");
-        deviceChoice72.setLabelString("State: ");
-        deviceChoice72.setOffsetNid(125);
-        deviceChoice72.setUpdateIdentifier("");
-        jPanel30.add(deviceChoice72);
+	deviceChoice72.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice72.setIdentifier("");
+	deviceChoice72.setLabelString("State: ");
+	deviceChoice72.setOffsetNid(125);
+	deviceChoice72.setUpdateIdentifier("");
+	jPanel30.add(deviceChoice72);
 /*
-        deviceChoice73.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice73.setIdentifier("");
-        deviceChoice73.setLabelString("Polarity: ");
-        deviceChoice73.setOffsetNid(126);
-        deviceChoice73.setUpdateIdentifier("");
-        jPanel30.add(deviceChoice73);
+	deviceChoice73.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice73.setIdentifier("");
+	deviceChoice73.setLabelString("Polarity: ");
+	deviceChoice73.setOffsetNid(126);
+	deviceChoice73.setUpdateIdentifier("");
+	jPanel30.add(deviceChoice73);
 */
-        deviceChoice74.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice74.setIdentifier("");
-        deviceChoice74.setLabelString("Range +/- : ");
-        deviceChoice74.setOffsetNid(127);
-        deviceChoice74.setUpdateIdentifier("");
-        jPanel30.add(deviceChoice74);
+	deviceChoice74.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice74.setIdentifier("");
+	deviceChoice74.setLabelString("Range +/- : ");
+	deviceChoice74.setOffsetNid(127);
+	deviceChoice74.setUpdateIdentifier("");
+	jPanel30.add(deviceChoice74);
 
-        jPanel39.add(jPanel30);
+	jPanel39.add(jPanel30);
 
-        jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 25"));
+	jPanel31.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 25"));
 
-        deviceChoice75.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice75.setIdentifier("");
-        deviceChoice75.setLabelString("State: ");
-        deviceChoice75.setOffsetNid(130);
-        deviceChoice75.setUpdateIdentifier("");
-        jPanel31.add(deviceChoice75);
+	deviceChoice75.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice75.setIdentifier("");
+	deviceChoice75.setLabelString("State: ");
+	deviceChoice75.setOffsetNid(130);
+	deviceChoice75.setUpdateIdentifier("");
+	jPanel31.add(deviceChoice75);
 /*
-        deviceChoice76.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice76.setIdentifier("");
-        deviceChoice76.setLabelString("Polarity: ");
-        deviceChoice76.setOffsetNid(131);
-        deviceChoice76.setUpdateIdentifier("");
-        jPanel31.add(deviceChoice76);
+	deviceChoice76.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice76.setIdentifier("");
+	deviceChoice76.setLabelString("Polarity: ");
+	deviceChoice76.setOffsetNid(131);
+	deviceChoice76.setUpdateIdentifier("");
+	jPanel31.add(deviceChoice76);
 */
-        deviceChoice77.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice77.setIdentifier("");
-        deviceChoice77.setLabelString("Range +/- : ");
-        deviceChoice77.setOffsetNid(132);
-        deviceChoice77.setUpdateIdentifier("");
-        jPanel31.add(deviceChoice77);
+	deviceChoice77.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice77.setIdentifier("");
+	deviceChoice77.setLabelString("Range +/- : ");
+	deviceChoice77.setOffsetNid(132);
+	deviceChoice77.setUpdateIdentifier("");
+	jPanel31.add(deviceChoice77);
 
-        jPanel39.add(jPanel31);
+	jPanel39.add(jPanel31);
 
-        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 26"));
+	jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 26"));
 
-        deviceChoice78.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice78.setIdentifier("");
-        deviceChoice78.setLabelString("State: ");
-        deviceChoice78.setOffsetNid(135);
-        deviceChoice78.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice78);
+	deviceChoice78.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice78.setIdentifier("");
+	deviceChoice78.setLabelString("State: ");
+	deviceChoice78.setOffsetNid(135);
+	deviceChoice78.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice78);
 /*
-        deviceChoice79.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice79.setIdentifier("");
-        deviceChoice79.setLabelString("Polarity: ");
-        deviceChoice79.setOffsetNid(136);
-        deviceChoice79.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice79);
+	deviceChoice79.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice79.setIdentifier("");
+	deviceChoice79.setLabelString("Polarity: ");
+	deviceChoice79.setOffsetNid(136);
+	deviceChoice79.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice79);
 */
-        deviceChoice80.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice80.setIdentifier("");
-        deviceChoice80.setLabelString("Range +/- : ");
-        deviceChoice80.setOffsetNid(137);
-        deviceChoice80.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice80);
+	deviceChoice80.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice80.setIdentifier("");
+	deviceChoice80.setLabelString("Range +/- : ");
+	deviceChoice80.setOffsetNid(137);
+	deviceChoice80.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice80);
 
-        jPanel39.add(jPanel32);
+	jPanel39.add(jPanel32);
 
-        jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 27"));
+	jPanel33.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 27"));
 
-        deviceChoice81.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice81.setIdentifier("");
-        deviceChoice81.setLabelString("State: ");
-        deviceChoice81.setOffsetNid(140);
-        deviceChoice81.setUpdateIdentifier("");
-        jPanel33.add(deviceChoice81);
+	deviceChoice81.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice81.setIdentifier("");
+	deviceChoice81.setLabelString("State: ");
+	deviceChoice81.setOffsetNid(140);
+	deviceChoice81.setUpdateIdentifier("");
+	jPanel33.add(deviceChoice81);
 /*
-        deviceChoice82.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice82.setIdentifier("");
-        deviceChoice82.setLabelString("Polarity: ");
-        deviceChoice82.setOffsetNid(141);
-        deviceChoice82.setUpdateIdentifier("");
-        jPanel33.add(deviceChoice82);
+	deviceChoice82.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice82.setIdentifier("");
+	deviceChoice82.setLabelString("Polarity: ");
+	deviceChoice82.setOffsetNid(141);
+	deviceChoice82.setUpdateIdentifier("");
+	jPanel33.add(deviceChoice82);
 */
-        deviceChoice83.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice83.setIdentifier("");
-        deviceChoice83.setLabelString("Range +/- : ");
-        deviceChoice83.setOffsetNid(142);
-        deviceChoice83.setUpdateIdentifier("");
-        jPanel33.add(deviceChoice83);
+	deviceChoice83.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice83.setIdentifier("");
+	deviceChoice83.setLabelString("Range +/- : ");
+	deviceChoice83.setOffsetNid(142);
+	deviceChoice83.setUpdateIdentifier("");
+	jPanel33.add(deviceChoice83);
 
-        jPanel39.add(jPanel33);
+	jPanel39.add(jPanel33);
 
-        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 28"));
+	jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 28"));
 
-        deviceChoice84.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice84.setIdentifier("");
-        deviceChoice84.setLabelString("State: ");
-        deviceChoice84.setOffsetNid(145);
-        deviceChoice84.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice84);
+	deviceChoice84.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice84.setIdentifier("");
+	deviceChoice84.setLabelString("State: ");
+	deviceChoice84.setOffsetNid(145);
+	deviceChoice84.setUpdateIdentifier("");
+	jPanel34.add(deviceChoice84);
 /*
-        deviceChoice85.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice85.setIdentifier("");
-        deviceChoice85.setLabelString("Polarity: ");
-        deviceChoice85.setOffsetNid(146);
-        deviceChoice85.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice85);
+	deviceChoice85.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice85.setIdentifier("");
+	deviceChoice85.setLabelString("Polarity: ");
+	deviceChoice85.setOffsetNid(146);
+	deviceChoice85.setUpdateIdentifier("");
+	jPanel34.add(deviceChoice85);
 */
-        deviceChoice86.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice86.setIdentifier("");
-        deviceChoice86.setLabelString("Range +/- : ");
-        deviceChoice86.setOffsetNid(147);
-        deviceChoice86.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice86);
+	deviceChoice86.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice86.setIdentifier("");
+	deviceChoice86.setLabelString("Range +/- : ");
+	deviceChoice86.setOffsetNid(147);
+	deviceChoice86.setUpdateIdentifier("");
+	jPanel34.add(deviceChoice86);
 
-        jPanel39.add(jPanel34);
+	jPanel39.add(jPanel34);
 
-        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 29"));
+	jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 29"));
 
-        deviceChoice87.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice87.setIdentifier("");
-        deviceChoice87.setLabelString("State: ");
-        deviceChoice87.setOffsetNid(150);
-        deviceChoice87.setUpdateIdentifier("");
-        jPanel35.add(deviceChoice87);
+	deviceChoice87.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice87.setIdentifier("");
+	deviceChoice87.setLabelString("State: ");
+	deviceChoice87.setOffsetNid(150);
+	deviceChoice87.setUpdateIdentifier("");
+	jPanel35.add(deviceChoice87);
 /*
-        deviceChoice88.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice88.setIdentifier("");
-        deviceChoice88.setLabelString("Polarity: ");
-        deviceChoice88.setOffsetNid(151);
-        deviceChoice88.setUpdateIdentifier("");
-        jPanel35.add(deviceChoice88);
+	deviceChoice88.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice88.setIdentifier("");
+	deviceChoice88.setLabelString("Polarity: ");
+	deviceChoice88.setOffsetNid(151);
+	deviceChoice88.setUpdateIdentifier("");
+	jPanel35.add(deviceChoice88);
 */
-        deviceChoice89.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice89.setIdentifier("");
-        deviceChoice89.setLabelString("Range +/- : ");
-        deviceChoice89.setOffsetNid(152);
-        deviceChoice89.setUpdateIdentifier("");
-        jPanel35.add(deviceChoice89);
+	deviceChoice89.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice89.setIdentifier("");
+	deviceChoice89.setLabelString("Range +/- : ");
+	deviceChoice89.setOffsetNid(152);
+	deviceChoice89.setUpdateIdentifier("");
+	jPanel35.add(deviceChoice89);
 
-        jPanel39.add(jPanel35);
+	jPanel39.add(jPanel35);
 
-        jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 30"));
+	jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 30"));
 
-        deviceChoice90.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice90.setIdentifier("");
-        deviceChoice90.setLabelString("State: ");
-        deviceChoice90.setOffsetNid(155);
-        deviceChoice90.setUpdateIdentifier("");
-        jPanel36.add(deviceChoice90);
+	deviceChoice90.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice90.setIdentifier("");
+	deviceChoice90.setLabelString("State: ");
+	deviceChoice90.setOffsetNid(155);
+	deviceChoice90.setUpdateIdentifier("");
+	jPanel36.add(deviceChoice90);
 /*
-        deviceChoice91.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice91.setIdentifier("");
-        deviceChoice91.setLabelString("Polarity: ");
-        deviceChoice91.setOffsetNid(156);
-        deviceChoice91.setUpdateIdentifier("");
-        jPanel36.add(deviceChoice91);
+	deviceChoice91.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice91.setIdentifier("");
+	deviceChoice91.setLabelString("Polarity: ");
+	deviceChoice91.setOffsetNid(156);
+	deviceChoice91.setUpdateIdentifier("");
+	jPanel36.add(deviceChoice91);
 */
-        deviceChoice92.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice92.setIdentifier("");
-        deviceChoice92.setLabelString("Range +/- : ");
-        deviceChoice92.setOffsetNid(157);
-        deviceChoice92.setUpdateIdentifier("");
-        jPanel36.add(deviceChoice92);
+	deviceChoice92.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice92.setIdentifier("");
+	deviceChoice92.setLabelString("Range +/- : ");
+	deviceChoice92.setOffsetNid(157);
+	deviceChoice92.setUpdateIdentifier("");
+	jPanel36.add(deviceChoice92);
 
-        jPanel39.add(jPanel36);
+	jPanel39.add(jPanel36);
 
-        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 31"));
+	jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 31"));
 
-        deviceChoice93.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice93.setIdentifier("");
-        deviceChoice93.setLabelString("State: ");
-        deviceChoice93.setOffsetNid(160);
-        deviceChoice93.setUpdateIdentifier("");
-        jPanel37.add(deviceChoice93);
+	deviceChoice93.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice93.setIdentifier("");
+	deviceChoice93.setLabelString("State: ");
+	deviceChoice93.setOffsetNid(160);
+	deviceChoice93.setUpdateIdentifier("");
+	jPanel37.add(deviceChoice93);
 /*
-        deviceChoice94.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice94.setIdentifier("");
-        deviceChoice94.setLabelString("Polarity: ");
-        deviceChoice94.setOffsetNid(161);
-        deviceChoice94.setUpdateIdentifier("");
-        jPanel37.add(deviceChoice94);
+	deviceChoice94.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice94.setIdentifier("");
+	deviceChoice94.setLabelString("Polarity: ");
+	deviceChoice94.setOffsetNid(161);
+	deviceChoice94.setUpdateIdentifier("");
+	jPanel37.add(deviceChoice94);
 */
-        deviceChoice95.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice95.setIdentifier("");
-        deviceChoice95.setLabelString("Range +/- : ");
-        deviceChoice95.setOffsetNid(162);
-        deviceChoice95.setUpdateIdentifier("");
-        jPanel37.add(deviceChoice95);
+	deviceChoice95.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice95.setIdentifier("");
+	deviceChoice95.setLabelString("Range +/- : ");
+	deviceChoice95.setOffsetNid(162);
+	deviceChoice95.setUpdateIdentifier("");
+	jPanel37.add(deviceChoice95);
 
-        jPanel39.add(jPanel37);
+	jPanel39.add(jPanel37);
 
-        jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 32"));
+	jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("Channel 32"));
 
-        deviceChoice96.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
-        deviceChoice96.setIdentifier("");
-        deviceChoice96.setLabelString("State: ");
-        deviceChoice96.setOffsetNid(165);
-        deviceChoice96.setUpdateIdentifier("");
-        jPanel38.add(deviceChoice96);
+	deviceChoice96.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+	deviceChoice96.setIdentifier("");
+	deviceChoice96.setLabelString("State: ");
+	deviceChoice96.setOffsetNid(165);
+	deviceChoice96.setUpdateIdentifier("");
+	jPanel38.add(deviceChoice96);
 /*
-        deviceChoice97.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
-        deviceChoice97.setIdentifier("");
-        deviceChoice97.setLabelString("Polarity: ");
-        deviceChoice97.setOffsetNid(166);
-        deviceChoice97.setUpdateIdentifier("");
-        jPanel38.add(deviceChoice97);
+	deviceChoice97.setChoiceItems(new String[] {"UNIPOLAR", "BIPOLAR"});
+	deviceChoice97.setIdentifier("");
+	deviceChoice97.setLabelString("Polarity: ");
+	deviceChoice97.setOffsetNid(166);
+	deviceChoice97.setUpdateIdentifier("");
+	jPanel38.add(deviceChoice97);
 */
-        deviceChoice98.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
-        deviceChoice98.setIdentifier("");
-        deviceChoice98.setLabelString("Range +/- : ");
-        deviceChoice98.setOffsetNid(167);
-        deviceChoice98.setUpdateIdentifier("");
-        jPanel38.add(deviceChoice98);
+	deviceChoice98.setChoiceItems(new String[] {"10V", "5V", "2V", "1V", "500mV", "200mV", "100mV"});
+	deviceChoice98.setIdentifier("");
+	deviceChoice98.setLabelString("Range +/- : ");
+	deviceChoice98.setOffsetNid(167);
+	deviceChoice98.setUpdateIdentifier("");
+	jPanel38.add(deviceChoice98);
 
-        jPanel39.add(jPanel38);
+	jPanel39.add(jPanel38);
 
-        jScrollPane1.setViewportView(jPanel39);
+	jScrollPane1.setViewportView(jPanel39);
 
-        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

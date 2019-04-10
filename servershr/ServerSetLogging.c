@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Set logging of server
+		Purpose: Set logging of server
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
    Set logging on server:
 

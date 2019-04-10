@@ -66,7 +66,7 @@ EXPORT int MdsIpGetDescriptor(int id, const char* expression, int nargs, struct 
       status = MdsSerializeDscOut(arglist_in[i-2],&xd);
       arr = (struct descriptor_a*)xd.pointer;
       if STATUS_OK
-        status = SendArg(id, i, arr->dtype, nargs, arr->length, 1, (int*)&arr->arsize, arr->pointer);
+	status = SendArg(id, i, arr->dtype, nargs, arr->length, 1, (int*)&arr->arsize, arr->pointer);
     }
     MdsFree1Dx(&xd,NULL);
   }
@@ -100,12 +100,12 @@ EXPORT int _MdsValue(int id, int nargs, struct descrip** arglist, struct descrip
     ans_arg->length = len;
     if (numbytes) {
       if (ans_arg->dtype == DTYPE_CSTRING) {
-        ans_arg->ptr = malloc(numbytes + 1);
-        ((char *)ans_arg->ptr)[numbytes] = 0;
+	ans_arg->ptr = malloc(numbytes + 1);
+	((char *)ans_arg->ptr)[numbytes] = 0;
       } else if (numbytes > 0)
-        ans_arg->ptr = malloc(numbytes);
+	ans_arg->ptr = malloc(numbytes);
       if (numbytes > 0)
-        memcpy(ans_arg->ptr, dptr, numbytes);
+	memcpy(ans_arg->ptr, dptr, numbytes);
     } else
       ans_arg->ptr = NULL;
     free(mem);

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,7 +31,7 @@ import acq
 class ACQ216(acq.Acq):
     """
     D-Tacq ACQ216  16 channel transient recorder
-    
+
     device support for d-tacq acq216 http://www.d-tacq.com/acq216cpci.shtml
     """
     from copy import copy
@@ -45,11 +45,11 @@ class ACQ216(acq.Acq):
         parts.append({'path':':INPUT_%2.2d:VIN'%(i+1,),'type':'NUMERIC', 'value':10, 'options':('no_write_shot')})
     del i
     parts.extend(acq.Acq.action_parts)
-    for part in parts:                
+    for part in parts:
         if part['path'] == ':ACTIVE_CHAN' :
-            part['value']=16                 
+            part['value']=16
     del part
-    
+
     def initftp(self, auto_store=None):
         """
         Initialize the device
@@ -136,7 +136,7 @@ class ACQ216(acq.Acq):
 		elif (vin == 10) :
 		    vin_str = "10"
 		else :
-		    vin_str = "10"		
+		    vin_str = "10"
                 fd.write("set.vin %d %s\n" % (chan+1, vin_str))
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
@@ -148,14 +148,14 @@ class ACQ216(acq.Acq):
                     clock_out_num = int(clock_out_num_str)
                     setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
 #    force the routing for this clock output
-#    regardless of the settings for this line 
+#    regardless of the settings for this line
 #    above
 		    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
                     if self.debugging():
                         print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                     fd.write(setDIOcmd)
-		    fd.write(setRoutecmd)         
+		    fd.write(setRoutecmd)
             else:
                 if (clock_out != None) :
                     clock_out_num_str = clock_out[-1]
@@ -168,7 +168,7 @@ class ACQ216(acq.Acq):
 #
 # set the channel mask twice as per Peter Milne
 #
-            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")            
+            fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if self.debugging():
                 print "routes all set now move on to pre-post\n"
                 print "pre trig = %d\n" % (pre_trig,)
@@ -192,17 +192,17 @@ class ACQ216(acq.Acq):
             try:
                 fd.close()
             except:
-                pass 
+                pass
 
             raise
 
         fd.close()
-       
+
         print "Time for board to init = %g\n" % (time.time()-start)
         return  1
 
     INITFTP=initftp
-        
+
     def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
             print "Begining store\n"

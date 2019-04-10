@@ -17,7 +17,7 @@ public class LASER_YAGSetup extends DeviceSetup {
 
     /** Creates new form LASER_SSSetup */
     public LASER_YAGSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -29,110 +29,110 @@ public class LASER_YAGSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel5 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceField5 = new DeviceField();
-        deviceField9 = new DeviceField();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        jLabel1 = new javax.swing.JLabel();
-        deviceField6 = new DeviceField();
-        jLabel3 = new javax.swing.JLabel();
-        deviceField2 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        jLabel2 = new javax.swing.JLabel();
-        deviceField8 = new DeviceField();
-        jLabel4 = new javax.swing.JLabel();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel5 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceField5 = new DeviceField();
+	deviceField9 = new DeviceField();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField4 = new DeviceField();
+	jLabel1 = new javax.swing.JLabel();
+	deviceField6 = new DeviceField();
+	jLabel3 = new javax.swing.JLabel();
+	deviceField2 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField7 = new DeviceField();
+	jLabel2 = new javax.swing.JLabel();
+	deviceField8 = new DeviceField();
+	jLabel4 = new javax.swing.JLabel();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Solid State Laser");
-        setDeviceType("LASER_YAG");
-        setHeight(550);
-        setWidth(700);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Solid State Laser");
+	setDeviceType("LASER_YAG");
+	setHeight(550);
+	setWidth(700);
 
-        deviceButtons1.setMethods(new String[] {"INIT", "ARM"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	deviceButtons1.setMethods(new String[] {"INIT", "ARM"});
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
+	jPanel1.setLayout(new java.awt.GridLayout(4, 1));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment:");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel2.add(deviceField1);
-        jPanel2.add(deviceDispatch1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment:");
+	deviceField1.setNumCols(20);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel2.add(deviceField1);
+	jPanel2.add(deviceDispatch1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("sw mode:");
-        deviceChoice1.setOffsetNid(2);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice1);
+	deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("sw mode:");
+	deviceChoice1.setOffsetNid(2);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel5.add(deviceChoice1);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("ip_address:");
-        deviceField5.setOffsetNid(3);
-        jPanel5.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("ip_address:");
+	deviceField5.setOffsetNid(3);
+	jPanel5.add(deviceField5);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Port:");
-        deviceField9.setOffsetNid(10);
-        deviceField9.setTextOnly(true);
-        jPanel5.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Port:");
+	deviceField9.setOffsetNid(10);
+	deviceField9.setTextOnly(true);
+	jPanel5.add(deviceField9);
 
-        jPanel1.add(jPanel5);
+	jPanel1.add(jPanel5);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("energy:");
-        deviceField4.setOffsetNid(4);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("energy:");
+	deviceField4.setOffsetNid(4);
+	jPanel3.add(deviceField4);
 
-        jLabel1.setText("J");
-        jPanel3.add(jLabel1);
+	jLabel1.setText("J");
+	jPanel3.add(jLabel1);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("repetition rate:");
-        deviceField6.setOffsetNid(5);
-        jPanel3.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("repetition rate:");
+	deviceField6.setOffsetNid(5);
+	jPanel3.add(deviceField6);
 
-        jLabel3.setText("Hz");
-        jPanel3.add(jLabel3);
+	jLabel3.setText("Hz");
+	jPanel3.add(jLabel3);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("nr pulses:");
-        deviceField2.setOffsetNid(6);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("nr pulses:");
+	deviceField2.setOffsetNid(6);
+	jPanel3.add(deviceField2);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("delay diode:");
-        deviceField7.setOffsetNid(8);
-        jPanel4.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("delay diode:");
+	deviceField7.setOffsetNid(8);
+	jPanel4.add(deviceField7);
 
-        jLabel2.setText("us");
-        jPanel4.add(jLabel2);
+	jLabel2.setText("us");
+	jPanel4.add(jLabel2);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("delay lamp:");
-        deviceField8.setOffsetNid(7);
-        jPanel4.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("delay lamp:");
+	deviceField8.setOffsetNid(7);
+	jPanel4.add(deviceField8);
 
-        jLabel4.setText("us");
-        jPanel4.add(jLabel4);
+	jLabel4.setText("us");
+	jPanel4.add(jLabel4);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

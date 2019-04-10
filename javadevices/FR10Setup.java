@@ -937,10 +937,10 @@ public class FR10Setup
     jPanel31.add(jPanel30, null);
     jPanel31.add(jPanel34, null);
 
-        jPanel32.add(jPanel35, null);
-            jPanel32.add(jPanel36, null);
-                jPanel33.add(jPanel37, null);
-                    jPanel33.add(jPanel38, null);
+	jPanel32.add(jPanel35, null);
+	    jPanel32.add(jPanel36, null);
+	        jPanel33.add(jPanel37, null);
+	            jPanel33.add(jPanel38, null);
 
     jPanel39.add(jPanel31, null);
     jPanel39.add(jPanel32, null);

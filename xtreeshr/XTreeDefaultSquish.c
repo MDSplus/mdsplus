@@ -70,9 +70,9 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes, i
       minNumShapes = maxNumShapes = numShapes[i];
     else  {
       if (numShapes[i] < minNumShapes)
-        minNumShapes = numShapes[i];
+	minNumShapes = numShapes[i];
       if (numShapes[i] > maxNumShapes)
-        maxNumShapes = numShapes[i];
+	maxNumShapes = numShapes[i];
     }
   }
 
@@ -84,8 +84,8 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes, i
     // Check Shapes: the first maxNumShapes - 1 dimensions must fit
     for (i = 1; i < numSignals; i++)
       for (j = 0; j < maxNumShapes - 1; j++)
-        if (shapes[i][j] != shapes[0][j])
-          status = InvalidShapeInSegments;
+	if (shapes[i][j] != shapes[0][j])
+	  status = InvalidShapeInSegments;
 
   if STATUS_OK {
     // Shapes Ok, build definitive shapes array for this signal;
@@ -94,9 +94,9 @@ static inline int checkShapes(struct descriptor_a *signalsApd, int *totShapes, i
     int lastDimension = 0;
     for (i = 0; i < numSignals; i++) {
       if (numShapes[i] == maxNumShapes)
-        lastDimension += shapes[i][numShapes[i] - 1];
+	lastDimension += shapes[i][numShapes[i] - 1];
       else
-        lastDimension++;
+	lastDimension++;
     }
     *totShapes = maxNumShapes;
     outShape[*totShapes - 1] = lastDimension;
@@ -151,8 +151,8 @@ static inline int checkRanges(struct descriptor_a *signalsApd){
       || currRangeD->begin   ->dtype != firstRangeD->begin   ->dtype
       || currRangeD->ending  ->dtype != firstRangeD->ending  ->dtype
       ||(currRangeD->ndesc==3 // check delta if given
-         && ( !currRangeD->deltaval || currRangeD->deltaval->class != CLASS_S
-            || currRangeD->deltaval->dtype != firstRangeD->deltaval->dtype )))
+	 && ( !currRangeD->deltaval || currRangeD->deltaval->class != CLASS_S
+	    || currRangeD->deltaval->dtype != firstRangeD->deltaval->dtype )))
       return B_FALSE;
   }
   return B_TRUE;
@@ -215,11 +215,11 @@ static inline int mergeArrays(struct descriptor_a *signalsApd, struct descriptor
       extern int TdiData();
       status = TdiData(currSignalD->dimensions[0], &(*dimensionsXd)[i] MDS_END_ARG);
       if STATUS_NOT_OK
-        break;
+	break;
       arraysD[i] = arrayD = (struct descriptor_a *)(*dimensionsXd)[i].pointer;
       if (!arrayD || arrayD->class != CLASS_A) {//Every first dimension must be evaluated to an array
-        status = InvalidDimensionInSegments;
-        break;
+	status = InvalidDimensionInSegments;
+	break;
       }
     }
     totSize += arrayD->arsize;

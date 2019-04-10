@@ -17,7 +17,7 @@ public class FAKECAMERASetup extends DeviceSetup {
 
     /** Creates new form FAKECAMERASetup */
     public FAKECAMERASetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -29,129 +29,129 @@ public class FAKECAMERASetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField16 = new DeviceField();
-        deviceField17 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField14 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        deviceChoice6 = new DeviceChoice();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChoice5 = new DeviceChoice();
-        deviceField18 = new DeviceField();
-        jPanel20 = new javax.swing.JPanel();
-        deviceChoice8 = new DeviceChoice();
-        deviceField19 = new DeviceField();
-        deviceField20 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel8 = new javax.swing.JPanel();
+	deviceField16 = new DeviceField();
+	deviceField17 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceField14 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField4 = new DeviceField();
+	deviceChoice6 = new DeviceChoice();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChoice5 = new DeviceChoice();
+	deviceField18 = new DeviceField();
+	jPanel20 = new javax.swing.JPanel();
+	deviceChoice8 = new DeviceChoice();
+	deviceField19 = new DeviceField();
+	deviceField20 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Fake Camera Device");
-        setDeviceType("FAKECAMERA");
-        setHeight(600);
-        setWidth(700);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Fake Camera Device");
+	setDeviceType("FAKECAMERA");
+	setHeight(600);
+	setWidth(700);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(5, 0));
+	jPanel1.setLayout(new java.awt.GridLayout(5, 0));
 
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Name: ");
-        deviceField16.setOffsetNid(1);
-        deviceField16.setTextOnly(true);
-        jPanel8.add(deviceField16);
+	deviceField16.setIdentifier("");
+	deviceField16.setLabelString("Name: ");
+	deviceField16.setOffsetNid(1);
+	deviceField16.setTextOnly(true);
+	jPanel8.add(deviceField16);
 
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("Comment:");
-        deviceField17.setNumCols(15);
-        deviceField17.setOffsetNid(2);
-        jPanel8.add(deviceField17);
-        jPanel8.add(deviceDispatch1);
+	deviceField17.setIdentifier("");
+	deviceField17.setLabelString("Comment:");
+	deviceField17.setNumCols(15);
+	deviceField17.setOffsetNid(2);
+	jPanel8.add(deviceField17);
+	jPanel8.add(deviceDispatch1);
 
-        jPanel1.add(jPanel8);
+	jPanel1.add(jPanel8);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Frames Source"));
+	jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Frames Source"));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Experiment: ");
-        deviceField1.setNumCols(20);
-        deviceField1.setOffsetNid(3);
-        jPanel2.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Experiment: ");
+	deviceField1.setNumCols(20);
+	deviceField1.setOffsetNid(3);
+	jPanel2.add(deviceField1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Shot: ");
-        deviceField2.setNumCols(5);
-        deviceField2.setOffsetNid(4);
-        jPanel2.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Shot: ");
+	deviceField2.setNumCols(5);
+	deviceField2.setOffsetNid(4);
+	jPanel2.add(deviceField2);
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Frame Node Path:");
-        deviceField14.setNumCols(30);
-        deviceField14.setOffsetNid(5);
-        jPanel2.add(deviceField14);
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("Frame Node Path:");
+	deviceField14.setNumCols(30);
+	deviceField14.setOffsetNid(5);
+	jPanel2.add(deviceField14);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
+	jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Settings"));
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Reading Frame Rate [Hz]:");
-        deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(6);
-        jPanel4.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Reading Frame Rate [Hz]:");
+	deviceField4.setNumCols(4);
+	deviceField4.setOffsetNid(6);
+	jPanel4.add(deviceField4);
 
-        deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Infinite Loop:");
-        deviceChoice6.setOffsetNid(7);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel4.add(deviceChoice6);
+	deviceChoice6.setChoiceItems(new String[] {"YES", "NO"});
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString("Infinite Loop:");
+	deviceChoice6.setOffsetNid(7);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel4.add(deviceChoice6);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
+	jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("Data Storage and Streaming"));
 
-        deviceChoice5.setChoiceItems(new String[] {"Stream and Store", "Only Stream", "Only Store"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Enable:");
-        deviceChoice5.setOffsetNid(8);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice5);
+	deviceChoice5.setChoiceItems(new String[] {"Stream and Store", "Only Stream", "Only Store"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("Enable:");
+	deviceChoice5.setOffsetNid(8);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice5);
 
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Localhost Port:");
-        deviceField18.setNumCols(4);
-        deviceField18.setOffsetNid(9);
-        jPanel9.add(deviceField18);
+	deviceField18.setIdentifier("");
+	deviceField18.setLabelString("Localhost Port:");
+	deviceField18.setNumCols(4);
+	deviceField18.setOffsetNid(9);
+	jPanel9.add(deviceField18);
 
-        jPanel1.add(jPanel9);
+	jPanel1.add(jPanel9);
 
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Dynamic Range for Streaming"));
+	jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Dynamic Range for Streaming"));
 
-        deviceChoice8.setChoiceItems(new String[] {"YES", "NO"});
-        deviceChoice8.setLabelString("Auto Adjustment:");
-        deviceChoice8.setOffsetNid(10);
-        jPanel20.add(deviceChoice8);
+	deviceChoice8.setChoiceItems(new String[] {"YES", "NO"});
+	deviceChoice8.setLabelString("Auto Adjustment:");
+	deviceChoice8.setOffsetNid(10);
+	jPanel20.add(deviceChoice8);
 
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Manual Low Limit:");
-        deviceField19.setNumCols(4);
-        deviceField19.setOffsetNid(11);
-        jPanel20.add(deviceField19);
+	deviceField19.setIdentifier("");
+	deviceField19.setLabelString("Manual Low Limit:");
+	deviceField19.setNumCols(4);
+	deviceField19.setOffsetNid(11);
+	jPanel20.add(deviceField19);
 
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("Manual High Limit:");
-        deviceField20.setNumCols(4);
-        deviceField20.setOffsetNid(12);
-        jPanel20.add(deviceField20);
+	deviceField20.setIdentifier("");
+	deviceField20.setLabelString("Manual High Limit:");
+	deviceField20.setNumCols(4);
+	deviceField20.setOffsetNid(12);
+	jPanel20.add(deviceField20);
 
-        jPanel1.add(jPanel20);
+	jPanel1.add(jPanel20);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

@@ -28,7 +28,7 @@ public class ProcedureEditor extends JPanel implements Editor
 	jp.add(procedure_edit);
 	jp.add(language_edit);
 	add(jp, "North");
-   	arg_edit = new ArgEditor(this.procedure.getArguments());
+	arg_edit = new ArgEditor(this.procedure.getArguments());
 	add(arg_edit, "Center");
 	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
 	    this.procedure.getTimeout(), false));
@@ -46,7 +46,7 @@ public class ProcedureEditor extends JPanel implements Editor
     public Data getData()
     {
 	return new ProcedureData(timeout_edit.getData(), language_edit.getData(),
-                             procedure_edit.getData(),arg_edit.getData());
+	                     procedure_edit.getData(),arg_edit.getData());
     }
 
     public void setData(Data data)
@@ -61,7 +61,7 @@ public class ProcedureEditor extends JPanel implements Editor
 
     public void setEditable(boolean editable)
     {
-        if(procedure_edit != null) procedure_edit.setEditable(editable);
+	if(procedure_edit != null) procedure_edit.setEditable(editable);
 	if(language_edit != null) language_edit.setEditable(editable);
 	if(timeout_edit != null) timeout_edit.setEditable(editable);
 	if(arg_edit != null) arg_edit.setEditable(editable);

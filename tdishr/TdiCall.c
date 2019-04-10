@@ -23,23 +23,23 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiCall.C
-        Call a routine in an image.
-        A CALL has pointers to
-        0       descriptor of image logical name (default SYS$SHARE:.EXE)
-        1       descriptor of routine name.
-        2...    descriptors of (ndesc-2) arguments.
-        You must check number of arguments.
-        Limit is 255 arguments.
-                result = image->entry(in1, ...)
+	Call a routine in an image.
+	A CALL has pointers to
+	0       descriptor of image logical name (default SYS$SHARE:.EXE)
+	1       descriptor of routine name.
+	2...    descriptors of (ndesc-2) arguments.
+	You must check number of arguments.
+	Limit is 255 arguments.
+	        result = image->entry(in1, ...)
 
-        Or the result type may be given.
-                result = image->entry:type(in1, ...)
-        where type is F for floating, B for byte, etc.,
-        or DSC for a descriptor of any kind supported.
-        A pointer to XD and D descriptor will free that descriptor.
-        The type is given by the value at the record pointer.
+	Or the result type may be given.
+	        result = image->entry:type(in1, ...)
+	where type is F for floating, B for byte, etc.,
+	or DSC for a descriptor of any kind supported.
+	A pointer to XD and D descriptor will free that descriptor.
+	The type is given by the value at the record pointer.
 
-        Ken Klare, LANL P-4     (c)1990,1992
+	Ken Klare, LANL P-4     (c)1990,1992
 */
 #include <string.h>
 #include <stdlib.h>
@@ -204,8 +204,8 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
 	goto fort;
     }
 		/********************************************
-                Default is DESCR for text and REF for others.
-                ********************************************/
+	        Default is DESCR for text and REF for others.
+	        ********************************************/
     else {
  fort:tmp[ntmp] = EMPTY_XD;
       if (list[j])

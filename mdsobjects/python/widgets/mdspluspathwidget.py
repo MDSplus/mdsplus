@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ class MDSplusPathWidget(props,MDSplusWidget,Label):
 
     __gtype_name__ = 'MDSplusPathWidget'
     __gproperties__=props.__gproperties__
-    
+
     def reset(self):
         if guibuilder:
             if self.useFullPath:
@@ -62,7 +62,7 @@ class MDSplusPathWidget(props,MDSplusWidget,Label):
         Label.__init__(self)
         self.useFullPath=False
 
-gobject.type_register(MDSplusPathWidget) 
+gobject.type_register(MDSplusPathWidget)
 
 if guibuilder:
     class MDSplusPathWidgetAdaptor(glade.get_adaptor_for_type('GtkLabel')):

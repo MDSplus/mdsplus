@@ -29,22 +29,22 @@ void log_test_end(SRunner * sr, TestResult * tr);
 void log_test_start(SRunner * sr, TCase * tc, TF * tfun);
 
 void stdout_lfun(SRunner * sr, FILE * file, enum print_output,
-                 void *obj, enum cl_event evt);
+	         void *obj, enum cl_event evt);
 
 void lfile_lfun(SRunner * sr, FILE * file, enum print_output,
-                void *obj, enum cl_event evt);
+	        void *obj, enum cl_event evt);
 
 void xml_lfun(SRunner * sr, FILE * file, enum print_output,
-              void *obj, enum cl_event evt);
+	      void *obj, enum cl_event evt);
 
 void tap_lfun(SRunner * sr, FILE * file, enum print_output,
-              void *obj, enum cl_event evt);
+	      void *obj, enum cl_event evt);
 
 void subunit_lfun(SRunner * sr, FILE * file, enum print_output,
-                  void *obj, enum cl_event evt);
+	          void *obj, enum cl_event evt);
 
 void srunner_register_lfun(SRunner * sr, FILE * lfile, int close,
-                           LFun lfun, enum print_output);
+	                   LFun lfun, enum print_output);
 
 FILE *srunner_open_lfile(SRunner * sr);
 FILE *srunner_open_xmlfile(SRunner * sr);

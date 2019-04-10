@@ -91,8 +91,8 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const leng
   else
     new_arsize = (in_dsc->arsize / in_dsc->length) * (*length_ptr);
   dsc_size = (l_length_t)(sizeof(mdsdsc_a_t)
-           + ((in_dsc->aflags.coeff || (new_arsize == 0)) ? sizeof(void*) + sizeof(int) * in_dsc->dimct : 0)
-           + ( in_dsc->aflags.bounds                      ? sizeof(int) * (size_t)(in_dsc->dimct * 2)   : 0));
+	   + ((in_dsc->aflags.coeff || (new_arsize == 0)) ? sizeof(void*) + sizeof(int) * in_dsc->dimct : 0)
+	   + ( in_dsc->aflags.bounds                      ? sizeof(int) * (size_t)(in_dsc->dimct * 2)   : 0));
   align_size = (*dtype_ptr == DTYPE_T) ? 1 : *length_ptr;
   dsc_size = align(dsc_size, align_size);
   new_size = dsc_size + new_arsize;
@@ -106,13 +106,13 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const leng
     out_dsc->arsize = new_arsize;
     if (out_dsc->aflags.coeff || (new_arsize==0 && in_dsc->pointer)) {
       if (!in_dsc->aflags.coeff) {//new_arsize==0; in_dsc->a0 invalid
-        out_dsc->aflags.coeff = 1;
-        out_dsc->a0 = out_dsc->pointer;
+	out_dsc->aflags.coeff = 1;
+	out_dsc->a0 = out_dsc->pointer;
       } else {
-        int64_t offset;
-        if (out_dsc->class == CLASS_CA)
+	int64_t offset;
+	if (out_dsc->class == CLASS_CA)
 	  offset = ((int64_t) out_dsc->length) * ((int64_t)(intptr_t)in_dsc->a0  / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
-        else
+	else
 	  offset = ((int64_t) out_dsc->length) * ((in_dsc->a0 - in_dsc->pointer) / ((int64_t)(in_dsc->length > 0 ? in_dsc->length : 1)));
 	out_dsc->a0 = out_dsc->pointer + offset;
       }

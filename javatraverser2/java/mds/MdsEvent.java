@@ -32,29 +32,29 @@ public class MdsEvent extends AWTEvent{
     public final int        total_size;
 
     public MdsEvent(final Object source){
-        super(source, MdsEvent.IDLE);
-        this.info = null;
-        this.current_size = this.total_size = 0;
+	super(source, MdsEvent.IDLE);
+	this.info = null;
+	this.current_size = this.total_size = 0;
     }
 
     public MdsEvent(final Object source, final int total_size, final int current_size){
-        this(source, null, total_size, current_size);
+	this(source, null, total_size, current_size);
     }
 
     public MdsEvent(final Object source, final int event_id, final String info){
-        super(source, event_id);
-        this.info = info;
-        this.current_size = this.total_size = 0;
+	super(source, event_id);
+	this.info = info;
+	this.current_size = this.total_size = 0;
     }
 
     public MdsEvent(final Object source, final String info, final int total_size, final int current_size){
-        super(source, MdsEvent.TRANSFER);
-        this.total_size = total_size;
-        this.current_size = current_size;
-        this.info = info;
+	super(source, MdsEvent.TRANSFER);
+	this.total_size = total_size;
+	this.current_size = current_size;
+	this.info = info;
     }
 
     public String getInfo() {
-        return this.info;
+	return this.info;
     }
 }

@@ -60,8 +60,8 @@ static char * _new_unique_event_name(const char *prefix, ...) {
 static int astCount = 0;
 void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused)) ) {
     printf("received event in thread %ld, name=%s\n",
-           syscall(__NR_gettid),
-           (char *)arg);
+	   syscall(__NR_gettid),
+	   (char *)arg);
     astCount++;
     pthread_exit(0);
 }
@@ -176,9 +176,9 @@ void test_pushEvent() {
     printf("pushEvent test\n");
     int i;
     for(i=0; i<10; ++i)
-        pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
+	pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
     for(i=0; i<10; ++i)
-        pthread_join(list[i].thread,0);
+	pthread_join(list[i].thread,0);
     END_TESTING
 }
 
@@ -194,9 +194,9 @@ void test_popEvent() {
     printf("popEvent test\n");
     int i;
     for(i=0; i<10; ++i)
-        pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
+	pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
     for(i=0; i<10; ++i)
-        pthread_join(list[i].thread,0);
+	pthread_join(list[i].thread,0);
     END_TESTING
 }
 
@@ -213,7 +213,7 @@ static void * _thread_action(void *arg) {
     status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
     status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
     while(1) {
-        // do nothing .. //
+	// do nothing .. //
     }
     return NULL;
 }
@@ -222,12 +222,12 @@ void test_pthread_cancel_Suppresstion() {
     pthread_t thread[10];
     int i;
     for(i=0; i<10; ++i) {
-        pthread_create(&thread[i],NULL,_thread_action,NULL);
-        pthread_detach(thread[i]);
+	pthread_create(&thread[i],NULL,_thread_action,NULL);
+	pthread_detach(thread[i]);
     }
     usleep(10000);
     for(i=0; i<10; ++i) {
-        while( pthread_cancel(thread[i]) != 0 );
+	while( pthread_cancel(thread[i]) != 0 );
     }
 }
 

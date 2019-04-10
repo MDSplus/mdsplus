@@ -3,7 +3,7 @@
 public class ApdData extends Data
 {
     Data[] descs;
-    
+
     public static Data getData(Data descs[]) {return new ApdData(descs); }
     public boolean isAtomic() {return false; }
     public ApdData()
@@ -12,7 +12,7 @@ public class ApdData extends Data
     }
     public ApdData(Data descs[])
     {
-        dclass = CLASS_APD;
+	dclass = CLASS_APD;
 	this.descs = descs;
     }
 }

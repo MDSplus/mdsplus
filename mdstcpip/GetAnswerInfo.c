@@ -88,17 +88,17 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
       dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : (*m)->h.dims[i / 2] >> 32;
 #else
       if (m->h.dims[i])
-        dims[i] = m->h.dims[i];
+	dims[i] = m->h.dims[i];
       else {
-        if (datalen>*numbytes && datalen%*numbytes) {
-          dims[i] = datalen/ *numbytes;
-          m->h.ndims = i+1;
-        } else if (datalen==*numbytes && m->h.ndims == i+1) {
-          dims[i] = 1;
-        } else {
-          m->h.ndims = i;
-          break; // dont mult numbytes
-        }
+	if (datalen>*numbytes && datalen%*numbytes) {
+	  dims[i] = datalen/ *numbytes;
+	  m->h.ndims = i+1;
+	} else if (datalen==*numbytes && m->h.ndims == i+1) {
+	  dims[i] = 1;
+	} else {
+	  m->h.ndims = i;
+	  break; // dont mult numbytes
+	}
       }
 #endif
       *numbytes *= dims[i];

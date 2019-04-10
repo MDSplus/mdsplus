@@ -23,21 +23,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Array.C
-        Generic routine to create shaped and molded scalar or array.
-                ARRAY   ([size], [mold])
-                RAMP    ([size], [mold])
-                RANDOM  ([size], [mold])
-                ZERO    ([size], [mold])
-        Size is missing for a scalar.
-        Size is scalar for simple array.
-        Size is vector for array with multipliers.
-        Type and length given by mold, if present, otherwise defaulted.
-        Unlikely example, ARRAY([COMPLEX(2,11),[3,4,5],6.7],1d0)
-        returns an array of doubles of dimensions [2,3,4,5,6].
+	Generic routine to create shaped and molded scalar or array.
+	        ARRAY   ([size], [mold])
+	        RAMP    ([size], [mold])
+	        RANDOM  ([size], [mold])
+	        ZERO    ([size], [mold])
+	Size is missing for a scalar.
+	Size is scalar for simple array.
+	Size is vector for array with multipliers.
+	Type and length given by mold, if present, otherwise defaulted.
+	Unlikely example, ARRAY([COMPLEX(2,11),[3,4,5],6.7],1d0)
+	returns an array of doubles of dimensions [2,3,4,5,6].
 
-        Limitation: number of dimensions must not exceed MAX_DIMS.
-        Limitation: product of dimensions must not exceed virtual-memory paging space.
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Limitation: number of dimensions must not exceed MAX_DIMS.
+	Limitation: product of dimensions must not exceed virtual-memory paging space.
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
@@ -76,8 +76,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
   int j, ndim = 0;
 
 	/****************************************
-        Get dimensions given and make into longs.
-        ****************************************/
+	Get dimensions given and make into longs.
+	****************************************/
   if (narg <= 0 || list[0] == 0)
     arr.class = CLASS_S;
   else {
@@ -99,8 +99,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
   }
 
 	/*****************************
-        Data type from opcode or mold.
-        *****************************/
+	Data type from opcode or mold.
+	*****************************/
   if (narg <= 1 || list[1] == 0) {
     dtype = fun_ptr->o1;
     length = TdiREF_CAT[dtype].length;
@@ -125,8 +125,8 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
   MdsFree1Dx(&tmp, NULL);
 
 	/*****************************
-        Size is product of dimensions.
-        *****************************/
+	Size is product of dimensions.
+	*****************************/
   if STATUS_OK {
     if (arr.class == CLASS_A) {
       for (arr.arsize = 1, j = ndim; --j >= 0;)
@@ -137,16 +137,16 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
   }
 
 	/*********************
-        Put some data into it.
-        *********************/
+	Put some data into it.
+	*********************/
   if STATUS_OK
     status = (*fun_ptr->f3) (out_ptr->pointer);
   return status;
 }
 
 /*---------------------------------------------------------------------
-        Create un-initialized array.
-                var = ARRAY([size-vector], [mold-type])
+	Create un-initialized array.
+	        var = ARRAY([size-vector], [mold-type])
 */
 
 int Tdi3Array(/*int *out_ptr*/)
@@ -156,7 +156,7 @@ int Tdi3Array(/*int *out_ptr*/)
 
 
 /*---------------------------------------------------------------------
-        Create a ramp of integers starting from zero.
+	Create a ramp of integers starting from zero.
 */
 int Tdi3Ramp(struct descriptor *out_ptr)
 {
@@ -168,9 +168,9 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 
 #define LoadRamp(type) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)i; break;}
 #define LoadRampF(type,dtype,native) { type *ptr = (type *)out_ptr->pointer; type tmp; \
-                                       for (i=0;i<n;i++) {tmp = (type)i; \
-                                            if (native == dtype) ptr[i] = tmp; \
-                                            else CvtConvertFloat(&tmp,native,&ptr[i],dtype);} break;}
+	                               for (i=0;i<n;i++) {tmp = (type)i; \
+	                                    if (native == dtype) ptr[i] = tmp; \
+	                                    else CvtConvertFloat(&tmp,native,&ptr[i],dtype);} break;}
 
   N_ELEMENTS(out_ptr, n);
   switch (out_ptr->dtype) {
@@ -188,9 +188,9 @@ int Tdi3Ramp(struct descriptor *out_ptr)
     case DTYPE_G: LoadRampF(double, DTYPE_G, DTYPE_NATIVE_DOUBLE)
     case DTYPE_FT:LoadRampF(double, DTYPE_FT, DTYPE_NATIVE_DOUBLE)
 	/**********************************************************
-        WARNING this depends on order of operations in ADD routine.
-        Make a zero and a one. Add 1 to this starter, but offset.
-        **********************************************************/
+	WARNING this depends on order of operations in ADD routine.
+	Make a zero and a one. Add 1 to this starter, but offset.
+	**********************************************************/
     default: {
       struct descriptor new = *out_ptr;
       new.class = CLASS_S;
@@ -216,12 +216,12 @@ int Tdi3Ramp(struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------------------------
-        Create PSEUDO-RANDOM numbers. F8X returns one f-float per call.
-        Integer range is full sized, reals range from 0.0 to 1.0.
-                value = RANDOM([size-vector], [type-mold])
+	Create PSEUDO-RANDOM numbers. F8X returns one f-float per call.
+	Integer range is full sized, reals range from 0.0 to 1.0.
+	        value = RANDOM([size-vector], [type-mold])
 
-        Limitation: This method is for 32-bit machine only.
-        Limitation: Low-order bits are not random.
+	Limitation: This method is for 32-bit machine only.
+	Limitation: Low-order bits are not random.
 */
 
 
@@ -322,7 +322,7 @@ int Tdi3Random(struct descriptor_a *out_ptr){
 }
 
 /*---------------------------------------------------------------------
-        Create an array of zeroes.
+	Create an array of zeroes.
 */
 int Tdi3Zero(struct descriptor_a *out_ptr){
   STATIC_CONSTANT int i0 = 0;

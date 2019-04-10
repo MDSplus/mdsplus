@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -104,7 +104,7 @@ int compare_str(const void *key1, const void *key2)
 }
 
 //-------------------------------------------------------------------------
-// same as 'strncmp()' but ignores case 
+// same as 'strncmp()' but ignores case
 //              (shamelessly copied from other mdsplus code)
 //-------------------------------------------------------------------------
 static int strncmp_nocase(const char *s, const char *t, int n)

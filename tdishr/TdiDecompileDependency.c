@@ -23,15 +23,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1DecompileDependency
-        Decompile a dependency tree
+	Decompile a dependency tree
 
-        Author: Manduchi Gabriele
-                Istituto Gas Ionizzati del CNR - Padova (Italy)
+	Author: Manduchi Gabriele
+	        Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-        Date:   3-MAY-1990
-        Revised: 18-May-1990 Ken Klare, CTR-7 LANL (c)1990 using precedence method
+	Date:   3-MAY-1990
+	Revised: 18-May-1990 Ken Klare, CTR-7 LANL (c)1990 using precedence method
 
-        Precedence:
+	Precedence:
 */
 #define P_WEAK  0		/*weakest */
 #define P_OR    4		/*OR(|) */

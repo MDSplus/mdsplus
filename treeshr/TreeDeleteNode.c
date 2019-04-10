@@ -97,7 +97,7 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
 	*count = 0;
     } else {
       if (old_list)
-        memcpy(dblist->delete_list, old_list, (size_t)((dblist->delete_list_vm < vm_needed) ? dblist->delete_list_vm : vm_needed));
+	memcpy(dblist->delete_list, old_list, (size_t)((dblist->delete_list_vm < vm_needed) ? dblist->delete_list_vm : vm_needed));
       if (vm_needed > dblist->delete_list_vm)
 	memset(dblist->delete_list + dblist->delete_list_vm, 0, (size_t)(vm_needed - dblist->delete_list_vm));
     }

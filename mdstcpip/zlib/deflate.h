@@ -1,6 +1,6 @@
 /* deflate.h -- internal compression state
  * Copyright (C) 1995-1998 Jean-loup Gailly
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /* WARNING: this file should *not* be used by applications. It is
@@ -308,7 +308,7 @@ extern const uch _dist_code[];
 #else
 #define _tr_tally_lit(s, c, flush) flush = _tr_tally(s, 0, c)
 #define _tr_tally_dist(s, distance, length, flush) \
-              flush = _tr_tally(s, distance, length)
+	      flush = _tr_tally(s, distance, length)
 #endif
 
 #endif

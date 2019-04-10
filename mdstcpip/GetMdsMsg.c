@@ -39,20 +39,20 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
     while (bytes_to_recv > 0 && (tries < 10)) {
       ssize_t bytes_recv;
       if (c->io->recv_to && to_msec>=0) // don't use timeout if not available or requested
-        bytes_recv = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
+	bytes_recv = c->io->recv_to(c, bptr, bytes_to_recv, to_msec);
       else
-        bytes_recv = c->io->recv(c, bptr, bytes_to_recv);
+	bytes_recv = c->io->recv(c, bptr, bytes_to_recv);
       if (bytes_recv > 0) {
 	tries = 0;
 	bytes_to_recv -= bytes_recv;
 	bptr += bytes_recv;
-        continue;
+	continue;
       }
       if (errno==ETIMEDOUT)            return TdiTIMEOUT;
       if (bytes_recv==0 && to_msec>=0) return TdiTIMEOUT;
       if (errno != EINTR) {
-          if (errno) {fprintf(stderr,"Connection %02d (r:%d)",c->id,(int)bytes_recv);perror("error");}
-          return MDSplusERROR;
+	  if (errno) {fprintf(stderr,"Connection %02d (r:%d)",c->id,(int)bytes_recv);perror("error");}
+	  return MDSplusERROR;
       }
       tries++;
     }

@@ -69,9 +69,9 @@ int test(char * device_name, int silent)
 //        uint16_t pfi_output_mask = 0x5E6F;
 //        uint16_t pfi_input_mask = (~pfi_output_mask) & 0xFFFF;
 
-        //uint32_t do_value = 0x98765ADF;
-        uint32_t do_value = 0x1;
-        uint32_t di_value = 0;
+	//uint32_t do_value = 0x98765ADF;
+	uint32_t do_value = 0x1;
+	uint32_t di_value = 0;
 
 //        uint32_t pfi_write_value = 0x4665;
 //        uint32_t pfi_read_value = 0;
@@ -107,7 +107,7 @@ int test(char * device_name, int silent)
 //	}
 
 	/* Stop the segment */
-	xseries_stop_di(dio_fd);	
+	xseries_stop_di(dio_fd);
 	di_conf = xseries_static_di(dio_input_mask);
 	do_conf = xseries_static_do(dio_output_mask);
 
@@ -156,24 +156,24 @@ int test(char * device_name, int silent)
 //	}
 
 	/* Load DIO configuration */
-        retval = xseries_load_di_conf(dio_fd, di_conf);
+	retval = xseries_load_di_conf(dio_fd, di_conf);
 	if (retval) {
 		printf("Error loading DI configuration!\n");
 		goto out;
 	}
-        retval = xseries_load_do_conf(dio_fd, do_conf);
+	retval = xseries_load_do_conf(dio_fd, do_conf);
 	if (retval) {
 		printf("Error loading DO configuration!\n");
 		goto out;
 	}
 
 	/* start DIO*/
-        retval = xseries_start_di(dio_fd);
+	retval = xseries_start_di(dio_fd);
 	if (retval) {
 		printf("Error loading DI configuration!\n");
 		goto out;
 	}
-        retval = xseries_start_do(dio_fd);
+	retval = xseries_start_do(dio_fd);
 	if (retval) {
 		printf("Error loading DO configuration!\n");
 		goto out;

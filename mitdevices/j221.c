@@ -229,7 +229,7 @@ EXPORT int j221___add(int *head_nid)
 		      "I_TO_X(BUILD_DIM(,$1),($2 > 0 ? SPREAD([0,$2],1,SIZE($3))+SPREAD($3,0,2) : $3) ) * $4 + $5");
     static DESCRIPTOR(signal,
 		      "2*BUILD_SIGNAL([0,REPLICATE([1,0],0,ESIZE($1)/2),ESIZE($1) MOD 2 ? [1,1] : 0],\
-           *,[MINVAL($1)-.1*(MAXVAL($1)-MINVAL($1)),$1,MAXVAL($1)+.1*(MAXVAL($1)-MINVAL($1))])");
+	   *,[MINVAL($1)-.1*(MAXVAL($1)-MINVAL($1)),$1,MAXVAL($1)+.1*(MAXVAL($1)-MINVAL($1))])");
     static int clock_nid;
     static DESCRIPTOR_NID(clock_nid_d, &clock_nid);
     static int mode_nid;

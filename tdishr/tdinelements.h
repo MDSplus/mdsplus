@@ -15,14 +15,14 @@
 		  count = 0; \
 		  if (aptr->length != 0) { \
 		    count = aptr->arsize / aptr->length; \
-	          } else if ( aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 ) { \
+		  } else if ( aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 ) { \
 		    int i; \
 		    for (i=0;i<aptr->dimct;i++) { \
 		      if (count == 0) count=aptr->m[i]; else count=count*aptr->m[i]; \
 		    }\
 		  }\
 		  break;\
- 	        }\
+		}\
 		case CLASS_S : case CLASS_D : count = 1; break;\
 		} \
 	}

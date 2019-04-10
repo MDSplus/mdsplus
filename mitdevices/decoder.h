@@ -37,7 +37,7 @@ typedef struct {
 #define ALWAYS_LOW          4
 #define HIGH_PULSES         5
 /*        illegal           6
-          illegal                         7
+	  illegal                         7
 *****************************/
 
 /** clock source settings ****/

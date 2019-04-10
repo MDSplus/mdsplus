@@ -127,7 +127,7 @@ EXPORT void mdsplus_connection_closeTree(const void *lvConnectionPtr,  ErrorClus
 	}
 	fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
-  
+
 EXPORT void mdsplus_connection_getNode(const void *lvConnectionPtr, void **lvTreeNodePtrOut,
 				      const char *pathIn, ErrorCluster * error)
 {

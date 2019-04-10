@@ -543,8 +543,8 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom 
       //targets[0] = XA_X_AXIS;
       //targets[1] = XA_Y_AXIS;
 /*
-        XtGetSelectionValues(w, XA_PRIMARY, targets, XtNumber(targets), (XtSelectionCallbackProc)PasteComplete, 
-                                              (XtPointer)stub, XtLastTimestampProcessed(XtDisplay(w)));
+	XtGetSelectionValues(w, XA_PRIMARY, targets, XtNumber(targets), (XtSelectionCallbackProc)PasteComplete,
+	                                      (XtPointer)stub, XtLastTimestampProcessed(XtDisplay(w)));
 */
       XtGetSelectionValue(w, XA_PRIMARY, XA_X_AXIS, (XtSelectionCallbackProc) PasteComplete,
 			  (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
@@ -911,7 +911,7 @@ EXPORT void GetEventInfo(int *eventid, int *info) {
   }
   IDL_WidgetStubLock(FALSE);
 }
-  
+
 static EventInfo *NewEvent(Widget w, unsigned long stub, XEvent * event, int reason,
 			   enum callback_id callback_id)
 {

@@ -13,7 +13,7 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
      * Creates new form RFX_PROTECTIONSSetup
      */
     public RFX_PROTECTIONSSetup() {
-        initComponents();
+	initComponents();
     }
 
     /**
@@ -25,233 +25,233 @@ public class RFX_PROTECTIONSSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField8 = new DeviceField();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        label1 = new java.awt.Label();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField10 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        deviceField11 = new DeviceField();
-        jPanel12 = new javax.swing.JPanel();
-        deviceField12 = new DeviceField();
-        jPanel14 = new javax.swing.JPanel();
-        deviceField13 = new DeviceField();
-        jPanel13 = new javax.swing.JPanel();
-        label2 = new java.awt.Label();
-        jPanel15 = new javax.swing.JPanel();
-        deviceField14 = new DeviceField();
-        jPanel17 = new javax.swing.JPanel();
-        deviceField15 = new DeviceField();
-        jPanel16 = new javax.swing.JPanel();
-        deviceField16 = new DeviceField();
-        jPanel18 = new javax.swing.JPanel();
-        deviceField17 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	deviceField4 = new DeviceField();
+	deviceField5 = new DeviceField();
+	deviceField6 = new DeviceField();
+	jPanel2 = new javax.swing.JPanel();
+	jPanel6 = new javax.swing.JPanel();
+	jPanel7 = new javax.swing.JPanel();
+	deviceField7 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	deviceField8 = new DeviceField();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField9 = new DeviceField();
+	jPanel8 = new javax.swing.JPanel();
+	jPanel11 = new javax.swing.JPanel();
+	label1 = new java.awt.Label();
+	jPanel9 = new javax.swing.JPanel();
+	deviceField10 = new DeviceField();
+	jPanel10 = new javax.swing.JPanel();
+	deviceField11 = new DeviceField();
+	jPanel12 = new javax.swing.JPanel();
+	deviceField12 = new DeviceField();
+	jPanel14 = new javax.swing.JPanel();
+	deviceField13 = new DeviceField();
+	jPanel13 = new javax.swing.JPanel();
+	label2 = new java.awt.Label();
+	jPanel15 = new javax.swing.JPanel();
+	deviceField14 = new DeviceField();
+	jPanel17 = new javax.swing.JPanel();
+	deviceField15 = new DeviceField();
+	jPanel16 = new javax.swing.JPanel();
+	deviceField16 = new DeviceField();
+	jPanel18 = new javax.swing.JPanel();
+	deviceField17 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Protezioni di Macchina RFX");
-        setDeviceType("RFX_PROTECTIONS");
-        setHeight(500);
-        setWidth(650);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Protezioni di Macchina RFX");
+	setDeviceType("RFX_PROTECTIONS");
+	setHeight(500);
+	setWidth(650);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.setLayout(new java.awt.GridLayout(4, 1));
+	jPanel1.setLayout(new java.awt.GridLayout(4, 1));
 
-        jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Br"));
-        jPanel3.setLayout(new java.awt.GridLayout(3, 2, 5, 0));
+	jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Br"));
+	jPanel3.setLayout(new java.awt.GridLayout(3, 2, 5, 0));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Max Br Orizzontale (T) (Warning): ");
-        deviceField1.setNumCols(4);
-        deviceField1.setOffsetNid(2);
-        jPanel3.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Max Br Orizzontale (T) (Warning): ");
+	deviceField1.setNumCols(4);
+	deviceField1.setOffsetNid(2);
+	jPanel3.add(deviceField1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Max Br Orizzontale (T) (Fault): ");
-        deviceField2.setNumCols(4);
-        deviceField2.setOffsetNid(3);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Max Br Orizzontale (T) (Fault): ");
+	deviceField2.setNumCols(4);
+	deviceField2.setOffsetNid(3);
+	jPanel3.add(deviceField2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Max Br verticale (T) (Warning): ");
-        deviceField3.setNumCols(4);
-        deviceField3.setOffsetNid(4);
-        jPanel3.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Max Br verticale (T) (Warning): ");
+	deviceField3.setNumCols(4);
+	deviceField3.setOffsetNid(4);
+	jPanel3.add(deviceField3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Max Br Verticale (T)(Fault): ");
-        deviceField4.setNumCols(4);
-        deviceField4.setOffsetNid(5);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Max Br Verticale (T)(Fault): ");
+	deviceField4.setNumCols(4);
+	deviceField4.setOffsetNid(5);
+	jPanel3.add(deviceField4);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Max tempo fuori soglia (s)  (Warning):");
-        deviceField5.setNumCols(4);
-        deviceField5.setOffsetNid(6);
-        jPanel3.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Max tempo fuori soglia (s)  (Warning):");
+	deviceField5.setNumCols(4);
+	deviceField5.setOffsetNid(6);
+	jPanel3.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Max tempo fuori soglia (s)(Fault):");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(7);
-        jPanel3.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Max tempo fuori soglia (s)(Fault):");
+	deviceField6.setNumCols(4);
+	deviceField6.setOffsetNid(7);
+	jPanel3.add(deviceField6);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Bobine a Sella"));
-        jPanel2.setLayout(new java.awt.BorderLayout());
+	jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Bobine a Sella"));
+	jPanel2.setLayout(new java.awt.BorderLayout());
 
-        jPanel6.setLayout(new java.awt.GridLayout(2, 1));
+	jPanel6.setLayout(new java.awt.GridLayout(2, 1));
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Max corrente Chopper Bobine a Sella(A): ");
-        deviceField7.setNumCols(4);
-        deviceField7.setOffsetNid(8);
-        jPanel7.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Max corrente Chopper Bobine a Sella(A): ");
+	deviceField7.setNumCols(4);
+	deviceField7.setOffsetNid(8);
+	jPanel7.add(deviceField7);
 
-        jPanel6.add(jPanel7);
+	jPanel6.add(jPanel7);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Limite I2T Bobine a Sella (A2s): ");
-        deviceField8.setNumCols(4);
-        deviceField8.setOffsetNid(9);
-        jPanel5.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("Limite I2T Bobine a Sella (A2s): ");
+	deviceField8.setNumCols(4);
+	deviceField8.setOffsetNid(9);
+	jPanel5.add(deviceField8);
 
-        jPanel6.add(jPanel5);
+	jPanel6.add(jPanel5);
 
-        jPanel2.add(jPanel6, java.awt.BorderLayout.CENTER);
+	jPanel2.add(jPanel6, java.awt.BorderLayout.CENTER);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Bobile Toroidali"));
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Bobile Toroidali"));
+	jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Limite I2T Bobine Toroidali (A2s): ");
-        deviceField9.setNumCols(4);
-        deviceField9.setOffsetNid(10);
-        jPanel4.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Limite I2T Bobine Toroidali (A2s): ");
+	deviceField9.setNumCols(4);
+	deviceField9.setOffsetNid(10);
+	jPanel4.add(deviceField9);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Resistenze Bobine F"));
-        jPanel8.setLayout(new java.awt.GridLayout(2, 5));
+	jPanel8.setBorder(javax.swing.BorderFactory.createTitledBorder("Protezioni Resistenze Bobine F"));
+	jPanel8.setLayout(new java.awt.GridLayout(2, 5));
 
-        label1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label1.setText("Limits I2t:");
-        jPanel11.add(label1);
-        label1.getAccessibleContext().setAccessibleName("t:");
+	label1.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+	label1.setText("Limits I2t:");
+	jPanel11.add(label1);
+	label1.getAccessibleContext().setAccessibleName("t:");
 
-        jPanel8.add(jPanel11);
+	jPanel8.add(jPanel11);
 
-        jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("RF1 (A2s) :");
-        deviceField10.setNumCols(5);
-        deviceField10.setOffsetNid(12);
-        jPanel9.add(deviceField10);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("RF1 (A2s) :");
+	deviceField10.setNumCols(5);
+	deviceField10.setOffsetNid(12);
+	jPanel9.add(deviceField10);
 
-        jPanel8.add(jPanel9);
+	jPanel8.add(jPanel9);
 
-        jPanel10.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel10.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("RF2 (A2s) :");
-        deviceField11.setNumCols(5);
-        deviceField11.setOffsetNid(13);
-        jPanel10.add(deviceField11);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("RF2 (A2s) :");
+	deviceField11.setNumCols(5);
+	deviceField11.setOffsetNid(13);
+	jPanel10.add(deviceField11);
 
-        jPanel8.add(jPanel10);
+	jPanel8.add(jPanel10);
 
-        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("RF3 (A2s) :");
-        deviceField12.setNumCols(5);
-        deviceField12.setOffsetNid(14);
-        jPanel12.add(deviceField12);
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("RF3 (A2s) :");
+	deviceField12.setNumCols(5);
+	deviceField12.setOffsetNid(14);
+	jPanel12.add(deviceField12);
 
-        jPanel8.add(jPanel12);
+	jPanel8.add(jPanel12);
 
-        jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel14.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("RF4 (A2s) :");
-        deviceField13.setNumCols(5);
-        deviceField13.setOffsetNid(15);
-        jPanel14.add(deviceField13);
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("RF4 (A2s) :");
+	deviceField13.setNumCols(5);
+	deviceField13.setOffsetNid(15);
+	jPanel14.add(deviceField13);
 
-        jPanel8.add(jPanel14);
+	jPanel8.add(jPanel14);
 
-        label2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
-        label2.setText("Limits I2t:");
-        jPanel13.add(label2);
-        label2.getAccessibleContext().setAccessibleName("");
+	label2.setFont(new java.awt.Font("Dialog", 1, 12)); // NOI18N
+	label2.setText("Limits I2t:");
+	jPanel13.add(label2);
+	label2.getAccessibleContext().setAccessibleName("");
 
-        jPanel8.add(jPanel13);
+	jPanel8.add(jPanel13);
 
-        jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel15.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("RF5 (A2s) :");
-        deviceField14.setNumCols(5);
-        deviceField14.setOffsetNid(16);
-        jPanel15.add(deviceField14);
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("RF5 (A2s) :");
+	deviceField14.setNumCols(5);
+	deviceField14.setOffsetNid(16);
+	jPanel15.add(deviceField14);
 
-        jPanel8.add(jPanel15);
+	jPanel8.add(jPanel15);
 
-        jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel17.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("RF6 (A2s) :");
-        deviceField15.setNumCols(5);
-        deviceField15.setOffsetNid(17);
-        jPanel17.add(deviceField15);
+	deviceField15.setIdentifier("");
+	deviceField15.setLabelString("RF6 (A2s) :");
+	deviceField15.setNumCols(5);
+	deviceField15.setOffsetNid(17);
+	jPanel17.add(deviceField15);
 
-        jPanel8.add(jPanel17);
+	jPanel8.add(jPanel17);
 
-        jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel16.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("RF7 (A2s) :");
-        deviceField16.setNumCols(5);
-        deviceField16.setOffsetNid(18);
-        jPanel16.add(deviceField16);
+	deviceField16.setIdentifier("");
+	deviceField16.setLabelString("RF7 (A2s) :");
+	deviceField16.setNumCols(5);
+	deviceField16.setOffsetNid(18);
+	jPanel16.add(deviceField16);
 
-        jPanel8.add(jPanel16);
+	jPanel8.add(jPanel16);
 
-        jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
+	jPanel18.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.CENTER, 0, 0));
 
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("RF8 (A2s) :");
-        deviceField17.setNumCols(5);
-        deviceField17.setOffsetNid(19);
-        jPanel18.add(deviceField17);
+	deviceField17.setIdentifier("");
+	deviceField17.setLabelString("RF8 (A2s) :");
+	deviceField17.setNumCols(5);
+	deviceField17.setOffsetNid(19);
+	jPanel18.add(deviceField17);
 
-        jPanel8.add(jPanel18);
+	jPanel8.add(jPanel18);
 
-        jPanel1.add(jPanel8);
+	jPanel1.add(jPanel8);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        getAccessibleContext().setAccessibleName("");
+	getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;

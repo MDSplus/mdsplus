@@ -1,4 +1,4 @@
- # 
+ #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,8 +47,8 @@ class NI6683(Device):
         {'path':':REL_START', 'type':'numeric', 'value': -5},
         {'path':':ABS_START', 'type':'numeric', 'value': 0}]
     chanNames = ['PFI0', 'PFI1', 'PFI2', 'STAR0', 'STAR1','STAR2','STAR3','STAR4','STAR5','STAR6','STAR7','STAR8',
-        'STAR9','STAR10','STAR11','STAR12', 'PXI_TRIG0', 'PXI_TRIG1', 'PXI_TRIG2', 'PXI_TRIG3', 'PXI_TRIG4', 
-        'PXI_TRIG5','PXI_TRIG6', 'PXI_TRIG7'] 
+        'STAR9','STAR10','STAR11','STAR12', 'PXI_TRIG0', 'PXI_TRIG1', 'PXI_TRIG2', 'PXI_TRIG3', 'PXI_TRIG4',
+        'PXI_TRIG5','PXI_TRIG6', 'PXI_TRIG7']
     for chanName in chanNames:
         parts.append({'path':'.'+chanName, 'type':'structure'})
         parts.append({'path':'.'+chanName+':MODE', 'type':'text', 'value':'DISABLED'})
@@ -168,7 +168,7 @@ class NI6683(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
 
-    
+
     def getAbsTime(self, relTime):
         try:
             return int((relTime - self.rel_start.data())*1000000000 + self.abs_start.data())
@@ -261,7 +261,7 @@ class NI6683(Device):
                     self.checkStatus(status, 'Cannot disable future events')
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -272,7 +272,7 @@ class NI6683(Device):
                 enabled = c_byte()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -310,8 +310,8 @@ class NI6683(Device):
                    Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                    raise DevBAD_PARAMETER
                 dutyCycleNs = int(periodNs * dutyCycle/100.)
-                print('Generate Clock: '+str(startNs) + '  '+str(endNs)+'  ' + str(periodNs) + '  '+str(dutyCycleNs)) 
-                status = NI6683.niLib.nisync_generate_clock_ns(c_int(self.termDict[termName]), c_ulonglong(startNs), 
+                print('Generate Clock: '+str(startNs) + '  '+str(endNs)+'  ' + str(periodNs) + '  '+str(dutyCycleNs))
+                status = NI6683.niLib.nisync_generate_clock_ns(c_int(self.termDict[termName]), c_ulonglong(startNs),
                     c_ulonglong(endNs), c_ulonglong(periodNs), c_ulonglong(dutyCycleNs))
                 if status != 0:
                    emsg = 'Error in replace clock for %s status = %d '%(termName, status)
@@ -321,7 +321,7 @@ class NI6683(Device):
                 enabled = c_byte()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -352,7 +352,7 @@ class NI6683(Device):
                 enabled = c_byte()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -383,7 +383,7 @@ class NI6683(Device):
                 enabled = c_byte()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -404,7 +404,7 @@ class NI6683(Device):
                 enabled = c_byte()
                 activeEdge = c_int()
                 decimationCount = c_int()
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -431,7 +431,7 @@ class NI6683(Device):
                     print('DISABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_disable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable future events')
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -439,7 +439,7 @@ class NI6683(Device):
                     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable timestamp triggers')
                 print('ENABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
-                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]),
                         c_int(self.NISYNC_EDGE_RISING), c_int(1))
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
                 NI6683.ni6683RecorderDict[self.nid].append(termName)
@@ -453,7 +453,7 @@ class NI6683(Device):
                     print('DISABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_disable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable future events')
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -461,7 +461,7 @@ class NI6683(Device):
                     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable timestamp triggers')
                 print('ENABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
-                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]),
                         c_int(self.NISYNC_EDGE_FALLING), c_int(1))
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
                 print('ADESSO ZONTO ' + termName +' in ', NI6683.ni6683RecorderDict[self.nid])
@@ -476,7 +476,7 @@ class NI6683(Device):
                     print('DISABLE FUTURE EVENT for ' + termName + ' fd: '+ str(self.termDict[termName]))
                     status = NI6683.niLib.nisync_disable_future_time_events(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable future events')
-                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_timestamp_trigger_configuration(c_int(self.termDict[termName]),
                     byref(enabled), byref(activeEdge), byref(decimationCount))
                 self.checkStatus(status, 'Cannot inquire timestamp triggers')
                 if enabled.value != 0:
@@ -484,7 +484,7 @@ class NI6683(Device):
                     status = NI6683.niLib.nisync_disable_timestamp_trigger(c_int(self.termDict[termName]))
                     self.checkStatus(status, 'Cannot disable timestamp triggers')
                 print('ENABLE TIMESTAMP for ' + termName + ' fd: '+ str(self.termDict[termName]))
-                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]), 
+                status = NI6683.niLib.nisync_enable_timestamp_trigger(c_int(self.termDict[termName]),
                         c_int(self.NISYNC_EDGE_ANY), c_int(1))
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
                 print('ADESSO ZONTO ' + termName +' in ', NI6683.ni6683RecorderDict[self.nid])
@@ -501,24 +501,24 @@ class NI6683(Device):
         self.abs_start.putData(Uint64(currentTime.value))
         return self.init()
 
-        
+
 
 
     def start_store(self):
 
         self.debugPrint('=================  PXI 6683 start_store ===============')
         print('CICCIO')
-        print ('RECORDER DEV NAMES:', NI6683.ni6683RecorderDict[self.nid]) 
+        print ('RECORDER DEV NAMES:', NI6683.ni6683RecorderDict[self.nid])
         print('BOMBO')
         self.restoreInfo()
         worker = self.AsynchStore()
         NI6683.ni6683WorkerDict[self.nid] = worker
         worker.daemon = True
         worker.configure(self)
-        worker.start()  
-        return 1  
-             
-                
+        worker.start()
+        return 1
+
+
     def stop_store(self):
       self.debugPrint('================= PXI 6683 stop store ================')
       worker = NI6683.ni6683WorkerDict[self.nid]
@@ -527,7 +527,7 @@ class NI6683(Device):
           worker.stop()
           worker.join()
           return 1
-                
+
 
     class AsynchStore(Thread):
 
@@ -572,7 +572,7 @@ class NI6683(Device):
                         Event.setevent(eventName, Uint64(timestamp.value))
                     except:
                         pass
-          
+
 
         def stop(self):
             self.stopReq = True

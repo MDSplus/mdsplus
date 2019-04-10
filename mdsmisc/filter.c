@@ -64,7 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element FILTER.C */
 /*------------------------------------------------------------------------------
 
-	Name:	FILTER   
+	Name:	FILTER
 
 	Type:   C function
 
@@ -81,13 +81,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	DoFilter(Filter *filter, float *in, float *out, int *n_samples)
 	    perform digital filtering as specified in structure filter. in and out must be already allocated.
 
-	DoFilterResample(Filter *filter, float *in, float *out, int *n_samples, int *start_idx, int *delta_idx, 
+	DoFilterResample(Filter *filter, float *in, float *out, int *n_samples, int *start_idx, int *delta_idx,
 		int *max_out_samples)
 	    perform digital filtering as specified in structure filter. but only samples corresponding
 	    to start_idx + N*delta_idx (N >=0) are stored in out.
 	    In and out must be already allocated.
 
-	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_samples, int *start_idx, int *delta_idx, 
+	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_samples, int *start_idx, int *delta_idx,
 		int *max_out_samples, int step_raw)
 	    same as DoFilterResample, except that input are 12 bit representation of an integer number
 
@@ -373,7 +373,7 @@ static void NormalizeFilter(Filter * filter)
   }
 }
 
-//Prepare the description of a butterworth 
+//Prepare the description of a butterworth
 EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
 {
   Filter *outFilter;

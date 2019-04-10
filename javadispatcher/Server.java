@@ -35,13 +35,13 @@ Abstracts Server functionality
     /**
     returns the number of waiting actions
     */
-    
+
     public int getDoingAction();
     /**
-    returns the number of doing actions 
+    returns the number of doing actions
     */
 
-    
+
     public void abort(boolean flush);
     /**
     aborts action currently being executed. If flush, empties waiting queue;

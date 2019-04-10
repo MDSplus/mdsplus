@@ -6,7 +6,7 @@ class FrameRepository
     static JFrame frame = null;
     static void setFrame(JFrame frame)
     {
-        FrameRepository.frame = frame;
+	FrameRepository.frame = frame;
     }
 }
 

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ def tcl(line,cell=None):
             toError.append(str(error))
         if out is not None and len(str(out)) > 0:
             toOut.append(str(out))
-        
+
     if cell is None:
         doit(line,toOut,toError)
     else:
@@ -106,7 +106,7 @@ def tdi(line,cell=None):
             toOut.append(str(_dat.tdi(line)))
         except Exception as e:
             toError.append(str(e))
-        
+
     if cell is None:
         doit(line,toOut,toError)
     else:

@@ -18,21 +18,21 @@ struct CommaInitializer
     typedef ContentT&(ContainerT::* OpType)(const size_t);
 
     inline explicit CommaInitializer(ContainerT *container,
-                                     ContentT s,
-                                     OpType op = &ContainerT::operator() )
-        : container(container),
-          operation(op)
+	                             ContentT s,
+	                             OpType op = &ContainerT::operator() )
+	: container(container),
+	  operation(op)
     {
-        this->index = 0;
-        container->resize(1);
-        (container->*operation)(0) = s;
+	this->index = 0;
+	container->resize(1);
+	(container->*operation)(0) = s;
     }
 
     inline CommaInitializer & operator, (ContentT s) {
-        this->index++;
-        container->resize(index + 1);
-        (container->*operation)(this->index) = s;
-        return *this;
+	this->index++;
+	container->resize(index + 1);
+	(container->*operation)(this->index) = s;
+	return *this;
     }
 
     ContainerT *container;

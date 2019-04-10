@@ -48,9 +48,9 @@ public class DisplayTags
     {
       for (int i = 0; i < tags.length; i++)
       {
-        tagNames += tags[i];
-        if (i < tags.length - 1)
-          tagNames += ", ";
+	tagNames += tags[i];
+	if (i < tags.length - 1)
+	  tagNames += ", ";
       }
     }
     tagsLabel.setText(tagNames);

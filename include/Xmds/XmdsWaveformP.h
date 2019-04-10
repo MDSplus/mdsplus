@@ -80,7 +80,7 @@
 
 #define XmdsInheritTranslations ((XtTranslations) _XtInherit)
 #define XmdsInheritUpdate ((void (*)(Widget, XmdsWaveformValStruct *, XmdsWaveformValStruct *, char *,\
-                                     float *, float *, float *, float *,Boolean)) _XtInherit)
+	                             float *, float *, float *, float *,Boolean)) _XtInherit)
 #define XmdsInheritSetCrosshairs ((void (*)(Widget, float *, float *, Boolean)) _XtInherit)
 #define XmdsInheritSetPointerMode ((void (*)(Widget, int)) _XtInherit)
 #define XmdsInheritPrint   ((void (*)(Widget, FILE *, int, int, int, char *, char *, int)) _XtInherit)

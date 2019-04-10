@@ -462,15 +462,15 @@ public enum OPC {
     OpcList("LIST"), // 458
     ;
     public static OPC get(final short opc) {
-        return OPC.values()[opc & 0xFFFF];
+	return OPC.values()[opc & 0xFFFF];
     }
     public final String label;
 
     private OPC(final String label){
-        this.label = label;
+	this.label = label;
     }
 
     public short toShort() {
-        return (short)this.ordinal();
+	return (short)this.ordinal();
     }
 }

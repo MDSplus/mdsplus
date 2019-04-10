@@ -20,7 +20,7 @@ extern "C" {
 #define DEVICE_NAME "rpadc_dma_auto"  /* Dev name as it appears in /proc/devices */
 #define MODULE_NAME "rpadc_dma_auto"
 
-//Generic IOCTL commands  
+//Generic IOCTL commands
 
 #define RPADC_DMA_AUTO_IOCTL_BASE	'W'
 #define RPADC_DMA_AUTO_ARM_DMA    			_IO(RPADC_DMA_AUTO_IOCTL_BASE, 1)
@@ -49,7 +49,7 @@ extern "C" {
 #define RPADC_DMA_AUTO_GET_TIME_FIFO_LEN		_IO(RPADC_DMA_AUTO_IOCTL_BASE, 28)
 #define RPADC_DMA_AUTO_GET_TIME_FIFO_VAL		_IO(RPADC_DMA_AUTO_IOCTL_BASE, 29)
 #define RPADC_DMA_AUTO_CLEAR_TIME_FIFO		_IO(RPADC_DMA_AUTO_IOCTL_BASE, 30)
-  
+
 
 
 enum AxiStreamFifo_Register {
@@ -107,7 +107,7 @@ enum RegisterIdx {
 
 struct rpadc_dma_auto_registers
 {
-    	char command_register_enable;
+	char command_register_enable;
 	unsigned int command_register;
 	char decimator_register_enable;
 	unsigned int decimator_register;

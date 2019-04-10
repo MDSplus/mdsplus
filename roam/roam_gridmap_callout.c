@@ -66,7 +66,7 @@ extern int MdsFree1Dx();
  * This function provides a gridmap lookup in callout form.
  *
  * @param ap
- *        This function, like all functions using the Globus Callout API, is 
+ *        This function, like all functions using the Globus Callout API, is
  *        passed parameter though the variable argument list facility. The
  *        actual arguments that are passed are:
  *

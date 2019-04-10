@@ -13,63 +13,63 @@ public class PropertiesEditor extends JDialog
 
     public PropertiesEditor(JFrame owner, String propetiesFile)
     {
-        super(owner);
-        this.setTitle("jScope properties file editor : " + propetiesFile);
+	super(owner);
+	this.setTitle("jScope properties file editor : " + propetiesFile);
 
-        prFile = propetiesFile;
+	prFile = propetiesFile;
 
-        text = new JEditorPane();
-        text.setEditable(true);
+	text = new JEditorPane();
+	text.setEditable(true);
 
-        try
-        {
-            text.setPage("file:"+propetiesFile);
-        }
-        catch(IOException exc){}
-
-
-        JScrollPane scroller = new JScrollPane();
-        JViewport vp = scroller.getViewport();
-        vp.add(text);
-        getContentPane().add(scroller, BorderLayout.CENTER);
+	try
+	{
+	    text.setPage("file:"+propetiesFile);
+	}
+	catch(IOException exc){}
 
 
-        JPanel p = new JPanel();
-        JButton save = new JButton("Save");
-        save.setSelected(true);
-        p.add(save);
-
-        save.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    try
-                    {
-                        text.write(new FileWriter(prFile));
- 		                JOptionPane.showMessageDialog(PropertiesEditor.this,
- 		                                          "The changes will take effect the next time you restart jScope.",
-		                                          "Info", JOptionPane.WARNING_MESSAGE);
-                    }
-                    catch (IOException exc){exc.printStackTrace();};
-                }
-            });
-
-        JButton close = new JButton("Close");
-        close.setSelected(true);
-        p.add(close);
-        close.addActionListener(new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    setVisible(false);
-                    dispose();
-                }
-            });
+	JScrollPane scroller = new JScrollPane();
+	JViewport vp = scroller.getViewport();
+	vp.add(text);
+	getContentPane().add(scroller, BorderLayout.CENTER);
 
 
-        getContentPane().add(p, BorderLayout.SOUTH);
-        pack();
-        setSize(680,700);
+	JPanel p = new JPanel();
+	JButton save = new JButton("Save");
+	save.setSelected(true);
+	p.add(save);
+
+	save.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+	        {
+	            try
+	            {
+	                text.write(new FileWriter(prFile));
+			        JOptionPane.showMessageDialog(PropertiesEditor.this,
+			                                  "The changes will take effect the next time you restart jScope.",
+			                                  "Info", JOptionPane.WARNING_MESSAGE);
+	            }
+	            catch (IOException exc){exc.printStackTrace();};
+	        }
+	    });
+
+	JButton close = new JButton("Close");
+	close.setSelected(true);
+	p.add(close);
+	close.addActionListener(new ActionListener()
+	    {
+	        public void actionPerformed(ActionEvent e)
+	        {
+	            setVisible(false);
+	            dispose();
+	        }
+	    });
+
+
+	getContentPane().add(p, BorderLayout.SOUTH);
+	pack();
+	setSize(680,700);
 
     }
 }

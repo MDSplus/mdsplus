@@ -6,16 +6,16 @@
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSINPUTS.H */
 /*------------------------------------------------------------------------------
 
-		Name:   XmdsInputs   
+		Name:   XmdsInputs
 
 		Type:   C include file
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:    2-APR-1990
 
-    		Purpose: Defines the data structures and routines for 
-                         generic Input or Channel support. 
+		Purpose: Defines the data structures and routines for
+	                 generic Input or Channel support.
 
 --------------------------------------------------------------------------------
 

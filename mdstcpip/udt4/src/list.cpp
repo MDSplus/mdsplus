@@ -93,7 +93,7 @@ int CSndLossList::insert(int32_t seqno1, int32_t seqno2)
       m_iHead = 0;
       m_piData1[m_iHead] = seqno1;
       if (seqno2 != seqno1)
-         m_piData2[m_iHead] = seqno2;
+	 m_piData2[m_iHead] = seqno2;
 
       m_piNext[m_iHead] = -1;
       m_iLastInsertPos = m_iHead;
@@ -114,7 +114,7 @@ int CSndLossList::insert(int32_t seqno1, int32_t seqno2)
 
       m_piData1[loc] = seqno1;
       if (seqno2 != seqno1)
-         m_piData2[loc] = seqno2;
+	 m_piData2[loc] = seqno2;
 
       // new node becomes head
       m_piNext[loc] = m_iHead;
@@ -127,68 +127,68 @@ int CSndLossList::insert(int32_t seqno1, int32_t seqno2)
    {
       if (seqno1 == m_piData1[loc])
       {
-         m_iLastInsertPos = loc;
+	 m_iLastInsertPos = loc;
 
-         // first seqno is equivlent, compare the second
-         if (-1 == m_piData2[loc])
-         {
-            if (seqno2 != seqno1)
-            {
-               m_iLength += CSeqNo::seqlen(seqno1, seqno2) - 1;
-               m_piData2[loc] = seqno2;
-            }
-         }
-         else if (CSeqNo::seqcmp(seqno2, m_piData2[loc]) > 0)
-         {
-            // new seq pair is longer than old pair, e.g., insert [3, 7] to [3, 5], becomes [3, 7]
-            m_iLength += CSeqNo::seqlen(m_piData2[loc], seqno2) - 1;
-            m_piData2[loc] = seqno2;
-         }
-         else
-            // Do nothing if it is already there
-            return 0;
+	 // first seqno is equivlent, compare the second
+	 if (-1 == m_piData2[loc])
+	 {
+	    if (seqno2 != seqno1)
+	    {
+	       m_iLength += CSeqNo::seqlen(seqno1, seqno2) - 1;
+	       m_piData2[loc] = seqno2;
+	    }
+	 }
+	 else if (CSeqNo::seqcmp(seqno2, m_piData2[loc]) > 0)
+	 {
+	    // new seq pair is longer than old pair, e.g., insert [3, 7] to [3, 5], becomes [3, 7]
+	    m_iLength += CSeqNo::seqlen(m_piData2[loc], seqno2) - 1;
+	    m_piData2[loc] = seqno2;
+	 }
+	 else
+	    // Do nothing if it is already there
+	    return 0;
       }
       else
       {
-         // searching the prior node
-         int i;
-         if ((-1 != m_iLastInsertPos) && (CSeqNo::seqcmp(m_piData1[m_iLastInsertPos], seqno1) < 0))
-            i = m_iLastInsertPos;
-         else
-            i = m_iHead;
+	 // searching the prior node
+	 int i;
+	 if ((-1 != m_iLastInsertPos) && (CSeqNo::seqcmp(m_piData1[m_iLastInsertPos], seqno1) < 0))
+	    i = m_iLastInsertPos;
+	 else
+	    i = m_iHead;
 
-         while ((-1 != m_piNext[i]) && (CSeqNo::seqcmp(m_piData1[m_piNext[i]], seqno1) < 0))
-            i = m_piNext[i];
+	 while ((-1 != m_piNext[i]) && (CSeqNo::seqcmp(m_piData1[m_piNext[i]], seqno1) < 0))
+	    i = m_piNext[i];
 
-         if ((-1 == m_piData2[i]) || (CSeqNo::seqcmp(m_piData2[i], seqno1) < 0))
-         {
-            m_iLastInsertPos = loc;
+	 if ((-1 == m_piData2[i]) || (CSeqNo::seqcmp(m_piData2[i], seqno1) < 0))
+	 {
+	    m_iLastInsertPos = loc;
 
-            // no overlap, create new node
-            m_piData1[loc] = seqno1;
-            if (seqno2 != seqno1)
-               m_piData2[loc] = seqno2;
+	    // no overlap, create new node
+	    m_piData1[loc] = seqno1;
+	    if (seqno2 != seqno1)
+	       m_piData2[loc] = seqno2;
 
-            m_piNext[loc] = m_piNext[i];
-            m_piNext[i] = loc;
+	    m_piNext[loc] = m_piNext[i];
+	    m_piNext[i] = loc;
 
-            m_iLength += CSeqNo::seqlen(seqno1, seqno2);
-         }
-         else
-         {
-            m_iLastInsertPos = i;
+	    m_iLength += CSeqNo::seqlen(seqno1, seqno2);
+	 }
+	 else
+	 {
+	    m_iLastInsertPos = i;
 
-            // overlap, coalesce with prior node, insert(3, 7) to [2, 5], ... becomes [2, 7]
-            if (CSeqNo::seqcmp(m_piData2[i], seqno2) < 0)
-            {
-               m_iLength += CSeqNo::seqlen(m_piData2[i], seqno2) - 1;
-               m_piData2[i] = seqno2;
+	    // overlap, coalesce with prior node, insert(3, 7) to [2, 5], ... becomes [2, 7]
+	    if (CSeqNo::seqcmp(m_piData2[i], seqno2) < 0)
+	    {
+	       m_iLength += CSeqNo::seqlen(m_piData2[i], seqno2) - 1;
+	       m_piData2[i] = seqno2;
 
-               loc = i;
-            }
-            else
-               return 0;
-         }
+	       loc = i;
+	    }
+	    else
+	       return 0;
+	 }
       }
    }
    else
@@ -198,57 +198,57 @@ int CSndLossList::insert(int32_t seqno1, int32_t seqno2)
       // insert to head node
       if (seqno2 != seqno1)
       {
-         if (-1 == m_piData2[loc])
-         {
-            m_iLength += CSeqNo::seqlen(seqno1, seqno2) - 1;
-            m_piData2[loc] = seqno2;
-         }
-         else if (CSeqNo::seqcmp(seqno2, m_piData2[loc]) > 0)
-         {
-            m_iLength += CSeqNo::seqlen(m_piData2[loc], seqno2) - 1;
-            m_piData2[loc] = seqno2;
-         }
-         else 
-            return 0;
+	 if (-1 == m_piData2[loc])
+	 {
+	    m_iLength += CSeqNo::seqlen(seqno1, seqno2) - 1;
+	    m_piData2[loc] = seqno2;
+	 }
+	 else if (CSeqNo::seqcmp(seqno2, m_piData2[loc]) > 0)
+	 {
+	    m_iLength += CSeqNo::seqlen(m_piData2[loc], seqno2) - 1;
+	    m_piData2[loc] = seqno2;
+	 }
+	 else
+	    return 0;
       }
       else
-         return 0;
+	 return 0;
    }
 
-   // coalesce with next node. E.g., [3, 7], ..., [6, 9] becomes [3, 9] 
+   // coalesce with next node. E.g., [3, 7], ..., [6, 9] becomes [3, 9]
    while ((-1 != m_piNext[loc]) && (-1 != m_piData2[loc]))
    {
       int i = m_piNext[loc];
 
       if (CSeqNo::seqcmp(m_piData1[i], CSeqNo::incseq(m_piData2[loc])) <= 0)
       {
-         // coalesce if there is overlap
-         if (-1 != m_piData2[i])
-         {
-            if (CSeqNo::seqcmp(m_piData2[i], m_piData2[loc]) > 0)
-            {
-               if (CSeqNo::seqcmp(m_piData2[loc], m_piData1[i]) >= 0)
-                  m_iLength -= CSeqNo::seqlen(m_piData1[i], m_piData2[loc]);
+	 // coalesce if there is overlap
+	 if (-1 != m_piData2[i])
+	 {
+	    if (CSeqNo::seqcmp(m_piData2[i], m_piData2[loc]) > 0)
+	    {
+	       if (CSeqNo::seqcmp(m_piData2[loc], m_piData1[i]) >= 0)
+	          m_iLength -= CSeqNo::seqlen(m_piData1[i], m_piData2[loc]);
 
-               m_piData2[loc] = m_piData2[i];
-            }
-            else
-               m_iLength -= CSeqNo::seqlen(m_piData1[i], m_piData2[i]);
-         }
-         else
-         {
-            if (m_piData1[i] == CSeqNo::incseq(m_piData2[loc]))
-               m_piData2[loc] = m_piData1[i];
-            else
-               m_iLength --;
-         }
+	       m_piData2[loc] = m_piData2[i];
+	    }
+	    else
+	       m_iLength -= CSeqNo::seqlen(m_piData1[i], m_piData2[i]);
+	 }
+	 else
+	 {
+	    if (m_piData1[i] == CSeqNo::incseq(m_piData2[loc]))
+	       m_piData2[loc] = m_piData1[i];
+	    else
+	       m_iLength --;
+	 }
 
-         m_piData1[i] = -1;
-         m_piData2[i] = -1;
-         m_piNext[loc] = m_piNext[i];
+	 m_piData1[i] = -1;
+	 m_piData2[i] = -1;
+	 m_piNext[loc] = m_piNext[i];
       }
       else
-         break;
+	 break;
    }
 
    return m_iLength - origlen;
@@ -271,22 +271,22 @@ void CSndLossList::remove(int32_t seqno)
       loc = (loc + 1) % m_iSize;
 
       if (-1 == m_piData2[m_iHead])
-         loc = m_piNext[m_iHead];
+	 loc = m_piNext[m_iHead];
       else
       {
-         m_piData1[loc] = CSeqNo::incseq(seqno);
-         if (CSeqNo::seqcmp(m_piData2[m_iHead], CSeqNo::incseq(seqno)) > 0)
-            m_piData2[loc] = m_piData2[m_iHead];
+	 m_piData1[loc] = CSeqNo::incseq(seqno);
+	 if (CSeqNo::seqcmp(m_piData2[m_iHead], CSeqNo::incseq(seqno)) > 0)
+	    m_piData2[loc] = m_piData2[m_iHead];
 
-         m_piData2[m_iHead] = -1;
+	 m_piData2[m_iHead] = -1;
 
-         m_piNext[loc] = m_piNext[m_iHead];
+	 m_piNext[loc] = m_piNext[m_iHead];
       }
 
       m_piData1[m_iHead] = -1;
 
       if (m_iLastInsertPos == m_iHead)
-         m_iLastInsertPos = -1;
+	 m_iLastInsertPos = -1;
 
       m_iHead = loc;
 
@@ -298,70 +298,70 @@ void CSndLossList::remove(int32_t seqno)
 
       if (seqno == m_piData1[loc])
       {
-         // target node is not empty, remove part/all of the seqno in the node.
-         int temp = loc;
-         loc = (loc + 1) % m_iSize;
+	 // target node is not empty, remove part/all of the seqno in the node.
+	 int temp = loc;
+	 loc = (loc + 1) % m_iSize;
 
-         if (-1 == m_piData2[temp])
-            m_iHead = m_piNext[temp];
-         else
-         {
-            // remove part, e.g., [3, 7] becomes [], [4, 7] after remove(3)
-            m_piData1[loc] = CSeqNo::incseq(seqno);
-            if (CSeqNo::seqcmp(m_piData2[temp], m_piData1[loc]) > 0)
-               m_piData2[loc] = m_piData2[temp];
-            m_iHead = loc;
-            m_piNext[loc] = m_piNext[temp];
-            m_piNext[temp] = loc;
-            m_piData2[temp] = -1;
-         }
+	 if (-1 == m_piData2[temp])
+	    m_iHead = m_piNext[temp];
+	 else
+	 {
+	    // remove part, e.g., [3, 7] becomes [], [4, 7] after remove(3)
+	    m_piData1[loc] = CSeqNo::incseq(seqno);
+	    if (CSeqNo::seqcmp(m_piData2[temp], m_piData1[loc]) > 0)
+	       m_piData2[loc] = m_piData2[temp];
+	    m_iHead = loc;
+	    m_piNext[loc] = m_piNext[temp];
+	    m_piNext[temp] = loc;
+	    m_piData2[temp] = -1;
+	 }
       }
       else
       {
-         // target node is empty, check prior node
-         int i = m_iHead;
-         while ((-1 != m_piNext[i]) && (CSeqNo::seqcmp(m_piData1[m_piNext[i]], seqno) < 0))
-            i = m_piNext[i];
+	 // target node is empty, check prior node
+	 int i = m_iHead;
+	 while ((-1 != m_piNext[i]) && (CSeqNo::seqcmp(m_piData1[m_piNext[i]], seqno) < 0))
+	    i = m_piNext[i];
 
-         loc = (loc + 1) % m_iSize;
+	 loc = (loc + 1) % m_iSize;
 
-         if (-1 == m_piData2[i])
-            m_iHead = m_piNext[i];
-         else if (CSeqNo::seqcmp(m_piData2[i], seqno) > 0)
-         {
-            // remove part/all seqno in the prior node
-            m_piData1[loc] = CSeqNo::incseq(seqno);
-            if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)
-               m_piData2[loc] = m_piData2[i];
+	 if (-1 == m_piData2[i])
+	    m_iHead = m_piNext[i];
+	 else if (CSeqNo::seqcmp(m_piData2[i], seqno) > 0)
+	 {
+	    // remove part/all seqno in the prior node
+	    m_piData1[loc] = CSeqNo::incseq(seqno);
+	    if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)
+	       m_piData2[loc] = m_piData2[i];
 
-            m_piData2[i] = seqno;
+	    m_piData2[i] = seqno;
 
-            m_piNext[loc] = m_piNext[i];
-            m_piNext[i] = loc;
+	    m_piNext[loc] = m_piNext[i];
+	    m_piNext[i] = loc;
 
-            m_iHead = loc;
-         }
-         else
-            m_iHead = m_piNext[i];
+	    m_iHead = loc;
+	 }
+	 else
+	    m_iHead = m_piNext[i];
       }
 
       // Remove all nodes prior to the new head
       while (h != m_iHead)
       {
-         if (m_piData2[h] != -1)
-         {
-            m_iLength -= CSeqNo::seqlen(m_piData1[h], m_piData2[h]);
-            m_piData2[h] = -1;
-         }
-         else
-            m_iLength --;
+	 if (m_piData2[h] != -1)
+	 {
+	    m_iLength -= CSeqNo::seqlen(m_piData1[h], m_piData2[h]);
+	    m_piData2[h] = -1;
+	 }
+	 else
+	    m_iLength --;
 
-         m_piData1[h] = -1;
+	 m_piData1[h] = -1;
 
-         if (m_iLastInsertPos == h)
-            m_iLastInsertPos = -1;
+	 if (m_iLastInsertPos == h)
+	    m_iLastInsertPos = -1;
 
-         h = m_piNext[h];
+	 h = m_piNext[h];
       }
    }
 }
@@ -403,7 +403,7 @@ int32_t CSndLossList::getLostSeq()
 
       m_piData1[loc] = CSeqNo::incseq(seqno);
       if (CSeqNo::seqcmp(m_piData2[m_iHead], m_piData1[loc]) > 0)
-         m_piData2[loc] = m_piData2[m_iHead];
+	 m_piData2[loc] = m_piData2[m_iHead];
 
       m_piData1[m_iHead] = -1;
       m_piData2[m_iHead] = -1;
@@ -462,7 +462,7 @@ void CRcvLossList::insert(int32_t seqno1, int32_t seqno2)
       m_iTail = 0;
       m_piData1[m_iHead] = seqno1;
       if (seqno2 != seqno1)
-         m_piData2[m_iHead] = seqno2;
+	 m_piData2[m_iHead] = seqno2;
 
       m_piNext[m_iHead] = -1;
       m_piPrior[m_iHead] = -1;
@@ -487,7 +487,7 @@ void CRcvLossList::insert(int32_t seqno1, int32_t seqno2)
       m_piData1[loc] = seqno1;
 
       if (seqno2 != seqno1)
-         m_piData2[loc] = seqno2;
+	 m_piData2[loc] = seqno2;
 
       m_piNext[m_iTail] = loc;
       m_piPrior[loc] = m_iTail;
@@ -501,7 +501,7 @@ void CRcvLossList::insert(int32_t seqno1, int32_t seqno2)
 bool CRcvLossList::remove(int32_t seqno)
 {
    if (0 == m_iLength)
-      return false; 
+      return false;
 
    // locate the position of "seqno" in the list
    int offset = CSeqNo::seqoff(m_piData1[m_iHead], seqno);
@@ -516,56 +516,56 @@ bool CRcvLossList::remove(int32_t seqno)
 
       if (-1 == m_piData2[loc])
       {
-         // there is only 1 loss in the sequence, delete it from the node
-         if (m_iHead == loc)
-         {
-            m_iHead = m_piNext[m_iHead];
-            if (-1 != m_iHead)
-               m_piPrior[m_iHead] = -1;
-         }
-         else
-         {
-            m_piNext[m_piPrior[loc]] = m_piNext[loc];
-            if (-1 != m_piNext[loc])
-               m_piPrior[m_piNext[loc]] = m_piPrior[loc];
-            else
-               m_iTail = m_piPrior[loc];
-         }
+	 // there is only 1 loss in the sequence, delete it from the node
+	 if (m_iHead == loc)
+	 {
+	    m_iHead = m_piNext[m_iHead];
+	    if (-1 != m_iHead)
+	       m_piPrior[m_iHead] = -1;
+	 }
+	 else
+	 {
+	    m_piNext[m_piPrior[loc]] = m_piNext[loc];
+	    if (-1 != m_piNext[loc])
+	       m_piPrior[m_piNext[loc]] = m_piPrior[loc];
+	    else
+	       m_iTail = m_piPrior[loc];
+	 }
 
-         m_piData1[loc] = -1;
+	 m_piData1[loc] = -1;
       }
       else
       {
-         // there are more than 1 loss in the sequence
-         // move the node to the next and update the starter as the next loss inSeqNo(seqno)
+	 // there are more than 1 loss in the sequence
+	 // move the node to the next and update the starter as the next loss inSeqNo(seqno)
 
-         // find next node
-         int i = (loc + 1) % m_iSize;
+	 // find next node
+	 int i = (loc + 1) % m_iSize;
 
-         // remove the "seqno" and change the starter as next seq. no.
-         m_piData1[i] = CSeqNo::incseq(m_piData1[loc]);
+	 // remove the "seqno" and change the starter as next seq. no.
+	 m_piData1[i] = CSeqNo::incseq(m_piData1[loc]);
 
-         // process the sequence end
-         if (CSeqNo::seqcmp(m_piData2[loc], CSeqNo::incseq(m_piData1[loc])) > 0)
-            m_piData2[i] = m_piData2[loc];
+	 // process the sequence end
+	 if (CSeqNo::seqcmp(m_piData2[loc], CSeqNo::incseq(m_piData1[loc])) > 0)
+	    m_piData2[i] = m_piData2[loc];
 
-         // remove the current node
-         m_piData1[loc] = -1;
-         m_piData2[loc] = -1;
- 
-         // update list pointer
-         m_piNext[i] = m_piNext[loc];
-         m_piPrior[i] = m_piPrior[loc];
+	 // remove the current node
+	 m_piData1[loc] = -1;
+	 m_piData2[loc] = -1;
 
-         if (m_iHead == loc)
-            m_iHead = i;
-         else
-            m_piNext[m_piPrior[i]] = i;
+	 // update list pointer
+	 m_piNext[i] = m_piNext[loc];
+	 m_piPrior[i] = m_piPrior[loc];
 
-         if (m_iTail == loc)
-            m_iTail = i;
-         else
-            m_piPrior[m_piNext[i]] = i;
+	 if (m_iHead == loc)
+	    m_iHead = i;
+	 else
+	    m_piNext[m_piPrior[i]] = i;
+
+	 if (m_iTail == loc)
+	    m_iTail = i;
+	 else
+	    m_piPrior[m_piNext[i]] = i;
       }
 
       m_iLength --;
@@ -590,9 +590,9 @@ bool CRcvLossList::remove(int32_t seqno)
       // it is the sequence end
 
       if (seqno == CSeqNo::incseq(m_piData1[i]))
-         m_piData2[i] = -1;
+	 m_piData2[i] = -1;
       else
-         m_piData2[i] = CSeqNo::decseq(seqno);
+	 m_piData2[i] = CSeqNo::decseq(seqno);
    }
    else
    {
@@ -603,14 +603,14 @@ bool CRcvLossList::remove(int32_t seqno)
       loc = (loc + 1) % m_iSize;
 
       m_piData1[loc] = CSeqNo::incseq(seqno);
-      if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)      
-         m_piData2[loc] = m_piData2[i];
+      if (CSeqNo::seqcmp(m_piData2[i], m_piData1[loc]) > 0)
+	 m_piData2[loc] = m_piData2[i];
 
       // the first (original) sequence is between the original sequence start to CSeqNo::decseq(seqno)
       if (seqno == CSeqNo::incseq(m_piData1[i]))
-         m_piData2[i] = -1;
+	 m_piData2[i] = -1;
       else
-         m_piData2[i] = CSeqNo::decseq(seqno);
+	 m_piData2[i] = CSeqNo::decseq(seqno);
 
       // update the list pointer
       m_piNext[loc] = m_piNext[i];
@@ -618,9 +618,9 @@ bool CRcvLossList::remove(int32_t seqno)
       m_piPrior[loc] = i;
 
       if (m_iTail == i)
-         m_iTail = loc;
+	 m_iTail = loc;
       else
-         m_piPrior[m_piNext[loc]] = loc;
+	 m_piPrior[m_piNext[loc]] = loc;
    }
 
    m_iLength --;
@@ -633,14 +633,14 @@ bool CRcvLossList::remove(int32_t seqno1, int32_t seqno2)
    if (seqno1 <= seqno2)
    {
       for (int32_t i = seqno1; i <= seqno2; ++ i)
-         remove(i);
+	 remove(i);
    }
    else
    {
       for (int32_t j = seqno1; j < CSeqNo::m_iMaxSeqNo; ++ j)
-         remove(j);
+	 remove(j);
       for (int32_t k = 0; k <= seqno2; ++ k)
-         remove(k);
+	 remove(k);
    }
 
    return true;
@@ -656,9 +656,9 @@ bool CRcvLossList::find(int32_t seqno1, int32_t seqno2) const
    while (-1 != p)
    {
       if ((CSeqNo::seqcmp(m_piData1[p], seqno1) == 0) ||
-          ((CSeqNo::seqcmp(m_piData1[p], seqno1) > 0) && (CSeqNo::seqcmp(m_piData1[p], seqno2) <= 0)) ||
-          ((CSeqNo::seqcmp(m_piData1[p], seqno1) < 0) && (m_piData2[p] != -1) && CSeqNo::seqcmp(m_piData2[p], seqno1) >= 0))
-          return true;
+	  ((CSeqNo::seqcmp(m_piData1[p], seqno1) > 0) && (CSeqNo::seqcmp(m_piData1[p], seqno2) <= 0)) ||
+	  ((CSeqNo::seqcmp(m_piData1[p], seqno1) < 0) && (m_piData2[p] != -1) && CSeqNo::seqcmp(m_piData2[p], seqno1) >= 0))
+	  return true;
 
       p = m_piNext[p];
    }
@@ -690,10 +690,10 @@ void CRcvLossList::getLossArray(int32_t* array, int& len, int limit)
       array[len] = m_piData1[i];
       if (-1 != m_piData2[i])
       {
-         // there are more than 1 loss in the sequence
-         array[len] |= 0x80000000;
-         ++ len;
-         array[len] = m_piData2[i];
+	 // there are more than 1 loss in the sequence
+	 array[len] |= 0x80000000;
+	 ++ len;
+	 array[len] = m_piData2[i];
       }
 
       ++ len;

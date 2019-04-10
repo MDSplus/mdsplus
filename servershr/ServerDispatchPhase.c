@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   21-APR-1992
 
@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Call sequence:
 
 int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phasenam, char *noact,
-                          int *sync, void (*output_rtn)(), struct descriptor *monitor)
+	                  int *sync, void (*output_rtn)(), struct descriptor *monitor)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -49,7 +49,7 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -240,29 +240,29 @@ STATIC_ROUTINE void ActionDone(int idx){
       TdiExecute(&expression_d, &xd MDS_END_ARG);
       MdsFree1Dx(&xd, NULL);
       for (i = 0; i < actions[idx].num_references; i++) {
-        int dstat;
-        int doit;
-        int cidx = actions[idx].referenced_by[i];
-        RDLOCK_ACTION(cidx,adl);
-        if (!actions[cidx].done) {
-          if IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)) {
-            UNLOCK_ACTION(cidx,ad_ftt);
-            if (doit)
-              Dispatch(cidx);
-            else {
-              WRLOCK_ACTION(cidx,ad_ftte);
-              actions[cidx].status = ServerNOT_DISPATCHED;
-              UNLOCK_ACTION(cidx,ad_ftte);
-              DoActionDone(cidx);
-            }
-          } else if (dstat != TdiUNKNOWN_VAR) {
-            UNLOCK_ACTION(cidx,ad_fte);
-            WRLOCK_ACTION(cidx,ad_fte);
-            actions[cidx].status = ServerINVALID_DEPENDENCY;
-            UNLOCK_ACTION(cidx,ad_fte);
-            DoActionDone(cidx);
-          }
-        } else UNLOCK_ACTION(cidx,ad_fe);
+	int dstat;
+	int doit;
+	int cidx = actions[idx].referenced_by[i];
+	RDLOCK_ACTION(cidx,adl);
+	if (!actions[cidx].done) {
+	  if IS_OK(dstat = TdiGetLong(actions[cidx].condition, &doit)) {
+	    UNLOCK_ACTION(cidx,ad_ftt);
+	    if (doit)
+	      Dispatch(cidx);
+	    else {
+	      WRLOCK_ACTION(cidx,ad_ftte);
+	      actions[cidx].status = ServerNOT_DISPATCHED;
+	      UNLOCK_ACTION(cidx,ad_ftte);
+	      DoActionDone(cidx);
+	    }
+	  } else if (dstat != TdiUNKNOWN_VAR) {
+	    UNLOCK_ACTION(cidx,ad_fte);
+	    WRLOCK_ACTION(cidx,ad_fte);
+	    actions[cidx].status = ServerINVALID_DEPENDENCY;
+	    UNLOCK_ACTION(cidx,ad_fte);
+	    DoActionDone(cidx);
+	  }
+	} else UNLOCK_ACTION(cidx,ad_fe);
       }
     }
     UNLOCK_ACTION(idx,ad);
@@ -429,7 +429,7 @@ STATIC_ROUTINE void WaitForActions(int all, int first_g, int last_g, int first_c
   while ((c_status == ETIMEDOUT || c_status == C_OK)
       && !isAbortInProgress()
       && (g=!NoOutstandingActions(first_g, last_g)
-        || (all && (c=!NoOutstandingActions(first_c, last_c))))) {
+	|| (all && (c=!NoOutstandingActions(first_c, last_c))))) {
 #ifdef DEBUG
     fprintf(stderr,"%lu: %d, %d\n",(long unsigned  int)tp.tv_sec,g,c);
     PRINT_ACTIONS;
@@ -459,10 +459,10 @@ STATIC_ROUTINE char *DetailProc(int full){
       if (actions[i].dispatched && !actions[i].done && ((int)actions[i].doing == doing)) {
 	char server[33];
 	sprintf(msg1, "	%s %s %s for shot %d\n",
-                actions[i].path,
+	        actions[i].path,
 		actions[i].doing ? "in progress on" : "dispatched to", Server(server,actions[i].server),
 		table->shot);
-        UNLOCK_ACTION(i,dp_t);
+	UNLOCK_ACTION(i,dp_t);
 	if (!msg)
 	  msg = strcpy((char *)malloc(msglen), "\nWaiting on:\n");
 	if (msglen < (strlen(msg) + strlen(msg1) + 1)) {
@@ -473,7 +473,7 @@ STATIC_ROUTINE char *DetailProc(int full){
 	}
 	strcat(msg, msg1);
       }else
-        UNLOCK_ACTION(i,dp_e);
+	UNLOCK_ACTION(i,dp_e);
     }
   }
   }else{
@@ -550,8 +550,8 @@ EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, c
     for (i = first_c; i < last_c; i++) {
       RDLOCK_ACTION(i,sdp);
       if (!actions[i].done) {
-        UNLOCK_ACTION(i,sdpw);
-        WRLOCK_ACTION(i,sdpw);
+	UNLOCK_ACTION(i,sdpw);
+	WRLOCK_ACTION(i,sdpw);
 	actions[i].status = ServerCANT_HAPPEN;
 	DoActionDone(i);
       }
@@ -615,7 +615,7 @@ STATIC_ROUTINE void Dispatch(int i){
       WRLOCK_ACTION(i,d_w);
       //ProgLoc = 7003;
       if STATUS_OK
-        actions[i].dispatched = 1;
+	actions[i].dispatched = 1;
     }
     //ProgLoc = 7004;
     if STATUS_NOT_OK {

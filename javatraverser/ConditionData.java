@@ -18,10 +18,10 @@ public class ConditionData extends CompoundData
 	descs = new Data[1];
 	descs[0] = argument;
     }
-    
+
     public final int getModifier() {return opcode; }
     public final Data getArgument() {return descs[0]; }
-    
+
     public static final int NEGATE_CONDITION = 7;
     public static final int IGNORE_UNDEFINED = 8;
     public static final int IGNORE_STATUS = 9;

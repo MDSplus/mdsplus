@@ -20,7 +20,7 @@ public class IntArray extends ArrayData
     }
     public IntArray(int datum[]) { this(datum, false); }
     public int [] getIntArray() {return datum; }
-    public float [] getFloatArray() 
+    public float [] getFloatArray()
     {
 	float ris [] = new float[datum.length];
 	for(int i = 0; i < datum.length; i++)

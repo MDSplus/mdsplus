@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -69,7 +69,7 @@ static int KsMultiIo(CamKey Key,	// module info
   if (MSGLVL(FUNCTION_NAME))
     printf("%s()\n", KM_ROUTINE_NAME);
 
-  // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address); 
+  // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
   sprintf(dev_name, "GK%c%2d%2.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
   if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {
@@ -156,8 +156,8 @@ static int KsMultiIo(CamKey Key,	// module info
 	break;
       }
       if (!dptr) {
-        printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
-        break;
+	printf("%s = invalid reg->nb = %d\n", reg[i].name, reg[i].nb);
+	break;
       }
       Command[0] = OpCodeRegisterAccess;
       Command[1] = 0;

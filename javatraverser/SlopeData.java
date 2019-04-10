@@ -12,7 +12,7 @@ public class SlopeData extends CompoundData
 	descs[1] = begin;
 	descs[2] = end;
     }
-    
+
     public Data getSlope()  {return descs[0]; }
     public Data getBegin()  {return descs[1]; }
     public Data getEnd()    {return descs[2]; }
