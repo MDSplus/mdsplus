@@ -11,3 +11,4 @@
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/shotcontrol.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq435st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/cryocon18i.py
+./usr/local/mdsplus/pydevices/HtsDevices/cryocon24c.py
