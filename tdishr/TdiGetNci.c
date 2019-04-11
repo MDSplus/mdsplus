@@ -23,28 +23,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1GetNci.C
-        Get node characteristic information by name.
-        WARNING this routine is an exception to rule that NIDs and PATHs are evaluated.
-        You may use GETNCI(GETNCI(.A,"CHILDREN"),"MEMBER_NIDS) as GETNCI can handle NID arrays.
-        WARNING an array of NIDs does not act like a NID/PATH vector because [.a,.b] has .a and .b evaluated.
-        Thus use a vector of text [".a",".b"] or [GETNCI(.a,"NID"), GETNCI(.b,"NID")].
+	Get node characteristic information by name.
+	WARNING this routine is an exception to rule that NIDs and PATHs are evaluated.
+	You may use GETNCI(GETNCI(.A,"CHILDREN"),"MEMBER_NIDS) as GETNCI can handle NID arrays.
+	WARNING an array of NIDs does not act like a NID/PATH vector because [.a,.b] has .a and .b evaluated.
+	Thus use a vector of text [".a",".b"] or [GETNCI(.a,"NID"), GETNCI(.b,"NID")].
 
-        The search name can be shortened to a unique match.
-        The full search name should be used in stored trees.
-                GETNCI(nid-path,"item_name",["usage_name"])
-        Note nid-path may be a nid (.XRAY),
-        a path (.XRAY as forward reference in compile), it may be wildcarded (.*RAY),
-        text or text expression (".XRAY"//":DESCRIPTION"), or
-        long or long_unsigned expression of node number (1) or arrays of these.
+	The search name can be shortened to a unique match.
+	The full search name should be used in stored trees.
+	        GETNCI(nid-path,"item_name",["usage_name"])
+	Note nid-path may be a nid (.XRAY),
+	a path (.XRAY as forward reference in compile), it may be wildcarded (.*RAY),
+	text or text expression (".XRAY"//":DESCRIPTION"), or
+	long or long_unsigned expression of node number (1) or arrays of these.
 
-        Bit tests: GETNCI(nid-path,"IS_CHILD") tests state of PARENT_RELATIONSHIP and gives $TRUE/$FALSE.
-        Special: GETNCI(nid-path,"NID_NUMBER") gives nid as longword.
-        Special: GETNCI(nid-path,"RECORD") gives value at NID, EVALUATE(nid-path) is evaluated.
-        Special: GETNCI(,"item_name") gives information about default/current node.
+	Bit tests: GETNCI(nid-path,"IS_CHILD") tests state of PARENT_RELATIONSHIP and gives $TRUE/$FALSE.
+	Special: GETNCI(nid-path,"NID_NUMBER") gives nid as longword.
+	Special: GETNCI(nid-path,"RECORD") gives value at NID, EVALUATE(nid-path) is evaluated.
+	Special: GETNCI(,"item_name") gives information about default/current node.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
-        NEED parameter for sizeof(NODE_NAME).
-        NEED to be careful about any new names. They could take away uniqueness from existing code.
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	NEED parameter for sizeof(NODE_NAME).
+	NEED to be careful about any new names. They could take away uniqueness from existing code.
 */
 #include <STATICdef.h>
 #undef MAX
@@ -184,11 +184,11 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   char c0;
 
 	/****************************************
-        If smaller is mismatch, go on.
-        (If len1 == len2, got it: cmp=0.)
-        If len1 > len2, omit trailing blanks.
-        If len1 < len2, check for unique match.
-        ****************************************/
+	If smaller is mismatch, go on.
+	(If len1 == len2, got it: cmp=0.)
+	If len1 > len2, omit trailing blanks.
+	If len1 < len2, check for unique match.
+	****************************************/
   if ((cmp = strncmp(s1->pointer, s2[0].item_name, len1 < len2 ? len1 : len2)) != 0) ;
   else if (len1 > len2)
     cmp = (c0 = s1->pointer[len2]) != ' ' && c0 != '\t';
@@ -277,8 +277,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
     nelem = 1;
   }
 	/**********************
-        String of item to find.
-        **********************/
+	String of item to find.
+	**********************/
   if STATUS_OK
     status = TdiData(list[1], &tmp MDS_END_ARG);
   if STATUS_OK
@@ -292,8 +292,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
   }
   StrFree1Dx(&string);
 	/********************
-        String of node usage.
-        ********************/
+	String of node usage.
+	********************/
   if (narg > 2 && list[2]) {
     usage_mask = 0;
     if STATUS_OK
@@ -329,8 +329,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
   } else
     usage_mask = 0xffff;
 	/********************
-        Guess at holder size.
-        ********************/
+	Guess at holder size.
+	********************/
   if STATUS_OK {
     step = key_ptr->item_length == 0 ? sizeof(struct descriptor_xd) : key_ptr->item_length;
     status = MdsGet1DxA((struct descriptor_a *)&arr0, &step, &key_ptr->item_dtype, &holdxd);
@@ -341,12 +341,12 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
     memset(hold_ptr, 255, holda_ptr->arsize);
   }
 	/**************************************
-        Loop over arrays of NIDs or TEXT names.
-        **************************************/
+	Loop over arrays of NIDs or TEXT names.
+	**************************************/
   for (; STATUS_OK && --nelem >= 0; dat_ptr += len) {
 		/**************
-                Convert to NID.
-                **************/
+	        Convert to NID.
+	        **************/
     wild = 0;
  more:switch (dtype) {
     case DTYPE_PATH:
@@ -372,8 +372,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       break;
     }
 		/****************************
-                Double size when you run out.
-                ****************************/
+	        Double size when you run out.
+	        ****************************/
     if ((unsigned int)(outcount * step) >= holda_ptr->arsize) {
       holda_ptr->arsize *= 2;
       if STATUS_OK
@@ -389,8 +389,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       tmp = EMPTY_XD;
     }
 	/*****************************
-        Store either data or pointers.
-        *****************************/
+	Store either data or pointers.
+	*****************************/
     if (STATUS_NOT_OK)
       break;
     if (key_ptr->item_code == NID_NUMBER)
@@ -400,8 +400,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       status = TdiGetRecord(nid, (struct descriptor_xd *)hold_ptr);
     }
 		/********************************
-                Logical results for bit or value.
-                ********************************/
+	        Logical results for bit or value.
+	        ********************************/
     else if (key_ptr->item_mask) {
       NCI_ITM masked[2] = { {sizeof(flag), 0, 0, 0}
       , EOL
@@ -414,23 +414,23 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
 	status = TreeGetNci(nid, masked);
       if STATUS_OK
 /*
-                        {
-                          char ans=0;
-                          switch (retlen)
-                          {
-                          case 1: flag = (int)(*(char *)&flag); break;
-                          case 2: flag = (int)(*(short *)&flag); break;
-                          case 4: flag = (int)(*(int *)&flag); break;
-                          }
-                          *(char *)hold_ptr = (char)((unsigned short)(flag & key_ptr->item_mask) == key_ptr->item_test);
-                        }
+	                {
+	                  char ans=0;
+	                  switch (retlen)
+	                  {
+	                  case 1: flag = (int)(*(char *)&flag); break;
+	                  case 2: flag = (int)(*(short *)&flag); break;
+	                  case 4: flag = (int)(*(int *)&flag); break;
+	                  }
+	                  *(char *)hold_ptr = (char)((unsigned short)(flag & key_ptr->item_mask) == key_ptr->item_test);
+	                }
 */
 	*(char *)hold_ptr = (char)((flag & key_ptr->item_mask) == key_ptr->item_test);
     }
 		/*************************
-                Only nid arrays are here.
-                First get size, then data.
-                *************************/
+	        Only nid arrays are here.
+	        First get size, then data.
+	        *************************/
     else if (key_ptr->item_test) {
       const dtype_t  dtype = DTYPE_NID;
       const length_t dlen  = (length_t)sizeof(nid);
@@ -458,8 +458,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       }
     }
 		/***************************
-                Do dynamic text arrays here.
-                ***************************/
+	        Do dynamic text arrays here.
+	        ***************************/
     else if (key_ptr->item_length == 0) {
       NCI_ITM texted[2] = { {0, 0, 0, 0}
       , EOL
@@ -477,9 +477,9 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       }
     }
 		/***********************************
-                Fixed length items can be done here.
-                Skip len=0 NIDs (missing).
-                ***********************************/
+	        Fixed length items can be done here.
+	        Skip len=0 NIDs (missing).
+	        ***********************************/
     else {
       NCI_ITM fixed[2] = { {0, 0, 0, 0}
       , EOL

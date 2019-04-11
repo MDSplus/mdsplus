@@ -14,7 +14,7 @@ public class IPControlSetup extends DeviceSetup {
 
     /** Creates new form BeanForm */
     public IPControlSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -26,151 +26,151 @@ public class IPControlSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceWave1 = new DeviceWave();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceWave2 = new DeviceWave();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceChoice1 = new DeviceChoice();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jTabbedPane1 = new javax.swing.JTabbedPane();
+	jPanel4 = new javax.swing.JPanel();
+	jPanel6 = new javax.swing.JPanel();
+	deviceField5 = new DeviceField();
+	deviceWave1 = new DeviceWave();
+	jPanel5 = new javax.swing.JPanel();
+	jPanel7 = new javax.swing.JPanel();
+	jPanel8 = new javax.swing.JPanel();
+	deviceField6 = new DeviceField();
+	deviceField7 = new DeviceField();
+	deviceField8 = new DeviceField();
+	jPanel9 = new javax.swing.JPanel();
+	deviceField9 = new DeviceField();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceWave2 = new DeviceWave();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceChoice1 = new DeviceChoice();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	deviceField4 = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Plasma Current COntrol");
-        setDeviceType("IPControl");
-        setHeight(500);
-        setWidth(500);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	setDeviceProvider("localhost");
+	setDeviceTitle("Plasma Current COntrol");
+	setDeviceType("IPControl");
+	setHeight(500);
+	setWidth(500);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel4.setLayout(new java.awt.BorderLayout());
+	jPanel4.setLayout(new java.awt.BorderLayout());
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("V Max:");
-        deviceField5.setOffsetNid(6);
-        jPanel6.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("V Max:");
+	deviceField5.setOffsetNid(6);
+	jPanel6.add(deviceField5);
 
-        jPanel4.add(jPanel6, java.awt.BorderLayout.NORTH);
+	jPanel4.add(jPanel6, java.awt.BorderLayout.NORTH);
 
-        deviceWave1.setIdentifier("");
-        deviceWave1.setOffsetNid(7);
-        deviceWave1.setUpdateExpression("");
-        jPanel4.add(deviceWave1, java.awt.BorderLayout.CENTER);
+	deviceWave1.setIdentifier("");
+	deviceWave1.setOffsetNid(7);
+	deviceWave1.setUpdateExpression("");
+	jPanel4.add(deviceWave1, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("Tokamak", jPanel4);
+	jTabbedPane1.addTab("Tokamak", jPanel4);
 
-        jPanel5.setLayout(new java.awt.BorderLayout());
+	jPanel5.setLayout(new java.awt.BorderLayout());
 
-        jPanel7.setLayout(new java.awt.GridLayout(2, 0));
+	jPanel7.setLayout(new java.awt.GridLayout(2, 0));
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("IP Star");
-        deviceField6.setNumCols(4);
-        deviceField6.setOffsetNid(13);
-        jPanel8.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("IP Star");
+	deviceField6.setNumCols(4);
+	deviceField6.setOffsetNid(13);
+	jPanel8.add(deviceField6);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Delta Ip Star: ");
-        deviceField7.setNumCols(5);
-        deviceField7.setOffsetNid(14);
-        jPanel8.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Delta Ip Star: ");
+	deviceField7.setNumCols(5);
+	deviceField7.setOffsetNid(14);
+	jPanel8.add(deviceField7);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Delta T Ramp Down: ");
-        deviceField8.setNumCols(5);
-        deviceField8.setOffsetNid(15);
-        jPanel8.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("Delta T Ramp Down: ");
+	deviceField8.setNumCols(5);
+	deviceField8.setOffsetNid(15);
+	jPanel8.add(deviceField8);
 
-        jPanel7.add(jPanel8);
+	jPanel7.add(jPanel8);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("POhm Max: ");
-        deviceField9.setNumCols(5);
-        deviceField9.setOffsetNid(16);
-        jPanel9.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("POhm Max: ");
+	deviceField9.setNumCols(5);
+	deviceField9.setOffsetNid(16);
+	jPanel9.add(deviceField9);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Tau z");
-        deviceField10.setNumCols(5);
-        deviceField10.setOffsetNid(17);
-        jPanel9.add(deviceField10);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("Tau z");
+	deviceField10.setNumCols(5);
+	deviceField10.setOffsetNid(17);
+	jPanel9.add(deviceField10);
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Tau p");
-        deviceField11.setNumCols(5);
-        deviceField11.setOffsetNid(18);
-        jPanel9.add(deviceField11);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("Tau p");
+	deviceField11.setNumCols(5);
+	deviceField11.setOffsetNid(18);
+	jPanel9.add(deviceField11);
 
-        jPanel7.add(jPanel9);
+	jPanel7.add(jPanel9);
 
-        jPanel5.add(jPanel7, java.awt.BorderLayout.NORTH);
+	jPanel5.add(jPanel7, java.awt.BorderLayout.NORTH);
 
-        deviceWave2.setIdentifier("");
-        deviceWave2.setOffsetNid(19);
-        deviceWave2.setUpdateExpression("");
-        jPanel5.add(deviceWave2, java.awt.BorderLayout.CENTER);
+	deviceWave2.setIdentifier("");
+	deviceWave2.setOffsetNid(19);
+	deviceWave2.setUpdateExpression("");
+	jPanel5.add(deviceWave2, java.awt.BorderLayout.CENTER);
 
-        jTabbedPane1.addTab("RFP", jPanel5);
+	jTabbedPane1.addTab("RFP", jPanel5);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+	jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel2.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment");
+	deviceField1.setNumCols(25);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel2.add(deviceField1);
 
-        deviceChoice1.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2});
-        deviceChoice1.setChoiceItems(new String[] {"OFF", "TOKAMAK", "RFP"});
-        deviceChoice1.setConvert(true);
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Type");
-        deviceChoice1.setOffsetNid(24);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel2.add(deviceChoice1);
+	deviceChoice1.setChoiceIntValues(new int[] {(int)0,(int)1,(int)2});
+	deviceChoice1.setChoiceItems(new String[] {"OFF", "TOKAMAK", "RFP"});
+	deviceChoice1.setConvert(true);
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Type");
+	deviceChoice1.setOffsetNid(24);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel2.add(deviceChoice1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("T Start:");
-        deviceField2.setNumCols(5);
-        deviceField2.setOffsetNid(2);
-        jPanel3.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("T Start:");
+	deviceField2.setNumCols(5);
+	deviceField2.setOffsetNid(2);
+	jPanel3.add(deviceField2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("T End:");
-        deviceField3.setNumCols(5);
-        deviceField3.setOffsetNid(3);
-        jPanel3.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("T End:");
+	deviceField3.setNumCols(5);
+	deviceField3.setOffsetNid(3);
+	jPanel3.add(deviceField3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Kp");
-        deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(4);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Kp");
+	deviceField4.setNumCols(5);
+	deviceField4.setOffsetNid(4);
+	jPanel3.add(deviceField4);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
 
 

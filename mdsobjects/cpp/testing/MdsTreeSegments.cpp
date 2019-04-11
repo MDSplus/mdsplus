@@ -76,9 +76,9 @@ void putSegment(){
       TEST_SEGMENT_FLOAT(n[0],0,array[i]==0.);
       TEST_SEGMENT_FLOAT(n[1],0,array[i]==0.);
       for(int i = 0; i < 10; i++){
-        unique_ptr<Float32Array> chunk = new MDSplus::Float32Array(&data[i*100], 100);
-        n[0]->putSegment(chunk, -1);
-        n[1]->putSegment(chunk, -1);
+	unique_ptr<Float32Array> chunk = new MDSplus::Float32Array(&data[i*100], 100);
+	n[0]->putSegment(chunk, -1);
+	n[1]->putSegment(chunk, -1);
       }
       TEST_SEGMENT_FLOAT(n[0],0,array[i]==data[i]);
       TEST_SEGMENT_FLOAT(n[1],0,array[i]==data[i]);

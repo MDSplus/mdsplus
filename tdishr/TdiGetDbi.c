@@ -23,13 +23,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1GetDbi.C
-        Get data base information by name.
-                GETDBI(STRING, [OFFSET])
+	Get data base information by name.
+	        GETDBI(STRING, [OFFSET])
 
-        The search name can be shortened to a unique match.
-        The full search name should be used in stored trees.
+	The search name can be shortened to a unique match.
+	The full search name should be used in stored trees.
 
-        Ken Klare, LANL P-4     (c)1990,1991
+	Ken Klare, LANL P-4     (c)1990,1991
 */
 #include <STATICdef.h>
 #include "tdirefstandard.h"
@@ -75,11 +75,11 @@ STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
   char c0;
 
 	/****************************************
-        If smaller is mismatch, go on.
-        (If len1 == len2, got it: cmp=0.)
-        If len1 > len2, omit trailing blanks.
-        If len1 < len2, check for unique match.
-        ****************************************/
+	If smaller is mismatch, go on.
+	(If len1 == len2, got it: cmp=0.)
+	If len1 > len2, omit trailing blanks.
+	If len1 < len2, check for unique match.
+	****************************************/
   if ((cmp = strncmp(s1->pointer, s2[0].item_name, len1 < len2 ? len1 : len2)) != 0) ;
   else if (len1 > len2)
     cmp = (c0 = s1->pointer[len2]) != ' ' && c0 != '\t';
@@ -108,8 +108,8 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
   };
   lst[0].pointer = (unsigned char *)&index;
 	/**********************
-        String of item to find.
-        **********************/
+	String of item to find.
+	**********************/
   status = TdiData(list[0], &tmp MDS_END_ARG);
   if STATUS_OK
     status = TdiUpcase(&tmp, &string MDS_END_ARG);
@@ -123,16 +123,16 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
   StrFree1Dx(&string);
   MdsFree1Dx(&tmp, NULL);
 	/**********************************
-        Somebody might want others in pool.
-        **********************************/
+	Somebody might want others in pool.
+	**********************************/
   if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &index);
   else
     index = 0;
 	/***********************
-        Get the item asked for.
-        Fixed length or varying.
-        ***********************/
+	Get the item asked for.
+	Fixed length or varying.
+	***********************/
   if STATUS_OK {
     lst[1].code = key_ptr->item_code;
     if ((lst[1].buffer_length = key_ptr->item_length) != 0) {
@@ -161,9 +161,9 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 }
 
 /*-------------------------------------------------------------------
-        Use a different default, shot, or experiment.
-                USING(expression, [DEFAULT], [SHOTID], [EXPT])
-        Note that DEFAULT may be NID/PATH and will not be data at same.
+	Use a different default, shot, or experiment.
+	        USING(expression, [DEFAULT], [SHOTID], [EXPT])
+	Note that DEFAULT may be NID/PATH and will not be data at same.
 */
 STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */
 			     int arg __attribute__ ((unused)),
@@ -207,10 +207,10 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
   unsigned char omits[] = { DTYPE_PATH, 0 };
 
 	/**********************
-        Evaluate with current.
-        Use current if omitted.
-        Must get expt if shot.
-        **********************/
+	Evaluate with current.
+	Use current if omitted.
+	Must get expt if shot.
+	**********************/
   if (narg > 1 && STATUS_OK) {
     if (list[1]) {
       struct descriptor_xd xd = EMPTY_XD;
@@ -276,9 +276,9 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
       }
     }
 		/*********************
-                Set new tree and path.
-                Allow some rel paths.
-                *********************/
+	        Set new tree and path.
+	        Allow some rel paths.
+	        *********************/
     if STATUS_OK {
       char *tree = MdsDescrToCstring((struct descriptor *)&expt);
       ctx = &dbid;
@@ -296,8 +296,8 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
     StrFree1Dx(&def);
   }
 	/***********************
-        Evaluate with temporary.
-        ***********************/
+	Evaluate with temporary.
+	***********************/
   if STATUS_OK {
     struct descriptor_xd tmp = EMPTY_XD;
     status = _TdiEvaluate(ctx, list[0], &tmp MDS_END_ARG);

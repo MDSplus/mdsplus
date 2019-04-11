@@ -23,18 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1DoTask.C
-        A routine to process various tree operations.
-        status = TDI$DO_TASK(&task_dsc)
+	A routine to process various tree operations.
+	status = TDI$DO_TASK(&task_dsc)
 
-        The task may be:
+	The task may be:
 *not    BUILD_METHOD    (timeout, method, object, ...)
 *not    BUILD_PROCEDURE (timeout, language, procedure, ...)
 *not    BUILD_PROGRAM   (timeout, program)
-        BUILD_ROUTINE   (timeout, image, routine, ...)
+	BUILD_ROUTINE   (timeout, image, routine, ...)
 
-        The timeout in seconds, if present, determines the allowed task time.
+	The timeout in seconds, if present, determines the allowed task time.
 
-        Ken Klare, LANL P-4     (c)1992
+	Ken Klare, LANL P-4     (c)1992
 */
 #include <STATICdef.h>
 #include <stdlib.h>
@@ -56,13 +56,13 @@ extern int TdiPutLong();
 extern int TdiCall();
 
 /****   SYS$SETIMR([efn], &daytim, [&astadr], [reqidt], [flags])
-        SYS$CANTIM([reqidt], [acmode])
-        efn     event flag number
-        daytim  +absolute, - relative time
-        astadr  service routine on expiration
-        reqidt  unique id
-        flags   1 for CPU time
-        acmode  access mode
+	SYS$CANTIM([reqidt], [acmode])
+	efn     event flag number
+	daytim  +absolute, - relative time
+	astadr  service routine on expiration
+	reqidt  unique id
+	flags   1 for CPU time
+	acmode  access mode
 ****/
 
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr){
@@ -102,7 +102,7 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
     {
       struct descriptor_program *prog_task = (struct descriptor_program *)ptask;
       if (prog_task->program && prog_task->program->dtype == DTYPE_T)
-        status = LibSpawn(prog_task->program, 1, 0) ? MDSplusERROR : MDSplusSUCCESS;
+	status = LibSpawn(prog_task->program, 1, 0) ? MDSplusERROR : MDSplusSUCCESS;
       status = TdiPutLong(&status, out_ptr);
     }
     break;

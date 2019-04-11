@@ -13,7 +13,7 @@ public class KillServer extends MdsConnection
   {
     String serverIp = "";
     int serverPort = 0;
-	  
+
 
     try {
       serverIp = args[0];
@@ -31,7 +31,7 @@ public class KillServer extends MdsConnection
 
 		killServer.MdsValue("kill", new Vector(), false);
 
-	
+
 		killServer.DisconnectFromMds();
 	}
 	catch(Exception exc)
@@ -39,9 +39,9 @@ public class KillServer extends MdsConnection
       System.err.println("Cannot connect to server: " + serverIp + ":"+serverPort);
     }
 
-	     
+
 	System.exit(0);
- 
+
   }
 
 

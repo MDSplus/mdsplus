@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   16-NOV-1993
 
-    		Purpose: Set/Get detail procedure used during show server
+		Purpose: Set/Get detail procedure used during show server
 
 ------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ void (*)(struct dsc$descriptor *)SERVER$GET_DETAIL_PROC()
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

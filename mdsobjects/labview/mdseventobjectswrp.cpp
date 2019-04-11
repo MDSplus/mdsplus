@@ -115,10 +115,10 @@ EXPORT void mdsplus_event_wait(const void *lvEventPtr, int *timeoutOccurred, Err
 		eventPtr = reinterpret_cast<Event *>(const_cast<void *>(lvEventPtr));
 
 		// 1 Sec timeout
-std::cout << "ASPETTO EVENTO....\n"; 
+std::cout << "ASPETTO EVENTO....\n";
 
 		eventPtr->wait(1);
-std::cout << "EVENTO ARRIVATO....\n"; 
+std::cout << "EVENTO ARRIVATO....\n";
 	}
 	catch (const MdsException & e)
 	{
@@ -238,7 +238,7 @@ EXPORT void mdsplus_event_setEvent_data(const char *evNameIn, const void *lvData
 
 EXPORT void mdsplus_event_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
-	char *int8Arr = NULL;	
+	char *int8Arr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = (char *)"";
@@ -470,7 +470,7 @@ EXPORT void mdsplus_revent_setEventAndWait(const char *evNameIn, const void *lvD
 
 EXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
-	char *int8Arr = NULL;	
+	char *int8Arr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = (char *)"";
@@ -496,7 +496,7 @@ EXPORT void mdsplus_revent_setEventRaw(const char *evNameIn, LByteArrHdl lvByteA
 
 EXPORT void mdsplus_revent_setEventRawAndWait(const char *evNameIn, LByteArrHdl lvByteArrHdlIn, ErrorCluster *error)
 {
-	char *int8Arr = NULL;	
+	char *int8Arr = NULL;
 	MgErr errorCode = noErr;
 	const char *errorSource = __FUNCTION__;
 	char const * errorMessage = (char *)"";

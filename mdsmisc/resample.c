@@ -24,21 +24,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   RESAMPLE   
+		Name:   RESAMPLE
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   15-AUG-1990
 
-    		Purpose: Resample a signal using linear interpolation.
-                         Extrapolated points are assumed to be the same
-                         value as the extremities.
+		Purpose: Resample a signal using linear interpolation.
+	                 Extrapolated points are assumed to be the same
+	                 value as the extremities.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 struct dsc$descriptor_xd *RESAMPLE(struct dsc$descriptor *sig,struct dsc$descriptor *x);
 
@@ -50,7 +50,7 @@ struct dsc$descriptor_xd *RESAMPLE(struct dsc$descriptor *sig,struct dsc$descrip
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

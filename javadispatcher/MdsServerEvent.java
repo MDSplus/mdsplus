@@ -13,10 +13,10 @@ class MdsServerEvent extends EventObject
 
     public MdsServerEvent(Object source, int jobid, int flags, int status)
     {
-        super(source);
-        this.jobid = jobid;
-        this.flags = flags;
-        this.status = status;
+	super(source);
+	this.jobid = jobid;
+	this.flags = flags;
+	this.status = status;
     }
     public int getJobid() {return jobid;}
     public int getFlags() {return flags;}

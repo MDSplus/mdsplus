@@ -108,15 +108,15 @@ int epixOpen(char *pcConfFile)
     if (status >= 0)
     {
 #ifdef DEBUG
-        printf("Open OK\n");
+	printf("Open OK\n");
 #endif
-        isOpen = true;
+	isOpen = true;
     }
     else
     {
-        printf("Open Error %d\a\a\n", status);
-        pxd_mesgFault(UNITSMAP);
-        return status;
+	printf("Open Error %d\a\a\n", status);
+	pxd_mesgFault(UNITSMAP);
+	return status;
     }
 #ifdef DEBUG
     printFrameInfo();
@@ -125,9 +125,9 @@ int epixOpen(char *pcConfFile)
     uint32 ticku[2];
     if(pxd_infoSysTicksUnits(ticku) == 0)
     {
-        dSecPerTick = (double)ticku[0] / (double)ticku[1] * 1E-6;
+	dSecPerTick = (double)ticku[0] / (double)ticku[1] * 1E-6;
 #ifdef DEBUG
-        printf("Microseconds per tick: %f\n", dSecPerTick * 1E6);
+	printf("Microseconds per tick: %f\n", dSecPerTick * 1E6);
 #endif
     }
     return status;
@@ -211,41 +211,41 @@ int epixCaptureFrame(int iID, int iFramesNid, double dTriggerTime, int iTimeoutM
     waitTime.tv_nsec = 5000000; //5ms delay
     if(*piBufIdx < 0)
     {
-        iLastBufIdx = pxd_capturedBuffer(iUnitMap);  //The first time captureFrame is called
-        *piFrameIdx = 0;
+	iLastBufIdx = pxd_capturedBuffer(iUnitMap);  //The first time captureFrame is called
+	*piFrameIdx = 0;
     }
     else
-        iLastBufIdx = *piBufIdx;
+	iLastBufIdx = *piBufIdx;
     int iMaxCount = iTimeoutMs/5; //Maximum number of iterations before timing out
     for(int i = 0; i < iMaxCount; i++)
     {
-        int iLastCaptured = pxd_capturedBuffer(iUnitMap);
-        if(iLastCaptured != iLastBufIdx) //A new frame arrived
-        {
-            iCurrTicks = pxd_capturedSysTicks(iUnitMap);//internal clock
-            if ( *piFrameIdx == 0) //first frame
-                *piBaseTicks = iCurrTicks;
-            *pdCurrTime = (iCurrTicks - (*piBaseTicks)) * dSecPerTick + dTriggerTime;
-            unsigned short *piFrame = new unsigned short[iPixelsToRead];//allocate frame
-            iPixelsRead = pxd_readushort(iUnitMap, iLastCaptured, 0, 0, iPixelsX, iPixelsY, piFrame, iPixelsToRead, (char *)"Grey");//get frame
+	int iLastCaptured = pxd_capturedBuffer(iUnitMap);
+	if(iLastCaptured != iLastBufIdx) //A new frame arrived
+	{
+	    iCurrTicks = pxd_capturedSysTicks(iUnitMap);//internal clock
+	    if ( *piFrameIdx == 0) //first frame
+	        *piBaseTicks = iCurrTicks;
+	    *pdCurrTime = (iCurrTicks - (*piBaseTicks)) * dSecPerTick + dTriggerTime;
+	    unsigned short *piFrame = new unsigned short[iPixelsToRead];//allocate frame
+	    iPixelsRead = pxd_readushort(iUnitMap, iLastCaptured, 0, 0, iPixelsX, iPixelsY, piFrame, iPixelsToRead, (char *)"Grey");//get frame
 #ifdef DEBUG
-            printf("FRAME %d READ AT TIME %f\n", *piFrameIdx, *pdCurrTime);
+	    printf("FRAME %d READ AT TIME %f\n", *piFrameIdx, *pdCurrTime);
 #endif
-            if(iPixelsRead != iPixelsToRead)
-            {
-                if (iPixelsRead < 0)
-                    printf("pxd_readushort: %s\n", pxd_mesgErrorCode(iPixelsRead));
-                else
-                    printf("pxd_readushort error: %d != %d\n", iPixelsRead, iPixelsToRead);
-                return 0;
-            }
-            camSaveFrameDirect(piFrame, iPixelsX, iPixelsY, *pdCurrTime, 12, pTree, iFramesNid, -1, *piFrameIdx, pList);
-            *piBufIdx = iLastCaptured;
-            *piFrameIdx += 1;
-            return 1;
-        }
-        else //No new frame
-            nanosleep(&waitTime, NULL);
+	    if(iPixelsRead != iPixelsToRead)
+	    {
+	        if (iPixelsRead < 0)
+	            printf("pxd_readushort: %s\n", pxd_mesgErrorCode(iPixelsRead));
+	        else
+	            printf("pxd_readushort error: %d != %d\n", iPixelsRead, iPixelsToRead);
+	        return 0;
+	    }
+	    camSaveFrameDirect(piFrame, iPixelsX, iPixelsY, *pdCurrTime, 12, pTree, iFramesNid, -1, *piFrameIdx, pList);
+	    *piBufIdx = iLastCaptured;
+	    *piFrameIdx += 1;
+	    return 1;
+	}
+	else //No new frame
+	    nanosleep(&waitTime, NULL);
     }
 //If code arrives here timeout occurred
     return 0;
@@ -261,34 +261,34 @@ int doTransaction(int iID, const char *pcOutBufIn, int iOutBytes, char *pcReadBu
     pcOutBuf[iOutBytes] = 0;
     for(int i = 0; i < iOutBytes; i++)
     {
-        pcOutBuf[i] = pcOutBufIn[i];
-        pcOutBuf[iOutBytes] ^= pcOutBuf[i];
+	pcOutBuf[i] = pcOutBufIn[i];
+	pcOutBuf[iOutBytes] ^= pcOutBuf[i];
     }
     waitTime.tv_sec = 0;
     waitTime.tv_nsec = 20000000; //20ms
     if(!isInitialized)
     {
-        iBytesRead = pxd_serialConfigure(iUnitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
-        if (iBytesRead < 0)
-        {
-            printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
-            return iBytesRead; // error
-        }
-        isInitialized = true;
+	iBytesRead = pxd_serialConfigure(iUnitMap, 0,  115200, 8, 0, 1, 0, 0, 0);
+	if (iBytesRead < 0)
+	{
+	    printf("ERROR CONFIGURING SERIAL CAMERALINK PORT\n");
+	    return iBytesRead; // error
+	}
+	isInitialized = true;
     }
     nanosleep(&waitTime, NULL);
     iBytesRead = pxd_serialWrite(iUnitMap, 0, pcOutBuf, iOutBytes+1);
     if (iBytesRead < 0)
     {
-        printf("ERROR IN SERIAL WRITE\n");
-        return iBytesRead; // error
+	printf("ERROR IN SERIAL WRITE\n");
+	return iBytesRead; // error
     }
     nanosleep(&waitTime, NULL);
     iBytesRead = pxd_serialRead(iUnitMap, 0, pcReadBuf, iBytesToRead);
     if (iBytesRead < 0)
-        printf("ERROR IN SERIAL READ\n");
+	printf("ERROR IN SERIAL READ\n");
     else if(iBytesRead != iBytesToRead)
-        printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", iBytesRead, iBytesToRead);
+	printf("ERROR IN SERIAL READ: LESS BYTES READ THAN EXPECTED %d %d\n", iBytesRead, iBytesToRead);
     return iBytesRead;
 }
 

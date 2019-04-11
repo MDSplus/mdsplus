@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -63,7 +63,7 @@ static char *ShowType(int type);
 //-------------------------------------------------------------------------
 // Thu Feb 15 12:33:49 EST 2001
 // Fri Mar  9 16:21:03 EST 2001
-// Wed May 23 11:07:27 EDT 2001 -- now returns highway type, 
+// Wed May 23 11:07:27 EDT 2001 -- now returns highway type,
 //                                                                              and command status
 // Thu May 31 16:48:32 EDT 2001 -- only have to check once, now
 // Fri Jun  1 10:27:13 EDT 2001 -- 'cleaned-up' type logic

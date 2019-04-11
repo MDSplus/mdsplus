@@ -32,9 +32,9 @@ public class SetupDefaults extends JDialog implements ActionListener
    private JCheckBox     reversed_b;
    private JCheckBox     upd_limits;
    int	   curr_grid_mode = 0,
-           x_curr_lines_grid = 3,
-           y_curr_lines_grid = 3,
-           curr_legend_mode = 0;
+	   x_curr_lines_grid = 3,
+	   y_curr_lines_grid = 3,
+	   curr_legend_mode = 0;
 
    public SetupDefaults(Frame fw, String frame_title, jScopeDefaultValues def_vals)
    {
@@ -152,72 +152,72 @@ public class SetupDefaults extends JDialog implements ActionListener
       gridbag.setConstraints(def_node, c);
       getContentPane().add(def_node);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-        c.fill =  GridBagConstraints.NONE;
+	JPanel panel = new JPanel();
+	panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+	c.fill =  GridBagConstraints.NONE;
 
-        panel.add(new JLabel("   lines x:"));
-        panel.add(x_grid_lines = new JTextField(2));
-        x_grid_lines.addActionListener(this);
-        x_grid_lines.setText(""+x_curr_lines_grid);
+	panel.add(new JLabel("   lines x:"));
+	panel.add(x_grid_lines = new JTextField(2));
+	x_grid_lines.addActionListener(this);
+	x_grid_lines.setText(""+x_curr_lines_grid);
 
-        panel.add(new JLabel("   lines y:"));
-        panel.add(y_grid_lines = new JTextField(2));
-        y_grid_lines.addActionListener(this);
-        y_grid_lines.setText(""+y_curr_lines_grid);
+	panel.add(new JLabel("   lines y:"));
+	panel.add(y_grid_lines = new JTextField(2));
+	y_grid_lines.addActionListener(this);
+	y_grid_lines.setText(""+y_curr_lines_grid);
 
-        panel.add(new JLabel("   Vertical offset:"));
-        panel.add(vertical_offset = new JTextField(3));
-        vertical_offset.addActionListener(this);
-        vertical_offset.setText("");
+	panel.add(new JLabel("   Vertical offset:"));
+	panel.add(vertical_offset = new JTextField(3));
+	vertical_offset.addActionListener(this);
+	vertical_offset.setText("");
 
-        panel.add(new JLabel("   Horizontal offset:"));
-        panel.add(horizontal_offset = new JTextField(3));
-        horizontal_offset.addActionListener(this);
-        horizontal_offset.setText("");
+	panel.add(new JLabel("   Horizontal offset:"));
+	panel.add(horizontal_offset = new JTextField(3));
+	horizontal_offset.addActionListener(this);
+	horizontal_offset.setText("");
 
-        gridbag.setConstraints(panel, c);
-        getContentPane().add(panel);
+	gridbag.setConstraints(panel, c);
+	getContentPane().add(panel);
 
-        JPanel panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-        c.fill =  GridBagConstraints.NONE;
+	JPanel panel1 = new JPanel();
+	panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+	c.fill =  GridBagConstraints.NONE;
 
-        panel1.add(reversed_b = new JCheckBox("Reversed"));
-        reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
+	panel1.add(reversed_b = new JCheckBox("Reversed"));
+	reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
 
-        lab = new JLabel("Grid: Mode");
-        panel1.add(lab);
+	lab = new JLabel("Grid: Mode");
+	panel1.add(lab);
 
-        String grd[] = {"Dotted", "Gray"};
-        grid_mode = new JComboBox<>(grd);//Grid.GRID_MODE);
-        grid_mode.setSelectedIndex(curr_grid_mode);
-        panel1.add(grid_mode);
+	String grd[] = {"Dotted", "Gray"};
+	grid_mode = new JComboBox<>(grd);//Grid.GRID_MODE);
+	grid_mode.setSelectedIndex(curr_grid_mode);
+	panel1.add(grid_mode);
 
-        lab = new JLabel("Legend:");
-        panel1.add(lab);
-        legend_mode = new JComboBox<>();
-        legend_mode.addItem("In Graphics");
-        legend_mode.addItem("Fixed Bottom");
-        legend_mode.addItem("Fixed Right");
-        legend_mode.setSelectedIndex(curr_legend_mode);
-        panel1.add(legend_mode);
+	lab = new JLabel("Legend:");
+	panel1.add(lab);
+	legend_mode = new JComboBox<>();
+	legend_mode.addItem("In Graphics");
+	legend_mode.addItem("Fixed Bottom");
+	legend_mode.addItem("Fixed Right");
+	legend_mode.setSelectedIndex(curr_legend_mode);
+	panel1.add(legend_mode);
 
-        lab = new JLabel("Auto color:");
-        panel1.add(lab);
-        auto_color_mode = new JComboBox<>();
-        auto_color_mode.addItem("on shot");
-        auto_color_mode.addItem("on expression");
-        auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);
-        panel1.add(auto_color_mode);
+	lab = new JLabel("Auto color:");
+	panel1.add(lab);
+	auto_color_mode = new JComboBox<>();
+	auto_color_mode.addItem("on shot");
+	auto_color_mode.addItem("on expression");
+	auto_color_mode.setSelectedIndex(WaveInterface.auto_color_on_expr ? 1 : 0);
+	panel1.add(auto_color_mode);
 
-        upd_limits = new JCheckBox("Upd. limits", true);
-        panel1.add(upd_limits);
+	upd_limits = new JCheckBox("Upd. limits", true);
+	panel1.add(upd_limits);
 
-        gridbag.setConstraints(panel1, c);
-        getContentPane().add(panel1);
+	gridbag.setConstraints(panel1, c);
+	getContentPane().add(panel1);
 
-        JPanel p1 = new JPanel();
+	JPanel p1 = new JPanel();
 
       ok = new JButton("Ok");
       ok.addActionListener(this);
@@ -248,10 +248,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 
    private int IsGridMode(String mode)
    {
-        for(int i = 0; i < Grid.GRID_MODE.length ; i++)
-            if(Grid.GRID_MODE[i].equals(mode))
-                return i;
-        return -1;
+	for(int i = 0; i < Grid.GRID_MODE.length ; i++)
+	    if(Grid.GRID_MODE[i].equals(mode))
+	        return i;
+	return -1;
    }
 
 
@@ -266,34 +266,34 @@ public class SetupDefaults extends JDialog implements ActionListener
        prop = js_prop.getProperty("jScope.reversed");
        if(prop != null && ( prop.equals("true") || prop.equals("false")))
        {
-         reversed = new Boolean(prop).booleanValue();
+	 reversed = new Boolean(prop).booleanValue();
        }
        else
-           reversed = false;
+	   reversed = false;
 
        prop = js_prop.getProperty("jScope.grid_mode");
        if(prop != null && (val = IsGridMode(prop)) > 0)
-         curr_grid_mode =  val;
+	 curr_grid_mode =  val;
 
        prop = js_prop.getProperty("jScope.x_grid");
        if(prop != null)
        {
-            try
-            {
-                val = Integer.parseInt(prop);
-                x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            }
-            catch (NumberFormatException e) {}
+	    try
+	    {
+	        val = Integer.parseInt(prop);
+	        x_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
+	    }
+	    catch (NumberFormatException e) {}
        }
 
        prop = js_prop.getProperty("jScope.y_grid");
        if(prop != null)
        {
-            try
-            {
-                val = Integer.parseInt(prop);
-                y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
-            } catch (NumberFormatException e) {}
+	    try
+	    {
+	        val = Integer.parseInt(prop);
+	        y_curr_lines_grid = val > Grid.MAX_GRID ? Grid.MAX_GRID : val;
+	    } catch (NumberFormatException e) {}
        }
    }
 
@@ -358,10 +358,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 	    setTextValue(title, def_vals.title_str);
 	    setTextValue(y_label, def_vals.ylabel);
 	    setTextValue(x_label, def_vals.xlabel);
-        setTextValue(y_max, def_vals.ymax);
-        setTextValue(y_min, def_vals.ymin);
-        setTextValue(x_max, def_vals.xmax);
-        setTextValue(x_min, def_vals.xmin);
+	setTextValue(y_max, def_vals.ymax);
+	setTextValue(y_min, def_vals.ymin);
+	setTextValue(x_max, def_vals.xmax);
+	setTextValue(x_min, def_vals.xmin);
 	    setTextValue(experiment, def_vals.experiment_str);
 	    setTextValue(shot, def_vals.shot_str);
 	    setTextValue(upd_event, def_vals.upd_event_str);
@@ -381,10 +381,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 
       def_vals.experiment_str	= new String(experiment.getText());
       def_vals.shot_str		    = new String(shot.getText());
-      def_vals.xmax		        = new String(x_max.getText());
-      def_vals.xmin		        = new String(x_min.getText());
-      def_vals.ymax		        = new String(y_max.getText());
-      def_vals.ymin		        = new String(y_min.getText());
+      def_vals.xmax			= new String(x_max.getText());
+      def_vals.xmin			= new String(x_min.getText());
+      def_vals.ymax			= new String(y_max.getText());
+      def_vals.ymin			= new String(y_min.getText());
       def_vals.title_str		= new String(title.getText());
       def_vals.xlabel		    = new String(x_label.getText());
       def_vals.ylabel		    = new String(y_label.getText());
@@ -453,10 +453,10 @@ public class SetupDefaults extends JDialog implements ActionListener
 
    public void  Show(Frame f,  jScopeDefaultValues def_vals)
    {
-        this.def_vals = def_vals;
+	this.def_vals = def_vals;
 	    initialize();
- 	    pack();
-        setLocationRelativeTo(f);
+	    pack();
+	setLocationRelativeTo(f);
 	    setVisible(true);
    }
 
@@ -492,7 +492,7 @@ public class SetupDefaults extends JDialog implements ActionListener
       if(ob == apply || ob == ok)
       {
 	    if(ob == ok)
-	        setVisible(false);
+		setVisible(false);
 	    main_scope.UpdateDefaultValues();
       }
 

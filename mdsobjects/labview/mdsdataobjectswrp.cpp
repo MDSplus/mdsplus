@@ -493,7 +493,7 @@ EXPORT void mdsplus_array_getInfo(const void *lvArrayPtr, char *clazzOut, char *
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
-	
+
 	char const * errorMessage = "";
 
 	try
@@ -558,7 +558,7 @@ EXPORT void mdsplus_array_getIntArray(const void *lvArrayPtr, LIntArrHdl lvIntAr
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -622,7 +622,7 @@ EXPORT void mdsplus_array_getLongArray(const void *lvArrayPtr, LLngArrHdl lvLngA
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -688,7 +688,7 @@ EXPORT void mdsplus_array_getShape(const void *lvArrayPtr, LIntArrHdl lvIntArrHd
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -752,7 +752,7 @@ EXPORT void mdsplus_array_getShortArray(const void *lvArrayPtr, LShtArrHdl lvSht
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -814,7 +814,7 @@ EXPORT void mdsplus_array_getSize(const void *lvArrayPtr, int *sizeOut, ErrorClu
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -918,7 +918,7 @@ EXPORT void mdsplus_array_setElementAt(const void *lvArrayPtr, int dimIn, const 
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -966,7 +966,7 @@ EXPORT void mdsplus_array_setElementAt_dims(const void *lvArrayPtr, const LIntAr
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1039,7 +1039,7 @@ EXPORT void mdsplus_data_compile(void **lvDataPtrOut, const char *exprIn, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1084,7 +1084,7 @@ EXPORT void mdsplus_data_compile_tree(void **lvDataPtrOut, const char *exprIn, c
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1130,7 +1130,7 @@ EXPORT void mdsplus_data_data(const void *lvDataPtr, void **lvDataPtrOut, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1177,7 +1177,7 @@ EXPORT void mdsplus_data_decompile(const void *lvDataPtr, LStrHandle lvStrHdlOut
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1239,7 +1239,7 @@ EXPORT void mdsplus_data_deserialize(void **lvDataPtrOut, const char *serialized
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1284,7 +1284,7 @@ EXPORT void mdsplus_data_deserialize_data(void **lvDataPtrOut, const void *lvDat
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1333,8 +1333,8 @@ EXPORT void mdsplus_data_evaluate(const void *lvDataPtr, void **lvDataPtrOut, Er
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
-	
-	char const * errorMessage = ""; 
+
+	char const * errorMessage = "";
 
 	try
 
@@ -1379,7 +1379,7 @@ EXPORT void mdsplus_data_execute(void **lvDataPtrOut, const char *exprIn, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -1424,7 +1424,7 @@ EXPORT void mdsplus_data_execute_tree(void **lvDataPtrOut, const char *exprIn, c
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2026,7 +2026,7 @@ EXPORT void mdsplus_data_getString(const void *lvDataPtr, LStrHandle lvStrHdlOut
 		errorCode = bogusError;
 
 		errorMessage = e.what();
-  
+
 		fillErrorCluster(errorCode, errorSource, errorMessage, error);
 		return;
 	}
@@ -2423,7 +2423,7 @@ EXPORT void mdsplus_int16_getByte(const void *lvInt16Ptr, char *byteOut, ErrorCl
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2463,7 +2463,7 @@ EXPORT void mdsplus_int16_getDouble(const void *lvInt16Ptr, double *doubleOut, E
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2502,8 +2502,8 @@ EXPORT void mdsplus_int16_getFloat(const void *lvInt16Ptr, float *floatOut, Erro
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
-	
-	char const * errorMessage = ""; 
+
+	char const * errorMessage = "";
 
 	try
 
@@ -2543,7 +2543,7 @@ EXPORT void mdsplus_int16_getInt(const void *lvInt16Ptr, int *intOut, ErrorClust
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2583,7 +2583,7 @@ EXPORT void mdsplus_int16_getLong(const void *lvInt16Ptr, int64_t *longOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2623,7 +2623,7 @@ EXPORT void mdsplus_int16_getShort(const void *lvInt16Ptr, short *shortOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2667,13 +2667,13 @@ EXPORT void mdsplus_int16array_constructor(void **lvInt16ArrayPtrOut, const LSht
 
 	Int16Array *int16ArrayPtrOut = NULL;
 
-	short *int16Arr = NULL;	
+	short *int16Arr = NULL;
 
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2729,7 +2729,7 @@ EXPORT void mdsplus_int16array_constructor_dims(void **lvInt16ArrayPtrOut, const
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2849,7 +2849,7 @@ EXPORT void mdsplus_int32_getDouble(const void *lvInt32Ptr, double *doubleOut, E
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2889,7 +2889,7 @@ EXPORT void mdsplus_int32_getFloat(const void *lvInt32Ptr, float *floatOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2929,7 +2929,7 @@ EXPORT void mdsplus_int32_getInt(const void *lvInt32Ptr, int *intOut, ErrorClust
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -2969,7 +2969,7 @@ EXPORT void mdsplus_int32_getLong(const void *lvInt32Ptr, int64_t *longOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3009,7 +3009,7 @@ EXPORT void mdsplus_int32_getShort(const void *lvInt32Ptr, short *shortOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3053,13 +3053,13 @@ EXPORT void mdsplus_int32array_constructor(void **lvInt32ArrayPtrOut, const LInt
 
 	Int32Array *int32ArrayPtrOut = NULL;
 
-	int *int32Arr = NULL;	
+	int *int32Arr = NULL;
 
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3115,7 +3115,7 @@ EXPORT void mdsplus_int32array_constructor_dims(void **lvInt32ArrayPtrOut, const
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3194,7 +3194,7 @@ EXPORT void mdsplus_int64_getByte(const void *lvInt64Ptr, char *byteOut, ErrorCl
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3234,7 +3234,7 @@ EXPORT void mdsplus_int64_getDouble(const void *lvInt64Ptr, double *doubleOut, E
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3274,7 +3274,7 @@ EXPORT void mdsplus_int64_getFloat(const void *lvInt64Ptr, float *floatOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3313,8 +3313,8 @@ EXPORT void mdsplus_int64_getInt(const void *lvInt64Ptr, int *intOut, ErrorClust
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
-	
-	char const * errorMessage = ""; 
+
+	char const * errorMessage = "";
 
 	try
 
@@ -3354,7 +3354,7 @@ EXPORT void mdsplus_int64_getLong(const void *lvInt64Ptr, int64_t *longOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3394,7 +3394,7 @@ EXPORT void mdsplus_int64_getShort(const void *lvInt64Ptr, short *shortOut, Erro
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3438,13 +3438,13 @@ EXPORT void mdsplus_int64array_constructor(void **lvInt64ArrayPtrOut, const LLng
 
 	Int64Array *int64ArrayPtrOut = NULL;
 
-	int64_t *int64Arr = NULL;	
+	int64_t *int64Arr = NULL;
 
 	MgErr errorCode = noErr;
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3581,7 +3581,7 @@ EXPORT void mdsplus_int8_getByte(const void *lvInt8Ptr, char *byteOut, ErrorClus
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3621,7 +3621,7 @@ EXPORT void mdsplus_int8_getDouble(const void *lvInt8Ptr, double *doubleOut, Err
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3661,7 +3661,7 @@ EXPORT void mdsplus_int8_getFloat(const void *lvInt8Ptr, float *floatOut, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3701,7 +3701,7 @@ EXPORT void mdsplus_int8_getInt(const void *lvInt8Ptr, int *intOut, ErrorCluster
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3741,7 +3741,7 @@ EXPORT void mdsplus_int8_getLong(const void *lvInt8Ptr, int64_t *longOut, ErrorC
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -3825,7 +3825,7 @@ EXPORT void mdsplus_int8array_constructor(void **lvInt8ArrayPtrOut, const LByteA
 
 	Int8Array *int8ArrayPtrOut = NULL;
 
-	char *int8Arr = NULL;	
+	char *int8Arr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -4019,7 +4019,7 @@ EXPORT void mdsplus_range_getBegin(const void *lvRangePtr, void **lvDataPtrOut, 
 
 	const char *errorSource = __FUNCTION__;
 
-	char const * errorMessage = ""; 
+	char const * errorMessage = "";
 
 	try
 
@@ -5176,7 +5176,7 @@ EXPORT void mdsplus_uint16array_constructor(void **lvUint16ArrayPtrOut, const LU
 
 	Uint16Array *uint16ArrayPtrOut = NULL;
 
-	unsigned short *uint16Arr = NULL;	
+	unsigned short *uint16Arr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -5563,7 +5563,7 @@ EXPORT void mdsplus_uint32array_constructor(void **lvUint32ArrayPtrOut, const LU
 
 	Uint32Array *uint32ArrayPtrOut = NULL;
 
-	unsigned int *uint32Arr = NULL;	
+	unsigned int *uint32Arr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -6012,7 +6012,7 @@ EXPORT void mdsplus_uint64array_constructor(void **lvUint64ArrayPtrOut, const LU
 
 	Uint64Array *uint64ArrayPtrOut = NULL;
 
-	uint64_t *uint64Arr = NULL;	
+	uint64_t *uint64Arr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -6399,7 +6399,7 @@ EXPORT void mdsplus_uint8array_constructor(void **lvUint8ArrayPtrOut, const LUBy
 
 	Uint8Array *uint8ArrayPtrOut = NULL;
 
-	unsigned char *uint8Arr = NULL;	
+	unsigned char *uint8Arr = NULL;
 
 	MgErr errorCode = noErr;
 
@@ -6595,15 +6595,15 @@ EXPORT void prova4(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
+  {
       i = 0;
   }
- 
+
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6616,12 +6616,12 @@ EXPORT void prova41(int inInt, int *outInt, ErrorCluster *error)
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
+  {
       i = 0;
   }
- 
+
   *outInt = inInt;
-  errorMessage = (char *)"CAZZACICCIA";	
+  errorMessage = (char *)"CAZZACICCIA";
   errorCode = bogusError;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6629,10 +6629,10 @@ EXPORT void prova40(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   int i;
   *outInt = inInt;
-  errorMessage = (char *)"CAZZACICCIA";	
+  errorMessage = (char *)"CAZZACICCIA";
   errorCode = bogusError;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6640,16 +6640,16 @@ EXPORT void prova42(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
-      errorMessage = (char *)"CAZZACICCIA";	
+  {
+      errorMessage = (char *)"CAZZACICCIA";
       errorCode = bogusError;
    }
- 
+
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6662,12 +6662,12 @@ EXPORT void prova43(int inInt, int *outInt, ErrorCluster *error)
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
+  {
       char *currErr = (char *)exc.what();
-      errorMessage = (char *)"CAZZACICCIA";	
+      errorMessage = (char *)"CAZZACICCIA";
       errorCode = bogusError;
    }
- 
+
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6675,8 +6675,8 @@ EXPORT void prova44(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-//  
-  char const * errorMessage = ""; 
+//
+  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
@@ -6696,17 +6696,17 @@ EXPORT void prova45(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
+  {
       char *currErr = (char *)exc.what();
       errorMessage = strdup(currErr);
       errorCode = bogusError;
    }
- 
+
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
@@ -6715,25 +6715,25 @@ EXPORT void prova5(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   int i;
   try {
     MDSplus::Tree *tree = new Tree("CACCA", -1);
   }catch(const MdsException &exc)
-  { 
+  {
      fillErrorCluster(bogusError, errorSource, exc.what(), error);
      return;
    }
- 
+
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
- 
+
 EXPORT void prova6(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   try {
     MDSplus::Data *d = new Int32(123);
   }catch(const MdsException &exc)
@@ -6748,7 +6748,7 @@ EXPORT void prova7(int inInt, int *outInt, ErrorCluster *error)
 {
   MgErr errorCode = noErr;
   const char *errorSource = __FUNCTION__;
-  char const * errorMessage = ""; 
+  char const * errorMessage = "";
   try {
     MDSplus::Tree *tree = new Tree("test", -1);
   }catch(const MdsException &exc)
@@ -6761,7 +6761,7 @@ EXPORT void prova7(int inInt, int *outInt, ErrorCluster *error)
   *outInt = inInt;
   fillErrorCluster(errorCode, errorSource, errorMessage, error);
 }
- 
+
 
 EXPORT void prova8()
 {
@@ -6771,8 +6771,8 @@ EXPORT void prova8()
    std::cout << "FATTO EXECUTE WITH ARGS" << (void *)retTimeStr << std::endl;
 
     std::cout << retTimeStr->getString() << std::endl;
-} 
- 
+}
+
 EXPORT void prova9()
 {
     Int64 *timeInsertedData = new Int64(0);
@@ -6780,14 +6780,14 @@ EXPORT void prova9()
    std::cout << "FATTO EXECUTE WITH ARGS" << std::endl;
 
     std::cout << retTimeStr->getString() << std::endl;
-} 
+}
 EXPORT void prova10()
 {
     Int32 *timeInsertedData = new Int32(0);
     Data *retTimeStr = executeWithArgs("date_time($)", 1, timeInsertedData);
 
     std::cout << retTimeStr->getString() << std::endl;
-} 
+}
 
 EXPORT void prova11()
 {
@@ -6811,7 +6811,7 @@ EXPORT void prova11()
     std::cout << "FINITO CACCONA www\n";
 }
 
- 
+
 }//End Extern "C"
 }//End Namespace MDSplus
 

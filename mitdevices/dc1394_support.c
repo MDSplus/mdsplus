@@ -67,7 +67,7 @@ typedef struct _DC1394Capture {
   int bus;
   raw1394handle_t handle;
   char *dev_filename;
-  //  nodeid_t *camera_node;  
+  //  nodeid_t *camera_node;
   int next_frame;
   int trigger_mode;
   int shutter;

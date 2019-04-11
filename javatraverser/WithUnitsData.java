@@ -11,7 +11,7 @@ public class WithUnitsData extends CompoundData
 	descs[0] = data;
 	descs[1] = units;
     }
-    
+
     public final Data getDatum() {return descs[0]; }
     public final Data getUnits() {return descs[1]; }
 }

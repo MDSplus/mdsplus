@@ -13,7 +13,7 @@ public class DeviceWaveDisplay extends DeviceComponent
 
     public void setPrefHeight(int prefHeight)
     {
-        this.prefHeight = prefHeight;
+	this.prefHeight = prefHeight;
     }
 
     public int getPrefHeight(){return prefHeight;}
@@ -23,30 +23,30 @@ public class DeviceWaveDisplay extends DeviceComponent
 
     protected void initializeData(Data data, boolean is_on)
     {
-        oldData = data;
-        setLayout(new BorderLayout());
-        wave = new Waveform();
-        wave.setPreferredSize(new Dimension(300, 200));
-        add(wave, "Center");
-        displayData(data, is_on);
+	oldData = data;
+	setLayout(new BorderLayout());
+	wave = new Waveform();
+	wave.setPreferredSize(new Dimension(300, 200));
+	add(wave, "Center");
+	displayData(data, is_on);
     }
 
 
     protected void displayData(Data data, boolean is_on)
     {
-        try {
-            Data xData = subtree.evaluateData(Data.fromExpr("DIM_OF(" + data +
-                ")"), 0);
-            Data yData = subtree.evaluateData(data, 0);
-            x = xData.getFloatArray();
-            y = yData.getFloatArray();
-            wave.Update(x, y);
-        }catch(Exception exc){}
+	try {
+	    Data xData = subtree.evaluateData(Data.fromExpr("DIM_OF(" + data +
+	        ")"), 0);
+	    Data yData = subtree.evaluateData(data, 0);
+	    x = xData.getFloatArray();
+	    y = yData.getFloatArray();
+	    wave.Update(x, y);
+	}catch(Exception exc){}
     }
 
      protected Data getData()
     {
-        return oldData;
+	return oldData;
     }
 
     protected boolean getState(){return true;}
@@ -55,7 +55,7 @@ public class DeviceWaveDisplay extends DeviceComponent
 
     void postApply()
     {
-        displayData(oldData, true);
+	displayData(oldData, true);
     }
 
     public void reset()
@@ -64,7 +64,7 @@ public class DeviceWaveDisplay extends DeviceComponent
 
     public void print(Graphics g)
     {
-        wave.paintComponent(g);
+	wave.paintComponent(g);
     }
 }
 

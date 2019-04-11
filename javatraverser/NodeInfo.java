@@ -40,10 +40,10 @@ public class NodeInfo implements Serializable
     public static final int COMPRESS_SEGMENTS =1 << 16;
 
     public static final NodeInfo getNodeInfo(byte dclass, byte dtype, byte usage, int flags, int owner, int length, int conglomerate_nids, int conglomerate_elt,
-	                                   String date_inserted, String name, String fullpath, String minpath, String path)
+		                           String date_inserted, String name, String fullpath, String minpath, String path)
     {
 	return new NodeInfo(dclass, dtype, usage, flags, owner, length, conglomerate_nids, conglomerate_elt,
-	                    date_inserted, name, fullpath, minpath, path);
+		            date_inserted, name, fullpath, minpath, path);
     }
 
     private final String date_inserted, name, fullpath, minpath, path;
@@ -52,12 +52,12 @@ public class NodeInfo implements Serializable
     private int flags;
 
     public NodeInfo(byte dclass, byte dtype, byte usage, int flags, int owner, int length, int conglomerate_nids, int conglomerate_elt,
-	                String date_inserted, String name, String fullpath, String minpath, String path)
+		        String date_inserted, String name, String fullpath, String minpath, String path)
     {
 	    this.dclass = dclass;
 	    this.dtype = dtype;
 	    this.usage = usage;
-        this.flags = flags;
+	this.flags = flags;
 	    this.owner = owner;
 	    this.length = length;
 	    this.conglomerate_nids = conglomerate_nids;
@@ -66,7 +66,7 @@ public class NodeInfo implements Serializable
 	    this.name = name.trim();
 	    this.fullpath = fullpath;
 	    this.minpath = minpath;
-        this.path = path;
+	this.path = path;
     }
     public final void setFlags(int flags){this.flags = flags;}
     public final byte getDClass() {return dclass;}

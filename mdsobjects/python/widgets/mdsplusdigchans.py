@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
             channel[field].set_text(str(channel[field+'Node'].record.decompile()))
         except Exception:
             channel[field].set_text('')
-        
+
 
     def reset(self):
         if not hasattr(self,'channels'):
@@ -97,7 +97,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
                 channel[field+'Node'].record=value
         except Exception:
             MDSplusErrorMsg('Error storing value','Error storing value %s for channel %d\n\n\%s' % (field,idx,sys.exc_info()))
-        
+
     def apply(self):
         if self.putOnApply:
             idx=0
@@ -122,7 +122,7 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
         newstep=adj.upper/self.numChannels
         if adj.step_increment != newstep:
             adj.step_increment = newstep
-    
+
     def setupChannels(self):
         for child in self.table.get_children():
             child.destroy()
@@ -185,8 +185,8 @@ class MDSplusDigChansWidget(props,MDSplusWidget,ScrolledWindow):
 
     def show(self):
         self.show_all()
-        
-gobject.type_register(MDSplusDigChansWidget) 
+
+gobject.type_register(MDSplusDigChansWidget)
 
 if guibuilder:
     class MDSplusDigChansWidgetAdaptor(glade.get_adaptor_for_type('GtkTable')):

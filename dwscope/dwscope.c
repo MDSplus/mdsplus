@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
- 		Name:   DWScope
+		Name:   DWScope
 
 		Type:   C main program
 
@@ -397,8 +397,8 @@ int main(int argc, String * argv)
   defaultfile = strlen(defaultfile) ? XtNewString(defaultfile) : XtNewString("my.scope");
   XtAppAddActions(AppContext, actions, XtNumber(actions));
   XtAugmentTranslations(TopWidget, XtParseTranslationTable("#augment <ResizeRequest> : Resize() \n\
-                                                                     <Unmap> : Shrink()\n\
-                                                                     <Map> : Expand()"));
+	                                                             <Unmap> : Shrink()\n\
+	                                                             <Map> : Expand()"));
   MrmOpenHierarchy(XtNumber(hierarchy_names), hierarchy_names, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "scope", TopWidget, &MainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);

@@ -23,22 +23,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Pack.C
-        F8X transformation to pack an array into a vector under control of a mask.
+	F8X transformation to pack an array into a vector under control of a mask.
 
-                PACK(ARRAY, MASK, [VECTOR])
+	        PACK(ARRAY, MASK, [VECTOR])
 
-        ARRAY   the source when MASK is true, must be array.
-        MASK    logical conformable with ARRAY, missing is false.
-        VECTOR  vector with as many elements as trues in MASK or
-                with at least as many elements as ARRAY if MASK is scalar true.
-                We accept a scalar and short arrays and match types.
-        Result type is confomation of ARRAY and VECTOR.
-        Result size is VECTOR size if present,
-                number of trues in MASK if not scalar true,
-                else ARRAY size.
-        Result class is a vector.
+	ARRAY   the source when MASK is true, must be array.
+	MASK    logical conformable with ARRAY, missing is false.
+	VECTOR  vector with as many elements as trues in MASK or
+	        with at least as many elements as ARRAY if MASK is scalar true.
+	        We accept a scalar and short arrays and match types.
+	Result type is confomation of ARRAY and VECTOR.
+	Result size is VECTOR size if present,
+	        number of trues in MASK if not scalar true,
+	        else ARRAY size.
+	Result class is a vector.
 
-        Ken Klare, LANL CTR-7   (c)1990
+	Ken Klare, LANL CTR-7   (c)1990
 */
 
 #include <STATICdef.h>
@@ -85,9 +85,9 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       numv = -1;
 
 	/*******************************************************************************
-        * Array MASK: Conform ARRAY to MASK (we use smaller). Result is condensed ARRAY.
-        * Scalar MASK: Result is ARRAY for true or null for false.
-        *******************************************************************************/
+	* Array MASK: Conform ARRAY to MASK (we use smaller). Result is condensed ARRAY.
+	* Scalar MASK: Result is ARRAY for true or null for false.
+	*******************************************************************************/
     if (dat[1].pointer->class == CLASS_A) {
       lenm = dat[1].pointer->length;
       numa = bytes / lena;
@@ -106,7 +106,7 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       for (; --numm >= 0; pm += lenm, pi += lena)
 	if (*pm & 1) {
 	  if (po<pi) // only copy if memory does not overlap
-            memcpy(po, pi,lena);
+	    memcpy(po, pi,lena);
 	  po += lena;
 	};
       bytes = po - dat[0].pointer->pointer;
@@ -114,11 +114,11 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       bytes = 0;
 
 	/*********************************************
-        * Possibly augmented by VECTOR.
-        * (-2) If it is a scalar, fill out ARRAY.
-        * (++) If it is a vector, copy to VECTOR.
-        * (-1) If missing/too short, use partial XD.
-        *********************************************/
+	* Possibly augmented by VECTOR.
+	* (-2) If it is a scalar, fill out ARRAY.
+	* (++) If it is a vector, copy to VECTOR.
+	* (-1) If missing/too short, use partial XD.
+	*********************************************/
     parr->aflags.coeff = 0;
     parr->aflags.bounds = 0;
     parr->dimct = 1;

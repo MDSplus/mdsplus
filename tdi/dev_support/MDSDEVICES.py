@@ -1,6 +1,6 @@
 from threading import Lock
 from time import time
-cache = [None]  
+cache = [None]
 lock = Lock() # locks the cache
 def MDSDEVICES():
   with lock:

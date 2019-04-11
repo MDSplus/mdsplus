@@ -4,10 +4,10 @@ import java.awt.*;
 
 public class NodeInfoPropertyEditor implements PropertyEditor {
     protected Data data;
-    
+
     public void setValue(Object o){data = (Data)o;}
     public Object getValue() {return data;}
-    public void setAsText(String s){} 
+    public void setAsText(String s){}
     public String getAsText() {return null; }
     public String []getTags() {return null;}
     public boolean  supportsCustomEditor() {return true;}

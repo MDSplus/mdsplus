@@ -25,12 +25,12 @@ public class MdsPlus extends Object implements Runnable
 	private byte m_eventNextId=0;
 
 	private static Hashtable<String, MdsPlus> m_connectionHash = new Hashtable<String, MdsPlus>();
-	
+
 	private static final byte MAX_BYTE=127;
 	private static final MdsPlusDescriptor EVENT_REQUEST = new MdsPlusDescriptor("---EVENTAST---REQUEST---");
 	private static final MdsPlusDescriptor EVENT_CANCEL = new MdsPlusDescriptor("---EVENTCAN---REQUEST---");
 	private static final String USER = "java-client";
-	private static final MdsPlusException UNAUTHORIZED = 
+	private static final MdsPlusException UNAUTHORIZED =
 		new MdsPlusException("You are not authorized to connect to this host");
 	private static final byte JAVA_CLIENT=3;
 	private static final byte BIG_ENDIAN=(byte)0x80;
@@ -111,7 +111,7 @@ public class MdsPlus extends Object implements Runnable
 		m_eventNextId = 0;
 		} catch(Exception e){};
 	}
-	
+
 	public void connect(String host, int port) throws UnknownHostException,IOException,MdsPlusException
 	{
 		s = new Socket(host,port);
@@ -210,7 +210,7 @@ public class MdsPlus extends Object implements Runnable
 //		System.out.println("Successfully allocated buffer");
 		int offset;
 		int len;
-        for (offset = 0; offset < d.data.length; offset += len)
+	for (offset = 0; offset < d.data.length; offset += len)
 		{
 			len = d.data.length - offset;
 			len = Math.min(8192,len);
@@ -280,7 +280,7 @@ public class MdsPlus extends Object implements Runnable
 				throw new MdsPlusException(s+GetVmsErrorString(status));
 		}
 	}
-			
+
 	/** Cause an MdsPlus event to occur on the remote host.
 	* @param eventname name of MdsPlus event to generate on remote host.
 	*/
@@ -367,7 +367,7 @@ public class MdsPlus extends Object implements Runnable
 	* <B>This procedure is used by
 	* the MdsPlusEvent constructor and should not be called directly by an application.</B>
 	*/
-	public static byte EventAst(MdsPlusEvent ev, String host, int port) 
+	public static byte EventAst(MdsPlusEvent ev, String host, int port)
 	  throws UnknownHostException,IOException,MdsPlusException
 	{
 		byte event_id;
@@ -393,13 +393,13 @@ public class MdsPlus extends Object implements Runnable
 				{
 					Cancel(mds.m_eventHash.get(""+event_id));
 				}
-			 	byte idarr[] = new byte[1];
+				byte idarr[] = new byte[1];
 				idarr[0] = event_id;
 				mds.SendMsg((byte)0,(byte)3,EVENT_REQUEST);
 				mds.SendMsg((byte)1,(byte)3,new MdsPlusDescriptor(ev.m_name));
 				mds.SendMsg((byte)2,(byte)3,new MdsPlusDescriptor(idarr));
 				mds.m_eventHash.put(""+event_id, ev);
-			} 
+			}
 			catch (Exception e)
 			{
 				mds.close();
@@ -412,13 +412,13 @@ public class MdsPlus extends Object implements Runnable
 	* <B>This procedure is used by
 	* the MdsPlus.MdsPlusEvent constructor and should not be called directly by an application.</B>
 	*/
-	public static byte EventAst(MdsPlusEvent ev, URL url) 
+	public static byte EventAst(MdsPlusEvent ev, URL url)
 	  throws UnknownHostException,IOException,MdsPlusException
 	{
 		return EventAst(ev, url.getHost(), 8001);
 	}
 
-    
+
 	private void Cancel(int id)
 	{
 	}
@@ -441,7 +441,7 @@ public class MdsPlus extends Object implements Runnable
 					{
 						mds.SendMsg((byte)0,(byte)2,EVENT_CANCEL);
 						mds.SendMsg((byte)1,(byte)2,new MdsPlusDescriptor(ev.m_id));
-					} 
+					}
 					catch (Exception e) {}
 					if (mds.m_eventHash.isEmpty())
 					{

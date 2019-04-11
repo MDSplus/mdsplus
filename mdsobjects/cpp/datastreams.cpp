@@ -46,7 +46,7 @@ static pthread_cond_t availCond;
 
 /////////////////////////////////////////////////////////////////////
 /// Class StreamInfo records information related to a given data item in streaming.
-/// StreamInfo instances are collected in StreamInfoV vector which is used for both periodi check/update 
+/// StreamInfo instances are collected in StreamInfoV vector which is used for both periodi check/update
 /// and for data readout. StreamInfo instances share the same condition variable used to signal
 /// data availability. New StreamInfo instances are created by subsequent registerListener calls.
 /// A client registers first for srteaming by calling resisterListener with the following parameters:
@@ -63,20 +63,20 @@ static pthread_cond_t availCond;
 /// The (set of) signals are returned in the form of a serialized APD data item. There will be as many APD descriptor pair
 /// as the number of data items with new data. The first descriptor of the pair will contain the id of the corresponding
 /// data item, and the second one will contain a signal describing sampels and time of the new data.
-/// \note A call to getNewSamplesSerialized() is a blocking one, i.e. no other remote expression evaluation can be performed 
-/// in the meantime. This means that no other remote expression evaluation hould be issued for a given mdsip connection. 
-/// In thic case, after registering for a number of signals, the client should repeatedly call getNewSamplesSerialised(). 
-/// Observe also that it is assumed that the mdsip connection is served 
+/// \note A call to getNewSamplesSerialized() is a blocking one, i.e. no other remote expression evaluation can be performed
+/// in the meantime. This means that no other remote expression evaluation hould be issued for a given mdsip connection.
+/// In thic case, after registering for a number of signals, the client should repeatedly call getNewSamplesSerialised().
+/// Observe also that it is assumed that the mdsip connection is served
 /// by xinetd on the server side, so that a separate process is created for every connection.
 /////////////////////////////////////////////////////////////////////
 class StreamInfo
 {
 	MDSplus::Tree *tree;            ///< Tree reference
 	MDSplus::TreeNode *segNode;     ///< Reference segmented node, always included in compiledExpr tree
-	MDSplus::Data *compiledExpr;    ///< Epression tree including a segmented node 
+	MDSplus::Data *compiledExpr;    ///< Epression tree including a segmented node
 	int lastSegment;				///< Last acxcessed segment number
-	int lastNextRow;				///< Last index of next free row in the segment   
-	bool dataAvailable;				///< New data available flag 
+	int lastNextRow;				///< Last index of next free row in the segment
+	bool dataAvailable;				///< New data available flag
 	MDSplus::Data *lastTime;		///< Time of the last sample streamed so far
 
 public:
@@ -99,7 +99,7 @@ public:
 		delete tree;
 	}
 	bool isDataAvailable() {return dataAvailable;}
-/// Check availability of new data. First the current number of segments is checked. 
+/// Check availability of new data. First the current number of segments is checked.
 /// If not changed, the index of the next free row is checked
 	void checkDataAvailable()
 	{
@@ -107,12 +107,12 @@ public:
 		int dims[MAX_DIMS], nextRow;
 	    if(dataAvailable) return;  	//Data previously available
 		int numSegments = segNode->getNumSegments();
-		if(numSegments == 0)		//No data yet 
-			return;	
+		if(numSegments == 0)		//No data yet
+			return;
 		if(numSegments != lastSegment) //First condition: number of segments has increased
 		{
 			segNode->getSegmentInfo(numSegments-1, &dtype, &dimct, dims, &nextRow);
-			lastNextRow = nextRow; 
+			lastNextRow = nextRow;
 //Do not signal condition in which number of segments has increased but no row has nee writen in the new segment
 //			if(numSegments > lastSegment +1 && nextRow > 0)
 			if(numSegments > lastSegment +1 || nextRow > 0)
@@ -122,7 +122,7 @@ public:
 				pthread_cond_signal(&availCond); //Awake pending threadd
 			return;
 		}
-		segNode->getSegmentInfo(lastSegment-1, &dtype, &dimct, dims, &nextRow); //Second condition: 
+		segNode->getSegmentInfo(lastSegment-1, &dtype, &dimct, dims, &nextRow); //Second condition:
 		if(nextRow > lastNextRow)  //Second condition: new samples added to current segment
 		{
 			lastNextRow = nextRow;
@@ -131,7 +131,7 @@ public:
 		}
 	}
 
-///Get new data for this data item. 
+///Get new data for this data item.
 	MDSplus::Signal *getNewSamples()
 	{
 		if(!dataAvailable) return NULL;  //No new data available
@@ -144,7 +144,7 @@ public:
 			dataAvailable = false;
 			return NULL;
 		}
-    	segData->getInfo((char *)&clazz, (char *)&dtype);
+	segData->getInfo((char *)&clazz, (char *)&dtype);
 		if(clazz != CLASS_R || dtype != DTYPE_SIGNAL)   //Data read from segment must be a signal
 		{
 			std::cout << "Internal error: non signal returned from segmented node" << std::endl;
@@ -184,8 +184,8 @@ public:
 		MDSplus::Data *retData, *retDim;
 		if(lastTime)
 		{
-			retData = ((MDSplus::Array *)sigData)->getSubArray(1, sigData->getSize() - 1); 
-			retDim = ((MDSplus::Array *)evalDimension)->getSubArray(1, evalDimension->getSize() - 1); 
+			retData = ((MDSplus::Array *)sigData)->getSubArray(1, sigData->getSize() - 1);
+			retDim = ((MDSplus::Array *)evalDimension)->getSubArray(1, evalDimension->getSize() - 1);
 			deleteData(sigData);
 			deleteData(evalDimension);
 		}
@@ -207,7 +207,7 @@ public:
     }
 };  //End class StreamInfo
 
-///Retrieve from the passed expression tree the first reference to a segmented node.If none found, return NULL 
+///Retrieve from the passed expression tree the first reference to a segmented node.If none found, return NULL
 static MDSplus::TreeNode *getSegmentedNode(MDSplus::Data *data, MDSplus::Tree *tree)
 {
 	unsigned char dtype, clazz;
@@ -317,7 +317,7 @@ MDSplus::Data *getNewSamplesSerialized()
 		}
 	}
 //If no new data available in any data item sharing the same  context, wait the associated condition variable.
-	if(!dataAvailable) 
+	if(!dataAvailable)
 	{
 		struct timespec waitTime = {0,0};
 		int waitSeconds = 5;  //Exit from wait every 5 seconds. This gives a chance to processes created by xinetd to exit
@@ -330,17 +330,17 @@ MDSplus::Data *getNewSamplesSerialized()
 	for(std::size_t idx = 0; idx < streamInfoV.size(); idx++)
 	{
 		StreamInfo *currSi = streamInfoV[idx];
-		if(!currSi || !currSi->isDataAvailable()) 
+		if(!currSi || !currSi->isDataAvailable())
 			continue;
 		MDSplus::Data *newData = currSi->getNewSamples();
 		if(newData)
 		{
 			retApd->appendDesc(new MDSplus::Int32(idx));
-			retApd->appendDesc(newData); 
+			retApd->appendDesc(newData);
 			//NOTE newData is not deallocated because APD::appendDesc does not increment reference counter
 		}
 	}
-	//Serialized resulting APD	
+	//Serialized resulting APD
 	int numBytes;
 	char *serialized = retApd->serialize(&numBytes);
 	deleteData(retApd);
@@ -373,15 +373,15 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 		pthread_mutex_lock(&mutex);
 		for(std::size_t i = 0; i < streamInfoV.size(); i++)
 		{
-			if(streamInfoV[i]) 
+			if(streamInfoV[i])
 				streamInfoV[i]->checkDataAvailable();
 		}
 		pthread_mutex_unlock(&mutex);
 		nanosleep(&waitTime, NULL);
 	}
-        return NULL;
+	return NULL;
 }
-	
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
 // recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
@@ -391,7 +391,7 @@ using namespace MDSplus;
 EXPORT void EventStream::send(int shot, const char *name, float time, float sample)
 {
     char msgBuf[strlen(name) + 256];
-    sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);  
+    sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);
     //ASCII coding: <shot> <name> [F|L] <numSamples> <xval>[ xval]* <yval>[ <yval>]*  where F and L indicate floating or integer times, respectrively
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
@@ -399,7 +399,7 @@ EXPORT void EventStream::send(int shot, const char *name, float time, float samp
 EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float sample)
 {
     char msgBuf[strlen(name) + 256];
-    sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);  
+    sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
@@ -409,10 +409,10 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, float 
     sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
     }
     for(int i = 0; i < numSamples; i++)
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
@@ -422,10 +422,10 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
     sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
-        sprintf(&msgBuf[strlen(msgBuf)], " %lu", (unsigned long)times[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %lu", (unsigned long)times[i]);
     }
     for(int i = 0; i < numSamples; i++)
-        sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
+	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
@@ -446,8 +446,8 @@ EXPORT void EventStream::run()
     int readItems = sscanf(str, "%d %s %s %d", &shot, name, timeFormat, &numSamples);
     if(readItems < 4)
     {
-        delete [] str;
-        return; //Incorrect message
+	delete [] str;
+	return; //Incorrect message
     }
     //skip to fourth blank
     int len = strlen(str);
@@ -456,7 +456,7 @@ EXPORT void EventStream::run()
     {
 	while(j < len && str[j] != ' ')
 	    j++;
-	if(j == len) 
+	if(j == len)
 	{
 	    delete [] str;
 	    return; //Incorrect message
@@ -470,11 +470,11 @@ EXPORT void EventStream::run()
 	for(int i = 0; i < numSamples; i++)
 	{
 	    sscanf(&str[j], "%f", &times[i]);
-	    while(j < len && str[j] != ' ')  
+	    while(j < len && str[j] != ' ')
 		j++;
 	    if(i < numSamples && j == len)
 	    {
-	        delete [] times;
+		delete [] times;
 		delete [] str;
 		return; //Incorrect message
 	    }
@@ -484,7 +484,7 @@ EXPORT void EventStream::run()
 	    timesD = new Float32Array(times, numSamples);
 	else
 	    timesD = new Float32(times[0]);
-        delete [] times;
+	delete [] times;
     }
     else
     {
@@ -492,11 +492,11 @@ EXPORT void EventStream::run()
 	for(int i = 0; i < numSamples; i++)
 	{
 	    sscanf(&str[j], "%lu", (unsigned long *)&times[i]);
-	    while(j < len && str[j] != ' ')  
+	    while(j < len && str[j] != ' ')
 		j++;
 	    if(i < numSamples - 1 && j == len)
 	    {
-	        delete [] times;
+		delete [] times;
 		delete [] str;
 		return; //Incorrect message
 	    }
@@ -506,14 +506,14 @@ EXPORT void EventStream::run()
 	    timesD = new Uint64Array(times, numSamples);
 	else
 	    timesD = new Uint64(times[0]);
-        delete [] times;
+	delete [] times;
     }
-    Data *samplesD; 
+    Data *samplesD;
     float *samples = new float[numSamples];
     for(int i = 0; i < numSamples; i++)
     {
 	sscanf(&str[j], "%f", &samples[i]);
-	while(j < len && str[j] != ' ')  
+	while(j < len && str[j] != ' ')
 	    j++;
 	if(i < numSamples - 1 && j == len)
 	{
@@ -525,13 +525,13 @@ EXPORT void EventStream::run()
 	j++;
     }
     if(numSamples > 1)
-        samplesD = new Float32Array(samples, numSamples);
+	samplesD = new Float32Array(samples, numSamples);
     else
 	samplesD = new Float32(samples[0]);
-    
+
     delete [] samples;
     std::string nameStr(name);
-    
+
     for(size_t i = 0; i < listeners.size(); i++)
     {
 	if(names[i] == nameStr)

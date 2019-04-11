@@ -77,7 +77,7 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
       arg++;
       arglen--;
       if (strcmp("help", arg) == 0)
-        PrintHelp(0);
+	PrintHelp(0);
       for (opt = 0; options[opt].short_name || options[opt].long_name; opt++) {
 	if (*arg == '-' && options[opt].long_name) {
 	  char *lonarg = arg + 1;

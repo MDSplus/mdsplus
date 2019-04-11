@@ -153,16 +153,16 @@ static char *getHostInfo(SOCKET sock, char **hostnameptr){
     if (hostnameptr) {
       char hbuf[NI_MAXHOST];
       if (getnameinfo((struct sockaddr *)&sin, len, hbuf, sizeof(hbuf),NULL, 0, NI_NAMEREQD) == 0) {
-        *hostnameptr=strdup(hbuf);
+	*hostnameptr=strdup(hbuf);
       } else
       {
-        struct addrinfo *entry,*info = NULL;
-        struct addrinfo hints = { AI_CANONNAME , AF_T, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
-        if (!(err = getaddrinfo(iphost, NULL, &hints, &info))) {
-          for (entry = info ; entry && !entry->ai_canonname ; entry = entry->ai_next);
-          if (entry) *hostnameptr = strdup(entry->ai_canonname);
-          if (info) freeaddrinfo(info);
-        }
+	struct addrinfo *entry,*info = NULL;
+	struct addrinfo hints = { AI_CANONNAME , AF_T, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+	if (!(err = getaddrinfo(iphost, NULL, &hints, &info))) {
+	  for (entry = info ; entry && !entry->ai_canonname ; entry = entry->ai_next);
+	  if (entry) *hostnameptr = strdup(entry->ai_canonname);
+	  if (info) freeaddrinfo(info);
+	}
       }
     }
     if (err) {
@@ -205,8 +205,8 @@ static int getSocketHandle(char *name){
   FREE_NOW(logfile);
   FREE_NOW(logdir);
   if (!DuplicateHandle(OpenProcess(PROCESS_ALL_ACCESS, TRUE, ppid),
-                       (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
-                       PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
+	               (HANDLE) psock, GetCurrentProcess(), (HANDLE *) & h,
+	               PROCESS_ALL_ACCESS, TRUE, DUPLICATE_CLOSE_SOURCE | DUPLICATE_SAME_ACCESS)) {
     fprintf(stderr, "Attempting to duplicate socket from pid %d socket %d\n", ppid, (int)psock);
     perror("Error duplicating socket from parent");
     exit(EXIT_FAILURE);
@@ -252,7 +252,7 @@ static int io_authorize(Connection* c, char *username){
   char now[32];Now32(now);
   if ((iphost = getHostInfo(sock, &hoststr))) {
     printf("%s (%d) (pid %d) Connection received from %s@%s [%s]\r\n",
-           now, (int)sock, getpid(), username, hoststr, iphost );
+	   now, (int)sock, getpid(), username, hoststr, iphost );
     char *matchString[2] = { NULL, NULL };
     FREE_ON_EXIT(matchString[0]);
     FREE_ON_EXIT(matchString[1]);
@@ -322,8 +322,8 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
       case -1: break; // Error
       case  0: break; // Timeout
       default: // for select this will be 1
-        recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
-        break;
+	recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
+	break;
       }
     }
     PopSocket(sock);
@@ -347,10 +347,10 @@ static int io_check(Connection* c){
     case -1: break; // Error
     case  0: break; // Timeout
     default: {// for select this will be 1
-        char bptr[1];
-        err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
-        err = (err==1) ? 0 : -1;
-        break;
+	char bptr[1];
+	err = RECV(sock, bptr, 1, MSG_NOSIGNAL||MSG_PEEK);
+	err = (err==1) ? 0 : -1;
+	break;
       }
     }
     PopSocket(sock);
@@ -374,13 +374,13 @@ static int io_disconnect(Connection* con){
       *p = c->next;
 #ifdef _TCP
       if (FD_ISSET(sock, &fdactive)) {
-        FD_CLR(sock, &fdactive);
+	FD_CLR(sock, &fdactive);
 #else
       if (server_epoll != -1) {
 	udt_epoll_remove_usock(server_epoll, sock);
 #endif
-        printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
-               now, (int)sock, getpid(), c->username, c->host, c->iphost);
+	printf("%s (%d) (pid %d) Connection disconnected from %s@%s [%s]\r\n",
+	       now, (int)sock, getpid(), c->username, c->host, c->iphost);
       }
       free(c->username);
       free(c->iphost);

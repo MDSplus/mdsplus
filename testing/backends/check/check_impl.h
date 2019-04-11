@@ -104,7 +104,7 @@ enum cl_event
 };
 
 typedef void (*LFun) (SRunner *, FILE *, enum print_output,
-                      void *, enum cl_event);
+	              void *, enum cl_event);
 
 typedef struct Log
 {
@@ -124,8 +124,8 @@ struct SRunner
     const char *tap_fname;      /* name of tap output file */
     List *loglst;               /* list of Log objects */
     enum fork_status fstat;     /* controls if suites are forked or not
-                                   NOTE: Don't use this value directly,
-                                   instead use srunner_fork_status */
+	                           NOTE: Don't use this value directly,
+	                           instead use srunner_fork_status */
 };
 
 

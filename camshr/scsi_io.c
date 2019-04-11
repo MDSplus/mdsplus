@@ -25,15 +25,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /****************************************************************
 
    status         = scsi_io(int scsiDevice,
-                            int direction
-                            unsigned char *scsi_cmd,
-                            unsigned char *scsi_cmd_len,
-                            unsigned char *user_buffer,
-                            unsigned char *user_buflen,
-                            unsigned char *sense_data_buffer,
-                            unsigned char sense_data_buflen,
-                            unsigned char *sense_data_retlen,
-                            int           *transfer_bytcnt)
+	                    int direction
+	                    unsigned char *scsi_cmd,
+	                    unsigned char *scsi_cmd_len,
+	                    unsigned char *user_buffer,
+	                    unsigned char *user_buflen,
+	                    unsigned char *sense_data_buffer,
+	                    unsigned char sense_data_buflen,
+	                    unsigned char *sense_data_retlen,
+	                    int           *transfer_bytcnt)
 
    scsi_io returns scsi status or -1 if some other error.
 
@@ -43,13 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
      direction         - 0=control (no data), 1=read, 2=write
      scsi_cmd          - buffer containing scsi command
      scsi_cmd_len      - length of scsi_cmd in bytes
-     user_buffer       - user buffer to receive data (read) or 
-                         containing data to write (write)
+     user_buffer       - user buffer to receive data (read) or
+	                 containing data to write (write)
      user_buflen       - size of user buffer in bytes
      sense_data_buffer - buffer to receive sense data
      sense_data_buflen - size of sense data buffer in bytes
      sense_data_retlen - address of unsigned char to receive number of
-                         sense data bytes returned
+	                 sense data bytes returned
      transfer_bytcnt   - address of int to receive number of bytes transfered.
 
    This routine is based on the linux sg driver version 3

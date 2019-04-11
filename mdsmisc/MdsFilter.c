@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element MDS$FILTER.C */
 /*------------------------------------------------------------------------------
 
-	Name:	MDS$FILTER   
+	Name:	MDS$FILTER
 
 	Type:   C function
 

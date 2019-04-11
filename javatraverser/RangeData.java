@@ -12,7 +12,7 @@ public class RangeData extends CompoundData
 	descs[1] = end;
 	descs[2] = delta;
     }
-    
+
     public Data getBegin()  {return descs[0]; }
     public Data getEnd()    {return descs[1]; }
     public Data getDelta()  {return descs[2]; }

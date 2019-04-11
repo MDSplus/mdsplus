@@ -140,17 +140,17 @@ int RemoteAccessDisconnect(int conid, int force){
     if ((force && host->h.conid == conid) || (host->h.connections <= 0 && host->h.time < time(0)-60)) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
       if (disconnectFromMds)
-        status = disconnectFromMds(conid);
+	status = disconnectFromMds(conid);
       if (prev) {
 	prev->next = host->next;
 	free(host->h.unique);
 	free(host);
-        host = prev->next;
+	host = prev->next;
       } else {
 	host_list  = host->next;
 	free(host->h.unique);
 	free(host);
-        host = host_list;
+	host = host_list;
       }
     } else {
       prev = host;
@@ -671,7 +671,7 @@ int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 	    memcpy(itm->pointer, ans.ptr, min(itm->buffer_length, length));
 /*            if (itm->buffer_length < length) status = TreeBUFFEROVF; */
 	  }
-          free(ans.ptr);
+	  free(ans.ptr);
 	} else
 	  status = 0;
       }
@@ -1119,7 +1119,7 @@ inline static off_t io_lseek_remote(int conid,int fd, off_t offset, int whence) 
   char *dout;
   int status = MdsIoRequest(conid, MDS_IO_LSEEK_K,sizeof(mdsio.lseek),&mdsio,NULL,&len,&dout,&msg);
   if (STATUS_OK)
-         if(len==sizeof(int32_t)){	ret = (off_t)*(int32_t*)dout; fprintf(stderr, "Server return 4 byte offset. Please update MDSplus on server if possible.");}
+	 if(len==sizeof(int32_t)){	ret = (off_t)*(int32_t*)dout; fprintf(stderr, "Server return 4 byte offset. Please update MDSplus on server if possible.");}
     else if(len==sizeof(int64_t))	ret = (off_t)*(int64_t*)dout;
     else				ret = -1;
   else					ret = -1;
@@ -1142,7 +1142,7 @@ inline static ssize_t io_write_remote(int conid, int fd, void *buff, size_t coun
   char *dout;
   int status =  MdsIoRequest(conid, MDS_IO_WRITE_K,sizeof(mdsio.write),&mdsio,buff,&len,&dout,&msg);
   if STATUS_OK {
-         if(len==sizeof(int32_t))	ret = (ssize_t)*(int32_t*)dout;
+	 if(len==sizeof(int32_t))	ret = (ssize_t)*(int32_t*)dout;
     else if(len==sizeof(int64_t))	ret = (ssize_t)*(int64_t*)dout;
     else				ret = 0;
   } else				ret = 0;
@@ -1473,7 +1473,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
     *conid = RemoteAccessConnect(host, 1, NULL);
     if (*conid != -1) {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
-        if (*filepath && !strstr(filepath,"::")) {
+	if (*filepath && !strstr(filepath,"::")) {
 	  INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
 	  int options,mode;
 	  getOptionsMode(new,edit,&options,&mode);
@@ -1491,9 +1491,9 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 	  }
 	  FREE_NOW(tmp);
 	} else {
-          status = TreeUNSUPTHICKOP;
-          RemoteAccessDisconnect(*conid, B_FALSE);
-        }
+	  status = TreeUNSUPTHICKOP;
+	  RemoteAccessDisconnect(*conid, B_FALSE);
+	}
 	break;
       }
       int len = strlen(treename);
@@ -1505,7 +1505,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
       status = io_open_one_request(*conid,sizeof(mdsio.open_one),&mdsio,data,host,enhanced,fullpath,fd);
       FREE_NOW(data);
       if (*fd<0)
-        RemoteAccessDisconnect(*conid, B_FALSE);
+	RemoteAccessDisconnect(*conid, B_FALSE);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
       *fd = -1;

@@ -3,7 +3,7 @@
 #undef getc
 #endif
 #define getc(file)		(TdiRefZone.a_cur < TdiRefZone.a_end ? *TdiRefZone.a_cur++ : \
-	        		(TdiRefZone.a_cur++ == TdiRefZone.a_end ? ';' : 0))
+				(TdiRefZone.a_cur++ == TdiRefZone.a_end ? ';' : 0))
 #ifdef output
 #undef output
 #endif

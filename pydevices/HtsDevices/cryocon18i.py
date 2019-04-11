@@ -53,10 +53,10 @@ class CRYOCON18I(MDSplus.Device):
         {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
         {'path':':TREND_EVENT','type':'text', 'value': 'CRYOCON_TREND',
          'options':('no_write_shot')},
-        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCCON_STREAM',
+        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON_STREAM',
          'options':('no_write_shot')},
         {'path':':STATUS_CMDS','type':'text',
-         'value':MDSplus.makeArray(['IDN?',
+         'value':MDSplus.makeArray(['*IDN?',
                                     'SYSTem:HWRev?',
                                     'SYSTem:FWREV?',
                                     'SYSTem:AMBient?']),
@@ -90,7 +90,7 @@ class CRYOCON18I(MDSplus.Device):
          'options':('no_write_shot',)},
         ]
 
-    for c in range(ord('A'), ord('H')):
+    for c in range(ord('A'), ord('I')):
         parts.append({'path':':INPUT_%c'%(c,),
                       'type':'signal',
                       'options':('no_write_model','write_once',)})
@@ -100,7 +100,7 @@ class CRYOCON18I(MDSplus.Device):
         parts.append({'path':':INPUT_%c:CALIBRATION'%(c,),
                       'type':'TEXT',
                       'options':('no_write_model', 'write_once',)})
-        parts.append({'path':':INPUT_%c:TEMPERATURE'%(c,),
+        parts.append({'path':':INPUT_%c:RESISTENCE'%(c,),
                       'type':'SIGNAL',
                       'options':('no_write_model', 'write_once',)})
     del c
@@ -111,7 +111,7 @@ class CRYOCON18I(MDSplus.Device):
         import pyvisa
         rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
-        answer = instrument.query(cmd)
+        answer = instrument.query(cmd)[:-1]
         print("cmd:%s\nans:%s"%(cmd,answer))
         return 1
     QUERY=query
@@ -153,7 +153,7 @@ class CRYOCON18I(MDSplus.Device):
                 print('  got back %s' % status_out[str(cmd)])
         self.status_out.record = status_out
 
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
               cal = self.__getattr__('input_%c_calibration'%(chr(i),))
@@ -183,7 +183,7 @@ class CRYOCON18I(MDSplus.Device):
         # open the instrument
         if self.debugging():
             print("about to open cryocon device %s" % str(self.node.data()))
-        event_name = self.data_event.data()
+        event_name = self.trend_event.data()
         rm = pyvisa.ResourceManager('@py')
         instrument = rm.open_resource('TCPIP::%s'% str(self.node.data()))
         chans = []
@@ -191,31 +191,29 @@ class CRYOCON18I(MDSplus.Device):
         resists = []
         temps = []
         query_cmd = ''
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
-                t_chan=self.__getattr__('input_%c_temperature' % (chr(i)))
                 query_cmd = 'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
-                ans = instrument.query(query_cmd).split(';')
+                ans = instrument.query(query_cmd)[:-1].split(';')
                 t_time=time.time()
                 try:
-                    temp = float(ans[0].split('\x00')[0])
+                    temp = float(ans[0])
                 except:
                     if self.debugging():
-                        print("Could not parse temperature /%s/"%
-                           ans[0].split('\x00')[0])
+                        print("Could not parse temperature /%s/"% ans)
                     temp = 0.0
-                t_chan.putRow(1000,
-                              MDSplus.Float32(temp),
-                               MDSplus.Int64(t_time*1000.))
+                chan.putRow(1000,
+                            MDSplus.Float32(temp),
+                            MDSplus.Int64(t_time*1000.))
+                r_chan=self.__getattr__('input_%c_resistence' % (chr(i)))
                 try:
-                    resist = float(ans[1].split('\x00')[0])
+                    resist = float(ans[1])
                 except:
                     if self.debugging():
-                        print("Could not parse resist /%s/"%
-                               ans[1].split('\x00')[0])
+                        print("Could not parse resist /%s/"% ans)
                     resist = 0.0
-                chan.putRow(1000,
+                r_chan.putRow(1000,
                           MDSplus.Float32(resist),
                           MDSplus.Int64(t_time*1000.))
         MDSplus.Event.setevent(event_name)
@@ -254,32 +252,25 @@ class CRYOCON18I(MDSplus.Device):
         # set up arrays of data and nodes to use in the loop
         seg_length = int(self.seg_length.data())
         max_segments = self.max_segments.data()
-        chans = []
+        r_chans = []
         t_chans = []
         resists = []
         temps = []
         times = np.zeros(seg_length)
         query_cmd = ''
-        for i in range(ord('a'), ord('h')):
+        for i in range(ord('a'), ord('i')):
             chan = self.__getattr__('input_%c'%(chr(i),))
             if chan.on:
                 temps.append(np.zeros(seg_length))
                 resists.append(np.zeros(seg_length))
-                chans.append(chan)
-                t_chans.append(self.__getattr__('input_%c_temperature' % (chr(i))))
-                query_cmd = query_cmd+'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
-        # note the time
-        # while not stopped and not done
-        #    for each sample in segment
-        #        read all temps and resists
-        #        for each channel
-        #            make the temp and resist a float
-        #    trim segment if necessary
-        #    write the segment
+                t_chans.append(chan)
+                r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
+
         segment = 0
         start_time = time.time()
         previous_time = 0
         self.trig_time.record = start_time
+
         while self.running.on and segment < max_segments:
             if self.debugging():
                 print ("starting on segment %d" % segment)
@@ -288,24 +279,29 @@ class CRYOCON18I(MDSplus.Device):
                     break
                 if previous_time != 0:
                     time.sleep(dt - (time.time()-previous_time))
-                ans = instrument.query(query_cmd).split(';')
                 previous_time = time.time()
                 times[sample] = previous_time - start_time
-                for i in range(len(temps)):
-                    try:
-                        temps[i][sample] = float(ans[2*i].split('\x00')[0])
-                    except:
-                        if self.debugging():
-                            print("Could not parse temperature /%s/"%
-                                   ans[2*i].split('\x00')[0])
-                        temps[i][sample] = 0.0
-                    try:
-                        resists[i][sample] = float(ans[2*i+1].split('\x00')[0])
-                    except:
-                        if self.debugging():
-                            print("Could not parse resist /%s/"%
-                                   ans[2*i+1].split('\x00')[0])
-                        resists[i][sample] = 0.0
+                idx = 0
+                for i in range(ord('a'), ord('i')):
+                    if chan.on:
+                        query_cmd = 'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
+                        ans = instrument.query(query_cmd)[:-1].split(';')
+                        try:
+                            temp = float(ans[0])
+                        except:
+                            if self.debugging():
+                                print("Could not parse temperature /%s/"% ans)
+                            temp = 0.0
+                        temps[idx][sample] = temp
+
+                        try:
+                            resist = float(ans[1])
+                        except:
+                            if self.debugging():
+                                print("Could not parse resist /%s/"% ans)
+                            resist = 0.0
+                        resists[idx][sample] = resist
+                        idx += 1
 
             if sample != seg_length-1:
                 for i in range(len(temps)):
@@ -313,7 +309,7 @@ class CRYOCON18I(MDSplus.Device):
                     temps[i] = temps[i][0:sample]
                     resists[i] = resists[i][0:sample]
             for i in range(len(temps)):
-                chans[i].makeSegment(times[0],
+                r_chans[i].makeSegment(times[0],
                                      times[-1],
                                      times,
                                      resists[i])

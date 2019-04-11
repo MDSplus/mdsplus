@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //#define _VI_FUNC
 //#include <ivi.h>
 //#include <iviScope.h>
-//#include "niScopeObsolete.h" 
+//#include "niScopeObsolete.h"
 
 // id = ih    같은 뜻이다. 여기서는 ih를 사용 했다.
 
@@ -130,12 +130,12 @@ int NiScope_ConfigureVertical(ViSession ih, char *dev, ViReal64 * range, ViReal6
   return status;
 }
 
-/*  
+/*
 #define IVISCOPE_VAL_AC                                         (0L)
 #define IVISCOPE_VAL_DC                                         (1L)
 #define IVISCOPE_VAL_GND                                        (2L)
 */
-//여기서  number record 는 데이터 저장을 한번하고 받을 것인지 여러번 데이터를 받고 한번에 저장을 할것인지 정한다. 그럴때가 가끔 필요하다. 
+//여기서  number record 는 데이터 저장을 한번하고 받을 것인지 여러번 데이터를 받고 한번에 저장을 할것인지 정한다. 그럴때가 가끔 필요하다.
 //우리는 보통 1회에 한번 데이터를 받는다.
 int NiScope_ConfigureHorizontalTiming(ViSession ih, ViReal64 * msr, ViInt32 mup)
 {
@@ -179,7 +179,7 @@ int NiScope_SampleRate(ViSession ih, ViReal64 * samplerate)
 }
 
 //Returns the actual number of points the digitizer acquires for each channel.
-// After configuring the digitizer for an acquisition, call this function to determine the size of the waveforms that the digitizer acquires. 
+// After configuring the digitizer for an acquisition, call this function to determine the size of the waveforms that the digitizer acquires.
 //Allocate a ViReal64 array of this size or greater to pass as the waveformArray parameter of niScope_ReadWaveform and niScope_FetchWaveform
 int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength)
 {
@@ -191,7 +191,7 @@ int NiScope_ActualRecordLength(ViSession ih, ViPInt32 recordlength)
 }
 
 //the array length can be determined by calling niScope_ActualNumWfms.
-//Allows you to declare appropriately-sized waveforms. NI-SCOPE handles the channel list parsing for you. 
+//Allows you to declare appropriately-sized waveforms. NI-SCOPE handles the channel list parsing for you.
 int NiScope_ActualNumWfms(ViSession ih, char *dev, ViPInt32 numwfms)
 {
   ViStatus status;
@@ -258,8 +258,8 @@ int NiScope_Store (int ih, char *nodeName, char* dev)
    voltresolution = 8912; //NI5122 14bits		 여기서는 데이터 값이 계산된 값으로 판단된다. 비트계산 하지 않은 값..
    niScope_SampleRate (ih, &srate);
    niScope_ActualRecordLength (ih, &samlen);
-   
-   // Data acquisition and Data Put tree   /  
+
+   // Data acquisition and Data Put tree   /
 	  samcount = samlen -1;        //
 	  srate = 1.0/srate;        // sample rate  --> time
 
@@ -273,14 +273,14 @@ int NiScope_Store (int ih, char *nodeName, char* dev)
 	  bindata = malloc (samlen * sizeof (ViInt32));
 	  niScope_FetchBinary32 (ih, "0", 5.0, samlen, bindata, &in);
 
-//	voltage= bindata * gain + in.offset 
+//	voltage= bindata * gain + in.offset
 
 	  dtype = DTYPE_DOUBLE;
 	  idesc1 = descr(&dtype, &in.gain, &null);  // gain   ch 0
       idesc2 = descr(&dtype, bindata, &samlen, &null);  // binary data ch 0
 	  idesc5 = descr(&dtype, &in.offset, &null);  //offset  ch 0
      sprintf (pathName, "%s:AI0:FOO", nodeName);
-     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);          
+     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);
 
    else if (dev="1")
 	  bindata1 = malloc (samlen * sizeof (ViInt32));
@@ -291,7 +291,7 @@ int NiScope_Store (int ih, char *nodeName, char* dev)
       idesc2 = descr(&dtype, bindata, &samlen, &null);  // binary data ch 0
 	  idesc5 = descr(&dtype, &info.offset, &null);  //offset  ch 0
 	 sprintf (pathName, "%s:AI1:FOO", nodeName);
-     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);          
+     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);
 
    else if (dev="0,1")
 	  bindata = malloc (samlen * sizeof (ViInt32));
@@ -306,14 +306,14 @@ int NiScope_Store (int ih, char *nodeName, char* dev)
       idesc2 = descr(&dtype, bindata, &samlen, &null);  // binary data ch 0
 	  idesc5 = descr(&dtype, &in.offset, &null);  //offset  ch 0
      sprintf (pathName, "%s:AI0:FOO", nodeName);
-     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);          
-	 
+     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);
+
 	  dtype = DTYPE_DOUBLE;
 	  idesc1 = descr(&dtype, &info.gain, &null);  // gain   ch 0
       idesc2 = descr(&dtype, bindata, &samlen, &null);  // binary data ch 0
 	  idesc5 = descr(&dtype, &info.offset, &null);  //offset  ch 0
 	 sprintf (pathName, "%s:AI1:FOO", nodeName);
-     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);          
+     stats = MdsPut(pathName,"BUILD_SIGNAL(BUILD_WITH_UNITS(($*$VALUE)+$,'V'),(`$[0:$]),MAKE_DIM(MAKE_WINDOW(0,$,0.0),MAKE_SLOPE(MAKE_WITH_UNITS($,'s'))))", &idesc1, &idesc5, &idesc2, &idesc3, &idesc4, &null);
 
     free(voltdata);
 	free(voltdata1);

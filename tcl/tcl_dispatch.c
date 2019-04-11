@@ -160,11 +160,11 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
       StrAppend(&svr, (struct descriptor *)&nullstr);
       int *iostatusp;
       if (sync) {
-        c.sid = calloc(1,sizeof(int));
+	c.sid = calloc(1,sizeof(int));
 	IOS = SsINTERNAL;
-        iostatusp = &IOS;
+	iostatusp = &IOS;
       } else
-        iostatusp = NULL;
+	iostatusp = NULL;
       status = ServerDispatchAction(c.sid,svr.pointer,treename,shot,nid,NULL,NULL,iostatusp,NULL,NULL,0);
     }
   }
@@ -295,13 +295,13 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       void *ctx1 = NULL;
       char *server = NULL;
       while ((server = ServerFindServers(&ctx1, ident))) {
-        FREE_ON_EXIT(server);
+	FREE_ON_EXIT(server);
 	tclAppend(output, "Checking server: ");
 	tclAppend(output, server);
 	tclAppend(output, "\n");
 	mdsdclFlushOutput(*output);
 	char *info=NULL;
-        FREE_ON_EXIT(info);
+	FREE_ON_EXIT(info);
 	if (dooutput) {
 	  tclAppend(output, info = ServerGetInfo(full, server));
 	  tclAppend(output, "\n");

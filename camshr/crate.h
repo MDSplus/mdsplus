@@ -13,7 +13,7 @@
 // form of data in crate.db:
 //              GKB509:001:2:1:1
 //      ^^^^^^ ^^^ ^
-//      ||||||  |  |||  |  | | \ online (1=online, 0=not) 
+//      ||||||  |  |||  |  | | \ online (1=online, 0=not)
 //              |  |||  |  | \ enhanced (1=enhanced, 0=not)
 //              GK||||  |  |      == constants
 //                B|||  |  |      == scsi host adapter

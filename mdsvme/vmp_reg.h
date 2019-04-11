@@ -28,7 +28,7 @@ struct vmpintr_info {
   int vector;			/* Interrupt vector */
 };
 
-/* ioctl defines 
+/* ioctl defines
  * VMP_MAP_PIO_ADDR maps outbound to a VME address.
  * VMP_UNMAP_PIO_ADDR unmaps the outbound mapping.
  * VMP_GET_PIO_INFO returns information about the outbound mapping.

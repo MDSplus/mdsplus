@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -80,7 +80,7 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
 
     def node_state_changed(self,button):
         self.xdbox.on.set_active(self.node_state.get_active())
-        
+
     def popupXd(self,button):
         if not hasattr(self,'xdbox'):
             self.xdbox=MDSplusXdBox(self.node)
@@ -110,10 +110,10 @@ class MDSplusOnOffXdBoxWidget(props,MDSplusWidget,HBox):
 
     def show(self):
         self.show_all()
-        
-        
 
-gobject.type_register(MDSplusOnOffXdBoxWidget) 
+
+
+gobject.type_register(MDSplusOnOffXdBoxWidget)
 
 if guibuilder:
 

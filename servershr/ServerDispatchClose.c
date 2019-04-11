@@ -28,12 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Tell all servers which performed actions in dispatch
-                         table to close their trees
+		Purpose: Tell all servers which performed actions in dispatch
+	                 table to close their trees
 
 ------------------------------------------------------------------------------
 
@@ -49,7 +49,7 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

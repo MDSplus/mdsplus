@@ -89,7 +89,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element BUTTERWORTH.C */
   /*------------------------------------------------------------------------------
 
-	Name:	BUTTERWORTH   
+	Name:	BUTTERWORTH
 
 	Type:   C function
 

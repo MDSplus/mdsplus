@@ -101,37 +101,37 @@ public enum DTYPE {
     public static final DTYPE COMPLEX_DOUBLE = DTYPE.FTC;
 
     public static DTYPE get(final byte c) {
-        return DTYPE.values()[c & 0xFF];
+	return DTYPE.values()[c & 0xFF];
     }
 
     public static final String getName(final byte dtype) {
-        final String ans = DTYPE.values()[dtype & 0xFF].label;
-        if(ans != null) return ans;
-        return new StringBuffer(9).append("DTYPE_").append(dtype & 0xFF).toString();
+	final String ans = DTYPE.values()[dtype & 0xFF].label;
+	if(ans != null) return ans;
+	return new StringBuffer(9).append("DTYPE_").append(dtype & 0xFF).toString();
     }
 
     public static final String getSuffix(final byte dtype) {
-        return DTYPE.values()[dtype & 0xFF].suffix;
+	return DTYPE.values()[dtype & 0xFF].suffix;
     }
     public final String suffix;
     public final String label;
 
     private DTYPE(){
-        this.label = null;
-        this.suffix = null;
+	this.label = null;
+	this.suffix = null;
     }
 
     private DTYPE(final String label){
-        this.label = label;
-        this.suffix = null;
+	this.label = label;
+	this.suffix = null;
     }
 
     private DTYPE(final String label, final String suffix){
-        this.label = label;
-        this.suffix = suffix;
+	this.label = label;
+	this.suffix = suffix;
     }
 
     public final byte toByte() {
-        return (byte)this.ordinal();
+	return (byte)this.ordinal();
     }
 }

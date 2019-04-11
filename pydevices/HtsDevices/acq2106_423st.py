@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -167,7 +167,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                 Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
-            
+
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -213,7 +213,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                             nbytes = s.recv_into(view, min(4096,toread))
                             view = view[nbytes:] # slicing views is cheap
                             toread -= nbytes
-                    
+
                     except socket.timeout as e:
                         print("Got a timeout.")
                         err = e.args[0]
@@ -257,11 +257,11 @@ class _ACQ2106_423ST(MDSplus.Device):
             slots.append(uut.s4)
             slots.append(uut.s5)
             slots.append(uut.s6)
-        except: 
+        except:
             pass
         for card in range(self.sites):
             coeffs =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
-            offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )       
+            offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
             for i in range(32):
                 coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
                 coeff.record = coeffs[i]
@@ -339,7 +339,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         first = True
         buf = bytearray(segment_bytes)
         while running.on and segment < max_segments:
-            toread=segment_bytes 
+            toread=segment_bytes
             try:
                 view = memoryview(buf)
                 while toread:

@@ -70,78 +70,78 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     {
       if (line[1] != '!')
       {
-        char name[64];
-        char type[3];
-        char value[256];
-        sscanf(&line[1],"%63s %2s %255s",name,type,value);
-        if (strlen(name) && (strlen(type)==1) && strlen(value))
-        {
-          static struct descriptor name_d = {0,DTYPE_T,CLASS_S,0};
-          name_d.length = strlen(name);
-          name_d.pointer = name;
-          switch (type[0])
-          {
-            case 'A':
-                      {
-                        static float val;
-                        static DESCRIPTOR_FLOAT(val_d,&val);
-                        sscanf(value,"%f",&val);
-                        if (analog_names.l_length)
-                        {
-                          TdiVector(&analog_names,&name_d,&analog_names MDS_END_ARG);
-                          TdiVector(&analog,&val_d,&analog MDS_END_ARG);
-                        }
-                        else
-                        {
-                          MdsCopyDxXd(&name_d,&analog_names);
-                          MdsCopyDxXd(&val_d,&analog);
-                        }
-                      }
-                      break;
-            case 'D':
-                      {
-                        static int val;
-                        static DESCRIPTOR_LONG(val_d,&val);
-                        val = strtol(value,NULL,0);
-                        if (digital_names.l_length)
-                        {
-                          TdiVector(&digital_names,&name_d,&digital_names MDS_END_ARG);
-                          TdiVector(&digital,&val_d,&digital MDS_END_ARG);
-                        }
-                        else
-                        {
-                          MdsCopyDxXd(&name_d,&digital_names);
-                          MdsCopyDxXd(&val_d,&digital);
-                        }
-                      }
-                      break;
-            case 'T':
-                      sscanf(&line[1],"%63s %2s %255[^|\n]",name,type,value);
-                      {
+	char name[64];
+	char type[3];
+	char value[256];
+	sscanf(&line[1],"%63s %2s %255s",name,type,value);
+	if (strlen(name) && (strlen(type)==1) && strlen(value))
+	{
+	  static struct descriptor name_d = {0,DTYPE_T,CLASS_S,0};
+	  name_d.length = strlen(name);
+	  name_d.pointer = name;
+	  switch (type[0])
+	  {
+	    case 'A':
+	              {
+	                static float val;
+	                static DESCRIPTOR_FLOAT(val_d,&val);
+	                sscanf(value,"%f",&val);
+	                if (analog_names.l_length)
+	                {
+	                  TdiVector(&analog_names,&name_d,&analog_names MDS_END_ARG);
+	                  TdiVector(&analog,&val_d,&analog MDS_END_ARG);
+	                }
+	                else
+	                {
+	                  MdsCopyDxXd(&name_d,&analog_names);
+	                  MdsCopyDxXd(&val_d,&analog);
+	                }
+	              }
+	              break;
+	    case 'D':
+	              {
+	                static int val;
+	                static DESCRIPTOR_LONG(val_d,&val);
+	                val = strtol(value,NULL,0);
+	                if (digital_names.l_length)
+	                {
+	                  TdiVector(&digital_names,&name_d,&digital_names MDS_END_ARG);
+	                  TdiVector(&digital,&val_d,&digital MDS_END_ARG);
+	                }
+	                else
+	                {
+	                  MdsCopyDxXd(&name_d,&digital_names);
+	                  MdsCopyDxXd(&val_d,&digital);
+	                }
+	              }
+	              break;
+	    case 'T':
+	              sscanf(&line[1],"%63s %2s %255[^|\n]",name,type,value);
+	              {
 			unsigned short len;
-                        static struct descriptor val_d = {0, DTYPE_T, CLASS_S, 0};
-                        static struct descriptor trimmed = {0, DTYPE_T, CLASS_D, 0};
-                        val_d.length = strlen(value);
-                        val_d.pointer = value;
-                        StrTrim(&trimmed,&val_d,&len);
-                        if (text_names.l_length)
-                        {
-                          TdiVector(&text_names,&name_d,&text_names MDS_END_ARG);
-                          TdiVector(&text,&trimmed,&text MDS_END_ARG);
-                        }
-                        else
-                        {
-                          MdsCopyDxXd(&name_d,&text_names);
-                          MdsCopyDxXd(&trimmed,&text);
-                        }
-                        StrFree1Dx(&trimmed);
-                      }
-                      break;
-            default: printf("Cannot parse report line: %s",line);
-          }
-        }
-        else if (strcmp(name,"DATE:"))
-          printf("Cannot parse report line: %s",line);
+	                static struct descriptor val_d = {0, DTYPE_T, CLASS_S, 0};
+	                static struct descriptor trimmed = {0, DTYPE_T, CLASS_D, 0};
+	                val_d.length = strlen(value);
+	                val_d.pointer = value;
+	                StrTrim(&trimmed,&val_d,&len);
+	                if (text_names.l_length)
+	                {
+	                  TdiVector(&text_names,&name_d,&text_names MDS_END_ARG);
+	                  TdiVector(&text,&trimmed,&text MDS_END_ARG);
+	                }
+	                else
+	                {
+	                  MdsCopyDxXd(&name_d,&text_names);
+	                  MdsCopyDxXd(&trimmed,&text);
+	                }
+	                StrFree1Dx(&trimmed);
+	              }
+	              break;
+	    default: printf("Cannot parse report line: %s",line);
+	  }
+	}
+	else if (strcmp(name,"DATE:"))
+	  printf("Cannot parse report line: %s",line);
       }
     }
   }

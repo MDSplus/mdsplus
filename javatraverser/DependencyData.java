@@ -13,10 +13,10 @@ public class DependencyData extends CompoundData
 	descs[0] = arg1;
 	descs[1] = arg2;
     }
-    
+
     public final int getOpcode() {return opcode; }
     public final Data[] getArguments() {return descs; }
-    
+
     public static final int DEPENDENCY_AND = 10;
     public static final int DEPENDENCY_OR = 11;
 }

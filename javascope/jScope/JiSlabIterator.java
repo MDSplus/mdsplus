@@ -5,11 +5,11 @@ import java.io.IOException;
 
 // Counter for hyperslab access
 
-class JiSlabIterator 
+class JiSlabIterator
 {
 	private int[] mCounter;	// Current slice
 	private int[] mProducts, mSizes; // Product matrix, sizes of dimensions
-	private int mOffset, mSize = 1;  
+	private int mOffset, mSize = 1;
 	private boolean mIsRecord = false;
 	private boolean mFinished = false;
 	private static boolean DEBUG = false;
@@ -21,7 +21,7 @@ class JiSlabIterator
 	  mProducts = new int[sliceDims.length];
 	  mSizes = new int[sliceDims.length];
 	  int[] dimOffsets = new int[sliceDims.length];
-	  
+
 	  int value = 1;
 	  int j = sliceDims.length-1;
 	  for (int i=0; i < sliceDims.length; i++, j--){
@@ -37,14 +37,14 @@ class JiSlabIterator
 	  for (int i=0; i < sliceDims.length; i++)
 	    mSize *= mSizes[i];
 	  mOffset = innerProduct(mProducts, dimOffsets);
-	  }  
+	  }
 	private int getOffset() throws IOException
 	  {
 	  int rval = innerProduct(mProducts, mCounter);
 //	  System.out.println("Offset = " + rval);
 	  rval += mOffset;
 	  return rval;
-	  }  
+	  }
 	private int innerProduct(int [] v1, int [] v2)
 	  {
 	  int rval = 0;
@@ -52,7 +52,7 @@ class JiSlabIterator
 	      rval += v1[i]*v2[i];
 	  }
 	  return rval;
-	  }  
+	  }
 	public JiSlab next() throws IOException
 	  {
 	  JiSlab rval = null;
@@ -78,7 +78,7 @@ class JiSlabIterator
 			  }
 			  System.out.println();
 		      }
-		      
+
 		      ++mCounter[i];
 		      mCounter[i] %= mSizes[i];
 		      if (mCounter[i] != 0)
@@ -89,9 +89,9 @@ class JiSlabIterator
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	public int size()
 	  {
 	  return mSize;
-	  }  
+	  }
 }

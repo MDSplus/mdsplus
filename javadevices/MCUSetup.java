@@ -14,7 +14,7 @@ public class MCUSetup extends DeviceSetup {
 
     /** Creates new form MCUSetup */
     public MCUSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -26,99 +26,99 @@ public class MCUSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceTable1 = new DeviceTable();
-        deviceTable2 = new DeviceTable();
-        deviceTable3 = new DeviceTable();
+	deviceButtons1 = new DeviceButtons();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	deviceTable1 = new DeviceTable();
+	deviceTable2 = new DeviceTable();
+	deviceTable3 = new DeviceTable();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("MCU Setup");
-        setDeviceType("MCU");
-        setHeight(405);
-        setWidth(500);
+	setDeviceProvider("localhost");
+	setDeviceTitle("MCU Setup");
+	setDeviceType("MCU");
+	setHeight(405);
+	setWidth(500);
 
-        deviceButtons1.setCheckExpressions(new String[] {});
-        deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"READ", "STORE"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
+	deviceButtons1.setCheckExpressions(new String[] {});
+	deviceButtons1.setCheckMessages(new String[] {});
+	deviceButtons1.setMethods(new String[] {"READ", "STORE"});
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.SOUTH);
 
-        jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
+	jPanel1.setLayout(new javax.swing.BoxLayout(jPanel1, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("GENERAL"));
-        jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
+	jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder("GENERAL"));
+	jPanel2.setLayout(new javax.swing.BoxLayout(jPanel2, javax.swing.BoxLayout.PAGE_AXIS));
 
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("   IP ADDRESS:");
-        deviceField2.setNumCols(15);
-        deviceField2.setOffsetNid(2);
-        deviceField2.setTextOnly(true);
-        jPanel3.add(deviceField2);
-        jPanel3.add(deviceDispatch1);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("   IP ADDRESS:");
+	deviceField2.setNumCols(15);
+	deviceField2.setOffsetNid(2);
+	deviceField2.setTextOnly(true);
+	jPanel3.add(deviceField2);
+	jPanel3.add(deviceDispatch1);
 
-        jPanel2.add(jPanel3);
+	jPanel2.add(jPanel3);
 
-        jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel4.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("      COMMENT:");
-        deviceField1.setNumCols(30);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel4.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("      COMMENT:");
+	deviceField1.setNumCols(30);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel4.add(deviceField1);
 
-        jPanel2.add(jPanel4);
+	jPanel2.add(jPanel4);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("DATA"));
-        jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.PAGE_AXIS));
+	jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("DATA"));
+	jPanel5.setLayout(new javax.swing.BoxLayout(jPanel5, javax.swing.BoxLayout.PAGE_AXIS));
 
-        deviceTable1.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
-        deviceTable1.setEditable(false);
-        deviceTable1.setIdentifier("");
-        deviceTable1.setNumCols(7);
-        deviceTable1.setNumRows(1);
-        deviceTable1.setOffsetNid(4);
-        deviceTable1.setPreferredHeight(30);
-        deviceTable1.setRowNames(new String[] {"MANIPULATORS"});
-        jPanel5.add(deviceTable1);
+	deviceTable1.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
+	deviceTable1.setEditable(false);
+	deviceTable1.setIdentifier("");
+	deviceTable1.setNumCols(7);
+	deviceTable1.setNumRows(1);
+	deviceTable1.setOffsetNid(4);
+	deviceTable1.setPreferredHeight(30);
+	deviceTable1.setRowNames(new String[] {"MANIPULATORS"});
+	jPanel5.add(deviceTable1);
 
-        deviceTable2.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
-        deviceTable2.setEditable(false);
-        deviceTable2.setIdentifier("");
-        deviceTable2.setNumCols(7);
-        deviceTable2.setNumRows(1);
-        deviceTable2.setOffsetNid(3);
-        deviceTable2.setPreferredHeight(30);
-        deviceTable2.setRowNames(new String[] {"FILTERS"});
-        jPanel5.add(deviceTable2);
+	deviceTable2.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
+	deviceTable2.setEditable(false);
+	deviceTable2.setIdentifier("");
+	deviceTable2.setNumCols(7);
+	deviceTable2.setNumRows(1);
+	deviceTable2.setOffsetNid(3);
+	deviceTable2.setPreferredHeight(30);
+	deviceTable2.setRowNames(new String[] {"FILTERS"});
+	jPanel5.add(deviceTable2);
 
-        deviceTable3.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
-        deviceTable3.setEditable(false);
-        deviceTable3.setIdentifier("");
-        deviceTable3.setNumCols(7);
-        deviceTable3.setNumRows(1);
-        deviceTable3.setOffsetNid(5);
-        deviceTable3.setPreferredHeight(30);
-        deviceTable3.setRowNames(new String[] {"RS232"});
-        jPanel5.add(deviceTable3);
+	deviceTable3.setColumnNames(new String[] {"VDC", "VDE", "VDI", "HOR", "VUE", "VUI", "VUC"});
+	deviceTable3.setEditable(false);
+	deviceTable3.setIdentifier("");
+	deviceTable3.setNumCols(7);
+	deviceTable3.setNumRows(1);
+	deviceTable3.setOffsetNid(5);
+	deviceTable3.setPreferredHeight(30);
+	deviceTable3.setRowNames(new String[] {"RS232"});
+	jPanel5.add(deviceTable3);
 
-        jPanel1.add(jPanel5);
+	jPanel1.add(jPanel5);
 
-        jScrollPane1.setViewportView(jPanel1);
+	jScrollPane1.setViewportView(jPanel1);
 
-        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

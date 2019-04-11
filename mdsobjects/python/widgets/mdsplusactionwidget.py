@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ class MDSplusActionWidget(HBox):
 
     def getValue(self):
         return Action(self.dispatch.value,self.task.value,None,None,None)
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()

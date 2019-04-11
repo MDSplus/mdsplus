@@ -6,7 +6,7 @@ public class RangeEditor extends JPanel implements Editor
 {
     RangeData range;
     LabeledExprEditor begin_edit, end_edit, delta_edit;
-    
+
     public RangeEditor() {this(null);}
     public RangeEditor(RangeData range)
     {
@@ -28,19 +28,19 @@ public class RangeEditor extends JPanel implements Editor
 	    this.range.getDelta(), false));
 	add(delta_edit);
     }
-    
+
     public void reset()
     {
 	begin_edit.reset();
 	end_edit.reset();
 	delta_edit.reset();
     }
-    
+
     public Data getData()
     {
 	return new RangeData(begin_edit.getData(), end_edit.getData(), delta_edit.getData());
     }
-	
+
     public void setData(Data data)
     {
 	this.range = (RangeData)data;
@@ -53,7 +53,7 @@ public class RangeEditor extends JPanel implements Editor
 	delta_edit.setData(range.getDelta());
 	reset();
     }
-    
+
     public void setEditable(boolean editable)
     {
 	if(begin_edit != null) begin_edit.setEditable(editable);

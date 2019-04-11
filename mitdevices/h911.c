@@ -24,19 +24,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   H911$METHODS   
+		Name:   H911$METHODS
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:    1-OCT-1993
 
-    		Purpose: Routines to Arm and store H911 32 channel latching scaler 
+		Purpose: Routines to Arm and store H911 32 channel latching scaler
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -46,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #include <mdsdescrip.h>
@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "devroutines.h"
 static int one = 1;
 #define pio(f,a) {int status; \
-                  if (!((status = DevCamChk(CamPiow(in->name, a, f, 0, 16, 0), &one, &one)) &1)) return status; }
+	          if (!((status = DevCamChk(CamPiow(in->name, a, f, 0, 16, 0), &one, &one)) &1)) return status; }
 EXPORT int h911___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), InInitStruct * in)
 {
   pio(24, 0);			/* standby mode */
@@ -70,10 +70,10 @@ EXPORT int h911___init(struct descriptor *nid_d_ptr __attribute__ ((unused)), In
 #undef pio
 
 #define pio(f,a, d) {int status; \
-                  if (!((status = DevCamChk(CamPiow(in->name, a, f, d, 16, 0), &one, &one)) &1)) return status; }
+	          if (!((status = DevCamChk(CamPiow(in->name, a, f, d, 16, 0), &one, &one)) &1)) return status; }
 #define stop(f, a, c, d) { int status; \
-                              if (!((status = DevCamChk(CamStopw(in->name, a, f, c, d, 16, 0), &one, &one)) &1))  \
-                                return status; }
+	                      if (!((status = DevCamChk(CamStopw(in->name, a, f, c, d, 16, 0), &one, &one)) &1))  \
+	                        return status; }
 
 EXPORT int h911___store(struct descriptor *nid_d_ptr __attribute__ ((unused)), InStoreStruct * in)
 {

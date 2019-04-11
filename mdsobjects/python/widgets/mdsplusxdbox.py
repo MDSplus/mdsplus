@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
         hb=HBox()
         hb.pack_start(w,False,False,0)
         return hb
-        
+
     def __init__(self,node=None,value=None):
         Window.__init__(self)
         MDSplusWidget.__init__(self)
@@ -131,7 +131,7 @@ class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
         else:
             self.dtype=self.dtype_any
         self.dtype.set_no_show_all(False)
-            
+
     def do_ok(self,button):
         try:
             value=self.value
@@ -178,5 +178,5 @@ class MDSplusXdBox(props,MDSplusDtypeSelWidget,MDSplusWidget,Window):
     def do_cancel(self,button):
         self.hide()
 
-        
-gobject.type_register(MDSplusXdBox) 
+
+gobject.type_register(MDSplusXdBox)

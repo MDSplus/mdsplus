@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -74,7 +74,7 @@ class MDSplusSequentialWidget(Table):
             except Exception:
                 pass
         return ans
-        
+
     def setValue(self,d):
         self._value=d
         self.reset()
@@ -93,9 +93,9 @@ class MDSplusSequentialWidget(Table):
             self.phase.set_text('')
             self.sequence.set_text('')
             self.event.set_text('')
-            
+
     value=property(getValue,setValue)
-        
+
     def show(self):
         old=self.get_no_show_all()
         self.set_no_show_all(False)

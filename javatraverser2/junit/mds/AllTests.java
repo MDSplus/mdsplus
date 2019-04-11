@@ -31,46 +31,46 @@ public class AllTests{
     private static final String  host       = AllTests.local ? "localhost" : "mds-data-1";                                      // "gate.rzg.mpg.de"; //
     private static final String  killcmd    = AllTests.local_win ? "taskkill /im mdsip.exe /F" : "kill -s 9 $pidof mdsip";
     static{// clean up test files
-        if(!AllTests.mdslib) MdsLib.lib_loaded = "use disabled";
-        if(AllTests.mdsip && AllTests.local){
-            try{
-                Runtime.getRuntime().exec(AllTests.killcmd).waitFor();
-            }catch(final Exception e){
-                System.err.println(e + ": " + e.getMessage());
-            }
-        }
+	if(!AllTests.mdslib) MdsLib.lib_loaded = "use disabled";
+	if(AllTests.mdsip && AllTests.local){
+	    try{
+	        Runtime.getRuntime().exec(AllTests.killcmd).waitFor();
+	    }catch(final Exception e){
+	        System.err.println(e + ": " + e.getMessage());
+	    }
+	}
     }
 
     public static Mds setUpBeforeClass() throws Exception {
-        final Provider provider = new Provider(AllTests.host, AllTests.port, AllTests.user, AllTests.use_ssh);
-        Mds mds = null;
-        if(!AllTests.mdsip){
-            mds = new MdsLib();
-        }else{
-            MdsIp tmds = MdsIp.sharedConnection(provider);
-            if(tmds.isConnected()) mds = tmds;
-            if(mds == null && AllTests.local){
-                System.out.println("Started new local mdsip server");
-                final ProcessBuilder pb = new ProcessBuilder("mdsip", "-h", System.getenv("userprofile") + "/mdsip.hosts", "-m", "-p", String.valueOf(AllTests.port)).inheritIO();// , "-P", "ssh"
-                // final Map<String, String> env = pb.environment();
-                // env.put(AllTests.tree + "_path", AllTests.treepath);
-                pb.start();
-                tmds = MdsIp.sharedConnection(provider);
-                if(tmds.isConnected()) mds = tmds;
-            }
-        }
-        if(mds == null) throw new Exception("Could not connect to mdsip.");
-        Function.setWindowsLineEnding(AllTests.local ? AllTests.local_win : AllTests.remote_win);
-        mds.getAPI().setenv(AllTests.tree + "_path", AllTests.treepath);
-        return mds;
+	final Provider provider = new Provider(AllTests.host, AllTests.port, AllTests.user, AllTests.use_ssh);
+	Mds mds = null;
+	if(!AllTests.mdsip){
+	    mds = new MdsLib();
+	}else{
+	    MdsIp tmds = MdsIp.sharedConnection(provider);
+	    if(tmds.isConnected()) mds = tmds;
+	    if(mds == null && AllTests.local){
+	        System.out.println("Started new local mdsip server");
+	        final ProcessBuilder pb = new ProcessBuilder("mdsip", "-h", System.getenv("userprofile") + "/mdsip.hosts", "-m", "-p", String.valueOf(AllTests.port)).inheritIO();// , "-P", "ssh"
+	        // final Map<String, String> env = pb.environment();
+	        // env.put(AllTests.tree + "_path", AllTests.treepath);
+	        pb.start();
+	        tmds = MdsIp.sharedConnection(provider);
+	        if(tmds.isConnected()) mds = tmds;
+	    }
+	}
+	if(mds == null) throw new Exception("Could not connect to mdsip.");
+	Function.setWindowsLineEnding(AllTests.local ? AllTests.local_win : AllTests.remote_win);
+	mds.getAPI().setenv(AllTests.tree + "_path", AllTests.treepath);
+	return mds;
     }
 
     public static void tearDownAfterClass(final Mds mds) {
-        mds.close();
+	mds.close();
     }
 
     @SuppressWarnings("boxing")
     public static void testStatus(final int expected, final int actual) {
-        if(actual != expected) throw new AssertionError(String.format("Return status mismatch, expected: %d '%s' actual: %d '%s'", expected, MdsException.getMdsMessage(expected), actual, MdsException.getMdsMessage(actual)));
+	if(actual != expected) throw new AssertionError(String.format("Return status mismatch, expected: %d '%s' actual: %d '%s'", expected, MdsException.getMdsMessage(expected), actual, MdsException.getMdsMessage(actual)));
     }
 }

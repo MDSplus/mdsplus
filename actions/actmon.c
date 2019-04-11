@@ -391,7 +391,7 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     if (items > MaxLogLines) {
       DoingListItem *doing;
       for (doing = DoingList; doing; doing = doing->next)
-        doing->pos--;
+	doing->pos--;
       XmListDeletePos(LogWidget, 1);
     }
     XmListSetBottomPos(LogWidget, 0);
@@ -407,10 +407,10 @@ static void PutLog(char *time, char *mode, char *status, char *server, char *pat
     } else if (strcmp(mode, "DONE") == 0) {
       int idx = FindServer(server, &srv);
       if (strcmp(srv->path, path) == 0) {
-        strcpy(srv->path, "");
-        item = XmStringCreateSimple(server);
-        XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
-        XmStringFree(item);
+	strcpy(srv->path, "");
+	item = XmStringCreateSimple(server);
+	XmListReplaceItemsPos(CurrentWidget, &item, 1, idx);
+	XmStringFree(item);
       }
     }
   }

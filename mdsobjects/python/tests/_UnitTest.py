@@ -75,7 +75,7 @@ class Tests(TestCase):
         if verify:
             ver,erro = erro.split('\n',2)
             self.assertEqual(ver.endswith("%s"%expr),True)
-            if len(erro)==0: erro = None 
+            if len(erro)==0: erro = None
         if not re:
             self.assertEqual(outo,out)
             self.assertEqual(erro,err)

@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi0Decompile_R
-        Routine to decompile a descriptor of class R.
-        status = Tdi0Decompile_R(in_ptr, precedence, out_ptr);
+	Routine to decompile a descriptor of class R.
+	status = Tdi0Decompile_R(in_ptr, precedence, out_ptr);
 
-        Josh Stillerman, MIT-PFC, 28-DEC-1988
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	Josh Stillerman, MIT-PFC, 28-DEC-1988
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 
 #include <STATICdef.h>
@@ -316,8 +316,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
       status = Append(fun_ptr->name, pout);
 
 		/*****************************************
-                Functions, subscripts, and constructors.
-                *****************************************/
+	        Functions, subscripts, and constructors.
+	        *****************************************/
     else
       switch (opcode) {
       default:			/*intrinsic(arg, ...) */
@@ -377,8 +377,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	status = Arguments(0, "[", "]", pin, pout);
 	break;
 		/****************
-                Unary operations.
-                ****************/
+	        Unary operations.
+	        ****************/
       case OPC_INOT:
       case OPC_NOT:
       case OPC_PRE_DEC:
@@ -405,8 +405,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
 
 		/***********************
-                Binary/n-ary operations.
-                ***********************/
+	        Binary/n-ary operations.
+	        ***********************/
       case OPC_EQUALS_FIRST:
 	r_ptr = (struct descriptor_r *)pin->dscptrs[0];
 	while (r_ptr && r_ptr->dtype == DTYPE_DSC)
@@ -481,9 +481,9 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
 
 		/*****************************************
-                C-language constructs followed by newline.
-                Plus WHERE.
-                *****************************************/
+	        C-language constructs followed by newline.
+	        Plus WHERE.
+	        *****************************************/
       case OPC_BREAK:		/*break; */
       case OPC_CONTINUE:	/*continue; */
 	if (prec < P_STMT)
@@ -642,8 +642,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
       }
 		/********************
-                End of opcode switch.
-                ********************/
+	        End of opcode switch.
+	        ********************/
     break;
   case DTYPE_CALL:		/*label->label(arg, ...) or label->label:type(arg, ...) */
     if (pin->dscptrs[0] == 0 || pin->dscptrs[0]->dtype != DTYPE_T)
@@ -672,7 +672,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
     break;
   }
 	/*******************
-        End of dtype switch.
-        *******************/
+	End of dtype switch.
+	*******************/
   return status;
 }

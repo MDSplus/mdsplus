@@ -2,7 +2,7 @@ package MDSplus;
 
 /**
  * Class description of DTYPE_T.
- * 
+ *
  * NOTE String name may clash with languase-defined String in Java. In this case
  * it will necessary to specify the package name.
  * Constructor: String(string)
@@ -10,34 +10,34 @@ package MDSplus;
  * @version 1.0
  * @updated 30-mar-2009 13.44.42
  */
-public class String extends Scalar 
+public class String extends Scalar
 {
     java.lang.String datum = "";
 
     public String(java.lang.String datum)
     {
-        this(datum, null, null, null, null);
+	this(datum, null, null, null, null);
     }
     public String(java.lang.String datum, Data help, Data units, Data error, Data validation)
     {
-        super(help, units, error, validation);
-        clazz = CLASS_S;
-        dtype = DTYPE_T;
-        this.datum = datum;
+	super(help, units, error, validation);
+	clazz = CLASS_S;
+	dtype = DTYPE_T;
+	this.datum = datum;
     }
     public boolean equals(Object data)
     {
-        if(!(data instanceof String))
-            return false;
-        return((String)data).datum.equals(datum);
+	if(!(data instanceof String))
+	    return false;
+	return((String)data).datum.equals(datum);
     }
     public static Data getData(java.lang.String datum, Data help, Data units, Data error, Data validation)
-    { 
-        return new String(datum, help, units, error, validation);
+    {
+	return new String(datum, help, units, error, validation);
     }
     public  byte getByte() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a byte");
+	throw new MdsException("Cannot convert a string to a byte");
     }
 
     /**
@@ -47,7 +47,7 @@ public class String extends Scalar
      */
     public  short getShort() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a short");
+	throw new MdsException("Cannot convert a string to a short");
     }
 
     /**
@@ -57,7 +57,7 @@ public class String extends Scalar
      */
     public  int getInt() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a int");
+	throw new MdsException("Cannot convert a string to a int");
     }
 
 
@@ -68,7 +68,7 @@ public class String extends Scalar
      */
     public  long getLong() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a long");
+	throw new MdsException("Cannot convert a string to a long");
     }
 
     /**
@@ -78,7 +78,7 @@ public class String extends Scalar
      */
     public  float getFloat()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a float");
+	throw new MdsException("Cannot convert a string to a float");
     }
 
     /**
@@ -88,18 +88,18 @@ public class String extends Scalar
      */
     public  double getDouble()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a double");
+	throw new MdsException("Cannot convert a string to a double");
     }
 
     /**
      * Convert this data into a byte array. Implemented at this class level by
      * returning TDI data(BYTE(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  byte[] getByteArray() throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a byte array");
+	throw new MdsException("Cannot convert a string to a byte array");
     }
 
 
@@ -107,11 +107,11 @@ public class String extends Scalar
      * Convert this data into a short array. Implemented at this class level by
      * returning TDI data(WORD(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  short[] getShortArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a short array");
+	throw new MdsException("Cannot convert a string to a short array");
     }
 
 
@@ -119,48 +119,48 @@ public class String extends Scalar
      * Convert this data into a int array. Implemented at this class level by
      * returning TDI data (LONG(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  int[] getIntArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a int array");
+	throw new MdsException("Cannot convert a string to a int array");
     }
 
     /**
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  long[] getLongArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a long array");
+	throw new MdsException("Cannot convert a string to a long array");
     }
 
     /**
      * Convert this data into a float array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  float[] getFloatArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a float array");
+	throw new MdsException("Cannot convert a string to a float array");
     }
     /**
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  double[] getDoubleArray()throws MdsException
     {
-        throw new MdsException("Cannot convert a string to a double array");
+	throw new MdsException("Cannot convert a string to a double array");
     }
-    
+
     public java.lang.String getString()
     {
-        return datum;
+	return datum;
     }
     public int getSizeInBytes() {return (datum == null)?0:datum.length();}
 }

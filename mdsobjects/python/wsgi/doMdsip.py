@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ def getheader(fd):
         idx=hdr[4]
     return (header,nbytes,nargs,idx)
 
-def getbytes(fd,num):          
+def getbytes(fd,num):
     bytes=''
     while len(bytes) < num:
         b=fd.read(num-len(bytes))

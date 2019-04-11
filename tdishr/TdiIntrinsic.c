@@ -23,26 +23,26 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiIntrinsic.C
-        Dispatch internal functions to their routines.
-        These are extensions of the basic types.
-        All operation must be defined in our table.
-        Each standard FUNCTION is called:
-                status = Tdi1name(opcode, narg, &list, &out)
-        NOTE first and second arguments are passed by value.
-        The returned expression is not re-evaluated.
-        This is used by Tdi1Evaluate for expression evaluation
-        and by TDISHR$SHARE.MAR for external calls.
-        If output is class XD, free it when we can and make it the result.
-        If output is class D, then try to grab S or D class. Type is set by data.
-        If output is class S or A, then try to convert into it. Only VMS result types.
-        Can use this to get scalar text of a long by:
-                DESCRIPTOR(output_dsc, "12345678");
-                status = TdiLong(&input_dsc, &output_dsc);
-        If input_dsc describes -123.4, then output_dsc will describe "bbbb-123".
-        WARNING, this depends on string writable.
-        WARNING, STR$ routines signal rather that return the error.
+	Dispatch internal functions to their routines.
+	These are extensions of the basic types.
+	All operation must be defined in our table.
+	Each standard FUNCTION is called:
+	        status = Tdi1name(opcode, narg, &list, &out)
+	NOTE first and second arguments are passed by value.
+	The returned expression is not re-evaluated.
+	This is used by Tdi1Evaluate for expression evaluation
+	and by TDISHR$SHARE.MAR for external calls.
+	If output is class XD, free it when we can and make it the result.
+	If output is class D, then try to grab S or D class. Type is set by data.
+	If output is class S or A, then try to convert into it. Only VMS result types.
+	Can use this to get scalar text of a long by:
+	        DESCRIPTOR(output_dsc, "12345678");
+	        status = TdiLong(&input_dsc, &output_dsc);
+	If input_dsc describes -123.4, then output_dsc will describe "bbbb-123".
+	WARNING, this depends on string writable.
+	WARNING, STR$ routines signal rather that return the error.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 #define PREC_COMMA 92
 #define MAXLINE 120
@@ -347,12 +347,12 @@ EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descripto
 }
 
 /*--------------------------------------------------------------
-        Set debugging printout.
-                message = DEBUG([option])
-        Where option is bitwise combination of:
-                1 to prepend first error message
-                2 to print the current message
-                4 to clear the message buffer
+	Set debugging printout.
+	        message = DEBUG([option])
+	Where option is bitwise combination of:
+	        1 to prepend first error message
+	        2 to print the current message
+	        4 to clear the message buffer
 		8 return message before clear
 */
 int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
@@ -383,7 +383,7 @@ int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
       printf("%.*s", message->length, message->pointer);
     if (option & 4) {
       if (option & 8)
-        status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
+	status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
       StrFree1Dx(message);
       return status;
     }

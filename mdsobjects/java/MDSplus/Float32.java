@@ -2,40 +2,40 @@ package MDSplus;
 
 /**
  * Class description of DTYPE_FLOAT
- * 
+ *
  * Constructor: Float32(float)
  * @author manduchi
  * @version 1.0
  * @updated 30-mar-2009 13.44.36
  */
-public class Float32 extends Scalar 
+public class Float32 extends Scalar
 {
     float datum;
-    public Float32(float datum)        
+    public Float32(float datum)
     {
-        this(datum, null, null, null, null);
+	this(datum, null, null, null, null);
     }
     public Float32(float datum, Data help, Data units, Data error, Data validation)
     {
-         super(help, units, error, validation);
-        clazz = CLASS_S;
-        dtype = DTYPE_FLOAT;
-        this.datum = datum;
+	 super(help, units, error, validation);
+	clazz = CLASS_S;
+	dtype = DTYPE_FLOAT;
+	this.datum = datum;
     }
     public boolean equals(Object data)
     {
-        if(!(data instanceof Float32))
-            return false;
-        return((Float32)data).datum == datum;
+	if(!(data instanceof Float32))
+	    return false;
+	return((Float32)data).datum == datum;
     }
     public static Data getData(float datum, Data help, Data units, Data error, Data validation)
-    { 
-        return new Float32(datum, help, units, error, validation);
+    {
+	return new Float32(datum, help, units, error, validation);
     }
 
     public  byte getByte() throws MdsException
     {
-        return (byte)datum;
+	return (byte)datum;
     }
 
     /**
@@ -45,7 +45,7 @@ public class Float32 extends Scalar
      */
     public  short getShort() throws MdsException
     {
-        return (short)datum;
+	return (short)datum;
     }
 
     /**
@@ -55,7 +55,7 @@ public class Float32 extends Scalar
      */
     public  int getInt() throws MdsException
     {
-        return (int)datum;
+	return (int)datum;
     }
 
 
@@ -66,7 +66,7 @@ public class Float32 extends Scalar
      */
     public  long getLong() throws MdsException
     {
-        return (long)datum;
+	return (long)datum;
     }
 
     /**
@@ -76,7 +76,7 @@ public class Float32 extends Scalar
      */
     public  float getFloat()throws MdsException
     {
-        return (float)datum;
+	return (float)datum;
     }
 
     /**
@@ -86,7 +86,7 @@ public class Float32 extends Scalar
      */
     public  double getDouble()throws MdsException
     {
-        return (double)datum;
+	return (double)datum;
     }
 
 
@@ -94,11 +94,11 @@ public class Float32 extends Scalar
      * Convert this data into a byte array. Implemented at this class level by
      * returning TDI data(BYTE(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  byte[] getByteArray() throws MdsException
     {
-        return new byte[]{(byte)datum};
+	return new byte[]{(byte)datum};
     }
 
 
@@ -106,11 +106,11 @@ public class Float32 extends Scalar
      * Convert this data into a short array. Implemented at this class level by
      * returning TDI data(WORD(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  short[] getShortArray()throws MdsException
     {
-        return new short[]{(short)datum};
+	return new short[]{(short)datum};
     }
 
 
@@ -118,43 +118,43 @@ public class Float32 extends Scalar
      * Convert this data into a int array. Implemented at this class level by
      * returning TDI data (LONG(this)). If data() fails or the returned class is not
      * array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  int[] getIntArray()throws MdsException
     {
-        return new int[]{(int)datum};
+	return new int[]{(int)datum};
     }
 
     /**
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  long[] getLongArray()throws MdsException
     {
-        return new long[]{(long)datum};
+	return new long[]{(long)datum};
     }
 
     /**
      * Convert this data into a float array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  float[] getFloatArray()throws MdsException
     {
-        return new float[]{(float)datum};
+	return new float[]{(float)datum};
     }
 
     /**
      * Convert this data into a long array. Implemented at this class level by
      * returning TDI data(QUADWORD(this)). If data() fails or the returned class is
      * not array, generates an exception. In Java and C++ will return a 1 dimensional
-     * array using row-first ordering if a multidimensional array. 
+     * array using row-first ordering if a multidimensional array.
      */
     public  double[] getDoubleArray()throws MdsException
     {
-        return new double[]{(double)datum};
+	return new double[]{(double)datum};
     }
     public int getSizeInBytes() {return 4;}}

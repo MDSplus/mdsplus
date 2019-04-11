@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -61,10 +61,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Thu Jan 11 10:41:13 EST 2001
 // Tue Apr  3 16:28:20 EDT 2001
 //-------------------------------------------------------------------------
-// Add a cts or crate entry to the appropriate db. The new entry is inserted 
+// Add a cts or crate entry to the appropriate db. The new entry is inserted
 //      into the list alphabetically.
 //
-// input:       db type, 
+// input:       db type,
 //                      pointer to a c-string containing a complete entry
 // output:      status
 //-------------------------------------------------------------------------
@@ -80,7 +80,7 @@ int add_entry(int dbType, char *newEntry)
     printf("add_entry()\n");
 
 //----------------------------
-//      adding an entry 
+//      adding an entry
 //----------------------------
 //-- 'critical section' start
 //----------------------------

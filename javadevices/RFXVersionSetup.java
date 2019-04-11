@@ -9,12 +9,12 @@
  * @author  manduchi
  */
 public class RFXVersionSetup extends DeviceSetup {
-    
+
     /** Creates new form RFXVersionSetup */
     public RFXVersionSetup() {
-        initComponents();
+	initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -22,267 +22,267 @@ public class RFXVersionSetup extends DeviceSetup {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField10 = new DeviceField();
-        deviceField9 = new DeviceField();
-        deviceField19 = new DeviceField();
-        deviceField18 = new DeviceField();
-        deviceField27 = new DeviceField();
-        deviceField26 = new DeviceField();
-        deviceField25 = new DeviceField();
-        deviceField24 = new DeviceField();
-        deviceField23 = new DeviceField();
-        deviceField22 = new DeviceField();
-        deviceField21 = new DeviceField();
-        deviceField20 = new DeviceField();
-        deviceField17 = new DeviceField();
-        deviceField16 = new DeviceField();
-        deviceField15 = new DeviceField();
-        deviceField14 = new DeviceField();
-        deviceField13 = new DeviceField();
-        deviceField7 = new DeviceField();
-        deviceField12 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField6 = new DeviceField();
-        deviceField8 = new DeviceField();
-        deviceField5 = new DeviceField();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
-        deviceField28 = new DeviceField();
-        deviceField29 = new DeviceField();
-        jPanel2 = new javax.swing.JPanel();
-        deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceField10 = new DeviceField();
+	deviceField9 = new DeviceField();
+	deviceField19 = new DeviceField();
+	deviceField18 = new DeviceField();
+	deviceField27 = new DeviceField();
+	deviceField26 = new DeviceField();
+	deviceField25 = new DeviceField();
+	deviceField24 = new DeviceField();
+	deviceField23 = new DeviceField();
+	deviceField22 = new DeviceField();
+	deviceField21 = new DeviceField();
+	deviceField20 = new DeviceField();
+	deviceField17 = new DeviceField();
+	deviceField16 = new DeviceField();
+	deviceField15 = new DeviceField();
+	deviceField14 = new DeviceField();
+	deviceField13 = new DeviceField();
+	deviceField7 = new DeviceField();
+	deviceField12 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField6 = new DeviceField();
+	deviceField8 = new DeviceField();
+	deviceField5 = new DeviceField();
+	deviceField3 = new DeviceField();
+	deviceField4 = new DeviceField();
+	deviceField28 = new DeviceField();
+	deviceField29 = new DeviceField();
+	jPanel2 = new javax.swing.JPanel();
+	deviceButtons1 = new DeviceButtons();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("RFX Version Configuration");
-        setDeviceType("RFXVersion");
-        jPanel1.setLayout(new java.awt.GridLayout(10, 3));
+	setDeviceProvider("localhost");
+	setDeviceTitle("RFX Version Configuration");
+	setDeviceType("RFXVersion");
+	jPanel1.setLayout(new java.awt.GridLayout(10, 3));
 
-        deviceField1.setEditable(false);
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("DEQU");
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel1.add(deviceField1);
+	deviceField1.setEditable(false);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("DEQU");
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel1.add(deviceField1);
 
-        deviceField2.setEditable(false);
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("PLC P2");
-        deviceField2.setOffsetNid(10);
-        deviceField2.setTextOnly(true);
-        jPanel1.add(deviceField2);
+	deviceField2.setEditable(false);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("PLC P2");
+	deviceField2.setOffsetNid(10);
+	deviceField2.setTextOnly(true);
+	jPanel1.add(deviceField2);
 
-        deviceField10.setEditable(false);
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("CPCI EDA3_1");
-        deviceField10.setOffsetNid(19);
-        deviceField10.setTextOnly(true);
-        jPanel1.add(deviceField10);
+	deviceField10.setEditable(false);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("CPCI EDA3_1");
+	deviceField10.setOffsetNid(19);
+	deviceField10.setTextOnly(true);
+	jPanel1.add(deviceField10);
 
-        deviceField9.setEditable(false);
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("DFLU");
-        deviceField9.setOffsetNid(2);
-        deviceField9.setTextOnly(true);
-        jPanel1.add(deviceField9);
+	deviceField9.setEditable(false);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("DFLU");
+	deviceField9.setOffsetNid(2);
+	deviceField9.setTextOnly(true);
+	jPanel1.add(deviceField9);
 
-        deviceField19.setEditable(false);
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("PLC G1");
-        deviceField19.setOffsetNid(11);
-        deviceField19.setTextOnly(true);
-        jPanel1.add(deviceField19);
+	deviceField19.setEditable(false);
+	deviceField19.setIdentifier("");
+	deviceField19.setLabelString("PLC G1");
+	deviceField19.setOffsetNid(11);
+	deviceField19.setTextOnly(true);
+	jPanel1.add(deviceField19);
 
-        deviceField18.setEditable(false);
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("CPCI EDA3_2");
-        deviceField18.setOffsetNid(20);
-        deviceField18.setTextOnly(true);
-        jPanel1.add(deviceField18);
+	deviceField18.setEditable(false);
+	deviceField18.setIdentifier("");
+	deviceField18.setLabelString("CPCI EDA3_2");
+	deviceField18.setOffsetNid(20);
+	deviceField18.setTextOnly(true);
+	jPanel1.add(deviceField18);
 
-        deviceField27.setEditable(false);
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("EDA1");
-        deviceField27.setOffsetNid(3);
-        deviceField27.setTextOnly(true);
-        jPanel1.add(deviceField27);
+	deviceField27.setEditable(false);
+	deviceField27.setIdentifier("");
+	deviceField27.setLabelString("EDA1");
+	deviceField27.setOffsetNid(3);
+	deviceField27.setTextOnly(true);
+	jPanel1.add(deviceField27);
 
-        deviceField26.setEditable(false);
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("PLC G2");
-        deviceField26.setOffsetNid(12);
-        deviceField26.setTextOnly(true);
-        jPanel1.add(deviceField26);
+	deviceField26.setEditable(false);
+	deviceField26.setIdentifier("");
+	deviceField26.setLabelString("PLC G2");
+	deviceField26.setOffsetNid(12);
+	deviceField26.setTextOnly(true);
+	jPanel1.add(deviceField26);
 
-        deviceField25.setEditable(false);
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("CPCI DEQU");
-        deviceField25.setOffsetNid(22);
-        deviceField25.setTextOnly(true);
-        jPanel1.add(deviceField25);
+	deviceField25.setEditable(false);
+	deviceField25.setIdentifier("");
+	deviceField25.setLabelString("CPCI DEQU");
+	deviceField25.setOffsetNid(22);
+	deviceField25.setTextOnly(true);
+	jPanel1.add(deviceField25);
 
-        deviceField24.setEditable(false);
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("EDA3");
-        deviceField24.setOffsetNid(4);
-        deviceField24.setTextOnly(true);
-        jPanel1.add(deviceField24);
+	deviceField24.setEditable(false);
+	deviceField24.setIdentifier("");
+	deviceField24.setLabelString("EDA3");
+	deviceField24.setOffsetNid(4);
+	deviceField24.setTextOnly(true);
+	jPanel1.add(deviceField24);
 
-        deviceField23.setEditable(false);
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("PLC V1");
-        deviceField23.setOffsetNid(13);
-        deviceField23.setTextOnly(true);
-        jPanel1.add(deviceField23);
+	deviceField23.setEditable(false);
+	deviceField23.setIdentifier("");
+	deviceField23.setLabelString("PLC V1");
+	deviceField23.setOffsetNid(13);
+	deviceField23.setTextOnly(true);
+	jPanel1.add(deviceField23);
 
-        deviceField22.setEditable(false);
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("CPCI AC_1");
-        deviceField22.setOffsetNid(23);
-        deviceField22.setTextOnly(true);
-        jPanel1.add(deviceField22);
+	deviceField22.setEditable(false);
+	deviceField22.setIdentifier("");
+	deviceField22.setLabelString("CPCI AC_1");
+	deviceField22.setOffsetNid(23);
+	deviceField22.setTextOnly(true);
+	jPanel1.add(deviceField22);
 
-        deviceField21.setEditable(false);
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("MHD_AC");
-        deviceField21.setOffsetNid(5);
-        deviceField21.setTextOnly(true);
-        jPanel1.add(deviceField21);
+	deviceField21.setEditable(false);
+	deviceField21.setIdentifier("");
+	deviceField21.setLabelString("MHD_AC");
+	deviceField21.setOffsetNid(5);
+	deviceField21.setTextOnly(true);
+	jPanel1.add(deviceField21);
 
-        deviceField20.setEditable(false);
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("PLC V2");
-        deviceField20.setOffsetNid(14);
-        deviceField20.setTextOnly(true);
-        jPanel1.add(deviceField20);
+	deviceField20.setEditable(false);
+	deviceField20.setIdentifier("");
+	deviceField20.setLabelString("PLC V2");
+	deviceField20.setOffsetNid(14);
+	deviceField20.setTextOnly(true);
+	jPanel1.add(deviceField20);
 
-        deviceField17.setEditable(false);
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("CPCI AC_2");
-        deviceField17.setOffsetNid(24);
-        deviceField17.setTextOnly(true);
-        jPanel1.add(deviceField17);
+	deviceField17.setEditable(false);
+	deviceField17.setIdentifier("");
+	deviceField17.setLabelString("CPCI AC_2");
+	deviceField17.setOffsetNid(24);
+	deviceField17.setTextOnly(true);
+	jPanel1.add(deviceField17);
 
-        deviceField16.setEditable(false);
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("MHD_BC");
-        deviceField16.setOffsetNid(6);
-        deviceField16.setTextOnly(true);
-        jPanel1.add(deviceField16);
+	deviceField16.setEditable(false);
+	deviceField16.setIdentifier("");
+	deviceField16.setLabelString("MHD_BC");
+	deviceField16.setOffsetNid(6);
+	deviceField16.setTextOnly(true);
+	jPanel1.add(deviceField16);
 
-        deviceField15.setEditable(false);
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("PLC MS");
-        deviceField15.setOffsetNid(15);
-        deviceField15.setTextOnly(true);
-        jPanel1.add(deviceField15);
+	deviceField15.setEditable(false);
+	deviceField15.setIdentifier("");
+	deviceField15.setLabelString("PLC MS");
+	deviceField15.setOffsetNid(15);
+	deviceField15.setTextOnly(true);
+	jPanel1.add(deviceField15);
 
-        deviceField14.setEditable(false);
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("CPCI BC_1");
-        deviceField14.setOffsetNid(25);
-        deviceField14.setTextOnly(true);
-        jPanel1.add(deviceField14);
+	deviceField14.setEditable(false);
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("CPCI BC_1");
+	deviceField14.setOffsetNid(25);
+	deviceField14.setTextOnly(true);
+	jPanel1.add(deviceField14);
 
-        deviceField13.setEditable(false);
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("MHD_BR");
-        deviceField13.setOffsetNid(7);
-        deviceField13.setTextOnly(true);
-        jPanel1.add(deviceField13);
+	deviceField13.setEditable(false);
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("MHD_BR");
+	deviceField13.setOffsetNid(7);
+	deviceField13.setTextOnly(true);
+	jPanel1.add(deviceField13);
 
-        deviceField7.setEditable(false);
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("CPCI EDA1");
-        deviceField7.setOffsetNid(16);
-        deviceField7.setTextOnly(true);
-        jPanel1.add(deviceField7);
+	deviceField7.setEditable(false);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("CPCI EDA1");
+	deviceField7.setOffsetNid(16);
+	deviceField7.setTextOnly(true);
+	jPanel1.add(deviceField7);
 
-        deviceField12.setEditable(false);
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("CPCI BC_2");
-        deviceField12.setOffsetNid(26);
-        deviceField12.setTextOnly(true);
-        jPanel1.add(deviceField12);
+	deviceField12.setEditable(false);
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("CPCI BC_2");
+	deviceField12.setOffsetNid(26);
+	deviceField12.setTextOnly(true);
+	jPanel1.add(deviceField12);
 
-        deviceField11.setEditable(false);
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("PLC P1");
-        deviceField11.setOffsetNid(8);
-        deviceField11.setTextOnly(true);
-        jPanel1.add(deviceField11);
+	deviceField11.setEditable(false);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("PLC P1");
+	deviceField11.setOffsetNid(8);
+	deviceField11.setTextOnly(true);
+	jPanel1.add(deviceField11);
 
-        deviceField6.setEditable(false);
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("CPCI EDA2_1");
-        deviceField6.setOffsetNid(17);
-        deviceField6.setTextOnly(true);
-        jPanel1.add(deviceField6);
+	deviceField6.setEditable(false);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("CPCI EDA2_1");
+	deviceField6.setOffsetNid(17);
+	deviceField6.setTextOnly(true);
+	jPanel1.add(deviceField6);
 
-        deviceField8.setEditable(false);
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("CPCI BR");
-        deviceField8.setOffsetNid(27);
-        deviceField8.setTextOnly(true);
-        jPanel1.add(deviceField8);
+	deviceField8.setEditable(false);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("CPCI BR");
+	deviceField8.setOffsetNid(27);
+	deviceField8.setTextOnly(true);
+	jPanel1.add(deviceField8);
 
-        deviceField5.setEditable(false);
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("PLC T1");
-        deviceField5.setOffsetNid(9);
-        deviceField5.setTextOnly(true);
-        jPanel1.add(deviceField5);
+	deviceField5.setEditable(false);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("PLC T1");
+	deviceField5.setOffsetNid(9);
+	deviceField5.setTextOnly(true);
+	jPanel1.add(deviceField5);
 
-        deviceField3.setEditable(false);
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("CPCI EDA2_2");
-        deviceField3.setOffsetNid(18);
-        deviceField3.setTextOnly(true);
-        jPanel1.add(deviceField3);
+	deviceField3.setEditable(false);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("CPCI EDA2_2");
+	deviceField3.setOffsetNid(18);
+	deviceField3.setTextOnly(true);
+	jPanel1.add(deviceField3);
 
-        deviceField4.setEditable(false);
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("CPCI EDAM");
-        deviceField4.setOffsetNid(21);
-        deviceField4.setTextOnly(true);
-        jPanel1.add(deviceField4);
+	deviceField4.setEditable(false);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("CPCI EDAM");
+	deviceField4.setOffsetNid(21);
+	deviceField4.setTextOnly(true);
+	jPanel1.add(deviceField4);
 
-        deviceField28.setEditable(false);
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("CPCI STC");
-        deviceField28.setOffsetNid(28);
-        deviceField28.setTextOnly(true);
-        jPanel1.add(deviceField28);
+	deviceField28.setEditable(false);
+	deviceField28.setIdentifier("");
+	deviceField28.setLabelString("CPCI STC");
+	deviceField28.setOffsetNid(28);
+	deviceField28.setTextOnly(true);
+	jPanel1.add(deviceField28);
 
-        deviceField29.setEditable(false);
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("CPCI DIAG STC");
-        deviceField29.setOffsetNid(29);
-        deviceField29.setTextOnly(true);
-        jPanel1.add(deviceField29);
+	deviceField29.setEditable(false);
+	deviceField29.setIdentifier("");
+	deviceField29.setLabelString("CPCI DIAG STC");
+	deviceField29.setOffsetNid(29);
+	deviceField29.setTextOnly(true);
+	jPanel1.add(deviceField29);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        jPanel2.add(deviceButtons1);
+	jPanel2.add(deviceButtons1);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
+	getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
-        pack();
+	pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new RFXVersionSetup().setVisible(true);
-            }
-        });
+	java.awt.EventQueue.invokeLater(new Runnable() {
+	    public void run() {
+	        new RFXVersionSetup().setVisible(true);
+	    }
+	});
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceField deviceField1;
@@ -317,5 +317,5 @@ public class RFXVersionSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
-    
+
 }

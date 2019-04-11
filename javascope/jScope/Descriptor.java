@@ -38,63 +38,63 @@ public class Descriptor
 
     public Descriptor()
     {
-        super();
+	super();
     }
 
     public Descriptor(String error)
     {
-        this.error = error;
+	this.error = error;
     }
 
 
     public Descriptor(byte dtype, int dims[], byte byte_data[])
     {
-        this.dtype = dtype;
-        this.dims = dims;
-        this.byte_data = byte_data;
+	this.dtype = dtype;
+	this.dims = dims;
+	this.byte_data = byte_data;
     }
 
 
     public Descriptor(int dims[], byte byte_data[])
     {
-        this.dtype = DTYPE_BYTE;
-        this.dims = dims;
-        this.byte_data = byte_data;
+	this.dtype = DTYPE_BYTE;
+	this.dims = dims;
+	this.byte_data = byte_data;
     }
 
     public Descriptor(int dims[], long long_data[])
     {
-        this.dtype = DTYPE_LONGLONG;
-        this.dims = dims;
-        this.long_data = long_data;
+	this.dtype = DTYPE_LONGLONG;
+	this.dims = dims;
+	this.long_data = long_data;
     }
 
     public Descriptor(int dims[], float float_data[])
     {
-        this.dtype = DTYPE_FLOAT;
-        this.dims = dims;
-        this.float_data = float_data;
+	this.dtype = DTYPE_FLOAT;
+	this.dims = dims;
+	this.float_data = float_data;
     }
 
     public Descriptor(int dims[], int int_data[])
     {
-        this.dtype = DTYPE_LONG;
-        this.dims = dims;
-        this.int_data = int_data;
+	this.dtype = DTYPE_LONG;
+	this.dims = dims;
+	this.int_data = int_data;
     }
 
     public Descriptor(int dims[], short short_data[])
     {
-        this.dtype = DTYPE_SHORT;
-        this.dims = dims;
-        this.short_data = short_data;
+	this.dtype = DTYPE_SHORT;
+	this.dims = dims;
+	this.short_data = short_data;
     }
 
     public Descriptor(int dims[], String strdata)
     {
-        this.dtype = DTYPE_CSTRING;
-        this.dims = dims;
-        this.strdata = strdata;
+	this.dtype = DTYPE_CSTRING;
+	this.dims = dims;
+	this.strdata = strdata;
     }
 
     public int getStatus() {return status;}
@@ -102,104 +102,104 @@ public class Descriptor
 
     public static byte[] dataToByteArray(Object o)
     {
-        byte b[] = null;
-        try
-        {
-        ByteArrayOutputStream dosb = new ByteArrayOutputStream();
-        DataOutputStream dos = new DataOutputStream(dosb);
+	byte b[] = null;
+	try
+	{
+	ByteArrayOutputStream dosb = new ByteArrayOutputStream();
+	DataOutputStream dos = new DataOutputStream(dosb);
 
-        if(o instanceof Short)
-        {
-            short d = ((Short)o).shortValue();
-            dos.writeShort(d);
-            b = dosb.toByteArray();
-        }
+	if(o instanceof Short)
+	{
+	    short d = ((Short)o).shortValue();
+	    dos.writeShort(d);
+	    b = dosb.toByteArray();
+	}
 
-        if(o instanceof Integer)
-        {
-            int d = ((Integer)o).intValue();
-            dos.writeInt(d);
-            b = dosb.toByteArray();
-        }
+	if(o instanceof Integer)
+	{
+	    int d = ((Integer)o).intValue();
+	    dos.writeInt(d);
+	    b = dosb.toByteArray();
+	}
 
-        if(o instanceof Float)
-        {
-            float d = ((Float)o).floatValue();
-            dos.writeFloat(d);
-            b = dosb.toByteArray();
-        }
+	if(o instanceof Float)
+	{
+	    float d = ((Float)o).floatValue();
+	    dos.writeFloat(d);
+	    b = dosb.toByteArray();
+	}
 
-        if(o instanceof Double)
-        {
-            double d = ((Double)o).doubleValue();
-            dos.writeDouble(d);
-            b = dosb.toByteArray();
-        }
-        if(o instanceof Long)
-        {
-            long l = ((Long)o).longValue();
-            dos.writeLong(l);
-            b = dosb.toByteArray();
-        }
-        dos.close();
-        return b;
+	if(o instanceof Double)
+	{
+	    double d = ((Double)o).doubleValue();
+	    dos.writeDouble(d);
+	    b = dosb.toByteArray();
+	}
+	if(o instanceof Long)
+	{
+	    long l = ((Long)o).longValue();
+	    dos.writeLong(l);
+	    b = dosb.toByteArray();
+	}
+	dos.close();
+	return b;
 
-        } catch (IOException e){};
+	} catch (IOException e){};
 
-        return null;
+	return null;
     }
 
     public byte[] dataToByteArray()
     {
-        byte b[] = null;
-        try
-        {
-           ByteArrayOutputStream dosb = new ByteArrayOutputStream();
-           DataOutputStream dos = new DataOutputStream(dosb);
+	byte b[] = null;
+	try
+	{
+	   ByteArrayOutputStream dosb = new ByteArrayOutputStream();
+	   DataOutputStream dos = new DataOutputStream(dosb);
 
-          switch(dtype)
-          {
-            case DTYPE_CSTRING:
-                dos.close();
-                if(strdata != null)
-                  return strdata.getBytes();
-                else
-                  return byte_data;
-            case DTYPE_UBYTE:
-            case DTYPE_BYTE:
-                dos.close();
-                return byte_data;
-            case DTYPE_USHORT :
-            case DTYPE_SHORT :
-              for(int i = 0; i < short_data.length; i++)
-                dos.writeShort(short_data[i]);
-            break;
+	  switch(dtype)
+	  {
+	    case DTYPE_CSTRING:
+	        dos.close();
+	        if(strdata != null)
+	          return strdata.getBytes();
+	        else
+	          return byte_data;
+	    case DTYPE_UBYTE:
+	    case DTYPE_BYTE:
+	        dos.close();
+	        return byte_data;
+	    case DTYPE_USHORT :
+	    case DTYPE_SHORT :
+	      for(int i = 0; i < short_data.length; i++)
+	        dos.writeShort(short_data[i]);
+	    break;
 
-            case DTYPE_ULONG:
-            case DTYPE_LONG:
-              for (int i = 0; i < int_data.length; i++)
-                dos.writeInt(int_data[i]);
-            break;
+	    case DTYPE_ULONG:
+	    case DTYPE_LONG:
+	      for (int i = 0; i < int_data.length; i++)
+	        dos.writeInt(int_data[i]);
+	    break;
 
-            case DTYPE_FLOAT:
-              for (int i = 0; i < float_data.length; i++)
-                dos.writeFloat(float_data[i]);
-            break;
+	    case DTYPE_FLOAT:
+	      for (int i = 0; i < float_data.length; i++)
+	        dos.writeFloat(float_data[i]);
+	    break;
 
-            case DTYPE_ULONGLONG :
-            case DTYPE_LONGLONG :
-              for(int i = 0; i < long_data.length; i++)
-                dos.writeLong(long_data[i]);
-            break;
+	    case DTYPE_ULONGLONG :
+	    case DTYPE_LONGLONG :
+	      for(int i = 0; i < long_data.length; i++)
+	        dos.writeLong(long_data[i]);
+	    break;
 
-            case DTYPE_DOUBLE :
-              for(int i = 0; i < double_data.length; i++)
-                dos.writeDouble(double_data[i]);
-            break;
-          }
-          b = dosb.toByteArray();
-          dos.close();
-          return b;
+	    case DTYPE_DOUBLE :
+	      for(int i = 0; i < double_data.length; i++)
+	        dos.writeDouble(double_data[i]);
+	    break;
+	  }
+	  b = dosb.toByteArray();
+	  dos.close();
+	  return b;
        } catch (IOException e){};
        return null;
     }
@@ -225,20 +225,20 @@ public class Descriptor
     public static void main(String arg[])
     {
 /*
-        float f[] = new float[100];
-        Descriptor dsc = new Descriptor();
+	float f[] = new float[100];
+	Descriptor dsc = new Descriptor();
 
-        dsc.dtype = Descriptor.DTYPE_FLOAT;
-        dsc.float_data = f;
-        byte b[] = dsc.dataToByteArray();
+	dsc.dtype = Descriptor.DTYPE_FLOAT;
+	dsc.float_data = f;
+	byte b[] = dsc.dataToByteArray();
 
 
-        b = dataToByteArray(new Short((short)100));
-        System.out.println("  "+b.length);
-        b = dataToByteArray(new Float(100));
-        System.out.println("  "+b.length);
-        b = dataToByteArray(new Double(100));
-        System.out.println("  "+b.length);
+	b = dataToByteArray(new Short((short)100));
+	System.out.println("  "+b.length);
+	b = dataToByteArray(new Float(100));
+	System.out.println("  "+b.length);
+	b = dataToByteArray(new Double(100));
+	System.out.println("  "+b.length);
 */
     }
 }

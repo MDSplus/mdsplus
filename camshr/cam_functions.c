@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -299,7 +299,7 @@ EXPORT int CamXandQ(TranslatedIosb * iosb)	// CAM$XANDQ_SCSI()
 	     (iosb) ? "iosb" : "&LastIosb",
 	     iosb,
 	     (iosb) ? "iosb" : "&LastIosb", iosb_use->x, iosb_use->q, iosb_use->x && iosb_use->q);
-    
+
 //printf("CamXnQ(iosb)    ::->> bytecount= %d\n", iosb->bytcnt);                // [2002.12.13]
 //printf("CamXnQ(iosb_use)::->> bytecount= %d\n", iosb_use->bytcnt);    // [2002.12.13]
 //printf("CamXnQ(LastIosb)::->> bytecount= %d\n", LastIosb.bytcnt);     // [2002.12.13]
@@ -365,16 +365,16 @@ EXPORT int CamError(int xexp, int qexp, TranslatedIosb * iosb)
     int xexp_use;
     int qexp_use;
     TranslatedIosb *iosb_use;
-    
+
     if (MSGLVL(DETAILS))
       printf("CamError(): xexp:%d qexp:%d\n", xexp, qexp);
-    
+
     xexp_use = xexp ? xexp : 0;
     qexp_use = qexp ? qexp : 0;
     iosb_use = iosb ? iosb : &LastIosb;
-    
+
     iosb_use->err = !iosb_use->x && !iosb_use->q;
-    
+
     if (MSGLVL(DETAILS))
       printf("CamError(): x:%d q:%d iosb->err %d\n", xexp_use, qexp_use, iosb_use->err);
     return iosb_use->err;
@@ -404,14 +404,14 @@ EXPORT int Cam##pname(                                     \
 {                                                   \
 	int 		status;              				\
 	CamKey		Key;                                \
-        static  int debug=-1; \
+	static  int debug=-1; \
 	\
 	if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) { \
 	  return RemCam##pname(Name, A, F, Data, Mem, iosb); \
 	}\
-                                                    \
-        if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
-        if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, data=%d, mem=%d\n",Name,A,F,Data ? *(int *)Data : -1,Mem); \
+	                                            \
+	if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
+	if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, data=%d, mem=%d\n",Name,A,F,Data ? *(int *)Data : -1,Mem); \
 	status = CamAssign( Name, &Key );               \
 	if( status == SUCCESS ) {                       \
 		status = SingleIo(                          \
@@ -424,7 +424,7 @@ EXPORT int Cam##pname(                                     \
 						dmode                       \
 						);                          \
 	}                                               \
-                                                    \
+	                                            \
 	return status;                                  \
 }
 
@@ -444,15 +444,15 @@ EXPORT int Cam##pname(                                     \
 {                                                   \
 	int 		status;              				\
 	CamKey		Key;                                \
-                                                    \
-        static  int debug=-1; \
-                                                    \
+	                                            \
+	static  int debug=-1; \
+	                                            \
 	if ((isRemote == 1 || (isRemote == -1 && checkRemote()))) { \
 	  return RemCam##pname(Name, A, F, Count, Data, Mem, iosb);	\
 	}\
-                                                    \
-        if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
-        if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",Name,A,F,Count,Data,Mem); \
+	                                            \
+	if (debug==-1) { char *tmp=getenv("CAM_DEBUG"); debug=tmp?1:0;} \
+	if (debug) printf("Cam"#pname": name=%s, A=%d, F=%d, Count=%d, data=%p, mem=%d\n",Name,A,F,Count,Data,Mem); \
 	status = CamAssign( Name, &Key );               \
 	if( status == SUCCESS ) {                       \
 		status = MultiIo(                           \
@@ -467,7 +467,7 @@ EXPORT int Cam##pname(                                     \
 						enhanced                    \
 						);                          \
 	}                                               \
-	                                                \
+		                                        \
 	return status;                                  \
 }
 

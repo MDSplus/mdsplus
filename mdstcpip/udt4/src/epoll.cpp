@@ -125,11 +125,11 @@ int CEPoll::add_ssock(const int eid, const SYSSOCKET& s, const int* events __att
    {
       ev.events = 0;
       if (*events & UDT_EPOLL_IN)
-         ev.events |= EPOLLIN;
+	 ev.events |= EPOLLIN;
       if (*events & UDT_EPOLL_OUT)
-         ev.events |= EPOLLOUT;
+	 ev.events |= EPOLLOUT;
       if (*events & UDT_EPOLL_ERR)
-         ev.events |= EPOLLERR;
+	 ev.events |= EPOLLERR;
    }
 
    ev.data.fd = s;
@@ -198,101 +198,101 @@ int CEPoll::wait(const int eid, set<UDTSOCKET>* readfds, set<UDTSOCKET>* writefd
       map<int, CEPollDesc>::iterator p = m_mPolls.find(eid);
       if (p == m_mPolls.end())
       {
-         CGuard::leaveCS(m_EPollLock);
-         throw CUDTException(5, 13);
+	 CGuard::leaveCS(m_EPollLock);
+	 throw CUDTException(5, 13);
       }
 
       if (p->second.m_sUDTSocksIn.empty() && p->second.m_sUDTSocksOut.empty() && p->second.m_sLocals.empty() && (msTimeOut < 0))
       {
-         // no socket is being monitored, this may be a deadlock
-         CGuard::leaveCS(m_EPollLock);
-         throw CUDTException(5, 3);
+	 // no socket is being monitored, this may be a deadlock
+	 CGuard::leaveCS(m_EPollLock);
+	 throw CUDTException(5, 3);
       }
 
       // Sockets with exceptions are returned to both read and write sets.
       if ((NULL != readfds) && (!p->second.m_sUDTReads.empty() || !p->second.m_sUDTExcepts.empty()))
       {
-         *readfds = p->second.m_sUDTReads;
-         for (set<UDTSOCKET>::const_iterator i = p->second.m_sUDTExcepts.begin(); i != p->second.m_sUDTExcepts.end(); ++ i)
-            readfds->insert(*i);
-         total += p->second.m_sUDTReads.size() + p->second.m_sUDTExcepts.size();
+	 *readfds = p->second.m_sUDTReads;
+	 for (set<UDTSOCKET>::const_iterator i = p->second.m_sUDTExcepts.begin(); i != p->second.m_sUDTExcepts.end(); ++ i)
+	    readfds->insert(*i);
+	 total += p->second.m_sUDTReads.size() + p->second.m_sUDTExcepts.size();
       }
       if ((NULL != writefds) && (!p->second.m_sUDTWrites.empty() || !p->second.m_sUDTExcepts.empty()))
       {
-         *writefds = p->second.m_sUDTWrites;
-         for (set<UDTSOCKET>::const_iterator i = p->second.m_sUDTExcepts.begin(); i != p->second.m_sUDTExcepts.end(); ++ i)
-            writefds->insert(*i);
-         total += p->second.m_sUDTWrites.size() + p->second.m_sUDTExcepts.size();
+	 *writefds = p->second.m_sUDTWrites;
+	 for (set<UDTSOCKET>::const_iterator i = p->second.m_sUDTExcepts.begin(); i != p->second.m_sUDTExcepts.end(); ++ i)
+	    writefds->insert(*i);
+	 total += p->second.m_sUDTWrites.size() + p->second.m_sUDTExcepts.size();
       }
 
       if (lrfds || lwfds)
       {
-         #ifdef LINUX
-         const int max_events = p->second.m_sLocals.size();
-         epoll_event ev[max_events];
-         int nfds = ::epoll_wait(p->second.m_iLocalID, ev, max_events, 0);
+	 #ifdef LINUX
+	 const int max_events = p->second.m_sLocals.size();
+	 epoll_event ev[max_events];
+	 int nfds = ::epoll_wait(p->second.m_iLocalID, ev, max_events, 0);
 
-         for (int i = 0; i < nfds; ++ i)
-         {
-            if ((NULL != lrfds) && (ev[i].events & EPOLLIN))
-           {
-               lrfds->insert(ev[i].data.fd);
-               ++ total;
-            }
-            if ((NULL != lwfds) && (ev[i].events & EPOLLOUT))
-            {
-               lwfds->insert(ev[i].data.fd);
-               ++ total;
-            }
-         }
-         #else
-         //currently "select" is used for all non-Linux platforms.
-         //faster approaches can be applied for specific systems in the future.
+	 for (int i = 0; i < nfds; ++ i)
+	 {
+	    if ((NULL != lrfds) && (ev[i].events & EPOLLIN))
+	   {
+	       lrfds->insert(ev[i].data.fd);
+	       ++ total;
+	    }
+	    if ((NULL != lwfds) && (ev[i].events & EPOLLOUT))
+	    {
+	       lwfds->insert(ev[i].data.fd);
+	       ++ total;
+	    }
+	 }
+	 #else
+	 //currently "select" is used for all non-Linux platforms.
+	 //faster approaches can be applied for specific systems in the future.
 
-         //"select" has a limitation on the number of sockets
+	 //"select" has a limitation on the number of sockets
 
-         fd_set readfds;
-         fd_set writefds;
-         FD_ZERO(&readfds);
-         FD_ZERO(&writefds);
+	 fd_set readfds;
+	 fd_set writefds;
+	 FD_ZERO(&readfds);
+	 FD_ZERO(&writefds);
 
-         for (set<SYSSOCKET>::const_iterator i = p->second.m_sLocals.begin(); i != p->second.m_sLocals.end(); ++ i)
-         {
-            if (lrfds)
-               FD_SET(*i, &readfds);
-            if (lwfds)
-               FD_SET(*i, &writefds);
-         }
+	 for (set<SYSSOCKET>::const_iterator i = p->second.m_sLocals.begin(); i != p->second.m_sLocals.end(); ++ i)
+	 {
+	    if (lrfds)
+	       FD_SET(*i, &readfds);
+	    if (lwfds)
+	       FD_SET(*i, &writefds);
+	 }
 
-         timeval tv;
-         tv.tv_sec = 0;
-         tv.tv_usec = 0;
-         if (::select(0, &readfds, &writefds, NULL, &tv) > 0)
-         {
-            for (set<SYSSOCKET>::const_iterator i = p->second.m_sLocals.begin(); i != p->second.m_sLocals.end(); ++ i)
-            {
-               if (lrfds && FD_ISSET(*i, &readfds))
-               {
-                  lrfds->insert(*i);
-                  ++ total;
-               }
-               if (lwfds && FD_ISSET(*i, &writefds))
-               {
-                  lwfds->insert(*i);
-                  ++ total;
-               }
-            }
-         }
-         #endif
+	 timeval tv;
+	 tv.tv_sec = 0;
+	 tv.tv_usec = 0;
+	 if (::select(0, &readfds, &writefds, NULL, &tv) > 0)
+	 {
+	    for (set<SYSSOCKET>::const_iterator i = p->second.m_sLocals.begin(); i != p->second.m_sLocals.end(); ++ i)
+	    {
+	       if (lrfds && FD_ISSET(*i, &readfds))
+	       {
+	          lrfds->insert(*i);
+	          ++ total;
+	       }
+	       if (lwfds && FD_ISSET(*i, &writefds))
+	       {
+	          lwfds->insert(*i);
+	          ++ total;
+	       }
+	    }
+	 }
+	 #endif
       }
 
       CGuard::leaveCS(m_EPollLock);
 
       if (total > 0)
-         return total;
+	 return total;
 
       if ((msTimeOut >= 0) && (int64_t(CTimer::getTime() - entertime) >= msTimeOut * 1000LL))
-         throw CUDTException(6, 3, 0);
+	 throw CUDTException(6, 3, 0);
 
       CTimer::waitForEvent();
    }
@@ -347,16 +347,16 @@ int CEPoll::update_events(const UDTSOCKET& uid, std::set<int>& eids, int events,
       p = m_mPolls.find(*i);
       if (p == m_mPolls.end())
       {
-         lost.push_back(*i);
+	 lost.push_back(*i);
       }
       else
       {
-         if ((events & UDT_EPOLL_IN) != 0)
-            update_epoll_sets(uid, p->second.m_sUDTSocksIn, p->second.m_sUDTReads, enable);
-         if ((events & UDT_EPOLL_OUT) != 0)
-            update_epoll_sets(uid, p->second.m_sUDTSocksOut, p->second.m_sUDTWrites, enable);
-         if ((events & UDT_EPOLL_ERR) != 0)
-            update_epoll_sets(uid, p->second.m_sUDTSocksEx, p->second.m_sUDTExcepts, enable);
+	 if ((events & UDT_EPOLL_IN) != 0)
+	    update_epoll_sets(uid, p->second.m_sUDTSocksIn, p->second.m_sUDTReads, enable);
+	 if ((events & UDT_EPOLL_OUT) != 0)
+	    update_epoll_sets(uid, p->second.m_sUDTSocksOut, p->second.m_sUDTWrites, enable);
+	 if ((events & UDT_EPOLL_ERR) != 0)
+	    update_epoll_sets(uid, p->second.m_sUDTSocksEx, p->second.m_sUDTExcepts, enable);
       }
    }
 

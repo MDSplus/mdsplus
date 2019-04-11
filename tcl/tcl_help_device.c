@@ -45,7 +45,7 @@ EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)), char
 	strcat(*output,"\n");
 	free(ans);
 	return MdsdclSUCCESS;
-	
+
       } else {
 	char *errorstr="Error obtaining information on that type of device\n";
 	if ((*error) == NULL)

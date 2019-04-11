@@ -3,16 +3,16 @@ package jScope;
 /* $Id$ */
 import java.io.IOException;
 
-class JiNcVarChar extends JiNcVarImp 
+class JiNcVarChar extends JiNcVarImp
 {
 	public JiNcVarChar(RandomAccessData in, JiNcVar parent, long offset)
 	  {
 	  super(in, parent, offset);
-	  }  
+	  }
 	public Object read(JiDim[] dims) throws IOException
 	  {
 	  return readChar(dims);
-	  }  
+	  }
 	public char[] readChar(JiDim[] dims) throws IOException
 	  {
 	  char[] rval = null;
@@ -31,9 +31,9 @@ class JiNcVarChar extends JiNcVarImp
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	public int sizeof()
 	  {
 	  return 1;
-	  }  
+	  }
 }

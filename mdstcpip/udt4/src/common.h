@@ -232,10 +232,10 @@ public:
    inline static int seqoff(int32_t seq1, int32_t seq2)
    {
       if (abs(seq1 - seq2) < m_iSeqNoTH)
-         return seq2 - seq1;
+	 return seq2 - seq1;
 
       if (seq1 < seq2)
-         return seq2 - seq1 - m_iMaxSeqNo - 1;
+	 return seq2 - seq1 - m_iMaxSeqNo - 1;
 
       return seq2 - seq1 + m_iMaxSeqNo + 1;
    }
@@ -284,10 +284,10 @@ public:
    inline static int msgoff(int32_t msgno1, int32_t msgno2)
    {
       if (abs(msgno1 - msgno2) < m_iMsgNoTH)
-         return msgno2 - msgno1;
+	 return msgno2 - msgno1;
 
       if (msgno1 < msgno2)
-         return msgno2 - msgno1 - m_iMaxMsgNo - 1;
+	 return msgno2 - msgno1 - m_iMaxMsgNo - 1;
 
       return msgno2 - msgno1 + m_iMaxMsgNo + 1;
    }

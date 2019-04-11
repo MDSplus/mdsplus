@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    
+
 #if defined(__has_feature)
 #  if __has_feature(address_sanitizer) || __has_feature(thread_sanitizer)
     SKIP_TEST("timeout test disabled on sanitizer");
@@ -58,13 +58,13 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     BEGIN_TESTING(timeout fail 10ms );
     usleep(1E4);
     END_TESTING;
-    
+
     TEST_TIMEOUT(0.019);
     BEGIN_TESTING(timeout fail 20ms);
     usleep(2E4);
     END_TESTING;
-     
+
 }
 
-#   endif    
+#   endif
 

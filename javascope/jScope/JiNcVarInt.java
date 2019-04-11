@@ -8,11 +8,11 @@ class JiNcVarInt extends JiNcVarImp
 	public JiNcVarInt(RandomAccessData in, JiNcVar parent, long offset)
 	  {
 	  super(in, parent, offset);
-	  }  
+	  }
 	public Object read(JiDim[] dims) throws IOException
 	  {
 	  return readInt(dims);
-	  }  
+	  }
 	public int[] readInt(JiDim[] dims) throws IOException
 	  {
 	  int[] rval = null;
@@ -29,9 +29,9 @@ class JiNcVarInt extends JiNcVarImp
 	      }
 	  }
 	  return rval;
-	  }  
+	  }
 	public int sizeof()
 	  {
 	  return 4;
-	  }  
+	  }
 }

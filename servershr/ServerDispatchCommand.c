@@ -28,18 +28,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Dispatch a mdsdcl command to a server
+		Purpose: Dispatch a mdsdcl command to a server
 
 ------------------------------------------------------------------------------
 
 	Call sequence:
 
 int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$descriptor *cli, struct dsc$descriptor *command,
-                        void (*ast)(), int astprm, int *netid, void (*link_down)(), void (*before_ast)())
+	                void (*ast)(), int astprm, int *netid, void (*link_down)(), void (*before_ast)())
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -49,7 +49,7 @@ int SERVER$DISPATCH_COMMAND(int efn, struct dsc$descriptor *server, struct dsc$d
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

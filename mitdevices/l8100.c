@@ -126,7 +126,7 @@ static int StoreChannel(InStoreStruct * setup, int chan)
     if (status & 1) {
       status = TreePutRecord(input_nid, (struct descriptor *)&value, 0);
       if ((status & 1) && (IsOn(filter_on_nid))) {
-        status = TreePutRecord(filter_on_nid, filter, 0);
+	status = TreePutRecord(filter_on_nid, filter, 0);
       }
     }
   }

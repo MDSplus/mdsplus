@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TDI$$DEF_FUNCTION.C
-        Internal/intrinsic function table definition.
-        Yacc tokens are put into TdiRefFunction table here.
-        Precedence is associated with a token.
+	Internal/intrinsic function table definition.
+	Yacc tokens are put into TdiRefFunction table here.
+	Precedence is associated with a token.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include <mds_stdarg.h>

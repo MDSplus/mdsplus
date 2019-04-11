@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -218,7 +218,7 @@ class NI6259EV(Device):
 
             nid = self.device.getNid()
             chanModes = NI6259EV.ni6259chanModes[nid]
-            chanEvents = NI6259EV.ni6259chanEvents[nid] 
+            chanEvents = NI6259EV.ni6259chanEvents[nid]
             chanPreTimes = NI6259EV.ni6259chanPreTimes[nid]
             chanPostTimes = NI6259EV.ni6259chanPostTimes[nid]
             chanFd = []
@@ -239,8 +239,8 @@ class NI6259EV(Device):
             preTimes_c = (c_double * numChans)()
             postTimes_c = (c_double * numChans)()
             eventNames_c = (c_char_p * numChans)()
-	
- 
+
+
             for chan in range(numChans):
                     #self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
                     #self.device.debugPrint '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]])
@@ -269,13 +269,13 @@ class NI6259EV(Device):
                     f1Divs_c[chan] = f1Div
                     f2Divs_c[chan] = f2Div
                     eventNames_c[chan] = c_char_p(chanEvents[chan])
-                else: 
+                else:
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Mode for channel '+str(chan + 1))
                     raise DevBAD_PARAMETER
 
                 preTimes_c[chan] = chanPreTimes[chan]
                 postTimes_c[chan] = chanPostTimes[chan]
-                 
+
                 try:
                     boardId = getattr(self.device, 'board_id').data()
                     print('APRO', '/dev/pxi6259.'+str(boardId)+'.ai.'+str(self.hwChanMap[self.chanMap[chan]]))
@@ -286,9 +286,9 @@ class NI6259EV(Device):
                     self.device.debugPrint(e)
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
                     self.error = self.ACQ_ERROR;
-                    return 
+                    return
                 chanNid.append( getattr(self.device, 'channel_%d_raw'%(self.chanMap[chan]+1)).getNid() )
-                     
+
                 self.device.debugPrint ('chanFd '+'channel_%d_raw'%(self.chanMap[chan]+1), chanFd[chan])
 
                 gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
@@ -303,13 +303,13 @@ class NI6259EV(Device):
                     msg = 'Error (%d) %s' % (errno, os.strerror( errno ))
                     self.device.debugPrint (msg)
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot read calibration values for Channel %d. Default value assumed ( offset= 0.0, gain = range/65536'%(self.chanMap[chan]))
- 
+
                 gainValue = self.device.gainValueDict[gain] * 2.
                 coeff[0] = coeff[2] = coeff[3] = 0
                 coeff[1] = c_float( gainValue / 65536. )
-                print('SCRIVO CALIBRAZIONE', coeff)		    
+                print('SCRIVO CALIBRAZIONE', coeff)
                 getattr(self.device, 'channel_%d_calib'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
-                print('SCRITTO')		    
+                print('SCRITTO')
 
 
             bufSize = self.device.buf_size.data()
@@ -329,7 +329,7 @@ class NI6259EV(Device):
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 self.error = self.ACQ_ERROR
-                return 
+                return
 
 
             saveList = c_void_p(0)
@@ -340,7 +340,7 @@ class NI6259EV(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
 
             while not self.stopReq:
-                status = NI6259EV.niInterfaceLib.pxi6259EV_readAndSaveAllChannels(c_int(numChans), chanFd_c, isBurst_c, f1Divs_c, f2Divs_c, c_double(maxDelay), c_double(baseFreq), 
+                status = NI6259EV.niInterfaceLib.pxi6259EV_readAndSaveAllChannels(c_int(numChans), chanFd_c, isBurst_c, f1Divs_c, f2Divs_c, c_double(maxDelay), c_double(baseFreq),
 			preTimes_c, postTimes_c, c_double(baseStart), c_int(bufSize), c_int(segmentSize), eventNames_c, chanNid_c, self.treePtr, saveList, self.stopAcq)
 
                 if status < 1:
@@ -355,7 +355,7 @@ class NI6259EV(Device):
 #            NI6259EV.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
 
-            return 
+            return
 
         def stop(self):
             self.stopReq = True
@@ -363,7 +363,7 @@ class NI6259EV(Device):
 
         def hasError(self):
             return ( self.error != self.ACQ_NOERROR)
-   
+
 
 
 #############End Inner class AsynchStore
@@ -406,8 +406,8 @@ class NI6259EV(Device):
         chanPostTimes = []
 
         for chan in range(0, numChannels):
-                    
-            #Empy the node which will contain  the segmented data   
+
+            #Empy the node which will contain  the segmented data
             getattr(self, 'channel_%d_raw'%(chan+1)).deleteData()
 
             getattr(self, 'channel_%d_raw'%(chan+1)).setCompressOnPut(False)
@@ -445,7 +445,7 @@ class NI6259EV(Device):
             try:
                 polarity = self.polarityDict[getattr(self, 'channel_%d_polarity'%(chan+1)).data()]
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan+1)).data()]
- 
+
                 data = Data.compile("NIpxi6259analogInputScaled(build_path($), build_path($), $ )", getattr(self, 'channel_%d_raw'%(chan+1)).getPath(),  getattr(self, 'channel_%d_calib'%(chan+1)).getPath(), gain )
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
@@ -484,11 +484,11 @@ class NI6259EV(Device):
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot configure device clock')
             raise DevBAD_PARAMETER
- 
+
         if activeChan == 1:
-            convClk = 16 
+            convClk = 16
         else:
-            convClk = 20 
+            convClk = 20
         status = NI6259EV.niLib.pxi6259_set_ai_convert_clk(aiConf, c_int(convClk), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
         if(status != 0):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Convert Clock')
@@ -555,7 +555,7 @@ class NI6259EV(Device):
             self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
-        
+
         time.sleep(2)
 
         if self.worker.hasError():
@@ -586,7 +586,7 @@ class NI6259EV(Device):
           error = self.worker.hasError()
       else:
           error = self.worker.hasError()
-          if not error: 
+          if not error:
               Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread stopped')
 
 

@@ -35,7 +35,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
    private JComboBox<String> legend_mode;
    private JCheckBox     reversed_b;
    int	   x_curr_lines_grid = 3,
-           y_curr_lines_grid = 3;
+	   y_curr_lines_grid = 3;
 
    public SetupWaveformParams(Frame fw, String frame_title)
    {
@@ -116,59 +116,59 @@ public class SetupWaveformParams extends JDialog implements ActionListener
       getContentPane().add(x_max);
 
 
-        JPanel panel = new JPanel();
-        panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-        c.fill =  GridBagConstraints.NONE;
+	JPanel panel = new JPanel();
+	panel.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+	c.fill =  GridBagConstraints.NONE;
 
-        panel.add(new JLabel("   lines x:"));
-        panel.add(x_grid_lines = new JTextField(2));
-        x_grid_lines.addActionListener(this);
-        x_grid_lines.setText(""+x_curr_lines_grid);
+	panel.add(new JLabel("   lines x:"));
+	panel.add(x_grid_lines = new JTextField(2));
+	x_grid_lines.addActionListener(this);
+	x_grid_lines.setText(""+x_curr_lines_grid);
 
-        panel.add(new JLabel("   lines y:"));
-        panel.add(y_grid_lines = new JTextField(2));
-        y_grid_lines.addActionListener(this);
-        y_grid_lines.setText(""+y_curr_lines_grid);
+	panel.add(new JLabel("   lines y:"));
+	panel.add(y_grid_lines = new JTextField(2));
+	y_grid_lines.addActionListener(this);
+	y_grid_lines.setText(""+y_curr_lines_grid);
 
-        panel.add(new JLabel("   Vertical offset:"));
-        panel.add(vertical_offset = new JTextField(3));
-        vertical_offset.addActionListener(this);
-        vertical_offset.setText("");
+	panel.add(new JLabel("   Vertical offset:"));
+	panel.add(vertical_offset = new JTextField(3));
+	vertical_offset.addActionListener(this);
+	vertical_offset.setText("");
 
-        panel.add(new JLabel("   Horizontal offset:"));
-        panel.add(horizontal_offset = new JTextField(3));
-        horizontal_offset.addActionListener(this);
-        horizontal_offset.setText("");
+	panel.add(new JLabel("   Horizontal offset:"));
+	panel.add(horizontal_offset = new JTextField(3));
+	horizontal_offset.addActionListener(this);
+	horizontal_offset.setText("");
 
-        gridbag.setConstraints(panel, c);
-        getContentPane().add(panel);
+	gridbag.setConstraints(panel, c);
+	getContentPane().add(panel);
 
-        JPanel panel1 = new JPanel();
-        panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
-        c.fill =  GridBagConstraints.NONE;
+	JPanel panel1 = new JPanel();
+	panel1.setLayout(new FlowLayout(FlowLayout.LEFT, 2, 3));
+	c.fill =  GridBagConstraints.NONE;
 
-        panel1.add(reversed_b = new JCheckBox("Reversed"));
-        reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
+	panel1.add(reversed_b = new JCheckBox("Reversed"));
+	reversed_b.setHorizontalTextPosition(SwingConstants.LEFT);
 
-        lab = new JLabel("Grid: Mode");
-        panel1.add(lab);
+	lab = new JLabel("Grid: Mode");
+	panel1.add(lab);
 
-        grid_mode = new JComboBox<>(Grid.GRID_MODE);
-        panel1.add(grid_mode);
+	grid_mode = new JComboBox<>(Grid.GRID_MODE);
+	panel1.add(grid_mode);
 
-        lab = new JLabel("Legend:");
-        panel1.add(lab);
-        legend_mode = new JComboBox<>();
-        legend_mode.addItem("In Graphics");
-        legend_mode.addItem("Fixed Bottom");
-        legend_mode.addItem("Fixed Right");
-        panel1.add(legend_mode);
+	lab = new JLabel("Legend:");
+	panel1.add(lab);
+	legend_mode = new JComboBox<>();
+	legend_mode.addItem("In Graphics");
+	legend_mode.addItem("Fixed Bottom");
+	legend_mode.addItem("Fixed Right");
+	panel1.add(legend_mode);
 
-        gridbag.setConstraints(panel1, c);
-        getContentPane().add(panel1);
+	gridbag.setConstraints(panel1, c);
+	getContentPane().add(panel1);
 
 
-        JPanel p1 = new JPanel();
+	JPanel p1 = new JPanel();
 
       ok = new JButton("Ok");
       ok.addActionListener(this);
@@ -195,7 +195,7 @@ public class SetupWaveformParams extends JDialog implements ActionListener
       c.gridwidth = GridBagConstraints.REMAINDER;
       gridbag.setConstraints(p1, c);
       getContentPane().add(p1);
- 	  pack();
+	  pack();
   }
 
    public void eraseForm()
@@ -229,20 +229,20 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
 	    if(wave instanceof MultiWaveform && ((MultiWaveform)wave).getWaveInterface() != null)
 	    {
-	        WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
+		WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
 
-            if(wi.in_xmax != null) x_max.setText(wi.in_xmax);
-            if(wi.in_xmin != null) x_min.setText(wi.in_xmin);
-            if(wi.in_ymax != null) y_max.setText(wi.in_ymax);
-            if(wi.in_ymin != null) y_min.setText(wi.in_ymin);
-        }
-        else
-        {
-            if(wave.lx_max != Float.MAX_VALUE) x_max.setText(""+wave.lx_max);
-            if(wave.lx_min != Float.MIN_VALUE) x_min.setText(""+wave.lx_min);
-            if(wave.ly_max != Float.MAX_VALUE) y_max.setText(""+wave.ly_max);
-            if(wave.ly_min != Float.MIN_VALUE) y_min.setText(""+wave.ly_min);
-        }
+	    if(wi.in_xmax != null) x_max.setText(wi.in_xmax);
+	    if(wi.in_xmin != null) x_min.setText(wi.in_xmin);
+	    if(wi.in_ymax != null) y_max.setText(wi.in_ymax);
+	    if(wi.in_ymin != null) y_min.setText(wi.in_ymin);
+	}
+	else
+	{
+	    if(wave.lx_max != Float.MAX_VALUE) x_max.setText(""+wave.lx_max);
+	    if(wave.lx_min != Float.MIN_VALUE) x_min.setText(""+wave.lx_min);
+	    if(wave.ly_max != Float.MAX_VALUE) y_max.setText(""+wave.ly_max);
+	    if(wave.ly_min != Float.MIN_VALUE) y_min.setText(""+wave.ly_min);
+	}
 
 	    setTextValue(title, wave.GetTitle());
 	    setTextValue(x_label, wave.GetXLabel());
@@ -252,11 +252,11 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
 	    if(wave instanceof MultiWaveform)
 	    {
-	        legend_mode.setVisible(true);
-	        legend_mode.setSelectedIndex(((MultiWaveform)wave).getLegendMode());
+		legend_mode.setVisible(true);
+		legend_mode.setSelectedIndex(((MultiWaveform)wave).getLegendMode());
 	    }
 	    else
-	        legend_mode.setVisible(false);
+		legend_mode.setVisible(false);
 
 	    setTextValue(x_grid_lines, ""+wave.GetGridStepX());
 	    setTextValue(y_grid_lines, ""+wave.GetGridStepX());
@@ -271,40 +271,40 @@ public class SetupWaveformParams extends JDialog implements ActionListener
    public void SaveParameters()
    {
 
-        wave.SetTitle(title.getText());
-        wave.SetXLabel(x_label.getText());
-        wave.SetYLabel(y_label.getText());
+	wave.SetTitle(title.getText());
+	wave.SetXLabel(x_label.getText());
+	wave.SetYLabel(y_label.getText());
 
 
-        if(wave instanceof MultiWaveform && ((MultiWaveform)wave).getWaveInterface() != null)
+	if(wave instanceof MultiWaveform && ((MultiWaveform)wave).getWaveInterface() != null)
 	    {
-	        WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
+		WaveInterface wi = ((MultiWaveform)wave).getWaveInterface();
 
-            wi.in_xmax = x_max.getText();
-            wi.in_xmin = x_min.getText();
-            wi.in_ymax = y_max.getText();
-            wi.in_ymin = y_min.getText();
-            try
-            {
-                wi.StartEvaluate();
-                wi.setLimits();
-            } catch (Exception e){}
-        }
-        else
-        {
-            wave.lx_max = convertToFloat(x_max.getText(), false);
-            wave.lx_min = convertToFloat(x_min.getText(), true);
-            wave.ly_max = convertToFloat(y_max.getText(), false);
-            wave.ly_min = convertToFloat(y_min.getText(), true);
-            wave.setFixedLimits();
-        }
+	    wi.in_xmax = x_max.getText();
+	    wi.in_xmin = x_min.getText();
+	    wi.in_ymax = y_max.getText();
+	    wi.in_ymin = y_min.getText();
+	    try
+	    {
+	        wi.StartEvaluate();
+	        wi.setLimits();
+	    } catch (Exception e){}
+	}
+	else
+	{
+	    wave.lx_max = convertToFloat(x_max.getText(), false);
+	    wave.lx_min = convertToFloat(x_min.getText(), true);
+	    wave.ly_max = convertToFloat(y_max.getText(), false);
+	    wave.ly_min = convertToFloat(y_min.getText(), true);
+	    wave.setFixedLimits();
+	}
 
 
 	    wave.SetGridMode(grid_mode.getSelectedIndex(), true, true);
 
 	    if(wave instanceof MultiWaveform)
 	    {
-	        ((MultiWaveform)wave).setLegendMode(legend_mode.getSelectedIndex());
+		((MultiWaveform)wave).setLegendMode(legend_mode.getSelectedIndex());
 	    }
 	    wave.SetReversed(reversed_b.getModel().isSelected());
 
@@ -354,36 +354,36 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 	  if(y_curr_lines_grid > Grid.MAX_GRID)
 	    y_curr_lines_grid = Grid.MAX_GRID;
 
-        wave.SetGridSteps(x_curr_lines_grid, y_curr_lines_grid);
+	wave.SetGridSteps(x_curr_lines_grid, y_curr_lines_grid);
 
-        wave.Update();
+	wave.Update();
 
     }
 
    private float convertToFloat(String s, boolean min)
    {
-        try
-        {
-            return Float.parseFloat(s);
-        }
-        catch(Exception exc)
-        {
-            return min ? Float.MIN_VALUE : Float.MAX_VALUE ;
-        }
+	try
+	{
+	    return Float.parseFloat(s);
+	}
+	catch(Exception exc)
+	{
+	    return min ? Float.MIN_VALUE : Float.MAX_VALUE ;
+	}
    }
 
    public void  Show(Waveform w)
    {
-        if(w == null) return;
-        if(w.IsImage())
-        {
-           JOptionPane.showMessageDialog(getParent(), "Not yet implemented", "alert", JOptionPane.WARNING_MESSAGE);
-           return;
-        }
-        wave = w;
-        initialize();
-        setLocationRelativeTo(wave.getParent());
-        setVisible(true);
+	if(w == null) return;
+	if(w.IsImage())
+	{
+	   JOptionPane.showMessageDialog(getParent(), "Not yet implemented", "alert", JOptionPane.WARNING_MESSAGE);
+	   return;
+	}
+	wave = w;
+	initialize();
+	setLocationRelativeTo(wave.getParent());
+	setVisible(true);
    }
 
 
@@ -399,9 +399,9 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 
       if(ob == apply || ob == ok)
       {
-        SaveParameters();
+	SaveParameters();
 	    if(ob == ok)
-	        setVisible(false);
+		setVisible(false);
       }
 
       if(ob == reset)

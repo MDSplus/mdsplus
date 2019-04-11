@@ -268,13 +268,13 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	out_nid = nid;
 	out_nid.node -= (swapint16(&node->conglomerate_elt) - 1);
 	cng_node = node - swapint16(&node->conglomerate_elt) + 1;
-        int len = itm->buffer_length>>2;// /4;
+	int len = itm->buffer_length>>2;// /4;
 	for (i=0 ; i<len && i< swapint16(&cng_node->conglomerate_elt) ; i++) {
 	  *((NID *) (itm->pointer) + i) = out_nid;
 	  cng_node++;
 	  out_nid.node++;
 	}
-        set_retlen(sizeof(NID)*i);
+	set_retlen(sizeof(NID)*i);
       } else
 	retlen = 0;
       break;
@@ -752,8 +752,8 @@ int _TreeOpenNciR(TREE_INFO * info)
       free(filename);
       status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
       if STATUS_NOT_OK {
-        free(info->nci_file);
-        info->nci_file = NULL;
+	free(info->nci_file);
+	info->nci_file = NULL;
       }
     }
   }

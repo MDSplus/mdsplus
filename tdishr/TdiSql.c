@@ -23,24 +23,24 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1SQL.C
-        An interface to dynamic SQL within TDI.
-        Links are dynamic to keep out Rdb libraries until wanted.
-        rows = ISQL("SQL-string")
-        Interaction is with terminal.
+	An interface to dynamic SQL within TDI.
+	Links are dynamic to keep out Rdb libraries until wanted.
+	rows = ISQL("SQL-string")
+	Interaction is with terminal.
 
-        rows = DSQL("SQL-string", question-mark-replacements, ... output-variables, ...)
-        If inputs are missing they are supplied as indicator asserted.
-        Useful only for INSERT and UPDATE statements, probably.
+	rows = DSQL("SQL-string", question-mark-replacements, ... output-variables, ...)
+	If inputs are missing they are supplied as indicator asserted.
+	Useful only for INSERT and UPDATE statements, probably.
 
-        Output may be a variable (defined or not)
-        or text string of variable name but not an expression for name.
-        If an output for selection XXX is NULL pointer
-        then variable of name _XXX is created.
-        Note for calculated select, name will be just "_".
-        Note same names from different tables will be folded together.
+	Output may be a variable (defined or not)
+	or text string of variable name but not an expression for name.
+	If an output for selection XXX is NULL pointer
+	then variable of name _XXX is created.
+	Note for calculated select, name will be just "_".
+	Note same names from different tables will be folded together.
 
-        The SQL string sElEcT is a blob write.
-        Ken Klare, LANL P-4     (c)1991,1992
+	The SQL string sElEcT is a blob write.
+	Ken Klare, LANL P-4     (c)1991,1992
 */
 #include <mdstypes.h>
 #define _MOVC3(a,b,c) memcpy(c,b,a)
@@ -229,12 +229,12 @@ STATIC_ROUTINE void AppendAnswer(int idx, void *buffer, int len, int dtype)
   if (dtype == DTYPE_T)
     needed++;
 /*
-        if (idx > num_bufs) {
-                num_bufs++;
-                bufs = realloc(bufs, num_bufs*sizeof(struct ans_buf));
-                bufs[idx].size = 0;
-                bufs[idx].offset=0;
-        }
+	if (idx > num_bufs) {
+	        num_bufs++;
+	        bufs = realloc(bufs, num_bufs*sizeof(struct ans_buf));
+	        bufs[idx].size = 0;
+	        bufs[idx].offset=0;
+	}
 */
   if (bufs[idx].size < (bufs[idx].offset + needed)) {
     int new_size = (bufs[idx].size == 0) ? INITIAL_GUESS * len : 3 * bufs[idx].size;
@@ -390,10 +390,10 @@ ARGLIST *arg;
 	   if (rows == -1) status = TdiPutIdent(dst, &tmp);
 	 */
 /*
-                                len = SYB_dbdatlen(dbproc, j+1);
-                                buf = SYB_dbdata(dbproc, j+1);
-                                ind = len == 0 && buf == (void *)NULL || rows < 0;
-                                type = SYB_dbcoltype(dbproc, j+1);
+	                        len = SYB_dbdatlen(dbproc, j+1);
+	                        buf = SYB_dbdata(dbproc, j+1);
+	                        ind = len == 0 && buf == (void *)NULL || rows < 0;
+	                        type = SYB_dbcoltype(dbproc, j+1);
 */
 	type = bufs[j].syb_type;
 	switch (type) {

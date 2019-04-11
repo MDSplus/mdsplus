@@ -10,7 +10,7 @@ package MDSplus;
  *
  * @author manduchi
  */
-public interface DataStreamListener 
+public interface DataStreamListener
 {
     void dataReceived(Data samples, Data times);
 }

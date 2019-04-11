@@ -194,7 +194,7 @@ static void Resize(Widget w);
  Macros:                                                                      */
 
 #define IsText(ptr) ( (ptr->dtype == DTYPE_T) &&\
-                      ((ptr->class == CLASS_S) || (ptr->class == CLASS_D)) )
+	              ((ptr->class == CLASS_S) || (ptr->class == CLASS_D)) )
 
 /*------------------------------------------------------------------------------
 

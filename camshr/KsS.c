@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -57,7 +57,7 @@ static int KsSingleIo(CamKey Key, BYTE A, BYTE F, BYTE * Data, BYTE Mem, Transla
     printf("%s()\n", KS_ROUTINE_NAME);
 
   // find the scsi device number (ie '/dev/sg#')
-  // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address); 
+  // sprintf(dev_name, "GK%c%d", Key.scsi_port, Key.scsi_address);
   sprintf(dev_name, "GK%c%2d%2.2d", Key.scsi_port, Key.scsi_address, Key.crate);
 
   if ((scsiDevice = get_scsi_device_number(dev_name, &enhanced, &online)) < 0) {

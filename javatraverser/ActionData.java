@@ -6,9 +6,9 @@ public class ActionData extends CompoundData
     {
 	return new ActionData();
     }
-    
+
     public ActionData() {dtype = DTYPE_ACTION;}
-    public ActionData(Data dispatch, Data task, Data errorlogs, 
+    public ActionData(Data dispatch, Data task, Data errorlogs,
 	Data completion_message, Data performance)
     {
 	dtype = DTYPE_ACTION;
@@ -21,7 +21,7 @@ public class ActionData extends CompoundData
     }
     public final Data getDispatch() {return descs[0]; }
     public final Data getTask()	    {return descs[1]; }
-    public final Data getErrorlogs() 
+    public final Data getErrorlogs()
     {
 	if(descs.length >= 3)
 	    return descs[2];
@@ -35,8 +35,8 @@ public class ActionData extends CompoundData
 	else
 	    return null;
     }
-        
-    public final Data getPerformance() 
+
+    public final Data getPerformance()
     {
 	if(descs.length >= 5)
 	    return descs[4];

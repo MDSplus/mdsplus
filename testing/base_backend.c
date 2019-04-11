@@ -33,14 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 void __assert_fail (const char *__assertion, const char *__file,
-                    ASSERT_LINE_TYPE __line, const char *__function)
+	            ASSERT_LINE_TYPE __line, const char *__function)
 {
     printf(" .-----------------------------------. \n"
-           " |  Assertion failed during test     | \n"
-           " '-----------------------------------' \n"
-           " > file: %s ,  function: %s, line: %d \n"
-           "   assertion:  (%s) \n\n",
-           __file,__function,__line,__assertion);
+	   " |  Assertion failed during test     | \n"
+	   " '-----------------------------------' \n"
+	   " > file: %s ,  function: %s, line: %d \n"
+	   "   assertion:  (%s) \n\n",
+	   __file,__function,__line,__assertion);
 
     __test_end();
     exit(1);
@@ -48,14 +48,14 @@ void __assert_fail (const char *__assertion, const char *__file,
 
 
 void __test_abort(int code, const char *__msg, const char *__file,
-                  unsigned int __line, const char *__function)
+	          unsigned int __line, const char *__function)
 {
     printf(" .-----------------------------------. \n"
-           " |  TEST ABORTED                     | \n"
-           " '-----------------------------------' \n"
-           "  file: %s ,  function: %s, line: %d "
-           "  message:  (%s) \n",
-           __file,__function,__line,__msg);
+	   " |  TEST ABORTED                     | \n"
+	   " '-----------------------------------' \n"
+	   "  file: %s ,  function: %s, line: %d "
+	   "  message:  (%s) \n",
+	   __file,__function,__line,__msg);
     exit(code);
 }
 

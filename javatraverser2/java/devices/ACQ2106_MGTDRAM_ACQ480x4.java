@@ -7,6 +7,6 @@ import mds.data.descriptor_s.NODE;
 
 public class ACQ2106_MGTDRAM_ACQ480x4 extends ACQ2106{
     public ACQ2106_MGTDRAM_ACQ480x4(final Frame frame, final NODE<?> head, final boolean editable){
-        super(frame, head, editable, 4, ACQ480.class);
+	super(frame, head, editable, 4, ACQ480.class);
     }
 }

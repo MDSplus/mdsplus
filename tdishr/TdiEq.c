@@ -46,36 +46,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Type:    C function
 
        Author:  Mark London
-               MIT Plasma Fusion Center
+	       MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose:
-        To test major VMS data types and classes.
-                out = in1 OP in2
-        or      out = LLT(in1, in2)
+	To test major VMS data types and classes.
+	        out = in1 OP in2
+	or      out = LLT(in1, in2)
 
-        Test OP may be EQ GE GT LE LT NE.
-        F77 functions LGE LGT LLE LLT also.
-        Unsigned compares for unsigned types.
-        Only EQ or NE are allowed for COMPLEX types.
-        Input and output memory overlap produces UNDEFINED results.
-        Coincidence of input and output, however, will work here.
+	Test OP may be EQ GE GT LE LT NE.
+	F77 functions LGE LGT LLE LLT also.
+	Unsigned compares for unsigned types.
+	Only EQ or NE are allowed for COMPLEX types.
+	Input and output memory overlap produces UNDEFINED results.
+	Coincidence of input and output, however, will work here.
 
        Call sequence:
-               struct descriptor *in1_ptr;
-               struct descriptor *in2_ptr;
-               struct descriptor *out_ptr;
+	       struct descriptor *in1_ptr;
+	       struct descriptor *in2_ptr;
+	       struct descriptor *out_ptr;
 
-               status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
-               status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
-               status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
-               status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
-               status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
-               status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Eq(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Ge(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Gt(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Le(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Lt(in1_ptr,in2_ptr,out_ptr);
+	       status = Tdi3Ne(in1_ptr,in2_ptr,out_ptr);
        returns:
-                TdiINVDTYDSC - if unsupported data type
-                1 - if supported data type
+	        TdiINVDTYDSC - if unsupported data type
+	        1 - if supported data type
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993
@@ -167,11 +167,11 @@ break;
     l = longwords*i; \
     for (j=longwords-1;j>=0;j--) \
       if (!j || in1[s1 ? j : l+j] != in2[s2 ? j : l+j]) {       \
-        if (!(signed) || !(j != longwords-1)) \
-          {out[i] = (char)(in1[s1 ? j : l+j] op in2[s2 ? j : l+j]); break;} \
-        else {i1 = (int *)(in1+(s1 ? j : l+j)), \
-              i2 = (int *)(in2+(s2 ? j : l+j)); \
-          out[i] = (char)(*i1 op *i2); break;} \
+	if (!(signed) || !(j != longwords-1)) \
+	  {out[i] = (char)(in1[s1 ? j : l+j] op in2[s2 ? j : l+j]); break;} \
+	else {i1 = (int *)(in1+(s1 ? j : l+j)), \
+	      i2 = (int *)(in2+(s2 ? j : l+j)); \
+	  out[i] = (char)(*i1 op *i2); break;} \
       }}                                       \
    break;
 
@@ -207,18 +207,18 @@ break;
     out[i] = not_op 1; \
     while (k < maxlen) { \
       if (k >= minlen) { \
-        type *in = (type *)((k >= in1_ptr->length) ? in2 : in1); \
-        if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
-          if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
-            {out[i] = not_op 0; break;} \
-          else {breakout}		\
-        } \
+	type *in = (type *)((k >= in1_ptr->length) ? in2 : in1); \
+	if (!(equal_until_last & (k < maxlen-1 && ' ' == in[k]))) {\
+	  if (!((in == in2) ? (' ' op in[k]) : (in[k] op ' '))) \
+	    {out[i] = not_op 0; break;} \
+	  else {breakout}		\
+	} \
       } else \
-        if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
-          if (!(in1[k] op in2[k])) \
-            {out[i] = not_op 0; break;} \
-          else {breakout}		\
-        } \
+	if (!(equal_until_last & (k < maxlen-1 && in1[k] == in2[k]))) {\
+	  if (!(in1[k] op in2[k])) \
+	    {out[i] = not_op 0; break;} \
+	  else {breakout}		\
+	} \
       k++; \
     } \
     if (!s1) in1=(type *)((char *)(in1)+in1_ptr->length); \

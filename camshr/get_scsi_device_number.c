@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Tue Sep 18 15:29:52 EDT 2001 -- removed file check; should be using memory
 //                                                                      mapped file
 //-------------------------------------------------------------------------
-// lookup a CAMAC device (serial highway) in crate.db 
+// lookup a CAMAC device (serial highway) in crate.db
 // and return O/S specific device number, eg '/dev/sg#'
 // returns '/dev/sg#' value; if non-existant, parse_crate_db() returns -1
 //-------------------------------------------------------------------------

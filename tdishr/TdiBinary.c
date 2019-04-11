@@ -37,26 +37,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        Type:    C function
 
        Author:  Mark London
-               MIT Plasma Fusion Center
+	       MIT Plasma Fusion Center
 
        Date:    7-SEP-1993
 
        Purpose: Checks descriptors for valid classes and equal lengths.
-                Returns the count of the number of elements if the
-                descriptors points to an array, else returns 1 for scalar
-                or string.
+	        Returns the count of the number of elements if the
+	        descriptors points to an array, else returns 1 for scalar
+	        or string.
 
        Call sequence:
-               struct descriptor *in1_ptr;
-               struct descriptor *in2_ptr;
-               struct descriptor *out_ptr;
-               int  *out_count;
+	       struct descriptor *in1_ptr;
+	       struct descriptor *in2_ptr;
+	       struct descriptor *out_ptr;
+	       int  *out_count;
 
-               status = TdiBinary(in1_ptr,in2_ptr,out_ptr,out_count);
+	       status = TdiBinary(in1_ptr,in2_ptr,out_ptr,out_count);
        returns:
-                TdiINVCLADSC - if unsupported class
-                TdiINV_SIZE - if descriptor length mismatch
-                1 - if supported class and lengths match
+	        TdiINVCLADSC - if unsupported class
+	        TdiINV_SIZE - if descriptor length mismatch
+	        1 - if supported class and lengths match
 
 ------------------------------------------------------------------------------
        Copyright (c) 1993

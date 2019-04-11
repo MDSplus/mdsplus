@@ -27,7 +27,7 @@ char *tr_str(TestResult * tr);
 
 /* Return a string representation of the given TestResult message
    without the test id or result type. This is suitable for separate
-   formatting of the test and the message. Return value has been 
+   formatting of the test and the message. Return value has been
    malloc'd, and must be freed by the caller */
 char *tr_short_str(TestResult * tr);
 

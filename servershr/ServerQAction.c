@@ -155,12 +155,12 @@ EXPORT int ServerQAction(uint32_t *addr, uint16_t *port, int *op, int *flags, in
       if (*(int *)p1) {
 	SrvJob *next,*job = JobQueue;
 	while (job){
-          next = job->h.next;
+	  next = job->h.next;
 	  AbortJob(job);
-          job = next;
-        }
-        JobQueueNext = 0;
-        JobQueueCond.value = 0;
+	  job = next;
+	}
+	JobQueueNext = 0;
+	JobQueueCond.value = 0;
       }
       QUEUE_UNLOCK;
       break;
@@ -306,11 +306,11 @@ static void LogPrefix(char *ans_c){
     gethostname(hname, 512);
     char now[32];Now32(now);
     sprintf(ans_c, "%s, %s:%s, %s, ", now, hname, port ? port : "?",
-          Logging == 0 ? "logging disabled" : "logging enabled");
+	  Logging == 0 ? "logging disabled" : "logging enabled");
     if (Debug) {
       sprintf(ans_c + strlen(ans_c), "\nDebug info: QueueLocked = %d ProgLoc = %d WorkerDied = %d"
-            "\n            LeftWorkerLoop = %d CondWStat = %d\n",
-            QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
+	    "\n            LeftWorkerLoop = %d CondWStat = %d\n",
+	    QueueLocked, ProgLoc, WorkerDied, LeftWorkerLoop, CondWStat);
     }
   }
 }
@@ -591,9 +591,9 @@ static void SendToMonitor(MonitorList *m, MonitorList *prev, SrvJob *job_in){
   free(msg);
   if STATUS_NOT_OK {
     if (prev)
-        prev->next = m->next;
+	prev->next = m->next;
     else
-        Monitors = m->next;
+	Monitors = m->next;
     free(m);
   }
 }

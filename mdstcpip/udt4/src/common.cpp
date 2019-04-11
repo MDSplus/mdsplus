@@ -117,12 +117,12 @@ void CTimer::rdtsc(uint64_t &x)
       x = hval;
       x = (x << 32) | lval;
    #elif defined(WIN32)
-      //HANDLE hCurThread = ::GetCurrentThread(); 
-      //DWORD_PTR dwOldMask = ::SetThreadAffinityMask(hCurThread, 1); 
+      //HANDLE hCurThread = ::GetCurrentThread();
+      //DWORD_PTR dwOldMask = ::SetThreadAffinityMask(hCurThread, 1);
       BOOL ret = QueryPerformanceCounter((LARGE_INTEGER *)&x);
       //SetThreadAffinityMask(hCurThread, dwOldMask);
       if (!ret)
-         x = getTime() * s_ullCPUFrequency;
+	 x = getTime() * s_ullCPUFrequency;
    #elif defined(OSX)
       x = mach_absolute_time();
    #else
@@ -150,7 +150,7 @@ uint64_t CTimer::readCPUFrequency()
    #elif defined(WIN32)
       int64_t ccf;
       if (QueryPerformanceFrequency((LARGE_INTEGER *)&ccf))
-         frequency = ccf / 1000000;
+	 frequency = ccf / 1000000;
    #elif defined(OSX)
       mach_timebase_info_data_t info;
       mach_timebase_info(&info);
@@ -191,34 +191,34 @@ void CTimer::sleepto(uint64_t nexttime)
    while (t < m_ullSchedTime)
    {
       #ifndef NO_BUSY_WAITING
-         #ifdef IA32
-            __asm__ volatile ("pause; rep; nop; nop; nop; nop; nop;");
-         #elif IA64
-            __asm__ volatile ("nop 0; nop 0; nop 0; nop 0; nop 0;");
-         #elif AMD64
-            __asm__ volatile ("nop; nop; nop; nop; nop;");
-         #endif
+	 #ifdef IA32
+	    __asm__ volatile ("pause; rep; nop; nop; nop; nop; nop;");
+	 #elif IA64
+	    __asm__ volatile ("nop 0; nop 0; nop 0; nop 0; nop 0;");
+	 #elif AMD64
+	    __asm__ volatile ("nop; nop; nop; nop; nop;");
+	 #endif
       #else
-         #ifndef WIN32
-            timeval now;
-            timespec timeout;
-            gettimeofday(&now, 0);
-            if (now.tv_usec < 990000)
-            {
-               timeout.tv_sec = now.tv_sec;
-               timeout.tv_nsec = (now.tv_usec + 10000) * 1000;
-            }
-            else
-            {
-               timeout.tv_sec = now.tv_sec + 1;
-               timeout.tv_nsec = (now.tv_usec + 10000 - 1000000) * 1000;
-            }
-            pthread_mutex_lock(&m_TickLock);
-            pthread_cond_timedwait(&m_TickCond, &m_TickLock, &timeout);
-            pthread_mutex_unlock(&m_TickLock);
-         #else
-            WaitForSingleObject(m_TickCond, 1);
-         #endif
+	 #ifndef WIN32
+	    timeval now;
+	    timespec timeout;
+	    gettimeofday(&now, 0);
+	    if (now.tv_usec < 990000)
+	    {
+	       timeout.tv_sec = now.tv_sec;
+	       timeout.tv_nsec = (now.tv_usec + 10000) * 1000;
+	    }
+	    else
+	    {
+	       timeout.tv_sec = now.tv_sec + 1;
+	       timeout.tv_nsec = (now.tv_usec + 10000 - 1000000) * 1000;
+	    }
+	    pthread_mutex_lock(&m_TickLock);
+	    pthread_cond_timedwait(&m_TickCond, &m_TickLock, &timeout);
+	    pthread_mutex_unlock(&m_TickLock);
+	 #else
+	    WaitForSingleObject(m_TickCond, 1);
+	 #endif
       #endif
 
       rdtsc(t);
@@ -255,19 +255,19 @@ uint64_t CTimer::getTime()
       return t.tv_sec * 1000000ULL + t.tv_usec;
    #else
       LARGE_INTEGER ccf;
-      HANDLE hCurThread = ::GetCurrentThread(); 
+      HANDLE hCurThread = ::GetCurrentThread();
       DWORD_PTR dwOldMask = ::SetThreadAffinityMask(hCurThread, 1);
       if (QueryPerformanceFrequency(&ccf))
       {
-         LARGE_INTEGER cc;
-         if (QueryPerformanceCounter(&cc))
-         {
-            SetThreadAffinityMask(hCurThread, dwOldMask); 
-            return (cc.QuadPart * 1000000ULL / ccf.QuadPart);
-         }
+	 LARGE_INTEGER cc;
+	 if (QueryPerformanceCounter(&cc))
+	 {
+	    SetThreadAffinityMask(hCurThread, dwOldMask);
+	    return (cc.QuadPart * 1000000ULL / ccf.QuadPart);
+	 }
       }
 
-      SetThreadAffinityMask(hCurThread, dwOldMask); 
+      SetThreadAffinityMask(hCurThread, dwOldMask);
       return GetTickCount() * 1000ULL;
    #endif
 }
@@ -291,13 +291,13 @@ void CTimer::waitForEvent()
       gettimeofday(&now, 0);
       if (now.tv_usec < 990000)
       {
-         timeout.tv_sec = now.tv_sec;
-         timeout.tv_nsec = (now.tv_usec + 10000) * 1000;
+	 timeout.tv_sec = now.tv_sec;
+	 timeout.tv_nsec = (now.tv_usec + 10000) * 1000;
       }
       else
       {
-         timeout.tv_sec = now.tv_sec + 1;
-         timeout.tv_nsec = (now.tv_usec + 10000 - 1000000) * 1000;
+	 timeout.tv_sec = now.tv_sec + 1;
+	 timeout.tv_nsec = (now.tv_usec + 10000 - 1000000) * 1000;
       }
       pthread_mutex_lock(&m_EventLock);
       pthread_cond_timedwait(&m_EventCond, &m_EventLock, &timeout);
@@ -335,10 +335,10 @@ CGuard::~CGuard()
 {
    #ifndef WIN32
       if (0 == m_iLocked)
-         pthread_mutex_unlock(&m_Mutex);
+	 pthread_mutex_unlock(&m_Mutex);
    #else
       if (WAIT_FAILED != m_iLocked)
-         ReleaseMutex(m_Mutex);
+	 ReleaseMutex(m_Mutex);
    #endif
 }
 
@@ -404,9 +404,9 @@ m_iMinor(minor)
 {
    if (-1 == err)
       #ifndef WIN32
-         m_iErrno = errno;
+	 m_iErrno = errno;
       #else
-         m_iErrno = GetLastError();
+	 m_iErrno = GetLastError();
       #endif
    else
       m_iErrno = err;
@@ -431,188 +431,188 @@ const char* CUDTException::getErrorMessage()
    switch (m_iMajor)
    {
       case 0:
-        m_strMsg = "Success";
-        break;
+	m_strMsg = "Success";
+	break;
 
       case 1:
-        m_strMsg = "Connection setup failure";
+	m_strMsg = "Connection setup failure";
 
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg += ": connection time out";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg += ": connection time out";
+	   break;
 
-        case 2:
-           m_strMsg += ": connection rejected";
-           break;
+	case 2:
+	   m_strMsg += ": connection rejected";
+	   break;
 
-        case 3:
-           m_strMsg += ": unable to create/configure UDP socket";
-           break;
+	case 3:
+	   m_strMsg += ": unable to create/configure UDP socket";
+	   break;
 
-        case 4:
-           m_strMsg += ": abort for security reasons";
-           break;
+	case 4:
+	   m_strMsg += ": abort for security reasons";
+	   break;
 
-        default:
-           break;
-        }
+	default:
+	   break;
+	}
 
-        break;
+	break;
 
       case 2:
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg = "Connection was broken";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg = "Connection was broken";
+	   break;
 
-        case 2:
-           m_strMsg = "Connection does not exist";
-           break;
+	case 2:
+	   m_strMsg = "Connection does not exist";
+	   break;
 
-        default:
-           break;
-        }
+	default:
+	   break;
+	}
 
-        break;
+	break;
 
       case 3:
-        m_strMsg = "System resource failure";
+	m_strMsg = "System resource failure";
 
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg += ": unable to create new threads";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg += ": unable to create new threads";
+	   break;
 
-        case 2:
-           m_strMsg += ": unable to allocate buffers";
-           break;
+	case 2:
+	   m_strMsg += ": unable to allocate buffers";
+	   break;
 
-        default:
-           break;
-        }
+	default:
+	   break;
+	}
 
-        break;
+	break;
 
       case 4:
-        m_strMsg = "File system failure";
+	m_strMsg = "File system failure";
 
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg += ": cannot seek read position";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg += ": cannot seek read position";
+	   break;
 
-        case 2:
-           m_strMsg += ": failure in read";
-           break;
+	case 2:
+	   m_strMsg += ": failure in read";
+	   break;
 
-        case 3:
-           m_strMsg += ": cannot seek write position";
-           break;
+	case 3:
+	   m_strMsg += ": cannot seek write position";
+	   break;
 
-        case 4:
-           m_strMsg += ": failure in write";
-           break;
+	case 4:
+	   m_strMsg += ": failure in write";
+	   break;
 
-        default:
-           break;
-        }
+	default:
+	   break;
+	}
 
-        break;
+	break;
 
       case 5:
-        m_strMsg = "Operation not supported";
- 
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg += ": Cannot do this operation on a BOUND socket";
-           break;
+	m_strMsg = "Operation not supported";
 
-        case 2:
-           m_strMsg += ": Cannot do this operation on a CONNECTED socket";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg += ": Cannot do this operation on a BOUND socket";
+	   break;
 
-        case 3:
-           m_strMsg += ": Bad parameters";
-           break;
+	case 2:
+	   m_strMsg += ": Cannot do this operation on a CONNECTED socket";
+	   break;
 
-        case 4:
-           m_strMsg += ": Invalid socket ID";
-           break;
+	case 3:
+	   m_strMsg += ": Bad parameters";
+	   break;
 
-        case 5:
-           m_strMsg += ": Cannot do this operation on an UNBOUND socket";
-           break;
+	case 4:
+	   m_strMsg += ": Invalid socket ID";
+	   break;
 
-        case 6:
-           m_strMsg += ": Socket is not in listening state";
-           break;
+	case 5:
+	   m_strMsg += ": Cannot do this operation on an UNBOUND socket";
+	   break;
 
-        case 7:
-           m_strMsg += ": Listen/accept is not supported in rendezous connection setup";
-           break;
+	case 6:
+	   m_strMsg += ": Socket is not in listening state";
+	   break;
 
-        case 8:
-           m_strMsg += ": Cannot call connect on UNBOUND socket in rendezvous connection setup";
-           break;
+	case 7:
+	   m_strMsg += ": Listen/accept is not supported in rendezous connection setup";
+	   break;
 
-        case 9:
-           m_strMsg += ": This operation is not supported in SOCK_STREAM mode";
-           break;
+	case 8:
+	   m_strMsg += ": Cannot call connect on UNBOUND socket in rendezvous connection setup";
+	   break;
 
-        case 10:
-           m_strMsg += ": This operation is not supported in SOCK_DGRAM mode";
-           break;
+	case 9:
+	   m_strMsg += ": This operation is not supported in SOCK_STREAM mode";
+	   break;
 
-        case 11:
-           m_strMsg += ": Another socket is already listening on the same port";
-           break;
+	case 10:
+	   m_strMsg += ": This operation is not supported in SOCK_DGRAM mode";
+	   break;
 
-        case 12:
-           m_strMsg += ": Message is too large to send (it must be less than the UDT send buffer size)";
-           break;
+	case 11:
+	   m_strMsg += ": Another socket is already listening on the same port";
+	   break;
 
-        case 13:
-           m_strMsg += ": Invalid epoll ID";
-           break;
+	case 12:
+	   m_strMsg += ": Message is too large to send (it must be less than the UDT send buffer size)";
+	   break;
 
-        default:
-           break;
-        }
+	case 13:
+	   m_strMsg += ": Invalid epoll ID";
+	   break;
 
-        break;
+	default:
+	   break;
+	}
+
+	break;
 
      case 6:
-        m_strMsg = "Non-blocking call failure";
+	m_strMsg = "Non-blocking call failure";
 
-        switch (m_iMinor)
-        {
-        case 1:
-           m_strMsg += ": no buffer available for sending";
-           break;
+	switch (m_iMinor)
+	{
+	case 1:
+	   m_strMsg += ": no buffer available for sending";
+	   break;
 
-        case 2:
-           m_strMsg += ": no data available for reading";
-           break;
+	case 2:
+	   m_strMsg += ": no data available for reading";
+	   break;
 
-        default:
-           break;
-        }
+	default:
+	   break;
+	}
 
-        break;
+	break;
 
      case 7:
-        m_strMsg = "The peer side has signalled an error";
+	m_strMsg = "The peer side has signalled an error";
 
-        break;
+	break;
 
       default:
-        m_strMsg = "Unknown error";
+	m_strMsg = "Unknown error";
    }
 
    // Adding "errno" information
@@ -620,14 +620,14 @@ const char* CUDTException::getErrorMessage()
    {
       m_strMsg += ": ";
       #ifndef WIN32
-         char errmsg[1024];
-         if (strerror_r(m_iErrno, errmsg, 1024) == 0)
-            m_strMsg += errmsg;
+	 char errmsg[1024];
+	 if (strerror_r(m_iErrno, errmsg, 1024) == 0)
+	    m_strMsg += errmsg;
       #else
-         LPVOID lpMsgBuf;
-         FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, m_iErrno, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
-         m_strMsg += (char*)lpMsgBuf;
-         LocalFree(lpMsgBuf);
+	 LPVOID lpMsgBuf;
+	 FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS, NULL, m_iErrno, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), (LPTSTR)&lpMsgBuf, 0, NULL);
+	 m_strMsg += (char*)lpMsgBuf;
+	 LocalFree(lpMsgBuf);
       #endif
    }
 
@@ -699,7 +699,7 @@ bool CIPAddress::ipcmp(const sockaddr* addr1, const sockaddr* addr2, int ver)
       sockaddr_in* a2 = (sockaddr_in*)addr2;
 
       if ((a1->sin_port == a2->sin_port) && (a1->sin_addr.s_addr == a2->sin_addr.s_addr))
-         return true;
+	 return true;
    }
    else
    {
@@ -708,11 +708,11 @@ bool CIPAddress::ipcmp(const sockaddr* addr1, const sockaddr* addr2, int ver)
 
       if (a1->sin6_port == a2->sin6_port)
       {
-         for (int i = 0; i < 16; ++ i)
-            if (*((char*)&(a1->sin6_addr) + i) != *((char*)&(a2->sin6_addr) + i))
-               return false;
+	 for (int i = 0; i < 16; ++ i)
+	    if (*((char*)&(a1->sin6_addr) + i) != *((char*)&(a2->sin6_addr) + i))
+	       return false;
 
-         return true;
+	 return true;
       }
    }
 
@@ -748,10 +748,10 @@ void CIPAddress::pton(sockaddr* addr, const uint32_t ip[4], int ver)
       sockaddr_in6* a = (sockaddr_in6*)addr;
       for (int i = 0; i < 4; ++ i)
       {
-         a->sin6_addr.s6_addr[i * 4] = ip[i] & 0xFF;
-         a->sin6_addr.s6_addr[i * 4 + 1] = (unsigned char)((ip[i] & 0xFF00) >> 8);
-         a->sin6_addr.s6_addr[i * 4 + 2] = (unsigned char)((ip[i] & 0xFF0000) >> 16);
-         a->sin6_addr.s6_addr[i * 4 + 3] = (unsigned char)((ip[i] & 0xFF000000) >> 24);
+	 a->sin6_addr.s6_addr[i * 4] = ip[i] & 0xFF;
+	 a->sin6_addr.s6_addr[i * 4 + 1] = (unsigned char)((ip[i] & 0xFF00) >> 8);
+	 a->sin6_addr.s6_addr[i * 4 + 2] = (unsigned char)((ip[i] & 0xFF0000) >> 16);
+	 a->sin6_addr.s6_addr[i * 4 + 3] = (unsigned char)((ip[i] & 0xFF000000) >> 24);
       }
    }
 }

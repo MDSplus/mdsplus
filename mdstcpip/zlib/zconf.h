@@ -1,6 +1,6 @@
 /* zconf.h -- configuration of the zlib compression library
  * Copyright (C) 1995-2002 Jean-loup Gailly.
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /* @(#) $Id$ */
@@ -54,7 +54,7 @@
 #define Byte		mds_Byte
 #define uInt		mds_uInt
 #define uLong		mds_uLong
-#define Bytef	        mds_Bytef
+#define Bytef		mds_Bytef
 #define charf		mds_charf
 #define intf		mds_intf
 #define uIntf		mds_uIntf
@@ -129,7 +129,7 @@
 #endif
 
 /* The memory requirements for deflate are (in bytes):
-            (1 << (windowBits+2)) +  (1 << (memLevel+9))
+	    (1 << (windowBits+2)) +  (1 << (memLevel+9))
  that is: 128K for windowBits=15  +  128K for memLevel = 8  (default values)
  plus a few kilobytes for small objects. For example, if you want to reduce
  the default memory requirements from 256K to 128K, compile with

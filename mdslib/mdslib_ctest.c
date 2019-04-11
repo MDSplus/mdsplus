@@ -122,7 +122,7 @@ long testNull(int ttype, int conid, char *expression)
   case 4:
     status = MdsValue2R(&conid, expression, &dsc, buf, &null, &returnlength);
     break;
-  } 
+  }
   return ((status & 1) == 0 && (returnlength == 0));
 }
 

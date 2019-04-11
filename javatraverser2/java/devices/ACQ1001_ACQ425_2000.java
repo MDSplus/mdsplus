@@ -7,6 +7,6 @@ import mds.data.descriptor_s.NODE;
 
 public class ACQ1001_ACQ425_2000 extends ACQ1001{
     public ACQ1001_ACQ425_2000(final Frame frame, final NODE<?> head, final boolean editable){
-        super(frame, head, editable, ACQ425_2000.class);
+	super(frame, head, editable, ACQ425_2000.class);
     }
 }

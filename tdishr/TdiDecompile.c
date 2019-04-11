@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Decompile.C
-        Convert expression into text.
-                status = TdiDecompile(&compiled_dsc, [&maximum_elements_dsc], &out_xd);
+	Convert expression into text.
+	        status = TdiDecompile(&compiled_dsc, [&maximum_elements_dsc], &out_xd);
 
-        Limitation: 65535 bytes of text.
-        based on work by Josh Stillerman 28-DEC-1988
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1993,1994
+	Limitation: 65535 bytes of text.
+	based on work by Josh Stillerman 28-DEC-1988
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1993,1994
 */
 
 #include <tdishr_messages.h>
@@ -89,9 +89,9 @@ EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, str
 }
 
 /*-------------------------------------------------------
-        Decompile an expression into text, recursively.
-        Uses dynamic string initialized and freed outside.
-        Precedence is used by function evaluation.
+	Decompile an expression into text, recursively.
+	Uses dynamic string initialized and freed outside.
+	Precedence is used by function evaluation.
 */
 #define P_ARG   88
 //STATIC_CONSTANT unsigned char htab[16] =
@@ -124,7 +124,7 @@ int TdiSingle(int val, struct descriptor_d *out_ptr)
 }
 
 /*-------------------------------------------------------
-        Handle arrays and arrays of pointers to descriptors.
+	Handle arrays and arrays of pointers to descriptors.
 */
 STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 			      int level, char **item_ptr_ptr, struct descriptor_d *out_ptr)
@@ -185,8 +185,8 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 }
 
 	/******************
-        Squeeze out spaces.
-        ******************/
+	Squeeze out spaces.
+	******************/
 STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
 {
   int n = cdsc_ptr->length;
@@ -202,8 +202,8 @@ STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
 }
 
 	/*****************************
-        Neater floating point numbers.
-        *****************************/
+	Neater floating point numbers.
+	*****************************/
 STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descriptor *pdc)
 {
   int status, sum, j, shift;
@@ -219,8 +219,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
   while (pwas < plim) {
     ppass = pwas;
 		/****************************
-                Skip spaces and leading zero.
-                ****************************/
+	        Skip spaces and leading zero.
+	        ****************************/
     while (*pwas == ' ')
       pwas++;
     if (*pwas == '-')
@@ -252,8 +252,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
     if (!pdec)
       pdec = pwas;
 		/*********************************
-                Zero and $ROPRAND should be quick.
-                *********************************/
+	        Zero and $ROPRAND should be quick.
+	        *********************************/
     if (plast == pdec) {
       if (*pdec == '$')
 	for (; pwas < plim && *pwas != ',';)
@@ -275,8 +275,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       continue;
     }
 		/*******************
-                We hit the exponent.
-                *******************/
+	        We hit the exponent.
+	        *******************/
     pexp = pwas;
     switch (*pwas) {
     case 'E':
@@ -310,12 +310,12 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       return TdiNOT_NUMBER;
     }
 		/*************************
-                Make a number of exponent.
-                Adjust by thousands.
-                .1e6    100.e3          .1e3    100.e0          .1e0    .1e0 special    .1e-3   100.e-6
-                .1e5    10.e3           .1e2    10.e0           .1e-1   10.e-3          .1e-4   10.e-6
-                .1e4    1000.e0 special .1e1    1.e0            .1e-2   1.e-3           .1e-5   1.e-6
-                *************************/
+	        Make a number of exponent.
+	        Adjust by thousands.
+	        .1e6    100.e3          .1e3    100.e0          .1e0    .1e0 special    .1e-3   100.e-6
+	        .1e5    10.e3           .1e2    10.e0           .1e-1   10.e-3          .1e-4   10.e-6
+	        .1e4    1000.e0 special .1e1    1.e0            .1e-2   1.e-3           .1e-5   1.e-6
+	        *************************/
     while (pwas < plim && *pwas == '0')
       *pwas++ = ' ';
     sum = 0;
@@ -332,11 +332,11 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       sum = sum - shift;
     }
 		/************************
-                Shift the decimal point.
-                Remove trailing zeroes.
-                Kill decimal at exponent.
-                Remove E0 (F_Floating).
-                ************************/
+	        Shift the decimal point.
+	        Remove trailing zeroes.
+	        Kill decimal at exponent.
+	        Remove E0 (F_Floating).
+	        ************************/
     for (j = shift; --j >= 0; pdec++)
       *pdec = *(pdec + 1);
     if (plast > pdec)
@@ -386,8 +386,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   char n1c;
   cdsc.pointer = c0;
 	/******************
-        Watch null pointer.
-        ******************/
+	Watch null pointer.
+	******************/
   if (!in_ptr)
     return StrAppend(out_ptr, (struct descriptor *)&STAR);
 
@@ -410,8 +410,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	status = TdiSingle(dtype, out_ptr);
       break;
 		/****************************************
-                Printing characters are added as a block.
-                ****************************************/
+	        Printing characters are added as a block.
+	        ****************************************/
     case DTYPE_T:
       {
 	DESCRIPTOR(QUOTE, "\"");
@@ -433,8 +433,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	  else
 	    switch (*cptr) {
 			/******************
-                        Special characters.
-                        ******************/
+	                Special characters.
+	                ******************/
 	    case '\\':
 	      c0[1] = '\\';
 	      break;		/*backslash */
@@ -464,8 +464,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	      if (*cptr >= ' ' && *cptr <= '~')
 		continue;	/*most printing codes */
 			/********************************
-                        Octal form of control characters.
-                        ********************************/
+	                Octal form of control characters.
+	                ********************************/
 	      cdsc.length = 4;
 	      c0[1] = (char)(((*cptr >> 6) & 7) | '0');
 	      c0[2] = (char)(((*cptr >> 3) & 7) | '0');
@@ -546,7 +546,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       dtype = DTYPE_FT;
       goto complex;
 complex: ;
-        struct descriptor temp = *in_ptr;
+	struct descriptor temp = *in_ptr;
 	temp.dtype = dtype;
 	StrAppend(out_ptr, (struct descriptor *)&CMPLX);
 	temp.length /= 2;
@@ -563,8 +563,8 @@ complex: ;
       break;
 
 		/*****************
-                TDI special types.
-                *****************/
+	        TDI special types.
+	        *****************/
     case DTYPE_MISSING:
       if (in_ptr->class != CLASS_XD)
 	status = StrAppend(out_ptr, (struct descriptor *)&MISSING);
@@ -576,8 +576,8 @@ complex: ;
       break;
 
 		/*********
-                MDS types.
-                *********/
+	        MDS types.
+	        *********/
     case DTYPE_NID:
       {
 	char *path = TreeGetMinimumPath(0, *(int *)in_ptr->pointer);
@@ -591,9 +591,9 @@ complex: ;
       break;
     case DTYPE_PATH:
 			/*****************************************************
-                        Convert forward refs to nid to reduce to minimum path.
-                        Then back to string. If it fails, use path as is.
-                        *****************************************************/
+	                Convert forward refs to nid to reduce to minimum path.
+	                Then back to string. If it fails, use path as is.
+	                *****************************************************/
       {
 	int nid;
 	char *path = MdsDescrToCstring((struct descriptor *)in_ptr);
@@ -621,10 +621,10 @@ complex: ;
     case DTYPE_POINTER:{
 	char outstr[11+2*in_ptr->length];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-        if (in_ptr->length==4)
-          out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
-        else
-          out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer);
+	if (in_ptr->length==4)
+	  out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
+	else
+	  out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
@@ -632,15 +632,15 @@ complex: ;
     break;
 
 	/***********
-        MDS records.
-        ***********/
+	MDS records.
+	***********/
   case CLASS_R:
     status = Tdi0Decompile_R(in_ptr, prec, out_ptr);
     break;
 
 	/**********************************
-        Compressed data should be expanded.
-        **********************************/
+	Compressed data should be expanded.
+	**********************************/
   case CLASS_CA:
     {
       struct descriptor_xd tmp = EMPTY_XD;
@@ -652,8 +652,8 @@ complex: ;
     break;
 
 	/******************
-        Arrays in brackets.
-        ******************/
+	Arrays in brackets.
+	******************/
   case CLASS_APD:
   case CLASS_A:
     {
@@ -665,8 +665,8 @@ complex: ;
       int more = count > TdiDECOMPILE_MAX || a_ptr->arsize >= 32768;
 
 		/**************************************
-                Special data types made easier to read.
-                **************************************/
+	        Special data types made easier to read.
+	        **************************************/
       switch (dtype) {
       case DTYPE_BU:
 	bptr = "Byte_Unsigned(";
@@ -711,8 +711,8 @@ complex: ;
 	}
       }
 		/*****************************************
-                Specify bounds of array. SET_RANGE(l:u,...
-                *****************************************/
+	        Specify bounds of array. SET_RANGE(l:u,...
+	        *****************************************/
       else if (a_ptr->aflags.bounds) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
@@ -728,8 +728,8 @@ complex: ;
       }
 
 		/******************************************
-                Specify shape of array. SET_RANGE(size, ...
-                ******************************************/
+	        Specify shape of array. SET_RANGE(size, ...
+	        ******************************************/
       else if (more) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
@@ -741,8 +741,8 @@ complex: ;
       }
 
 		/*********************************
-                Specify data of array. [value,...]
-                *********************************/
+	        Specify data of array. [value,...]
+	        *********************************/
       if (more) {
 	if STATUS_OK {
 	  if (in_ptr->class == CLASS_APD) {

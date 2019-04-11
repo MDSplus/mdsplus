@@ -23,28 +23,28 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Bsearch.C
-        Binary search for offset in a table, including iNEQ_uality searches.
-                status = TdiBsearch(&list_dsc, &table_dsc, [&mode_dsc, [&upcase_dsc,]] &output_xd);
-        or      output = BSEARCH(list, table, [mode, [upcase,]])
+	Binary search for offset in a table, including iNEQ_uality searches.
+	        status = TdiBsearch(&list_dsc, &table_dsc, [&mode_dsc, [&upcase_dsc,]] &output_xd);
+	or      output = BSEARCH(list, table, [mode, [upcase,]])
 
-        list    values to look up
-        table   strictly ascending sorted values, table[j] < table[j+1]
-        mode    equality:       ==0 for table[j] == list[k],            result 0 (bottom) to n-1 (top), no match is -1
-                less/equal:     <0 for table[j-1] < list[k] <= table[j], result 0 (bottom or below) to n (above top)
-                greater/equal:  >0 for table[j] <= list[k] < table[j+1], result -1 (below bottom) to n-1 (top or above)
-        upcase  0 or missing    case sensitive
-                1               case insensitive, compares text as uppercase.
+	list    values to look up
+	table   strictly ascending sorted values, table[j] < table[j+1]
+	mode    equality:       ==0 for table[j] == list[k],            result 0 (bottom) to n-1 (top), no match is -1
+	        less/equal:     <0 for table[j-1] < list[k] <= table[j], result 0 (bottom or below) to n (above top)
+	        greater/equal:  >0 for table[j] <= list[k] < table[j+1], result -1 (below bottom) to n-1 (top or above)
+	upcase  0 or missing    case sensitive
+	        1               case insensitive, compares text as uppercase.
 
-        Method: "Numerical Recipes" pp.89-92, Knuth Vol.3 pp.406-411.
-        Note that N.R. does not clearly define case of equality but does allow descending table.
-        The greater/equal form is used and adjusted when search finishes.
+	Method: "Numerical Recipes" pp.89-92, Knuth Vol.3 pp.406-411.
+	Note that N.R. does not clearly define case of equality but does allow descending table.
+	The greater/equal form is used and adjusted when search finishes.
 
-        Strictly speaking COMPLEX numbers cannot be sorted, but we provide routines
-        so that UNION, which should be able to work with complex, will not stub its toe.
-        The complex "sort" orders first by real part and then by imaginary part.
+	Strictly speaking COMPLEX numbers cannot be sorted, but we provide routines
+	so that UNION, which should be able to work with complex, will not stub its toe.
+	The complex "sort" orders first by real part and then by imaginary part.
 
-        Ken Klare, LANL P-4     (c)1990,1992
-        KK      21-Oct-1992     upcase options for BSEARCH/SORT/SORTVAL
+	Ken Klare, LANL P-4     (c)1990,1992
+	KK      21-Oct-1992     upcase options for BSEARCH/SORT/SORTVAL
 */
 #include <STATICdef.h>
 #include "tdinelements.h"
@@ -76,11 +76,11 @@ extern int TdiIntrinsic();
 extern int TdiSortVal();
 
 /*--------------------------------------------------
-        Greater than tests.
-        >0 implies a > b, <=0 implies a <= b.
-        Some are negative and some are zero for a < b.
-        Some tests are VAX dependent.
-        Equality test where different.
+	Greater than tests.
+	>0 implies a > b, <=0 implies a <= b.
+	Some are negative and some are zero for a < b.
+	Some tests are VAX dependent.
+	Equality test where different.
 */
 #define NEQ_BU GTR_BU
 STATIC_ROUTINE int GTR_BU(unsigned char *a, unsigned char *b)
@@ -410,16 +410,16 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
     poutput = (int *)out_ptr->pointer->pointer;
     for (; --ni >= 0; pinput += len) {
 			/**********************************
-                        Out of bounds does straight search.
-                        **********************************/
+	                Out of bounds does straight search.
+	                **********************************/
       if (lo < -1 || lo >= nt) {
 	lo = -1;
 	hi = nt;
       }
 			/*********************************
-                        Expand search from previous point.
-                        Adjust upper limit above previous.
-                        *********************************/
+	                Expand search from previous point.
+	                Adjust upper limit above previous.
+	                *********************************/
       else if (lo < 0 || (*gtr) (ptable + len * lo, pinput, len) <= 0) {
 	inc = 1;
 	while ((hi = lo + inc) < nt && (*gtr) (ptable + len * hi, pinput, len) <= 0) {
@@ -430,8 +430,8 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
 	  hi = nt;
       }
 			/*********************************
-                        Adjust lower limit below previous.
-                        *********************************/
+	                Adjust lower limit below previous.
+	                *********************************/
       else {
 	inc = 1;
 	while (hi = lo, (lo -= inc) >= 0 && (*gtr) (ptable + len * lo, pinput, len) > 0)
@@ -440,8 +440,8 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
 	  lo = -1;
       }
 			/*****************
-                        The binary search.
-                        *****************/
+	                The binary search.
+	                *****************/
       while (hi - lo > 1) {
 	mid = (hi + lo) >> 1;
 	if ((*gtr) (ptable + len * mid, pinput, len) <= 0)
@@ -450,8 +450,8 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
 	  hi = mid;
       }
 			/**************
-                        Equality check.
-                        **************/
+	                Equality check.
+	                **************/
       if (mode > 0 || (lo >= 0 && (*neq) (pinput, ptable + len * lo, len) == 0))
 	*poutput++ = lo;
       else if (mode == 0)
@@ -476,17 +476,17 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
 }
 
 /*--------------------------------------------------------------
-        list = SORT(array, upcase)
+	list = SORT(array, upcase)
 
-        array[list[j]] <= array[list[j+1]]
-        Same signality, no units.
+	array[list[j]] <= array[list[j+1]]
+	Same signality, no units.
 
-        Hoare Quicksort with randomized partition.
-        Fastest sorting on the average, normally n*log2(n), exceptional case is n*n.
-        Method: "Numerical Recipes" pp.235-6 based on Knuth Vol.3.
-        Limitation: internal stack limit is 2**32 elements.
-        Limitation: does not preserve order of equal values, no n*log2(n) does, I think.
-        It could be done by sorting indices of equal value elements.
+	Hoare Quicksort with randomized partition.
+	Fastest sorting on the average, normally n*log2(n), exceptional case is n*n.
+	Method: "Numerical Recipes" pp.235-6 based on Knuth Vol.3.
+	Limitation: internal stack limit is 2**32 elements.
+	Limitation: does not preserve order of equal values, no n*log2(n) does, I think.
+	It could be done by sorting indices of equal value elements.
 */
 int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -589,8 +589,8 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   pinput = dat[0].pointer->pointer;
   ndx = (int *)out_ptr->pointer->pointer;
 	/******************
-        Initialize indices.
-        ******************/
+	Initialize indices.
+	******************/
   jstack = 0;
   l = 0;
   r = n - 1;
@@ -599,8 +599,8 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   ndx = (int *)out_ptr->pointer->pointer;
   for (;;) {
 		/*********************************************
-                Insertion sort for small ranges. Say, 7 to 13.
-                *********************************************/
+	        Insertion sort for small ranges. Say, 7 to 13.
+	        *********************************************/
     while (r - l < 11) {
       for (j = l; ++j <= r;) {
 	keep = *(ndx + j);
@@ -610,18 +610,18 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	*(ndx + i + 1) = keep;
       }
 			/**************************
-                        New region to sort, if any.
-                        Two-level breakout.
-                        **************************/
+	                New region to sort, if any.
+	                Two-level breakout.
+	                **************************/
       if (jstack <= 0)
 	goto done;
       r = stack[--jstack];
       l = stack[--jstack];
     }
 		/***********************************
-                Randomly select the partition value.
-                Choose an index between l and r.
-                ***********************************/
+	        Randomly select the partition value.
+	        Choose an index between l and r.
+	        ***********************************/
     ran = (ran * 211 + 1663) % 7875;
     i = (int)(l + (r - l + 1) * ran / 7875);
     keep = *(ndx + i);
@@ -630,10 +630,10 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
     i = l;
     j = r;
 		/************************************************
-                Those at higher location with bigger value stick.
-                Those at lower location with lower value stick.
-                Stuff misfits in opposite side.
-                ************************************************/
+	        Those at higher location with bigger value stick.
+	        Those at lower location with lower value stick.
+	        Stuff misfits in opposite side.
+	        ************************************************/
     for (;;) {
       while (i < j && (*gtr) (pinput + len * *(ndx + j), pkeep, len) > 0)
 	--j;
@@ -650,8 +650,8 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
     }
     *(ndx + i) = keep;
 		/**********************************************************
-                With i as breakpoint, put larger block on stack for latter.
-                **********************************************************/
+	        With i as breakpoint, put larger block on stack for latter.
+	        **********************************************************/
     if (i - l <= r - i) {
       stack[jstack++] = i + 1;
       stack[jstack++] = r;
@@ -675,10 +675,10 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 }
 
 /*--------------------------------------------------------------
-        new = SORTVAL(array, [upcase])
+	new = SORTVAL(array, [upcase])
 
-        Sort in place.
-        Method: MAP(array, SORT(array, [upcase]))
+	Sort in place.
+	Method: MAP(array, SORT(array, [upcase]))
 */
 int Tdi1SortVal(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -696,9 +696,9 @@ int Tdi1SortVal(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 }
 
 /*--------------------------------------------------------------
-        Form unduplicated union of argument sets.
-        There may any number or arguments.
-        The signality is removed and units are joined by VECTOR.
+	Form unduplicated union of argument sets.
+	There may any number or arguments.
+	The signality is removed and units are joined by VECTOR.
 */
 int Tdi1Union(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
@@ -791,12 +791,12 @@ int Tdi1Union(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 }
 
 /*--------------------------------------------------------------
-        logical = element IS_IN list
-        logical = IS_IN(element, list, [upcase])
+	logical = element IS_IN list
+	logical = IS_IN(element, list, [upcase])
 
-        element scalar or array of items to test
-        list    vector of valid values
-        upcase  compare in uppercase (for text only)
+	element scalar or array of items to test
+	list    vector of valid values
+	upcase  compare in uppercase (for text only)
 */
 int Tdi1IsIn(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {

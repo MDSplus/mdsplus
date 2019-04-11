@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -506,8 +506,8 @@ class FLIRSC65X(Device):
           print("streamingServer ", streamingServer)
           deviceName = str(self).rsplit(":",1)
           deviceName = deviceName[1]
-          print("Device Name ", deviceName)     
-      
+          print("Device Name ", deviceName)
+
 #fede: recover device name and pass it to set streaming to overlay text on frame!!!
 
           status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, c_char_p(deviceName));

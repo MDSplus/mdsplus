@@ -3,4 +3,4 @@
 public interface DataId
 {
     public boolean isResolved();
-}    
+}

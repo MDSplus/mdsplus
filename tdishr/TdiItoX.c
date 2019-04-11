@@ -23,25 +23,25 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1ItoX.C
-        Convert between axis and index.
+	Convert between axis and index.
 
-                i = X_TO_I(dimension, [x])
-        Signality of second, no units, extrapolates.
+	        i = X_TO_I(dimension, [x])
+	Signality of second, no units, extrapolates.
 
-                x = I_TO_X(dimension, [i])
-        Signality of second, units of dimension, extrapolates.
+	        x = I_TO_X(dimension, [i])
+	Signality of second, units of dimension, extrapolates.
 
-                same = I_TO_X or X_TO_I(non-dimension, [i or x])
+	        same = I_TO_X or X_TO_I(non-dimension, [i or x])
 
-        Internal routines to get bounds (ELBOUND/ESHAPE/ESIZE/EUBOUND/RANGE):
-                i_two_vector = X_TO_I(dimension, TdiItoXSpecial)
-                x_two_vector = I_TO_X(dimension, TdiItoXSpecial)
+	Internal routines to get bounds (ELBOUND/ESHAPE/ESIZE/EUBOUND/RANGE):
+	        i_two_vector = X_TO_I(dimension, TdiItoXSpecial)
+	        x_two_vector = I_TO_X(dimension, TdiItoXSpecial)
 
-        Typical dimension: BUILD_DIM(BUILD_WINDOW(-pretrig,posttrig,triggertime),clockstart:clockstop:clockrate)
-        Restriction: Dimension may not use complex numbers. What would it mean?
+	Typical dimension: BUILD_DIM(BUILD_WINDOW(-pretrig,posttrig,triggertime),clockstart:clockstop:clockrate)
+	Restriction: Dimension may not use complex numbers. What would it mean?
 
-        Ken Klare, LANL P-4     (c)1990,1991,1992
-        KK      21-Oct-1992     Text requires exact match.
+	Ken Klare, LANL P-4     (c)1990,1991,1992
+	KK      21-Oct-1992     Text requires exact match.
  */
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
@@ -152,9 +152,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
   keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
 	/************************************************************
-        Remove and save outer WITH_UNITS.
-        8-Apr-1991 allow BUILD_WITH_UNITS(BUILD_DIM(,range),units).
-        Previously allowed BUILD_DIM(,BUILD_WITH_UNITS(range,units)).
+	Remove and save outer WITH_UNITS.
+	8-Apr-1991 allow BUILD_WITH_UNITS(BUILD_DIM(,range),units).
+	Previously allowed BUILD_DIM(,BUILD_WITH_UNITS(range,units)).
 	 ************************************************************/
   if (!flag)
     status = TdiGetData(&omits[1], list[0], &dimen);
@@ -170,7 +170,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   if STATUS_OK
     switch (dimen.pointer->dtype) {
 		/*********************
-        They just have a list.
+	They just have a list.
 		 *********************/
     default:
       k0 = -HUGE;
@@ -261,7 +261,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       if (STATUS_NOT_OK)
 	break;
 			/*********************
-                WARNING falls through.
+	        WARNING falls through.
 			 *********************/
       MDS_ATTR_FALLTHROUGH
     case DTYPE_RANGE:
@@ -434,7 +434,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       }
 
 				/*****************************************************************
-                When we can't get left side, use right of first segment for limit.
+	        When we can't get left side, use right of first segment for limit.
 				 *****************************************************************/
       if (kseg == 0 && big_beg && (nseg > 1 || !big_end)) {
 	if STATUS_OK {
@@ -586,9 +586,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       MdsFree1Dx(&uni1, NULL);
 
 				/*******************************************************************
-                For full range, set bounds if lower is nonzero.
-                For given list, order of operations is must preserve original shape.
-                MAP preserves shape of second arg and single segment uses scalars.
+	        For full range, set bounds if lower is nonzero.
+	        For given list, order of operations is must preserve original shape.
+	        MAP preserves shape of second arg and single segment uses scalars.
 				 *******************************************************************/
       if (STATUS_OK && k0 != 0 && !arg1 && !special) {
 	DESCRIPTOR_RANGE(range, 0, 0, 0);
@@ -599,7 +599,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       }
 
 				/********************************
-                Embed result in units and signal.
+	        Embed result in units and signal.
 				 ********************************/
       if STATUS_OK
 	status = TdiMasterData(narg > 1, &sig1, &units, &cmode, out_ptr);
@@ -612,13 +612,13 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       }
       break;
 				/**************************************
-        General list of values for a dimension.
-        I_TO_X: just map it, add xat0.
-        X_TO_I: subtract xat0, sort, search, and map.
-        1/6/92 added xat0 and window range
-        Assumes one-dimensional axis.
-        Cull with range doesn't work for text
-        because it generates range.
+	General list of values for a dimension.
+	I_TO_X: just map it, add xat0.
+	X_TO_I: subtract xat0, sort, search, and map.
+	1/6/92 added xat0 and window range
+	Assumes one-dimensional axis.
+	Cull with range doesn't work for text
+	because it generates range.
 				 **************************************/
     default:
  plain:status = TdiData(&axis, &axis MDS_END_ARG);
@@ -643,7 +643,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	    k0 = left;
 	  if (k1 > right)
 	    k1 = right;
-        }
+	}
       } else {
 	if STATUS_OK
 	  status = TdiLbound(axis.pointer, &dk0 MDS_END_ARG);

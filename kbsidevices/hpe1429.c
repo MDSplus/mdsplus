@@ -130,11 +130,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       ((unsigned char *)(dest))[0] =  ((unsigned char*)(src))[1];  \
       ((unsigned char *)(dest))[1] =  ((unsigned char*)(src))[0];  \
  }
-/*=============================================================== 
+/*===============================================================
  *
- *  All messages are stored in this area to aid in localization 
+ *  All messages are stored in this area to aid in localization
  *
- *=============================================================== 
+ *===============================================================
  */
 
 #define hpe1429_MSG_VI_OPEN_ERR 				\
@@ -173,7 +173,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* hpe1429_error_message() */
 
 #define hpe1429_MSG_INVALID_STATUS					\
-  	"Parameter 2 is invalid"				\
+	"Parameter 2 is invalid"				\
 	" in function hpe1429_error_message()."
 	/* hpe1429_error_message() */
 
@@ -182,7 +182,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* hpe1429_error_message() */
 
 #define  hpe1429_MSG_INVALID_VI					\
-  	"Parameter 1 is invalid"				\
+	"Parameter 1 is invalid"				\
 	" in function hpe1429_error_message()"			\
 	".  Using an inactive ViSession may cause this error."	\
 	"  Was the instrument driver closed prematurely?"
@@ -214,8 +214,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define hpe1429_MSG_NO_MATCH "Could not match string %s."
 
-/* 
- * static error message 
+/*
+ * static error message
  */
 
 #define VI_ERROR_PARAMETER1_MSG				\
@@ -301,7 +301,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/* check for NULL user data */				\
 	if( 0 == thisPtr)					\
 	{							\
- 		hpe1429_LOG_STATUS(                             	\
+		hpe1429_LOG_STATUS(                             	\
 		  vi, NULL, hpe1429_INSTR_ERROR_INV_SESSION );	\
 	}							\
 	{							\
@@ -312,12 +312,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 			VI_ATTR_RM_SESSION, &defRM);		\
 		if( VI_SUCCESS > errStatus )			\
 		{						\
- 			hpe1429_LOG_STATUS(				\
+			hpe1429_LOG_STATUS(				\
 			  vi, NULL, hpe1429_INSTR_ERROR_UNEXPECTED );	\
 		}						\
 		if( defRM != thisPtr->defRMSession)		\
 		{						\
- 			hpe1429_LOG_STATUS(				\
+			hpe1429_LOG_STATUS(				\
 			  vi, NULL, hpe1429_INSTR_ERROR_INV_SESSION );	\
 		}						\
 	}
@@ -331,13 +331,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	thisPtr->errNumber = VI_SUCCESS;			\
 	thisPtr->errMessage[0] = 0;
 
-#define hpe1429_CDE_MESSAGE( message ) 	 			\
+#define hpe1429_CDE_MESSAGE( message ) 				\
 	strcpy(thisPtr->errMessage, message)
 #else
 #define hpe1429_CDE_INIT( funcname) 				\
 	thisPtr->errNumber = VI_SUCCESS;			\
 
-#define hpe1429_CDE_MESSAGE( message ) 	 			\
+#define hpe1429_CDE_MESSAGE( message ) 				\
 	strcpy(thisPtr->errMessage, message)
 #endif
 
@@ -542,7 +542,7 @@ ViStatus hpe1429_statusUpdate(ViSession vi, struct hpe1429_globals *thisPtr, ViS
   return s;
 }
 
-/* 
+/*
  * Error Message Structures
  */
 
@@ -664,9 +664,9 @@ static ViBoolean hpe1429_chk_enum(struct hpe1429_globals *thisPtr, ViInt16 my_va
   return VI_FALSE;
 }
 
-/*  ==========================================================================  
-     This function searches an array of strings for a specific string and     
-     returns its index.  If successful, a VI_SUCCESS is returned, 
+/*  ==========================================================================
+     This function searches an array of strings for a specific string and
+     returns its index.  If successful, a VI_SUCCESS is returned,
      else hpe1429_INSTR_ERROR_LOOKUP is returned.
     ======================================================================== */
 ViStatus hpe1429_findIndex(struct hpe1429_globals * thisPtr, const char *const array_of_strings[],
@@ -756,7 +756,7 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
   /* Find the Default Resource Manager */
   errStatus = viOpenDefaultRM(&defRM);
   if (VI_SUCCESS > errStatus) {
-    /* Errors: VI_ERROR_SYSTEM_ERROR 
+    /* Errors: VI_ERROR_SYSTEM_ERROR
      *         VI_ERROR_ALLOC
      */
     hpe1429_LOG_STATUS(*vi, NULL, errStatus);
@@ -815,11 +815,11 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
       char idn_buf[256];
 
       /* Can't use VI_ATTR_INTF_NUM since
-         /* HP VTL 3.0 has a defect which returns 7 instead of 0 */
+	 /* HP VTL 3.0 has a defect which returns 7 instead of 0 */
       /* Read the number from the descriptor instead, assuming
-         it's GPIB-VXIn.
-         /* Set the GPIB board number is the same had the GPIB-VXI 
-         board number */
+	 it's GPIB-VXIn.
+	 /* Set the GPIB board number is the same had the GPIB-VXI
+	 board number */
       if (intf == VI_INTF_GPIB_VXI) {
 	if (memcmp(InstrDesc, "GPIB-VXI", 8) || InstrDesc[8] < '0' || InstrDesc[8] > '9')
 	  num = 0;		/* Problem with InstrDesc */
@@ -949,7 +949,7 @@ ViStatus _VI_FUNC hpe1429_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
       errStatus = viGetAttribute(*vi, VI_ATTR_MODEL_CODE, (ViPAttrState) (&modelCode));
       if (VI_SUCCESS > errStatus) {
 	/* Errors: VI_ERROR_NSUP_ATTR */
-	/* Note: this should never happen 
+	/* Note: this should never happen
 	 *   with a VXI instrument
 	 */
 
@@ -1228,8 +1228,8 @@ ViStatus _VI_FUNC hpe1429_error_message(ViSession vi,
 		"%s " hpe1429_MSG_IN_FUNCTION " %s() %s",
 		instrErrMsgTable[idx].errMessage, thisPtr->errFuncName, thisPtr->errMessage);
       } else {
-	/* No context dependent eror 
-	 * message available so copy 
+	/* No context dependent eror
+	 * message available so copy
 	 * the static error message
 	 */
 	strcpy(message, instrErrMsgTable[idx].errMessage);
@@ -1242,7 +1242,7 @@ ViStatus _VI_FUNC hpe1429_error_message(ViSession vi,
     }
   }
 
-  /* try VTL/VISA to see if it exists there 
+  /* try VTL/VISA to see if it exists there
    *
    * At this point vi is either VALID or VI_NULL
    */
@@ -1650,15 +1650,15 @@ ViStatus _VI_FUNC hpe1429_quesCond_Q(ViSession vi, ViPInt32 val)
 
 /* 	hpe1429_cmdString_Q
 	Scpi escape function that returns a string.
-	
+
 	input:
 		vi			- session
 		p1			- The scpi command to be exectuted
 		p2			- The size of p3
-	
+
 	output:
 		p3			- the string returned by the instrument
-		
+
 */
 ViStatus _VI_FUNC hpe1429_cmdString_Q(ViSession vi, ViString p1, ViInt32 p2, ViChar _VI_FAR p3[])
 {
@@ -1698,16 +1698,16 @@ ViStatus _VI_FUNC hpe1429_cmdString_Q(ViSession vi, ViString p1, ViInt32 p2, ViC
 
 /* 	hpe1429_cmdData_Q
 	Scpi escape function that returns a string.
-	
+
 	input:
 		vi			- session
 		p1			- The scpi command to be exectuted
 		p2			- length of p3 in bytes
-	
+
 	output:
 		p3			- the string returned by the instrument
-		
-		
+
+
 */
 ViStatus _VI_FUNC hpe1429_cmdData_Q(ViSession vi, ViString p1, ViInt32 p2, ViChar _VI_FAR p3[])
 {
@@ -1744,7 +1744,7 @@ ViStatus _VI_FUNC hpe1429_cmdData_Q(ViSession vi, ViString p1, ViInt32 p2, ViCha
 
 /*	PREFXI_cmd:
 	Send a scpi command, it does not look for a response
-	
+
 	input:
 		vi			- session
 		p1			- Scpi command string
@@ -1770,13 +1770,13 @@ ViStatus _VI_FUNC hpe1429_cmd(ViSession vi, ViString p1)
 
 /*	hpe1429_cmdInt32_Q:
 	Sends scpi command and waits for a response that must be representable as an int32
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string with scpi command.
 	output:
 		p2			- Result
-		
+
 	comment:
 		a non number instrument response would yeild zero in p2.
 */
@@ -1806,14 +1806,14 @@ ViStatus _VI_FUNC hpe1429_cmdInt32_Q(ViSession vi, ViString p1, ViPInt32 p2)
 
 /*	hpe1429_cmdReal32_Q
 	sends scpi command that must elicit a response that can be represented as a real32
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
-	
+
 	output:
 		p2			- Response converted to real 32
-		
+
 	comment:
 		non numeric response will yeild 0 in p2, in case of underflow underfined.
 */
@@ -1842,14 +1842,14 @@ ViStatus _VI_FUNC hpe1429_cmdReal32_Q(ViSession vi, ViString p1, ViPReal32 p2)
 
 /*	hpe1429_cmdReal64_Q
 	sends scpi command that must elicit a response that can be represented as a real64 (double)
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
-	
+
 	output:
 		p2			- Response converted to real 64
-		
+
 	comment:
 		non numeric response will yeild 0 in p2, in case of underflow underfined.
 */
@@ -1878,14 +1878,14 @@ ViStatus _VI_FUNC hpe1429_cmdReal64_Q(ViSession vi, ViString p1, ViPReal64 p2)
 
 /*	hpe1429_cmdInt16_Q:
 	Scpi command that must respond with a number that can be interpreted as an int16
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string with command
-	
+
 	output:
 		p2			- response converted to int 16
-		
+
 	comment:
 		will return 0 if response is not a valid number
 */
@@ -1914,16 +1914,16 @@ ViStatus _VI_FUNC hpe1429_cmdInt16_Q(ViSession vi, ViString p1, ViPInt16 p2)
 
 /* 	hpe1429_cmdReal64Arr_Q
 	Scpi command that returns a real64 definate arbitrary block
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
 		p2 			- size of p3
-	
+
 	output:
 		p3			- reutrns array of real64s
 		p4			- # of bytes in p3
-	
+
 */
 
 ViStatus _VI_FUNC hpe1429_cmdReal64Arr_Q(ViSession vi,
@@ -2017,16 +2017,16 @@ ViStatus _VI_FUNC hpe1429_cmdReal64Arr_Q(ViSession vi,
 
 /* 	hpe1429_cmdReal32Arr_Q
 	Scpi command that returns a real32 definate arbitrary block
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
 		p2			- size of p3
-	
+
 	output:
 		p3			- reutrns array of real32s
-		p4			- # of items in p3 
-	
+		p4			- # of items in p3
+
 */
 ViStatus _VI_FUNC hpe1429_cmdReal32Arr_Q(ViSession vi,
 					 ViString p1, ViInt32 p2, ViReal32 _VI_FAR p3[],
@@ -2119,16 +2119,16 @@ ViStatus _VI_FUNC hpe1429_cmdReal32Arr_Q(ViSession vi,
 
 /* 	hpe1429_cmdInt16Arr_Q
 	Scpi command that returns a int16 definate arbitrary block
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
 		p2			- size of p3
-	
+
 	output:
 		p3			- reutrns array of int16s
 		p4			- # of items in p3
-	
+
 */
 ViStatus _VI_FUNC hpe1429_cmdInt16Arr_Q(ViSession vi,
 					ViString p1, ViInt32 p2, ViInt16 _VI_FAR p3[], ViPInt32 p4)
@@ -2221,7 +2221,7 @@ ViStatus _VI_FUNC hpe1429_cmdInt16Arr_Q(ViSession vi,
 
 /* 	hpe1429_cmdInt32Arr_Q
 	Scpi command that returns a int16 definate arbitrary block
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
@@ -2229,7 +2229,7 @@ ViStatus _VI_FUNC hpe1429_cmdInt16Arr_Q(ViSession vi,
 	output:
 		p3			- reutrns array of int16s
 		p4			- # of items in p3
-	
+
 */
 ViStatus _VI_FUNC hpe1429_cmdInt32Arr_Q(ViSession vi,
 					ViString p1, ViInt32 p2, ViInt32 _VI_FAR p3[], ViPInt32 p4)
@@ -2322,12 +2322,12 @@ ViStatus _VI_FUNC hpe1429_cmdInt32Arr_Q(ViSession vi,
 
 /* 	hpe1429_cmdInt
 	Scpi command that takes ONE int16 or int32 command
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
 		p2			- integer parameter
-	
+
 */
 ViStatus _VI_FUNC hpe1429_cmdInt(ViSession vi, ViString p1, ViInt32 p2)
 {
@@ -2347,12 +2347,12 @@ ViStatus _VI_FUNC hpe1429_cmdInt(ViSession vi, ViString p1, ViInt32 p2)
 
 /* 	hpe1429_cmdReal
 	Scpi command that takes ONE Real32 or Real64 param
-	
+
 	input:
 		vi			- session
 		p1			- NULL terminated C string containing scpi command
 		p2			- Real parameter
-	
+
 */
 ViStatus _VI_FUNC hpe1429_cmdReal(ViSession vi, ViString p1, ViReal64 p2)
 {
@@ -2372,12 +2372,12 @@ ViStatus _VI_FUNC hpe1429_cmdReal(ViSession vi, ViString p1, ViReal64 p2)
 
 /* 	hpe1429_opc_Q
 	Returns VI_TRUE if operations still pending
-	
+
 	input:
 		vi			- session
 	output
 		p1			- VI_TRUE if operations pending
-	
+
 */
 ViStatus _VI_FUNC hpe1429_opc_Q(ViSession vi, ViPBoolean p1)
 {
@@ -3032,7 +3032,7 @@ void hpe1429_checkEmbedded(ViSession vi, struct hpe1429_globals *thisPtr)
    * LBUS:MODE == OFF
    * and a successful viMapAddress can be done         */
   /* In addition, fast init will not be done if the total sample time
-     is greater than 1 second or there are pre-trigger readings 
+     is greater than 1 second or there are pre-trigger readings
      or arm source is not immediate
      or TRIG:SOUR != TIMER    -- Added in Revision A.02.02 ***
      or ROSC:SOUR != INTERNAL -- Added in Revision A.02.02 ***
@@ -3694,20 +3694,20 @@ ViStatus _VI_FUNC hpe1429_fetcCheck_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_A24
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the a24 address of the HP E1429.
  *            This may be used for debugging purposes.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt32 a24_addr
- * OUT       
+ * OUT
  *            Returns the A24 address of the HP E1429.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error.
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_A24(ViSession vi, ViPInt32 a24_addr)
@@ -3734,7 +3734,7 @@ ViStatus _VI_FUNC hpe1429_A24(ViSession vi, ViPInt32 a24_addr)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_HighSpeedStatus
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to check the current status of the
  *            high-speed data access.  The bits may be interpreted as:
  *             BIT#   (Value)           Condition
@@ -3761,17 +3761,17 @@ ViStatus _VI_FUNC hpe1429_A24(ViSession vi, ViPInt32 a24_addr)
  *              16             Indicates that block transfer has
  *                             been disabled.
  *              17-31          Not used.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt32 status
- * OUT       
+ * OUT
  *            Returns the status of the high speed data access.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error.
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_HighSpeedStatus(ViSession vi, ViPInt32 status)
@@ -3798,20 +3798,20 @@ ViStatus _VI_FUNC hpe1429_HighSpeedStatus(ViSession vi, ViPInt32 status)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_abor
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  The hpe1429_abor() function removes the HP E1429 from the
- *           wait-for-trigger state and places it in the idle state. 
+ *           wait-for-trigger state and places it in the idle state.
  *           Measurement is halted and can only be restarted by another
  *           hpe1429_init() function.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_abor(ViSession vi)
@@ -3838,7 +3838,7 @@ ViStatus _VI_FUNC hpe1429_abor(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarDel
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function specifies how long to delay entering the
  *           wait-for-trigger state after the arming pulse is received and
  *           processed.  Delays of greater than 0 can be specified only if no
@@ -3846,28 +3846,28 @@ ViStatus _VI_FUNC hpe1429_abor(ViSession vi)
  *           hpe1429_configure(). The delay can be:
  *                0 to 65534*T in steps of T
  *                65540*T to 655350*T in steps of 10*T
- *           
+ *
  *           where T is the current reference oscillator period.
  *            NOTE: Additional delays are present in the instrument.  Please
  *            refer to Appendix A in the manuals for additional information
  *            on the inherent delay.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 armStarDel
- * IN        
+ * IN
  *            Specifies how long to delay entering the wait-for-trigger state
  *            after the arming pulse is received and processed.
- * 
+ *
  *      MAX = hpe1429_ARM_STAR_DEL_MAX   65.535
  *      MIN = hpe1429_ARM_STAR_DEL_MIN   0.0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_armStarDel(ViSession vi, ViPReal64 armStarDel)
@@ -3897,25 +3897,25 @@ ViStatus _VI_FUNC hpe1429_armStarDel(ViSession vi, ViPReal64 armStarDel)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarDel_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the value of the delay that the
  *           instrument uses before entering the wait-for-trigger state after
  *           the arming pulse is received and processed.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 armStarDel
- * OUT       
+ * OUT
  *            Returns how long the instrument will delay entering the
  *            wait-for-trigger state after the arming pulse is received and
  *           processed.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_armStarDel_Q(ViSession vi, ViPReal64 armStarDel)
@@ -3950,40 +3950,40 @@ ViStatus _VI_FUNC hpe1429_armStarDel_Q(ViSession vi, ViPReal64 armStarDel)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarEvent
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function combines two instrument SCPI commands:
  *              ARM[:STARt]:SOURce<n> source;
  *              ARM[:STARt]:SLOPe<n> edge;
  *            Together, these two commands allow you to configure the arm
  *           event subsystem to respond to a specified source and edge.
- *           
+ *
  *           The available sources are:
  *              Bus: The Group Execute Trigger (GET) HP-IB command.
- *           
+ *
  *              ECLTrg0 and ECLTrg1: The VXIbus ECL trigger lines.
- *           
+ *
  *              TTLTrg0 through TTLTrg7: The VXIbus TTL trigger lines.
- *           
+ *
  *              External 1: The HP E1429's front panel "Ext 1" BNC connector.
- *           
+ *
  *              Internal 1: The HP E1429's channel 1 signal.
- *           
+ *
  *              Internal 2: The HP E1429's channel 2 signal.
- *           
+ *
  *              Hold: Disable this arming event.  If both event are set
  *                    to Hold, the hpe1429_armStarImm() function must be
  *                    sent before measurements will proceed.
- *           
+ *
  *              Immediate: Arming will occur as soon as hpe1429_initImm()
  *                         is sent.  This choice is valid only for event 1,
  *                         and requires event 2 be set to HOLD.
- *           
- *           
+ *
+ *
  *            This slope selects which edge - Positive, Negative, or Either
  *           on the arming source  will cause the arm event to occur.  The
  *           slope is only active when the arming source is set to External
  *           1, Internal 1, or Internal 2.  The "Either" setting may be used
- *           only when the arming source is set to Internal 1 or Internal 2. 
+ *           only when the arming source is set to Internal 1 or Internal 2.
  *           The "Either" setting causes the window specified
  *           hpe1429_armStarLevels() for the Internal channel to be in
  *           effect.  When the slope is "Either", having the positive value
@@ -3992,32 +3992,32 @@ ViStatus _VI_FUNC hpe1429_armStarDel_Q(ViSession vi, ViPReal64 armStarDel)
  *           signal exits the defined window.  If negative value is greater
  *           than the positive value, then an arm event will occur when the
  *           signal enters into the defined window.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 event
- * IN        
+ * IN
  *            Specifies the event number (1 or 2) being specified.  Note
  *            that the event number is NOT the same as the channel number.
  *            There just happens to be two of each.  The numbers associated
  *            with sources Internal 1 and Internal 2 are the channel numbers.
- * 
+ *
  *      MAX = hpe1429_ARM_EVENT_MAX   2
  *      MIN = hpe1429_ARM_EVENT_MIN   1
- * 
+ *
  * PARAM 3 : ViInt16 source
- * IN        
+ * IN
  *            This parameter configures the arm system to respond to the
  *            specified source.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 4 : ViInt16 slope
- * IN        
+ * IN
  *            This parameter selects which edge - Positive, Negative, or
- *           Either on the arming source  will cause the arm event to occur. 
+ *           Either on the arming source  will cause the arm event to occur.
  *           The slope is only active when the arming source is set to
  *           External 1, Internal 1, or Internal 2.  The "Either" setting may
  *           be used only when the arming source is set to Internal 1 or
@@ -4025,11 +4025,11 @@ ViStatus _VI_FUNC hpe1429_armStarDel_Q(ViSession vi, ViPReal64 armStarDel)
  *           hpe1429_armStarLevels() for the Internal channel to be in
  *           effect.
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_armStarEvent_source_a[] = { "BUS", "HOLD",
@@ -4077,41 +4077,41 @@ ViStatus _VI_FUNC hpe1429_armStarEvent(ViSession vi, ViInt16 event, ViInt16 sour
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarEvent_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This routine queries the arm source and slope in a single call.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 event
- * IN        
+ * IN
  *            Specifies the event number (1 or 2) being specified.  Note
  *            that the event number is NOT the same as the channel number.
  *            There just happens to be two of each.  The numbers associated
  *            with sources Internal 1 and Internal 2 are the channel numbers.
- * 
+ *
  *      MAX = hpe1429_ARM_EVENT_MAX   2
  *      MIN = hpe1429_ARM_EVENT_MIN   1
- * 
+ *
  * PARAM 3 : ViPInt16 source
- * OUT       
+ * OUT
  *            This returns an integer value indicating the source
  *            to which the arm system will respond.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 4 : ViPInt16 slope
- * OUT       
+ * OUT
  *            This returns an integer value indicating the slope
  *            to which the arm system will respond.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_armStarEvent_Q_source_a[] = { "BUS",
@@ -4197,20 +4197,20 @@ ViStatus _VI_FUNC hpe1429_armStarEvent_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will cause the start trigger to be armed
  *           immediately, regardless of the selected ArmSource.  The
  *           instrument must be initiated and in the wait-for-arm state when
  *           this function is sent.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_armStarImm(ViSession vi)
@@ -4240,7 +4240,7 @@ ViStatus _VI_FUNC hpe1429_armStarImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarLevels
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets the levels which will arm a measurement
  *           cycle when an hpe1429_armStarEvent() event source is set to
  *           Internal <chan>. The allowable levels depend on the measurement
@@ -4249,41 +4249,41 @@ ViStatus _VI_FUNC hpe1429_armStarImm(ViSession vi)
  *               (50 mV / 1.0235V) * measurement range
  *            This accounts for offset errors in the levels specified and
  *           enables the levels to be detected.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies the channel for which the levels are being specified.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViReal64 negative
- * IN        
+ * IN
  *            This selects the input voltage level which will arm a
  *           measurement cycle. This setting is used only when the
  *           hpe1429_armStarEvent() function sets an event source to Internal
  *           <chan> and sets slope to Negative or Either.
- * 
+ *
  *      MAX = hpe1429_ARM_STAR_LEV_MAX   102.2418
  *      MIN = hpe1429_ARM_STAR_LEV_MIN   -102.2418
- * 
+ *
  * PARAM 4 : ViReal64 positive
- * IN        
+ * IN
  *            This selects the input voltage level which will arm a
  *           measurement cycle. This setting is used only when the
  *           hpe1429_armStarEvent() function sets an event source to Internal
  *           <chan> and sets slope to Positive or Either.
- * 
+ *
  *      MAX = hpe1429_ARM_STAR_LEV_MAX   102.2418
  *      MIN = hpe1429_ARM_STAR_LEV_MIN   -102.2418
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_armStarLevels_chan_a[] = { "", "1", "2", 0 };
@@ -4322,32 +4322,32 @@ ViStatus _VI_FUNC hpe1429_armStarLevels(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_armStarLevels_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function gets the values of the arm levels for the
  *           specified channel.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies the channel for which the levels are being queried.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPReal64 negative
- * OUT       
+ * OUT
  *            Returns the negative going arm level.
- * 
+ *
  * PARAM 4 : ViPReal64 positive
- * OUT       
+ * OUT
  *            Returns the positive going arm level.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_armStarLevels_Q_chan_a[] = { "", "1", "2", 0 };
@@ -4399,7 +4399,7 @@ ViStatus _VI_FUNC hpe1429_armStarLevels_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_calZero
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function performs a calibration of the zero offset of the
  *           specified channel using the specified number of readings and
  *           sample rate on the specified range(s).  When the command
@@ -4408,42 +4408,42 @@ ViStatus _VI_FUNC hpe1429_armStarLevels_Q(ViSession vi,
  *           CAL:STOR:AUTO command, which may be accessed through the
  *           Pass-through functions, is set to OFF.  The product of the
  *           number of readings times the period must be less than or equal to 10 seconds.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel to calibrate.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt32 readings
- * IN        
+ * IN
  *            Specifies the number of readings to use during calibration.
- * 
+ *
  *      MAX = hpe1429_CAL_ZERO_READ_MAX   32767
  *      MIN = hpe1429_CAL_ZERO_READ_MIN   100
- * 
+ *
  * PARAM 4 : ViReal64 period
- * IN        
+ * IN
  *            Specifies the sample rate to use during calibration.
- * 
+ *
  *      MAX = hpe1429_CAL_ZERO_PER_MAX   0.1
  *      MIN = hpe1429_CAL_ZERO_PER_MIN   0.00000005
- * 
+ *
  * PARAM 5 : ViInt16 mode
- * IN        
+ * IN
  *            The mode specifies whether to calibrate just the present range
  *           and port or to calibrate all ranges on both ports of the
  *           specified channel. The types are defined as macros and are shown
  *           below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_calZero_chan_a[] = { "", "1", "2", 0 };
@@ -4484,13 +4484,13 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_confLocalBus
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure the HP E1429B's Local Bus for data
  *           transfer. Sending this function to an HP E1429A will generate a
  *           "Missing Hardware" error.
- *           
+ *
  *            There are two ways to transfer data over the Local bus:
- *           
+ *
  *            Data can be transferred directly from the analog to digital
  *           converter(s) using the ARM and TRIGger subsystems in conjunction
  *           with the hpe1429_initImm() command. Everything proceeds exactly
@@ -4511,7 +4511,7 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
  *            Instead, the VINS:LBUS:MEM:INIT command (sent with a
  *           Pass-Through function) must be used to start the transfer after
  *           the mode and source have been set to the desired values.
- *           
+ *
  *            The mode selects the operating mode for the VXI Local bus.
  *           The available modes are:
  *                Append: Local bus data is received from the left, and
@@ -4524,12 +4524,12 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
  *                     left that is in Generate mode.  The mode is not active
  *                     until either an hpe1429_initImm() command or a
  *                     VINStrument:LBUS:MEMory:INITiate command is sent.
- *           
+ *
  *                Generate: Local bus data originates in this module and is
  *                     passed to the right, followed by an end of frame flag.
  *                     The mode is not active until either an hpe1429_initImm
  *                     command or a VINS:LBUS:MEM:INIT command is sent.
- *           
+ *
  *                Insert: Local bus data is inserted onto the bus from this
  *                     module.  The module will place its data out onto the
  *                     Local bus with an end of block flag at the end and no
@@ -4541,11 +4541,11 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
  *                     mode.  The mode is not active until either an
  *                     hpe1429_initImm command or a VINS:LBUS:MEM:INIT
  *                     command is sent.
- *           
+ *
  *                Off: The Local bus interface is disabled immediately upon
  *                     receipt of this function.  Local bus data is neither
  *                     used nor passed through.
- *           
+ *
  *                Pipeline: Local bus data is passed through and not altered.
  *                     This mode becomes effective immediately upon receipt
  *                     of this function.  Select this mode when data should
@@ -4554,14 +4554,14 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
  *                     end of frame flag is received; therefore, it is
  *                     necessary to change modes to take the module out of
  *                     Pipeline mode.
- *           
- *           
+ *
+ *
  *            The source parameter indicates the source of the data which
  *           will be output to the Local bus. The
  *            data source may be channel 1, channel 2, or both channels. The
  *           data may come from memory or directly from the A/D converter(s).
  *           Sources beginning with "Memory" are the post measurement modes,
- *           sources beginning with "Converter" are the real time modes. 
+ *           sources beginning with "Converter" are the real time modes.
  *           When the source is one or both A/D converters, care must be
  *           taken that other active instruments in the pipeline can maintain
  *           the data generation rate. If data is available from the A/D
@@ -4572,50 +4572,50 @@ ViStatus _VI_FUNC hpe1429_calZero(ViSession vi,
  *                Memory Channel 1: Channel 1 memory is the data source for
  *                      the Local bus. Two bytes per reading will be output
  *                      to the bus.
- *           
+ *
  *                Memory Channel 2: Channel 2 memory is the data source for
  *                      the Local bus. Two bytes per reading will be output
  *                      to the bus.
- *           
+ *
  *                Memory Both: Both channels of memory are the data
  *                      source for the Local bus.  The channel 2 reading is
  *                      output first, followed by the channel 1 reading.
  *                      Four bytes for each set of readings will be output
  *                      to the bus.
- *           
+ *
  *                Converter Channel 1: The channel 1 A/D converter is the
  *                      data source for the Local bus. Two bytes per reading
  *                      will be output to the bus.
- *           
+ *
  *                Converter Channel 2: The channel 2 A/D converter is the
  *                      data source for the Local bus. Two bytes per reading
  *                      will be output to the bus.
- *           
+ *
  *                Converter Both: Both A/D converters are the data source
  *                      for the Local bus.  The channel 2 reading is output
  *                      first, followed by the channel 1 reading. Four bytes
  *                      for each set of readings will be output to the bus.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 mode
- * IN        
+ * IN
  *            Specifies the operating mode for the VXI Local Bus.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt16 source
- * IN        
+ * IN
  *            Specifies the source of the data which will be output to the
  *           Local Bus.
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_confLocalBus_mode_a[] = { "OFF", "PIP",
@@ -4655,32 +4655,32 @@ ViStatus _VI_FUNC hpe1429_confLocalBus(ViSession vi, ViInt16 mode, ViInt16 sourc
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_confLocalBus_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will query the HP E1429B's Local Bus
  *           configuration for its mode and source.  Sending this function to
  *           an HP E1429A will generate a "Missing Hardware" error.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 mode
- * OUT       
+ * OUT
  *            Returns the operating mode of the VXI Local Bus.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPInt16 source
- * OUT       
+ * OUT
  *            Returns the source of the data which will be output to the
  *           Local Bus.
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_confLocalBus_Q_mode_a[] = { "OFF", "PIP",
@@ -4752,7 +4752,7 @@ ViStatus _VI_FUNC hpe1429_confLocalBus_Q(ViSession vi, ViPInt16 mode, ViPInt16 s
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_confVME
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure the HP E1429's VME Bus for data
  *           transfer.
  *            When data is transferred over the VME bus directly from the A/D
@@ -4761,11 +4761,11 @@ ViStatus _VI_FUNC hpe1429_confLocalBus_Q(ViSession vi, ViPInt16 mode, ViPInt16 s
  *           read cycle.  During the read cycle, the HP E1429 takes a reading
  *           and puts the data into the register before the read cycle
  *           completes. The ARM sources may be set to any legal source for
- *           this mode, but hpe1429_trigger() source must be set to VME. 
+ *           this mode, but hpe1429_trigger() source must be set to VME.
  *           Selections can be made using the hpe1429_confVME() source such
  *            that a single read produces data from only one channel (16
  *           bits), or both channels simultaneously (32 bits).
- *           
+ *
  *            When the data is transferred post measurement, completion of
  *           the hpe1429_initImm() command will automatically configure for a
  *           VME transfer from memory, based on the settings of the
@@ -4787,7 +4787,7 @@ ViStatus _VI_FUNC hpe1429_confLocalBus_Q(ViSession vi, ViPInt16 mode, ViPInt16 s
  *            VME bus by reading the data register at offset 12 (0x0C) in
  *            A24 address space.  The Generate mode is not allowed unless
  *            hpe1429_confLocalBus() mode is set to OFF or PIPeline.
- *           
+ *
  *            The source parameter selects which data source will feed the
  *           VME (VXI data transfer) bus. The bus is driven by reading the
  *           data register, offset 12 (0x0C) in A24 address space. Sources
@@ -4796,43 +4796,43 @@ ViStatus _VI_FUNC hpe1429_confLocalBus_Q(ViSession vi, ViPInt16 mode, ViPInt16 s
  *           The possible sources are:
  *                "Memory Channel 1": Channel 1 memory is the data source for
  *                     the VME bus. One 16-bit reading is returned.
- *           
+ *
  *                "Memory Channel 2": Channel 2 memory is the data source for
  *                     the VME bus. One 16-bit reading is returned.
- *           
+ *
  *                "Memory Both": Both channels of memory are the data source
  *                     for the VME bus.  In this mode, channel 1 will be
  *                     output the first time the data register is accessed,
  *                     channel 2 is output the second time the data register
  *                     is accessed. One 16-bit reading is returned with each
  *                     access.
- *           
+ *
  *                "Memory Both 32": Both channels of memory are the data
  *                     source for the VME bus.  In this mode, accessing the
  *                     data register returns a 32-bit number where the high
  *                     order 16 bits are the channel 2 reading and the low
  *                     order 16 bits are the channel 1 reading.
- *           
+ *
  *                "Converter Channel 1": The channel 1 A/D converter is the
  *                     data source for the VME bus. One 16-bit reading is
  *                     returned.
- *           
+ *
  *                "Converter Channel 2": The channel 2 A/D converter is the
  *                     data source for the VME bus. One 16-bit reading is
  *                     returned.
- *           
+ *
  *                "Converter Both": Accessing the data register triggers both
  *                     A/D converters at the same time, and one 16-bit
  *                     reading (channel 1) is returned.  Accessing the data
  *                     register a second time returns the second 16-bit
  *                     reading (channel 2), but does not trigger the A/Ds.
- *           
+ *
  *                "Converter Both 32": Accessing the data register triggers
  *                     both A/D converters at the same time, and one 32-bit
  *                     number is returned.  The high order 16 bits are the
  *                     channel 2 reading, and the low order 16 bits are the
  *                     channel 1 reading.
- *           
+ *
  *            If the data in memory is in multiple segments, then
  *            there will be a small delay (630 microseconds) between segments
  *           while the CPU switches the memory address to point to the next
@@ -4841,27 +4841,27 @@ ViStatus _VI_FUNC hpe1429_confLocalBus_Q(ViSession vi, ViPInt16 mode, ViPInt16 s
  *           0x43).  This bit goes high when the data is again ready for
  *           transfer. See "VME Bus Data Transfers" in Chapter 3 of the
  *           instrument manual for additional information.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 mode
- * IN        
+ * IN
  *            Specifies the operating mode for the VME Bus.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt16 source
- * IN        
+ * IN
  *            Specifies the source of the data which will feed the VME bus.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_confVME_mode_a[] = { "OFF", "GEN", 0 };
@@ -4899,30 +4899,30 @@ ViStatus _VI_FUNC hpe1429_confVME(ViSession vi, ViInt16 mode, ViInt16 source)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_confVME_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will query the HP E1429's VME Bus configuration
  *            for its mode and source.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 mode
- * OUT       
+ * OUT
  *            Returns the operating mode for the VME Bus.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPInt16 source
- * OUT       
+ * OUT
  *            Returns the source of the data which will be output over the
  *           VME Bus.
  *            The types are defined as macros and are shown below:
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_confVME_Q_mode_a[] = { "OFF", "GEN", 0 };
@@ -4992,7 +4992,7 @@ ViStatus _VI_FUNC hpe1429_confVME_Q(ViSession vi, ViPInt16 mode, ViPInt16 source
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_configure
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure a channel (1 or 2) to take
  *           readings on the specified port (the single ended port or the
  *           differential port). The expected value parameter specified
@@ -5013,7 +5013,7 @@ ViStatus _VI_FUNC hpe1429_confVME_Q(ViSession vi, ViPInt16 mode, ViPInt16 source
  *                        20.0            20.47000        .01000
  *                        50.0            51.17500        .02500
  *                       100.0           102.35000        .05000
- *           
+ *
  *            The numTriggers specifies how many readings will be taken
  *           during each numArms cycle of the trigger system.  The
  *           preTriggers specifies how many of those readings will be before
@@ -5023,7 +5023,7 @@ ViStatus _VI_FUNC hpe1429_confVME_Q(ViSession vi, ViPInt16 mode, ViPInt16 source
  *           limits:
  *             if preTriggers == 0:
  *                   Maximum numTriggers = 524288 / numArms
- *           
+ *
  *             if preTriggers >  0:
  *                   numArms    (Segments)   Maximum numTriggers
  *                      1              1          524288
@@ -5034,79 +5034,79 @@ ViStatus _VI_FUNC hpe1429_confVME_Q(ViSession vi, ViPInt16 mode, ViPInt16 source
  *                   17 - 32          32           16384
  *                   33 - 64          64            8192
  *                   65 - 128        128            4096
- *           
+ *
  *            If the non-volatile mode of memory is enabled,
  *            hpe1429_memBattStat(vi,VI_TRUE), then all of the maximum
  *           numTriggers counts shown above decrease by four.  These four
  *           memory locations in each segment hold the data necessary to
  *           recover all readings after a power failure.
- *           
+ *
  *            The value of preTriggers can be 0 or range from 3 to 65535.  If
  *           preTriggers is not 0 then numTriggers must be greater than or
  *           equal to preTriggers+7. Also, if preTriggers is not 0 then
  *           numArms is limited to 128 rather than 65535.
- *           
+ *
  *            Also note that the numTriggers, preTriggers and numArms for
  *           channel 1 and channel 2 are the same.  Both channels will be set
  *           to whatever has been sent to the instrument last.
- *           
+ *
  *            If you desire to set numTriggers or numArms to INF, you may use
  *            a Pass-Through function to do it.  Please read the instrument
  *           manual for information concerning when and where this is legal
  *           to do.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel to configure.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt16 port
- * IN        
+ * IN
  *            Specifies the desired port for the channel.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 4 : ViReal64 expected
- * IN        
+ * IN
  *            Specifies the maximum expected voltage for the specified port
  *           of the specified channel.
- * 
+ *
  *      MAX = hpe1429_VOLT_MAX   102.35
  *      MIN = hpe1429_VOLT_MIN   -102.30
- * 
+ *
  * PARAM 5 : ViInt32 numTriggers
- * IN        
+ * IN
  *            Specifies the total number of readings to take for each arm
  *           count.
- * 
+ *
  *      MAX = hpe1429_TRIG_POINTS_MAX   524288
  *      MIN = hpe1429_TRIG_POINTS_MIN   1
- * 
+ *
  * PARAM 6 : ViInt32 preTriggers
- * IN        
+ * IN
  *            Specifies how many pre-arm readings will be taken for each arm.
- * 
+ *
  *      MAX = hpe1429_TRIG_OFFSET_MAX   65535
  *      MIN = hpe1429_TRIG_OFFSET_MIN   0
- * 
+ *
  * PARAM 7 : ViInt32 numArms
- * IN        
+ * IN
  *            Specifies how many measurement cycles will occur after
  *           hpe1429_initImm() before the trigger system returns to the idle
  *           state.
- * 
+ *
  *      MAX = hpe1429_ARM_POINTS_MAX   65535
  *      MIN = hpe1429_ARM_POINTS_MIN   1
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_configure_chan_a[] = { "", "1", "2", 0 };
@@ -5174,7 +5174,7 @@ ViStatus _VI_FUNC hpe1429_configure(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_configure_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will query a channel (1 or 2) for its current
  *           settings, indicating which port (single ended or differential)
  *           will be used, the voltage range, the number of total triggers
@@ -5183,46 +5183,46 @@ ViStatus _VI_FUNC hpe1429_configure(ViSession vi,
  *           of the instrument. If numArms or numTriggers has been set to
  *           INF, this function will return -1 for that parameter as 9.9E37
  *           cannot be represented in an ViInt32 variable.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel to query.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPInt16 port
- * OUT       
+ * OUT
  *            Returns an integer indicating the port for the channel.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 4 : ViPReal64 range
- * OUT       
+ * OUT
  *            Returns the voltage range of the specified channel.
- * 
+ *
  * PARAM 5 : ViPInt32 numTriggers
- * OUT       
+ * OUT
  *            Returns the total number of readings that will be taken for
  *           each arm count.
- * 
+ *
  * PARAM 6 : ViPInt32 preTriggers
- * OUT       
+ * OUT
  *            Returns how many pre-arm readings will be taken for each arm.
- * 
+ *
  * PARAM 7 : ViPInt32 numArms
- * OUT       
+ * OUT
  *            Returns how many measurement cycles will occur after
  *           hpe1429_initImm() before the trigger system returns to the idle
  *           state.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_configure_Q_chan_a[] = { "", "1", "2", 0 };
@@ -5343,27 +5343,27 @@ ViStatus _VI_FUNC hpe1429_configure_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_disableHighSpeed
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to permanently disable high-speed VME
  *           access attempts by the hpe1429_fetc_Q() function for this
  *           session. A mask of 0 will disable all high speed access.  A mask
  *           value of 2 will disable block transfers in WIN32 embedded
  *           controlers. All other non-0 masks will disable the fast init
  *           routine of embedded controlers.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 mask
- * IN        
+ * IN
  *            Specifies what to disable.
- * 
+ *
  *      MAX = hpe1429_DISABLE_MAX   32767
  *      MIN = hpe1429_DISABLE_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error.
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_disableHighSpeed(ViSession vi, ViInt16 mask)
@@ -5407,7 +5407,7 @@ ViStatus _VI_FUNC hpe1429_disableHighSpeed(ViSession vi, ViInt16 mask)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_fetcScal_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used in conjunction with the hpe1429_initImm()
  *            command to obtain readings.  The readings obtained by this
  *           function are scaled according to the specified range command,
@@ -5415,38 +5415,38 @@ ViStatus _VI_FUNC hpe1429_disableHighSpeed(ViSession vi, ViInt16 mask)
  *           hpe1429_fetc_Q() function which gives the data as 16 bit
  *           integers. The data may be read any number of times, as long as
  *           no parameters have changed which could affect new data.
- *           
+ *
  *            The number of readings that this function will return
  *            for each channel can be determined by calculating the
  *            armCount times the trigCount.  Note that if an hpe1429_abor()
  *            is done, fewer readings may be valid.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel for which to obtain data.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the data array in number of readings.
- * 
+ *
  *      MAX = hpe1429_FETC_SIZE_MAX   524288
  *      MIN = hpe1429_FETC_SIZE_MIN   1
- * 
+ *
  * PARAM 4 : ViReal64 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of doubles which will hold the A/D reading
  *           values. Make sure it is large enough to hold the data.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_fetcScal_Q_chan_a[] = { "", "1", "2", 0 };
@@ -5544,7 +5544,7 @@ ViStatus _VI_FUNC hpe1429_fetcScal_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_fetc_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used in conjunction with the hpe1429_initImm()
  *            command to obtain readings.  The readings obtained by this
  *           function are not scaled according to the specified range
@@ -5552,43 +5552,43 @@ ViStatus _VI_FUNC hpe1429_fetcScal_Q(ViSession vi,
  *           readings obtained by the hpe1429_fetcScal_Q() function.
  *            The data may be read any number of times, as long as no
  *           parameters have changed which could affect new data.
- *           
+ *
  *            The number of readings that this function will return
  *            for each channel can be determined by calculating the
  *            armCount times the trigCount.  Note that if an hpe1429_abor()
  *            is done, fewer readings may be valid.
- *           
+ *
  *            Caution: Normally this driver will attempt to do High Speed
  *            data access.  If you experience problems with High
  *            Speed access, you may use the function
  *           hpe1429_disableHighSpeed() to disable this feature.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel for which to obtain data.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the data array in number of readings.
- * 
+ *
  *      MAX = hpe1429_FETC_SIZE_MAX   524288
  *      MIN = hpe1429_FETC_SIZE_MIN   1
- * 
+ *
  * PARAM 4 : ViInt16 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values. Make sure it is large enough to hold the data.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_fetc_Q_chan_a[] = { "", "1", "2", 0 };
@@ -5745,21 +5745,21 @@ ViStatus _VI_FUNC hpe1429_fetc_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_initImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  The hpe1429_initImm() command controls the initiation of the
  *            trigger subsystem and prepares the HP E1429 to take voltage
  *            measurements.  Once initiated, triggers are armed on both
  *           channels, and a trigger received from the programmed source will
  *           cause voltage measurements to begin on both channels.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_initImm(ViSession vi)
@@ -5820,36 +5820,36 @@ ViStatus _VI_FUNC hpe1429_initImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_maxMin
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will find the maximum and minimum voltage
  *           readings on a channel over the first arm cycle and report those
  *           values and the time or position of their occurrence.  This
  *           function does not take new readings.  Measurements must have
  *           been completed before sending this function.
- *           
+ *
  *            Caution: Normally this driver will attempt to do High Speed
  *            data access.  If you experience problems with High
  *            Speed access, you may use the function
  *           hpe1429_disableHighSpeed() to disable this feature.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel to configure and measure.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPReal64 maxVolt
- * OUT       
+ * OUT
  *            Returns the maximum measured voltage on the specified channel.
  *            If the numArms is more than 1, the search period will be
  *           limited to the first arm cycle.
- * 
+ *
  * PARAM 4 : ViPReal64 maxTime
- * OUT       
+ * OUT
  *            Returns the first time that maximum measured voltage occurred
  *            on the specified channel.  If the numArms is more than 1,
  *            the search period will be limited to the first arm cycle.
@@ -5859,15 +5859,15 @@ ViStatus _VI_FUNC hpe1429_initImm(ViSession vi)
  *           a timer, the value given will be in number of triggers.  The
  *           maxTime may be negative if preTriggers is not 0 and the maximum
  *            Voltage occurs before the Arm Event.
- * 
+ *
  * PARAM 5 : ViPReal64 minVolt
- * OUT       
+ * OUT
  *            Returns the minimum measured voltage on the specified channel.
  *            If the numArms is more than 1, the search period will be
  *           limited to the first arm cycle.
- * 
+ *
  * PARAM 6 : ViPReal64 minTime
- * OUT       
+ * OUT
  *            Returns the first time that minimum measured voltage occurred
  *            on the specified channel.  If the numArms is more than 1,
  *            the search period will be limited to the first arm cycle.
@@ -5877,11 +5877,11 @@ ViStatus _VI_FUNC hpe1429_initImm(ViSession vi)
  *           a timer, the value given will be in number of triggers.  The
  *           minTime may be negative if preTriggers is not 0 and the minimum
  *            Voltage occurs before the Arm Event.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_maxMin_chan_a[] = { "", "1", "2", 0 };
@@ -6084,7 +6084,7 @@ ViStatus _VI_FUNC hpe1429_maxMin(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_measure
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure a channel (1 or 2) to take
  *           readings on the specified port (the single ended port or the
  *           differential port), initialize the instrument, and then fetch
@@ -6108,7 +6108,7 @@ ViStatus _VI_FUNC hpe1429_maxMin(ViSession vi,
  *                        20.0            20.47           .01000
  *                        50.0            51.175          .02500
  *                       100.0           102.35           .05000
- *           
+ *
  *            The numTriggers specifies how many readings will be taken
  *           during each numArms cycle of the trigger system.  The
  *           preTriggers specifies how many of those readings will be before
@@ -6118,7 +6118,7 @@ ViStatus _VI_FUNC hpe1429_maxMin(ViSession vi,
  *           limits:
  *             preTriggers equal to 0:
  *                   Maximum numTriggers = 524288 / numArms
- *           
+ *
  *             preTriggers greater than 0:
  *                   numArms    (Segments)   Maximum numTriggers
  *                      1              1          524288
@@ -6129,22 +6129,22 @@ ViStatus _VI_FUNC hpe1429_maxMin(ViSession vi,
  *                   17 - 32          32           16384
  *                   33 - 64          64            8192
  *                   65 - 128        128            4096
- *           
+ *
  *            If the non-volatile mode of memory is enabled,
  *            hpe1429_memBattStat(vi,VI_TRUE), then all of the maximum
  *           numTriggers counts shown above decrease by four.  These four
  *           memory locations in each segment hold the data necessary to
  *           recover all readings after a power failure.
- *           
+ *
  *            The value of preTriggers can be 0 or range from 3 to 65535.  If
  *           preTriggers is not 0 then numTriggers must be greater than or
  *           equal to preTriggers+7. Also, if preTriggers is not 0 then
  *           numArms is limited to 128 rather than 65535.
- *           
+ *
  *            Also note that the numTriggers, preTriggers and numArms for
  *           channel 1 and channel 2 are the same.  Both channels will be set
  *           to whatever has been sent to the instrument last.
- *           
+ *
  *            If you desire to set numTriggers or numArms to INF, you may use
  *            a Pass-Through function to do it.  Please read the instrument
  *           manual for information concerning when and where this is legal
@@ -6153,71 +6153,71 @@ ViStatus _VI_FUNC hpe1429_maxMin(ViSession vi,
  *            data access. If you experience problems with High
  *            Speed access, you may use the function
  *           hpe1429_disableHighSpeed() to disable this feature.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel to configure and measure.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt16 port
- * IN        
+ * IN
  *            Specifies the desired port for the channel.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 4 : ViReal64 expected
- * IN        
+ * IN
  *            Specifies the maximum expected voltage for the specified port
  *           of the specified channel.
- * 
+ *
  *      MAX = hpe1429_VOLT_MAX   102.35
  *      MIN = hpe1429_VOLT_MIN   -102.30
- * 
+ *
  * PARAM 5 : ViInt32 numTriggers
- * IN        
+ * IN
  *            Specifies the total number of readings to take for each arm
  *           count.
- * 
+ *
  *      MAX = hpe1429_TRIG_POINTS_MAX   524288
  *      MIN = hpe1429_TRIG_POINTS_MIN   1
- * 
+ *
  * PARAM 6 : ViInt32 preTriggers
- * IN        
+ * IN
  *            Specifies how many pre-arm readings will be taken for each arm.
- * 
+ *
  *      MAX = hpe1429_TRIG_OFFSET_MAX   65535
  *      MIN = hpe1429_TRIG_OFFSET_MIN   0
- * 
+ *
  * PARAM 7 : ViInt32 numArms
- * IN        
+ * IN
  *            Specifies how many measurement cycles will occur after
  *           hpe1429_initImm() before the trigger system returns to the idle
  *           state.
- * 
+ *
  *      MAX = hpe1429_ARM_POINTS_MAX   65535
  *      MIN = hpe1429_ARM_POINTS_MIN   1
- * 
+ *
  * PARAM 8 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the data array in number of readings.
- * 
+ *
  *      MAX = hpe1429_FETC_SIZE_MAX   524288
  *      MIN = hpe1429_FETC_SIZE_MIN   1
- * 
+ *
  * PARAM 9 : ViReal64 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of doubles which will hold the A/D reading
  *           values. Make sure it is large enough to hold the data.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_measure_chan_a[] = { "", "1", "2", 0 };
@@ -6289,27 +6289,27 @@ ViStatus _VI_FUNC hpe1429_measure(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_memBattStat
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function enables or disables  non-volatile
  *            memory. If the state is ON (VI_TRUE), then measurement data
  *           will be preserved in the HP E1429A's internal memory when power
  *           fails or the instrument is turned off.
- *           
+ *
  *            When enabled, the maximum trigger count is reduced by 4.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViBoolean memBattStat
- * IN        
+ * IN
  *            A boolean value indicating whether or not to enable the
  *           non-volatile memory.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_memBattStat(ViSession vi, ViBoolean memBattStat)
@@ -6338,25 +6338,25 @@ ViStatus _VI_FUNC hpe1429_memBattStat(ViSession vi, ViBoolean memBattStat)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_memBattStat_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function determines if the non-volatile memory is enabled
  *           or disabled. If the state is enabled (VI_TRUE), then measurement
  *           data will be preserved in the HP E1429A's internal memory when
  *           power fails or the instrument is turned off.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPBoolean memBattStat
- * OUT       
+ * OUT
  *            A boolean value indicating whether or not the non-volatile
  *            memory is enabled.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_memBattStat_Q(ViSession vi, ViPBoolean memBattStat)
@@ -6391,42 +6391,42 @@ ViStatus _VI_FUNC hpe1429_memBattStat_Q(ViSession vi, ViPBoolean memBattStat)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_recover_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to obtain readings when the normal fetch
  *            commands will not work.  The readings obtained by this function
  *            are not scaled according to the specified range command.
  *            The data may be read any number of times.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chan
- * IN        
+ * IN
  *            Specifies which channel for which to obtain data.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViInt32 arrayLength
- * IN        
+ * IN
  *            The length of the data array (number of elements).
- * 
+ *
  *      MAX = hpe1429_FETC_SIZE_MAX   524288
  *      MIN = hpe1429_FETC_SIZE_MIN   1
- * 
+ *
  * PARAM 4 : ViInt16 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values. Make sure it is large enough to hold the data.
- * 
+ *
  * PARAM 5 : ViPInt32 count
- * OUT       
+ * OUT
  *            The actual number of readings that are recovered.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_recover_Q_chan_a[] = { "", "1", "2", 0 };
@@ -6513,7 +6513,7 @@ ViStatus _VI_FUNC hpe1429_recover_Q(ViSession vi,
 
     if (errStatus >= VI_SUCCESS) {
       /*  sprintf(fmtStr,"%%%ldc%%*t", nbytes);
-         errStatus = viScanf(vi, fmtStr, (unsigned char*)fptr); */
+	 errStatus = viScanf(vi, fmtStr, (unsigned char*)fptr); */
       errStatus = viRead(vi, (unsigned char *)fptr, nbytes, &retbytes);
       if (errStatus == VI_SUCCESS_MAX_CNT)
 	errStatus = viScanf(vi, "%*t");	/* Clear input. */
@@ -6542,20 +6542,20 @@ ViStatus _VI_FUNC hpe1429_recover_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_trigStarImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will cause a reading to be taken
  *            immediately when the digitizer is in the wait-for-trigger state
  *           (ARM event has occurred), regardless of the selected trigger
  *           source. The selected trigger source remains unchanged.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_trigStarImm(ViSession vi)
@@ -6585,7 +6585,7 @@ ViStatus _VI_FUNC hpe1429_trigStarImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_trigger
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function combines two instrument SCPI commands:
  *              :TRIGger[:STARt]:SOURce
  *              :TRIGger[:STARt]:TIMer[1]
@@ -6612,38 +6612,38 @@ ViStatus _VI_FUNC hpe1429_trigStarImm(ViSession vi)
  *           specified by numArms in hpe1429_configure() is satisfied.
  *            The trigSour parameter configures the trigger
  *            system to respond to the specified source for taking readings.
- *           
+ *
  *           The available sources are:
  *              Bus: The Group Execute Trigger (GET) HP-IB command.
- *           
+ *
  *              ECLTrg0 and ECLTrg1: The VXIbus ECL trigger lines.
- *           
+ *
  *              Dual ECL Trig: Samples are taken at a dual rate, using the
  *                   VXIbus ECLTRG0 trigger line to pace pre-arm readings,
  *                   and the ECLTRG1 trigger line to pace the post-arm
  *                   readings.
- *           
+ *
  *              Dual External: Samples are taken at a dual rate, using the
  *                   signal on the Ext 1 input to pace pre-arm readings, and
  *                   the signal on the Ext 2 input to pace the post-arm
  *                   readings.
- *           
+ *
  *              Dual Timer: Samples are taken at a dual rate, using
  *                   trigTimer1 to pace pre-arm readings, and the
  *                   TRIGger:STARt:TIMer2 rate to pace the post-arm readings.
- *           
+ *
  *              TTLTrg0 through TTLTrg7: The VXIbus TTL trigger lines.
- *           
+ *
  *              External 1: The HP E1429's front panel "Ext 1" BNC connector.
- *           
+ *
  *              External 2: The HP E1429's front panel "Ext 2" BNC connector.
- *           
+ *
  *              Hold: Suspend triggering.  The hpe1429_trigStarImm() function
  *                    must be used to trigger a reading.
- *           
+ *
  *              Timer: Use the period specified by trigTimer1 as the sample
  *                     rate.
- *           
+ *
  *              VME: This source is used to either trigger readings from VME
  *                   A24 register accesses, or to read measurement data out
  *                   of the HP E1429 internal memory by reading a VME A24
@@ -6652,12 +6652,12 @@ ViStatus _VI_FUNC hpe1429_trigStarImm(ViSession vi)
  *                   more information on how to transfer data out over the
  *                   VME bus using this function, see the VINStrument:VME
  *                   commands.
- *           
+ *
  *            The trigTimer1 parameter specifies the time
  *            period between each sampling event.  The time period must be a
  *           multiple of the reference oscillator period, with allowable
  *           multiples being 1,2,4,10,20,40,........1E8, 2E8, 4E8.
- *           
+ *
  *            If trigSour is DTIM, then both trigTimer1 and
  *           TRIGger:STARt:TIMer2 are used, and there is a coupling between
  *           the two settings.  The relationship between the two settings is
@@ -6679,32 +6679,32 @@ ViStatus _VI_FUNC hpe1429_trigStarImm(ViSession vi)
  *            If the E1429 can not sample within 1 percent of the
  *            period specified by trigTimer1, then the TIME bit (bit 2)
  *            in the QUEStionable Status register is set.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 trigSour
- * IN        
+ * IN
  *            This parameter configures the trigger system to respond to the
  *            specified source for taking readings.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViReal64 trigTimer1
- * IN        
+ * IN
  *            This parameter specifies the time period between each sampling
  *           event. The time period must be a multiple of the reference
  *           oscillator period, with allowable multiples being
  *           1,2,4,10,20,40,........1E8, 2E8, 4E8.
- * 
+ *
  *      MAX = hpe1429_TRIG_TIM_MAX   40000
  *      MIN = hpe1429_TRIG_TIM_MIN   0.00000005
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_trigger_trigSour_a[] = { "BUS", "HOLD",
@@ -6741,30 +6741,30 @@ ViStatus _VI_FUNC hpe1429_trigger(ViSession vi, ViInt16 trigSour, ViPReal64 trig
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_trigger_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This routine queries the trigger source and timer1 in a single
  *           call.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 trigSour
- * OUT       
+ * OUT
  *            This returns an integer representing the current source that
  *            the trigger system will use for taking readings.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  * PARAM 3 : ViPReal64 trigTimer1
- * OUT       
+ * OUT
  *            This returns a value indicating the time period between each
  *           sampling event when trigSour is hpe1429_TRIG_TIM.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1429_trigger_Q_trigSour_a[] = { "BUS", "HOLD",
@@ -6823,7 +6823,7 @@ ViStatus _VI_FUNC hpe1429_trigger_Q(ViSession vi, ViPInt16 trigSour, ViPReal64 t
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1429_vinsConfLbusRes
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will reset the digitizer's Local bus chip.
  *            This function should be used when it is necessary to put the
  *            Local bus chip into a known state without altering any other
@@ -6833,15 +6833,15 @@ ViStatus _VI_FUNC hpe1429_trigger_Q(ViSession vi, ViPInt16 trigSour, ViPReal64 t
  *           must also be reset in a left-to-right sequence. Refer to the
  *           product documentation for information on how a particular
  *           device's Local bus chip is reset.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1429_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1429_vinsConfLbusRes(ViSession vi)

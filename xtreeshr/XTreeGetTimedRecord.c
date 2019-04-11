@@ -100,7 +100,7 @@ static int checkResampledVersion(int nid, mdsdsc_t *deltaD)
   numRows = dims[dimct-1];
   actDeltaNs = (endNs - startNs)/numRows;
   if(actDeltaNs <= 0)
-                return nid;
+	        return nid;
   if((int)(deltaNs / actDeltaNs) < resampleFactor)
     return nid;
   status = TreeGetXNci(nid, "ResampleNid", &xd);
@@ -115,7 +115,7 @@ static int checkResampledVersion(int nid, mdsdsc_t *deltaD)
 }
 
 EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
-        			mdsdsc_t *endD, mdsdsc_t *minDeltaD,
+				mdsdsc_t *endD, mdsdsc_t *minDeltaD,
 				mdsdsc_xd_t  *outSignal){
   int status, nid;
   int actNumSegments, currSegIdx, numSegments, currIdx, numDimensions;
@@ -236,8 +236,8 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
   else {
     for (currSegIdx = startIdx; currSegIdx < numSegments ; currSegIdx++) {
       if(endTimes[currSegIdx] >= end) { // Last overlapping segment
-        if(startTimes[currSegIdx] > end && currSegIdx > startIdx) currSegIdx--;
-        break;
+	if(startTimes[currSegIdx] > end && currSegIdx > startIdx) currSegIdx--;
+	break;
       }
     }
     endIdx = currSegIdx == numSegments ? currSegIdx-1 : currSegIdx; //No segment (section) after end
@@ -271,9 +271,9 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
     if STATUS_NOT_OK {
       free(signals);
       for(i = 0; i < actNumSegments; i++) {
-        MdsFree1Dx(&resampledXds[i], 0);
-        MdsFree1Dx(&dataXds[i], 0);
-        MdsFree1Dx(&dimensionXds[i], 0);
+	MdsFree1Dx(&resampledXds[i], 0);
+	MdsFree1Dx(&dataXds[i], 0);
+	MdsFree1Dx(&dimensionXds[i], 0);
       }
       free(resampledXds);
       free(dataXds);
@@ -290,7 +290,7 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
       numDimensions = currApd->arsize / currApd->length;
       currSignalD.ndesc = 2 + numDimensions;
       for(i = 0; i < numDimensions; i++)
-        currSignalD.dimensions[i] = ((mdsdsc_t **)currApd->pointer)[i];
+	currSignalD.dimensions[i] = ((mdsdsc_t **)currApd->pointer)[i];
     } else {
       currSignalD.ndesc = 3;
       currSignalD.dimensions[0] = dimensionXds[currSegIdx].pointer;
@@ -328,9 +328,9 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
     if STATUS_NOT_OK {
       free(signals);
       for(i = 0; i < actNumSegments; i++){
-        MdsFree1Dx(&resampledXds[i], 0);
-        MdsFree1Dx(&dataXds[i], 0);
-        MdsFree1Dx(&dimensionXds[i], 0);
+	MdsFree1Dx(&resampledXds[i], 0);
+	MdsFree1Dx(&dataXds[i], 0);
+	MdsFree1Dx(&dimensionXds[i], 0);
       }
       free(resampledXds);
       free(dataXds);

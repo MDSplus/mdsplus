@@ -317,16 +317,16 @@ static int ReadChannel(char *name, int max_samps, int chan, short *data_ptr, int
 #define CHAN_NID(chan, field) setup->head_nid+L8212_N_CHANNELS+chan*L8212_K_NODES_PER_CHANNEL+field
 #define NocToChans(chans, noc, chans_ptr) {\
 	  static int channels[4][4] = {{1,2,4,8},{1,2,4,8},{2,4,8,16},{4,8,16,32}};\
-          int chan_index;\
+	  int chan_index;\
 	  int base = chans>>2;\
-          libffs(&zero,&four,(char *)&base,&chan_index);	\
+	  libffs(&zero,&four,(char *)&base,&chan_index);	\
 	  *chans_ptr = channels[chan_index][noc];\
 	}
 #define ClockToDt(chans,period,freq_ptr)\
 	{\
 	  static float freqs[2][8] = {{0.0, 1./500., 1./2500., 1./5000., 1./12500., 1./25000., 1./50000.0, 1./100000.0},\
-	  				    {0.0, 1./200., 1./1000., 1./2000., 1./5000.,  1./10000., 1./20000.0,  1./40000.0}};\
-          *freq_ptr = freqs[(chans<32)?0:1][period];\
+					    {0.0, 1./200., 1./1000., 1./2000., 1./5000.,  1./10000., 1./20000.0,  1./40000.0}};\
+	  *freq_ptr = freqs[(chans<32)?0:1][period];\
 	}
 
 static int L8212__STORE(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStoreStruct * setup, int chans)

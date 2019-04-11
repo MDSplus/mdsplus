@@ -11,7 +11,7 @@ public class WithErrorData extends CompoundData
 	descs[0] = data;
 	descs[1] = error;
     }
-    
+
     public final Data getDatum() {return descs[0]; }
     public final Data getErrror() {return descs[1]; }
 }

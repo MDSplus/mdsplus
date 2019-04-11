@@ -53,7 +53,7 @@
 #define XmdsNlabelFont           "labelFont"	/* Font used for title and axis labels */
 #define XmdsNshowMode            "showMode"	/* Show lines, points, or both (box at data points) */
 #define XmdsNshowSelections      "showSelections"	/* Show selection points */
-#define XmdsNstepPlot	         "stepPlot"	/* Step plot mode */
+#define XmdsNstepPlot		 "stepPlot"	/* Step plot mode */
 #define XmdsNcount               "count"	/* Number of X,Y datapoints */
 #define XmdsNselections          "selections"	/* Selections (char [count]) */
 #define XmdsNselectionsValStruct "selectionsValStruct"	/* Selections (using value struct mechanism) */

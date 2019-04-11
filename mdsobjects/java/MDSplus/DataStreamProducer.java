@@ -10,13 +10,13 @@ package MDSplus;
 public interface DataStreamProducer {
 
 	/**
-	 * 
+	 *
 	 * @param consumer
 	 */
 	public void addDataStreamConsumer(DataStreamConsumer consumer);
 
 	/**
-	 * 
+	 *
 	 * @param consumer
 	 */
 	public void removeDataStreamConsumer(DataStreamConsumer consumer);

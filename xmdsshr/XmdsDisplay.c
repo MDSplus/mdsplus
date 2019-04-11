@@ -35,20 +35,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  VAX/DEC CMS REPLACEMENT HISTORY, Element XMDSDISPLAY.C */
 /*------------------------------------------------------------------------------
 
-		Name:   XMDSDISPLAY   
+		Name:   XMDSDISPLAY
 
 		Type:   C function
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:    6-MAY-1992
 
-    		Purpose: Xmds Widget to display a node's contents. (e.g. the
-                         decompile ( value ( node )) 
+		Purpose: Xmds Widget to display a node's contents. (e.g. the
+	                 decompile ( value ( node ))
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
   Widget XmdsCreateDisplay(Widget parent, String name, ArgList args, Cardinal argcount);
   Boolean XmdsIsDisplay(Widget w);
@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -31,12 +31,12 @@ def timeSignatureAnalyze(y, start) :
     JAS  1/27/11
     From TWF translation of IDL
     MIT - PSFC
-    
+
     Function timebase
     A routine to analyze the digitized signal of the timebase
     verifier and extract the real times for the samples at the
     beginnings of the time signatures
-    
+
     Arguments
         y - digitized waveform
         start - time of start of signature.
@@ -77,7 +77,7 @@ def timeSignatureAnalyze(y, start) :
     falling = falling[(falling>starts[0]).nonzero()]
     """
     get all of the pulse widths and classifiers for
-    narrow - 0 
+    narrow - 0
     wide - 1
     """
     num=numpy.array((len(falling),len(rising))).min()
@@ -107,11 +107,11 @@ def timeSignature(parent) :
       Assumes that under the parent node which is specified as an argument
       the following set of nodes exists and are filled in:
 
-      T_SIG_BASE (axis) - place to store the answer   
-     :*T_SIG_CHAN (signal) - points to channel with time signal 
-     :T_SIG_DESC (text) - describes these nodes  
+      T_SIG_BASE (axis) - place to store the answer
+     :*T_SIG_CHAN (signal) - points to channel with time signal
+     :T_SIG_DESC (text) - describes these nodes
       *T_SIG_GATES (numeric) - optional gates for the timing signal 4 values
-     :*T_SIG_START (numeric) - start of the timing signature signal 
+     :*T_SIG_START (numeric) - start of the timing signature signal
      :T_SIG_TIMES (signal) - place to store the times and indexes of the time signals
 
       * used by this routine
@@ -121,7 +121,7 @@ def timeSignature(parent) :
 
       Returns
         Dimension
-    '''    
+    '''
     y = data(parent.getNode('t_sig_chan').record)
     try:
         start = data( parent.getNode('t_sig_start').record)
@@ -152,8 +152,8 @@ def timeSignature(parent) :
     dt = (times[-1]-times[0]) / (idxs[-1] - idxs[0])
     time_of_zero = times[0] - dt*idxs[0]
     return (Dimension(Window(0, last_idx, time_of_zero), Range( None, None, dt)), Signal(idxs, None, times))
-    
 
 
-    
-        
+
+
+

@@ -24,14 +24,14 @@ public class RFXAxiToroidalControlSetup extends DeviceSetup
   DeviceWave deviceWave4 = new DeviceWave();
     public RFXAxiToroidalControlSetup()
     {
-        try
-        {
-          jbInit();
-        }
-        catch(Exception e)
-        {
-          e.printStackTrace();
-        }
+	try
+	{
+	  jbInit();
+	}
+	catch(Exception e)
+	{
+	  e.printStackTrace();
+	}
     }
     private void jbInit() throws Exception
     {
@@ -55,10 +55,10 @@ public class RFXAxiToroidalControlSetup extends DeviceSetup
       deviceWave2.setIdentifier("");
       deviceWave2.setUpdateExpression("");
       deviceWave3.setOffsetNid(15);
-        deviceWave3.setMinYVisible(true);
-        deviceWave3.setIdentifier("");
-        deviceWave3.setUpdateExpression("");
-        deviceWave4.setUpdateExpression("");
+	deviceWave3.setMinYVisible(true);
+	deviceWave3.setIdentifier("");
+	deviceWave3.setUpdateExpression("");
+	deviceWave4.setUpdateExpression("");
     deviceWave4.setIdentifier("");
     deviceWave4.setMinYVisible(true);
     deviceWave4.setOffsetNid(21);

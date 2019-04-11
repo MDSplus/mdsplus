@@ -204,8 +204,8 @@ public class T2ControlSetup extends DeviceSetup {
     deviceChoice2.setOffsetNid(6);
     deviceChoice2.setLabelString("Initial Control: ");
     deviceChoice2.setChoiceItems(new String[] {"Offset Correction", "Individual Perturbation", "Intelligent Shell", "Rotating Perturbation", "Mode Control (Diag)",
-        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/sinusoidal)"
-        });
+	"Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/sinusoidal)"
+	});
     deviceChoice2.setUpdateIdentifier("");
     deviceChoice2.setIdentifier("");
     deviceChoice1.setChoiceIntValues(new int[] {(int)1,(int)5,(int)2,(int)3,(int)4,(int)6,(int)7,(int)8,(int)9});
@@ -214,8 +214,8 @@ public class T2ControlSetup extends DeviceSetup {
     deviceChoice1.setOffsetNid(7);
     deviceChoice1.setLabelString("Trigger control: ");
     deviceChoice1.setChoiceItems(new String[] {"Offset Correction", "Individual Perturbation", "Intelligent Shell", "Rotating Perturbation", "Mode Control (Diag)",
-        "Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/Sinusoidal)"
-        });
+	"Mode control (Full)", "Mode control (Diag-Plasma)", "Mode Control (Diag+Rot/Times)", "Mode Control (Diag+Rot/Sinusoidal)"
+	});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField10.setOffsetNid(127);
@@ -232,7 +232,7 @@ public class T2ControlSetup extends DeviceSetup {
     deviceChoice3.setOffsetNid(130);
     deviceChoice3.setLabelString("Mapping:");
     deviceChoice3.setChoiceItems(new String[] {"(OLD)16 Equispaced Coils", "(OLD)16 Coils", "(OLD)8 Coils", "16 Toroidal angles in-out&top-bottom", "32 Toroidal angles in-out only",
-        "32 Toroidal angles top-bottom only", "32 Toroidal angles in-out alternated to top-bottom"});
+	"32 Toroidal angles top-bottom only", "32 Toroidal angles in-out alternated to top-bottom"});
     deviceChoice3.setUpdateIdentifier("");
     deviceChoice3.setIdentifier("");
     deviceChoice5.setChoiceIntValues(new int[] {(int)0,(int)1});

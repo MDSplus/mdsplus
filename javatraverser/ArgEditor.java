@@ -37,13 +37,13 @@ public class ArgEditor extends JScrollPane
 	for(int i = 0; i < num_args; i++)
 	    args[i].reset();
     }
-    
+
     public void setEditable(boolean editable)
     {
 	for(int i = 0; i < num_args; i++)
 	    args[i].setEditable(editable);
     }
-    
+
     public Data [] getData()
     {
 	Data data[] = new Data[num_args];
@@ -51,7 +51,7 @@ public class ArgEditor extends JScrollPane
 	    data[i] = args[i].getData();
 	return data;
     }
-    
+
     public void setData(Data [] data)
     {
 	int min_len, i;
@@ -68,5 +68,4 @@ public class ArgEditor extends JScrollPane
 	    args[i].setData(null);
     }
     }
-    
-    
+

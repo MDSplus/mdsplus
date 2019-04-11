@@ -23,16 +23,16 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiGetSlope
-        Evaluate a SLOPE type axis.
-        Typically it is a time base for a recorder.
-        WARNING: usually first BEGIN and last END are not defined.
-        Assume monotonic axis, ascending or descending.
-        Internal routine:
-                status = TdiGetSlope(&window_dsc, &slope_dsc, &out_dsc)
+	Evaluate a SLOPE type axis.
+	Typically it is a time base for a recorder.
+	WARNING: usually first BEGIN and last END are not defined.
+	Assume monotonic axis, ascending or descending.
+	Internal routine:
+	        status = TdiGetSlope(&window_dsc, &slope_dsc, &out_dsc)
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
-        ASSUMES all slopes same sign and (end-start)*slope >= 0.
-        NEED to watch for rounding/precision problems.
+	Ken Klare, LANL CTR-7   (c)1989,1990
+	ASSUMES all slopes same sign and (end-start)*slope >= 0.
+	NEED to watch for rounding/precision problems.
 */
 
 #include <STATICdef.h>
@@ -77,8 +77,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
   k0_dsc.pointer = (char *)&k0;
   k1_dsc.pointer = (char *)&k1;
 	/*****************
-        Get window limits.
-        *****************/
+	Get window limits.
+	*****************/
   if (ndesc <= 0)
     status = TdiMISS_ARG;
   else if (window_ptr && window_ptr->startidx)
@@ -95,9 +95,9 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     status = TdiData(window_ptr, &xat0);
 
 	/********************************************
-        Single slope with no begin or end.
-        X[i] = (dX/di)*RANGE(startidx,endidx) + X[0].
-        ********************************************/
+	Single slope with no begin or end.
+	X[i] = (dX/di)*RANGE(startidx,endidx) + X[0].
+	********************************************/
   if ((ndesc < 2 || !slope_ptr->segment[0].begin) && (ndesc < 3 || !slope_ptr->segment[0].ending)) {
     if STATUS_OK
       status = TdiRange(&k0_dsc, &k1_dsc, out_ptr);
@@ -108,10 +108,10 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
   }
 
 	/*********************************
-        Multiple segments.
-        Get each slope, begin, and end.
-        May omit first begin and last end.
-        *********************************/
+	Multiple segments.
+	Get each slope, begin, and end.
+	May omit first begin and last end.
+	*********************************/
   else if STATUS_OK {
     struct descriptor left_dsc = { sizeof(left), DTYPE_L, CLASS_S, 0 };
     struct descriptor right_dsc = { sizeof(right), DTYPE_L, CLASS_S, 0 };
@@ -127,10 +127,10 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     ramp.begin = &left_dsc;
     ramp.ending = &right_dsc;
 		/**************************************
-                Dynamic allocation of descriptors.
-                Memory for begin[nseg], end[nseg],
-                slope[nseg], *vlist[nseg], cnt[nseg+1].
-                **************************************/
+	        Dynamic allocation of descriptors.
+	        Memory for begin[nseg], end[nseg],
+	        slope[nseg], *vlist[nseg], cnt[nseg+1].
+	        **************************************/
     status = (pbegin = malloc(virt)) != NULL;
     if STATUS_OK {
       pend = (struct descriptor_xd(*)[])&(*pbegin)[nseg];
@@ -140,13 +140,13 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     }
 
 		/*************************************************************************************
-                Find the number of points in interior segments, if any.
-                For 1ms sampling, begin=0s, 1000 points, end=.999s, no sample is taken at 1s.
-                Ideal expression: FLOOR((end - begin)/slope + 1) but not less than zero.
-                WARNING: round-off may change by +-1, could change next by -+1 if end(j)==begin(j+1).
-                WARNING: to prevent swings, ASSUME that divisor is close and round. Must be exact int.
-                Expression: NINT((end - begin)/slope + 1)
-                *************************************************************************************/
+	        Find the number of points in interior segments, if any.
+	        For 1ms sampling, begin=0s, 1000 points, end=.999s, no sample is taken at 1s.
+	        Ideal expression: FLOOR((end - begin)/slope + 1) but not less than zero.
+	        WARNING: round-off may change by +-1, could change next by -+1 if end(j)==begin(j+1).
+	        WARNING: to prevent swings, ASSUME that divisor is close and round. Must be exact int.
+	        Expression: NINT((end - begin)/slope + 1)
+	        *************************************************************************************/
     tmp1 = EMPTY_XD;
     for (jseg = 0; jseg < nseg; ++jseg) {
       (*pslope)[jseg] = (*pbegin)[jseg] = (*pend)[jseg] = EMPTY_XD;
@@ -178,11 +178,11 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     }
 
 		/********************************************
-                Find the segment with value at index 0.
-                Use first segment where expression is true:
-                (0 LE slope[0]) EQV (x[0] LT begin[kseg+1]]).
-                WARNING use .pointer to not free it.
-                ********************************************/
+	        Find the segment with value at index 0.
+	        Use first segment where expression is true:
+	        (0 LE slope[0]) EQV (x[0] LT begin[kseg+1]]).
+	        WARNING use .pointer to not free it.
+	        ********************************************/
     if STATUS_OK
       status = TdiLe(0, (*pslope)[0].pointer, &tmp1);
     if STATUS_OK
@@ -196,13 +196,13 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     }
 
 		/********************************************
-                With index 0 in kseg, what is index at begin?
-                left = (begin[kseg] - xat0)/slope[kseg]
-                right = (end[0] - xat0)/slope[0]+1 for kseg=0.
-                Trigger time xat0 implies next clock is at
-                index 0, thus round down, more negative.
-                Then adjust and accumulate counts.
-                ********************************************/
+	        With index 0 in kseg, what is index at begin?
+	        left = (begin[kseg] - xat0)/slope[kseg]
+	        right = (end[0] - xat0)/slope[0]+1 for kseg=0.
+	        Trigger time xat0 implies next clock is at
+	        index 0, thus round down, more negative.
+	        Then adjust and accumulate counts.
+	        ********************************************/
     if (kseg == 0 && !slope_ptr->segment[0].begin) {
       if STATUS_OK
 	status = TdiSubtract((*pend)[0].pointer, &xat0, &tmp1);
@@ -213,9 +213,9 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       (*pcnt)[0] = MAX(right + 1, 0) - (*pcnt)[1];
     } else {
 			/*******************************************
-                        To make FLOOR work, must be floating divide.
-                        Generally, result is a negative number.
-                        *******************************************/
+	                To make FLOOR work, must be floating divide.
+	                Generally, result is a negative number.
+	                *******************************************/
       if STATUS_OK
 	status = TdiSubtract((*pbegin)[kseg].pointer, &xat0, &tmp1);
       if STATUS_OK
@@ -228,10 +228,10 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
 	status = TdiGetLong(&tmp1, &left);
 
 			/***************************************
-                        Definition of kseg gives cnt[kseg] <= 0.
-                        Check that cnt[kseg+1] >= 0. For xat0
-                        near start[kseg+1], get cnt[kseg+1] = 0.
-                        ***************************************/
+	                Definition of kseg gives cnt[kseg] <= 0.
+	                Check that cnt[kseg+1] >= 0. For xat0
+	                near start[kseg+1], get cnt[kseg+1] = 0.
+	                ***************************************/
       (*pcnt)[0] = MAX(left, -(*pcnt)[kseg + 1]);
       for (jseg = kseg; --jseg >= 0;)
 	(*pcnt)[0] -= (*pcnt)[jseg + 1];
@@ -244,12 +244,12 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
       k1 = (*pcnt)[nseg] - 1;
 
 		/********************************
-                For each segment generate result.
-                ASSUMES ramp < 0 is 0 elements.
-                [*:0] * slope[0] + end[0] or
-                [0:*] * slope[jseg] + begin[jseg]
-                Reuse slope as segment dsc.
-                ********************************/
+	        For each segment generate result.
+	        ASSUMES ramp < 0 is 0 elements.
+	        [*:0] * slope[0] + end[0] or
+	        [0:*] * slope[jseg] + begin[jseg]
+	        Reuse slope as segment dsc.
+	        ********************************/
     for (jseg = nseg; --jseg >= 0;) {
       left = MAX(k0 - (*pcnt)[jseg], 0);
       right = MIN((*pcnt)[jseg + 1] - 1, k1) - (*pcnt)[jseg];
@@ -273,8 +273,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
     }
 
 		/************************
-                Make segments into whole.
-                ************************/
+	        Make segments into whole.
+	        ************************/
     if STATUS_OK
       status = Tdi1Vector(0, nseg, (*pvlist), out_ptr);
 
@@ -290,8 +290,8 @@ int TdiGetSlope(struct descriptor_window *window_ptr,
   MdsFree1Dx(&xat0, NULL);
 
 	/*********************************************
-        When first index is not 0, we must set bounds.
-        *********************************************/
+	When first index is not 0, we must set bounds.
+	*********************************************/
   if (window_ptr && STATUS_OK && k0 != 0) {
     DESCRIPTOR_RANGE(range, 0, 0, 0);
     range.begin = &k0_dsc;

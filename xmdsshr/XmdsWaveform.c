@@ -60,7 +60,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 #define compare_sign(a,b) ( ((a)>0 && (b)>0) ? 1 : (((a)<0 && (b)<0) ? 1 : 0) )
 #define interp(x1,y1,x2,y2,x) ( ((y2)-(y1)) * ( (x) / ((x2)-(x1)) ) + ( ( (y1) * ( (x2) / ((x2)-(x1)) ) ) - \
-         ( (y2) * ( (x1) / ((x2)-(x1)) ) ) ) )
+	 ( (y2) * ( (x1) / ((x2)-(x1)) ) ) ) )
 #define pointsPerIo 1024
 #define recsPerIo 256
 #define roprand 32768
@@ -127,7 +127,7 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 #define waveformShowSelections(widget)  ((widget)->waveform.show_selections)
 #define waveformStepPlot(widget)        ((widget)->waveform.step_plot)
 #define waveformDisabled(widget)         ((widget)->waveform.disabled)
-#define waveformClosed(widget)	          ((widget)->waveform.closed)
+#define waveformClosed(widget)		  ((widget)->waveform.closed)
 
 /*------------------------------------------------------------------------------
 
@@ -587,7 +587,7 @@ static void Destroy(XmdsWaveformWidget w)
 #define destroyVal(field)\
     if (field##ValStruct(w)){\
       if (field##ValStruct(w)->destroy){\
-        (*field##ValStruct(w)->destroy)(w,field##ValStruct(w)->destroy_arg);\
+	(*field##ValStruct(w)->destroy)(w,field##ValStruct(w)->destroy_arg);\
       }\
       XtFree((char *)field##ValStruct(w));\
     }\
@@ -1032,17 +1032,17 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width, Dimension height)
     if (this_point.x != xval)\
     {\
       if (xval < -32768)\
-        this_point.x = -32768;\
+	this_point.x = -32768;\
       else if (xval > 32767)\
-        this_point.x = 32767;\
+	this_point.x = 32767;\
     }\
     this_point.y = yval;\
     if (this_point.y != yval)\
     {\
       if (yval < -32768)\
-        this_point.y = -32768;\
+	this_point.y = -32768;\
       else if (yval > 32767)\
-        this_point.y = 32767;\
+	this_point.y = 32767;\
     }\
     is_missing = ((this_point.x == 32767) || (this_point.x == -32768)) || ((this_point.y == 32767) || (this_point.y == -32768));\
     pen_down = penDown && !is_missing;\
@@ -1087,9 +1087,9 @@ static void GetPixVals(XmdsWaveformWidget w, Dimension width, Dimension height)
       (ridx)++;\
       if (ridx >= maxR)\
       {\
-        DrawRectangles(XtDisplay(w), waveformDrawable(w), waveformPlotGC(w), recs, ridx,XtWidth(w),XtHeight(w));\
-        recs[0] = recs[ridx - 1];\
-        ridx = 1;\
+	DrawRectangles(XtDisplay(w), waveformDrawable(w), waveformPlotGC(w), recs, ridx,XtWidth(w),XtHeight(w));\
+	recs[0] = recs[ridx - 1];\
+	ridx = 1;\
       }\
     }\
   }\
@@ -1721,8 +1721,8 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
 #define destroyValStructIfChanged(field)\
     if (field##ValStruct(req) != field##ValStruct(old)){\
       if (field##ValStruct(old)){\
-        if (field##ValStruct(old)->destroy) (*field##ValStruct(old)->destroy)(old,field##ValStruct(old)->destroy_arg);\
-        XtFree((char *)field##ValStruct(old));\
+	if (field##ValStruct(old)->destroy) (*field##ValStruct(old)->destroy)(old,field##ValStruct(old)->destroy_arg);\
+	XtFree((char *)field##ValStruct(old));\
       }\
       changed = TRUE;\
     }
@@ -1730,7 +1730,7 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
 #define updateValStruct(field,type,minsize)\
   if (((!old) || (field##ValStruct(req) != field##ValStruct(old))) && field##ValStruct(req)) {\
     field##ValStruct(new) = (XmdsWaveformValStruct *)memcpy(XtNew(XmdsWaveformValStruct),field##ValStruct(req),\
-                                     sizeof(XmdsWaveformValStruct));\
+	                             sizeof(XmdsWaveformValStruct));\
     waveformCount(new) = min((int)(field##ValStruct(req)->size/sizeof(type)),(minsize)); \
     field##Value(new) = (type *)field##ValStruct(req)->addr;\
     field##ValPtr(new) = (type *)NULL;\
@@ -1742,28 +1742,28 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
     {\
       if (old_count != waveformCount(new))\
       {\
-        if ((field##ValPtr(new) == field##Value(new)) && waveformCount(new))\
-        {\
-          field##Value(new) = (type *)XtRealloc((char *)field##Value(new),waveformCount(new)*sizeof(*field##Value(new)));\
-          field##ValPtr(new) = field##Value(new);\
-        }\
-        else\
-        {\
-          if (field##ValPtr(new))\
-          {\
-            field##Value(new) = (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));\
-            memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
-            field##ValPtr(new) = field##Value(new);\
-          }\
-          XtFree((char *)field##ValPtr(old));\
-        }\
-        changed = TRUE;\
+	if ((field##ValPtr(new) == field##Value(new)) && waveformCount(new))\
+	{\
+	  field##Value(new) = (type *)XtRealloc((char *)field##Value(new),waveformCount(new)*sizeof(*field##Value(new)));\
+	  field##ValPtr(new) = field##Value(new);\
+	}\
+	else\
+	{\
+	  if (field##ValPtr(new))\
+	  {\
+	    field##Value(new) = (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));\
+	    memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
+	    field##ValPtr(new) = field##Value(new);\
+	  }\
+	  XtFree((char *)field##ValPtr(old));\
+	}\
+	changed = TRUE;\
       }\
       else if (field##ValPtr(new) && (field##ValPtr(new) != field##Value(new)))\
       {\
-        memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
-        field##ValPtr(new) = field##Value(new);\
-        changed = TRUE;\
+	memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
+	field##ValPtr(new) = field##Value(new);\
+	changed = TRUE;\
       }\
     }\
     else if (field##ValPtr(new))\
@@ -1777,10 +1777,10 @@ static Boolean SetupXandY(XmdsWaveformWidget old, XmdsWaveformWidget req, XmdsWa
 #define initializeValPtr(field, type)\
       if (field##ValPtr(new))\
       {\
-        field##Value(new) = (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));\
-        memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
-        field##ValPtr(new) = field##Value(new);\
-        changed = TRUE;\
+	field##Value(new) = (type *)XtMalloc(waveformCount(new) * sizeof(*field##Value(new)));\
+	memcpy(field##Value(new),field##ValPtr(req),waveformCount(new)*sizeof(*field##Value(new)));\
+	field##ValPtr(new) = field##Value(new);\
+	changed = TRUE;\
       }
 
   int old_count = 0;
@@ -1910,7 +1910,7 @@ static void SetWave(Widget w_in, int count, float *x, float *y, Boolean * wavefo
     if (count)\
     {\
       field##Value(w) = (type *)(old_count ? XtRealloc((char *)field##Value(w),count * sizeof(*field##Value(w))) :\
-                                      XtMalloc(count * sizeof(*field##Value(w))));\
+	                              XtMalloc(count * sizeof(*field##Value(w))));\
       field##ValPtr(w) = field##Value(w);\
     }\
     else\
@@ -2622,7 +2622,7 @@ static void DrawRectangles(Display * display, Window win, GC gc, XRectangle * re
 
 	fprintf(printfid, "%d %d %d %d dorectangle\n",
 		rectangle[i].x,(int)(height_page * resolution - rectangle[i].y),
-                rectangle[i].width,rectangle[i].height);
+	        rectangle[i].width,rectangle[i].height);
     }
     fprintf(printfid, "grestore\n");
   }

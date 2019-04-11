@@ -88,25 +88,25 @@ int CACKWindow::acknowledge(int32_t seq, int32_t& ack)
 
       for (int i = m_iTail, n = m_iHead; i < n; ++ i)
       {
-         // looking for indentical ACK Seq. No.
-         if (seq == m_piACKSeqNo[i])
-         {
-            // return the Data ACK it carried
-            ack = m_piACK[i];
+	 // looking for indentical ACK Seq. No.
+	 if (seq == m_piACKSeqNo[i])
+	 {
+	    // return the Data ACK it carried
+	    ack = m_piACK[i];
 
-            // calculate RTT
-            int rtt = int(CTimer::getTime() - m_pTimeStamp[i]);
+	    // calculate RTT
+	    int rtt = int(CTimer::getTime() - m_pTimeStamp[i]);
 
-            if (i + 1 == m_iHead)
-            {
-               m_iTail = m_iHead = 0;
-               m_piACKSeqNo[0] = -1;
-            }
-            else
-               m_iTail = (i + 1) % m_iSize;
+	    if (i + 1 == m_iHead)
+	    {
+	       m_iTail = m_iHead = 0;
+	       m_piACKSeqNo[0] = -1;
+	    }
+	    else
+	       m_iTail = (i + 1) % m_iSize;
 
-            return rtt;
-         }
+	    return rtt;
+	 }
       }
 
       // Bad input, the ACK node has been overwritten
@@ -119,22 +119,22 @@ int CACKWindow::acknowledge(int32_t seq, int32_t& ack)
       // looking for indentical ACK seq. no.
       if (seq == m_piACKSeqNo[j % m_iSize])
       {
-         // return Data ACK
-         j %= m_iSize;
-         ack = m_piACK[j];
+	 // return Data ACK
+	 j %= m_iSize;
+	 ack = m_piACK[j];
 
-         // calculate RTT
-         int rtt = int(CTimer::getTime() - m_pTimeStamp[j]);
+	 // calculate RTT
+	 int rtt = int(CTimer::getTime() - m_pTimeStamp[j]);
 
-         if (j == m_iHead)
-         {
-            m_iTail = m_iHead = 0;
-            m_piACKSeqNo[0] = -1;
-         }
-         else
-            m_iTail = (j + 1) % m_iSize;
+	 if (j == m_iHead)
+	 {
+	    m_iTail = m_iHead = 0;
+	    m_piACKSeqNo[0] = -1;
+	 }
+	 else
+	    m_iTail = (j + 1) % m_iSize;
 
-         return rtt;
+	 return rtt;
       }
    }
 
@@ -202,8 +202,8 @@ int CPktTimeWindow::getPktRcvSpeed() const
    {
       if ((*p < upper) && (*p > lower))
       {
-         ++ count;
-         sum += *p;
+	 ++ count;
+	 sum += *p;
       }
       ++ p;
    }
@@ -233,8 +233,8 @@ int CPktTimeWindow::getBandwidth() const
    {
       if ((*p < upper) && (*p > lower))
       {
-         ++ count;
-         sum += *p;
+	 ++ count;
+	 sum += *p;
       }
       ++ p;
    }

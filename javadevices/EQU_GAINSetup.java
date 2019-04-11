@@ -17,9 +17,9 @@ public class EQU_GAINSetup extends  DeviceSetup {
 
     /** Creates new form EQU_GAINSetup */
     public EQU_GAINSetup() {
-        initComponents();
-        this.pack();
-        this.setPreferredSize(new Dimension(500,600));
+	initComponents();
+	this.pack();
+	this.setPreferredSize(new Dimension(500,600));
     }
 
     /** This method is called from within the constructor to
@@ -31,928 +31,928 @@ public class EQU_GAINSetup extends  DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel1 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        deviceChoice1 = new DeviceChoice();
-        jPanel6 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        deviceChannel1 = new DeviceChannel();
-        deviceChoice2 = new DeviceChoice();
-        deviceLabel1 = new DeviceLabel();
-        deviceField4 = new DeviceField();
-        deviceLabel2 = new DeviceLabel();
-        deviceField5 = new DeviceField();
-        deviceChoice3 = new DeviceChoice();
-        jPanel7 = new javax.swing.JPanel();
-        deviceChannel2 = new DeviceChannel();
-        deviceChoice4 = new DeviceChoice();
-        deviceLabel3 = new DeviceLabel();
-        deviceField6 = new DeviceField();
-        deviceLabel4 = new DeviceLabel();
-        deviceField7 = new DeviceField();
-        deviceChoice5 = new DeviceChoice();
-        jPanel8 = new javax.swing.JPanel();
-        deviceChannel3 = new DeviceChannel();
-        deviceChoice6 = new DeviceChoice();
-        deviceLabel5 = new DeviceLabel();
-        deviceField8 = new DeviceField();
-        deviceLabel6 = new DeviceLabel();
-        deviceField9 = new DeviceField();
-        deviceChoice7 = new DeviceChoice();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChannel4 = new DeviceChannel();
-        deviceChoice8 = new DeviceChoice();
-        deviceLabel7 = new DeviceLabel();
-        deviceField10 = new DeviceField();
-        deviceLabel8 = new DeviceLabel();
-        deviceField11 = new DeviceField();
-        deviceChoice9 = new DeviceChoice();
-        jPanel10 = new javax.swing.JPanel();
-        deviceChannel5 = new DeviceChannel();
-        deviceChoice10 = new DeviceChoice();
-        deviceLabel9 = new DeviceLabel();
-        deviceField12 = new DeviceField();
-        deviceLabel10 = new DeviceLabel();
-        deviceField13 = new DeviceField();
-        deviceChoice11 = new DeviceChoice();
-        jPanel11 = new javax.swing.JPanel();
-        deviceChannel6 = new DeviceChannel();
-        deviceChoice12 = new DeviceChoice();
-        deviceLabel11 = new DeviceLabel();
-        deviceField14 = new DeviceField();
-        deviceLabel12 = new DeviceLabel();
-        deviceField15 = new DeviceField();
-        deviceChoice13 = new DeviceChoice();
-        jPanel12 = new javax.swing.JPanel();
-        deviceChannel7 = new DeviceChannel();
-        deviceChoice14 = new DeviceChoice();
-        deviceLabel13 = new DeviceLabel();
-        deviceField16 = new DeviceField();
-        deviceLabel14 = new DeviceLabel();
-        deviceField17 = new DeviceField();
-        deviceChoice15 = new DeviceChoice();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChannel8 = new DeviceChannel();
-        deviceChoice16 = new DeviceChoice();
-        deviceLabel15 = new DeviceLabel();
-        deviceField18 = new DeviceField();
-        deviceLabel16 = new DeviceLabel();
-        deviceField19 = new DeviceField();
-        deviceChoice17 = new DeviceChoice();
-        jPanel14 = new javax.swing.JPanel();
-        deviceChannel9 = new DeviceChannel();
-        deviceChoice18 = new DeviceChoice();
-        deviceLabel17 = new DeviceLabel();
-        deviceField20 = new DeviceField();
-        deviceLabel18 = new DeviceLabel();
-        deviceField21 = new DeviceField();
-        deviceChoice19 = new DeviceChoice();
-        jPanel15 = new javax.swing.JPanel();
-        deviceChannel10 = new DeviceChannel();
-        deviceChoice20 = new DeviceChoice();
-        deviceLabel19 = new DeviceLabel();
-        deviceField22 = new DeviceField();
-        deviceLabel20 = new DeviceLabel();
-        deviceField23 = new DeviceField();
-        deviceChoice21 = new DeviceChoice();
-        jPanel16 = new javax.swing.JPanel();
-        deviceChannel11 = new DeviceChannel();
-        deviceChoice22 = new DeviceChoice();
-        deviceLabel21 = new DeviceLabel();
-        deviceField24 = new DeviceField();
-        deviceLabel22 = new DeviceLabel();
-        deviceField25 = new DeviceField();
-        deviceChoice23 = new DeviceChoice();
-        jPanel17 = new javax.swing.JPanel();
-        deviceChannel12 = new DeviceChannel();
-        deviceChoice24 = new DeviceChoice();
-        deviceLabel23 = new DeviceLabel();
-        deviceField26 = new DeviceField();
-        deviceLabel24 = new DeviceLabel();
-        deviceField27 = new DeviceField();
-        deviceChoice25 = new DeviceChoice();
-        jPanel18 = new javax.swing.JPanel();
-        deviceChannel13 = new DeviceChannel();
-        deviceChoice26 = new DeviceChoice();
-        deviceLabel25 = new DeviceLabel();
-        deviceField28 = new DeviceField();
-        deviceLabel26 = new DeviceLabel();
-        deviceField29 = new DeviceField();
-        deviceChoice27 = new DeviceChoice();
-        jPanel19 = new javax.swing.JPanel();
-        deviceChannel14 = new DeviceChannel();
-        deviceChoice28 = new DeviceChoice();
-        deviceLabel27 = new DeviceLabel();
-        deviceField30 = new DeviceField();
-        deviceLabel28 = new DeviceLabel();
-        deviceField31 = new DeviceField();
-        deviceChoice29 = new DeviceChoice();
-        jPanel20 = new javax.swing.JPanel();
-        deviceChannel15 = new DeviceChannel();
-        deviceChoice30 = new DeviceChoice();
-        deviceLabel29 = new DeviceLabel();
-        deviceField32 = new DeviceField();
-        deviceLabel30 = new DeviceLabel();
-        deviceField33 = new DeviceField();
-        deviceChoice31 = new DeviceChoice();
-        jPanel21 = new javax.swing.JPanel();
-        deviceChannel16 = new DeviceChannel();
-        deviceChoice32 = new DeviceChoice();
-        deviceLabel31 = new DeviceLabel();
-        deviceField34 = new DeviceField();
-        deviceLabel32 = new DeviceLabel();
-        deviceField35 = new DeviceField();
-        deviceChoice33 = new DeviceChoice();
-
-        setDeviceProvider("localhost");
-        setDeviceTitle("EQU Gain ");
-        setDeviceType("EQU_GAIN");
-
-        deviceButtons1.setCheckExpressions(new String[] {});
-        deviceButtons1.setCheckMessages(new String[] {});
-        deviceButtons1.setMethods(new String[] {"init"});
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        jPanel2.setLayout(new java.awt.GridLayout(3, 0));
-
-        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment : ");
-        deviceField1.setNumCols(30);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel1.add(deviceField1);
-        jPanel1.add(deviceDispatch1);
-
-        jPanel2.add(jPanel1);
-
-        jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Lin. ADC");
-        deviceField2.setNumCols(20);
-        deviceField2.setOffsetNid(3);
-        jPanel3.add(deviceField2);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Int. ADC");
-        deviceField3.setNumCols(20);
-        deviceField3.setOffsetNid(2);
-        jPanel3.add(deviceField3);
-
-        deviceChoice1.setChoiceItems(new String[] {"INTEGRAL", "LINEAR", "INT. & LIN."});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Acquire signals : ");
-        deviceChoice1.setOffsetNid(4);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice1);
-
-        jPanel2.add(jPanel3);
-
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
-
-        jLabel1.setText("  Channel               Att.                   Linear Name                   Linear Calib.                      Integral Name              Integral Calib.          Integral  Gain");
-        jPanel6.add(jLabel1);
-
-        jPanel2.add(jPanel6);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
-
-        jPanel4.setLayout(new java.awt.GridLayout(16, 0));
-
-        deviceChannel1.setInSameLine(true);
-        deviceChannel1.setLabelString("01");
-        deviceChannel1.setOffsetNid(5);
-        deviceChannel1.setShowVal("");
-        deviceChannel1.setUpdateIdentifier("");
-        jPanel5.add(deviceChannel1);
-
-        deviceChoice2.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice2.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString(" ");
-        deviceChoice2.setOffsetNid(6);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice2);
-
-        deviceLabel1.setIdentifier("");
-        deviceLabel1.setNumCols(15);
-        deviceLabel1.setOffsetNid(7);
-        jPanel5.add(deviceLabel1);
-
-        deviceField4.setIdentifier("");
-        deviceField4.setNumCols(12);
-        deviceField4.setOffsetNid(8);
-        jPanel5.add(deviceField4);
-
-        deviceLabel2.setIdentifier("");
-        deviceLabel2.setNumCols(15);
-        deviceLabel2.setOffsetNid(11);
-        jPanel5.add(deviceLabel2);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setNumCols(12);
-        deviceField5.setOffsetNid(12);
-        jPanel5.add(deviceField5);
-
-        deviceChoice3.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice3.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString(" ");
-        deviceChoice3.setOffsetNid(13);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel5.add(deviceChoice3);
-
-        jPanel4.add(jPanel5);
-
-        deviceChannel2.setInSameLine(true);
-        deviceChannel2.setLabelString("02");
-        deviceChannel2.setOffsetNid(16);
-        deviceChannel2.setShowVal("");
-        deviceChannel2.setUpdateIdentifier("");
-        jPanel7.add(deviceChannel2);
-
-        deviceChoice4.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice4.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString(" ");
-        deviceChoice4.setOffsetNid(17);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice4);
-
-        deviceLabel3.setIdentifier("");
-        deviceLabel3.setNumCols(15);
-        deviceLabel3.setOffsetNid(18);
-        jPanel7.add(deviceLabel3);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setNumCols(12);
-        deviceField6.setOffsetNid(19);
-        jPanel7.add(deviceField6);
-
-        deviceLabel4.setIdentifier("");
-        deviceLabel4.setNumCols(15);
-        deviceLabel4.setOffsetNid(22);
-        jPanel7.add(deviceLabel4);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setNumCols(12);
-        deviceField7.setOffsetNid(23);
-        jPanel7.add(deviceField7);
-
-        deviceChoice5.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice5.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString(" ");
-        deviceChoice5.setOffsetNid(24);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice5);
-
-        jPanel4.add(jPanel7);
-
-        deviceChannel3.setInSameLine(true);
-        deviceChannel3.setLabelString("03");
-        deviceChannel3.setOffsetNid(27);
-        deviceChannel3.setShowVal("");
-        deviceChannel3.setUpdateIdentifier("");
-        jPanel8.add(deviceChannel3);
-
-        deviceChoice6.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice6.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString(" ");
-        deviceChoice6.setOffsetNid(28);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice6);
-
-        deviceLabel5.setIdentifier("");
-        deviceLabel5.setNumCols(15);
-        deviceLabel5.setOffsetNid(29);
-        jPanel8.add(deviceLabel5);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setNumCols(12);
-        deviceField8.setOffsetNid(30);
-        jPanel8.add(deviceField8);
-
-        deviceLabel6.setIdentifier("");
-        deviceLabel6.setNumCols(15);
-        deviceLabel6.setOffsetNid(33);
-        jPanel8.add(deviceLabel6);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setNumCols(12);
-        deviceField9.setOffsetNid(34);
-        jPanel8.add(deviceField9);
-
-        deviceChoice7.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice7.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString(" ");
-        deviceChoice7.setOffsetNid(35);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice7);
-
-        jPanel4.add(jPanel8);
-
-        deviceChannel4.setInSameLine(true);
-        deviceChannel4.setLabelString("04");
-        deviceChannel4.setOffsetNid(38);
-        deviceChannel4.setShowVal("");
-        deviceChannel4.setUpdateIdentifier("");
-        jPanel9.add(deviceChannel4);
-
-        deviceChoice8.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice8.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString(" ");
-        deviceChoice8.setOffsetNid(39);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice8);
-
-        deviceLabel7.setIdentifier("");
-        deviceLabel7.setNumCols(15);
-        deviceLabel7.setOffsetNid(40);
-        jPanel9.add(deviceLabel7);
-
-        deviceField10.setIdentifier("");
-        deviceField10.setNumCols(12);
-        deviceField10.setOffsetNid(41);
-        jPanel9.add(deviceField10);
-
-        deviceLabel8.setIdentifier("");
-        deviceLabel8.setNumCols(15);
-        deviceLabel8.setOffsetNid(44);
-        jPanel9.add(deviceLabel8);
-
-        deviceField11.setIdentifier("");
-        deviceField11.setNumCols(12);
-        deviceField11.setOffsetNid(45);
-        jPanel9.add(deviceField11);
-
-        deviceChoice9.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice9.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString(" ");
-        deviceChoice9.setOffsetNid(46);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice9);
-
-        jPanel4.add(jPanel9);
-
-        deviceChannel5.setInSameLine(true);
-        deviceChannel5.setLabelString("05");
-        deviceChannel5.setOffsetNid(49);
-        deviceChannel5.setShowVal("");
-        deviceChannel5.setUpdateIdentifier("");
-        jPanel10.add(deviceChannel5);
-
-        deviceChoice10.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice10.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString(" ");
-        deviceChoice10.setOffsetNid(50);
-        deviceChoice10.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice10);
-
-        deviceLabel9.setIdentifier("");
-        deviceLabel9.setNumCols(15);
-        deviceLabel9.setOffsetNid(51);
-        jPanel10.add(deviceLabel9);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setNumCols(12);
-        deviceField12.setOffsetNid(52);
-        jPanel10.add(deviceField12);
-
-        deviceLabel10.setIdentifier("");
-        deviceLabel10.setNumCols(15);
-        deviceLabel10.setOffsetNid(55);
-        jPanel10.add(deviceLabel10);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setNumCols(12);
-        deviceField13.setOffsetNid(56);
-        jPanel10.add(deviceField13);
-
-        deviceChoice11.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice11.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString(" ");
-        deviceChoice11.setOffsetNid(57);
-        deviceChoice11.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice11);
-
-        jPanel4.add(jPanel10);
-
-        deviceChannel6.setInSameLine(true);
-        deviceChannel6.setLabelString("06");
-        deviceChannel6.setOffsetNid(60);
-        deviceChannel6.setShowVal("");
-        deviceChannel6.setUpdateIdentifier("");
-        jPanel11.add(deviceChannel6);
-
-        deviceChoice12.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice12.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString(" ");
-        deviceChoice12.setOffsetNid(61);
-        deviceChoice12.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice12);
-
-        deviceLabel11.setIdentifier("");
-        deviceLabel11.setNumCols(15);
-        deviceLabel11.setOffsetNid(62);
-        jPanel11.add(deviceLabel11);
-
-        deviceField14.setIdentifier("");
-        deviceField14.setNumCols(12);
-        deviceField14.setOffsetNid(63);
-        jPanel11.add(deviceField14);
-
-        deviceLabel12.setIdentifier("");
-        deviceLabel12.setNumCols(15);
-        deviceLabel12.setOffsetNid(66);
-        jPanel11.add(deviceLabel12);
-
-        deviceField15.setIdentifier("");
-        deviceField15.setNumCols(12);
-        deviceField15.setOffsetNid(67);
-        jPanel11.add(deviceField15);
-
-        deviceChoice13.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice13.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString(" ");
-        deviceChoice13.setOffsetNid(68);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel11.add(deviceChoice13);
-
-        jPanel4.add(jPanel11);
-
-        deviceChannel7.setInSameLine(true);
-        deviceChannel7.setLabelString("07");
-        deviceChannel7.setOffsetNid(71);
-        deviceChannel7.setShowVal("");
-        deviceChannel7.setUpdateIdentifier("");
-        jPanel12.add(deviceChannel7);
-
-        deviceChoice14.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice14.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString(" ");
-        deviceChoice14.setOffsetNid(72);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice14);
-
-        deviceLabel13.setIdentifier("");
-        deviceLabel13.setNumCols(15);
-        deviceLabel13.setOffsetNid(73);
-        jPanel12.add(deviceLabel13);
-
-        deviceField16.setIdentifier("");
-        deviceField16.setNumCols(12);
-        deviceField16.setOffsetNid(74);
-        jPanel12.add(deviceField16);
-
-        deviceLabel14.setIdentifier("");
-        deviceLabel14.setNumCols(15);
-        deviceLabel14.setOffsetNid(77);
-        jPanel12.add(deviceLabel14);
-
-        deviceField17.setIdentifier("");
-        deviceField17.setNumCols(12);
-        deviceField17.setOffsetNid(78);
-        jPanel12.add(deviceField17);
-
-        deviceChoice15.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice15.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString(" ");
-        deviceChoice15.setOffsetNid(79);
-        deviceChoice15.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice15);
-
-        jPanel4.add(jPanel12);
-
-        deviceChannel8.setInSameLine(true);
-        deviceChannel8.setLabelString("08");
-        deviceChannel8.setOffsetNid(82);
-        deviceChannel8.setShowVal("");
-        deviceChannel8.setUpdateIdentifier("");
-        jPanel13.add(deviceChannel8);
-
-        deviceChoice16.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice16.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString(" ");
-        deviceChoice16.setOffsetNid(83);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice16);
-
-        deviceLabel15.setIdentifier("");
-        deviceLabel15.setNumCols(15);
-        deviceLabel15.setOffsetNid(84);
-        jPanel13.add(deviceLabel15);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setNumCols(12);
-        deviceField18.setOffsetNid(85);
-        jPanel13.add(deviceField18);
-
-        deviceLabel16.setIdentifier("");
-        deviceLabel16.setNumCols(15);
-        deviceLabel16.setOffsetNid(88);
-        jPanel13.add(deviceLabel16);
-
-        deviceField19.setIdentifier("");
-        deviceField19.setNumCols(12);
-        deviceField19.setOffsetNid(89);
-        jPanel13.add(deviceField19);
-
-        deviceChoice17.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice17.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString(" ");
-        deviceChoice17.setOffsetNid(90);
-        deviceChoice17.setUpdateIdentifier("");
-        jPanel13.add(deviceChoice17);
-
-        jPanel4.add(jPanel13);
-
-        deviceChannel9.setInSameLine(true);
-        deviceChannel9.setLabelString("09");
-        deviceChannel9.setOffsetNid(93);
-        deviceChannel9.setShowVal("");
-        deviceChannel9.setUpdateIdentifier("");
-        jPanel14.add(deviceChannel9);
-
-        deviceChoice18.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice18.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString(" ");
-        deviceChoice18.setOffsetNid(94);
-        deviceChoice18.setUpdateIdentifier("");
-        jPanel14.add(deviceChoice18);
-
-        deviceLabel17.setIdentifier("");
-        deviceLabel17.setNumCols(15);
-        deviceLabel17.setOffsetNid(95);
-        jPanel14.add(deviceLabel17);
-
-        deviceField20.setIdentifier("");
-        deviceField20.setNumCols(12);
-        deviceField20.setOffsetNid(96);
-        jPanel14.add(deviceField20);
-
-        deviceLabel18.setIdentifier("");
-        deviceLabel18.setNumCols(15);
-        deviceLabel18.setOffsetNid(99);
-        jPanel14.add(deviceLabel18);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setNumCols(12);
-        deviceField21.setOffsetNid(100);
-        jPanel14.add(deviceField21);
-
-        deviceChoice19.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice19.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString(" ");
-        deviceChoice19.setOffsetNid(101);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel14.add(deviceChoice19);
-
-        jPanel4.add(jPanel14);
-
-        deviceChannel10.setInSameLine(true);
-        deviceChannel10.setLabelString("10");
-        deviceChannel10.setOffsetNid(104);
-        deviceChannel10.setShowVal("");
-        deviceChannel10.setUpdateIdentifier("");
-        jPanel15.add(deviceChannel10);
-
-        deviceChoice20.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice20.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString(" ");
-        deviceChoice20.setOffsetNid(105);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice20);
-
-        deviceLabel19.setIdentifier("");
-        deviceLabel19.setNumCols(15);
-        deviceLabel19.setOffsetNid(106);
-        jPanel15.add(deviceLabel19);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setNumCols(12);
-        deviceField22.setOffsetNid(107);
-        jPanel15.add(deviceField22);
-
-        deviceLabel20.setIdentifier("");
-        deviceLabel20.setNumCols(15);
-        deviceLabel20.setOffsetNid(110);
-        jPanel15.add(deviceLabel20);
-
-        deviceField23.setIdentifier("");
-        deviceField23.setNumCols(12);
-        deviceField23.setOffsetNid(111);
-        jPanel15.add(deviceField23);
-
-        deviceChoice21.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice21.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString(" ");
-        deviceChoice21.setOffsetNid(112);
-        deviceChoice21.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice21);
-
-        jPanel4.add(jPanel15);
-
-        deviceChannel11.setInSameLine(true);
-        deviceChannel11.setLabelString("11");
-        deviceChannel11.setOffsetNid(115);
-        deviceChannel11.setShowVal("");
-        deviceChannel11.setUpdateIdentifier("");
-        jPanel16.add(deviceChannel11);
-
-        deviceChoice22.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice22.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString(" ");
-        deviceChoice22.setOffsetNid(116);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice22);
-
-        deviceLabel21.setIdentifier("");
-        deviceLabel21.setNumCols(15);
-        deviceLabel21.setOffsetNid(117);
-        jPanel16.add(deviceLabel21);
-
-        deviceField24.setIdentifier("");
-        deviceField24.setNumCols(12);
-        deviceField24.setOffsetNid(118);
-        jPanel16.add(deviceField24);
-
-        deviceLabel22.setIdentifier("");
-        deviceLabel22.setNumCols(15);
-        deviceLabel22.setOffsetNid(121);
-        jPanel16.add(deviceLabel22);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setNumCols(12);
-        deviceField25.setOffsetNid(122);
-        jPanel16.add(deviceField25);
-
-        deviceChoice23.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice23.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString(" ");
-        deviceChoice23.setOffsetNid(123);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice23);
-
-        jPanel4.add(jPanel16);
-
-        deviceChannel12.setInSameLine(true);
-        deviceChannel12.setLabelString("12");
-        deviceChannel12.setOffsetNid(126);
-        deviceChannel12.setShowVal("");
-        deviceChannel12.setUpdateIdentifier("");
-        jPanel17.add(deviceChannel12);
-
-        deviceChoice24.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice24.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString(" ");
-        deviceChoice24.setOffsetNid(127);
-        deviceChoice24.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice24);
-
-        deviceLabel23.setIdentifier("");
-        deviceLabel23.setNumCols(15);
-        deviceLabel23.setOffsetNid(128);
-        jPanel17.add(deviceLabel23);
-
-        deviceField26.setIdentifier("");
-        deviceField26.setNumCols(12);
-        deviceField26.setOffsetNid(129);
-        jPanel17.add(deviceField26);
-
-        deviceLabel24.setIdentifier("");
-        deviceLabel24.setNumCols(15);
-        deviceLabel24.setOffsetNid(132);
-        jPanel17.add(deviceLabel24);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setNumCols(12);
-        deviceField27.setOffsetNid(133);
-        jPanel17.add(deviceField27);
-
-        deviceChoice25.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice25.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString(" ");
-        deviceChoice25.setOffsetNid(134);
-        deviceChoice25.setUpdateIdentifier("");
-        jPanel17.add(deviceChoice25);
-
-        jPanel4.add(jPanel17);
-
-        deviceChannel13.setInSameLine(true);
-        deviceChannel13.setLabelString("13");
-        deviceChannel13.setOffsetNid(137);
-        deviceChannel13.setShowVal("");
-        deviceChannel13.setUpdateIdentifier("");
-        jPanel18.add(deviceChannel13);
-
-        deviceChoice26.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice26.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString(" ");
-        deviceChoice26.setOffsetNid(138);
-        deviceChoice26.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice26);
-
-        deviceLabel25.setIdentifier("");
-        deviceLabel25.setNumCols(15);
-        deviceLabel25.setOffsetNid(139);
-        jPanel18.add(deviceLabel25);
-
-        deviceField28.setIdentifier("");
-        deviceField28.setNumCols(12);
-        deviceField28.setOffsetNid(140);
-        jPanel18.add(deviceField28);
-
-        deviceLabel26.setIdentifier("");
-        deviceLabel26.setNumCols(15);
-        deviceLabel26.setOffsetNid(143);
-        jPanel18.add(deviceLabel26);
-
-        deviceField29.setIdentifier("");
-        deviceField29.setNumCols(12);
-        deviceField29.setOffsetNid(144);
-        jPanel18.add(deviceField29);
-
-        deviceChoice27.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice27.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice27.setIdentifier("");
-        deviceChoice27.setLabelString(" ");
-        deviceChoice27.setOffsetNid(145);
-        deviceChoice27.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice27);
-
-        jPanel4.add(jPanel18);
-
-        deviceChannel14.setInSameLine(true);
-        deviceChannel14.setLabelString("14");
-        deviceChannel14.setOffsetNid(148);
-        deviceChannel14.setShowVal("");
-        deviceChannel14.setUpdateIdentifier("");
-        jPanel19.add(deviceChannel14);
-
-        deviceChoice28.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice28.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice28.setIdentifier("");
-        deviceChoice28.setLabelString(" ");
-        deviceChoice28.setOffsetNid(149);
-        deviceChoice28.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice28);
-
-        deviceLabel27.setIdentifier("");
-        deviceLabel27.setNumCols(15);
-        deviceLabel27.setOffsetNid(150);
-        jPanel19.add(deviceLabel27);
-
-        deviceField30.setIdentifier("");
-        deviceField30.setNumCols(12);
-        deviceField30.setOffsetNid(151);
-        jPanel19.add(deviceField30);
-
-        deviceLabel28.setIdentifier("");
-        deviceLabel28.setNumCols(15);
-        deviceLabel28.setOffsetNid(154);
-        jPanel19.add(deviceLabel28);
-
-        deviceField31.setIdentifier("");
-        deviceField31.setNumCols(12);
-        deviceField31.setOffsetNid(155);
-        jPanel19.add(deviceField31);
-
-        deviceChoice29.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice29.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString(" ");
-        deviceChoice29.setOffsetNid(156);
-        deviceChoice29.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice29);
-
-        jPanel4.add(jPanel19);
-
-        deviceChannel15.setInSameLine(true);
-        deviceChannel15.setLabelString("15");
-        deviceChannel15.setOffsetNid(159);
-        deviceChannel15.setShowVal("");
-        deviceChannel15.setUpdateIdentifier("");
-        jPanel20.add(deviceChannel15);
-
-        deviceChoice30.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice30.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice30.setIdentifier("");
-        deviceChoice30.setLabelString(" ");
-        deviceChoice30.setOffsetNid(160);
-        deviceChoice30.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice30);
-
-        deviceLabel29.setIdentifier("");
-        deviceLabel29.setNumCols(15);
-        deviceLabel29.setOffsetNid(161);
-        jPanel20.add(deviceLabel29);
-
-        deviceField32.setIdentifier("");
-        deviceField32.setNumCols(12);
-        deviceField32.setOffsetNid(162);
-        jPanel20.add(deviceField32);
-
-        deviceLabel30.setIdentifier("");
-        deviceLabel30.setNumCols(15);
-        deviceLabel30.setOffsetNid(165);
-        jPanel20.add(deviceLabel30);
-
-        deviceField33.setIdentifier("");
-        deviceField33.setNumCols(12);
-        deviceField33.setOffsetNid(166);
-        jPanel20.add(deviceField33);
-
-        deviceChoice31.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice31.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice31.setIdentifier("");
-        deviceChoice31.setLabelString(" ");
-        deviceChoice31.setOffsetNid(167);
-        deviceChoice31.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice31);
-
-        jPanel4.add(jPanel20);
-
-        deviceChannel16.setInSameLine(true);
-        deviceChannel16.setLabelString("16");
-        deviceChannel16.setOffsetNid(170);
-        deviceChannel16.setShowVal("");
-        deviceChannel16.setUpdateIdentifier("");
-        jPanel21.add(deviceChannel16);
-
-        deviceChoice32.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
-        deviceChoice32.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
-        deviceChoice32.setIdentifier("");
-        deviceChoice32.setLabelString(" ");
-        deviceChoice32.setOffsetNid(171);
-        deviceChoice32.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice32);
-
-        deviceLabel31.setIdentifier("");
-        deviceLabel31.setNumCols(15);
-        deviceLabel31.setOffsetNid(172);
-        jPanel21.add(deviceLabel31);
-
-        deviceField34.setIdentifier("");
-        deviceField34.setNumCols(12);
-        deviceField34.setOffsetNid(173);
-        jPanel21.add(deviceField34);
-
-        deviceLabel32.setIdentifier("");
-        deviceLabel32.setNumCols(15);
-        deviceLabel32.setOffsetNid(176);
-        jPanel21.add(deviceLabel32);
-
-        deviceField35.setIdentifier("");
-        deviceField35.setNumCols(12);
-        deviceField35.setOffsetNid(177);
-        jPanel21.add(deviceField35);
-
-        deviceChoice33.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
-        deviceChoice33.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice33.setIdentifier("");
-        deviceChoice33.setLabelString(" ");
-        deviceChoice33.setOffsetNid(178);
-        deviceChoice33.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice33);
-
-        jPanel4.add(jPanel21);
-
-        jScrollPane1.setViewportView(jPanel4);
-
-        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+	deviceButtons1 = new DeviceButtons();
+	jPanel2 = new javax.swing.JPanel();
+	jPanel1 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	deviceChoice1 = new DeviceChoice();
+	jPanel6 = new javax.swing.JPanel();
+	jLabel1 = new javax.swing.JLabel();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jPanel4 = new javax.swing.JPanel();
+	jPanel5 = new javax.swing.JPanel();
+	deviceChannel1 = new DeviceChannel();
+	deviceChoice2 = new DeviceChoice();
+	deviceLabel1 = new DeviceLabel();
+	deviceField4 = new DeviceField();
+	deviceLabel2 = new DeviceLabel();
+	deviceField5 = new DeviceField();
+	deviceChoice3 = new DeviceChoice();
+	jPanel7 = new javax.swing.JPanel();
+	deviceChannel2 = new DeviceChannel();
+	deviceChoice4 = new DeviceChoice();
+	deviceLabel3 = new DeviceLabel();
+	deviceField6 = new DeviceField();
+	deviceLabel4 = new DeviceLabel();
+	deviceField7 = new DeviceField();
+	deviceChoice5 = new DeviceChoice();
+	jPanel8 = new javax.swing.JPanel();
+	deviceChannel3 = new DeviceChannel();
+	deviceChoice6 = new DeviceChoice();
+	deviceLabel5 = new DeviceLabel();
+	deviceField8 = new DeviceField();
+	deviceLabel6 = new DeviceLabel();
+	deviceField9 = new DeviceField();
+	deviceChoice7 = new DeviceChoice();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChannel4 = new DeviceChannel();
+	deviceChoice8 = new DeviceChoice();
+	deviceLabel7 = new DeviceLabel();
+	deviceField10 = new DeviceField();
+	deviceLabel8 = new DeviceLabel();
+	deviceField11 = new DeviceField();
+	deviceChoice9 = new DeviceChoice();
+	jPanel10 = new javax.swing.JPanel();
+	deviceChannel5 = new DeviceChannel();
+	deviceChoice10 = new DeviceChoice();
+	deviceLabel9 = new DeviceLabel();
+	deviceField12 = new DeviceField();
+	deviceLabel10 = new DeviceLabel();
+	deviceField13 = new DeviceField();
+	deviceChoice11 = new DeviceChoice();
+	jPanel11 = new javax.swing.JPanel();
+	deviceChannel6 = new DeviceChannel();
+	deviceChoice12 = new DeviceChoice();
+	deviceLabel11 = new DeviceLabel();
+	deviceField14 = new DeviceField();
+	deviceLabel12 = new DeviceLabel();
+	deviceField15 = new DeviceField();
+	deviceChoice13 = new DeviceChoice();
+	jPanel12 = new javax.swing.JPanel();
+	deviceChannel7 = new DeviceChannel();
+	deviceChoice14 = new DeviceChoice();
+	deviceLabel13 = new DeviceLabel();
+	deviceField16 = new DeviceField();
+	deviceLabel14 = new DeviceLabel();
+	deviceField17 = new DeviceField();
+	deviceChoice15 = new DeviceChoice();
+	jPanel13 = new javax.swing.JPanel();
+	deviceChannel8 = new DeviceChannel();
+	deviceChoice16 = new DeviceChoice();
+	deviceLabel15 = new DeviceLabel();
+	deviceField18 = new DeviceField();
+	deviceLabel16 = new DeviceLabel();
+	deviceField19 = new DeviceField();
+	deviceChoice17 = new DeviceChoice();
+	jPanel14 = new javax.swing.JPanel();
+	deviceChannel9 = new DeviceChannel();
+	deviceChoice18 = new DeviceChoice();
+	deviceLabel17 = new DeviceLabel();
+	deviceField20 = new DeviceField();
+	deviceLabel18 = new DeviceLabel();
+	deviceField21 = new DeviceField();
+	deviceChoice19 = new DeviceChoice();
+	jPanel15 = new javax.swing.JPanel();
+	deviceChannel10 = new DeviceChannel();
+	deviceChoice20 = new DeviceChoice();
+	deviceLabel19 = new DeviceLabel();
+	deviceField22 = new DeviceField();
+	deviceLabel20 = new DeviceLabel();
+	deviceField23 = new DeviceField();
+	deviceChoice21 = new DeviceChoice();
+	jPanel16 = new javax.swing.JPanel();
+	deviceChannel11 = new DeviceChannel();
+	deviceChoice22 = new DeviceChoice();
+	deviceLabel21 = new DeviceLabel();
+	deviceField24 = new DeviceField();
+	deviceLabel22 = new DeviceLabel();
+	deviceField25 = new DeviceField();
+	deviceChoice23 = new DeviceChoice();
+	jPanel17 = new javax.swing.JPanel();
+	deviceChannel12 = new DeviceChannel();
+	deviceChoice24 = new DeviceChoice();
+	deviceLabel23 = new DeviceLabel();
+	deviceField26 = new DeviceField();
+	deviceLabel24 = new DeviceLabel();
+	deviceField27 = new DeviceField();
+	deviceChoice25 = new DeviceChoice();
+	jPanel18 = new javax.swing.JPanel();
+	deviceChannel13 = new DeviceChannel();
+	deviceChoice26 = new DeviceChoice();
+	deviceLabel25 = new DeviceLabel();
+	deviceField28 = new DeviceField();
+	deviceLabel26 = new DeviceLabel();
+	deviceField29 = new DeviceField();
+	deviceChoice27 = new DeviceChoice();
+	jPanel19 = new javax.swing.JPanel();
+	deviceChannel14 = new DeviceChannel();
+	deviceChoice28 = new DeviceChoice();
+	deviceLabel27 = new DeviceLabel();
+	deviceField30 = new DeviceField();
+	deviceLabel28 = new DeviceLabel();
+	deviceField31 = new DeviceField();
+	deviceChoice29 = new DeviceChoice();
+	jPanel20 = new javax.swing.JPanel();
+	deviceChannel15 = new DeviceChannel();
+	deviceChoice30 = new DeviceChoice();
+	deviceLabel29 = new DeviceLabel();
+	deviceField32 = new DeviceField();
+	deviceLabel30 = new DeviceLabel();
+	deviceField33 = new DeviceField();
+	deviceChoice31 = new DeviceChoice();
+	jPanel21 = new javax.swing.JPanel();
+	deviceChannel16 = new DeviceChannel();
+	deviceChoice32 = new DeviceChoice();
+	deviceLabel31 = new DeviceLabel();
+	deviceField34 = new DeviceField();
+	deviceLabel32 = new DeviceLabel();
+	deviceField35 = new DeviceField();
+	deviceChoice33 = new DeviceChoice();
+
+	setDeviceProvider("localhost");
+	setDeviceTitle("EQU Gain ");
+	setDeviceType("EQU_GAIN");
+
+	deviceButtons1.setCheckExpressions(new String[] {});
+	deviceButtons1.setCheckMessages(new String[] {});
+	deviceButtons1.setMethods(new String[] {"init"});
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+
+	jPanel2.setLayout(new java.awt.GridLayout(3, 0));
+
+	jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
+
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment : ");
+	deviceField1.setNumCols(30);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel1.add(deviceField1);
+	jPanel1.add(deviceDispatch1);
+
+	jPanel2.add(jPanel1);
+
+	jPanel3.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
+
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Lin. ADC");
+	deviceField2.setNumCols(20);
+	deviceField2.setOffsetNid(3);
+	jPanel3.add(deviceField2);
+
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Int. ADC");
+	deviceField3.setNumCols(20);
+	deviceField3.setOffsetNid(2);
+	jPanel3.add(deviceField3);
+
+	deviceChoice1.setChoiceItems(new String[] {"INTEGRAL", "LINEAR", "INT. & LIN."});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Acquire signals : ");
+	deviceChoice1.setOffsetNid(4);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice1);
+
+	jPanel2.add(jPanel3);
+
+	jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 1, 1));
+
+	jLabel1.setText("  Channel               Att.                   Linear Name                   Linear Calib.                      Integral Name              Integral Calib.          Integral  Gain");
+	jPanel6.add(jLabel1);
+
+	jPanel2.add(jPanel6);
+
+	getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
+
+	jPanel4.setLayout(new java.awt.GridLayout(16, 0));
+
+	deviceChannel1.setInSameLine(true);
+	deviceChannel1.setLabelString("01");
+	deviceChannel1.setOffsetNid(5);
+	deviceChannel1.setShowVal("");
+	deviceChannel1.setUpdateIdentifier("");
+	jPanel5.add(deviceChannel1);
+
+	deviceChoice2.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice2.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString(" ");
+	deviceChoice2.setOffsetNid(6);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel5.add(deviceChoice2);
+
+	deviceLabel1.setIdentifier("");
+	deviceLabel1.setNumCols(15);
+	deviceLabel1.setOffsetNid(7);
+	jPanel5.add(deviceLabel1);
+
+	deviceField4.setIdentifier("");
+	deviceField4.setNumCols(12);
+	deviceField4.setOffsetNid(8);
+	jPanel5.add(deviceField4);
+
+	deviceLabel2.setIdentifier("");
+	deviceLabel2.setNumCols(15);
+	deviceLabel2.setOffsetNid(11);
+	jPanel5.add(deviceLabel2);
+
+	deviceField5.setIdentifier("");
+	deviceField5.setNumCols(12);
+	deviceField5.setOffsetNid(12);
+	jPanel5.add(deviceField5);
+
+	deviceChoice3.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice3.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString(" ");
+	deviceChoice3.setOffsetNid(13);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel5.add(deviceChoice3);
+
+	jPanel4.add(jPanel5);
+
+	deviceChannel2.setInSameLine(true);
+	deviceChannel2.setLabelString("02");
+	deviceChannel2.setOffsetNid(16);
+	deviceChannel2.setShowVal("");
+	deviceChannel2.setUpdateIdentifier("");
+	jPanel7.add(deviceChannel2);
+
+	deviceChoice4.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice4.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString(" ");
+	deviceChoice4.setOffsetNid(17);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice4);
+
+	deviceLabel3.setIdentifier("");
+	deviceLabel3.setNumCols(15);
+	deviceLabel3.setOffsetNid(18);
+	jPanel7.add(deviceLabel3);
+
+	deviceField6.setIdentifier("");
+	deviceField6.setNumCols(12);
+	deviceField6.setOffsetNid(19);
+	jPanel7.add(deviceField6);
+
+	deviceLabel4.setIdentifier("");
+	deviceLabel4.setNumCols(15);
+	deviceLabel4.setOffsetNid(22);
+	jPanel7.add(deviceLabel4);
+
+	deviceField7.setIdentifier("");
+	deviceField7.setNumCols(12);
+	deviceField7.setOffsetNid(23);
+	jPanel7.add(deviceField7);
+
+	deviceChoice5.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice5.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString(" ");
+	deviceChoice5.setOffsetNid(24);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice5);
+
+	jPanel4.add(jPanel7);
+
+	deviceChannel3.setInSameLine(true);
+	deviceChannel3.setLabelString("03");
+	deviceChannel3.setOffsetNid(27);
+	deviceChannel3.setShowVal("");
+	deviceChannel3.setUpdateIdentifier("");
+	jPanel8.add(deviceChannel3);
+
+	deviceChoice6.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice6.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString(" ");
+	deviceChoice6.setOffsetNid(28);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice6);
+
+	deviceLabel5.setIdentifier("");
+	deviceLabel5.setNumCols(15);
+	deviceLabel5.setOffsetNid(29);
+	jPanel8.add(deviceLabel5);
+
+	deviceField8.setIdentifier("");
+	deviceField8.setNumCols(12);
+	deviceField8.setOffsetNid(30);
+	jPanel8.add(deviceField8);
+
+	deviceLabel6.setIdentifier("");
+	deviceLabel6.setNumCols(15);
+	deviceLabel6.setOffsetNid(33);
+	jPanel8.add(deviceLabel6);
+
+	deviceField9.setIdentifier("");
+	deviceField9.setNumCols(12);
+	deviceField9.setOffsetNid(34);
+	jPanel8.add(deviceField9);
+
+	deviceChoice7.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice7.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice7.setIdentifier("");
+	deviceChoice7.setLabelString(" ");
+	deviceChoice7.setOffsetNid(35);
+	deviceChoice7.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice7);
+
+	jPanel4.add(jPanel8);
+
+	deviceChannel4.setInSameLine(true);
+	deviceChannel4.setLabelString("04");
+	deviceChannel4.setOffsetNid(38);
+	deviceChannel4.setShowVal("");
+	deviceChannel4.setUpdateIdentifier("");
+	jPanel9.add(deviceChannel4);
+
+	deviceChoice8.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice8.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString(" ");
+	deviceChoice8.setOffsetNid(39);
+	deviceChoice8.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice8);
+
+	deviceLabel7.setIdentifier("");
+	deviceLabel7.setNumCols(15);
+	deviceLabel7.setOffsetNid(40);
+	jPanel9.add(deviceLabel7);
+
+	deviceField10.setIdentifier("");
+	deviceField10.setNumCols(12);
+	deviceField10.setOffsetNid(41);
+	jPanel9.add(deviceField10);
+
+	deviceLabel8.setIdentifier("");
+	deviceLabel8.setNumCols(15);
+	deviceLabel8.setOffsetNid(44);
+	jPanel9.add(deviceLabel8);
+
+	deviceField11.setIdentifier("");
+	deviceField11.setNumCols(12);
+	deviceField11.setOffsetNid(45);
+	jPanel9.add(deviceField11);
+
+	deviceChoice9.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice9.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice9.setIdentifier("");
+	deviceChoice9.setLabelString(" ");
+	deviceChoice9.setOffsetNid(46);
+	deviceChoice9.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice9);
+
+	jPanel4.add(jPanel9);
+
+	deviceChannel5.setInSameLine(true);
+	deviceChannel5.setLabelString("05");
+	deviceChannel5.setOffsetNid(49);
+	deviceChannel5.setShowVal("");
+	deviceChannel5.setUpdateIdentifier("");
+	jPanel10.add(deviceChannel5);
+
+	deviceChoice10.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice10.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice10.setIdentifier("");
+	deviceChoice10.setLabelString(" ");
+	deviceChoice10.setOffsetNid(50);
+	deviceChoice10.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice10);
+
+	deviceLabel9.setIdentifier("");
+	deviceLabel9.setNumCols(15);
+	deviceLabel9.setOffsetNid(51);
+	jPanel10.add(deviceLabel9);
+
+	deviceField12.setIdentifier("");
+	deviceField12.setNumCols(12);
+	deviceField12.setOffsetNid(52);
+	jPanel10.add(deviceField12);
+
+	deviceLabel10.setIdentifier("");
+	deviceLabel10.setNumCols(15);
+	deviceLabel10.setOffsetNid(55);
+	jPanel10.add(deviceLabel10);
+
+	deviceField13.setIdentifier("");
+	deviceField13.setNumCols(12);
+	deviceField13.setOffsetNid(56);
+	jPanel10.add(deviceField13);
+
+	deviceChoice11.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice11.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice11.setIdentifier("");
+	deviceChoice11.setLabelString(" ");
+	deviceChoice11.setOffsetNid(57);
+	deviceChoice11.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice11);
+
+	jPanel4.add(jPanel10);
+
+	deviceChannel6.setInSameLine(true);
+	deviceChannel6.setLabelString("06");
+	deviceChannel6.setOffsetNid(60);
+	deviceChannel6.setShowVal("");
+	deviceChannel6.setUpdateIdentifier("");
+	jPanel11.add(deviceChannel6);
+
+	deviceChoice12.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice12.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice12.setIdentifier("");
+	deviceChoice12.setLabelString(" ");
+	deviceChoice12.setOffsetNid(61);
+	deviceChoice12.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice12);
+
+	deviceLabel11.setIdentifier("");
+	deviceLabel11.setNumCols(15);
+	deviceLabel11.setOffsetNid(62);
+	jPanel11.add(deviceLabel11);
+
+	deviceField14.setIdentifier("");
+	deviceField14.setNumCols(12);
+	deviceField14.setOffsetNid(63);
+	jPanel11.add(deviceField14);
+
+	deviceLabel12.setIdentifier("");
+	deviceLabel12.setNumCols(15);
+	deviceLabel12.setOffsetNid(66);
+	jPanel11.add(deviceLabel12);
+
+	deviceField15.setIdentifier("");
+	deviceField15.setNumCols(12);
+	deviceField15.setOffsetNid(67);
+	jPanel11.add(deviceField15);
+
+	deviceChoice13.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice13.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice13.setIdentifier("");
+	deviceChoice13.setLabelString(" ");
+	deviceChoice13.setOffsetNid(68);
+	deviceChoice13.setUpdateIdentifier("");
+	jPanel11.add(deviceChoice13);
+
+	jPanel4.add(jPanel11);
+
+	deviceChannel7.setInSameLine(true);
+	deviceChannel7.setLabelString("07");
+	deviceChannel7.setOffsetNid(71);
+	deviceChannel7.setShowVal("");
+	deviceChannel7.setUpdateIdentifier("");
+	jPanel12.add(deviceChannel7);
+
+	deviceChoice14.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice14.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice14.setIdentifier("");
+	deviceChoice14.setLabelString(" ");
+	deviceChoice14.setOffsetNid(72);
+	deviceChoice14.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice14);
+
+	deviceLabel13.setIdentifier("");
+	deviceLabel13.setNumCols(15);
+	deviceLabel13.setOffsetNid(73);
+	jPanel12.add(deviceLabel13);
+
+	deviceField16.setIdentifier("");
+	deviceField16.setNumCols(12);
+	deviceField16.setOffsetNid(74);
+	jPanel12.add(deviceField16);
+
+	deviceLabel14.setIdentifier("");
+	deviceLabel14.setNumCols(15);
+	deviceLabel14.setOffsetNid(77);
+	jPanel12.add(deviceLabel14);
+
+	deviceField17.setIdentifier("");
+	deviceField17.setNumCols(12);
+	deviceField17.setOffsetNid(78);
+	jPanel12.add(deviceField17);
+
+	deviceChoice15.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice15.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice15.setIdentifier("");
+	deviceChoice15.setLabelString(" ");
+	deviceChoice15.setOffsetNid(79);
+	deviceChoice15.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice15);
+
+	jPanel4.add(jPanel12);
+
+	deviceChannel8.setInSameLine(true);
+	deviceChannel8.setLabelString("08");
+	deviceChannel8.setOffsetNid(82);
+	deviceChannel8.setShowVal("");
+	deviceChannel8.setUpdateIdentifier("");
+	jPanel13.add(deviceChannel8);
+
+	deviceChoice16.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice16.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice16.setIdentifier("");
+	deviceChoice16.setLabelString(" ");
+	deviceChoice16.setOffsetNid(83);
+	deviceChoice16.setUpdateIdentifier("");
+	jPanel13.add(deviceChoice16);
+
+	deviceLabel15.setIdentifier("");
+	deviceLabel15.setNumCols(15);
+	deviceLabel15.setOffsetNid(84);
+	jPanel13.add(deviceLabel15);
+
+	deviceField18.setIdentifier("");
+	deviceField18.setNumCols(12);
+	deviceField18.setOffsetNid(85);
+	jPanel13.add(deviceField18);
+
+	deviceLabel16.setIdentifier("");
+	deviceLabel16.setNumCols(15);
+	deviceLabel16.setOffsetNid(88);
+	jPanel13.add(deviceLabel16);
+
+	deviceField19.setIdentifier("");
+	deviceField19.setNumCols(12);
+	deviceField19.setOffsetNid(89);
+	jPanel13.add(deviceField19);
+
+	deviceChoice17.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice17.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice17.setIdentifier("");
+	deviceChoice17.setLabelString(" ");
+	deviceChoice17.setOffsetNid(90);
+	deviceChoice17.setUpdateIdentifier("");
+	jPanel13.add(deviceChoice17);
+
+	jPanel4.add(jPanel13);
+
+	deviceChannel9.setInSameLine(true);
+	deviceChannel9.setLabelString("09");
+	deviceChannel9.setOffsetNid(93);
+	deviceChannel9.setShowVal("");
+	deviceChannel9.setUpdateIdentifier("");
+	jPanel14.add(deviceChannel9);
+
+	deviceChoice18.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice18.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice18.setIdentifier("");
+	deviceChoice18.setLabelString(" ");
+	deviceChoice18.setOffsetNid(94);
+	deviceChoice18.setUpdateIdentifier("");
+	jPanel14.add(deviceChoice18);
+
+	deviceLabel17.setIdentifier("");
+	deviceLabel17.setNumCols(15);
+	deviceLabel17.setOffsetNid(95);
+	jPanel14.add(deviceLabel17);
+
+	deviceField20.setIdentifier("");
+	deviceField20.setNumCols(12);
+	deviceField20.setOffsetNid(96);
+	jPanel14.add(deviceField20);
+
+	deviceLabel18.setIdentifier("");
+	deviceLabel18.setNumCols(15);
+	deviceLabel18.setOffsetNid(99);
+	jPanel14.add(deviceLabel18);
+
+	deviceField21.setIdentifier("");
+	deviceField21.setNumCols(12);
+	deviceField21.setOffsetNid(100);
+	jPanel14.add(deviceField21);
+
+	deviceChoice19.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice19.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice19.setIdentifier("");
+	deviceChoice19.setLabelString(" ");
+	deviceChoice19.setOffsetNid(101);
+	deviceChoice19.setUpdateIdentifier("");
+	jPanel14.add(deviceChoice19);
+
+	jPanel4.add(jPanel14);
+
+	deviceChannel10.setInSameLine(true);
+	deviceChannel10.setLabelString("10");
+	deviceChannel10.setOffsetNid(104);
+	deviceChannel10.setShowVal("");
+	deviceChannel10.setUpdateIdentifier("");
+	jPanel15.add(deviceChannel10);
+
+	deviceChoice20.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice20.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice20.setIdentifier("");
+	deviceChoice20.setLabelString(" ");
+	deviceChoice20.setOffsetNid(105);
+	deviceChoice20.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice20);
+
+	deviceLabel19.setIdentifier("");
+	deviceLabel19.setNumCols(15);
+	deviceLabel19.setOffsetNid(106);
+	jPanel15.add(deviceLabel19);
+
+	deviceField22.setIdentifier("");
+	deviceField22.setNumCols(12);
+	deviceField22.setOffsetNid(107);
+	jPanel15.add(deviceField22);
+
+	deviceLabel20.setIdentifier("");
+	deviceLabel20.setNumCols(15);
+	deviceLabel20.setOffsetNid(110);
+	jPanel15.add(deviceLabel20);
+
+	deviceField23.setIdentifier("");
+	deviceField23.setNumCols(12);
+	deviceField23.setOffsetNid(111);
+	jPanel15.add(deviceField23);
+
+	deviceChoice21.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice21.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice21.setIdentifier("");
+	deviceChoice21.setLabelString(" ");
+	deviceChoice21.setOffsetNid(112);
+	deviceChoice21.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice21);
+
+	jPanel4.add(jPanel15);
+
+	deviceChannel11.setInSameLine(true);
+	deviceChannel11.setLabelString("11");
+	deviceChannel11.setOffsetNid(115);
+	deviceChannel11.setShowVal("");
+	deviceChannel11.setUpdateIdentifier("");
+	jPanel16.add(deviceChannel11);
+
+	deviceChoice22.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice22.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice22.setIdentifier("");
+	deviceChoice22.setLabelString(" ");
+	deviceChoice22.setOffsetNid(116);
+	deviceChoice22.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice22);
+
+	deviceLabel21.setIdentifier("");
+	deviceLabel21.setNumCols(15);
+	deviceLabel21.setOffsetNid(117);
+	jPanel16.add(deviceLabel21);
+
+	deviceField24.setIdentifier("");
+	deviceField24.setNumCols(12);
+	deviceField24.setOffsetNid(118);
+	jPanel16.add(deviceField24);
+
+	deviceLabel22.setIdentifier("");
+	deviceLabel22.setNumCols(15);
+	deviceLabel22.setOffsetNid(121);
+	jPanel16.add(deviceLabel22);
+
+	deviceField25.setIdentifier("");
+	deviceField25.setNumCols(12);
+	deviceField25.setOffsetNid(122);
+	jPanel16.add(deviceField25);
+
+	deviceChoice23.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice23.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice23.setIdentifier("");
+	deviceChoice23.setLabelString(" ");
+	deviceChoice23.setOffsetNid(123);
+	deviceChoice23.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice23);
+
+	jPanel4.add(jPanel16);
+
+	deviceChannel12.setInSameLine(true);
+	deviceChannel12.setLabelString("12");
+	deviceChannel12.setOffsetNid(126);
+	deviceChannel12.setShowVal("");
+	deviceChannel12.setUpdateIdentifier("");
+	jPanel17.add(deviceChannel12);
+
+	deviceChoice24.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice24.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice24.setIdentifier("");
+	deviceChoice24.setLabelString(" ");
+	deviceChoice24.setOffsetNid(127);
+	deviceChoice24.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice24);
+
+	deviceLabel23.setIdentifier("");
+	deviceLabel23.setNumCols(15);
+	deviceLabel23.setOffsetNid(128);
+	jPanel17.add(deviceLabel23);
+
+	deviceField26.setIdentifier("");
+	deviceField26.setNumCols(12);
+	deviceField26.setOffsetNid(129);
+	jPanel17.add(deviceField26);
+
+	deviceLabel24.setIdentifier("");
+	deviceLabel24.setNumCols(15);
+	deviceLabel24.setOffsetNid(132);
+	jPanel17.add(deviceLabel24);
+
+	deviceField27.setIdentifier("");
+	deviceField27.setNumCols(12);
+	deviceField27.setOffsetNid(133);
+	jPanel17.add(deviceField27);
+
+	deviceChoice25.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice25.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice25.setIdentifier("");
+	deviceChoice25.setLabelString(" ");
+	deviceChoice25.setOffsetNid(134);
+	deviceChoice25.setUpdateIdentifier("");
+	jPanel17.add(deviceChoice25);
+
+	jPanel4.add(jPanel17);
+
+	deviceChannel13.setInSameLine(true);
+	deviceChannel13.setLabelString("13");
+	deviceChannel13.setOffsetNid(137);
+	deviceChannel13.setShowVal("");
+	deviceChannel13.setUpdateIdentifier("");
+	jPanel18.add(deviceChannel13);
+
+	deviceChoice26.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice26.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice26.setIdentifier("");
+	deviceChoice26.setLabelString(" ");
+	deviceChoice26.setOffsetNid(138);
+	deviceChoice26.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice26);
+
+	deviceLabel25.setIdentifier("");
+	deviceLabel25.setNumCols(15);
+	deviceLabel25.setOffsetNid(139);
+	jPanel18.add(deviceLabel25);
+
+	deviceField28.setIdentifier("");
+	deviceField28.setNumCols(12);
+	deviceField28.setOffsetNid(140);
+	jPanel18.add(deviceField28);
+
+	deviceLabel26.setIdentifier("");
+	deviceLabel26.setNumCols(15);
+	deviceLabel26.setOffsetNid(143);
+	jPanel18.add(deviceLabel26);
+
+	deviceField29.setIdentifier("");
+	deviceField29.setNumCols(12);
+	deviceField29.setOffsetNid(144);
+	jPanel18.add(deviceField29);
+
+	deviceChoice27.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice27.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice27.setIdentifier("");
+	deviceChoice27.setLabelString(" ");
+	deviceChoice27.setOffsetNid(145);
+	deviceChoice27.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice27);
+
+	jPanel4.add(jPanel18);
+
+	deviceChannel14.setInSameLine(true);
+	deviceChannel14.setLabelString("14");
+	deviceChannel14.setOffsetNid(148);
+	deviceChannel14.setShowVal("");
+	deviceChannel14.setUpdateIdentifier("");
+	jPanel19.add(deviceChannel14);
+
+	deviceChoice28.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice28.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice28.setIdentifier("");
+	deviceChoice28.setLabelString(" ");
+	deviceChoice28.setOffsetNid(149);
+	deviceChoice28.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice28);
+
+	deviceLabel27.setIdentifier("");
+	deviceLabel27.setNumCols(15);
+	deviceLabel27.setOffsetNid(150);
+	jPanel19.add(deviceLabel27);
+
+	deviceField30.setIdentifier("");
+	deviceField30.setNumCols(12);
+	deviceField30.setOffsetNid(151);
+	jPanel19.add(deviceField30);
+
+	deviceLabel28.setIdentifier("");
+	deviceLabel28.setNumCols(15);
+	deviceLabel28.setOffsetNid(154);
+	jPanel19.add(deviceLabel28);
+
+	deviceField31.setIdentifier("");
+	deviceField31.setNumCols(12);
+	deviceField31.setOffsetNid(155);
+	jPanel19.add(deviceField31);
+
+	deviceChoice29.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice29.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice29.setIdentifier("");
+	deviceChoice29.setLabelString(" ");
+	deviceChoice29.setOffsetNid(156);
+	deviceChoice29.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice29);
+
+	jPanel4.add(jPanel19);
+
+	deviceChannel15.setInSameLine(true);
+	deviceChannel15.setLabelString("15");
+	deviceChannel15.setOffsetNid(159);
+	deviceChannel15.setShowVal("");
+	deviceChannel15.setUpdateIdentifier("");
+	jPanel20.add(deviceChannel15);
+
+	deviceChoice30.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice30.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice30.setIdentifier("");
+	deviceChoice30.setLabelString(" ");
+	deviceChoice30.setOffsetNid(160);
+	deviceChoice30.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice30);
+
+	deviceLabel29.setIdentifier("");
+	deviceLabel29.setNumCols(15);
+	deviceLabel29.setOffsetNid(161);
+	jPanel20.add(deviceLabel29);
+
+	deviceField32.setIdentifier("");
+	deviceField32.setNumCols(12);
+	deviceField32.setOffsetNid(162);
+	jPanel20.add(deviceField32);
+
+	deviceLabel30.setIdentifier("");
+	deviceLabel30.setNumCols(15);
+	deviceLabel30.setOffsetNid(165);
+	jPanel20.add(deviceLabel30);
+
+	deviceField33.setIdentifier("");
+	deviceField33.setNumCols(12);
+	deviceField33.setOffsetNid(166);
+	jPanel20.add(deviceField33);
+
+	deviceChoice31.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice31.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice31.setIdentifier("");
+	deviceChoice31.setLabelString(" ");
+	deviceChoice31.setOffsetNid(167);
+	deviceChoice31.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice31);
+
+	jPanel4.add(jPanel20);
+
+	deviceChannel16.setInSameLine(true);
+	deviceChannel16.setLabelString("16");
+	deviceChannel16.setOffsetNid(170);
+	deviceChannel16.setShowVal("");
+	deviceChannel16.setUpdateIdentifier("");
+	jPanel21.add(deviceChannel16);
+
+	deviceChoice32.setChoiceFloatValues(new float[] {(float)1.0,(float)4.0,(float)5.0,(float)10.0,(float)20.0,(float)50.0,(float)100.0});
+	deviceChoice32.setChoiceItems(new String[] {"1", "4", "5", "10", "20", "50", "100"});
+	deviceChoice32.setIdentifier("");
+	deviceChoice32.setLabelString(" ");
+	deviceChoice32.setOffsetNid(171);
+	deviceChoice32.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice32);
+
+	deviceLabel31.setIdentifier("");
+	deviceLabel31.setNumCols(15);
+	deviceLabel31.setOffsetNid(172);
+	jPanel21.add(deviceLabel31);
+
+	deviceField34.setIdentifier("");
+	deviceField34.setNumCols(12);
+	deviceField34.setOffsetNid(173);
+	jPanel21.add(deviceField34);
+
+	deviceLabel32.setIdentifier("");
+	deviceLabel32.setNumCols(15);
+	deviceLabel32.setOffsetNid(176);
+	jPanel21.add(deviceLabel32);
+
+	deviceField35.setIdentifier("");
+	deviceField35.setNumCols(12);
+	deviceField35.setOffsetNid(177);
+	jPanel21.add(deviceField35);
+
+	deviceChoice33.setChoiceFloatValues(new float[] {(float)1.0,(float)2.0,(float)4.0,(float)8.0});
+	deviceChoice33.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice33.setIdentifier("");
+	deviceChoice33.setLabelString(" ");
+	deviceChoice33.setOffsetNid(178);
+	deviceChoice33.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice33);
+
+	jPanel4.add(jPanel21);
+
+	jScrollPane1.setViewportView(jPanel4);
+
+	getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

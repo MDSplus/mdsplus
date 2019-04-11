@@ -495,7 +495,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       c->client_type = m_user->h.client_type;
       *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
       if (m_user->h.ndims>0)
-        c->version = m_user->h.dims[0];
+	c->version = m_user->h.dims[0];
     } else
       *usr = NULL;
     if STATUS_NOT_OK

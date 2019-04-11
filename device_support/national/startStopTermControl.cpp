@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-int main(int argc, char** argv) 
+int main(int argc, char** argv)
 {
     sem_t * semPause_id;
     sem_t * semWake_id;
@@ -42,14 +42,14 @@ int main(int argc, char** argv)
 
     semPause_id = sem_open("PauseControl", O_CREAT, 0666, 0);
     if(semPause_id == SEM_FAILED) {
-        perror("child sem_open");
-        return 0;
+	perror("child sem_open");
+	return 0;
     }
-    
+
     semWake_id = sem_open("WakeControl", O_CREAT, 0666, 0);
     if(semWake_id== SEM_FAILED) {
-        perror("child sem_open");
-        return 0;
+	perror("child sem_open");
+	return 0;
     }
 
 
@@ -76,9 +76,9 @@ int main(int argc, char** argv)
 			return 0;
 		}
 */
-	}   
+	}
     }
-    
+
     if(strcmp(argv[1], "start") == 0 )
     {
 	if( sem_getvalue( semWake_id, &wakeState ) < 0 )
@@ -102,7 +102,7 @@ int main(int argc, char** argv)
 			perror("sem_post WakeControl");
 			return 0;
 		}
-	}   
+	}
     }
 
     printf("Posting for parent\n");

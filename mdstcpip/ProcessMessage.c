@@ -843,9 +843,9 @@ Message *ProcessMessage(Connection * connection, Message * message)
     struct descriptor *d = connection->descrip[message->h.descriptor_idx];
     if (message->h.dtype == DTYPE_SERIAL) {
       if (d && d->class != CLASS_XD) {
-        if (d->class == CLASS_D && d->pointer)
-          free(d->pointer);
-        free(d);
+	if (d->class == CLASS_D && d->pointer)
+	  free(d->pointer);
+	free(d);
       }
       COPY_DESC(d,EMPTYXD,tmp);
       connection->descrip[message->h.descriptor_idx] = d;
@@ -855,10 +855,10 @@ Message *ProcessMessage(Connection * connection, Message * message)
       // instance the connection descriptor field //
       const short lengths[] = { 0, 0, 1, 2, 4, 8, 1, 2, 4, 8, 4, 8, 8, 16, 0 };
       if (message->h.ndims == 0) {
-        d = calloc(1,sizeof(struct descriptor_s));
-        d->class = CLASS_S;
+	d = calloc(1,sizeof(struct descriptor_s));
+	d->class = CLASS_S;
       } else
-        COPY_DESC(d,DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
+	COPY_DESC(d,DESCRIPTOR_A_COEFF, tmp, 0, 0, 0, MAX_DIMS, 0);
       d->length = message->h.dtype < DTYPE_CSTRING ? lengths[message->h.dtype] : message->h.length;
       d->dtype = message->h.dtype;
       if (d->class == CLASS_A) {
@@ -878,8 +878,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
       connection->descrip[message->h.descriptor_idx] = d;
     }
     if (d) {
-        // have valid connection descriptor instance     //
-        // copy the message buffer into the descriptor   //
+	// have valid connection descriptor instance     //
+	// copy the message buffer into the descriptor   //
 
       int dbytes = d->class == CLASS_S ? (int)d->length : (int)((array_coeff *) d)->arsize;
       int num = dbytes / max(1, d->length);
@@ -1015,8 +1015,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	if (options & MDS_IO_O_RDONLY)fopts|= O_RDONLY;
 	if (options & MDS_IO_O_RDWR)	fopts|= O_RDWR;
 	int fd = MDS_IO_OPEN(filename, fopts , mode);
-        struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&fd};
-        ans = BuildResponse(connection->client_type, connection->message_id, 3, &ans_d);
+	struct descriptor ans_d = { 4, DTYPE_L, CLASS_S, (char *)&fd};
+	ans = BuildResponse(connection->client_type, connection->message_id, 3, &ans_d);
 	break;
       }
     case MDS_IO_CLOSE_K:
@@ -1030,8 +1030,8 @@ Message *ProcessMessage(Connection * connection, Message * message)
     case MDS_IO_LSEEK_K:
       {
 	int fd = mdsio->lseek.fd;
-        int64_t offset = mdsio->lseek.offset;
-        SWAP_INT_IF_BIGENDIAN(&offset);
+	int64_t offset = mdsio->lseek.offset;
+	SWAP_INT_IF_BIGENDIAN(&offset);
 	int whence = mdsio->lseek.whence;
 	int64_t ans_o = MDS_IO_LSEEK(fd, offset, whence);
 	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, 0 };
@@ -1042,7 +1042,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_READ_K:
       {
-        int fd = mdsio->read.fd;
+	int fd = mdsio->read.fd;
 	size_t count =  mdsio->read.count;
 	void *buf = malloc(count);
 	ssize_t nbytes = MDS_IO_READ(fd, buf, count);
@@ -1119,7 +1119,7 @@ Message *ProcessMessage(Connection * connection, Message * message)
 	size_t count = mdsio->read_x.count;
 	void *buf = malloc(count);
 	int deleted;
-        size_t nbytes = MDS_IO_READ_X(fd, offset,buf,count,&deleted);
+	size_t nbytes = MDS_IO_READ_X(fd, offset,buf,count,&deleted);
 	if (nbytes > 0) {
 	  DESCRIPTOR_A(ans_d, 1, DTYPE_B, buf, nbytes);
 	  if ((size_t)nbytes != count) perror("READ_X_K wrong byte count");
@@ -1133,15 +1133,15 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_OPEN_ONE_K:
       {
-        char *treename= message->bytes;
-        char *filepath= message->bytes+strlen(treename)+1;
-        int shot = mdsio->open_one.shot;
-        tree_type_t type = (tree_type_t)mdsio->open_one.type;
-        int new =  mdsio->open_one.new;
-        int edit_flag = mdsio->open_one.edit;
-        int fd;
-        char*fullpath = NULL;
-        int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,NULL,&fd);
+	char *treename= message->bytes;
+	char *filepath= message->bytes+strlen(treename)+1;
+	int shot = mdsio->open_one.shot;
+	tree_type_t type = (tree_type_t)mdsio->open_one.type;
+	int new =  mdsio->open_one.new;
+	int edit_flag = mdsio->open_one.edit;
+	int fd;
+	char*fullpath = NULL;
+	int status = MDS_IO_OPEN_ONE(filepath,treename,shot,type,new,edit_flag,&fullpath,NULL,&fd);
 	int msglen = fullpath ? strlen(fullpath)+9 : 8;
 	char* msg = malloc(msglen);
 	DESCRIPTOR_A(ans_d,sizeof(char),DTYPE_B,msg,msglen);

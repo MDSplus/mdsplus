@@ -374,10 +374,10 @@ public class SXCSetup extends DeviceSetup {
     flowLayout4.setVgap(0);
 
     deviceButtons1.setCheckExpressions(new String[] {"SxcTrImpCheck(1, _ti_1)", "SxcTrImpCheck(2, _ti_2)", "SxcTrImpCheck(3, _ti_3)", "SxcTrImpCheck(4, _ti_4)",
-        "SxcTrImpCheck(5, _ti_5)", "SxcTrImpCheck(6, _ti_6)", "SxcTrImpCheck(7, _ti_7)", "SxcTrImpCheck(8, _ti_8)",
-        "SxcTrImpCheck(9, _ti_9)", "SxcTrImpCheck(10, _ti_10)", "SxcTrImpCheck(11, _ti_11)", "SxcTrImpCheck(12, _ti_12)",
-        "SxcTrImpCheck(13, _ti_13)", "SxcTrImpCheck(14, _ti_14)", "SxcTrImpCheck(15, _ti_15)", "SxcTrImpCheck(16, _ti_16)",
-        "SxcTrImpCheck(17, _ti_17)", "SxcTrImpCheck(18, _ti_18)", "SxcTrImpCheck(19, _ti_19)", "SxcTrImpCheck(20, _ti_20)",});
+	"SxcTrImpCheck(5, _ti_5)", "SxcTrImpCheck(6, _ti_6)", "SxcTrImpCheck(7, _ti_7)", "SxcTrImpCheck(8, _ti_8)",
+	"SxcTrImpCheck(9, _ti_9)", "SxcTrImpCheck(10, _ti_10)", "SxcTrImpCheck(11, _ti_11)", "SxcTrImpCheck(12, _ti_12)",
+	"SxcTrImpCheck(13, _ti_13)", "SxcTrImpCheck(14, _ti_14)", "SxcTrImpCheck(15, _ti_15)", "SxcTrImpCheck(16, _ti_16)",
+	"SxcTrImpCheck(17, _ti_17)", "SxcTrImpCheck(18, _ti_18)", "SxcTrImpCheck(19, _ti_19)", "SxcTrImpCheck(20, _ti_20)",});
     deviceButtons1.setCheckMessages(new String[] {"Invalid transimpedance value for channel 1", "Invalid transimpedance value for channel 2",
     "Invalid transimpedance value for channel 3", "Invalid transimpedance value for channel 4",
     "Invalid transimpedance value for channel 5", "Invalid transimpedance value for channel 6",

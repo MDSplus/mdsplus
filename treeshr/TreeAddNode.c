@@ -724,107 +724,107 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
     PINO_DATABASE *db;
     PINO_DATABASE *prev_db;
     if (dblist) {
-        if (exp_ptr) {
-            char uptree[13];
-            size_t i;
-            int shot;
-            size_t len = strlen(exp_ptr);
-            for (i = 0; i < 12 && i < len; i++)
-                uptree[i] = (char)toupper(exp_ptr[i]);
-            uptree[i] = '\0';
-            shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
-            status = TreeNOT_OPEN;
-            for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next) {
-                if ((shot == db->shotid) && (strcmp(uptree, db->main_treenam) == 0)) {
-                    if (prev_db) {
-                        prev_db->next = db->next;
-                        db->next = (*dblist);
-                        *dblist = db;
-                    }
-                    status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
-                    break;
-                }
-            }
-        } else
-            status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
-        if STATUS_OK {
-            /**************************************
-            Compute number of pages to allocate for
-            each part of the tree file.
-            Create a file of the correct size then
-            write out each part of the tree file.
-            Close the file.
-            Write out the characteristics file.
-            **************************************/
-            char *nfilenam = NULL;
-            FREE_ON_EXIT(nfilenam);
-            int ntreefd;
-            TREE_INFO *info_ptr = (*dblist)->tree_info;
-            nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
+	if (exp_ptr) {
+	    char uptree[13];
+	    size_t i;
+	    int shot;
+	    size_t len = strlen(exp_ptr);
+	    for (i = 0; i < 12 && i < len; i++)
+	        uptree[i] = (char)toupper(exp_ptr[i]);
+	    uptree[i] = '\0';
+	    shot = (shotid == 0) ? TreeGetCurrentShotId(uptree) : shotid;
+	    status = TreeNOT_OPEN;
+	    for (prev_db = 0, db = (*dblist); db ? db->open : 0; prev_db = db, db = db->next) {
+	        if ((shot == db->shotid) && (strcmp(uptree, db->main_treenam) == 0)) {
+	            if (prev_db) {
+	                prev_db->next = db->next;
+	                db->next = (*dblist);
+	                *dblist = db;
+	            }
+	            status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
+	            break;
+	        }
+	    }
+	} else
+	    status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
+	if STATUS_OK {
+	    /**************************************
+	    Compute number of pages to allocate for
+	    each part of the tree file.
+	    Create a file of the correct size then
+	    write out each part of the tree file.
+	    Close the file.
+	    Write out the characteristics file.
+	    **************************************/
+	    char *nfilenam = NULL;
+	    FREE_ON_EXIT(nfilenam);
+	    int ntreefd;
+	    TREE_INFO *info_ptr = (*dblist)->tree_info;
+	    nfilenam = strcpy(malloc(strlen(info_ptr->filespec) + 2), info_ptr->filespec);
 	    _TreeDeleteNodesWrite(*dbid);
-            trim_excess_nodes(info_ptr);
-            header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
-            node_pages = ((size_t)info_ptr->header->nodes * sizeof(NODE) + 511u) / 512u;
-            tags_pages = ((size_t)info_ptr->header->tags * 4u + 511u) / 512u;
-            tag_info_pages = ((size_t)info_ptr->header->tags * sizeof(TAG_INFO) + 511u) / 512u;
-            external_pages = ((size_t)info_ptr->header->externals * 4u + 511u) / 512u;
-            strcat(nfilenam, "#");
-            ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
-            if (ntreefd != -1) {
-                status = MDSplusERROR;
-                ssize_t num;
-                TREE_HEADER *header = HeaderOut(info_ptr->header);
-                num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
-                FreeHeaderOut(header);
-                status = TreeWRITETREEERR;
-                if (num != (ssize_t)(header_pages * 512)) {
-                    goto error_exit;
-                }
-                num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
-                if (num != (ssize_t)(node_pages * 512))
-                    goto error_exit;
-                num = MDS_IO_WRITE(ntreefd, info_ptr->tags, 512 * tags_pages);
-                if (num != (ssize_t)(tags_pages * 512))
-                    goto error_exit;
-                num = MDS_IO_WRITE(ntreefd, info_ptr->tag_info, 512 * tag_info_pages);
-                if (num != (ssize_t)(tag_info_pages * 512))
-                    goto error_exit;
-                num = MDS_IO_WRITE(ntreefd, info_ptr->external, 512 * external_pages);
-                if (num != (ssize_t)(external_pages * 512))
-                    goto error_exit;
-                status = TreeWriteNci(info_ptr);
-                if STATUS_NOT_OK
-                    goto error_exit;
-                status = TreeNORMAL;
-                if (info_ptr->channel > -1)
-                    status = MDS_IO_CLOSE(info_ptr->channel);
-                info_ptr->channel = -2;
-                MDS_IO_REMOVE(info_ptr->filespec);
-                if (MDS_IO_CLOSE(ntreefd) == -1) {
-                    status = TreeCLOSEERR;
-                    goto error_exit;
-                }
-                if (MDS_IO_RENAME(nfilenam, info_ptr->filespec) == -1) {
-                    status = TreeMOVEERROR;
-                    goto error_exit;
-                }
-                info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec, O_RDWR, 0);
-                if (info_ptr->channel == -1) {
-                    status = TreeOPENEDITERR;
-                    goto error_exit;
-                }
-                MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
-                status = TreeNORMAL;
-                (*dblist)->modified = 0;
+	    trim_excess_nodes(info_ptr);
+	    header_pages = (sizeof(TREE_HEADER) + 511u) / 512u;
+	    node_pages = ((size_t)info_ptr->header->nodes * sizeof(NODE) + 511u) / 512u;
+	    tags_pages = ((size_t)info_ptr->header->tags * 4u + 511u) / 512u;
+	    tag_info_pages = ((size_t)info_ptr->header->tags * sizeof(TAG_INFO) + 511u) / 512u;
+	    external_pages = ((size_t)info_ptr->header->externals * 4u + 511u) / 512u;
+	    strcat(nfilenam, "#");
+	    ntreefd = MDS_IO_OPEN(nfilenam, O_WRONLY | O_CREAT | O_TRUNC, 0664);
+	    if (ntreefd != -1) {
+	        status = MDSplusERROR;
+	        ssize_t num;
+	        TREE_HEADER *header = HeaderOut(info_ptr->header);
+	        num = MDS_IO_WRITE(ntreefd, header, 512 * header_pages);
+	        FreeHeaderOut(header);
+	        status = TreeWRITETREEERR;
+	        if (num != (ssize_t)(header_pages * 512)) {
+	            goto error_exit;
+	        }
+	        num = MDS_IO_WRITE(ntreefd, info_ptr->node, 512 * node_pages);
+	        if (num != (ssize_t)(node_pages * 512))
+	            goto error_exit;
+	        num = MDS_IO_WRITE(ntreefd, info_ptr->tags, 512 * tags_pages);
+	        if (num != (ssize_t)(tags_pages * 512))
+	            goto error_exit;
+	        num = MDS_IO_WRITE(ntreefd, info_ptr->tag_info, 512 * tag_info_pages);
+	        if (num != (ssize_t)(tag_info_pages * 512))
+	            goto error_exit;
+	        num = MDS_IO_WRITE(ntreefd, info_ptr->external, 512 * external_pages);
+	        if (num != (ssize_t)(external_pages * 512))
+	            goto error_exit;
+	        status = TreeWriteNci(info_ptr);
+	        if STATUS_NOT_OK
+	            goto error_exit;
+	        status = TreeNORMAL;
+	        if (info_ptr->channel > -1)
+	            status = MDS_IO_CLOSE(info_ptr->channel);
+	        info_ptr->channel = -2;
+	        MDS_IO_REMOVE(info_ptr->filespec);
+	        if (MDS_IO_CLOSE(ntreefd) == -1) {
+	            status = TreeCLOSEERR;
+	            goto error_exit;
+	        }
+	        if (MDS_IO_RENAME(nfilenam, info_ptr->filespec) == -1) {
+	            status = TreeMOVEERROR;
+	            goto error_exit;
+	        }
+	        info_ptr->channel = MDS_IO_OPEN(info_ptr->filespec, O_RDWR, 0);
+	        if (info_ptr->channel == -1) {
+	            status = TreeOPENEDITERR;
+	            goto error_exit;
+	        }
+	        MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
+	        status = TreeNORMAL;
+	        (*dblist)->modified = 0;
 		TreeCallHookFun("TreeHook","WriteTree",info_ptr->treenam, (*dblist)->shotid, NULL);
-                TreeCallHook(WriteTree, info_ptr, 0);
-            } else {
-                (*dblist)->modified = 0;
-                status = TreeFCREATE;
-            }
+	        TreeCallHook(WriteTree, info_ptr, 0);
+	    } else {
+	        (*dblist)->modified = 0;
+	        status = TreeFCREATE;
+	    }
 error_exit: ;
-            FREE_NOW(nfilenam);
-        }
+	    FREE_NOW(nfilenam);
+	}
     }
     return status;
 }

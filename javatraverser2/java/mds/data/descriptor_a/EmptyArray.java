@@ -12,46 +12,46 @@ public final class EmptyArray extends Descriptor_A<Object>{
     public static final EmptyArray NEW = new EmptyArray();
 
     public EmptyArray(){
-        super(DTYPE.Z, ByteBuffer.allocate(0).order(Descriptor.BYTEORDER));
+	super(DTYPE.Z, ByteBuffer.allocate(0).order(Descriptor.BYTEORDER));
     }
 
     public EmptyArray(final ByteBuffer b){
-        super(b);
+	super(b);
     }
 
     @Override
     public final StringBuilder decompile(final int prec, final StringBuilder pout, final int mode) {
-        return pout.append("[]");
+	return pout.append("[]");
     }
 
     @Override
     protected DATA<?> getData_() throws MdsException {
-        return new Uint8Array(new byte[]{});
+	return new Uint8Array(new byte[]{});
     }
 
     @Override
     public final Object getElement(final ByteBuffer b_in) {
-        return null;
+	return null;
     }
 
     @Override
     public Object getElement(final int i) {
-        return null;
+	return null;
     }
 
     @Override
     public Descriptor<?> getScalar(final int idx) {
-        return null;
+	return null;
     }
 
     @Override
     protected final String getSuffix() {
-        return "";
+	return "";
     }
 
     @Override
     protected final Object[] initArray(final int size) {
-        return new Object[0];
+	return new Object[0];
     }
 
     @Override
@@ -62,41 +62,41 @@ public final class EmptyArray extends Descriptor_A<Object>{
 
     @Override
     public BigInteger toBigInteger(final Object t) {
-        return null;
+	return null;
     }
 
     @Override
     public final byte toByte(final Object t) {
-        return 0;
+	return 0;
     }
 
     @Override
     public final double toDouble(final Object t) {
-        return 0.;
+	return 0.;
     }
 
     @Override
     public final float toFloat(final Object t) {
-        return 0.f;
+	return 0.f;
     }
 
     @Override
     public final int toInt(final Object t) {
-        return 0;
+	return 0;
     }
 
     @Override
     public final long toLong(final Object t) {
-        return 0l;
+	return 0l;
     }
 
     @Override
     public final short toShort(final Object t) {
-        return 0;
+	return 0;
     }
 
     @Override
     protected final String toString(final Object t) {
-        return "*";
+	return "*";
     }
 }

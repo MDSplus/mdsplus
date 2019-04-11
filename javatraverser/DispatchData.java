@@ -24,5 +24,5 @@ public class DispatchData extends CompoundData
     public static final int SCHED_ASYNCH = 1;//0x1000000;
     public static final int SCHED_SEQ = 2;//0x2000000;
     public static final int SCHED_COND = 3;//0x3000000;
- 
+
 }

@@ -70,7 +70,7 @@ Filter *Bilinear(double fp, double fs, double ap, double as, double fc, int *out
 Complex *FindFactors(Complex * poles, double fc, int n, double gain);
 
 /* Real time support */
-//Prepare the description of a butterworth 
+//Prepare the description of a butterworth
 Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles);
 //Initialize then data structures whichb are required for real-time filtering
 void initializeRunTimeFilter(RunTimeFilter * rtf);
