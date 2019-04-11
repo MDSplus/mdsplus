@@ -294,7 +294,7 @@ static int io_listen(int argc, char **argv){
 	}
       }
     } else if (errno==EINTR) {
-      exit(EINTR);// signal interrupt
+      continue;// exit(EINTR);// signal interrupt; can be triggered by python os.system()
     } else {// Select returned -1 error code
       error_count++;
       PERROR("error in main select");
