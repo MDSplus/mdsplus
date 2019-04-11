@@ -176,7 +176,7 @@ class MARTE2_COMPONENT(Device):
       except:
         timebase = None
       mode = self.mode.getData()
-      gamName = self.convertPath(self.getFullPath().data())
+      gamName = self.convertPath(self.getFullPath())
        
       gamClass = self.gam_class.data() #class is a py
       gamMode = self.mode.data()
@@ -191,7 +191,6 @@ class MARTE2_COMPONENT(Device):
           paramDicts.append(paramDict)
         except:
           pass
-
       inputDicts = []
       if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
         inputNids = np.sort(self.getNode('inputs').getChildren())
@@ -420,7 +419,7 @@ class MARTE2_COMPONENT(Device):
           else:
             prevTimebase = TreeNode(timebase, self.getTree())
             timebase = prevTimebase.getData()
-        origName = self.convertPath(prevTimebase.getParent().getFullPath().data())
+        origName = self.convertPath(prevTimebase.getParent().getFullPath())
         #Check whether the synchronization source is a Sunch Input. Only in this case, the origin DDB is its output DDB since that device is expected to produce Time
         originMode = prevTimebase.getParent().getNode('mode').data()
         if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
@@ -443,7 +442,7 @@ class MARTE2_COMPONENT(Device):
       gamText = '  +'+gamName+' = {\n'
       gamText += '    Class = '+gamClass+'\n'
       for paramDict in paramDicts:
-	if paramDict['is_text']:
+        if paramDict['is_text']:
           gamText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
         else:
           gamText += '    '+paramDict['name']+' = '+str(paramDict['value'])+'\n'
@@ -463,12 +462,12 @@ class MARTE2_COMPONENT(Device):
 	    if sourceNode.getUsage() != 'DEVICE':
 	      isTreeRef = True
 	    else:
-              sourceGamName = self.convertPath(sourceNode.getFullPath().data())
+              sourceGamName = self.convertPath(sourceNode.getFullPath())
               signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
 	    isTreeRef = True
 	  if isTreeRef:
-	    signalName = self.convertPath(inputDict['value_nid'].getPath().data())
+	    signalName = self.convertPath(inputDict['value_nid'].getPath())
             nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
             gamText += '      '+signalName+' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeInput\n'
@@ -508,8 +507,9 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
-          startTime = currTimebase.getBegin().data()
-          period = currTimebase.getDelta().data()
+	  print(currTimebase)
+          startTime = currTimebase.begin.data()
+          period = currTimebase.delta.data()
         else:
           currTimebase = currTimebase.data()
           startTime - currTimebase[0]
@@ -523,24 +523,24 @@ class MARTE2_COMPONENT(Device):
           dataSourceText += '      '+nodeDict['name']+' = {\n'
           valExpr = nodeDict['expr']
           if isinstance(valExpr, TreeNode):
-	    valExpr = valExpr.getFullPath().data()
+            valExpr = valExpr.getFullPath()
           dataSourceText += '        DataExpr = "'+valExpr+'"\n'
           dataSourceText += '        TimebaseExpr = "dim_of('+valExpr+')"\n'
           numberOfElements = 1
           if not (np.isscalar(nodeDict['dimensions'])):
-	    for currDim in nodeDict['dimensions']:
+            for currDim in nodeDict['dimensions']:
               numberOfElements *= currDim
           dataSourceText += '        NumberOfElements = '+str(numberOfElements)+'\n' 
           if nodeDict['col_order']:
-	    dataSourceText += '        UseColumnOrder = 1\n'
-	  else:
-	    dataSourceText += '        UseColumnOrder = 0\n'
-          dataSourceText += '        DataManagement = 1\n'
-          dataSourceText += '      }\n'
+            dataSourceText += '        UseColumnOrder = 1\n'
+          else:
+            dataSourceText += '        UseColumnOrder = 0\n'
+            dataSourceText += '        DataManagement = 1\n'
+            dataSourceText += '      }\n'
         dataSourceText += '      timebase = {\n'
-	dataSourceText += '        NumberOfElements = 1\n'
-	dataSourceText += '        Type = uint64\n'
-	dataSourceText += '	 }\n'
+        dataSourceText += '        NumberOfElements = 1\n'
+        dataSourceText += '        Type = uint64\n'
+        dataSourceText += '	 }\n'
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
@@ -593,19 +593,19 @@ class MARTE2_COMPONENT(Device):
       dataSourceText += '    Signals = {\n'
       currTimebase = self.timebase.evaluate()
       if isinstance(currTimebase, Range):
-         period = currTimebase.getDelta().data()
+         period = currTimebase.delta.data()
       else:
          currTimebase = currTimebase.data()
          period = currTimebase[1] - currTimebase[0]
 
 #If trigger is defined put it as first signal
       if outputTrigger != None:
-	dataSourceText += '      Trigger = {\n'
-	dataSourceText += '      type = uint8\n'
-	dataSourceText += '    }\n'
+        dataSourceText += '      Trigger = {\n'
+        dataSourceText += '      type = uint8\n'
+        dataSourceText += '    }\n'
       for outputDict in outputDicts:
         dataSourceText += '      '+outputDict['name']+' = {\n'
-        dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath().data()+'"\n'
+        dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath()+'"\n'
         dataSourceText += '        Period = '+str(period)+'\n'
         dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
         dataSourceText += '        AutomaticSegmentation = 0\n'
@@ -625,15 +625,15 @@ class MARTE2_COMPONENT(Device):
 #MdsWriter Trigger management
       if outputTrigger != None:
         triggerNode = outputTrigger.getParent().getParent().getParent()
-        triggerGamName = self.convertPath(sourceNode.getFullPath().data())
+        triggerGamName = self.convertPath(sourceNode.getFullPath())
         triggerSigName = outputTrigger.getParent().getNode(':name').data()
         gamText += '      '+triggerSigName+' = {\n'
         if self.onSameThread(threadMap, triggerNode):
-	  gamText += '        DataSource = '+triggerGamName+'_Output_DDB\n'
+          gamText += '        DataSource = '+triggerGamName+'_Output_DDB\n'
         elif self.sameSynchSource(sourceNode):
-	  gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
+          gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
         else:
- 	  gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
+          gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
         gamText += '      }\n'
 
       gamText += '    }\n'
@@ -832,7 +832,7 @@ class MARTE2_COMPONENT(Device):
       currTimebase = self.getNode('timebase').evaluate()
       
       if isinstance(currTimebase, Range):
-         period = currTimebase.getDelta().data()
+         period = currTimebase.delta.data()
       else:
          currTimebase = currTimebase.data()
          period = currTimebase[1] - currTimebase[0]
@@ -844,7 +844,7 @@ class MARTE2_COMPONENT(Device):
 	dataSourceText += '    }\n'
       for outputDict in outputDicts:
         dataSourceText += '      '+outputDict['name']+' = {\n'
-        dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath().data()+'"\n'
+        dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath()+'"\n'
         dataSourceText += '        Period = '+str(period)+'\n'
         dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
         dataSourceText += '        AutomaticSegmentation = 0\n'
@@ -899,7 +899,7 @@ class MARTE2_COMPONENT(Device):
 #MdsWriter Trigger management
       if outputTrigger != None:
         triggerNode = outputTrigger.getParent().getParent().getParent()
-        triggerGamName = self.convertPath(sourceNode.getFullPath().data())
+        triggerGamName = self.convertPath(sourceNode.getFullPath())
         triggerSigName = outputTrigger.getParent().getNode(':name').data()
         gamText += '      '+triggerSigName+' = {\n'
         if self.onSameThread(threadMap, triggerNode):
@@ -908,7 +908,7 @@ class MARTE2_COMPONENT(Device):
 	  gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
         else:
  	  gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
- 	gamText += '      }\n'
+      gamText += '      }\n'
 
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
@@ -1064,7 +1064,7 @@ class MARTE2_COMPONENT(Device):
           else:
             prevTimebase = TreeNode(timebase, self.getTree())
             timebase = prevTimebase.getData()
-        origName = prevTimebase.getParent().getFullPath().data()
+        origName = prevTimebase.getParent().getFullPath()
         #Check whether the synchronization source is a Sunch Input. Only in this case, the origin DDB is its output DDB
         originMode = prevTimebase.getParent().getNode('mode').data()
         if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
@@ -1094,16 +1094,18 @@ class MARTE2_COMPONENT(Device):
           isTreeRef = False
           try:
 	    sourceNode = inputDict['value'].getParent().getParent().getParent()
-            sourceGamName = self.convertPath(sourceNode.getFullPath().data())
+            sourceGamName = self.convertPath(sourceNode.getFullPath())
             signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
             isTreeRef = True
 	  if isTreeRef:
-	      signalName = self.convertPath(inputDict['value_nid'].getPath().data())
+	      signalName = self.convertPath(inputDict['value_nid'].getPath())
 	      signalNames.append(signalName)
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
               gamText += '      '+signalName+' = {\n'
               gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
+              if 'type' in inputDict:
+                gamText += '        Type = '+inputDict['type']+'\n'
 	  else: 
             signalNames.append(signalGamName)
             gamText += '      '+signalGamName+' = {\n'
@@ -1162,8 +1164,8 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
-          startTime = currTimebase.getBegin()
-          period = currTimebase.getDelta()
+          startTime = currTimebase.begin
+          period = currTimebase.delta
         else:
           currTimebase = currTimebase.data()
           startTime - currTimebase[0]
@@ -1177,8 +1179,9 @@ class MARTE2_COMPONENT(Device):
           dataSourceText += '      '+nodeDict['name']+' = {\n'
           valExpr = nodeDict['expr']
           if isinstance(valExpr, TreeNode):
-	    valExpr = valExpr.getFullPath().data()
+	    valExpr = valExpr.getFullPath()
           dataSourceText += '        DataExpr = "'+valExpr+'"\n'
+          dataSourceText += '        TimebaseExpr = "dim_of('+valExpr+')"\n'
           numberOfElements = 1
           if not (np.isscalar(nodeDict['dimensions'])):
 	    for currDim in nodeDict['dimensions']:
@@ -1198,6 +1201,14 @@ class MARTE2_COMPONENT(Device):
  #Head and parameters
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
+#parameters
+      print('OUT PARS')
+      print(paramDicts)
+      for paramDict in paramDicts:
+        if paramDict['is_text']:
+          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
+        else:
+          dataSourceText += '    '+paramDict['name']+' = '+str(paramDict['value'])+'\n'
 
 #input Signals
       dataSourceText += '    Signals = {\n'

@@ -292,7 +292,7 @@ public class ChannelArchiver
 				            if(debug) System.out.println("QUEUE SIZE: " + queue.size());
 				            if(debug) System.out.println("FILE SIZE: " + currSize);
 				            if(currSize > 1000000000 && currSize == prevSize)
-				                ChannelArchiver.debug = true;
+				            ChannelArchiver.debug = true;
 				            prevSize = currSize;
                         }
                     }catch(Exception exc){System.err.println("Cannot get Datafile Size: " + exc); 
@@ -346,16 +346,16 @@ public class ChannelArchiver
 	    public void setNewShot(int shot)
 	    {
 	        if( shot < 0 )
-                {
-                   System.out.println("setNewShot terminate");
-                   terminate = true;
-                }
-                else
-                {
-	           newShot = shot;
-                   currShot = -1;
-                   terminate = false;
-                }
+            {
+               System.out.println("setNewShot terminate");
+               terminate = true;
+            }
+            else
+            {
+           	   newShot = shot;
+               currShot = -1;
+               terminate = false;
+            }
 	    }
 
 	    public int getCurrShot()
@@ -388,7 +388,7 @@ public class ChannelArchiver
 	            	{
          		        if(debug) System.out.println("REACHED FILE SIZE LIMIT: " + currSize + " " + switchSize);
 	           	        currShot++;
-		            newShot = currShot;
+		            	newShot = currShot;
 		            } 
 	                else
 	                {
@@ -438,12 +438,12 @@ public class ChannelArchiver
 	                }
 	                catch(Exception exc) 
 	                {
-		                System.err.println("Error getting tree node for " + nodeName + ": " +exc + " : " + tree);
-				System.exit(0);
+		                System.err.println("---- Error getting tree node for " + nodeName + ": " +exc + " : " + tree);
+				        System.exit(0);
 	                }
 	            }
             	try {
-                       //System.out.println(" Write data on Node " + nodeName );
+                   //System.out.println(" Write data on Node " + nodeName );
 	                if(descr.getDim() > 1)
 	                {
 	                    node.makeTimestampedSegment(descr.getVals(), descr.getTimes());
@@ -702,6 +702,7 @@ public class ChannelArchiver
             }
 
 	        treeH.setNewShot(shot);
+
             if( shot > 0  )
             {
                 System.err.println("setNewShot Start Thread");
@@ -730,7 +731,7 @@ public class ChannelArchiver
              if(recName == null)
                 return;
 
-System.out.println("Spedisco evento  " + recName);
+//System.out.println("Spedisco evento  " + recName);
 
              long timeUTC = (time + POSIX_TIME_AT_EPICS_EPOCH)/1000000;
 
@@ -738,8 +739,7 @@ System.out.println("Spedisco evento  " + recName);
              try {
                 java.lang.String streamEvent = ""+getCurrShot()+" "+recName+" F 1 "+timeUTC+" "+data.getFloat();
 
-System.out.println("Spedisco dato  " + timeUTC);
-
+//System.out.println("Spedisco dato  " + timeUTC);
 
                 Event.setEventRaw("STREAMING", streamEvent.getBytes());
                 }catch(Exception exc)
@@ -897,7 +897,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 		        int severity = CAStatus2Severity(e.getStatus());
                 if(time <= prevTime)  //A previous sample has been received
                 {
-                        //System.out.println("---PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
+                  //System.out.println("---PREVIOUS SAMPLE!!! Time: "+time + " Previous time: " + prevTime);
                     return;
                 }
                 if(prevTime > 0 && ((time - prevTime)/1E12 > ignFuture)) //Too far in future
@@ -935,12 +935,10 @@ System.out.println("Spedisco dato  " + timeUTC);
 	    {
 	        try {                                
 		        Date now = new Date();      
-		        long nowTime1 = (now.getTime() * 1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
+		        //long nowTime1 = (now.getTime() * 1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
 		        long nowTime = (System.currentTimeMillis()*1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
-
-
-                        //System.err.println("Writing SNAP VALUE " + treeNodeName + " " + currTime + " " + nowTime + " " + currData);
-                 treeManager.putRow(treeNodeName, currData, nowTime, segmentSize);
+              //System.err.println("Writing SNAP VALUE " + treeNodeName + " " + currTime + " " + nowTime + " " + currData);
+                treeManager.putRow(treeNodeName, currData, nowTime, segmentSize);
             }
             catch(Exception exc)
             {
@@ -1025,7 +1023,8 @@ System.out.println("Spedisco dato  " + timeUTC);
                             {
                                 //if(debug) 
                                 System.out.println("Starting thread for " + treeNodeName);
-                                prevTime = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
+                                //prevTime = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
+							    prevTime = (System.currentTimeMillis() * 1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
                                 System.out.println("Time at thread start " + prevTime);
                                 DBR dbr = chan.get();
 			                    try
@@ -1033,7 +1032,7 @@ System.out.println("Spedisco dato  " + timeUTC);
                                     dataType = DBR2TimedType(dbr);
                                 } catch (Exception exc ) {
                                     System.out.println("NODE - "+treeNodeName+" Not Scanned invalid time time data format");
-                                                //System.out.println(exc);
+                                  //System.out.println(exc);
 				                    break;
 			                    }
                                 nItems = DBR2NItems(dbr);
@@ -1041,7 +1040,7 @@ System.out.println("Spedisco dato  " + timeUTC);
 
                             try
                             {
-			                    DBR dbr = chan.get(dataType, nItems);
+			                   DBR dbr = chan.get(dataType, nItems);
                                ctxt.pendIO(.5);
                                data = DBR2Data(dbr);
                                time = DBR2Time(dbr);
@@ -1057,8 +1056,9 @@ System.out.println("Spedisco dato  " + timeUTC);
                                 else
                                     System.out.print(" TIMEOUT on data  " + treeNodeName + "Used previous value");					
 			                    data = prevData;
-                                //time = prevTime + period * 1000000;//epics time in nano seconds
-                                time = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
+                              //time = prevTime + period * 1000000;//epics time in nano seconds
+                              //time = (System.currentTimeMillis() - 631152000000l ) * 1000000l;
+							    time = (System.currentTimeMillis() * 1000000L) - POSIX_TIME_AT_EPICS_EPOCH;
                             }
                             catch(Exception exc)
                             {
@@ -1248,16 +1248,25 @@ System.out.println("Spedisco dato  " + timeUTC);
 		        treeManager = new TreeManager(experiment, tree, shot, fileSize);
 	        else
 		        treeManager = new TreeManagerConnection(mdsipAddress, experiment, shot);
+
             TreeNodeArray treeNodeArr = tree.getNodeWild("***");
-            java.lang.String []nodeNames = treeNodeArr.getPath();
+            java.lang.String []nodeNames = treeNodeArr.getFullPath();
             int[] nids = treeNodeArr.getNid();
 
             for(int i = 0; i < nodeNames.length; i++)
             {
+
                 if(nodeNames[i].endsWith(":REC_NAME"))
                 {
                     java.lang.String nodeName = nodeNames[i].substring(0, nodeNames[i].length() - 9);
                     java.lang.String recName  = "";
+
+		    if( !(treeNodeArr.getElementAt(i).isOn()) )
+		    {
+		        System.out.println("Node off " + nodeNames[i] );
+		        continue;
+		    }
+
                     
                     try {
                         recName = new TreeNode(nids[i], tree).getData().getString();

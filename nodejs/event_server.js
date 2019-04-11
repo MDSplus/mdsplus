@@ -26,7 +26,7 @@ var ssePort = parseInt(process.argv[3]);
 app.get('/streams', function(req, res) {
       //console.log('REQUEST FOR NAME: '+req.query.name); 
 //      var data = fs.readFileSync('scope/sample_display.html', 'utf8');
-      var data = fs.readFileSync('scope/index.html', 'utf8');
+      var data = fs.readFileSync('index.html', 'utf8');
       //console.log(data);
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
@@ -34,7 +34,7 @@ app.get('/streams', function(req, res) {
 
 app.get('/', function(req, res) {
       console.log('REQUEST FOR NAME: /'); 
-      var data = fs.readFileSync('scope/index-demo.html', 'utf8');
+      var data = fs.readFileSync('index.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
@@ -75,6 +75,8 @@ function getArrayOfSignals(inputString) {
 
       if(signals != undefined)
 	  handleNewConnectionList(signals, client); });
+
+   sse.on('disconnect', function(client) {console.log('DISCONNECT!!!!!');})
    console.log("Example app listening at http://%s:%s", host, port)
 })
 
@@ -108,10 +110,10 @@ function handleEventReception(evMessage)
       var samples = [];
       for(var i = 0; i < numSamples; i++)
       {
-	  //console.log("XXXX", evItems[4+i], parseFloat(evItems[4+i]));
 	  times.push(parseFloat(evItems[4+i]));
 	  samples.push(parseFloat(evItems[4+numSamples+i]));
       }
+      console.log('Received ' + name, numSamples);
       addSamples(name, shot, times, samples, evItems[2] == 'L');
       if(connections[name] != undefined)
       {

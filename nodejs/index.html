@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <!-- http://rat2.rfx.local:8082/w?panel=pippo&length=1000&s=s1&c=red&s=s2&c=green -->
   <!-- http://rat2.rfx.local:8082/w
     celestino logo RFX: rgb(30,180,224)
     blue logo RFX: rgb(7,75,118)
@@ -159,6 +160,8 @@
 <div id="app">
 
   <img src="https://www.igi.cnr.it/RFX_scope.png" alt="RFX Logo" width="300px">
+
+  <br><span>Example: http://rat2.rfx.local:8082/?panel=panelName&length=1000&s=s1&c=red&s=s2&c=green</span>
 
   <span v-if="$root.isRunningGraph"><div></div></span>
   <span v-else>
@@ -469,6 +472,44 @@ var vm = new Vue({
   created() {
     window.addEventListener('resize', this.handleResize)
     this.handleResize();
+
+    // parse parameters
+    var url = window.location.href;
+    //console.log("\n\nURL: " + url);
+    var params = { panel: "", length: 0, s: [], c: []};
+    var parser = document.createElement('a');
+    parser.href = url;
+    var query = parser.search.substring(1);
+    var vars = query.split('&');   
+    for (var i = 0; i < vars.length; i++) {
+	var pair = vars[i].split('=');
+        if (pair[0] == "panel") params.panel = decodeURIComponent(pair[1]);
+        if (pair[0] == "length") params.length = decodeURIComponent(pair[1]);
+        if (pair[0] == "s") params.s.push(decodeURIComponent(pair[1]));
+        if (pair[0] == "c") params.c.push(decodeURIComponent(pair[1]));
+    }
+    var st = [];
+    for (var i=0; i<params.s.length; i++) {
+        var col;
+        if(typeof params.c[i] === 'undefined') {
+            col = 'black';
+        } else {
+           col = params.c[i];
+        }
+	st.push({name: params.s[i], color: col});
+    }
+
+    if (params.panel != "") {
+        this.panels = [ {
+            name: params.panel,
+	    windowLength: params.length,
+            signals: st,
+        } ];  
+        console.log("Panel:");
+        console.log(this.panels);
+        this.startGraph();
+    }
+
   },
   destroyed() {
     window.removeEventListener('resize', this.handleResize)
@@ -558,10 +599,11 @@ var vm = new Vue({
 
       var msgLabels = msgArray.slice(5, 5+msgLength);
 
-      msgLabels = msgLabels.map(function (x) {
-        return (new Date(parseInt(x)));
-      });
-
+      if (msgTag == "L") {
+          msgLabels = msgLabels.map(function (x) {
+              return (new Date(parseInt(x)));
+          });
+      }
 
       var msgValues = msgArray.slice(5+msgLength, 5+2*msgLength);
 
