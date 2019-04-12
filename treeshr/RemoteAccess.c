@@ -1158,7 +1158,7 @@ EXPORT ssize_t MDS_IO_WRITE(int idx, void *buff, size_t count){
 #ifdef USE_PERF
   TreePerfWrite(count);
 #endif
-  return write(i.fd, buff, (unsigned int)count);
+  return write(i.fd, buff, (uint32_t)count);
 }
 
 inline static ssize_t io_read_remote(int conid, int fd, void *buff, size_t count){
