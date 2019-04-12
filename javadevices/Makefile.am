@@ -161,7 +161,10 @@ RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
 A3248Setup.java \
-RFX_RPADCSetup.java
+RFX_RPADCSetup.java \
+MARTE2_SUPERVISORSetup.java \
+MARTE2_STREAMSetup.java \
+MARTE2_GAMSetup.java
 
 java_DATA = jDevices.jar
 

@@ -194,27 +194,34 @@ class MARTE2_COMPONENT(Device):
       if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
         inputNids = np.sort(self.getNode('inputs').getChildren())
         for inputNid in inputNids:
-	  input = TreeNode(inputNid, self.getTree())
-          inputDict = {}
-          inputDict['type'] = input.getNode('type').data()
-          inputDict['dimensions'] = input.getNode('dimensions').data()
-          inputDict['value'] = input.getNode('value').getData() #NOT data()
-          inputDict['value_nid'] = input.getNode('value')
-          inputDict['col_order'] = input.getNode('col_order').data().upper()=='YES'
-          inputDicts.append(inputDict)
-
+          try:
+            input = TreeNode(inputNid, self.getTree())
+            inputDict = {}
+            inputDict['type'] = input.getNode('type').data()
+            inputDict['dimensions'] = input.getNode('dimensions').data()
+            inputDict['value'] = input.getNode('value').getData() #NOT data()
+            inputDict['value_nid'] = input.getNode('value')
+            inputDict['col_order'] = input.getNode('col_order').data().upper()=='YES'
+            inputDicts.append(inputDict)
+          except:
+            pass
       outputDicts = []
       if mode != MARTE2_COMPONENT.MODE_OUTPUT:
         outputNids = np.sort(self.getNode('outputs').getChildren())
         for outputNid in outputNids:
-	  output = TreeNode(outputNid, self.getTree())
-          outputDict = {}
-          outputDict['name'] = output.getNode('name').data()
-          outputDict['type'] = output.getNode('type').data()
-          outputDict['dimensions'] = output.getNode('dimensions').data()
-          outputDict['value_nid'] = output.getNode(':value')
-          outputDict['seg_len'] = output.getNode(':seg_len').data()
-          outputDicts.append(outputDict)
+          output = TreeNode(outputNid, self.getTree())
+          try:
+            outputDict = {}
+            outputDict['name'] = output.getNode('name').data()
+            outputDict['type'] = output.getNode('type').data()
+            outputDict['dimensions'] = output.getNode('dimensions').data()
+            if(outputDict['dimensions'] == -1):
+                continue  #dimensions set to -1 means that the output is not used
+            outputDict['value_nid'] = output.getNode(':value')
+            outputDict['seg_len'] = output.getNode(':seg_len').data()
+            outputDicts.append(outputDict)
+          except:
+            pass
       try:
 	outputTrigger = self.outputs_trigger.getData()
       except:
@@ -228,6 +235,9 @@ class MARTE2_COMPONENT(Device):
     def onSameThread(self, threadMap, node):
       nid1 = self.getNid()
       nid2 = node.getNid()
+      print(threadMap)
+      print(self.getPath())
+      print(node.getPath())
       if len(threadMap[nid1]) != len(threadMap[nid2]):
         return False
       for idx in range(len(threadMap[nid1])):
