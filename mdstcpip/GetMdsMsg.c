@@ -46,6 +46,7 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
 	tries = 0;
 	bytes_to_recv -= bytes_recv;
 	bptr += bytes_recv;
+	tries = 0;
 	continue;
       }
       if (errno==ETIMEDOUT)            return TdiTIMEOUT;
@@ -56,8 +57,8 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
       }
       tries++;
     }
-    if (tries >= 10) {
-      fprintf(stderr, "\rrecv failed for connection %d: too many EINTR's", c->id);
+    if (tries > 10) {
+      fprintf(stderr, "Connection %d possibly lost: encountered > 10 EINTRs\n", c->id);
       return SsINTERNAL;
     }
     return MDSplusSUCCESS;

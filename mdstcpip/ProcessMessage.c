@@ -1062,12 +1062,18 @@ Message *ProcessMessage(Connection * connection, Message * message)
       }
     case MDS_IO_WRITE_K:
       {
+	/* from http://man7.org/linux/man-pages/man2/write.2.html
+	 * On Linux, write() (and similar system calls) will transfer at most
+	 * 0x7ffff000 (2,147,479,552) bytes, returning the number of bytes
+	 * actually transferred.  (This is true on both 32-bit and 64-bit
+	 * systems.) => ergo uint32 will suffice
+         */
 	int fd = mdsio->write.fd;
 	size_t count = mdsio->write.count;
-	int64_t ans_o = (int64_t)MDS_IO_WRITE(fd, message->bytes, count);
-	struct descriptor ans_d = { 8, DTYPE_Q, CLASS_S, (char*)&ans_o };
+	uint32_t ans_o = (uint32_t)(MDS_IO_WRITE(fd, message->bytes, count) & 0xFFFFFFFFL);
+	struct descriptor ans_d = { sizeof(ans_o), DTYPE_LU, CLASS_S, (char*)&ans_o };
 	SWAP_INT_IF_BIGENDIAN(ans_d.pointer);
-	if (ans_o != (int64_t)count) perror("WRITE_K wrong byte count");
+	if (ans_o != mdsio->write.count) perror("WRITE_K wrong byte count");
 	ans = BuildResponse(connection->client_type, connection->message_id, 1, &ans_d);
 	break;
       }
