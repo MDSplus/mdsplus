@@ -2893,8 +2893,10 @@ remove 28/06/2005
 
     static boolean IsNewJVMVersion()
     {
-        String ver = System.getProperty("java.version");
-        return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1));
+	//String ver = System.getProperty("java.version");
+	boolean isGreater = ( Float.valueOf(System.getProperty("java.specification.version")) >= 1.2 );
+	return (isGreater);
+	// return (! (ver.indexOf("1.0") != -1 || ver.indexOf("1.1") != -1));
     }
 
     public static void main(String args[])
