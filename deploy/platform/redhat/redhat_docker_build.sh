@@ -20,7 +20,7 @@ do_createrepo() {
     if [ -d ${repodir}/${BRANCH}/RPMS/repodata ]
     then
 	rsync -a ${repodir}/${BRANCH}/RPMS/repodata ${tmpdir}
-	update_args="--update --cachdir ${repodir}/${BRANCH}/cache ${use_deltas}"
+	update_args="--update --cachedir ${repodir}/${BRANCH}/cache ${use_deltas}"
     fi
     :&& createrepo -q $update_args -o ${tmpdir} ${repodir}/${BRANCH}/RPMS
     checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
