@@ -693,7 +693,6 @@ TESTS = \
 	segmentsUnitTest.py \
 	taskUnitTest.py \
 	connectionUnitTest.py \
-	dclUnitTest.py \
 	threadsUnitTest.py
 
 
@@ -705,8 +704,7 @@ VALGRIND_TESTS = \
 	treeUnitTest.py \
 	segmentsUnitTest.py \
 	taskUnitTest.py \
-	connectionUnitTest.py \
-	dclUnitTest.py
+	connectionUnitTest.py 
 
 
 # DISABLE PYTHON LEAK DETECTION: This suppression file shall be removed when
