@@ -9,5 +9,9 @@
 # Enable arm emulation support in host kernel
 #docker run --rm --privileged multiarch/qemu-user-static:register --reset
 #
+if ( ! uname -m | grep arm >/dev/null )
+then
+  docker run --rm --privileged multiarch/qemu-user-static:register --reset
+fi
 default_build
 rundocker
