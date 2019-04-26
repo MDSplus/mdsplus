@@ -235,9 +235,6 @@ class MARTE2_COMPONENT(Device):
     def onSameThread(self, threadMap, node):
       nid1 = self.getNid()
       nid2 = node.getNid()
-      print(threadMap)
-      print(self.getPath())
-      print(node.getPath())
       if len(threadMap[nid1]) != len(threadMap[nid2]):
         return False
       for idx in range(len(threadMap[nid1])):
@@ -492,7 +489,6 @@ class MARTE2_COMPONENT(Device):
         if 'type' in inputDict:
           gamText += '        Type = '+inputDict['type']+'\n'
         if 'dimensions' in inputDict:
-	  print(inputDict['dimensions'])
 	  dimensions = inputDict['dimensions']
           if dimensions == 0:
             numberOfElements = 1
@@ -516,7 +512,6 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
-	  print(currTimebase)
           startTime = currTimebase.begin.data()
           period = currTimebase.delta.data()
         else:
@@ -588,7 +583,7 @@ class MARTE2_COMPONENT(Device):
 
       dataSourceText = '  +'+gamName+'_TreeOutput = {\n'
       dataSourceText += '    Class = MDSWriter\n'
-      dataSourceText += '    NumberOfBuffers = 1000\n'
+      dataSourceText += '    NumberOfBuffers = 100000\n'
       dataSourceText += '    CPUMask = 15\n'
       dataSourceText += '    StackSize = 10000000\n'
       dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
@@ -826,7 +821,7 @@ class MARTE2_COMPONENT(Device):
 
       dataSourceText = '  +'+dataSourceName+'_TreeOutput = {\n'
       dataSourceText += '    Class = MDSWriter\n'
-      dataSourceText += '    NumberOfBuffers = 100\n'
+      dataSourceText += '    NumberOfBuffers = 10000\n'
       dataSourceText += '    CPUMask = 15\n'
       dataSourceText += '    StackSize = 10000000\n'
       dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
@@ -866,9 +861,16 @@ class MARTE2_COMPONENT(Device):
       gamText ='  +'+dataSourceName+'_DDBOutIOGAM = {\n'
       gamText += '    Class = IOGAM\n'
       gamText += '    InputSignals = {\n'
+
+      firstOut = True
       for outputDict in outputDicts:
         gamText += '      '+outputDict['name'] + ' = {\n'
         gamText += '        DataSource = '+dataSourceName+'\n'
+        if isSynch and firstOut:
+          firstOut = False
+          period = timebase.getDescAt(2).data() #Must be correct(will be checked before)
+          frequency = round(1./period)
+          gamText += '        Frequency = '+str(frequency)+'\n'
         gamText += '      }\n'
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
@@ -917,7 +919,7 @@ class MARTE2_COMPONENT(Device):
 	  gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
         else:
  	  gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
-      gamText += '      }\n'
+        gamText += '      }\n'
 
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
@@ -1211,8 +1213,6 @@ class MARTE2_COMPONENT(Device):
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
 #parameters
-      print('OUT PARS')
-      print(paramDicts)
       for paramDict in paramDicts:
         if paramDict['is_text']:
           dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'

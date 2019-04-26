@@ -36,6 +36,30 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
       {'name': 'ADC1_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
 												    {'name':'ChannelId', 'type': 'int', 'value':1},
 												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC2_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC3_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC4_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC5_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC6_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
+												    {'name': 'InputMode', 'type':'string','value':'RSE'}]},
+      {'name': 'ADC7_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'InputRange', 'type':'float32', 'value':10},
+												    {'name':'ChannelId', 'type': 'int', 'value':1},
+												    {'name':'InputPolarity', 'type':'string', 'value': 'Bipolar'},
 												    {'name': 'InputMode', 'type':'string','value':'RSE'}]}]
     MARTE2_COMPONENT.parameters = [{'name':'SamplingFrequency', 'type': 'int32', 'value':1000000},
 				   {'name':'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
@@ -48,8 +72,8 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
 				   {'name': 'CPUs', 'type':'int32', 'value': 0xf}]
 
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'NI6259ADC', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 'build_range(0, 1000000, 1./build_path(".parameters:parameter_1:value"))')
+    MARTE2_COMPONENT.buildGam(parts, 'NI6259', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 'build_range(0, 1000000, 1./build_path(".parameters:parameter_1:value"))')
 
     def prepareMarteInfo(self):
-      print('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")' )
-      self.timebase.putData(Data.compile('0:1000000 : 1. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")'))
+      print('0:1000000 : 8. / build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")' )
+      self.timebase.putData(Data.compile('0:1000000 : 8./ build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value")'))
