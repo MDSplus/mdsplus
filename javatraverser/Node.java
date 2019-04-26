@@ -276,7 +276,9 @@ public class Node
 	                ds.configure(experiment, nid.getInt(), this);
 	                if (ds.getContentPane().getLayout() != null)
 	                    ds.pack();
-	                ds.setLocation(hierarchy.getMousePosition());
+			try {
+			    ds.setLocation(hierarchy.getMousePosition());
+			} catch(Exception exc){}
 	                ds.setSize(prevDim);
 	                ds.setVisible(true);
 	            }
