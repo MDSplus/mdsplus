@@ -164,7 +164,8 @@ A3248Setup.java \
 RFX_RPADCSetup.java \
 MARTE2_SUPERVISORSetup.java \
 MARTE2_STREAMSetup.java \
-MARTE2_GAMSetup.java
+MARTE2_GAMSetup.java \
+MARTE2_NI6259.java
 
 java_DATA = jDevices.jar
 

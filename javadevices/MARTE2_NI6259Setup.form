@@ -1,0 +1,751 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="spild8.rfx.local:9000"/>
+    <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI6259"/>
+    <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259"/>
+    <Property name="height" type="int" value="300"/>
+    <Property name="width" type="int" value="1000"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,0,-28,0,0,3,62"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="North"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="2"/>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel2">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField2">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Board Id: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="13"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField3">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="(8*)Sampling Freq:"/>
+                <Property name="offsetNid" type="int" value="7"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField4">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Delay Div."/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="16"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField1">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="CPUs"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="31"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice1">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="42">
+                    <StringItem index="0" value="SI_TC"/>
+                    <StringItem index="1" value="PFI0"/>
+                    <StringItem index="2" value="PFI1"/>
+                    <StringItem index="3" value="PFI2"/>
+                    <StringItem index="4" value="PFI3"/>
+                    <StringItem index="5" value="PFI4"/>
+                    <StringItem index="6" value="PFI5"/>
+                    <StringItem index="7" value="PFI6"/>
+                    <StringItem index="8" value="PFI7"/>
+                    <StringItem index="9" value="PFI8"/>
+                    <StringItem index="10" value="PFI9"/>
+                    <StringItem index="11" value="PFI10"/>
+                    <StringItem index="12" value="PFI11"/>
+                    <StringItem index="13" value="PFI12"/>
+                    <StringItem index="14" value="PFI13"/>
+                    <StringItem index="15" value="PFI14"/>
+                    <StringItem index="16" value="PFI15"/>
+                    <StringItem index="17" value="RTSI0"/>
+                    <StringItem index="18" value="RTSI1"/>
+                    <StringItem index="19" value="RTSI2"/>
+                    <StringItem index="20" value="RTSI3"/>
+                    <StringItem index="21" value="RTSI4"/>
+                    <StringItem index="22" value="RTSI5"/>
+                    <StringItem index="23" value="RTSI6"/>
+                    <StringItem index="24" value="RTSI7"/>
+                    <StringItem index="25" value="RTSI8"/>
+                    <StringItem index="26" value="RTSI9"/>
+                    <StringItem index="27" value="RTSI10"/>
+                    <StringItem index="28" value="RTSI11"/>
+                    <StringItem index="29" value="RTSI12"/>
+                    <StringItem index="30" value="RTSI13"/>
+                    <StringItem index="31" value="RTSI14"/>
+                    <StringItem index="32" value="RTSI15"/>
+                    <StringItem index="33" value="RTSI16"/>
+                    <StringItem index="34" value="RTSI17"/>
+                    <StringItem index="35" value="PULSE"/>
+                    <StringItem index="36" value="GPCRT0_OUT"/>
+                    <StringItem index="37" value="STAR_TRIGGER"/>
+                    <StringItem index="38" value="GPCTR1_OUT"/>
+                    <StringItem index="39" value="SCXI_TRIG1"/>
+                    <StringItem index="40" value="ANALOG_TRIGGER"/>
+                    <StringItem index="41" value="LOW"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Clock Sample Source: "/>
+                <Property name="offsetNid" type="int" value="19"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel3">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice2">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="ACTIVE_HIGH_OR_RISING_EDGE"/>
+                    <StringItem index="1" value="ACTIVE_LOW_OR_FALLING_EDGE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Clock Sample Polarity:"/>
+                <Property name="offsetNid" type="int" value="22"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice3">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="40">
+                    <StringItem index="0" value="SI2TC"/>
+                    <StringItem index="1" value="PFI0"/>
+                    <StringItem index="2" value="PFI1"/>
+                    <StringItem index="3" value="PFI2"/>
+                    <StringItem index="4" value="PFI3"/>
+                    <StringItem index="5" value="PFI4"/>
+                    <StringItem index="6" value="PFI5"/>
+                    <StringItem index="7" value="PFI6"/>
+                    <StringItem index="8" value="PFI7"/>
+                    <StringItem index="9" value="PFI8"/>
+                    <StringItem index="10" value="PFI9"/>
+                    <StringItem index="11" value="PFI10"/>
+                    <StringItem index="12" value="PFI11"/>
+                    <StringItem index="13" value="PFI12"/>
+                    <StringItem index="14" value="PFI13"/>
+                    <StringItem index="15" value="PFI14"/>
+                    <StringItem index="16" value="PFI15"/>
+                    <StringItem index="17" value="RTSI0"/>
+                    <StringItem index="18" value="RTSI1"/>
+                    <StringItem index="19" value="RTSI2"/>
+                    <StringItem index="20" value="RTSI3"/>
+                    <StringItem index="21" value="RTSI4"/>
+                    <StringItem index="22" value="RTSI5"/>
+                    <StringItem index="23" value="RTSI6"/>
+                    <StringItem index="24" value="RTSI7"/>
+                    <StringItem index="25" value="RTSI8"/>
+                    <StringItem index="26" value="RTSI9"/>
+                    <StringItem index="27" value="RTSI10"/>
+                    <StringItem index="28" value="RTSI11"/>
+                    <StringItem index="29" value="RTSI12"/>
+                    <StringItem index="30" value="RTSI13"/>
+                    <StringItem index="31" value="RTSI14"/>
+                    <StringItem index="32" value="RTSI15"/>
+                    <StringItem index="33" value="RTSI16"/>
+                    <StringItem index="34" value="RTSI17"/>
+                    <StringItem index="35" value="PULSE"/>
+                    <StringItem index="36" value="GPCRT0_OUT"/>
+                    <StringItem index="37" value="STAR_TRIGGER"/>
+                    <StringItem index="38" value="ANALOG_TRIGGER"/>
+                    <StringItem index="39" value="LOW"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Clock Convert Source:"/>
+                <Property name="offsetNid" type="int" value="25"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice4">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="RISING_EDGE"/>
+                    <StringItem index="1" value="FALLING_EDGE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Clock Convert Polarity: "/>
+                <Property name="offsetNid" type="int" value="28"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JTabbedPane" name="jTabbedPane1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel4">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 1">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 1"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice5">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="57"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice6">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="63"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice7">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="66"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel5">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 2">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 2"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice8">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="76"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice9">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="82"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice10">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="85"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel6">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 3">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 3"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice11">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="95"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice12">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="101"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice13">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="104"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel8">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 4">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 4"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice17">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="114"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice18">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="120"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice19">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="123"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel7">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 5">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 5"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice14">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="133"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice15">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="139"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice16">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="142"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel9">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 6">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 6"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice20">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="152"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice21">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="158"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice22">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="161"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel10">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 7">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 7"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice23">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="171"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice24">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="177"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice25">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="180"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel11">
+          <Constraints>
+            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+              <JTabbedPaneConstraints tabName="Ch 8">
+                <Property name="tabTitle" type="java.lang.String" value="Ch 8"/>
+              </JTabbedPaneConstraints>
+            </Constraint>
+          </Constraints>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceChoice" name="deviceChoice26">
+              <Properties>
+                <Property name="choiceFloatValues" type="[F" editor="org.netbeans.modules.form.editors.PrimitiveTypeArrayEditor">
+                  <PropertyValue value="[0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0]"/>
+                </Property>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="7">
+                    <StringItem index="0" value="0.1"/>
+                    <StringItem index="1" value="0.2"/>
+                    <StringItem index="2" value="0.5"/>
+                    <StringItem index="3" value="1"/>
+                    <StringItem index="4" value="2"/>
+                    <StringItem index="5" value="5"/>
+                    <StringItem index="6" value="10"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Range: "/>
+                <Property name="offsetNid" type="int" value="190"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice27">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="2">
+                    <StringItem index="0" value="Bipolar"/>
+                    <StringItem index="1" value="Unipolar"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
+                <Property name="offsetNid" type="int" value="196"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice28">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="3">
+                    <StringItem index="0" value="Differential"/>
+                    <StringItem index="1" value="RSE"/>
+                    <StringItem index="2" value="NRSE"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
+                <Property name="offsetNid" type="int" value="199"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>
