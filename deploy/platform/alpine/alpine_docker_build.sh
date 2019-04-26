@@ -55,5 +55,6 @@ buildrelease() {
 }
 
 publish() {
-    rsync -a /release/${BRANCH} /publish/
+    mkdir -p /publish/${BRANCH}
+    rsync -a /release/${BRANCH}/${ARCH} /publish/${BRANCH}/
 }

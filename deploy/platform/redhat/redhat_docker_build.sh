@@ -13,6 +13,20 @@
 # /publish/$branch/cache/$arch/*.rpm-*
 #
 
+do_createrepo() {
+    repodir=$1
+    tmpdir=$(mktemp -d)
+    trap 'rm -Rf ${tmpdir}' EXIT
+    if [ -d ${repodir}/${BRANCH}/RPMS/repodata ]
+    then
+	rsync -a ${repodir}/${BRANCH}/RPMS/repodata ${tmpdir}
+	update_args="--update --cachedir ${repodir}/${BRANCH}/cache ${use_deltas}"
+    fi
+    :&& createrepo -q $update_args -o ${tmpdir} ${repodir}/${BRANCH}/RPMS
+    checkstatus abort "Failure: Problem creating rpm repository in ${repodir}!" $?
+    :&& rsync -a ${tmpdir}/repodata ${repodir}/${BRANCH}/RPMS/
+}
+
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
@@ -96,7 +110,7 @@ EOF
           BUILDROOT=${BUILDROOT} \
           PLATFORM=${PLATFORM} \
           ${srcdir}/deploy/platform/${PLATFORM}/${PLATFORM}_build_rpms.py;
-    createrepo -q /release/${BRANCH}/RPMS
+    do_createrepo /release
     badrpm=0
     for rpm in $(find /release/${BRANCH}/RPMS -name '*\.rpm')
     do
@@ -137,10 +151,6 @@ publish(){
     then
         use_deltas="--deltas"
     fi
-    tmpdir=$(mktemp -d)
-    trap 'rm -Rf ${tmpdir}' EXIT
-    :&& createrepo -q --update --cachedir /publish/${BRANCH}/cache ${use_deltas} -o ${tmpdir} /publish/${BRANCH}/RPMS
-    checkstatus abort "Failure: Problem creating rpm repository in publish area!" $?
-    :&& rsync -a ${tmpdir}/repodata /publish/${BRANCH}/RPMS/
+    do_createrepo /publish
     checkstatus abort "Failure: Problem rsyncing rpm repository with publish area!" $?
 }
