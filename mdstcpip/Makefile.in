@@ -139,6 +139,7 @@ secundary : primary \
 	$(MdsIpGSI) \
 	$(MDSIPSD) \
 	@MAKEETCDIR@mdsip.hosts \
+	@MAKEETCDIR@multi.hosts \
 	@MAKELIBDIR@@LIBPRE@MdsIpShr.a
 
 tertiary : secundary \
@@ -156,6 +157,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUtil.a
 	@ $(RM) $(PROGRAMS)
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
+	@ $(RM) @MAKEETCDIR@multi.hosts
 	@ $(RM) $(MdsIpSrvShr)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
@@ -180,6 +182,7 @@ install: $(bindir) $(libdir) $(sysconfdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpShr.a @libdir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
+	$(INSTALL) -m 755  @MAKEETCDIR@multi.hosts $(sysconfdir)
 	$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
@@ -260,6 +263,8 @@ $(MdsIpSSH) $(MdsIpHTTP) $(MdsIpLOCAL):
 	$(LN_TUNNEL) $@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)
+	cp $< $@
+@MAKEETCDIR@multi.hosts : multi.hosts$(WIN)
 	cp $< $@
 
 $(bin_SCRIPTS): @MAKEBINDIR@%: %
