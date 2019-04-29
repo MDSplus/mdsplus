@@ -1144,32 +1144,38 @@ static int ReadSegment(TREE_INFO* tinfo, int nid, SEGMENT_HEADER* shead, SEGMENT
 static int getSegmentLimits(vars_t* vars,
                             struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
-  struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, 0 };
+  int64_t timestamp=0;
+  struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, (char *)&timestamp };
   if (vars->sinfo->dimension_offset != -1 && vars->sinfo->dimension_length == 0) {
     /*** timestamped segments ****/
     if (vars->sinfo->rows < 0 || !(vars->sinfo->start == 0 && vars->sinfo->end == 0)) {
-      q_d.pointer = (char *)&vars->sinfo->start;
-      MdsCopyDxXd(&q_d, retStart);
-      q_d.pointer = (char *)&vars->sinfo->end;
-      MdsCopyDxXd(&q_d, retEnd);
+      if (retStart) {
+	timestamp = vars->sinfo->start;
+	MdsCopyDxXd(&q_d, retStart);
+      }
+      if (retEnd) {
+	timestamp = vars->sinfo->end;
+	MdsCopyDxXd(&q_d, retEnd);
+      }
     } else {
       int length = sizeof(int64_t) * vars->sinfo->rows;
       char *buffer = NULL;
       FREE_ON_EXIT(buffer);
       buffer = malloc(length);
-      int64_t timestamp;
-      status = ReadProperty(vars->tinfo,vars->sinfo->dimension_offset, buffer, length);
+      status = read_property(vars->tinfo,vars->sinfo->dimension_offset, buffer, length);
       if STATUS_OK {
-        q_d.pointer = (char *)&timestamp;
-        timestamp = swapquad(buffer);
-        MdsCopyDxXd(&q_d, retStart);
-        int filled_rows = get_filled_rows_ts(&vars->shead,vars->sinfo,vars->idx,(int64_t*)buffer);
-        if (filled_rows > 0) {
-          timestamp = swapquad(buffer + (filled_rows-1) * sizeof(int64_t));
-          MdsCopyDxXd(&q_d, retEnd);
-        } else {
-          MdsFree1Dx(retEnd, 0);
-        }
+	if (retStart) {
+	  loadint64(&timestamp,buffer);
+	  MdsCopyDxXd(&q_d, retStart);
+	}
+	if (retEnd) {
+	  const int filled_rows = get_filled_rows_ts(&vars->shead,vars->sinfo,vars->idx,(int64_t*)buffer);
+	  if (filled_rows > 0) {
+	    loadint64(&timestamp,buffer + (filled_rows-1) * sizeof(int64_t));
+	    MdsCopyDxXd(&q_d, retEnd);
+	  } else
+	    MdsFree1Dx(retEnd, 0);
+	}
       } else {
         MdsFree1Dx(retStart, 0);
         MdsFree1Dx(retEnd, 0);
@@ -1177,20 +1183,24 @@ static int getSegmentLimits(vars_t* vars,
       FREE_NOW(buffer);
     }
   } else {
-    if (vars->sinfo->start != -1) {
-      q_d.pointer = (char *)&vars->sinfo->start;
-      MdsCopyDxXd(&q_d, retStart);
-    } else if (vars->sinfo->start_length > 0 && vars->sinfo->start_offset > 0) {
-      status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->start_offset, vars->sinfo->start_length, retStart);
-    } else
-      status = MdsFree1Dx(retStart, 0);
-    if (vars->sinfo->end != -1) {
-      q_d.pointer = (char *)&vars->sinfo->end;
-      MdsCopyDxXd(&q_d, retEnd);
-    } else if (vars->sinfo->end_length > 0 && vars->sinfo->end_offset > 0) {
-      status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->end_offset, vars->sinfo->end_length, retEnd);
-    } else
-      status = MdsFree1Dx(retEnd, 0);
+    if (retStart) {
+      if (vars->sinfo->start != -1) {
+	timestamp = vars->sinfo->start;
+	MdsCopyDxXd(&q_d, retStart);
+      } else if (vars->sinfo->start_length > 0 && vars->sinfo->start_offset > 0)
+	status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->start_offset, vars->sinfo->start_length, retStart);
+      else
+	status = MdsFree1Dx(retStart, 0);
+    }
+    if (retEnd) {
+      if (vars->sinfo->end != -1) {
+	timestamp = vars->sinfo->end;
+	MdsCopyDxXd(&q_d, retEnd);
+      } else if (vars->sinfo->end_length > 0 && vars->sinfo->end_offset > 0)
+	status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->end_offset, vars->sinfo->end_length, retEnd);
+      else
+	status = MdsFree1Dx(retEnd, 0);
+    }
   }
   return status;
 }
