@@ -6,6 +6,7 @@
 ./usr/local/mdsplus/etc/envsyms
 ./usr/local/mdsplus/etc/mdsip.hosts
 ./usr/local/mdsplus/etc/mdsplus.conf.template
+./usr/local/mdsplus/etc/multi.hosts
 ./usr/local/mdsplus/nodejs/event_server.js
 ./usr/local/mdsplus/nodejs/index.html
 ./usr/local/mdsplus/nodejs/mdsipRest-multi.js

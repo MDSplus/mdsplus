@@ -133,6 +133,7 @@ secundary : primary \
 	$(MdsIpGSI) \
 	$(MDSIPSD) \
 	@MAKEETCDIR@mdsip.hosts \
+	@MAKEETCDIR@multi.hosts \
 	@MAKELIBDIR@@LIBPRE@MdsIpShr.a
 
 depend:
@@ -145,6 +146,7 @@ clean :
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUtil.a
 	@ $(RM) $(PROGRAMS)
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
+	@ $(RM) @MAKEETCDIR@multi.hosts
 	@ $(RM) $(MdsIpSrvShr)
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCPV6@SHARETYPE@
@@ -165,6 +167,7 @@ install: $(bindir) $(libdir) $(sysconfdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsIpShr.a @libdir@; \
 	fi;
 	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
+	$(INSTALL) -m 755  @MAKEETCDIR@multi.hosts $(sysconfdir)
 	$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCPV6) @libdir@
@@ -231,6 +234,8 @@ $(MdsIpUDTV6): $(UDT4_DIRS) $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)
+	cp $< $@
+@MAKEETCDIR@multi.hosts : multi.hosts$(WIN)
 	cp $< $@
 
 $(bin_SCRIPTS): @MAKEBINDIR@%: %

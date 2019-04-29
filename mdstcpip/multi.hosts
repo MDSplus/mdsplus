@@ -1,0 +1,34 @@
+# sample mdsip.hosts file for multi mode
+#
+# normally this file should be placed in /etc/mdsip.hosts
+#
+# This file maps remote connections to local users. The mdsip
+# data server will change itself into the appropriate local user
+# for access control. Use * to match zero or more characters or
+# % to match one and only one character.
+#
+# Comments can be included by placing a # character in the beginning
+# of the line. You can deny access to a particular connection by placing
+# a ! character in the beginning of the line. Connection matching proceeds
+# from the first line containing a map and continues until the first match
+# is found. Trailing comments are not permitted in the mapping lines.
+# You can use either ip address names or numbers in the match string.
+# For local account mapping you can also use the keyword MAP_TO_LOCAL which
+# maps the username of the remote user to the same name on the local system.
+#
+#
+# If you want to run an mdsip server from a non-privileged account you will
+# need to map all permitted connections to the special keyword SELF. This
+# instructs the server to not attempt to switch user id when incoming connections
+# occur. Do not use the SELF mapping when running the server from the root
+# account as this will compromise system security.
+#
+# Changes to this file take effect immediately without restarting inetd or
+# any other service. They do not effect existing connections however.
+#
+# the service wil be running as SELF i.e. the user that spawned the mdsip process
+multi | SELF
+# allow connections from localhost
+*@127.0.0.1
+# deny any other connection
+!*
