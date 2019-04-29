@@ -1446,16 +1446,17 @@ static int read_segment(void* dbid, TREE_INFO * tinfo, int nid, SEGMENT_HEADER* 
 
 static int get_segment_limits(vars_t* vars, struct descriptor_xd *retStart, struct descriptor_xd *retEnd){
   INIT_TREESUCCESS;
-  struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, 0 };
+  int64_t timestamp=0;
+  struct descriptor q_d = { 8, DTYPE_Q, CLASS_S, (char *)&timestamp };
   if (vars->sinfo->dimension_offset != -1 && vars->sinfo->dimension_length == 0) {
     /*** timestamped segments ****/
     if (vars->sinfo->rows < 0 || !(vars->sinfo->start == 0 && vars->sinfo->end == 0)) {
       if (retStart) {
-	q_d.pointer = (char *)&vars->sinfo->start;
+	timestamp = vars->sinfo->start;
 	MdsCopyDxXd(&q_d, retStart);
       }
       if (retEnd) {
-	q_d.pointer = (char *)&vars->sinfo->end;
+	timestamp = vars->sinfo->end;
 	MdsCopyDxXd(&q_d, retEnd);
       }
     } else {
@@ -1463,11 +1464,9 @@ static int get_segment_limits(vars_t* vars, struct descriptor_xd *retStart, stru
       FREE_ON_EXIT(buffer);
       const int length = sizeof(int64_t) * vars->sinfo->rows;
       buffer = malloc(length);
-      int64_t timestamp;
       status = read_property(vars->tinfo,vars->sinfo->dimension_offset, buffer, length);
       if STATUS_OK {
 	if (retStart) {
-	  q_d.pointer = (char *)&timestamp;
 	  loadint64(&timestamp,buffer);
 	  MdsCopyDxXd(&q_d, retStart);
 	}
@@ -1488,7 +1487,7 @@ static int get_segment_limits(vars_t* vars, struct descriptor_xd *retStart, stru
   } else {
     if (retStart) {
       if (vars->sinfo->start != -1) {
-	q_d.pointer = (char *)&vars->sinfo->start;
+	timestamp = vars->sinfo->start;
 	MdsCopyDxXd(&q_d, retStart);
       } else if (vars->sinfo->start_length > 0 && vars->sinfo->start_offset > 0)
 	status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->start_offset, vars->sinfo->start_length, retStart);
@@ -1497,7 +1496,7 @@ static int get_segment_limits(vars_t* vars, struct descriptor_xd *retStart, stru
     }
     if (retEnd) {
       if (vars->sinfo->end != -1) {
-	q_d.pointer = (char *)&vars->sinfo->end;
+	timestamp = vars->sinfo->end;
 	MdsCopyDxXd(&q_d, retEnd);
       } else if (vars->sinfo->end_length > 0 && vars->sinfo->end_offset > 0)
 	status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, vars->sinfo->end_offset, vars->sinfo->end_length, retEnd);
