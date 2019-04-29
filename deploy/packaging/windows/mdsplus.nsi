@@ -103,7 +103,6 @@ ${Else}
 ${EndIf}
 !macroend
 
- 
 Section
 SectionIn 1 2 3 RO
 SetOutPath "$INSTDIR"
@@ -200,7 +199,7 @@ CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\TCL.lnk" '"$6\mdsdcl"' '-prep "set 
 CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
 ${IF} $7 == 1
 	CreateDirectory "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer"
-	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\multi.hosts$\""
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
 	CreateShortCut "$SMPROGRAMS\MDSplus${FLAVOR}\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
@@ -208,7 +207,7 @@ ${ENDIF}
 
 SetOutPath "\"
 SetOverWrite off
-File etc\mdsip.hosts
+File etc\mdsip.hosts etc\multi.hosts
 SetOverWrite on
 
 # Registry information for add/remove programs
