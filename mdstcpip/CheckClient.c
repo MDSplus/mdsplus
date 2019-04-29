@@ -70,8 +70,9 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
     ok = 1;
   else if (local_user->length) {
     char *luser = MdsDescrToCstring(local_user);
-    int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
-    char *user = map_to_local ? remuser : luser;
+    const int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
+    const int is_root = strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
+    char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;
     int status = -1;
     struct passwd *pwd;
     if (map_to_local && remuser == 0) {
