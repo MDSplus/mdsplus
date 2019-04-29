@@ -85,12 +85,14 @@ ALL_SOURCES = $(LIB_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURC
 bin_SCRIPTS =
 @MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip_service.exe.manifest
 @MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh.bat
+@MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-sshp.bat
 @MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-local.bat
 
 
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsipd
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip_server
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-ssh
+@MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-sshp
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-http
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-client-local
 @MINGW_FALSE@bin_SCRIPTS += @MAKEBINDIR@mdsip-server-ssh
