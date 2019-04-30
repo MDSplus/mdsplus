@@ -462,7 +462,7 @@ Function install_core_pre
 	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
 	${If} for AllUsers ?
 		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
-		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\multi.hosts$\""
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
 		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
@@ -491,7 +491,7 @@ Function install_core_post
 	Push $R0
 	SetOutPath "\"
 	SetOverWrite off
-	File etc\mdsip.hosts
+	File etc\mdsip.hosts etc\multi.hosts
 	SetOverWrite on
 	# Registry information for add/remove programs
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"

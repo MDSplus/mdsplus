@@ -1,0 +1,52 @@
+# sample multi.hosts file
+#
+# normally this file should be placed in C:\multi.hosts
+#
+# This file determines if a user on a given system is permitted
+# to connect to this action server.
+#
+# Comments can be included by placing a # character in the beginning
+# of the line. You can deny access to a particular connection by placing
+# a ! character in the beginning of the line. Connection matching proceeds
+# from the first line containing a map and continues until the first match
+# is found. Trailing comments are not permitted in the mapping lines.
+# You can use either ip address names or numbers in the match string.
+#
+# The format of the rule is:
+#
+# [!] "user@host match string"
+#
+# User@host match strings can contain wildcards (*) which match zero or more
+# characters. Host can be either hostnames or ip-addresses. For example:
+#
+# *@localhost
+# twf@*.psfc.mit.edu
+# *@192.176.0.*
+# !joe@localhost
+#
+# Where the first example permits anyone on the local system to connect.
+# The second rule allows the user twf in the psfc.mit.edu domain to connect.
+# The third rule allows any user connecting from ip addresses 192.176.0.0-255.
+# The fourth disallows user joe on the local system from connecting.
+#
+# Keep in mind the rules are checked starting with the first rule in this file
+# until a match occurs and no further matching takes place so be careful with
+# the order of your rules.
+#
+# Also be sure your Windows firewall is configured to permit the connections
+# on the mdsip port being used (e.g. 8100 for the default action server).
+# Both the Windows firewall and this file can be used to restrict access allowing
+# connections from specific network domains. When possible, always use the firewall
+# to protect access to your system from unknown ip addresses so the mdsip services
+# will not even be invoked from unknown sources.
+#
+# Changes to this file take effect immediately without restarting the mdsip service.
+# They do not effect existing connections however.
+#
+# the service will be running as the user that spawned the mdsip process, likely SYSTEM
+# only option on windows systems as mdsip cannot change user identity
+multi | SELF
+# allow connections from localhost
+*@127.0.0.1
+# deny any other connection
+!*
