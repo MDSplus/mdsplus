@@ -50,7 +50,9 @@ static int SendBytes(Connection* c, void *buffer, size_t bytes_to_send, int opti
 	bytes_to_send -= bytes_sent;
 	bptr += bytes_sent;
 	if (bytes_sent)
-	  tries = 0;
+	  tries=0;
+	else
+	  tries++;
       }
     }
     if (tries >= 10) {
