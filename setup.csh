@@ -1,4 +1,4 @@
-# mdsplus.csh  - to be sourced during login from csh or derivative
+# mdsplus.csh  - to be sourced during login from csh or derivative 
 # 
 # this script will search for the first environment variable definition file
 # it can find looking in the following order:
