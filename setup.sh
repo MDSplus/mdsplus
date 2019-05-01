@@ -94,8 +94,17 @@ then
     eval $temp_sym_name='`echo $temp_sym_value`'
     doExport $temp_sym_name
   else
-    if echo $temp_sym_old_value | grep $temp_sym_value > /dev/null ; then
-	:
+    found=false
+    for v in `echo ${temp_sym_old_value} | tr "${temp_delim}" "\n"`
+    do
+        if ( test "$v" == "$temp_sym_value")
+        then
+            found=true
+            break
+        fi
+    done
+    if ( test "$found" == "true" ) ; then
+        :
     else
       case $temp_direction in
       '>')
@@ -194,4 +203,3 @@ then
     fi
   fi
 fi
-
