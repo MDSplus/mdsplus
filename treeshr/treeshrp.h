@@ -729,6 +729,7 @@ to databases
 #define IS_OPEN_FOR_EDIT(db) (IS_OPEN(db) ? (db)->open_for_edit : 0)
 
 #define TREE_PATH_SUFFIX "_path"
+#define TREE_DEFAULT_PATH "default_tree_path"
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/

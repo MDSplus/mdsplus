@@ -137,6 +137,8 @@ EXPORT char *TreePath(char const *tree, char *tree_lower_out){
   if (tree_lower_out)
     strcpy(tree_lower_out, tree_lower);
   path = TranslateLogical(pathname);
+  if (path == NULL)
+    path = TranslateLogical(TREE_DEFAULT_PATH);
   if (path) {
     // remove trailing spaces
     for (i = strlen(path); i > 0 && (path[i - 1] == ' ' || path[i - 1] == 9); i--)
