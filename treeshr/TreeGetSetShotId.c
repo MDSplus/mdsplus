@@ -171,7 +171,6 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
   char exp[16]={0};
   char *path = TreePath(experiment,exp);
   size_t slen;
-  path = TreePath(experiment,NULL);
   if (path && ((slen = strlen(path)) > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':')) {
     path[slen - 2] = 0;
     status = TreeSetCurrentShotIdRemote(exp, path, shot);
