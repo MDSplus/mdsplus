@@ -59,12 +59,11 @@ int TreeGetCurrentShotId(experiment,shot)
 #include <fcntl.h>
 #include <ncidef.h>
 #include <treeshr.h>
-extern void TranslateLogicalFree();
 extern int TreeGetCurrentShotIdRemote();
 extern int TreeSetCurrentShotIdRemote();
 extern char *MaskReplace();
 
-extern char *TranslateLogical();
+extern char *TreePath();
 
 static char *GetFileName(char *experiment, char **ctx)
 {
@@ -75,10 +74,8 @@ static char *GetFileName(char *experiment, char **ctx)
   char *part;
   if (*ctx == NULL) {
     if (path != NULL)
-      TranslateLogicalFree(path);
-    strcpy(pathname, experiment);
-    strcat(pathname, "_path");
-    path = (char *)TranslateLogical(pathname);
+      free(path);
+    path = TreePath(experiment,NULL);
     part = path;
   } else if (*ctx == pathname)
     return NULL;
@@ -140,15 +137,9 @@ int TreeGetCurrentShotId(char const *experiment)
 {
   int shot = 0;
   int status = TreeFAILURE;
-  char *path = 0;
-  char *exp = strcpy(malloc(strlen(experiment) + 6), experiment);
-  int i;
+  char exp[16]={0};
+  char *path = TreePath(experiment,exp);
   size_t slen;
-  for (i = 0; exp[i] != '\0'; i++)
-    exp[i] = (char)tolower(exp[i]);
-  strcat(exp, "_path");
-  path = TranslateLogical(exp);
-  exp[strlen(experiment)] = '\0';
   if (path && ((slen = strlen(path)) > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':')) {
     path[slen - 2] = 0;
     status = TreeGetCurrentShotIdRemote(exp, path, &shot);
@@ -170,23 +161,17 @@ int TreeGetCurrentShotId(char const *experiment)
     }
   }
   if (path)
-    TranslateLogicalFree(path);
-  free(exp);
+    free(path);
   return STATUS_OK ? shot : 0;
 }
 
 int TreeSetCurrentShotId(char const *experiment, int shot)
 {
   int status = TreeFAILURE;
-  char *path = 0;
-  char *exp = strcpy(malloc(strlen(experiment) + 6), experiment);
+  char exp[16]={0};
+  char *path = TreePath(experiment,exp);
   size_t slen;
-  int i;
-  for (i = 0; exp[i] != '\0'; i++)
-    exp[i] = (char)tolower(exp[i]);
-  strcat(exp, "_path");
-  path = TranslateLogical(exp);
-  exp[strlen(experiment)] = '\0';
+  path = TreePath(experiment,NULL);
   if (path && ((slen = strlen(path)) > 2) && (path[slen - 1] == ':') && (path[slen - 2] == ':')) {
     path[slen - 2] = 0;
     status = TreeSetCurrentShotIdRemote(exp, path, shot);
@@ -206,7 +191,6 @@ int TreeSetCurrentShotId(char const *experiment, int shot)
     }
   }
   if (path)
-    TranslateLogicalFree(path);
-  free(exp);
+    free(path);
   return status;
 }
