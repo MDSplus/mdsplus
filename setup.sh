@@ -1,5 +1,5 @@
 # mdsplus.sh  - to be run during login from sh or derivative
-# 
+#
 # this script will search for the first environment variable definition file
 # it can find looking in the following order:
 #               $setup_file
@@ -55,7 +55,7 @@
 #   5) dot-statement
 #
 #        Source another file with shell commands
-# 
+#
 #        Example:
 #
 #            . $HOME/myscript.csh
@@ -86,7 +86,7 @@ else
 fi
 doExport MDSPLUS_DIR
 
-if ( test "$temp_sym_name" != "") 
+if ( test "$temp_sym_name" != "")
 then
   eval temp_sym_old_value=$`echo $temp_sym_name`
   if ( test "$temp_sym_old_value" = "" )
@@ -97,13 +97,13 @@ then
     found=false
     for v in `echo ${temp_sym_old_value} | tr "${temp_delim}" "\n"`
     do
-        if ( test "$v" == "$temp_sym_value")
+        if ( test "$v" = "$temp_sym_value")
         then
             found=true
             break
         fi
     done
-    if ( test "$found" == "true" ) ; then
+    if ( test "$found" = "true" ) ; then
         :
     else
       case $temp_direction in
@@ -123,31 +123,31 @@ then
   unset temp_direction
   unset temp_delim
 else
-  if ( test "$temp_file" = "") 
+  if ( test "$temp_file" = "")
   then
     if ( test "$setup_file" != "" )
     then
       temp_file=$setup_file
-    else 
-      if ( test -r ./envsyms ) 
+    else
+      if ( test -r ./envsyms )
       then
         temp_file=envsyms
       else
         if ( test -r $MDSPLUS_DIR/etc/envsyms )
         then
           temp_file=$MDSPLUS_DIR/etc/envsyms
-        else 
+        else
           temp_file=asdjklasdjasdjlkasd
         fi
       fi
     fi
   fi
-  if ( test -r $temp_file ) 
+  if ( test -r $temp_file )
   then
     if ( test -r ./setup.sh )
     then
       temp_setup_script=./setup.sh
-    else 
+    else
       if ( test -r $MDSPLUS_DIR/setup.sh )
       then
         temp_setup_script=$MDSPLUS_DIR/setup.sh
@@ -171,11 +171,11 @@ else
     awkcmd="$awkcmd"'; temp_delim='
     awkcmd="$awkcmd"'" substr($3,2) "'
     awkcmd="$awkcmd"'; . '$temp_setup_script';" ; }'
-    if ( test -x /bin/awk ) 
+    if ( test -x /bin/awk )
     then
       shellcmd=`/bin/awk "$awkcmd" $temp_file`
     else
-      if ( test -x /usr/bin/awk) 
+      if ( test -x /usr/bin/awk)
       then
         shellcmd=`/usr/bin/awk "$awkcmd" $temp_file`
       else
