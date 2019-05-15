@@ -146,8 +146,10 @@ int CheckClient(char *username, int num, char **matchString)
 		}
 	      } else {
 		StrRight((struct descriptor *)&access_id, (struct descriptor *)&access_id, &two);
-		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
+		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1) {
 		  ok = 2;
+		  break;
+		}
 	      }
 	      StrFree1Dx(&match);
 	    }
