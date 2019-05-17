@@ -93,8 +93,14 @@ $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddi
 
 .DEFAULT_GOAL := all
 
-# docker build targets
+## docker build targets
 @AX_DOCKER_BUILD_TARGETS@
+
+
+## git release tags
+@AX_GIT_REVISION_TARGETS@
+
+
 
 .PHONY: reconfigure
 reconfigure: ##@miscellaneous rerun configure script again using last arguments passed
