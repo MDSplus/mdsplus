@@ -1,4 +1,4 @@
-# mdsplus.csh  - to be sourced during login from csh or derivative
+# mdsplus.csh  - to be sourced during login from csh or derivative 
 # 
 # this script will search for the first environment variable definition file
 # it can find looking in the following order:
@@ -76,8 +76,13 @@ if ( $?temp_sym_name ) then
   if ( $temp_sym_old_value == '' ) then
     setenv $temp_sym_name $temp_sym_value
   else
-    echo $temp_sym_old_value | grep $temp_sym_value > /dev/null
-    if ( $status) then
+    set found=false
+    foreach v (`echo ${temp_sym_old_value} | tr "${temp_delim}" "\n"`)
+      if ( $v == $temp_sym_value ) then
+        set found=true
+      endif
+    end
+    if ( $found == 'false' ) then
       switch ($temp_direction)
       case '>':
         setenv $temp_sym_name ${temp_sym_old_value}${temp_delim}${temp_sym_value}
@@ -151,4 +156,3 @@ if ( ! $?PyLib ) then
   endif
   unset pyver
 endif
-

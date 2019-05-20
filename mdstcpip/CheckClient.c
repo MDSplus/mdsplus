@@ -70,8 +70,9 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
     ok = 1;
   else if (local_user->length) {
     char *luser = MdsDescrToCstring(local_user);
-    int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
-    char *user = map_to_local ? remuser : luser;
+    const int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
+    const int is_root = strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
+    char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;
     int status = -1;
     struct passwd *pwd;
     if (map_to_local && remuser == 0) {
@@ -112,7 +113,6 @@ int CheckClient(char *username, int num, char **matchString)
   if (strncmp(hostfile, "TDI", 3)) {
     FILE *f = fopen(hostfile, "r");
     static int zero = 0, one = 1;
-    static unsigned short two = 2;
     if (f) {
       static char line_c[1024];
       static struct descriptor line_d = { 0, DTYPE_T, CLASS_S, line_c };
@@ -144,9 +144,13 @@ int CheckClient(char *username, int num, char **matchString)
 		    ok = GetMulti()? 1 : BecomeUser(username, &local_user);
 		}
 	      } else {
-		StrRight((struct descriptor *)&access_id, (struct descriptor *)&access_id, &two);
-		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
+		access_id.length-=1;
+		access_id.pointer+=1;
+		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1) {
 		  ok = 2;
+		}
+		access_id.length+=1;
+		access_id.pointer-=1;
 	      }
 	      StrFree1Dx(&match);
 	    }

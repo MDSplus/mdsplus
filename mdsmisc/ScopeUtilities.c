@@ -77,7 +77,7 @@ static double to_doublex(const void *const ptr, const dtype_t dtype, const doubl
       return (double)*(int32_t *)ptr;
     case DTYPE_Q:
     case DTYPE_QU:
-      if (is_time) return ((double)*(int64_t *)ptr)/1e9;
+      if (is_time) return ((double)*(int64_t *)ptr);
       return (double)*(int64_t *)ptr;
     default:
       printf("Unsupported Type in getData\n");

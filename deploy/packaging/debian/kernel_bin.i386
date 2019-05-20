@@ -13,6 +13,7 @@
 ./usr/local/mdsplus/bin/mdsip-client-http
 ./usr/local/mdsplus/bin/mdsip-client-local
 ./usr/local/mdsplus/bin/mdsip-client-ssh
+./usr/local/mdsplus/bin/mdsip-client-sshp
 ./usr/local/mdsplus/bin/mdsip-server-http
 ./usr/local/mdsplus/bin/mdsip-server-ssh
 ./usr/local/mdsplus/bin/mdsip_server
