@@ -153,6 +153,7 @@ AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
 RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
+BASLERACASetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
@@ -161,7 +162,14 @@ RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
 A3248Setup.java \
-RFX_RPADCSetup.java
+SPIDER_SETUPSetup.java \
+RFX_RPADCSetup.java \
+PI_CAMSetup.java \
+PI_SCT320Setup.java\
+SPECTRO_CFGSetup.java \
+NI6683RECSetup.java \
+LINCMOSSetup.java  \
+PLFESetup.java
 
 java_DATA = jDevices.jar
 

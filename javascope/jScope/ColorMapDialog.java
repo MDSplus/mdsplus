@@ -133,22 +133,61 @@ public class ColorMapDialog
 	    );
 	 */
 
-	getContentPane().setLayout(new GridLayout(3, 1));
+        getContentPane().setLayout(new GridLayout(4, 1));
 
 	JPanel pan1 = new JPanel();
-//        pan1.setLayout(new GridLayout(2, 1));
+        pan1.setLayout(new GridLayout(2, 1));
 
 	JPanel pan2 = new JPanel();
+        JPanel pan3 = new JPanel();
 
-	/*
+       
 	    pan2.add(new JLabel("MIN : "));
 	    pan2.add(minVal = new JTextField(6));
+            minVal.addActionListener(new ActionListener()    
+            {
+                public void actionPerformed(ActionEvent ev)
+                {                       
+                     float min, max;
+                     try {
+                        min = Float.parseFloat(minVal.getText().trim());
+                    } catch(Exception exc) {
+                        min = Float.MIN_VALUE;
+                    }
+                    try {
+                        max = Float.parseFloat(maxVal.getText().trim());
+                    } catch(Exception exc) {
+                        max = Float.MAX_VALUE;
+                    }                    
+                    ColorMapDialog.this.wave.setFrameMinMax(min, max);
+                }
+            });
+            
 	    pan2.add(new JLabel("MAX : "));
 	    pan2.add(maxVal = new JTextField(6));
-	 */
+            maxVal.addActionListener(new ActionListener()    
+            {
+                public void actionPerformed(ActionEvent ev)
+                {
+                       float min, max;
+                       try {
+                           min = Float.parseFloat(minVal.getText().trim());
+                       } catch(Exception exc) {
+                           min = Float.MIN_VALUE;
+                       }
+                       try {
+                           max = Float.parseFloat(maxVal.getText().trim());
+                       } catch(Exception exc) {
+                           max = Float.MAX_VALUE;
+                       }                    
+                       ColorMapDialog.this.wave.setFrameMinMax(min, max);
+                }
+            });
 
-	cmComboBox = new JComboBox<>();
-	pan2.add(cmComboBox);
+         
+
+        cmComboBox = new JComboBox();
+        pan3.add(cmComboBox);
 	int r[] = new int[256];
 	int g[] = new int[256];
 	int b[] = new int[256];
@@ -176,6 +215,8 @@ public class ColorMapDialog
        cp = new ColorPalette(colorMap.colors);
        getContentPane().add(cp);
        pan1.add(pan2);
+       pan1.add(pan3);
+       
 
        bitOptionPanel = new JPanel();
        bitOptionPanel.setBorder(BorderFactory.createTitledBorder("16 bit  Option"));
@@ -206,6 +247,7 @@ public class ColorMapDialog
 	}
 	);
 
+       
 	JPanel pan4 = new JPanel();
 	pan4.add(ok = new JButton("Ok"));
 	ok.addActionListener(new ActionListener()
@@ -215,11 +257,24 @@ public class ColorMapDialog
 //                if (ColorMapDialog.this.wave.IsImage())
 	        {
 	            ColorMap cm = (ColorMap) cmComboBox.getSelectedItem();
+                    
 	            if(is16BitImage)
 	            {
 	                cm.bitClip = bitClip.isSelected();
 	                cm.bitShift = shiftSlider.getValue();
 	            }
+                    
+                    try {
+                        cm.setMin( Float.parseFloat(minVal.getText().trim()) );
+                    } catch(Exception exc) {
+                        cm.setMin( Float.MIN_VALUE );
+                    }
+                    try {
+                        cm.setMax( Float.parseFloat(maxVal.getText().trim()) );
+                    } catch(Exception exc) {
+                        cm.setMax( Float.MAX_VALUE );
+                    }                    
+                    
 	            ColorMapDialog.this.wave.setColorMap(cm);
 	            ColorMapDialog.this.setVisible(false);
 	        }
@@ -278,6 +333,7 @@ public class ColorMapDialog
 	        {
 	            ColorMapDialog.this.wave.setColorMap(colorMap);
 	            ColorMapDialog.this.setVisible(false);
+                    
 	            if(is16BitImage)
 	            {
 	                bitClip.setSelected(colorMap.bitClip);
@@ -294,7 +350,7 @@ public class ColorMapDialog
 	getContentPane().add(pan4);
 
 	pack();
-	setSize(330, 350);
+        setSize(330, 380);
     }
 
     public ColorMap getColorMap(String name)
@@ -312,29 +368,36 @@ public class ColorMapDialog
     {
 	this.wave = wave;
 	colorMap = wave.getColorMap();
-	cmComboBox.setSelectedItem(colorMap);
+        minVal.setText(""+colorMap.getMin());
+        maxVal.setText(""+colorMap.getMax());
 
- //       if( wave.frames != null && wave.frames.frame_type.length > 0 && wave.frames.frame_type[0] == FrameData.BITMAP_IMAGE_16 )
-       if( wave.frames != null && wave.frames.getFrameType() == FrameData.BITMAP_IMAGE_16 )
+        cmComboBox.setSelectedItem(colorMap);
+        //shiftSlider and bitClip to be remove
+        //pallet color scaled on min max value
+        if( false )
 	{
+        
 	    if(!is16BitImage)
 	    {
 	        getContentPane().setLayout(new GridLayout(4, 1));
 	        getContentPane().add(bitOptionPanel, 2);
-	        setSize(330, 350);
+                setSize(380, 350);
 
 	    }
 	    is16BitImage = true;
 	    shiftSlider.setValue(colorMap.bitShift);
 	    bitClip.setSelected(colorMap.bitClip);
+          
+             
 	}
 	else
 	{
 	    is16BitImage = false;
 	    getContentPane().remove(bitOptionPanel);
 	    getContentPane().setLayout(new GridLayout(3, 1));
-	    setSize(330, 250);
+            setSize(380, 250);
 	}
+        
     }
 
     public void addColorMapListener(ActionListener l)

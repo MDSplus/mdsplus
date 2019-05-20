@@ -1,4 +1,4 @@
-#
+# 
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -21,6 +21,9 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+#
+#   2019 03 07: Trig time is initialized to trig source value also in INTERNAL mode
 #
 
 from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float32Array
@@ -102,23 +105,26 @@ class NI6259AI(Device):
     AI_START_SELECT_PULSE  = c_int(0)
     AI_START_SELECT_PFI1 = c_int(2)
 
-    AI_START_SELECT_RTSI0 = c_int(11)
-    AI_START_SELECT_RTSI1 = c_int(12)
+#    AI_START_SELECT_RTSI0 = c_int(11)
+#    AI_START_SELECT_RTSI1 = c_int(12)
 
 #Codac Core 5.0
-    AI_START_SELECT = c_int(10)
-    AI_START_POLARITY = c_int(11)
+#    AI_START_SELECT = c_int(10)
+#    AI_START_POLARITY = c_int(11)
+
+#Codac Core 6.0
+    AI_START_SELECT = c_int(11)
+    AI_START_POLARITY = c_int(12)
 
     AI_START_POLARITY_RISING_EDGE = c_int(0)
-
     AI_REFERENCE_SELECT_PULSE  = c_int(0)
     AI_REFERENCE_SELECT_PFI1 = c_int(2)
+
 
  #Codac Core 5.0
     AI_REFERENCE_SELECT = c_int(12)
     AI_REFERENCE_POLARITY = c_int(13)
     AI_REFERENCE_POLARITY_RISING_EDGE = c_int(0)
-
     PXI6259_AI_START_TRIGGER = c_int(3)
     PXI6259_RTSI1 = c_int(3)
     PXI6259_RTSI2 = c_int(4)
@@ -142,7 +148,13 @@ class NI6259AI(Device):
 
 
     def debugPrint(self, msg="", obj=""):
-          print( self.name + ":" + msg, obj );
+          msger=""
+          if NI6259AI.niInterfaceLib is not None:
+              errno = NI6259AI.niInterfaceLib.getErrno();
+              print "erno ", errno
+              if errno is not None:
+                  msger = 'Error (%d) %s' % (errno, os.strerror( errno ))
+          print( self.name + ":" + msg, obj, msger );
 
 #saveInfo and restoreInfo allow to handle open file descriptors
     def saveInfo(self):
@@ -169,7 +181,7 @@ class NI6259AI(Device):
                devName = '/dev/pxi6259.'+str(boardId);
                dfd = os.open(devName, os.O_RDWR);
                serialNum = c_int(0)
-               if NI6259AI.niLib.pxi6259_get_board_serial_number(dfd, byref(serialNum)) == 0 :
+               if NI6259AI.niLib.pxi6259_get_board_serial_number(dfd, byref(serialNum)) == 0 : 
                   self.serial_num.putData(serialNum)
                os.close(dfd)
             except:
@@ -290,14 +302,14 @@ class NI6259AI(Device):
                         gainValue = self.device.gainValueDict[gain] * 2.
                         coeff[0] = coeff[2] = coeff[3] = 0
                         coeff[1] = c_float( gainValue / 65536. )
-
+		    
                     getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
 
                 except Exception as e:
                     self.device.debugPrint(e)
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
                     self.error = self.ACQ_ERROR;
-                    return
+                    return 
 
             if( not transientRec ):
 
@@ -327,7 +339,7 @@ class NI6259AI(Device):
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 self.error = self.ACQ_ERROR
-                return
+                return 
 
 
             saveList = c_void_p(0)
@@ -338,7 +350,7 @@ class NI6259AI(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
 
             #timeAt0 = trigSource + startTime
-            #self.device.debugPrint("PXI 6259 TIME AT0 ", numSamples)
+            #self.device.debugPrint("PXI 6259 TIME AT0 ", numSamples)            
             timeAt0 = startTime
 
             while not self.stopReq:
@@ -362,7 +374,7 @@ class NI6259AI(Device):
             NI6259AI.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
             self.device.closeInfo()
 
-            return
+            return 
 
         def stop(self):
             self.stopReq = True
@@ -370,7 +382,7 @@ class NI6259AI(Device):
 
         def hasError(self):
             return ( self.error != self.ACQ_NOERROR)
-
+   
 
 
 #############End Inner class AsynchStore
@@ -380,13 +392,11 @@ class NI6259AI(Device):
 
         self.debugPrint('================= 11 PXI 6259 Init ===============')
 
-        ##self.restoreInfo()
 
 #Module in acquisition check
         if self.restoreInfo() == self.DEV_IS_OPEN :
             try:
                self.restoreWorker()
-               print 'Chech Start Store'
                if self.worker.isAlive():
                   print 'stop Store'
                   self.stop_store()
@@ -409,8 +419,8 @@ class NI6259AI(Device):
 #Channel configuration
         activeChan = 0;
         for chan in range(0, numChannels):
-
-            #Empy the node which will contain  the segmented data
+                    
+            #Empy the node which will contain  the segmented data   
             getattr(self, 'channel_%d_data_raw'%(chan+1)).deleteData()
 
             getattr(self, 'channel_%d_data_raw'%(chan+1)).setCompressOnPut(False)
@@ -418,7 +428,7 @@ class NI6259AI(Device):
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
                 polarity = self.polarityDict[getattr(self, 'channel_%d_polarity'%(chan+1)).data()]
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan+1)).data()]
-
+ 
                 data = Data.compile("NIpxi6259analogInputScaled(build_path($), build_path($), $ )", getattr(self, 'channel_%d_data_raw'%(chan+1)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan+1)).getPath(), gain )
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
@@ -483,15 +493,17 @@ class NI6259AI(Device):
                     """
                     if( trigMode == 'EXTERNAL_PFI1' or trigMode == 'EXT_PFI1_R_RTSI1' ):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
+                        self.debugPrint('AI_START_SELECT_PFI1 %d'%(status) ) 
                     else:
                         self.debugPrint("1 OK AI_START_SELECT_RTSI1")
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
                     if( status == 0 ):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
+                        self.debugPrint('AI_START_POLARITY_RISING_EDGE %d'%(status) ) 
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        raise DevBAD_PARAMETER
-
+                        raise DevBAD_PARAMETER                    
+                    
                 else:
                     if( trigMode == 'EXT_PFI1_R_RTSI1' ):
                          status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
@@ -540,7 +552,10 @@ class NI6259AI(Device):
             if(trigMode == 'EXTERNAL_PFI1' or trigMode == 'EXTERNAL_RTSI1' or trigMode == 'SW_RTSI1'):
                 trigSource = self.trig_source.data()
             else:
-                trigSource = 0
+                try:
+                    trigSource = self.trig_source.data()
+		except:
+		    trigSource = 0;
             self.debugPrint('PXI 6259 Trigger source: ',trigSource)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve Trigger source')
@@ -583,7 +598,7 @@ class NI6259AI(Device):
 
             convClk = self.conv_clk.data()
             if ( activeChan == 1 and convClk == 20 ) :
-                convClk = 16
+                convClk = 16  
 
 
             status = NI6259AI.niLib.pxi6259_set_ai_convert_clk(aiConf, c_int(convClk), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
@@ -727,7 +742,6 @@ class NI6259AI(Device):
 #Module in acquisition check
         try:
             self.restoreWorker()
-            print 'Chech Start Store'
             if self.worker.isAlive():
                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module is in acquisition')
                return
@@ -766,7 +780,7 @@ class NI6259AI(Device):
             self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
-
+        
         time.sleep(2)
 
         if self.worker.hasError():
@@ -799,7 +813,7 @@ class NI6259AI(Device):
           error = self.worker.hasError()
       else:
           error = self.worker.hasError()
-          if not error:
+          if not error: 
               Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread stopped')
 
 

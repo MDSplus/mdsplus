@@ -9,6 +9,7 @@ import java.net.*;
 
 /*
 javac -cp ./caj-1.1.14.jar:./jca-2.3.6.jar:/usr/local/mdsplus/java/classes/mdsobjects.jar ChannelArchiver.java
+cp caj-1.1.14.jar jca-2.3.6.jar /usr/local/mdsplus/epics/archiver/.
 cp *.class /usr/local/mdsplus/epics/archiver/.
 */
 

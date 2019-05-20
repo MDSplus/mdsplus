@@ -423,7 +423,7 @@ public class WaveformMetrics
 	            ypoints[curr_num_points] = YPixel(max_y, d);
 	            curr_num_points++;
 	        }
-	        if (j == sig.getNumPoints() || j == end_point || Double.isNaN(sig.getY(j))) // || sig.x_double[j] >= xmax_nolog)
+                if (j == sig.getNumPoints() || j >= end_point || Double.isNaN(sig.getY(j))) // || sig.x_double[j] >= xmax_nolog)
 	        {
 	            curr_polygon = new Polygon(xpoints, ypoints,
 	                                       curr_num_points);
