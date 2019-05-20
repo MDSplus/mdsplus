@@ -1,0 +1,1566 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.8" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <NonVisualComponents>
+    <Component class="DeviceField" name="deviceField14">
+      <Properties>
+        <Property name="labelString" type="java.lang.String" value="x.:"/>
+      </Properties>
+    </Component>
+  </NonVisualComponents>
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="scpsl.nbtf"/>
+    <Property name="deviceTitle" type="java.lang.String" value="Princeton Instruments CCD Camera"/>
+    <Property name="deviceType" type="java.lang.String" value="PI_CAM"/>
+    <Property name="height" type="int" value="600"/>
+    <Property name="width" type="int" value="1100"/>
+  </Properties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,-83,0,0,3,-5"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Properties>
+        <Property name="checkExpressions" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="checkMessages" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="0"/>
+        </Property>
+        <Property name="methods" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+          <StringArray count="3">
+            <StringItem index="0" value="init"/>
+            <StringItem index="1" value="start_store"/>
+            <StringItem index="2" value="stop_store"/>
+          </StringArray>
+        </Property>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="South"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JPanel" name="jPanel3">
+      <Properties>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[1000, 500]"/>
+        </Property>
+        <Property name="name" type="java.lang.String" value="" noResource="true"/>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="First"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+        <Property name="verticalGap" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel1">
+          <Properties>
+            <Property name="alignmentY" type="float" value="0.0"/>
+            <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[488, 500]"/>
+            </Property>
+            <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+              <Dimension value="[780, 310]"/>
+            </Property>
+          </Properties>
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="0"/>
+            <Property name="rows" type="int" value="3"/>
+            <Property name="verticalGap" type="int" value="5"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel7">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder/>
+                  </Border>
+                </Property>
+                <Property name="alignmentY" type="float" value="0.0"/>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel14">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField1">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Comment:"/>
+                        <Property name="numCols" type="int" value="40"/>
+                        <Property name="offsetNid" type="int" value="3"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceDispatch" name="deviceDispatch1">
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel15">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField30">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Camera Model Name:"/>
+                        <Property name="offsetNid" type="int" value="1"/>
+                        <Property name="textOnly" type="boolean" value="true"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField31">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Camera Serial Number:"/>
+                        <Property name="offsetNid" type="int" value="2"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel6">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder position="1"/>
+                  </Border>
+                </Property>
+                <Property name="alignmentY" type="float" value="0.0"/>
+                <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[488, 80]"/>
+                </Property>
+                <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+                  <Dimension value="[1208, 80]"/>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="2"/>
+                <Property name="verticalGap" type="int" value="1"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel5">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceChoice" name="deviceChoice1">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="INTERNAL"/>
+                            <StringItem index="1" value="EXTERNAL"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Clock Mode:"/>
+                        <Property name="offsetNid" type="int" value="4"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField5">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Start:"/>
+                        <Property name="offsetNid" type="int" value="6"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField6">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Ferq.:"/>
+                        <Property name="offsetNid" type="int" value="5"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField7">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Duaration:"/>
+                        <Property name="offsetNid" type="int" value="7"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel9">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField8">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Clock Source:"/>
+                        <Property name="numCols" type="int" value="60"/>
+                        <Property name="offsetNid" type="int" value="8"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel10">
+              <Properties>
+                <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                  <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+                    <TitledBorder/>
+                  </Border>
+                </Property>
+              </Properties>
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="1"/>
+                <Property name="rows" type="int" value="2"/>
+              </Layout>
+              <SubComponents>
+                <Container class="javax.swing.JPanel" name="jPanel12">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField9">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Exposure:"/>
+                        <Property name="offsetNid" type="int" value="9"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField11">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Temperature:"/>
+                        <Property name="offsetNid" type="int" value="10"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField10">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Frames:"/>
+                        <Property name="offsetNid" type="int" value="264"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice2">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="2">
+                            <StringItem index="0" value="OPEN"/>
+                            <StringItem index="1" value="NORMAL"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Shutter:"/>
+                        <Property name="offsetNid" type="int" value="11"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="javax.swing.JPanel" name="jPanel11">
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
+                    <Property name="verticalGap" type="int" value="0"/>
+                  </Layout>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField12">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Cleans:"/>
+                        <Property name="offsetNid" type="int" value="13"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField13">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Skip:"/>
+                        <Property name="offsetNid" type="int" value="14"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice3">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="4">
+                            <StringItem index="0" value="LOW_NOISE"/>
+                            <StringItem index="1" value="HIGH_SPEED"/>
+                            <StringItem index="2" value="HIGH_CAPACITY"/>
+                            <StringItem index="3" value="ELECTRON_MULTIPLIED"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="ADC:"/>
+                        <Property name="offsetNid" type="int" value="16"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceChoice" name="deviceChoice4">
+                      <Properties>
+                        <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                          <StringArray count="3">
+                            <StringItem index="0" value="NORMAL"/>
+                            <StringItem index="1" value="FLIPPED_H"/>
+                            <StringItem index="2" value="FLIPPED_V"/>
+                          </StringArray>
+                        </Property>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="Chip Orientation:"/>
+                        <Property name="offsetNid" type="int" value="15"/>
+                        <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="jPanel8">
+      <Properties>
+        <Property name="minimumSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[900, 600]"/>
+        </Property>
+        <Property name="preferredSize" type="java.awt.Dimension" editor="org.netbeans.beaninfo.editors.DimensionEditor">
+          <Dimension value="[760, 200]"/>
+        </Property>
+      </Properties>
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="0"/>
+        <Property name="rows" type="int" value="1"/>
+      </Layout>
+      <SubComponents>
+        <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel2">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+                <Property name="columns" type="int" value="0"/>
+                <Property name="rows" type="int" value="24"/>
+              </Layout>
+              <SubComponents>
+                <Container class="DeviceChannel" name="deviceChannel1">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R01"/>
+                    <Property name="offsetNid" type="int" value="21"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField15">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="24"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField135">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="25"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField16">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="26"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField17">
+                      <Properties>
+                        <Property name="identifier" type="java.lang.String" value=""/>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="27"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField18">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="28"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField19">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="29"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel2">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R02"/>
+                    <Property name="offsetNid" type="int" value="31"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField20">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="34"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField136">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="35"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField21">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="36"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField22">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="37"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField23">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="38"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField24">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="39"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel3">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R03"/>
+                    <Property name="offsetNid" type="int" value="41"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField25">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="44"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField137">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="45"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField26">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="46"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField27">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="47"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField28">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="48"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField29">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="49"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel5">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R04"/>
+                    <Property name="offsetNid" type="int" value="51"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField35">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="54"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField139">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="55"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField36">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="56"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField37">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="57"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField38">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="58"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField39">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="59"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel6">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R05"/>
+                    <Property name="offsetNid" type="int" value="61"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField40">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="64"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField140">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="65"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField41">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="66"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField42">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="67"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField43">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="68"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField44">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="69"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel7">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R06"/>
+                    <Property name="offsetNid" type="int" value="71"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField45">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="74"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField141">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="75"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField46">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="76"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField47">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="77"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField48">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="78"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField49">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="79"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel8">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R07"/>
+                    <Property name="offsetNid" type="int" value="81"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField50">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="84"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField142">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="85"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField51">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="86"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField52">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="87"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField53">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="88"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField54">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="89"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel9">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R08"/>
+                    <Property name="offsetNid" type="int" value="91"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField55">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="94"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField143">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="95"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField56">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="96"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField57">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="97"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField58">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="98"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField59">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="99"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel10">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R09"/>
+                    <Property name="offsetNid" type="int" value="101"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField60">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="104"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField144">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="105"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField61">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="106"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField62">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="107"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField63">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="108"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField64">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="109"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel11">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R10"/>
+                    <Property name="offsetNid" type="int" value="111"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField65">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="114"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField145">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="115"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField66">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="116"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField67">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="117"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField68">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="118"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField69">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="119"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel12">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R11"/>
+                    <Property name="offsetNid" type="int" value="121"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField70">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="124"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField146">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="125"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField71">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="126"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField72">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="127"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField73">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="128"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField74">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="129"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel13">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R12"/>
+                    <Property name="offsetNid" type="int" value="131"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField75">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="134"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField147">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="135"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField76">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="136"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField77">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="137"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField78">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="138"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField79">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="139"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel14">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R13"/>
+                    <Property name="offsetNid" type="int" value="141"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField80">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="144"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField148">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="145"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField81">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="146"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField82">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="147"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField83">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="148"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField84">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="149"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel15">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R14"/>
+                    <Property name="offsetNid" type="int" value="151"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField85">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="154"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField149">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="155"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField86">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="156"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField87">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="157"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField88">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="158"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField89">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="159"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel16">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R15"/>
+                    <Property name="offsetNid" type="int" value="161"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField90">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="164"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField150">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="165"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField91">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="166"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField92">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="167"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField93">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="168"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField94">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="169"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel17">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R16"/>
+                    <Property name="offsetNid" type="int" value="171"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField95">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="174"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField151">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="175"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField96">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="176"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField97">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="177"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField98">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="178"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField99">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="179"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel18">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R17"/>
+                    <Property name="offsetNid" type="int" value="181"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField100">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="184"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField152">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="185"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField101">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="186"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField102">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="187"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField103">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="188"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField104">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="189"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel19">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R18"/>
+                    <Property name="offsetNid" type="int" value="191"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField105">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="194"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField153">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="195"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField106">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="196"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField107">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="197"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField108">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="198"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField109">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="199"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel20">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R19"/>
+                    <Property name="offsetNid" type="int" value="201"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField110">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="204"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField154">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="205"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField111">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="206"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField112">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="207"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField113">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="208"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField114">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="209"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel21">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R20"/>
+                    <Property name="offsetNid" type="int" value="211"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField115">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="214"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField155">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="215"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField116">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="216"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField117">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="217"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField118">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="218"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField119">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="219"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel23">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R21"/>
+                    <Property name="offsetNid" type="int" value="221"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField125">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="224"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField157">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="225"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField126">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="226"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField127">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="227"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField128">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="228"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField129">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="229"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel24">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R22"/>
+                    <Property name="offsetNid" type="int" value="231"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField130">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="234"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField158">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="235"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField131">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="236"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField132">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="237"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField133">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="238"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField134">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="239"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel25">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R23"/>
+                    <Property name="offsetNid" type="int" value="241"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField159">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="244"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField160">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="245"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField161">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="246"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField162">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="247"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField163">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="248"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField164">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="249"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+                <Container class="DeviceChannel" name="deviceChannel26">
+                  <Properties>
+                    <Property name="inSameLine" type="boolean" value="true"/>
+                    <Property name="labelString" type="java.lang.String" value="R24"/>
+                    <Property name="offsetNid" type="int" value="251"/>
+                    <Property name="showVal" type="java.lang.String" value=""/>
+                    <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+
+                  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+                  <SubComponents>
+                    <Component class="DeviceField" name="deviceField165">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="x:"/>
+                        <Property name="offsetNid" type="int" value="254"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField166">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Width:"/>
+                        <Property name="offsetNid" type="int" value="255"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField167">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="xBin:"/>
+                        <Property name="offsetNid" type="int" value="256"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField168">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="y:"/>
+                        <Property name="offsetNid" type="int" value="257"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField169">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="Height:"/>
+                        <Property name="offsetNid" type="int" value="258"/>
+                      </Properties>
+                    </Component>
+                    <Component class="DeviceField" name="deviceField170">
+                      <Properties>
+                        <Property name="labelString" type="java.lang.String" value="yBin:"/>
+                        <Property name="offsetNid" type="int" value="259"/>
+                      </Properties>
+                    </Component>
+                  </SubComponents>
+                </Container>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

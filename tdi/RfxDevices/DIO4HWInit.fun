@@ -23,19 +23,14 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	private _DIO4_IO_INT_ENABLE =0x1;
 	private _DIO4_IO_INT_DISABLE= 0x0;
 
-
-
-
-
-
-
-
+    private _DIO4_CLOCK_SOURCE_OK = 0x1;
+    private _DIO4_CLOCK_SOURCE_NOK = 0x0;
 
 	/* private _NO_EVENT = -1; */
 
 	 /* if( size( _synch_event ) == 1 && _synch_event[0] == _NO_EVENT ) _synch_event = []; */
 
-	write(*, 'DIO4HWInit');
+	write(*, 'DIO4HWInit _ext_clock', _ext_clock);
 
 
 /* Initialize Library if the first time */
@@ -55,10 +50,11 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 
 
 /* Reset module */
-/*******
-       if(_first) 
+/********
+    if(_first)
 		DIO4->DIO4_Reset(val(_handle));
 *******/
+
 	_status = DIO4->DIO4_Cmd_TimingChannelDisarm(val(_handle),val(byte(255)));
 		if(_status != 0)
 		{
@@ -84,62 +80,30 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 /* Set clock functions */
 
 	_clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
-	_out = byte(_DIO4_TH_OUTPUT_DISABLE);
 /*
-	if(_ext_clock==1)
-	{
-		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
-	}
-
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
-			val(_out), val(byte(_DIO4_TH_INT_DISABLE)));
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			else
-				write(*, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			return(0);
-		}
+	_out = byte(_DIO4_TH_OUTPUT_DISABLE); TT
 */
+	_out = byte(_DIO4_TH_OUTPUT_ENABLE); 
 
-
-	if(_ext_clock==1)
+	if(_ext_clock == 1)
 	{
-	write(*, 'HIGHWAY');
-
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
-			val(byte(_DIO4_TH_OUTPUT_DISABLE)), val(byte(_DIO4_TH_INT_DISABLE)));
-
-
-
-
-
+	    write(*, 'HIGHWAY');
 		_clock_source = byte(_DIO4_CLOCK_SOURCE_TIMING_HIGHWAY);
-
-		if(_status != 0)
-		{
-			if(_nid != 0)
-				DevLogErr(_nid, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			else
-				write(*, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
-			return(0);
-		}
-
-
+	    _out = byte(_DIO4_TH_OUTPUT_DISABLE);/*TT*/
 	}
-	else 	if(_ext_clock==0 || _ext_clock==2)
+
+    _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
+			val(_out), val(byte(_DIO4_TH_INT_DISABLE)));
+	if(_status != 0)
 	{
+		if(_nid != 0)
+			DevLogErr(_nid, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
+		else
+			write(*, "Error setting highway configuration in DIO4 device, board ID = "// _board_id);
+		return(0);
+	}
 
-
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
-			val(byte(_DIO4_TH_OUTPUT_ENABLE)), val(byte(_DIO4_TH_INT_DISABLE)));
-
-		_clock_source = byte(_DIO4_CLOCK_SOURCE_INTERNAL);
-	}	
-
-
-
+    wait(1);
 		
 	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(_clock_source), val(byte(0)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
 	if(_status != 0)
@@ -151,13 +115,44 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 		return(0);
 	}
 
+    wait(1);
 
-
-
-
-
-
-
+    /*
+    ** Since the PLL is used, check to see that the PLL has locked.
+    */
+    _bOk = 0;
+    for (_bLockCnt = 0; _bLockCnt < 10; _bLockCnt++) {
+        _status = DIO4->DIO4_CS_CheckClockOK(val(_handle), ref(_bOK));
+        write(*, "Check PLL", _bLockCnt, " locked ", _bOK);
+		if(_status != 0)
+        {
+			if(_nid != 0)
+			    DevLogErr(_nid, "Error on check synchronization clock in DIO4 device, board ID = "// _board_id);
+		    else
+			    write(*, "Error on check synchronization clock in DIO4 device, board ID = "// _board_id);
+	        DIO4->DIO4_Close(val(_handle));
+		    return(0);
+        }
+        if (_bOK == _DIO4_CLOCK_SOURCE_OK) {
+            /*
+            ** Clock is present and PLL has locked
+            */
+            write(*, "PLL locked in DIO4 device, board ID = "// _board_id);
+            break;
+        }
+        else if (_bLockCnt > 8) {
+            /*
+            ** Clock is still not OK after 3 seconds
+            */
+			if(_nid != 0)
+				DevLogErr(_nid, "Error PLL not locked in DIO4 device, board ID = "// _board_id);
+			else
+				write(*, "Error PLL not locked in DIO4 device, board ID = "// _board_id);
+	        DIO4->DIO4_Close(val(_handle));
+			return(0);
+        }
+        wait(1);
+    }
 
 /* Set recorder start event and arm recorder */
 /*
@@ -199,10 +194,6 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 	}
 
 
-
-
-
-
 /* Set synch event if defined */
 
 	for(_i = 0; _i < size(_synch_event); _i++)
@@ -222,7 +213,7 @@ public fun DIO4HWInit(in _nid, in _board_id, in _ext_clock, in _rec_event, in _s
 /* Initialize remaining event register */
 
     	
-    	for(_i = size(_synch_event) + 1; _i <= 16; _i++)
+    for(_i = size(_synch_event) + 1; _i <= 16; _i++)
 	{
 
 		_status = DIO4->DIO4_EC_SetEventDecoder(val(_handle), val(_i), val(byte(0)),

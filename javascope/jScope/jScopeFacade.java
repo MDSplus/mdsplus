@@ -97,6 +97,7 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 
 
@@ -225,6 +226,17 @@ public class jScopeFacade
 
     static int getTimeMode() {return timeMode; }
 
+    static long convertFromSpecificDeltaTime(long deltaTime)
+    {
+        if (timeMode == VMS_TIME)
+                return deltaTime / 10000L;
+        else if(timeMode == EPICS_TIME)
+        {
+            return deltaTime/1000000L;
+        }
+        else 
+            return deltaTime;
+    }
 
     static long convertFromSpecificTime(long inTime)
     {
@@ -743,7 +755,8 @@ public class jScopeFacade
 	    }
 	});
 
-	file_diag.addChoosableFileFilter( new  javax.swing.filechooser.FileFilter()
+        javax.swing.filechooser.FileFilter defaultFileFilter;
+	file_diag.addChoosableFileFilter( defaultFileFilter = new  javax.swing.filechooser.FileFilter()
 	{
 	    public boolean accept(File f) {
 	        return f.isDirectory() || f.getName().toLowerCase().endsWith(".jscp");
@@ -754,7 +767,7 @@ public class jScopeFacade
 	    }
 	});
 
-
+        file_diag.setFileFilter(defaultFileFilter);
 
 	mb = new JMenuBar();
 	setJMenuBar(mb);

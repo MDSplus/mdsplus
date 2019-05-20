@@ -1408,7 +1408,10 @@ public class Waveform
 	                       frames.getPixel(frames.GetFrameIdx(), p.x, p.y),
 	                       0);
 
-	if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16 || frame_type == FrameData.BITMAP_IMAGE_8 ) {
+        if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_16 ||
+            frame_type == FrameData.BITMAP_IMAGE_U32 || frame_type == FrameData.BITMAP_IMAGE_U16 || 
+            frame_type == FrameData.BITMAP_IMAGE_8 || frame_type == FrameData.BITMAP_IMAGE_U8 ||
+            frame_type == FrameData.BITMAP_IMAGE_F32 ) {
 	  we.setPointValue(frames.getPointValue(frames.GetFrameIdx(), p.x, p.y));
 	}
 	we.setFrameType(frame_type);
@@ -1469,8 +1472,9 @@ public class Waveform
       Point p = frames.getFramePoint(new Point(end_x, end_y), d);
       int frame_type = frames.getFrameType();
 
-      if (frame_type == FrameData.BITMAP_IMAGE_32 ||
-	  frame_type == FrameData.BITMAP_IMAGE_16 ) {
+      if (frame_type == FrameData.BITMAP_IMAGE_32 || frame_type == FrameData.BITMAP_IMAGE_U32 ||
+          frame_type == FrameData.BITMAP_IMAGE_16 || frame_type == FrameData.BITMAP_IMAGE_16 ||
+          frame_type == FrameData.BITMAP_IMAGE_F32 ) {
 	we = new WaveformEvent(this,
 	                       p.x, p.y, (float)(Math.round(frames.GetFrameTime() * 10000) / 10000.) ,
 	                       frames.getName(),
@@ -1957,7 +1961,9 @@ public class Waveform
     img = frames.GetFrame(frame_idx, d);
 
     if (img == null) {
-      wave_error = " No frame at time " + curr_point;//frames.GetTime(frame_idx);
+        wave_error = frames.getError();
+        if( wave_error == null || wave_error.length() == 0)
+             wave_error = " No frame at time " + curr_point;//frames.GetTime(frame_idx);
       return false;
     }
 
@@ -2734,11 +2740,21 @@ protected void drawMarkers(Graphics g, Vector<Polygon> segments, int marker, int
   {
       if(frames != null)
       {
-	  frames.shiftImagePixel(bitShift, bitClip);
-	  not_drawn = true;
-	  repaint();
+            ((Frames)frames).shiftImagePixel(bitShift, bitClip);
+            not_drawn = true;
+            repaint();
       }
-  }
+   }
+
+   public void setFrameMinMax(float min, float max)
+   {
+      if(frames != null)
+      {
+         frames.setMinMax(min, max);
+	 not_drawn = true;
+	 repaint();
+      }
+   }
 
   public ColorMap getColorMap()
   {
