@@ -96,5 +96,7 @@ autom4te.cache
 _version.py
 *.log
 
+.vscode/
+
 testing/MDSplus/
 testing/*Devices/
