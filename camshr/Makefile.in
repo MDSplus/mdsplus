@@ -1,6 +1,9 @@
 include @top_builddir@/Makefile.inc
 
+srcdir = @srcdir@
+builddir = @builddir@
 VPATH = @srcdir@
+@AX_RECONFIGURE_TARGET@
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@CamShr.dll.a
 

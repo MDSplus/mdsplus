@@ -129,6 +129,16 @@ typedef struct {
   const char *MDSVERSION;
 } MDSplusVersionInfo;
 
+typedef struct {
+  const char *GIT_TAG;
+  const char *GIT_BRANCH;
+  const char *GIT_REMOTE;
+  const char *GIT_REMOTE_URL;
+  const char *GIT_COMMIT;
+  const char *GIT_SRCDIR;
+} MDSplusGitVersionInfo;
+
+
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 // FREEXD
