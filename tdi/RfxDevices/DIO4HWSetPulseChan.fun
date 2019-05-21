@@ -151,19 +151,19 @@ write(*, 'event size: ', _s);
 		    _found = 0;
 		    for(_ev = 1; (_ev <=16) && (!_found); _ev++)
 		    { 
-			_ev_code = byte(0);
-			_ev_chan = byte(0);
-			_ev_trig = byte(0);
-			_status1 = DIO4->DIO4_EC_GetEventDecoder(val(_handle), val(byte(_ev)), 
-				ref(_ev_code), ref(_ev_chan), ref(_ev_trig));
-			if((_ev_code == 0) || ((_ev_code == _event[_i]) && (_ev_trig == _DIO4_EC_GENERAL_TRIGGER)))
-			{
-			    _found = 1;
-			    _ev_chan = _ev_chan | (1 << _channel);
-				write(*, '_ev: ', _ev);
-			    _status = DIO4->DIO4_EC_SetEventDecoder(val(_handle), val(byte(_ev)), val(byte(_event[_i])),
-				val(byte(_ev_chan)), val(byte(_DIO4_EC_GENERAL_TRIGGER))); 
-			}
+			    _ev_code = byte(0);
+			    _ev_chan = byte(0);
+			    _ev_trig = byte(0);
+			    _status1 = DIO4->DIO4_EC_GetEventDecoder(val(_handle), val(byte(_ev)), 
+				    ref(_ev_code), ref(_ev_chan), ref(_ev_trig));
+			    if((_ev_code == 0) || ((_ev_code == _event[_i]) && (_ev_trig == _DIO4_EC_GENERAL_TRIGGER)))
+			    {
+			        _found = 1;
+			        _ev_chan = _ev_chan | (1 << _channel);
+				    write(*, 'DIO4_EC_SetEventDecoder: ', _ev);
+			        _status = DIO4->DIO4_EC_SetEventDecoder(val(_handle), val(byte(_ev)), val(byte(_event[_i])),
+				    val(byte(_ev_chan)), val(byte(_DIO4_EC_GENERAL_TRIGGER))); 
+			    }
 		    }
 		}
 		if(_status != 0)

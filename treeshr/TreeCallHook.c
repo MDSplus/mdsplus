@@ -89,7 +89,11 @@ static int isEnabled(char *hookName) {
 }
 
 void TreeCallHookFun(char *hookType, char *hookName, ...) {
-  if (!isEnabled(hookName)) return;
+  static int (*TdiExecute)() = NULL;
+  int status;
+  status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
+  if (!(isEnabled(hookName) && STATUS_OK)) return;
+  DESCRIPTOR(expression_d,"TreeShrHook($)");
   static DESCRIPTOR(hooktype_key_d,"type");
   DESCRIPTOR_FROM_CSTRING(hooktype_d,hookName);
   static DESCRIPTOR(tree_key_d,"tree");
@@ -117,6 +121,7 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
 				      (struct descriptor *)&shot_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 6);
     dict = (struct descriptor *)&hook_d;
+    (*TdiExecute)(&expression_d,dict,ans MDS_END_ARG);
   } else if (strcmp(hookType,"TreeNidHook")==0) {
     va_list ap;
     va_start(ap, hookName);
@@ -139,6 +144,7 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
 	                              (struct descriptor *)&nid_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 8);
     dict = (struct descriptor *)&hook_d;
+    (*TdiExecute)(&expression_d,dict,ans MDS_END_ARG);
   } else if (strcmp(hookType,"TreeNidDataHook")==0) {
     va_list ap;
     va_start(ap, hookName);
@@ -164,14 +170,9 @@ void TreeCallHookFun(char *hookType, char *hookName, ...) {
 				      data_d};
     DESCRIPTOR_APD(hook_d, DTYPE_DICTIONARY, &hook_dscs, 10);
     dict = (struct descriptor *)&hook_d;
+    (*TdiExecute)(&expression_d,dict,ans MDS_END_ARG);
   } else {
     return;
   }
-  static int (*TdiExecute)() = NULL; // LibFindImageSymbol_C is a NOP if TdiExecute is already set
-  int status;
-  status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
-  DESCRIPTOR(expression_d,"TreeShrHook($)");
-  if STATUS_OK
-      (*TdiExecute)(&expression_d,dict,ans MDS_END_ARG);
   MdsFree1Dx(&defaultAns,0);
 }

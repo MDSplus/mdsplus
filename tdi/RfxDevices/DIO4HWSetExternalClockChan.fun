@@ -123,7 +123,6 @@ write(*, 'DIO4HWSetExternalClockChan');
 
 
 
-
 	_status = DIO4->DIO4_CS_SetClockSource(val(_handle), val(byte(_DIO4_CLOCK_SOURCE_IO)), val(byte(2*_channel+2)), val(byte(_DIO4_CLOCK_SOURCE_RISING_EDGE)));
 	if(_status != 0)
 	{
@@ -133,6 +132,47 @@ write(*, 'DIO4HWSetExternalClockChan');
 			write(*, "Error setting clock source in DIO4 device, board ID = "// _board_id);
 		return(0);
 	}
+
+
+    /*
+    ** Since the PLL is used, check to see that the PLL has locked.
+    */
+    _bOk = 0;
+    for (_bLockCnt = 0; _bLockCnt < 10; _bLockCnt++) {
+        _status = DIO4->DIO4_CS_CheckClockOK(val(_handle), ref(_bOK));
+		if(_status != 0)
+        {
+			if(_nid != 0)
+			    DevLogErr(_nid, "Error on check synchronization clock in DIO4 device, board ID = "// _board_id);
+		    else
+			    write(*, "Error on check synchronization clock in DIO4 device, board ID = "// _board_id);
+	        DIO4->DIO4_Close(val(_handle));
+		    return(0);
+        }
+        if (_bOK == _DIO4_CLOCK_SOURCE_OK) {
+            /*
+            ** Clock is present and PLL has locked
+            */
+            write(*, "PLL locked in DIO4 device, board ID = "// _board_id);
+            break;
+        }
+        else if (_bLockCnt > 8) {
+            /*
+            ** Clock is still not OK after 3 seconds
+            */
+			if(_nid != 0)
+				DevLogErr(_nid, "Error PLL not locked in DIO4 device, board ID = "// _board_id);
+			else
+				write(*, "Error PLL not locked in DIO4 device, board ID = "// _board_id);
+	        DIO4->DIO4_Close(val(_handle));
+			return(0);
+        }
+        write("Check PLL", _bLockCnt);
+        wait(1);
+    }
+
+
+
 
 	_dwTemp = long(0);
 	_status = DIO4->DIO4_Tst_ReadRegister(val(_handle), val(long(0x008)), ref(_dwTemp));

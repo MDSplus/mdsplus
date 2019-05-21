@@ -12,7 +12,7 @@ public fun DIO4HWEventTrigger(in _nid, in _board_id, in _evCode)
 	write(*, 'DIO4HWEventTrigger with event ', _evCode);
 
 /* Initialize Library if the first time */
-    	if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
+    if_error(_DIO4_initialized, (DIO4->DIO4_InitLibrary(); public _DIO4_initialized = 1;));
 
 
 	_handle = 0L;
@@ -37,10 +37,8 @@ public fun DIO4HWEventTrigger(in _nid, in _board_id, in _evCode)
 		return(0);
 	}
 
-
-
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
-			val(_DIO4_TH_OUTPUT_ENABLE), val(byte(_DIO4_TH_INT_DISABLE)));
+	_status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(byte(_DIO4_TH_SYNCHRONOUS)), 
+	val(_DIO4_TH_OUTPUT_ENABLE), val(byte(_DIO4_TH_INT_DISABLE)));
 	if(_status != 0)
 	{
 		if(_nid != 0)
@@ -62,7 +60,7 @@ public fun DIO4HWEventTrigger(in _nid, in _board_id, in _evCode)
 	}
 
 /*
-	        _status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(_synch),  val(_out), val(_int));
+	_status = DIO4->DIO4_TH_SetTimingHighway(val(_handle), val(_synch),  val(_out), val(_int));
 
 	if(_status != 0)
 	{
