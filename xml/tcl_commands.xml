@@ -1259,6 +1259,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <keyword name="DEFAULT" syntax="show_default"/>"
     <keyword name="SERVER" syntax="show_server"/>"
     <keyword name="VERSION" syntax="show_version"/>"
+    <keyword name="GIT" syntax="SHOW_GIT_INFO"/>
     <keyword name="VERSIONS" syntax="show_versions"/>"
   </type>
 
@@ -1412,6 +1413,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
+
+  <syntax name="SHOW_GIT_INFO">
+    <help name="SHOW GIT">
+      Command: SHOW GIT
+      Purpose: Show the version information of this MDSplus git repository.
+      Format: SHOW GIT [/TAG] [/BRANCH] [/COMMIT] [/REMOTE] [/REMOTE_URL] [/SRCDIR]
+
+    </help>
+    <routine name="mdsdcl_show_git_info"/>
+    <parameter name="P1" required="True"/>    
+    <parameter name="P2" label="ATTRS" prompt="Attributes" required="False"/>
+    <qualifier name="TAG"/>
+    <qualifier name="BRANCH"/>
+    <qualifier name="COMMIT"/>
+    <qualifier name="REMOTE"/>
+    <qualifier name="REMOTE_URL"/>
+    <qualifier name="SRCDIR"/>
+  </syntax>
+
 
   <syntax name="show_versions">
     <help name="SHOW VERSIONS">

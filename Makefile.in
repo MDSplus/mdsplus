@@ -4,12 +4,11 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
+builddir=@builddir@ 
 VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
 
-# selfhelp target
-@TARGET_SELFHELP@
-HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
+
 
 JAVA_JAR = \
 	   javascope \

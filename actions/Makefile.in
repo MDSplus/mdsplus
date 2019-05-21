@@ -3,6 +3,8 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@
 VPATH = @srcdir@
+@AX_RECONFIGURE_TARGET@
+
 X_CFLAGS=@X_CFLAGS@
 CFLAGS+=$(X_CFLAGS) @TARGET_ARCH@
 X_LIBS=@X_LIBS@

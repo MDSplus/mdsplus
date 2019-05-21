@@ -36,26 +36,29 @@ AX_IS_RELEASE([always])
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[        
+    # ],[        
+    # ])
+
 if [[ ! -z ${RELEASE_VERSION} ]]
 then
   RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
   RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
   RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  # RELEASE_BRANCH=${BRANCH:-${GIT_BRANCH}}
-  # RELEASE_COMMIT=${GIT_COMMIT}
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 else
   RELEASE_MAJOR=1
   RELEASE_MINOR=0
   RELEASE_RELEASE=0
-  # RELEASE_BRANCH="unknown"
-  # RELEASE_COMMIT="unknown"
+  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 fi
+RELEASE_DATE="$(date)"
 
 dnl look if a version from git directory can be obtained 
 AX_GIT_REVISION
 
-: ${RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"}
-: ${RELEASE_DATE="$(date)"}
+dnl add reconfigure target option to autoconf generated Makefile
+AX_RECONFIGURE_TARGETS
 
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
@@ -1309,13 +1312,21 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(DEF_PYLIB)
 AC_SUBST(NEED_SEMUN)
+
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
-AC_SUBST(RELEASE_COMMIT)
-AC_SUBST(RELEASE_BRANCH)
 AC_SUBST(RELEASE_TAG)
 AC_SUBST(RELEASE_DATE)
+
+AC_SUBST([GIT_TAG])
+AC_SUBST([GIT_BRANCH])
+AC_SUBST([GIT_REMOTE])
+AC_SUBST([GIT_REMOTE_URL])
+AC_SUBST([GIT_COMMIT])
+AC_SUBST([GIT_COMMIT_DATE])
+AC_SUBST([GIT_SRCDIR])
+
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
 AC_SUBST(ENABLE_SANITIZE)

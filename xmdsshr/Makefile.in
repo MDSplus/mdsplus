@@ -1,9 +1,10 @@
 include @top_builddir@/Makefile.inc
 
-srcdir = @srcdir@
-builddir = @builddir@
-VPATH = @srcdir@
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
 MKDIR_P=@MKDIR_P@
+@AX_RECONFIGURE_TARGET@
 
 X_CFLAGS=@X_CFLAGS@
 CFLAGS+=$(X_CFLAGS)
