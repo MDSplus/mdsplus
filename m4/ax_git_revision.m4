@@ -63,7 +63,7 @@ AC_DEFUN([AX_GIT_REVISION],[
     AS_IF([test -d ${abs_top_srcdir}],,AS_VAR_SET([HAVE_GIT],[no]))    
 
     AS_VAR_IF([HAVE_GIT],[yes],[
-        AS_VAR_SET([GIT],["git --git-dir=${abs_top_srcdir}/.git"])
+        AS_VAR_SET([GIT],["git --git-dir=${abs_top_srcdir}/.git --work-tree=${abs_top_srcdir} "])
         AS_VAR_SET([GIT_TAG],[$(${GIT} describe --tag)])
         AS_VAR_SET([GIT_BRANCH],[$(${GIT} rev-parse --abbrev-ref HEAD)])
         AS_VAR_SET([GIT_REMOTE],[$(${GIT} config branch.${GIT_BRANCH}.remote)])
