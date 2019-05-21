@@ -213,6 +213,46 @@ the e.join() would return exiting the problem.
         _exc.checkStatus(_MdsShr.MDSQueueEvent(_ver.tobytes(event),_C.pointer(eventid)))
         return eventid.value
 
+    @staticmethod
+    def stream(shot, signal, timeData, sampleData):
+        """Builds the payload for the MDS event STREAMING. This event will be received by a Node.js server 
+        that will serve web applications for waveform streaming
+        @param shot: shot number
+        @param signal: name of the signal. The choice of name is free
+        @type signal: str
+        @param timeData: Time associated with samples
+        @type signal: Data
+        @param sampleData: Data samples 
+        @type sampleData: Data
+        """
+        payload = str(shot) + ' '+ signal
+        if isinstance(timeData, _sca.Int64) or isinstance(timeData, _sca.Uint64) or isinstance(timeData, _arr.Int64Array) or isinstance(timeData, _arr.Uint64Array):
+            payload +=  ' L '
+        else:
+            payload += ' F '
+        times = timeData.data()
+        samples = sampleData.data()
+        if isinstance(timeData, _arr.Array):
+            nTimes = len(times)
+        else:
+            nTimes = 1
+        if isinstance(sampleData, _arr.Array):
+            nSamples = len(samples)
+        else:
+            nSamples = 1
+        if(nTimes < nSamples):
+            nSamples = nTimes
+        payload += str(nSamples)  
+        if nSamples == 1:
+            payload += ' '+ str(times) + ' ' + str(samples)
+        else:
+            for i in range(0, nSamples):
+                payload += ' '+str(times[i])
+            for i in range(0, nSamples):
+                payload += ' '+str(samples[i])
+        Event.seteventRaw('STREAMING', _N.uint8(bytearray(payload, 'utf8')))
+
+
     def getQueue(self):
         """Retrieve event occurrence.
         @param eventid: eventid returned from MDSQueueEvent function
