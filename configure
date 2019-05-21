@@ -4748,7 +4748,7 @@ fi
 
     if test "x$HAVE_GIT" = xyes; then :
 
-        GIT="git --git-dir=${abs_top_srcdir}/.git"
+        GIT="git --git-dir=${abs_top_srcdir}/.git --work-tree=${abs_top_srcdir} "
         GIT_TAG=$(${GIT} describe --tag)
         GIT_BRANCH=$(${GIT} rev-parse --abbrev-ref HEAD)
         GIT_REMOTE=$(${GIT} config branch.${GIT_BRANCH}.remote)
