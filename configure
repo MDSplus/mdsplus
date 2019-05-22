@@ -650,10 +650,15 @@ SHARETYPEJNI
 SHARETYPE
 REMCAMLIB
 REMCAM
+GIT_SRCDIR
+GIT_COMMIT_DATE
+GIT_COMMIT
+GIT_REMOTE_URL
+GIT_REMOTE
+GIT_BRANCH
+GIT_TAG
 RELEASE_DATE
 RELEASE_TAG
-RELEASE_BRANCH
-RELEASE_COMMIT
 RELEASE_RELEASE
 RELEASE_MINOR
 RELEASE_MAJOR
@@ -905,6 +910,10 @@ CXX
 USE_JARS_DIR_FALSE
 USE_JARS_DIR_TRUE
 TARGET_SELFHELP
+AX_RECONFIGURE_TARGET
+HAVE_AWK
+AX_GIT_REVISION_TARGETS
+HAVE_GIT
 MAINT
 MAINTAINER_MODE_FALSE
 MAINTAINER_MODE_TRUE
@@ -997,6 +1006,8 @@ with_docker_profile
 enable_debug
 enable_silent_rules
 enable_maintainer_mode
+enable_uncommitted_install
+enable_reconfigure
 enable_java_only
 with_jars
 enable_dependency_tracking
@@ -1687,6 +1698,10 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
+  --enable-uncommitted-install
+                          [[default yes]] enable install target if there are
+                          uncommitted changes
+  --disable-reconfigure   disable reconfigure targets for autoconf
   --enable-debug=[yes/info/profile/no]
                           compile with debugging
   --enable-java_only      Only build java jar files
@@ -2966,6 +2981,8 @@ ac_configure="$SHELL $ac_aux_dir/configure"  # Please don't use this var.
 
 
 
+srcdir=${srcdir}
+builddir=$(pwd)
 
 
 
@@ -4639,6 +4656,262 @@ fi
 
 
 
+# //////////////////////////////////////////////////////////////////////////// #
+# ////// RELEASE INFO //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[
+    # ],[
+    # ])
+
+if [ ! -z ${RELEASE_VERSION} ]
+then
+  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+else
+  RELEASE_MAJOR=1
+  RELEASE_MINOR=0
+  RELEASE_RELEASE=0
+  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+fi
+RELEASE_DATE="$(date)"
+
+
+
+
+    # Check whether --enable-uncommitted-install was given.
+if test "${enable_uncommitted_install+set}" = set; then :
+  enableval=$enable_uncommitted_install;
+fi
+
+    if test -z "${enable_uncommitted_install}"; then :
+  enable_uncommitted_install=yes
+fi
+    if test "x$enable_uncommitted_install" = xyes; then :
+  enable_uncommitted_install=#
+else
+  enable_uncommitted_install=
+fi
+
+    # Extract the first word of "git", so it can be a program name with args.
+set dummy git; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_GIT+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_GIT"; then
+  ac_cv_prog_HAVE_GIT="$HAVE_GIT" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_GIT="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_GIT" && ac_cv_prog_HAVE_GIT="no"
+fi
+fi
+HAVE_GIT=$ac_cv_prog_HAVE_GIT
+if test -n "$HAVE_GIT"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_GIT" >&5
+$as_echo "$HAVE_GIT" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+    if test -d ${srcdir}/.git; then :
+
+else
+  HAVE_GIT=no
+fi
+
+    abs_top_srcdir=$(cd ${srcdir}; pwd)
+    if test -d ${abs_top_srcdir}; then :
+
+else
+  HAVE_GIT=no
+fi
+
+    if test "x$HAVE_GIT" = xyes; then :
+
+        GIT="git --git-dir=${abs_top_srcdir}/.git --work-tree=${abs_top_srcdir} "
+        GIT_TAG=$(${GIT} describe --tag)
+        GIT_BRANCH=$(${GIT} rev-parse --abbrev-ref HEAD)
+        GIT_REMOTE=$(${GIT} config branch.${GIT_BRANCH}.remote)
+        GIT_REMOTE_URL=$(${GIT} config remote.${GIT_REMOTE}.url)
+        GIT_COMMIT=$(${GIT} rev-parse HEAD)         GIT_COMMIT_DATE=$(${GIT} log -1 --format="%ad")
+        GIT_SRCDIR=${abs_top_srcdir}
+
+        ## remoute could not be set to local branch
+        if test -z "${GIT_REMOTE}"; then :
+
+            GIT_REMOTE=LOCAL
+            GIT_REMOTE_URL="source code upstream is not set, please refer to local srcdir."
+
+fi
+
+        ## substs
+
+
+read -d '' AX_GIT_REVISION_TARGETS << _as_read_EOF
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //// GIT REVISION TARGETS  ///////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+# check for uncommitted modified files and eventually define "M" for the GIT_TAG
+_git_check_changes = \$(shell ${GIT} diff-index --quiet HEAD || echo M)
+
+# check if the current branch name matches the autoconf variable and trigger a reconfigure otherwise
+\$(shell test "$(${GIT} rev-parse --abbrev-ref HEAD)" = "${GIT_BRANCH}" || touch \$(top_builddir)/config.status)
+
+# ///////////// #
+# GIT VARIABLES #
+# ///////////// #
+GIT_TAG         = ${GIT_TAG}\$(_git_check_changes)
+GIT_SRCDIR      = \$(abs_top_srcdir)
+GIT_BRANCH      = ${GIT_BRANCH}
+GIT_REMOTE      = ${GIT_REMOTE}
+GIT_REMOTE_URL  = ${GIT_REMOTE_URL}
+
+release_tag: ##@@miscellaneous dump release tag
+	@ \$(if \$(_git_check_changes),\$(info "WARNING: There are uncommitted changes")) \
+      echo "\$(RELEASE_TAG)"
+
+git_info: ##@@miscellaneous dump release tag
+	@ \$(if \$(_git_check_changes),\$(info  WARNING: There are uncommitted changes))\
+	  echo " Git repository status: "; \
+	  echo " ------------------------------ "; \
+	  echo "";
+	  echo "   tag: ...... \$(GIT_TAG)"; \
+	  echo "   branch: ... \$(GIT_BRANCH)"; \
+	  echo "   commit: ... \$(GIT_COMMIT)"; \
+	  echo "   remote_url: \$(GIT_REMOTE_URL)"; \
+	  echo "";
+
+
+ifeq (install,\$(filter install,\$(MAKECMDGOALS)))
+${enable_uncommitted_install}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))
+endif
+
+
+_as_read_EOF
+
+
+
+
+
+                # Extract the first word of "awk", so it can be a program name with args.
+set dummy awk; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_HAVE_AWK+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$HAVE_AWK"; then
+  ac_cv_prog_HAVE_AWK="$HAVE_AWK" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_HAVE_AWK="yes"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  test -z "$ac_cv_prog_HAVE_AWK" && ac_cv_prog_HAVE_AWK="no"
+fi
+fi
+HAVE_AWK=$ac_cv_prog_HAVE_AWK
+if test -n "$HAVE_AWK"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $HAVE_AWK" >&5
+$as_echo "$HAVE_AWK" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+        if test "x$HAVE_AWK" = xyes; then :
+
+            if test -z "${RELEASE_VERSION}"; then :
+
+                RELEASE_TAG=$(echo ${GIT_TAG} | ${AWK} '{ match($0,/([a-zA-Z0-9_-]+[^0-9-]+)-([0-9]+-[0-9]+-[0-9]+)/,arr); print arr[0] }' )
+                RELEASE_VERSION=$(echo ${GIT_TAG} | ${AWK} '{ match($0,/[0-9]+-[0-9]+-[0-9]+/,arr); print arr[0] }' | ${AWK} '{ gsub("-","."); print }' )
+                RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $1 }' )
+                RELEASE_MINOR=$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $2 }' )
+                RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $3 }' )
+                RELEASE_DATE=$(${GIT} log -1 --format="%ad")
+
+fi
+fi
+
+fi
+
+
+
+
+
+    # Check whether --enable-reconfigure was given.
+if test "${enable_reconfigure+set}" = set; then :
+  enableval=$enable_reconfigure;
+fi
+
+    if test -z "${enable_reconfigure}"; then :
+  enable_reconfigure=yes
+fi
+    if test "x$enable_reconfigure" = xyes; then :
+
+
+
+read -d '' AX_RECONFIGURE_TARGET << _as_read_EOF
+
+
+# trigger reconfigure if config.status has been touched
+Makefile: \$(srcdir)/Makefile.in \$(top_builddir)/config.status
+	cd '\$(top_builddir)' && \$(SHELL) ./config.status;
+
+# trigger reconfigure at configure changes
+\$(top_builddir)/config.status: \$(top_srcdir)/configure
+	\$(info -------------------------------------------------------------------------------------)\
+	\$(info INFO: A reconfigure is needed because the configure does not match with config.status)\
+	\$(info -------------------------------------------------------------------------------------)\
+	cd '\$(top_builddir)' && \$(SHELL) ./config.status --recheck;
+
+
+_as_read_EOF
+
+
+
+
+
+fi
+
+
+
+
 
 
     { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable debugging" >&5
@@ -4755,7 +5028,7 @@ ifndef SELFHELP_FUNC
 SELFHELP_FUNC = \\\\
     %help; \\\\
     while(<>) { \\\\
-	if(/^([a-zA-Z0-9_-]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	if(/^([a-zA-Z0-9_\\\\-\\\\.]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
 	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
 	} \\\\
     }; \\\\
@@ -4765,14 +5038,59 @@ SELFHELP_FUNC = \\\\
     print "| \${SH_GREEN}usage: make target\${SH_RESET}\\\\n"; \\\\
     print "| \\\\n"; \\\\
     for ( sort keys %help ) { \\\\
-	print "| \${SH_YELLOW}\$\$_:\${SH_RESET}\\\\n"; \\\\
+	print "| \${SH_YELLOW}\$\$_\${SH_RESET}:\\\\n"; \\\\
 	printf("|   %-20s %-60s\\\\n", \$\$_->[0], \$\$_->[1]) for @{\$\$help{\$\$_}}; \\\\
 	print "| \\\\n"; \\\\
     } \\\\
     print "\\\\n";
 
-help:   ##@miscellaneous Show this help.
+SELFHELP_ADVANCED_FUNC = \\\\
+    %help; \\\\
+    while(<>) { \\\\
+	if(/^([a-zA-Z0-9_\\\\-\\\\.]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
+	} \\\\
+	if(/^([a-zA-Z0-9_\\\\-\\\\.]+):.*\\\\#\\\\#(?:@@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+	    push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); \\\\
+	} \\\\
+    }; \\\\
+    print "\\\\n"; \\\\
+	print ", \${SH_GREEN}ADVANCED TARGETS \${SH_RESET}\\\\n"; \\\\
+	print "| \\\\n"; \\\\
+	for ( sort keys %help ) { \\\\
+	print "| \${SH_YELLOW}\$\$_\${SH_RESET}:\\\\n"; \\\\
+	printf("|   %-20s %-60s\\\\n", \$\$_->[0], \$\$_->[1]) for @{\$\$help{\$\$_}}; \\\\
+	print "| \\\\n"; \\\\
+	} \\\\
+    print "\\\\n";
+
+SELFHELP_PRINT_TARGET_LIST_FUNC = \\\\
+    %help; \\\\
+    while(<>) { \\\\
+    if(/^([a-zA-Z0-9_\\\\-\\\\.]+):.*\\\\#\\\\#(?:@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+    	push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); } \\\\
+    if(/^([a-zA-Z0-9_\\\\-\\\\.]+):.*\\\\#\\\\#(?:@@(\\\\w+))?\\\\s(.*)\$\$/) { \\\\
+    	push(@{\$\$help{\$\$2}}, [\$\$1, \$\$3]); } \\\\
+    }; \\\\
+    for ( sort keys %help ) { \\\\
+    printf("%s ", \$\$_->[0]) for @{\$\$help{\$\$_}}; \\\\
+    } \\\\
+
+SELFHELP_TARGETS = \$(shell perl -e '\$(SELFHELP_PRINT_TARGET_LIST_FUNC)' \$(MAKEFILE_LIST))
+
+help:         ##@miscellaneous Show this help.
+help-more:    ##@miscellaneous get help on advanced targets.
+help-targets: ##@@miscellaneous get list of target with help signature
+
+help-targets:
+	@ \$(info \$(SELFHELP_TARGETS)):;
+
+help:
 	@perl -e '\$(SELFHELP_FUNC)' \$(MAKEFILE_LIST)
+
+help-more:
+	@perl -e '\$(SELFHELP_ADVANCED_FUNC)' \$(MAKEFILE_LIST)
+
 endif
 
 
@@ -17115,26 +17433,7 @@ esac
 CFLAGS="$CFLAGS_lib_check_save"
 #
 
-# //////////////////////////////////////////////////////////////////////////// #
-# ////// RELEASE INFO //////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 
-if [ ! -z ${RELEASE_VERSION} ]
-then
-  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  RELEASE_BRANCH=$BRANCH
-  RELEASE_COMMIT=$GIT_COMMIT
-else
-  RELEASE_MAJOR=1
-  RELEASE_MINOR=0
-  RELEASE_RELEASE=0
-  RELEASE_BRANCH="unknown"
-  RELEASE_COMMIT="unknown"
-fi
-RELEASE_DATE="$(date)"
-RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
@@ -17260,6 +17559,14 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
+
+
+
+
+
+
+
+
 
 
 

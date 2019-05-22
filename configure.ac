@@ -7,11 +7,13 @@ AC_CONFIG_SRCDIR([include/mdsdescrip.h])
 AC_PREFIX_DEFAULT([/usr/local/mdsplus])
 
 dnl docker helpers
+AS_VAR_SET([srcdir],[${srcdir}])
+AS_VAR_SET([builddir],[$(pwd)])
 AX_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_MAINTAINER_MODE
 
 dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
@@ -28,6 +30,35 @@ dnl * always:         ax_is_release will always be 'yes'
 dnl * never:          ax_is_release will always be 'no'
 dnl
 AX_IS_RELEASE([always])
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ////// RELEASE INFO //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[        
+    # ],[        
+    # ])
+
+if [[ ! -z ${RELEASE_VERSION} ]]
+then
+  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+else
+  RELEASE_MAJOR=1
+  RELEASE_MINOR=0
+  RELEASE_RELEASE=0
+  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+fi
+RELEASE_DATE="$(date)"
+
+dnl look if a version from git directory can be obtained 
+AX_GIT_REVISION
+
+dnl add reconfigure target option to autoconf generated Makefile
+AX_RECONFIGURE_TARGETS
 
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
@@ -1139,26 +1170,7 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 CFLAGS="$CFLAGS_lib_check_save"
 #
 
-# //////////////////////////////////////////////////////////////////////////// #
-# ////// RELEASE INFO //////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 
-if [[ ! -z ${RELEASE_VERSION} ]]
-then
-  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  RELEASE_BRANCH=$BRANCH
-  RELEASE_COMMIT=$GIT_COMMIT
-else
-  RELEASE_MAJOR=1
-  RELEASE_MINOR=0
-  RELEASE_RELEASE=0
-  RELEASE_BRANCH="unknown"
-  RELEASE_COMMIT="unknown"
-fi
-RELEASE_DATE="$(date)"
-RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
@@ -1300,13 +1312,21 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(DEF_PYLIB)
 AC_SUBST(NEED_SEMUN)
+
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
-AC_SUBST(RELEASE_COMMIT)
-AC_SUBST(RELEASE_BRANCH)
 AC_SUBST(RELEASE_TAG)
 AC_SUBST(RELEASE_DATE)
+
+AC_SUBST([GIT_TAG])
+AC_SUBST([GIT_BRANCH])
+AC_SUBST([GIT_REMOTE])
+AC_SUBST([GIT_REMOTE_URL])
+AC_SUBST([GIT_COMMIT])
+AC_SUBST([GIT_COMMIT_DATE])
+AC_SUBST([GIT_SRCDIR])
+
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
 AC_SUBST(ENABLE_SANITIZE)

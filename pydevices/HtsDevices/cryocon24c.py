@@ -1,6 +1,7 @@
 import MDSplus
 import threading
 import socket
+import string
 import time
 import datetime
 import numpy as np
@@ -19,8 +20,8 @@ class CRYOCON24C(MDSplus.Device):
                     (for trend timestamp record, for daq segmented record)
 
      Methods:
-        init - start daq loop
-        stop - stop daq loop
+        init  - start daq loop
+        stop  - stop daq loop
         trend - store one trend sample for each channel
 
      debugging() - is debugging enabled.
@@ -28,25 +29,30 @@ class CRYOCON24C(MDSplus.Device):
 
      """
 
+    @staticmethod
+    def inputs():
+        return range(ord('a'), ord('d')+1)
+
+    @staticmethod
+    def loops():
+        return range(0, 4)
+
     parts = [
         {'path': ':COMMENT', 'type': 'text', 'options': ('no_write_shot')},
-        {'path': ':SEG_LENGTH', 'type': 'numeric', 'value': 5, 'options': ('no_write_shot')},
         {'path': ':INIT_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options': ('no_write_shot',)},
-        {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STOP',50,None),Method(None,'STOP',head))",'options': ('no_write_shot',)},
+        {'path': ':STOP_ACTION', 'type': 'action', 'valueExpr': "Action(Dispatch('S','STOP',50,None),Method(None,'STORE',head))",'options': ('no_write_shot',)},
         {'path': ':RUNNING', 'type': 'numeric', 'options': ('no_write_model')},
-    ]
+        ]
 
-    for c in range(ord('A'), ord('E')):
-        parts.append({'path': ':INPUT_%c' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:SERIAL_NO' %(c,), 'type': 'TEXT', 'options': ('no_write_shot')})
-        parts.append({'path': ':INPUT_%c:CALIBRATION' %(c,), 'type': 'TEXT', 'options': ('no_write_model', 'write_once',)})
-        #parts.append({'path': ':INPUT_%c:TEMPERATURE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        parts.append({'path': ':INPUT_%c:RESISTENCE' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        #parts.append({'path': ':INPUT_%c:OUTPUT_POWER' %(c,), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-        
-    for i in range(0,4):
+    for c in inputs.__func__():
+        parts.append({'path': ':INPUT_%c' %(string.upper(chr(c)),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
+        parts.append({'path': ':INPUT_%c:SERIAL_NO' %(string.upper(chr(c)),), 'type': 'TEXT', 'options': ('no_write_shot')})
+        parts.append({'path': ':INPUT_%c:CALIBRATION' %(string.upper(chr(c)),), 'type': 'TEXT', 'options': ('no_write_model', 'write_once',)})
+        parts.append({'path': ':INPUT_%c:RESISTENCE' %(string.upper(chr(c)),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
+         
+    for i in loops.__func__():
         parts.append({'path': ':LOOP_%c' %(str(i+1),), 'type': 'signal', 'options': ('no_write_model', 'write_once',)})
-
+            
     del c
     debug = None
 
@@ -65,15 +71,12 @@ class CRYOCON24C_TREND(CRYOCON24C):
     putRow.  The timestamp will be time since the unix EPOCH in msec
     '''
     parts = copy.copy(CRYOCON24C.parts)
-    #for c in range(ord('A'), ord('E')):
-    #    parts.append({'path': ':INPUT_%c:PROPOR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
-    #    parts.append({'path': ':INPUT_%c:INTEGR_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
-    #    parts.append({'path': ':INPUT_%c:DERIVA_GAIN' %(c,), 'type': 'NUMERIC', 'options': ('no_write_model')})
     
-    for c in range(0, 4):
+    for c in CRYOCON24C.loops():
         parts.append({'path': ':LOOP_%c:PROPOR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
         parts.append({'path': ':LOOP_%c:INTEGR_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
         parts.append({'path': ':LOOP_%c:DERIVA_GAIN' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_model')})
+        parts.append({'path': ':LOOP_%c:SETPOINT' %(str(c+1),), 'type': 'NUMERIC', 'options': ('no_write_shot')})
 
     parts.append({'path': ':DATA_EVENT', 'type': 'text', 'value': 'CRYOCON24C_TREND', 'options': ('no_write_shot')})
     parts.append({'path': ':NODE', 'type': 'text', 'value': '192.168.0.254', 'options': ('no_write_shot')})
@@ -83,10 +86,6 @@ class CRYOCON24C_TREND(CRYOCON24C):
     # SYSTEM:AMBIENT = 
     parts.append({'path': ':STATUS_CMDS', 'type': 'text', 'value': MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options': ('no_write_shot')})
     parts.append({'path': ':STATUS_OUT', 'type': 'any','options': ('write_shot', 'write_once', 'no_write_model')})
-    # RATE in Hz. Base rate of the stream.
-    # TREND_RATE in Hz. 
-    parts.append({'path': ':RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})        
-    parts.append({'path': ':TREND_RATE', 'type': 'numeric', 'value': 1,'options': ('no_write_shot')})
 
     def sendCommand(self,s,cmd):
         s.send(cmd + "\r\n")
@@ -107,34 +106,18 @@ class CRYOCON24C_TREND(CRYOCON24C):
         return self.recvResponse(s)
 
     def init(self):
-        '''start the stream
-           socket
         '''
-        thread = self.Worker(self)
-        thread.start()
+        init method for cryocon 24c
+        '''
+        self.trend()
         return 1
     INIT = init
 
-    class Worker(threading.Thread):
-        """An async worker should be a proper class
-           This ensures that the methods remian in memory
-           It should at least take one argument: teh device node
-        """
-        def __init__(self,dev):
-            print(MDSplus.__file__)
-            print(MDSplus.__version__)
-            super(CRYOCON24C_TREND.Worker,self).__init__(name=dev.path)
-            # make a thread safe copy of the device node with a non-global context
-            self.dev = MDSplus.TreeNode.copy(dev)
 
-        def run(self):
-            self.dev.run()
-
-    def run(self):
+    def trend(self):
         # start it trending
         self.running.on=True
-        self.rate.record = self.trend_rate.data()
-
+        
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((str(self.node.data()), 5000))
 
@@ -144,20 +127,26 @@ class CRYOCON24C_TREND(CRYOCON24C):
 
         event_name = self.data_event.data()
 
-        # read and save the status commands
-        status_out={}
-
-        for cmd in self.status_cmds:
+        try:
+            self.status_out.getData()
+        except:
             if self.debugging():
-                print('about to send %s' % cmd)
+                print("Status_Out tree node is empty. Lets write the data now.")
+            # read and save the status commands
+            status_out={}
 
-            # status_out[str(cmd)] = instrument.query(str(cmd))
-            status_out[str(cmd)] = self.queryCommand(s, str(cmd))
+            for cmd in self.status_cmds:
+                if self.debugging():
+                    print('about to send %s' % cmd)
 
-            if self.debugging():
-                print('  got back %s' % status_out[str(cmd)])
+                # status_out[str(cmd)] = instrument.query(str(cmd))
+                status_out[str(cmd)] = self.queryCommand(s, str(cmd))
 
-        self.status_out.record = status_out
+                if self.debugging():
+                    print('  got back %s' % status_out[str(cmd)])
+
+            self.status_out.record = status_out
+
 
         # Control Loop PID values Numeric Entry The Pgain, Igain and Dgain lines correspond to the Proportional,
         # Integral and Derivative coefficients of the control loop. Pman is the output power that will be applied
@@ -169,179 +158,140 @@ class CRYOCON24C_TREND(CRYOCON24C):
         # Derivative gain values have units of inverse Seconds and may have values from zero to 1000. A value of
         # zero turns the Derivative control function off.
 
-        #for i in range(ord('a'), ord('e')):
-        for i in range(0,4):
+        for i in self.loops():
             # Proportional gain, or P term for PID control.
             # This is a numeric field that is a percent of full scale.
             pgain_chan = self.__getattr__('loop_%c_propor_gain' % (str(i+1)))
-            query_cmd = 'LOOP %c:PGA?' % (str(i+1),)
-
-            ansQuery = self.queryCommand(s, query_cmd)
-
-            try:
-                print("Parsing Proportional Gain /%s/" % ansQuery)
-                pgain = float(ansQuery)
-            except:
-                if self.debugging():
-                    print("Could not Proportional Gain /%s/" % ansQuery)
-                pgain = 0.0
-
-            pgain_chan.record = MDSplus.Float32(pgain)
+            pgain_query_cmd = 'LOOP %c:PGA?' % (str(i+1),)
 
             # Integrator gain term, in Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
             igain_chan = self.__getattr__('loop_%c_integr_gain' % (str(i+1)))
-            query_cmd = 'LOOP %c:IGA?' % (str(i+1),)
-
-            ansQuery = self.queryCommand(s, query_cmd)
-
-            try:
-                print("Parsing Integral Gain /%s/" % ansQuery)
-                igain = float(ansQuery)
-            except:
-                if self.debugging():
-                    print("Could not Integral Gain /%s/" % ansQuery)
-                igain = 0.0
-
-            igain_chan.record = MDSplus.Float32(igain)
+            igain_query_cmd = 'LOOP %c:IGA?' % (str(i+1),)
 
             # Derivative gain term, in inverse-Seconds, for PID control.
             # This is a numeric field that is a percent of full scale.
             dgain_chan = self.__getattr__('loop_%c_deriva_gain' % (str(i+1)))
-            query_cmd = 'LOOP %c:DGA?' % (str(i+1),)
+            dgain_query_cmd = 'LOOP %c:DGA?' % (str(i+1),)
 
-            ansQuery = self.queryCommand(s, query_cmd)
+            spoint_chan = self.__getattr__('loop_%c_setpoint' % (str(i+1)))
+            spoint_query_cmd = 'LOOP %c:SETP?' % (str(i+1),)
 
+            ansQuery = self.queryCommand(s, pgain_query_cmd)
+            
             try:
-                print("Parsing Derivative Gain /%s/" % ansQuery)
-                dgain = float(ansQuery)
+                pgain_chan.getData()
+                igain_chan.getData()
+                dgain_chan.getData()
             except:
-                if self.debugging():
-                    print("Could not Derivative Gain /%s/" % ansQuery)
-                dgain = 0.0
+                try:
+                    print("Parsing Proportional Gain /%s/" % ansQuery)
+                    pgain = float(ansQuery)
+                except:
+                    if self.debugging():
+                        print("Could not parse Proportional Gain /%s/" % ansQuery)
+                    pgain = 0.0
 
-            dgain_chan.record = MDSplus.Float32(dgain)
+                pgain_chan.record = MDSplus.Float32(pgain)
 
-        # For the storage of calibration curves
-        # index    = 1
-        # caltable = []
-        # strCalcur= ''
-
-        # set up arrays of data and nodes to use in the loop
-        seg_length = int(self.seg_length.data())
-        times = np.zeros(seg_length)
-
-        answerTemp = []
-        answerOutp = []
-        temps   = []
-        resists = []
-        outpower= []
-        r_chans = []
-        t_chans = []
-        p_chans = []
-
-        start_time = time.time()
-        previous_time = 0
-
-        query_cmd_temp = []
-        query_cmd_outp = []
-        for i in range(ord('a'), ord('e')):
-            chan = self.__getattr__('input_%c' % (chr(i),))
-            if chan.on:
-                temps.append(np.zeros(seg_length))
-                resists.append(np.zeros(seg_length))
-                outpower.append(np.zeros(seg_length))
-                t_chans.append(self.__getattr__('input_%c' % (chr(i))))
-                r_chans.append(self.__getattr__('input_%c_resistence' % (chr(i))))
-                query_cmd_temp.append('INP %c:TEMP?;SENP?' % (chr(i),))
-        
-        for i in range(0,4):
-            chan = self.__getattr__('loop_%c' % (str(i+1),))
-            if chan.on:
-                outpower.append(np.zeros(seg_length))
-                p_chans.append(self.__getattr__('loop_%c' % (str(i+1))))
-                query_cmd_outp.append('LOOP %c:HTRRead?' % (str(i+1),))
-
-
-        # Run until the STOP function is externally triggerd
-        while self.running.on:
-            for sample in range(seg_length):
-                previous_time = time.time()
-                times[sample] = previous_time - start_time
-                timestamp = time.time()
-
-                # Calibrartion Curve storage
-                # cal = self.__getattr__('input_%c_calibration' % (chr(i),))
-                # self.sendCommand(s, 'CALCUR %d?' % (index))
-                # while ';' not in strCalcur:
-                #     ans = self.recvResponse(s)
-                #     print('Answer: ', ans)
-                #     caltable.append(ans)
-                # ans = 1 #Disable for now
-                # cal.record = ans
-
-                for i in range(len(temps)):
-                    ansQueryTemp = self.queryCommand(s, query_cmd_temp[i])
-                    ansQueryOutp = self.queryCommand(s, query_cmd_outp[i])
-                    answerTemp = ansQueryTemp.split(';')
-                    answerOutp = ansQueryOutp[:-1] #remove the '%' at the end of the number
-
-                    # Temperature reading
-                    try:
-                        temps[i][sample] = float(answerTemp[0])
-                        is_digit = True
-                    except ValueError:
-                        is_digit= False
-                        if self.debugging():
-                            print("Could not parse temperature /%s/" % answerTemp[0])
-                    if not is_digit:
-                        temps[i][sample] = -9999.0
-                    
-                    t_chans[i].putRow(1000, MDSplus.Float32(temps[i][sample]), MDSplus.Int64(timestamp*1000.))
-
-                    # Resistence reading
-                    try:
-                        resists[i][sample] = float(answerTemp[1])
-                        is_digit=True                                
-                    except ValueError:
-                        is_digit=False
-                        if self.debugging():
-                            print("Could not parse resist /%s/" % answerTemp)
-                    if not is_digit:
-                        resists[i][sample] = -9999.0
-                    
-                    r_chans[i].putRow(1000, MDSplus.Float32(resists[i][sample]), MDSplus.Int64(timestamp*1000.))
-
-                    # Output Power reading: Queries the output power of the selected control loop.
-                    # This is a numeric field that is a percent of full scale.
-                    try:
-                        # print("Parsing output power /%s/" % ansQuery)
-                        if 'NAK' not in ansQueryOutp:
-                            outpower[i][sample] = float(answerOutp)
-                        else:
-                            outpower[i][sample] = float(-9999.0)
-                    except ValueError:
-                        if self.debugging():
-                            print("Could not parse output power /%s/" % answerOutp)
-                    
-                    p_chans[i].putRow(1000, MDSplus.Float32(outpower[i][sample]), MDSplus.Int64(timestamp*1000.))
-                                
-                MDSplus.Event.setevent(event_name)
+                ansQuery = self.queryCommand(s, igain_query_cmd)
 
                 try:
-                    dt = 1./float(self.rate.data())
+                    print("Parsing Integral Gain /%s/" % ansQuery)
+                    igain = float(ansQuery)
                 except:
-                    dt = 1
-                time.sleep(dt)
-               
-                if self.debugging():
-                    if self.rate.data() != self.trend_rate.data():
-                        print('Shot Sample-Time at SHOT rate ---->', times[sample], MDSplus.Int64(time.time()*1000.))
-                    else:
-                        print('Shot Sample-Time at trend rate ', times[sample], MDSplus.Int64(time.time()*1000.))
+                    if self.debugging():
+                        print("Could not parse Integral Gain /%s/" % ansQuery)
+                    igain = 0.0
 
+                igain_chan.record = MDSplus.Float32(igain)
+
+                ansQuery = self.queryCommand(s, dgain_query_cmd)
+
+                try:
+                    print("Parsing Derivative Gain /%s/" % ansQuery)
+                    dgain = float(ansQuery)
+                except:
+                    if self.debugging():
+                        print("Could not parse Derivative Gain /%s/" % ansQuery)
+                    dgain = 0.0
+
+                dgain_chan.record = MDSplus.Float32(dgain)
+
+                ansQuery = self.queryCommand(s, spoint_query_cmd)
+
+                try:
+                    print("Parsing Setpoint /%s/" % ansQuery)
+                    spoint = float(ansQuery)
+                except:
+                    if self.debugging():
+                        print("Could not parse Setpoint /%s/" % ansQuery)
+                    spoint = 0.0
+
+                spoint_chan.record = MDSplus.Float32(spoint)
+
+
+        for i in self.inputs():
+            t_chans = self.__getattr__('input_%c' % (chr(i)))
+            r_chans = self.__getattr__('input_%c_resistence' % (chr(i)))
+            if t_chans.on:
+                query_cmd_temp = 'INP %c:TEMP?;SENP?' % (chr(i),)
+                ansQuery = self.queryCommand(s, query_cmd_temp)
+
+                t_time=time.time()
+
+                # Temperature reading
+                try:
+                    temps = float(ansQuery.split(';')[0])
+                    is_digit = True
+                except ValueError:
+                    is_digit= False
+                    if self.debugging():
+                        print("Could not parse temperature /%s/" % ansQuery.split(';')[0])
+                if not is_digit:
+                    temps = -9999.0
+                
+                t_chans.putRow(1000, MDSplus.Float32(temps), MDSplus.Int64(t_time*1000.))
+
+                # Resistence reading
+                try:
+                    resists = float(ansQuery.split(';')[1])
+                    is_digit=True                                
+                except ValueError:
+                    is_digit=False
+                    if self.debugging():
+                        print("Could not parse resist /%s/" % ansQuery.split(';')[1])
+                if not is_digit:
+                    resists  = -9999.0
+                
+                r_chans.putRow(1000, MDSplus.Float32(resists), MDSplus.Int64(t_time*1000.))
+
+        
+        for i in self.loops():
+            p_chans        = self.__getattr__('loop_%c' % (str(i+1)))
+            query_cmd_outp = 'LOOP %c:HTRRead?' % (str(i+1),) 
+            ansQuery = self.queryCommand(s, query_cmd_outp)
+            answerOutp = ansQuery[:-1] #remove the '%' at the end of the number
+
+            if p_chans.on:
+                t_time=time.time()
+                # Output Power reading: Queries the output power of the selected control loop.
+                # This is a numeric field that is a percent of full scale.
+                try:
+                    print("Parsing output power /%s/" % ansQuery)
+                    if 'NAK' not in ansQuery:
+                        outpower  = float(answerOutp)
+                    else:
+                        outpower  = float(-9999.0)
+                except ValueError:
+                    if self.debugging():
+                        print("Could not parse output power /%s/" % ansQuery)
+                
+                p_chans.putRow(1000, MDSplus.Float32(outpower), MDSplus.Int64(t_time*1000.))
+        
+        MDSplus.Event.setevent(event_name)
         s.close()
-    RUN=run
+    TREND=trend
 
     def stop(self):
         '''
@@ -357,8 +307,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
     parts.append({'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON24C_DATA','options':('no_write_shot')})
     parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in seconds that the shot began taking data'})
     parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')})
-    # SHOT_RATE in Hz. 
-    parts.append({'path': ':SHOT_RATE', 'type': 'numeric', 'value': 5,'options': ('no_write_shot')})
+
     parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
     parts.append({'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')})
     parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
@@ -370,19 +319,15 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         return trend_tree
 
     def init(self):
-        trend_tree = self.getTrendTree()
-        trend_dev = trend_tree.getNode(self.trend_device.data())
-        trend_dev.rate.record = self.shot_rate.data()
+        # Place holder
+        pass
     INIT=init
 
-    def stop(self):
+    def store(self):
         event_name = self.data_event.data()
         self.t2.record = MDSplus.Int64(time.time()*1000.)
         trend_tree = self.getTrendTree()
         trend_dev = trend_tree.getNode(self.trend_device.data())
-
-        # Resetting the original rate:
-        trend_dev.rate.record = trend_dev.trend_rate.data()
 
         # Getting T1 from TREND:
         t1 = MDSplus.Int64(self.t1.data()*1000.)
@@ -394,7 +339,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
         trend_tree.setTimeContext(t1, self.t2.data())
         
         print('Writing data into shot node')
-        for i in range(ord('a'), ord('e')):
+        for i in self.inputs():
             trend_temp     = trend_dev.__getattr__('input_%c'% (chr(i)))
             trend_resis    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
                         
@@ -414,7 +359,7 @@ class CRYOCON24C_SHOT(CRYOCON24C):
             shot_temp.record     = MDSplus.Signal(temps, None, times)
             shot_resis.record    = MDSplus.Signal(resists, None, times)
                     
-        for i in range(0,4):
+        for i in self.loops():
                 trend_outpower = trend_dev.__getattr__('loop_%c'% (str(i+1)))
                 times    = trend_outpower.dim_of().data()
                 outpower = trend_outpower.data()
@@ -429,5 +374,5 @@ class CRYOCON24C_SHOT(CRYOCON24C):
 
 
         MDSplus.Event.setevent(event_name)
+    STORE=store
 
-    STOP=stop

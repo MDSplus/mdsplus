@@ -162,6 +162,7 @@ RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
 A3248Setup.java \
+MARTE_DUTY_CYCLESetup.java \
 SPIDER_SETUPSetup.java \
 RFX_RPADCSetup.java \
 PI_CAMSetup.java \

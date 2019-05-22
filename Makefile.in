@@ -4,12 +4,11 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
+builddir=@builddir@ 
 VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
 
-# selfhelp target
-@TARGET_SELFHELP@
-HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
+
 
 JAVA_JAR = \
 	   javascope \
@@ -187,8 +186,8 @@ install: $(install_DIRS)
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
 		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
-	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
-	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
+#	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
+	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h $$(find . -name _version.py) | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
 	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
