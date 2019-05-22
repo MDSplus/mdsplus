@@ -524,11 +524,11 @@ inline static int getNSamples(const mdsdsc_xd_t *const yXd, const mdsdsc_xd_t *c
   if(yXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(xXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(yXd->pointer->dtype == DTYPE_F) {
-    const int status = TdiFloat((mdsdsc_t *)yXd, yXd MDS_END_ARG);
+    const int status = TdiFloat(yXd->pointer, yXd MDS_END_ARG);
     if STATUS_NOT_OK return status;
   }
   if(xXd->pointer->dtype == DTYPE_F) {
-    const int status = TdiFloat((mdsdsc_t *)xXd, xXd MDS_END_ARG);
+    const int status = TdiFloat(xXd->pointer, xXd MDS_END_ARG);
     if STATUS_NOT_OK return status;
   }
   //Number of samples set to minimum between X and Y
