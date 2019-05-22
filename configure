@@ -1698,9 +1698,9 @@ Optional Features:
   --enable-maintainer-mode
                           enable make rules and dependencies not useful (and
                           sometimes confusing) to the casual installer
-  --disable-uncommitted-install
-                          disable install target if there are uncommitted
-                          changes
+  --enable-uncommitted-install
+                          [[default yes]] enable install target if there are
+                          uncommitted changes
   --disable-reconfigure   disable reconfigure targets for autoconf
   --enable-debug=[yes/info/profile/no]
                           compile with debugging
@@ -4806,7 +4806,7 @@ git_info: ##@@miscellaneous dump release tag
 
 
 ifeq (install,\$(filter install,\$(MAKECMDGOALS)))
-${enable_uncommitted_changes}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))
+${enable_uncommitted_install}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))
 endif
 
 
@@ -4898,7 +4898,7 @@ Makefile: \$(srcdir)/Makefile.in \$(top_builddir)/config.status
 	\$(info -------------------------------------------------------------------------------------)\
 	\$(info INFO: A reconfigure is needed because the configure does not match with config.status)\
 	\$(info -------------------------------------------------------------------------------------)\
-	cd '\$(top_builddir)' && \$(top_srcdir)/configure \$(shell \$(abs_top_builddir)/config.status --config);
+	cd '\$(top_builddir)' && \$(SHELL) ./config.status --recheck;
 
 
 _as_read_EOF
