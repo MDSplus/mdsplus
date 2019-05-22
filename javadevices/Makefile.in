@@ -664,13 +664,12 @@ A3248Setup.java \
 MARTE_DUTY_CYCLESetup.java \
 SPIDER_SETUPSetup.java \
 RFX_RPADCSetup.java \
-PI_CAMSetup.java  \
+PI_CAMSetup.java \
 PI_SCT320Setup.java\
 SPECTRO_CFGSetup.java \
 NI6683RECSetup.java \
 LINCMOSSetup.java  \
 PLFESetup.java
-
 
 java_DATA = jDevices.jar
 @USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
