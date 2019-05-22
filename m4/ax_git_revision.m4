@@ -49,9 +49,9 @@
 AC_DEFUN([AX_GIT_REVISION],[
     AC_PUSH_LOCAL([ax_git_revision])
 
-    AC_ARG_ENABLE(uncommitted-install, [AS_HELP_STRING([--disable-uncommitted-install],
-                                          [disable install target if there are uncommitted changes])])
-    AS_IF([test -z "${enable_uncommitted_install}"], [AS_VAR_SET([enable_uncommitted_install],[yes])])
+    AC_ARG_ENABLE(uncommitted-install, [AS_HELP_STRING([--enable-uncommitted-install],
+                                        [[[default yes]] enable install target if there are uncommitted changes])])
+    AS_IF([test -z "${enable_uncommitted_install}"],[AS_VAR_SET([enable_uncommitted_install],[yes])])
     AS_VAR_IF([enable_uncommitted_install],[yes],
         [AS_VAR_SET([enable_uncommitted_install],[#])],
         [AS_VAR_SET([enable_uncommitted_install],[])])
@@ -138,7 +138,7 @@ git_info: ##@@miscellaneous dump release tag
       
 
 ifeq (install,\$(filter install,\$(MAKECMDGOALS)))
-${enable_uncommitted_changes}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))
+${enable_uncommitted_install}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))
 endif
 
 ])

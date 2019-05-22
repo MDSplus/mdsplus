@@ -75,7 +75,7 @@ Makefile: \$(srcdir)/Makefile.in \$(top_builddir)/config.status
 	\$(info -------------------------------------------------------------------------------------)\
 	\$(info INFO: A reconfigure is needed because the configure does not match with config.status)\
 	\$(info -------------------------------------------------------------------------------------)\
-	cd '\$(top_builddir)' && \$(top_srcdir)/configure \$(shell \$(abs_top_builddir)/config.status --config);
+	cd '\$(top_builddir)' && \$(SHELL) ./config.status --recheck;
 
 ])
 AC_SUBST([AX_RECONFIGURE_TARGET])
