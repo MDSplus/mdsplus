@@ -12,35 +12,35 @@ var fs = require("fs");
 var sse;
 
 //check arguments
-if(process.argv.length != 4)
+if(process.argv.length != 4 && process.argv.length != 5)
 {
-    console.log('Usage: mode event_server.js  <Event Port>  <SSE Port>');
+    console.log('Usage: mode event_server.js  <Event Port>  <SSE Port> [debug]' );
     process.exit();
 }
 
-
+var debug = false;
+if(process.argv[4] == 'debug')
+    debug = true;
 
 var eventPort = parseInt(process.argv[2]);
 var ssePort = parseInt(process.argv[3]); 
 
 app.get('/streams', function(req, res) {
-      //console.log('REQUEST FOR NAME: '+req.query.name); 
-//      var data = fs.readFileSync('scope/sample_display.html', 'utf8');
-      var data = fs.readFileSync('scope/index.html', 'utf8');
-      //console.log(data);
+      if(debug)console.log('REQUEST FOR NAME: '+req.query.name); 
+      var data = fs.readFileSync('index.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
 
 app.get('/', function(req, res) {
-      console.log('REQUEST FOR NAME: /'); 
-      var data = fs.readFileSync('scope/index-demo.html', 'utf8');
+      if(debug)console.log('REQUEST FOR NAME: /'); 
+      var data = fs.readFileSync('index.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
 
 app.get('/w', function(req, res) {
-      console.log('REQUEST FOR NAME: /'); 
+      if(debug)console.log('REQUEST FOR NAME: /'); 
       var data = fs.readFileSync('scope/index.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
@@ -61,13 +61,11 @@ function getArrayOfSignals(inputString) {
 }
 
   var server = app.listen(ssePort, function () {
-   var host = server.address().address
-   var port = server.address().port
+   var host = server.address().address;
+   var port = server.address().port;
    sse = new SSE(server);
    sse.on('connection', function(client) {
-      // console.log(client.req);
-      // url is something like: /sse?par1=val1&par2=var2  
-      // we use: /sse?signals=s1,s2,s3
+     client.on('close', function(client) { if(debug) console.log('DISCONNECT!');removeConnections(client);})
       console.log('RECEIVED CONNECTION - URL: ' + client.req.url);
 
       var signals = getArrayOfSignals(client.req.url);
@@ -75,24 +73,32 @@ function getArrayOfSignals(inputString) {
 
       if(signals != undefined)
 	  handleNewConnectionList(signals, client); });
-   console.log("Example app listening at http://%s:%s", host, port)
+//   console.log("Example app listening at http://%s:%s", host, port)
 })
 
 
 
 function addSamples(name, shot, times, samples, isAbsoluteTime)
 {
-    // console.log("addSample: ", name, times, samples);
+    if(debug) console.log("addSample: ", name, times, samples);
     if(history[name] == undefined || history[name].shot != shot)
     {
         history[name] = {shot: shot, isAbsoluteTime: isAbsoluteTime, times: times, samples: samples};
     }
     else
     {
-	for(var i = 0; i < times.length; i++)
+        lastTime = history[name].times[history[name].times.length - 1];
+	if(times[0] < lastTime)
 	{
-	    history[name].times.push(times[i]);
-	    history[name].samples.push(samples[i]);
+	    history[name] = {shot: shot, isAbsoluteTime: isAbsoluteTime, times: times, samples: samples};
+	}
+	else
+	{
+	    for(var i = 0; i < times.length; i++)
+	    {
+		history[name].times.push(times[i]);
+		history[name].samples.push(samples[i]);
+	    }
 	}
     }
 }
@@ -108,16 +114,16 @@ function handleEventReception(evMessage)
       var samples = [];
       for(var i = 0; i < numSamples; i++)
       {
-	  //console.log("XXXX", evItems[4+i], parseFloat(evItems[4+i]));
 	  times.push(parseFloat(evItems[4+i]));
 	  samples.push(parseFloat(evItems[4+numSamples+i]));
       }
+      if(debug) console.log('Received ' + name, numSamples);
       addSamples(name, shot, times, samples, evItems[2] == 'L');
       if(connections[name] != undefined)
       {
 	  for(var i = 0; i < connections[name].listeners.length; i++)
 	  {
-	      console.log('Sending '+ connections[name].timestamp.toString() + ' '+ evMessage);
+	      if(debug) console.log('Sending '+ connections[name].timestamp.toString() + ' '+ evMessage);
 	      connections[name].listeners[i].send(connections[name].timestamp.toString() + ' '+ evMessage);
 	  }
 	  connections[name].timestamp++;
@@ -127,6 +133,21 @@ function handleEventReception(evMessage)
     {
         console.log("Error handling event: " + err.message);
     }
+}
+
+function removeConnections(listener)
+{
+    Object.keys(connections).map(x =>removeConnection(x, listener)); 
+}
+
+
+function removeConnection(name, listener)
+{
+    if(connections[name] == undefined)
+	return;
+    console.log(connections[name]);
+    var index = connections[name].listeners.indexOf(listener);
+    connections[name].listeners.splice(index, 1);
 }
 
 function handleNewConnection(name, listener)
@@ -142,8 +163,7 @@ function handleNewConnection(name, listener)
 	    msg = msg + ' '+ history[name].times[i].toString();
         for(var i = 0; i < history[name].samples.length; i++)
 	    msg = msg + ' '+ history[name].samples[i].toString();
-        console.log("New Connection: " + msg);
-//console.log(history[name].times);
+        if(debug) console.log("New Connection: " + msg);
         listener.send(connections[name].timestamp.toString() + ' '+ msg);
     }
 }
