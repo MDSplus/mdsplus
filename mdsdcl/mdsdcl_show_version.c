@@ -37,11 +37,10 @@ EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error 
 		      strlen(MDSplusVersion.COMMIT)+1000);
   
   strcpy(info,"\n\n");
-  sprintf(info,"----------------------\n");
   if (strlen(MDSplusVersion.MAJOR) && strlen(MDSplusVersion.MINOR) && strlen(MDSplusVersion.MAJOR)) {
     sprintf(info+strlen(info),"MDSplus version: %s.%s.%s\n",MDSplusVersion.MAJOR,MDSplusVersion.MINOR,MDSplusVersion.RELEASE);
   }
-  sprintf(info,"----------------------\n");
+  sprintf(info+strlen(info),"----------------------\n");
   if (strlen(MDSplusVersion.RELEASE_TAG)) {
     sprintf(info+strlen(info),"  Release:  %s\n",MDSplusVersion.RELEASE_TAG);
     sprintf(info+strlen(info),"  Browse:   https://github.com/MDSplus/mdsplus/tree/%s\n",MDSplusVersion.RELEASE_TAG);
