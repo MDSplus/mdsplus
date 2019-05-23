@@ -230,7 +230,8 @@ class CRYOCON18I_SHOT(CRYOCON18I):
     def store(self):
         event_name = self.data_event.data()
         now = time.time()
-        self.t2.record = MDSplus.Int64(now)
+        if self.t2.rlength == 0:
+            self.t2.record = MDSplus.Int64(now)
         trend_tree = self.getTrendTree()
         trend_dev = trend_tree.getNode(self.trend_device.data())
 
