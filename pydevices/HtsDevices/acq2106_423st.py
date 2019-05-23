@@ -163,7 +163,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -179,6 +179,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                 self.empty_buffers = empty_buffers
                 self.full_buffers = full_buffers
                 self.trig_time = 0
+                self.io_buffer_size = 4096
 
             def stop(self):
                 self.running = False
@@ -208,7 +209,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                     try:
                         view = memoryview(buf)
                         while toread:
-                            nbytes = s.recv_into(view, min(4096,toread))
+                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
                             if first:
                                 self.trig_time = time.time()
                                 first = False

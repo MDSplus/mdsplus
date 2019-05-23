@@ -92,21 +92,173 @@ class ACQ435ST(MDSplus.Device):
         parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     del i
 
-    class Worker(threading.Thread):
-        """An async worker should be a proper class
-           This ensures that the methods remian in memory
-           It should at least take one argument: teh device node
-        """
-        def __init__(self,dev):
-            super(ACQ435ST.Worker,self).__init__(name=dev.path)
-            # make a thread safe copy of the device node with a non-global context
-            self.dev = dev.copy()
-        def run(self):
-            self.dev.stream()
-
     debug=None
 
     trig_types=[ 'hard', 'soft', 'automatic']
+
+    class MDSWorker(threading.Thread):
+        NUM_BUFFERS = 20
+
+        def __init__(self,dev):
+            super(ACQ435ST.MDSWorker,self).__init__(name=dev.path)
+            threading.Thread.__init__(self)
+
+            self.dev = dev.copy()
+
+            self.chans = []
+            self.decim = []
+            self.nchans = 32
+
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'input_%3.3d'%(i+1)))
+                self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
+
+            self.seg_length = self.dev.seg_length.data()
+            segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
+
+            self.empty_buffers = Queue.Queue()
+            self.full_buffers = Queue.Queue()
+
+            for i in range(self.NUM_BUFFERS):
+                self.empty_buffers.put(bytearray(segment_bytes))
+
+            self.device_thread = self.DeviceWorker(self.dev,self.empty_buffers,self.full_buffers)
+
+        def run(self):
+            def lcm(a,b):
+                from fractions import gcd
+                return (a * b / gcd(int(a), int(b)))
+
+            def lcma(arr):
+                ans = 1.
+                for e in arr:
+                    ans = lcm(ans, e)
+                return int(ans)
+
+            def truncate(f, n):
+                return math.floor(f * 10 ** n) / 10 ** n
+
+            if self.dev.debug:
+                print("MDSWorker running")
+
+            event_name = self.dev.seg_event.data()
+
+            dt = 1./self.dev.freq.data()
+
+            decimator = lcma(self.decim)
+
+            if self.seg_length % decimator:
+                self.seg_length = (self.seg_length // decimator + 1) * decimator
+
+            self.dims = []
+            for i in range(self.nchans):
+                self.dims.append(Range(0., truncate((self.seg_length-1)*dt,3), dt*self.decim[i]))
+
+            self.device_thread.start()
+
+            segment = 0
+            first = True
+            running = self.dev.running
+            max_segments = self.dev.max_segments.data()
+            while running.on and segment < max_segments:
+                try:
+                    buf = self.full_buffers.get(block=True, timeout=1)
+                except Queue.Empty:
+                    continue
+
+                if first:
+                    self.dev.trig_time.record = time.time() - (self.) * dt
+                    first = False
+
+                buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
+                i = 0
+                for c in chans:
+                    if c.on:
+                        b = buffer[i::32*decim[i]]
+                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
+                        dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                    i += 1
+                segment += 1
+                Event.setevent(event_name)
+
+                self.empty_buffers.put(buf)
+
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
+            self.device_thread.stop()
+
+        class DeviceWorker(threading.Thread):
+            running = False
+
+            def __init__(self,dev,empty_buffers,full_buffers):
+                threading.Thread.__init__(self)
+                self.debug = dev.debug
+                self.node_addr = dev.node.data()
+                self.seg_length = dev.seg_length.data()
+                self.freq = dev.freq.data()
+                self.nchans = 32
+                self.empty_buffers = empty_buffers
+                self.full_buffers = full_buffers
+                self.trig_time = 0
+                self.io_buffer_size = 4096
+
+            def stop(self):
+                self.running = False
+
+            def run(self):
+                if self.debug:
+                    print("DeviceWorker running")
+
+                self.running = True
+
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect((self.node_addr,4210))
+                s.settimeout(6)
+
+                segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
+
+                # trigger time out count initialization:
+                while self.running:
+                    try:
+                        buf = self.empty_buffers.get(block=False)
+                    except Queue.Empty:
+                        print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
+                        buf = bytearray(segment_bytes)
+
+                    toread = segment_bytes
+                    try:
+                        view = memoryview(buf)
+                        while toread:
+                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
+                            if first:
+                                self.trig_time = time.time()
+                                first = False
+                            view = view[nbytes:] # slicing views is cheap
+                            toread -= nbytes
+
+                    except socket.timeout as e:
+                        print("Got a timeout.")
+                        err = e.args[0]
+                        # this next if/else is a bit redundant, but illustrates how the
+                        # timeout exception is setup
+
+                        if err == 'timed out':
+                            time.sleep(1)
+                            print (' recv timed out, retry later')
+                            continue
+                        else:
+                            print (e)
+                            break
+                    except socket.error as e:
+                        # Something else happened, handle error, exit, etc.
+                        print("socket error", e)
+                        self.full_buffers.put(buf[:segment_bytes-toread])
+                        break
+                    else:
+                        if toread != 0:
+                            print ('orderly shutdown on server end')
+                            break
+                        else:
+                            self.full_buffers.put(buf)
 
     def setChanScale(self,num):
         chan=self.__getattr__('INPUT_%2.2d' % num)
