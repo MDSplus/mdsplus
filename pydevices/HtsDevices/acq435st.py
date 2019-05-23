@@ -171,7 +171,7 @@ class ACQ435ST(MDSplus.Device):
                 i = 0
                 for c in chans:
                     if c.on:
-                        b = buffer[i::32*decim[i]]
+                        b = buffer[i::self.nchans*decim[i]]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
                         dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
