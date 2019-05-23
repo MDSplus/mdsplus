@@ -135,15 +135,16 @@ class ACQ435ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            def truncate(f, n):
-                return math.floor(f * 10 ** n) / 10 ** n
-
             if self.dev.debug:
                 print("MDSWorker running")
 
             event_name = self.dev.seg_event.data()
 
-            dt = 1./self.dev.freq.data()
+            trig = self.dev.trigger.data()
+            if self.dev.hw_filter.length > 0:
+                dt = 1./self.dev.freq.data() * 2 ** self.dev.hw_filter.data()
+            else:
+                dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
 
@@ -152,7 +153,7 @@ class ACQ435ST(MDSplus.Device):
 
             self.dims = []
             for i in range(self.nchans):
-                self.dims.append(Range(0., truncate((self.seg_length-1)*dt,3), dt*self.decim[i]))
+                self.dims.append(Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
 
             self.device_thread.start()
 
@@ -317,152 +318,3 @@ class ACQ435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
     TRIG=trig
-
-    def stream(self):
-        import socket
-        import numpy as np
-        import datetime
-        import time
-        import os
-        import sys
-        from MDSplus import Tree,Event,Range
-        from MDSplus.mdsExceptions import DevNOT_TRIGGERED
-
-        def lcm(a,b):
-            from fractions import gcd
-            return (a * b / gcd(int(a), int(b)))
-
-        def lcma(arr):
-            ans = 1.
-            for e in arr:
-                ans = lcm(ans, e)
-            return int(ans)
-
-        print("starting streamer for %s %s %s\nat: %s"%(self.tree, self.tree.shot, self.path, datetime.datetime.now()))
-
-        event_name = self.seg_event.data()
-        trig = self.trigger.data()
-        if self.hw_filter.length > 0:
-            dt = 1./self.freq.data()*2**self.hw_filter.data()
-        else:
-            dt = 1./self.freq.data()
-
-        chans = []
-        decim = []
-        for i in range(32):
-            chans.append(getattr(self, 'input_%2.2d'%(i+1)))
-            decim.append(getattr(self, 'input_%2.2d_decimate' %(i+1)).data())
-
-        decimator = lcma(decim)
-
-        seg_length = self.seg_length.data()
-        if seg_length % decimator:
-            seg_length = (seg_length // decimator + 1) * decimator
-
-        segment_bytes = seg_length*32*4
-
-        dims=[]
-        for i in range(32):
-            dims.append(Range(0., (seg_length-1)*dt, dt*decim[i]))
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.node.data(),4210))
-
-        socketTimeout = 6 #secs
-        if self.debug:
-            print('Initial socket timeout: ' + str(socketTimeout) + ' secs')
-        seg_time      = 2**self.hw_filter.data() * seg_length / self.freq.data()
-
-        if seg_time <= socketTimeout:
-            if self.debug:
-                print('Chosen  socket timeout: ' + str(socketTimeout)+ ' secs')
-            s.settimeout(socketTimeout)
-        else:
-            if self.debug:
-                print('Chosen  socket timeout: ' + str(seg_time)+ ' secs')
-            s.settimeout(seg_time)
-
-        giveup_count = int(self.giveup_time.data() / s.gettimeout())
-        if self.debug:
-            print('Ratio of (Node giveup-time)/(chosen socket-timeout): ' + str(giveup_count))
-
-        # trigger time out count initialization:
-        timeOutCount=0
-
-        chunk = 0
-        segment = 0
-        running = self.running
-        max_segments = self.max_segments.data()
-        first = True
-        buf = bytearray(segment_bytes)
-
-        while running.on and \
-              segment < max_segments and \
-              timeOutCount < giveup_count:
-           # If no trigger, then the count (timeOutCount) will continue until the
-           # maximun count is reached.
-
-            toread=segment_bytes
-            try:
-                view = memoryview(buf)
-                while toread:
-                    nbytes = s.recv_into(view, min(4096,toread))
-                    if first:
-                        self.trig_time.record=time.time()
-                        first = False
-                    view = view[nbytes:] # slicing views is cheap
-                    toread -= nbytes
-
-            except socket.timeout as e:
-                # if no triggered, i.e. first=true, increase the trigger time out count.
-                if first:
-                    print('Trigger timeout tries: ' + str(timeOutCount) +
-                          ' out of ' + str(giveup_count))
-                    timeOutCount += 1
-
-                print("Got a timeout.")
-                err = e.args[0]
-        # this next if/else is a bit redundant, but illustrates how the
-        # timeout exception is setup
-
-                if err == 'timed out':
-                    time.sleep(1)
-                    print (' recv timed out, retry later')
-                    if not running.on:
-                        break
-                    else:
-                        continue
-                else:
-                    print (e)
-                    break
-            except socket.error as e:
-        # Something else happened, handle error, exit, etc.
-                print("socket error", e)
-                break
-            else:
-                if toread != 0:
-                    print ('orderly shutdown on server end')
-                    break
-                else:
-                    buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
-                    i = 0
-                    for c in chans:
-                        if c.on:
-                            b = buffer[i::32*decim[i]]
-                            c.makeSegment(dims[i].begin, dims[i].ending, dims[i], b)
-                            dims[i] = Range(dims[i].begin + seg_length*dt, dims[i].ending + seg_length*dt, dt*decim[i])
-                        i += 1
-                    segment += 1
-                    Event.setevent(event_name)
-
-        if timeOutCount >= giveup_count:
-            if self.debug:
-                print('\r\nNOT TRIGGERED!, EXITING')
-            raise DevNOT_TRIGGERED()
-
-        print("%s\tAll Done"%(datetime.datetime.now(),))
-        sys.stdout.flush()
-#        txt =  open(str(rundata['log_file']), 'r').read()
-#        self.log_output.record = np.array(txt.split('\n'))
-#        if  not self.debug:
-#            os.remove(str(rundata['log_file']))
