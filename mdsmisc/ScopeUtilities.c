@@ -647,12 +647,13 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
       delta = estimatedSegmentSamples/10.;
     //In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
     delta *= (estimatedDuration/estimatedSamples);
-    if (isLong) delta /= 1e9;
+    if (isLong) delta /= 1e9; // quick compensation of xtreeshr conversion
     deltaP = (delta>1e-9) ? &deltaD : NULL;
   } else deltaP = NULL;
   //Set limits if any
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
   if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
