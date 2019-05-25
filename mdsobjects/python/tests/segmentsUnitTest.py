@@ -225,58 +225,58 @@ class Tests(_UnitTest.TreeTests):
         self.assertTrue(sig.dim_of().tolist(),(arange(0,length,dtype=int64)*int(1e9/clk)).tolist())
 
     def TimeContext(self):
-        from MDSplus import Tree,Int32,Int32Array,Float32Array,tdi
+        from MDSplus import Tree,Int64,Int64Array,Float32Array,tdi
         Tree.setTimeContext() # test initPinoDb
         self.assertEqual(Tree.getTimeContext(),(None,None,None))
         with Tree(self.tree,self.shot+5,'NEW') as ptree:
             node = ptree.addNode('S')
             ptree.write()
         ptree.normal()
-        for i in range(-9,9,3):
-            d = Int32Array(range(3))*10+i*10
-            v = Float32Array(range(3))+i
-            node.makeSegment(d[0],d[2],d,v)
-        self.assertEqual(node.getSegmentList(20,59).dim_of(0).tolist(),[0,30])
-        self.assertEqual(node.getSegmentList(20,60).dim_of(0).tolist(),[0,30,60])
-        self.assertEqual(node.getSegmentList(21,60).dim_of(0).tolist(),[30,60])
-        self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
-        node.tree.setTimeContext(Int32(30),Int32(70),Int32(15))
+        for i in range(-90,90,30):
+            d = Int64Array(range(30))*10+i*10
+            v = Float32Array(range(30))+i
+            node.makeSegment(d[0],d[29],d,v)
+        self.assertEqual(node.getSegmentList(200,599).dim_of(0).tolist(),[0,300])
+        self.assertEqual(node.getSegmentList(200,600).dim_of(0).tolist(),[0,300,600])
+        self.assertEqual(node.getSegmentList(291,600).dim_of(0).tolist(),[300,600])
+        self.assertEqual(node.record.data().tolist(),list(range(-90,90)))
+        node.tree.setTimeContext(Int64(300),Int64(700),Int64(150))
         Tree.setTimeContext(1,2,3)
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
-        self.assertEqual(node.tree.getTimeContext(),(30,70,15))
+        self.assertEqual(node.tree.getTimeContext(),(300,700,150))
 
         sig = node.record # interp as set by env
-        self.assertEqual(sig.data().tolist(),[3,4.5,6])
-        self.assertEqual(sig.dim_of().data().tolist(),[30,45,60])
+        self.assertEqual(sig.data().tolist(),[30,45,60])
+        self.assertEqual(sig.dim_of().data().tolist(),[300,450,600])
 
         node.setExtendedAttribute("ResampleMode","Average")
         sig = node.record
-        self.assertEqual(sig.data().tolist(),[3.5,5.,6.5])
-        self.assertEqual(sig.dim_of().data().tolist(),[37.5,52.5,67.5]) # 35,45,65
+        self.assertEqual(sig.data().tolist(),[37,52,67])
+        self.assertEqual(sig.dim_of().data().tolist(),[375,525,675])
 
         node.setExtendedAttribute("ResampleMode","MinMax")
         sig = node.record
-        self.assertEqual(sig.data().tolist(),[3,4,5,5,6,7])
-        self.assertEqual(sig.dim_of().data().tolist(),[37.5,37.5,52.5,52.5,67.5,67.5])
+        self.assertEqual(sig.data().tolist(),[30,44,45,59,60,74])
+        self.assertEqual(sig.dim_of().data().tolist(),[375,375,525,525,675,675])
 
         node.setExtendedAttribute("ResampleMode","INTERP")
         sig = node.record
-        self.assertEqual(sig.data().tolist(),[3,4.5,6])
-        self.assertEqual(sig.dim_of().data().tolist(),[30,45,60])
+        self.assertEqual(sig.data().tolist(),[30,45,60])
+        self.assertEqual(sig.dim_of().data().tolist(),[300,450,600])
 
         node.setExtendedAttribute("ResampleMode","Previous")
         sig = node.record
-        self.assertEqual(sig.data().tolist(),[3,4,6])
-        self.assertEqual(sig.dim_of().data().tolist(),[30,45,60])
+        self.assertEqual(sig.data().tolist(),[30,44,60])
+        self.assertEqual(sig.dim_of().data().tolist(),[300,450,600])
 
         node.setExtendedAttribute("ResampleMode","Closest")
         sig = node.record
-        self.assertEqual(sig.data().tolist(),[3,5,6])
-        self.assertEqual(sig.dim_of().data().tolist(),[30,45,60])
+        self.assertEqual(sig.data().tolist(),[30,45,60])
+        self.assertEqual(sig.dim_of().data().tolist(),[300,450,600])
 
         node.tree.setTimeContext()
         self.assertEqual(node.tree.getTimeContext(),(None,None,None))
-        self.assertEqual(node.record.data().tolist(),list(range(-9,9)))
+        self.assertEqual(node.record.data().tolist(),list(range(-90,90)))
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
         tdi('treeopen($,$)',self.tree,self.shot+5)
         Tree.setTimeContext(1,2,3) # test privacy to Tree
