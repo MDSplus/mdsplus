@@ -240,6 +240,11 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(node.getSegmentList(200,600).dim_of(0).tolist(),[0,300,600])
         self.assertEqual(node.getSegmentList(291,600).dim_of(0).tolist(),[300,600])
         self.assertEqual(node.record.data().tolist(),list(range(-90,90)))
+
+        sig = node.getXYSignal(xmin=0., xmax=3e-8, num=5)
+        self.assertEqual(sig.data().tolist(),[0,1,2,3])
+        self.assertEqual(sig.dim_of().data().tolist(),[0,10,20,30])
+
         node.tree.setTimeContext(Int64(300),Int64(700),Int64(150))
         Tree.setTimeContext(1,2,3)
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
