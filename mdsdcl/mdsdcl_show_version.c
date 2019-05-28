@@ -33,8 +33,7 @@ extern MDSplusGitVersionInfo MDSplusGitVersion;
 EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   char *info = malloc(strlen(MDSplusVersion.MAJOR)+strlen(MDSplusVersion.MINOR)+strlen(MDSplusVersion.RELEASE)+
-		      strlen(MDSplusVersion.BRANCH)+strlen(MDSplusVersion.RELEASE_TAG)+
-		      strlen(MDSplusVersion.COMMIT)+1000);
+		           strlen(MDSplusVersion.RELEASE_TAG)+1000);
   
   strcpy(info,"\n\n");
   if (strlen(MDSplusVersion.MAJOR) && strlen(MDSplusVersion.MINOR) && strlen(MDSplusVersion.MAJOR)) {

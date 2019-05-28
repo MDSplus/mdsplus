@@ -85,7 +85,8 @@ AC_DEFUN([AX_GIT_REVISION],[
         AC_CHECK_PROG([HAVE_AWK],[awk],[yes],[no])
         AS_VAR_IF([HAVE_AWK],[yes],[
             AS_IF([test -z "${RELEASE_VERSION}"],[
-                AS_VAR_SET([RELEASE_TAG],[$(echo ${GIT_TAG} | ${AWK} '{ match($[]0,/([[a-zA-Z0-9_-]]+[[^0-9-]]+)-([[0-9]]+-[[0-9]]+-[[0-9]]+)/,arr); print arr[[0]] }' )])
+                dnl AS_VAR_SET([RELEASE_TAG],[$(echo ${GIT_TAG} | ${AWK} '{ match($[]0,/([[a-zA-Z0-9_-]]+[[^0-9-]]+)-([[0-9]]+-[[0-9]]+-[[0-9]]+)/,arr); print arr[[0]] }' )])
+                AS_VAR_SET([RELEASE_TAG],[${GIT_TAG}])
                 AS_VAR_SET([RELEASE_VERSION],[$(echo ${GIT_TAG} | ${AWK} '{ match($[]0,/[[0-9]]+-[[0-9]]+-[[0-9]]+/,arr); print arr[[0]] }' | ${AWK} '{ gsub("-","."); print }' ) ])
                 AS_VAR_SET([RELEASE_MAJOR],  [$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $[]1 }' ) ])
                 AS_VAR_SET([RELEASE_MINOR],  [$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $[]2 }' ) ])
