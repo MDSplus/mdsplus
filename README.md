@@ -58,9 +58,7 @@ You can find the available operating systems that you could specify for the
 Who Uses MDSplus
 This map shows world fusion sites using MDSplus.  
 
-<iframe 
-   src="https://www.google.com/maps/d/embed?mid=1Lt3r3dnAtx79anaLarJkKb4l0s5RWpPn" width="640" height="480">
-</iframe>
+https://drive.google.com/open?id=1Lt3r3dnAtx79anaLarJkKb4l0s5RWpPn&usp=sharing
 
 ---------------------------------------------------------------------------
 Special Notes
