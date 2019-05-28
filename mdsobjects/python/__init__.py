@@ -68,8 +68,8 @@ try:
     release_tag = _version.release_tag
     __doc__ = """%s
 Version: %s\nRelease tag: %s
-Release: %s
-""" % (__doc__,__version__,branch,commit,release_tag,_version.release_date)
+Release Date: %s
+""" % (__doc__,__version__,release_tag,_version.release_date)
 except:
     if version_check:
         sys.stderr.write("PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
