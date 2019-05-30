@@ -4858,7 +4858,7 @@ fi
 
             if test -z "${RELEASE_VERSION}"; then :
 
-                RELEASE_TAG=$(echo ${GIT_TAG} | ${AWK} '{ match($0,/([a-zA-Z0-9_-]+[^0-9-]+)-([0-9]+-[0-9]+-[0-9]+)/,arr); print arr[0] }' )
+                                RELEASE_TAG=${GIT_TAG}
                 RELEASE_VERSION=$(echo ${GIT_TAG} | ${AWK} '{ match($0,/[0-9]+-[0-9]+-[0-9]+/,arr); print arr[0] }' | ${AWK} '{ gsub("-","."); print }' )
                 RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $1 }' )
                 RELEASE_MINOR=$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $2 }' )

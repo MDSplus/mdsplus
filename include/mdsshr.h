@@ -122,9 +122,7 @@ typedef struct {
   const char *MAJOR;
   const char *MINOR;
   const char *RELEASE;
-  const char *BRANCH;
   const char *RELEASE_TAG;
-  const char *COMMIT;
   const char *DATE;
   const char *MDSVERSION;
 } MDSplusVersionInfo;
