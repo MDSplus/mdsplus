@@ -145,6 +145,10 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       break;
     case CLASS_R: {
       rDsc = (mdsdsc_r_t*)dsc;
+      if(rDsc->dtype == DTYPE_SIGNAL)
+	  break; //If the expression includes a Signal descriptor, the time base may be different from that of the segmented node
+      if(rDsc->dtype == DTYPE_FUNCTION)
+	  break;  //If the expression  goes through a fun, the time base may be different from that of the segmented node
       for (i = 0; i < rDsc->ndesc; i++) {
 	if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
 	  return nid;
@@ -263,6 +267,7 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
   }
   //From here, consider xMin and xMax
   int startIdx, endIdx;
+
   for(startIdx = 0;        startIdx < nSamples && to_doublex(&x->pointer[startIdx * x->length], x->dtype,xMin,TRUE) <= xMin; startIdx++);
   if(startIdx == nSamples) startIdx--;
   for(  endIdx = startIdx;   endIdx < nSamples && to_doublex(&x->pointer[  endIdx * x->length], x->dtype,xMax,TRUE) <  xMax;   endIdx++);
@@ -636,6 +641,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   double xmin = -INFINITY, xmax = INFINITY, delta;
   mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char* )&delta};
   int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax, &isLong);
+
   const double estimatedDuration = xmax - xmin;
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax <  INFINITY) ? inXMax : NULL;
@@ -651,6 +657,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
     deltaP = (delta>1e-9) ? &deltaD : NULL;
   } else deltaP = NULL;
   //Set limits if any
+
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
   if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
   TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
@@ -823,6 +830,7 @@ EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXM
 
 EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
   static EMPTYXD(xd);
+
   const size_t len = strlen(inY);
   if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&xd));
   EMPTYXD(yXd);
