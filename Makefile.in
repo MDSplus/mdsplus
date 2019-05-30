@@ -74,6 +74,7 @@ NON_JAR = \
 	@LV@ \
 	LabView \
 	@MACOSX@
+
 @ENABLE_TESTS_TRUE@ NON_JAR += testing
 
 PARTS = $(NON_JAR) @JAVA_JAR@
@@ -81,7 +82,7 @@ endif
 
 .PHONY: all $(PARTS)
 all: ##@build build all active submodules
-all: $(PARTS)
+all: ChangeLog $(PARTS)
 
 DIRECTORIES = $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEUIDDIR@)
 
@@ -99,6 +100,9 @@ docs:   ##@docs build documentation using doxygen (ref to docs directory)
 
 
 clean_DIRS = $(addprefix clean_, $(PARTS))
+
+ChangeLog:
+	if (! git --git-dir=@top_srcdir@/.git log --decorate=full --no-merges > ChangeLog 2>/dev/null); then touch ChangeLog; fi
 
 .PHONY: clean
 clean: ##@build recusively clean all built objects in submodules
@@ -164,7 +168,7 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh ChangeLog include mdsobjects/python desktop pixmaps matlab php epics xml nodejs
+MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh include mdsobjects/python desktop pixmaps matlab php epics xml nodejs
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):
@@ -173,6 +177,7 @@ $(install_DIRS):
 .PHONY: install
 install: ##@build build and install active modules to prefix directory
 install: $(install_DIRS)
+	$(INSTALL) ChangeLog $(prefix)/
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files

@@ -100,3 +100,6 @@ _version.py
 
 testing/MDSplus/
 testing/*Devices/
+
+# file created by release build trigger.sh script
+trigger.opts
