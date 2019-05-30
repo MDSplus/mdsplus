@@ -36,7 +36,7 @@ class RFX_RPADC(Device):
 
 
     class Configuration:
-      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, postSamples, segmentSamples, frequency, single):
+      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, postSamples, segmentSamples, frequency, frequency1, single):
           self.lib = lib
           self.fd = fd
           self.name = name
@@ -49,6 +49,7 @@ class RFX_RPADC(Device):
           self.postSamples = postSamples
           self.segmentSamples = segmentSamples
           self.frequency = frequency
+          self.frequency1 = frequency1
           self.single = single
 
     class AsynchStore(Thread):
@@ -65,6 +66,7 @@ class RFX_RPADC(Device):
           self.postSamples = conf.postSamples
           self.segmentSamples = conf.segmentSamples
           self.frequency = conf.frequency
+          self.frequency1 = conf.frequency1
           self.single = conf.single
 
 
@@ -73,7 +75,7 @@ class RFX_RPADC(Device):
           try:
              self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
                                   c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
-                                  c_int(self.segmentSamples), c_double(self.frequency), c_int(self.single))
+                                  c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
           except ValueError:
                print(ValueError)
                raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -103,7 +105,7 @@ class RFX_RPADC(Device):
                 print('Invalid mode: ' + self.mode.data())
                 return 0
             print('letto mode')
-            if mode == 2 or mode == 4 or mode == 3:  #force segment composted of a single block
+            if mode == 2 or mode == 4:  #force segment composted of a single block
                 isSingle = 1
             else:
                 isSingle = 0
@@ -127,17 +129,20 @@ class RFX_RPADC(Device):
             evLevel = self.ev_level.data()
             evSamples = self.ev_samples.data()
             print('leggo clock_mode')
-            if self.clock_mode.data() == 'INTERNAL':
-                try:
-                    decimation = self.decimation.data()
-                    frequency = 125E6/decimation;
-                except:
-                    print('Cannot get decimation')
-                    return 0
-            else:
+            try:
+                decimation = self.decimation.data()
+                frequency = 125E6/decimation;
+                frequency1 = frequency
+            except:
+                print('Cannot get decimation')
+                return 0
+
+            if self.clock_mode.data() != 'INTERNAL':
                 try:
                     period = Data.execute('slope_of($)', self.ext_clock)
                     frequency = 1./period
+                    if self.clock_mode.data() == 'EXTERNAL':
+                        frequency1 = frequency
                 except:
                     print('Cannot resolve external clock')
                     return 0
@@ -150,7 +155,7 @@ class RFX_RPADC(Device):
                 return
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.chan_a.getNid(), self.chan_b.getNid(),
-                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, isSingle)
+                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, frequency1, isSingle)
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1

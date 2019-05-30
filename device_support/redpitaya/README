@@ -1,0 +1,56 @@
+The RedPitaya ADC device is implemented by MDSplus RFX_RPADC device (MDSplus must be installed). This device supports several modes of operation 
+(field "Mode" in DwSetup):
+
+--STREAMING: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW or SW), streaming 
+acquisition is started until method stop_store is called. The dimension of the segment used to store data is defined in field "Segment Size"
+
+--TRIGGER_SINGLE: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW - Digital input DIO1_P or 
+SW - method do_trigger), the number of samples specified in fields "Pre Samples" and "Post Samples" is acquired. 
+NOTE: the dimension of the used segments is computed internally,  and it will be 10000 if (PreSamples+PostSamples) is a multiple of 10000
+else 1000 if (PreSamples+PostSamples) is a multiple of 1000 else (PreSamples+PostSamples)
+
+--TRIGGER_STREAMING: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW - Digital input DIO1_P or 
+SW - method do_trigger), the number of samples specified in fields "Pre Samples" and "Post Samples" is acquired and then the module 
+is ready to accept a new trigger until method stop_store is called. The segment dimension specified in field "Segment Size" is used, possibly
+adjusted to be a multiple of (PreSamples+PostSamples)
+
+--EVENT_SINGLE
+--EVENT_STREAMING: like TRIGGER_SINGLE and TRIGGER_STREAMING but in this case, after receiving a trigger signal, actuual data acquisition is 
+	 triggered by the input signal. The following fields specify how the trigger is derived:          
+	 - Event Chan.: channel to consider for trigger generation (A or B)
+	 - Event Mode: Generation if above (UPPER) or below (LOWER) the specified threshond
+	 - Event Level: threshold (raw data) for trigger generation
+	 - Event Samples: number of samples that must satisfy the specified confition in order to generate trigger
+	 
+Clock can be internal or external and is specified by field Clock Mode that can be:
+--INTERNAL: clock is derived from the internal 125MHz clock
+--EXTERNAL: clock is derived from Digital input DIO3_P
+--TRIG_EXTERNAL: meaningful for mode TRIGGER_STREAMING or EVENT_STREAMING and useful when using a sampling speed higher that the external clock
+     in this case the external clock is used  to measure event time, and internal clock is used for sampling.
+     
+When EXTERNAL or TRIG_EXTERNAL clock mode specified, field Ext. Clock specifies the clock source (must be a range data type)
+When INTERNAL or TRIG_EXTERNAL clock mode specified, the 125MHz internal clock is divided by the value specified in field "Decimation"
+
+Field trigger time specifies the time of the initial trigger (valid for all modes) and is used to build signal timebases. 
+
+
+				    *************INSTALLATION***************
+				    
+1) Firmware upload. The bitstream is in file rpadc_fifo.bit. It must be copied on the redpitaya board and EVERY TIME the board is powered
+it must be installed with the comand:  
+    
+    cat rpadc_fifo.bit /dev/xdevcfg
+    
+2) Device tree installation. Performed only once with the following commands, followed by a system reboot
+
+      mount -o remount,rw /boot 
+      cp devicetree.dtb /boot
+      
+3) Driver installation, performed every time the device is powered or rebooted, via the following command:
+
+    insmod rpadc_fifo_auto.ko 
+
+    
+The python device implementation relies on a compiled program (redpitaya.cpp) in $MDSPLUS_DIR/device_support/redpitaya (containing also the
+other files). Installation is done with commands make and make install.
+    
