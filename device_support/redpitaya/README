@@ -23,10 +23,11 @@ adjusted to be a multiple of (PreSamples+PostSamples)
 	 - Event Samples: number of samples that must satisfy the specified confition in order to generate trigger
 	 
 Clock can be internal or external and is specified by field Clock Mode that can be:
---INTERNAL: clock is derived from the internal 125MHz clock
---EXTERNAL: clock is derived from Digital input DIO3_P
+--INTERNAL: clock is derived from the internal 125MHz clock, decimated as specified in field "Decimation"
+--EXTERNAL: clock is derived from Digital input DIO3_P, decimated as specified in field "Decimation"
 --TRIG_EXTERNAL: meaningful for mode TRIGGER_STREAMING or EVENT_STREAMING and useful when using a sampling speed higher that the external clock
-     in this case the external clock is used  to measure event time, and internal clock is used for sampling.
+     in this case the external clock is used  to measure event time, and internal clock (decimated as specified in field "Decimation") is used 
+     for sampling.
      
 When EXTERNAL or TRIG_EXTERNAL clock mode specified, field Ext. Clock specifies the clock source (must be a range data type)
 When INTERNAL or TRIG_EXTERNAL clock mode specified, the 125MHz internal clock is divided by the value specified in field "Decimation"
