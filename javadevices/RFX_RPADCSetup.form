@@ -2,7 +2,7 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8001"/>
+    <Property name="deviceProvider" type="java.lang.String" value="spilds.rfx.local:8100"/>
     <Property name="deviceTitle" type="java.lang.String" value="RedPitaya ADC"/>
     <Property name="deviceType" type="java.lang.String" value="RFX_RPADC"/>
     <Property name="height" type="int" value="300"/>
@@ -71,13 +71,6 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Decimation:"/>
                 <Property name="offsetNid" type="int" value="2"/>
-              </Properties>
-            </Component>
-            <Component class="DeviceField" name="deviceField3">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Buffer Size:"/>
-                <Property name="offsetNid" type="int" value="3"/>
               </Properties>
             </Component>
             <Component class="DeviceField" name="deviceField4">
