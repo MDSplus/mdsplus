@@ -1,5 +1,11 @@
-The RedPitaya ADC device is implemented by MDSplus RFX_RPADC device (MDSplus must be installed). This device supports several modes of operation 
-(field "Mode" in DwSetup):
+The RedPitaya ADC device is implemented by MDSplus RFX_RPADC device (MDSplus must be installed). 
+
+******THE SUPPORTED KERNEL VERSION TO BE INSTALLED IN THE RED PITAYA BOARD IS 4.4.0*******************
+
+
+This device supports several modes of operation (field "Mode" in DwSetup):
+
+
 
 --STREAMING: when initialized (method init) and armed (method start_store), upon reception of a trigger (HW or SW), streaming 
 acquisition is started until method stop_store is called. The dimension of the segment used to store data is defined in field "Segment Size"
