@@ -485,9 +485,11 @@ EOF
 fi
 if [ "$TAG_RELEASE" = "yes" ]
 then
-    if ( git tag | grep last_release >/dev/null )
-    then 
-    	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
+    if [ "$NEW_RELEASE" = "yes" ]
+    then
+      if ( git tag | grep last_release >/dev/null )
+      then 
+      	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
       	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
@@ -509,7 +511,6 @@ EOF
 EOF
 	 fi
 	 git tag -d last_release
-         git tag -d ${RELEASE_TAG}
          if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
          then 
      	     RED
@@ -525,20 +526,8 @@ EOF
 	     cat ${WORKSPACE}/tag_release.log
 	     NORMAL
 	     exit 1
-        fi
-    else
-	RED
-	cat <<EOF >&2
-=========================================================
-
-Attempt to tag a new release without first triggering
-a release build with the --release option.
-FAILURE
-
-=========================================================
-EOF
-	NORMAL
-	exit 1
+         fi
+      fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts
