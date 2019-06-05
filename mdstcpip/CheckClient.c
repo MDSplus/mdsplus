@@ -71,15 +71,14 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
   else if (local_user->length) {
     char *luser = MdsDescrToCstring(local_user);
     const int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
-    const int is_root = strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
-    char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;
-    int status = -1;
-    struct passwd *pwd;
     if (map_to_local && remuser == 0) {
       MdsFree(luser);
       return 0;
     }
-    pwd = user ? getpwnam(user) : 0;
+    int status = -1;
+    const int is_root = remuser && strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
+    char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;
+    struct passwd *pwd = user ? getpwnam(user) : 0;
     if (!pwd && remuser == user) {
       size_t i;
       for (i = 0; i < strlen(user); i++)
@@ -138,7 +137,7 @@ int CheckClient(char *username, int num, char **matchString)
 		    strncmp(match.pointer, "MULTI", strlen("multi")) == 0 &&
 		    access_id.length == strlen("multi") &&
 		    strncmp(access_id.pointer, "MULTI", strlen("multi")) == 0)
-		  BecomeUser(0, &local_user);
+		  BecomeUser(NULL, &local_user);
 		else {
 		  if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
 		    ok = GetMulti()? 1 : BecomeUser(username, &local_user);
