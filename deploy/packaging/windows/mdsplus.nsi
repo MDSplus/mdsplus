@@ -31,6 +31,8 @@ InstType "Minimal"
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 !define UNINSTALL_VAL "UninstallString"
 
+!define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
+
 !define BINDIR32		"$INSTDIR\bin32"
 !define BINDIR64		"$INSTDIR\bin64"
 
@@ -109,6 +111,8 @@ Var StartMenuFolder
 !include StrFunc.nsh
 ${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
 
+;; used to get filename in ignore branch of uninstaller
+!include "WordFunc.nsh"
 
 
 ### BEGIN _in ###
@@ -1017,7 +1021,6 @@ Section uninstall
 	Pop $R0
 	skip_python_remove:
 	SetOutPath "$INSTDIR"
-	Delete uninstall.exe
 	${IF} for AllUsers ?
 		ReadEnvStr $R1 COMSPEC
 		nsExec::ExecToLog '"$R1" /C NET STOP "MDSplus 8000"'
@@ -1030,15 +1033,29 @@ Section uninstall
 		Pop $R0
 		FileOpen $R0 "$INSTDIR\uninstall.dat" r
 		${DisableX64FSRedirection}
-		loop_u:
+		CreateDirectory "${TEMP_DEL_DIR}"
+		ClearErrors
+		loop:
 			FileRead $R0 $R1
-			StrCmp $R1 "" done_u
+			StrCmp $R1 "" done
 			${UnStrTrimNewLines} $R2 $R1
-			Delete $R2
-			Goto loop_u
-		done_u:
+			retry:
+			Delete "$R2"
+			IfErrors 0 loop
+			MessageBox MB_ABORTRETRYIGNORE 'File "$R2" could not be deleted. Is it still in use.' IDIGNORE ignore IDRETRY retry
+			FileClose $R0
+			RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
+			Abort
+			ignore:
+			System::Call 'kernel32::GetTickCount()i .R3'
+			${WordFind} "$R2" "\" "-1" $R4
+			Rename "$R2" "${TEMP_DEL_DIR}\$R4$R3"
+			ClearErrors
+			Goto loop
+		done:
 		FileClose $R0
 		${EnableX64FSRedirection}
+		RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
 		Delete uninstall.dat
 	${Else}
 		${GetBinDir} $R0
