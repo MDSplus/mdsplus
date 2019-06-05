@@ -1,5 +1,6 @@
 Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
+;SetCompress off
 SetCompressor /FINAL LZMA
 ShowInstDetails show
 InstType "Typical" 
@@ -1018,9 +1019,14 @@ Section uninstall
 	SetOutPath "$INSTDIR"
 	Delete uninstall.exe
 	${IF} for AllUsers ?
-		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
+		ReadEnvStr $R1 COMSPEC
+		nsExec::ExecToLog '"$R1" /C NET STOP "MDSplus 8000"'
 		Pop $R0
-		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8000"'
+		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8000"'
+		Pop $R0
+		nsExec::ExecToLog '"$R1" /C NET STOP "MDSplus 8100"'
+		Pop $R0
+		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8100"'
 		Pop $R0
 		FileOpen $R0 "$INSTDIR\installer.dat" r
 		${DisableX64FSRedirection}
