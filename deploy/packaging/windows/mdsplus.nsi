@@ -574,7 +574,7 @@ SectionGroup "!core" core
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
 	${If} for AllUsers ?
-		FileOpen $R0 "$INSTDIR\installer.dat" w
+		FileOpen $R0 "$INSTDIR\uninstall.dat" w
 		${InstallFiles} "${BINDIR64}" "$SYSDIR" $R0
 		FileClose $R0
 		SetOutPath "$INSTDIR"  ; avoid access to ${BINDIR64} so it may be deleted
@@ -610,11 +610,11 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${ZLIB1_LIB}
 	${IF} for AllUsers ?
 		${If} ${RunningX64}
-			FileOpen $R0 "$INSTDIR\installer.dat" a
+			FileOpen $R0 "$INSTDIR\uninstall.dat" a
 			FileSeek $R0 0 END
 			${InstallFiles} "${BINDIR32}" "$WINDIR\SysWOW64" $R0
 		${Else}
-			FileOpen $R0 "$INSTDIR\installer.dat" w
+			FileOpen $R0 "$INSTDIR\uninstall.dat" w
 			${InstallFiles} "${BINDIR32}" "$SYSDIR" $R0
 		${EndIf}
 		FileClose $R0
@@ -1028,7 +1028,7 @@ Section uninstall
 		Pop $R0
 		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8100"'
 		Pop $R0
-		FileOpen $R0 "$INSTDIR\installer.dat" r
+		FileOpen $R0 "$INSTDIR\uninstall.dat" r
 		${DisableX64FSRedirection}
 		loop_u:
 			FileRead $R0 $R1
@@ -1039,7 +1039,7 @@ Section uninstall
 		done_u:
 		FileClose $R0
 		${EnableX64FSRedirection}
-		Delete installer.dat
+		Delete uninstall.dat
 	${Else}
 		${GetBinDir} $R0
 		${RemoveFromEnv}	PATH		"$R0"
