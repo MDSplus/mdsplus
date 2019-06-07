@@ -491,14 +491,12 @@ class NI6683(Device):
 
     def soft_init(self):
         self.debugPrint('=================  PXI 6683 soft_init ===============')
-        print('*************ORA CHIAMO INIT')
 
         self.restoreInfo()
         currentTime = c_ulonglong(0)
         status = NI6683.niLib.nisync_get_time_ns(c_int(self.fd), byref(currentTime))
         self.checkStatus(status, 'Cannot get current time')
         self.abs_start.putData(Uint64(currentTime.value))
-        print('ORA CHIAMO INIT')
         return self.init()
 
 
@@ -507,9 +505,6 @@ class NI6683(Device):
     def start_store(self):
 
         self.debugPrint('=================  PXI 6683 start_store ===============')
-        print('CICCIO')
-        print ('RECORDER DEV NAMES:', NI6683.ni6683RecorderDict[self.nid])
-        print('BOMBO')
         self.restoreInfo()
         worker = self.AsynchStore()
         NI6683.ni6683WorkerDict[self.nid] = worker
@@ -549,7 +544,7 @@ class NI6683(Device):
                 for fdTuple in readyFds:
                     readyFd = fdTuple[0]
                     event = fdTuple[1]
-                    print('EVENTO: ', fdTuple, select.EPOLLIN)
+                    print('EVENT: ', fdTuple, select.EPOLLIN)
                     if event & select.EPOLLIN == 0:
                         print('NO DATA')
                     if event & select.EPOLLERR != 0:
@@ -557,18 +552,15 @@ class NI6683(Device):
                         return
                         continue
                     timestamp = c_ulonglong()
-                    print('READY FD: ', readyFd)
                     status = NI6683.niLib.nisync_read_timestamps_ns(c_int(readyFd), byref(timestamp), c_int(1))
                     self.device.checkStatus(status, 'Cannot get current time')
                     termName = self.nameDict[readyFd]
-                    print('ECCO EVENTO DA TERM ' + termName)
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
                     eventRelTime = getRelTime(self, timestamp.value)
                     recorderNid.putRow(10, Float64(eventRelTime), Float64(eventRelTime))
                     try:
                         eventNameNid = getattr(self.device, termName.lower()+'_event_name')
                         eventName = eventDameNid.data()
-                        print('SPEDISCO EVENTO: '+ eventName, timestamp.value)
                         Event.setevent(eventName, Uint64(timestamp.value))
                     except:
                         pass
