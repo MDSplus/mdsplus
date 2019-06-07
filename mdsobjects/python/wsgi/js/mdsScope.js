@@ -1109,7 +1109,7 @@ function Grid(g, metrics, labels, xIsDateTime)
 		title.appendChild(document.createTextNode(this.labels.errors));
 	    else
 		title.appendChild(document.createTextNode(this.labels.title));
-	                  if(this.labels.errors != undefined)
+	    if(this.labels.errors != undefined)
             {
                 var errorLabel=document.createElementNS("http://www.w3.org/2000/svg","text");
                 var tooltip=document.createElementNS("http://www.w3.org/2000/svg","title");
@@ -1122,11 +1122,14 @@ function Grid(g, metrics, labels, xIsDateTime)
  //               var parsedMessage = this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/);
                 var parsedMessage = this.labels.errors;
                 var errorMessage = '';
-                if(parsedMessage != undefined);
+		try {
+                  if(parsedMessage != undefined);
                     errorMessage = parsedMessage[0].substring(3);
                 //var errorMessage=this.labels.errors.match(/u'%[A-Za-z\-\,\s_]+/)[0].substring(3);
-                errorLabel.appendChild(document.createTextNode(errorMessage));
-                tooltip.appendChild(document.createTextNode(errorMessage));
+                  errorLabel.appendChild(document.createTextNode(errorMessage));
+                  tooltip.appendChild(document.createTextNode(errorMessage));
+		}catch(err) {}
+
             }
         }
         if(this.labels != undefined && this.labels.ylabel != undefined)
