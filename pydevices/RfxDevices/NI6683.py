@@ -104,10 +104,8 @@ class NI6683(Device):
             NI6683.niLib = CDLL("libnisync.so")
             NI6683.termNameDict = {'PFI0': 0,'PFI1':1,'PFI2':2,'PXI_TRIG0': 11,
                'PXI_TRIG1': 12,'PXI_TRIG2': 13,'PXI_TRIG3': 14,'PXI_TRIG4': 15,'PXI_TRIG5': 16,
-               'PXI_TRIG6': 17,'PXI_TRIG7': 18, 'STAR0': 19,'STAR0': 19,'STAR1': 20,
-               'STAR2': 21,'STAR3': 22,'STAR4': 23,'STAR5': 24,'STAR6': 25,
-               'STAR7': 26,'STAR8': 27,'STAR9': 28,'STAR10': 29,'STAR11': 30,
-               'STAR12': 31}
+               'PXI_TRIG6': 17,'PXI_TRIG7': 18}
+#'STAR0': 19,'STAR0': 19,'STAR1': 20, 'STAR2': 21,'STAR3': 22,'STAR4': 23,'STAR5': 24,'STAR6': 25,'STAR7': 26,'STAR8': 27,'STAR9': 28,'STAR10': 29,'STAR11': 30,'STAR12': 31}
             NI6683.typeDict = {'PXI6682': 0, 'PCI1588': 1,'PXI6683': 2,'PXI6683H': 3}
 
 
@@ -493,12 +491,14 @@ class NI6683(Device):
 
     def soft_init(self):
         self.debugPrint('=================  PXI 6683 soft_init ===============')
+        print('*************ORA CHIAMO INIT')
 
         self.restoreInfo()
         currentTime = c_ulonglong(0)
         status = NI6683.niLib.nisync_get_time_ns(c_int(self.fd), byref(currentTime))
         self.checkStatus(status, 'Cannot get current time')
         self.abs_start.putData(Uint64(currentTime.value))
+        print('ORA CHIAMO INIT')
         return self.init()
 
 
