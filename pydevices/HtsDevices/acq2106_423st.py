@@ -99,15 +99,15 @@ class _ACQ2106_423ST(MDSplus.Device):
                 self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
-            segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
             self.empty_buffers = Queue.Queue()
             self.full_buffers = Queue.Queue()
 
             for i in range(self.NUM_BUFFERS):
-                self.empty_buffers.put(bytearray(segment_bytes))
+                self.empty_buffers.put(bytearray(self.segment_bytes))
 
-            self.device_thread = self.DeviceWorker(self.dev,self.empty_buffers,self.full_buffers)
+            self.device_thread = self.DeviceWorker(self)
 
         def run(self):
             def lcm(a,b):
@@ -163,22 +163,24 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
             running = False
 
-            def __init__(self,dev,empty_buffers,full_buffers):
+            def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = dev.debug
-                self.node_addr = dev.node.data()
-                self.seg_length = dev.seg_length.data()
-                self.freq = dev.freq.data()
-                self.nchans = dev.sites*32
-                self.empty_buffers = empty_buffers
-                self.full_buffers = full_buffers
+                self.debug = mds.debug
+                self.node_addr = mds.dev.node.data()
+                self.seg_length = mds.dev.seg_length.data()
+                self.segment_bytes = mds.segment_bytes
+                self.freq = mds.dev.freq.data()
+                self.nchans = mds.nchans
+                self.empty_buffers = mds.empty_buffers
+                self.full_buffers = mds.full_buffers
                 self.trig_time = 0
+                self.io_buffer_size = 4096
 
             def stop(self):
                 self.running = False
@@ -193,8 +195,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                 s.connect((self.node_addr,4210))
                 s.settimeout(6)
 
-                segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
-
                 # trigger time out count initialization:
                 first = True
                 while self.running:
@@ -202,13 +202,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                         buf = self.empty_buffers.get(block=False)
                     except Queue.Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
-                        buf = bytearray(segment_bytes)
+                        buf = bytearray(self.segment_bytes)
                         
-                    toread = segment_bytes
+                    toread =self.segment_bytes
                     try:
                         view = memoryview(buf)
                         while toread:
-                            nbytes = s.recv_into(view, min(4096,toread))
+                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
                             if first:
                                 self.trig_time = time.time()
                                 first = False
@@ -231,7 +231,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                     except socket.error as e:
                         # Something else happened, handle error, exit, etc.
                         print("socket error", e)
-                        self.full_buffers.put(buf[:segment_bytes-toread])
+                        self.full_buffers.put(buf[:self.segment_bytes-toread])
                         break
                     else:
                         if toread != 0:
