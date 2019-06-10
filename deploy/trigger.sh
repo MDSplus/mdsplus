@@ -485,10 +485,8 @@ EOF
 fi
 if [ "$TAG_RELEASE" = "yes" ]
 then
-    if [ "$NEW_RELEASE" = "yes" ]
-    then
-      if ( git tag | grep last_release >/dev/null )
-      then 
+    if ( git tag | grep last_release >/dev/null )
+    then 
       	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
       	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
@@ -527,7 +525,6 @@ EOF
 	     NORMAL
 	     exit 1
          fi
-      fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts
