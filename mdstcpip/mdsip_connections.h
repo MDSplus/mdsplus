@@ -84,6 +84,7 @@ typedef struct _connection {
   SOCKET readfd;
   struct _io_routines *io;
   unsigned short version;
+  char *rm_user;
 } Connection;
 
 #define INVALID_CONNECTION_ID 0

@@ -201,6 +201,7 @@ void DisconnectConnectionC(Connection *c){
   FreeDescriptors(c);
   free(c->protocol);
   free(c->info_name);
+  free(c->rm_user);
   TreeFreeDbid(c->DBID);
   pthread_cond_destroy(&c->cond);
   free(c);
@@ -240,11 +241,11 @@ Connection* NewConnectionC(char *protocol){
   IoRoutines *io = LoadIo(protocol);
   if (io) {
     RUN_FUNCTION_ONCE(registerHandler);
-    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection = calloc(1,sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;
     connection->message_id = -1;
-    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
     _TreeNewDbid(&connection->DBID);
@@ -487,6 +488,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       memcpy(user, m_user->bytes, m_user->h.length);
       user[m_user->h.length] = 0;
     }
+    c->rm_user = user;
     user_p = user ? user : "?";
     status = authorizeClient(c, user_p);
     // SET COMPRESSION //
@@ -502,7 +504,6 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n",user_p);
     else
       fprintf(stderr, "Connected: %s\n",user_p);
-    free(user);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     m.h.ndims = 1;
