@@ -122,12 +122,20 @@ typedef struct {
   const char *MAJOR;
   const char *MINOR;
   const char *RELEASE;
-  const char *BRANCH;
   const char *RELEASE_TAG;
-  const char *COMMIT;
   const char *DATE;
   const char *MDSVERSION;
 } MDSplusVersionInfo;
+
+typedef struct {
+  const char *GIT_TAG;
+  const char *GIT_BRANCH;
+  const char *GIT_REMOTE;
+  const char *GIT_REMOTE_URL;
+  const char *GIT_COMMIT;
+  const char *GIT_SRCDIR;
+} MDSplusGitVersionInfo;
+
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>

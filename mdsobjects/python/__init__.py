@@ -65,13 +65,11 @@ else:
 try:
     _version = _mimport('_version')
     __version__ = _version.version
-    branch      = _version.branch
-    commit      = _version.commit
     release_tag = _version.release_tag
     __doc__ = """%s
-Version: %s\nBranch: %s\nCommit: %s\nRelease tag: %s
-Release: %s
-""" % (__doc__,__version__,branch,commit,release_tag,_version.release_date)
+Version: %s\nRelease tag: %s
+Release Date: %s
+""" % (__doc__,__version__,release_tag,_version.release_date)
 except:
     if version_check:
         sys.stderr.write("PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
@@ -83,9 +81,7 @@ if version_check:
             _fields_= [("MAJOR",ctypes.c_char_p),
                        ("MINOR",ctypes.c_char_p),
                        ("RELEASE",ctypes.c_char_p),
-                       ("BRANCH",ctypes.c_char_p),
                        ("RELEASE_TAG",ctypes.c_char_p),
-                       ("COMMIT",ctypes.c_char_p),
                        ("DATE",ctypes.c_char_p),
                        ("MDSVERSION",ctypes.c_char_p)]
         try:

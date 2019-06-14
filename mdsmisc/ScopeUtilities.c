@@ -77,7 +77,7 @@ static double to_doublex(const void *const ptr, const dtype_t dtype, const doubl
       return (double)*(int32_t *)ptr;
     case DTYPE_Q:
     case DTYPE_QU:
-      if (is_time) return ((double)*(int64_t *)ptr)/1e9;
+      if (is_time) return ((double)*(int64_t *)ptr);
       return (double)*(int64_t *)ptr;
     default:
       printf("Unsupported Type in getData\n");
@@ -145,6 +145,10 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       break;
     case CLASS_R: {
       rDsc = (mdsdsc_r_t*)dsc;
+      if(rDsc->dtype == DTYPE_SIGNAL)
+	  break; //If the expression includes a Signal descriptor, the time base may be different from that of the segmented node
+      if(rDsc->dtype == DTYPE_FUNCTION)
+	  break;  //If the expression  goes through a fun, the time base may be different from that of the segmented node
       for (i = 0; i < rDsc->ndesc; i++) {
 	if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
 	  return nid;
@@ -166,7 +170,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
 **/
 
 #define MAX64 0x7FFFFFFFFFFFFFFFL
-inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin, mdsdsc_t *const xMax, int *const estimatedSegmentSamples, double *const dMin, double *const dMax) {
+inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin, mdsdsc_t *const xMax, int *const estimatedSegmentSamples, double *const dMin, double *const dMax, int *const dIsLong) {
 /* return the number of samples the signal holds based on meta information
    or -1 if something went wrong
  */
@@ -180,6 +184,11 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   if(!nid) goto return_neg1;
   int status = TreeGetNumSegments(nid, &numSegments);
   if STATUS_NOT_OK goto return_neg1;
+  status = TreeGetSegmentLimits(nid, 0, NULL, &xd);
+  if STATUS_NOT_OK goto return_neg1;
+  status = TdiData(xd.pointer, &xd MDS_END_ARG);
+  if STATUS_NOT_OK goto return_neg1;
+  *dIsLong = xd.pointer && (xd.pointer->dtype == DTYPE_Q || xd.pointer->dtype == DTYPE_QU);
   if(xMin != NULL || xMax != NULL) {
     if(xMin) XTreeConvertToLongTime(xMin, &startTime);
     if(xMax) XTreeConvertToLongTime(xMax,   &endTime);
@@ -224,7 +233,7 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   segmentSamples = dims[dimct - 1];
   //Compute duration
   status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
-  if STATUS_OK status = TdiData((mdsdsc_t*)&xd, &xd MDS_END_ARG);
+  if STATUS_OK status = TdiData(xd.pointer, &xd MDS_END_ARG);
   if STATUS_NOT_OK goto return_neg1;
   const double xmin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
   status = TreeGetSegmentLimits(nid, endIdx, NULL, &xd);
@@ -258,6 +267,7 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
   }
   //From here, consider xMin and xMax
   int startIdx, endIdx;
+
   for(startIdx = 0;        startIdx < nSamples && to_doublex(&x->pointer[startIdx * x->length], x->dtype,xMin,TRUE) <= xMin; startIdx++);
   if(startIdx == nSamples) startIdx--;
   for(  endIdx = startIdx;   endIdx < nSamples && to_doublex(&x->pointer[  endIdx * x->length], x->dtype,xMax,TRUE) <  xMax;   endIdx++);
@@ -519,11 +529,11 @@ inline static int getNSamples(const mdsdsc_xd_t *const yXd, const mdsdsc_xd_t *c
   if(yXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(xXd->pointer->class != CLASS_A) return TdiINVCLADSC;
   if(yXd->pointer->dtype == DTYPE_F) {
-    const int status = TdiFloat((mdsdsc_t *)yXd, yXd MDS_END_ARG);
+    const int status = TdiFloat(yXd->pointer, yXd MDS_END_ARG);
     if STATUS_NOT_OK return status;
   }
   if(xXd->pointer->dtype == DTYPE_F) {
-    const int status = TdiFloat((mdsdsc_t *)xXd, xXd MDS_END_ARG);
+    const int status = TdiFloat(xXd->pointer, xXd MDS_END_ARG);
     if STATUS_NOT_OK return status;
   }
   //Number of samples set to minimum between X and Y
@@ -627,9 +637,11 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   EMPTYXD(yXd);
   EMPTYXD(xXd);
   int estimatedSegmentSamples = 0;
+  int isLong = FALSE;
   double xmin = -INFINITY, xmax = INFINITY, delta;
   mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char* )&delta};
-  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax);
+  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax, &isLong);
+
   const double estimatedDuration = xmax - xmin;
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax <  INFINITY) ? inXMax : NULL;
@@ -641,11 +653,14 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
       delta = estimatedSegmentSamples/10.;
     //In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
     delta *= (estimatedDuration/estimatedSamples);
+    if (isLong) delta /= 1e9; // quick compensation of xtreeshr conversion
     deltaP = (delta>1e-9) ? &deltaD : NULL;
   } else deltaP = NULL;
   //Set limits if any
+
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
   if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
+  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
@@ -815,6 +830,7 @@ EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXM
 
 EXPORT mdsdsc_xd_t* GetXYSignalLongTimes(char *inY, char *inX, int64_t *inXMin, int64_t *inXMax, int *reqNSamples) {
   static EMPTYXD(xd);
+
   const size_t len = strlen(inY);
   if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&xd));
   EMPTYXD(yXd);

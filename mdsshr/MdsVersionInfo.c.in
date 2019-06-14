@@ -29,8 +29,29 @@ EXPORT MDSplusVersionInfo MDSplusVersion =
   {"@RELEASE_MAJOR@",
    "@RELEASE_MINOR@",
    "@RELEASE_RELEASE@",
-   "@RELEASE_BRANCH@",
    "@RELEASE_TAG@",
-   "@RELEASE_COMMIT@",
    "@RELEASE_DATE@",
    "@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@"};
+
+
+#define STR(s) #s
+#define xSTR(s) STR(s)
+#ifdef _GIT_TAG
+EXPORT MDSplusGitVersionInfo MDSplusGitVersion =
+  {xSTR(_GIT_TAG),
+   "@GIT_BRANCH@",
+   "@GIT_REMOTE@",
+   "@GIT_REMOTE_URL@",
+   "@GIT_COMMIT@",
+   "@GIT_SRCDIR@"};
+#else
+EXPORT MDSplusGitVersionInfo MDSplusGitVersion =
+  {"@GIT_TAG@",
+   "@GIT_BRANCH@",
+   "@GIT_REMOTE@",
+   "@GIT_REMOTE_URL@",
+   "@GIT_COMMIT@",
+   "@GIT_SRCDIR@"};
+#endif
+
+

@@ -1,8 +1,10 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
 SHELL=/bin/bash
 X_CFLAGS=@X_CFLAGS@
 CFLAGS+=$(X_CFLAGS) $(TARGET_ARCH)

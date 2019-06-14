@@ -104,10 +104,8 @@ class NI6683(Device):
             NI6683.niLib = CDLL("libnisync.so")
             NI6683.termNameDict = {'PFI0': 0,'PFI1':1,'PFI2':2,'PXI_TRIG0': 11,
                'PXI_TRIG1': 12,'PXI_TRIG2': 13,'PXI_TRIG3': 14,'PXI_TRIG4': 15,'PXI_TRIG5': 16,
-               'PXI_TRIG6': 17,'PXI_TRIG7': 18, 'STAR0': 19,'STAR0': 19,'STAR1': 20,
-               'STAR2': 21,'STAR3': 22,'STAR4': 23,'STAR5': 24,'STAR6': 25,
-               'STAR7': 26,'STAR8': 27,'STAR9': 28,'STAR10': 29,'STAR11': 30,
-               'STAR12': 31}
+               'PXI_TRIG6': 17,'PXI_TRIG7': 18}
+#'STAR0': 19,'STAR0': 19,'STAR1': 20, 'STAR2': 21,'STAR3': 22,'STAR4': 23,'STAR5': 24,'STAR6': 25,'STAR7': 26,'STAR8': 27,'STAR9': 28,'STAR10': 29,'STAR11': 30,'STAR12': 31}
             NI6683.typeDict = {'PXI6682': 0, 'PCI1588': 1,'PXI6683': 2,'PXI6683H': 3}
 
 
@@ -507,9 +505,6 @@ class NI6683(Device):
     def start_store(self):
 
         self.debugPrint('=================  PXI 6683 start_store ===============')
-        print('CICCIO')
-        print ('RECORDER DEV NAMES:', NI6683.ni6683RecorderDict[self.nid])
-        print('BOMBO')
         self.restoreInfo()
         worker = self.AsynchStore()
         NI6683.ni6683WorkerDict[self.nid] = worker
@@ -549,7 +544,7 @@ class NI6683(Device):
                 for fdTuple in readyFds:
                     readyFd = fdTuple[0]
                     event = fdTuple[1]
-                    print('EVENTO: ', fdTuple, select.EPOLLIN)
+                    print('EVENT: ', fdTuple, select.EPOLLIN)
                     if event & select.EPOLLIN == 0:
                         print('NO DATA')
                     if event & select.EPOLLERR != 0:
@@ -557,18 +552,15 @@ class NI6683(Device):
                         return
                         continue
                     timestamp = c_ulonglong()
-                    print('READY FD: ', readyFd)
                     status = NI6683.niLib.nisync_read_timestamps_ns(c_int(readyFd), byref(timestamp), c_int(1))
                     self.device.checkStatus(status, 'Cannot get current time')
                     termName = self.nameDict[readyFd]
-                    print('ECCO EVENTO DA TERM ' + termName)
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
                     eventRelTime = getRelTime(self, timestamp.value)
                     recorderNid.putRow(10, Float64(eventRelTime), Float64(eventRelTime))
                     try:
                         eventNameNid = getattr(self.device, termName.lower()+'_event_name')
                         eventName = eventDameNid.data()
-                        print('SPEDISCO EVENTO: '+ eventName, timestamp.value)
                         Event.setevent(eventName, Uint64(timestamp.value))
                     except:
                         pass

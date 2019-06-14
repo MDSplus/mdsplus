@@ -6,10 +6,10 @@ SUBMODULE_ERROR='Could not recursively update all git submodules. You may experi
 srcdir=$(dirname $0)/..
 if [ ! -r ${srcdir}/3rd-party-aps/.git ]
 then
-  pushd $srcdir > /dev/null
+  export GIT_DIR=${srcdir}/.git
+  export GIT_WORK_TREE=${srcdir}
   ( git submodule --quiet update --init --recursive ) \
     || ( git submodule --quiet init && git submodule update --recursive ) \
     || ( git submodule --quiet init && git submodule update && echo $SUBMODULE_ERROR ) \
     || (echo 'Git submodules could not be updated. Compilation will fail')
-  popd > /dev/null
 fi

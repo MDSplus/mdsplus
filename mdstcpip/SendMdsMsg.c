@@ -40,14 +40,19 @@ static int SendBytes(Connection* c, void *buffer, size_t bytes_to_send, int opti
     while ((bytes_to_send > 0) && (tries < 10)) {
       ssize_t bytes_sent;
       bytes_sent = c->io->send(c, bptr, bytes_to_send, options);
-      if (bytes_sent <= 0) {
-	if (errno != EINTR)
+      if (bytes_sent < 0) {
+	if (errno != EINTR) {
+	  perror("Error sending data to remote server");
 	  return MDSplusERROR;
+	}
 	tries++;
       } else {
 	bytes_to_send -= bytes_sent;
 	bptr += bytes_sent;
-	tries = 0;
+	if (bytes_sent)
+	  tries=0;
+	else
+	  tries++;
       }
     }
     if (tries >= 10) {
@@ -58,6 +63,7 @@ static int SendBytes(Connection* c, void *buffer, size_t bytes_to_send, int opti
     }
     return MDSplusSUCCESS;
   }
+  printf("Connection to remote server failed");
   return MDSplusERROR;
 }
 

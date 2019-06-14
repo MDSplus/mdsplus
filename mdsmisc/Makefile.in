@@ -1,8 +1,9 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
 @MINGW_TRUE@ DEF=${srcdir}/MdsMisc.def
 
 CFLAGS+=@GLOBUS_CFLAGS@

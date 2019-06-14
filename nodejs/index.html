@@ -1,32 +1,15 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!-- http://rat2.rfx.local:8082/w?panel=pippo&length=1000&s=s1&c=red&s=s2&c=green -->
-  <!-- http://rat2.rfx.local:8082/w
-    celestino logo RFX: rgb(30,180,224)
-    blue logo RFX: rgb(7,75,118)
-    https://www.bestcssbuttongenerator.com/#/17 
-    https://htmlcolorcodes.com/color-names/
-    https://vuetifyjs.com/en/
-    https://chrisblackwell.m§<e/server-sent-events-using-laravel-vue/
-    https://www.npmjs.com/package/vue-sse
-    https://vuejs.org/v2/guide/reactivity.html
-    https://vuejs.org/v2/guide/list.html#Caveats - Vue.set(example1.items, indexOfItem, newValue)
-    https://plot.ly/javascript/getting-started/
-    https://medium.com/@bobthomas295/vuejs-and-plotly-js-reactive-charts-da9b3b59f2dc
-    https://stackoverflow.com/questions/25078634/can-i-re-use-the-same-svg-in-a-page-and-apply-different-css
-  -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
-  <title>RFXScope</title>
+  <title>WebScope</title>
+  <!-- author: Gianluca.Moro@unipd.it -->
   <!-- production -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
   <!-- development -->
   <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.common.dev.js"></script> -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Last on 20190320: v1.45.3 -->
-  <!-- <script src="https://cdn.plot.ly/plotly-1.2.0.min.js"></script> -->  
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/1.39.1/plotly.js"></script> -->
-  <!-- https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.css -->
 
   <style>
 
@@ -158,10 +141,6 @@
 <!-- END of Reusable components -->
 
 <div id="app">
-
-  <img src="https://www.igi.cnr.it/RFX_scope.png" alt="RFX Logo" width="300px">
-
-  <br><span>Example: http://rat2.rfx.local:8082/?panel=panelName&length=1000&s=s1&c=red&s=s2&c=green</span>
 
   <span v-if="$root.isRunningGraph"><div></div></span>
   <span v-else>
@@ -449,6 +428,8 @@ var vm = new Vue({
     isVisibleConfiguration: true,
     isVisibleAddPanel: false,
     isRunningGraph: false,
+    lastShotNumber: -2,
+    versionNumber: '20190604150000',
     restylevent: null,
    } // end return
   },
@@ -583,13 +564,14 @@ var vm = new Vue({
     //
     // graph management
     //
+
     updateChart: function (receivedMsg) {
       //console.log('RECEIVED ' + receivedMsg);
       var msgArray = receivedMsg.split(" ");
-      var msgProgressiveId = msgArray[0]; // header: a total of 5 fields
-      var msgTag           = msgArray[1]; //
+      var msgProgressiveId = msgArray[0]; // 
+      var msgShotNumber    = msgArray[1]; //
       var msgSignalName    = msgArray[2]; //
-      var msgFormat        = msgArray[3]; //
+      var msgFormat        = msgArray[3]; // "L" - date as UTC, "F" - date as ms, "A" - date UTC and reset array
       var msgLength        = parseInt(msgArray[4]); //
 
       if (msgArray.length != 5 + 2*msgLength) {
@@ -599,7 +581,9 @@ var vm = new Vue({
 
       var msgLabels = msgArray.slice(5, 5+msgLength);
 
-      if (msgTag == "L") {
+      console.log("msgFormat=" + msgFormat);
+
+      if ((msgFormat == "L") || (msgFormat == "A") || (msgFormat == "l") || (msgFormat == "a")) {
           msgLabels = msgLabels.map(function (x) {
               return (new Date(parseInt(x)));
           });
@@ -614,8 +598,14 @@ var vm = new Vue({
             // we found the incoming signal in this panel
             //
 	    this.charts[i].traces[j].name = msgSignalName;
-            this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
-            this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+            if (msgFormat == "A" || this.lastShotNumber != msgShotNumber) {
+                this.charts[i].traces[j].x = msgLabels;
+                this.charts[i].traces[j].y = msgValues;
+            } else {
+                this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
+                this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+            }
+            this.lastShotNumber = msgShotNumber;
             //console.log(this.panels[i].windowLength + " " + this.charts[i].traces[j].x.length);
             if (this.panels[i].windowLength > 0 && this.charts[i].traces[j].x.length > this.panels[i].windowLength) {
               this.charts[i].traces[j].x = this.charts[i].traces[j].x.slice(-this.panels[i].windowLength);
@@ -638,7 +628,7 @@ var vm = new Vue({
       //var callbackPanels = this.panels;
       eventSource.onmessage = function (event) {
         var received_msg = event.data;
-        console.log('RECEIVED: ' + received_msg);
+        //console.log('RECEIVED: ' + received_msg);
         // RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
         // RECEIVED: 2960 666 p1s2 F 1 3132.000000 7.453648
         // RECEIVED: 3183 666 p1s2 F 1 3355.000000 -7.996949

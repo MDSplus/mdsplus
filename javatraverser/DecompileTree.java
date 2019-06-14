@@ -82,6 +82,7 @@ public class DecompileTree
 	NidData [] members;
 	try {
 	    members = mdsTree.getMembers(topNid, 0);
+            if( members == null ) members = new NidData[0];
 	}catch(Exception exc) {members = new NidData[0];}
 
 	for(int i = 0; i < members.length; i++)
@@ -165,6 +166,7 @@ public class DecompileTree
 	        Vector subtreeMembers = new Vector();
 	        try {
 	            members = mdsTree.getMembers(nid, 0);
+                    if( members == null ) members = new NidData[0];
 	        }catch(Exception exc) { members = new NidData[0];}
 	        for(int i = 0; i < members.length; i++)
 	        {
@@ -360,6 +362,7 @@ public class DecompileTree
 	                NidData [] members;
 	                try {
 	                    members = mdsTree.getMembers(nid, 0);
+                            if( members == null ) members = new NidData[0];
 	                }catch(Exception exc){members = new NidData[0];}
 	                for(int i = 0; i < members.length; i++)
 	                {

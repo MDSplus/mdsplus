@@ -99,15 +99,15 @@ class _ACQ2106_423ST(MDSplus.Device):
                 self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
-            segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
             self.empty_buffers = Queue.Queue()
             self.full_buffers = Queue.Queue()
 
             for i in range(self.NUM_BUFFERS):
-                self.empty_buffers.put(bytearray(segment_bytes))
+                self.empty_buffers.put(bytearray(self.segment_bytes))
 
-            self.device_thread = self.DeviceWorker(self.dev,self.empty_buffers,self.full_buffers)
+            self.device_thread = self.DeviceWorker(self)
 
         def run(self):
             def lcm(a,b):
@@ -142,7 +142,6 @@ class _ACQ2106_423ST(MDSplus.Device):
             self.device_thread.start()
 
             segment = 0
-            first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
             while running.on and segment < max_segments:
@@ -150,10 +149,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                     buf = self.full_buffers.get(block=True, timeout=1)
                 except Queue.Empty:
                     continue
-
-                if first:
-                    self.dev.trig_time.record = time.time()
-                    first = False
 
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
@@ -168,20 +163,24 @@ class _ACQ2106_423ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
             running = False
 
-            def __init__(self,dev,empty_buffers,full_buffers):
+            def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = dev.debug
-                self.node_addr = dev.node.data()
-                self.seg_length = dev.seg_length.data()
-                self.freq = dev.freq.data()
-                self.nchans = dev.sites*32
-                self.empty_buffers = empty_buffers
-                self.full_buffers = full_buffers
+                self.debug = mds.debug
+                self.node_addr = mds.dev.node.data()
+                self.seg_length = mds.dev.seg_length.data()
+                self.segment_bytes = mds.segment_bytes
+                self.freq = mds.dev.freq.data()
+                self.nchans = mds.nchans
+                self.empty_buffers = mds.empty_buffers
+                self.full_buffers = mds.full_buffers
+                self.trig_time = 0
+                self.io_buffer_size = 4096
 
             def stop(self):
                 self.running = False
@@ -196,21 +195,23 @@ class _ACQ2106_423ST(MDSplus.Device):
                 s.connect((self.node_addr,4210))
                 s.settimeout(6)
 
-                segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
-
                 # trigger time out count initialization:
+                first = True
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
                     except Queue.Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
-                        buf = bytearray(segment_bytes)
-
-                    toread = segment_bytes
+                        buf = bytearray(self.segment_bytes)
+                        
+                    toread =self.segment_bytes
                     try:
                         view = memoryview(buf)
                         while toread:
-                            nbytes = s.recv_into(view, min(4096,toread))
+                            nbytes = s.recv_into(view, min(self.io_buffer_size,toread))
+                            if first:
+                                self.trig_time = time.time()
+                                first = False
                             view = view[nbytes:] # slicing views is cheap
                             toread -= nbytes
 
@@ -230,7 +231,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                     except socket.error as e:
                         # Something else happened, handle error, exit, etc.
                         print("socket error", e)
-                        self.full_buffers.put(buf[:segment_bytes-toread])
+                        self.full_buffers.put(buf[:self.segment_bytes-toread])
                         break
                     else:
                         if toread != 0:
@@ -285,106 +286,6 @@ class _ACQ2106_423ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
     TRIG=trig
-
-    def stream(self):
-        import socket
-        import numpy as np
-        import datetime
-        import time
-        import sys
-        from MDSplus import Event,Range
-
-        def lcm(a,b):
-            from fractions import gcd
-            return (a * b / gcd(int(a), int(b)))
-
-        def lcma(arr):
-            ans = 1.
-            for e in arr:
-                ans = lcm(ans, e)
-            return int(ans)
-
-        print("starting streamer for %s %s %s\nat: %s"%(self.tree, self.tree.shot, self.path, datetime.datetime.now()))
-
-        event_name = self.seg_event.data()
-        dt = 1./self.freq.data()
-
-        chans = []
-        decim = []
-        nchans = self.sites*32
-
-        for i in range(nchans):
-            chans.append(getattr(self, 'input_%3.3d'%(i+1)))
-            decim.append(getattr(self, 'input_%3.3d_decimate' %(i+1)).data())
-
-        decimator = lcma(decim)
-
-        seg_length = self.seg_length.data()
-        if seg_length % decimator:
-            seg_length = (seg_length // decimator + 1) * decimator
-
-        segment_bytes = seg_length*nchans*2
-
-        dims=[]
-        for i in range(nchans):
-            dims.append(Range(0., (seg_length-1)*dt, dt*decim[i]))
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.connect((self.node.data(),4210))
-        s.settimeout(6)
-
-        segment = 0
-        running = self.running
-        max_segments = self.max_segments.data()
-        first = True
-        buf = bytearray(segment_bytes)
-        while running.on and segment < max_segments:
-            toread=segment_bytes
-            try:
-                view = memoryview(buf)
-                while toread:
-                    nbytes = s.recv_into(view, min(4096,toread))
-                    if first:
-                        self.trig_time.record=time.time()
-                        first = False
-                    view = view[nbytes:] # slicing views is cheap
-                    toread -= nbytes
-            except socket.timeout as e:
-                print("got a timeout")
-                err = e.args[0]
-        # this next if/else is a bit redundant, but illustrates how the
-        # timeout exception is setup
-                if err == 'timed out':
-                    time.sleep(1)
-                    print ('recv timed out, retry later')
-                    if not running.on:
-                        break
-                    else:
-                        continue
-                else:
-                    print (e)
-                    break
-            except socket.error as e:
-        # Something else happened, handle error, exit, etc.
-                print("socket error", e)
-                break
-            else:
-                if toread != 0:
-                    print ('orderly shutdown on server end')
-                    break
-                else:
-                    buffer = np.frombuffer(buf, dtype='int16')
-                    i = 0
-                    for c in chans:
-                        if c.on:
-                            b = buffer[i::nchans*decim[i]]
-                            c.makeSegment(dims[i].begin, dims[i].ending, dims[i], b)
-                            dims[i] = Range(dims[i].begin + seg_length*dt, dims[i].ending + seg_length*dt, dt*decim[i])
-                        i += 1
-                    segment += 1
-                    Event.setevent(event_name)
-        print("%s\tAll Done"%(datetime.datetime.now(),))
-        sys.stdout.flush()
 
     def setChanScale(self,num):
         chan=self.__getattr__('INPUT_%3.3d' % num)

@@ -227,7 +227,7 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
     outDataArray.dtype = dataD->dtype;
   }
   // Make sure enough room is allocated
-  char    *outData;
+  char   *outData;
   double *outDim;
   int timebaseIdx = 0;
   int timebaseSamples = numTimebase - startIdx;
@@ -245,7 +245,7 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
 	end     += delta;
       break;default:break;
     }
-    int reqSamples = (end - start) / delta + 1;
+    int reqSamples = (int)((end - start) / delta + 1.5);
     if (mode == AVERAGE) {// use FLOAT or DOUBLE
       if (dataD->length<8) {
 	outDataArray.length = sizeof(float);
@@ -261,8 +261,8 @@ static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, md
       outDataArray.length = dataD->length;
       outDataArray.dtype = dataD->dtype;
     }
-    outData =  malloc(reqSamples * outItemSize);
-    outDim  =  malloc(reqSamples * sizeof(int64_t));
+    outData = malloc(reqSamples * outItemSize);
+    outDim  = malloc(reqSamples * sizeof(double));
     int prevTimebaseIdx = timebaseIdx;
     while (refTime <= end) {
       while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
@@ -397,7 +397,7 @@ const int range = (timebaseIdx-prevTimebaseIdx); \
   if (isQ) {
     timebaseQ = (int64_t *)malloc(outSamples * sizeof(int64_t));
     for (i = 0; i < outSamples; i++)
-      timebaseQ[i] = (int64_t)((outDim[i] * 1e9) +0.5);
+      timebaseQ[i] = (int64_t)((outDim[i] * 1e9) + 0.5);
     outDimArray.length = sizeof(int64_t);
     outDimArray.arsize = sizeof(int64_t) * outSamples;
     outDimArray.dtype = isQ;
@@ -413,11 +413,10 @@ const int range = (timebaseIdx-prevTimebaseIdx); \
   MdsCopyDxXd((mdsdsc_t*)&outSignalD, outSignalXd);
   free(fulltimebase);
   free(timebaseQ);
-  if (delta>0) {
-    free(outDim);
+  if (timebase != outDim) {
     free(outData);
+    free(outDim);
   }
-  //MdsFree1Dx(&shapeXd, 0);
   MdsFree1Dx(&dataXd, 0);
   return 1;
 }

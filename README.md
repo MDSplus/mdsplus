@@ -56,11 +56,10 @@ You can find the available operating systems that you could specify for the
     
 ---------------------------------------------------------------------------
 Who Uses MDSplus
-This map shows world fusion sites with MDSplus users marked in Blue.  To update
-edit the file sites.csv and put in a pull request.
+This map shows world fusion sites using MDSplus.  
+(Use the <back> button in the browser to return to this page)
 
-<a href="https://batchgeo.com/map/4cb145f00105157a242b5acafa8e646b" _target="_blank">
-A Full screen Map </a> of MDSplus sites.  Use the 'back' button to return to this page.
+https://drive.google.com/open?id=1Lt3r3dnAtx79anaLarJkKb4l0s5RWpPn&usp=sharing
 
 ---------------------------------------------------------------------------
 Special Notes

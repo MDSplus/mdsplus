@@ -153,6 +153,7 @@ AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
 RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
+BASLERACASetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
@@ -166,6 +167,14 @@ MARTE2_SUPERVISORSetup.java \
 MARTE2_STREAMSetup.java \
 MARTE2_GAMSetup.java \
 MARTE2_NI6259.java
+MARTE_DUTY_CYCLESetup.java \
+SPIDER_SETUPSetup.java \
+PI_CAMSetup.java \
+PI_SCT320Setup.java\
+SPECTRO_CFGSetup.java \
+NI6683RECSetup.java \
+LINCMOSSetup.java  \
+PLFESetup.java
 
 java_DATA = jDevices.jar
 

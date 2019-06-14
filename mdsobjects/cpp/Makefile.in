@@ -1,6 +1,10 @@
 include @top_builddir@/Makefile.inc
 
-VPATH = @srcdir@
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
 
 CPPFLAGS += 

@@ -96,5 +96,10 @@ autom4te.cache
 _version.py
 *.log
 
+.vscode/
+
 testing/MDSplus/
 testing/*Devices/
+
+# file created by release build trigger.sh script
+trigger.opts

@@ -1,5 +1,6 @@
 Name   "MDSplus${FLAVOR} ${MAJOR}.${MINOR}-${RELEASE}"
 OutFile ${OUTDIR}/MDSplus${FLAVOR}-${MAJOR}.${MINOR}-${RELEASE}.exe
+;SetCompress off
 SetCompressor /FINAL LZMA
 ShowInstDetails show
 InstType "Typical" 
@@ -29,6 +30,8 @@ InstType "Minimal"
 !define ZLIB1_LIB zlib1.dll
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
 !define UNINSTALL_VAL "UninstallString"
+
+!define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
 
 !define BINDIR32		"$INSTDIR\bin32"
 !define BINDIR64		"$INSTDIR\bin64"
@@ -108,6 +111,8 @@ Var StartMenuFolder
 !include StrFunc.nsh
 ${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
 
+;; used to get filename in ignore branch of uninstaller
+!include "WordFunc.nsh"
 
 
 ### BEGIN _in ###
@@ -455,44 +460,48 @@ FunctionEnd ; FileLowerExt
 
 
 
+### BEGIN InstallFiles ###
+!macro InstallFiles source dest logfile
+	!define _id_ ${__LINE__}
+	Push $0
+	Push $1
+	FindFirst $0 $1 "${source}\*"
+	ClearErrors
+	loop${_id_}:
+		StrCmp $1 ""   done${_id_}
+		StrCmp $1 "."  next${_id_}
+		StrCmp $1 ".." next${_id_}
+		retry${_id_}:
+		Rename "${source}\$1" "${dest}\$1"
+		IfErrors 0 ignore${_id_}
+		MessageBox MB_ABORTRETRYIGNORE 'File "$1" cannot be moved to "${dest}". File already exists?!' IDIGNORE ignore${_id_} IDRETRY retry${_id_}
+		FindClose $0
+		FileClose ${logfile}
+		Abort
+		ignore${_id_}:
+		FileWrite ${logfile} "${dest}\$1$\n"
+		next${_id_}:
+		FindNext $0 $1
+		Goto loop${_id_}
+	done${_id_}:
+	FindClose $0
+	Pop $1
+	Pop $0
+	!undef _id_
+!macroend ; InstallFiles
+!define InstallFiles '!insertmacro "InstallFiles"'
+### END InstallFiles ###
+
+
+
 ### BEGIN SECTIONS ###
 Function install_core_pre
-	Push $R0
-	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
-	${If} for AllUsers ?
-		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
-		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\multi.hosts$\""
-		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
-		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
-		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
-	${EndIf}
-	${GetBinDir} $R0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\ActLog.lnk" "$R0\actlog.exe"  "" "$R0\actlog.exe"  0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TDI.lnk"    "$R0\tditest.exe" "" "$R0\tditest.exe" 0
-	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk"    "$R0\mdsdcl.exe" `-prep "set command tcl_commands -history=.tcl"` "$R0\tcl_commands.dll" 0
-;	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
-	!insertmacro MUI_STARTMENU_WRITE_END
 	SetOutPath "$INSTDIR"
-;	File "/oname=ChangeLog.rtf" ChangeLog
-	File icons/mdsplus.ico
-	File MDSplus-License.rtf
 	writeUninstaller "$INSTDIR\uninstall.exe"
-	${AddToEnv} MDS_PATH	"${MDS_PATH}"
-	${WriteEnv} MDSPLUS_DIR	"${MDSPLUS_DIR}"
-	SetOutPath "$INSTDIR\tdi"
-	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*
-	SetOutPath "$INSTDIR\xml"
-	File /r xml\*
-	Pop $R0
-FunctionEnd
+	File icons/mdsplus.ico
+;	File "/oname=ChangeLog.rtf" ChangeLog
+	File MDSplus-License.rtf
 
-Function install_core_post
-	Push $R0
-	SetOutPath "\"
-	SetOverWrite off
-	File etc\mdsip.hosts etc\multi.hosts
-	SetOverWrite on
 	# Registry information for add/remove programs
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe /$MultiUser.InstallMode"
@@ -512,6 +521,37 @@ Function install_core_post
 	${WriteKeyDWORD} "${UNINSTALL_KEY}" "NoRepair" 1
 	# Set the INSTALLSIZE constant (!defined at the top of this script) so Add/Remove Programs can accurately report the size
 	${WriteKeyDWORD} "${UNINSTALL_KEY}" "EstimatedSize" ${INSTALLSIZE}
+
+	SetOutPath "$INSTDIR\tdi"
+	File /r /x local /x MitDevices /x RfxDevices /x KbsiDevices /x d3d tdi/*
+	SetOutPath "$INSTDIR\xml"
+	File /r xml\*
+
+	SetOutPath "\"
+	SetOverWrite off
+	File etc\mdsip.hosts etc\multi.hosts
+	SetOverWrite on
+FunctionEnd
+
+Function install_core_post
+	Push $R0
+	${AddToEnv} MDS_PATH	"${MDS_PATH}"
+	${WriteEnv} MDSPLUS_DIR	"${MDSPLUS_DIR}"
+	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
+	CreateDirectory "$SMPROGRAMS\$StartMenuFolder"
+	${If} for AllUsers ?
+		CreateDirectory "$SMPROGRAMS\$StartMenuFolder\DataServer"
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip action server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-i -s -p 8100 -h $\"C:\multi.hosts$\""
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Install mdsip data server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-i -p 8000 -h $\"C:\mdsip.hosts$\""
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8100.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8100"
+		CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\DataServer\Remove mdsip server on port 8000.lnk" "$SYSDIR\mdsip_service.exe" "-r -p 8000"
+	${EndIf}
+	${GetBinDir} $R0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\ActLog.lnk" "$R0\actlog.exe"  "" "$R0\actlog.exe"  0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TDI.lnk"    "$R0\tditest.exe" "" "$R0\tditest.exe" 0
+	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\TCL.lnk"    "$R0\mdsdcl.exe" `-prep "set command tcl_commands -history=.tcl"` "$R0\tcl_commands.dll" 0
+;	CreateShortCut  "$SMPROGRAMS\$StartMenuFolder\View ChangeLog.lnk" "$INSTDIR\ChangeLog.rtf"
+	!insertmacro MUI_STARTMENU_WRITE_END
 	Pop $R0
 FunctionEnd
 
@@ -538,17 +578,8 @@ SectionGroup "!core" core
 	File ${MINGWLIB64}/${ZLIB1_LIB}
 	${DisableX64FSRedirection}
 	${If} for AllUsers ?
-		FileOpen $R0 "$INSTDIR\installer.dat" w
-		FindFirst $R1 $R2 "${BINDIR64}\*"
-		loop_64:
-			StrCmp $R2 "" done_64
-			FileWrite $R0 "$SYSDIR\$R2$\n"
-			Delete "$SYSDIR\$R2"
-			Rename "${BINDIR64}\$R2" "$SYSDIR\$R2"
-			FindNext $R1 $R2
-			Goto loop_64
-		done_64:
-		FindClose $R1
+		FileOpen $R0 "$INSTDIR\uninstall.dat" w
+		${InstallFiles} "${BINDIR64}" "$SYSDIR" $R0
 		FileClose $R0
 		SetOutPath "$INSTDIR"  ; avoid access to ${BINDIR64} so it may be deleted
 		RMDir "${BINDIR64}"
@@ -583,21 +614,13 @@ SectionGroup "!core" core
 	File ${MINGWLIB32}/${ZLIB1_LIB}
 	${IF} for AllUsers ?
 		${If} ${RunningX64}
-			StrCpy $R3 "$WINDIR\SysWOW64"
-			FileOpen $R0 "$INSTDIR\installer.dat" a
+			FileOpen $R0 "$INSTDIR\uninstall.dat" a
 			FileSeek $R0 0 END
+			${InstallFiles} "${BINDIR32}" "$WINDIR\SysWOW64" $R0
 		${Else}
-			StrCpy $R3 "$SYSDIR"
-			FileOpen $R0 "$INSTDIR\installer.dat" w
+			FileOpen $R0 "$INSTDIR\uninstall.dat" w
+			${InstallFiles} "${BINDIR32}" "$SYSDIR" $R0
 		${EndIf}
-		FindFirst $R1 $R2 "${BINDIR32}\*"
-		${Do}
-			${IfThen} $R2 == "" ${|} ${ExitDo} ${|}
-			FileWrite $R0 "$R3\$R2$\n"
-			Rename "${BINDIR32}\$R2" "$R3\$R2"
-			FindNext $R1 $R2
-		${Loop}
-		FindClose $R1
 		FileClose $R0
 		SetOutPath "$INSTDIR"	; avoid access to ${BINDIR32} so it may be deleted
 		RMDir "${BINDIR32}"
@@ -998,24 +1021,42 @@ Section uninstall
 	Pop $R0
 	skip_python_remove:
 	SetOutPath "$INSTDIR"
-	Delete uninstall.exe
 	${IF} for AllUsers ?
-		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8100"'
+		ReadEnvStr $R1 COMSPEC
+		nsExec::ExecToLog '"$R1" /C NET STOP "MDSplus 8000"'
 		Pop $R0
-		nsExec::ExecToLog /OEM /timeout=5000 '"$SYSDIR\mdsip_service.exe" "-r -p 8000"'
+		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8000"'
 		Pop $R0
-		FileOpen $R0 "$INSTDIR\installer.dat" r
+		nsExec::ExecToLog '"$R1" /C NET STOP "MDSplus 8100"'
+		Pop $R0
+		nsExec::ExecToLog '"$R1" /C SC DELETE "MDSplus 8100"'
+		Pop $R0
+		FileOpen $R0 "$INSTDIR\uninstall.dat" r
 		${DisableX64FSRedirection}
-		loop_u:
+		CreateDirectory "${TEMP_DEL_DIR}"
+		ClearErrors
+		loop:
 			FileRead $R0 $R1
-			StrCmp $R1 "" done_u
+			StrCmp $R1 "" done
 			${UnStrTrimNewLines} $R2 $R1
-			Delete $R2
-			Goto loop_u
-		done_u:
+			retry:
+			Delete "$R2"
+			IfErrors 0 loop
+			MessageBox MB_ABORTRETRYIGNORE 'File "$R2" could not be deleted. Is it still in use.' IDIGNORE ignore IDRETRY retry
+			FileClose $R0
+			RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
+			Abort
+			ignore:
+			System::Call 'kernel32::GetTickCount()i .R3'
+			${WordFind} "$R2" "\" "-1" $R4
+			Rename "$R2" "${TEMP_DEL_DIR}\$R4$R3"
+			ClearErrors
+			Goto loop
+		done:
 		FileClose $R0
 		${EnableX64FSRedirection}
-		Delete installer.dat
+		RmDir /r /REBOOTOK "${TEMP_DEL_DIR}"
+		Delete uninstall.dat
 	${Else}
 		${GetBinDir} $R0
 		${RemoveFromEnv}	PATH		"$R0"

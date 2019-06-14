@@ -33,7 +33,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--pypi] [--make_jars ] [--make_epydocs ]
+                 [--make_jars ] [--make_epydocs ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -148,14 +148,12 @@ OPTIONS
     --color
        Output failure and success messages in color using ansi color
        escape sequences.
-
-    --pypi
-       Push python package to Python Package Index (http://pypi.python.org/)
-
 EOF
 }
 
 SRCDIR=$(realpath $(dirname ${0})/..)
+export GIT_DIR=${SRCDIR}/.git
+export GIT_WORK_TREE=${SRCDIR}
 
 opts=""
 parsecmd() {
@@ -195,6 +193,7 @@ parsecmd() {
 		TAG_RELEASE=yes
 		;;
 	    --publish)
+		opts="${opts} ${i}"
 		PUBLISH=yes
 		;;
 	    --valgrind)
@@ -225,9 +224,6 @@ parsecmd() {
 	    --color)
 		opts="${opts} ${i}"
 		COLOR=yes
-		;;
-	    --pypi)
-		PUSH_TO_PYPI=yes
 		;;
 	    --promote_to=*)
 		PROMOTE_TO=${i#*=}
@@ -309,6 +305,10 @@ EOF
 fi
 
 BRANCH=${GIT_BRANCH##*/}
+if [ -z "${BRANCH}" ]
+then
+    BRANCH=$(git describe --tags | cut -d- -f1 | cut -d_ -f1)
+fi
 opts="$opts --branch=$BRANCH"
 
 if [ "$BUILD_CAUSE" = "GHPRBCAUSE" ]
@@ -363,7 +363,7 @@ then
     NEW_RELEASE=no
     if [ -z ${RELEASE_TAG} ]
     then
-	RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
+	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4);
     fi
     if [ -z ${RELEASE_TAG} ]
     then
@@ -375,12 +375,13 @@ then
 	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
 	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
     fi
+    GIT_COMMIT=$(git rev-list -n 1 HEAD)
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
 	if [ -z "${PROMOTE_TO}" ]
 	then
-	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg nomail)
 	else
 	    version_inc=PROMOTE
 	fi
@@ -466,15 +467,11 @@ EOF
 	esac
     fi
     RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
-    RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
-    git log --decorate=full --no-merges > ${SRCDIR}/ChangeLog
-    opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
-    cat <<EOF > ${SRCDIR}/trigger.version
-NEW_RELEASE=${NEW_RELEASE}
-LAST_RELEASE_COMMIT=${LAST_RELEASE_COMMIT}
-RELEASE_TAG=${RELEASE_TAG}
-RELEASE_VERSION=${RELEASE_VERSION}
-EOF
+    if [ "$NEW_RELEASE" = "yes" ]
+    then
+	git tag -f last_release ${LAST_RELEASE_COMMIT}
+	git tag -f ${RELEASE_TAG}
+    fi
     GREEN
     cat <<EOF
 =========================================================
@@ -484,56 +481,25 @@ Triggering release ${RELEASE_TAG} build
 =========================================================
 EOF
     NORMAL
-fi
-if [ "$PUBLISH" = "yes" ]
-then
-    if [ -r ${SRCDIR}/trigger.version ]
-    then
-	. ${SRCDIR}/trigger.version
-	opts="$opts --publish=${RELEASE_VERSION}"
-	GREEN
-	cat <<EOF
-=========================================================
-
-Triggering publish release of ${RELEASE_TAG}
-
-=========================================================
-EOF
-	NORMAL
-    else
-	RED
-	cat <<EOF >&2
-=========================================================
-
-Attempt to publish a new release without first triggering
-a release build with the --release option.
-FAILURE
-
-=========================================================
-EOF
-	NORMAL
-	exit 1
-    fi
+    opts="$opts --release"
 fi
 if [ "$TAG_RELEASE" = "yes" ]
 then
-    if [ -r ${SRCDIR}/trigger.version ]
-    then
-	. ${SRCDIR}/trigger.version
-	if [ "$NEW_RELEASE" = "yes" ]
-	then
-	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+    if ( git tag | grep last_release >/dev/null )
+    then 
+      	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
+      	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
   "body":"Commits since last release:\n\n
-$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\\\\","\\\\");gsub("\"","\\\"");print $0"\\n"}')"
+$(git log --decorate=full --no-merges last_release..HEAD | awk '{gsub("\\\\","\\\\");gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
-	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-	   then
-	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+	if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+      	then
+		curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
@@ -541,11 +507,12 @@ EOF
   "body":"New release. Commit messages could not be included"
 }
 EOF
-	   fi
-	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-	   then 
-	       RED
-	       cat <<EOF >&2
+	 fi
+	 git tag -d last_release
+         if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+         then 
+     	     RED
+	     cat <<EOF >&2
 =========================================================
 
 Failed to tag a new release on github. Response/error
@@ -554,45 +521,10 @@ FAILURE
 
 =========================================================
 EOF
-	       cat ${WORKSPACE}/tag_release.log
-	       NORMAL
-	       exit 1
-	   fi
-	fi
-    else
-	RED
-	cat <<EOF >&2
-=========================================================
-
-Attempt to tag a new release without first triggering
-a release build with the --release option.
-FAILURE
-
-=========================================================
-EOF
-	NORMAL
-	exit 1
-    fi
-    if [ "$PUSH_TO_PYPI" = "yes" ]
-    then
-	export BRANCH RELEASE_VERSION
-	if [ "$BRANCH" = "stable" ]
-	then
-	    pypi_name=MDSplus
-	else
-	    pypi_name=mdsplus-${BRANCH}
-	fi
-	if (! wget -O - "https://pypi.python.org/${pypi_name}/$RELEASE_VERSION" >/dev/null 2>&1 )
-	then
-	    tmpdir=$(mktemp -d)
-	    cd $tmpdir
-	    ${WORKSPACE}/configure --disable-java >/dev/null 2>&1
-	    rsync -a ${WORKSPACE}/mdsobjects/python mdsobjects/
-	    cd mdsobjects/python
-	    HOME=${KEYS} python setup.py sdist upload
-	    cd $WORKSPACE
-	    rm -Rf $tmpdir
-	fi
+	     cat ${WORKSPACE}/tag_release.log
+	     NORMAL
+	     exit 1
+         fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts

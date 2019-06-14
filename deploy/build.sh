@@ -5,6 +5,9 @@
 # Build mdsplus for a selected operating system for testing or
 # generating installers.
 #
+SRCDIR=$(realpath $(dirname ${0})/..)
+export GIT_DIR=${SRCDIR}/.git
+export GIT_WORK_TREE=${SRCDIR}
 RED() {
   if [ "$COLOR" = "yes" ]
   then echo -e "\033[31m"
@@ -36,8 +39,7 @@ SYNOPSIS
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name] [--color] [--winhost=hostname]
-               [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
+               [--arch=name] [--color] 
                [--jars] [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
@@ -134,7 +136,6 @@ OPTIONS
    --release[=version]
        Build the installers for the target operating system and place
        them in the directory specified by  the --releasedir option.
-       If the version is omitted the version will be set to 1.2.3.
        During new release builds the version will be determined from
        release tags. If just doing test builds the version can be omitted.
 
@@ -194,19 +195,6 @@ OPTIONS
     --color
        If this option is specified, success and failure messages will be
        output using ansi color escape sequences.
-
-    --winhost=hostname
-       Specify the windows system host which has a wsgi application used to
-       build the Visual Studio version of the cpp objects dll.
-
-    --winbld=directory
-       Specify the directory on the linux host with the windows share mounted.
-
-    --winrembld=directory
-       Specify the directory on the windows system host of the windows share.
-
-    --gitcommit=commit
-       Set by trigger jenkins job representing the commit hash of the sources.
 
     --jars
        Set by trigger job to indicate that build job should get the java jar
@@ -386,18 +374,6 @@ parsecmd() {
 	    -i)
 		INTERACTIVE="1"
 		;;
-	    --winhost=*)
-		WINHOST="${i#*=}"
-		;;
-	    --winbld=*)
-		WINBLD="${i#*=}"
-		;;
-	    --winrembld=*)
-		WINREMBLD="${i#*=}"
-		;;
-	    --gitcommit=*)
-		GIT_COMMIT="${i#*=}"
-		;;
 	    --jars)
 		JARS_DIR="${JARS_DIR-$(realpath $(dirname ${0})/../jars)}"
 		;;
@@ -431,7 +407,6 @@ opts="$@"
 #
 parsecmd "$opts"
 
-SRCDIR=$(realpath $(dirname ${0})/..)
 if [ -z "${DOCKER_SRCDIR}" ]
 then
    DOCKER_SRCDIR="${SRCDIR}"
@@ -464,7 +439,9 @@ Build script executing with the following combined options:
 EOF
 parsecmd "${trigger_opts} ${os_opts} ${opts}"
 
-RELEASE_VERSION="${RELEASE_VERSION-1.2.3}"
+TAG=$(git describe --tags)
+RELEASE_VERSION="${RELEASE_VERSION-$(echo $TAG | cut -d- -f2,3,4 --output-delimiter='.')}"
+BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
@@ -528,7 +505,7 @@ if [ -z "$NEW_WORKSPACE" ]
 then
     if [ -z "$WORKSPACE" ]
     then
-       WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
+       WORKSPACE=$(pwd)/${OS}/${BRANCH}
     fi
 else
     WORKSPACE=$(realpath ${NEW_WORKSPACE})
@@ -663,10 +640,6 @@ OS=${OS} \
   UPDATEPKG=${UPDATEPKG} \
   COLOR=$COLOR \
   ARCH=${ARCH} \
-  WINHOST="${WINHOST}" \
-  WINBLD="${WINBLD}" \
-  WINREMBLD="${WINREMBLD}" \
-  GIT_COMMIT="${GIT_COMMIT}" \
   INTERACTIVE="$INTERACTIVE" \
   JARS_DIR="$JARS_DIR" \
   CONFIGURE_PARAMS="$CONFIGURE_PARAMS" \
