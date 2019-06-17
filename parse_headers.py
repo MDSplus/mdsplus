@@ -1,8 +1,8 @@
 #!/usr/bin/python
 """
 call 'python parse_headers.py'
-edit 'mdsobjects/python/compound.py' and trunk file below '### parse_headers.py ###'
-call 'cat /tmp/compound_rest.py >> mdsobjects/python/compound.py'
+edit 'python/MDSplus/compound.py' and trunk file below '### parse_headers.py ###'
+call 'cat /tmp/compound_rest.py >> python/MDSplus/compound.py'
 """
 forceref = ('$EXPT','$SHOT','$SHOTNAME','$DEFAULT','GETNCI',
   'MAKE_FUNCTION','BUILD_FUNCTION','EXT_FUNCTION'

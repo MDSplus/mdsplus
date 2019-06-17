@@ -51,9 +51,9 @@ class libs:
     MdsShr = _ver.load_library('MdsShr')
     TreeShr= _ver.load_library('TreeShr')
     TdiShr = _ver.load_library('TdiShr')
-    try:   Mdsdcl = version.load_library('Mdsdcl')
+    try:   Mdsdcl = _ver.load_library('Mdsdcl')
     except:Mdsdcl = None
-    try:   MdsIpShr = version.load_library('MdsIpShr')
+    try:   MdsIpShr = _ver.load_library('MdsIpShr')
     except:MdsIpShr = None
 
 # check version
@@ -71,7 +71,7 @@ Version: %s\nRelease tag: %s
 Release Date: %s
 """ % (__doc__,__version__,release_tag,_version.release_date)
 except:
-    if version_check:
+    if version_check and 'PYTHONPATH' in os.environ:
         sys.stderr.write("PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
     __version__='Unknown'
 
@@ -86,18 +86,18 @@ if version_check:
                        ("MDSVERSION",ctypes.c_char_p)]
         try:
             _info=ctypes.cast(libs.MdsShr.MDSplusVersion,ctypes.POINTER(MDSplusVersionInfo)).contents
-            _ver = version.tostr(_info.MDSVERSION.decode())
+            _verchk = _ver.tostr(_info.MDSVERSION.decode())
         except:
-            _ver = "Unknown"
-        if _ver != __version__ or _ver == "Unknown":
+            _verchk = "Unknown"
+        if _verchk != __version__ or _verchk == "Unknown":
             sys.stderr.write('''Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
-  Upgrade the module using the mdsplus/mdsobjects/python directory of the
-  MDSplus installation.
-''' % (__version__, _ver ))
+  Upgrade the module using the mdsplus/python/MDSplus directory of the
+  MDSplus installation or set PYTHONPATH=/usr/local/mdsplus/python/MDSplus.
+''' % (__version__, _verchk ))
     version_check()
-del version_check, _ver
+del version_check
 
 def load_package(gbls={},version_check=False):
     def loadmod_full(name,gbls):
@@ -135,7 +135,7 @@ if __name__==__package__:
             if lib is not None:
                 return lib
             lib = name
-        libs.MdsShr.MdsPutEnv(version.tobytes("%s=%s"%("PyLib",lib)))
+        libs.MdsShr.MdsPutEnv(_ver.tobytes("%s=%s"%("PyLib",lib)))
         return lib
     PyLib = PyLib()
     load_package(globals(),True)

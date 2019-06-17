@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdint.h>
 
 /* Should be save for descriptor args due to alignment.
- * !!! must match mdsobjects/python/version.py !!!
+ * !!! must match python/MDSplus/version.py !!!
  */
 #define MdsEND_ARG ((void *)(intptr_t)1)
 #define MDS_END_ARG ,MdsEND_ARG

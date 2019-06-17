@@ -505,7 +505,7 @@ if [ -z "$NEW_WORKSPACE" ]
 then
     if [ -z "$WORKSPACE" ]
     then
-       WORKSPACE=$(pwd)/${OS}/${BRANCH}
+       WORKSPACE=$(pwd)/build/${OS}/${BRANCH}
     fi
 else
     WORKSPACE=$(realpath ${NEW_WORKSPACE})

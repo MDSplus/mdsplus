@@ -7,7 +7,7 @@ cleanup() {
   rm -f ${WORKSPACE}/docker-cid
 }
 trap cleanup EXIT
-docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}docker-cid \
+docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/docker-cid \
    -u $(id -u):$(id -g) --privileged \
    -e "HOME=/workspace" \
    -v ${SRCDIR}:${DOCKER_SRCDIR} \
