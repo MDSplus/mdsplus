@@ -61,7 +61,7 @@ OPTIONS
        can just cp the jar files from the trigger directory location.
 
    --make_epydocs
-       Build the python docs using epydoc. This will replace the mdsobjects/python/doc
+       Build the python docs using epydoc. This will replace the python/MDSplus/doc
        directory in the trigger sources with updated epydoc documentation. This requires
        epydoc to be installed and usable on the system running the trigger script.
 
@@ -269,7 +269,7 @@ fi
 
 if [ ! -z "${MAKE_EPYDOCS}" ]
 then
-    if ( ! ${SRCDIR}/mdsobjects/python/makedoc.sh ${SRCDIR}/mdsobjects/python/doc > make_epydocs.log 2>&1 )
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc > make_epydocs.log 2>&1 )
     then
 	RED
 	cat <<EOF >&2

@@ -103,7 +103,7 @@ MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
 """ % msg)
     f_inc.close()
 
-f_py=open("%s/mdsobjects/python/mdsExceptions.py"%sourcedir,'w')
+f_py=open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w')
 f_py.write("""#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #

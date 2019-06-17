@@ -20,10 +20,16 @@ do
   do
     if ( echo $mdir | grep -i $1 >/dev/null )
     then
-	if ( rm -Rf $mdir )
+	if [ -L $mdir ]
 	then
-	    mdir=$(getModDir $1 ${py})
-            continue # check if there is more
+	  rm -f $mdir
+	else
+	  rm -Rf $mdir
+	fi
+	if [ "$?" = 0 ]
+	then
+	  mdir=$(getModDir $1 ${py})
+          continue # check if there is more
 	fi
     fi
     break # out of while loop

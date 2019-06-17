@@ -10,7 +10,6 @@
 ./usr/local/mdsplus/etc/mdsplus.conf.template
 ./usr/local/mdsplus/etc/multi.hosts
 ./usr/local/mdsplus/idl
-./usr/local/mdsplus/mdsobjects
 ./usr/local/mdsplus/nodejs
 ./usr/local/mdsplus/nodejs/event_server.js
 ./usr/local/mdsplus/nodejs/index.html

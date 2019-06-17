@@ -120,7 +120,7 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
     </pre>
     <post>
       
-python -m compileall  $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </post>
     <postun>
@@ -137,7 +137,7 @@ python -m compileall  $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/dev/
     </preinst>
     <postinst>
       
-python -m compileall  /usr/local/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall -q /usr/local/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
     <postrm>rm -Rf /usr/local/mdsplus/pydevices/MitDevices</postrm>
@@ -149,7 +149,7 @@ python -m compileall  /usr/local/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt
     </pre-install>
     <post-install>
 
-python -m compileall  /mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
+python -m compileall -q /mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/MitDevices</post-deinstall>
@@ -437,7 +437,6 @@ fi
     <requires package="kernel_bin"/>
     <requires external="True" package="xinetd"/>
     <include dironly="/usr/local/mdsplus/idl"/>
-    <include dironly="/usr/local/mdsplus/mdsobjects"/>
     <include file="/usr/local/mdsplus/MDSplus-License.txt"/>
 <!--    <include file="/usr/local/mdsplus/ChangeLog"/> -->
     <include dir="/usr/local/mdsplus/etc"/>
@@ -793,19 +792,19 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
     <!-- rpm scripts -->
     <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh RfxDevices</pre>
-    <post>python -m compileall  $RPM_INSTALL_PREFIX/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post>
     <postun>rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/RfxDevices</postun>
     <!-- end rpm scripts -->
 
     <!-- deb scripts -->
     <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh RfxDevices</preinst>
-    <postinst>python -m compileall  /usr/local/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</postinst>
     <postrm>rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</postrm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
     <pre-install>/mdsplus/rpm/removePythonModule.sh RfxDevices</pre-install>
-    <post-install>python -m compileall  /mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-install>python -m compileall -q /mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/RfxDevices</post-deinstall>
     <!-- end alpine scripts -->
     
@@ -816,19 +815,19 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
     <!-- rpm scripts -->
     <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh W7xDevices</pre>
-    <post>python -m compileall  $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post>
     <postun>rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7Devices</postun>
     <!-- end rpm scripts -->
 
     <!-- deb scripts -->
     <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh W7xDevices</preinst>
-    <postinst>python -m compileall  /usr/local/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</postinst>
     <postrm>rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</postrm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
     <pre-install>/mdsplus/rpm/removePythonModule.sh W7xDevices</pre-install>
-    <post-install>python -m compileall  /mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-install>python -m compileall -q /mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/W7xDevices</post-deinstall>
     <!-- end alpine scripts -->
   </package>
@@ -838,19 +837,19 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <include dir="/usr/local/mdsplus/pydevices/HtsDevices"/>
     <!-- rpm scripts -->
     <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh HtsDevices</pre>
-    <post>python -m compileall  $RPM_INSTALL_PREFIX/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post>
     <postun>rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7Devices</postun>
     <!-- end rpm scripts -->
 
     <!-- deb scripts -->
     <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh HtsDevices</preinst>
-    <postinst>python -m compileall  /usr/local/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</postinst>
     <postrm>rm -Rf /usr/local/mdsplus/pydevices/HtsDevices</postrm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
     <pre-install>/mdsplus/rpm/removePythonModule.sh HtsDevices</pre-install>
-    <post-install>python -m compileall  /mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-install>python -m compileall -q /mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/HtsDevices</post-deinstall>
     <!-- end alpine scripts -->
   </package>
@@ -870,18 +869,17 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <requires external="true" package="setuptools"/>
     <requires external="True" package="python-devel"/>
     <requires external="true" package="numpy"/>
-    <include dir="/usr/local/mdsplus/mdsobjects/python"/>
-    <exclude file="/usr/local/mdsplus/mdsobjects/python/makedoc.sh"/>
+    <include dir="/usr/local/mdsplus/python/MDSplus"/>
+    <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
     <!-- rpm scripts -->
     <post>
       $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
-      pushd $RPM_INSTALL_PREFIX/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
+      pushd $RPM_INSTALL_PREFIX/mdsplus/python/MDSplus &gt;/dev/null 2&gt;&amp;1
       for py in python python3
       do
-        ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
-        rm -Rf build dist *.egg-info
-        find . -name '*\.pyc' -delete
+        ${py} -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
+        MDSPLUS_DIR=${RPM_INSTALL_PREFIX}/mdsplus ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
       done
       popd &gt;/dev/null 2&gt;&amp;1
     </post>
@@ -891,34 +889,49 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
         $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
       fi
     </preun>
+    <postun>
+      if [ "$1" == "0" ]
+      then
+        rm -Rf $RPM_INSTALL_PREFIX/mdsplus/python
+      fi
+    </postun>
     <!-- end rpm scripts -->
     
     <!-- deb scripts -->
     <postinst>
       /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
-      pushd /usr/local/mdsplus/mdsobjects/python &gt;/dev/null 2&gt;&amp;1
+      pushd /usr/local/mdsplus/python/MDSplus &gt;/dev/null 2&gt;&amp;1
       for py in python python3
       do
-        ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
-        rm -Rf build dist *.egg-info
-        find . -name '*\.pyc' -delete
+        ${py} -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
+        MDSPLUS_DIR=/usr/local/mdsplus ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
       done
       popd &gt;/dev/null 2&gt;&amp;1
     </postinst>
-    <prerm>/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus</prerm>
+    <prerm>
+      /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
+    </prerm>
+    <postrm>rm -Rf /usr/local/mdsplus/python</postrm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
     <post-install>
       oldpwd="$(pwd)"
-      cd /mdsplus/mdsobjects/python
-      python setup.py -q install
+      cd /mdsplus/python/MDSplus
+      python -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
+      MDSPLUS_DIR=/mdsplus python setup.py -q install
       rm -Rf build dist MDSplus.egg-info
-      find . -name '*\.pyc' -delete
       cd "$oldpwd"
     </post-install>
-    <pre-deinstall>/mdsplus/rpm/removePythonModule.sh MDSplus</pre-deinstall>
-    <pre-upgrade>/mdsplus/rpm/removePythonModule.sh MDSplus</pre-upgrade>
+    <pre-deinstall>
+      /mdsplus/rpm/removePythonModule.sh MDSplus
+    </pre-deinstall>
+    <post-deinstall>
+      rm -Rf /mdsplus/python
+     </post-deinstall>
+    <pre-upgrade>
+      /mdsplus/rpm/removePythonModule.sh MDSplus
+    </pre-upgrade>
     <!-- end alpine scripts -->
       
   </package>

@@ -6,7 +6,7 @@ include ../../../docs/config/doxygen.am
 # DOXYGEN CONFIG #
 
 DX_CONFIG = ${top_srcdir}/docs/config/doxygen_cpp.cfg
-DX_DOCDIR = mdsobjects/python/docs
+DX_DOCDIR = python/MDSplus/docs
 DX_PACKAGE_NAME = mdsobjects_py
 DX_TITLE = MDSplus Python interface
 DX_BRIEF = "MDSplus object oriented interface"

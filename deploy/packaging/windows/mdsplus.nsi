@@ -757,28 +757,28 @@ SectionGroup /e "!APIs" apis
   Section "!MDSplus package" python_cp
 	SectionIn 1 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /x modpython.py /x setup.py mdsobjects/python/*.py
-	File /workspace/releasebld/64/mdsobjects/python/_version.py
+	File /x modpython.py /x setup.py python/MDSplus/*.py
+	File /workspace/releasebld/64/python/MDSplus/_version.py
   SectionEnd ; python_cp
   Section "tests" python_tst
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r mdsobjects/python/tests
+	File /r python/MDSplus/tests
   SectionEnd ; python_tst
   Section "WSGI" python_wsgi
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r mdsobjects/python/wsgi
+	File /r python/MDSplus/wsgi
   SectionEnd ; python_wsgi
   Section "glade widgets" python_wdg
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File /r mdsobjects/python/widgets
+	File /r python/MDSplus/widgets
   SectionEnd ; python_wdg
   Section "mod_python" python_mod
 	SectionIn 2
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File mdsobjects/python/modpython.py
+	File python/MDSplus/modpython.py
   SectionEnd ; python_mod
   Section "add to PYTHONPATH" python_pp
 	SectionIn 1 2
@@ -786,8 +786,8 @@ SectionGroup /e "!APIs" apis
   SectionEnd ; python_pp
   Section "run 'python setup.py install'" python_su
 	SetOutPath "$INSTDIR\python\MDSplus"
-	File mdsobjects/python/setup.py
-	nsExec::Exec /OEM /TIMEOUT=10000 "python setup.py install"
+	File python/MDSplus/setup.py
+	nsExec::Exec /OEM /TIMEOUT=10000 "set MDSPLUS_DIR=$INSDIR && python setup.py install"
 	Exch $R0
 	Pop  $R0
   SectionEnd ; python_su
