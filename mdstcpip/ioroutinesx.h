@@ -423,7 +423,7 @@ int runServerMode(Options *options  __attribute__((unused))){
   SOCKLEN_T len = sizeof(sin);
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in*)&sin)->sin_addr.s_addr);
-  Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+  Client *client = calloc(1,sizeof(Client));
   client->id = id;
   client->sock = sock;
   client->next = ClientList;

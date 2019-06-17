@@ -477,7 +477,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     m_user = GetMdsMsgTOC(c, &status, 10000);
     if (!m_user || STATUS_NOT_OK) {
       free(m_user);
-      if (usr) *usr = NULL;
+      *usr = NULL;
       DisconnectConnectionC(c);
       return MDSplusERROR;
     }
@@ -495,7 +495,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     if STATUS_OK {
       c->compression_level = m_user->h.status & 0xf;
       c->client_type = m_user->h.client_type;
-      *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
+      *usr = strdup(user_p);
       if (m_user->h.ndims>0)
 	c->version = m_user->h.dims[0];
     } else
@@ -508,8 +508,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     m.h.ndims = 1;
     m.h.dims[0] = MDSIP_VERSION;
-    if (m_user)
-      MdsIpFree(m_user);
+    MdsIpFree(m_user);
     // reply to client //
     SendMdsMsgC(c, &m, 0);
     if STATUS_OK {
@@ -517,7 +516,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       *id = AddConnection(c);
     } else
       DisconnectConnectionC(c);
-    fflush(stderr);
+    //fflush(stderr); stderr needs no flush
   }
   return status;
 }
