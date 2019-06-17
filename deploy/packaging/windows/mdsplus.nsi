@@ -787,7 +787,7 @@ SectionGroup /e "!APIs" apis
   Section "run 'python setup.py install'" python_su
 	SetOutPath "$INSTDIR\python\MDSplus"
 	File python/MDSplus/setup.py
-	nsExec::Exec /OEM /TIMEOUT=10000 "set MDSPLUS_DIR=$INSDIR && python setup.py install"
+	nsExec::Exec /OEM /TIMEOUT=10000 "python setup.py install"
 	Exch $R0
 	Pop  $R0
   SectionEnd ; python_su
