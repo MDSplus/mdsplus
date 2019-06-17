@@ -64,12 +64,14 @@ static inline char *replaceBackslashes(char *filename) {
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
-
+// #define USE_TIME 1 # i.e. connections that are use for less than one second are kept for speedup of short requests.. questionable usefulness
 typedef struct {
   int conid;
   int connections;
-  time_t time;
   char* unique;
+#ifdef USE_TIME
+  time_t time;
+#endif
 } host_t;
 
 typedef struct host_list{
@@ -77,9 +79,13 @@ typedef struct host_list{
   host_t h;
 } host_list_t;
 
-host_list_t*host_list = NULL;
+static host_list_t*host_list = NULL;
 
-int RemoteAccessConnect(char *server, int inc_count, void *dbid){
+static int remote_access_connect(char *server, int inc_count, void *dbid
+#ifndef USE_TIME
+__attribute__((unused))
+#endif
+){
   static int (*ReuseCheck) (char *,char *,int) = NULL;
   char unique[128]="\0";
   if IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)) {
@@ -95,7 +101,9 @@ int RemoteAccessConnect(char *server, int inc_count, void *dbid){
   host_list_t *host;
   for (host = host_list; host; host = host->next) {
     if (!strcmp(host->h.unique,unique)) {
+#ifdef USE_TIME
       host->h.time = time(0);
+#endif
       if (inc_count) {
 	host->h.connections++;
 	DBG("Connection %d> %d\n",host->h.conid,host->h.connections);
@@ -113,9 +121,11 @@ int RemoteAccessConnect(char *server, int inc_count, void *dbid){
 	host = malloc(sizeof(host_list_t));
 	host->h.conid = conid;
 	host->h.connections = inc_count ? 1 : 0;
+	host->h.unique = strdup(unique);
+#ifdef USE_TIME
 	// if global context, keep connection alive
 	host->h.time = !dbid ? time(0) : 0;
-	host->h.unique = strdup(unique);
+#endif
 	host->next = host_list;
 	host_list = host;
       }
@@ -125,7 +135,7 @@ int RemoteAccessConnect(char *server, int inc_count, void *dbid){
   return conid;
 }
 
-int RemoteAccessDisconnect(int conid, int force){
+static int remote_access_disconnect(int conid, int force){
   static int (*disconnectFromMds) (int) = NULL;
   int status;
   HOST_LIST_LOCK;
@@ -137,7 +147,11 @@ int RemoteAccessDisconnect(int conid, int force){
     DBG("Connection %d< %d\n",conid,host->h.connections);
   } else DBG("Disconnected %d\n",conid);
   for (host = host_list; host ;) {
-    if ((force && host->h.conid == conid) || (host->h.connections <= 0 && host->h.time < time(0)-60)) {
+    if ((force && host->h.conid == conid) || (host->h.connections <= 0
+#ifdef USE_TIME
+	host->h.time < time(0)-USE_TIME
+#endif
+)) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
       if (disconnectFromMds)
 	status = disconnectFromMds(conid);
@@ -160,7 +174,6 @@ int RemoteAccessDisconnect(int conid, int force){
   HOST_LIST_UNLOCK;
   return status;
 }
-
 
 ///////////////////////////////////////////////////////////////////
 ///////OLD THICK CLIENT////////////////////////////////////////////
@@ -238,7 +251,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
   int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeNORMAL;
-  conid = RemoteAccessConnect(logname, 1, (void *)dblist);
+  conid = remote_access_connect(logname, 1, (void *)dblist);
   if (conid != -1) {
     status = tree_open(dblist,conid,subtree_list ? subtree_list : tree);
     if STATUS_OK {
@@ -266,7 +279,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  status = TreeFILE_NOT_FOUND;
       }
     } else
-      RemoteAccessDisconnect(conid, 0);
+      remote_access_disconnect(conid, 0);
   } else
     status = TreeCONNECTFAIL;
   return status;
@@ -287,7 +300,7 @@ int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused
     status = (ans.dtype == DTYPE_L) ? *(int *)ans.ptr : 0;
     MdsIpFree(ans.ptr);
   }
-  RemoteAccessDisconnect(dblist->tree_info->channel, 0);
+  remote_access_disconnect(dblist->tree_info->channel, 0);
   if (dblist->tree_info) {
     free(dblist->tree_info->treenam);
     free(dblist->tree_info);
@@ -825,7 +838,7 @@ int TreeTurnOffRemote(PINO_DATABASE * dblist, int nid)
 int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 {
   int status = TreeFAILURE;
-  int channel = RemoteAccessConnect(path, 0, 0);
+  int channel = remote_access_connect(path, 0, 0);
   if (channel > 0) {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
@@ -844,7 +857,7 @@ int TreeGetCurrentShotIdRemote(const char *treearg, char *path, int *shot)
 int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 {
   int status = 0;
-  int channel = RemoteAccessConnect(path, 0, 0);
+  int channel = remote_access_connect(path, 0, 0);
   if (channel > 0) {
     struct descrip ans = {0};
     struct descrip tree = STR2DESCRIP(treearg);
@@ -987,13 +1000,13 @@ static inline int mds_io_request(int conid, mds_io_mode idx, size_t size, mdsio_
   status = SendArg(conid, (int)idx, 0, 0, 0, nargs, mdsio->dims, din);
   if STATUS_NOT_OK {
     if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in SendArg: mode = %d, status = %d\n", idx, status);
-    RemoteAccessDisconnect(conid, 1);
+    remote_access_disconnect(conid, 1);
   } else {
     int d[MAX_DIMS];
     status = GetAnswerInfoTS(conid, (char*)d, (short*)d, (char*)d, d, bytes, (void**)dout, m);
     if STATUS_NOT_OK {
       if (idx!=MDS_IO_CLOSE_K) fprintf(stderr, "Error in GetAnswerInfoTS: mode = %d, status = %d\n", idx, status);
-      RemoteAccessDisconnect(conid, 0);
+      remote_access_disconnect(conid, 0);
     }
   }
   pthread_cleanup_pop(1);
@@ -1039,11 +1052,11 @@ inline static int io_open_remote(char *host, char *filename, int options, mode_t
   if (options & O_RDONLY) mdsio.open.options|= MDS_IO_O_RDONLY;
   if (options & O_RDWR)   mdsio.open.options|= MDS_IO_O_RDWR;
   if (*conid == -1)
-    *conid = RemoteAccessConnect(host, 1, 0);
+    *conid = remote_access_connect(host, 1, 0);
   if (*conid != -1) {
     fd = io_open_request(*conid,enhanced,sizeof(mdsio.open),&mdsio,filename);
     if (fd<0)
-      RemoteAccessDisconnect(*conid, B_FALSE);
+      remote_access_disconnect(*conid, B_FALSE);
   } else {
     fd = -1;
     fprintf(stderr, "Error connecting to host /%s/ in io_open_remote\n", host);
@@ -1094,7 +1107,7 @@ inline static int io_close_remote(int conid,int fd){
   char *dout;
   mdsio_t mdsio = { .close = { .fd=fd } };
   int status = MdsIoRequest(conid, MDS_IO_CLOSE_K,sizeof(mdsio.close),&mdsio,NULL,&len,&dout,&msg);
-  if (STATUS_OK) RemoteAccessDisconnect(conid, 0);
+  if (STATUS_OK) remote_access_disconnect(conid, 0);
   if (STATUS_OK && sizeof(int)==len) {
     ret = *(int*)dout;
   } else
@@ -1294,7 +1307,7 @@ EXPORT int MDS_IO_LOCK(int idx, off_t offset, size_t size, int mode_in, int *del
 inline static int io_exists_remote(char *host, char *filename){
   int ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int conid = RemoteAccessConnect(host, 1, 0);
+  int conid = remote_access_connect(host, 1, 0);
   if (conid != -1) {
     mdsio_t mdsio = { .exists = { .length = strlen(filename) + 1 } };
     int len;
@@ -1328,7 +1341,7 @@ EXPORT int MDS_IO_EXISTS(char *filename_in){
 inline static int io_remove_remote(char *host, char *filename){
   int ret;
   INIT_AND_FREE_ON_EXIT(void*,msg);
-  int conid = RemoteAccessConnect(host, 1, 0);
+  int conid = remote_access_connect(host, 1, 0);
   if (conid != -1) {
     mdsio_t mdsio = { .remove = { .length = strlen(filename) + 1 } };
     int len;
@@ -1358,7 +1371,7 @@ EXPORT int MDS_IO_REMOVE(char *filename_in){
 inline static int io_rename_remote(char *host, char *filename_old, char *filename_new){
   int ret;
   int conid;
-  conid = RemoteAccessConnect(host, 1, 0);
+  conid = remote_access_connect(host, 1, 0);
   if (conid != -1) {
     INIT_AND_FREE_ON_EXIT(char*,names);
     INIT_AND_FREE_ON_EXIT(void*,msg);
@@ -1470,7 +1483,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
   static int (*GetConnectionVersion)(int) = NULL;
   status = LibFindImageSymbol_C("MdsIpShr","GetConnectionVersion",&GetConnectionVersion);
   do {
-    *conid = RemoteAccessConnect(host, 1, NULL);
+    *conid = remote_access_connect(host, 1, NULL);
     if (*conid != -1) {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
 	if (*filepath && !strstr(filepath,"::")) {
@@ -1492,7 +1505,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 	  FREE_NOW(tmp);
 	} else {
 	  status = TreeUNSUPTHICKOP;
-	  RemoteAccessDisconnect(*conid, B_FALSE);
+	  remote_access_disconnect(*conid, B_FALSE);
 	}
 	break;
       }
@@ -1505,7 +1518,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
       status = io_open_one_request(*conid,sizeof(mdsio.open_one),&mdsio,data,host,enhanced,fullpath,fd);
       FREE_NOW(data);
       if (*fd<0)
-	RemoteAccessDisconnect(*conid, B_FALSE);
+	remote_access_disconnect(*conid, B_FALSE);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
       *fd = -1;
