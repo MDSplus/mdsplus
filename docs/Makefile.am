@@ -47,7 +47,7 @@ DX_EXCLUDE_PAGES =
 DX_TAGFILES = mdsip.tag \
               mdsshr.tag \
               mdsobjects/cpp/docs \
-              mdsobjects/python/docs \
+              python/MDSplus/docs \
               mdsobjects/java/docs \
               mdslib/docs \
               javascope/docs
@@ -75,13 +75,12 @@ DX_SUBDIRS = \
           ../mdsshr/docs/ \
           ../mdstcpip/docs/ \
           ../mdsobjects/cpp/docs/ \
-          ../mdsobjects/python/docs/ \
+          ../python/MDSplus/docs/ \
           ../mdsobjects/java/docs/ \
           ../mdslib/docs/ \
           ../javascope/docs \
           .
-          
-	
+
 build_all:
 	list='$(DX_SUBDIRS)'
 	for subdir in $$list; do echo "Making $$target in $$subdir"; \

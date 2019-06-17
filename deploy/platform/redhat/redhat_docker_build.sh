@@ -34,9 +34,9 @@ test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/u
 makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
-        grep -v python/dist | \
-	grep -v python/doc | \
-        grep -v python/build | \
+        grep -v MDSplus/dist | \
+	grep -v MDSplus/doc | \
+        grep -v MDSplus/build | \
         grep -v egg-info | \
 	grep -v '\.build\-id' | \
         sort

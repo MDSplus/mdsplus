@@ -25,73 +25,44 @@
 #
 import sys
 import os
+if 'pip-egg-info' in sys.argv:
+    print("When using pip to install MDSplus use 'pip install -e <dir>'")
+    sys.exit(1)
 
-def getRelease():
-    name='mdsplus'
-    remove_args=list()
-    release='1.0'
+def parseTag(tag):
+    release=tag.split('-')[0]
+    if release=='alpha_release':
+       name='mdsplus-alpha'
+    elif release=='stable_release':
+       name='mdsplus'
+    else:
+       name='-'.join(['mdsplus',release])
+    return name
 
-    for arg in sys.argv:
-        if arg.startswith('name='):
-            name=arg.split('=')[1]
-            remove_args.append(arg)
-        if arg.startswith('version='):
-            release=arg.split('=')[1]
-            remove_args.append(arg)
-    for arg in remove_args:
-        sys.argv.remove(arg)
 
-    if 'MDSPLUS_PYTHON_VERSION' in os.environ:
-        release=os.environ['MDSPLUS_PYTHON_VERSION']
-    try:
-        from mdsplus_version import mdsplus_version
-        release=mdsplus_version
-    except:
-        pass
-    if '-' in release:
-        parts=release.split('-')
-        name=name+'_'+parts[0]
-        release=parts[1]
-    return (release,name.lower())
-
-branch = None
 try:
     exec(open('_version.py').read())
+    release=version
+    pname=parseTag(release_tag)
 except:
-    pass
-if branch is None:
-    version,name=getRelease()
-elif branch == "stable":
-    name="mdsplus"
-else:
-    name="mdsplus_%s" % branch
-
-pname='MDSplus'
-
-
+    release='1.0'
+    pname='mdsplus'
+    release_tag='Unknown'
+pth_dir=os.path.abspath(__file__)
+pth_dir=os.path.abspath(os.path.dirname(pth_dir)+'/..')
 setupkw = {
-      'name'         : name,
-      'version'      : version,
-      'description'  : 'MDSplus Python Objects',
+      'name'         : 'MDSplus',
+      'extra_path'    : {'mdsplus',pth_dir},
+      'version'      : release,
+      'description'  : 'MDSplus Python Objectsi - '+release_tag,
       'long_description': """
       This module provides all of the functionality of MDSplus TDI natively in python.
       All of the MDSplus data types such as signal are represented as python classes.
       """,
-      'author'       : 'Tom Fredian,Josh Stillerman,Gabriele Manduchi',
+      'author'       : 'MDSplus DEvelopment Team',
       'author_email' : 'twf@www.mdsplus.org',
       'url'          : 'http://www.mdsplus.org/',
-      'download_url' : 'http://www.mdsplus.org/mdsplus_download/python',
-      'package_dir'  : {pname:'.',
-                     pname+'.tests':'./tests',
-                     pname+'.widgets':'./widgets',
-                     pname+'.wsgi':'./wsgi',
-                     },
-      'packages'     : [pname,
-                  pname+'.tests',
-                  pname+'.widgets',
-                  pname+'.wsgi',
-                  ],
-      'package_data' : {'':['doc/*.*','widgets/*.xml','js/*.js','html/*.html','wsgi/*.tbl']},
+      'license'      : 'MIT',
       'classifiers'  : [
       'Programming Language :: Python',
       'Intended Audience :: Science/Research',
@@ -99,8 +70,8 @@ setupkw = {
       'Topic :: Scientific/Engineering',
       ],
       'keywords'     : ['physics','mdsplus',],
-#       install_requires=['numpy','ctypes'],
     }
+
 def remove():
     import shutil
     "Remove installed MDSplus package"
@@ -127,7 +98,10 @@ def remove():
         packagedir = os.sep.join(_f)
         sys.stdout.write("Removing '%s' ..."%packagedir)
         try:
-            shutil.rmtree(packagedir)
+            if os.path.islink(packagedir):
+                os.remove(packagedir)
+            else:
+                shutil.rmtree(packagedir)
             _f[-1] = "mdsplus-*.egg-info"
             import glob
             egginfos = glob.glob(os.sep.join(_f))

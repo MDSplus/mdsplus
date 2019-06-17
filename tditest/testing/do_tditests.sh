@@ -41,7 +41,7 @@ fi
 tmpdir=$(mktemp -d)
 trap 'rm -Rf ${tmpdir}' EXIT
 MDS_PATH=".;${MDSPLUS_DIR}/tdi;."
-MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/mdsobjects/python/tests/devices"
+MDS_PYDEVICE_PATH="${MDSPLUS_DIR}/pydevices;${MDSPLUS_DIR}/python/MDSplus/tests/devices"
 subtree_path="${tmpdir};${MDSPLUS_DIR}/trees/subtree"
 main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 

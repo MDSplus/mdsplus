@@ -127,7 +127,7 @@ distclean: ##@build make source directory look like original sources
 	  if [ "$$(pwd)" == "$$cpwd" ]; \
 	     then make full_clean > /dev/null; \
 	  fi; \
-	  rm -Rf ./mdsobjects/python/build; \
+	  rm -Rf ./python/MDSplus/build; \
 	fi; \
 	cd $$cpwd
 
@@ -168,7 +168,7 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh include mdsobjects/python desktop pixmaps matlab php epics xml nodejs
+MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh include desktop pixmaps matlab php epics xml nodejs python/MDSplus
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):
@@ -180,36 +180,37 @@ install: $(install_DIRS)
 	$(INSTALL) ChangeLog $(prefix)/
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
+	$(MKDIR_P) $(prefix)/python/MDSplus
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	tar -C ${top_srcdir} \
 		--exclude='.gitignore' \
 		--exclude='*.pyc' \
 		--exclude=__pycache__ \
-		--exclude=python/build \
+		--exclude=python/MDSplus/build \
+		--exclude=python/MDSplus/docs \
                 --exclude=tdi/*Devices/build \
 		--exclude='*egg-info' \
 		--exclude='*\.in' \
 		--exclude='Makefile\.*' \
 		-cf  - $(MISC_PARTS) | (cd $(exec_prefix); tar -xf -)
-#	find . -name '_version\.py' -not -path "./$(realpath --relative-to=$(pwd) $(exec_prefix))/*" -exec cp {} $(exec_prefix)/{} \;
 	tar -C ${top_builddir} -cf - include/mdsplus/mdsconfig.h $$(find . -name _version.py) | (cd $(exec_prefix); tar -xf -) ## TODO: remove this and config.h from headers ...
-	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/mdsobjects/python/mdsplus_version.py; fi
+	if [ ! -z "$$MDSPLUS_VERSION" ]; then echo "mdsplus_version='$$MDSPLUS_VERSION'" > $(exec_prefix)/python/MDSplus/mdsplus_version.py; fi
 	$(INSTALL) ${top_srcdir}/MDSplus-License.txt ${top_srcdir}/MDSplus-License.rtf $(exec_prefix)
 	(cd $(exec_prefix); chmod -R 755 $(MISC_PARTS))
 
 .PHONY: tests-envdump
 tests-envdump:
-	cd mdsobjects/python/tests&&(\
+	cd python/MDSobjects/tests&&(\
 	make test-envdump;\
 	cd ../../..;)
 
 test-env:
-	cd mdsobjects/python/tests&&(\
+	cd python/MDSplus/tests&&(\
 	make test-env;\
 	cd ../../..;)
 
 @HAVE_WINE_TRUE@wineconsole:
-@HAVE_WINE_TRUE@	cd mdsobjects/python/tests&&(\
+@HAVE_WINE_TRUE@	cd python/MDSplus/tests&&(\
 @HAVE_WINE_TRUE@	make wineconsole;\
 @HAVE_WINE_TRUE@	cd ../../..;)
 

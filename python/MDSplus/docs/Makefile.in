@@ -118,7 +118,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = mdsobjects/python/docs
+subdir = python/MDSplus/docs
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -209,7 +209,7 @@ DOXYGEN_PAPER_SIZE = @DOXYGEN_PAPER_SIZE@
 # //////////////////////////////////////////////////////////////////////////// #
 # DOXYGEN CONFIG #
 DX_CONFIG = ${top_srcdir}/docs/config/doxygen_cpp.cfg
-DX_DOCDIR = mdsobjects/python/docs
+DX_DOCDIR = python/MDSplus/docs
 DX_DOT = @DX_DOT@
 DX_DOXYGEN = @DX_DOXYGEN@
 DX_DVIPS = @DX_DVIPS@
@@ -562,9 +562,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign mdsobjects/python/docs/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign python/MDSplus/docs/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign mdsobjects/python/docs/Makefile
+	  $(AUTOMAKE) --foreign python/MDSplus/docs/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

@@ -24,6 +24,8 @@
 #
 
 import sys
+import os
+
 from time import sleep
 from MDSplus import Tree,Device,Connection
 from MDSplus import dcl,ccl,tcl,cts,mdsExceptions as Exc
