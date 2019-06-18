@@ -60,24 +60,20 @@ int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, 
   INIT_STATUS;
   int i;
   Message *m;
-  *mout = 0;
-  *numbytes = 0;
   m = GetMdsMsgTOC(c, &status, timeout_msec);
   UnlockConnection(c);
-  if (!m && status == SsINTERNAL) {
+  if (!m) {
     DisconnectConnection(id);
     status = MDSplusERROR;
-  } else
+  }
   if STATUS_NOT_OK {
+    free(m);
+    *mout = NULL;
     *dtype = 0;
     *length = 0;
     *ndims = 0;
     *numbytes = 0;
     *dptr = 0;
-    if (m) {
-      free(m);
-      *mout = 0;
-    }
     return status;
   }
   int datalen = (int)(m->h.msglen - sizeof(MsgHdr));
