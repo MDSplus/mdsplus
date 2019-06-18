@@ -57,7 +57,6 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
   // MESSAGE ID //
   // * if this is the first argument sent, increments connection message id   //
   // * get the connection message_id and store it inside message              //
-
   if (idx > nargs) {
     /**** Special I/O message ****/
     if (idx==MDS_IO_OPEN_ONE_K && c->version < MDSIP_VERSION_OPEN_ONE){
@@ -69,8 +68,10 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
     for (i = 0; i < ndims; i++)
       nbytes *= dims[i];
   }
+  if (!bytes) nbytes = 0;
   msglen = sizeof(MsgHdr) + nbytes;
-  m = memset(malloc(msglen), 0, msglen);
+  m = malloc(msglen);
+  memset(&m->h,0,sizeof(m->h));
   m->h.client_type = 0;
   m->h.msglen = msglen;
   m->h.descriptor_idx = idx;
@@ -84,7 +85,8 @@ int SendArg(int id, unsigned char idx, char dtype, unsigned char nargs, unsigned
 #else
   for (i = 0; i < MAX_DIMS; i++)  m->h.dims[i] = i < ndims ? dims[i] : 0;
 #endif
-  memcpy(m->bytes, bytes, nbytes);
+  if (nbytes>0)
+    memcpy(m->bytes, bytes, nbytes);
   m->h.message_id = (idx == 0 || nargs == 0)
 	    ? IncrementConnectionMessageIdC(c)
 	    : c->message_id;
