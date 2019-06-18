@@ -59,7 +59,7 @@ setupkw = {
       This module provides all of the functionality of MDSplus TDI natively in python.
       All of the MDSplus data types such as signal are represented as python classes.
       """,
-      'author'       : 'MDSplus DEvelopment Team',
+      'author'       : 'MDSplus Development Team',
       'author_email' : 'twf@www.mdsplus.org',
       'url'          : 'http://www.mdsplus.org/',
       'license'      : 'MIT',
