@@ -869,6 +869,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_mod}	"Copy mod_python module for apache to '.\python\MDSplus'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_pp}	"Add '.\python' to PYTHONPATH env."
 	!insertmacro MUI_DESCRIPTION_TEXT ${python_su}	"Install MDSplus package via python's setup method"
+	!insertmacro MUI_DESCRIPTION_TEXT ${python_comp} "Will attempt to compile python files for default python version"
 	!insertmacro MUI_DESCRIPTION_TEXT ${devel}	"Copy headers and '*.lib' files for MinGW and VS projects"
 	!insertmacro MUI_DESCRIPTION_TEXT ${headers}	"Copy headers to '.\include'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${devtools}	"Copy '*.lib' files for MinGW and VS projects to '.\devtools'"
@@ -891,6 +892,7 @@ Function .onSelChange
 			${UnselectSection}  ${python_mod}
 			${UnselectSection}  ${python_pp}
 			${UnselectSection}  ${python_su}
+			${UnselectSection}  ${python_comp}
 			${UnselectSection}  ${python_tst}
 			${UnselectSection}  ${python_wdg}
 			${UnselectSection}  ${python_wsgi}
@@ -927,19 +929,12 @@ Function .onSelChange
 			${SelectSection}    ${python_cp}
 		${EndIf}
 	${ElseIf} $0 == ${python_su}
-		${If} $0 is ${SF_SELECTED}
-			${SelectSection}    ${python_cp}
-			${SelectSection}    ${python_tst}
-			${SelectSection}    ${python_wdg}
-			${SelectSection}    ${python_wsgi}
-		${EndIf}
-	${ElseIf} $0 == ${python_tst}
+	${OrIf}   $0 == ${python_comp}
+	${OrIf}   $0 == ${python_tst}
 	${OrIf}   $0 == ${python_wdg}
 	${OrIf}   $0 == ${python_wsgi}
-		${If} $0 is ${SF_SELECTED}
+	${If} $0 is ${SF_SELECTED}
 			${SelectSection}    ${python_cp}
-		${Else}
-			${UnselectSection}  ${python_su}
 		${EndIf}
 	${EndIf}
 FunctionEnd
