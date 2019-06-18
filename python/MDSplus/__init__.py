@@ -46,14 +46,14 @@ import os,sys,numpy,ctypes,ctypes.util,hashlib # importing required packages
 if sys.version_info < (2,6):
     raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
 # importing libs for convenience and to early check if we have what we need in place
-version = _mimport("version")
+_ver = _mimport("version")
 class libs:
-    MdsShr = version.load_library('MdsShr')
-    TreeShr= version.load_library('TreeShr')
-    TdiShr = version.load_library('TdiShr')
-    try:   Mdsdcl = version.load_library('Mdsdcl')
+    MdsShr = _ver.load_library('MdsShr')
+    TreeShr= _ver.load_library('TreeShr')
+    TdiShr = _ver.load_library('TdiShr')
+    try:   Mdsdcl = _ver.load_library('Mdsdcl')
     except:Mdsdcl = None
-    try:   MdsIpShr = version.load_library('MdsIpShr')
+    try:   MdsIpShr = _ver.load_library('MdsIpShr')
     except:MdsIpShr = None
 
 # check version
@@ -86,7 +86,7 @@ if version_check:
                        ("MDSVERSION",ctypes.c_char_p)]
         try:
             info = ctypes.cast(libs.MdsShr.MDSplusVersion,ctypes.POINTER(MDSplusVersionInfo)).contents
-            verchk = version.tostr(info.MDSVERSION.decode())
+            verchk = _ver.tostr(info.MDSVERSION.decode())
         except:
             verchk = "Unknown"
         if verchk != __version__ or verchk == "Unknown":
@@ -135,10 +135,11 @@ if __name__==__package__:
             if lib is not None:
                 return lib
             lib = name
-        libs.MdsShr.MdsPutEnv(version.tobytes("%s=%s"%("PyLib",lib)))
+        libs.MdsShr.MdsPutEnv(_ver.tobytes("%s=%s"%("PyLib",lib)))
         return lib
     PyLib = PyLib()
     load_package(globals(),True)
     try:    _mimport("magic") # load ipython magic
     except: pass
     del load_package
+del _ver
