@@ -52,8 +52,9 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
       if (errno==ETIMEDOUT)            return TdiTIMEOUT;
       if (bytes_recv==0 && to_msec>=0) return TdiTIMEOUT;
       if (errno != EINTR) {
-	  if (errno) {fprintf(stderr,"Connection %02d (r:%d)",c->id,(int)bytes_recv);perror("error");}
-	  return MDSplusERROR;
+	  // this is in 99.9% due to the fact that the other end hung up or this process is being torn down
+	  //if (errno) {fprintf(stderr,"Connection %02d (r:%d)",c->id,(int)bytes_recv);perror("error");}
+	  return SsINTERNAL;
       }
       tries++;
     }
