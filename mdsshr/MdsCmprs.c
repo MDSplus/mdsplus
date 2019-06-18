@@ -110,6 +110,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define X_OF_INT(val) (int)(((unsigned int)(val) >> BITSY) & MASK(BITSX))
 #define Y_OF_INT(val) (int)((unsigned int)(val) & MASK(BITSY))
 #define SWAP_SHORTS(in,out)         ((short *)out)[0] = ((short *)in)[1],((short *)out)[1] = ((short *)in)[0]
+#define DEFINED_OVERFLOW(a,op,b) (signed)( ((unsigned)(a)) op ((unsigned)(b)) )         // use defined + and - operations on unsigned
+
 
 typedef struct {
   int l;
@@ -138,7 +140,7 @@ int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr,
   register int j, yy;
   register int i, *p32, *pn, *pe;
   struct HEADER header;
-  int maxim, mark, old, best, test;
+  int old, best, test;
   int ye, xe, yn, xn, xsum, *ptally;
   int tally[MAXY + 1];
   signed char yn_c;
@@ -244,7 +246,7 @@ Do this in runs.
  *             compiler the other <= tests do not work.
  *        if overflow, put in flag value
  ***********/
-      int32_t ans = *p32 - old;
+      int32_t ans = DEFINED_OVERFLOW(*p32, -, old);
       if ((((uint32_t)ans) == 0x80000000) || (old<0 ? ans<*p32 : ans>*p32)) {
 	*pn++=ans;
 	yy = 32;
@@ -304,18 +306,19 @@ Do this in runs.
 	}
       }
       xe = tally[yn - 1];
-    }
-  /*********************
-  Build exception table.
-  Assume 2's complement.
-  *********************/
-    mark = (int)(0xFFFFFFFF << (yn - 1));
-    maxim = ~mark;
-    for (pn = diff, pe = exce, j = xe; --j >= 0;) {
-      while (*pn <= maxim && *pn > mark)
-	++pn;
-      *pe++ = *pn;
-      *pn++ = mark;
+
+    /*********************
+    Build exception table.
+    Assume 2's complement.
+    *********************/
+      int mark = (int)(0xFFFFFFFF << (yn - 1));
+      int maxim = ~mark;
+      for (pn = diff, pe = exce, j = xe; --j >= 0;) {
+	while (*pn <= maxim && *pn > mark)
+	  ++pn;
+	*pe++ = *pn;
+	*pn++ = mark;
+      }
     }
 
   /******************************
@@ -416,7 +419,7 @@ Note the sign-extended unpacking.
 #define load(type) { type *newone;\
 	             for (newone = (type *)px; --j >= 0;pn++,newone++)\
 	             {\
-	                old += (xe && (*pn == mark)) ? *pe++ : *pn ;\
+	                old = DEFINED_OVERFLOW(old, +,(xe && (*pn == mark)) ? *pe++ : *pn); \
 	                *newone = (type)old;\
 	             }\
 	             px = (PF)newone;\
