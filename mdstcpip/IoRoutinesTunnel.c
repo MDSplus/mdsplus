@@ -129,17 +129,28 @@ static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to
   ssize_t num = 0;
   return ReadFile(p->in, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
 #else
-  if (to_msec>=0) { // don't time out if to_msec < 0
-    struct timeval timeout;
+  struct timeval to,timeout;
+  if (to_msec<0) {
+    timeout.tv_sec  = 1;
+    timeout.tv_usec = 0;
+  } else {
     timeout.tv_sec  = to_msec / 1000;
     timeout.tv_usec =(to_msec % 1000) * 1000;
-    fd_set set;
-    FD_ZERO(&set); /* clear the set */
-    FD_SET(p->in, &set); /* add our file descriptor to the set */
-    int rv = select(p->in + 1, &set, NULL, NULL, &timeout);
-    if (rv<=0) return rv;
   }
-  return read(p->in, buffer, buflen);
+  int sel,fd = p->in;
+  fd_set rf,readfds;
+  FD_ZERO(&readfds);
+  FD_SET(fd, &readfds);
+  do {// loop even for nowait for responsiveness
+    to = timeout; rf = readfds;
+    sel = select(fd+1, &rf, NULL, NULL, &to);
+    if (sel > 0) // good to go
+      return read(fd, buffer, buflen);
+    if (errno == EAGAIN) continue;
+    if (sel < 0) // Error
+      return sel;
+  } while (to_msec<0);
+  return 0; // timeout
 #endif
 }
 
