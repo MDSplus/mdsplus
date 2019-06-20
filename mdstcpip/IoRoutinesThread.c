@@ -103,17 +103,28 @@ ssize_t thread_recv_to(Connection* c, void *buffer, size_t buflen, int to_msec){
   ssize_t num = 0;
   return ReadFile(p->out, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
 #else
-  if (to_msec>=0) { // don't time out if to_msec < 0
-    struct timeval timeout;
+  struct timeval to,timeout;
+  if (to_msec<0) {
+    timeout.tv_sec  = 1;
+    timeout.tv_usec = 0;
+  } else {
     timeout.tv_sec  = to_msec / 1000;
     timeout.tv_usec =(to_msec % 1000) * 1000;
-    fd_set set;
-    FD_ZERO(&set); /* clear the set */
-    FD_SET(p->out, &set); /* add our file descriptor to the set */
-    int rv = select(p->out + 1, &set, NULL, NULL, &timeout);
-    if (rv<=0) return rv;
   }
-  return read(p->out, buffer, buflen);
+  int sel,fd = p->out;
+  fd_set rf,readfds;
+  FD_ZERO(&readfds);
+  FD_SET(fd, &readfds);
+  do {// loop even for nowait for responsiveness
+    to = timeout; rf = readfds;
+    sel = select(fd+1, &rf, NULL, NULL, &to);
+    if (sel > 0) // good to go
+      return read(fd, buffer, buflen);
+    if (errno == EAGAIN) continue;
+    if (sel < 0) // Error
+      return sel;
+  } while (to_msec<0);
+  return 0; // timeout
 #endif
 }
 

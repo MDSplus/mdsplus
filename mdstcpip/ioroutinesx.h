@@ -328,7 +328,10 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
 	recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
 	break;
       }
-      if (recved < 0) break; // Error
+      if (recved < 0) {
+        if (errno == EAGAIN) continue;
+	break; // Error
+      }
     } while (to_msec<0); // else timeout
     PopSocket(sock);
   }
