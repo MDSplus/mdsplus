@@ -50,7 +50,7 @@ static int GetBytesTO(Connection* c, void *buffer, size_t bytes_to_recv, int to_
       if (errno==ETIMEDOUT)		return TdiTIMEOUT;
       if (bytes_recv==0 && to_msec>=0)	return TdiTIMEOUT;
       if (errno == EINTR)		return MDSplusERROR;
-      fprintf(stderr, "Connection %d ", id);perror("possibly lost");
+      if (errno) {fprintf(stderr, "Connection %d ", id);perror("possibly lost");}
       return SsINTERNAL;
     }
     return MDSplusSUCCESS;
