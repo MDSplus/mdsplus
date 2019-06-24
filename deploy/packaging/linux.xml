@@ -901,7 +901,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
       for py in python python3
       do
         ${py} -m compileall -q -f /usr/local/mdsplus/python &gt;/dev/null 2&gt;&amp;1
-        /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        ${py} /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
       done
       popd &gt;/dev/null 2&gt;&amp;1
     </postinst>
@@ -914,7 +914,7 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <!-- alpine scripts -->
     <post-install>
       python -m compileall -q -f /mdsplus/python &gt;/dev/null 2&gt;&amp;1
-      /mdsplus/python/MDSplus/setup.py -q install
+      python /mdsplus/python/MDSplus/setup.py -q install
       rm -Rf build dist MDSplus.egg-info
     </post-install>
     <pre-deinstall>
