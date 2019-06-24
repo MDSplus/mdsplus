@@ -52,7 +52,7 @@ pth_dir=os.path.abspath(__file__)
 pth_dir=os.path.abspath(os.path.dirname(pth_dir)+'/..')
 setupkw = {
       'name'         : 'MDSplus',
-      'extra_path'    : {'mdsplus',pth_dir},
+      'extra_path'    : ('mdsplus',pth_dir),
       'version'      : release,
       'description'  : 'MDSplus Python Objectsi - '+release_tag,
       'long_description': """
