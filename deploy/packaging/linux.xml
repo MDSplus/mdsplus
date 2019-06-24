@@ -875,13 +875,11 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <!-- rpm scripts -->
     <post>
       $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
-      pushd $RPM_INSTALL_PREFIX/mdsplus/python/MDSplus &gt;/dev/null 2&gt;&amp;1
       for py in python python3
       do
-        ${py} -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
-        MDSPLUS_DIR=${RPM_INSTALL_PREFIX}/mdsplus ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        ${py} -m compileall -q -f $RPM_INSTALL_PREFIX/mdsplus/python &gt;/dev/null 2&gt;&amp;1
+        ${py} $RPM_INSTALL_PREFIX/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
       done
-      popd &gt;/dev/null 2&gt;&amp;1
     </post>
     <preun>
       if [ "$1" == "0" ]
@@ -900,11 +898,10 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <!-- deb scripts -->
     <postinst>
       /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
-      pushd /usr/local/mdsplus/python/MDSplus &gt;/dev/null 2&gt;&amp;1
       for py in python python3
       do
-        ${py} -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
-        MDSPLUS_DIR=/usr/local/mdsplus ${py} setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        ${py} -m compileall -q -f /usr/local/mdsplus/python &gt;/dev/null 2&gt;&amp;1
+        /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
       done
       popd &gt;/dev/null 2&gt;&amp;1
     </postinst>
@@ -916,12 +913,9 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 
     <!-- alpine scripts -->
     <post-install>
-      oldpwd="$(pwd)"
-      cd /mdsplus/python/MDSplus
-      python -m compileall -q -f . &gt;/dev/null 2&gt;&amp;1
-      MDSPLUS_DIR=/mdsplus python setup.py -q install
+      python -m compileall -q -f /mdsplus/python &gt;/dev/null 2&gt;&amp;1
+      /mdsplus/python/MDSplus/setup.py -q install
       rm -Rf build dist MDSplus.egg-info
-      cd "$oldpwd"
     </post-install>
     <pre-deinstall>
       /mdsplus/rpm/removePythonModule.sh MDSplus
