@@ -147,9 +147,9 @@ static int remote_access_disconnect(int conid, int force){
     DBG("Connection %d< %d\n",conid,host->h.connections);
   } else DBG("Disconnected %d\n",conid);
   for (host = host_list; host ;) {
-    if ((force && host->h.conid == conid) || (host->h.connections <= 0
+    if ((force && host->h.conid == conid) || (host->h.conid == conid && host->h.connections <= 0
 #ifdef USE_TIME
-	host->h.time < time(0)-USE_TIME
+	 && host->h.time < time(0)-USE_TIME
 #endif
 )) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);

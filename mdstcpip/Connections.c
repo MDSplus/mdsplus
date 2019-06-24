@@ -214,11 +214,11 @@ int DisconnectConnection(int conid){
   if (c) {
     c->state |= CON_DISCONNECT;
     pthread_cond_broadcast(&c->cond);
-    if (c->state & !CON_DISCONNECT) {
+    if (c->state & ~CON_DISCONNECT) {
       struct timespec tp;
       clock_gettime(CLOCK_REALTIME, &tp);
       tp.tv_sec += 10; // wait upto 10 seconds to allow current task to finish
-      while (c->state & !CON_DISCONNECT && pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      while (c->state & ~CON_DISCONNECT && pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
     }
     // remove after tast is complete
     if (p)      p->next = c->next;
