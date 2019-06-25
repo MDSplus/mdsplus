@@ -22,68 +22,24 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "mdsip_connections.h"
-#include <pthread_port.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <stdlib.h>
-#include <string.h>
-#include <errno.h>
-#include <stdio.h>
-#include <ctype.h>
-#include <status.h>
-#ifdef HAVE_UNISTD_H
- #include <unistd.h>
-#endif
-#ifdef _WIN32
- #include <process.h>
-#else
- #include <sys/wait.h>
- #define INVALID_SOCKET -1
-#endif
-static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait);
-static ssize_t tunnel_recv(Connection* c, void *buffer, size_t len);
-static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t len, int to_msec);
-static int tunnel_disconnect(Connection* c);
-static int tunnel_connect(Connection* c, char *protocol, char *host);
-static int tunnel_listen(int argc, char **argv);
-IoRoutines tunnel_routines = {
- tunnel_connect, tunnel_send, tunnel_recv, NULL, tunnel_listen, NULL, NULL, tunnel_disconnect, tunnel_recv_to, NULL
-};
+#define PROTOCOL "tunnel"
+#define PROT_TUNNEL
+#include "ioroutines_pipes.h"
 
-typedef struct {
-#ifdef _WIN32
-  HANDLE out;
-  HANDLE in;
-  HANDLE hProcess;
-#else
-  int out;
-  int in;
-  int pid;
-#endif
-} tunnel_pipes_t;
-
-static tunnel_pipes_t *getTunnelPipes(Connection* c){
-  size_t len;
-  char *info_name;
-  tunnel_pipes_t *p = (tunnel_pipes_t *)GetConnectionInfoC(c, &info_name, 0, &len);
-  return (info_name && !strcmp("tunnel", info_name) && len == sizeof(tunnel_pipes_t)) ? p : 0;
-}
-
-static int tunnel_disconnect(Connection* c){
-  tunnel_pipes_t *p = getTunnelPipes(c);
+static int io_disconnect(Connection* c){
+  io_pipes_t *p = get_pipes(c);
   if (p) {
 #ifdef _WIN32
-    if (p->hProcess){
+    if (p->pid){
       DWORD exitcode;
-      if (GetExitCodeProcess(p->hProcess, &exitcode) && exitcode == 9009)
+      if (GetExitCodeProcess(p->pid, &exitcode) && exitcode == 9009)
 	fprintf(stderr,"Protocol is not supported.\n");
       else
-	TerminateProcess(p->hProcess,0);
+	TerminateProcess(p->pid,0);
     }
     CloseHandle(p->in);
     CloseHandle(p->out);
-    CloseHandle(p->hProcess);
+    CloseHandle(p->pid);
 #else
     close(p->in);
     close(p->out);
@@ -99,59 +55,6 @@ static int tunnel_disconnect(Connection* c){
 #endif
   }
   return C_OK;
-}
-
-static ssize_t tunnel_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
-  tunnel_pipes_t *p = getTunnelPipes(c);
-  if (!p) return -1;
-#ifdef _WIN32
-  ssize_t num = 0;
-  return WriteFile(p->out, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
-#else
-  return write(p->out, buffer, buflen);
-#endif
-}
-
-static ssize_t tunnel_recv(Connection* c, void *buffer, size_t buflen){
-  return tunnel_recv_to(c,buffer,buflen,-1);
-}
-
-static ssize_t tunnel_recv_to(Connection* c, void *buffer, size_t buflen, int to_msec){
-  tunnel_pipes_t *p = getTunnelPipes(c);
-  if (!p) return -1;
-#ifdef _WIN32
-  DWORD toval;
-  if      (to_msec< 0) toval = 0;
-  else if (to_msec==0) toval = MAXDWORD;
-  else                 toval = to_msec;
-  COMMTIMEOUTS timeouts = { 0, 0, toval, 0, 0};
-  SetCommTimeouts(p->in, &timeouts);
-  ssize_t num = 0;
-  return ReadFile(p->in, buffer, buflen, (DWORD *)&num, NULL) ? num : -1;
-#else
-  struct timeval to,timeout;
-  if (to_msec<0) {
-    timeout.tv_sec  = 1;
-    timeout.tv_usec = 0;
-  } else {
-    timeout.tv_sec  = to_msec / 1000;
-    timeout.tv_usec =(to_msec % 1000) * 1000;
-  }
-  int sel,fd = p->in;
-  fd_set rf,readfds;
-  FD_ZERO(&readfds);
-  FD_SET(fd, &readfds);
-  do {// loop even for nowait for responsiveness
-    to = timeout; rf = readfds;
-    sel = select(fd+1, &rf, NULL, NULL, &to);
-    if (sel > 0) // good to go
-      return read(fd, buffer, buflen);
-    if (errno == EAGAIN) continue;
-    if (sel < 0) // Error
-      return sel;
-  } while (to_msec<0);
-  return 0; // timeout
-#endif
 }
 
 #ifndef _WIN32
@@ -171,8 +74,8 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
     void *info;
     size_t info_len = 0;
     while ((id = NextConnection(&ctx, &info_name, &info, &info_len)) != INVALID_CONNECTION_ID) {
-      if (info_name && strcmp(info_name, "tunnel") == 0
-	  && ((tunnel_pipes_t *)info)->pid == pid) {
+      if (info_name && strcmp(info_name, PROTOCOL) == 0
+	  && ((io_pipes_t *)info)->pid == pid) {
 	DisconnectConnection(id);
 	break;
       }
@@ -182,7 +85,7 @@ static void ChildSignalHandler(int num __attribute__ ((unused))){
 }
 #endif
 
-static int tunnel_connect(Connection* c, char *protocol, char *host) {
+static int io_connect(Connection* c, char *protocol, char *host) {
 #ifdef _WIN32
   size_t len = strlen(protocol) * 2 + strlen(host) + 512;
   char *cmd = (char *)malloc(len);
@@ -209,14 +112,14 @@ static int tunnel_connect(Connection* c, char *protocol, char *host) {
   BOOL bSuccess = CreateProcess(NULL, cmd, NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &siStartInfo, &piProcInfo);
   free(cmd);
   if (bSuccess) {//parent
-    tunnel_pipes_t p;
-    p.out = pipe_p2c.wr;
+    io_pipes_t p;
     p.in  = pipe_c2p.rd;
-    p.hProcess = piProcInfo.hProcess;
+    p.out = pipe_p2c.wr;
+    p.pid = piProcInfo.hProcess;
     CloseHandle(pipe_c2p.wr);
     CloseHandle(pipe_p2c.rd);
     CloseHandle(piProcInfo.hThread);
-    SetConnectionInfoC(c, "tunnel", INVALID_SOCKET, &p, sizeof(p));
+    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   fprintf(stderr,"CreateProcess");
@@ -233,7 +136,7 @@ err: ;
   int err_p2c = pipe((int*)&pipe_p2c);
   int err_c2p = pipe((int*)&pipe_c2p);
   if (err_p2c || err_c2p) {
-    perror("Error in mdsip tunnel_connect creating pipes\n");
+    perror("Error in mdsip io_connect creating pipes\n");
     if (!err_p2c) {close(pipe_p2c.rd);close(pipe_p2c.wr);}
     if (!err_c2p) {close(pipe_c2p.rd);close(pipe_c2p.wr);}
     return C_ERROR;
@@ -246,9 +149,9 @@ err: ;
     return C_ERROR;
   }
   if (pid>0) {// parent
-    tunnel_pipes_t p;
-    p.out = pipe_p2c.wr;
+    io_pipes_t p;
     p.in  = pipe_c2p.rd;
+    p.out = pipe_p2c.wr;
     p.pid = pid;
     close(pipe_c2p.wr);fcntl(pipe_c2p.rd,F_SETFD,FD_CLOEXEC);
     close(pipe_p2c.rd);fcntl(pipe_p2c.wr,F_SETFD,FD_CLOEXEC);
@@ -260,7 +163,7 @@ err: ;
     sigaddset(&handler.sa_mask, SIGPIPE);
     sigaction(SIGCHLD, &handler,NULL);
     sigaction(SIGPIPE, &handler,NULL);
-    SetConnectionInfoC(c, "tunnel", INVALID_SOCKET, &p, sizeof(p));
+    SetConnectionInfoC(c, PROTOCOL, INVALID_SOCKET, &p, sizeof(p));
     return C_OK;
   }
   /*if (pid==0)*/ {//child
@@ -285,16 +188,16 @@ err: ;
 #endif
 }
 
-static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
+static int io_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
   int id, status;
   INIT_AND_FREE_ON_EXIT(char*,username);
 #ifdef _WIN32
-  tunnel_pipes_t p;
+  io_pipes_t p;
   p.in  = GetStdHandle(STD_INPUT_HANDLE);
   p.out = GetStdHandle(STD_OUTPUT_HANDLE);
-  p.hProcess = NULL;
+  p.pid = NULL;
 #else
-  tunnel_pipes_t p = { 0, 1, 0 };
+  io_pipes_t p = { 0, 1, 0 };
   p.in  = dup(0);
   p.out = dup(1);
   fcntl(p.in ,F_SETFD,FD_CLOEXEC);
@@ -303,8 +206,12 @@ static int tunnel_listen(int argc __attribute__ ((unused)), char **argv __attrib
   close(1);//fcntl(1,F_SETFD,FD_CLOEXEC);
   dup2(2,1);
 #endif
-  status = AcceptConnection(GetProtocol(), "tunnel", 0, &p, sizeof(p), &id, &username);
+  status = AcceptConnection(GetProtocol(), PROTOCOL, 0, &p, sizeof(p), &id, &username);
   FREE_NOW(username);
   if STATUS_OK while (DoMessage(id));
   return C_OK;
 }
+
+const IoRoutines tunnel_routines = {
+ io_connect, io_send, io_recv, NULL, io_listen, NULL, NULL, io_disconnect, io_recv_to, NULL
+};
