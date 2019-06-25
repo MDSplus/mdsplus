@@ -37,6 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <string.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -61,10 +62,6 @@ static inline char *replaceBackslashes(char *filename) {
   return filename;
 }
 
-static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
-#define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
-#define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
-// #define USE_TIME 1 # i.e. connections that are use for less than one second are kept for speedup of short requests.. questionable usefulness
 typedef struct {
   int conid;
   int connections;
@@ -79,17 +76,78 @@ typedef struct host_list{
   host_t h;
 } host_list_t;
 
-static host_list_t*host_list = NULL;
+static host_list_t *host_list = NULL;
+static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
+static pthread_cond_t  host_list_sig  = PTHREAD_COND_INITIALIZER;
+#define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
+#define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
+/** host_list_cleanup
+ * can be colled to cleanup unused connections in host_list.
+ * meant to be called by host_list_clean_main().
+ */
+static void host_list_cleanup(){
+  static int (*disconnectFromMds) (int) = NULL;
+  if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds))
+    perror("Error loading MdsIpShr->DisconnectFromMds in host_list_cleanup");
+  host_list_t *host, *prev = NULL;
+  for (host = host_list; host ;) {
+    if (host->h.connections <= 0) {
+      DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
+      if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
+        fprintf(stderr,"Failed to disconnect Connection %d\n",host->h.conid);
+      if (prev) {
+	prev->next = host->next;
+	free(host->h.unique);
+	free(host);
+	host = prev->next;
+      } else {
+	host_list  = host->next;
+	free(host->h.unique);
+	free(host);
+	host = host_list;
+      }
+    } else {
+      prev = host;
+      host = host->next;
+    }
+  }
+}
+/** host_list_clean_main
+ * Run method of host_list_cleaner schedulled by host_list_schedule_cleanup().
+ * Triggers a 10 second timout upon which it will call host_list_cleanup().
+ * signalling host_cleaner_sig will reset the 10 second timeout.
+ */
+static void host_list_clean_main(){
+  HOST_LIST_LOCK;
+  struct timespec tp;
+  do{
+    clock_gettime(CLOCK_REALTIME, &tp);
+    tp.tv_sec += 10;
+    int status = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp);
+    if (status == ETIMEDOUT) {
+        host_list_cleanup();
+     } else if (status != 0) {
+        perror("PANIC in treeshr/RemoteAccess.c -> host_list_clean_main");
+        abort();
+     }
+  } while(1);
+  pthread_cleanup_pop(1);
+}
+static void host_list_init_cleanup(){
+  static pthread_t thread;
+  int err = pthread_create(&thread, NULL, (void*)host_list_clean_main, NULL);
+  if (!err) pthread_detach(thread);
+}
+static void host_list_schedule_cleanup(){
+  RUN_FUNCTION_ONCE(host_list_init_cleanup);
+  pthread_cond_signal(&host_list_sig);
+}
 
-static int remote_access_connect(char *server, int inc_count, void *dbid
-#ifndef USE_TIME
-__attribute__((unused))
-#endif
-){
+static int remote_access_connect(char *server, int inc_count, void *dbid __attribute__((unused))){
   static int (*ReuseCheck) (char *,char *,int) = NULL;
   char unique[128]="\0";
   if IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)) {
-    if (ReuseCheck(server,unique, 128)<0) return -1;
+    if (ReuseCheck(server,unique, 128)<0) return -1; // TODO: check if this is required / desired
   } else {
     int i;
     for (i=0;server[i] && i<127 ;i++)
@@ -101,9 +159,6 @@ __attribute__((unused))
   host_list_t *host;
   for (host = host_list; host; host = host->next) {
     if (!strcmp(host->h.unique,unique)) {
-#ifdef USE_TIME
-      host->h.time = time(0);
-#endif
       if (inc_count) {
 	host->h.connections++;
 	DBG("Connection %d> %d\n",host->h.conid,host->h.connections);
@@ -122,57 +177,32 @@ __attribute__((unused))
 	host->h.conid = conid;
 	host->h.connections = inc_count ? 1 : 0;
 	host->h.unique = strdup(unique);
-#ifdef USE_TIME
-	// if global context, keep connection alive
-	host->h.time = !dbid ? time(0) : 0;
-#endif
 	host->next = host_list;
 	host_list = host;
       }
     } else conid = -1;
   } else conid = host->h.conid;
+  host_list_schedule_cleanup();
   HOST_LIST_UNLOCK;
   return conid;
 }
 
 static int remote_access_disconnect(int conid, int force){
-  static int (*disconnectFromMds) (int) = NULL;
-  int status;
   HOST_LIST_LOCK;
-  status = LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds);
-  host_list_t *host, *prev = NULL;
+  host_list_t *host;
   for (host = host_list; host && host->h.conid != conid; host = host->next);
   if (host) {
-    host->h.connections--;
-    DBG("Connection %d< %d\n",conid,host->h.connections);
-  } else DBG("Disconnected %d\n",conid);
-  for (host = host_list; host ;) {
-    if ((force && host->h.conid == conid) || (host->h.connections <= 0
-#ifdef USE_TIME
-	host->h.time < time(0)-USE_TIME
-#endif
-)) {
-      DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
-      if (disconnectFromMds)
-	status = disconnectFromMds(conid);
-      if (prev) {
-	prev->next = host->next;
-	free(host->h.unique);
-	free(host);
-	host = prev->next;
-      } else {
-	host_list  = host->next;
-	free(host->h.unique);
-	free(host);
-	host = host_list;
-      }
+    if (force) {
+      fprintf(stderr,"Connection %d: forcefully disconnecting %d links\n",conid,host->h.connections);
+      host->h.connections = 0;
+      host_list_cleanup();
     } else {
-      prev = host;
-      host = host->next;
+      host->h.connections--;
+      DBG("Connection %d< %d\n",conid,host->h.connections);
     }
-  }
+  } else DBG("Disconnected %d\n",conid);
   HOST_LIST_UNLOCK;
-  return status;
+  return TreeSUCCESS;
 }
 
 ///////////////////////////////////////////////////////////////////
