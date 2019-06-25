@@ -211,7 +211,8 @@ int DisconnectConnection(int conid){
   Connection *p, *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
-  if (c) {
+  if (c && c->state & CON_DISCONNECT) c = NULL;
+  else if (c) {
     c->state |= CON_DISCONNECT; // sets disconnect
     pthread_cond_broadcast(&c->cond);
     if (c->state & ~CON_DISCONNECT) { // if any task but disconnect
