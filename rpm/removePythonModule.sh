@@ -29,11 +29,11 @@ do
 	then
 	  rm -f $mdir
 	else
-	  echo rm -Rf $mdir
+	  rm -Rf $mdir
 	fi
 	if [ "$?" = 0 ]
 	then
-	  mdir=$(getModDir $1 ${py})
+	  mdir=$(getModDir $1 ${py} $mdsplus_dir)
           continue # check if there is more
 	fi
     fi
