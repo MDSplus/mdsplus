@@ -877,8 +877,11 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
       $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MDSplus
       for py in python python3
       do
-        ${py} -m compileall -q -f $RPM_INSTALL_PREFIX/mdsplus/python &gt;/dev/null 2&gt;&amp;1
-        ${py} $RPM_INSTALL_PREFIX/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        if ( ${py} -c exit\(\) &gt;/dev/null 2&gt;&amp;1 )
+        then
+          ${py} -m compileall -q -f $RPM_INSTALL_PREFIX/mdsplus/python &gt;/dev/null 2&gt;&amp;1
+          ${py} $RPM_INSTALL_PREFIX/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
+	fi
       done
     </post>
     <preun>
@@ -900,10 +903,12 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
       /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
       for py in python python3
       do
-        ${py} -m compileall -q -f /usr/local/mdsplus/python &gt;/dev/null 2&gt;&amp;1
-        ${py} /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
+        if ( ${py} -c exit\(\) &gt;/dev/null 2&gt;&amp;1 )
+        then
+          ${py} -m compileall -q -f /usr/local/mdsplus/python &gt;/dev/null 2&gt;&amp;1
+          ${py} /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
+	fi
       done
-      popd &gt;/dev/null 2&gt;&amp;1
     </postinst>
     <prerm>
       /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
