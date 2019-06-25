@@ -77,20 +77,25 @@ typedef struct host_list{
 } host_list_t;
 
 static host_list_t *host_list = NULL;
+static int host_list_armed  = FALSE;
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t  host_list_sig  = PTHREAD_COND_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
 /** host_list_cleanup
- * can be colled to cleanup unused connections in host_list.
- * meant to be called by host_list_clean_main().
+ * Can be colled to cleanup unused connections in host_list.
+ * Meant to be called by host_list_clean_main() with conid = -1
+ * Can be called by remote_access_disconnect() with conid>=0,
+ * in which case it will only disconnect the desired connection.
  */
-static void host_list_cleanup(){
+static void host_list_cleanup(const int conid){
   static int (*disconnectFromMds) (int) = NULL;
   if IS_NOT_OK(LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", &disconnectFromMds))
     perror("Error loading MdsIpShr->DisconnectFromMds in host_list_cleanup");
   host_list_t *host, *prev = NULL;
   for (host = host_list; host ;) {
+    if (conid>=0 && host->h.conid!=conid)
+      continue;
     if (host->h.connections <= 0) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
       if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
@@ -113,36 +118,45 @@ static void host_list_cleanup(){
   }
 }
 /** host_list_clean_main
- * Run method of host_list_cleaner schedulled by host_list_schedule_cleanup().
- * Triggers a 10 second timout upon which it will call host_list_cleanup().
- * signalling host_cleaner_sig will reset the 10 second timeout.
+ * Run method of host_list_cleaner.
+ * Implements a 10 second timout upon which it will call host_list_cleanup().
+ * After the cleanup it will go into idle state.
+ * Signalling host_cleaner_sig will wake it up or reset the timeout.
  */
 static void host_list_clean_main(){
   HOST_LIST_LOCK;
   struct timespec tp;
-  do{
+  do{ // entering armed state
+    host_list_armed = TRUE;
     clock_gettime(CLOCK_REALTIME, &tp);
     tp.tv_sec += 10;
-    int status = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp);
-    if (status == ETIMEDOUT) {
-        host_list_cleanup();
-     } else if (status != 0) {
-        perror("PANIC in treeshr/RemoteAccess.c -> host_list_clean_main");
-        abort();
-     }
+    int err = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp);
+    if (!err) continue; // reset timeout
+    if (err == ETIMEDOUT) {
+      host_list_cleanup(-1);
+    } else {
+      perror("PANIC in treeshr/RemoteAccess.c -> host_list_clean_main");
+      abort();
+    } // entering idle state
+    host_list_armed = FALSE;
+    pthread_cond_wait(&host_list_sig,&host_list_lock);
   } while(1);
   pthread_cleanup_pop(1);
 }
+/** host_list_init_cleanup
+ * Creates the cleanup thread and detaches.
+ * This method is only called once in host_list_schedule_cleanup()
+ */
 static void host_list_init_cleanup(){
   static pthread_t thread;
   int err = pthread_create(&thread, NULL, (void*)host_list_clean_main, NULL);
   if (!err) pthread_detach(thread);
 }
-static void host_list_schedule_cleanup(){
-  RUN_FUNCTION_ONCE(host_list_init_cleanup);
-  pthread_cond_signal(&host_list_sig);
-}
-
+/** remote_access_connect
+ * Both creates and selects existing connections for reuse.
+ * This method shall reset the cleanup cycle to ensure full timeout period.
+ * If the cleanup cycle is not armed, it is not required to arm it.
+ */
 static int remote_access_connect(char *server, int inc_count, void *dbid __attribute__((unused))){
   static int (*ReuseCheck) (char *,char *,int) = NULL;
   char unique[128]="\0";
@@ -182,11 +196,17 @@ static int remote_access_connect(char *server, int inc_count, void *dbid __attri
       }
     } else conid = -1;
   } else conid = host->h.conid;
-  host_list_schedule_cleanup();
+  if (host_list_armed)
+    pthread_cond_signal(&host_list_sig);
   HOST_LIST_UNLOCK;
   return conid;
 }
 
+/** remote_access_disconnect
+ * Used to close a connection either forcefulle or indirect by reducing the connection counter.
+ * If the counter drops to 0, this method shall arm the cleanup cycle.
+ * If the cleanup cycle is already armed, it is not required to reset it.
+ */
 static int remote_access_disconnect(int conid, int force){
   HOST_LIST_LOCK;
   host_list_t *host;
@@ -195,10 +215,15 @@ static int remote_access_disconnect(int conid, int force){
     if (force) {
       fprintf(stderr,"Connection %d: forcefully disconnecting %d links\n",conid,host->h.connections);
       host->h.connections = 0;
-      host_list_cleanup();
+      host_list_cleanup(conid);
     } else {
       host->h.connections--;
       DBG("Connection %d< %d\n",conid,host->h.connections);
+      if (host->h.connections<=0 && !host_list_armed) {
+	// arm host_list_cleaner
+	RUN_FUNCTION_ONCE(host_list_init_cleanup);
+	pthread_cond_signal(&host_list_sig);
+      }
     }
   } else DBG("Disconnected %d\n",conid);
   HOST_LIST_UNLOCK;
