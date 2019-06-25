@@ -91,7 +91,7 @@ Connection *FindConnectionWithLock(int id, con_t state){
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
   if (c) {
-    while (c->state && !(c->state & CON_DISCONNECT)) {
+    while (c->state & ~CON_DISCONNECT) {
       DBG("Connection %02d -- %02x waiting\n",c->id,state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
@@ -212,15 +212,19 @@ int DisconnectConnection(int conid){
   CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
   if (c) {
-    c->state |= CON_DISCONNECT;
+    c->state |= CON_DISCONNECT; // sets disconnect
     pthread_cond_broadcast(&c->cond);
-    if (c->state & !CON_DISCONNECT) {
+    if (c->state & ~CON_DISCONNECT) { // if any task but disconnect
       struct timespec tp;
       clock_gettime(CLOCK_REALTIME, &tp);
-      tp.tv_sec += 10; // wait upto 10 seconds to allow current task to finish
-      while (c->state & !CON_DISCONNECT && pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      tp.tv_sec += 10;
+      // wait upto 10 seconds to allow current task to finish
+      // while exits if no other task but disconnect or on timeout
+      while (c->state & ~CON_DISCONNECT && !pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      if (c->state & ~CON_DISCONNECT)
+        fprintf(stderr,"DisconnectConnection: Timeout waiting for connection %d state=%d", conid, c->state);
     }
-    // remove after tast is complete
+    // remove after task is complete
     if (p)      p->next = c->next;
     else ConnectionList = c->next;
   }
