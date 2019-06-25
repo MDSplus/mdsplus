@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>
 #include "treeshrp.h"
 
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
@@ -123,15 +123,13 @@ static void host_list_clean_main(){
   do{
     clock_gettime(CLOCK_REALTIME, &tp);
     tp.tv_sec += 10;
-    if (pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp)) {
-      if (errno != ETIMEDOUT) {
+    int status = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp); {
+    if (status == ETIMEDOUT) {
+        host_list_cleanup();
+     } else if (status != 0) {
         perror("PANIC in treeshr/RemoteAccess.c -> host_list_clean_main");
         abort();
-      }
-      continue;
-    }
-    host_list_cleanup();
-    pthread_cond_wait(&host_list_sig,&host_list_lock);
+     }
   } while(1);
   pthread_cleanup_pop(1);
 }
