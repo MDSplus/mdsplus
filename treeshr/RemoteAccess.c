@@ -64,6 +64,7 @@ static inline char *replaceBackslashes(char *filename) {
 static pthread_mutex_t host_list_lock = PTHREAD_MUTEX_INITIALIZER;
 #define HOST_LIST_LOCK    pthread_mutex_lock(&host_list_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&host_list_lock);
 #define HOST_LIST_UNLOCK  pthread_cleanup_pop(1);
+#define USE_TIME 60
 // #define USE_TIME 1 # i.e. connections that are use for less than one second are kept for speedup of short requests.. questionable usefulness
 typedef struct {
   int conid;
@@ -149,7 +150,7 @@ static int remote_access_disconnect(int conid, int force){
   for (host = host_list; host ;) {
     if ((force && host->h.conid == conid) || (host->h.connections <= 0
 #ifdef USE_TIME
-	host->h.time < time(0)-USE_TIME
+	&& host->h.time < time(0)-USE_TIME
 #endif
 )) {
       DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
