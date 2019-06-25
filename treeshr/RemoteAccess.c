@@ -123,7 +123,7 @@ static void host_list_clean_main(){
   do{
     clock_gettime(CLOCK_REALTIME, &tp);
     tp.tv_sec += 10;
-    int status = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp); {
+    int status = pthread_cond_timedwait(&host_list_sig,&host_list_lock,&tp);
     if (status == ETIMEDOUT) {
         host_list_cleanup();
      } else if (status != 0) {
