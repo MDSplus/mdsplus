@@ -72,64 +72,72 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
 {
 #ifdef __ALPHA
   int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
-#else
-  int f_regs = 1;		/*(rtype == 0) i.e. no return value */
 #endif
   switch (rtype) {
   case DTYPE_F:
   case DTYPE_FS:
-    if (f_regs) {
+#ifdef __ALPHA
+    if (f_regs)
+#endif
+    {
       float (*called_f) () = (float (*)())called;
       float *result_f = (float *)result;
       *max = sizeof(float);
       *result_f = (*called_f) (newdsc, routine);
+#ifdef __ALPHA
     } else {
       *max = sizeof(float);
       *result = (*called) (newdsc, routine);
+#endif
+      break;
     }
-    break;
   case DTYPE_D:
   case DTYPE_G:
   case DTYPE_FC:
   case DTYPE_FSC:
-    if (f_regs) {
+#ifdef __ALPHA
+    if (f_regs)
+#endif
+    {
       double (*called_g) () = (double (*)())called;
       double *result_g = (double *)result;
       *max = sizeof(double);
       *result_g = (*called_g) (newdsc, routine);
       break;
     }
+#ifdef __ALPHA
     MDS_ATTR_FALLTHROUGH
+#endif
   case DTYPE_T:
   case DTYPE_POINTER:
-    if (f_regs) {
+  case DTYPE_DSC:
+#ifdef __ALPHA
+    if (f_regs)
+#endif
+    {
       void *(*called_p) () = (void *(*)())called;
       void **result_p = (void *)result;
       *max = sizeof(void *);
       *result_p = (*called_p) (newdsc, routine);
+      break;
     }
 #ifdef __ALPHA
-    else {
-      _int64_t(*called_g) () = (_int64_t(*)())called;
-      _int64_t *result_g = (_int64_t *) result;
-      *max = sizeof(double);
-      *result_g = (*called_g) (newdsc, routine);
-    }
+    MDS_ATTR_FALLTHROUGH
 #endif
-    break;
-  case DTYPE_DSC:
-    {
-      void *(*called_dsc) () = (void *(*)())called;
-      void **result_dsc = (void **)result;
-      *max = sizeof(void *);
-      *result_dsc = (*called_dsc) (newdsc, routine);
+  case DTYPE_Q:
+  case DTYPE_QU:
+    { // 8 bytes
+      int64_t (*called_q) () = (int64_t (*)())called;
+      int64_t *result_q = (int64_t *)result;
+      *max = sizeof(int64_t);
+      *result_q = (*called_q) (newdsc, routine);
       break;
     }
   default:
-    {
-      unsigned int (*called_int) () = (unsigned int (*)())called;
-      unsigned int *result_int = (unsigned int *)result;
-      *max = sizeof(int);
+    { // 4 bytes
+      int32_t (*called_int) () = (int32_t (*)())called;
+      int32_t *result_int = (int32_t *)result;
+      *max = sizeof(int32_t);
       *result_int = (*called_int) (newdsc, routine);
     }
   }
