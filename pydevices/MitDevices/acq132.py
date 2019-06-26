@@ -78,21 +78,21 @@ class ACQ132(acq.Acq):
             print("have active chan")
 
         try:
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
         except Exception as e:
             raise DevBAD_TRIG_SRC(str(e))
         if self.debugging():
             print("have trig_src")
 
         try:
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         except Exception as e:
             raise DevBAD_CLOCK_SRC(str(e))
         if self.debugging():
             print("have clock src")
 
         try:
-            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+            clock_out=str(self.clock_out.record.getOriginalPartName())[1:]
         except:
             clock_out=None
 
@@ -180,7 +180,7 @@ class ACQ132(acq.Acq):
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print("chan_mask = %s" % (chanMask,))
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+        clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         if self.debugging():
             print("clock_src = %s" % (clock_src,))
         if clock_src == 'INT_CLOCK' :

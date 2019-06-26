@@ -548,7 +548,7 @@ add_cmd get.trig >> $settingsf
             print("finishing doInit")
 
     def storeClock(self):
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+        clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         if self.debugging():
             print("clock_src = %s" % (clock_src,))
         try:
@@ -630,7 +630,7 @@ add_cmd get.trig >> $settingsf
             print("starting trigger")
         try:
             boardip = self.getBoardIp()
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
             if self.debugging() :
                 print("executing trigger on board %s, trig_src is %s."% (boardip, trig_src,))
             trig_src = trig_src[2:]

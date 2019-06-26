@@ -155,7 +155,7 @@ class DT132(Device):
                 print "active chans must be in (8, 16, 32)"
                 active_chans = 32
             error="Trig source must be a string"
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
             error=None
             if debug:
                 print "trig_src is %s\n" % trig_src
@@ -165,7 +165,7 @@ class DT132(Device):
             trig_edge=self.trig_edge.record.getString()
             error=None
             error="Clock source must be a string"
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
             error=None
             if debug:
                 print "clock_src is %s\n" % clock_src
@@ -287,7 +287,7 @@ class DT132(Device):
             post = int(post)-1
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             error="Clock source must be a string"
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
             error=None
             if clock_src == 'INT_CLOCK' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))

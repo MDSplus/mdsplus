@@ -158,12 +158,12 @@ class DT216B(Device):
             if active_chans not in (2,4,8,16) :
                 print "active chans must be in (2, 4,8, 16 )"
                 active_chans = 16
-            trig_src=self.check('self.trig_src.record.getOriginalPartName().getString()[1:]', "Trig source must be a string")
+            trig_src=self.check('str(self.trig_src.record.getOriginalPartName())[1:]', "Trig source must be a string")
             print "trig_src is %s\n" % trig_src
             if not trig_src in self.trig_sources:
                 raise Exception, "Trig_src must be in %s" % str(self.trig_sources)
             trig_edge=self.check('self.trig_edge.record.getString()', 'Trig edge must be a string')
-            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
+            clock_src=self.check('str(self.clock_src.record.getOriginalPartName())[1:]', "Clock source must be a string")
             if debug:
                 print "clock_src is %s\n" % clock_src
             if not clock_src in self.clock_sources:
@@ -266,7 +266,7 @@ class DT216B(Device):
             mask = UUT.uut.acqcmd('getChannelMask').split('=')[-1]
             if debug:
                 print "pre = %d, post = %d" % (pre, post, )
-            clock_src=self.check('self.clock_src.record.getOriginalPartName().getString()[1:]', "Clock source must be a string")
+            clock_src=self.check('str(self.clock_src.record.getOriginalPartName())[1:]', "Clock source must be a string")
             if clock_src == 'INT_CLOCK' or clock_src == 'MASTER' :
                 self.clock.record = Range(delta=1./self.getInternalClock(UUT))
             else:

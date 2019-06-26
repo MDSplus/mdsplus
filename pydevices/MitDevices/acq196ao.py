@@ -129,13 +129,13 @@ class ACQ196AO(Acq):
             if max_samples < 0 :
                 raise Exception(message)
             msg="Could not read clock source"
-            clock_src=self.ao_clock.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.ao_clock.record.getOriginalPartName())[1:]
             msg="Clock must be filled in with valid Range value"
             clock = self.__getattr__(clock_src.lower())
             if self.debugging():
                 print "clock source is %s clock is %s\n"%(clock_src, clock,)
             msg="Could not read trigger source"
-            trig_src=self.ao_trig.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.ao_trig.record.getOriginalPartName())[1:]
             msg="Trigger time must be defined  at init time"
             trigger = self.__getattr__(trig_src.lower())
             msg="FAWG_DIV must be a postive integer"

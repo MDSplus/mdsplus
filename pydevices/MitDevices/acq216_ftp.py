@@ -72,11 +72,11 @@ class ACQ216_FTP(ACQ_FTP):
                 print "active chans must be in (2, 4, 8, 16 )"
                 active_chan = 16
             msg="Could not read trigger source"
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
             msg="Could not read clock source"
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
             msg=None
-            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+            clock_out=str(self.clock_out.record.getOriginalPartName())[1:]
             msg="Must specify pre trigger samples"
             pre_trig=int(self.pre_trig.data()*1024)
             msg="Must specify post trigger samples"
@@ -218,7 +218,7 @@ class ACQ216_FTP(ACQ_FTP):
         chanMask = settings['getChannelMask'].split('=')[-1]
         if self.debugging():
             print "chan_mask = %s\n" % (chanMask,)
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+        clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         if self.debugging():
             print "clock_src = %s\n" % (clock_src,)
         if clock_src == 'INT_CLOCK' :
