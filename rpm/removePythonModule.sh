@@ -17,7 +17,7 @@ getModDir() {
     echo $mdir
 }
 
-mdsplus_dir=$(realpath $(dirname ${0})/..)
+mdsplus_dir=$(readlink -f $(dirname ${0})/..)
 for py in python2 python3
 do
   mdir=$(getModDir $1 ${py} $mdsplus_dir)

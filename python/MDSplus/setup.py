@@ -41,7 +41,8 @@ def parseTag(tag):
 
 
 try:
-    exec(open('_version.py').read())
+    mod_dir=os.path.dirname(os.path.abspath(__file__))
+    exec(open(mod_dir+os.sep+'_version.py').read())
     release=version
     pname=parseTag(release_tag)
 except:
