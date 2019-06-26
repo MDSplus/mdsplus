@@ -440,7 +440,7 @@ EOF
 parsecmd "${trigger_opts} ${os_opts} ${opts}"
 
 TAG=$(git describe --tags)
-RELEASE_VERSION="${RELEASE_VERSION-$(echo $TAG | cut -d- -f2,3,4 --output-delimiter='.')}"
+RELEASE_VERSION="${RELEASE_VERSION-$(echo $TAG | cut -d- -f2,3,4 | tr '-' '.')}"
 BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
