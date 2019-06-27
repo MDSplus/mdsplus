@@ -66,7 +66,7 @@ extern int TdiPutIdent();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
+STATIC_ROUTINE int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
@@ -107,20 +107,17 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
   return 1;
 }
 
-int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_function *pfun;
-  struct descriptor_xd image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
+  mds_function_t *pfun;
+  mdsdsc_xd_t image = EMPTY_XD, entry = EMPTY_XD, tmp[255];
   int j, max = 0, ntmp = 0, (*routine) ();
-  struct descriptor *result[2] = { 0, 0 };
+  char result[8] = { 0 };// we need up to 8 bytes
   unsigned short code;
-  struct descriptor *newdsc[256];
-  struct descriptor dx = { 0, 0, CLASS_S, 0 };
+  mdsdsc_t *newdsc[256] = {0};
+  mdsdsc_t dx = { 0, rtype, CLASS_S, result };
   unsigned char origin[255];
-  dx.dtype = rtype;
-  dx.pointer = (char *)result;
-  memset(newdsc, 0, sizeof(newdsc));
   if (narg > 255 + 2)
     status = TdiNDIM_OVER;
   else
@@ -142,7 +139,7 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
       if (code == OPC_DESCR) {
 	tmp[ntmp] = EMPTY_XD;
 	status = TdiData(pfun->arguments[0], &tmp[ntmp] MDS_END_ARG);
-	newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer;
+	newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer;
 	origin[ntmp++] = (unsigned char)j;
       } else if (code == OPC_REF) {
 	tmp[ntmp] = EMPTY_XD;
@@ -152,7 +149,7 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
 	    DESCRIPTOR(zero, "\0");
 	    TdiConcat(&tmp[ntmp], &zero, &tmp[ntmp] MDS_END_ARG);
 	  }
-	  newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
+	  newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer->pointer;
 	}
 	origin[ntmp++] = (unsigned char)j;
       } else if (code == OPC_VAL) {
@@ -168,7 +165,7 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
 	MdsFree1Dx(&xd, 0);
       } else if (code == OPC_XD) {
 	tmp[ntmp] = EMPTY_XD;
-	status = TdiEvaluate(pfun->arguments[0], newdsc[j - 1] = (struct descriptor *)&tmp[ntmp]
+	status = TdiEvaluate(pfun->arguments[0], newdsc[j - 1] = (mdsdsc_t *)&tmp[ntmp]
 			     MDS_END_ARG);
 	origin[ntmp++] = (unsigned char)j;
       } else
@@ -184,11 +181,11 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
       newdsc[j - 1] = tmp[ntmp].pointer;
       if (newdsc[j - 1]) {
 	if (newdsc[j - 1]->dtype != DTYPE_T)
-	  newdsc[j - 1] = (struct descriptor *)newdsc[j - 1]->pointer;
+	  newdsc[j - 1] = (mdsdsc_t *)newdsc[j - 1]->pointer;
 	else {
 	  DESCRIPTOR(zero_dsc, "\0");
 	  TdiConcat(&tmp[ntmp], &zero_dsc, &tmp[ntmp] MDS_END_ARG);
-	  newdsc[j - 1] = (struct descriptor *)tmp[ntmp].pointer->pointer;
+	  newdsc[j - 1] = (mdsdsc_t *)tmp[ntmp].pointer->pointer;
 	}
       }
       origin[ntmp++] = (unsigned char)j;
@@ -201,19 +198,19 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
   if STATUS_OK
     switch (rtype) {
     case DTYPE_DSC:
-      dx.pointer = (char *)result[0];
-      if (result[0])
-	switch (result[0]->class) {
+      dx.pointer = *(char **)result;
+      if (*(void**)result)
+	switch ((*(mdsdsc_t **)result)->class) {
 	case CLASS_XD:
 	  MdsFree1Dx(out_ptr, NULL);
-	  *out_ptr = *(struct descriptor_xd *)result[0];
-	  *(struct descriptor_xd *)result[0] = EMPTY_XD;
+	  *out_ptr = **(mdsdsc_xd_t **)result;
+	  **(mdsdsc_xd_t **)result = EMPTY_XD;
 	  goto skip;
 	case CLASS_D:
 	  MdsFree1Dx(out_ptr, NULL);
-	  *(struct descriptor *)out_ptr = *result[0];
-	  result[0]->length = 0;
-	  result[0]->pointer = 0;
+	  *(mdsdsc_t *)out_ptr = **(mdsdsc_t**)result;
+ 	  (*(mdsdsc_t**)result)->length  = 0;
+ 	  (*(mdsdsc_t**)result)->pointer = NULL;
 	  goto skip;
 	default:
 	  break;
@@ -222,21 +219,15 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
     case DTYPE_T:
     case DTYPE_PATH:
     case DTYPE_EVENT:
-      if (!result[0]) goto skip;
-      dx.length = (unsigned short)strlen(dx.pointer = (char *)result[0]);
+      if (!*(char **)result) goto skip;
+      dx.length = (length_t)strlen(dx.pointer = *(char **)result);
       break;
     case DTYPE_NID:
       dx.length = sizeof(int);
       break;
     case DTYPE_POINTER:
       dx.length = sizeof(void *);
-      dx.pointer = (char *)result;
-      //      if (sizeof(void *) == 8)
-      //  dx.dtype = DTYPE_QU;
-      //else
-      //  dx.dtype = DTYPE_LU;
       break;
-
     default: {
       if ((int)rtype < TdiCAT_MAX) {
 	if ((dx.length = TdiREF_CAT[(int)rtype].length) > max)
@@ -249,12 +240,12 @@ int TdiCall(dtype_t rtype, int narg, struct descriptor *list[], struct descripto
     status = MdsCopyDxXd(&dx, out_ptr);
  skip:
   for (j = 0; j < ntmp; ++j) {
-    for (pfun = (struct descriptor_function *)list[origin[j]]; pfun && pfun->dtype == DTYPE_DSC;)
-      pfun = (struct descriptor_function *)pfun->pointer;
+    for (pfun = (mds_function_t *)list[origin[j]]; pfun && pfun->dtype == DTYPE_DSC;)
+      pfun = (mds_function_t *)pfun->pointer;
     if (pfun && pfun->dtype == DTYPE_FUNCTION) {
-      code = *(unsigned short *)pfun->pointer;
+      code = *(length_t *)pfun->pointer;
       if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
-	pfun = (struct descriptor_function *)pfun->arguments[0];
+	pfun = (mds_function_t *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
 	TdiPutIdent(pfun, &tmp[j]);
     }
