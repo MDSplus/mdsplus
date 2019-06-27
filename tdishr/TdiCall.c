@@ -70,50 +70,10 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
-#ifdef __ALPHA
-  int f_regs = (*(int *)routine == 0x23FF0000) ? 0 : 1;
-#endif
   switch (rtype) {
-  case DTYPE_F:
-  case DTYPE_FS:
-#ifdef __ALPHA
-    if (f_regs)
-#endif
-    {
-      float (*called_f) () = (float (*)())called;
-      float *result_f = (float *)result;
-      *max = sizeof(float);
-      *result_f = (*called_f) (newdsc, routine);
-#ifdef __ALPHA
-    } else {
-      *max = sizeof(float);
-      *result = (*called) (newdsc, routine);
-#endif
-      break;
-    }
-  case DTYPE_D:
-  case DTYPE_G:
-  case DTYPE_FC:
-  case DTYPE_FSC:
-#ifdef __ALPHA
-    if (f_regs)
-#endif
-    {
-      double (*called_g) () = (double (*)())called;
-      double *result_g = (double *)result;
-      *max = sizeof(double);
-      *result_g = (*called_g) (newdsc, routine);
-      break;
-    }
-#ifdef __ALPHA
-    MDS_ATTR_FALLTHROUGH
-#endif
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
-#ifdef __ALPHA
-    if (f_regs)
-#endif
     {
       void *(*called_p) () = (void *(*)())called;
       void **result_p = (void *)result;
@@ -121,9 +81,10 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
       *result_p = (*called_p) (newdsc, routine);
       break;
     }
-#ifdef __ALPHA
-    MDS_ATTR_FALLTHROUGH
-#endif
+  case DTYPE_D:
+  case DTYPE_G:
+  case DTYPE_FC:
+  case DTYPE_FSC:
   case DTYPE_Q:
   case DTYPE_QU:
     { // 8 bytes
@@ -133,6 +94,8 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, struct descriptor **newdsc,
       *result_q = (*called_q) (newdsc, routine);
       break;
     }
+  //case DTYPE_F:
+  //case DTYPE_FS:
   default:
     { // 4 bytes
       int32_t (*called_int) () = (int32_t (*)())called;
