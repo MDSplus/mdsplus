@@ -21,8 +21,16 @@ class RFX_RPADC(Device):
         {'path':':CLOCK_MODE', 'type':'text', 'value': 'INTERNAL'},  	#Clock mode
         {'path':':EXT_CLOCK', 'type':'numeric'},  			#Ext. Clock
         {'path':':TRIG_EVENT', 'type':'numeric'	},  			#if clock_mode == TRIG_EVENT or clock_mode == EXT_EVENT
-        {'path':':CHAN_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
-        {'path':':CHAN_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
+        {'path':':RANGE_A', 'type':'numeric', 'value':1.},  		#1/20 Vpp
+        {'path':':RANGE_B', 'type':'numeric', 'value':1.},  			
+        {'path':':GAIN_A', 'type':'numeric', 'value':1.},  		
+        {'path':':GAIN_B', 'type':'numeric', 'value':1.},  		
+        {'path':':OFFSET_A', 'type':'numeric', 'value':0.},  		
+        {'path':':OFFSET_B', 'type':'numeric', 'value':0.},  		
+        {'path':':RAW_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
+        {'path':':RAW_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
+        {'path':':CHAN_A', 'type':'signal'},
+        {'path':':CHAN_B', 'type':'signal'},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
          'options':('no_write_shot',)},
@@ -152,10 +160,12 @@ class RFX_RPADC(Device):
                                          c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation))
             if self.fd < 0:
                 print("Error opening device")
-                return
+                return 0
             print('device opened')
-            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.chan_a.getNid(), self.chan_b.getNid(),
+            self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
                                 self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, frequency1, isSingle)
+	    self.chan_a.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
+	    self.chan_b.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1
