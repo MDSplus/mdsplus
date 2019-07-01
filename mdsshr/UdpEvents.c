@@ -28,6 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SHUT_RDWR SD_BOTH
 #else
 #define SOCKET int
+#define INVALID_SOCKET -1
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
@@ -61,46 +62,22 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 static void print_error_code(char* message, int error) {
   char *errorstr;
   switch (error) {
-    case WSANOTINITIALISED:
-      errorstr = "WSANOTINITIALISED";
-      break;
-    case WSAENETDOWN:
-      errorstr = "WSAENETDOWN";
-      break;
-    case WSAEADDRINUSE:
-      errorstr = "WSAEADDRINUSE";
-      break;
-    case WSAEINTR:
-      errorstr = "WSAEINTR";
-      break;
-    case WSAEINPROGRESS:
-      errorstr = "WSAEINPROGRESS";
-      break;
-    case WSAEALREADY:
-      errorstr = "WSAEALREADY";
-      break;
-    case WSAEADDRNOTAVAIL:
-      errorstr = "WSAEADDRNOTAVAIL";
-      break;
-    case WSAEAFNOSUPPORT:
-      errorstr = "WSAEAFNOSUPPORT";
-      break;
-    case WSAECONNREFUSED:
-      errorstr = "WSAECONNREFUSED";
-      break;
-    case WSAENOPROTOOPT:
-      errorstr = "WSAENOPROTOOPT";
-      break;
-    case WSAEFAULT:
-      errorstr = "WSAEFAULT";
-      break;
-    default:
-      errorstr = 0;
+    case WSANOTINITIALISED: errorstr = "WSANOTINITIALISED"; break;
+    case WSAENETDOWN:       errorstr = "WSAENETDOWN";       break;
+    case WSAEADDRINUSE:     errorstr = "WSAEADDRINUSE";     break;
+    case WSAEINTR:          errorstr = "WSAEINTR";          break;
+    case WSAEINPROGRESS:    errorstr = "WSAEINPROGRESS";    break;
+    case WSAEALREADY:       errorstr = "WSAEALREADY";       break;
+    case WSAEADDRNOTAVAIL:  errorstr = "WSAEADDRNOTAVAIL";  break;
+    case WSAEAFNOSUPPORT:   errorstr = "WSAEAFNOSUPPORT";   break;
+    case WSAECONNREFUSED:   errorstr = "WSAECONNREFUSED";   break;
+    case WSAENOPROTOOPT:    errorstr = "WSAENOPROTOOPT";    break;
+    case WSAEFAULT:         errorstr = "WSAEFAULT";         break;
+    case WSAENOTSOCK:       errorstr = "WSAENOTSOCK";       break;
+    default:                errorstr = 0;
     }
-  if (errorstr)
-    fprintf(stderr, "%s - %s\n", message,errorstr);
-  else
-    fprintf(stderr, "%s - error code %d\n", message,error);
+  if (errorstr) fprintf(stderr, "%s - %s\n", message,errorstr);
+  else          fprintf(stderr, "%s - error code %d\n", message,error);
 }
 inline static void print_error(char* message) {
   print_error_code(message,WSAGetLastError());
@@ -117,7 +94,7 @@ typedef struct _EventList {
 } EventList;
 
 struct EventInfo {
-  int socket;
+  SOCKET socket;
   char *eventName;
   void *arg;
   void (*astadr) (void *, int, char *);
@@ -125,10 +102,8 @@ struct EventInfo {
 
 static int EVENTID = 0;
 static EventList *EVENTLIST = 0;
-static int sendSocket = 0;
 static pthread_mutex_t eventIdMutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_mutex_t sendEventMutex = PTHREAD_MUTEX_INITIALIZER;
-static pthread_mutex_t getSocketMutex = PTHREAD_MUTEX_INITIALIZER;
 
 
 /**********************
@@ -145,7 +120,7 @@ static void *handleMessage(void *info_in)
 {
   struct EventInfo *info = (struct EventInfo *)info_in;
   pthread_mutex_lock(&eventIdMutex);
-  int socket = info->socket;
+  SOCKET socket = info->socket;
   size_t thisNameLen = strlen(info->eventName);
   char *thisEventName = strcpy(alloca(thisNameLen+1),info->eventName);
   void *arg = info->arg;
@@ -192,7 +167,7 @@ static void *handleMessage(void *info_in)
   return 0;
 }
 
-static int pushEvent(pthread_t thread, int socket) {
+static int pushEvent(pthread_t thread, SOCKET socket) {
   pthread_mutex_lock(&eventIdMutex);
   EventList *ev = malloc(sizeof(EventList));
   ev->eventid = ++EVENTID;
@@ -217,19 +192,6 @@ static EventList *popEvent(int eventid) {
   pthread_mutex_unlock(&eventIdMutex);
   return ev;
 }
-
-static int getSendSocket(){
-  pthread_mutex_lock(&getSocketMutex);
-  if (!sendSocket) {
-    if ((sendSocket = socket(AF_INET, SOCK_DGRAM, 0)) == -1) {
-      print_error("Error creating socket");
-      sendSocket = -1;
-    }
-  }
-  pthread_mutex_unlock(&getSocketMutex);
-  return sendSocket;
-}
-
 
 static void getMulticastAddr(char const *eventName, char *retIp)
 {
@@ -340,11 +302,17 @@ int MDSUdpEventCan(int eventid)
   return 1;
 }
 
-int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
-{
+static SOCKET send_socket = INVALID_SOCKET;
+static pthread_once_t send_socket_once = PTHREAD_ONCE_INIT;
+static void send_socket_get(){
+  if ((send_socket = socket(AF_INET, SOCK_DGRAM, 0)) == INVALID_SOCKET)
+    print_error("Error creating socket");
+}
+
+int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf){
   char multiIp[64];
   uint32_t buflen_net_order = (uint32_t)htonl(bufLen);
-  int udpSocket;
+  SOCKET udpSocket;
   struct sockaddr_in sin;
   char *msg=0, *currPtr;
   unsigned int msgLen, nameLen = (unsigned int)strlen(eventName), actBufLen;
@@ -355,35 +323,12 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
   struct in_addr *interface_addr=0;
 
   getMulticastAddr(eventName, multiIp);
-  udpSocket = getSendSocket();
+  pthread_once(&send_socket_once,&send_socket_get);
+  udpSocket = send_socket;
 
   memset((char *)&sin, 0, sizeof(sin));
   sin.sin_family = AF_INET;
-#if defined(__MACH__) || defined(_WIN32)
-  struct hostent* hp = gethostbyname(multiIp);
-  if (!hp) {
-    int addr = inet_addr(multiIp);
-    if (addr != -1)  hp = gethostbyaddr(((void *)&addr),sizeof(int),AF_INET);
-  }
-  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
-#else
-  size_t memlen;
-  struct hostent hostbuf, *hp = NULL;
-  int herr;
-  char *hp_mem = NULL;
-  FREE_ON_EXIT(hp_mem);
-  for ( memlen=1024, hp_mem=malloc(memlen);
-        hp_mem && (gethostbyname_r(multiIp,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-        memlen *= 2, free(hp_mem), hp_mem = malloc(memlen));
-  if (!hp) {
-    int addr = (int)inet_addr(multiIp);
-    for (;
-        hp_mem && (gethostbyaddr_r(((void *)&addr),sizeof(int),AF_INET,&hostbuf,hp_mem,memlen,&hp,&herr) == ERANGE);
-        memlen *=2, free(hp_mem), hp_mem = (char*)malloc(memlen));
-  }
-  if (hp) memcpy(&sin.sin_addr, hp->h_addr_list[0], (size_t)hp->h_length);
-  FREE_NOW(hp_mem);
-#endif
+  *(int*)&sin.sin_addr = LibGetHostAddr(multiIp);
   UdpEventGetPort(&port);
   sin.sin_port = htons(port);
   nameLen = (unsigned int)strlen(eventName);
@@ -421,8 +366,7 @@ int MDSUdpEvent(char const *eventName, unsigned int bufLen, char const *buf)
     status = 0;
   } else
     status = 1;
-  if (msg)
-    free(msg);
+  free(msg);
   pthread_mutex_unlock(&sendEventMutex);
   return status;
 }

@@ -174,7 +174,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define ADD_NODE(name, usage)\
     {	status = TreeAddNode(STRING_LITERAL(name), &curr_nid, usage);\
 	 if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
-         flags = 0;}
+	 flags = 0;}
 
 #define ADD_NODE_INTEGER(name, value, usage)\
     {	int num = value, curr_usage = usage;\
@@ -184,7 +184,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	else status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC);\
 	if(status & 1) status = TreePutRecord(curr_nid, &num_d,0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
-        flags = 0;}
+	flags = 0;}
 
 #define ADD_NODE_FLOAT(name, value, usage)\
     {	float num = value;\
@@ -195,7 +195,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	else status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_NUMERIC);\
 	if(status & 1) status = TreePutRecord(curr_nid, &num_d, 0);\
 	 if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
-         flags = 0;}
+	 flags = 0;}
 
 #define ADD_NODE_STRING(name, string, usage)\
     {	DESCRIPTOR(string_d, string);\
@@ -204,11 +204,11 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	else status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_TEXT);\
 	if(status & 1) status = TreePutRecord(curr_nid, (struct descriptor *)&string_d, 0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
-        flags = 0;}
+	flags = 0;}
 
 #define ADD_NODE_EXPR(name, usage)\
     {   DESCRIPTOR(expr_d, expr);\
-	int curr_usage = usage;\
+	usage_t curr_usage = usage;\
 	struct descriptor_xd comp_expr_xd = {0, DTYPE_DSC, CLASS_XD, 0, 0};\
 	status = TdiCompile((struct descriptor *)&expr_d, &comp_expr_xd MDS_END_ARG);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
@@ -228,40 +228,42 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	if(status & 1) status = TreePutRecord(curr_nid, comp_expr_xd.pointer, 0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
 	MdsFree1Dx(&comp_expr_xd,0);\
-        flags = 0;}
+	flags = 0;}
 
 #define ADD_NODE_ACTION(name, method_in, phase_in, sequence, completion_in, timout, server, usage)\
     {	DESCRIPTOR(phase_d, STRING_LITERAL(phase_in));\
 	DESCRIPTOR(method_d, STRING_LITERAL(method_in));\
 	DESCRIPTOR(server_d, STRING_LITERAL(server));\
 	char *compl = completion_in;\
-	int tim = timout, seq = sequence, disp_mode = TreeSCHED_SEQ, curr_usage = usage;\
+	int tim = timout, seq = sequence;\
+	treesched_t disp_mode = TreeSCHED_SEQ;\
+	usage_t curr_usage = usage;\
 	struct descriptor sequence_d = {4, DTYPE_L, CLASS_S, 0},\
 	    timout_d = {4, DTYPE_L, CLASS_S, 0},\
 	    completion_d = {0, DTYPE_T, CLASS_S, 0},\
 	    object_d = {4, DTYPE_NID, CLASS_S, 0};\
-        DESCRIPTOR_DISPATCH(dispatch_d, 0, 0, 0, 0, 0);\
+	DESCRIPTOR_DISPATCH(dispatch_d, 0, 0, 0, 0, 0);\
 	DESCRIPTOR_METHOD_0(task_d, 0,0,0);\
 	DESCRIPTOR_ACTION(action_d, 0,0,0);\
-        completion_d.pointer = compl;\
+	completion_d.pointer = compl;\
 	sequence_d.pointer = (char *)&seq;\
 	timout_d.pointer = (char *)&tim;\
 	object_d.pointer = (char *)&head_nid;\
-	dispatch_d.pointer = (unsigned char *)&disp_mode;\
+	dispatch_d.pointer = &disp_mode;\
 	dispatch_d.ident = (struct descriptor *)&server_d;\
 	dispatch_d.phase = (struct descriptor *)&phase_d;\
 	dispatch_d.when = &sequence_d;\
-        task_d.method = (struct descriptor *)&method_d;\
-        task_d.object = (struct descriptor *)&object_d;\
-        action_d.dispatch = (struct descriptor *)&dispatch_d;\
-        action_d.task = (struct descriptor *)&task_d;\
+	task_d.method = (struct descriptor *)&method_d;\
+	task_d.object = (struct descriptor *)&object_d;\
+	action_d.dispatch = (struct descriptor *)&dispatch_d;\
+	action_d.task = (struct descriptor *)&task_d;\
 	if(tim) task_d.time_out = &timout_d;\
 	if(compl){ completion_d.length = strlen(compl); dispatch_d.completion = &completion_d; }\
 	if(curr_usage) status = TreeAddNode(STRING_LITERAL(name), &curr_nid, curr_usage);\
 	else status = TreeAddNode(STRING_LITERAL(name), &curr_nid, TreeUSAGE_ACTION);\
 	if(status & 1) status = TreePutRecord(curr_nid, (struct descriptor *)&action_d, 0);\
 	if(!(status & 1)) {TreeSetDefaultNid(old_nid); return status;}\
-        flags = 0;}
+	flags = 0;}
 
 #define COPY_PART_NAME(name)\
 {   DESCRIPTOR(return_d, STRING_LITERAL(name));\
@@ -283,7 +285,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 	struct descriptor_xd xd __attribute__ ((unused)) = {0, DTYPE_DSC, CLASS_XD, 0, 0}; \
 	struct descriptor_a *array_d_ptr __attribute__ ((unused));\
 	in_struct_type in_struct __attribute__ ((unused));\
-        static int curr_nid __attribute__ ((unused));\
+	static int curr_nid __attribute__ ((unused));\
 	static int curr_int __attribute__ ((unused));\
 	static float curr_float __attribute__ ((unused));\
 	static struct descriptor curr_nid_d __attribute__ ((unused)) = {sizeof(int), DTYPE_NID, CLASS_S, (char *) &curr_nid}; \
@@ -292,7 +294,7 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 
 #define initialize_variables(in_struct_type)\
 	memset((char *)&in_struct, '\0', sizeof(in_struct_type));\
-        in_struct.head_nid = head_nid;
+	in_struct.head_nid = head_nid;
 
 #define next_xd\
     memcpy((char *)&work_xd[xd_count++], (char *)&xd, sizeof(struct descriptor_xd));\

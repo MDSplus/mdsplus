@@ -39,7 +39,6 @@ int MdsClose(int id)
   int status = MdsValue(id, expression, &ansarg, NULL);
   if ((status & 1) && (ansarg.dtype == DTYPE_LONG))
     status = *(int *)ansarg.ptr;
-  if (ansarg.ptr)
-    free(ansarg.ptr);
+  free(ansarg.ptr);
   return status;
 }

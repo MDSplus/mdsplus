@@ -59,8 +59,9 @@ static void flushError(char *error)
   error[0] = 0;
 }
 
-void handle_signals(int signo __attribute__ ((unused)))
-{
+void handle_signals(int signo){
+ (void)signo;
+ fprintf(stderr,"received signal %d",signo);
 }
 
 int main(int argc, char const *argv[])
@@ -117,6 +118,24 @@ int main(int argc, char const *argv[])
 
   /* If other options on command line */
 
+  if ((argc > 2) && (strcmp("-f", argv[1]) == 0)) {
+    FILE * fp = fopen(argv[2],"r");
+    if (fp == NULL) {
+      perror("Error opening file");
+      exit(EXIT_FAILURE);
+    }
+    char line[1024];
+    while (fgets(line, sizeof(line), fp)) {
+	size_t len = strlen(line);
+	while(len>0 && (line[len-1]=='\n' || line[len-1]=='\r')) line[--len] = '\0';
+	if (len==0) continue;
+	if (mdsdcl_do_command(line) == MdsdclEXIT)
+	  break;
+    }
+    fclose(fp);
+    exit(EXIT_SUCCESS);
+  }
+
   if (argc > 1) {
 
     /* Concatenate rest of line into a mdsdcl command string */
@@ -130,8 +149,7 @@ int main(int argc, char const *argv[])
 
     status = mdsdcl_do_command(cmd);
     add_history(cmd);
-    if (cmd)
-      free(cmd);
+    free(cmd);
     goto done;
 
   }
@@ -140,7 +158,7 @@ int main(int argc, char const *argv[])
 
   prompt = mdsdclGetPrompt();
 
-  signal(SIGINT, handle_signals);
+  //signal(SIGINT, handle_signals);
 
   /* While more commands to be entered */
 
@@ -164,7 +182,7 @@ int main(int argc, char const *argv[])
     if (cmd) {
 
       /* If command continued from previous line or command need more input,
-         append line to previous command portion */
+	 append line to previous command portion */
       if (command) {
 	if (strlen(cmd) > 0) {
 	  command = (char *)realloc(command, strlen(command) + strlen(cmd) + 1);
@@ -184,9 +202,7 @@ int main(int argc, char const *argv[])
       /* If line ends in hyphen it is a continuation. Go get rest of line */
       if ( strlen(command)>1 ) if (command[strlen(command) - 1] == '-') {
 	command[strlen(command) - 1] = '\0';
-	if (prompt)
-	  free(prompt);
-	prompt = 0;
+	free(prompt);
 	prompt = strdup("Continue: ");
 	continue;
       }
@@ -211,8 +227,7 @@ int main(int argc, char const *argv[])
 	  }
 
 	  command = strcat(realloc(command, strlen(command) + 2), " ");
-	  if (prompt)
-	    free(prompt);
+	  free(prompt);
 	  prompt = strcpy(malloc(strlen(prompt_more) + 10), "_");
 	  strcat(prompt, prompt_more);
 	  strcat(prompt, ": ");
@@ -225,12 +240,11 @@ int main(int argc, char const *argv[])
 	  free(error);
 	  error = 0;
 	}
-	if (prompt)
-	  free(prompt);
+	free(prompt);
 	prompt = 0;
 	if (status == MdsdclEXIT) {
 	  free(command);
-          status=0;
+	  status=0;
 	  goto done;
 	}
       }
@@ -242,12 +256,9 @@ int main(int argc, char const *argv[])
     }
   }
  done:
-  if (output)
-    free(output);
-  if (prompt)
-    free(prompt);
-  if (error)
-    free(error);
+  free(output);
+  free(prompt);
+  free(error);
   history_file = mdsdclGetHistoryFile();
   if (history_file)
     write_history(history_file);

@@ -13,7 +13,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
     Data data;
     boolean editable = true;
     TreeDialog dialog;
-    
+
     public WindowEditor(Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
@@ -24,7 +24,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	    mode_idx = 1;
 	else
 	    mode_idx = 2;
-    	curr_mode_idx = mode_idx;
+	curr_mode_idx = mode_idx;
 	String names[] = {"Undefined", "Window", "Expression"};
 	combo = new JComboBox(names);
 	combo.setEditable(false);
@@ -35,12 +35,12 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	jp.add(combo);
 	add(jp, "North");
 	addEditor();
-    }    
+    }
     private void addEditor()
     {
 	switch(curr_mode_idx) {
 	    case 0: return;
-	    case 1: 
+	    case 1:
 		if(mode_idx == 1)
 		    window_edit = new WindowEdt((WindowData)data);
 		else
@@ -56,8 +56,8 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 		break;
 	}
     }
-    
-		    
+
+
     public void actionPerformed(ActionEvent e)
     {
 	if(!editable)
@@ -68,7 +68,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	int idx = combo.getSelectedIndex();
 	if(idx == curr_mode_idx)  return;
 	switch(curr_mode_idx)  {
-	    case 1: 
+	    case 1:
 		remove(window_edit);
 		break;
 	    case 2:
@@ -81,11 +81,11 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	dialog.repack();
     }
 
-		
+
     public void reset()
     {
 	switch(curr_mode_idx)  {
-		case 1: 
+		case 1:
 		    remove(window_edit);
 		    break;
 		case 2:
@@ -97,14 +97,14 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	validate();
 	repaint();
     }
-    
+
     public Data getData()
     {
 	switch(curr_mode_idx)  {
 	    case 0: return null;
-	    case 1: 
+	    case 1:
 		return window_edit.getData();
-	    case 2: 
+	    case 2:
 		return expr_edit.getData();
 	}
 	return null;
@@ -112,7 +112,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 
     public void setData(Data data)
     {
-    	this.data = data;
+	this.data = data;
 	if(data == null)
 	    mode_idx = 0;
 	else if(data.dtype == Data.DTYPE_WINDOW)
@@ -120,7 +120,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	else
 	    mode_idx = 2;
 	reset();
-    }	
+    }
 
 
     public void setEditable(boolean editable)
@@ -135,7 +135,7 @@ static class WindowEdt extends JPanel
 {
     WindowData window;
     LabeledExprEditor startidx_edit, endidx_edit, value0_edit;
-    
+
     public WindowEdt() {this(null);}
     public WindowEdt(WindowData window)
     {
@@ -157,27 +157,27 @@ static class WindowEdt extends JPanel
 	    this.window.getValueAt0(), false));
 	add(value0_edit);
     }
-    
+
     public void reset()
     {
 	startidx_edit.reset();
 	endidx_edit.reset();
 	value0_edit.reset();
     }
-    
+
     public Data getData()
     {
-	return new WindowData(startidx_edit.getData(), endidx_edit.getData(), 
+	return new WindowData(startidx_edit.getData(), endidx_edit.getData(),
 	    value0_edit.getData());
     }
-    
+
     public void setEditable(boolean editable)
     {
-        if(startidx_edit != null) startidx_edit.setEditable(editable);
+	if(startidx_edit != null) startidx_edit.setEditable(editable);
 	if(endidx_edit != null) endidx_edit.setEditable(editable);
 	if(value0_edit != null) value0_edit.setEditable(editable);
     }
 
-	
-}    
+
+}
 }

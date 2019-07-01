@@ -26,7 +26,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /******************************************************************
    name:        dc1394_support2.c
    purpose:     Callable routines for dc1394a device type
-   description: Based on libdc1394 version 2.  Works with RH5 (2.6) 
+   description: Based on libdc1394 version 2.  Works with RH5 (2.6)
 ********************************************************************/
 
 #include <errno.h>
@@ -130,10 +130,10 @@ EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
 }
 
 /*
- * dc1394Init - set up capture, allocate buffers and capture the frames 
+ * dc1394Init - set up capture, allocate buffers and capture the frames
  *
  * Arguments:
- *     int mode 
+ *     int mode
  *        DC1394_VIDEO_MODE_160x120_YUV444= 64,
  *        DC1394_VIDEO_MODE_320x240_YUV422,
  *        DC1394_VIDEO_MODE_640x480_YUV411,
@@ -174,7 +174,7 @@ EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
  *        DC1394_ISO_SPEED_800,
  *        DC1394_ISO_SPEED_1600,
  *        DC1394_ISO_SPEED_3200
- * 
+ *
  *     int max_frames - maximum number of frames to capture
  *        NOTE - Memory is allocated for all of them
  *
@@ -189,7 +189,7 @@ EXPORT void *CaptureFrames(void *arg __attribute__ ((unused)))
  *        DC1394_TRIGGER_MODE_15
  *
  *    int shutter - not sure of the range or units (1 .. 2k ?)
- *    int gain    - 
+ *    int gain    -
  *    int trig_on - external trigger 1  internal 0
  *    int frame_rate
  *       DC1394_FRAMERATE_1_875= 32,
@@ -355,16 +355,14 @@ EXPORT int dc1394Init(int mode, int iso_speed, int max_frames_in, int trigger_mo
   bytes =
       (bits_per_pixel <= 8) ? 1 : ((bits_per_pixel <= 16) ? 2 : ((bits_per_pixel <= 24) ? 3 : 4));
 
-  if (buf)
-    free(buf);
+  free(buf);
   framesize = width * height * bytes;
   buf = (unsigned char *)malloc(framesize * max_frames);
   if (buf == NULL) {
     fprintf(stderr, "Failed to allocate frame memory - restarting server\n");
     exit(0);
   }
-  if (frame_times)
-    free(frame_times);
+  free(frame_times);
   frame_times = (double *)malloc(max_frames * sizeof(double));
   if (frame_times == NULL) {
     fprintf(stderr, "Failed to allocate times memory - restarting server\n");

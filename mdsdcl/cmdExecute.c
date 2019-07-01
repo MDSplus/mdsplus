@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdcl_messages.h>
 #include "dcl_p.h"
 #include "mdsdclthreadsafe.h"
+#include <treeshr.h>
 
 
 dclDocListPtr mdsdcl_getdocs(){
@@ -67,8 +68,7 @@ void freeParameter(dclParameterPtr * p_in){
       free(p->restOfLine);
     for (i = 0; i < p->value_count; i++)
       free(p->values[i]);
-    if (p->values)
-      free(p->values);
+    free(p->values);
     free(p);
     *p_in = 0;
   }
@@ -83,14 +83,10 @@ static void freeQualifier(dclQualifierPtr * q_in){
     dclQualifierPtr q = *q_in;
     if (q) {
       int i;
-      if (q->name)
-	free(q->name);
-      if (q->defaultValue)
-	free(q->defaultValue);
-      if (q->type)
-	free(q->type);
-      if (q->syntax)
-	free(q->syntax);
+      free(q->name);
+      free(q->defaultValue);
+      free(q->type);
+      free(q->syntax);
       if (q->values) {
 	for (i = 0; i < q->value_count; i++)
 	  free(q->values[i]);
@@ -134,14 +130,10 @@ static void freeCommand(dclCommandPtr * cmd_in){
   if (cmd_in) {
     dclCommandPtr cmd = *cmd_in;
     if (cmd) {
-      if (cmd->verb)
-	free(cmd->verb);
-      if (cmd->routine)
-	free(cmd->routine);
-      if (cmd->image)
-	free(cmd->image);
-      if (cmd->command_line)
-	free(cmd->command_line);
+      free(cmd->verb);
+      free(cmd->routine);
+      free(cmd->image);
+      free(cmd->command_line);
       freeCommandParamsAndQuals(cmd);
       free(cmd);
       *cmd_in = 0;
@@ -158,7 +150,7 @@ static void freeCommand(dclCommandPtr * cmd_in){
   ** NOTE - findVerbInfo will recurse to find the command parts. **
 
  \param node [in] A pointer to a child node of a command verb node
-                  found in the xml document.
+	          found in the xml document.
  \param cmd [in] A pointer to a dclCommand structure.
 
 */
@@ -201,7 +193,7 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd){
     for (propNode = node->properties; propNode; propNode = propNode->next) {
 
       /* If this is a label property (i.e. <parameter label=gub ... />)
-         duplicate the label value into the dclParameter structure. */
+	 duplicate the label value into the dclParameter structure. */
 
       if (propNode->name &&
 	  (strcasecmp((const char *)propNode->name, "label") == 0) &&
@@ -396,19 +388,17 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd){
     cmd->qualifiers[cmd->qualifier_count] = qualifier;
     cmd->qualifier_count++;
 
-    /* else if this is a routine node (i.e. <routine ... /> 
+    /* else if this is a routine node (i.e. <routine ... />
        duplicate the routine name into the command routine element. */
 
   } else if (node->name && (strcasecmp((const char *)node->name, "routine") == 0)) {
     if (node->properties && node->properties->children && node->properties->children->content) {
-      if (cmd->routine)
-	free(cmd->routine);
+      free(cmd->routine);
       cmd->routine = strdup((const char *)node->properties->children->content);
     }
   } else if (node->name && (strcasecmp((const char *)node->name, "image") == 0)) {
     if (node->properties && node->properties->children && node->properties->children->content) {
-      if (cmd->image)
-	free(cmd->image);
+      free(cmd->image);
       cmd->image = strdup((const char *)node->properties->children->content);
     }
   }
@@ -429,7 +419,7 @@ static void findVerbInfo(xmlNodePtr node, dclCommandPtr cmd){
    \param name [in] Value to match with the content of the first property of the node found based on category.
    \param list [in] Pointer to a dclNodList which describes an array of xmlNodes
    \param exactFound [in,out] Pointer to an int flag which is set if the name parameter exactly matches the
-          property of the xml node.
+	  property of the xml node.
 
    *** NOTE: This is only applicable for use on xml nodes which look like <category name="name"/> ***
    *** NOTE: This routine recurses on node siblings and children. ****
@@ -505,12 +495,12 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name, 
   \param cmd [in] The command definition constructed from the user input.
   \param cmdDef [in] The command definition constructed from the xml command defintion.
   \param prompt [out] The address of a pointer to a string where a prompt string will be
-                      written if the command processing requests for additional information.
-                      This pointer must be freed by the callers if not NULL.
+	              written if the command processing requests for additional information.
+	              This pointer must be freed by the callers if not NULL.
   \param error [out] The address of a pointer to an error message.
-                     This pointer must be freed by the callers if not NULL.
+	             This pointer must be freed by the callers if not NULL.
   \param output [out] The address of a pointer to command output text.
-                      This pointer must be freed by the callers if not NULL.
+	              This pointer must be freed by the callers if not NULL.
 */
 
 static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDef, char **prompt,
@@ -714,11 +704,9 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
   /* Replace any parameter names and labels with the real command definition parameter names. */
 
   for (i = 0; i < cmd->parameter_count; i++) {
-    if (cmd->parameters[i]->name)
-      free(cmd->parameters[i]->name);
+    free(cmd->parameters[i]->name);
     cmd->parameters[i]->name = strdup(cmdDef->parameters[i]->name);
-    if (cmd->parameters[i]->label)
-      free(cmd->parameters[i]->label);
+    free(cmd->parameters[i]->label);
     cmd->parameters[i]->label =
 	(cmdDef->parameters[i]->label) ? strdup(cmdDef->parameters[i]->label) : 0;
   }
@@ -764,8 +752,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
 	/* set the qualifier name to the realname */
 
-	if (cmd->qualifiers[i]->name)
-	  free(cmd->qualifiers[i]->name);
+	free(cmd->qualifiers[i]->name);
 	cmd->qualifiers[i]->name = strdup(realname);
 	free(negated);
 	break;
@@ -787,8 +774,7 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
     fprintf(stderr, "Command not supported\n");
     return MdsdclIVVERB;
   } else {
-    if (cmd->routine)
-      free(cmd->routine);
+    free(cmd->routine);
     cmd->routine = strdup(cmdDef->routine);
   }
 
@@ -824,24 +810,24 @@ static int dispatchToHandler(char *image, dclCommandPtr cmd, dclCommandPtr cmdDe
 
       1) Get the command information which matches the verb specified in the command.
       2) For each possible parameter permitted by the verb.
-           Check to see if the parameter is used to specify a new command syntax.
-           This is common for verbs like "SET" where the next parameter changes
+	   Check to see if the parameter is used to specify a new command syntax.
+	   This is common for verbs like "SET" where the next parameter changes
 	   the type of command being issued (i.e. SET TREE, SET DEFAULT,...))
 	   If a new syntax is controlled by this parameter reload the defined command
 	   information based on this new syntax and restart the processing based
 	   on this new command definition.
       3) Similarly, for each qualifier provided check the command definition to
-         see if any command alters the syntax of the command and if so reload the
+	 see if any command alters the syntax of the command and if so reload the
 	 defined command info base on this syntax switch. An example of this
 	 is the "DIRECTORY /TAG" command which uses a different handler than
 	 the "DIRECTORY" command without that qualifier.
       4) Unless there were errors (i.e. no matching verb or matching parameter
-         where a new syntax is expected, call the dispatchTohandler routine with
+	 where a new syntax is expected, call the dispatchTohandler routine with
 	 the following arguments:
 	 - The command table name where the command definition was found. (Used
 	   to identify the library where the execution handlers should be found.)
-         - The parsed command definition provided by the user.
-         - The matching command definition from the command definition tables.
+	 - The parsed command definition provided by the user.
+	 - The matching command definition from the command definition tables.
 	 - A pointer to a prompt string in case the command needs to prompt for
 	   more input.
 	 - A pointer to an error string where any specific error information can
@@ -923,7 +909,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 				 (const char *)syntaxNode->children->content, &list, &exactFound);
 
 		      /* If found (which should be the case unless error in the command definition) reprocess the cmd
-		         using the new syntax definition */
+			 using the new syntax definition */
 
 		      if (list.count == 1) {
 			redo = 1;
@@ -931,8 +917,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 			verbNode = list.nodes[0];
 			findVerbInfo(((xmlNodePtr) (list.nodes[0]))->children, cmdDef);
 		      }
-		      if (list.nodes)
-			free(list.nodes);
+		      free(list.nodes);
 		      goto REDO;
 		    }
 		  }
@@ -978,8 +963,7 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 	      redo = 1;
 	      verbNode = list.nodes[0];
 	    }
-	    if (list.nodes)
-	      free(list.nodes);
+	    free(list.nodes);
 	    free(negated);
 	    goto REDO;
 	  }
@@ -1040,7 +1024,7 @@ STATIC_THREADSAFE pthread_mutex_t SdclDocs_lock   = PTHREAD_MUTEX_INITIALIZER;
 
   \param name [in] The name of the command table (i.e tcl or tcl_commands)
   \param error [out] An error message if trouble finding and/or parsing
-                     the xml command definition file.
+	             the xml command definition file.
 */
 inline static void xmlInitParser_supp() {
   // so it can targeted for valgrind suppression
@@ -1166,9 +1150,7 @@ EXPORT int mdsdcl_do_command(char const *command)
   return status;
 }
 
-EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc,
-			  struct descriptor_xd *output_dsc)
-{
+EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc) {
   char *error = 0;
   char *output = 0;
   int status =
@@ -1184,6 +1166,13 @@ EXPORT int mdsdcl_do_command_dsc(char const *command, struct descriptor_xd *erro
     MdsCopyDxXd(&d, output_dsc);
     free(output);
   }
+  return status;
+}
+EXPORT int _mdsdcl_do_command_dsc(void**ctx, char const *command, struct descriptor_xd *error_dsc, struct descriptor_xd *output_dsc){
+  int status;
+  CTX_PUSH(ctx);
+  status = mdsdcl_do_command_dsc(command,error_dsc,output_dsc);
+  CTX_POP(ctx);
   return status;
 }
 
@@ -1237,8 +1226,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 	  processCommand(doc_l, matchingVerbs.nodes[0], cmd, cmdDef, &prompt,
 			 &error_tmp, &output_tmp, getline, getlineinfo);
       if (status & 1) {
-	if (error)
-	  free(error);
+	free(error);
 	error = error_tmp;
       } else {
 	if (error_tmp) {

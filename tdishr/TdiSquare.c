@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi3Square.C
-        Interludes for some simple stuff.
+	Interludes for some simple stuff.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <mdsdescrip.h>
 #include <status.h>
@@ -39,7 +39,7 @@ extern int Tdi3UnaryMinus();
 extern int Tdi3Floor();
 
 /*--------------------------------------------------------------
-        Square a number by multiplying.
+	Square a number by multiplying.
 */
 int Tdi3Square(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -47,7 +47,7 @@ int Tdi3Square(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*--------------------------------------------------------------
-        F90 elemental, convert complex call to molded type.
+	F90 elemental, convert complex call to molded type.
 */
 int Tdi3Cmplx(struct descriptor *x_ptr,
 	      struct descriptor *y_ptr, struct descriptor *mold_ptr __attribute__ ((unused)), struct descriptor *out_ptr)
@@ -56,7 +56,7 @@ int Tdi3Cmplx(struct descriptor *x_ptr,
 }
 
 /*--------------------------------------------------------------
-        F90 elemental, round to higher integral value. In CC it is CEIL.
+	F90 elemental, round to higher integral value. In CC it is CEIL.
 */
 int Tdi3Ceiling(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {

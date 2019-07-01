@@ -1,14 +1,15 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/servershr.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsServerShr.def
 
 SOURCES = \
       ServerDispatchAction.c\
-      ServerFreeDispatchTable.c\
       ServerSetDetailProc.c\
       ServerAbortServer.c\
       ServerDispatchClose.c\
@@ -28,7 +29,7 @@ SOURCES = \
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = servershr.export
+EXPORTS = MdsServerShr.exports
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsServerShr.a
 

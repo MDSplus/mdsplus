@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ setupkw = {
       'Environment :: Console',
       'Topic :: Scientific/Engineering',
       ],
-      'keywords'     : ('data acquisition','hardware','digital to analog'),
+      'keywords'     : ['data acquisition','hardware','digital to analog'],
 #       install_requires=['numpy','ctypes'],
     }
 

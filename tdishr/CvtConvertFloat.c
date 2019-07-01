@@ -411,49 +411,49 @@ STATIC_CONSTANT uint32_t const cray[] = {
 #define VAX_H_NEG_HUGE &vax_c[12]
 
 #define IEEE_S_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[1] : &ieee_s[0])
+	&ieee_s[1] : &ieee_s[0])
 #define IEEE_S_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[3] : &ieee_s[2])
+	&ieee_s[3] : &ieee_s[2])
 #define IEEE_S_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[5] : &ieee_s[4])
+	&ieee_s[5] : &ieee_s[4])
 #define IEEE_S_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[7] : &ieee_s[6])
+	&ieee_s[7] : &ieee_s[6])
 #define IEEE_S_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[9] : &ieee_s[8])
+	&ieee_s[9] : &ieee_s[8])
 #define IEEE_S_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[11] : &ieee_s[10])
+	&ieee_s[11] : &ieee_s[10])
 #define IEEE_S_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_s[13] : &ieee_s[12])
+	&ieee_s[13] : &ieee_s[12])
 
 #define IEEE_T_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[2] : &ieee_t[0])
+	&ieee_t[2] : &ieee_t[0])
 #define IEEE_T_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[6] : &ieee_t[4])
+	&ieee_t[6] : &ieee_t[4])
 #define IEEE_T_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[10] : &ieee_t[8])
+	&ieee_t[10] : &ieee_t[8])
 #define IEEE_T_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[14] : &ieee_t[12])
+	&ieee_t[14] : &ieee_t[12])
 #define IEEE_T_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[18] : &ieee_t[16])
+	&ieee_t[18] : &ieee_t[16])
 #define IEEE_T_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[22] : &ieee_t[20])
+	&ieee_t[22] : &ieee_t[20])
 #define IEEE_T_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_t[26] : &ieee_t[24])
+	&ieee_t[26] : &ieee_t[24])
 
 #define IEEE_X_INVALID ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[4] : &ieee_x[0])
+	&ieee_x[4] : &ieee_x[0])
 #define IEEE_X_POS_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[12] : &ieee_x[8])
+	&ieee_x[12] : &ieee_x[8])
 #define IEEE_X_NEG_ZERO ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[20] : &ieee_x[16])
+	&ieee_x[20] : &ieee_x[16])
 #define IEEE_X_POS_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[28] : &ieee_x[24])
+	&ieee_x[28] : &ieee_x[24])
 #define IEEE_X_NEG_HUGE ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[36] : &ieee_x[32])
+	&ieee_x[36] : &ieee_x[32])
 #define IEEE_X_POS_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[44] : &ieee_x[40])
+	&ieee_x[44] : &ieee_x[40])
 #define IEEE_X_NEG_INFINITY ((options & CVT_M_BIG_ENDIAN) ? \
-        &ieee_x[52] : &ieee_x[48])
+	&ieee_x[52] : &ieee_x[48])
 
 #define IBM_S_INVALID   &ibm_s[0]
 #define IBM_S_POS_ZERO  &ibm_s[1]

@@ -126,7 +126,7 @@ ViInt32 hpe1564_statusHap[hpe1564_MAX_STAT_HAP] = {
 };
 
 /* Assumes we have driver copies of the event register.  This is needed
- * because in IEEE 488.2, the event register are cleared after they are 
+ * because in IEEE 488.2, the event register are cleared after they are
  * read.  Since the event register contains several events, we need to
  * keep this information around to pass back to the user.
  */
@@ -202,11 +202,11 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
       ((unsigned char *)(dest))[0] =  ((unsigned char*)(src))[1];  \
       ((unsigned char *)(dest))[1] =  ((unsigned char*)(src))[0];  \
  }
-/*=============================================================== 
+/*===============================================================
  *
- *  All messages are stored in this area to aid in localization 
+ *  All messages are stored in this area to aid in localization
  *
- *=============================================================== 
+ *===============================================================
  */
 
 #define hpe1564_MSG_VI_OPEN_ERR 				\
@@ -245,7 +245,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* hpe1564_error_message() */
 
 #define hpe1564_MSG_INVALID_STATUS					\
-  	"Parameter 2 is invalid"				\
+	"Parameter 2 is invalid"				\
 	"in function hpe1564_error_message()."
 	/* hpe1564_error_message() */
 
@@ -254,7 +254,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* hpe1564_error_message() */
 
 #define  hpe1564_MSG_INVALID_VI					\
-  	"Parameter 1 is invalid"				\
+	"Parameter 1 is invalid"				\
 	" in function hpe1564_error_message()"			\
 	".  Using an inactive ViSession may cause this error."	\
 	"  Was the instrument driver closed prematurely?"
@@ -290,8 +290,8 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 
 #define hpe1564_MSG_NO_MATCH "Could not match string %s"
 
-/* 
- * static error message 
+/*
+ * static error message
  */
 
 #define VI_ERROR_PARAMETER1_MSG				\
@@ -448,7 +448,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	"Calibration not converging; exiting"
 
 #define INSTR_ERROR_BIG_VOLT_MSG      \
-        "Overloads occurring, reduce signal level."
+	"Overloads occurring, reduce signal level."
 
 #define INSTR_ERROR_TRIG_DEAD_MSG 				\
 	"Trigger source deadlock detected, data fetch aborted"
@@ -476,7 +476,7 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 	/* check for NULL user data */				\
 	if( 0 == thisPtr)					\
 	{							\
- 		hpe1564_LOG_STATUS(                             	\
+		hpe1564_LOG_STATUS(                             	\
 		  vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION );	\
 	}							\
 	{							\
@@ -487,12 +487,12 @@ static ViBoolean hpe1564_findAccessIdx(ViInt32 regNum, ViPInt32 pIdx)
 			VI_ATTR_RM_SESSION, &defRM);		\
 		if( VI_SUCCESS > errStatus )			\
 		{						\
- 			hpe1564_LOG_STATUS(				\
+			hpe1564_LOG_STATUS(				\
 			  vi, NULL, hpe1564_INSTR_ERROR_UNEXPECTED );	\
 		}						\
 		if( defRM != thisPtr->defRMSession)		\
 		{						\
- 			hpe1564_LOG_STATUS(				\
+			hpe1564_LOG_STATUS(				\
 			  vi, NULL, hpe1564_INSTR_ERROR_INV_SESSION );	\
 		}						\
 	}
@@ -523,7 +523,7 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals * thisPtr, ViStatus 
   if (!thisPtr)
     return s;
 
-  /* This is only done, if the vi is valid and 
+  /* This is only done, if the vi is valid and
    * no other errors have occured.
    */
   if (s == VI_ERROR_TMO) {
@@ -545,7 +545,7 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals * thisPtr, ViStatus 
       if (errStatus < VI_SUCCESS)
 	return VI_ERROR_SYSTEM_ERROR;
 
-      eventQ = atoi(lc);
+      eventQ = strtol(lc,NULL,0);
 
       if ((0x04			/* Query Error */
 	   | 0x08		/* Device Dependent Error */
@@ -583,7 +583,7 @@ ViStatus hpe1564_statusUpdate(ViSession vi, hpe1564_globals * thisPtr, ViStatus 
   return s;
 }
 
-/* 
+/*
  * Error Message Structures
  */
 
@@ -740,9 +740,9 @@ static ViBoolean hpe1564_chk_enum(hpe1564_globals * thisPtr, ViInt16 my_val, ViI
   return VI_FALSE;
 }
 
-/*  ==========================================================================  
-     This function searches an array of strings for a specific string and     
-     returns its index.  If successful, a VI_SUCCESS is returned, 
+/*  ==========================================================================
+     This function searches an array of strings for a specific string and
+     returns its index.  If successful, a VI_SUCCESS is returned,
      else hpe1564_INSTR_ERROR_LOOKUP is returned.
     ======================================================================== */
 ViStatus hpe1564_findIndex(hpe1564_globals * thisPtr, const char *const array_of_strings[],
@@ -782,7 +782,7 @@ ViStatus hpe1564_findIndex(hpe1564_globals * thisPtr, const char *const array_of
 {\
     errStatus = viGetAttribute( vi, VI_ATTR_USER_DATA, (ViAddr) &thisPtr);\
     if( VI_SUCCESS > errStatus)\
-        hpe1564_LOG_STATUS( vi, NULL, errStatus);\
+	hpe1564_LOG_STATUS( vi, NULL, errStatus);\
 }
 
 void hpe1564_delay(long delayTime)
@@ -913,7 +913,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
   /* Find the Default Resource Manager */
   errStatus = viOpenDefaultRM(&defRM);
   if (VI_SUCCESS > errStatus) {
-    /* Errors: VI_ERROR_SYSTEM_ERROR 
+    /* Errors: VI_ERROR_SYSTEM_ERROR
      *         VI_ERROR_ALLOC
      */
     hpe1564_LOG_STATUS(*vi, NULL, errStatus);
@@ -997,7 +997,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
        in the original template, but I am commenting them out
        here for now.
 
-       viSetAttribute(*vi, VI_ATTR_TMO_VALUE, 1000); 
+       viSetAttribute(*vi, VI_ATTR_TMO_VALUE, 1000);
        viClear(*vi);
      */
 
@@ -1053,7 +1053,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
   thisPtr->gpibVxi = 0;
   thisPtr->D16_only = 0;
 
-/* mumble -- when split driver, only need one of these 
+/* mumble -- when split driver, only need one of these
 	thisPtr->E1563 = 1;
 	thisPtr->E1563 = 0;
 */
@@ -1065,8 +1065,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
   if (intf == VI_INTF_GPIB) {
     thisPtr->e1406 = 1;
 /* mumble -- add back in when separate drivers
-		if( VI_TRUE == id_query ) 
-    	{
+		if( VI_TRUE == id_query )
+	{
 */
     if (viClear(*vi) < VI_SUCCESS ||
 	viPrintf(*vi, "*IDN?\n") < VI_SUCCESS || viScanf(*vi, "%t", idn_buf) < VI_SUCCESS) {
@@ -1091,8 +1091,8 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
 	hpe1564_LOG_STATUS(*vi, NULL, VI_ERROR_FAIL_ID_QUERY);
       }
     }
-/* mumble -- add back in when split into two drivers 
-    	}
+/* mumble -- add back in when split into two drivers
+	}
 */
 
     if (VI_TRUE == do_reset) {
@@ -1163,7 +1163,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
       errStatus = viGetAttribute(*vi, VI_ATTR_MODEL_CODE, (ViPAttrState) (&modelCode));
       if (VI_SUCCESS > errStatus) {
 	/* Errors: VI_ERROR_NSUP_ATTR */
-	/* Note: this should never happen 
+	/* Note: this should never happen
 	 *   with a VXI instrument
 	 */
 
@@ -1210,7 +1210,7 @@ ViStatus _VI_FUNC hpe1564_init(ViRsrc InstrDesc, ViBoolean id_query, ViBoolean d
     else if (tempBlock[1] != 0x0003FFCC)
       thisPtr->D16_only = 1;
 
-    /* if not D-SCPI, we need to initialize the other globals.  This 
+    /* if not D-SCPI, we need to initialize the other globals.  This
        also resets the card.  This is only way to get to a known
        state at card open time.
      */
@@ -1531,8 +1531,8 @@ ViStatus _VI_FUNC hpe1564_error_message(ViSession vi,
 		"%s " hpe1564_MSG_IN_FUNCTION " %s() %s",
 		instrErrMsgTable[idx].errMessage, thisPtr->errFuncName, thisPtr->errMessage);
       } else {
-	/* No context dependent error 
-	 * message available so copy 
+	/* No context dependent error
+	 * message available so copy
 	 * the static error message
 	 */
 	strcpy(message, instrErrMsgTable[idx].errMessage);
@@ -1543,7 +1543,7 @@ ViStatus _VI_FUNC hpe1564_error_message(ViSession vi,
     }
   }
 
-  /* try VTL/VISA to see if it exists there 
+  /* try VTL/VISA to see if it exists there
    *
    * At this point vi is either VALID or VI_NULL
    */
@@ -1799,22 +1799,22 @@ ViStatus _VI_FUNC hpe1564_dcl(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_cls
  *-----------------------------------------------------------------------------
- * 
- * PURPOSE :  This function clears the status system on the instrument. 
+ *
+ * PURPOSE :  This function clears the status system on the instrument.
  *           Additionally, any error messages in the queue are deleted, and
  *           the error light is turned off.
  *
  *	     This function is usually not called unless an HP Command
  *           module is used in the system.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            Instrument Handle returned from hpe1564_init().
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_cls(ViSession vi)
@@ -1876,12 +1876,12 @@ ViStatus _VI_FUNC hpe1564_readStatusByte_Q(ViSession vi, ViPInt16 statusByte)
 
 /* 	hpe1564_opc_Q
 	Returns VI_TRUE if operations still pending
-	
+
 	input:
 		vi			- session
 	output
 		p1			- VI_TRUE if operations pending
-	
+
 */
 ViStatus _VI_FUNC hpe1564_opc_Q(ViSession vi, ViPBoolean p1)
 {
@@ -1906,25 +1906,25 @@ ViStatus _VI_FUNC hpe1564_opc_Q(ViSession vi, ViPBoolean p1)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_abort
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function aborts a measurement in progress. The command is
  *           ignored without error if a measurement is not in progress.  If
  *           there is a measurement in progress and the measurement is
- *           aborted, there is an indeterminate amount of data in memory. 
+ *           aborted, there is an indeterminate amount of data in memory.
  *           Attempts to read this data will result in the full count of data
  *           returned in the array, but some, all, or none of it may be from
  *           the aborted measurement (depending upon when the measurement
  *           process was aborted).  The data returned may therefore contain
  *           data from a previous measurement.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_abort(ViSession vi)
@@ -1996,7 +1996,7 @@ ViStatus hpe1564_scan16(ViSession vi,
 
     length_str[digits] = '\0';	/* null terminate the string */
 
-    n_bytes = atol(length_str);
+    n_bytes = strtol(length_str,NULL,0);
 
     /* Verify that caller's array is big enough. */
     if (n_bytes > (max_length * 2))
@@ -2038,10 +2038,10 @@ ViStatus hpe1564_scan16(ViSession vi,
  * FUNCTION:   hpe1564_getHeader()
  * PURPOSE:    Reads the binary block header from a definite length block.
  *             Returns the number of bytes that need to be read.
- * 
+ *
  * PARAMS:     vi          - VTL session
  *             num_bytes   - number of bytes coming back.
- *  
+ *
  ************/
 ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
 {
@@ -2074,7 +2074,7 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
 
     length_str[digits] = '\0';	/* null terminate the string */
 
-    n_bytes = atol(length_str);
+    n_bytes = strtol(length_str,NULL,0);
 
   } else {			/* Indefinite Arbitrary Block, we don't handle, so error */
 
@@ -2090,24 +2090,24 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calDacVolt
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function programs the internal DAC to output the specified
  *            voltage.  This command is only active if the calibration source
  *            (hpe1564_calSource) is set to INTernal.
- *           
+ *
  *            The maximum output levels are limited to the levels shown in
  *           the table below. Note that the 64 volt range and 256 volt range
  *           are not used.  See the hpe1564_calGain function for more
  *           information regarding calibrating those ranges.
- *           
+ *
  *            An error will occur if the specified voltage value is greater
  *           than that allowed for the present range setting.  Be sure that
  *           the desired range has been set before sending this command.
- *           
+ *
  *            The recommended DAC voltages for calibrating each range are
  *           given below.  These values are approximately 98 percent of full
  *           scale (except on the 64 and 256 volt ranges).
- *           
+ *
  *           Voltage Range   Max. DC Voltage (absolute value)
  *             0.0625        0.061256409
  *             0.2500        0.245025635
@@ -2116,23 +2116,23 @@ ViStatus hpe1564_readHeader(ViSession vi, ViPInt32 num_bytes)
  *            16.0000        15.00
  *            64.0000        not used
  *           256.0000        not used
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 voltage
- * IN        
+ * IN
  *            This is the voltage to be output by the DAC.
- * 
+ *
  *      MAX = hpe1564_CAL_DAC_MAX   15.00
  *      MIN = hpe1564_CAL_DAC_MIN   -15.00
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage)
@@ -2166,22 +2166,22 @@ ViStatus _VI_FUNC hpe1564_calDacVolt(ViSession vi, ViReal64 voltage)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calDacVolt_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the internal DAC
  *           voltage.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 voltage
- * OUT       
+ * OUT
  *            The present setting of the calibration DAC.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage)
@@ -2209,17 +2209,17 @@ ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calData_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the present calibration constants.  The
  *           constants are in an array, and the constants from all channels
  *           are returned in the array.  The following equations are used to
  *           access specific constants for a given channel and range:
- *           
+ *
  *            offsetIndex = 64 * ( channel - 1) + 32 * 1 + 8 * 0 + rangeIndex
  *            gainIndex   = 64 * ( channel - 1) + 32 * 0 + 8 * 0 + rangeIndex
- *           
+ *
  *           And rangeIndex is an integer 0 through 6 where:
- *           
+ *
  *               0 = 0.0625 volt range
  *               1 = 0.250 volt range
  *               2 = 1.0 volt range
@@ -2227,39 +2227,39 @@ ViStatus _VI_FUNC hpe1564_calDacVolt_Q(ViSession vi, ViPReal64 voltage)
  *               4 = 16.0 volt range
  *               5 = 64.0 volt range
  *               6 = 256 volt range
- *           
+ *
  *           So if, for example, you wished to see the gain constant for the
  *           64 volt range on channel 2, the array index would be:
- *           
+ *
  *                offsetIndex = 64 * 1 + 32 + 0 + 5 = 101
  *                gainIndex   = 64 * 1 + 0 + 0 + 5 = 69
- *           
+ *
  *           so the gain constant would be found at calData[69], and the
  *           offset constant at calData[101].
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the data array in total number of
  *           readings. An error will be reported if arrayLength is less than
  *           256.  If arrayLength is > 256, no error will occur, but only 256
  *           elements will be filled.
- * 
+ *
  *      MAX = hpe1564_CAL_ARRAY_MAX   16000000
  *      MIN = hpe1564_CAL_ARRAY_MIN   256
- * 
+ *
  * PARAM 3 : ViInt16 _VI_FAR calData[]
- * OUT       
+ * OUT
  *            The array of calibration constants is returned in this
  *           parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength, ViInt16 _VI_FAR calData[])
@@ -2302,7 +2302,7 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength, ViInt16 _
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calGain
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function does a gain calibration on the specified channel.
  *            The number of samples and the sample rate would normally be
  *           defaulted (-1 and -1.0 respectively) to provide averaging over
@@ -2327,63 +2327,63 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength, ViInt16 _
  *           been already completed:
  *               1. The instrument must be set to the desired range and
  *                  filtering on the channel of interest.
- *           
+ *
  *               2. Calibration must be enabled with
  *                  hpe1564_calState(vi, hpe1564_ON).
- *           
+ *
  *               3. A calibration source must be specified with
  *                  hpe1564_calSource.
- *           
+ *
  *               4. A calibration value must have been supplied with the
  *                  hpe1564_calValue command.  This value must be a least 85
  *                  percent (ideally 98 percent) of either a positive full
  *                  scale reading or a negative full scale reading.
- *           
+ *
  *               5. The DC level specified by hpe1564_calValue must be
  *                  present on either the input connector (calSource
  *                  EXTernal), or on the calibration bus
  *                  (calSource INTernal).
- *           
+ *
  *            Failure to do the above steps will result in errors during
  *           calibration and/or inaccurate calibration.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel will be calibrated.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of samples to be taken and averaged
  *           for gain calculations.  If the value specified is -1, then the
  *           default count of 100 samples will be used.
- * 
+ *
  *      MAX = hpe1564_CAL_COUNT_MAX   1000
  *      MIN = hpe1564_CAL_COUNT_MIN   25
- * 
+ *
  * PARAM 4 : ViReal64 period
- * IN        
+ * IN
  *            This is the sample period that will be used for each reading
  *            during the calibration.  If the value -1.0 is specified, the
  *            default sample period of 0.001 seconds will be used.
- * 
+ *
  *      MAX = hpe1564_SAMP_TIM_MAX   0.83886070
  *      MIN = hpe1564_SAMP_TIM_MIN   0.00000130
- * 
+ *
  * PARAM 5 : ViBoolean autoCal
- * IN        
+ * IN
  *            This parameter enables or disables the automatic gain
  *           calibration of the 64 volt and 256 volt ranges.  It is only
  *           checked during the gain calibration of the 16 volt range.  At
@@ -2393,16 +2393,16 @@ ViStatus _VI_FUNC hpe1564_calData_Q(ViSession vi, ViInt16 arrayLength, ViInt16 _
  *           disabled (hpe1564_OFF), the gain values on the 64 volt and 256
  *           volt ranges will NOT be modified.  This allows someone to gain
  *           calibrate the 16 volt range without side affects.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disable calibration
  *      hpe1564_ON           1  Enable calibration
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calGain(ViSession vi,
@@ -2460,7 +2460,7 @@ ViStatus _VI_FUNC hpe1564_calGain(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calOffset
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function does an offset calibration on the specified
  *           channel.  The number of samples and the sample rate would
  *           normally be defaulted (-1 and -1.0 respectively) to provide
@@ -2471,54 +2471,54 @@ ViStatus _VI_FUNC hpe1564_calGain(ViSession vi,
  *           those values being used for the gain calibration.
  *            Before this command is executed, the following steps must have
  *           been already completed:
- *           
+ *
  *               1. The instrument must be set to the desired range
  *                  on the channel of interest.
- *           
+ *
  *               2. Calibration must be enabled with
  *                  hpe1564_calState(vi, hpe1564_ON).
- *           
+ *
  *            Failure to do the above steps will result in errors.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel will be calibrated.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of samples to be taken and averaged
  *           for offset calculations.  If the value specified is -1, then the
  *           default count of 100 samples will be used.
- * 
+ *
  *      MAX = hpe1564_CAL_COUNT_MAX   1000
  *      MIN = hpe1564_CAL_COUNT_MIN   25
- * 
+ *
  * PARAM 4 : ViReal64 period
- * IN        
+ * IN
  *            This is the sample period that will be used for each reading
  *            during the calibration.  If the value -1.0 is specified, the
  *            default sample period of 0.001 seconds will be used.
- * 
+ *
  *      MAX = hpe1564_SAMP_TIM_MAX   0.83886070
  *      MIN = hpe1564_SAMP_TIM_MIN   0.00000130
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi,
@@ -2576,7 +2576,7 @@ ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calOffsAll_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function does an offset calibration of all ranges on the
  *           specified channel.  The number of samples and the sample rate
  *           would normally be defaulted (-1 and -1.0 respectively) to
@@ -2589,62 +2589,62 @@ ViStatus _VI_FUNC hpe1564_calOffset(ViSession vi,
  *           next range, and the bad range is noted as a high bit in the
  *           errCode parameter, where bit 0 represents the lowest range
  *           (0.0625 Volt) and bit 6 represents the highest range (256 Volt).
- *           
+ *
  *            Before this command is executed, the following steps must have
  *           been already completed:
- *           
+ *
  *               1. Calibration must be enabled with
  *                  hpe1564_calState(vi, hpe1564_ON).
- *           
+ *
  *            Failure to do the above steps will result in errors.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel will be calibrated.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of samples to be taken and averaged
  *           for offset calculations.  If the value specified is -1, then the
  *           default count of 100 samples will be used.
- * 
+ *
  *      MAX = hpe1564_CAL_COUNT_MAX   1000
  *      MIN = hpe1564_CAL_COUNT_MIN   25
- * 
+ *
  * PARAM 4 : ViReal64 period
- * IN        
+ * IN
  *            This is the sample period that will be used for each reading
  *            during the calibration.  If the value -1.0 is specified, the
  *            default sample period of 0.001 seconds will be used.
- * 
+ *
  *      MAX = hpe1564_SAMP_TIM_MAX   0.83886070
  *      MIN = hpe1564_SAMP_TIM_MIN   0.00000130
- * 
+ *
  * PARAM 5 : ViPInt16 errCode
- * OUT       
+ * OUT
  *            An error code is returned in this parameter.  The lower byte
  *           indicates which range had an error (0 thru 6).  The bit position
  *           for the range (0 thru 6) is set high if an error occurred on
  *           that range. For example, if ranges 0 (0.0625 V) and 5 (64.0 V)
  *           failed, the return code would be 0x0021.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi,
@@ -2723,33 +2723,33 @@ ViStatus _VI_FUNC hpe1564_calOffsAll_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calSource
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function specifies the calibration source to be used for
  *           any subsequent gain or zero (offset) calibrations.  If
  *           "EXTernal" is specified, a voltage must be provided from an
  *           external source.  If "INTernal" is specified, the voltage
  *           specified by the hpe1564_calDacVolt command will be output onto
  *           the calibration bus.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 source
- * IN        
+ * IN
  *            This parameter specifies which calibration source to use for
  *            gain and offset calibrations.  These values are represented by
  *            the macros below.
- * 
+ *
  *      Macro Name                Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CAL_SOUR_INT          0  Internal
  *      hpe1564_CAL_SOUR_EXT          1  External
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_calSource_source_a[] = { "INT", "EXT", 0 };
@@ -2784,29 +2784,29 @@ ViStatus _VI_FUNC hpe1564_calSource(ViSession vi, ViInt16 source)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calSource_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the calibration
  *           source. This setting is shared by all of the channels.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 source
- * OUT       
+ * OUT
  *            The present setting (EXTernal or INTernal) is returned as an
  *            integer in this parameter, where 0=INTernal and 1=EXTernal.
  *            These values are represented by the macros below.
- * 
+ *
  *      Macro Name                Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CAL_SOUR_INT          0  Internal
  *      hpe1564_CAL_SOUR_EXT          1  External
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calSource_Q(ViSession vi, ViPInt16 source)
@@ -2838,31 +2838,31 @@ ViStatus _VI_FUNC hpe1564_calSource_Q(ViSession vi, ViPInt16 source)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calState
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function enables the calibration of the instrument.  While
  *           enabled, many other instrument operations are not allowed, and
  *           will result in an error "Illegal while calibrating".  When
  *           finished with calibration, set calibration state to off.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViBoolean state
- * IN        
+ * IN
  *            This parameter enables or disables calibration of the
  *            instrument. The allowable settings are shown in the following
  *           macros.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disable calibration
  *      hpe1564_ON           1  Enable calibration
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state)
@@ -2898,32 +2898,32 @@ ViStatus _VI_FUNC hpe1564_calState(ViSession vi, ViBoolean state)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calState_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present calibration state of the
  *           instrument.  A return value of 1 indicates the instrument is in
  *           the calibration process. A return value of 0 indicates
  *           calibration is not enabled, and the calibration commands (like
  *           hpe1564_calGain) will return an error "Calibration not enabled".
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPBoolean state
- * OUT       
+ * OUT
  *            The calibration state (ON=1, 0=OFF) is returned in this
  *           parameter. The allowable settings are shown in the following
  *           macros.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disable calibration
  *      hpe1564_ON           1  Enable calibration
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calState_Q(ViSession vi, ViPBoolean state)
@@ -2953,20 +2953,20 @@ ViStatus _VI_FUNC hpe1564_calState_Q(ViSession vi, ViPBoolean state)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calStore
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function stores the calibration constants to non-volatile
  *           RAM after calibration has been completed.  It may also be used
  *           to store constants into non-volatile RAM after downloading
  *           constants via the hpe1564_calData command.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calStore(ViSession vi)
@@ -3000,13 +3000,13 @@ ViStatus _VI_FUNC hpe1564_calStore(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calValue
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function specifies the voltage value applied to the
  *           channel being calibrated.  This value informs the digitizer what
  *           voltage is either being placed on the input (calSource EXTernal)
  *           or is being generated by the internal DAC (calSource INTernal)
  *           and output onto the calibration bus.
- *           
+ *
  *            When calSource INTernal is specified, the internal DAC outputs
  *           the voltage specified by the calDacVolt command; this voltage
  *           must be measured with a voltmeter by the person doing the
@@ -3023,7 +3023,7 @@ ViStatus _VI_FUNC hpe1564_calStore(ViSession vi)
  *           offsets.  It is therefore not necessary to calibrate gain on the
  *           64 volt and 256 volt ranges.
  *            Absolute maximum voltages for each range are shown below.
- *           
+ *
  *           Voltage Range   Max. DC Voltage (absolute value)
  *             0.0625        0.061256409
  *             0.2500        0.245025635
@@ -3032,27 +3032,27 @@ ViStatus _VI_FUNC hpe1564_calStore(ViSession vi)
  *            16.0000        15.68164062 (15.00 if INTernal source)
  *            64.0000        extrapolated
  *           256.0000        extrapolated
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 voltage
- * IN        
+ * IN
  *            This is the the value entered by the user to provide the actual
  *            voltage being used for calibration.  This voltage is being
  *           output either by an external device (when calSource is EXTernal)
  *           or by the instrument's internal DAC (when calSource is
  *           INTernal).
- * 
+ *
  *      MAX = hpe1564_CAL_VALUE_MAX   251.00
  *      MIN = hpe1564_CAL_VALUE_MIN   -251.00
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage)
@@ -3085,24 +3085,24 @@ ViStatus _VI_FUNC hpe1564_calValue(ViSession vi, ViReal64 voltage)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_calValue_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the calibration
  *           voltage on the specified channel.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 voltage
- * OUT       
+ * OUT
  *            The present setting of the calibration voltage value is
  *           returned in this parameter.  This is the voltage that the
  *           instrument attempts to calibrate to.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage)
@@ -3131,7 +3131,7 @@ ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_configure
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure a channel (1 through 4 ) to take
  *           readings. The expectMax value parameter specified should be the
  *           maximum expected measurement value.  The voltage range is set
@@ -3148,72 +3148,72 @@ ViStatus _VI_FUNC hpe1564_calValue_Q(ViSession vi, ViPReal64 voltage)
  *                    15.68000            16.0000        .001953125
  *                    62.72000            64.0000        .007812500
  *                   250.88000           256.0000        .031250000
- *           
+ *
  *            The numSamples parameter specifies how many total readings will
  *           be taken (the actual maximum value allowed will depend on which
  *           memory option is present on the module - 4, 8, 16, or 32
  *           Megabytes).  The numPreTriggers parameter specifies how many of
- *           those readings will take place before the trigger event occurs. 
+ *           those readings will take place before the trigger event occurs.
  *           The total number of readings is limited to a maximum of 4194304
  *           with the 32 Megabyte memory option. The following table
  *           describes the maximum reading limits for the different memory options:
- *           
+ *
  *           Memory Size       Maximum numSamples
  *            4 MBytes           524288
  *            8 MBytes          1048576
  *           16 MBytes          2097152
  *           32 MBytes          4194304
- *           
+ *
  *            The value of numPreTriggers can range from 0 to (numSamples -
  *           1).
  *            Note that the numSamples and numPreTriggers settings are common
  *            to all channels.  All channels will be set to whatever
  *            values were most recently sent to the instrument.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to configure.
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViReal64 expectMax
- * IN        
+ * IN
  *            Specifies the absolute value of the largest magnitude voltage
  *            expected for the specified channel.
- * 
+ *
  *      MAX = hpe1564_VOLT_MAX   256.0001
  *      MIN = hpe1564_VOLT_MIN   -256.0001
- * 
+ *
  * PARAM 4 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of readings to take.
- * 
+ *
  *      MAX = hpe1564_SAMP_COUNT_MAX   4000000
  *      MIN = hpe1564_SAMP_COUNT_MIN   1
- * 
+ *
  * PARAM 5 : ViInt32 numPreTriggers
- * IN        
+ * IN
  *            Specifies how many of the total readings will be taken before
  *           (pre) the trigger event occurs.
- * 
+ *
  *      MAX = hpe1564_PRETRIG_MAX   3999999
  *      MIN = hpe1564_PRETRIG_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_configure(ViSession vi,
@@ -3297,7 +3297,7 @@ ViStatus _VI_FUNC hpe1564_configure(ViSession vi,
        Rather than burn the I/O time querying 7 lines for state,
        just force one ON for BOTH sample and trigger pulses (this turns
        any others off).  Then, if we now turn this one OFF, outputs are
-       disabled on all lines. 
+       disabled on all lines.
      */
     errStatus = viPrintf(vi, "OUTP:TTLT0:SOUR BOTH;STAT ON\n");
     if (errStatus < VI_SUCCESS)
@@ -3360,48 +3360,48 @@ ViStatus _VI_FUNC hpe1564_configure(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_configure_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will query any of the 4 channels for its current
  *            settings, indicating the voltage range, the total number of
  *           readings to take (number of samples), and the number of readings
  *           (of the total number) which will be taken before the trigger
  *           event.  If this query is sent during a continuous measurement,
  *           the numSamples parameter will be set to -1.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to query.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 range
- * OUT       
+ * OUT
  *            Returns the voltage range of the specified channel.
- * 
+ *
  * PARAM 4 : ViPInt32 numSamples
- * OUT       
+ * OUT
  *            Returns the total number of readings that will be taken.
- * 
+ *
  * PARAM 5 : ViPInt32 numPreTriggers
- * OUT       
+ * OUT
  *            Returns how many readings will be taken before the trigger
  *           event.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_configure_Q(ViSession vi,
@@ -3474,47 +3474,47 @@ ViStatus _VI_FUNC hpe1564_configure_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagDacGain
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function writes the specified data to the calibration gain
  *           DAC. NOTE: There must be a signal on the input for this to work
  *           properly.
  *            A positive full scale input combined with a DAC value of 255
  *           will result in +2.5 volts output from the DAC.
- *           
+ *
  *            A negative full scale input combined with a DAC value of 255
  *           will result in -2.5 volts output from the DAC.
- *           
+ *
  *            A DAC value of 0 combined with a 0 voltage input will result in
  *           0 Volts output.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to configure.
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt16 data
- * IN        
+ * IN
  *            This is the data to send to the specified register.
- * 
+ *
  *      MAX = hpe1564_DAC_GAIN_MAX   255
  *      MIN = hpe1564_DAC_GAIN_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacGain(ViSession vi, ViInt16 chan, ViInt16 data)
@@ -3549,39 +3549,39 @@ ViStatus _VI_FUNC hpe1564_diagDacGain(ViSession vi, ViInt16 chan, ViInt16 data)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagDacOffs
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function writes the specified data to the calibration
  *           offset DAC. NOTE:  This routine does not short the input.  Use
  *           the hpe1564_diagShort command to short the input before calling
  *           this routine.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to configure.
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt16 data
- * IN        
+ * IN
  *            This is the data to send to the specified register.
- * 
+ *
  *      MAX = hpe1564_DAC_OFFS_MAX   255
  *      MIN = hpe1564_DAC_OFFS_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacOffs(ViSession vi, ViInt16 chan, ViInt16 data)
@@ -3616,40 +3616,40 @@ ViStatus _VI_FUNC hpe1564_diagDacOffs(ViSession vi, ViInt16 chan, ViInt16 data)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagDacOffsRamp
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function outputs a ramp of DAC values from 0 to 255, with
  *           the DAC code changing about every 100 microseconds.  The "count"
  *           variable is how many ramps to output.  The timing is such that
  *           about 37.35 full ramps are output each second.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to configure.
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt16 count
- * IN        
+ * IN
  *            This is the number of ramps to put out.  A count of 2240 will
  *            output ramps for approximately 60 seconds.
- * 
+ *
  *      MAX = hpe1564_RAMP_COUNT_MAX   32767
  *      MIN = hpe1564_RAMP_COUNT_MIN   1
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacOffsRamp(ViSession vi, ViInt16 chan, ViInt16 count)
@@ -3684,27 +3684,27 @@ ViStatus _VI_FUNC hpe1564_diagDacOffsRamp(ViSession vi, ViInt16 chan, ViInt16 co
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagDacSour
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function outputs the specified voltage from the internal
  *           calibration source DAC onto the calibration bus.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
- * 
+ *
+ *
  * PARAM 2 : ViReal64 voltage
- * IN        
+ * IN
  *            This is the voltage to output from the internal DAC.  The
  *            DAC can output voltages from -15.0 to +15.0 volts.
- * 
+ *
  *      MAX = hpe1564_DAC_SOUR_MAX   15.0
  *      MIN = hpe1564_DAC_SOUR_MIN   -15.0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage)
@@ -3737,7 +3737,7 @@ ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagDacSourRamp
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function outputs a ramp of DAC values from 0 to 4095, with
  *           the DAC code changing about every 100 microseconds.  The signal
  *           will be connected to the input relay of the specified channel
@@ -3746,36 +3746,36 @@ ViStatus _VI_FUNC hpe1564_diagDacSour(ViSession vi, ViReal64 voltage)
  *           setting).  The "count" variable specifies how many ramps to
  *           output.  The timing is such that about 2.3257 full ramps are
  *           output each second.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel will be calibrated.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViInt16 count
- * IN        
+ * IN
  *            This is the number of ramps to put out.  A count of 139 will
  *            output ramps for just under 60 seconds.
- * 
+ *
  *      MAX = hpe1564_RAMP_COUNT_MAX   32767
  *      MIN = hpe1564_RAMP_COUNT_MIN   1
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagDacSourRamp(ViSession vi, ViInt16 count)
@@ -3808,36 +3808,36 @@ ViStatus _VI_FUNC hpe1564_diagDacSourRamp(ViSession vi, ViInt16 count)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagFlashRead_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the calibration constants, a ten digit
  *           serial number, and a three digit date code.  Each digit of the
  *           serial number occupies one location in flash, as does each digit
  *           of the date code.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the flashData array in total number of
  *           readings. An error will be reported if arrayLength is less than
  *           269.  If arrayLength is > 269, no error will occur, but only 269
  *           elements will be filled.
- * 
+ *
  *      MAX = hpe1564_FLASH_ARRAY_MAX   32767
  *      MIN = hpe1564_FLASH_ARRAY_MIN   269
- * 
+ *
  * PARAM 3 : ViInt16 _VI_FAR flashData[]
- * OUT       
+ * OUT
  *            269 integers are returned in this array.  The first 256 are the
  *           calibration constants, the last 13 are a ten digit serial number
  *           and a three digit date code respectively.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi,
@@ -3891,7 +3891,7 @@ ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagFlashWrite
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function writes data into the flash rom.  The data array
  *           must contain 256 calibration constants, followed by 13 integers
  *           which are assumed to be a ten digit serial number and 3 digit
@@ -3903,33 +3903,33 @@ ViStatus _VI_FUNC hpe1564_diagFlashRead_Q(ViSession vi,
  *           calculate a new checksum.  If you do not, a self test error will
  *           occur because the data in flash rom will no longer agree with
  *           the old checksum that self test compares against.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViBoolean doCheckSum
- * IN        
+ * IN
  *            Specifies whether or not to calculate and store a new checksum
  *           with the data.  Only the calibration constants (elements 1
  *           through 256 of the array) are used to compute the checksum.
- *           
+ *
  *            NOTE: If any of the calibration constants were modified, a new
  *           checksum MUST be calculated or a self test error will result
  *           when self test is run.
- * 
+ *
  *      MAX = hpe1564_ON   1
  *      MIN = hpe1564_OFF   0
- * 
+ *
  * PARAM 3 : ViInt16 _VI_FAR flashData[]
- * IN        
+ * IN
  *            The 269 integers which will be written to the flash rom.  Only
  *           the lower 8 bits of each word will be written.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi,
@@ -3976,7 +3976,7 @@ ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagIntLine
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  CAUTION:  This command is seldom needed, and care should be
  *           taken when using it.  Specifying an improper interrupt line will
  *           cause the CLOSe, OPEN, and SCAN commands to "hang" or time out
@@ -3984,24 +3984,24 @@ ViStatus _VI_FUNC hpe1564_diagFlashWrite(ViSession vi,
  *           on the expected line.
  *            hpe1564_diagIntLine selects which interrupt line (none if 0)
  *           the card will interrupt upon.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 intLine
- * IN        
+ * IN
  *            Numeric value of the interrupt line to be enabled.  Note that
  *           enabling one line disables the previous setting.  Also, a value
  *           of 0 is equivalent to NO INTERRUPT or OFF.
- * 
+ *
  *      MAX = hpe1564_INTR_MAX   7
  *      MIN = hpe1564_INTR_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine)
@@ -4035,23 +4035,23 @@ ViStatus _VI_FUNC hpe1564_diagIntLine(ViSession vi, ViInt16 intLine)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagIntLine_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  hpe1564_diagIntLine_Q returns the currently active interrupt
  *           line.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 intLine
- * OUT       
+ * OUT
  *            Numeric value returned here is the active interrupt line.  A
  *            return value of 0 indicates interrupts are off on all lines.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagIntLine_Q(ViSession vi, ViPInt16 intLine)
@@ -4079,34 +4079,34 @@ ViStatus _VI_FUNC hpe1564_diagIntLine_Q(ViSession vi, ViPInt16 intLine)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagMemSize
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This command is used to specify the memory size when a
  *           different memory SIMM has been added to the card.  The switche
  *           settings for FLASH and CALIBRATION CONSTANTS must be set to the
  *           Write Enable positions for this routine to work properly.
- *           
+ *
  *            The new setting will take effect until the instrument is reset
  *           with the hpe1564_reset command or power is cycled on the
  *           instrument.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 memSize
- * IN        
+ * IN
  *            Specifies the amount of memory in bytes.  This can either be
  *           the approximate size (i.e. 16.0E6) or the actual size (i.e.
  *           16777216); either number will be accepted as 16 MegaBytes of
  *           memory.
- * 
+ *
  *      MAX = hpe1564_MEM_SIZE_MAX   134217728
  *      MIN = hpe1564_MEM_SIZE_MIN   3800000
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize)
@@ -4140,21 +4140,21 @@ ViStatus _VI_FUNC hpe1564_diagMemSize(ViSession vi, ViInt32 memSize)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagMemSize_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the size of memory in bytes.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt32 memSize
- * OUT       
+ * OUT
  *            Numeric value returned here is the memory size in bytes.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagMemSize_Q(ViSession vi, ViPInt32 memSize)
@@ -4182,32 +4182,32 @@ ViStatus _VI_FUNC hpe1564_diagMemSize_Q(ViSession vi, ViPInt32 memSize)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagPeek_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the specified register and returns its
  *           contents.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 regNum
- * IN        
+ * IN
  *            This is the register number.  The register number is the
  *            offset, in words, into A16 space.  For example, the Status
  *            register is number 2, and the Fifo high word register is
  *            number 6.
- * 
+ *
  *      MAX = hpe1564_REG_ADDR_MAX   31
  *      MIN = hpe1564_REG_ADDR_MIN   0
- * 
+ *
  * PARAM 3 : ViPInt16 data
- * OUT       
+ * OUT
  *            The contents of the register are returned in this parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagPeek_Q(ViSession vi, ViInt16 regNum, ViPInt16 data)
@@ -4236,39 +4236,39 @@ ViStatus _VI_FUNC hpe1564_diagPeek_Q(ViSession vi, ViInt16 regNum, ViPInt16 data
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagPoke
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function writes the specified data to the specified
  *           register. NOTE: Be sure you know what you are doing if you use
  *           this command.  The driver keeps state information, and you are
  *           changing state behind its back here, so the driver can, and
  *           probably will, get out of sync. with the hardware if you use
  *           this command.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 regNum
- * IN        
+ * IN
  *            This is the register number.  The register number is the
  *            offset, in words, into A24 space.  For example, the Status
  *            register is number 2, and the Fifo high word register is
  *            number 6.
- * 
+ *
  *      MAX = hpe1564_REG_ADDR_MAX   31
  *      MIN = hpe1564_REG_ADDR_MIN   0
- * 
+ *
  * PARAM 3 : ViInt16 data
- * IN        
+ * IN
  *            This is the data to send to the specified register.
- * 
+ *
  *      MAX = hpe1564_REG_DATA_MAX   32767
  *      MIN = hpe1564_REG_DATA_MIN   -32768
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagPoke(ViSession vi, ViInt16 regNum, ViInt16 data)
@@ -4297,40 +4297,40 @@ ViStatus _VI_FUNC hpe1564_diagPoke(ViSession vi, ViInt16 regNum, ViInt16 data)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagShort
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function controls whether the input on the channel is
  *           shorted or not.  The short remains in effect until a reset or
  *           until it is disabled with another hpe1564_diagShort command.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel will be affected.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViBoolean state
- * IN        
+ * IN
  *            This is the desired state: 0 = OFF; 1 = ON.  Macros for these
  *            settings are shown below.
- * 
+ *
  *      MAX = hpe1564_ON   1
  *      MIN = hpe1564_OFF   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagShort(ViSession vi, ViInt16 channel, ViBoolean state)
@@ -4360,33 +4360,33 @@ ViStatus _VI_FUNC hpe1564_diagShort(ViSession vi, ViInt16 channel, ViBoolean sta
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagTest_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the results of a self test in a test
  *            by test manner.  Each element in the array contains the
  *            result of that test number --- mumble mumble.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the length of the data array.  The array must be at
  *           least mumble elements in size.
- * 
- *      MAX = hpe1564_TEST_ARRAY_MAX    16000000 
- *      MIN = hpe1564_TEST_ARRAY_MIN    100 
- * 
+ *
+ *      MAX = hpe1564_TEST_ARRAY_MAX    16000000
+ *      MIN = hpe1564_TEST_ARRAY_MIN    100
+ *
  * PARAM 3 : ViReal64 _VI_FAR results[]
- * OUT       
+ * OUT
  *            The array of test results is returned in this parameter.
  *            See "Description" for more details on the format of the
  *            results.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength, ViInt16 _VI_FAR results[])
@@ -4425,45 +4425,45 @@ ViStatus _VI_FUNC hpe1564_diagTest_Q(ViSession vi, ViInt32 arrayLength, ViInt16 
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagTestNum_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function runs the specified test once, or multiple times,
  *           depending upon the value of the "iterations" parameter.  An
  *           integer is returned which contains the number of times the test
  *           failed (0 is returned if it passed all iterations).
- *           
+ *
  *            If the test failed (returned non-zero in result parameter),
  *           more information about the most recent failure can be obtained
  *           using the hpe1564_diagTestErr_Q function.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 testNum
- * IN        
+ * IN
  *            Specifies the test number to obtain detailed information about.
  *           mumble final number here in MAX.
- * 
+ *
  *      MAX = hpe1564_TEST_NUM_MAX   100
  *      MIN = hpe1564_TEST_NUM_MIN   1
- * 
+ *
  * PARAM 3 : ViInt16 iterations
- * IN        
+ * IN
  *            Specifies the number of times to run the test before bringing
  *           back the results.
- * 
+ *
  *      MAX = hpe1564_TEST_RUNS_MAX   32767
  *      MIN = hpe1564_TEST_RUNS_MIN   1
- * 
+ *
  * PARAM 4 : ViPInt16 failures
- * OUT       
+ * OUT
  *            The integer returned here contains the number of times the test
  *           failed.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagTestNum_Q(ViSession vi,
@@ -4509,39 +4509,39 @@ ViStatus _VI_FUNC hpe1564_diagTestNum_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_diagTestErr_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function obtains more information about a particular test
  *           of the self test suite.  An error code and information string
  *           are returned.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 testNum
- * IN        
+ * IN
  *            Specifies the test number to obtain detailed information about.
  *           mumble final number here in MAX.
- * 
+ *
  *      MAX = hpe1564_TEST_NUM_MAX   100
  *      MIN = hpe1564_TEST_NUM_MIN   1
- * 
+ *
  * PARAM 3 : ViPInt16 diagCode
- * OUT       
+ * OUT
  *           A diagnostic code giving more information about the type of
  *           failure is returned in this parameter.  See the service manual for
  *           information about the meaning of each diagnostic code.
- * 
+ *
  * PARAM 4 : ViChar _VI_FAR test_message[]
- * OUT       
+ * OUT
  *            A message giving more detailed information about the failure is
  *           returned in this string.  This string must be at least 80
  *           characters in length.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi,
@@ -4577,7 +4577,7 @@ ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_fetchAll_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is the fastest way to get data out of the
  *           digitizer. Raw data from all four channels is returned in an
  *            interleaved fashion -- that is, the array contains the first
@@ -4585,56 +4585,56 @@ ViStatus _VI_FUNC hpe1564_diagTestErr_Q(ViSession vi,
  *           each channel, and so on.  Each reading is brought back as a 16
  *           bit integer that represents a voltage.  To convert the raw
  *           readings to voltages, use either of the two methods shown below:
- *           
+ *
  *            voltage = reading * range/32768
- *           
+ *
  *            voltage = reading * resolution
- *           
+ *
  *            Where resolution may be obtained from the
  *            hpe1564_resolution_Q() command, and range from the
  *            hpe1564_input_Q() or hpe1564_rang_Q() commands.
- *           
+ *
  *            NOTE: Because the instrument supports continuous measurements,
  *           the memory is a fifo (first in first out), and the read is a
  *           destructive read.  Therefore, it is not possible to read the
  *           same data multiple times even for a non-continuous measurement.
- *           
+ *
  *            See the help file for more information.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the total amount of data to bring back.  Normally
  *           this would be equal to four times the sample count (since all 4
  *           channels are brought back interleaved).  If the instrument has
  *           more than "arrayLength" data points in memory, only
  *           "arrayLength" points will be brought back.
- * 
+ *
  *      MAX = hpe1564_FETCH_ALL_MAX   16000000
  *      MIN = hpe1564_FETCH_ALL_MIN   4
- * 
+ *
  * PARAM 3 : ViInt16 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values. The data points returned are interleaved -- that
  *           is, the array contains the first reading from each channel,
  *           followed by the second reading from each channel, etc.
- * 
+ *
  * PARAM 4 : ViPInt32 howMany
- * OUT       
+ * OUT
  *            Specifies how many readings were actually placed into the data
  *            array.  This is useful when using one large array to cover
  *           several different measurements that vary in sample count, or
  *           when fetching out data in "blocks", where the last fetch of data
  *           may contain only a remainder of data and not a full block.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi,
@@ -4708,88 +4708,88 @@ ViStatus _VI_FUNC hpe1564_fetchAll_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_fetch_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function brings back raw data from the specified
  *            channels.  In addition, this routine sorts the interleaved
  *           instrument data into individual arrays for the specified
  *           channels.  Each reading is brought back as a 16 bit integer that
  *           represents a voltage.  To convert the raw readings to voltages,
  *           use either of the two methods shown below:
- *           
+ *
  *            voltage = reading * range/32768
- *           
+ *
  *            voltage = reading * resolution
- *           
+ *
  *            Where resolution may be obtained from the
  *            hpe1564_resolution_Q() command, and range from the
  *            hpe1564_input_Q() or hpe1564_rang_Q() commands.
- *           
+ *
  *            Because it separates the interleaved raw data, this function is
  *            slower than the hpe1564_fetchAll function.  Channel arrays that
  *           are specified as null (0L), will have no data returned.
- *           
+ *
  *            NOTE: Measurement data on channels which have an associated
  *           null array pointer (0L), is thrown away by this command and is
  *           not recoverable. Similarly, this command can read the data from
  *           a measurement only once, and it is a destructive read.
- *           
+ *
  *            This function will attempt to bring back "arrayLength" readings
  *           for each channel with a non-null array pointer, but will not
  *           error if fewer readings are available.  The number of readings
  *           actually read into the data array is returned in the "howMany"
  *           parameter.
  *            See the help file for more information about this command.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the number of readings to bring back in each data
  *           array.  The data arrays must be at least this large, or they
  *           must be NULL (0L).
- * 
+ *
  *      MAX = hpe1564_FETCH_MAX   4000000
  *      MIN = hpe1564_FETCH_MIN   1
- * 
+ *
  * PARAM 3 : ViInt16 _VI_FAR data1[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 1.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- * 
+ *
  * PARAM 4 : ViInt16 _VI_FAR data2[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 2.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- * 
+ *
  * PARAM 5 : ViInt16 _VI_FAR data3[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 3.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- * 
+ *
  * PARAM 6 : ViInt16 _VI_FAR data4[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 4.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- * 
+ *
  * PARAM 7 : ViPInt32 howMany
- * OUT       
+ * OUT
  *            Specifies how many readings were actually placed into each
  *           non-null data array.  This is useful when using one large array
  *           to cover several different measurements that vary in sample
  *           count, or when fetching out data in "blocks" where the last
  *           fetch of data may contain only a remainder of data and not a
  *           full block.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 
@@ -4986,37 +4986,37 @@ ViStatus _VI_FUNC hpe1564_fetch_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_fetchCvt_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function brings back the most recently taken reading on
  *           each channel.  The data is returned as 16 bit integers.  To
  *           convert the raw readings to voltages, use either of the two
  *           methods shown below: BEGIN VERBATIM
- *           
+ *
  *            voltage = reading * range/32768
- *           
+ *
  *            voltage = reading * resolution
- *           
+ *
  *            Where resolution may be obtained from the
  *            hpe1564_resolution_Q() command, and range from the
  *            hpe1564_input_Q() or hpe1564_rang_Q() commands.
  *            END VERBATIM
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array which will hold the Current Value Table
  *           readings from all channels.  The array must be at least four
  *           elements in size to hold the current reading from each of four
  *           channels.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[])
@@ -5061,7 +5061,7 @@ ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[])
 
 /************
  * FUNCTION:   hpe1564_scan64()
- * PURPOSE:    Reads an (Indef/Def) Arbitrary Block from input, placing the 
+ * PURPOSE:    Reads an (Indef/Def) Arbitrary Block from input, placing the
  *             byte array into the callers array. If the caller requests byte
  *             swapping, then swaps all 8byte 64bit words appropriately from
  *             Motorola to Intel format.
@@ -5069,7 +5069,7 @@ ViStatus _VI_FUNC hpe1564_fetchCvt_Q(ViSession vi, ViInt16 _VI_FAR data[])
  *             Read Buffer.
  *             if (swapping needed)
  *                 Byte swap 8 byte words.
- * RETURNS: 
+ * RETURNS:
  *             VI_ERROR_INV_RESPONSE  - invalid response from instrument.
  *             VI_ERROR_PARAMETER2    - array length too short.
  *             VI_SUCCESS             - no errors.
@@ -5121,7 +5121,7 @@ ViStatus hpe1564_scan64(ViSession vi,
       return (rtn_code);
 
     length_str[digits] = '\0';	/* null terminate the string */
-    nbytes = atol(length_str);
+    nbytes = strtol(length_str,NULL,0);
 
     /* Verify that caller's array is big enough. */
     if ((max_length * 8) < nbytes)
@@ -5167,25 +5167,25 @@ ViStatus hpe1564_scan64(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the last voltage readings acquired on
  *           each channel.  The readings are in channel number order,
  *           beginning with channel 1.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 _VI_FAR data[]
- * OUT       
+ * OUT
  *            Pointer to the array of doubles which will hold the A/D reading
  *           values. One data point from each channel is returned in the
  *           array.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q(ViSession vi, ViReal64 _VI_FAR data[])
@@ -5231,7 +5231,7 @@ ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q(ViSession vi, ViReal64 _VI_FAR data[])
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_fetchScal_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function brings back voltage formatted data from the
  *           specified channels.  Because it separates the interleaved raw
  *           data into the distinct channel arrays provided, and converts the
@@ -5242,64 +5242,64 @@ ViStatus _VI_FUNC hpe1564_fetchScalCvt_Q(ViSession vi, ViReal64 _VI_FAR data[])
  *           null array pointer (0L), is thrown away by this command and is
  *           not recoverable. Similarly, this command can read the data from
  *           a measurement only once, and it is a destructive read.
- *           
+ *
  *            This function will attempt to bring back "arrayLength" readings
  *           for each channel with a non-null array pointer, but will not
  *           error if fewer readings are available.  The number of readings
  *           actually read into the data array is returned in the "howMany"
  *           parameter.
  *            See the help file for more information about this command.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the number of readings to bring back in each data
  *           array.  The data arrays must be at least this large, or they
  *           must be NULL (0L).
- * 
+ *
  *      MAX = hpe1564_FETCH_MAX   4000000
  *      MIN = hpe1564_FETCH_MIN   1
- * 
+ *
  * PARAM 3 : ViReal64 _VI_FAR data1[]
- * OUT       
+ * OUT
  *            Pointer to the array of floating point values which will hold
  *           the A/D reading values from channel 1.  If a null pointer is
  *           given (0L), no data will be returned for this channel.
- * 
+ *
  * PARAM 4 : ViReal64 _VI_FAR data2[]
- * OUT       
+ * OUT
  *            Pointer to the array of floating point values which will hold
  *           the A/D reading values from channel 2.  If a null pointer is
  *           given (0L), no data will be returned for this channel.
- * 
+ *
  * PARAM 5 : ViReal64 _VI_FAR data3[]
- * OUT       
+ * OUT
  *            Pointer to the array of floating point values which will hold
  *           the A/D reading values from channel 3.  If a null pointer is
  *           given (0L), no data will be returned for this channel.
- * 
+ *
  * PARAM 6 : ViReal64 _VI_FAR data4[]
- * OUT       
+ * OUT
  *            Pointer to the array of floating point values which will hold
  *           the A/D reading values from channel 4.  If a null pointer is
  *           given (0L), no data will be returned for this channel.
- * 
+ *
  * PARAM 7 : ViPInt32 howMany
- * OUT       
+ * OUT
  *            Specifies how many readings were actually placed into each
  *           non-null data array.  This is useful when using one large array
  *           to cover several different measurements that vary in sample
  *           count, or when fetching out data in "blocks" where the last
  *           fetch of data may contain only a remainder of data and not a
  *           full block.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi,
@@ -5493,46 +5493,46 @@ ViStatus _VI_FUNC hpe1564_fetchScal_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_initCont
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to either begin or end a continuous
  *           measurement. The ON (1) setting will begin a measurement with
  *           infinite sample count.  Once the trigger condition is met, the
  *           instrument will sample until one of the following three things
  *           occurs: BEGIN VERBATIM
  *            1. The measurement is halted with the hpe1564_abort() function.
- *           
+ *
  *            2. The measurement is stopped by setting continuous mode to OFF
  *            by calling hpe1564_initCont(vi, hpe1564_OFF)
- *           
+ *
  *            3. The instrument fifo memory is filled.  This can be prevented
  *            from happening by fetching the data out in blocks faster than
  *            the sample rate can fill memory.
- *           
+ *
  *            Once initiated, the instrument enters the wait-for-trigger
  *            state to await a trigger before proceeding to the
  *           wait-for-sample state which is where readings are actually
  *           taken.  The instrument stays in the wait-for-sample state until
  *           one of the three events mentioned above occurs.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViBoolean state
- * IN        
+ * IN
  *            This parameter specifies whether continuous mode is ON (1) or
  *           OFF (0). See the function description for more information about
  *           ON/OFF.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disabled
  *      hpe1564_ON           1  Enabled
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state)
@@ -5574,25 +5574,25 @@ ViStatus _VI_FUNC hpe1564_initCont(ViSession vi, ViBoolean state)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_initCont_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to determine if the instrument is in the
  *            continuous measurement mode.  A return value of 1 indicates
  *           continous measurement mode is set, a return value of 0 indicates
  *           non-continous measurement mode.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPBoolean state
- * OUT       
+ * OUT
  *            This parameter specifies whether continuous mode is ON (1) or
  *           OFF (0).
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_initCont_Q(ViSession vi, ViPBoolean state)
@@ -5620,22 +5620,22 @@ ViStatus _VI_FUNC hpe1564_initCont_Q(ViSession vi, ViPBoolean state)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_initImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  The hpe1564_initImm() command controls the initiation of the
  *            trigger subsystem and prepares the HP E1564 to take voltage
  *            measurements.  Once initiated, the instrument enters the
  *           wait-for-trigger state to await a trigger before proceeding to
  *           the wait-for-sample state which is where readings are actually
  *           taken.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_initImm(ViSession vi)
@@ -5667,40 +5667,40 @@ ViStatus _VI_FUNC hpe1564_initImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_inpFilt
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function changes the filter frequency and enables or
  *            disables the filter.  The hardware will be set to the nearest
  *            value that can achieve the specified filter setting.  Use the
  *            hpe1564_inpFilt_Q function to see the final setting used in
  *            the hardware.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to adjust the filter on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViReal64 filter
- * IN        
+ * IN
  *            Specifies the filter setting desired.  The filters
  *            are 2 pole Bessel filters.
- *           
+ *
  *            Values of filter less than 750.0 will result in the
  *            OFF (0.0) setting.  Other values will be rounded
  *            to the nearest setting the hardware can achieve.
  *            The actual discrete hardware settings are shown below:
- * 
+ *
  *      Macro Name             Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_FILT_OFF         0.0  0.0
@@ -5708,14 +5708,14 @@ ViStatus _VI_FUNC hpe1564_initImm(ViSession vi)
  *      hpe1564_FILT_6K       6000.0  6000.0
  *      hpe1564_FILT_25K     25000.0  25000.0
  *      hpe1564_FILT_100K   100000.0  100000.0
- * 
+ *
  *      MAX = hpe1564_FILT_MAX   100000.0001
  *      MIN = hpe1564_FILT_MIN   0.0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpFilt(ViSession vi, ViInt16 channel, ViReal64 filter)
@@ -5766,37 +5766,37 @@ ViStatus _VI_FUNC hpe1564_inpFilt(ViSession vi, ViInt16 channel, ViReal64 filter
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_inpFilt_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the filter on
  *            the specified channel.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to query the filter setting on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 filter
- * OUT       
+ * OUT
  *            The filter setting of the specfied channel is
  *            returned in this parameter.  0.0 indicates the
  *            filter is OFF.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel, ViPReal64 filter)
@@ -5853,42 +5853,42 @@ ViStatus _VI_FUNC hpe1564_inpFilt_Q(ViSession vi, ViInt16 channel, ViPReal64 fil
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_inpState
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function connects or disconnects the input signal to
  *            the instrument's measurement circuitry.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to change the input relay state on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViBoolean state
- * IN        
+ * IN
  *            Boolean which connects (1) or disconnects (0) the signal
  *            to the measurement circuitry on the instrument.  The settings
  *           are shown in the macros below.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disconnected
  *      hpe1564_ON           1  Connected
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpState(ViSession vi, ViInt16 channel, ViBoolean state)
@@ -5928,44 +5928,44 @@ ViStatus _VI_FUNC hpe1564_inpState(ViSession vi, ViInt16 channel, ViBoolean stat
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_inpState_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the input relay on the specified channel
  *            to see if it is in the connected (1) or disconnected (0)
  *            state.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to query the input relay state on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPBoolean state
- * OUT       
+ * OUT
  *            The state of the input connection (1 = connected),
  *            (0 = disconnected) to the measurement circuitry
  *            is returned in this parameter.  These states are also
  *            available as macros.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disconnected
  *      hpe1564_ON           1  Connected
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean state)
@@ -5998,8 +5998,8 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_input
  *-----------------------------------------------------------------------------
- * 
- * PURPOSE :  This function allows the user to configure 2 channels at once. 
+ *
+ * PURPOSE :  This function allows the user to configure 2 channels at once.
  *           Since the hardware puts two channels into the same register,
  *           this command is the most time efficient way to change range
  *           and/or filter settings on a pair of channels, especially since
@@ -6008,7 +6008,7 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *            It is important to note that this function will automatically
  *           close the input relay on each channel (if it was open), thereby
  *           connecting the input signal to the measurement path.
- *           
+ *
  *            The filter will be set to the nearest value that can be
  *           achieved;  a filter value less than 750.0 will result in the
  *           filter being turned off.
@@ -6016,31 +6016,31 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *           each of these same parameters.  See the "Low Level Configure"
  *           functions that begin with "hpe1564_inp", for the one(s) you
  *           need.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 chanPair
- * IN        
+ * IN
  *            Specifies which pair of channels will be altered.
  *            The allowable channel pairs are defined as macros and shown
  *           below:
- * 
+ *
  *      Macro Name            Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHANS_12          1  1
  *      hpe1564_CHANS_34          2  2
- * 
+ *
  *      MAX = hpe1564_CHANS_34   2
  *      MIN = hpe1564_CHANS_12   1
- * 
+ *
  * PARAM 3 : ViReal64 oddChanRange
- * IN        
+ * IN
  *            Specifies the voltage range to use on the lower numbered (or
  *           odd) channel of the pair.  The allowable settings are shown in
  *            the macros below.
- * 
+ *
  *      Macro Name               Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_RANGE_63MV      0.0625  0.0625
@@ -6050,12 +6050,12 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *      hpe1564_RANGE_16          16.0  16.0
  *      hpe1564_RANGE_64          64.0  64.0
  *      hpe1564_RANGE_256        256.0  256.0
- * 
+ *
  *      MAX = hpe1564_VOLT_MAX   256.0001
  *      MIN = hpe1564_VOLT_MIN   -256.0001
- * 
+ *
  * PARAM 4 : ViReal64 oddChanFilter
- * IN        
+ * IN
  *            Specifies the filter setting desired on the lower numbered (or
  *           odd) channel in the channel pair. The filters are 2 pole Bessel
  *           filters.
@@ -6063,7 +6063,7 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *            OFF (0.0) setting.  Other values will be rounded
  *            to the nearest setting the hardware can achieve.
  *            The actual discrete hardware settings are shown below:
- * 
+ *
  *      Macro Name             Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_FILT_OFF         0.0  0.0
@@ -6071,16 +6071,16 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *      hpe1564_FILT_6K       6000.0  6000.0
  *      hpe1564_FILT_25K     25000.0  25000.0
  *      hpe1564_FILT_100K   100000.0  100000.0
- * 
+ *
  *      MAX = hpe1564_FILT_MAX   100000.0001
  *      MIN = hpe1564_FILT_MIN   0.0
- * 
+ *
  * PARAM 5 : ViReal64 evenChanRange
- * IN        
+ * IN
  *            Specifies the voltage range to use on the higher numbered (or
  *           even) channel of the pair.  The allowable settings are shown in
  *            the macros below.
- * 
+ *
  *      Macro Name               Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_RANGE_63MV      0.0625  0.0625
@@ -6090,12 +6090,12 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *      hpe1564_RANGE_16          16.0  16.0
  *      hpe1564_RANGE_64          64.0  64.0
  *      hpe1564_RANGE_256        256.0  256.0
- * 
+ *
  *      MAX = hpe1564_VOLT_MAX   256.0001
  *      MIN = hpe1564_VOLT_MIN   -256.0001
- * 
+ *
  * PARAM 6 : ViReal64 evenChanFilter
- * IN        
+ * IN
  *            Specifies the filter setting desired on the higher numbered (or
  *           even) channel in the channel pair. The filters are 2 pole Bessel
  *           filters.
@@ -6103,7 +6103,7 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *            OFF (0.0) setting.  Other values will be rounded
  *            to the nearest setting the hardware can achieve.
  *            The actual discrete hardware settings are shown below:
- * 
+ *
  *      Macro Name             Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_FILT_OFF         0.0  0.0
@@ -6111,14 +6111,14 @@ ViStatus _VI_FUNC hpe1564_inpState_Q(ViSession vi, ViInt16 channel, ViPBoolean s
  *      hpe1564_FILT_6K       6000.0  6000.0
  *      hpe1564_FILT_25K     25000.0  25000.0
  *      hpe1564_FILT_100K   100000.0  100000.0
- * 
+ *
  *      MAX = hpe1564_FILT_MAX   100000.0001
  *      MIN = hpe1564_FILT_MIN   0.0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_input(ViSession vi,
@@ -6306,58 +6306,58 @@ ViStatus _VI_FUNC hpe1564_input(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_input_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the input range and filter settings on
  *           all channels.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 range1
- * OUT       
+ * OUT
  *            The present setting of the range on channel 1 is returned in
  *           this parameter.
- * 
+ *
  * PARAM 3 : ViPReal64 filter1
- * OUT       
+ * OUT
  *            The present filter setting on channel 1 is returned in this
  *           parameter.
- * 
+ *
  * PARAM 4 : ViPReal64 range2
- * OUT       
+ * OUT
  *            The present setting of the range on channel 2 is returned in
  *           this parameter.
- * 
+ *
  * PARAM 5 : ViPReal64 filter2
- * OUT       
+ * OUT
  *            The present filter setting on channel 2 is returned in this
  *           parameter.
- * 
+ *
  * PARAM 6 : ViPReal64 range3
- * OUT       
+ * OUT
  *            The present setting of the range on channel 3 is returned in
  *           this parameter.
- * 
+ *
  * PARAM 7 : ViPReal64 filter3
- * OUT       
+ * OUT
  *            The present filter setting on channel 3 is returned in this
  *           parameter.
- * 
+ *
  * PARAM 8 : ViPReal64 range4
- * OUT       
+ * OUT
  *            The present setting of the range on channel 4 is returned in
  *           this parameter.
- * 
+ *
  * PARAM 9 : ViPReal64 filter4
- * OUT       
+ * OUT
  *            The present filter setting on channel 4 is returned in this
  *           parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi,
@@ -6557,42 +6557,42 @@ ViStatus _VI_FUNC hpe1564_input_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_limitFail_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present status of the limit
  *            checking on the specified channel.  The returned value
  *            is a boolean, where 0 indicates the limit was not
  *            exceeded (passed), and 1 indicates the limit was
  *            exceeded (failed).
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to query the limit status on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPBoolean status
- * OUT       
+ * OUT
  *            The state of the limit checking on the most
  *            recent measurement is returned here.  A return
  *            value of 1 indicates the specified limit was exceeded (failed);
  *            a return value of 0 indicates that the measurement
  *            did not exceed the specified limit (passed).
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitFail_Q(ViSession vi, ViInt16 channel, ViPBoolean status)
@@ -6625,62 +6625,62 @@ ViStatus _VI_FUNC hpe1564_limitFail_Q(ViSession vi, ViInt16 channel, ViPBoolean 
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_limitSet
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets up a channel to detect when a limit has
  *            been exceeded in the specified manner (i.e. signal either rose
  *            above or fell below the specified level).  To determine if the
  *            level was exceeded, call the hpe1564_limitFail_Q function.  The
  *            status system can also be mumble enabled to do something when
  *            if the limit is exceeded.
- *           
+ *
  *            The limit detection is reset with each new measurement, so
  *            it is not a cumulative record.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to set the limit on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViReal64 level
- * IN        
+ * IN
  *            Specifies the level that will be the limit.  The value
  *            allowed here will depend upon the present range setting.
  *            The resolution varies by range and is shown for each
  *            range in the COMMENTS section below.  An error will occur
  *            if a level is chosen outside the present range setting.
  *            The overall minimum and maximum are shown as macros below.
- * 
+ *
  *      MAX = hpe1564_LIMIT_MAX   254.00
  *      MIN = hpe1564_LIMIT_MIN   -252.00
- * 
+ *
  * PARAM 4 : ViInt16 mode
- * IN        
+ * IN
  *            Specifies the mode or direction of the limit detection
  *            desired.  The three choices are shown as macros below.
- * 
+ *
  *      Macro Name               Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_LIMIT_OFF            0  No limit checking
  *      hpe1564_LIMIT_BELOW          1  Falling below level
  *      hpe1564_LIMIT_ABOVE          2  Rising above level
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel, ViReal64 level, ViInt16 mode)
@@ -6763,48 +6763,48 @@ ViStatus _VI_FUNC hpe1564_limitSet(ViSession vi, ViInt16 channel, ViReal64 level
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_limitSet_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present settings for limit
  *            checking on the specified channel.  The returned values
  *            are the voltage level, and the detection mode -- above
  *            the level (2), below the level (1), and no limit
  *            checking (0).
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to query the limit setting on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 level
- * OUT       
+ * OUT
  *            The voltage level used for the limit checking
  *            is returned in this parameter.
- * 
+ *
  * PARAM 4 : ViPInt16 mode
- * OUT       
+ * OUT
  *            The mode of the limit checking is returned in
  *            this parameter. A value of 0 indicates that limit
  *            checking is disabled, a value of 1 indicates
  *            detection of signals BELOW the specified limit,
  *            a value of 2 indicates detection of signals ABOVE
  *            the specified limit.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan, ViPReal64 level, ViPInt16 mode)
@@ -6893,41 +6893,41 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan, ViPReal64 level
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_maxMin
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will find the maximum and minimum voltage
  *           readings on a channel and report those values and the time or
  *           position of their occurrence.  This function does not take new
  *           readings.  The measurement must either have been started or have
  *           completed before calling this function.
- *           
+ *
  *            NOTE: We limit the search to 524288 readings in size.  To look
  *           through larger data sets, call this routine multiple times,
  *           saving the previous results to obtain the absolute min and max.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to configure and measure.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 maxVolt
- * OUT       
+ * OUT
  *            Returns the maximum measured voltage on the specified channel.
- * 
+ *
  * PARAM 4 : ViPReal64 maxTime
- * OUT       
+ * OUT
  *            Returns the first time the maximum measured voltage occurred
  *            on the specified channel.
  *            If the sample source is Timer, the time given will be the time
@@ -6936,13 +6936,13 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan, ViPReal64 level
  *           given will be in number of samples.  The maxTime may be negative
  *           if numPreTriggers is not 0 and the maximum Voltage occurs before
  *           the trigger event.
- * 
+ *
  * PARAM 5 : ViPReal64 minVolt
- * OUT       
+ * OUT
  *            Returns the minimum measured voltage on the specified channel.
- * 
+ *
  * PARAM 6 : ViPReal64 minTime
- * OUT       
+ * OUT
  *            Returns the first time that the minimum measured voltage
  *           occurred on the specified channel. If the sample source is
  *           Timer, the time given will be the time delay from the trigger
@@ -6950,11 +6950,11 @@ ViStatus _VI_FUNC hpe1564_limitSet_Q(ViSession vi, ViInt16 chan, ViPReal64 level
  *           sample source is not Timer, the value given will be in number of
  *            samples.  The minTime may be negative if numPreTriggers is
  *            not 0 and the minimum Voltage occurs before the trigger event.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi,
@@ -7108,13 +7108,13 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_measure_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will configure all channels to take readings on
  *           the range indicated by the "expected" parameter, will initiate
  *           the measurement, and bring back the scaled data for all
  *           channels. The trigger source is set to immediate and the sample
  *           source is set to timer with the fastest sampling period.
- *           
+ *
  *            This is equivalent to doing hpe1564_configure() on all
  *           channels, followed by hpe1564_initImm() and
  *           hpe1564_fetchScal_Q() all done in sequence.  The expected value
@@ -7125,7 +7125,7 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi,
  *           instrument's range, the next higher range is automatically
  *           chosen.  The following table gives the crossover points for
  *           range changes; note that negative expected values are converted to positive values when deciding range.
- *           
+ *
  *             Maximum Expected Value   Voltage Range    Resolution
  *                     0.06125             0.0625        .000007629
  *                     0.24500             0.2500        .000030518
@@ -7134,85 +7134,85 @@ ViStatus _VI_FUNC hpe1564_maxMin(ViSession vi,
  *                    15.68000            16.0000        .001953125
  *                    62.72000            64.0000        .007812500
  *                   250.88000           256.0000        .031250000
- *           
+ *
  *            The numSamples parameter specifies how many readings will be
  *           taken per channel. The total number of readings allowed is a
  *           function of optional memory, but at most will be 128 Meg
  *           (16,777,216 readings per channel).
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 expected
- * IN        
+ * IN
  *            Specifies the maximum expected voltage for the specified
  *           channel.
- * 
+ *
  *      MAX = hpe1564_VOLT_MAX   256.0001
  *      MIN = hpe1564_VOLT_MIN   -256.0001
- * 
+ *
  * PARAM 3 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of readings to take on each channel.
- * 
+ *
  *      MAX = hpe1564_SAMP_COUNT_MAX   16777216
  *      MIN = hpe1564_SAMP_COUNT_MIN   1
- * 
+ *
  * PARAM 4 : ViInt32 arrayLength
- * IN        
+ * IN
  *            Specifies the number of readings to bring back in each data
  *           array.  The data arrays must be at least this large, or they
  *           must be NULL (0L).
- * 
+ *
  *      MAX = hpe1564_FETCH_MAX   2147483646
  *      MIN = hpe1564_FETCH_MIN   1
- * 
+ *
  * PARAM 5 : ViInt16 _VI_FAR data1[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 1.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- *           
+ *
  *            NOTE:  In HP VEE, NULL pointers are not allowed, so you must
  *           give a valid array pointer for each channel when using HP VEE.
- * 
+ *
  * PARAM 6 : ViInt16 _VI_FAR data2[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 2.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- *           
+ *
  *            NOTE:  In HP VEE, NULL pointers are not allowed, so you must
  *           give a valid array pointer for each channel when using HP VEE.
- * 
+ *
  * PARAM 7 : ViInt16 _VI_FAR data3[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 3.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- *           
+ *
  *            NOTE:  In HP VEE, NULL pointers are not allowed, so you must
  *           give a valid array pointer for each channel when using HP VEE.
- * 
+ *
  * PARAM 8 : ViInt16 _VI_FAR data4[]
- * OUT       
+ * OUT
  *            Pointer to the array of 16 bit integers which will hold the A/D
  *           reading values from channel 4.  If a null pointer is given (0L),
  *           no data will be returned for this channel.
- *           
+ *
  *            NOTE:  In HP VEE, NULL pointers are not allowed, so you must
  *           give a valid array pointer for each channel when using HP VEE.
- * 
+ *
  * PARAM 9 : ViPInt32 howMany
- * OUT       
+ * OUT
  *            The number of data points actually read into each data array is
  *           returned in this parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_measure_Q(ViSession vi,
@@ -7305,7 +7305,7 @@ ViStatus _VI_FUNC hpe1564_measure_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_outpTtltSour
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets the source of output pulses for the
  *           specified TTL trigger line.  Note that only one line may be
  *           enabled to output a particular source.  For example, the trigger
@@ -7316,18 +7316,18 @@ ViStatus _VI_FUNC hpe1564_measure_Q(ViSession vi,
  *            simultaneously.  Additionally, BOTH sources may be enabled to
  *            output onto a single line, but no other lines may be enabled
  *            when this condition exists.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 line
- * IN        
+ * IN
  *            Specifies which of the TTL trigger lines will have the
  *            source changed.
- *           
+ *
  *            The trigger lines are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TTLT0          0  TTL Trigger line 0
@@ -7338,22 +7338,22 @@ ViStatus _VI_FUNC hpe1564_measure_Q(ViSession vi,
  *      hpe1564_TTLT5          5  TTL Trigger line 5
  *      hpe1564_TTLT6          6  TTL Trigger line 6
  *      hpe1564_TTLT7          7  TTL Trigger line 7
- * 
+ *
  * PARAM 3 : ViInt16 source
- * IN        
+ * IN
  *            The desired source to cause pulses on the specified TTL trigger
  *            line.  The allowable choices are shown in the following macros.
- * 
+ *
  *      Macro Name             Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OUTP_TRIG          0  Trigger event
  *      hpe1564_OUTP_SAMP          1  Sample event(s)
  *      hpe1564_OUTP_BOTH          2  Both events
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_outpTtltSour_source_a[] = { "TRIG",
@@ -7398,21 +7398,21 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour(ViSession vi, ViInt16 line, ViInt16 sourc
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_outpTtltSour_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present output pulse source
  *            for the specified TTL trigger line.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 line
- * IN        
+ * IN
  *            Specifies which TTL trigger line to query the source on.
- *           
+ *
  *            The possible TTL trigger lines are defined as macros and are
  *           shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TTLT0          0  TTL trigger line 0
@@ -7423,23 +7423,23 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour(ViSession vi, ViInt16 line, ViInt16 sourc
  *      hpe1564_TTLT5          5  TTL trigger line 5
  *      hpe1564_TTLT6          6  TTL trigger line 6
  *      hpe1564_TTLT7          7  TTL trigger line 7
- * 
+ *
  * PARAM 3 : ViPBoolean source
- * OUT       
+ * OUT
  *            The source of the pulse, (0 = trigger event), (1 = sample
  *           event), and (2 = Both sample and trigger events).  These values
  *           are shown in the macros below.
- * 
+ *
  *      Macro Name             Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OUTP_TRIG          0  Trigger event
  *      hpe1564_OUTP_SAMP          1  Sample event(s)
  *      hpe1564_OUTP_BOTH          2  Both events
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_outpTtltSour_Q_source_a[] = { "TRIG",
@@ -7482,28 +7482,28 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line, ViPInt16 so
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_outpTtltStat
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function enables the specified TTL line to provide
  *            output pulses when either the trigger event, sample event,
  *            or both occur.
- *           
+ *
  *            Because the TTL trigger lines can be used as either an input
  *            or an output, some resource conflicts can occur with the
  *            TTL trigger lines.  See the "COMMENTS" section of the help file
  *            for the specifics on the conflicts and their resolutions.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 line
- * IN        
+ * IN
  *            Specifies which of the TTL trigger lines will have the
  *            source changed.
- *           
+ *
  *            The trigger lines are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TTLT0          0  TTL Trigger line 0
@@ -7514,24 +7514,24 @@ ViStatus _VI_FUNC hpe1564_outpTtltSour_Q(ViSession vi, ViInt16 line, ViPInt16 so
  *      hpe1564_TTLT5          5  TTL Trigger line 5
  *      hpe1564_TTLT6          6  TTL Trigger line 6
  *      hpe1564_TTLT7          7  TTL Trigger line 7
- * 
+ *
  * PARAM 3 : ViBoolean state
- * IN        
+ * IN
  *            The desired state -- ON (1) or OFF (0) of the specified
  *            TTL trigger line.  When ON, pulses will be output onto the
  *            line when the TTL output source (hpe1564_outpTtltSour) event
  *            occurs.
  *            The allowable settings are shown in the following macros.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disable outputting
  *      hpe1564_ON           1  Enable outputting
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line, ViBoolean state)
@@ -7572,23 +7572,23 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line, ViBoolean sta
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_outpTtltStat_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present state of outputting
  *            for the TTL trigger line specified.  A return value for
  *            state of 0 indicates that outputting is disabled, while
  *            a 1 indicates outputting is enabled.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 line
- * IN        
+ * IN
  *            Specifies which TTL trigger line to query the state on.
- *           
+ *
  *            The possible TTL trigger lines are defined as macros and are
  *           shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TTLT0          0  TTL trigger line 0
@@ -7599,21 +7599,21 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat(ViSession vi, ViInt16 line, ViBoolean sta
  *      hpe1564_TTLT5          5  TTL trigger line 5
  *      hpe1564_TTLT6          6  TTL trigger line 6
  *      hpe1564_TTLT7          7  TTL trigger line 7
- * 
+ *
  * PARAM 3 : ViPBoolean state
- * OUT       
+ * OUT
  *            The state of the TTL trigger line for outputting pulses -- 0 =
  *           OFF, 1 = ON.
- * 
+ *
  *      Macro Name       Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_OFF          0  Disable output
  *      hpe1564_ON           1  Enable output
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line, ViPBoolean state)
@@ -7647,7 +7647,7 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line, ViPBoolean 
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_range
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will change the range on the specified channel to
  *            at least the level specified.  If the range value specified
  *            falls between two of the instrument's ranges, the higher range
@@ -7655,7 +7655,7 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line, ViPBoolean 
  *            The following table gives the crossover points for range
  *           changes. Note that a full scale reading on a given range may
  *           actually be an overload condition.
- *           
+ *
  *           Voltage Range    Resolution
  *             0.0625        .000007629
  *             0.2500        .000030518
@@ -7664,31 +7664,31 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line, ViPBoolean 
  *            16.0000        .001953125
  *            64.0000        .007812500
  *           256.0000        .031250000
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies which channel to change range on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViReal64 range
- * IN        
+ * IN
  *            Specifies the voltage range to use for the measurement.
  *            There are 7 different ranges, the ranges are as shown in
  *            the macros below.
- * 
+ *
  *      Macro Name               Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_RANGE_63MV      0.0625  0.0625
@@ -7698,14 +7698,14 @@ ViStatus _VI_FUNC hpe1564_outpTtltStat_Q(ViSession vi, ViInt16 line, ViPBoolean 
  *      hpe1564_RANGE_16          16.0  16.0
  *      hpe1564_RANGE_64          64.0  64.0
  *      hpe1564_RANGE_256        256.0  256.0
- * 
+ *
  *      MAX = hpe1564_VOLT_MAX   256.0001
  *      MIN = hpe1564_VOLT_MIN   -256.0001
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range)
@@ -7746,36 +7746,36 @@ ViStatus _VI_FUNC hpe1564_range(ViSession vi, ViInt16 chan, ViReal64 range)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_range_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will query the range setting for the specified
  *            channel.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to query the range on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 range
- * OUT       
+ * OUT
  *            The present range setting on the specified channel is
  *            returned in this parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range)
@@ -7809,7 +7809,7 @@ ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampCount
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function selects the total number of readings the
  *           instrument will take, and the number of readings that are taken
  *           before the trigger event is accepted (if numPreTriggers is
@@ -7821,30 +7821,30 @@ ViStatus _VI_FUNC hpe1564_range_Q(ViSession vi, ViInt16 chan, ViPReal64 range)
  *           the instrument will continue taking pretrigger readings until
  *           the trigger occurs, keeping only the the most recent
  *           numPreTriggers readings in memory.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of readings to take.
- * 
+ *
  *      MAX = hpe1564_SAMP_COUNT_MAX   4000000
  *      MIN = hpe1564_SAMP_COUNT_MIN   1
- * 
+ *
  * PARAM 3 : ViInt32 numPreTriggers
- * IN        
+ * IN
  *            Specifies how many of the total readings will be taken before
  *           (pre) the trigger event occurs.
- * 
+ *
  *      MAX = hpe1564_PRETRIG_MAX   3999999
  *      MIN = hpe1564_PRETRIG_MIN   0
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples, ViInt32 numPreTriggers)
@@ -7915,44 +7915,44 @@ ViStatus _VI_FUNC hpe1564_sampCount(ViSession vi, ViInt32 numSamples, ViInt32 nu
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampCount_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the sample count.
- *           
+ *
  *           The available counts are:
- *           
+ *
  *             Timer: The internal timebase controls when data is taken.
  *                    The rate is controlled by calling the hpe1564_sampTim
  *                    or hpe1564_sample functions.
- *           
+ *
  *             External 1: The "Ext 1" pin of the HP E1564's 9 pin
  *                         D-subminiature connector.
- *           
+ *
  *             External 2: The "Ext 2" pin of the HP E1564's 9 pin
  *                         D-subminiature connector.
- *           
+ *
  *             TTLTrg0 through TTLTrg7: The VXIbus TTL trigger lines.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt32 numSamples
- * OUT       
+ * OUT
  *            The total number of readings the instrument will take during
  *            a measurement is returned here.  A value of -1 is returned here
  *           if continuous measurement is enabled (see hpe1564_initCont);
  *           this indicates an infinite total reading count.
- * 
+ *
  * PARAM 3 : ViPInt32 numPreTriggers
- * OUT       
+ * OUT
  *            Returns how many readings will be taken before the trigger
  *           event may be accepted.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampCount_Q(ViSession vi, ViPInt32 numSamples, ViPInt32 numPreTriggers)
@@ -8006,24 +8006,24 @@ ViStatus _VI_FUNC hpe1564_sampCount_Q(ViSession vi, ViPInt32 numSamples, ViPInt3
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is really a diagnostic type of function.  It is
  *            only useful when the sample source can be suspended (i.e. the
  *            sample source is HOLD, EXTernal, or TTLT<n>).
- *           
+ *
  *            This function, when called, will force a single sample event.
  *            The instrument must be initiated and in the
  *            wait-for-sample state when this function is called; otherwise,
  *           a "Sample ignored" error will result.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampImm(ViSession vi)
@@ -8052,30 +8052,30 @@ ViStatus _VI_FUNC hpe1564_sampImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampSlop
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets the sample slope.  The slope is
  *            set, but ignored, if the sample source is not one of
  *            External 1 or External 2.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViBoolean slope
- * IN        
- *            This parameter specifies the active edge of the sample source. 
+ * IN
+ *            This parameter specifies the active edge of the sample source.
  *           VI_TRUE (1) specifies a POSitive slope (rising edge), and
  *           VI_FALSE (0) specifies a NEGative slope (falling edge).
- * 
+ *
  *      Macro Name            Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SLOP_NEG          0  Falling Edge
  *      hpe1564_SLOP_POS          1  Rising Edge
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope)
@@ -8117,31 +8117,31 @@ ViStatus _VI_FUNC hpe1564_sampSlop(ViSession vi, ViBoolean slope)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampSlop_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the sample
  *            slope.  This slope is only active if the sample source
  *            is one of External 1 or External 2.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPBoolean slope
- * OUT       
+ * OUT
  *            The active edge of the sample source is returned in this
  *           parameter. VI_TRUE (1) specifies a POSitive slope (rising edge),
- *           and VI_FALSE (0) specifies a NEGative slope (falling edge). 
+ *           and VI_FALSE (0) specifies a NEGative slope (falling edge).
  *           These settings are represented by the macros below.
- * 
+ *
  *      Macro Name            Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SLOP_NEG          0  Falling Edge
  *      hpe1564_SLOP_POS          1  Rising Edge
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sampSlop_Q_slope_a[] = { "NEG", "POS", 0 };
@@ -8183,14 +8183,14 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampSour
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function combines two instrument SCPI commands:
  *              :SAMPle[:STARt]:SLOPe
  *              :SAMPle[:STARt]:SOURce
  *            Together, these commands allow you to configure the sample
  *            subsystem to respond to a specific source and a specific edge
  *            on a pulse (if source is External).
- *           
+ *
  *            The SAMPle command subsystem controls the fourth state in a
  *           four state measurement process.  The four states which occur
  *           during a successful reading are idle, initiated,
@@ -8208,35 +8208,35 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope)
  *           the instrument goes to the idle state.
  *            The source parameter configures the sample system to respond to
  *           the specified source for taking readings.
- *           
+ *
  *           The available sources are:
  *             External, Rising: The rising edge of a pulse on the
  *                "Sample" pin of the HP E1564's 9 pin D-subminiature
  *                connector.  The pulse width must be at least 30e-9
  *                seconds.
- *           
+ *
  *             External, Falling: The falling edge of a pulse on the
  *                "Sample" pin of the HP E1564's 9 pin D-subminiature
  *                connector.  The pulse width must be at least 30e-9
  *                seconds.
- *           
+ *
  *             TTLTrg0 through TTLTrg7: The VXIbus TTL sample lines.
  *                The pulse width must be at least 30e-9 seconds.
- *           
+ *
  *             Timer: Uses the specified period as the sample rate.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 source
- * IN        
+ * IN
  *            This parameter configures the trigger system to respond to the
  *            specified source for taking readings.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  *      Macro Name                 Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SAMP_HOLD              0  Wait for Software sample
@@ -8251,11 +8251,11 @@ ViStatus _VI_FUNC hpe1564_sampSlop_Q(ViSession vi, ViPBoolean slope)
  *      hpe1564_SAMP_TTLT7             9  TTLTrg7
  *      hpe1564_SAMP_EXT_RISE         10  External Rising Edge
  *      hpe1564_SAMP_EXT_FALL         11  External Falling Edge
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sampSour_source_a[] = { "HOLD", "TIM",
@@ -8335,33 +8335,33 @@ ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampSour_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function queries the present setting of the sample source.
- *           
+ *
  *           The available sources are:
- *           
+ *
  *             Hold: Sampling only occurs when sample immediate command sent.
- *           
+ *
  *             Timer: The internal timebase controls when data is taken.
  *                    The rate is controlled by calling the hpe1564_sampTim
  *                    or hpe1564_sample functions.
- *           
+ *
  *             External 1: The "Ext 1" pin of the HP E1564's 9 pin
  *                         D-subminiature connector.
- *           
+ *
  *             TTLTrg0 through TTLTrg7: The VXIbus TTL trigger lines.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 source
- * OUT       
+ * OUT
  *            The present sample source setting is returned in this
  *           parameter. The integer returned represents one of the following
  *           macro settings.
- * 
+ *
  *      Macro Name              Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SAMP_HOLD           0  Hold
@@ -8375,11 +8375,11 @@ ViStatus _VI_FUNC hpe1564_sampSour(ViSession vi, ViInt16 source)
  *      hpe1564_SAMP_TTLT6          8  TTLTrg6
  *      hpe1564_SAMP_TTLT7          9  TTLTrg7
  *      hpe1564_SAMP_EXT          10 External 1
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 
@@ -8428,8 +8428,8 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source)
       errStatus = hpe1564_findIndex(thisPtr, hpe1564_sampSlop_Q_slope_a, slope_str, &slope);
 
       /* If we have negative slope, we need to change the
-         source to EXT_FALL.  This is
-         done by adding 1 to the current source value.
+	 source to EXT_FALL.  This is
+	 done by adding 1 to the current source value.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source + 1;
@@ -8445,32 +8445,32 @@ ViStatus _VI_FUNC hpe1564_sampSour_Q(ViSession vi, ViPInt16 source)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampTim
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets the sample period.  This is the
  *            rate at which each reading is taken during a measurement.
  *            This period is only active when the sample source is
  *            TIMer.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViReal64 period
- * IN        
+ * IN
  *            This parameter specifies the time period between each sample
  *           event when the sample source is TIMer. The sample period must be
- *           a multiple of 1.0E-7 seconds, up to a maximum of 0.8 seconds. 
+ *           a multiple of 1.0E-7 seconds, up to a maximum of 0.8 seconds.
  *           The specified value will be rounded to the nearest value that
  *           can be attained with the internal clock period.  Use the query
  *           form of this function to obtain the exact period used.
- * 
+ *
  *      MAX = hpe1564_SAMP_TIM_MAX   0.80
  *      MIN = hpe1564_SAMP_TIM_MIN   0.0000013
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period)
@@ -8509,25 +8509,25 @@ ViStatus _VI_FUNC hpe1564_sampTim(ViSession vi, ViReal64 period)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sampTim_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the present setting of the sample period.
  *            This is the rate at which each reading is taken during a
  *           measurement. This period is only active when the sample source
  *           is TIMer.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 period
- * OUT       
+ * OUT
  *            The time period between each reading taken is returned in this
  *            parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
@@ -8560,7 +8560,7 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sample
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function combines five instrument SCPI commands:
  *              :SAMPle[:STARt]:SLOPe
  *              :SAMPle[:STARt]:SOURce
@@ -8574,7 +8574,7 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
  *           reading (if source is TIMer).  The time period is checked for
  *           valid range, but is not sent to the instrument unless the sample
  *           source is TIMer.
- *           
+ *
  *            The SAMPle command subsystem controls the fourth state in a
  *           four state measurement process.  The four states which occur
  *           during a successful reading are idle, initiated,
@@ -8592,50 +8592,50 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
  *           the instrument goes to the idle state.
  *            The source parameter configures the sample system to respond to
  *           the specified source for taking readings.
- *           
+ *
  *           The available sources are:
  *             External, Rising: The rising edge of a pulse on the
  *                "Sample" pin of the HP E1564's 9 pin D-subminiature
  *                connector.  The pulse width must be at least 30e-9
  *                seconds.
- *           
+ *
  *             External, Falling: The falling edge of a pulse on the
  *                "Sample" pin of the HP E1564's 9 pin D-subminiature
  *                connector.  The pulse width must be at least 30e-9
  *                seconds.
- *           
+ *
  *             TTLTrg0 through TTLTrg7: The VXIbus TTL sample lines.
  *                The pulse width must be at least 30e-9 seconds.
- *           
+ *
  *             Timer: Uses the specified period as the sample rate.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt32 numSamples
- * IN        
+ * IN
  *            Specifies the total number of readings to take.
- * 
+ *
  *      MAX = hpe1564_SAMP_COUNT_MAX   4000000
  *      MIN = hpe1564_SAMP_COUNT_MIN   1
- * 
+ *
  * PARAM 3 : ViInt32 numPreTriggers
- * IN        
+ * IN
  *            Specifies how many of the total readings will be taken before
  *           (pre) the trigger event occurs.
- * 
+ *
  *      MAX = hpe1564_PRETRIG_MAX   3999999
  *      MIN = hpe1564_PRETRIG_MIN   0
- * 
+ *
  * PARAM 4 : ViInt16 source
- * IN        
+ * IN
  *            This parameter configures the trigger system to respond to the
  *            specified source for taking readings.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  *      Macro Name                 Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SAMP_HOLD              0  Wait for Software sample
@@ -8650,9 +8650,9 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
  *      hpe1564_SAMP_TTLT7             9  TTLTrg7
  *      hpe1564_SAMP_EXT_RISE         10  External Rising Edge
  *      hpe1564_SAMP_EXT_FALL         11  External Falling Edge
- * 
+ *
  * PARAM 5 : ViReal64 period
- * IN        
+ * IN
  *            This parameter specifies the time period between each sample
  *           event when the sample source is TIMer. The sample period must be
  *           a multiple of the timebase period (for INTernal timebase, this
@@ -8660,14 +8660,14 @@ ViStatus _VI_FUNC hpe1564_sampTim_Q(ViSession vi, ViPReal64 period)
  *           specified value will be rounded to the nearest value that can be
  *           attained with the timebase reference period.  Use the query form
  *           of this function to obtain the exact period used.
- * 
+ *
  *      MAX = hpe1564_SAMP_TIM_MAX   0.83886070
  *      MIN = hpe1564_SAMP_TIM_MIN   0.00000124999
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sample_source_a[] = { "HOLD", "TIM", "TTLT0",
@@ -8804,33 +8804,33 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_sample_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This routine queries the sample source, timer period, sample
  *           count, and pretrigger count all in a single call.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt32 numSamples
- * OUT       
+ * OUT
  *            The total number of readings the instrument will take during
  *            a measurement is returned here.  A value of -1 is returned here
  *           if continuous measurement is enabled (see hpe1564_initCont);
  *           this indicates an infinite total reading count.
- * 
+ *
  * PARAM 3 : ViPInt32 numPreTriggers
- * OUT       
+ * OUT
  *            Returns how many readings will be taken before the trigger
  *           event may be accepted.
- * 
+ *
  * PARAM 4 : ViPInt16 source
- * OUT       
+ * OUT
  *            This returns an integer representing the present source that
  *            the sample system will use to cause a reading to be taken.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  *      Macro Name                 Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_SAMP_HOLD              0  Wait for Software sample
@@ -8845,16 +8845,16 @@ ViStatus _VI_FUNC hpe1564_sample(ViSession vi,
  *      hpe1564_SAMP_TTLT7             9  TTLTrg7
  *      hpe1564_SAMP_EXT_RISE         10  External Rising Edge
  *      hpe1564_SAMP_EXT_FALL         11  External Falling Edge
- * 
+ *
  * PARAM 5 : ViPReal64 period
- * OUT       
+ * OUT
  *            This returns a value indicating the time period between each
  *           sampling event when source is hpe1564_SAMP_TIM.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_sample_Q_source_a[] = { "HOLD", "TIM",
@@ -8919,8 +8919,8 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi,
       errStatus = hpe1564_findIndex(thisPtr, hpe1564_sample_Q_slope_a, slope_str, &slope);
 
       /* If we have negative slope, we need to change the
-         source to EXT_FALL.  This is
-         done by adding 1 to the current source value.
+	 source to EXT_FALL.  This is
+	 done by adding 1 to the current source value.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source + 1;
@@ -8967,56 +8967,56 @@ ViStatus _VI_FUNC hpe1564_sample_Q(ViSession vi,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_status_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the contents of the instrument's status
  *            register.  A high value in a bit location indicates a
  *           particular event has occurred.  The bit positions and their
  *           meanings are as follows:
- *           
+ *
  *              Bit Position   Event Represented When Bit is High
- *           
+ *
  *                  0           Channel 1 limit was exceeded or
  *                              channel 1 trigger level was exceeded.
- *           
+ *
  *                  1           Channel 2 limit was exceeded or
  *                              channel 2 trigger level was exceeded.
- *           
+ *
  *                  2           Channel 3 limit was exceeded or
  *                              channel 3 trigger level was exceeded.
- *           
+ *
  *                  3           Channel 4 limit was exceeded or
  *                              channel 4 trigger level was exceeded.
- *           
+ *
  *                  4           The digitizer has a taken at least one
  *                              reading and has data available.
- *           
+ *
  *                  5           A block of data is available from the
  *                              instrument.  This is 256 bytes of data,
  *                              which is 32 readings per channel.
- *           
+ *
  *                  6           The measurement has completed normally,
  *                              or available memory has been filled and
  *                              the measurement was halted.
- *           
+ *
  *                  7           A valid trigger event was received after
  *                              the pretrigger acquisition (if any) was
  *                              completed.
- *           
- * 
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 status
- * OUT       
+ * OUT
  *            Returns a bit pattern representing the status of
  *            several events on the instrument.  See the description
  *            section below for the meaning of each status bit.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_status_Q(ViSession vi, ViPInt16 status)
@@ -9049,45 +9049,45 @@ ViStatus _VI_FUNC hpe1564_status_Q(ViSession vi, ViPInt16 status)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_timeBase
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is used to specify the timebase.  The default
  *           timebase is the INTernal timebase which uses the VXI CLK10, 10
  *           MHz reference. The "source" parameter specifies either INTernal
  *           (10 MHz) or EXTernal timebase source.  The "freq" parameter
  *           specifies the frequency of the timebase.  The timebase reference
  *           is used when the sample source is TIMer.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 source
- * IN        
+ * IN
  *            This parameter specifies which timebase will be used as the
  *           reference for the sample period.  There are only two choices,
  *           INTernal and EXTernal.
- * 
+ *
  *      Macro Name                Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TIMEBASE_INT          0  Internal
  *      hpe1564_TIMEBASE_EXT          1  External
- * 
+ *
  * PARAM 3 : ViReal64 freq
- * IN        
+ * IN
  *            This parameter specifies the frequency of the timebase.  If the
  *           source is EXTernal, this parameter must specify the frequency of
  *           that external timebase.  This value is used to calculate sample
  *           periods when the sample source is set to TIMer.  If the source
  *           is INTernal, the frequency is already known, and the value
  *           passed in here is checked for allowable range, but is not used.
- * 
+ *
  *      MAX = hpe1564_FREQ_MAX   30.001e6
  *      MIN = hpe1564_FREQ_MIN   9900
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_timeBase(ViSession vi, ViInt16 source, ViReal64 freq)
@@ -9127,26 +9127,26 @@ ViStatus _VI_FUNC hpe1564_timeBase(ViSession vi, ViInt16 source, ViReal64 freq)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_timeBase_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the timebase source and frequency.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPReal64 source
- * OUT       
+ * OUT
  *            The timebase source is returned in this parameter.  This will
  *           be either 0 (hpe1564_TIMEBASE_INT) or 1 (hpe1564_TIMEBASE_EXT).
- * 
+ *
  * PARAM 3 : ViPReal64 freq
- * OUT       
+ * OUT
  *            The frequency of the timebase is returned in this parameter.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_timeBase_source_a[] = { "INT", "EXT", 0 };
@@ -9187,74 +9187,74 @@ ViStatus _VI_FUNC hpe1564_timeBase_Q(ViSession vi, ViPInt16 source, ViPReal64 fr
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigEvent
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function combines two instrument SCPI commands:
  *              TRIGger[:STARt]:SOURce<n> source;
  *              TRIGger[:STARt]:SLOPe<n> edge;
  *            Together, these two commands allow you to configure the trigger
  *            subsystem to respond to a specific source and edge.
- *           
+ *
  *           The available sources are:
  *              Bus: The Group Execute Trigger (GET) HP-IB command.
- *           
+ *
  *              TTLTrg0 through TTLTrg7: The VXIbus TTL trigger lines.  The
  *                   trigger occurs when the specified line goes low.  The
  *                   line must be held low a minimum of 30e-9 seconds.
- *           
+ *
  *              External 1: The "Ext 1" pin of the HP E1564's 9 pin
  *                   D-subminiature connector.  The rising or falling
  *                   edge can be specified as the trigger event.
  *                   The pulse width must be at least 30e-9 seconds.
- *           
+ *
  *              Level 1: The HP E1564's channel 1 signal.  Rising or
  *                   falling through the level can be specified as the
  *                   trigger event.
- *           
+ *
  *              Level 2: The HP E1564's channel 2 signal.  Rising or
  *                   falling through the level can be specified as the
  *                   trigger event.
- *           
+ *
  *              Level 3: The HP E1564's channel 3 signal.  Rising or
  *                   falling through the level can be specified as the
  *                   trigger event.
- *           
+ *
  *              Level 4: The HP E1564's channel 4 signal.  Rising or
  *                   falling through the level can be specified as the
  *                   trigger event.
- *           
+ *
  *              Hold: Disable this trigger event.  If both events are set
  *                    to Hold, the hpe1564_trigImm() function must be
  *                    sent before measurements will proceed.
- *           
+ *
  *              Immediate: A trigger will occur as soon as hpe1564_initImm()
  *                         is sent.  This choice is valid only for event 1,
  *                         and requires that event 2 be set to HOLD.  This is
  *                         also the reset state.
- *           
- *           
- * 
+ *
+ *
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 event
- * IN        
+ * IN
  *            Specifies the event number (1 or 2) to modify.  Note
  *            that the event number is NOT the same as the channel number.
  *            The numbers associated with sources Internal 1 through Internal
  *           4 are the channel numbers.
- * 
+ *
  *      MAX = hpe1564_TRIG_EVENT_MAX   2
  *      MIN = hpe1564_TRIG_EVENT_MIN   1
- * 
+ *
  * PARAM 3 : ViInt16 source
- * IN        
+ * IN
  *            This parameter configures the trigger system to respond to the
  *            specified source.  Note that some sources have a rising or
  *           falling edge component to them.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  *      Macro Name                    Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TRIG_BUS                  0  Bus
@@ -9278,17 +9278,17 @@ ViStatus _VI_FUNC hpe1564_timeBase_Q(ViSession vi, ViPInt16 source, ViPReal64 fr
  *      hpe1564_TRIG_TTLT5               18  TTLTrg5
  *      hpe1564_TRIG_TTLT6               19  TTLTrg6
  *      hpe1564_TRIG_TTLT7               20  TTLTrg7
- * 
- *  PARAM 4: ViReal64 level 
+ *
+ *  PARAM 4: ViReal64 level
  *  OUT
  *	Specifies the signal level which will cause a trigger to occur if the
- *	trigger source is the level on a channel.  If the trigger source is 
+ *	trigger source is the level on a channel.  If the trigger source is
  *      not level, then this parameter is ignored.
  *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_trigEvent_source_a[] = { "BUS", "EXT",
@@ -9486,31 +9486,31 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigEvent_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This routine queries the source and slope for the specified
  *            trigger event in a single call.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 event
- * IN        
+ * IN
  *            Specifies the event number (1 or 2) being specified.  Note
  *            that the event number is NOT the same as the channel number.
  *            The numbers associated with sources Level 1 through Level 4 are
  *            the channel numbers.
- * 
+ *
  *      MAX = hpe1564_TRIG_EVENT_MAX   2
  *      MIN = hpe1564_TRIG_EVENT_MIN   1
- * 
+ *
  * PARAM 3 : ViPInt16 source
- * OUT       
+ * OUT
  *            This returns an integer value indicating the source
  *            to which the trigger will respond.
- *           
+ *
  *            The types are defined as macros and are shown below:
- * 
+ *
  *      Macro Name                    Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TRIG_BUS                  0  Bus
@@ -9534,8 +9534,8 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
  *      hpe1564_TRIG_TTLT5               18  TTLTrg5
  *      hpe1564_TRIG_TTLT6               19  TTLTrg6
  *      hpe1564_TRIG_TTLT7               20  TTLTrg7
- * 
- *  PARAM 4: ViPReal64 level 
+ *
+ *  PARAM 4: ViPReal64 level
  *  OUT
  *	Contains the present level setting on the channel being monitored if
  *	the trigger source is one of the LEVEL<n> choices; otherwise, this
@@ -9544,7 +9544,7 @@ ViStatus _VI_FUNC hpe1564_trigEvent(ViSession vi, ViInt16 event, ViInt16 source,
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 
@@ -9626,7 +9626,7 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event, ViPInt16 sour
 	hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       /* If slope was positive, we were really _RISE and not _FALL,
-         so indicate that in the *source param.
+	 so indicate that in the *source param.
        */
       if (slope == hpe1564_SLOP_POS)
 	*source = *source + 1;
@@ -9683,7 +9683,7 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event, ViPInt16 sour
 	hpe1564_LOG_STATUS(vi, thisPtr, errStatus);
 
       /* If slope was negative, we were really _FALL and not _RISE,
-         so indicate that in the *source param.
+	 so indicate that in the *source param.
        */
       if (slope == hpe1564_SLOP_NEG)
 	*source = *source - 1;
@@ -9775,21 +9775,21 @@ ViStatus _VI_FUNC hpe1564_trigEvent_Q(ViSession vi, ViInt16 event, ViPInt16 sour
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigImm
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function will cause the instrument to transition to the
  *            wait-for-sample state immediately, regardless of the selected
  *            trigger sources.  The instrument must be initiated and in the
  *            wait-for-trigger state when this function is called; otherwise,
  *           a "Trigger ignored" error will result.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_trigImm(ViSession vi)
@@ -9822,43 +9822,43 @@ ViStatus _VI_FUNC hpe1564_trigImm(ViSession vi)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigLevel
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function sets the level on a channel that may be used for
  *            triggering the instrument.  For the level to be used, one of
  *           the trigger events must be set to
  *           "hpe1564_TRIG_LEVEL<chan>_RISE" or
  *           "hpe1564_TRIG_LEVEL<chan>_FALL".
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel to set the level on.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViReal64 level
- * IN        
+ * IN
  *            The desired level for the specified channel.  Note that the
  *            present range setting will determine the maximum and minimum
  *            values that may be entered without error.
- * 
+ *
  *      MAX = hpe1564_LEVEL_MAX   255.984375
  *      MIN = hpe1564_LEVEL_MIN   -255.9765625
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_trigLevel(ViSession vi, ViInt16 chan, ViReal64 level)
@@ -9893,35 +9893,35 @@ ViStatus _VI_FUNC hpe1564_trigLevel(ViSession vi, ViInt16 chan, ViReal64 level)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigLevel_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the value of the trigger level for the
  *           specified channel.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 channel
- * IN        
+ * IN
  *            Specifies the channel for which the level is being queried.
- *           
+ *
  *            The channels are defined as macros and are shown below:
- * 
+ *
  *      Macro Name         Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_CHAN1          1  1
  *      hpe1564_CHAN2          2  2
  *      hpe1564_CHAN3          3  3
  *      hpe1564_CHAN4          4  4
- * 
+ *
  * PARAM 3 : ViPReal64 level
- * OUT       
+ * OUT
  *            Returns the present level setting.
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan, ViPReal64 level)
@@ -9954,7 +9954,7 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan, ViPReal64 leve
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigMode
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function is ONLY used when it is desired to synchronize
  *           multiple digitizers to sample on the same event.  A pair of TTL
  *           trigger lines is used to accomplish this; the <n> in the
@@ -9971,12 +9971,12 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan, ViPReal64 leve
  *              Trigger Source:  Trigger source 1 is set to the appropriate
  *                               TTL trigger line.  Trigger source 2 may be
  *                               set to anything.
- *           
+ *
  *              Outputs:  Outputs to the TTL trigger lines (see the
  *                        hpe1564_outpTtltStat function) are disabled.  The
  *                        only outputs that occur are the ones dictated by
  *                        the Master/Slave relationship.
- *           
+ *
  *              Sample Source:  The Master unit can have any sample source,
  *                              EXCEPT the two TTL trigger lines used in the
  *                              Master/Slave relationship.  The Slave's
@@ -9984,18 +9984,18 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan, ViPReal64 leve
  *                              specified by the Master/Slave relationship.
  *                              Attempting to change the sample source on a
  *                              Slave unit will result in an error.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViInt16 mode
- * IN        
+ * IN
  *            Specifies the trigger mode.  See the "Description" section for
  *            explanation of each mode.  The modes are defined as macros and
  *            are shown below:
- *           
- * 
+ *
+ *
  *      Macro Name                     Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TRIG_MODE_NORMAL           0  Normal triggering
@@ -10007,11 +10007,11 @@ ViStatus _VI_FUNC hpe1564_trigLevel_Q(ViSession vi, ViInt16 chan, ViPReal64 leve
  *      hpe1564_TRIG_MODE_SLAVE2           6  Master, TTLT2 and TTLT3
  *      hpe1564_TRIG_MODE_SLAVE4           7  Master, TTLT4 and TTLT5
  *      hpe1564_TRIG_MODE_SLAVE6           8  Master, TTLT6 and TTLT7
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_trigMode_mode_a[] = { "NORMAL", "MASTER0",
@@ -10052,20 +10052,20 @@ ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode)
 /*-----------------------------------------------------------------------------
  * FUNC    : ViStatus _VI_FUNC hpe1564_trigMode_Q
  *-----------------------------------------------------------------------------
- * 
+ *
  * PURPOSE :  This function returns the present setting of the trigger mode.
- * 
+ *
  * PARAM 1 : ViSession vi
- * IN        
+ * IN
  *            The handle to the instrument.
- * 
+ *
  * PARAM 2 : ViPInt16 mode
- * OUT       
+ * OUT
  *            The integer representing the present trigger mode setting is
  *            returned in this parameter.  The mode settings are shown in the
  *            macros below:
- *           
- * 
+ *
+ *
  *      Macro Name                     Value  Description
  *      -----------------------------------------------------------
  *      hpe1564_TRIG_MODE_NORMAL           0  Normal triggering
@@ -10077,11 +10077,11 @@ ViStatus _VI_FUNC hpe1564_trigMode(ViSession vi, ViInt16 mode)
  *      hpe1564_TRIG_MODE_SLAVE2           6  Master, TTLT2 and TTLT3
  *      hpe1564_TRIG_MODE_SLAVE4           7  Master, TTLT4 and TTLT5
  *      hpe1564_TRIG_MODE_SLAVE6           8  Master, TTLT6 and TTLT7
- * 
+ *
  * RETURN  :  VI_SUCCESS: No error. Non VI_SUCCESS: Indicates error
  *           condition. To determine error message, pass the return value to
  *           routine "hpe1564_error_message".
- * 
+ *
  *-----------------------------------------------------------------------------
  */
 static const char *const hpe1564_trigMode_Q_mode_a[] = { "NORMAL",

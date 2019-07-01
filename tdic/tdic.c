@@ -319,11 +319,11 @@ int main(int argc, char **argv)
       expr[prefixlen] = 0;
       strcat(expr, line_in);
       if (!(comment = line_in[len - 1] == ';'))
-          strcat(line_in, " = ");
+	  strcat(line_in, " = ");
 	expr_dsc.length = strlen(expr);
 /*
-      expr_dsc.length = strlen(expr)-1;    
-      expr_dsc.length = strlen(expr)-1;    
+      expr_dsc.length = strlen(expr)-1;
+      expr_dsc.length = strlen(expr)-1;
       expr[expr_dsc.length++] = ')';
       expr[expr_dsc.length++] = ')';
       expr[expr_dsc.length++] = ')';
@@ -378,8 +378,7 @@ char *bfgets(char *s, int size, FILE * stream, char *prompt)
     if (rep && *rep)		/* Add to history if interesting */
       Badd_history(rep);
 #endif
-    if (rep)
-      free(rep);
+    free(rep);
     s[size - 1] = '\0';		/* null terminate if necessary */
     return (s);
   } else

@@ -44,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element IIR.C */
 /*------------------------------------------------------------------------------
 
-	Name:	IIR   
+	Name:	IIR
 
 	Type:   C function
 
@@ -219,8 +219,8 @@ EXPORT Filter *Invariant(double fp, double fs, double ap, double as, double fc, 
       filter->units[i].den[1] = -2 * exp(poles[2 * i].re * T) * cos(poles[2 * i].im * T);
       filter->units[i].den[2] = exp(2 * poles[2 * i].re * T);
     }
-  free((char *)poles);
-  free((char *)Ak);
+  free(poles);
+  free(Ak);
   return filter;
 }
 
@@ -385,7 +385,7 @@ EXPORT Filter *Bilinear(double fp, double fs, double ap, double as, double fc, i
       filter->units[i].den[2] = cplx.re;
     }
   }
-  free((char *)poles);
-  free((char *)Ak);
+  free(poles);
+  free(Ak);
   return filter;
 }

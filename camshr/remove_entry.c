@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -64,8 +64,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Fri Feb 22 10:43:30 EST 2002 -- fixed end of new blank line problem
 //-------------------------------------------------------------------------
 // Removes an entry from a db file. Entry removed is referenced by
-//      its positional index in file.  File locking (ie critial section) is 
-//      provided by use of a semaphore. Upon removal, the db in memory is 
+//      its positional index in file.  File locking (ie critial section) is
+//      provided by use of a semaphore. Upon removal, the db in memory is
 //      updated to the actual disk file.
 //
 // input:       db type,
@@ -85,7 +85,7 @@ int remove_entry(int dbType, int index)
     printf("remove_entry(#:%d)\n", index + 1);
 
 //----------------------------
-//      removing an entry 
+//      removing an entry
 //----------------------------
 //-- 'critical section' start
 //----------------------------

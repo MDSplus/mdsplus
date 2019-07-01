@@ -4,7 +4,7 @@ public class CompoundData extends Data
 {
     Data[] descs;
     int opcode = 0;
-	
+
     public boolean isAtomic() {return false; }
     public CompoundData()
     {

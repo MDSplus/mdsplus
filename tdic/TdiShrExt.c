@@ -33,7 +33,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * This will have to be compiled with the mdsplus/include in the -I path
  * B.P.DUVAL, March 2000
  */
-#ifdef EXAMPLE
+
+/*EXAMPLE
 dele *.exe;
 *, *.obj;
 *, *.opt;
@@ -42,55 +43,40 @@ dele *.exe;
     define TdiShrExt USER:[DUVAL.IBQ.ECC2.TDIC] bpdmdsunix_axp.exe
     _status = build_call(8, 'TdiShrExt', 'rMdsOpen', ref('crpppc6::'), val(0l))
     _oo = build_call(24, 'TdiShrExt', 'rMdsValue', descr('2+3'), xd([]), val(0ul))
-#endif
-#ifdef HOW_TO_COMPILE
-/* to compile with debugging */
+EXAMPLE*/
+/*COMPILE w/ debugging
     export DEBUG = -DDEBUG
     make libBpdMdsUnix.so cp libBpdMdsUnix.so / usr / lib / libBpdMdsUnix.so ldconfig
-#endif
-#if  !defined(int32) && !defined(_AIX)
-#define int32 int
-#endif
-#ifdef _WIN32
- #include <winsock2.h>
- #include <windows.h>
-#else
- #include <netdb.h>
- #include <sys/socket.h>
- #define INVALID_SOCKET -1
-#endif
+COMPILE*/
 #include <mdsplus/mdsconfig.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ipdesc.h>
 #include <ctype.h>
+#include <inttypes.h>
 #include <mdsshr.h>
-#ifdef DTYPE_EVENT
-#undef DTYPE_EVENT
-#endif
+#include <status.h>
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
-extern int MdsOpen(int sock, char *tree, int shot);
-extern int MdsClose(int sock);
+extern int MdsOpen(int conid, char *tree, int shot);
+extern int MdsClose(int conid);
 extern int TdiCvt();
 extern int GetAnswerInfoTS();
 extern int MdsIpFree();
-extern SOCKET ReuseCheck(char *hostin, char *unique, size_t buflen);
-#define MIN(a,b) (((a) < (b)) ? (a) : (b))
-#define MAX(a,b) (((a) > (b)) ? (a) : (b))
+extern int ReuseCheck(char *hostin, char *unique, size_t buflen);
 
 #define LOCAL "local"
 #define STRLEN 4096
-
+#define INVALID_ID -1
 /* Variables that stay set between calls */
-static SOCKET sock = INVALID_SOCKET;	/* Mark the socket as unopen */
+static int id = INVALID_ID;	/* Mark the conid as unopen */
 static char serv[STRLEN];	/* Current server */
 static EMPTYXD(ans_xd);
 
 /* Connection record */
 typedef struct _connection {
-  SOCKET sock;			/* Mark the socket as unopen */
+  int id;			/* Mark the conid as unopen */
   char *unique;			/* Unique connection name */
   int port;
   char serv[STRLEN];		/* Current server */
@@ -108,13 +94,13 @@ struct descriptor_xd *rMdsVersion();
 struct descriptor_xd *rMdsCurrent();
 struct descriptor_xd *rgetenv();
 
-static SOCKET AddConnection(char *server);
+static int AddConnection(char *server);
 static int MdsToIp(struct descriptor **tdiarg, short *len);
 static int IpToMds(int dtypein);
 
 /* Test routines */
 #ifdef DEBUG
-int bTest(struct descriptor *desc);
+static void bTest(struct descriptor *desc);
 struct descriptor_xd *bTest1(struct descriptor *in_bufD);
 #endif
 
@@ -141,9 +127,9 @@ EXPORT int rMdsList()
     printf("Current connection is local\n");
   for (cptr = Connections; (cptr != NULL);) {
     i++;
-    if (cptr->sock != INVALID_SOCKET) {
-      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->sock);
-      if (cptr->sock == sock)
+    if (cptr->id != INVALID_ID) {
+      printf("Name[%20s] Id[%s] Connection[%3d]", cptr->serv, cptr->unique, (int)cptr->id);
+      if (cptr->id == id)
 	printf("  <-- active");
     } else
       printf("UnUsed slot");
@@ -179,37 +165,37 @@ EXPORT struct descriptor_xd *rMdsVersion()
   return (&ans_xd);
 }
 
-/* Routine returns socket if valid */
-static SOCKET AddConnection(char *server)
+/* Routine returns conid if valid */
+static int AddConnection(char *server)
 {
   Connection *cptr;
-  SOCKET nsock;
+  int nid;
   char unique[128]="\0";
 /* Extract the ip and port numbers */
-  if ((nsock = ReuseCheck(server, unique, 128)) == INVALID_SOCKET) {
+  if ((nid = ReuseCheck(server, unique, 128)) == INVALID_ID) {
     printf("hostname [%s] invalid, No Connection\n", server);
-    return INVALID_SOCKET;
+    return INVALID_ID;
   }
 /* scan through current list looking for an ip/port pair */
   for (cptr = Connections; (cptr != NULL);) {
-    if ((cptr->sock != INVALID_SOCKET) && (strcmp(unique, cptr->unique) == 0)) {
+    if ((cptr->id != INVALID_ID) && (strcmp(unique, cptr->unique) == 0)) {
 #ifdef DEBUG
-      printf("mdsopen: Keep socket! name changed from  [%s] to [%s]\n", cptr->serv, server);
+      printf("mdsopen: Keep conid! name changed from  [%s] to [%s]\n", cptr->serv, server);
 #endif
-/* found a match, replace string and return socket */
+/* found a match, replace string and return conid */
       strcpy(cptr->serv, server);
-      return (cptr->sock);
+      return (cptr->id);
     }
     cptr = cptr->next;
   }
 /* See if the connection works */
-  if ((nsock = ConnectToMds(server)) == INVALID_SOCKET) {
+  if ((nid = ConnectToMds(server)) == INVALID_ID) {
     printf("mdsopen: Could not open connection to MDS server\n");
-    return (INVALID_SOCKET);
+    return (INVALID_ID);
   }
 /* Connection valid, find a slot in the stack */
   for (cptr = Connections; (cptr != NULL);) {
-    if (cptr->sock == INVALID_SOCKET) {	/* found an empty slot */
+    if (cptr->id == INVALID_ID) {	/* found an empty slot */
 #ifdef DEBUG
       printf("Found empty slot\n");
 #endif
@@ -228,9 +214,9 @@ static SOCKET AddConnection(char *server)
   }
 /* Copy in the connection details */
   cptr->unique = strdup(unique);
-  cptr->sock = nsock;
+  cptr->id = nid;
   strcpy(cptr->serv, server);	/* Copy in the name */
-  return (nsock);
+  return (nid);
 }
 
 /* mds server connect */
@@ -246,19 +232,19 @@ EXPORT int rMdsConnect(char *hostin)
   host[i] = 0;
   if (!strcmp(host, LOCAL)) {
     strcpy(serv, LOCAL);
-    sock = INVALID_SOCKET;
-    return (sock);
+    id = INVALID_ID;
+    return (id);
   }
-/* If no socket, or server name has changed */
-  if ((sock == INVALID_SOCKET) || strcmp(host, serv)) {
-    if ((sock = AddConnection(hostin)) == INVALID_SOCKET) {
+/* If no conid, or server name has changed */
+  if ((id == INVALID_ID) || strcmp(host, serv)) {
+    if ((id = AddConnection(hostin)) == INVALID_ID) {
       *serv = '\0';
       return (0);		/* no connection obtained */
     } else {
-      strcpy(serv, host);	/* copy new name to memory, keep socket open */
+      strcpy(serv, host);	/* copy new name to memory, keep conid open */
     }
   }
-  return (sock);
+  return (id);
 }
 
 /* mdsdisconnect ==================================================================== */
@@ -269,20 +255,20 @@ EXPORT int rMdsDisconnect(int all)
 
   if (all) {
     for (cptr = Connections; (cptr != NULL); cptr = cptr->next) {
-      if (cptr->sock != INVALID_SOCKET) {
-	DisconnectFromMds(sock);
-	cptr->sock = INVALID_SOCKET;
+      if (cptr->id != INVALID_ID) {
+	DisconnectFromMds(id);
+	cptr->id = INVALID_ID;
 	if (cptr->unique) {
 	  free(cptr->unique);
 	  cptr->unique = 0;
 	}
       }
     }
-  } else if (sock != INVALID_SOCKET) {
-    status = DisconnectFromMds(sock);
+  } else if (id != INVALID_ID) {
+    status = DisconnectFromMds(id);
     for (cptr = Connections; (cptr != NULL);) {
-      if (cptr->sock == sock) {
-	cptr->sock = INVALID_SOCKET;
+      if (cptr->id == id) {
+	cptr->id = INVALID_ID;
 	if (cptr->unique) {
 	  free(cptr->unique);
 	  cptr->unique = 0;
@@ -292,10 +278,10 @@ EXPORT int rMdsDisconnect(int all)
       cptr = cptr->next;
     }
   } else if (strcmp(serv, "local")) {
-    printf("mdsdisconnect: warning, communication socket aleady closed\n");
+    printf("mdsdisconnect: warning, communication conid aleady closed\n");
     status = 0;
   }
-  sock = INVALID_SOCKET;
+  id = INVALID_ID;
   *serv = '\0';			/* Clear current server string */
   return (status);
 }
@@ -310,7 +296,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   int status = 1;
   struct descriptor *tdiarg;
   struct descriptor_a *desca;
-  int dims[MAX_DIMS + 1];	/* dimensions of an array */
+  int dims[MAX_DIMS];	/* dimensions of an array */
   char dtype;
   char ndims;
   unsigned char *ptr;
@@ -320,7 +306,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   void *dptr;
   void *mem = 0;
 /* check there is a connection open */
-  if (sock == INVALID_SOCKET) {
+  if (id == INVALID_ID) {
     printf("MdsValue: No Socket open\n");
     return (0);
   }
@@ -330,7 +316,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
   for (nargs = 0; tdiarg != NULL; nargs++) {
     tdiarg = va_arg(incrmtr, struct descriptor *);
 #ifdef DEBUG
-    printf("Vararg [%d] for [%lu]\n", nargs, tdiarg);
+    printf("Vararg [%d] for [0x%"PRIxPTR"]\n", nargs, (uintptr_t)tdiarg);
 #endif
   }
 /* note minimum 1 arg I/P and 1 arg O/P */
@@ -352,6 +338,7 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
 #endif
 /* Make up the correct packet for SendArg */
     switch (tdiarg->class) {
+    default:break;
     case CLASS_S:		/* fixed-length descriptor */
       ndims = 0;
       num = 1;
@@ -373,24 +360,20 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
       return (0);
     ptr = (unsigned char *)tdiarg->pointer;
 #ifdef DEBUG
-    printf("SendArg sock[%d],idx[%d],dtype[%d],nargs[%d],len[%d],ndims[%d]\n",
-	   sock, i, dtype, nargs, len, ndims);
+    printf("SendArg id[%d],idx[%d],dtype[%d],nargs[%d],len[%d],ndims[%d]\n",
+	   id, i, dtype, nargs, len, ndims);
 #endif
-    status = SendArg(sock, (unsigned char)i, dtype, nargs, len, ndims, dims, (char *)ptr);
+    status = SendArg(id, (unsigned char)i, dtype, nargs, len, ndims, dims, (char *)ptr);
     tdiarg = va_arg(incrmtr, struct descriptor *);	/* get next in list */
   }
   va_end(incrmtr);
 /* Get the reply ================================================== */
-  if (status & 1) {
-    status = GetAnswerInfoTS(sock, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
+  if STATUS_OK {
+    status = GetAnswerInfoTS(id, &dtype, &len, &ndims, dims, &numbytes, &dptr, &mem);
 #ifdef DEBUG
-    printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype,
-	   len, ndims, numbytes, *(int *)dptr);
+    printf("Reply status[%d],dtype[%d],len[%d],ndims[%d],numbytes[%d],ans[%d]\n", status, dtype, len, ndims, numbytes, *(int *)dptr);
 #endif
-  }
-  if (!status & 1) {
-    MdsFree1Dx(&ans_xd, 0);
-  } else {
+   if STATUS_OK {
 /* Remap the descriptor types */
     dtype = IpToMds(dtype);
 /* Copy the Josh way ( see his example in MdsRemote.c ) */
@@ -416,6 +399,12 @@ EXPORT struct descriptor_xd *rMdsValue(struct descriptor *expression, ...)
       }
       MdsCopyDxXd((struct descriptor *)&a_dsc, &ans_xd);	/* Copy the arrival data to xd output */
     }
+   } else {
+     MdsFree1Dx(&ans_xd, 0);
+   }
+  } else {
+    MdsFree1Dx(&ans_xd, 0);
+    rMdsDisconnect(id);
   }
   if (mem)
     MdsIpFree(mem);
@@ -526,21 +515,6 @@ static int MdsToIp(struct descriptor **tdiarg, short *len)
     dtype = 0;
     *len = 0;
     break;
-  case DTYPE_H:		/*      28              H_floating;  128-bit quadruple-precision floating point */
-  case DTYPE_OU:		/*      25              octaword (unsigned);  128-bit unsigned quantity */
-  case DTYPE_O:		/*      26              octaword integer (signed);  128-bit signed 2's-complement integer */
-  case DTYPE_HC:		/*      30              H_floating complex */
-  case DTYPE_CIT:		/*      31              COBOL Intermediate Temporary */
-  case DTYPE_VT:		/*      37              varying character string;  16-bit count, followed by a string */
-  case DTYPE_NU:		/*      15              numeric string, unsigned */
-  case DTYPE_NL:		/*      16              numeric string, left separate sign */
-  case DTYPE_NLO:		/*      17              numeric string, left overpunched sign */
-  case DTYPE_NR:		/*      18              numeric string, right separate sign */
-  case DTYPE_NRO:		/*      19              numeric string, right overpunched sign */
-  case DTYPE_NZ:		/*      20              numeric string, zoned sign */
-  case DTYPE_P:		/*      21              packed decimal string */
-  case DTYPE_V:		/*      1               aligned bit string */
-  case DTYPE_VU:		/*      34              unaligned bit string */
   default:
     printf("Descriptor type [%d]\n not handled\n", (*tdiarg)->dtype);
     *len = dtype = 0;
@@ -597,17 +571,17 @@ static int IpToMds(int dtypein)
 
 #ifdef DEBUG
 /* test routines for fun */
-int bTest(struct descriptor *desc)
+static void bTest(struct descriptor *desc)
 {
   int i, num;
-  char *pntC;
-  unsigned char *pntUC;
-  short *pntS;
-  unsigned short *pntUS;
-  int *pntW;
-  unsigned int *pntUW;
-  long *pntL;
-  unsigned long *pntUL;
+   int8_t *pntC;
+  uint8_t *pntUC;
+   int16_t *pntS;
+  uint16_t *pntUS;
+   int32_t *pntW;
+  uint32_t *pntUW;
+   int64_t *pntL;
+  uint64_t *pntUL;
   float *pntF;
   double *pntD;
 
@@ -615,14 +589,13 @@ int bTest(struct descriptor *desc)
 /* if an array, print out other info */
   switch (desc->class) {
   case CLASS_S:		/* fixed-length descriptor */
-    printf("got descriptor [%d],[%d],[%d],[%lu]\n", desc->length, desc->dtype, desc->class,
-	   desc->pointer);
+    printf("got descriptor [%d],[%d],[%d],[%"PRIu64"]\n", desc->length, desc->dtype, desc->class, (uintptr_t)desc->pointer);
     num = (desc->pointer == NULL) ? 0 : 1;	/* pointer must be non zero to print */
     break;
   case CLASS_A:		/* Array descriptor */
     desca = (struct descriptor_a *)desc;
-    printf("got descriptor [%d],[%d],[%d],[%lu] [%d][%d][%d][%d]\n",
-	   desca->length, desca->dtype, desca->class, desca->pointer,
+    printf("got descriptor [%d],[%d],[%d],[0x%"PRIxPTR"] [%d][%d][%d][%d]\n",
+	   desca->length, desca->dtype, desca->class, (uintptr_t)desca->pointer,
 	   desca->scale, desca->digits, desca->dimct, desca->arsize);
     printf("aflags binscale[%d],redim[%d],column[%d],coeff[%d],bounds[%d]\n",
 	   desca->aflags.binscale, desca->aflags.redim, desca->aflags.column, desca->aflags.coeff,
@@ -640,13 +613,12 @@ int bTest(struct descriptor *desc)
     break;
   case CLASS_XD:
     printf("extended Descriptor\n");
-    printf("got descriptor [%d],[%d],[%d],[%lu]\n", desc->length, desc->dtype, desc->class,
-	   desc->pointer);
+    printf("got descriptor [%d],[%d],[%d],[0x%"PRIxPTR"]\n", desc->length, desc->dtype, desc->class, (uintptr_t)desc->pointer);
     num = 0;
     break;
   default:
     printf("class [%d] unknown\n", desc->class);
-    return (0);
+    return;
   }
   if (num)
     switch (desc->dtype) {
@@ -654,46 +626,46 @@ int bTest(struct descriptor *desc)
       printf("unspecified ($MISSING)");
       break;
     case DTYPE_BU:		/*      2               byte (unsigned);  8-bit unsigned quantity */
-      pntUC = (unsigned char *)desc->pointer;
+      pntUC = (uint8_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUC++);
       break;
     case DTYPE_WU:		/*      3               word (unsigned);  16-bit unsigned quantity */
-      pntUS = (unsigned short *)desc->pointer;
+      pntUS = (uint16_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUS++);
       break;
     case DTYPE_LU:		/*      4               longword (unsigned);  32-bit unsigned quantity */
-      pntUW = (unsigned int *)desc->pointer;
+      pntUW = (uint32_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%u]", *pntUW++);
       break;
     case DTYPE_QU:		/*      5               quadword (unsigned);  64-bit unsigned quantity */
-      pntUL = (unsigned long *)desc->pointer;
+      pntUL = (uint64_t *)desc->pointer;
       for (i = 0; i++ < num;)
-	printf("[%ul]", *pntUL++);
+	printf("[%"PRIu64"]", *pntUL++);
       break;
     case DTYPE_OU:		/*      25              octaword (unsigned);  128-bit unsigned quantity */
       break;
     case DTYPE_B:		/*      6               byte integer (signed);  8-bit signed 2's-complement integer */
-      pntC = (char *)desc->pointer;
+      pntC = (int8_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntC++);
       break;
     case DTYPE_W:		/*      7               word integer (signed);  16-bit signed 2's-complement integer */
-      pntS = (short *)desc->pointer;
+      pntS = (int16_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntS++);
       break;
     case DTYPE_L:		/*      8               longword integer (signed);  32-bit signed 2's-complement integer */
-      pntW = (int *)desc->pointer;
+      pntW = (int32_t *)desc->pointer;
       for (i = 0; i++ < num;)
 	printf("[%d]", *pntW++);
       break;
     case DTYPE_Q:		/*      9               quadword integer (signed);  64-bit signed 2's-complement integer */
-      pntL = (long *)desc->pointer;
+      pntL = (int64_t *)desc->pointer;
       for (i = 0; i++ < num;)
-	printf("[%l]", *pntL++);
+	printf("[%"PRId64"]", *pntL++);
       break;
     case DTYPE_T:		/*      14              character string;  a single 8-bit character or a sequence of characters */
       printf("string [%s]", (char *)desc->pointer);

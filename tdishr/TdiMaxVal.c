@@ -24,15 +24,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3MaxVal
+	        Name:   Tdi3MaxVal
 
-                Type:   C function
+	        Type:   C function
 
-                Author: MARK LONDON
+	        Author: MARK LONDON
 
-                Date:   5-OCT-1993
+	        Date:   5-OCT-1993
 
-                Purpose:
+	        Purpose:
 
  Scalar/vector results from simple operations on one VMS data type and class.
  Works along the dimension.
@@ -50,11 +50,11 @@ extern int Tdi3Sum
 extern int Tdi3Accumulate
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
-               struct descriptor *out,int cnt_dim, int cnt_bef, int cnt_aft,
-               int stp_dim, int stp_bef, int stp_aft)
+	       struct descriptor *out,int cnt_dim, int cnt_bef, int cnt_aft,
+	       int stp_dim, int stp_bef, int stp_aft)
 
 ------------------------------------------------------------------------------
    Copyright (c) 1993
@@ -64,7 +64,7 @@ int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 
 ------------------------------------------------------------------------------*/
@@ -239,10 +239,10 @@ static inline void operateIloc(char* start,int testit(const char*,const char*),a
       *outp = -1;
       char* result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1 && testit(pid,result)){
-          result = pid;
-          *outp  = jd;
-        }
+	if (*pmd & 1 && testit(pid,result)){
+	  result = pid;
+	  *outp  = jd;
+	}
       }
     }
   }
@@ -258,13 +258,13 @@ static inline void OperateFloc(char dtype, double start, int operator(const doub
       *outp = -1;
       double result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double val;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result)) {
-            result = val;
-            *outp  = jd;
-          }
-        }
+	if (*pmd & 1) {
+	  double val;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result)) {
+	    result = val;
+	    *outp  = jd;
+	  }
+	}
       }
     }
   }
@@ -282,14 +282,14 @@ static inline void OperateTloc(int testit(),args_t* a) {
       struct descriptor result={a->length,DTYPE_T,CLASS_S,pib};
       *outp = -1;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-           s_d.pointer=pid;
-           testit(&s_d,&result,&o_d);
-           if (testval) {
-             result.pointer=pid;
-             *outp = jd;
-           }
-        }
+	if (*pmd & 1) {
+	   s_d.pointer=pid;
+	   testit(&s_d,&result,&o_d);
+	   if (testval) {
+	     result.pointer=pid;
+	     *outp = jd;
+	   }
+	}
       }
     }
   }
@@ -356,8 +356,8 @@ static inline void operateIval(char* start,int testit(const char*,const char*),a
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       char* result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1 && testit(pid,result))
-          result = pid;
+	if (*pmd & 1 && testit(pid,result))
+	  result = pid;
       }
       memcpy(outp, result, a->length);
     }
@@ -373,11 +373,11 @@ static inline void OperateFval(char dtype, double start, int operator(const doub
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double result = start;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double val;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result))
-            result = val;
-        }
+	if (*pmd & 1) {
+	  double val;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) && operator(val,result))
+	    result = val;
+	}
       }
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
     }
@@ -396,12 +396,12 @@ static inline void OperateTval(int testit(),args_t* a) {
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       result.pointer = pib;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-           s_d.pointer=pid;
-           testit(&s_d,&result,&o_d);
-           if (testval)
-             result.pointer=pid;
-        }
+	if (*pmd & 1) {
+	   s_d.pointer=pid;
+	   testit(&s_d,&result,&o_d);
+	   if (testval)
+	     result.pointer=pid;
+	}
       }
       memmove(outp,result.pointer,a->length);
     }
@@ -472,15 +472,15 @@ static inline void OperateImean(size_t buflen,void avgadd(const char*, char*),vo
       int count = 0;
       memset(buf,0,buflen);
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          avgadd(pid,buf);
-          count++;
-        }
+	if (*pmd & 1) {
+	  avgadd(pid,buf);
+	  count++;
+	}
       }
       if (count)
-        avgdiv(buf,count,outp);
+	avgdiv(buf,count,outp);
       else
-        memset(outp,0,a->length);
+	memset(outp,0,a->length);
     }
   }
   free(buf);
@@ -495,15 +495,15 @@ static inline void OperateFmean(char dtype, args_t*a) {
       int count = 0;
       double result = 0;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double val;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
-            result+= val;count++;
-          } else {
-            CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
-            break;
-          }
-        }
+	if (*pmd & 1) {
+	  double val;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
+	    result+= val;count++;
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
+	    break;
+	  }
+	}
       }
       result/=count;
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
@@ -520,17 +520,17 @@ static inline void OperateCmean(char dtype, args_t*a) {
       int count = 0;
       double resultr=0, resulti=0;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double valr,vali;
-          if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
-              CvtConvertFloat(pid+a->length/2,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
-            resultr+=valr; resulti+=vali; count++;
-          } else {
-            CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
-            CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
-            break;
-          }
-        }
+	if (*pmd & 1) {
+	  double valr,vali;
+	  if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
+	      CvtConvertFloat(pid+a->length/2,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
+	    resultr+=valr; resulti+=vali; count++;
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
+	    CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
+	    break;
+	  }
+	}
       }
       resultr/=count; resulti/=count;
       CvtConvertFloat(&resultr,DTYPE_NATIVE_DOUBLE,outp            ,dtype,0);
@@ -579,8 +579,8 @@ static inline void OperateIfun(char init, void fun(const char*, const char*, cha
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       memset(outp,0,a->length); outp[0]=init;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1)
-          fun(pid,outp,outp);
+	if (*pmd & 1)
+	  fun(pid,outp,outp);
       }
     }
   }
@@ -594,15 +594,15 @@ static inline void OperateFfun(double init, char dtype, double fun(const double,
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double result = init;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double val;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
-            result = fun(val,result);
-          } else {
-            CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
-            break;
-          }
-        }
+	if (*pmd & 1) {
+	  double val;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
+	    result = fun(val,result);
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
+	    break;
+	  }
+	}
       }
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
     }
@@ -617,17 +617,17 @@ static inline void OperateCfun(double init, char dtype, double fun(const double,
     for (jb=0,  pib= pia,  pmb= pma;    jb < a->cnt_bef; jb++, pib+=a->stp_bef, pmb+=a->stpm_bef, outp+=a->length) { // LOOP_BEFORE_VAL
       double resultr = init,resulti = init;
       for (jd=0,pid= pib,  pmd= pmb;    jd < a->cnt_dim; jd++, pid+=a->stp_dim, pmd+=a->stpm_dim) {                  // LOOP_DIM
-        if (*pmd & 1) {
-          double valr,vali;
-          if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
-              CvtConvertFloat(pid+a->length/2,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
-            resultr=fun(valr,resultr);resulti=fun(vali,resulti);
-          } else {
-            CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
-            CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
-            break;
-          }
-        }
+	if (*pmd & 1) {
+	  double valr,vali;
+	  if (CvtConvertFloat(pid            ,dtype,&valr,DTYPE_NATIVE_DOUBLE,0)&&
+	      CvtConvertFloat(pid+a->length/2,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
+	    resultr=fun(valr,resultr);resulti=fun(vali,resulti);
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
+	    CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
+	    break;
+	  }
+	}
       }
       CvtConvertFloat(&resultr,DTYPE_NATIVE_DOUBLE,outp            ,dtype,0);
       CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp+a->length/2,dtype,0);
@@ -707,10 +707,10 @@ static inline void OperateIaccum(void add(const char*,const char*, char*),args_t
     for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       memset(result,0,a->length);
       for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1) {
-          add(pid,result,result);
-          memcpy(pod,result,a->length);
-        }
+	if (*pmd & 1) {
+	  add(pid,result,result);
+	  memcpy(pod,result,a->length);
+	}
       }
     }
   }
@@ -725,13 +725,13 @@ static inline void OperateFaccum(char dtype,args_t* a){
     for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       double result = 0;
       for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1){
-          double val;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
-            result += val;
-            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
-          } else CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
-        }
+	if (*pmd & 1){
+	  double val;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
+	    result += val;
+	    CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
+	  } else CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+	}
       }
     }
   }
@@ -746,18 +746,18 @@ static inline void OperateCaccum(char dtype,args_t* a){
     for (jb=0,pob=poa,  pib=pia,   pmb=pma;      jb++ < a->cnt_bef; pob += a->stp_bef, pib += a->stp_bef, pmb += a->stpm_bef) { // LOOP_BEFORE_ARRAY
       double result = 0, resulti = 0;
       for (jd=0,pod=pob,pid=pib,   pmd=pmb;      jd++ < a->cnt_dim; pod += a->stp_dim, pid += a->stp_dim, pmd += a->stpm_dim) { // LOOP_DIM_ARRAY
-        if (*pmd & 1){
-          double val, vali;
-          if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) &&
-              CvtConvertFloat(pid+a->length,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
-            result += val; resulti += vali;
-            CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
-            CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,pod+a->length/2,dtype,0);
-          } else {
-            CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
-            CvtConvertFloat(&roprand,DTYPE_F,pod+a->length/2,dtype,0);
-          }
-        }
+	if (*pmd & 1){
+	  double val, vali;
+	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0) &&
+	      CvtConvertFloat(pid+a->length,dtype,&vali,DTYPE_NATIVE_DOUBLE,0)) {
+	    result += val; resulti += vali;
+	    CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
+	    CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,pod+a->length/2,dtype,0);
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+	    CvtConvertFloat(&roprand,DTYPE_F,pod+a->length/2,dtype,0);
+	  }
+	}
       }
     }
   }

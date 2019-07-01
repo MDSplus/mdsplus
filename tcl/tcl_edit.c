@@ -67,9 +67,7 @@ EXPORT int TclEdit(void *ctx, char **error, char **output __attribute__ ((unused
     sprintf(*error, "Error: Unable to edit shot number %d of the '%s' tree\nError msg was: %s\n",
 	    shot, filnam, msg);
   }
-  if (filnam)
-    free(filnam);
-  if (asciiShot)
-    free(asciiShot);
+  free(filnam);
+  free(asciiShot);
   return sts;
 }

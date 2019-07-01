@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     SHOW MACRO     - Show the contents of a macro
     SHOW TIMER     - Show the timer information.
     SHOW VERSION   - Show MDSplus version information.
+    SHOW GIT       - Show git source repository information.
     SPAWN          - Execute a operating system shell command.
     syntax         - Basic syntax of mdsdcl commands.
     TYPE           - Print a message.
@@ -383,6 +384,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <keyword name="MACRO" syntax="SHOW_MACRO"/>
     <keyword name="TIMER" syntax="SHOW_TIMER"/>
     <keyword name="VERSION" syntax="SHOW_VERSION"/>
+    <keyword name="GIT" syntax="SHOW_GIT_INFO"/>
   </type>
 
   <syntax name="SHOW_MACRO">
@@ -437,15 +439,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       information will not be provided unless environment variables have been
       set before using ./configure. The environment variables include:
 
-      BRANCH:   Git branch used for the build
       MAJOR,MINOR,RELEASE: Version numbers where a release of 7.8.9 would be
-      represented by MAJOR=7, MINOR=8, RELEASE=9
-      RELEASE_TAG: Git tag of the build (i.e. alpha_release_7_8_9).
+                           represented by MAJOR=7, MINOR=8, RELEASE=9
+      RELEASE_TAG:         Git tag of the build (i.e. alpha_release_7_8_9).
     </help>
     <routine name="mdsdcl_show_version"/>
     <parameter name="P1" required="True"/>
   </syntax>
 
+  <syntax name="SHOW_GIT_INFO">
+    <help name="SHOW GIT">
+      Command: SHOW GIT
+      Purpose: Show the version information of this MDSplus git repository.
+      Format: SHOW GIT [/TAG] [/BRANCH] [/COMMIT] [/REMOTE] [/REMOTE_URL] [/SRCDIR]
+
+    </help>
+    <routine name="mdsdcl_show_git_info"/>
+    <parameter name="P1" required="True"/>    
+    <parameter name="P2" label="ATTRS" prompt="Attributes" required="False"/>
+    <qualifier name="TAG"/>
+    <qualifier name="BRANCH"/>
+    <qualifier name="COMMIT"/>
+    <qualifier name="REMOTE"/>
+    <qualifier name="REMOTE_URL"/>
+    <qualifier name="SRCDIR"/>
+  </syntax>
+
+  
   <verb name="SPAWN">
     <help name="SPAWN">
       Command: SPAWN

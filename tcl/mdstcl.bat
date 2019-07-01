@@ -1,2 +1,2 @@
-@echo off
-mdsdcl -prep "set command tcl"
+@ECHO OFF
+mdsdcl -prep "set command tcl_commands -history=.tcl" %*

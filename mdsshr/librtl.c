@@ -24,6 +24,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
+#define LOAD_INITIALIZESOCKETS
+#include <pthread_port.h>
+
+#ifdef _WIN32
+#include <ws2tcpip.h>
+#else
+#include <netinet/in.h>
+#include <netdb.h>
+#include <arpa/inet.h>
+#include <netinet/tcp.h>
+#endif
+
 #include <mdsplus/mdsconfig.h>
 #include <sys/time.h>
 #include <time.h>
@@ -38,11 +50,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <signal.h>
 
+// #define DEBUG
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+# define DBG(...) {/**/}
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #include <process.h>
 #define setenv(name,value,overwrite) _putenv_s(name,value)
+#define unsetenv(name)               _putenv_s(name,"")
 #define localtime_r(time,tm)         localtime_s(tm,time)
+#define ctime_r(tm,buf)              ctime_s(buf,32,tm)
 #else
 #include <sys/wait.h>
 #endif
@@ -62,7 +83,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 typedef struct {
   char *env;
   char *file;
-  struct descriptor wild_descr;
+  mdsdsc_t wild_descr;
   char **env_strs;
   int num_env;
   int next_index;
@@ -98,14 +119,14 @@ typedef struct node {
  */
 time_t ntimezone_;
 int daylight_;
-static void tzset_(){
+inline static void tzset_(){
   tzset();
   ntimezone_ = - timezone;
   daylight_ = daylight;
 }
 #endif
 
-static time_t get_tz_offset(time_t* time){
+static inline time_t get_tz_offset(time_t *const time){
   struct tm tmval;
   localtime_r(time, &tmval);
 #ifdef USE_TM_GMTOFF
@@ -124,7 +145,7 @@ STATIC_CONSTANT int64_t VMS_TIME_OFFSET = LONG_LONG_CONSTANT(0x7c95674beb4000);
 /// \param secs the address of a constant floating point number representing the time to wait
 /// \return 1 if successful, 0 if failed or interrupted.
 ///
-EXPORT int LibWait(const float *secs)
+EXPORT int LibWait(const float *const secs)
 {
   struct timespec ts;
   ts.tv_sec = (unsigned int)*secs;
@@ -132,6 +153,12 @@ EXPORT int LibWait(const float *secs)
   return nanosleep(&ts, 0) == 0;
 }
 
+EXPORT char *Now32(char *const buf){
+  const time_t tim = time(0);
+  ctime_r(&tim,buf);
+  buf[strlen(buf) - 1] = '\0';
+  return buf;
+}
 ///
 /// Call a routine in a shared library passing zero or more arguments.
 ///
@@ -139,157 +166,116 @@ EXPORT int LibWait(const float *secs)
 /// \param routine address of the routine to call
 /// \return the value returned by the routine as a void *
 ///
-EXPORT void *LibCallg(void **arglist, void *(*routine) ()) {
+EXPORT void *LibCallg(void **const a, void* (*const routine)()) {
   if (!routine) abort(); // intercept definite stack corruption
-  switch (*(int*)&arglist[0] & 0xff) {
+  switch (*(int*)a & 0xff) {
   case 0:
-    return (*routine) ();
+    return routine();
   case 1:
-    return (*routine) (arglist[1]);
+    return routine(a[1]);
   case 2:
-    return (*routine) (arglist[1], arglist[2]);
+    return routine(a[1],a[2]);
   case 3:
-    return (*routine) (arglist[1], arglist[2], arglist[3]);
+    return routine(a[1],a[2],a[3]);
   case 4:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4]);
+    return routine(a[1],a[2],a[3],a[4]);
   case 5:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5]);
+    return routine(a[1],a[2],a[3],a[4],a[5]);
   case 6:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6]);
   case 7:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7]);
   case 8:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8]);
   case 9:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9]);
   case 10:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10]);
   case 11:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11]);
   case 12:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12]);
   case 13:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13]);
   case 14:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14]);
   case 15:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15]);
   case 16:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16]);
   case 17:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17]);
   case 18:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17],
-		       arglist[18]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18]);
   case 19:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19]);
   case 20:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20]);
   case 21:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21]);
   case 22:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22]);
   case 23:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23]);
   case 24:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23],
-		       arglist[24]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24]);
   case 25:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25]);
   case 26:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26]);
   case 27:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27]);
   case 28:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28]);
   case 29:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29]);
   case 30:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29],
-		       arglist[30]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30]);
   case 31:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30],a[31]);
   case 32:
-    return (*routine) (arglist[1], arglist[2], arglist[3], arglist[4], arglist[5], arglist[6],
-		       arglist[7], arglist[8], arglist[9], arglist[10], arglist[11], arglist[12],
-		       arglist[13], arglist[14], arglist[15], arglist[16], arglist[17], arglist[18],
-		       arglist[19], arglist[20], arglist[21], arglist[22], arglist[23], arglist[24],
-		       arglist[25], arglist[26], arglist[27], arglist[28], arglist[29], arglist[30],
-		       arglist[31], arglist[32]);
+    return routine(a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],
+	a[17],a[18],a[19],a[20],a[21],a[22],a[23],a[24],a[25],a[26],a[27],a[28],a[29],a[30],a[31],a[32]);
   default:
     printf("Error - currently no more than 32 arguments supported on external calls\n");
   }
   return 0;
 }
 
+EXPORT uint32_t LibGetHostAddr(const char *const name){
+  INITIALIZESOCKETS;
+  uint32_t addr = 0;
+  struct addrinfo *entry,*info = NULL;
+  const struct addrinfo hints = { 0, AF_INET, SOCK_STREAM, 0, 0, NULL, NULL, NULL };
+  if (!getaddrinfo(name, NULL, &hints, &info)) {
+    for (entry = info ; entry && !entry->ai_addr ; entry = entry->ai_next);
+    if (entry) {
+      const struct sockaddr_in* addrin = (struct sockaddr_in*)entry->ai_addr;
+      addr = *(uint32_t*)&addrin->sin_addr;
+    }
+    if (info) freeaddrinfo(info);
+  }
+  return addr == 0xffffffff ? 0 : addr;
+}
+
 #ifdef _WIN32
 
-STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
+static char *GetRegistry(const HKEY where, const char *const pathname)
 {
   HKEY regkey;
   unsigned char *path = NULL;
@@ -307,7 +293,7 @@ STATIC_ROUTINE char *GetRegistry(HKEY where, const char *pathname)
 }
 
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attribute__ ((unused))){
+EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag __attribute__ ((unused))){
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -335,7 +321,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitFlag, int notifyFlag __attri
 #else	/* _WIN32 */
 
 
-STATIC_ROUTINE char const *nonblank(char *p)
+static char const *nonblank(const char *p)
 {
   if (!p)
     return (0);
@@ -344,7 +330,7 @@ STATIC_ROUTINE char const *nonblank(char *p)
 }
 
 
-STATIC_ROUTINE void child_done(int sig   )
+static void child_done(int sig   )
 {
   if (sig == SIGCHLD)
     fprintf(stdout, "--> Process completed\n");
@@ -354,7 +340,7 @@ STATIC_ROUTINE void child_done(int sig   )
   return;
 }
 
-EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
+EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag)
 {
   char *sh = "/bin/sh";
   pid_t pid, xpid;
@@ -369,13 +355,13 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
     free(oldcmdstring);
     TranslateLogicalFree(spawn_wrapper);
   }
-  signal(SIGCHLD, notifyFlag ? child_done : (waitflag ? SIG_DFL : SIG_IGN));
+  signal(SIGCHLD, notifyFlag ? child_done : (waitFlag ? SIG_DFL : SIG_IGN));
   pid = fork();
   if (!pid) {
   /*-------------> child process: execute cmd	*/
     char const *arglist[4];
     int i = 0;
-    if (!waitflag) {
+    if (!waitFlag) {
       pid = fork();
       if (pid != -1 && pid != 0)
 	_exit(0);
@@ -421,7 +407,7 @@ EXPORT int LibSpawn(struct descriptor *cmd, int waitflag, int notifyFlag)
 
 #endif
 
-EXPORT char *TranslateLogical(char const *pathname)
+EXPORT char *TranslateLogical(const char *const pathname)
 {
   char *tpath = getenv(pathname);
   if (tpath) return strdup(tpath);
@@ -434,19 +420,15 @@ EXPORT char *TranslateLogical(char const *pathname)
   return NULL;
 }
 
-#ifndef va_count
-#define  va_count(narg) va_start(incrmtr, first); \
-                        for (narg=1; (narg < 256) && (va_arg(incrmtr, struct descriptor *) != MdsEND_ARG); narg++)
-#endif				/* va_count */
 
-EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd *out)
+EXPORT int TranslateLogicalXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out)
 {
-  struct descriptor out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+  mdsdsc_t out_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int status = 0;
   char *in_c = MdsDescrToCstring(in);
   char *out_c = TranslateLogical(in_c);
   if (out_c) {
-    out_dsc.length = (unsigned short)strlen(out_c);
+    out_dsc.length = (uint16_t)strlen(out_c);
     out_dsc.pointer = out_c;
     status = 1;
   }
@@ -457,12 +439,12 @@ EXPORT int TranslateLogicalXd(struct descriptor const *in, struct descriptor_xd 
   return status;
 }
 
-EXPORT void MdsFree(void *ptr)
+EXPORT void MdsFree(void *const ptr)
 {
   free(ptr);
 }
 
-EXPORT char *MdsDescrToCstring(struct descriptor const *in)
+EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
   memcpy(out, in->pointer, in->length);
@@ -482,7 +464,7 @@ EXPORT char *LibFindImageSymbolErrString()
   return FIS_Error;
 }
 
-static void *loadLib(const char *dirspec, const char *filename, char *errorstr) {
+static void *loadLib(const char *const dirspec, const char *const filename, char *errorstr) {
   void *handle = NULL;
   char *full_filename = alloca( strlen(dirspec) + strlen(filename) + 10);
   if (strlen(dirspec)>0) {
@@ -494,14 +476,18 @@ static void *loadLib(const char *dirspec, const char *filename, char *errorstr) 
   } else {
     strcpy(full_filename,filename);
   }
-  handle = dlopen(full_filename, RTLD_NOW);
-  if (handle == NULL) {
+#ifndef _WIN32
+  handle = dlopen(full_filename, RTLD_NOLOAD | RTLD_LAZY);
+  if (!handle)
+#endif
+    handle = dlopen(full_filename,             RTLD_LAZY);
+  if (!handle) {
     snprintf(errorstr + strlen(errorstr), 4096 - strlen(errorstr), "Error loading %s: %s\n", full_filename, dlerror());
   }
   return handle;
 }
 
-EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, void **symbol_value)
+EXPORT int LibFindImageSymbol_C(const char *const filename_in, const char *const symbol, void **symbol_value)
 {
   int status;
   static pthread_mutex_t dlopen_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -579,7 +565,7 @@ EXPORT int LibFindImageSymbol_C(const char *filename_in, const char *symbol, voi
   return status;
 }
 
-EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *symbol, void **symbol_value)
+EXPORT int LibFindImageSymbol(const mdsdsc_t *const filename, const mdsdsc_t *const symbol, void **const symbol_value)
 {
   char *c_filename = MdsDescrToCstring(filename);
   char *c_symbol = MdsDescrToCstring(symbol);
@@ -589,48 +575,43 @@ EXPORT int LibFindImageSymbol(struct descriptor *filename, struct descriptor *sy
   free(c_symbol);
   return status;
 }
-/*******************************************************
- TODO: StrConcat fails when any of the varargs is out
- *******************************************************/
-EXPORT int StrConcat(struct descriptor *out, struct descriptor *first, ...)
+
+EXPORT int StrConcat(mdsdsc_t *const out, ...)
 {
-  int i;
-  int narg;
-  va_list incrmtr;
-  int status = StrCopyDx(out, first);
-  if STATUS_OK {
-    va_count(narg);
-    va_start(incrmtr, first);
-    if (out->class == CLASS_D) {
-      struct descriptor *arg = va_arg(incrmtr, struct descriptor *);
-      for (i = 1; i < narg && STATUS_OK && arg; i++) {
-	StrAppend((struct descriptor_d *)out, arg);
-	arg = va_arg(incrmtr, struct descriptor *);
-      }
-    } else if (out->class == CLASS_S) {
-      struct descriptor temp = *out;
-      struct descriptor *next;
-      for (i = 1,
-	   temp.length = (unsigned short)(out->length - first->length),
-	   temp.pointer = out->pointer + first->length;
-	   i < narg && STATUS_OK && temp.length > 0;
-	   i++,
-	   temp.length = (unsigned short)(temp.length - next->length),
-	   temp.pointer += next->length) {
-	next = va_arg(incrmtr, struct descriptor *);
-	if (next) {
-	  StrCopyDx(&temp, next);
-	} else {
-	  temp.length = 0;
-	}
-      }
-    } else
-      status = MDSplusERROR;
+  int i,nargs,len;
+  mdsdsc_t * arglist[256];
+  VA_LIST_MDS_END_ARG(arglist,nargs,0,0,out);
+  char *new;
+  if (out->class == CLASS_D) {
+    len = 0;
+    for (i = 0; i<nargs && arglist[i] && len<0xFFFF; i++)
+      len += (int)arglist[i]->length;
+    if (len>0xFFFF) return StrSTRTOOLON;
+    new = malloc(len);
+  } else if (out->class == CLASS_S)
+    new = malloc(len = (int)out->length);
+  else
+    return LibINVSTRDES;
+  // concat the strings
+  char *p = new, *e = new + len, *p2, *e2;
+  for (i = 0 ; i<nargs && arglist[i] && p<e ; i++) {
+    p2 = arglist[i]->pointer;
+    e2 = arglist[i]->pointer + (int)arglist[i]->length;
+    while (p<e && p2<e2) *p++ = *p2++;
   }
-  return status;
+  if (out->class == CLASS_S) {
+    memcpy(out->pointer,new,p-new);
+    memset(p,' ',e-p);
+    free(new);
+  } else {
+    free(out->pointer);
+    out->pointer = new;
+    out->length = len;
+  }
+  return MDSplusSUCCESS;
 }
 
-EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, int *start)
+EXPORT int StrPosition(const mdsdsc_t *const source, const mdsdsc_t *const substring, const int *const start)
 {
   char *source_c = MdsDescrToCstring(source);
   char *substring_c = MdsDescrToCstring(substring);
@@ -642,28 +623,28 @@ EXPORT int StrPosition(struct descriptor *source, struct descriptor *substring, 
   return answer;
 }
 
-EXPORT int StrCopyR(struct descriptor *dest, const unsigned short *len, char *source)
-{
-  const struct descriptor s = { *len, DTYPE_T, CLASS_S, source };
-  return StrCopyDx(dest, &s);
+EXPORT int StrCopyR(mdsdsc_t *const out, const length_t *const len, char *const in){
+  const mdsdsc_t in_d = { *len, DTYPE_T, CLASS_S, in };
+  return StrCopyDx(out, &in_d);
 }
 
-EXPORT int StrLenExtr(struct descriptor *dest, struct descriptor *source, int *start_in, int *len_in)
+EXPORT int StrLenExtr(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_in, const int *const len_in)
 {
-  unsigned short len = (unsigned short)((*len_in < 0) ? 0 : *len_in & 0xffff);
-  unsigned short start = (unsigned short)((*start_in > 1) ? *start_in & 0xffff : 1);
-  struct descriptor_d s = { 0, DTYPE_T, CLASS_D, 0 };
-  int status = StrGet1Dx(&len, &s);
-  int i, j;
-  memset(s.pointer, 32, len);
-  for (i = start - 1, j = 0; ((i < source->length) && (j < len)); i++, j++)
-    s.pointer[j] = source->pointer[i];
-  status = StrCopyDx(dest, (struct descriptor *)&s);
-  StrFree1Dx(&s);
+  const length_t len  = (length_t)((*len_in   < 0) ? 0 : *len_in & 0xffff);
+  const length_t start= (length_t)((*start_in > 1) ? (*start_in & 0xffff)-1 : 0);
+  const length_t span = (in->length > start) ? in->length - start : 0;
+  const length_t tspan= span<len ? span : len;
+  mdsdsc_t s = { len, DTYPE_T, CLASS_S, malloc(len) };
+  if (!s.pointer) return LibINSVIRMEM;
+  memcpy(s.pointer,in->pointer+start,tspan);
+  if (span<len)
+    memset(s.pointer+span, ' ', len-span);
+  int status = StrCopyDx(out, &s);
+  free(s.pointer);
   return status;
 }
 
-EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
+EXPORT int StrGet1Dx(const length_t *const len, mdsdsc_d_t *const out)
 {
   if (out->class != CLASS_D)
     return LibINVSTRDES;
@@ -676,29 +657,19 @@ EXPORT int StrGet1Dx(const unsigned short *len, struct descriptor_d *out)
   return MDSplusSUCCESS;
 }
 
-//int LibEmul(int *m1, int *m2, int *add, int64_t * prod)
-//{
-//  int64_t m1_64 = *m1;
-//  int64_t m2_64 = *m2;
-//  int64_t add_64 = *add;
-//  *prod = m1_64 * m2_64 + add_64;
-//  return 1;
-//}
-
-int LibSFree1Dd(struct descriptor_d *out)
-{
+int LibSFree1Dd(mdsdsc_d_t *const out){
   return StrFree1Dx(out);
 }
 
-EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short *lenout)
+EXPORT int StrTrim(mdsdsc_t *const out, const mdsdsc_t *const in, length_t *const lenout)
 {
-  struct descriptor_d tmp = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  unsigned short i;
+  mdsdsc_d_t tmp = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_t s = { 0, DTYPE_T, CLASS_S, 0 };
+  uint16_t i;
   for (i = in->length; i > 0; i--)
-    if (in->pointer[i - 1] != 32 && in->pointer[i - 1] != 9)
+    if (in->pointer[i - 1] != ' ' && in->pointer[i - 1] != 9)
       break;
-  StrCopyDx((struct descriptor *)&tmp, in);
+  StrCopyDx((mdsdsc_t *)&tmp, in);
   s.length = i;
   s.pointer = tmp.pointer;
   if (lenout != NULL)
@@ -707,51 +678,64 @@ EXPORT int StrTrim(struct descriptor *out, struct descriptor *in, unsigned short
   return StrFree1Dx(&tmp);
 }
 
-EXPORT int StrCopyDx(struct descriptor *out, const struct descriptor *in)
+EXPORT int StrCopyDx(mdsdsc_t *const out, const mdsdsc_t *const in)
 {
   if (out->class == CLASS_D && (in->length != out->length))
-    StrGet1Dx(&in->length, (struct descriptor_d *)out);
+    StrGet1Dx(&in->length, (mdsdsc_d_t *)out);
   if (out->length && out->pointer != NULL) {
-    unsigned int outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
-    unsigned int inlength = (in->class == CLASS_A) ? ((struct descriptor_a *)in)->arsize : in->length;
-    unsigned int len = outlength > inlength ? inlength : outlength;
+    const length_t outlength = (out->class == CLASS_A) ? ((mdsdsc_a_t *)out)->arsize : out->length;
+    const length_t inlength = (in->class == CLASS_A) ? ((mdsdsc_a_t *)in)->arsize : in->length;
+    const length_t len = outlength > inlength ? inlength : outlength;
     char *p1, *p2;
-    unsigned int i;
+    uint32_t i;
     for (i = 0, p1 = out->pointer, p2 = in->pointer; i < len; i++)
       *p1++ = *p2++;
     if (outlength > inlength)
-      memset(out->pointer + inlength, 32, outlength - inlength);
+      memset(out->pointer + inlength, ' ', outlength - inlength);
   }
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrCompare(struct descriptor *str1, struct descriptor *str2)
+EXPORT int StrCompare(const mdsdsc_t *const str1, const mdsdsc_t *const str2)
 {
-  char *str1c = MdsDescrToCstring(str1);
-  char *str2c = MdsDescrToCstring(str2);
-  int ans;
-  ans = strcmp(str1c, str2c);
-  free(str1c);
-  free(str2c);
-  return ans;
+  const int len = str1->length < str2->length ? str1->length : str2->length;
+  const int ans = strncmp(str1->pointer,str2->pointer,len);
+  if (ans) return ans;
+  if (str1->length > str2->length)
+    return  (str1->pointer[len]&0xFF);
+  if (str2->length > str1->length)
+    return -(str2->pointer[len]&0xFF);
+  return 0;
 }
 
-EXPORT int StrUpcase(struct descriptor *out, struct descriptor *in)
+EXPORT int StrCaseBlindCompare(const mdsdsc_t *const str1, const mdsdsc_t *const str2)
 {
-  unsigned int outlength,i;
-  StrCopyDx(out, in);
-  outlength = (out->class == CLASS_A) ? ((struct descriptor_a *)out)->arsize : out->length;
+  const int len = str1->length < str2->length ? str1->length : str2->length;
+  const int ans = strncasecmp(str1->pointer,str2->pointer,len);
+  if (ans) return ans;
+  if (str1->length > str2->length)
+    return  (str1->pointer[len]&0xFF);
+  if (str2->length > str1->length)
+    return -(str2->pointer[len]&0xFF);
+  return 0;
+}
+
+EXPORT int StrUpcase(mdsdsc_t *const out, const mdsdsc_t *const in){
+  int status = StrCopyDx(out, in);
+  if STATUS_NOT_OK return status;
+  const int outlength = (out->class == CLASS_A) ? ((mdsdsc_a_t *)out)->arsize : out->length;
+  int i;
   for (i = 0; i < outlength; i++)
     out->pointer[i] = (char)toupper(out->pointer[i]);
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrRight(struct descriptor *out, struct descriptor *in, unsigned short *start)
+EXPORT int StrRight(mdsdsc_t *const out, const mdsdsc_t *const in, const length_t *const start)
 {
-  struct descriptor_d tmp = { 0, DTYPE_T, CLASS_D, 0 };
-  struct descriptor s = { 0, DTYPE_T, CLASS_S, 0 };
-  StrCopyDx((struct descriptor *)&tmp, in);
-  s.length = (unsigned short)((int)in->length - *start + 1);
+  mdsdsc_d_t tmp = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_t s = { 0, DTYPE_T, CLASS_S, 0 };
+  StrCopyDx((mdsdsc_t *)&tmp, in);
+  s.length = (length_t)((int)in->length - *start + 1);
   s.pointer = tmp.pointer + (*start - 1);
   StrCopyDx(out, &s);
   return StrFree1Dx(&tmp);
@@ -764,7 +748,7 @@ ZoneList *MdsZones = NULL;
 #define   LOCK_ZONE(zone) pthread_mutex_lock(&(zone)->lock);pthread_cleanup_push((void*)pthread_mutex_unlock,&(zone)->lock)
 #define UNLOCK_ZONE(zone) pthread_cleanup_pop(1);
 
-EXPORT int LibCreateVmZone(ZoneList ** zone)
+EXPORT int LibCreateVmZone(ZoneList **const zone)
 {
   ZoneList *list;
   *zone = malloc(sizeof(ZoneList));
@@ -782,7 +766,7 @@ EXPORT int LibCreateVmZone(ZoneList ** zone)
   return (*zone != NULL);
 }
 
-EXPORT int LibDeleteVmZone(ZoneList ** zone)
+EXPORT int LibDeleteVmZone(ZoneList **const zone)
 {
   int found;
   ZoneList *list, *prev;
@@ -807,10 +791,10 @@ EXPORT int LibDeleteVmZone(ZoneList ** zone)
   return found;
 }
 
-EXPORT int LibResetVmZone(ZoneList ** zone)
+EXPORT int LibResetVmZone(ZoneList **const zone)
 {
   VmList *list;
-  unsigned int len = 1;
+  const uint32_t len = 1;
   LOCK_ZONES;
   while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
     LibFreeVm(&len, &list->ptr, zone);
@@ -818,7 +802,7 @@ EXPORT int LibResetVmZone(ZoneList ** zone)
   return MDSplusSUCCESS;
 }
 
-EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
+EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   VmList *list = NULL;
   if (zone) {
@@ -836,22 +820,17 @@ EXPORT int LibFreeVm(unsigned int *len, void **vm, ZoneList ** zone)
   }
   if (len && *len && vm && *vm)
     free(*vm);
-  if (list)
-    free(list);
+  free(list);
   return MDSplusSUCCESS;
 }
-
-EXPORT int libfreevm_(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibFreeVm(len, vm, zone));
+EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibFreeVm(len, vm, zone);
+}
+EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int libfreevm(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibFreeVm(len, vm, zone));
-}
-
-EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
+EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   *vm = malloc(*len);
   if (*vm == NULL) {
@@ -872,15 +851,11 @@ EXPORT int LibGetVm(unsigned int *len, void **vm, ZoneList ** zone)
   }
   return (*vm != NULL);
 }
-
-EXPORT int libgetvm_(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibGetVm(len, vm, zone));
+EXPORT int libgetvm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibGetVm(len, vm, zone);
 }
-
-EXPORT int libgetvm(unsigned int *len, void **vm, ZoneList ** zone)
-{
-  return (LibGetVm(len, vm, zone));
+EXPORT int libgetvm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+  return LibGetVm(len, vm, zone);
 }
 
 //int LibEstablish()
@@ -890,7 +865,7 @@ EXPORT int libgetvm(unsigned int *len, void **vm, ZoneList ** zone)
 
 #define SEC_PER_DAY (60*60*24)
 
-EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
+EXPORT int LibConvertDateString(const char *asc_time, int64_t *const qtime)
 {
   time_t tim = 0;
   char time_out[24];
@@ -913,8 +888,8 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
   }
   if (parse_it) {
     if (ctime_it) {
-      char *time_str;
-      time_str = ctime(&tim);
+      char time_str[32];
+      ctime_r(&tim,time_str);
       time_out[0] = time_str[8];
       time_out[1] = time_str[9];
       time_out[2] = '-';
@@ -946,7 +921,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
     {
       struct tm tm = { 0 };
 #ifdef _WIN32
-      unsigned int day, year, hour, minute, second;
+      uint32_t day, year, hour, minute, second;
       char month[4];
       char *months[] =
 	  { "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC" };
@@ -983,7 +958,7 @@ EXPORT int LibConvertDateString(const char *asc_time, int64_t * qtime)
   return tim > 0;
 }
 
-EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
+EXPORT int LibTimeToVMSTime(const time_t *const time_in, int64_t *const time_out)
 {
   time_t time_to_use = time_in ? *time_in : time(NULL);
   struct timeval tv;
@@ -996,7 +971,7 @@ EXPORT int LibTimeToVMSTime(const time_t * time_in, int64_t * time_out)
   return MDSplusSUCCESS;
 }
 
-EXPORT time_t LibCvtTim(int *time_in, double *t)
+EXPORT time_t LibCvtTim(const int *const time_in, double *const t)
 {
   double t_out;
   time_t bintim = time(&bintim);
@@ -1019,15 +994,15 @@ EXPORT time_t LibCvtTim(int *time_in, double *t)
   return (bintim);
 }
 
-EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_in)
+EXPORT int LibSysAscTim(length_t *const len, mdsdsc_t *const str, const int *const time_in)
 {
-  char *time_str;
   char time_out[24];
-  unsigned short slen = sizeof(time_out)-1;
+  uint16_t slen = sizeof(time_out)-1;
   time_t bintim = LibCvtTim(time_in, 0);
   int64_t chunks = time_in ? *(int64_t *)time_in % 10000000 : 0;
-  time_str = ctime(&bintim);
-  if (time_str) {
+  char time_str[32];time_str[0]='\0';
+  ctime_r(&bintim,time_str);
+  if (strlen(time_str)>18) {
     time_out[0] = time_str[8];
     time_out[1] = time_str[9];
     time_out[2] = '-';
@@ -1060,44 +1035,42 @@ EXPORT int LibSysAscTim(unsigned short *len, struct descriptor *str, int *time_i
   return MDSplusSUCCESS;
 }
 
-//int LibGetDvi(int *code, void *dummy1, struct descriptor *device, int *ans,
-//	      struct descriptor *ans_string, int *len)
+//int LibGetDvi(int *code, void *dummy1, mdsdsc_t *device, int *ans,
+//	      mdsdsc_t *ans_string, int *len)
 //{
 //  *ans = 132;
 //  return 1;
 //}
 
-EXPORT int StrAppend(struct descriptor_d *out, struct descriptor *tail)
+EXPORT int StrAppend(mdsdsc_d_t *const out, const mdsdsc_t *const tail)
 {
-  if (tail->length != 0 && tail->pointer != NULL) {
+  if (tail->length > 0 && tail->pointer) {
     int len = (int)out->length + (int)tail->length;
-    if (len > 0xffff)
-      return StrSTRTOOLON;
-    struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
-    unsigned short us_len = (unsigned short)len;
-    StrGet1Dx(&us_len, &new);
+    if (len > 0xffff) return StrSTRTOOLON;
+    char *old = out->pointer;
+    out->pointer = realloc(out->pointer, len);
     if (out->pointer) {
-      memcpy(new.pointer, out->pointer, out->length);
+      memcpy(out->pointer + out->length, tail->pointer, tail->length);
+      out->length = len;
+    } else {
+      out->pointer = old;
+      return LibINSVIRMEM;
     }
-    memcpy(new.pointer + out->length, tail->pointer, tail->length);
-    StrFree1Dx(out);
-    *out = new;
   }
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrFree1Dx(struct descriptor_d *out)
+EXPORT int StrFree1Dx(mdsdsc_d_t *const out)
 {
   if (out->class == CLASS_D) {
-    if (out->pointer)
-      free(out->pointer);
+    free(out->pointer);
     out->pointer = NULL;
     out->length = 0;
   }
   return MDSplusSUCCESS;
 }
 
-EXPORT int StrFindFirstNotInSet(struct descriptor *source, struct descriptor *set)
+EXPORT int StrFindFirstNotInSet(const mdsdsc_t *const source, const mdsdsc_t *const set)
 {
   int ans = 0;
   if (source->length > 0) {
@@ -1112,7 +1085,7 @@ EXPORT int StrFindFirstNotInSet(struct descriptor *source, struct descriptor *se
   return ans;
 }
 
-EXPORT int StrFindFirstInSet(struct descriptor *source, struct descriptor *set)
+EXPORT int StrFindFirstInSet(const mdsdsc_t *const source, const mdsdsc_t *const set)
 {
   int ans = 0;
   if (source->length > 0) {
@@ -1139,11 +1112,10 @@ struct bbtree_info {
   void *user_context;
 };
 
-STATIC_ROUTINE int MdsInsertTree();
+static int MdsInsertTree();
 
-EXPORT int LibInsertTree(LibTreeNode **treehead, void *symbol_ptr, int *control_flags,
-		  int (*compare_rtn) (), int (*alloc_rtn) (), LibTreeNode **blockaddr,
-		  void *user_data)
+EXPORT int LibInsertTree(LibTreeNode **const treehead, void *const symbol_ptr, int *const control_flags,
+	int (*const compare_rtn)(), int (*const alloc_rtn)(), LibTreeNode **const blockaddr, void *const user_data)
 {
   struct bbtree_info bbtree;
   bbtree.currentnode = *treehead;
@@ -1161,7 +1133,7 @@ EXPORT int LibInsertTree(LibTreeNode **treehead, void *symbol_ptr, int *control_
   return bbtree.foundintree;
 }
 
-STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
+static int MdsInsertTree(struct bbtree_info *const bbtree_ptr)
 {
 
 #define currentNode (bbtree_ptr->currentnode)
@@ -1285,13 +1257,13 @@ STATIC_ROUTINE int MdsInsertTree(struct bbtree_info *bbtree_ptr)
 
 #undef currentNode
 
-EXPORT int LibLookupTree(LibTreeNode **treehead, void *symbolstring, int (*compare_rtn) (),
-		  LibTreeNode **blockaddr)
+EXPORT int LibLookupTree(LibTreeNode **const treehead, void *const symbol_ptr,
+	int (*const compare_rtn)(), LibTreeNode **const blockaddr)
 {
   int ch_result;
   struct node *currentnode = *treehead;
   while (currentnode != 0) {
-    if ((ch_result = (*compare_rtn) (symbolstring, currentnode)) == 0) {
+    if ((ch_result = compare_rtn(symbol_ptr, currentnode)) == 0) {
       *blockaddr = currentnode;
       return MDSplusSUCCESS;
     } else if (ch_result < 0)
@@ -1302,14 +1274,7 @@ EXPORT int LibLookupTree(LibTreeNode **treehead, void *symbolstring, int (*compa
   return LibKEYNOTFOU;
 }
 
-STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct node *currentnode);
-
-EXPORT int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn) (), void *user_data)
-{
-  return MdsTraverseTree(user_rtn, user_data, *treehead);
-}
-
-STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct node *currentnode)
+inline static int MdsTraverseTree(int (*const user_rtn)(), void *const user_data, struct node *const currentnode)
 {
   struct node *right_subtree;
   int status;
@@ -1317,62 +1282,40 @@ STATIC_ROUTINE int MdsTraverseTree(int (*user_rtn) (), void *user_data, struct n
     return MDSplusSUCCESS;
   if (left_of(currentnode)) {
     status = MdsTraverseTree(user_rtn, user_data, left_of(currentnode));
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   right_subtree = right_of(currentnode);
-  status = (*user_rtn) (currentnode, user_data);
-  if (!(status & 1))
-    return status;
+  status = user_rtn(currentnode, user_data);
+  if STATUS_NOT_OK return status;
   if (right_subtree) {
     status = MdsTraverseTree(user_rtn, user_data, right_subtree);
-    if (!(status & 1))
-      return status;
+    if STATUS_NOT_OK return status;
   }
   return MDSplusSUCCESS;
 }
-
-EXPORT int StrCaseBlindCompare(struct descriptor *one, struct descriptor *two)
+EXPORT int LibTraverseTree(LibTreeNode **treehead, int (*user_rtn)(), void *user_data)
 {
-  int ans=0;
-  if (one->length != two->length) {
-    char *one_c = MdsDescrToCstring(one);
-    char *two_c = MdsDescrToCstring(two);
-    ans = strcasecmp(one_c, two_c);
-    free(one_c);
-    free(two_c);
-  } else {
-    ans = strncasecmp(one->pointer, two->pointer, (size_t)one->length);
-  }
-  return ans;
+  return MdsTraverseTree(user_rtn, user_data, *treehead);
 }
 
-EXPORT unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor *pattern)
-{
-  struct descr {
-    int length;
-    char *ptr;
-  };
-  struct descr cand;
-  struct descr scand;
-  struct descr pat;
-  struct descr spat;
-  char pc;
-  cand.length = candidate->length;
-  cand.ptr = candidate->pointer;
-  scand = cand;
-  pat.length = pattern->length;
-  pat.ptr = pattern->pointer;
-  spat = pat;
-  scand.length = 0;
 
-  while (1) {
+static int match_wild(const char *const cand_ptr, const int cand_len, const char *const pat_ptr, const int pat_len){
+  struct descr {
+    const char *ptr;
+    int length;
+  };
+  struct descr cand  = {cand_ptr,cand_len};
+  struct descr scand = {cand_ptr,0     };
+  struct descr pat   = {pat_ptr,pat_len};
+  struct descr spat  = pat;
+  char pc;
+  for (;;) {
     if (--pat.length < 0) {
       if (cand.length == 0)
-	return StrMATCH;
+	return TRUE;
       else {
 	if (--scand.length < 0)
-	  return StrNOMATCH;
+	  return FALSE;
 	else {
 	  scand.ptr++;
 	  cand = scand;
@@ -1382,16 +1325,16 @@ EXPORT unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor
     } else {
       if ((pc = *pat.ptr++) == '*') {
 	if (pat.length == 0)
-	  return StrMATCH;
+	  return TRUE;
 	scand = cand;
 	spat = pat;
       } else {
 	if (--cand.length < 0)
-	  return StrNOMATCH;
+	  return FALSE;
 	if (*cand.ptr++ != pc) {
 	  if (pc != '%') {
 	    if (--scand.length < 0)
-	      return StrNOMATCH;
+	      return FALSE;
 	    else {
 	      scand.ptr++;
 	      cand = scand;
@@ -1402,307 +1345,414 @@ EXPORT unsigned int StrMatchWild(struct descriptor *candidate, struct descriptor
       }
     }
   }
+  return FALSE;
+}
+
+EXPORT int StrMatchWild(const mdsdsc_t *const candidate, const mdsdsc_t *const pattern){
+  if (match_wild(candidate->pointer,candidate->length,pattern->pointer,pattern->length))
+    return StrMATCH;
   return StrNOMATCH;
 }
 
-#ifdef MAX
-#undef MAX
-#endif
-#define MAX(a,b) (a) > (b) ? (a) : (b)
-#ifdef MIN
-#undef MIN
-#endif
-#define MIN(a,b) (a) < (b) ? (a) : (b)
-
-EXPORT int StrElement(struct descriptor *dest, int *num, struct descriptor *delim, struct descriptor *src)
+EXPORT int StrElement(mdsdsc_t *const out, const int *const num, const mdsdsc_t *const delim, const mdsdsc_t *const in)
 {
-  char *src_ptr = src->pointer;
-  char *se_ptr = src_ptr + src->length;
+  char *in_ptr = in->pointer;
+  char *se_ptr = in_ptr + in->length;
   char *e_ptr;
-  unsigned short len;
+  uint16_t len;
   int cnt;
   int status;
   if (delim->length != 1)
     return StrINVDELIM;
-  for (cnt = 0; (cnt < *num) && (src_ptr < se_ptr); src_ptr++)
-    if (*src_ptr == *delim->pointer)
+  for (cnt = 0; (cnt < *num) && (in_ptr < se_ptr); in_ptr++)
+    if (*in_ptr == *delim->pointer)
       cnt++;
   if (cnt < *num)
     return StrNOELEM;
-  for (e_ptr = src_ptr; src_ptr < se_ptr; src_ptr++)
-    if (*src_ptr == *delim->pointer)
+  for (e_ptr = in_ptr; in_ptr < se_ptr; in_ptr++)
+    if (*in_ptr == *delim->pointer)
       break;
-  len = (unsigned short)(src_ptr - e_ptr);
-  status = StrCopyR(dest, &len, e_ptr);
+  len = (uint16_t)(in_ptr - e_ptr);
+  status = StrCopyR(out, &len, e_ptr);
   return status;
 }
 
-EXPORT int StrTranslate(struct descriptor *dest, struct descriptor *src, struct descriptor *tran,
-		 struct descriptor *match)
-{
+EXPORT int StrTranslate(mdsdsc_t *const out, const mdsdsc_t *const in, const mdsdsc_t *const tran, mdsdsc_t *const match){
   int status = 0;
-  if (src->class == CLASS_S || src->class == CLASS_D) {
-    char *dst = (char *)malloc(src->length);
+  if (in->class == CLASS_S || in->class == CLASS_D) {
+    char *dst = (char *)malloc(in->length);
     int i;
-    for (i = 0; i < src->length; i++) {
+    for (i = 0; i < in->length; i++) {
       int j;
       int next = 1;
       for (j = 0; next && j < match->length; j += next)
-	next = (match->pointer[j] != src->pointer[i]) ? 1 : 0;
-      dst[i] = (char)(next ? src->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
+	next = (match->pointer[j] != in->pointer[i]) ? 1 : 0;
+      dst[i] = (char)(next ? in->pointer[i] : ((j < tran->length) ? tran->pointer[j] : ' '));
     }
-    status = StrCopyR(dest, &src->length, dst);
+    status = StrCopyR(out, &in->length, dst);
     free(dst);
-  } else if ((src->class == CLASS_A) && (dest->class == CLASS_A) && (src->length > 0)
-	     && (dest->length > 0)
-	     && (((struct descriptor_a *)src)->arsize / src->length ==
-		 ((struct descriptor_a *)dest)->arsize / dest->length)) {
-    struct descriptor outdsc = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor indsc = { 0, DTYPE_T, CLASS_S, 0 };
-    unsigned int num = ((struct descriptor_a *)src)->arsize / src->length;
-    unsigned int i;
-    outdsc.length = dest->length;
-    outdsc.pointer = dest->pointer;
-    indsc.length = src->length;
-    indsc.pointer = src->pointer;
+  } else if ((in->class == CLASS_A) && (out->class == CLASS_A) && (in->length > 0)
+	     && (out->length > 0)
+	     && (((mdsdsc_a_t *)in)->arsize / in->length ==
+		 ((mdsdsc_a_t *)out)->arsize / out->length)) {
+    mdsdsc_t outdsc = { 0, DTYPE_T, CLASS_S, 0 };
+    mdsdsc_t indsc = { 0, DTYPE_T, CLASS_S, 0 };
+    uint32_t num = ((mdsdsc_a_t *)in)->arsize / in->length;
+    uint32_t i;
+    outdsc.length = out->length;
+    outdsc.pointer = out->pointer;
+    indsc.length = in->length;
+    indsc.pointer = in->pointer;
     for (i = 0; i < num; i++, outdsc.pointer += outdsc.length, indsc.pointer += indsc.length)
       status = StrTranslate(&outdsc, &indsc, tran, match);
   }
   return status;
 }
 
-EXPORT int StrReplace(struct descriptor *dest, struct descriptor *src, int *start_idx, int *end_idx,
-	       struct descriptor *rep)
+EXPORT int StrReplace(mdsdsc_t *const out, const mdsdsc_t *const in, const int *const start_idx, const int *const end_idx, const mdsdsc_t *const rep)
 {
   int status;
   int start;
   int end;
-  unsigned short int dstlen;
+  uint16_t dstlen;
   char *dst;
   char *sptr;
   char *dptr;
-  start = MAX(1, MIN(*start_idx, src->length));
-  end = MAX(1, MIN(*end_idx, src->length));
-  dstlen = (unsigned short)(start - 1 + rep->length + src->length - end + 1);
+#define minmax(l,x,u) (  ((x)<(l)) ? (l) : ( ((x)>(u)) ? (u) : (x) )  )
+  start = minmax(1, *start_idx, in->length);
+  end   = minmax(1, *end_idx,   in->length);
+  dstlen = (uint16_t)(start - 1 + rep->length + in->length - end + 1);
   dst = (char *)malloc(dstlen);
-  for (sptr = src->pointer, dptr = dst; (dptr - dst) < (start - 1); *dptr++ = *sptr++) ;
+  for (sptr = in->pointer, dptr = dst; (dptr - dst) < (start - 1); *dptr++ = *sptr++) ;
   for (sptr = rep->pointer; (sptr - rep->pointer) < rep->length; *dptr++ = *sptr++) ;
-  for (sptr = src->pointer + end; (sptr - src->pointer) < src->length; *dptr++ = *sptr++) ;
-  status = StrCopyR(dest, &dstlen, dst);
+  for (sptr = in->pointer + end; (sptr - in->pointer) < in->length; *dptr++ = *sptr++) ;
+  status = StrCopyR(out, &dstlen, dst);
   free(dst);
   return status;
 }
 
-STATIC_ROUTINE int FindFile(struct descriptor *filespec, struct descriptor *result, FindFileCtx **ctx,
-			    int recursively, int caseBlind);
-STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx ** ctx, int caseBlind);
-STATIC_ROUTINE int FindFileEnd(FindFileCtx * ctx);
-STATIC_ROUTINE char *_FindNextFile(FindFileCtx * ctx, int recursively, int caseBlind);
+////////////////////////////////////////////////////////////////////////////////
+/////FIND FILE//////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
-EXPORT int LibFindFile(struct descriptor *filespec, struct descriptor *result, FindFileCtx **ctx)
-{
-  return FindFile(filespec, result, ctx, 0, 0);
+#ifdef _WIN32
+#define DIR_HND   HANDLE
+#define FILE_INFO WIN32_FIND_DATAA
+#else
+#define DIR_HND DIR
+#define FILE_INFO struct dirent *
+#endif
+
+typedef struct {
+  DIR_HND *h;
+  size_t wlen;
+} findstack_t;
+typedef struct {
+  findstack_t *stack;
+  int cur_stack;
+  int max_stack;
+  const char *cptr;
+  const char *ptr;
+  const char *folders;
+  const char *filename;
+  const size_t flen;
+  char *buffer;
+#ifndef _WIN32
+  size_t buflen;
+#endif
+  int recursive;
+  int case_blind;
+  FILE_INFO fd; // hold the file information
+} ctx_t;
+
+#ifdef _WIN32
+
+#define SEP    '\\'
+#define FILENAME(ctx) ctx->fd.cFileName
+#define ISDIRECTORY(ctx) (ctx->fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
+#define REALLOCBUF(ctx,extra)
+static inline void FINDFILECLOSE_OS(const ctx_t *const ctx){
+  FindClose(ctx->stack[ctx->cur_stack].h);
+}
+static inline int FINDFILENEXT_OS(ctx_t *const ctx){
+  return FindNextFile(ctx->stack[ctx->cur_stack].h, &ctx->fd);
+}
+static inline int FINDFILEFIRST_OS(ctx_t *const ctx){
+  ctx->stack[ctx->cur_stack].h = FindFirstFile(ctx->buffer, &ctx->fd);
+  return ctx->stack[ctx->cur_stack].h != INVALID_HANDLE_VALUE;
 }
 
-EXPORT int LibFindFileRecurseCaseBlind(struct descriptor *filespec, struct descriptor *result,
-				       FindFileCtx **ctx)
-{
-  return FindFile(filespec, result, ctx, 1, 1);
-}
+#else
 
-STATIC_ROUTINE int FindFile(struct descriptor *filespec, struct descriptor *result, FindFileCtx **ctx,
-			    int recursively, int caseBlind)
-{
-  int status;
-  char *ans;
-  if (*ctx == 0) {
-    status = FindFileStart(filespec, (FindFileCtx **) ctx, caseBlind);
-    if STATUS_NOT_OK  return status;
+#define SEP    '/'
+#define INVALID_HANDLE_VALUE NULL
+#define MAX_PATH 1 // at least fit empty string
+#define FILENAME(ctx) ctx->fd->d_name
+static inline void REALLOCBUF(ctx_t *const ctx, const size_t extra) {
+  const size_t required = ctx->stack[ctx->cur_stack].wlen + extra;
+  if (ctx->buflen>=required) return;
+  char *newbuf = realloc(ctx->buffer, required);
+  if (newbuf) {
+    ctx->buffer = newbuf;
+    ctx->buflen = required;
   }
-  ans = _FindNextFile((FindFileCtx *) * ctx, recursively, caseBlind);
+}
+#include <sys/stat.h>
+static inline int ISDIRECTORY(const ctx_t *const ctx){
+   struct stat statbuf;
+   if (stat(ctx->buffer, &statbuf) != 0)
+       return FALSE;
+   return S_ISDIR(statbuf.st_mode);
+}
+static inline void FINDFILECLOSE_OS(const ctx_t *const ctx){
+  closedir(ctx->stack[ctx->cur_stack].h);
+}
+static inline int FINDFILENEXT_OS(ctx_t *const ctx){
+    return (ctx->fd = readdir(ctx->stack[ctx->cur_stack].h)) != NULL;
+}
+static inline int FINDFILEFIRST_OS(ctx_t *const ctx){
+    ctx->stack[ctx->cur_stack].h = opendir(ctx->buffer);
+    if (!ctx->stack[ctx->cur_stack].h) {
+      ctx->cur_stack--;
+      return FALSE;
+    }
+    if (!FINDFILENEXT_OS(ctx)) {
+      FINDFILECLOSE_OS(ctx);
+      ctx->cur_stack--;
+      return FALSE;
+    }
+    return TRUE;
+}
+
+#endif
+
+static int findfileloopstart(ctx_t *const ctx) {
+  ctx->buffer[ctx->stack[ctx->cur_stack].wlen++] = SEP;
+#ifdef _WIN32
+  // after this wlen will mark the last SEP so we can simply attach the filename
+  if (ctx->recursive) { // append "\\*\0"
+    ctx->buffer[ctx->stack[ctx->cur_stack].wlen] = '*';
+    ctx->buffer[ctx->stack[ctx->cur_stack].wlen + 1] = '\0';
+  } else { // append "/<pattern>\0"
+    // Windows will find he file much faster
+    char* p;
+    memcpy(p = ctx->buffer + ctx->stack[ctx->cur_stack].wlen, ctx->filename, ctx->flen + 1);
+    // replace single char wildcard '%' with '?'
+    for (; *p; p++) if (*p == '%') *p = '?';
+  }
+#else
+  ctx->buffer[ctx->stack[ctx->cur_stack].wlen] = '\0';
+#endif
+  return FINDFILEFIRST_OS(ctx);
+}
+
+static size_t findfileloop(ctx_t *const ctx) {
+  if (ctx->stack[ctx->cur_stack].h == INVALID_HANDLE_VALUE) {
+    if (!findfileloopstart(ctx))
+      return 0;
+  } else if (!FINDFILENEXT_OS(ctx))
+    goto close;
+  do {
+    if (strcmp(FILENAME(ctx), ".") == 0 || strcmp(FILENAME(ctx), "..") == 0)
+      continue;
+    size_t flen = strlen(FILENAME(ctx));
+    REALLOCBUF(ctx, flen + 2); // +2 for "/\0" - would be +3 for win but MAX_PATH
+    memcpy(ctx->buffer + ctx->stack[ctx->cur_stack].wlen, FILENAME(ctx), flen + 1);
+    if (ctx->case_blind) {
+      char* p;
+      for (p = FILENAME(ctx); *p; p++) *p = toupper(*p);
+    }
+    if (match_wild(FILENAME(ctx),flen, ctx->filename,ctx->flen))
+      return ctx->stack[ctx->cur_stack].wlen + flen;
+    if (ctx->recursive && ISDIRECTORY(ctx)) {
+      //DBG("path = %s\n", ctx->buffer);
+      if (++ctx->cur_stack == ctx->max_stack) {
+	DBG("max_stack increased = %d\n", ctx->max_stack);
+	findstack_t* old = ctx->stack;
+	ctx->max_stack *= 2;
+	ctx->stack = malloc(sizeof(findstack_t)*ctx->max_stack);
+	memcpy(ctx->stack, old, sizeof(findstack_t)*ctx->cur_stack);
+	free(old);
+      }
+      ctx->stack[ctx->cur_stack].h = INVALID_HANDLE_VALUE; // reset handle
+      ctx->stack[ctx->cur_stack].wlen = ctx->stack[ctx->cur_stack-1].wlen + flen;
+      const size_t len = findfileloop(ctx);
+      if (len > 0) return len;
+    }
+  } while (FINDFILENEXT_OS(ctx));
+close:
+  FINDFILECLOSE_OS(ctx);
+  ctx->cur_stack--;
+  return 0;
+}
+
+static inline void* _findfilestart(const char *const envname, const char *const filename, const int recursive, const int case_blind) {
+  DBG("looking for '%s' in '%s'\n", filename, envname);
+  ctx_t*ctx = (ctx_t*)malloc(sizeof(ctx_t));
+  ctx->max_stack = recursive ? 8 : 1;
+  ctx->stack = malloc(ctx->max_stack * sizeof(findstack_t));
+  ctx->cur_stack = -1;
+  char *folders;
+  if (envname && (folders = getenv(envname))) {
+    ctx->folders = strdup(folders);
+    *(size_t*)&ctx->flen = strlen(filename);
+    ctx->filename = memcpy(malloc(ctx->flen+1),filename,ctx->flen+1);
+  } else {
+    const size_t tlen = strlen(filename);
+    char* tmp = memcpy(malloc(tlen+1),filename,tlen+1);
+#ifdef _WIN32
+    char* sep;    // replace '/' with '\\'
+    for (sep = tmp+tlen; sep-- > tmp; ) if (*sep == '/') *sep = '\\';
+#endif
+    char *p, *c;
+    for (c=tmp,p=NULL;(c=strchr(c,SEP));p=c,c=p+1);
+    if (p) { // look in specified path
+      *(char*)p = '\0';
+      const size_t flen = p - tmp + 1;
+      *(size_t*)&ctx->flen = tlen - flen;
+      ctx->filename = strdup(p+1);
+      ctx->folders = realloc(tmp,flen);
+    } else { // look in current folder only
+      *(size_t*)&ctx->flen = tlen;
+      ctx->filename = tmp;
+      ctx->folders = calloc(1,1);
+    }
+  }
+  ctx->buffer = malloc(MAX_PATH);
+#ifndef _WIN32
+  ctx->buflen = MAX_PATH;
+#endif
+  ctx->recursive = recursive;
+  ctx->case_blind = case_blind;
+  ctx->cptr = ctx->ptr = ctx->folders;
+  if (ctx->case_blind) {
+    char* p;
+    for (p = (char*)ctx->filename; *p; p++) *p = toupper(*p);
+  }
+  return ctx;
+}
+
+static inline void* findfilestart(const char *const filename, const int recursive, const int case_blind) {
+  char* env;
+  const char* colon = strchr(filename, ':');
+  if (colon) {
+    size_t envlen = (colon++ - filename);
+    env = memcpy(malloc(envlen+1), filename, envlen); env[envlen] = '\0';
+  } else {
+    env = NULL;
+    colon = filename;
+  }
+  void* ctx;
+  if (strlen(colon) == 0)
+    ctx = NULL;
+  else
+      ctx = _findfilestart(env, colon, recursive, case_blind);
+  free(env);
+  return ctx;
+}
+
+static inline char* findfilenext(ctx_t *const ctx) {
+  if (ctx->cur_stack >= 0) do {
+      if (findfileloop(ctx)>0)
+	return ctx->buffer;
+    } while (ctx->cur_stack >= 0);
+  if (ctx->cur_stack != -1) fprintf(stderr,"ctx_stack = %d != -1\n", ctx->cur_stack);
+  while(ctx->cptr) {
+    const size_t wlen = ((ctx->cptr = strchr(ctx->ptr, ';')) == NULL) ? (int)strlen(ctx->ptr) : (int)(ctx->cptr - ctx->ptr);
+    if (wlen == 0) {
+      ctx->ptr = ctx->cptr + 1; // set ptr to start of next path
+      continue; // if path empty, skip
+    }
+    // start search in first folder
+    ctx->stack[ctx->cur_stack = 0].h = INVALID_HANDLE_VALUE;
+    ctx->stack[ctx->cur_stack].wlen = wlen;
+    REALLOCBUF(ctx,3); // +3 for "./\0" - would be 4 for win but MAX_PATH
+    memcpy(ctx->buffer, ctx->ptr, wlen);
+    ctx->ptr = ctx->cptr + 1; // set ptr to start of next path
+#ifdef _WIN32
+    char* sep;    // replace '/' with '\\'
+    for (sep = ctx->buffer+wlen; sep-- > ctx->buffer; ) if (*sep == '/') *sep = '\\';
+#endif
+    // allow current path , i.e. wlen = 0
+    if (ctx->stack[ctx->cur_stack].wlen==0)
+	ctx->buffer[ctx->stack[ctx->cur_stack].wlen++] = '.';
+    else {
+      // ensure buffer is not terminated by SEP
+      while (ctx->stack[ctx->cur_stack].wlen>0 && ctx->buffer[ctx->stack[ctx->cur_stack].wlen-1] == SEP)
+	ctx->stack[ctx->cur_stack].wlen--;
+    }
+    // ctx->buffer can enter findfileloop w/o \0 termination
+    if (findfileloop(ctx)>0)
+      return ctx->buffer;
+  }
+  ctx->buffer[0] = '\0';
+  return NULL;
+}
+
+static inline void findfileend(void *const ctx_i) {
+  if (!ctx_i) return;
+  ctx_t* ctx = (ctx_t*)ctx_i;
+  while (ctx->cur_stack >= 0) {
+    FINDFILECLOSE_OS(ctx);
+    ctx->cur_stack--;
+  }
+  free((void*)ctx->filename);
+  free((void*)ctx->folders);
+  free(ctx->stack);
+  free(ctx->buffer);
+  free(ctx);
+}
+
+EXPORT extern int LibFindFileEnd(void **const ctx){
+  findfileend(*ctx);
+  *ctx = NULL;
+  return MDSplusSUCCESS;
+}
+
+static int find_file(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx,
+	const int recursively, int const case_blind){
+#ifdef DEBUG
+  clock_t start = clock();
+#endif
+  int status;
+  if (*ctx == 0) {
+    char* fspec = malloc(filespec->length+1);
+    memcpy(fspec,filespec->pointer,filespec->length);fspec[filespec->length] = '\0';
+    *ctx = (void*)findfilestart(fspec,recursively,case_blind);
+#ifdef DEBUG
+  fprintf(stderr, "locking for %s: ", fspec);
+#endif
+    free(fspec);
+    if (!*ctx) return MDSplusERROR;
+  }
+  char* ans = findfilenext(*(ctx_t**)ctx);
   if (ans) {
-    struct descriptor ansd = { 0, DTYPE_T, CLASS_S, 0 };
-    ansd.length = (unsigned short)strlen(ans);
-    ansd.pointer = ans;
+    mdsdsc_t ansd = { strlen(ans), DTYPE_T, CLASS_S, ans };
     StrCopyDx(result, &ansd);
-    free(ans);
     status = MDSplusSUCCESS;
   } else {
     status = MDSplusERROR;
     LibFindFileEnd(ctx);
   }
+#ifdef DEBUG
+  fprintf(stderr, "took %fs: %s\n", ((double)(clock()-start))/CLOCKS_PER_SEC,ans);
+#endif
   return status;
 }
 
-EXPORT extern int LibFindFileEnd(FindFileCtx **ctx)
-{
-  int status = FindFileEnd((FindFileCtx *) * ctx);
-  if STATUS_OK
-    *ctx = NULL;
-  return status;
+EXPORT int LibFindFile(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
+  return find_file(filespec, result, ctx, 0, 0);
 }
 
-STATIC_ROUTINE int FindFileEnd(FindFileCtx * ctx)
-{
-  int i;
-  if (ctx != NULL) {
-    if (ctx->dir_ptr) {
-      closedir(ctx->dir_ptr);
-      ctx->dir_ptr = 0;
-    }
-    if (ctx->env != 0)
-      free(ctx->env);
-    if (ctx->file != 0)
-      free(ctx->file);
-    for (i = 0; i < ctx->num_env; i++)
-      if (ctx->env_strs[i] != 0)
-	free(ctx->env_strs[i]);
-    if (ctx->env_strs != 0)
-      free(ctx->env_strs);
-    free(ctx);
-  }
-  return MDSplusSUCCESS;
+EXPORT int LibFindFileRecurseCaseBlind(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
+  return find_file(filespec, result, ctx, 1, 1);
 }
 
-#define CSTRING_FROM_DESCRIPTOR(cstring, descr)\
-  cstring=strncpy(malloc((size_t)(descr->length+1)),descr->pointer,descr->length);\
-  cstring[descr->length] = '\0';
-
-STATIC_ROUTINE int FindFileStart(struct descriptor *filespec, FindFileCtx ** ctx, int caseBlind)
-{
-  FindFileCtx *lctx;
-  char *fspec;
-  char *colon;
-  *ctx = (FindFileCtx *) malloc(sizeof(FindFileCtx));
-  memset(*ctx, 0, sizeof(FindFileCtx));
-  lctx = *ctx;
-
-  CSTRING_FROM_DESCRIPTOR(fspec, filespec)
-
-      lctx->next_index = lctx->next_dir_index = 0;
-  colon = strchr(fspec, ':');
-  if (colon == 0) {
-    lctx->env = 0;
-    colon = fspec - 1;
-  } else {
-    lctx->env = strncpy(malloc((size_t)(colon - fspec + 1)), fspec, (size_t)(colon - fspec));
-    lctx->env[colon - fspec] = '\0';
-  }
-  if (strlen(colon + 1) == 0) {
-    if (lctx->env)
-      free(lctx->env);
-    free(fspec);
-    return 0;
-  } else {
-    lctx->file = malloc(strlen(colon + 1) + 1);
-    strcpy(lctx->file, colon + 1);
-    lctx->wild_descr.length = (unsigned short)strlen(colon + 1);
-    lctx->wild_descr.pointer = lctx->file;
-    lctx->wild_descr.dtype = DTYPE_T;
-    lctx->wild_descr.class = CLASS_S;
-    if (caseBlind)
-      StrUpcase(&lctx->wild_descr, &lctx->wild_descr);
-    free(fspec);
-  }
-  if (lctx->env != 0) {
-    int num = 0;
-    char *env;
-    char *semi;
-    char *env_sav;
-    env = env_sav = TranslateLogical(lctx->env);
-    if (env != 0) {
-      if (env[strlen(env) - 1] != ';') {
-	char *tmp = malloc(strlen(env) + 2);
-	strcpy(tmp, env);
-	strcat(tmp, ";");
-	env = tmp;
-      } else {
-	char *tmp = malloc(strlen(env) + 1);
-	strcpy(tmp, env);
-	env = tmp;
-      }
-      free(env_sav);
-      for (semi = strchr(env, ';'); semi != 0; num++, semi = strchr(semi + 1, ';')) ;
-      if (num > 0) {
-	char *ptr;
-	int i;
-	lctx->num_env = num;
-	lctx->env_strs = (char **)malloc((size_t)num * sizeof(char *));
-	for (ptr = env, i = 0; i < num; i++) {
-	  char *cptr;
-	  int len = ((cptr = strchr(ptr, ';')) == (char *)0) ? (int)strlen(ptr) : (int)(cptr - ptr);
-	  lctx->env_strs[i] = strncpy(malloc((size_t)len + 1), ptr, (size_t)len);
-	  lctx->env_strs[i][len] = '\0';
-	  ptr = cptr + 1;
-	}
-      }
-      free(env);
-    }
-  }
-  lctx->dir_ptr = 0;
-  return 1;
+EXPORT int LibFindFileCaseBlind(const mdsdsc_t *const filespec, mdsdsc_t *const result, void **const ctx){
+  return find_file(filespec, result, ctx, 0, 1);
 }
 
-STATIC_ROUTINE char *_FindNextFile(FindFileCtx * ctx, int recursively, int caseBlind)
-{
-  char *ans;
-  struct dirent *dp;
-
-  int found = 0;
-  while (!found) {
-    while (ctx->dir_ptr == 0) {
-      if (ctx->next_index < ctx->num_env) {
-	ctx->dir_ptr = opendir(ctx->env_strs[ctx->next_index++]);
-	ctx->next_dir_index = ctx->next_index;
-      } else
-	return 0;
-    }
-    dp = readdir(ctx->dir_ptr);
-    if (dp != NULL) {
-      struct descriptor_d upname = { 0, DTYPE_T, CLASS_D, 0 };
-      DESCRIPTOR_FROM_CSTRING(filename, dp->d_name)
-	  if (caseBlind) {
-	    StrUpcase((struct descriptor *)&upname, &filename);
-      } else {
-	    StrCopyDx((struct descriptor *)&upname, &filename);
-      }
-      found = StrMatchWild((struct descriptor *)&upname, &ctx->wild_descr) & 1;
-      StrFree1Dx(&upname);
-      if (recursively) {
-	if ((strcmp(dp->d_name, ".") != 0) && (strcmp(dp->d_name, "..") != 0)) {
-	  char *tmp_dirname;
-	  DIR *tmp_dir;
-	  tmp_dirname = malloc(strlen(ctx->env_strs[ctx->next_index - 1]) + 2 + strlen(dp->d_name));
-	  strcpy(tmp_dirname, ctx->env_strs[ctx->next_index - 1]);
-	  strcat(tmp_dirname, "/");
-	  strcat(tmp_dirname, dp->d_name);
-	  tmp_dir = opendir(tmp_dirname);
-	  if (tmp_dir != NULL) {
-	    int i;
-	    closedir(tmp_dir);
-	    ctx->env_strs = realloc(ctx->env_strs, sizeof(char *) * (size_t)(ctx->num_env + 1));
-	    for (i = ctx->num_env - 1; i >= ctx->next_dir_index; i--)
-	      ctx->env_strs[i + 1] = ctx->env_strs[i];
-	    ctx->env_strs[ctx->next_dir_index] = tmp_dirname;
-	    ctx->num_env++;
-	    ctx->next_dir_index++;
-	  } else
-	    free(tmp_dirname);
-	}
-      }
-    } else {
-      closedir(ctx->dir_ptr);
-      ctx->dir_ptr = NULL;
-    }
-  }
-  ans = malloc(strlen(ctx->env_strs[ctx->next_index - 1]) + 1 + strlen(dp->d_name) + 1);
-  strcpy(ans, ctx->env_strs[ctx->next_index - 1]);
-  strcat(ans, "/");
-  strcat(ans, dp->d_name);
-  return ans;
-}
-
-EXPORT void TranslateLogicalFree(char *value)
+EXPORT void TranslateLogicalFree(char *const value)
 {
   free(value);
 }
@@ -1716,10 +1766,12 @@ EXPORT void TranslateLogicalFree(char *value)
 #define LOBYTE(x) ((x) & 0xFF)
 #define HIBYTE(x) (((x) >> 8) & 0xFF)
 
-STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
+/*
+// Cyclic redundancy check but seems unused
+static uint16_t icrc1(const uint16_t crc)
 {
   int i;
-  unsigned int ans = crc;
+  uint32_t ans = crc;
   for (i = 0; i < 8; i++) {
     if (ans & 0x8000) {
       ans <<= 1;
@@ -1727,13 +1779,12 @@ STATIC_ROUTINE unsigned short icrc1(unsigned short crc)
     } else
       ans <<= 1;
   }
-  return (unsigned short)ans;
+  return (uint16_t)ans;
 }
-
-unsigned short Crc(unsigned int len, unsigned char *bufptr)
+uint16_t Crc(const uint32_t len, uint8_t *const bufptr)
 {
   STATIC_THREADSAFE pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
-  STATIC_THREADSAFE unsigned short icrctb[256], init = 0;
+  STATIC_THREADSAFE uint16_t icrctb[256], init = 0;
   pthread_mutex_lock(&mutex);
   //  STATIC_THREADSAFE unsigned char rchr[256];
   //STATIC_CONSTANT unsigned it[16] = { 0, 8, 4, 12, 2, 10, 6, 14, 1, 9, 5, 13, 3, 11, 7, 15 };
@@ -1741,36 +1792,46 @@ unsigned short Crc(unsigned int len, unsigned char *bufptr)
     init = 1;
     int i;
     for (i = 0; i < 256; i++) {
-      icrctb[i] = icrc1((unsigned short)(i << 8));
+      icrctb[i] = icrc1((uint16_t)(i << 8));
       //  rchr[i] = (unsigned char)(it[i & 0xF] << 4 | it[i >> 4]);
     }
   }
   int cword = 0;
-  unsigned int j;
+  uint32_t j;
   for (j = 0; j < len; j++)
     cword = icrctb[bufptr[j] ^ HIBYTE(cword)] ^ LOBYTE(cword) << 8;
   pthread_mutex_unlock(&mutex);
-  return (unsigned short)cword;
+  return (uint16_t)cword;
 }
+*/
 
-EXPORT int MdsPutEnv(char const *cmd)
-{
+EXPORT int MdsPutEnv(const char *const cmd) {
+/* cmd		action
+ * name		unset name
+ * name=	set name to ""
+ * name=value   set name to value
+ */
   INIT_STATUS_ERROR;
   if (cmd != NULL) {
     if (!strstr(cmd, "MDSPLUS_SPAWN_WRAPPER") && !strstr(cmd, "MDSPLUS_LIBCALL_WRAPPER")){
-      char *tmp = strdup(cmd);
-      char *saveptr = NULL;
-      char *name = strtok_r(tmp,"=",&saveptr);
-      char *value = strtok_r(NULL,"=",&saveptr);
-      if (name != NULL && value != NULL)
-        status = setenv(name,value,1) ? MDSplusERROR : MDSplusSUCCESS;
-      free(tmp);
+      char *value, *name = strdup(cmd);
+      for (value=name ; *value && *value!='=' ; value++); // find =
+      if (*value) {
+	*(value++) = '\0';
+	DBG("setenv %s=%s\n",name,value);
+	status = setenv(name,value,1);
+      } else {
+	DBG("unsetenv %s\n",name);
+	status = unsetenv(name);
+      }
+      status = status ? MDSplusERROR : MDSplusSUCCESS;
+      free(name);
     }
   }
   return status;
 }
 
-EXPORT int libffs(int *position, int *size, char *base, int *find_position)
+EXPORT int libffs(const int *const position, const int *const size, const char *const base, int *const find_position)
 {
   INIT_STATUS_ERROR;
   int i;
@@ -1791,10 +1852,10 @@ EXPORT const char *MdsRelease()
   return RELEASE;
 }
 
-EXPORT struct descriptor *MdsReleaseDsc()
+EXPORT mdsdsc_t *MdsReleaseDsc()
 {
-  static struct descriptor RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
-  RELEASE_D.length = (unsigned short)strlen(RELEASE);
+  static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
+  RELEASE_D.length = (uint16_t)strlen(RELEASE);
   RELEASE_D.pointer = (char *)RELEASE;
   return &RELEASE_D;
 }

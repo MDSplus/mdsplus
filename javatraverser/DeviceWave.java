@@ -6,10 +6,20 @@ import javax.swing.table.*;
 import java.util.*;
 import java.text.*;
 import jScope.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.FlavorListener;
+import java.awt.datatransfer.FlavorEvent;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.BufferedReader;
+import java.io.IOException;
+
 
 public class DeviceWave extends DeviceComponent
 {
-    static final int MAX_POINTS = 50;
+    static final int MAX_POINTS = 500;
     static final double MIN_STEP = 1E-5;
 
 
@@ -106,9 +116,27 @@ public class DeviceWave extends DeviceComponent
     protected static float savedMinX, savedMinY, savedMaxX, savedMaxY;
     protected static float savedWaveX[] = null, savedWaveY[] = null;
     JPopupMenu copyPastePopup;
-    JMenuItem copyI, pasteI;
+    JMenuItem copyI, copyC, pasteI, pasteC;
     public DeviceWave()
     {}
+
+	private boolean isClipboardText(Clipboard clip)
+	{
+		Transferable contents = clip.getContents(null);
+		DataFlavor[] flavors = contents.getTransferDataFlavors();
+	       
+		//System.out.println("isClipboardText: " + flavors);
+
+		boolean isText = false;
+		for( int k=0 ; k < flavors.length ; k++) {
+		    //System.out.println( flavors[k].getHumanPresentableName());
+		    if( !flavors[k].getHumanPresentableName().equals("Unicode String") )
+		        continue;
+		    isText = true;
+		    break;
+		}
+		return isText;
+	}
 
     private void create()
     {
@@ -351,8 +379,340 @@ public class DeviceWave extends DeviceComponent
             }
         });
         copyPastePopup.add(pasteI);
-        copyPastePopup.pack();
 
+        pasteC = new JMenuItem("Paste from Clipboard");
+        pasteC.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                int numPoint;
+                boolean yxColumn = false;
+                boolean setMinX=false,setMaxX=false,setMinY=false,setMaxY=false; 
+		try {
+   
+			Clipboard clip = java.awt.Toolkit.getDefaultToolkit().getSystemClipboard();
+			Transferable contents = clip.getContents(null);
+			DataFlavor[] flavors = contents.getTransferDataFlavors();
+                        String valType = "";
+			for( int k=0 ; k<flavors.length ; k++) {
+                            try {
+				    //System.out.println( flavors[k].getHumanPresentableName());
+                                    if(   !flavors[k].getHumanPresentableName().equals("Unicode String") )
+                                       continue;
+
+                                    BufferedReader in = new BufferedReader( flavors[k].getReaderForText(contents));
+                                    String s = in.readLine();
+                                    while( s!=null ) //&& s.trim().length() != 0 )	
+                                    {
+                                                      
+                                        if( s.trim().length() != 0 )
+                                        {
+                                            StringTokenizer st = new StringTokenizer(s);
+                                            valType = st.nextToken();
+
+	                                    if(valType.trim().equalsIgnoreCase("xmax"))
+	                                        {
+	                                            savedMaxX = Float.parseFloat(st.nextToken());
+	                                            setMaxX = true;
+	                                        }
+	                                    else if(valType.trim().equalsIgnoreCase("xmin"))
+	                                        {
+	                                            savedMinX = Float.parseFloat(st.nextToken());
+	                                            setMinX = true;
+	                                        } 
+	                                    else if(valType.trim().equalsIgnoreCase("ymax"))
+	                                        {
+	                                            savedMaxY = Float.parseFloat(st.nextToken());
+	                                            setMaxY = true;
+	                                        }                                             
+	                                    else if(valType.trim().equalsIgnoreCase("ymin"))
+	                                        {
+	                                            savedMinY = Float.parseFloat(st.nextToken());
+	                                            setMinY = true;
+	                                        } 
+	                                    else if(valType.trim().equalsIgnoreCase("x"))
+	                                    {
+	                                        int i = 0;
+	                                        numPoint = st.countTokens();
+	                                        savedWaveX = new float[numPoint];
+		                                while( st.hasMoreTokens() )
+		                                {
+		                                    savedWaveX[i] = Float.parseFloat(st.nextToken());
+		                                    i++;
+		                                }
+	                                    } 
+	                                    else if(valType.trim().equalsIgnoreCase("y"))
+	                                    {
+	                                        int i = 0;
+	                                        numPoint = st.countTokens();
+	                                        savedWaveY = new float[numPoint];
+			                        while( st.hasMoreTokens() )
+			                        {
+			                             savedWaveY[i] = Float.parseFloat(st.nextToken());
+			                             i++;
+			                        }
+	                                    } 
+                                            else if( valType.trim().equalsIgnoreCase("xc") && st.nextToken().equalsIgnoreCase("yc") ||
+                                                     (yxColumn = ( valType.trim().equalsIgnoreCase("yc") && st.nextToken().equalsIgnoreCase("xc") ))  )
+	                                    {
+	                                        int i = 0;
+                    				Vector<Float> vectX = new Vector<Float>();
+                    				Vector<Float> vectY = new Vector<Float>();
+                                                float fv1, fv2;
+
+	                                        //numPoint = st.countTokens();
+	                                        //savedWaveY = new float[numPoint];
+			                        while( (s = in.readLine()) != null )
+			                        {
+                                                     StringTokenizer st1 = new StringTokenizer(s);
+			                             fv1 = Float.parseFloat(st1.nextToken());
+			                             fv2 = Float.parseFloat(st1.nextToken());
+                                                     vectX.addElement( yxColumn ? new Float( fv2 ) : new Float( fv1 ) );
+                                                     vectY.addElement( yxColumn ? new Float( fv1 ) : new Float( fv2 ) );
+			                        }
+
+					        savedWaveX = new float[vectX.size()];    
+					        savedWaveY = new float[vectY.size()];    
+					        for(  Float val : vectX )
+					     	   savedWaveX[i++] =  val.floatValue();
+					        i=0;        
+					        for(  Float val : vectY )
+					     	   savedWaveY[i++] =  val.floatValue();       
+ 
+
+	                                    } else {
+						JOptionPane.showMessageDialog(DeviceWave.this,
+							"Clipboard contents syntax error\nSyntax : \nx nx1 nx2 nx3 ..... nxm\ny ny1 ny2 ny3 ..... nym",
+							"Invalid clipboard contents", JOptionPane.WARNING_MESSAGE);
+					        return;
+					    }
+                                            s = in.readLine();
+                                        }
+                                    }
+                                    break;
+                            } 
+                            catch(NumberFormatException ex) 
+                            {
+			        JOptionPane.showMessageDialog(DeviceWave.this,
+					"Clipboard contents syntax error on " +  valType + " value",
+					"Invalid clipboard contents", JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+                            catch( IOException ex) 
+                            {
+			        JOptionPane.showMessageDialog(DeviceWave.this,
+				        "Error on clipboard data reading",
+				        "Invalid clipboard contents" , JOptionPane.WARNING_MESSAGE);
+                                return;
+                            }
+			}
+		} catch( UnsupportedFlavorException ex) 
+		{
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Clipboard data type not supported",
+                        "Invalid clipboard contents" , JOptionPane.WARNING_MESSAGE);
+                    return;
+		}                
+                               
+                
+                /* Clip Waveform */
+                try {
+
+		    numPoint = savedWaveX.length;
+		    if(savedWaveX.length != savedWaveY.length )
+		    {
+		            JOptionPane.showMessageDialog(DeviceWave.this,
+		                "x and y array must be equal in length",
+		                "Invalid clipboard contents" , JOptionPane.WARNING_MESSAGE);
+		            return;
+		    }
+
+                    for( int i = 1; i < numPoint; i++ )
+                       if( savedWaveX[i] < savedWaveX[i-1])
+		       {
+		            JOptionPane.showMessageDialog(DeviceWave.this,
+		                "X must be monotonic increasing array",
+		                "Invalid clipboard contents" , JOptionPane.WARNING_MESSAGE);
+		            return;
+		       }  	
+		      
+	            if(minXVisible && setMinX) minX = savedMinX;
+		    if(minYVisible && setMinY) minY = savedMinY;
+		    if(maxXVisible && setMaxX) maxX = savedMaxX;
+		    if(maxYVisible && setMaxY) maxY = savedMaxY;
+
+                    Vector<Float> vectX = new Vector<Float>();
+                    Vector<Float> vectY = new Vector<Float>();
+
+                    String warningMessage = "";
+
+                    float valX;
+                    float valY;
+                    boolean minXfound = false;
+                    boolean maxXfound = false;
+
+/*
+
+x   -6 100 200 300 360 
+y   10 20 20 30 100    
+
+x   -5 100 200 300 350 
+y   10 20 20 30 100    
+
+x  -7 -5 100 200 300 350 370
+y   100 10 20 20 30 100  200  
+
+x  -7 -6 100 200 300 360 370
+y   100 10 20 20 30 100  200
+
+  
+x  -8 -7 -6 100 200 300 360 370 380
+y   200 100 10 20 20 30 100  200 300
+
+x  -8 -7 -5 100 200 300 350 370 380
+y   200 100 10 20 20 30 100  200 300
+
+
+*/
+
+                    for(int i = 0; i < numPoint; i++)
+                    {
+                        valX = savedWaveX[i];
+                        valY = savedWaveY[i];
+			
+			if( valX < minX )
+			    continue;
+
+			if( valX > maxX )
+			    break;
+			
+			if( valX >= minX || valX <= maxX )
+                        {
+		                if (valY < minY)
+		                {
+		                    valY = minY;
+		                }
+		                else if ( valY > maxY)
+		                {
+		                    valY = maxY;
+		                }
+                        } else
+			    valY = 0;
+
+                        if ( valX <= minX)
+			{
+                            if( minXfound )
+                              continue;
+                            valX = minX;
+                            //valY = 0; first values should be not 0
+                            minXfound = true;
+                        }
+                        else
+                        { 
+                            if ( valX >= maxX)
+                            {
+                               if( maxXfound )
+                                  break;
+                               valX = maxX;
+                               //valY = 0; first values should be not 0
+                               maxXfound = true;
+
+			    } 
+                            else 
+                            {
+                    	        if( !minXfound && (i == 0 || savedWaveX[i-1] < minX ) )
+                    	        {
+                		    vectX.addElement(new Float(minX));
+                		    vectY.addElement(new Float(0));
+                		    vectX.addElement(new Float(valX));
+                		    vectY.addElement(new Float(0));
+                    	        }
+                    	        if( !maxXfound && ( i == (numPoint-1) || savedWaveX[i+1] > maxX ) )
+                    	        {
+                		    vectX.addElement(new Float(valX));
+                		    vectY.addElement(new Float(valY));
+                		    vectX.addElement(new Float(valX));
+                		    vectY.addElement(new Float(0));
+                                    valX = maxX;
+                                    valY = 0;
+                    	        }
+                            }
+                        }
+
+
+                        vectX.addElement(new Float(valX));
+                        vectY.addElement(new Float(valY));
+                    }
+
+                    
+                     int i=0;
+                     waveX = new float[vectX.size()];    
+                     waveY = new float[vectY.size()];    
+		     for(  Float val : vectX )
+                     	waveX[i++] =  val.floatValue();
+		     i=0;        
+		     for(  Float val : vectY )
+                     	waveY[i++] =  val.floatValue();       
+ 										
+
+                     if( warningMessage.length() > 0 )		
+		        JOptionPane.showMessageDialog(DeviceWave.this,
+		                 warningMessage,
+		                "WARNING clipboard contents", JOptionPane.WARNING_MESSAGE);
+
+
+                } catch(Exception exc){
+                    JOptionPane.showMessageDialog(DeviceWave.this,
+                        "Invalid content in clipboard",
+                        "Parsing clipboard data error", JOptionPane.WARNING_MESSAGE);
+		}
+                displayData(null, true);
+            }
+        });        
+        copyPastePopup.add(pasteC);
+        pasteC.setEnabled( isClipboardText(Toolkit.getDefaultToolkit().getSystemClipboard()) );
+
+
+	Toolkit.getDefaultToolkit().getSystemClipboard().addFlavorListener(new FlavorListener() { 
+	   @Override 
+	   public void flavorsChanged(FlavorEvent e) {
+
+	        //System.out.println("ClipBoard UPDATED: " + e.getSource() + " " + e.toString());
+
+		Clipboard clip = (Clipboard) (e.getSource());
+                pasteC.setEnabled(isClipboardText(clip));
+	   } 
+	}); 
+
+        copyC = new JMenuItem("Copy to Clipboard");
+        copyC.addActionListener(new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+	    {
+		String myString = ""; 
+
+                if(minXVisible) myString =  myString + "xmin\t"+minX+"\n";
+                if(minYVisible) myString =  myString + "ymin\t"+minY+"\n";
+                if(maxXVisible) myString =  myString + "xmax\t"+maxX+"\n";
+                if(maxYVisible) myString =  myString + "ymax\t"+maxY+"\n";
+
+		myString = myString + "x";
+                for ( float val : waveX )
+			myString = myString + "\t"+val;
+		myString = myString + "\ny";
+                for ( float val : waveY )
+			myString = myString + "\t"+val;
+
+		//System.out.println(myString);
+
+		StringSelection stringSelection = new StringSelection(myString);
+		Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+		clipboard.setContents(stringSelection, null);
+            }
+        });
+        copyPastePopup.add(copyC);
+        
+        copyPastePopup.pack();
         copyPastePopup.setInvoker(this);
 
         addMouseListener(new MouseAdapter()
@@ -410,9 +770,13 @@ public class DeviceWave extends DeviceComponent
         //Prepare waveX and waveY
         Data xData, yData;
         try {
-            yData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0);
+            //yData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(" + subtree.dataToString(data) + ")"), 0);
+            //xData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(DIM_OF(" + subtree.dataToString(data) + "))"), 0);
+            currNid = new NidData(nidData.getInt());
+            currData = subtree.getData(currNid, 0);
+	    yData = ((SignalData)currData).getDatum();
+	    xData = ((SignalData)currData).getDimension(0);
             currY = yData.getFloatArray();
-            xData = subtree.evaluateData(subtree.dataFromExpr("FLOAT(DIM_OF(" + subtree.dataToString(data) + "))"), 0);
             currX = xData.getFloatArray();
         }catch(Exception exc)
         {
@@ -421,7 +785,7 @@ public class DeviceWave extends DeviceComponent
         }
 
         //Check that the stored signal lies into valid X range
-        if(currX[0] <= minX - (float)MIN_STEP || currX[currX.length - 1] >= maxX + (float)MIN_STEP)
+        if(currX[0] <= minX - (double)MIN_STEP || currX[currX.length - 1] >= maxX + (double)MIN_STEP)
         {
             currX = new float[]{minX, maxX};
             currY = new float[]{0, 0};
@@ -468,6 +832,8 @@ public class DeviceWave extends DeviceComponent
             waveXOld[i] = waveX[i];
             waveYOld[i] = waveY[i];
         }
+
+
         //updateLimits();
         displayData(data, is_on);
         initializing = false;
@@ -490,6 +856,7 @@ public class DeviceWave extends DeviceComponent
      protected Data getData()
     {
         Data []dims = new Data[1];
+//System.out.println("waveY length " + waveY.length);
         dims[0] = new FloatArray(waveX);
         Data values = new FloatArray(waveY);
         return new SignalData(values, values, dims);

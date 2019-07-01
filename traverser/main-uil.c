@@ -65,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BX_UID_FILE_NAME "traverser.uid"
 
 /*
- * External procedure declarations 
+ * External procedure declarations
  */
 extern void CloseTree(Widget, XtPointer, XtPointer);
 extern void CommandEntered(Widget, XtPointer, XtPointer);
@@ -388,7 +388,7 @@ int main(int argc, char **argv)
   XtAppMainLoop(context);
 
   /*
-   * A return value even though XtAppMainLoop never ends. 
+   * A return value even though XtAppMainLoop never ends.
    */
   return (0);
 }

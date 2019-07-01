@@ -232,8 +232,8 @@ EXPORT struct descriptor_xd *JavaResample(int *nidPtr, float *xmin, float *xmax,
   dataDsc.pointer = (char *)outData;
   dataDsc.arsize = 2 * outIdx * sizeof(float);
   MdsCopyDxXd((struct descriptor *)&retSigDsc, &xd);
-  free((char *)outTimes);
-  free((char *)outData);
+  free(outTimes);
+  free(outData);
   return &xd;
 }
 
@@ -313,7 +313,7 @@ static struct descriptor_xd *JavaResampleClassic(struct descriptor_xd *y_xdptr,
       out_array[out_idx] = y[curr_idx];
     }
     out_points = out_idx;
-  } else {		      
+  } else {
 
     delta = (xmax - xmin) / (MAX_POINTS - 1);
     curr = x[start_idx] + delta;

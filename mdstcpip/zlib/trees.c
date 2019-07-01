@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /* trees.c -- output deflated data using Huffman coding
  * Copyright (C) 1995-1998 Jean-loup Gailly
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /*
@@ -59,7 +59,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "deflate.h"
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 #include <ctype.h>
 #endif
 
@@ -185,11 +185,11 @@ local void copy_block OF((deflate_state * s, charf * buf, unsigned len, int head
 local void gen_trees_header OF((void));
 #endif
 
-#ifndef DEBUG
+#ifndef ZLIB_DEBUG
 #define send_code(s, c, tree) send_bits(s, tree[c].Code, tree[c].Len)
    /* Send a code of the given tree. c and tree must not have side effects */
 
-#else				/* DEBUG */
+#else				/* ZLIB_DEBUG */
 #define send_code(s, c, tree) \
      { if (z_verbose>2) fprintf(stderr,"\ncd %3d ",(c)); \
        send_bits(s, tree[c].Code, tree[c].Len); }
@@ -208,7 +208,7 @@ local void gen_trees_header OF((void));
  * Send a value on a given number of bits.
  * IN assertion: length <= 16 and value fits in length bits.
  */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 local void send_bits OF((deflate_state * s, int value, int length));
 
 local void send_bits(s, value, length)
@@ -234,7 +234,7 @@ int length;			/* number of bits */
     s->bi_valid += length;
   }
 }
-#else				/* !DEBUG */
+#else				/* !ZLIB_DEBUG */
 
 #define send_bits(s, value, length) \
 { int len = length;\
@@ -249,7 +249,7 @@ int length;			/* number of bits */
     s->bi_valid += len;\
   }\
 }
-#endif				/* DEBUG */
+#endif				/* ZLIB_DEBUG */
 
 #define MAX(a,b) (a >= b ? a : b)
 /* the arguments must not have side effects */
@@ -347,7 +347,7 @@ local void tr_static_init()
  * Genererate the file trees.h describing the static trees.
  */
 #ifdef GEN_TREES_H
-#ifndef DEBUG
+#ifndef ZLIB_DEBUG
 #include <stdio.h>
 #endif
 
@@ -419,7 +419,7 @@ deflate_state *s;
   s->bi_buf = 0;
   s->bi_valid = 0;
   s->last_eob_len = 8;		/* enough lookahead for inflate */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
   s->compressed_len = 0L;
   s->bits_sent = 0L;
 #endif
@@ -920,7 +920,7 @@ ulg stored_len;			/* length of input block */
 int eof;			/* true if this is the last block for a file */
 {
   send_bits(s, (STORED_BLOCK << 1) + eof, 3);	/* send block type */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
   s->compressed_len = (s->compressed_len + 3 + 7) & (ulg) ~ 7L;
   s->compressed_len += (stored_len + 4) << 3;
 #endif
@@ -943,7 +943,7 @@ deflate_state *s;
 {
   send_bits(s, STATIC_TREES << 1, 3);
   send_code(s, END_BLOCK, static_ltree);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
   s->compressed_len += 10L;	/* 3 for block type, 7 for EOB */
 #endif
   bi_flush(s);
@@ -955,7 +955,7 @@ deflate_state *s;
   if (1 + s->last_eob_len + 10 - s->bi_valid < 9) {
     send_bits(s, STATIC_TREES << 1, 3);
     send_code(s, END_BLOCK, static_ltree);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     s->compressed_len += 10L;
 #endif
     bi_flush(s);
@@ -1034,14 +1034,14 @@ int eof;			/* true if this is the last block for a file */
 #endif
     send_bits(s, (STATIC_TREES << 1) + eof, 3);
     compress_block(s, (ct_data *) static_ltree, (ct_data *) static_dtree);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     s->compressed_len += 3 + s->static_len;
 #endif
   } else {
     send_bits(s, (DYN_TREES << 1) + eof, 3);
     send_all_trees(s, s->l_desc.max_code + 1, s->d_desc.max_code + 1, max_blindex + 1);
     compress_block(s, (ct_data *) s->dyn_ltree, (ct_data *) s->dyn_dtree);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     s->compressed_len += 3 + s->opt_len;
 #endif
   }
@@ -1053,7 +1053,7 @@ int eof;			/* true if this is the last block for a file */
 
   if (eof) {
     bi_windup(s);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     s->compressed_len += 7;	/* align on byte boundary */
 #endif
   }
@@ -1229,7 +1229,7 @@ deflate_state *s;
   }
   s->bi_buf = 0;
   s->bi_valid = 0;
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
   s->bits_sent = (s->bits_sent + 7) & ~7;
 #endif
 }
@@ -1250,11 +1250,11 @@ int header;			/* true if block header must be written */
   if (header) {
     put_short(s, (ush) len);
     put_short(s, (ush) ~ len);
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
     s->bits_sent += 2 * 16;
 #endif
   }
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
   s->bits_sent += (ulg) len << 3;
 #endif
   while (len--) {

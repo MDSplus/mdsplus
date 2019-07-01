@@ -23,17 +23,16 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Scalar.C
-        Common routine for operations that collapse the input shape and lose signality.
-        1 argument: (2$ONE 2$ANY) (ALLOCATED) BIT_SIZE DIGITS EPSILON HUGE LEN MAXEXPONENT MINEXPONENT
-                RADIX PRECISION RANGE RANK SELECTED_INT_KIND SELECTED_REAL_KIND TINY
-        2 arguments: (2$ADD) DOT_PRODUCT.
-                out = name(in1, ...)
+	Common routine for operations that collapse the input shape and lose signality.
+	1 argument: (2$ONE 2$ANY) (ALLOCATED) BIT_SIZE DIGITS EPSILON HUGE LEN MAXEXPONENT MINEXPONENT
+	        RADIX PRECISION RANGE RANK SELECTED_INT_KIND SELECTED_REAL_KIND TINY
+	2 arguments: (2$ADD) DOT_PRODUCT.
+	        out = name(in1, ...)
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcDotProduct;
 #include <mdsplus/mdsplus.h>
 #include <STATICdef.h>
 #include "tdirefcat.h"
@@ -61,7 +60,7 @@ extern int TdiPower();
 
 #define _factor ((float).30103)
 
-int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[2], uni[2], dat[2];
@@ -72,31 +71,31 @@ int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descripto
   dat[1].pointer = 0;
 
 	/******************************************
-        Fetch signals and data and data's category.
-        ******************************************/
+	Fetch signals and data and data's category.
+	******************************************/
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
 
 	/******************************************
-        Adjust category needed to match data types.
-        ******************************************/
+	Adjust category needed to match data types.
+	******************************************/
   if STATUS_OK
     status = (*fun_ptr->f2) (narg, uni, dat, cats, &routine);
 
 	/******************************
-        Do the needed type conversions.
-        ******************************/
+	Do the needed type conversions.
+	******************************/
   if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 
 	/******************
-        Find correct shape.
-        ******************/
+	Find correct shape.
+	******************/
   if STATUS_OK
     status = TdiGetShape(0, dat, 0, cats[narg].out_dtype, &cmode, out_ptr);
 
 	/*****************************
-        Act on data, linear arguments.
-        *****************************/
+	Act on data, linear arguments.
+	*****************************/
   if STATUS_OK
     switch (fun_ptr->m2) {
     case 1:
@@ -107,12 +106,12 @@ int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descripto
       break;
     }
 
-  if (STATUS_OK && (opcode == OpcDotProduct || fun_ptr->f2 == Tdi2Keep))
+  if (STATUS_OK && (opcode == OPC_DOT_PRODUCT || fun_ptr->f2 == Tdi2Keep))
     status = TdiMasterData(0, sig, uni, &cmode, out_ptr);
 
 	/********************
-        Free all temporaries.
-        ********************/
+	Free all temporaries.
+	********************/
   for (j = narg; --j >= 0;) {
     if (sig[j].pointer)
       MdsFree1Dx(&sig[j], NULL);
@@ -125,11 +124,11 @@ int Tdi1Scalar(int opcode, int narg, struct descriptor *list[], struct descripto
 }
 
 /*---------------------------------------------------
-        F90 inquiry for the number of bits in an element.
-        F90 restricted to integers and returns same type.
-                integer = BIT_SIZE(expression)
+	F90 inquiry for the number of bits in an element.
+	F90 restricted to integers and returns same type.
+	        integer = BIT_SIZE(expression)
 
-        NEED handling of bit and packed types.
+	NEED handling of bit and packed types.
 */
 int Tdi3BitSize(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -149,12 +148,12 @@ int Tdi3BitSize(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for number of (binary) digits in
-        integer model: sign * number or
-        real model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        DIGITS(3.0) is 24, DIGITS(4) 31.
-                integer = DIGITS(number)
+	F90 inquiry for number of (binary) digits in
+	integer model: sign * number or
+	real model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	DIGITS(3.0) is 24, DIGITS(4) 31.
+	        integer = DIGITS(number)
 */
 int Tdi3Digits(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -205,11 +204,11 @@ int Tdi3Digits(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for number almost negligible w.r.t. 1.0.
-        real model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        EPSILON(3.0) is 2**(-23), EPSILON(4g0) 2**(-52).
-                real = EPSILON(real-model)
+	F90 inquiry for number almost negligible w.r.t. 1.0.
+	real model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	EPSILON(3.0) is 2**(-23), EPSILON(4g0) 2**(-52).
+	        real = EPSILON(real-model)
 */
 
 int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
@@ -230,10 +229,10 @@ int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for largest positive number in model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        HUGE(3.0) is 2**(+127)*(1-2**(-24)).
-                real = HUGE(real)
+	F90 inquiry for largest positive number in model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	HUGE(3.0) is 2**(+127)*(1-2**(-24)).
+	        real = HUGE(real)
 */
 STATIC_CONSTANT const unsigned int BU_HUGE[] = { 0xff };
 STATIC_CONSTANT const unsigned int B_HUGE[] = { 0x7f };
@@ -291,11 +290,11 @@ int Tdi3Huge(struct descriptor *x_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for length of one element in bytes.
-        F90 restricted to strings.
-                integer = LEN(expression)
+	F90 inquiry for length of one element in bytes.
+	F90 restricted to strings.
+	        integer = LEN(expression)
 
-        NEED handling of bit and packed types.
+	NEED handling of bit and packed types.
 */
 int Tdi3Len(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -315,10 +314,10 @@ int Tdi3Len(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for maximum exponent in real model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        MAXEXPONENT(3.0) is +127, MAXEXPONENT(4g0) +1023.
-                integer = MAXEXPONENT(real)
+	F90 inquiry for maximum exponent in real model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	MAXEXPONENT(3.0) is +127, MAXEXPONENT(4g0) +1023.
+	        integer = MAXEXPONENT(real)
 */
 int Tdi3MaxExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -351,10 +350,10 @@ int Tdi3MaxExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for minimum exponent in real model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        MINEXPONENT(3.0) is -127, MINEXPONENT(4g0) -1023.
-                integer = MINEXPONENT(real)
+	F90 inquiry for minimum exponent in real model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	MINEXPONENT(3.0) is -127, MINEXPONENT(4g0) -1023.
+	        integer = MINEXPONENT(real)
 */
 int Tdi3MinExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -387,11 +386,11 @@ int Tdi3MinExponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for number of decimal digits in real model: sign * base**exponent * fraction.
-                INT((digits-1)*LOG10(base) + k (k=1 for base = power of 10)
-        This is computer-dependent. VAX base=2.
-        PRECISION(3.0) is 6, PRECISION(4g0) 15.
-                integer = PRECISION(real)
+	F90 inquiry for number of decimal digits in real model: sign * base**exponent * fraction.
+	        INT((digits-1)*LOG10(base) + k (k=1 for base = power of 10)
+	This is computer-dependent. VAX base=2.
+	PRECISION(3.0) is 6, PRECISION(4g0) 15.
+	        integer = PRECISION(real)
 */
 int Tdi3Precision(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -424,12 +423,12 @@ int Tdi3Precision(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for radix or base of
-        integer model: sign * number or
-        real model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        RADIX(3.0) is 2, RADIX(4) is 2.
-                integer = RADIX(number)
+	F90 inquiry for radix or base of
+	integer model: sign * number or
+	real model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	RADIX(3.0) is 2, RADIX(4) is 2.
+	        integer = RADIX(number)
 */
 int Tdi3Radix(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -468,11 +467,11 @@ int Tdi3Radix(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for exponent range in real model: sign * base**exponent * fraction.
-                INT(MIN(LOG10(huge),-LOG10(tiny))
-        This is computer-dependent. VAX base=2. VAX huge < 1/tiny.
-        RANGE(3.0) is 38, RANGE(4g0) 307.
-                integer = RANGE(real)
+	F90 inquiry for exponent range in real model: sign * base**exponent * fraction.
+	        INT(MIN(LOG10(huge),-LOG10(tiny))
+	This is computer-dependent. VAX base=2. VAX huge < 1/tiny.
+	RANGE(3.0) is 38, RANGE(4g0) 307.
+	        integer = RANGE(real)
 */
 int Tdi3Range(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -505,8 +504,8 @@ int Tdi3Range(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 extension inquiry for declared number of dimensions of an array.
-        Returns zero for a scalar.
+	F90 extension inquiry for declared number of dimensions of an array.
+	Returns zero for a scalar.
 */
 int Tdi3Rank(struct descriptor_a *arr_ptr, struct descriptor *out_ptr)
 {
@@ -523,7 +522,7 @@ int Tdi3Rank(struct descriptor_a *arr_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        Return kind (dtype) of smallest integer with sufficient range.
+	Return kind (dtype) of smallest integer with sufficient range.
 */
 int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout)
 {
@@ -551,7 +550,7 @@ int Tdi3SelectedIntKind(struct descriptor *pdr, struct descriptor *pout)
 }
 
 /*---------------------------------------------------
-        Return kind (dtype) of smallest real with sufficient precision and range.
+	Return kind (dtype) of smallest real with sufficient precision and range.
 */
 int Tdi3SelectedRealKind(struct descriptor *pdp, struct descriptor *pdr, struct descriptor *pout)
 {
@@ -578,9 +577,9 @@ int Tdi3SelectedRealKind(struct descriptor *pdp, struct descriptor *pdr, struct 
 }
 
 /*---------------------------------------------------
-        Return length of all data elements in bytes, excluding its descriptor.
-                int = SIZEOF(expression)
-        NEED handling of bit and packed types.
+	Return length of all data elements in bytes, excluding its descriptor.
+	        int = SIZEOF(expression)
+	NEED handling of bit and packed types.
 */
 int Tdi3SizeOf(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -604,10 +603,10 @@ int Tdi3SizeOf(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        F90 inquiry for smallest positive number in model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        TINY(3.0) is 2**(-127), TINY(4G0) is 2**(-1023).
-                real = TINY(real)
+	F90 inquiry for smallest positive number in model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	TINY(3.0) is 2**(-127), TINY(4G0) is 2**(-1023).
+	        real = TINY(real)
 */
 STATIC_CONSTANT unsigned int F_TINY[] = { 0x80 };
 STATIC_CONSTANT unsigned int D_TINY[] = { 0x80, 0 };
@@ -648,7 +647,7 @@ int Tdi3Tiny(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*---------------------------------------------------
-        Dot product of two vectors.
+	Dot product of two vectors.
 */
 int Tdi3DotProduct(struct descriptor_a *in1_ptr,
 		   struct descriptor_a *in2_ptr, struct descriptor *out_ptr)

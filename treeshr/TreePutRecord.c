@@ -141,6 +141,9 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     int stv;
     NCI local_nci, old_nci;
     int64_t saved_viewdate;
+    TreeCallHookFun("TreeNidHook","PutData",info_ptr->treenam, info_ptr->shot, nid, NULL);
+    TreeCallHookFun("TreeNidDataHook","PutDataFull",info_ptr->treenam,
+		    info_ptr->shot, nid, descriptor_ptr, NULL);
     status = TreeCallHook(PutData, info_ptr, nid);
     if (status && !(status & 1))
       return status;
@@ -166,7 +169,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     }
     if STATUS_OK {
       if (utility_update) {
-        NCI *nci = &TreeGetThreadStatic()->TemplateNci;
+	NCI *nci = &TreeGetThreadStatic()->TemplateNci;
 	local_nci.flags = nci->flags;
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
 	local_nci.owner_identifier = nci->owner_identifier;
@@ -269,19 +272,19 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 {
 
 #define is_expression ((nci->dtype == DTYPE_FUNCTION) ||\
-                       (nci->dtype == DTYPE_NID) ||\
-                       (nci->dtype == DTYPE_PATH) ||\
-                       (nci->dtype == DTYPE_IDENT) ||\
-                       (nci->dtype == DTYPE_CALL))
+	               (nci->dtype == DTYPE_NID) ||\
+	               (nci->dtype == DTYPE_PATH) ||\
+	               (nci->dtype == DTYPE_IDENT) ||\
+	               (nci->dtype == DTYPE_CALL))
 
 #define check(boolean) (boolean) ? TreeNORMAL : TreeINVDTPUSG;
 
 #define is_numeric ( ((nci->dtype >= DTYPE_BU) &&\
-                      (nci->dtype <= DTYPE_DC)) ||\
-                     ((nci->dtype >= DTYPE_OU) &&\
-                      (nci->dtype <= DTYPE_HC)) ||\
-                     ((nci->dtype >= DTYPE_FS) &&\
-                      (nci->dtype <= DTYPE_FTC)) || (nci->dtype == DTYPE_DSC) )
+	              (nci->dtype <= DTYPE_DC)) ||\
+	             ((nci->dtype >= DTYPE_OU) &&\
+	              (nci->dtype <= DTYPE_HC)) ||\
+	             ((nci->dtype >= DTYPE_FS) &&\
+	              (nci->dtype <= DTYPE_FTC)) || (nci->dtype == DTYPE_DSC) )
 
   NODE *node_ptr;
   int status;
@@ -425,8 +428,10 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     df_ptr = NULL;
   }
   info->data_file = df_ptr;
-  if (status & 1)
+  if (status & 1) {
+    TreeCallHookFun("TreeHook","OpenDataFileWrite", info->treenam, info->shot, NULL);
     TreeCallHook(OpenDataFileWrite, info, 0);
+  }
   return status;
 }
 
@@ -461,7 +466,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     } else {
       buffer = (char *)malloc(blen);
       bptr = buffer;
-      LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+      loadint32(&info->data_file->record_header->node_number,&nodenum);
       bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
       while (bytes_to_put && (status & 1)) {
@@ -481,7 +486,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
 	unsigned short rlength = bytes_this_time + 10;
 	bytes_to_put -= bytes_this_time;
-	LoadShort(rlength, (char *)&info->data_file->record_header->rlength);
+	loadint16(&info->data_file->record_header->rlength,&rlength);
 	memcpy(bptr, (void *)info->data_file->record_header, sizeof(RECORD_HEADER));
 	bptr += sizeof(RECORD_HEADER);
 	bptr += bytes_this_time;
@@ -535,7 +540,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
   int status = TreeNORMAL;
   int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
 
-  LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+  loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
   while (bytes_to_put && (status & 1)) {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -546,7 +551,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
       unsigned short rlength = bytes_this_time + 10;
       eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
       bytes_to_put -= bytes_this_time;
-      LoadShort(rlength, (char *)&info->data_file->record_header->rlength);
+      loadint16(&info->data_file->record_header->rlength,&rlength);
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
@@ -588,7 +593,7 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 {
   int status = TreeNORMAL;
   unsigned int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-  LoadInt(nodenum, (char *)&info->data_file->record_header->node_number);
+  loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
   while (bytes_to_put && (status & 1)) {
     int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
@@ -596,9 +601,8 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     status = TreeLockDatafile(info, 0, rfa_l);
     if (status & 1) {
       bytes_to_put -= bytes_this_time;
-      info->data_file->record_header->rlength = (unsigned short)(bytes_this_time + 10);
-      info->data_file->record_header->rlength =
-	  swapshort((char *)&info->data_file->record_header->rlength);
+      uint16_t tmp = bytes_this_time + 10;
+      loadint16(&info->data_file->record_header->rlength,&tmp);
       MDS_IO_LSEEK(info->data_file->put, rfa_l, SEEK_SET);
       status =
 	  (MDS_IO_WRITE

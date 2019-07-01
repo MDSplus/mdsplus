@@ -23,17 +23,16 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi0Decompile_R
-        Routine to decompile a descriptor of class R.
-        status = Tdi0Decompile_R(in_ptr, precedence, out_ptr);
+	Routine to decompile a descriptor of class R.
+	status = Tdi0Decompile_R(in_ptr, precedence, out_ptr);
 
-        Josh Stillerman, MIT-PFC, 28-DEC-1988
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	Josh Stillerman, MIT-PFC, 28-DEC-1988
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
+
 #include <STATICdef.h>
 #include <string.h>
-#include <mdsdescrip.h>
-#include <status.h>
-#include "opcopcodes.h"
+#include <tdishr.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
@@ -45,62 +44,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define P_ARG           88
 #define P_SUBS          0
 
-
-
-extern unsigned int LEX_CONST;
 extern int Tdi0Decompile();
 extern int TdiSingle();
 
 STATIC_CONSTANT struct op_rec {
   char *symbol;
-  short opcode;
+  opcode_t opcode;
   char prec, lorr;
 } binary[] = {
   {
-  ", ", OpcComma, 92, -1}, {
-  " = ", OpcEquals, 84, 1}, {
-  0, OpcEqualsFirst, 84, 1}, {
-  " : ", OpcDtypeRange, 80, 0},	/*dtype is generated, not opcode */
+  ", ",		OPC_COMMA, 92, -1}, {
+  " = ",	OPC_EQUALS, 84, 1}, {
+  NULL,		OPC_EQUALS_FIRST, 84, 1}, {
+  " : ",	OPC_DTYPE_RANGE, 80, 0},	/*dtype is generated, not opcode */
   {
-  " ? ", OpcConditional, 72, 1}, {
-  " @ ", OpcPromote, 68, 1}, {
-  " Eqv ", OpcEqv, 64, -1}, {
-  " Neqv ", OpcNeqv, 64, -1}, {
-  " || ", OpcOr, 60, -1}, {
-  " Or_Not ", OpcOrNot, 60, -1}, {
-  " Nor ", OpcNor, 60, -1}, {
-  " Nor_Not ", OpcNorNot, 60, -1}, {
-  " && ", OpcAnd, 52, -1}, {
-  " And_Not ", OpcAndNot, 52, -1}, {
-  " Nand ", OpcNand, 52, -1}, {
-  " Nand_Not ", OpcNandNot, 52, -1}, {
-  " == ", OpcEq, 48, -1}, {
-  " <> ", OpcNe, 48, -1}, {
-  " >= ", OpcGe, 44, -1}, {
-  " > ", OpcGt, 44, -1}, {
-  " <= ", OpcLe, 44, -1}, {
-  " < ", OpcLt, 44, -1}, {
-  " Is_In ", OpcIsIn, 40, -1}, {
-  " // ", OpcConcat, 32, -1}, {
-  " << ", OpcShiftLeft, 28, -1}, {
-  " >> ", OpcShiftRight, 28, -1}, {
-  " + ", OpcAdd, 24, -1}, {
-  " - ", OpcSubtract, 24, -1}, {
-  " * ", OpcMultiply, 20, -1}, {
-  " / ", OpcDivide, 20, -1}, {
-  " ^ ", OpcPower, 16, 1}, {
+  " ? ",	OPC_CONDITIONAL, 72, 1}, {
+  " @ ",	OPC_PROMOTE, 68, 1}, {
+  " Eqv ",	OPC_EQV, 64, -1}, {
+  " Neqv ",	OPC_NEQV, 64, -1}, {
+  " || ",	OPC_OR, 60, -1}, {
+  " Or_Not ",	OPC_OR_NOT, 60, -1}, {
+  " Nor ",	OPC_NOR, 60, -1}, {
+  " Nor_Not ",	OPC_NOR_NOT, 60, -1}, {
+  " && ",	OPC_AND, 52, -1}, {
+  " And_Not ",	OPC_AND_NOT, 52, -1}, {
+  " Nand ",	OPC_NAND, 52, -1}, {
+  " Nand_Not ",	OPC_NAND_NOT, 52, -1}, {
+  " == ",	OPC_EQ, 48, -1}, {
+  " <> ",	OPC_NE, 48, -1}, {
+  " >= ",	OPC_GE, 44, -1}, {
+  " > ",	OPC_GT, 44, -1}, {
+  " <= ",	OPC_LE, 44, -1}, {
+  " < ",	OPC_LT, 44, -1}, {
+  " Is_In ",	OPC_IS_IN, 40, -1}, {
+  " // ",	OPC_CONCAT, 32, -1}, {
+  " << ",	OPC_SHIFT_LEFT, 28, -1}, {
+  " >> ",	OPC_SHIFT_RIGHT, 28, -1}, {
+  " + ",	OPC_ADD, 24, -1}, {
+  " - ",	OPC_SUBTRACT, 24, -1}, {
+  " * ",	OPC_MULTIPLY, 20, -1}, {
+  " / ",	OPC_DIVIDE, 20, -1}, {
+  " ^ ",	OPC_POWER, 16, 1}, {
   0, 0, 0, 0}
 }, unary[] = {
 
   {
-  "~", OpcInot, 8, 1}, {
-  "!", OpcNot, 8, 1}, {
-  "--", OpcPreDec, 8, 1}, {
-  "++", OpcPreInc, 8, 1}, {
-  "-", OpcUnaryMinus, 8, 1}, {
-  "+", OpcUnaryPlus, 8, 1}, {
-  "--", OpcPostDec, 4, -1}, {
-  "++", OpcPostInc, 4, -1}, {
+  "~",	OPC_INOT, 8, 1}, {
+  "!",	OPC_NOT, 8, 1}, {
+  "--",	OPC_PRE_DEC, 8, 1}, {
+  "++",	OPC_PRE_INC, 8, 1}, {
+  "-",	OPC_UNARY_MINUS, 8, 1}, {
+  "+",	OPC_UNARY_PLUS, 8, 1}, {
+  "--",	OPC_POST_DEC, 4, -1}, {
+  "++",	OPC_POST_INC, 4, -1}, {
   0, 0, 0, 0}
 };
 
@@ -257,7 +253,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
   int m, lorr, newone;
   struct op_rec *pop;
   unsigned int dtype;
-  enum OpcOpcodes opcode;
+  opcode_t opcode;
 
   switch (pin->dtype) {
   default:
@@ -288,13 +284,13 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
       status = Append("(", pout);
     if (pin->length) {
       if (pin->length == 1)
-	opcode = (enum OpcOpcodes)(*(unsigned char *)pin->pointer);
+	opcode = (opcode_t)(*(unsigned char *)pin->pointer);
       else if (pin->length == 2)
-	opcode = (enum OpcOpcodes)(*(unsigned short *)pin->pointer);
+	opcode = (opcode_t)(*(unsigned short *)pin->pointer);
       else if (pin->length == 4)
-	opcode = (enum OpcOpcodes)(*(unsigned int *)pin->pointer);
+	opcode = (opcode_t)(*(unsigned int *)pin->pointer);
       else
-	opcode = (enum OpcOpcodes)-1;
+	opcode = (opcode_t)-1;
       if STATUS_OK
 	status = TdiSingle(opcode, pout);
       if STATUS_OK
@@ -305,13 +301,13 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
     break;
 
   case DTYPE_RANGE:
-    opcode = OpcDtypeRange;
+    opcode = OPC_DTYPE_RANGE;
     goto range;
 
   case DTYPE_FUNCTION:
-    opcode = (enum OpcOpcodes)(*(unsigned short *)pin->pointer);
+    opcode = (opcode_t)(*(unsigned short *)pin->pointer);
     if ((int)opcode >= TdiFUNCTION_MAX)
-      return (int)(opcode = (enum OpcOpcodes)0);
+      return (int)(opcode = (opcode_t)0);
 
  range:fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < fun_ptr->m1 || narg > fun_ptr->m2)
@@ -320,8 +316,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
       status = Append(fun_ptr->name, pout);
 
 		/*****************************************
-                Functions, subscripts, and constructors.
-                *****************************************/
+	        Functions, subscripts, and constructors.
+	        *****************************************/
     else
       switch (opcode) {
       default:			/*intrinsic(arg, ...) */
@@ -329,7 +325,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if STATUS_OK
 	  status = Arguments(0, "(", ")", pin, pout);
 	break;
-      case OpcFun:		/*fun ident(arg, ...) stmt */
+      case OPC_FUN:		/*fun ident(arg, ...) stmt */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -348,12 +344,12 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (STATUS_OK && prec < P_STMT)
 	  status = Append(")", pout);
 	break;
-      case OpcIn:		/*input argument */
-      case OpcInOut:		/*input and output argument */
-      case OpcOptional:	/*optional argument */
-      case OpcOut:		/*output argument */
-      case OpcPrivate:		/*private ident */
-      case OpcPublic:		/*public ident */
+      case OPC_IN:		/*input argument */
+      case OPC_INOUT:		/*input and output argument */
+      case OPC_OPTIONAL:	/*optional argument */
+      case OPC_OUT:		/*output argument */
+      case OPC_PRIVATE:		/*private ident */
+      case OPC_PUBLIC:		/*public ident */
 	status = Append(fun_ptr->name, pout);
 	if STATUS_OK
 	  status = Append(" ", pout);
@@ -365,34 +361,34 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	    status = Tdi0Decompile(r_ptr, P_SUBS, pout);
 	}
 	break;
-      case OpcExtFunction:	     /*_label(arg, ...)*/
+      case OPC_EXT_FUNCTION:	     /*_label(arg, ...)*/
 	if (pin->dscptrs[0] != 0 || pin->dscptrs[1] == 0 || pin->dscptrs[1]->dtype != DTYPE_T)
 	  goto cannot;
 	status = StrAppend(pout, pin->dscptrs[1]);
 	if STATUS_OK
 	  status = Arguments(2, "(", ")", pin, pout);
 	break;
-      case OpcSubscript:	/*postfix[subscript, ...] */
+      case OPC_SUBSCRIPT:	/*postfix[subscript, ...] */
 	status = Tdi0Decompile(pin->dscptrs[0], P_SUBS, pout);
 	if STATUS_OK
 	  status = Arguments(1, "[", "]", pin, pout);
 	break;
-      case OpcVector:		/*[elem, ...] */
+      case OPC_VECTOR:		/*[elem, ...] */
 	status = Arguments(0, "[", "]", pin, pout);
 	break;
 		/****************
-                Unary operations.
-                ****************/
-      case OpcInot:
-      case OpcNot:
-      case OpcPreDec:
-      case OpcPreInc:
-      case OpcUnaryMinus:
-      case OpcUnaryPlus:
-      case OpcPostDec:
-      case OpcPostInc:
+	        Unary operations.
+	        ****************/
+      case OPC_INOT:
+      case OPC_NOT:
+      case OPC_PRE_DEC:
+      case OPC_PRE_INC:
+      case OPC_UNARY_MINUS:
+      case OPC_UNARY_PLUS:
+      case OPC_POST_DEC:
+      case OPC_POST_INC:
 	for (pop = unary; pop->opcode; pop++)
-	  if ((enum OpcOpcodes)pop->opcode == opcode)
+	  if (pop->opcode == opcode)
 	    break;
 	newone = pop->prec;
 	lorr = pop->lorr;
@@ -409,55 +405,55 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
 
 		/***********************
-                Binary/n-ary operations.
-                ***********************/
-      case OpcEqualsFirst:
+	        Binary/n-ary operations.
+	        ***********************/
+      case OPC_EQUALS_FIRST:
 	r_ptr = (struct descriptor_r *)pin->dscptrs[0];
 	while (r_ptr && r_ptr->dtype == DTYPE_DSC)
 	  r_ptr = (struct descriptor_r *)r_ptr->pointer;
 	newone = *(unsigned short *)r_ptr->pointer;
 	narg = r_ptr->ndesc;
 	goto first;
-      case OpcPower:
-      case OpcDivide:
-      case OpcMultiply:
-      case OpcAdd:
-      case OpcSubtract:
-      case OpcShiftLeft:
-      case OpcShiftRight:
-      case OpcConcat:
-      case OpcIsIn:
-      case OpcGe:
-      case OpcGt:
-      case OpcLe:
-      case OpcLt:
-      case OpcEq:
-      case OpcNe:
-      case OpcAnd:
-      case OpcNand:
-      case OpcOr:
-      case OpcNor:
-      case OpcEqv:
-      case OpcNeqv:
-      case OpcPromote:
-      case OpcEquals:
-      case OpcDtypeRange:
-      case OpcComma:
-      case OpcConditional:
+      case OPC_POWER:
+      case OPC_DIVIDE:
+      case OPC_MULTIPLY:
+      case OPC_ADD:
+      case OPC_SUBTRACT:
+      case OPC_SHIFT_LEFT:
+      case OPC_SHIFT_RIGHT:
+      case OPC_CONCAT:
+      case OPC_IS_IN:
+      case OPC_GE:
+      case OPC_GT:
+      case OPC_LE:
+      case OPC_LT:
+      case OPC_EQ:
+      case OPC_NE:
+      case OPC_AND:
+      case OPC_NAND:
+      case OPC_OR:
+      case OPC_NOR:
+      case OPC_EQV:
+      case OPC_NEQV:
+      case OPC_PROMOTE:
+      case OPC_EQUALS:
+      case OPC_DTYPE_RANGE:
+      case OPC_COMMA:
+      case OPC_CONDITIONAL:
 	r_ptr = (struct descriptor_r *)pin;
 	newone = (int)opcode;
  first:for (pop = binary; pop->opcode; pop++)
-	  if (pop->opcode == newone)
+	  if ((int)pop->opcode == newone)
 	    break;
 	newone = pop->prec;
 	lorr = pop->lorr;
-	if (opcode == OpcEqualsFirst) {
+	if (opcode == OPC_EQUALS_FIRST) {
 	  newone = binary[2].prec;
 	  lorr = binary[2].lorr;
 	}
 	if (prec <= newone)
 	  status = Append("(", pout);
-	if (opcode == OpcConditional) {
+	if (opcode == OPC_CONDITIONAL) {
 	  if STATUS_OK
 	    status = Tdi0Decompile(r_ptr->dscptrs[2], newone - lorr, pout);
 	  if STATUS_OK
@@ -485,11 +481,11 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
 
 		/*****************************************
-                C-language constructs followed by newline.
-                Plus WHERE.
-                *****************************************/
-      case OpcBreak:		/*break; */
-      case OpcContinue:	/*continue; */
+	        C-language constructs followed by newline.
+	        Plus WHERE.
+	        *****************************************/
+      case OPC_BREAK:		/*break; */
+      case OPC_CONTINUE:	/*continue; */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -499,7 +495,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcCase:		/*case (xxx) stmt ... */
+      case OPC_CASE:		/*case (xxx) stmt ... */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -513,7 +509,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcDefault:		/*case default stmt ... */
+      case OPC_DEFAULT:		/*case default stmt ... */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -523,7 +519,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcDo:		/*do {stmt} while (exp); Note argument order is (exp,stmt,...) */
+      case OPC_DO:		/*do {stmt} while (exp); Note argument order is (exp,stmt,...) */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -539,7 +535,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcFor:		/*for (init;test;step) stmt */
+      case OPC_FOR:		/*for (init;test;step) stmt */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -561,7 +557,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcGoto:		/*goto xxx; */
+      case OPC_GOTO:		/*goto xxx; */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -573,12 +569,12 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcIf:		/*if (exp) stmt else stmt */
-      case OpcWhere:		/*where (exp) stmt elsewhere stmt */
+      case OPC_IF:		/*if (exp) stmt else stmt */
+      case OPC_WHERE:		/*where (exp) stmt elsewhere stmt */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
-	  status = Append((opcode == OpcIf) ? "If (" : "Where (", pout);
+	  status = Append((opcode == OPC_IF) ? "If (" : "Where (", pout);
 	if STATUS_OK
 	  status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
 	if STATUS_OK
@@ -586,14 +582,14 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if STATUS_OK
 	  status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[1], pout);
 	if (STATUS_OK && narg >= 3) {
-	  status = Append((opcode == OpcIf) ? " Else " : " ElseWhere ", pout);
+	  status = Append((opcode == OPC_IF) ? " Else " : " ElseWhere ", pout);
 	  if STATUS_OK
 	    status = CompoundStatement(1, (struct descriptor_r **)&pin->dscptrs[2], pout);
 	}
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcLabel:		/*xxx : stmt ... */
+      case OPC_LABEL:		/*xxx : stmt ... */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -607,7 +603,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcReturn:		/*return (optional-exp); */
+      case OPC_RETURN:		/*return (optional-exp); */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -621,7 +617,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcStatement:	/*{stmt ...} */
+      case OPC_STATEMENT:	/*{stmt ...} */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
@@ -629,12 +625,12 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	if (prec < P_STMT && STATUS_OK)
 	  status = Append(")", pout);
 	break;
-      case OpcSwitch:		/*switch (exp) stmt */
-      case OpcWhile:		/*while (exp) stmt */
+      case OPC_SWITCH:		/*switch (exp) stmt */
+      case OPC_WHILE:		/*while (exp) stmt */
 	if (prec < P_STMT)
 	  status = Append("(", pout);
 	if STATUS_OK
-	  status = Append((opcode == OpcSwitch) ? "Switch (" : "While (", pout);
+	  status = Append((opcode == OPC_SWITCH) ? "Switch (" : "While (", pout);
 	if STATUS_OK
 	  status = Tdi0Decompile(pin->dscptrs[0], P_STMT, pout);
 	if STATUS_OK
@@ -646,8 +642,8 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
 	break;
       }
 		/********************
-                End of opcode switch.
-                ********************/
+	        End of opcode switch.
+	        ********************/
     break;
   case DTYPE_CALL:		/*label->label(arg, ...) or label->label:type(arg, ...) */
     if (pin->dscptrs[0] == 0 || pin->dscptrs[0]->dtype != DTYPE_T)
@@ -676,7 +672,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
     break;
   }
 	/*******************
-        End of dtype switch.
-        *******************/
+	End of dtype switch.
+	*******************/
   return status;
 }

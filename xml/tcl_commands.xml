@@ -34,23 +34,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     datafile associated with a tree. These commands are listed
     when you type:
 
-    HELP TREE COMMANDS
+      HELP TREE COMMANDS
 
     TCL can also be used for dispatching commands or actions to action servers
     or to directly execute actions or methods provided by devices described in
     the tree. For help on dispatching related commands type:
 
-    HELP DISPATCH COMMANDS
+      HELP DISPATCH COMMANDS
 
     With TCL using edit commands you can create a new tree structure or modify
     an existing one by adding, deleting or renaming nodes and adding tagnames
     to give direct addressing of nodes in the tree. For edit commands type:
 
-    HELP EDIT COMMANDS
+      HELP EDIT COMMANDS
 
     TCL can also issue and wait for MDSplus events. See:
 
-    HELP WFEVENT and HELP SETEVENT
+      HELP WFEVENT and HELP SETEVENT
+
+    TCL can display device information. See:
+
+      HELP DEVICES
   </helpall>
 
   <help name="EDIT COMMANDS">
@@ -123,6 +127,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     commands.
   </help>
   
+  <verb name="DEVICES">
+    <help name="DEVICES">
+      Command: DEVICES
+      Purpose: Optain information about python device support modules.
+      Format: DEVICES [device_type] [/FULL]
+      Description:
+
+      Get a description of a python device support module. If the device type
+      parameter is omitted a list of all the available python devices will be displayed.
+      If the device type contains a wildcard character such as an asterisk the devices
+      matching that wildcard will be listed. The FULL qualifier will show the full python
+      help for the device class.
+    </help>
+    <help name="HELP">
+      Command: HELP
+      Purpose: Provide help on available commands.
+      Format: HELP [command]
+    </help>      
+    <routine name="tcl_help_device"/>
+    <parameter name="devtype" prompt="Device type:" default="*"/>
+    <qualifier name="FULL"/>
+  </verb>
+
   <verb name="abort">
     <parameter name="p1" prompt="What" required="True" type="abort_type"/>
   </verb>
@@ -1232,6 +1259,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <keyword name="DEFAULT" syntax="show_default"/>"
     <keyword name="SERVER" syntax="show_server"/>"
     <keyword name="VERSION" syntax="show_version"/>"
+    <keyword name="GIT" syntax="SHOW_GIT_INFO"/>
     <keyword name="VERSIONS" syntax="show_versions"/>"
   </type>
 
@@ -1385,6 +1413,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <routine name="mdsdcl_show_version"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
   </syntax>
+
+  <syntax name="SHOW_GIT_INFO">
+    <help name="SHOW GIT">
+      Command: SHOW GIT
+      Purpose: Show the version information of this MDSplus git repository.
+      Format: SHOW GIT [/TAG] [/BRANCH] [/COMMIT] [/REMOTE] [/REMOTE_URL] [/SRCDIR]
+
+    </help>
+    <routine name="mdsdcl_show_git_info"/>
+    <parameter name="P1" required="True"/>    
+    <parameter name="P2" label="ATTRS" prompt="Attributes" required="False"/>
+    <qualifier name="TAG"/>
+    <qualifier name="BRANCH"/>
+    <qualifier name="COMMIT"/>
+    <qualifier name="REMOTE"/>
+    <qualifier name="REMOTE_URL"/>
+    <qualifier name="SRCDIR"/>
+  </syntax>
+
 
   <syntax name="show_versions">
     <help name="SHOW VERSIONS">

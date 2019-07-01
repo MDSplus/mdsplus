@@ -23,14 +23,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Vector.C
-        Converts a list of scalars and arrays into a rank-1 vector or higher array.
-        Signality is lost.
-        Null vectors are ignored, except lamination is not done.
-        If all dimensions match exactly, the result has one more dimension.
-        [[1],,[3]] [1,2,3] and [1,[2,3]] are simple vectors.
-        [[1,2,3],[4,5,6]] has lamination shape [3,2].
+	Converts a list of scalars and arrays into a rank-1 vector or higher array.
+	Signality is lost.
+	Null vectors are ignored, except lamination is not done.
+	If all dimensions match exactly, the result has one more dimension.
+	[[1],,[3]] [1,2,3] and [1,[2,3]] are simple vectors.
+	[[1,2,3],[4,5,6]] has lamination shape [3,2].
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 
 #include "STATICdef.h"
@@ -42,26 +42,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 
-
-
 extern int TdiConvert();
 extern int TdiCvtArgs();
 extern int TdiGetArgs();
 extern int TdiMasterData();
 extern int Tdi2Vector();
 
-int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Vector(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array miss = { sizeof(char), DTYPE_MISSING, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 0,
 									 0}, 1, 0
   };
   array_coeff arr = { sizeof(char), DTYPE_BU, CLASS_A, (char *)0, 0, 0, {0, 1, 1, 1, 0},
-		      MAXDIM, 0, 0, {0}
+		      MAX_DIMS, 0, 0, {0}
   };
   struct descriptor_xd (*psig)[], (*puni)[] = 0, (*pdat)[] = 0;
   struct TdiCatStruct (*pcats)[] = 0;
-  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAXDIM, maxd = 0, nmiss = 0;
+  int cmode = -1, j, n, (*pnelem)[] = 0, jd, mind = MAX_DIMS, maxd = 0, nmiss = 0;
   int virt =
       (sizeof(struct descriptor_xd) * 3 + sizeof(int *)) * narg +
       sizeof(struct TdiCatStruct) * (narg + 1);
@@ -69,10 +67,10 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
   if (narg == 0)
     return MdsCopyDxXd((struct descriptor *)&miss, out_ptr);
 	/************************************
-        Dynamic number of descriptors.
-        Memory for sig[narg], uni[narg],
-        dat[narg], nelem[narg], cats[narg+1].
-        ************************************/
+	Dynamic number of descriptors.
+	Memory for sig[narg], uni[narg],
+	dat[narg], nelem[narg], cats[narg+1].
+	************************************/
 
   status = (psig = malloc(virt)) != NULL;
   if STATUS_OK {
@@ -83,14 +81,14 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
   }
 
 	/******************************************
-        Fetch signals and data and data's category.
-        ******************************************/
+	Fetch signals and data and data's category.
+	******************************************/
   if STATUS_OK
     status = TdiGetArgs(opcode, narg, list, (*psig), (*puni), (*pdat), (*pcats));
 
 	/*****************************************
-        Save and accumulate lengths of all inputs.
-        *****************************************/
+	Save and accumulate lengths of all inputs.
+	*****************************************/
   if STATUS_OK
     for (j = narg; --j >= 0;) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
@@ -114,15 +112,15 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
     }
 
 	/********************************
-        If all dimensions match then add one.
-        If all match but highest, expand it.
-        Otherwise, use a simple vector.
-        Shape: [[3],[3]] is [3,2].
-        Shape: [[3,1],[3,4]] is [3,5].
-        Shape: [[3],[3,4]] is [3,5].
-        ********************************/
+	If all dimensions match then add one.
+	If all match but highest, expand it.
+	Otherwise, use a simple vector.
+	Shape: [[3],[3]] is [3,2].
+	Shape: [[3,1],[3,4]] is [3,5].
+	Shape: [[3],[3,4]] is [3,5].
+	********************************/
  if (STATUS_OK) {
-  if (mind > 0 && mind >= maxd - 1 && mind < MAXDIM && nmiss == 0) {
+  if (mind > 0 && mind >= maxd - 1 && mind < MAX_DIMS && nmiss == 0) {
     n = 0;
     for (j = 0; j < narg; ++j) {
       array_coeff *pnew = (array_coeff *) (*pdat)[j].pointer;
@@ -161,25 +159,24 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
     status = Tdi2Vector(narg, (*puni), (*pdat), (*pcats), 0);
 
 	/*********************
-        Find type conversions.
-        *********************/
+	Find type conversions.
+	*********************/
   if STATUS_OK
     status = TdiCvtArgs(0, (*pdat), &(*pcats)[narg]);
 
 	/***************************
-        Get an array to hold it all.
-        Size is 1 so arsize = nelem.
-        ***************************/
+	Get an array to hold it all.
+	Size is 1 so arsize = nelem.
+	***************************/
   if STATUS_OK
     status =
-	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits,
-		   &(*pcats)[narg].out_dtype, out_ptr);
+	MdsGet1DxA((struct descriptor_a *)&arr, &(*pcats)[narg].digits, &(*pcats)[narg].out_dtype, out_ptr);
 
 	/*********************************
-        Accumulate all arrays and scalars.
-        Recycle arr as temporary pointer.
-        Class and flags are the same.
-        *********************************/
+	Accumulate all arrays and scalars.
+	Recycle arr as temporary pointer.
+	Class and flags are the same.
+	*********************************/
   if STATUS_OK {
     struct descriptor *pout = out_ptr->pointer;
     arr.length = pout->length;
@@ -199,14 +196,14 @@ int Tdi1Vector(int opcode, int narg, struct descriptor *list[], struct descripto
   }
 
 	/*************************
-        Remove signal, keep units.
-        *************************/
+	Remove signal, keep units.
+	*************************/
   if STATUS_OK
     status = TdiMasterData(0, (*psig), (*puni), &cmode, out_ptr);
 
 	/********************
-        Free all temporaries.
-        ********************/
+	Free all temporaries.
+	********************/
   for (j = narg; --j >= 0;) {
     if ((*psig)[j].pointer)
       MdsFree1Dx(&(*psig)[j], NULL);

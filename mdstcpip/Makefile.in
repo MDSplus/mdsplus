@@ -2,12 +2,15 @@ include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
 builddir=@builddir@ 
-VPATH = @srcdir@
+VPATH=@srcdir@
+MKDIR_P=@MKDIR_P@
+@AX_RECONFIGURE_TARGET@
+
 
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ WIN=.win
-@MINGW_TRUE@ DEF=${srcdir}/mdsipshr.def
+@MINGW_TRUE@ DEF=${srcdir}/MdsIpShr.def
 
 COMPRESSION_SOURCES = zlib/adler32.c \
                       zlib/compress.c \
@@ -33,11 +36,7 @@ LIBS=@LIBS@ @LIBRESOLV@ $(LIBSOCKET)
 
 MdsIpShr    = @MAKESHLIBDIR@@LIBPRE@MdsIpShr@SHARETYPE@ $(IMPLIB_MdsIpShr)
 MdsIpSrvShr = @MAKESHLIBDIR@@LIBPRE@MdsIpSrvShr@SHARETYPE@ $(IMPLIB_MdsIpSrvShr)
-MdsIpTunnel = @MAKESHLIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 MdsIpTCP    = @MAKESHLIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
-MdsIpSSH    = @MAKESHLIBDIR@@LIBPRE@MdsIpSSH@SHARETYPE@
-MdsIpHTTP   = @MAKESHLIBDIR@@LIBPRE@MdsIpHTTP@SHARETYPE@
-MdsIpLOCAL  = @MAKESHLIBDIR@@LIBPRE@MdsIpLOCAL@SHARETYPE@
 MdsIpTCPV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpTCPV6@SHARETYPE@
 MdsIpUDT    = @MAKESHLIBDIR@@LIBPRE@MdsIpUDT@SHARETYPE@
 MdsIpUDTV6  = @MAKESHLIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
@@ -57,8 +56,8 @@ LIB_SOURCES = MdsValue.c MdsPut.c MdsOpen.c MdsClose.c MdsSetDefault.c MdsEventA
 	MdsEventCan.c MdsDispatchEvent.c MdsSetCompression.c FreeMessage.c \
 	IdlApi.c SendMdsMsg.c GetMdsMsg.c FlipData.c FlipHeader.c GetAnswerInfo.c ClientType.c \
 	MakeDescrip.c LoadIo.c ArgLen.c GetSetSettings.c DoMessage.c  \
-	LockAsts.c Connections.c MdsIpFree.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c \
-	CheckClient.c ParseCommand.c
+	LockAsts.c Connections.c SendArg.c ConnectToMds.c DisconnectFromMds.c CloseConnection.c \
+	CheckClient.c ParseCommand.c IoRoutinesTunnel.c IoRoutinesThread.c
 
 LIB_OBJECTS = $(LIB_SOURCES:.c=.o)
 
@@ -82,10 +81,8 @@ UDT4_DIRS = @builddir@/udt4/src @builddir@/udt4/udtc
 UDT4_OBJECTS=$(UDT4_SOURCES:.cpp=.o)
 UDT_OBJECTS = IoRoutinesUdt.o  $(UDT4_OBJECTS)
 UDTV6_OBJECTS = IoRoutinesUdtV6.o $(UDT4_OBJECTS)
-TUNNEL_SOURCES = IoRoutinesTunnel.c
-TUNNEL_OBJECTS = $(TUNNEL_SOURCES:.c=.o)
-CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS) $(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
-ALL_SOURCES = $(LIB_SOURCES) $(TUNNEL_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURCES)
+CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TCP_OBJECTS) $(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS) $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS)
+ALL_SOURCES = $(LIB_SOURCES) $(TCP_SOURCES) $(SERVER_LIB_SOURCES) $(SERVER_SOURCES)
 
 bin_SCRIPTS =
 @MINGW_TRUE@bin_SCRIPTS += @MAKEBINDIR@mdsip_service.exe.manifest
@@ -108,7 +105,7 @@ ifneq "@GLOBUS_FLAVOR@" ""
 
 MdsIpGSI = @MAKESHLIBDIR@@LIBPRE@MdsIpGSI@SHARETYPE@
 ALL_SOURCES = $(ALL_SOURCES) $(GSI_SOURCES)
-CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TUNNEL_OBJECTS) $(TCP_OBJECTS)\
+CLEAN_OBJECTS = $(COMPRESSION_OBJECTS) $(LIB_OBJECTS) $(TCP_OBJECTS)\
 	$(TCPV6_OBJECTS) $(UDT_OBJECTS) $(UDTV6_OBJECTS)\
 	 $(SERVER_LIB_OBJECTS) $(SERVER_OBJECTS) IoRoutinesGsi.o 
 MDSIPSD = @MAKEBINDIR@mdsipsd
@@ -117,11 +114,10 @@ endif #GLOBUS_FLAVOR
 
 PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip$(EXE) @MAKEBINDIR@mdsiptest$(EXE) $(MDSIP_SERVICE)
 
-EXPORTS = mdsipshr.export
+EXPORTS = MdsIpShr.exports
 
 all : primary
 	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@
-	$(MAKE) tertiary  @MAKEFLAG_J@  @MAKEFLAG_O@
 
 primary : \
 	$(MAKEFILE_HEADER) \
@@ -133,19 +129,14 @@ primary : \
 secundary : primary \
 	$(modules) \
 	$(MdsIpSrvShr) \
-	$(MdsIpTunnel) \
 	$(MdsIpTCP) \
+	$(MdsIpTCPV6) \
 	$(IPV6_UDT) \
 	$(MdsIpGSI) \
 	$(MDSIPSD) \
 	@MAKEETCDIR@mdsip.hosts \
 	@MAKEETCDIR@multi.hosts \
 	@MAKELIBDIR@@LIBPRE@MdsIpShr.a
-
-tertiary : secundary \
-	$(MdsIpSSH) \
-	$(MdsIpHTTP) \
-	$(MdsIpLOCAL)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(ALL_SOURCES)
@@ -159,14 +150,10 @@ clean :
 	@ $(RM) @MAKEETCDIR@mdsip.hosts
 	@ $(RM) @MAKEETCDIR@multi.hosts
 	@ $(RM) $(MdsIpSrvShr)
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCP@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpTCPV6@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUDT@SHARETYPE@
 	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpUDTV6@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpSSH@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpHTTP@SHARETYPE@
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsIpLOCAL@SHARETYPE@
         ifdef MdsIpGSI
 	@ $(RM) $(MdsIpGSI)
 	@ $(RM) $(MDSIPSD)
@@ -184,15 +171,9 @@ install: $(bindir) $(libdir) $(sysconfdir)
 	$(INSTALL) -m 755  @MAKEETCDIR@mdsip.hosts $(sysconfdir)
 	$(INSTALL) -m 755  @MAKEETCDIR@multi.hosts $(sysconfdir)
 	$(INSTALL) -m 755 $(MdsIpSrvShr) @libdir@
-	$(INSTALL) -m 755 $(MdsIpTunnel) @libdir@
 	$(INSTALL) -m 755 $(MdsIpTCP) @libdir@
+	$(INSTALL) -m 755 $(MdsIpTCPV6) @libdir@
 @MINGW_FALSE@	$(INSTALL) -m 755 $(IPV6_UDT) @libdir@
-@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpSSH) @libdir@
-@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpHTTP) @libdir@
-@MINGW_TRUE@	$(INSTALL) -m 755 $(MdsIpLOCAL) @libdir@
-@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpSSH))
-@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpHTTP))
-@MINGW_FALSE@	ln -sf $$(basename $(MdsIpTunnel)) @libdir@/$$(basename $(MdsIpLOCAL))
         ifdef MdsIpGSI
 		$(INSTALL) -m 755 $(MdsIpGSI) @libdir@
         endif
@@ -215,7 +196,7 @@ MDSIP_EXTRALIB = -lMdsIpSrvShr
 @MAKEBINDIR@mdsip$(EXE): $(SERVER_OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
 
-MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr
+MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr
 
 @MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(AR) -cr $@ $^
@@ -230,15 +211,12 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
 $(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(DEF)
-	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) -lTreeShr $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
+	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) -lTreeShr -lMdsShr $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
 
-LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr
+LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)
 $(MdsIpSrvShr): $(SERVER_LIB_OBJECTS) $(MdsIpShr)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(SERVER_LIB_OBJECTS) $(LINK_MDSIPSHR) -lMdsShr -lTreeShr -lTdiShr $(LIBS) $(MAKE_IMPLIB_MdsIpSrvShr)
-
-$(MdsIpTunnel): $(TUNNEL_OBJECTS) $(MdsIpShr)
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(TUNNEL_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(SERVER_LIB_OBJECTS) $(LINK_MDSIPSHR) -lTreeShr -lTdiShr $(LIBS) $(MAKE_IMPLIB_MdsIpSrvShr)
 
 $(MdsIpTCP): $(TCP_OBJECTS) $(MdsIpShr)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(TCP_OBJECTS) $(LINK_MDSIPSHR) $(LIBS)
@@ -256,11 +234,6 @@ $(MdsIpUDT): $(UDT4_DIRS) $(UDT_OBJECTS) $(MdsIpShr)
 
 $(MdsIpUDTV6): $(UDT4_DIRS) $(UDTV6_OBJECTS) $(MdsIpShr)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) @LINKSHARED@ $(LDFLAGS) $(UDTV6_OBJECTS) $(CXXFLAGS) $(LINK_MDSIPSHR) $(LIBS)
-
-@MINGW_TRUE@ LN_TUNNEL=cp @MAKELIBDIR@@LIBPRE@MdsIpTunnel@SHARETYPE@
-@MINGW_FALSE@ LN_TUNNEL=ln -sf @LIBPRE@MdsIpTunnel@SHARETYPE@
-$(MdsIpSSH) $(MdsIpHTTP) $(MdsIpLOCAL):
-	$(LN_TUNNEL) $@
 
 @MAKEETCDIR@mdsip.hosts : mdsip.hosts$(WIN)
 	cp $< $@

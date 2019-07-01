@@ -83,7 +83,7 @@ static void DoOpenTree(LinkedEvent * event);
 //#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
 //#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
 
-static char *current_tree = NULL;
+static char current_tree[13] = {0};
 static int current_shot = -9999;
 static int current_phase = -9999;
 static int current_node_entry;
@@ -107,26 +107,26 @@ static int parseMsg(char *msg, LinkedEvent * event){
   if (!event->tree) return C_ERROR;
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->shot = atoi(tmp);
+  event->shot = strtol(tmp,NULL,0);
   if (event->shot <= 0) return C_ERROR;
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->phase = atoi(tmp);
+  event->phase = strtol(tmp,NULL,0);
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->nid = atoi(tmp);
+  event->nid = strtol(tmp,NULL,0);
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->on = atoi(tmp);
+  event->on = strtol(tmp,NULL,0);
   if (event->on != 0 && event->on != 1) return C_ERROR;
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->mode = atoi(tmp);
+  event->mode = strtol(tmp,NULL,0);
   event->server = strtok(0, " ");
   if (!event->server) return C_ERROR;
   tmp = strtok(0, " ");
   if (!tmp) return C_ERROR;
-  event->status = atoi(tmp);
+  event->status = strtol(tmp,NULL,0);
   event->fullpath = strtok(0, " ");
   if (!event->fullpath) return C_ERROR;
   event->time = strtok(0, ";");
@@ -153,8 +153,7 @@ inline static void _DoTimer(){
   //while (sleep(100)==0)
   while ((ev = GetQEvent())) {
     EventUpdate(ev);
-    if (ev->msg)
-      free(ev->msg);
+    free(ev->msg);
     free(ev);
   }
 }
@@ -177,8 +176,7 @@ static void MessageAst(void* dummy __attribute__ ((unused)), char *reply){
     QEvent(event);
     return;
   }
-  if (event->msg)
-    free(event->msg);
+  free(event->msg);
   free(event);
   CheckIn(0);
 }
@@ -203,15 +201,13 @@ inline static void _EventUpdate(LinkedEvent * event){
   }
 }
 
-inline static void _DoOpenTree(LinkedEvent * event)
-{
+inline static void _DoOpenTree(LinkedEvent * event){
   current_node_entry = 0;
   current_on = -1;
   current_phase = 9999;
   if ((event->shot != current_shot) || strcmp(event->tree, current_tree)) {
     current_shot = event->shot;
-    current_tree = realloc(current_tree, strlen(event->tree) + 1);
-    strcpy(current_tree, event->tree);
+    if (event->tree) strncpy(current_tree,event->tree,12);
     PutLog(event->time, "NEW SHOT", (char *)asterisks, (char *)asterisks, current_tree);
   }
 }
@@ -222,12 +218,13 @@ static void Phase(LinkedEvent * event){
   static DESCRIPTOR(const phase_lookup, "PHASE_NAME_LOOKUP($)");
   static struct descriptor phase_d = { sizeof(int), DTYPE_L, CLASS_S, 0 };
   phase_d.pointer = (char *)&event->phase;
+  if (current_shot == -9999) current_shot = event->shot;
   if (current_phase != event->phase) {
     if (!(TdiExecute(&phase_lookup, &phase_d, &phase MDS_END_ARG) & 1))
       StrCopyDx((struct descriptor *)&phase, (struct descriptor *)&unknown);
     char *str = MdsDescrToCstring(&phase);
     PutLog(event->time, "PHASE", (char *)asterisks, (char *)asterisks, str);
-    if (str) free(str);
+    free(str);
     current_phase = event->phase;
   }
 }

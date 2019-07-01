@@ -34,24 +34,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //  LoadIo  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
+extern IoRoutines tunnel_routines;
+extern IoRoutines thread_routines;
+
 IoRoutines *LoadIo(char *protocol_in){
-  IoRoutines *(*rtn) () = NULL;
-  if (protocol_in == 0)
-    protocol_in = "TCP";
+  if (protocol_in == 0) protocol_in = "TCP";
   char *protocol = strcpy((char *)malloc(strlen(protocol_in) + 1), protocol_in);
   size_t i;
-  for (i = 0; i < strlen(protocol) ; i++)
-    protocol[i] = toupper(protocol[i]);
+  for (i = 0; i < strlen(protocol) ; i++) protocol[i] = toupper(protocol[i]);
+  if (strcmp(protocol,"THREAD")==0) {
+    free(protocol);
+    return &thread_routines;
+  }
   char* image = strcpy((char *)malloc(strlen(protocol) + 36), "MdsIp");
   strcat(image, protocol);
-  int ok = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
+  free(protocol);
+  IoRoutines *(*rtn) () = NULL;
+  int status = LibFindImageSymbol_C(image, "Io", (void**)&rtn);
   free(image);
-  if (ok && rtn) {
-    free(protocol);
-    return rtn();
-  } else {
-    fprintf(stderr, "Protocol %s is not supported\n", protocol);
-    free(protocol);
-    return NULL;
-  }
+  if (STATUS_OK && rtn) return rtn();
+  return &tunnel_routines;
 }
+

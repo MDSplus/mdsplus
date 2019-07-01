@@ -34,11 +34,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
 		      int nid, int on, int mode, char *server, int actstatus) {
   static int initialized=B_FALSE;
   static char *event = NULL;
-  char now[64];
-  time_t tim;
-  tim = time(0);
-  strcpy(now, ctime(&tim));
-  now[strlen(now) - 1] = 0;
+  char now[32];Now32(now);
   const char*        event_str = "event:";
   const unsigned int event_len = strlen(event_str);
   if (!initialized) {
@@ -60,7 +56,7 @@ int ServerSendMonitor(char *monitor, char *tree, int shot, int phase,
 			  actstatus, path ? path : "unknown", now, status_text);
     eventmsg[msglen]=0;
     int status = MDSEvent(event,msglen+1,eventmsg);
-    if (path) free(path);
+    free(path);
     return status;
   }//else
   struct descrip p1, p2, p3, p4, p5, p6, p7, p8;

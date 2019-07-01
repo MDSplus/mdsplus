@@ -1,8 +1,13 @@
 include @top_builddir@/Makefile.inc
 
-VPATH = @srcdir@
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+MKDIR_P=@MKDIR_P@
+@AX_RECONFIGURE_TARGET@
 
 SOURCES = tditest.c
+@MINGW_TRUE@ SOURCES += icon.o
 
 all : @MAKEBINDIR@ @MAKEBINDIR@tditest$(EXE)
 

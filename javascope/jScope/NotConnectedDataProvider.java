@@ -14,21 +14,21 @@ class NotConnectedDataProvider implements DataProvider
     final String error = "Not Connected";
 
 
-    public WaveData GetWaveData(String in)
+    public WaveData GetWaveData(String in, int row, int col, int index)
     {
-        return null;
+	return null;
     }
-    public WaveData GetWaveData(String in_y, String in_x)
+    public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
     {
-        return null;
+	return null;
     }
     public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
     {
-        return null;
+	return null;
     }
     public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
     {
-        return null;
+	return null;
     }
     public void enableAsyncUpdate(boolean enable){}
 
@@ -49,36 +49,36 @@ class NotConnectedDataProvider implements DataProvider
     {
     }
 
-    public String GetString(String in)
+    public String GetString(String in, int row, int col, int index)
     {
-        return "";
+	return "";
     }
 
-    public double GetFloat(String in)
+    public double GetFloat(String in, int row, int col, int index)
     {
-        return Double.parseDouble(in);
+	return Double.parseDouble(in);
     }
 
     public float[] GetFloatArray(String in_x, String in_y, float start, float end)
     {
-        return null;
+	return null;
     }
 
     public float[] GetFloatArray(String in)
     {
-        return null;
+	return null;
     }
 
     public long[] GetShots(String in)
     {
-        long d[] = new long[1];
-        d[0] = 0;
-        return d;
+	long d[] = new long[1];
+	d[0] = 0;
+	return d;
     }
 
     public String ErrorString()
     {
-        return error;
+	return error;
     }
 
     public void AddUpdateEventListener(UpdateEventListener l, String event)
@@ -100,11 +100,11 @@ class NotConnectedDataProvider implements DataProvider
 
     public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
     {
-        return null;
+	return null;
     }
 
     public boolean DataPending()
     {
-        return false;
+	return false;
     }
 }

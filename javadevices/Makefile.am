@@ -27,6 +27,8 @@ TRCFSetup.java \
 Aurora14Setup.java \
 ACQD265Setup.java \
 NI6071ESetup.java\
+NI6683Setup.java\
+SOFT_TRIGGERSetup.java\
 PELLETSetup.java\
 L5613Setup.java\
 RFXTimesSetup.java\
@@ -145,11 +147,13 @@ SPIDER_SMSetup.java\
 SPIDERSetup.java\
 ZELOS2150GVSetup.java\
 NI6259AISetup.java\
+NI6259EVSetup.java\
 FAKECAMERASetup.java\
 AWG2021Setup.java\
 RFXWAVESETUPSetup.java\
 RFX_PROTECTIONSSetup.java\
 FLIRSC65XSetup.java\
+BASLERACASetup.java\
 NI6368AISetup.java\
 ACQIPPSETUPSetup.java\
 DIO2_ENCDECSetup.java\
@@ -158,7 +162,15 @@ RFXVICONTROLSetup.java \
 REDPYTADCSetup.java \
 JRG_ADC32ASetup.java \
 A3248Setup.java \
-RFX_RPADCSetup.java
+MARTE_DUTY_CYCLESetup.java \
+SPIDER_SETUPSetup.java \
+RFX_RPADCSetup.java \
+PI_CAMSetup.java \
+PI_SCT320Setup.java\
+SPECTRO_CFGSetup.java \
+NI6683RECSetup.java \
+LINCMOSSetup.java  \
+PLFESetup.java
 
 java_DATA = jDevices.jar
 

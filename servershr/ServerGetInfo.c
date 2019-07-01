@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Find out what server is doing
+		Purpose: Find out what server is doing
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int SERVER$GET_INFO(int efn, struct dsc$descriptor *server, struct dsc$descripto
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 Send Ast message to server asking server to tell what it is currently
 doing.
@@ -70,8 +70,8 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
   char *ansret;
   short len = 0;
   void *mem = 0;
-  int sock = ServerConnect(server);
-  if (sock >= 0) {
+  SOCKET sock = ServerConnect(server);
+  if (sock != INVALID_SOCKET) {
     int status = SendArg(sock,(unsigned char)0,(char)DTYPE_CSTRING,(unsigned char)1,(short)strlen(cmd),0,0,cmd);
     if STATUS_OK {
       char dtype;
@@ -95,8 +95,7 @@ EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
     len = strlen(ans);
   }
   ansret = strncpy((char *)malloc(len + 1), ans, len);
-  if (mem)
-    free(mem);
+  free(mem);
   ansret[len] = 0;
   return (ansret);
 }

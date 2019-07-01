@@ -1,12 +1,14 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
-@MINGW_TRUE@ DEF=${srcdir}/mdslibidl.def
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
+@MINGW_TRUE@ DEF=${srcdir}/MdsLibIdl.def
 SOURCES = MdsLibIdl.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = mdslibidl.export
+EXPORTS = MdsLibIdl.export
 
 all : @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsLibIdl@SHARETYPEMOD@
 

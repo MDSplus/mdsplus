@@ -9,12 +9,12 @@
  * @author  taliercio
  */
 public class FASTCAMSetup extends DeviceSetup {
-    
+
     /** Creates new form FASTCAMSetup */
     public FASTCAMSetup() {
-        initComponents();
+	initComponents();
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -22,260 +22,260 @@ public class FASTCAMSetup extends DeviceSetup {
      */
     // <editor-fold defaultstate="collapsed" desc=" Generated Code ">//GEN-BEGIN:initComponents
     private void initComponents() {
-        jPanel1 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel6 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceField2 = new DeviceField();
-        deviceChoice8 = new DeviceChoice();
-        jPanel7 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
-        deviceField3 = new DeviceField();
-        jPanel12 = new javax.swing.JPanel();
-        deviceChoice5 = new DeviceChoice();
-        deviceField14 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceChoice3 = new DeviceChoice();
-        deviceField4 = new DeviceField();
-        deviceField5 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChoice4 = new DeviceChoice();
-        deviceChoice6 = new DeviceChoice();
-        deviceChoice7 = new DeviceChoice();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        deviceField6 = new DeviceField();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        deviceField9 = new DeviceField();
-        jPanel10 = new javax.swing.JPanel();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        deviceField13 = new DeviceField();
-        jPanel2 = new javax.swing.JPanel();
-        deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel3 = new javax.swing.JPanel();
+	jPanel5 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel6 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceField2 = new DeviceField();
+	deviceChoice8 = new DeviceChoice();
+	jPanel7 = new javax.swing.JPanel();
+	deviceChoice2 = new DeviceChoice();
+	deviceField3 = new DeviceField();
+	jPanel12 = new javax.swing.JPanel();
+	deviceChoice5 = new DeviceChoice();
+	deviceField14 = new DeviceField();
+	jPanel8 = new javax.swing.JPanel();
+	deviceChoice3 = new DeviceChoice();
+	deviceField4 = new DeviceField();
+	deviceField5 = new DeviceField();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChoice4 = new DeviceChoice();
+	deviceChoice6 = new DeviceChoice();
+	deviceChoice7 = new DeviceChoice();
+	jPanel4 = new javax.swing.JPanel();
+	jPanel11 = new javax.swing.JPanel();
+	deviceField6 = new DeviceField();
+	deviceField7 = new DeviceField();
+	deviceField8 = new DeviceField();
+	deviceField9 = new DeviceField();
+	jPanel10 = new javax.swing.JPanel();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField12 = new DeviceField();
+	deviceField13 = new DeviceField();
+	jPanel2 = new javax.swing.JPanel();
+	deviceButtons1 = new DeviceButtons();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("Photron Fast Camera");
-        setDeviceType("FASTCAM");
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+	setDeviceProvider("localhost");
+	setDeviceTitle("Photron Fast Camera");
+	setDeviceType("FASTCAM");
+	jPanel1.setLayout(new java.awt.GridLayout(2, 0));
 
-        jPanel3.setLayout(new java.awt.GridLayout(6, 0));
+	jPanel3.setLayout(new java.awt.GridLayout(6, 0));
 
-        jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+	jPanel5.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment");
-        deviceField1.setNumCols(25);
-        deviceField1.setOffsetNid(1);
-        jPanel5.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment");
+	deviceField1.setNumCols(25);
+	deviceField1.setOffsetNid(1);
+	jPanel5.add(deviceField1);
 
-        jPanel5.add(deviceDispatch1);
+	jPanel5.add(deviceDispatch1);
 
-        jPanel3.add(jPanel5);
+	jPanel3.add(jPanel5);
 
-        jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+	jPanel6.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Mode:");
-        deviceChoice1.setOffsetNid(3);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice1);
+	deviceChoice1.setChoiceItems(new String[] {"LOCAL", "REMOTE"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Mode:");
+	deviceChoice1.setOffsetNid(3);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel6.add(deviceChoice1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("IP Address:");
-        deviceField2.setNumCols(15);
-        deviceField2.setOffsetNid(4);
-        jPanel6.add(deviceField2);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("IP Address:");
+	deviceField2.setNumCols(15);
+	deviceField2.setOffsetNid(4);
+	jPanel6.add(deviceField2);
 
-        deviceChoice8.setChoiceItems(new String[] {"OFF", "ON", "LOAD"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Calibrate:");
-        deviceChoice8.setOffsetNid(8);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel6.add(deviceChoice8);
+	deviceChoice8.setChoiceItems(new String[] {"OFF", "ON", "LOAD"});
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString("Calibrate:");
+	deviceChoice8.setOffsetNid(8);
+	deviceChoice8.setUpdateIdentifier("");
+	jPanel6.add(deviceChoice8);
 
-        jPanel3.add(jPanel6);
+	jPanel3.add(jPanel6);
 
-        jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+	jPanel7.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Trig. Mode");
-        deviceChoice2.setOffsetNid(6);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel7.add(deviceChoice2);
+	deviceChoice2.setChoiceItems(new String[] {"INTERNAL", "EXTERNAL"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Trig. Mode");
+	deviceChoice2.setOffsetNid(6);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel7.add(deviceChoice2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("Trig Source:");
-        deviceField3.setNumCols(25);
-        deviceField3.setOffsetNid(7);
-        jPanel7.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("Trig Source:");
+	deviceField3.setNumCols(25);
+	deviceField3.setOffsetNid(7);
+	jPanel7.add(deviceField3);
 
-        jPanel3.add(jPanel7);
+	jPanel3.add(jPanel7);
 
-        jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+	jPanel12.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        deviceChoice5.setChoiceItems(new String[] {"VIDEO", "DATA", "VIDEO & DATA"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Acquisition Mode:");
-        deviceChoice5.setOffsetNid(5);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel12.add(deviceChoice5);
+	deviceChoice5.setChoiceItems(new String[] {"VIDEO", "DATA", "VIDEO & DATA"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("Acquisition Mode:");
+	deviceChoice5.setOffsetNid(5);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel12.add(deviceChoice5);
 
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Resample Source:");
-        deviceField14.setOffsetNid(13);
-        jPanel12.add(deviceField14);
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("Resample Source:");
+	deviceField14.setOffsetNid(13);
+	jPanel12.add(deviceField14);
 
-        jPanel3.add(jPanel12);
+	jPanel3.add(jPanel12);
 
-        jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+	jPanel8.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceChoice3.setChoiceItems(new String[] {"TRUE", "FALSE"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Use Time:");
-        deviceChoice3.setOffsetNid(9);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice3);
+	deviceChoice3.setChoiceItems(new String[] {"TRUE", "FALSE"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("Use Time:");
+	deviceChoice3.setOffsetNid(9);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Duration:");
-        deviceField4.setOffsetNid(12);
-        jPanel8.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Duration:");
+	deviceField4.setOffsetNid(12);
+	jPanel8.add(deviceField4);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("N. Frames:");
-        deviceField5.setOffsetNid(10);
-        jPanel8.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("N. Frames:");
+	deviceField5.setOffsetNid(10);
+	jPanel8.add(deviceField5);
 
-        jPanel3.add(jPanel8);
+	jPanel3.add(jPanel8);
 
-        jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
+	jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 5, 0));
 
-        deviceChoice4.setChoiceItems(new String[] {"1024x1024", "1024x512", "1024x256", "1024x128", "1024x64", "1024x32", "1024x16", "512x512", "512x256", "512x128", "512x64", "512x32", "512x16", "256x1024", "256x512", "256x256", "256x128", "256x64", "256x32", "256x16", "128x1024", "128x512", "128x256", "128x128", "128x64", "128x32", "128x16"});
-        deviceChoice4.setIdentifier("resolution");
-        deviceChoice4.setLabelString("Resolution:");
-        deviceChoice4.setOffsetNid(14);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice4);
+	deviceChoice4.setChoiceItems(new String[] {"1024x1024", "1024x512", "1024x256", "1024x128", "1024x64", "1024x32", "1024x16", "512x512", "512x256", "512x128", "512x64", "512x32", "512x16", "256x1024", "256x512", "256x256", "256x128", "256x64", "256x32", "256x16", "128x1024", "128x512", "128x256", "128x128", "128x64", "128x32", "128x16"});
+	deviceChoice4.setIdentifier("resolution");
+	deviceChoice4.setLabelString("Resolution:");
+	deviceChoice4.setOffsetNid(14);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice4);
 
-        deviceChoice6.setChoiceIntValues(new int[] {(int)109500,(int)73000,(int)45000,(int)27000,(int)18000,(int)10000,(int)6000,(int)3000,(int)2000,(int)1000,(int)500,(int)250,(int)125,(int)60});
-        deviceChoice6.setChoiceItems(new String[] {"109500", "73000", "45000", "27000", "18000", "10000", "6000", "3000", "2000", "1000", "500", "250", "125", "60"});
-        deviceChoice6.setIdentifier("frameRate");
-        deviceChoice6.setLabelString("Frame Rate:");
-        deviceChoice6.setOffsetNid(15);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice6);
+	deviceChoice6.setChoiceIntValues(new int[] {(int)109500,(int)73000,(int)45000,(int)27000,(int)18000,(int)10000,(int)6000,(int)3000,(int)2000,(int)1000,(int)500,(int)250,(int)125,(int)60});
+	deviceChoice6.setChoiceItems(new String[] {"109500", "73000", "45000", "27000", "18000", "10000", "6000", "3000", "2000", "1000", "500", "250", "125", "60"});
+	deviceChoice6.setIdentifier("frameRate");
+	deviceChoice6.setLabelString("Frame Rate:");
+	deviceChoice6.setOffsetNid(15);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice6);
 
-        deviceChoice7.setChoiceIntValues(new int[] {(int)60,(int)125,(int)250,(int)500,(int)1000,(int)2000,(int)3000,(int)4000,(int)5000,(int)6000,(int)7000,(int)8000,(int)9000,(int)10000,(int)11000,(int)12000,(int)13000,(int)14000,(int)15000,(int)16000,(int)17000,(int)18000,(int)19000,(int)20000,(int)21000,(int)22000,(int)23000,(int)24000,(int)25000,(int)26000,(int)27000,(int)28000,(int)29000,(int)31000,(int)33000,(int)35000,(int)37000,(int)40000,(int)43000,(int)45000,(int)47000,(int)51000,(int)57000,(int)64000,(int)72000,(int)73000,(int)84000,(int)100000,(int)109500,(int)122000,(int)159000,(int)227000,(int)303000,(int)402000,(int)505000,(int)657000});
-        deviceChoice7.setChoiceItems(new String[] {"1/60", "1/125", "1/250", "1/500", "1/1000", "1/2000", "1/3000", "1/4000", "1/5000", "1/6000", "1/7000", "1/8000", "1/9000", "1/10000", "1/11000", "1/12000", "1/13000", "1/14000", "1/15000", "1/16000", "1/17000", "1/18000", "1/19000", "1/20000", "1/21000", "1/22000", "1/23000", "1/24000", "1/25000", "1/26000", "1/27000", "1/28000", "1/29000", "1/31000", "1/33000", "1/35000", "1/37000", "1/40000", "1/43000", "1/45000", "1/47000", "1/51000", "1/57000", "1/64000", "1/72000", "1/73000", "1/84000", "1/100000", "1/109500", "1/122000", "1/159000", "1/227000", "1/303000", "1/402000", "1/505000", "1/657000"});
-        deviceChoice7.setConvert(true);
-        deviceChoice7.setIdentifier("shutter");
-        deviceChoice7.setLabelString("Shutter:");
-        deviceChoice7.setOffsetNid(16);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel9.add(deviceChoice7);
+	deviceChoice7.setChoiceIntValues(new int[] {(int)60,(int)125,(int)250,(int)500,(int)1000,(int)2000,(int)3000,(int)4000,(int)5000,(int)6000,(int)7000,(int)8000,(int)9000,(int)10000,(int)11000,(int)12000,(int)13000,(int)14000,(int)15000,(int)16000,(int)17000,(int)18000,(int)19000,(int)20000,(int)21000,(int)22000,(int)23000,(int)24000,(int)25000,(int)26000,(int)27000,(int)28000,(int)29000,(int)31000,(int)33000,(int)35000,(int)37000,(int)40000,(int)43000,(int)45000,(int)47000,(int)51000,(int)57000,(int)64000,(int)72000,(int)73000,(int)84000,(int)100000,(int)109500,(int)122000,(int)159000,(int)227000,(int)303000,(int)402000,(int)505000,(int)657000});
+	deviceChoice7.setChoiceItems(new String[] {"1/60", "1/125", "1/250", "1/500", "1/1000", "1/2000", "1/3000", "1/4000", "1/5000", "1/6000", "1/7000", "1/8000", "1/9000", "1/10000", "1/11000", "1/12000", "1/13000", "1/14000", "1/15000", "1/16000", "1/17000", "1/18000", "1/19000", "1/20000", "1/21000", "1/22000", "1/23000", "1/24000", "1/25000", "1/26000", "1/27000", "1/28000", "1/29000", "1/31000", "1/33000", "1/35000", "1/37000", "1/40000", "1/43000", "1/45000", "1/47000", "1/51000", "1/57000", "1/64000", "1/72000", "1/73000", "1/84000", "1/100000", "1/109500", "1/122000", "1/159000", "1/227000", "1/303000", "1/402000", "1/505000", "1/657000"});
+	deviceChoice7.setConvert(true);
+	deviceChoice7.setIdentifier("shutter");
+	deviceChoice7.setLabelString("Shutter:");
+	deviceChoice7.setOffsetNid(16);
+	deviceChoice7.setUpdateIdentifier("");
+	jPanel9.add(deviceChoice7);
 
-        jPanel3.add(jPanel9);
+	jPanel3.add(jPanel9);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        jPanel4.setLayout(new java.awt.GridLayout(1, 2));
+	jPanel4.setLayout(new java.awt.GridLayout(1, 2));
 
-        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Camera Info"));
-        jPanel11.setLayout(new java.awt.GridLayout(4, 0));
+	jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Camera Info"));
+	jPanel11.setLayout(new java.awt.GridLayout(4, 0));
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Model:");
-        deviceField6.setNumCols(18);
-        deviceField6.setOffsetNid(20);
-        deviceField6.setTextOnly(true);
-        jPanel11.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Model:");
+	deviceField6.setNumCols(18);
+	deviceField6.setOffsetNid(20);
+	deviceField6.setTextOnly(true);
+	jPanel11.add(deviceField6);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Aperture:");
-        deviceField7.setNumCols(16);
-        deviceField7.setOffsetNid(22);
-        jPanel11.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Aperture:");
+	deviceField7.setNumCols(16);
+	deviceField7.setOffsetNid(22);
+	jPanel11.add(deviceField7);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Filter:");
-        deviceField8.setNumCols(17);
-        deviceField8.setOffsetNid(24);
-        deviceField8.setTextOnly(true);
-        jPanel11.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("Filter:");
+	deviceField8.setNumCols(17);
+	deviceField8.setOffsetNid(24);
+	deviceField8.setTextOnly(true);
+	jPanel11.add(deviceField8);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Tor. Pos.:");
-        deviceField9.setNumCols(15);
-        deviceField9.setOffsetNid(25);
-        deviceField9.setTextOnly(true);
-        jPanel11.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Tor. Pos.:");
+	deviceField9.setNumCols(15);
+	deviceField9.setOffsetNid(25);
+	deviceField9.setTextOnly(true);
+	jPanel11.add(deviceField9);
 
-        jPanel4.add(jPanel11);
+	jPanel4.add(jPanel11);
 
-        jPanel10.setLayout(new java.awt.GridLayout(4, 0));
+	jPanel10.setLayout(new java.awt.GridLayout(4, 0));
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("Traget Zone:");
-        deviceField10.setNumCols(14);
-        deviceField10.setOffsetNid(27);
-        deviceField10.setTextOnly(true);
-        jPanel10.add(deviceField10);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("Traget Zone:");
+	deviceField10.setNumCols(14);
+	deviceField10.setOffsetNid(27);
+	deviceField10.setTextOnly(true);
+	jPanel10.add(deviceField10);
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("F Distance:");
-        deviceField11.setNumCols(15);
-        deviceField11.setOffsetNid(23);
-        jPanel10.add(deviceField11);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("F Distance:");
+	deviceField11.setNumCols(15);
+	deviceField11.setOffsetNid(23);
+	jPanel10.add(deviceField11);
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Lens Type:");
-        deviceField12.setNumCols(15);
-        deviceField12.setOffsetNid(21);
-        deviceField12.setTextOnly(true);
-        jPanel10.add(deviceField12);
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("Lens Type:");
+	deviceField12.setNumCols(15);
+	deviceField12.setOffsetNid(21);
+	deviceField12.setTextOnly(true);
+	jPanel10.add(deviceField12);
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Pol. Pos.:");
-        deviceField13.setNumCols(16);
-        deviceField13.setOffsetNid(26);
-        deviceField13.setTextOnly(true);
-        jPanel10.add(deviceField13);
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("Pol. Pos.:");
+	deviceField13.setNumCols(16);
+	deviceField13.setOffsetNid(26);
+	deviceField13.setTextOnly(true);
+	jPanel10.add(deviceField13);
 
-        jPanel4.add(jPanel10);
+	jPanel4.add(jPanel10);
 
-        jPanel1.add(jPanel4);
+	jPanel1.add(jPanel4);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
-        deviceButtons1.setCheckExpressions(new String[] {"((FastCamCheckFrameRate( _resolution ) - _frameRate ) >=  0 )", "( ( _frameRate == _shutter ) ||  (FastCamCheckShutter( _resolution,  _shutter) - _shutter )  ==  0 )", "( _shutter >= _frameRate ) "});
-        deviceButtons1.setCheckMessages(new String[] {"FAULT : invalid frame rate value", "WARNING : shutter is approximate to the nearest correct value", "FAULT : frame period must be equal or greater than shutter period."});
-        deviceButtons1.setMethods(new String[] {"init", "trigger", "store", "calibrate"});
-        jPanel2.add(deviceButtons1);
+	deviceButtons1.setCheckExpressions(new String[] {"((FastCamCheckFrameRate( _resolution ) - _frameRate ) >=  0 )", "( ( _frameRate == _shutter ) ||  (FastCamCheckShutter( _resolution,  _shutter) - _shutter )  ==  0 )", "( _shutter >= _frameRate ) "});
+	deviceButtons1.setCheckMessages(new String[] {"FAULT : invalid frame rate value", "WARNING : shutter is approximate to the nearest correct value", "FAULT : frame period must be equal or greater than shutter period."});
+	deviceButtons1.setMethods(new String[] {"init", "trigger", "store", "calibrate"});
+	jPanel2.add(deviceButtons1);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
+	getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
 
-        pack();
+	pack();
     }// </editor-fold>//GEN-END:initComponents
-    
+
     /**
      * @param args the command line arguments
      */
     public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new FASTCAMSetup().setVisible(true);
-            }
-        });
+	java.awt.EventQueue.invokeLater(new Runnable() {
+	    public void run() {
+	        new FASTCAMSetup().setVisible(true);
+	    }
+	});
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
@@ -314,5 +314,5 @@ public class FASTCAMSetup extends DeviceSetup {
     private javax.swing.JPanel jPanel8;
     private javax.swing.JPanel jPanel9;
     // End of variables declaration//GEN-END:variables
-    
+
 }

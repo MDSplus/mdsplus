@@ -29,10 +29,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "mdsip_connections.h"
+#include "mdsIo.h"
 #include <pthread_port.h>
 
-
-//#define DEBUG
+#ifdef DEBUG
+ #define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+ #define DBG(...) {/**/}
+#endif
 
 static Connection *ConnectionList = NULL;
 static pthread_mutex_t connection_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -51,28 +55,51 @@ Connection *FindConnection(int id, Connection ** prev){
   Connection *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, prev);
+  if (c && c->state & CON_DISCONNECT) c = NULL;
   CONNECTIONLIST_UNLOCK;
   return c;
 }
 
-Connection *FindConnectionWithLock(int id, char state){
+Connection *FindConnectionSending(int id){
+  Connection *c;
+  CONNECTIONLIST_LOCK;
+  c = _FindConnection(id, NULL);
+  if (c && c->state != CON_SENDARG) {
+    if (c->state & CON_SENDARG) {
+      c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
+      DBG("Connection %02d -> %02x unlocked\n",c->id,c->state);
+      pthread_cond_signal(&c->cond);
+    }
+    c = NULL;
+  }
+  CONNECTIONLIST_UNLOCK;
+  return c;
+}
+
+EXPORT int GetConnectionVersion(int id){
+  int version;
+  CONNECTIONLIST_LOCK;
+  Connection *c = _FindConnection(id, NULL);
+  version = c ? (int)c->version : -1;
+  CONNECTIONLIST_UNLOCK;
+  return version;
+}
+
+
+Connection *FindConnectionWithLock(int id, con_t state){
   Connection *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
   if (c) {
-    while (c->state>0) {
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -- %02x waiting\n",c->id,(unsigned char)state);
-#endif
+    while (c->state & ~CON_DISCONNECT) {
+      DBG("Connection %02d -- %02x waiting\n",c->id,state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
-    if (c->state<0) {
+    if (c->state & CON_DISCONNECT) {
       pthread_cond_signal(&c->cond); // pass on signal
       c = NULL;
     } else {
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -> %02x   locked\n",c->id,(unsigned char)state);
-#endif
+      DBG("Connection %02d -> %02x   locked\n",c->id,state);
       c->state = state;
     }
   }
@@ -80,20 +107,19 @@ Connection *FindConnectionWithLock(int id, char state){
   return c;
 }
 
-void UnlockConnection(Connection* c) {
+void UnlockConnection(Connection* c_in) {
+  CONNECTIONLIST_LOCK;
+  Connection *c; // check if not yet freed
+  for (c = ConnectionList; c && c != c_in; c = c->next);
   if (c) {
-    CONNECTIONLIST_LOCK;
     c->state &= CON_DISCONNECT; // preserve CON_DISCONNECT
-#ifdef DEBUG
-      fprintf(stderr,"Connection %02d -> %02x unlocked\n",c->id,(unsigned char)c->state);
-#endif
+    DBG("Connection %02d -> %02x unlocked\n",c->id,c->state);
     pthread_cond_signal(&c->cond);
-    CONNECTIONLIST_UNLOCK;
   }
+  CONNECTIONLIST_UNLOCK;
 }
 
 #define CONNECTION_UNLOCK_PUSH(c) pthread_cleanup_push((void*)UnlockConnection,(void*)c)
-#define CONNECTION_LOCK(c,state)  LockConnection(c,state);CONNECTION_UNLOCK_PUSH(c)
 #define CONNECTION_UNLOCK(c)      pthread_cleanup_pop(1)
 
 int NextConnection(void **ctx, char **info_name, void **info, size_t * info_len){//check
@@ -169,39 +195,47 @@ static void registerHandler(){
 ////////////////////////////////////////////////////////////////////////////////
 
 void DisconnectConnectionC(Connection *c){
+  // connection should not be in list at this point
   c->io->disconnect(c);
-  if (c->info)
-    free(c->info);
+  free(c->info);
   FreeDescriptors(c);
   free(c->protocol);
   free(c->info_name);
+  free(c->rm_user);
   TreeFreeDbid(c->DBID);
   pthread_cond_destroy(&c->cond);
   free(c);
 }
 
 int DisconnectConnection(int conid){
-  INIT_STATUS_AS MDSplusERROR;
   Connection *p, *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
-  if (c) {
-    if (p == 0)
-      ConnectionList = c->next;
-    else
-      p->next = c->next;
-    c->state |= CON_DISCONNECT;
-    while (c->state&!CON_DISCONNECT) {
-      pthread_cond_broadcast(&c->cond);
-      pthread_cond_wait(&c->cond,&connection_mutex);
-    } // allow current action to finish
+  if (c && c->state & CON_DISCONNECT) c = NULL;
+  else if (c) {
+    c->state |= CON_DISCONNECT; // sets disconnect
+    pthread_cond_broadcast(&c->cond);
+    if (c->state & ~CON_DISCONNECT) { // if any task but disconnect
+      struct timespec tp;
+      clock_gettime(CLOCK_REALTIME, &tp);
+      tp.tv_sec += 10;
+      // wait upto 10 seconds to allow current task to finish
+      // while exits if no other task but disconnect or on timeout
+      while (c->state & ~CON_DISCONNECT && !pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      if (c->state & ~CON_DISCONNECT)
+        fprintf(stderr,"DisconnectConnection: Timeout waiting for connection %d state=%d", conid, c->state);
+      c = _FindConnection(conid, &p); // we were waiting, so we need to update p
+    }
+    // remove after task is complete
+    if (p)      p->next = c->next;
+    else ConnectionList = c->next;
   }
   CONNECTIONLIST_UNLOCK;
   if (c) {
     DisconnectConnectionC(c);
-    status = MDSplusSUCCESS;
+    return MDSplusSUCCESS;
   }
-  return status;
+  return MDSplusERROR;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -213,11 +247,11 @@ Connection* NewConnectionC(char *protocol){
   IoRoutines *io = LoadIo(protocol);
   if (io) {
     RUN_FUNCTION_ONCE(registerHandler);
-    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection = calloc(1,sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;
     connection->message_id = -1;
-    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
     _TreeNewDbid(&connection->DBID);
@@ -237,8 +271,7 @@ void FreeDescriptors(Connection * c){
     for (i = 0; i < MDSIP_MAX_ARGS; i++) {
       if (c->descrip[i]) {
 	if (c->descrip[i] != MdsEND_ARG) {
-	  if (c->descrip[i]->pointer)
-	    free(c->descrip[i]->pointer);
+	  free(c->descrip[i]->pointer);
 	  free(c->descrip[i]);
 	}
 	c->descrip[i] = NULL;
@@ -266,7 +299,7 @@ IoRoutines *GetConnectionIo(int conid){
 //  GetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfoC(Connection* c, char **info_name, SOCKET *readfd, size_t * len){
   if (c) {
     if (len)
       *len = c->info_len;
@@ -279,7 +312,7 @@ void *GetConnectionInfoC(Connection* c, char **info_name, int *readfd, size_t * 
   return NULL;
 }
 
-void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
+void *GetConnectionInfo(int conid, char **info_name, SOCKET *readfd, size_t * len){
   void *ans;
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
@@ -292,7 +325,7 @@ void *GetConnectionInfo(int conid, char **info_name, int *readfd, size_t * len){
 //  SetConnectionInfo  /////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, size_t len){
+void SetConnectionInfoC(Connection* c, char *info_name, SOCKET readfd, void *info, size_t len){
   if (c) {
     c->info_name = strcpy(malloc(strlen(info_name) + 1), info_name);
     if (info) {
@@ -306,7 +339,7 @@ void SetConnectionInfoC(Connection* c, char *info_name, int readfd, void *info, 
   }
 }
 
-void SetConnectionInfo(int conid, char *info_name, int readfd, void *info, size_t len){
+void SetConnectionInfo(int conid, char *info_name, SOCKET readfd, void *info, size_t len){
   CONNECTIONLIST_LOCK;
   Connection *c = _FindConnection(conid, 0);
   if (c) SetConnectionInfoC(c, info_name, readfd, info, len);
@@ -438,7 +471,7 @@ int AddConnection(Connection* c) {
 }
 
 
-int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, size_t info_len, int *id, char **usr){
+int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info, size_t info_len, int *id, char **usr){
   Connection* c = NewConnectionC(protocol);
   INIT_STATUS_ERROR;
   if (c) {
@@ -449,9 +482,8 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
     SetConnectionInfoC(c, info_name, readfd, info, info_len);
     m_user = GetMdsMsgTOC(c, &status, 10000);
     if (!m_user || STATUS_NOT_OK) {
-      if (m_user)
-	free(m_user);
-      if (usr) *usr = NULL;
+      free(m_user);
+      *usr = NULL;
       DisconnectConnectionC(c);
       return MDSplusERROR;
     }
@@ -462,23 +494,27 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       memcpy(user, m_user->bytes, m_user->h.length);
       user[m_user->h.length] = 0;
     }
+    c->rm_user = user;
     user_p = user ? user : "?";
     status = authorizeClient(c, user_p);
     // SET COMPRESSION //
     if STATUS_OK {
       c->compression_level = m_user->h.status & 0xf;
-      *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
+      c->client_type = m_user->h.client_type;
+      *usr = strdup(user_p);
+      if (m_user->h.ndims>0)
+	c->version = m_user->h.dims[0];
     } else
       *usr = NULL;
     if STATUS_NOT_OK
       fprintf(stderr, "Access denied: %s\n",user_p);
     else
       fprintf(stderr, "Connected: %s\n",user_p);
-    if (user) free(user);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
-    if (m_user)
-      MdsIpFree(m_user);
+    m.h.ndims = 1;
+    m.h.dims[0] = MDSIP_VERSION;
+    MdsIpFree(m_user);
     // reply to client //
     SendMdsMsgC(c, &m, 0);
     if STATUS_OK {
@@ -486,7 +522,7 @@ int AcceptConnection(char *protocol, char *info_name, int readfd, void *info, si
       *id = AddConnection(c);
     } else
       DisconnectConnectionC(c);
-    fflush(stderr);
+    //fflush(stderr); stderr needs no flush
   }
   return status;
 }

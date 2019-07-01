@@ -52,6 +52,7 @@ camshr/cts_commands.c
 
 # python compiled files
 *.pyc
+__pycache__/
 
 # Compiled Object files
 *.slo
@@ -94,3 +95,11 @@ autom4te.cache
 # python version module
 _version.py
 *.log
+
+.vscode/
+
+testing/MDSplus/
+testing/*Devices/
+
+# file created by release build trigger.sh script
+trigger.opts

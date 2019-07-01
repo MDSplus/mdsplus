@@ -163,8 +163,8 @@ EXPORT int GetDBStatus()
 
 EXPORT struct descriptor *GetDBMsgText_dsc() {
   return &DBMSGTEXT_DSC;
-} 
-  
+}
+
 EXPORT char *GetDBMsgText()
 {
   return DBMSGTEXT;

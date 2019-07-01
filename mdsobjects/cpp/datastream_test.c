@@ -91,7 +91,7 @@ int main(int argc, char *argv[])
 		printDecompiled(xd.pointer);
 		MdsFree1Dx(&xd, 0);
 		MdsFree1Dx(retXd, 0);
-		free((char *)retXd);
+		free(retXd);
 	}
 }
 

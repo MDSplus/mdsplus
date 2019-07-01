@@ -28,18 +28,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   17-APR-1992
 
-    		Purpose: Create a single tree pulse file
+		Purpose: Create a single tree pulse file
 
 ------------------------------------------------------------------------------
 
 	Call sequence:
 
 int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$descriptor *tree, int *shot, int *nid,
-                        void (*ast)(), int astprm, int *netid, void (*link_down)(),void (*before_ast)())
+	                void (*ast)(), int astprm, int *netid, void (*link_down)(),void (*before_ast)())
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -49,7 +49,7 @@ int SERVER$DISPATCH_ACTION(int efn, struct dsc$descriptor *server, struct dsc$de
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

@@ -24,20 +24,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   STEP_RESAMPLE   
+		Name:   STEP_RESAMPLE
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   15-AUG-1990
 
-    		Purpose: Resample a signal using stepped interpolation.
-                         Extrapolated points are set to zero.
+		Purpose: Resample a signal using stepped interpolation.
+	                 Extrapolated points are set to zero.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x);
 
@@ -49,7 +49,7 @@ struct descriptor_xd *STEP_RESAMPLE(struct descriptor *sig,struct descriptor *x)
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

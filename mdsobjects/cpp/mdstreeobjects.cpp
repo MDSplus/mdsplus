@@ -178,12 +178,12 @@ Tree::~Tree()
 {
     if(fromActiveTree) return;
     if( isModified() ) {
-        int status = _TreeQuitTree(&ctx, name.c_str(), shot);
-        (void)status;
+	int status = _TreeQuitTree(&ctx, name.c_str(), shot);
+	(void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
     } else {
-        int status = _TreeClose(&ctx, name.c_str(), shot);
+	int status = _TreeClose(&ctx, name.c_str(), shot);
        (void)status;
 //        if(!(status & 1))
 //            throw MdsException(status);
@@ -206,9 +206,9 @@ EXPORT void Tree::operator delete(void *p)
 void Tree::edit(const bool st)
 {
     if( isReadOnly() )
-        throw MdsException("Tree is read only");
+	throw MdsException("Tree is read only");
     int status = st ? _TreeOpenEdit(&ctx, name.c_str(), shot) :
-                      _TreeOpen(&ctx, name.c_str(), shot,0);
+	              _TreeOpen(&ctx, name.c_str(), shot,0);
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -416,8 +416,7 @@ int Tree::getCurrent(char const * treeName)
 
 void Tree::createPulse(int shot)
 {
-	int  retNids;
-	int status = _TreeCreatePulseFile(getCtx(), shot, 0, &retNids);
+	int status = _TreeCreatePulseFile(getCtx(), shot, 0, NULL);
 	if(!(status & 1))
 		throw MdsException(status);
 }
@@ -490,8 +489,8 @@ static T getNci(void * ctx, int nid, short int code) {
 	T value = 0;
 	int len;
 	struct nci_itm nciList[] =  {
-			{ sizeof(T), code, &value, &len},
-			{ NciEND_OF_LIST, 0, 0, 0 }
+			{ sizeof(T), (nci_t)code, &value, &len},
+			{ 0, NciEND_OF_LIST, 0, 0 }
 	};
 
 	int status = _TreeGetNci(ctx, nid, nciList);
@@ -506,8 +505,8 @@ std::string getNci(void * ctx, int nid, short int code) {
 	char value[1024] = {};
 	int len;
 	struct nci_itm nciList[] =  {
-			{ sizeof(value), code, &value, &len},
-			{ NciEND_OF_LIST, 0, 0, 0 }
+			{ sizeof(value), (nci_t)code, &value, &len},
+			{ 0, NciEND_OF_LIST, 0, 0 }
 	};
 
 	int status = _TreeGetNci(ctx, nid, nciList);
@@ -739,7 +738,7 @@ void TreeNode::setExtendedAttribute (const char *name, Data *data)
     int status = setTreeXNci(tree->getCtx(), nid, name, data->convertToDsc());
     if(!(status & 1))
 	throw MdsException(status);
-  
+
 }
 
 void TreeNode::setExtendedAttribute (std::string name, Data *data)
@@ -912,7 +911,7 @@ TreeNode **TreeNode::getChildren(int *numChildren)
 	int retLen = sizeof(int) * (nidCnt);
 	struct nci_itm nciList1[] = {
 		{ (short)retLen, NciCHILDREN_NIDS, &nids[0], &retLen },
-		{ NciEND_OF_LIST, 0, 0, 0 }
+		{ 0, NciEND_OF_LIST, 0, 0 }
 	};
 
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList1);
@@ -935,7 +934,7 @@ TreeNode **TreeNode::getMembers(int *numMembers)
 	int retLen = sizeof(int) * (nidCnt);
 	struct nci_itm nciList1[] = {
 		{ (short)retLen, NciMEMBER_NIDS, &nids[0], &retLen },
-		{ NciEND_OF_LIST, 0, 0, 0 }
+		{ 0, NciEND_OF_LIST, 0, 0 }
 	};
 
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList1);
@@ -998,7 +997,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 	int nNids;
 	struct nci_itm nciList[] =
 		{{4, NciNUMBER_OF_ELTS, (char *)&nNids, &nNidsLen},
-		{NciEND_OF_LIST, 0, 0, 0}};
+		{0, NciEND_OF_LIST, 0, 0}};
 
 	resolveNid();
 	int status = _TreeGetNci(tree->getCtx(), nid, nciList);
@@ -1008,7 +1007,7 @@ TreeNodeArray *TreeNode::getConglomerateNodes()
 	int *nids = new int[nNids];
 	struct nci_itm nciList1[] =
 	  {{(short)(4*nNids), NciCONGLOMERATE_ELT, (char *)nids, &retLen},
-		{NciEND_OF_LIST, 0, 0, 0}};
+		{0, NciEND_OF_LIST, 0, 0}};
 
 	status = _TreeGetNci(tree->getCtx(), nid, nciList1);
 	if(!(status & 1))
@@ -1252,8 +1251,8 @@ void TreeNode::getSegmentAndDimension(int segIdx, Array *&segment, Data *&dimens
 	}
 	segment   = (Array *)convertFromDsc(dataDsc, tree);
 	dimension = (Data *)convertFromDsc(dataDsc, tree);
-        freeDsc(dataDsc);
-        freeDsc(timeDsc);
+	freeDsc(dataDsc);
+	freeDsc(timeDsc);
 }
 
 Data *TreeNode::getSegmentScale()
@@ -1263,10 +1262,10 @@ Data *TreeNode::getSegmentScale()
 	//if(tree) tree->lock();
 	int status = getTreeSegmentScale(tree->getCtx(), getNid(), &sclDsc);
 	//if(tree) tree->unlock();
-        if(!(status & 1)) {
-                freeDsc(sclDsc);
-                sclDsc = NULL;
-        }
+	if(!(status & 1)) {
+	        freeDsc(sclDsc);
+	        sclDsc = NULL;
+	}
 	Data *retScl = (Data *)convertFromDsc(sclDsc, tree);
 	freeDsc(sclDsc);
 	return retScl;
@@ -1274,12 +1273,12 @@ Data *TreeNode::getSegmentScale()
 
 void TreeNode::setSegmentScale(Data *scale)
 {
-        resolveNid();
-        //if(tree) tree->lock();
-        int status = setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
-        //if(tree) tree->unlock();
-        if(!(status & 1))
-                throw MdsException(status);
+	resolveNid();
+	//if(tree) tree->lock();
+	int status = setTreeSegmentScale(tree->getCtx(), getNid(), scale->convertToDsc());
+	//if(tree) tree->unlock();
+	if(!(status & 1))
+	        throw MdsException(status);
 }
 
 void TreeNode::beginTimestampedSegment(Array *initData)

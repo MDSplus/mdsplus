@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -35,7 +35,7 @@ def Dt200WriteMaster(board, cmd, rsh):
     print "Error opening D-Tacq device %s\n\t%s" % (file ,str(e),)
     raise e
   try:
-    try:  
+    try:
       f.write(cmd+'\n')
     except Exception,e:
       print "Error writing %s to D-Tacq device %s\n\t%s" % (cmd, file ,str(e),)

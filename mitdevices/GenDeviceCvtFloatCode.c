@@ -24,25 +24,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-		Name:   GEN_DEVICE$CVT_FLOAT_CODE   
+		Name:   GEN_DEVICE$CVT_FLOAT_CODE
 
 		Type:   C function
 
-     		Author:	GABRIELE MANDUCHI
+		Author:	GABRIELE MANDUCHI
 
 		Date:   22-AUG-1989
 
-    		Purpose: Convert floating point number to code, given 
-		    translation table. 
+		Purpose: Convert floating point number to code, given
+		    translation table.
 
 ------------------------------------------------------------------------------
 
-	Call sequence: 
+	Call sequence:
 
 EXPORT int GEN_DEVICE$CVT_FLOAT_CODE(code_ptr, value, table, dimension)
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

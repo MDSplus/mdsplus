@@ -1,6 +1,7 @@
 #ifndef SERVERSHRP_H
  #define SERVERSHRP_H
  #include <mdsplus/mdsconfig.h>
+ #include <mdsdescrip.h>
  #include <pthread_port.h>
  #ifdef _WIN32
   #include <time.h>
@@ -11,39 +12,58 @@
   #endif
  #endif
 
- #define SrvNoop        0	   /**** Used to start server ****/
- #define SrvAbort       1	   /**** Abort current action or mdsdcl command ***/
- #define SrvAction      2	   /**** Execute an action nid in a tree ***/
- #define SrvClose       3	   /**** Close open trees ***/
- #define SrvCreatePulse 4	   /**** Create pulse files for single tree (no subtrees) ***/
- #define SrvSetLogging  5	   /**** Turn logging on/off ***/
- #define SrvCommand     6	   /**** Execute MDSDCL command ***/
- #define SrvMonitor     7	   /**** Broadcast messages to action monitors ***/
- #define SrvShow        8	   /**** Request current status of server ***/
- #define SrvStop        9	   /**** Stop server ***/
- #define SrvRemoveLast  10	   /**** Remove last entry in the queue if jobs pending ***/
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+// visual studio uses int types for typedef
+# define TYPEDEF(bytes) enum
+# define ENDDEF(type,name) ;typedef type name
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name
+#endif
 
- #define MonitorBuildBegin 1
- #define MonitorBuild      2
- #define MonitorBuildEnd   3
- #define MonitorCheckin    4
- #define MonitorDispatched  5
- #define MonitorDoing      6
- #define MonitorDone       7
+TYPEDEF(4) {
+SrvNoop        =0,	   /**** Used to start server ****/
+SrvAbort       =1,	   /**** Abort current action or mdsdcl command ***/
+SrvAction      =2,	   /**** Execute an action nid in a tree ***/
+SrvClose       =3,	   /**** Close open trees ***/
+SrvCreatePulse =4,	   /**** Create pulse files for single tree (no subtrees) ***/
+SrvSetLogging  =5,	   /**** Turn logging on/off ***/
+SrvCommand     =6,	   /**** Execute MDSDCL command ***/
+SrvMonitor     =7,	   /**** Broadcast messages to action monitors ***/
+SrvShow        =8,	   /**** Request current status of server ***/
+SrvStop        =9,	   /**** Stop server ***/
+SrvRemoveLast  =10,	   /**** Remove last entry in the queue if jobs pending ***/
+} ENDDEF(int,srv_t);
 
- #define SrvJobABORTED     1
- #define SrvJobSTARTING    2
- #define SrvJobFINISHED    3
- #define SrvJobCHECKEDIN   4
+TYPEDEF(4) {
+MonitorBuildBegin =1,
+MonitorBuild      =2,
+MonitorBuildEnd   =3,
+MonitorCheckin    =4,
+MonitorDispatched =5,
+MonitorDoing      =6,
+MonitorDone       =7,
+} ENDDEF(int,monitor_t);
 
- #define SrvJobBEFORE_NOTIFY 1
- #define SrvJobAFTER_NOTIFY  2
+TYPEDEF(4) {
+SrvJobABORTED     =1,
+SrvJobSTARTING    =2,
+SrvJobFINISHED    =3,
+SrvJobCHECKEDIN   =4,
+} ENDDEF(int,srvjob_t);
+
+TYPEDEF(4) {
+SrvJobBEFORE_NOTIFY =1,
+SrvJobAFTER_NOTIFY  =2,
+} ENDDEF(int,srvjobnotify_t);
+#undef TYPEDEF
+#undef ENDDEF
 
 typedef struct {
   struct _SrvJob *next;
   struct _SrvJob *previous;
-  int addr;
-  int port;
+  unsigned int addr;
+  unsigned int port;
   int sock;
   int length;
   int op;
@@ -128,16 +148,11 @@ typedef struct {
   int status;
 } DispatchEvent;
 
-/*STATIC_THREADSAFE pthread_rwlock_t actions_rwlock = PTHREAD_RWLOCK_INITIALIZER;*/
-#define WRLOCK_ACTION(idx) pthread_rwlock_wrlock(&table->actions[idx].lock)
-#define RDLOCK_ACTION(idx) pthread_rwlock_rdlock(&table->actions[idx].lock)
-#define UNLOCK_ACTION(idx) pthread_rwlock_unlock(&table->actions[idx].lock)
-
-#ifndef _NO_SERVER_SEND_MESSAGE_PROTO
+# ifndef _NO_SERVER_SEND_MESSAGE_PROTO
 extern int ServerSendMessage(int *msgid, char *server, int op, int *retstatus, pthread_rwlock_t *lock, int *socket,
 			     void (*ast) (), void *astparam, void (*before_ast) (),
 			     int numargs_in, ...);
- #endif
+# endif
 extern int ServerConnect(char *);
 extern int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid, int on,
 			     int mode, char *server, int actstatus);

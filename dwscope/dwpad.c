@@ -366,9 +366,9 @@ static void ApplyCustomizeWindow(Widget w __attribute__ ((unused)),
   ApplyStatus = 0;
   XmScaleGetValue(XtNameToWidget(CustomizeWindowWidget, "padlabelwidth"), &btnwidth);
   btnwidth = max(btnwidth, 1);
-  cols = atoi(cols_string);
+  cols = strtol(cols_string,NULL,0);
   XtFree(cols_string);
-  rows = atoi(rows_string);
+  rows = strtol(rows_string,NULL,0);
   XtFree(rows_string);
   if (cols <= 0 || cols > 1000)
     PopupComplaint(TopWidget, "Columns value is invalid.");
@@ -747,8 +747,8 @@ static void RestoreDatabase(String dbname)
   int r;
   Widget *widgets;
   XrmDatabase paddb = GetFileDatabase(dbname);
-  int cols = max(atoi(GetResource(paddb, "Pad.columns", "1")), 1);
-  int rows = max(atoi(GetResource(paddb, "Pad.rows", "10")), 1);
+  int cols = max(strtol(GetResource(paddb, "Pad.columns", "1"),NULL,0), 1);
+  int rows = max(strtol(GetResource(paddb, "Pad.rows", "10"),NULL,0), 1);
   MakeWaves(cols, rows);
   XtVaGetValues(PadWidget, XmNchildren, &widgets, NULL);
   for (c = 0; c < cols; c++)
@@ -760,8 +760,8 @@ static void RestoreDatabase(String dbname)
   ResetWindow(GetResource(paddb, "Pad.geometry", "50x50+100+100"),
 	      GetResource(paddb, "Pad.title", "MDS Pad"), GetResource(paddb, "Pad.icon_name",
 								      "Pad"), cols, rows,
-	      atoi(GetResource(paddb, "Pad.font", "0")),
-	      max(atoi(GetResource(paddb, "Pad.padlabelwidth", "25")), 1));
+	      strtol(GetResource(paddb, "Pad.font", "0"),NULL,0),
+	      max(strtol(GetResource(paddb, "Pad.padlabelwidth", "25"),NULL,0), 1));
   XrmDestroyDatabase(paddb);
 }
 

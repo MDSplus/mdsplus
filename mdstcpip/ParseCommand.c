@@ -36,6 +36,7 @@ void PrintHelp(char *option)
   printf("mdsip - MDSplus data server\n\n"
 	 "  Format:\n\n"
 	 "    mdsip [-P protocol] [-m|-s] [-i|-r] [-h hostfile] [-c|+c] [-p port] [protocol-specific-options]\n\n"
+	 "      -?                 This help message\n"
 	 "      -P protocol        Specifies server protocol, defaults to tcp\n"
 	 "      -p port|service    Specifies port number or tcp service name\n"
 	 "      -m                 Use multi mode (accepts multiple connections each with own context)\n"
@@ -53,7 +54,8 @@ void PrintHelp(char *option)
 	 "      --server\n"
 	 "      --install\n"
 	 "      --remove\n"
-	 "      --hostfile=hostfile\n" "      --compression [level,default=9]\n\n");
+	 "      --hostfile=hostfile\n"
+	 "      --compression [level,default=9]\n\n");
   exit(1);
 }
 
@@ -139,6 +141,7 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
       {"s", "server", 0, 0, 0},
       {"m", "multi", 0, 0, 0},
       {"c", "compression", 1, 0, 0},
+      {"?", "help", 1, 0, 0},
       {0, 0, 0, 0,0}
   };
   ParseCommand(argc, argv, options, 1, extra_argc, extra_argv);
@@ -160,5 +163,7 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetContextSwitching(1);
   }
   if (options[4].present && options[4].value)
-    SetCompressionLevel(atoi(options[4].value));
+    SetCompressionLevel(strtol(options[4].value,NULL,0));
+  if (options[5].present)
+    PrintHelp(0);
 }

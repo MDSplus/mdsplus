@@ -23,18 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1DoTask.C
-        A routine to process various tree operations.
-        status = TDI$DO_TASK(&task_dsc)
+	A routine to process various tree operations.
+	status = TDI$DO_TASK(&task_dsc)
 
-        The task may be:
+	The task may be:
 *not    BUILD_METHOD    (timeout, method, object, ...)
 *not    BUILD_PROCEDURE (timeout, language, procedure, ...)
 *not    BUILD_PROGRAM   (timeout, program)
-        BUILD_ROUTINE   (timeout, image, routine, ...)
+	BUILD_ROUTINE   (timeout, image, routine, ...)
 
-        The timeout in seconds, if present, determines the allowed task time.
+	The timeout in seconds, if present, determines the allowed task time.
 
-        Ken Klare, LANL P-4     (c)1992
+	Ken Klare, LANL P-4     (c)1992
 */
 #include <STATICdef.h>
 #include <stdlib.h>
@@ -42,31 +42,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <tdishr_messages.h>
+#include <tdishr.h>
 #include <pthread_port.h>
 #include <errno.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include <signal.h>
 
-
-extern int TdiTaskOf();
 extern int TdiGetFloat();
 extern int TdiGetLong();
-extern int TdiConvert();
-extern int TdiSubtract();
-extern int TdiData();
 extern int TdiGetNid();
 extern int TdiPutLong();
 extern int TdiCall();
 
 /****   SYS$SETIMR([efn], &daytim, [&astadr], [reqidt], [flags])
-        SYS$CANTIM([reqidt], [acmode])
-        efn     event flag number
-        daytim  +absolute, - relative time
-        astadr  service routine on expiration
-        reqidt  unique id
-        flags   1 for CPU time
-        acmode  access mode
+	SYS$CANTIM([reqidt], [acmode])
+	efn     event flag number
+	daytim  +absolute, - relative time
+	astadr  service routine on expiration
+	reqidt  unique id
+	flags   1 for CPU time
+	acmode  access mode
 ****/
 
 STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr){
@@ -106,7 +102,7 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
     {
       struct descriptor_program *prog_task = (struct descriptor_program *)ptask;
       if (prog_task->program && prog_task->program->dtype == DTYPE_T)
-        status = LibSpawn(prog_task->program, 1, 0) ? MDSplusERROR : MDSplusSUCCESS;
+	status = LibSpawn(prog_task->program, 1, 0) ? MDSplusERROR : MDSplusSUCCESS;
       status = TdiPutLong(&status, out_ptr);
     }
     break;
@@ -120,71 +116,120 @@ STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *
   return status;
 }
 
-typedef struct _WorkerArgs{
-  Condition                 *pcond;
-  int                       *pstatus;
-  struct descriptor_xd      *task_xd;
-  void                      *dbid;
-} WorkerArgs;
+/* The following implementation of a cancelable worker is used in:
+ * tdishr/TdiDoTask.c
+ * mdstcpip/ProcessMessage.c
+ * Problems with the implementation are likely to be fixed in all locations.
+ */
+typedef struct {
+  void      **ctx;
+  int       status;
+#ifndef _WIN32
+  Condition *const condition;
+#endif
+  struct descriptor_xd *const task_xd;
+} worker_args_t;
+
+typedef struct {
+  worker_args_t        *const wa;
+  struct descriptor_xd *const xdp;
+  void                 *pc;
+} worker_cleanup_t;
 
 
-pthread_mutex_t worker_destroy = PTHREAD_MUTEX_INITIALIZER;
-static void WorkerExit(void *args){
-  free_xd(((WorkerArgs*)args)->task_xd);
-  pthread_mutex_lock(&worker_destroy);pthread_cleanup_push((void*)pthread_mutex_unlock, &worker_destroy);
-  CONDITION_RESET(((WorkerArgs*)args)->pcond);
-  pthread_cleanup_pop(1);
+static void WorkerCleanup(void *args){
+  worker_cleanup_t* const wc = (worker_cleanup_t*)args;
+  if (wc->pc) TreeCtxPop(wc->pc);
+#ifndef _WIN32
+  CONDITION_SET(wc->wa->condition);
+#endif
+  free_xd(wc->xdp);
+  free_xd(wc->wa->task_xd);
 }
 
-static void WorkerThread(void *args){
-  pthread_cleanup_push(WorkerExit, (void*)((WorkerArgs*)args));
-  CONDITION_SET(((WorkerArgs*)args)->pcond);
-  TreeUsePrivateCtx(1);
-  void* old = TreeSwitchDbid(((WorkerArgs*)args)->dbid);
-  pthread_cleanup_push((void*)TreeSwitchDbid,old);
-  EMPTYXD(out_xd);
-  FREEXD_ON_EXIT(&out_xd);
-  struct descriptor_routine* ptask = (struct descriptor_routine *)((WorkerArgs*)args)->task_xd->pointer;
-  int status = Doit(ptask,&out_xd);
-  *((WorkerArgs*)args)->pstatus = STATUS_OK ? *(int*)out_xd.pointer->pointer : status;
-  FREEXD_NOW(&out_xd);
+static int WorkerThread(void *args){
+  EMPTYXD(xd);
+  worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
+  pthread_cleanup_push(WorkerCleanup, (void*)&wc);
+  wc.pc = TreeCtxPush(wc.wa->ctx);
+  struct descriptor_routine* ptask = (struct descriptor_routine *)wc.wa->task_xd->pointer;
+  wc.wa->status = Doit(ptask,wc.xdp);
+  if IS_OK(wc.wa->status) wc.wa->status = *(int*)xd.pointer->pointer;
   pthread_cleanup_pop(1);
-  pthread_cleanup_pop(1);
-  pthread_exit(0);
+  return wc.wa->status;
 }
 
 STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_xd *out_ptr, const float timeout){
-  INIT_STATUS, t_status = MDSplusERROR;
-  pthread_t Worker;
+  INIT_STATUS;
+#ifdef _WIN32
+  worker_args_t wa = {
+#else
   Condition WorkerRunning = CONDITION_INITIALIZER;
-  WorkerArgs args = { &WorkerRunning, &t_status, task_xd, TreeDbid()};
-  _CONDITION_LOCK(&WorkerRunning);
-  CREATE_DETACHED_THREAD(Worker, *8, WorkerThread,(void*)&args);
-  if (c_status) {
-    perror("Error creating pthread");
+  worker_args_t wa = {.condition = &WorkerRunning,
+#endif
+  .ctx = TreeCtx(), .status = -1, .task_xd = task_xd};
+#ifdef _WIN32
+  HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
+  if (!hWorker) {
+    errno = GetLastError();
+    perror("ERROR CreateThread");
     status = MDSplusFATAL;
-  } else {
-    _CONDITION_WAIT_SET(&WorkerRunning);
-    struct timespec tp;
-    clock_gettime(CLOCK_REALTIME, &tp);
-    uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
-    tp.tv_nsec = ns % 1000000000;
-    tp.tv_sec += (time_t)(ns/1000000000);
-    int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
-    if (err) {
-      pthread_cancel(Worker);
-      status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusERROR;
-    } else // only populate out_ptr if task finished in time
-      status = TdiPutLong(&t_status, out_ptr);
-    if (WorkerRunning.value)
-      _CONDITION_WAIT(&WorkerRunning);
+    goto end;
+  }
+  int canceled = B_FALSE;
+  if (WaitForSingleObject(hWorker, (int)(timeout*1000)) == WAIT_TIMEOUT) {
+    fflush(stdout);fprintf(stderr, "Timeout, terminating Worker\n");
+    TerminateThread(hWorker,2);
+    canceled = B_TRUE;
+  }
+  WaitForSingleObject(hWorker, INFINITE);
+  if (canceled)
+    status = TdiTIMEOUT;
+#else
+  pthread_t Worker = 0;
+  _CONDITION_LOCK(wa.condition);
+  CREATE_THREAD(Worker, *16, WorkerThread, &wa);
+  if (c_status) {
+    perror("ERROR pthread_create");
+    _CONDITION_UNLOCK(wa.condition);
+    pthread_cond_destroy(&WorkerRunning.cond);
+    pthread_mutex_destroy(&WorkerRunning.mutex);
+    status = MDSplusFATAL;
+    goto end;
+  }
+  struct timespec tp;
+  clock_gettime(CLOCK_REALTIME, &tp);
+  uint64_t ns = tp.tv_nsec + (uint64_t)(timeout*1E9);
+  tp.tv_nsec = ns % 1000000000;
+  tp.tv_sec += (time_t)(ns/1000000000);
+  int err = pthread_cond_timedwait(&WorkerRunning.cond,&WorkerRunning.mutex,&tp);
+  if (err) {
+    fflush(stdout);fprintf(stderr, "Timeout, terminating Worker ..");
+    pthread_cancel(Worker);
+    _CONDITION_WAIT_1SEC(wa.condition,);
+    fflush(stdout);
+    if (WorkerRunning.value) {
+      fprintf(stderr," ok\n");
+    } else {
+      fprintf(stderr," failed - sending SIGCHLD\n");
+      pthread_kill(Worker,SIGCHLD);
+    }
   }
   _CONDITION_UNLOCK(&WorkerRunning);
-  CONDITION_DESTROY(&WorkerRunning,&worker_destroy);
+  void* result;
+  pthread_join(Worker,&result);
+  pthread_cond_destroy(&WorkerRunning.cond);
+  pthread_mutex_destroy(&WorkerRunning.mutex);
+  if (err && result==PTHREAD_CANCELED)
+    status = err==ETIMEDOUT ? TdiTIMEOUT : MDSplusFATAL;
+#endif
+  else // only populate out_ptr if task finished in time
+    status = TdiPutLong(&wa.status, out_ptr);
+end: ;
   return status;
 }
 
-int Tdi1DoTask(int opcode __attribute__ ((unused)),
+int Tdi1DoTask(opcode_t opcode __attribute__ ((unused)),
 	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;

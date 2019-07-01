@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -156,7 +156,7 @@ EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused))
     if (lookup_entry(CTS_DB, log_name) >= 0) {	// duplicate !
       *error = malloc(strlen(log_name)+100);
       sprintf(*error, "Error: duplicate module name '%s' -- not allowed\n", log_name);
-      
+
       status = FAILURE;		// DUPLICATE;           [2001.07.12]
       goto Assign_Exit;
     }
@@ -218,17 +218,14 @@ EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused))
 #endif
 
  Assign_Exit:			// we're done, so out'a here!
-  if (phy_name)
-    free(phy_name);
-  if (log_name)
-    free(log_name);
-  if (comment)
-    free(comment);
+  free(phy_name);
+  free(log_name);
+  free(comment);
   return status;
 }
 
 //-------------------------------------------------------------------------
-// map generic scsi device names to crate table names 
+// map generic scsi device names to crate table names
 //-------------------------------------------------------------------------
 EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
 {
@@ -270,12 +267,12 @@ EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **o
 
       // NB! this is a work-around -- seems necessary for the moment
       for (j = 0; j < 2; j++) {
-        if (map_scsi_device(pHighwayName) != SUCCESS) {	// map it if possible
+	if (map_scsi_device(pHighwayName) != SUCCESS) {	// map it if possible
 	    *error = malloc(strlen(pHighwayName)+100);
 	    sprintf(*error, "Error: problem mapping scsi device '%s'\n", pHighwayName);
 	    status = FILE_ERROR;
 	    goto AutoConfig_Exit;
-        }
+	}
       }
     }
 
@@ -338,7 +335,7 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
 
     if (physical_name)		// physical name
       sprintf(db_tmp, "GK%c%d%02d:N%d", pMod->adapter + 'A', pMod->id, pMod->crate, pMod->slot);
-    else			// logical name 
+    else			// logical name
       sprintf(db_tmp, "%s", pMod->name);
 
     // prepare for 'wild' match
@@ -362,13 +359,13 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
 
       if (physical_name)	// physical name
 	sprintf(db_tmp, "GK%c%d%02d:N%d", pMod->adapter + 'A', pMod->id, pMod->crate, pMod->slot);
-      else			// logical name 
+      else			// logical name
 	sprintf(db_tmp, "%s", pMod->name);
 
       // prepare for 'wild' match
       pattern.pointer = db_tmp;
       pattern.length = strlen(db_tmp);
-      
+
 
       if (StrMatchWild(&pattern, &wild_d) & 1) {
 	if (remove_entry(CTS_DB, i) != SUCCESS) {	// removal failed
@@ -383,8 +380,7 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
   }
 
  Deassign_Exit:
-  if (wild)
-    free(wild);
+  free(wild);
 
   return status;
   }
@@ -429,8 +425,7 @@ EXPORT int SetCrate(void *ctx, char **error, char **output __attribute__ ((unuse
   }
   find_crate_end(&ctx2);
  SetCrate_Exit:
-  if (wild)
-    free(wild);
+  free(wild);
   return SUCCESS;
 }
 
@@ -528,8 +523,7 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
   status = SUCCESS;		// always (???)
 
  ShowCrate_Exit:
-  if (wild)
-    free(wild);
+  free(wild);
   return status;
 }
 
@@ -603,8 +597,7 @@ EXPORT int ShowModule(void *ctx, char **error, char **output)
   }
 
  Showmodule_Exit:
-  if (wild)
-    free(wild);
+  free(wild);
   return status;
 }
 
@@ -688,8 +681,7 @@ EXPORT int AddCrate(void *ctx, char **error, char **output)
   if (status == SUCCESS)	// if everything is OK ...
     Autoconfig(ctx,error,output);		// ... map crate to /dev/sg#
 
-  if (phy_name)
-    free(phy_name);
+  free(phy_name);
 //ShowCrate();
   return status;
 }
@@ -739,8 +731,7 @@ EXPORT int DelCrate(void *ctx, char **error, char **output __attribute__ ((unuse
   }
 
  DelCrate_Exit:
-  if (phy_name)
-    free(phy_name);
+  free(phy_name);
   return status;
 }
 

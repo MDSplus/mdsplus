@@ -70,7 +70,7 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
   usageMask = -1;
   while ((status = TreeFindNodeWild(nodename, &nid, &ctx1, usageMask)) & 1) {
     if (statusStr) {
-      int statval = atoi(statusStr);
+      int statval = strtol(statusStr,NULL,0);
       NCI_ITM setnci[] = { {sizeof(int), NciSTATUS, 0, 0}, {0, NciEND_OF_LIST, 0, 0} };
       setnci[0].pointer = (unsigned char *)&statval;
       TreeSetNci(nid, setnci);
@@ -235,7 +235,6 @@ EXPORT int TclSetNode(void *ctx, char **error, char **output)
   TreeFindNodeEnd(&ctx1);
   if (status == TreeNMN)
     status = 1;
-  if (nodename)
-    free(nodename);
+  free(nodename);
   return status;
 }

@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element MDS$FILTER.C */
 /*------------------------------------------------------------------------------
 
-	Name:	MDS$FILTER   
+	Name:	MDS$FILTER
 
 	Type:   C function
 
@@ -129,7 +129,7 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   time_at_0 = in_dim[0] - delay;
 
   MdsCopyDxXd((struct descriptor *)&signal_d, &out_xd);
-  free((char *)filtered_data);
+  free(filtered_data);
 
   return &out_xd;
 }

@@ -1,4 +1,3 @@
-./usr/local/mdsplus/ChangeLog
 ./usr/local/mdsplus/MDSplus-License.txt
 ./usr/local/mdsplus/desktop/kernel
 ./usr/local/mdsplus/desktop/kernel/mdstcl.desktop
@@ -11,14 +10,13 @@
 ./usr/local/mdsplus/etc/mdsplus.conf.template
 ./usr/local/mdsplus/etc/multi.hosts
 ./usr/local/mdsplus/idl
-./usr/local/mdsplus/mdsobjects
 ./usr/local/mdsplus/nodejs
+./usr/local/mdsplus/nodejs/event_server.js
+./usr/local/mdsplus/nodejs/index.html
 ./usr/local/mdsplus/nodejs/mdsipRest-multi.js
-./usr/local/mdsplus/pixmaps/Tcl.png
-./usr/local/mdsplus/pixmaps/Tdi.png
-./usr/local/mdsplus/pixmaps/dwscope.png
+./usr/local/mdsplus/pixmaps/mdstcl.png
 ./usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg
-./usr/local/mdsplus/pixmaps/traverser.png
+./usr/local/mdsplus/pixmaps/tdi.png
 ./usr/local/mdsplus/rpm
 ./usr/local/mdsplus/rpm/mdsipd.xinetd
 ./usr/local/mdsplus/rpm/mdsipsd.xinetd
@@ -55,6 +53,7 @@
 ./usr/local/mdsplus/tdi/dev_support/DevAddStart.fun
 ./usr/local/mdsplus/tdi/dev_support/DevCamChk.fun
 ./usr/local/mdsplus/tdi/dev_support/DevHead.fun
+./usr/local/mdsplus/tdi/dev_support/DevHelp.py
 ./usr/local/mdsplus/tdi/dev_support/DevIsOn.fun
 ./usr/local/mdsplus/tdi/dev_support/DevNodeRef.fun
 ./usr/local/mdsplus/tdi/dev_support/DevPutSignal.fun
@@ -149,6 +148,7 @@
 ./usr/local/mdsplus/tdi/output_name.fun
 ./usr/local/mdsplus/tdi/python
 ./usr/local/mdsplus/tdi/python/Py.py
+./usr/local/mdsplus/tdi/python/addfun.py
 ./usr/local/mdsplus/tdi/python/ctime.py
 ./usr/local/mdsplus/tdi/python/getShotDB.py
 ./usr/local/mdsplus/tdi/python/intersect1d.py

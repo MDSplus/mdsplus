@@ -9,7 +9,7 @@ public abstract class Data implements Serializable
 {
     static boolean library_loaded = false;
 /*    static {
-        try {
+	try {
 	    System.loadLibrary("JavaMds");
 	    }catch(Exception e) {System.out.println("Cannot load library " + e); }
     }*/
@@ -17,20 +17,20 @@ public abstract class Data implements Serializable
     Vector data_listeners = new Vector();
     public Data()
     {
-        if(!library_loaded)
-        {
-            library_loaded = true;
-            try {
+	if(!library_loaded)
+	{
+	    library_loaded = true;
+	    try {
 //              System.loadLibrary("MdsShr");
 //              System.loadLibrary("MdsIpShr");
 //              System.loadLibrary("TreeShr");
 //              System.loadLibrary("TdiShr");
-              System.loadLibrary("JavaMds");
-	        }catch(Exception exc)
-                {
-                  jTraverser.stderr("Error loading library", exc);
-                  exc.printStackTrace();
-                }
+	      System.loadLibrary("JavaMds");
+		}catch(Exception exc)
+	        {
+	          jTraverser.stderr("Error loading library", exc);
+	          exc.printStackTrace();
+	        }
 	    }
     }
     native static public Data fromExpr(String text_descr);

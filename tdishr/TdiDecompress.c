@@ -23,18 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Decompress.C
-        Decompress using standard (MdsXpand) or user routine in an image.
-        Compressed data has pointers to
-        1       descriptor of image logical name.
-        2       descriptor of routine name.
-        3       descriptor of shape. Signality and units.
-        4       descriptor of compressed data. Signality and units.
-        TDI:    result = image->routine(shape, compressed)
+	Decompress using standard (MdsXpand) or user routine in an image.
+	Compressed data has pointers to
+	1       descriptor of image logical name.
+	2       descriptor of routine name.
+	3       descriptor of shape. Signality and units.
+	4       descriptor of compressed data. Signality and units.
+	TDI:    result = image->routine(shape, compressed)
 
-        See MDS$COMPRESS.C and MdsCmprs.C for more info on expansion routine arguments.
-        Fortran image:  routine(nitems, %descr(packed), %descr(result), bit)
+	See MDS$COMPRESS.C and MdsCmprs.C for more info on expansion routine arguments.
+	Fortran image:  routine(nitems, %descr(packed), %descr(result), bit)
 
-        Ken Klare, LANL P-4     (c)1989,1990,1992
+	Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 #include <STATICdef.h>
 #include <stdlib.h>
@@ -50,7 +50,7 @@ extern int Tdi2Vector();
 extern int TdiFindImageSymbol();
 extern int TdiMasterData();
 
-int Tdi1Decompress(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[4], uni[4], dat[4];

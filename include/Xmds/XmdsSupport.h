@@ -10,11 +10,11 @@
 
 		Type:   C Include file
 
-     		Author:	JOSH STILLERMAN
+		Author:	JOSH STILLERMAN
 
 		Date:   16-JAN-1992
 
-    		Purpose: Include file for XmdsSupport routines 
+		Purpose: Include file for XmdsSupport routines
 
 ------------------------------------------------------------------------------
    Copyright (c) 1992
@@ -24,7 +24,7 @@
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 #ifndef XmdsSupport_h

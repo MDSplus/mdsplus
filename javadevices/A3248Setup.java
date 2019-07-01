@@ -14,7 +14,7 @@ public class A3248Setup extends DeviceSetup {
      * Creates new form AEON_3248Setup
      */
     public A3248Setup() {
-        initComponents();
+	initComponents();
     }
 
     /**
@@ -26,153 +26,153 @@ public class A3248Setup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel4 = new javax.swing.JPanel();
-        deviceField5 = new DeviceField();
-        deviceField6 = new DeviceField();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField9 = new DeviceField();
-        deviceField10 = new DeviceField();
-        jPanel7 = new javax.swing.JPanel();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceDispatch1 = new DeviceDispatch();
-        jPanel3 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceChoice2 = new DeviceChoice();
-        deviceField3 = new DeviceField();
-        deviceField4 = new DeviceField();
-        deviceField13 = new DeviceField();
-        extClockField = new DeviceField();
+	deviceButtons1 = new DeviceButtons();
+	jTabbedPane1 = new javax.swing.JTabbedPane();
+	jPanel4 = new javax.swing.JPanel();
+	deviceField5 = new DeviceField();
+	deviceField6 = new DeviceField();
+	jPanel5 = new javax.swing.JPanel();
+	deviceField7 = new DeviceField();
+	deviceField8 = new DeviceField();
+	jPanel6 = new javax.swing.JPanel();
+	deviceField9 = new DeviceField();
+	deviceField10 = new DeviceField();
+	jPanel7 = new javax.swing.JPanel();
+	deviceField11 = new DeviceField();
+	deviceField12 = new DeviceField();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceDispatch1 = new DeviceDispatch();
+	jPanel3 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceChoice2 = new DeviceChoice();
+	deviceField3 = new DeviceField();
+	deviceField4 = new DeviceField();
+	deviceField13 = new DeviceField();
+	extClockField = new DeviceField();
 
-        setDeviceProvider("localhost");
-        setDeviceTitle("AEON Model 3248");
-        setDeviceType("A3248");
-        setHeight(300);
-        setWidth(850);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+	setDeviceProvider("localhost");
+	setDeviceTitle("AEON Model 3248");
+	setDeviceType("A3248");
+	setHeight(300);
+	setWidth(850);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Start Idx: ");
-        deviceField5.setOffsetNid(11);
-        jPanel4.add(deviceField5);
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("Start Idx: ");
+	deviceField5.setOffsetNid(11);
+	jPanel4.add(deviceField5);
 
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("End Idx:");
-        deviceField6.setOffsetNid(12);
-        jPanel4.add(deviceField6);
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("End Idx:");
+	deviceField6.setOffsetNid(12);
+	jPanel4.add(deviceField6);
 
-        jTabbedPane1.addTab("Chan 1", jPanel4);
+	jTabbedPane1.addTab("Chan 1", jPanel4);
 
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Start Idx: ");
-        deviceField7.setOffsetNid(14);
-        jPanel5.add(deviceField7);
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Start Idx: ");
+	deviceField7.setOffsetNid(14);
+	jPanel5.add(deviceField7);
 
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("End Idx:");
-        deviceField8.setOffsetNid(15);
-        jPanel5.add(deviceField8);
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("End Idx:");
+	deviceField8.setOffsetNid(15);
+	jPanel5.add(deviceField8);
 
-        jTabbedPane1.addTab("Chan 2", jPanel5);
+	jTabbedPane1.addTab("Chan 2", jPanel5);
 
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Start Idx: ");
-        deviceField9.setOffsetNid(17);
-        jPanel6.add(deviceField9);
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Start Idx: ");
+	deviceField9.setOffsetNid(17);
+	jPanel6.add(deviceField9);
 
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("End Idx:");
-        deviceField10.setOffsetNid(18);
-        jPanel6.add(deviceField10);
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("End Idx:");
+	deviceField10.setOffsetNid(18);
+	jPanel6.add(deviceField10);
 
-        jTabbedPane1.addTab("Chan 3", jPanel6);
+	jTabbedPane1.addTab("Chan 3", jPanel6);
 
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("Start Idx: ");
-        deviceField11.setOffsetNid(20);
-        jPanel7.add(deviceField11);
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("Start Idx: ");
+	deviceField11.setOffsetNid(20);
+	jPanel7.add(deviceField11);
 
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("End Idx:");
-        deviceField12.setOffsetNid(21);
-        jPanel7.add(deviceField12);
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("End Idx:");
+	deviceField12.setOffsetNid(21);
+	jPanel7.add(deviceField12);
 
-        jTabbedPane1.addTab("Chan 4", jPanel7);
+	jTabbedPane1.addTab("Chan 4", jPanel7);
 
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+	getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+	jPanel1.setLayout(new java.awt.GridLayout(2, 1));
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Name:");
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel2.add(deviceField1);
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Name:");
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel2.add(deviceField1);
 
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Comment: ");
-        deviceField2.setNumCols(20);
-        deviceField2.setOffsetNid(2);
-        deviceField2.setTextOnly(true);
-        jPanel2.add(deviceField2);
-        jPanel2.add(deviceDispatch1);
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Comment: ");
+	deviceField2.setNumCols(20);
+	deviceField2.setOffsetNid(2);
+	deviceField2.setTextOnly(true);
+	jPanel2.add(deviceField2);
+	jPanel2.add(deviceDispatch1);
 
-        jPanel1.add(jPanel2);
+	jPanel1.add(jPanel2);
 
-        jPanel3.setPreferredSize(new java.awt.Dimension(1268, 96));
+	jPanel3.setPreferredSize(new java.awt.Dimension(1268, 96));
 
-        deviceChoice1.setChoiceIntValues(new int[] {10000, 6670, 5000, 4000, 3330, 2860, 2500, 1000, 667, 500, 400, 333, 286, 250, 0});
-        deviceChoice1.setChoiceItems(new String[] {"10000", "6670", "5000", "4000", "3330", "2860", "2500", "1000", "667", "500", "400", "333", "286", "250", "External"});
-        deviceChoice1.setConvert(true);
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Clock Freq (KHz).:");
-        deviceChoice1.setOffsetNid(4);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice1);
+	deviceChoice1.setChoiceIntValues(new int[] {10000, 6670, 5000, 4000, 3330, 2860, 2500, 1000, 667, 500, 400, 333, 286, 250, 0});
+	deviceChoice1.setChoiceItems(new String[] {"10000", "6670", "5000", "4000", "3330", "2860", "2500", "1000", "667", "500", "400", "333", "286", "250", "External"});
+	deviceChoice1.setConvert(true);
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Clock Freq (KHz).:");
+	deviceChoice1.setOffsetNid(4);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice1);
 
-        deviceChoice2.setChoiceIntValues(new int[] {1, 2, 4, 8});
-        deviceChoice2.setChoiceItems(new String[] {"1", "2", "4", "8"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Gain: ");
-        deviceChoice2.setOffsetNid(6);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice2);
+	deviceChoice2.setChoiceIntValues(new int[] {1, 2, 4, 8});
+	deviceChoice2.setChoiceItems(new String[] {"1", "2", "4", "8"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Gain: ");
+	deviceChoice2.setOffsetNid(6);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice2);
 
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("PreTrig:");
-        deviceField3.setOffsetNid(8);
-        jPanel3.add(deviceField3);
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("PreTrig:");
+	deviceField3.setOffsetNid(8);
+	jPanel3.add(deviceField3);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Trigger: ");
-        deviceField4.setNumCols(15);
-        deviceField4.setOffsetNid(5);
-        jPanel3.add(deviceField4);
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Trigger: ");
+	deviceField4.setNumCols(15);
+	deviceField4.setOffsetNid(5);
+	jPanel3.add(deviceField4);
 
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Offset");
-        deviceField13.setOffsetNid(7);
-        jPanel3.add(deviceField13);
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("Offset");
+	deviceField13.setOffsetNid(7);
+	jPanel3.add(deviceField13);
 
-        extClockField.setIdentifier("");
-        extClockField.setLabelString("External Clock:");
-        extClockField.setOffsetNid(3);
-        jPanel3.add(extClockField);
+	extClockField.setIdentifier("");
+	extClockField.setLabelString("External Clock:");
+	extClockField.setOffsetNid(3);
+	jPanel3.add(extClockField);
 
-        jPanel1.add(jPanel3);
+	jPanel1.add(jPanel3);
 
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+	getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
-        getAccessibleContext().setAccessibleName("");
+	getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
 

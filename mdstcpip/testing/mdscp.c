@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsip_connections.h"
 
 struct mdsfile {
-  int socket;
+  SOCKET socket;
   int fd;
 };
 
@@ -116,7 +116,7 @@ static int doOpen(int streams, char *name, int options, int mode, struct mdsfile
       char dtype;
       short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -130,8 +130,7 @@ static int doOpen(int streams, char *name, int options, int mode, struct mdsfile
 	printf("Err in GetAnswerInfoTS in io_open_remote: status = %d, length = %d\n", sts, length);
 	status = -1;
       }
-      if (msg)
-	free(msg);
+      free(msg);
     } else {
       fprintf(stderr, "Error opening file: %s\n", name);
       status = -1;
@@ -162,7 +161,7 @@ off_t getSize(struct mdsfile * file)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0, 0, 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[4] = SEEK_END;
@@ -172,7 +171,7 @@ off_t getSize(struct mdsfile * file)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -181,8 +180,7 @@ off_t getSize(struct mdsfile * file)
 	ret = 0;
 	memcpy(&ret, dptr, (length > sizeof(ret)) ? sizeof(ret) : length);
       }
-      if (msg)
-	free(msg);
+      free(msg);
       info[4] = SEEK_SET;
     }
     status = SendArg(sock, MDS_IO_LSEEK_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
@@ -190,7 +188,7 @@ off_t getSize(struct mdsfile * file)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -200,8 +198,7 @@ off_t getSize(struct mdsfile * file)
 	dumret = 0;
 	memcpy(&dumret, dptr, (length > sizeof(dumret)) ? sizeof(dumret) : length);
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -215,7 +212,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[2] = count;
@@ -224,7 +221,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
@@ -233,8 +230,7 @@ off_t doRead(struct mdsfile * file, off_t count, void *buff)
 	if (ret)
 	  memcpy(buff, dptr, ret);
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -247,7 +243,7 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
   } else {
     off_t ret = -1;
     int info[] = { 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     info[0] = count;
@@ -256,15 +252,14 @@ static off_t doWrite(struct mdsfile *file, off_t count, void *buff)
       char dtype;
       unsigned short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)) {
 	ret = (off_t) * (int *)dptr;
       }
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -277,7 +272,7 @@ static int doClose(struct mdsfile *file)
   } else {
     int ret = -1;
     int info[] = { 0, 0 };
-    int sock = file->socket;
+    SOCKET sock = file->socket;
     int status;
     info[1] = file->fd;
     status = SendArg(sock, MDS_IO_CLOSE_K, 0, 0, 0, sizeof(info) / sizeof(int), info, 0);
@@ -285,15 +280,14 @@ static int doClose(struct mdsfile *file)
       char dtype;
       short length;
       char ndims;
-      int dims[7];
+      int dims[MAX_DIMS];
       int numbytes;
       void *dptr;
       void *msg = 0;
       if ((GetAnswerInfoTS(sock, &dtype, &length, &ndims, dims, &numbytes, &dptr, &msg) & 1)
 	  && (length == sizeof(ret)))
 	memcpy(&ret, dptr, sizeof(ret));
-      if (msg)
-	free(msg);
+      free(msg);
     }
     return ret;
   }
@@ -323,7 +317,7 @@ int main(int argc, char **argv)
     case 0:
       switch (option_index) {
       case 0:
-	streams = atoi(optarg);
+	streams = strtol(optarg,NULL,0);
 	if (streams < 1 || streams > 32) {
 	  printf("Invalid number of streams specified.");
 	  error = 1;

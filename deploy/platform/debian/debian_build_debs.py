@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -134,16 +134,13 @@ def buildDebs():
                 includes.append("/usr/local/mdsplus/lib/*.a")
             files=getPackageFiles(info['buildroot'],includes,excludes)
             for f in files:
-                info['file']=f[len("%(buildroot)s/"%info)-1:].replace(' ','\\ ').replace('$','\\$')\
-                        .replace('(','\\(').replace(')','\\)')
-                if subprocess.Popen("""
-set -o verbose
-set -e
-dn=$(dirname %(file)s)
-mkdir -p %(tmpdir)s/DEBIAN
-mkdir -p "%(tmpdir)s/${dn}"
-cp -a %(buildroot)s/%(file)s "%(tmpdir)s/${dn}/"
-""" % info,shell=True).wait() != 0:
+                filepath= f.replace('\\','\\\\').replace("'","\\'")
+                relpath = filepath[len(info['buildroot'])+1:]
+                target  = "%s/%s/"%(info['tmpdir'],os.path.dirname(relpath))
+                if subprocess.Popen("mkdir -p '%s'&&cp -a '%s' '%s'"%(target,filepath,target),shell=True).wait() != 0:
+                    for k,v in info.items(): print("%s=%s"%(k,v))
+                    print("filepath="%filepath)
+                    print("target="%target)
                     raise Exception("Error building deb")
                 sys.stdout.flush()
             depends=list()
@@ -179,11 +176,8 @@ Description: %(description)s
                     f.close()
                     os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info,0775)
             info['debfile']="/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
-            if subprocess.Popen("""
-set -o verbose
-set -e
-dpkg-deb --build %(tmpdir)s %(debfile)s
-""" % info,shell=True).wait() != 0:
+            if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s"%info,shell=True).wait() != 0:
+                for k,v in info.items(): print("%s=%s"%(k,v))
                 raise Exception("Problem building package")
             sys.stdout.flush()
             debs.append({"deb":info["debfile"],"arch":info["arch"]})

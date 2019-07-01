@@ -4,15 +4,17 @@ AC_PREREQ([2.69])
 AC_INIT([MDSplus], [7a], [mdsplus@lists.psfc.mit.edu])
 AC_CONFIG_AUX_DIR([conf])
 AC_CONFIG_SRCDIR([include/mdsdescrip.h])
+AC_PREFIX_DEFAULT([/usr/local/mdsplus])
 
 dnl docker helpers
+AS_VAR_SET([srcdir],[${srcdir}])
+AS_VAR_SET([builddir],[$(pwd)])
 AX_DOCKER_BUILD
 
 AC_CANONICAL_TARGET
 
-AM_INIT_AUTOMAKE([1.15 foreign subdir-objects])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 AM_MAINTAINER_MODE
-
 
 dnl AS_IS_RELEASE //////////////////////////////////////////////////////////////
 dnl see: http://www.gnu.org/software/autoconf-archive/ax_is_release.html
@@ -28,6 +30,35 @@ dnl * always:         ax_is_release will always be 'yes'
 dnl * never:          ax_is_release will always be 'no'
 dnl
 AX_IS_RELEASE([always])
+
+
+# //////////////////////////////////////////////////////////////////////////// #
+# ////// RELEASE INFO //////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+
+    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[        
+    # ],[        
+    # ])
+
+if [[ ! -z ${RELEASE_VERSION} ]]
+then
+  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
+  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
+  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
+  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+else
+  RELEASE_MAJOR=1
+  RELEASE_MINOR=0
+  RELEASE_RELEASE=0
+  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
+fi
+RELEASE_DATE="$(date)"
+
+dnl look if a version from git directory can be obtained 
+AX_GIT_REVISION
+
+dnl add reconfigure target option to autoconf generated Makefile
+AX_RECONFIGURE_TARGETS
 
 
 dnl AX_CHECK_ENABLE_DEBUG //////////////////////////////////////////////////////
@@ -226,7 +257,9 @@ AC_SUBST([JAVAVERSION])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
-                AS_IF([test ! -d $with_jdk/jre],
+                ## AS_IF([test ! -d $with_jdk/jre], ##
+		## AS_IF([test ! -d $with_jdk], ##
+		AS_IF([test ! -d $with_jdk ${JRE}],
                       [AC_MSG_RESULT([not found])
                        AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
                        AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
@@ -369,6 +402,10 @@ then
 else
   MAKEFLAG_J="-j -l 1"
 fi
+
+AS_IF([test "${prefix}" = "NONE"],[AS_VAR_SET([prefix],[${ac_defaut_prefix}])])
+AS_IF([test "${exec_prefix}" = "NONE"],[AS_VAR_SET([exec_prefix],[${prefix}])])
+
 MAKEFLAG_O="$(if ${MAKE:=make} -v -O&>/dev/null; then echo -O; fi)"
 MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
@@ -387,11 +424,12 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        MAKEFLAG_J=""
        MAKEFLAG_O=""
-       IDLMDSEVENT=""
        LIBPRE=""
-       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields ";
+       CFLAGS="$CFLAGS -fno-strict-aliasing -mno-ms-bitfields -DWIN32 -D_WIN32 ";
        LD="$CXX -static-libgcc"
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="$FC"
@@ -425,6 +463,8 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
@@ -482,6 +522,8 @@ case "$host" in
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
        ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
        AR=arm-xilinx-linux-gnueabi-ar;
@@ -511,6 +553,8 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
+       JRE = "/jre";
+       UIL = "/usr/bin/X11";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -530,6 +574,8 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
+       JRE = "";
+       UIL = "/usr/bin/uil";
        THREAD=""
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
@@ -966,7 +1012,8 @@ if test $UILCMD = uil32
 then
   X_LIBS=`echo $X_LIBS | sed s/lib64/lib/`
 fi
-AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin)
+## AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:/usr/bin/X11:$PATH:/usr/dt/bin) ##
+AC_PATH_PROG(UIL,$UILCMD,$UILCMD,$UILPATH:${UIL}:$PATH:/usr/dt/bin)
 AC_MSG_CHECKING(for uil command)
 if test ! "$MINGW" = "yes" && ( which $UIL &>/dev/null )
 then
@@ -1123,26 +1170,7 @@ DX_INIT_DOXYGEN(mdsplus, doxygen.cfg)
 CFLAGS="$CFLAGS_lib_check_save"
 #
 
-# //////////////////////////////////////////////////////////////////////////// #
-# ////// RELEASE INFO //////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
 
-if [[ ! -z ${RELEASE_VERSION} ]]
-then
-  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  RELEASE_BRANCH=$BRANCH
-  RELEASE_COMMIT=$GIT_COMMIT
-else
-  RELEASE_MAJOR=1
-  RELEASE_MINOR=0
-  RELEASE_RELEASE=0
-  RELEASE_BRANCH="unknown"
-  RELEASE_COMMIT="unknown"
-fi
-RELEASE_DATE="$(date)"
-RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
@@ -1154,7 +1182,7 @@ AC_ARG_ENABLE([werror],
               [],
               [AS_VAR_SET([enable_werror], [no])])
 AS_CASE([$enable_werror],
-        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror "])],
+        [yes], [AS_VAR_APPEND([WARNFLAGS], [" -Werror"])],
         [])
 AC_ARG_ENABLE([wreturns],
               [AS_HELP_STRING([--disable-wreturns],
@@ -1284,13 +1312,21 @@ AC_SUBST(MOTIF_LD_LDARC)
 AC_SUBST(PYTHON_INCLUDE_DIR)
 AC_SUBST(DEF_PYLIB)
 AC_SUBST(NEED_SEMUN)
+
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
-AC_SUBST(RELEASE_COMMIT)
-AC_SUBST(RELEASE_BRANCH)
 AC_SUBST(RELEASE_TAG)
 AC_SUBST(RELEASE_DATE)
+
+AC_SUBST([GIT_TAG])
+AC_SUBST([GIT_BRANCH])
+AC_SUBST([GIT_REMOTE])
+AC_SUBST([GIT_REMOTE_URL])
+AC_SUBST([GIT_COMMIT])
+AC_SUBST([GIT_COMMIT_DATE])
+AC_SUBST([GIT_SRCDIR])
+
 AC_SUBST(REMCAM)
 AC_SUBST(REMCAMLIB)
 AC_SUBST(ENABLE_SANITIZE)
@@ -1315,6 +1351,8 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
+AC_SUBST(JRE)
+AC_SUBST(UIL)
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
@@ -1343,7 +1381,6 @@ AC_OUTPUT(Makefile.inc
           macosx/Makefile
           math/Makefile
           mdsdcl/Makefile
-	  mdsdcl/mdsdcl_show_version.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile
@@ -1352,14 +1389,15 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
-	  mdsobjects/python/_version.py
-          mdsobjects/python/docs/Makefile
-          mdsobjects/python/tests/Makefile
+	  python/MDSplus/_version.py
+          python/MDSplus/docs/Makefile
+          python/MDSplus/tests/Makefile
           mdsobjects/java/Makefile
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
+	  mdsshr/MdsVersionInfo.c
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
@@ -1395,7 +1433,6 @@ AC_OUTPUT(Makefile.inc
           wfevent/Makefile
           xmdsshr/Makefile
           xtreeshr/Makefile
-          icons/Makefile
 )
 
 

@@ -91,9 +91,9 @@ class Channelclient(netclient.Netclient):
         addr (str) : ip address or dns name
         ch (int) : channel number 1..N
 
-    """    
-    def __init__(self, addr, ch):        
-        netclient.Netclient.__init__(self, addr, AcqPorts.DATA0+ch) 
+    """
+    def __init__(self, addr, ch):
+        netclient.Netclient.__init__(self, addr, AcqPorts.DATA0+ch)
 
     def read(self, ndata, data_size=2, maxbuf=4096):
         """read ndata from channel data server, return as numpy array.
@@ -103,21 +103,21 @@ class Channelclient(netclient.Netclient):
             maxbuf=4096 : max bytes to read per packet
 
         Returns:
-            :numpy: data array 
+            :numpy: data array
 
-        @@todo buffer +=   
+        @@todo buffer +=
         # this is probably horribly inefficient
-        # probably better: 
+        # probably better:
         - retbuf = numpy.array(dtype, ndata)
-        - retbuf[cursor].                
+        - retbuf[cursor].
         """
         buffer = self.sock.recv(maxbuf)
         while len(buffer) < ndata*data_size:
             buffer += self.sock.recv(maxbuf)
-            
+
         _dtype = numpy.dtype('i4' if data_size == 4 else 'i2')
-        
-        return numpy.frombuffer(buffer, dtype=_dtype, count=ndata)        
+
+        return numpy.frombuffer(buffer, dtype=_dtype, count=ndata)
 
 
 class ExitCommand(Exception):
@@ -154,10 +154,10 @@ class Statusmonitor:
                         self.armed.set()
                         self.stopped.clear()
                     if self.status[SF.STATE] == 0 and status1[SF.STATE] > 1:
-                        print("ERROR: %s skipped ARM %d -> %d" % (self.uut, self.status[0], status1[0]))                        
+                        print("ERROR: %s skipped ARM %d -> %d" % (self.uut, self.status[0], status1[0]))
                         self.quit_requested = True
                         os.kill(self.main_pid, signal.SIGINT)
-                        sys.exit(1)                                            
+                        sys.exit(1)
                 self.status = status1
             elif self.trace > 1:
                 print("%s <%s>" % (repr(self), st))
@@ -174,34 +174,34 @@ class Statusmonitor:
 
 #        print("wait_%s 88 %d" % (descr, ev.is_set()))
         ev.clear()
-#        print("wait_%s 99 %d" % (descr, ev.is_set()))        
+#        print("wait_%s 99 %d" % (descr, ev.is_set()))
 
     def wait_armed(self):
         """
-        blocks until uut is ARMED                    
+        blocks until uut is ARMED
         """
         self.wait_event(self.armed, "armed")
 
     def wait_stopped(self):
         """
-        blocks until uut is STOPPED                    
-        """        
+        blocks until uut is STOPPED
+        """
         self.wait_event(self.stopped, "stopped")
 
     trace = int(os.getenv("STATUSMONITOR_TRACE", "0"))
 
     def __init__(self, _uut, _status):
-        self.quit_requested = False        
+        self.quit_requested = False
         self.trace = Statusmonitor.trace
         self.uut = _uut
         self.main_pid = os.getpid()
         self.status = _status
         self.stopped = threading.Event()
         self.armed = threading.Event()
-        self.logclient = netclient.Logclient(_uut, AcqPorts.TSTAT)        
+        self.logclient = netclient.Logclient(_uut, AcqPorts.TSTAT)
         self.st_thread = threading.Thread(target=self.st_monitor)
         self.st_thread.setDaemon(True)
-        self.st_thread.start()             
+        self.st_thread.start()
 
 
 class NullFilter:
@@ -215,7 +215,7 @@ class ProcessMonitor:
     def st_monitor(self):
         while self.quit_requested == False:
             st = self.logclient.poll()
-            self.output_filter(st)            
+            self.output_filter(st)
             match = self.st_re.search(st)
             if match:
                 self.quit_requested = True
@@ -239,10 +239,10 @@ class Acq400:
 
     Args:
         _uut (str) : ip-address or dns name
-        monitor=True (bool) : set false to stub monitor, 
+        monitor=True (bool) : set false to stub monitor,
           useful for tracing on a second connection to an active system.
-    """     
-    @property 
+    """
+    @property
     def mod_count(self):
         return self.__mod_count
 
@@ -253,7 +253,7 @@ class Acq400:
         self.save_data = None
         self.svc = {}
         self.modules = {}
-        self.__mod_count = 0    
+        self.__mod_count = 0
         s0 = self.svc["s0"] = netclient.Siteclient(self.uut, AcqPorts.SITE0)
         sl = s0.SITELIST.split(",")
         sl.pop(0)
@@ -271,7 +271,7 @@ class Acq400:
 # init _status so that values are valid even if this Acq400 doesn't run a shot ..
         _status = [int(x) for x in s0.state.split(" ")]
         if monitor:
-            self.statmon = Statusmonitor(self.uut, _status)        
+            self.statmon = Statusmonitor(self.uut, _status)
 
 
     def __getattr__(self, name):
@@ -308,9 +308,9 @@ class Acq400:
                     ccraw = ccraw >> 14
             except AttributeError:
                 pass
-                 
+
         if self.save_data:
-            try:                
+            try:
                 os.makedirs(self.save_data)
             except OSError as exception:
                 if exception.errno != errno.EEXIST:
@@ -349,7 +349,7 @@ class Acq400:
 
             if self.trace:
                 tt = timeit.default_timer() - start
-                print("%s CH%02d complete.. %.3f s %.2f MB/s" % 
+                print("%s CH%02d complete.. %.3f s %.2f MB/s" %
                       (self.uut, ch, tt, len(chx[-1])*2/1000000/tt))
 
         return chx
@@ -367,7 +367,7 @@ class Acq400:
                 if buf:
                     print(buf)
                 else:
-                    break            
+                    break
 
     def clear_counters(self):
         for s in self.svc:
@@ -390,7 +390,7 @@ class Acq400:
         # valid roles: master or slave
         if role == "master":
             self.set_sync_routing_master()
-        elif role == "slave":            
+        elif role == "slave":
             self.set_sync_routing_slave()
         else:
             raise ValueError("undefined role {}".format(role))
@@ -421,7 +421,7 @@ class Acq400:
 
     def load_gpg(self, stl, trace = False):
         termex = re.compile("\n")
-        with netclient.Netclient(self.uut, AcqPorts.GPGSTL) as nc:            
+        with netclient.Netclient(self.uut, AcqPorts.GPGSTL) as nc:
             lines = stl.split("\n")
             for ll in lines:
                 if trace:
@@ -435,20 +435,20 @@ class Acq400:
                         print("skip comment")
                     continue
                 nc.sock.send((ll+"\n").encode())
-                rx = nc.sock.recv(4096) 
+                rx = nc.sock.recv(4096)
                 if trace:
                     print("< {}".format(rx))
             nc.sock.send("EOF\n".encode())
             nc.sock.shutdown(socket.SHUT_WR)
-            rx = nc.sock.recv(4096) 
+            rx = nc.sock.recv(4096)
             if trace:
-                print("< {}".format(rx))            
+                print("< {}".format(rx))
 
-        with netclient.Netclient(self.uut, AcqPorts.GPGDUMP) as nc: 
+        with netclient.Netclient(self.uut, AcqPorts.GPGDUMP) as nc:
             while True:
                 txt = nc.sock.recv(4096)
-                if txt: 
-                    sys.stdout.write(txt)                    
+                if txt:
+                    sys.stdout.write(txt)
                     if txt.find("EOF") != -1:
                         break
                 else:
@@ -469,7 +469,7 @@ class Acq400:
 
         with netclient.Netclient(self.uut, port) as nc:
             nc.sock.send(data)
-            nc.sock.shutdown(socket.SHUT_WR) 
+            nc.sock.shutdown(socket.SHUT_WR)
             while True:
                 rx = nc.sock.recv(128)
                 if not rx or rx.startswith("DONE"):
@@ -487,11 +487,11 @@ class Acq400:
                 if rx.startswith(eof):
                     break
             nc.sock.shutdown(socket.SHUT_RDWR)
-            nc.sock.close() 
+            nc.sock.close()
 
         return txt
 
-    def run_oneshot(self):        
+    def run_oneshot(self):
         with netclient.Netclient(self.uut, AcqPorts.ONESHOT) as nc:
             while True:
                 rx = nc.receive_message(self.NL, 256)
@@ -499,11 +499,11 @@ class Acq400:
                 if rx.startswith("SHOT_COMPLETE"):
                     break
             nc.sock.shutdown(socket.SHUT_RDWR)
-            nc.sock.close()            
+            nc.sock.close()
 
     def run_livetop(self):
         with netclient.Netclient(self.uut, AcqPorts.LIVETOP) as nc:
-            print(nc.receive_message(self.NL, 256))             
+            print(nc.receive_message(self.NL, 256))
             nc.sock.shutdown(socket.SHUT_RDWR)
             nc.sock.close()
 
@@ -513,7 +513,7 @@ class Acq2106(Acq400):
         print("Acq2106 %s" % (_uut))
         Acq400.__init__(self, _uut, monitor)
         site = 13
-        for sm in [ 'cA', 'cB']:                
+        for sm in [ 'cA', 'cB']:
             self.svc[sm] = netclient.Siteclient(self.uut, AcqPorts.SITE0+site)
             self.mod_count += 1
             site = site - 1
@@ -529,7 +529,7 @@ class Acq2106(Acq400):
         Acq400.set_sync_routing_slave(self)
         self.s0.SYS_CLK_OE_CLK1_ZYNQ = '1'
 
-    def set_master_trg(self, trg, edge = "rising", enabled=True):        
+    def set_master_trg(self, trg, edge = "rising", enabled=True):
         if trg == "fp":
             self.s0.SIG_SRC_TRG_0 = "EXT" if enabled else "HOSTB"
         elif trg == "int":

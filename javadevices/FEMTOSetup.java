@@ -17,7 +17,7 @@ public class FEMTOSetup extends DeviceSetup {
 
     /** Creates new form FEMTOSetup */
     public FEMTOSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -28,2586 +28,2586 @@ public class FEMTOSetup extends DeviceSetup {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
-        java.awt.GridBagConstraints gridBagConstraints;
-
-        deviceButtons1 = new DeviceButtons();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel2 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        jPanel3 = new javax.swing.JPanel();
-        deviceField4 = new DeviceField();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel6 = new javax.swing.JPanel();
-        jPanel7 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceChoice2 = new DeviceChoice();
-        deviceChoice3 = new DeviceChoice();
-        jPanel10 = new javax.swing.JPanel();
-        deviceChoice4 = new DeviceChoice();
-        deviceChoice5 = new DeviceChoice();
-        deviceChoice6 = new DeviceChoice();
-        jPanel11 = new javax.swing.JPanel();
-        deviceChoice7 = new DeviceChoice();
-        deviceChoice8 = new DeviceChoice();
-        deviceChoice9 = new DeviceChoice();
-        jPanel12 = new javax.swing.JPanel();
-        deviceChoice10 = new DeviceChoice();
-        deviceChoice11 = new DeviceChoice();
-        deviceChoice12 = new DeviceChoice();
-        jPanel13 = new javax.swing.JPanel();
-        deviceChoice13 = new DeviceChoice();
-        deviceChoice14 = new DeviceChoice();
-        deviceChoice15 = new DeviceChoice();
-        jPanel14 = new javax.swing.JPanel();
-        deviceChoice16 = new DeviceChoice();
-        deviceChoice17 = new DeviceChoice();
-        deviceChoice18 = new DeviceChoice();
-        jPanel15 = new javax.swing.JPanel();
-        deviceChoice19 = new DeviceChoice();
-        deviceChoice20 = new DeviceChoice();
-        deviceChoice21 = new DeviceChoice();
-        jPanel16 = new javax.swing.JPanel();
-        deviceChoice22 = new DeviceChoice();
-        deviceChoice23 = new DeviceChoice();
-        deviceChoice24 = new DeviceChoice();
-        jPanel17 = new javax.swing.JPanel();
-        deviceChoice25 = new DeviceChoice();
-        deviceChoice26 = new DeviceChoice();
-        deviceChoice27 = new DeviceChoice();
-        jPanel18 = new javax.swing.JPanel();
-        deviceChoice28 = new DeviceChoice();
-        deviceChoice29 = new DeviceChoice();
-        deviceChoice30 = new DeviceChoice();
-        jPanel19 = new javax.swing.JPanel();
-        deviceChoice31 = new DeviceChoice();
-        deviceChoice32 = new DeviceChoice();
-        deviceChoice33 = new DeviceChoice();
-        jPanel8 = new javax.swing.JPanel();
-        jPanel20 = new javax.swing.JPanel();
-        deviceChoice34 = new DeviceChoice();
-        deviceChoice35 = new DeviceChoice();
-        deviceChoice36 = new DeviceChoice();
-        jPanel21 = new javax.swing.JPanel();
-        deviceChoice37 = new DeviceChoice();
-        deviceChoice38 = new DeviceChoice();
-        deviceChoice39 = new DeviceChoice();
-        jPanel22 = new javax.swing.JPanel();
-        deviceChoice40 = new DeviceChoice();
-        deviceChoice41 = new DeviceChoice();
-        deviceChoice42 = new DeviceChoice();
-        jPanel23 = new javax.swing.JPanel();
-        deviceChoice43 = new DeviceChoice();
-        deviceChoice44 = new DeviceChoice();
-        deviceChoice45 = new DeviceChoice();
-        jPanel24 = new javax.swing.JPanel();
-        deviceChoice46 = new DeviceChoice();
-        deviceChoice47 = new DeviceChoice();
-        deviceChoice48 = new DeviceChoice();
-        jPanel25 = new javax.swing.JPanel();
-        deviceChoice49 = new DeviceChoice();
-        deviceChoice50 = new DeviceChoice();
-        deviceChoice51 = new DeviceChoice();
-        jPanel26 = new javax.swing.JPanel();
-        deviceChoice52 = new DeviceChoice();
-        deviceChoice53 = new DeviceChoice();
-        deviceChoice54 = new DeviceChoice();
-        jPanel27 = new javax.swing.JPanel();
-        deviceChoice55 = new DeviceChoice();
-        deviceChoice56 = new DeviceChoice();
-        deviceChoice57 = new DeviceChoice();
-        jPanel28 = new javax.swing.JPanel();
-        deviceChoice58 = new DeviceChoice();
-        deviceChoice59 = new DeviceChoice();
-        deviceChoice60 = new DeviceChoice();
-        jPanel29 = new javax.swing.JPanel();
-        deviceChoice61 = new DeviceChoice();
-        deviceChoice62 = new DeviceChoice();
-        deviceChoice63 = new DeviceChoice();
-        jPanel30 = new javax.swing.JPanel();
-        deviceChoice64 = new DeviceChoice();
-        deviceChoice65 = new DeviceChoice();
-        deviceChoice66 = new DeviceChoice();
-        jPanel32 = new javax.swing.JPanel();
-        jPanel33 = new javax.swing.JPanel();
-        jPanel34 = new javax.swing.JPanel();
-        deviceChoice67 = new DeviceChoice();
-        deviceChoice68 = new DeviceChoice();
-        deviceChoice69 = new DeviceChoice();
-        jPanel35 = new javax.swing.JPanel();
-        deviceChoice70 = new DeviceChoice();
-        deviceChoice71 = new DeviceChoice();
-        deviceChoice72 = new DeviceChoice();
-        jPanel36 = new javax.swing.JPanel();
-        deviceChoice73 = new DeviceChoice();
-        deviceChoice74 = new DeviceChoice();
-        deviceChoice75 = new DeviceChoice();
-        jPanel37 = new javax.swing.JPanel();
-        deviceChoice76 = new DeviceChoice();
-        deviceChoice77 = new DeviceChoice();
-        deviceChoice78 = new DeviceChoice();
-        jPanel38 = new javax.swing.JPanel();
-        deviceChoice79 = new DeviceChoice();
-        deviceChoice80 = new DeviceChoice();
-        deviceChoice81 = new DeviceChoice();
-        jPanel39 = new javax.swing.JPanel();
-        deviceChoice82 = new DeviceChoice();
-        deviceChoice83 = new DeviceChoice();
-        deviceChoice84 = new DeviceChoice();
-        jPanel40 = new javax.swing.JPanel();
-        deviceChoice85 = new DeviceChoice();
-        deviceChoice86 = new DeviceChoice();
-        deviceChoice87 = new DeviceChoice();
-        jPanel41 = new javax.swing.JPanel();
-        deviceChoice88 = new DeviceChoice();
-        deviceChoice89 = new DeviceChoice();
-        deviceChoice90 = new DeviceChoice();
-        jPanel42 = new javax.swing.JPanel();
-        deviceChoice91 = new DeviceChoice();
-        deviceChoice92 = new DeviceChoice();
-        deviceChoice93 = new DeviceChoice();
-        jPanel43 = new javax.swing.JPanel();
-        deviceChoice94 = new DeviceChoice();
-        deviceChoice95 = new DeviceChoice();
-        deviceChoice96 = new DeviceChoice();
-        jPanel44 = new javax.swing.JPanel();
-        deviceChoice97 = new DeviceChoice();
-        deviceChoice98 = new DeviceChoice();
-        deviceChoice99 = new DeviceChoice();
-        jPanel45 = new javax.swing.JPanel();
-        jPanel46 = new javax.swing.JPanel();
-        deviceChoice100 = new DeviceChoice();
-        deviceChoice101 = new DeviceChoice();
-        deviceChoice102 = new DeviceChoice();
-        jPanel47 = new javax.swing.JPanel();
-        deviceChoice103 = new DeviceChoice();
-        deviceChoice104 = new DeviceChoice();
-        deviceChoice105 = new DeviceChoice();
-        jPanel48 = new javax.swing.JPanel();
-        deviceChoice106 = new DeviceChoice();
-        deviceChoice107 = new DeviceChoice();
-        deviceChoice108 = new DeviceChoice();
-        jPanel49 = new javax.swing.JPanel();
-        deviceChoice109 = new DeviceChoice();
-        deviceChoice110 = new DeviceChoice();
-        deviceChoice111 = new DeviceChoice();
-        jPanel50 = new javax.swing.JPanel();
-        deviceChoice112 = new DeviceChoice();
-        deviceChoice113 = new DeviceChoice();
-        deviceChoice114 = new DeviceChoice();
-        jPanel51 = new javax.swing.JPanel();
-        deviceChoice115 = new DeviceChoice();
-        deviceChoice116 = new DeviceChoice();
-        deviceChoice117 = new DeviceChoice();
-        jPanel52 = new javax.swing.JPanel();
-        deviceChoice118 = new DeviceChoice();
-        deviceChoice119 = new DeviceChoice();
-        deviceChoice120 = new DeviceChoice();
-        jPanel53 = new javax.swing.JPanel();
-        deviceChoice121 = new DeviceChoice();
-        deviceChoice122 = new DeviceChoice();
-        deviceChoice123 = new DeviceChoice();
-        jPanel54 = new javax.swing.JPanel();
-        deviceChoice124 = new DeviceChoice();
-        deviceChoice125 = new DeviceChoice();
-        deviceChoice126 = new DeviceChoice();
-        jPanel55 = new javax.swing.JPanel();
-        deviceChoice127 = new DeviceChoice();
-        deviceChoice128 = new DeviceChoice();
-        deviceChoice129 = new DeviceChoice();
-        jPanel56 = new javax.swing.JPanel();
-        deviceChoice130 = new DeviceChoice();
-        deviceChoice131 = new DeviceChoice();
-        deviceChoice132 = new DeviceChoice();
-        jPanel57 = new javax.swing.JPanel();
-        jPanel58 = new javax.swing.JPanel();
-        jPanel59 = new javax.swing.JPanel();
-        deviceChoice133 = new DeviceChoice();
-        deviceChoice134 = new DeviceChoice();
-        deviceChoice135 = new DeviceChoice();
-        jPanel60 = new javax.swing.JPanel();
-        deviceChoice136 = new DeviceChoice();
-        deviceChoice137 = new DeviceChoice();
-        deviceChoice138 = new DeviceChoice();
-        jPanel61 = new javax.swing.JPanel();
-        deviceChoice139 = new DeviceChoice();
-        deviceChoice140 = new DeviceChoice();
-        deviceChoice141 = new DeviceChoice();
-        jPanel62 = new javax.swing.JPanel();
-        deviceChoice142 = new DeviceChoice();
-        deviceChoice143 = new DeviceChoice();
-        deviceChoice144 = new DeviceChoice();
-        jPanel63 = new javax.swing.JPanel();
-        deviceChoice145 = new DeviceChoice();
-        deviceChoice146 = new DeviceChoice();
-        deviceChoice147 = new DeviceChoice();
-        jPanel64 = new javax.swing.JPanel();
-        deviceChoice148 = new DeviceChoice();
-        deviceChoice149 = new DeviceChoice();
-        deviceChoice150 = new DeviceChoice();
-        jPanel65 = new javax.swing.JPanel();
-        deviceChoice151 = new DeviceChoice();
-        deviceChoice152 = new DeviceChoice();
-        deviceChoice153 = new DeviceChoice();
-        jPanel66 = new javax.swing.JPanel();
-        deviceChoice154 = new DeviceChoice();
-        deviceChoice155 = new DeviceChoice();
-        deviceChoice156 = new DeviceChoice();
-        jPanel67 = new javax.swing.JPanel();
-        deviceChoice157 = new DeviceChoice();
-        deviceChoice158 = new DeviceChoice();
-        deviceChoice159 = new DeviceChoice();
-        jPanel68 = new javax.swing.JPanel();
-        deviceChoice160 = new DeviceChoice();
-        deviceChoice161 = new DeviceChoice();
-        deviceChoice162 = new DeviceChoice();
-        jPanel69 = new javax.swing.JPanel();
-        deviceChoice163 = new DeviceChoice();
-        deviceChoice164 = new DeviceChoice();
-        deviceChoice165 = new DeviceChoice();
-        jPanel70 = new javax.swing.JPanel();
-        jPanel71 = new javax.swing.JPanel();
-        deviceChoice166 = new DeviceChoice();
-        deviceChoice167 = new DeviceChoice();
-        deviceChoice168 = new DeviceChoice();
-        jPanel72 = new javax.swing.JPanel();
-        deviceChoice169 = new DeviceChoice();
-        deviceChoice170 = new DeviceChoice();
-        deviceChoice171 = new DeviceChoice();
-        jPanel73 = new javax.swing.JPanel();
-        deviceChoice172 = new DeviceChoice();
-        deviceChoice173 = new DeviceChoice();
-        deviceChoice174 = new DeviceChoice();
-        jPanel74 = new javax.swing.JPanel();
-        deviceChoice175 = new DeviceChoice();
-        deviceChoice176 = new DeviceChoice();
-        deviceChoice177 = new DeviceChoice();
-        jPanel75 = new javax.swing.JPanel();
-        deviceChoice178 = new DeviceChoice();
-        deviceChoice179 = new DeviceChoice();
-        deviceChoice180 = new DeviceChoice();
-        jPanel76 = new javax.swing.JPanel();
-        deviceChoice181 = new DeviceChoice();
-        deviceChoice182 = new DeviceChoice();
-        deviceChoice183 = new DeviceChoice();
-        jPanel77 = new javax.swing.JPanel();
-        deviceChoice184 = new DeviceChoice();
-        deviceChoice185 = new DeviceChoice();
-        deviceChoice186 = new DeviceChoice();
-        jPanel78 = new javax.swing.JPanel();
-        deviceChoice187 = new DeviceChoice();
-        deviceChoice188 = new DeviceChoice();
-        deviceChoice189 = new DeviceChoice();
-        jPanel79 = new javax.swing.JPanel();
-        deviceChoice190 = new DeviceChoice();
-        deviceChoice191 = new DeviceChoice();
-        deviceChoice192 = new DeviceChoice();
-        jPanel80 = new javax.swing.JPanel();
-        deviceChoice193 = new DeviceChoice();
-        deviceChoice194 = new DeviceChoice();
-        deviceChoice195 = new DeviceChoice();
-
-        setDeviceProvider("localhost:5005");
-        setDeviceTitle("Femto Amplifier Setup");
-        setDeviceType("FEMTO");
-        setHeight(760);
-        setWidth(700);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Base Setup"));
-        jPanel1.setAlignmentX(0.0F);
-        jPanel1.setAlignmentY(0.0F);
-        jPanel1.setMinimumSize(new java.awt.Dimension(600, 95));
-        jPanel1.setPreferredSize(new java.awt.Dimension(600, 95));
-        jPanel1.setRequestFocusEnabled(false);
-        jPanel1.setLayout(new java.awt.GridLayout(2, 1));
-
-        jPanel2.setAlignmentX(0.0F);
-        jPanel2.setAlignmentY(0.0F);
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("NAME:");
-        deviceField1.setNumCols(16);
-        deviceField1.setOffsetNid(1);
-        jPanel2.add(deviceField1);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("IP ADDRESS:");
-        deviceField2.setNumCols(16);
-        deviceField2.setOffsetNid(3);
-        jPanel2.add(deviceField2);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("COM PORT:");
-        deviceField3.setNumCols(6);
-        deviceField3.setOffsetNid(4);
-        jPanel2.add(deviceField3);
-
-        jPanel1.add(jPanel2);
-
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Comment:");
-        deviceField4.setNumCols(40);
-        deviceField4.setOffsetNid(2);
-        jPanel3.add(deviceField4);
-
-        jPanel1.add(jPanel3);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
-
-        jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Femto Amplifier Setup"));
-        jTabbedPane1.setMinimumSize(new java.awt.Dimension(570, 640));
-        jTabbedPane1.setPreferredSize(new java.awt.Dimension(570, 640));
-
-        jPanel6.setLayout(new java.awt.GridLayout(1, 2));
-
-        jPanel7.setLayout(new java.awt.GridLayout(11, 1));
-
-        jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
-        jPanel9.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel9.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel9.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice1.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("HS/LN");
-        deviceChoice1.setOffsetNid(8);
-        deviceChoice1.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel9.add(deviceChoice1, gridBagConstraints);
-
-        deviceChoice2.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("AC/DC");
-        deviceChoice2.setOffsetNid(7);
-        deviceChoice2.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel9.add(deviceChoice2, gridBagConstraints);
-
-        deviceChoice3.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("GAIN");
-        deviceChoice3.setOffsetNid(6);
-        deviceChoice3.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel9.add(deviceChoice3, gridBagConstraints);
-
-        jPanel7.add(jPanel9);
-
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
-        jPanel10.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel10.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel10.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice4.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("HS/LN");
-        deviceChoice4.setOffsetNid(12);
-        deviceChoice4.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel10.add(deviceChoice4, gridBagConstraints);
-
-        deviceChoice5.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("AC/DC");
-        deviceChoice5.setOffsetNid(11);
-        deviceChoice5.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel10.add(deviceChoice5, gridBagConstraints);
-
-        deviceChoice6.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("GAIN");
-        deviceChoice6.setOffsetNid(10);
-        deviceChoice6.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel10.add(deviceChoice6, gridBagConstraints);
-
-        jPanel7.add(jPanel10);
-
-        jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
-        jPanel11.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel11.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel11.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice7.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("HS/LN");
-        deviceChoice7.setOffsetNid(16);
-        deviceChoice7.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel11.add(deviceChoice7, gridBagConstraints);
-
-        deviceChoice8.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("AC/DC");
-        deviceChoice8.setOffsetNid(15);
-        deviceChoice8.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel11.add(deviceChoice8, gridBagConstraints);
-
-        deviceChoice9.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("GAIN");
-        deviceChoice9.setOffsetNid(14);
-        deviceChoice9.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel11.add(deviceChoice9, gridBagConstraints);
-
-        jPanel7.add(jPanel11);
-
-        jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
-        jPanel12.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel12.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel12.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice10.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice10.setIdentifier("");
-        deviceChoice10.setLabelString("HS/LN");
-        deviceChoice10.setOffsetNid(20);
-        deviceChoice10.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel12.add(deviceChoice10, gridBagConstraints);
-
-        deviceChoice11.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("AC/DC");
-        deviceChoice11.setOffsetNid(19);
-        deviceChoice11.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel12.add(deviceChoice11, gridBagConstraints);
-
-        deviceChoice12.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("GAIN");
-        deviceChoice12.setOffsetNid(18);
-        deviceChoice12.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel12.add(deviceChoice12, gridBagConstraints);
-
-        jPanel7.add(jPanel12);
-
-        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
-        jPanel13.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel13.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel13.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice13.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("HS/LN");
-        deviceChoice13.setOffsetNid(24);
-        deviceChoice13.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel13.add(deviceChoice13, gridBagConstraints);
-
-        deviceChoice14.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("AC/DC");
-        deviceChoice14.setOffsetNid(23);
-        deviceChoice14.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel13.add(deviceChoice14, gridBagConstraints);
-
-        deviceChoice15.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("GAIN");
-        deviceChoice15.setOffsetNid(22);
-        deviceChoice15.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel13.add(deviceChoice15, gridBagConstraints);
-
-        jPanel7.add(jPanel13);
-
-        jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
-        jPanel14.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel14.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel14.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice16.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("HS/LN");
-        deviceChoice16.setOffsetNid(28);
-        deviceChoice16.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel14.add(deviceChoice16, gridBagConstraints);
-
-        deviceChoice17.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("AC/DC");
-        deviceChoice17.setOffsetNid(27);
-        deviceChoice17.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel14.add(deviceChoice17, gridBagConstraints);
-
-        deviceChoice18.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("GAIN");
-        deviceChoice18.setOffsetNid(26);
-        deviceChoice18.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel14.add(deviceChoice18, gridBagConstraints);
-
-        jPanel7.add(jPanel14);
-
-        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
-        jPanel15.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel15.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel15.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice19.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("HS/LN");
-        deviceChoice19.setOffsetNid(32);
-        deviceChoice19.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel15.add(deviceChoice19, gridBagConstraints);
-
-        deviceChoice20.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("AC/DC");
-        deviceChoice20.setOffsetNid(31);
-        deviceChoice20.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel15.add(deviceChoice20, gridBagConstraints);
-
-        deviceChoice21.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("GAIN");
-        deviceChoice21.setOffsetNid(30);
-        deviceChoice21.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel15.add(deviceChoice21, gridBagConstraints);
-
-        jPanel7.add(jPanel15);
-
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
-        jPanel16.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel16.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel16.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice22.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("HS/LN");
-        deviceChoice22.setOffsetNid(36);
-        deviceChoice22.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel16.add(deviceChoice22, gridBagConstraints);
-
-        deviceChoice23.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("AC/DC");
-        deviceChoice23.setOffsetNid(35);
-        deviceChoice23.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel16.add(deviceChoice23, gridBagConstraints);
-
-        deviceChoice24.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString("GAIN");
-        deviceChoice24.setOffsetNid(34);
-        deviceChoice24.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel16.add(deviceChoice24, gridBagConstraints);
-
-        jPanel7.add(jPanel16);
-
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("9"));
-        jPanel17.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel17.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel17.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice25.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString("HS/LN");
-        deviceChoice25.setOffsetNid(40);
-        deviceChoice25.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel17.add(deviceChoice25, gridBagConstraints);
-
-        deviceChoice26.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString("AC/DC");
-        deviceChoice26.setOffsetNid(39);
-        deviceChoice26.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel17.add(deviceChoice26, gridBagConstraints);
-
-        deviceChoice27.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice27.setIdentifier("");
-        deviceChoice27.setLabelString("GAIN");
-        deviceChoice27.setOffsetNid(38);
-        deviceChoice27.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel17.add(deviceChoice27, gridBagConstraints);
-
-        jPanel7.add(jPanel17);
-
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("10"));
-        jPanel18.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel18.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel18.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice28.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice28.setIdentifier("");
-        deviceChoice28.setLabelString("HS/LN");
-        deviceChoice28.setOffsetNid(44);
-        deviceChoice28.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel18.add(deviceChoice28, gridBagConstraints);
-
-        deviceChoice29.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString("AC/DC");
-        deviceChoice29.setOffsetNid(43);
-        deviceChoice29.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel18.add(deviceChoice29, gridBagConstraints);
-
-        deviceChoice30.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice30.setIdentifier("");
-        deviceChoice30.setLabelString("GAIN");
-        deviceChoice30.setOffsetNid(42);
-        deviceChoice30.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel18.add(deviceChoice30, gridBagConstraints);
-
-        jPanel7.add(jPanel18);
-
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("11"));
-        jPanel19.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel19.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel19.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice31.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice31.setIdentifier("");
-        deviceChoice31.setLabelString("HS/LN");
-        deviceChoice31.setOffsetNid(48);
-        deviceChoice31.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel19.add(deviceChoice31, gridBagConstraints);
-
-        deviceChoice32.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice32.setIdentifier("");
-        deviceChoice32.setLabelString("AC/DC");
-        deviceChoice32.setOffsetNid(47);
-        deviceChoice32.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel19.add(deviceChoice32, gridBagConstraints);
-
-        deviceChoice33.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice33.setIdentifier("");
-        deviceChoice33.setLabelString("GAIN");
-        deviceChoice33.setOffsetNid(46);
-        deviceChoice33.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel19.add(deviceChoice33, gridBagConstraints);
-
-        jPanel7.add(jPanel19);
-
-        jPanel6.add(jPanel7);
-
-        jPanel8.setLayout(new java.awt.GridLayout(11, 3));
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("12"));
-        jPanel20.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel20.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel20.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice34.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice34.setIdentifier("");
-        deviceChoice34.setLabelString("HS/LN");
-        deviceChoice34.setOffsetNid(52);
-        deviceChoice34.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel20.add(deviceChoice34, gridBagConstraints);
-
-        deviceChoice35.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice35.setIdentifier("");
-        deviceChoice35.setLabelString("AC/DC");
-        deviceChoice35.setOffsetNid(51);
-        deviceChoice35.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel20.add(deviceChoice35, gridBagConstraints);
-
-        deviceChoice36.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice36.setIdentifier("");
-        deviceChoice36.setLabelString("GAIN");
-        deviceChoice36.setOffsetNid(50);
-        deviceChoice36.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel20.add(deviceChoice36, gridBagConstraints);
-
-        jPanel8.add(jPanel20);
-
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("13"));
-        jPanel21.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel21.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel21.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice37.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice37.setIdentifier("");
-        deviceChoice37.setLabelString("HS/LN");
-        deviceChoice37.setOffsetNid(56);
-        deviceChoice37.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel21.add(deviceChoice37, gridBagConstraints);
-
-        deviceChoice38.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice38.setIdentifier("");
-        deviceChoice38.setLabelString("AC/DC");
-        deviceChoice38.setOffsetNid(55);
-        deviceChoice38.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel21.add(deviceChoice38, gridBagConstraints);
-
-        deviceChoice39.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice39.setIdentifier("");
-        deviceChoice39.setLabelString("GAIN");
-        deviceChoice39.setOffsetNid(54);
-        deviceChoice39.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel21.add(deviceChoice39, gridBagConstraints);
-
-        jPanel8.add(jPanel21);
-
-        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("14"));
-        jPanel22.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel22.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel22.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice40.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice40.setIdentifier("");
-        deviceChoice40.setLabelString("HS/LN");
-        deviceChoice40.setOffsetNid(60);
-        deviceChoice40.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel22.add(deviceChoice40, gridBagConstraints);
-
-        deviceChoice41.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice41.setIdentifier("");
-        deviceChoice41.setLabelString("AC/DC");
-        deviceChoice41.setOffsetNid(59);
-        deviceChoice41.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel22.add(deviceChoice41, gridBagConstraints);
-
-        deviceChoice42.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice42.setIdentifier("");
-        deviceChoice42.setLabelString("GAIN");
-        deviceChoice42.setOffsetNid(58);
-        deviceChoice42.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel22.add(deviceChoice42, gridBagConstraints);
-
-        jPanel8.add(jPanel22);
-
-        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("15"));
-        jPanel23.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel23.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel23.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice43.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice43.setIdentifier("");
-        deviceChoice43.setLabelString("HS/LN");
-        deviceChoice43.setOffsetNid(64);
-        deviceChoice43.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel23.add(deviceChoice43, gridBagConstraints);
-
-        deviceChoice44.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice44.setIdentifier("");
-        deviceChoice44.setLabelString("AC/DC");
-        deviceChoice44.setOffsetNid(63);
-        deviceChoice44.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel23.add(deviceChoice44, gridBagConstraints);
-
-        deviceChoice45.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice45.setIdentifier("");
-        deviceChoice45.setLabelString("GAIN");
-        deviceChoice45.setOffsetNid(62);
-        deviceChoice45.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel23.add(deviceChoice45, gridBagConstraints);
-
-        jPanel8.add(jPanel23);
-
-        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("16"));
-        jPanel24.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel24.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel24.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice46.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice46.setIdentifier("");
-        deviceChoice46.setLabelString("HS/LN");
-        deviceChoice46.setOffsetNid(68);
-        deviceChoice46.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel24.add(deviceChoice46, gridBagConstraints);
-
-        deviceChoice47.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice47.setIdentifier("");
-        deviceChoice47.setLabelString("AC/DC");
-        deviceChoice47.setOffsetNid(67);
-        deviceChoice47.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel24.add(deviceChoice47, gridBagConstraints);
-
-        deviceChoice48.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice48.setIdentifier("");
-        deviceChoice48.setLabelString("GAIN");
-        deviceChoice48.setOffsetNid(66);
-        deviceChoice48.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel24.add(deviceChoice48, gridBagConstraints);
-
-        jPanel8.add(jPanel24);
-
-        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("17"));
-        jPanel25.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel25.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel25.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice49.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice49.setIdentifier("");
-        deviceChoice49.setLabelString("HS/LN");
-        deviceChoice49.setOffsetNid(72);
-        deviceChoice49.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel25.add(deviceChoice49, gridBagConstraints);
-
-        deviceChoice50.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice50.setIdentifier("");
-        deviceChoice50.setLabelString("AC/DC");
-        deviceChoice50.setOffsetNid(71);
-        deviceChoice50.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel25.add(deviceChoice50, gridBagConstraints);
-
-        deviceChoice51.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice51.setIdentifier("");
-        deviceChoice51.setLabelString("GAIN");
-        deviceChoice51.setOffsetNid(70);
-        deviceChoice51.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel25.add(deviceChoice51, gridBagConstraints);
-
-        jPanel8.add(jPanel25);
-
-        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("18"));
-        jPanel26.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel26.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel26.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice52.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice52.setIdentifier("");
-        deviceChoice52.setLabelString("HS/LN");
-        deviceChoice52.setOffsetNid(76);
-        deviceChoice52.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel26.add(deviceChoice52, gridBagConstraints);
-
-        deviceChoice53.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice53.setIdentifier("");
-        deviceChoice53.setLabelString("AC/DC");
-        deviceChoice53.setOffsetNid(75);
-        deviceChoice53.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel26.add(deviceChoice53, gridBagConstraints);
-
-        deviceChoice54.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice54.setIdentifier("");
-        deviceChoice54.setLabelString("GAIN");
-        deviceChoice54.setOffsetNid(74);
-        deviceChoice54.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel26.add(deviceChoice54, gridBagConstraints);
-
-        jPanel8.add(jPanel26);
-
-        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("19"));
-        jPanel27.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel27.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel27.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice55.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice55.setIdentifier("");
-        deviceChoice55.setLabelString("HS/LN");
-        deviceChoice55.setOffsetNid(80);
-        deviceChoice55.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel27.add(deviceChoice55, gridBagConstraints);
-
-        deviceChoice56.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice56.setIdentifier("");
-        deviceChoice56.setLabelString("AC/DC");
-        deviceChoice56.setOffsetNid(79);
-        deviceChoice56.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel27.add(deviceChoice56, gridBagConstraints);
-
-        deviceChoice57.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice57.setIdentifier("");
-        deviceChoice57.setLabelString("GAIN");
-        deviceChoice57.setOffsetNid(78);
-        deviceChoice57.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel27.add(deviceChoice57, gridBagConstraints);
-
-        jPanel8.add(jPanel27);
-
-        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("20"));
-        jPanel28.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel28.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel28.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice58.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice58.setIdentifier("");
-        deviceChoice58.setLabelString("HS/LN");
-        deviceChoice58.setOffsetNid(84);
-        deviceChoice58.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel28.add(deviceChoice58, gridBagConstraints);
-
-        deviceChoice59.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice59.setIdentifier("");
-        deviceChoice59.setLabelString("AC/DC");
-        deviceChoice59.setOffsetNid(83);
-        deviceChoice59.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel28.add(deviceChoice59, gridBagConstraints);
-
-        deviceChoice60.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice60.setIdentifier("");
-        deviceChoice60.setLabelString("GAIN");
-        deviceChoice60.setOffsetNid(82);
-        deviceChoice60.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel28.add(deviceChoice60, gridBagConstraints);
-
-        jPanel8.add(jPanel28);
-
-        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("21"));
-        jPanel29.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel29.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel29.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice61.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice61.setIdentifier("");
-        deviceChoice61.setLabelString("HS/LN");
-        deviceChoice61.setOffsetNid(88);
-        deviceChoice61.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel29.add(deviceChoice61, gridBagConstraints);
-
-        deviceChoice62.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice62.setIdentifier("");
-        deviceChoice62.setLabelString("AC/DC");
-        deviceChoice62.setOffsetNid(87);
-        deviceChoice62.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel29.add(deviceChoice62, gridBagConstraints);
-
-        deviceChoice63.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice63.setIdentifier("");
-        deviceChoice63.setLabelString("GAIN");
-        deviceChoice63.setOffsetNid(86);
-        deviceChoice63.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel29.add(deviceChoice63, gridBagConstraints);
-
-        jPanel8.add(jPanel29);
-
-        jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("22"));
-        jPanel30.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel30.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel30.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice64.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice64.setIdentifier("");
-        deviceChoice64.setLabelString("HS/LN");
-        deviceChoice64.setOffsetNid(92);
-        deviceChoice64.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel30.add(deviceChoice64, gridBagConstraints);
-
-        deviceChoice65.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice65.setIdentifier("");
-        deviceChoice65.setLabelString("AC/DC");
-        deviceChoice65.setOffsetNid(91);
-        deviceChoice65.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel30.add(deviceChoice65, gridBagConstraints);
-
-        deviceChoice66.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice66.setIdentifier("");
-        deviceChoice66.setLabelString("GAIN");
-        deviceChoice66.setOffsetNid(90);
-        deviceChoice66.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel30.add(deviceChoice66, gridBagConstraints);
-
-        jPanel8.add(jPanel30);
-
-        jPanel6.add(jPanel8);
-
-        jTabbedPane1.addTab("1...22", jPanel6);
-
-        jPanel32.setLayout(new java.awt.GridLayout(1, 2));
-
-        jPanel33.setLayout(new java.awt.GridLayout(11, 3));
-
-        jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("23"));
-        jPanel34.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel34.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel34.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice67.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice67.setIdentifier("");
-        deviceChoice67.setLabelString("HS/LN");
-        deviceChoice67.setOffsetNid(96);
-        deviceChoice67.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel34.add(deviceChoice67, gridBagConstraints);
-
-        deviceChoice68.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice68.setIdentifier("");
-        deviceChoice68.setLabelString("AC/DC");
-        deviceChoice68.setOffsetNid(95);
-        deviceChoice68.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel34.add(deviceChoice68, gridBagConstraints);
-
-        deviceChoice69.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice69.setIdentifier("");
-        deviceChoice69.setLabelString("GAIN");
-        deviceChoice69.setOffsetNid(94);
-        deviceChoice69.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel34.add(deviceChoice69, gridBagConstraints);
-
-        jPanel33.add(jPanel34);
-
-        jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("24"));
-        jPanel35.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel35.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel35.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice70.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice70.setIdentifier("");
-        deviceChoice70.setLabelString("HS/LN");
-        deviceChoice70.setOffsetNid(100);
-        deviceChoice70.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel35.add(deviceChoice70, gridBagConstraints);
-
-        deviceChoice71.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice71.setIdentifier("");
-        deviceChoice71.setLabelString("AC/DC");
-        deviceChoice71.setOffsetNid(99);
-        deviceChoice71.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel35.add(deviceChoice71, gridBagConstraints);
-
-        deviceChoice72.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice72.setIdentifier("");
-        deviceChoice72.setLabelString("GAIN");
-        deviceChoice72.setOffsetNid(98);
-        deviceChoice72.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel35.add(deviceChoice72, gridBagConstraints);
-
-        jPanel33.add(jPanel35);
-
-        jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("25"));
-        jPanel36.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel36.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel36.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice73.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice73.setIdentifier("");
-        deviceChoice73.setLabelString("HS/LN");
-        deviceChoice73.setOffsetNid(104);
-        deviceChoice73.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel36.add(deviceChoice73, gridBagConstraints);
-
-        deviceChoice74.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice74.setIdentifier("");
-        deviceChoice74.setLabelString("AC/DC");
-        deviceChoice74.setOffsetNid(103);
-        deviceChoice74.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel36.add(deviceChoice74, gridBagConstraints);
-
-        deviceChoice75.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice75.setIdentifier("");
-        deviceChoice75.setLabelString("GAIN");
-        deviceChoice75.setOffsetNid(102);
-        deviceChoice75.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel36.add(deviceChoice75, gridBagConstraints);
-
-        jPanel33.add(jPanel36);
-
-        jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("26"));
-        jPanel37.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel37.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel37.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice76.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice76.setIdentifier("");
-        deviceChoice76.setLabelString("HS/LN");
-        deviceChoice76.setOffsetNid(108);
-        deviceChoice76.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel37.add(deviceChoice76, gridBagConstraints);
-
-        deviceChoice77.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice77.setIdentifier("");
-        deviceChoice77.setLabelString("AC/DC");
-        deviceChoice77.setOffsetNid(107);
-        deviceChoice77.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel37.add(deviceChoice77, gridBagConstraints);
-
-        deviceChoice78.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice78.setIdentifier("");
-        deviceChoice78.setLabelString("GAIN");
-        deviceChoice78.setOffsetNid(106);
-        deviceChoice78.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel37.add(deviceChoice78, gridBagConstraints);
-
-        jPanel33.add(jPanel37);
-
-        jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("27"));
-        jPanel38.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel38.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel38.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice79.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice79.setIdentifier("");
-        deviceChoice79.setLabelString("HS/LN");
-        deviceChoice79.setOffsetNid(112);
-        deviceChoice79.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel38.add(deviceChoice79, gridBagConstraints);
-
-        deviceChoice80.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice80.setIdentifier("");
-        deviceChoice80.setLabelString("AC/DC");
-        deviceChoice80.setOffsetNid(111);
-        deviceChoice80.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel38.add(deviceChoice80, gridBagConstraints);
-
-        deviceChoice81.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice81.setIdentifier("");
-        deviceChoice81.setLabelString("GAIN");
-        deviceChoice81.setOffsetNid(110);
-        deviceChoice81.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel38.add(deviceChoice81, gridBagConstraints);
-
-        jPanel33.add(jPanel38);
-
-        jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("28"));
-        jPanel39.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel39.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel39.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice82.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice82.setIdentifier("");
-        deviceChoice82.setLabelString("HS/LN");
-        deviceChoice82.setOffsetNid(116);
-        deviceChoice82.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel39.add(deviceChoice82, gridBagConstraints);
-
-        deviceChoice83.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice83.setIdentifier("");
-        deviceChoice83.setLabelString("AC/DC");
-        deviceChoice83.setOffsetNid(115);
-        deviceChoice83.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel39.add(deviceChoice83, gridBagConstraints);
-
-        deviceChoice84.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice84.setIdentifier("");
-        deviceChoice84.setLabelString("GAIN");
-        deviceChoice84.setOffsetNid(114);
-        deviceChoice84.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel39.add(deviceChoice84, gridBagConstraints);
-
-        jPanel33.add(jPanel39);
-
-        jPanel40.setBorder(javax.swing.BorderFactory.createTitledBorder("29"));
-        jPanel40.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel40.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel40.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice85.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice85.setIdentifier("");
-        deviceChoice85.setLabelString("HS/LN");
-        deviceChoice85.setOffsetNid(120);
-        deviceChoice85.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel40.add(deviceChoice85, gridBagConstraints);
-
-        deviceChoice86.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice86.setIdentifier("");
-        deviceChoice86.setLabelString("AC/DC");
-        deviceChoice86.setOffsetNid(119);
-        deviceChoice86.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel40.add(deviceChoice86, gridBagConstraints);
-
-        deviceChoice87.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice87.setIdentifier("");
-        deviceChoice87.setLabelString("GAIN");
-        deviceChoice87.setOffsetNid(118);
-        deviceChoice87.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel40.add(deviceChoice87, gridBagConstraints);
-
-        jPanel33.add(jPanel40);
-
-        jPanel41.setBorder(javax.swing.BorderFactory.createTitledBorder("30"));
-        jPanel41.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel41.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel41.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice88.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice88.setIdentifier("");
-        deviceChoice88.setLabelString("HS/LN");
-        deviceChoice88.setOffsetNid(124);
-        deviceChoice88.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel41.add(deviceChoice88, gridBagConstraints);
-
-        deviceChoice89.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice89.setIdentifier("");
-        deviceChoice89.setLabelString("AC/DC");
-        deviceChoice89.setOffsetNid(123);
-        deviceChoice89.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel41.add(deviceChoice89, gridBagConstraints);
-
-        deviceChoice90.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice90.setIdentifier("");
-        deviceChoice90.setLabelString("GAIN");
-        deviceChoice90.setOffsetNid(122);
-        deviceChoice90.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel41.add(deviceChoice90, gridBagConstraints);
-
-        jPanel33.add(jPanel41);
-
-        jPanel42.setBorder(javax.swing.BorderFactory.createTitledBorder("31"));
-        jPanel42.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel42.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel42.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice91.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice91.setIdentifier("");
-        deviceChoice91.setLabelString("HS/LN");
-        deviceChoice91.setOffsetNid(128);
-        deviceChoice91.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel42.add(deviceChoice91, gridBagConstraints);
-
-        deviceChoice92.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice92.setIdentifier("");
-        deviceChoice92.setLabelString("AC/DC");
-        deviceChoice92.setOffsetNid(127);
-        deviceChoice92.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel42.add(deviceChoice92, gridBagConstraints);
-
-        deviceChoice93.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice93.setIdentifier("");
-        deviceChoice93.setLabelString("GAIN");
-        deviceChoice93.setOffsetNid(126);
-        deviceChoice93.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel42.add(deviceChoice93, gridBagConstraints);
-
-        jPanel33.add(jPanel42);
-
-        jPanel43.setBorder(javax.swing.BorderFactory.createTitledBorder("32"));
-        jPanel43.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel43.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel43.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice94.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice94.setIdentifier("");
-        deviceChoice94.setLabelString("HS/LN");
-        deviceChoice94.setOffsetNid(132);
-        deviceChoice94.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel43.add(deviceChoice94, gridBagConstraints);
-
-        deviceChoice95.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice95.setIdentifier("");
-        deviceChoice95.setLabelString("AC/DC");
-        deviceChoice95.setOffsetNid(131);
-        deviceChoice95.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel43.add(deviceChoice95, gridBagConstraints);
-
-        deviceChoice96.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice96.setIdentifier("");
-        deviceChoice96.setLabelString("GAIN");
-        deviceChoice96.setOffsetNid(130);
-        deviceChoice96.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel43.add(deviceChoice96, gridBagConstraints);
-
-        jPanel33.add(jPanel43);
-
-        jPanel44.setBorder(javax.swing.BorderFactory.createTitledBorder("33"));
-        jPanel44.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel44.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel44.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice97.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice97.setIdentifier("");
-        deviceChoice97.setLabelString("HS/LN");
-        deviceChoice97.setOffsetNid(136);
-        deviceChoice97.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel44.add(deviceChoice97, gridBagConstraints);
-
-        deviceChoice98.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice98.setIdentifier("");
-        deviceChoice98.setLabelString("AC/DC");
-        deviceChoice98.setOffsetNid(135);
-        deviceChoice98.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel44.add(deviceChoice98, gridBagConstraints);
-
-        deviceChoice99.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice99.setIdentifier("");
-        deviceChoice99.setLabelString("GAIN");
-        deviceChoice99.setOffsetNid(134);
-        deviceChoice99.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel44.add(deviceChoice99, gridBagConstraints);
-
-        jPanel33.add(jPanel44);
-
-        jPanel32.add(jPanel33);
-
-        jPanel45.setLayout(new java.awt.GridLayout(11, 3));
-
-        jPanel46.setBorder(javax.swing.BorderFactory.createTitledBorder("34"));
-        jPanel46.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel46.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel46.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice100.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice100.setIdentifier("");
-        deviceChoice100.setLabelString("HS/LN");
-        deviceChoice100.setOffsetNid(140);
-        deviceChoice100.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel46.add(deviceChoice100, gridBagConstraints);
-
-        deviceChoice101.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice101.setIdentifier("");
-        deviceChoice101.setLabelString("AC/DC");
-        deviceChoice101.setOffsetNid(139);
-        deviceChoice101.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel46.add(deviceChoice101, gridBagConstraints);
-
-        deviceChoice102.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice102.setIdentifier("");
-        deviceChoice102.setLabelString("GAIN");
-        deviceChoice102.setOffsetNid(138);
-        deviceChoice102.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel46.add(deviceChoice102, gridBagConstraints);
-
-        jPanel45.add(jPanel46);
-
-        jPanel47.setBorder(javax.swing.BorderFactory.createTitledBorder("35"));
-        jPanel47.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel47.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel47.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice103.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice103.setIdentifier("");
-        deviceChoice103.setLabelString("HS/LN");
-        deviceChoice103.setOffsetNid(144);
-        deviceChoice103.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel47.add(deviceChoice103, gridBagConstraints);
-
-        deviceChoice104.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice104.setIdentifier("");
-        deviceChoice104.setLabelString("AC/DC");
-        deviceChoice104.setOffsetNid(143);
-        deviceChoice104.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel47.add(deviceChoice104, gridBagConstraints);
-
-        deviceChoice105.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice105.setIdentifier("");
-        deviceChoice105.setLabelString("GAIN");
-        deviceChoice105.setOffsetNid(142);
-        deviceChoice105.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel47.add(deviceChoice105, gridBagConstraints);
-
-        jPanel45.add(jPanel47);
-
-        jPanel48.setBorder(javax.swing.BorderFactory.createTitledBorder("36"));
-        jPanel48.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel48.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel48.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice106.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice106.setIdentifier("");
-        deviceChoice106.setLabelString("HS/LN");
-        deviceChoice106.setOffsetNid(148);
-        deviceChoice106.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel48.add(deviceChoice106, gridBagConstraints);
-
-        deviceChoice107.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice107.setIdentifier("");
-        deviceChoice107.setLabelString("AC/DC");
-        deviceChoice107.setOffsetNid(147);
-        deviceChoice107.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel48.add(deviceChoice107, gridBagConstraints);
-
-        deviceChoice108.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice108.setIdentifier("");
-        deviceChoice108.setLabelString("GAIN");
-        deviceChoice108.setOffsetNid(146);
-        deviceChoice108.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel48.add(deviceChoice108, gridBagConstraints);
-
-        jPanel45.add(jPanel48);
-
-        jPanel49.setBorder(javax.swing.BorderFactory.createTitledBorder("37"));
-        jPanel49.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel49.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel49.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice109.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice109.setIdentifier("");
-        deviceChoice109.setLabelString("HS/LN");
-        deviceChoice109.setOffsetNid(152);
-        deviceChoice109.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel49.add(deviceChoice109, gridBagConstraints);
-
-        deviceChoice110.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice110.setIdentifier("");
-        deviceChoice110.setLabelString("AC/DC");
-        deviceChoice110.setOffsetNid(151);
-        deviceChoice110.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel49.add(deviceChoice110, gridBagConstraints);
-
-        deviceChoice111.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice111.setIdentifier("");
-        deviceChoice111.setLabelString("GAIN");
-        deviceChoice111.setOffsetNid(150);
-        deviceChoice111.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel49.add(deviceChoice111, gridBagConstraints);
-
-        jPanel45.add(jPanel49);
-
-        jPanel50.setBorder(javax.swing.BorderFactory.createTitledBorder("38"));
-        jPanel50.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel50.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel50.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice112.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice112.setIdentifier("");
-        deviceChoice112.setLabelString("HS/LN");
-        deviceChoice112.setOffsetNid(156);
-        deviceChoice112.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel50.add(deviceChoice112, gridBagConstraints);
-
-        deviceChoice113.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice113.setIdentifier("");
-        deviceChoice113.setLabelString("AC/DC");
-        deviceChoice113.setOffsetNid(155);
-        deviceChoice113.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel50.add(deviceChoice113, gridBagConstraints);
-
-        deviceChoice114.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice114.setIdentifier("");
-        deviceChoice114.setLabelString("GAIN");
-        deviceChoice114.setOffsetNid(154);
-        deviceChoice114.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel50.add(deviceChoice114, gridBagConstraints);
-
-        jPanel45.add(jPanel50);
-
-        jPanel51.setBorder(javax.swing.BorderFactory.createTitledBorder("39"));
-        jPanel51.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel51.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel51.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice115.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice115.setIdentifier("");
-        deviceChoice115.setLabelString("HS/LN");
-        deviceChoice115.setOffsetNid(160);
-        deviceChoice115.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel51.add(deviceChoice115, gridBagConstraints);
-
-        deviceChoice116.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice116.setIdentifier("");
-        deviceChoice116.setLabelString("AC/DC");
-        deviceChoice116.setOffsetNid(159);
-        deviceChoice116.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel51.add(deviceChoice116, gridBagConstraints);
-
-        deviceChoice117.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice117.setIdentifier("");
-        deviceChoice117.setLabelString("GAIN");
-        deviceChoice117.setOffsetNid(158);
-        deviceChoice117.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel51.add(deviceChoice117, gridBagConstraints);
-
-        jPanel45.add(jPanel51);
-
-        jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("40"));
-        jPanel52.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel52.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel52.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice118.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice118.setIdentifier("");
-        deviceChoice118.setLabelString("HS/LN");
-        deviceChoice118.setOffsetNid(164);
-        deviceChoice118.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel52.add(deviceChoice118, gridBagConstraints);
-
-        deviceChoice119.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice119.setIdentifier("");
-        deviceChoice119.setLabelString("AC/DC");
-        deviceChoice119.setOffsetNid(163);
-        deviceChoice119.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel52.add(deviceChoice119, gridBagConstraints);
-
-        deviceChoice120.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice120.setIdentifier("");
-        deviceChoice120.setLabelString("GAIN");
-        deviceChoice120.setOffsetNid(162);
-        deviceChoice120.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel52.add(deviceChoice120, gridBagConstraints);
-
-        jPanel45.add(jPanel52);
-
-        jPanel53.setBorder(javax.swing.BorderFactory.createTitledBorder("41"));
-        jPanel53.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel53.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel53.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice121.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice121.setIdentifier("");
-        deviceChoice121.setLabelString("HS/LN");
-        deviceChoice121.setOffsetNid(168);
-        deviceChoice121.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel53.add(deviceChoice121, gridBagConstraints);
-
-        deviceChoice122.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice122.setIdentifier("");
-        deviceChoice122.setLabelString("AC/DC");
-        deviceChoice122.setOffsetNid(167);
-        deviceChoice122.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel53.add(deviceChoice122, gridBagConstraints);
-
-        deviceChoice123.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice123.setIdentifier("");
-        deviceChoice123.setLabelString("GAIN");
-        deviceChoice123.setOffsetNid(166);
-        deviceChoice123.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel53.add(deviceChoice123, gridBagConstraints);
-
-        jPanel45.add(jPanel53);
-
-        jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("42"));
-        jPanel54.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel54.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel54.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice124.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice124.setIdentifier("");
-        deviceChoice124.setLabelString("HS/LN");
-        deviceChoice124.setOffsetNid(172);
-        deviceChoice124.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel54.add(deviceChoice124, gridBagConstraints);
-
-        deviceChoice125.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice125.setIdentifier("");
-        deviceChoice125.setLabelString("AC/DC");
-        deviceChoice125.setOffsetNid(171);
-        deviceChoice125.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel54.add(deviceChoice125, gridBagConstraints);
-
-        deviceChoice126.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice126.setIdentifier("");
-        deviceChoice126.setLabelString("GAIN");
-        deviceChoice126.setOffsetNid(170);
-        deviceChoice126.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel54.add(deviceChoice126, gridBagConstraints);
-
-        jPanel45.add(jPanel54);
-
-        jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("43"));
-        jPanel55.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel55.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel55.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice127.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice127.setIdentifier("");
-        deviceChoice127.setLabelString("HS/LN");
-        deviceChoice127.setOffsetNid(176);
-        deviceChoice127.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel55.add(deviceChoice127, gridBagConstraints);
-
-        deviceChoice128.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice128.setIdentifier("");
-        deviceChoice128.setLabelString("AC/DC");
-        deviceChoice128.setOffsetNid(175);
-        deviceChoice128.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel55.add(deviceChoice128, gridBagConstraints);
-
-        deviceChoice129.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice129.setIdentifier("");
-        deviceChoice129.setLabelString("GAIN");
-        deviceChoice129.setOffsetNid(174);
-        deviceChoice129.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel55.add(deviceChoice129, gridBagConstraints);
-
-        jPanel45.add(jPanel55);
-
-        jPanel56.setBorder(javax.swing.BorderFactory.createTitledBorder("44"));
-        jPanel56.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel56.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel56.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice130.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice130.setIdentifier("");
-        deviceChoice130.setLabelString("HS/LN");
-        deviceChoice130.setOffsetNid(180);
-        deviceChoice130.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel56.add(deviceChoice130, gridBagConstraints);
-
-        deviceChoice131.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice131.setIdentifier("");
-        deviceChoice131.setLabelString("AC/DC");
-        deviceChoice131.setOffsetNid(179);
-        deviceChoice131.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel56.add(deviceChoice131, gridBagConstraints);
-
-        deviceChoice132.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice132.setIdentifier("");
-        deviceChoice132.setLabelString("GAIN");
-        deviceChoice132.setOffsetNid(178);
-        deviceChoice132.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel56.add(deviceChoice132, gridBagConstraints);
-
-        jPanel45.add(jPanel56);
-
-        jPanel32.add(jPanel45);
-
-        jTabbedPane1.addTab("23...44", jPanel32);
-
-        jPanel57.setLayout(new java.awt.GridLayout(1, 2));
-
-        jPanel58.setLayout(new java.awt.GridLayout(11, 3));
-
-        jPanel59.setBorder(javax.swing.BorderFactory.createTitledBorder("45"));
-        jPanel59.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel59.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel59.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice133.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice133.setIdentifier("");
-        deviceChoice133.setLabelString("HS/LN");
-        deviceChoice133.setOffsetNid(184);
-        deviceChoice133.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel59.add(deviceChoice133, gridBagConstraints);
-
-        deviceChoice134.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice134.setIdentifier("");
-        deviceChoice134.setLabelString("AC/DC");
-        deviceChoice134.setOffsetNid(183);
-        deviceChoice134.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel59.add(deviceChoice134, gridBagConstraints);
-
-        deviceChoice135.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice135.setIdentifier("");
-        deviceChoice135.setLabelString("GAIN");
-        deviceChoice135.setOffsetNid(182);
-        deviceChoice135.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel59.add(deviceChoice135, gridBagConstraints);
-
-        jPanel58.add(jPanel59);
-
-        jPanel60.setBorder(javax.swing.BorderFactory.createTitledBorder("46"));
-        jPanel60.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel60.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel60.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice136.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice136.setIdentifier("");
-        deviceChoice136.setLabelString("HS/LN");
-        deviceChoice136.setOffsetNid(188);
-        deviceChoice136.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel60.add(deviceChoice136, gridBagConstraints);
-
-        deviceChoice137.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice137.setIdentifier("");
-        deviceChoice137.setLabelString("AC/DC");
-        deviceChoice137.setOffsetNid(187);
-        deviceChoice137.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel60.add(deviceChoice137, gridBagConstraints);
-
-        deviceChoice138.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice138.setIdentifier("");
-        deviceChoice138.setLabelString("GAIN");
-        deviceChoice138.setOffsetNid(186);
-        deviceChoice138.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel60.add(deviceChoice138, gridBagConstraints);
-
-        jPanel58.add(jPanel60);
-
-        jPanel61.setBorder(javax.swing.BorderFactory.createTitledBorder("47"));
-        jPanel61.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel61.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel61.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice139.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice139.setIdentifier("");
-        deviceChoice139.setLabelString("HS/LN");
-        deviceChoice139.setOffsetNid(192);
-        deviceChoice139.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel61.add(deviceChoice139, gridBagConstraints);
-
-        deviceChoice140.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice140.setIdentifier("");
-        deviceChoice140.setLabelString("AC/DC");
-        deviceChoice140.setOffsetNid(191);
-        deviceChoice140.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel61.add(deviceChoice140, gridBagConstraints);
-
-        deviceChoice141.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice141.setIdentifier("");
-        deviceChoice141.setLabelString("GAIN");
-        deviceChoice141.setOffsetNid(190);
-        deviceChoice141.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel61.add(deviceChoice141, gridBagConstraints);
-
-        jPanel58.add(jPanel61);
-
-        jPanel62.setBorder(javax.swing.BorderFactory.createTitledBorder("48"));
-        jPanel62.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel62.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel62.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice142.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice142.setIdentifier("");
-        deviceChoice142.setLabelString("HS/LN");
-        deviceChoice142.setOffsetNid(196);
-        deviceChoice142.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel62.add(deviceChoice142, gridBagConstraints);
-
-        deviceChoice143.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice143.setIdentifier("");
-        deviceChoice143.setLabelString("AC/DC");
-        deviceChoice143.setOffsetNid(195);
-        deviceChoice143.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel62.add(deviceChoice143, gridBagConstraints);
-
-        deviceChoice144.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice144.setIdentifier("");
-        deviceChoice144.setLabelString("GAIN");
-        deviceChoice144.setOffsetNid(194);
-        deviceChoice144.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel62.add(deviceChoice144, gridBagConstraints);
-
-        jPanel58.add(jPanel62);
-
-        jPanel63.setBorder(javax.swing.BorderFactory.createTitledBorder("49"));
-        jPanel63.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel63.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel63.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice145.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice145.setIdentifier("");
-        deviceChoice145.setLabelString("HS/LN");
-        deviceChoice145.setOffsetNid(200);
-        deviceChoice145.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel63.add(deviceChoice145, gridBagConstraints);
-
-        deviceChoice146.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice146.setIdentifier("");
-        deviceChoice146.setLabelString("AC/DC");
-        deviceChoice146.setOffsetNid(199);
-        deviceChoice146.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel63.add(deviceChoice146, gridBagConstraints);
-
-        deviceChoice147.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice147.setIdentifier("");
-        deviceChoice147.setLabelString("GAIN");
-        deviceChoice147.setOffsetNid(198);
-        deviceChoice147.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel63.add(deviceChoice147, gridBagConstraints);
-
-        jPanel58.add(jPanel63);
-
-        jPanel64.setBorder(javax.swing.BorderFactory.createTitledBorder("50"));
-        jPanel64.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel64.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel64.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice148.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice148.setIdentifier("");
-        deviceChoice148.setLabelString("HS/LN");
-        deviceChoice148.setOffsetNid(204);
-        deviceChoice148.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel64.add(deviceChoice148, gridBagConstraints);
-
-        deviceChoice149.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice149.setIdentifier("");
-        deviceChoice149.setLabelString("AC/DC");
-        deviceChoice149.setOffsetNid(203);
-        deviceChoice149.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel64.add(deviceChoice149, gridBagConstraints);
-
-        deviceChoice150.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice150.setIdentifier("");
-        deviceChoice150.setLabelString("GAIN");
-        deviceChoice150.setOffsetNid(202);
-        deviceChoice150.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel64.add(deviceChoice150, gridBagConstraints);
-
-        jPanel58.add(jPanel64);
-
-        jPanel65.setBorder(javax.swing.BorderFactory.createTitledBorder("51"));
-        jPanel65.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel65.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel65.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice151.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice151.setIdentifier("");
-        deviceChoice151.setLabelString("HS/LN");
-        deviceChoice151.setOffsetNid(208);
-        deviceChoice151.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel65.add(deviceChoice151, gridBagConstraints);
-
-        deviceChoice152.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice152.setIdentifier("");
-        deviceChoice152.setLabelString("AC/DC");
-        deviceChoice152.setOffsetNid(207);
-        deviceChoice152.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel65.add(deviceChoice152, gridBagConstraints);
-
-        deviceChoice153.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice153.setIdentifier("");
-        deviceChoice153.setLabelString("GAIN");
-        deviceChoice153.setOffsetNid(206);
-        deviceChoice153.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel65.add(deviceChoice153, gridBagConstraints);
-
-        jPanel58.add(jPanel65);
-
-        jPanel66.setBorder(javax.swing.BorderFactory.createTitledBorder("52"));
-        jPanel66.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel66.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel66.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice154.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice154.setIdentifier("");
-        deviceChoice154.setLabelString("HS/LN");
-        deviceChoice154.setOffsetNid(212);
-        deviceChoice154.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel66.add(deviceChoice154, gridBagConstraints);
-
-        deviceChoice155.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice155.setIdentifier("");
-        deviceChoice155.setLabelString("AC/DC");
-        deviceChoice155.setOffsetNid(211);
-        deviceChoice155.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel66.add(deviceChoice155, gridBagConstraints);
-
-        deviceChoice156.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice156.setIdentifier("");
-        deviceChoice156.setLabelString("GAIN");
-        deviceChoice156.setOffsetNid(210);
-        deviceChoice156.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel66.add(deviceChoice156, gridBagConstraints);
-
-        jPanel58.add(jPanel66);
-
-        jPanel67.setBorder(javax.swing.BorderFactory.createTitledBorder("53"));
-        jPanel67.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel67.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel67.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice157.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice157.setIdentifier("");
-        deviceChoice157.setLabelString("HS/LN");
-        deviceChoice157.setOffsetNid(216);
-        deviceChoice157.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel67.add(deviceChoice157, gridBagConstraints);
-
-        deviceChoice158.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice158.setIdentifier("");
-        deviceChoice158.setLabelString("AC/DC");
-        deviceChoice158.setOffsetNid(215);
-        deviceChoice158.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel67.add(deviceChoice158, gridBagConstraints);
-
-        deviceChoice159.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice159.setIdentifier("");
-        deviceChoice159.setLabelString("GAIN");
-        deviceChoice159.setOffsetNid(214);
-        deviceChoice159.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel67.add(deviceChoice159, gridBagConstraints);
-
-        jPanel58.add(jPanel67);
-
-        jPanel68.setBorder(javax.swing.BorderFactory.createTitledBorder("54"));
-        jPanel68.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel68.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel68.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice160.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice160.setIdentifier("");
-        deviceChoice160.setLabelString("HS/LN");
-        deviceChoice160.setOffsetNid(220);
-        deviceChoice160.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel68.add(deviceChoice160, gridBagConstraints);
-
-        deviceChoice161.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice161.setIdentifier("");
-        deviceChoice161.setLabelString("AC/DC");
-        deviceChoice161.setOffsetNid(219);
-        deviceChoice161.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel68.add(deviceChoice161, gridBagConstraints);
-
-        deviceChoice162.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice162.setIdentifier("");
-        deviceChoice162.setLabelString("GAIN");
-        deviceChoice162.setOffsetNid(218);
-        deviceChoice162.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel68.add(deviceChoice162, gridBagConstraints);
-
-        jPanel58.add(jPanel68);
-
-        jPanel69.setBorder(javax.swing.BorderFactory.createTitledBorder("55"));
-        jPanel69.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel69.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel69.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice163.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice163.setIdentifier("");
-        deviceChoice163.setLabelString("HS/LN");
-        deviceChoice163.setOffsetNid(224);
-        deviceChoice163.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel69.add(deviceChoice163, gridBagConstraints);
-
-        deviceChoice164.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice164.setIdentifier("");
-        deviceChoice164.setLabelString("AC/DC");
-        deviceChoice164.setOffsetNid(223);
-        deviceChoice164.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel69.add(deviceChoice164, gridBagConstraints);
-
-        deviceChoice165.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice165.setIdentifier("");
-        deviceChoice165.setLabelString("GAIN");
-        deviceChoice165.setOffsetNid(222);
-        deviceChoice165.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel69.add(deviceChoice165, gridBagConstraints);
-
-        jPanel58.add(jPanel69);
-
-        jPanel57.add(jPanel58);
-
-        jPanel70.setLayout(new java.awt.GridLayout(11, 3));
-
-        jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("56"));
-        jPanel71.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel71.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel71.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice166.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice166.setIdentifier("");
-        deviceChoice166.setLabelString("HS/LN");
-        deviceChoice166.setOffsetNid(228);
-        deviceChoice166.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel71.add(deviceChoice166, gridBagConstraints);
-
-        deviceChoice167.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice167.setIdentifier("");
-        deviceChoice167.setLabelString("AC/DC");
-        deviceChoice167.setOffsetNid(227);
-        deviceChoice167.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel71.add(deviceChoice167, gridBagConstraints);
-
-        deviceChoice168.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice168.setIdentifier("");
-        deviceChoice168.setLabelString("GAIN");
-        deviceChoice168.setOffsetNid(226);
-        deviceChoice168.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel71.add(deviceChoice168, gridBagConstraints);
-
-        jPanel70.add(jPanel71);
-
-        jPanel72.setBorder(javax.swing.BorderFactory.createTitledBorder("57"));
-        jPanel72.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel72.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel72.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice169.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice169.setIdentifier("");
-        deviceChoice169.setLabelString("HS/LN");
-        deviceChoice169.setOffsetNid(232);
-        deviceChoice169.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel72.add(deviceChoice169, gridBagConstraints);
-
-        deviceChoice170.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice170.setIdentifier("");
-        deviceChoice170.setLabelString("AC/DC");
-        deviceChoice170.setOffsetNid(231);
-        deviceChoice170.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel72.add(deviceChoice170, gridBagConstraints);
-
-        deviceChoice171.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice171.setIdentifier("");
-        deviceChoice171.setLabelString("GAIN");
-        deviceChoice171.setOffsetNid(230);
-        deviceChoice171.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel72.add(deviceChoice171, gridBagConstraints);
-
-        jPanel70.add(jPanel72);
-
-        jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("58"));
-        jPanel73.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel73.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel73.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice172.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice172.setIdentifier("");
-        deviceChoice172.setLabelString("HS/LN");
-        deviceChoice172.setOffsetNid(236);
-        deviceChoice172.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel73.add(deviceChoice172, gridBagConstraints);
-
-        deviceChoice173.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice173.setIdentifier("");
-        deviceChoice173.setLabelString("AC/DC");
-        deviceChoice173.setOffsetNid(235);
-        deviceChoice173.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel73.add(deviceChoice173, gridBagConstraints);
-
-        deviceChoice174.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice174.setIdentifier("");
-        deviceChoice174.setLabelString("GAIN");
-        deviceChoice174.setOffsetNid(234);
-        deviceChoice174.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel73.add(deviceChoice174, gridBagConstraints);
-
-        jPanel70.add(jPanel73);
-
-        jPanel74.setBorder(javax.swing.BorderFactory.createTitledBorder("59"));
-        jPanel74.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel74.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel74.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice175.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice175.setIdentifier("");
-        deviceChoice175.setLabelString("HS/LN");
-        deviceChoice175.setOffsetNid(240);
-        deviceChoice175.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel74.add(deviceChoice175, gridBagConstraints);
-
-        deviceChoice176.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice176.setIdentifier("");
-        deviceChoice176.setLabelString("AC/DC");
-        deviceChoice176.setOffsetNid(239);
-        deviceChoice176.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel74.add(deviceChoice176, gridBagConstraints);
-
-        deviceChoice177.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice177.setIdentifier("");
-        deviceChoice177.setLabelString("GAIN");
-        deviceChoice177.setOffsetNid(238);
-        deviceChoice177.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel74.add(deviceChoice177, gridBagConstraints);
-
-        jPanel70.add(jPanel74);
-
-        jPanel75.setBorder(javax.swing.BorderFactory.createTitledBorder("60"));
-        jPanel75.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel75.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel75.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice178.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice178.setIdentifier("");
-        deviceChoice178.setLabelString("HS/LN");
-        deviceChoice178.setOffsetNid(244);
-        deviceChoice178.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel75.add(deviceChoice178, gridBagConstraints);
-
-        deviceChoice179.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice179.setIdentifier("");
-        deviceChoice179.setLabelString("AC/DC");
-        deviceChoice179.setOffsetNid(243);
-        deviceChoice179.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel75.add(deviceChoice179, gridBagConstraints);
-
-        deviceChoice180.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice180.setIdentifier("");
-        deviceChoice180.setLabelString("GAIN");
-        deviceChoice180.setOffsetNid(242);
-        deviceChoice180.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel75.add(deviceChoice180, gridBagConstraints);
-
-        jPanel70.add(jPanel75);
-
-        jPanel76.setBorder(javax.swing.BorderFactory.createTitledBorder("61"));
-        jPanel76.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel76.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel76.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice181.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice181.setIdentifier("");
-        deviceChoice181.setLabelString("HS/LN");
-        deviceChoice181.setOffsetNid(248);
-        deviceChoice181.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel76.add(deviceChoice181, gridBagConstraints);
-
-        deviceChoice182.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice182.setIdentifier("");
-        deviceChoice182.setLabelString("AC/DC");
-        deviceChoice182.setOffsetNid(247);
-        deviceChoice182.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel76.add(deviceChoice182, gridBagConstraints);
-
-        deviceChoice183.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice183.setIdentifier("");
-        deviceChoice183.setLabelString("GAIN");
-        deviceChoice183.setOffsetNid(246);
-        deviceChoice183.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel76.add(deviceChoice183, gridBagConstraints);
-
-        jPanel70.add(jPanel76);
-
-        jPanel77.setBorder(javax.swing.BorderFactory.createTitledBorder("62"));
-        jPanel77.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel77.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel77.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice184.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice184.setIdentifier("");
-        deviceChoice184.setLabelString("HS/LN");
-        deviceChoice184.setOffsetNid(252);
-        deviceChoice184.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel77.add(deviceChoice184, gridBagConstraints);
-
-        deviceChoice185.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice185.setIdentifier("");
-        deviceChoice185.setLabelString("AC/DC");
-        deviceChoice185.setOffsetNid(251);
-        deviceChoice185.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel77.add(deviceChoice185, gridBagConstraints);
-
-        deviceChoice186.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice186.setIdentifier("");
-        deviceChoice186.setLabelString("GAIN");
-        deviceChoice186.setOffsetNid(250);
-        deviceChoice186.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel77.add(deviceChoice186, gridBagConstraints);
-
-        jPanel70.add(jPanel77);
-
-        jPanel78.setBorder(javax.swing.BorderFactory.createTitledBorder("63"));
-        jPanel78.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel78.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel78.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice187.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice187.setIdentifier("");
-        deviceChoice187.setLabelString("HS/LN");
-        deviceChoice187.setOffsetNid(256);
-        deviceChoice187.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel78.add(deviceChoice187, gridBagConstraints);
-
-        deviceChoice188.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice188.setIdentifier("");
-        deviceChoice188.setLabelString("AC/DC");
-        deviceChoice188.setOffsetNid(255);
-        deviceChoice188.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel78.add(deviceChoice188, gridBagConstraints);
-
-        deviceChoice189.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice189.setIdentifier("");
-        deviceChoice189.setLabelString("GAIN");
-        deviceChoice189.setOffsetNid(254);
-        deviceChoice189.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel78.add(deviceChoice189, gridBagConstraints);
-
-        jPanel70.add(jPanel78);
-
-        jPanel79.setBorder(javax.swing.BorderFactory.createTitledBorder("64"));
-        jPanel79.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel79.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel79.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice190.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice190.setIdentifier("");
-        deviceChoice190.setLabelString("HS/LN");
-        deviceChoice190.setOffsetNid(260);
-        deviceChoice190.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel79.add(deviceChoice190, gridBagConstraints);
-
-        deviceChoice191.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice191.setIdentifier("");
-        deviceChoice191.setLabelString("AC/DC");
-        deviceChoice191.setOffsetNid(259);
-        deviceChoice191.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel79.add(deviceChoice191, gridBagConstraints);
-
-        deviceChoice192.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice192.setIdentifier("");
-        deviceChoice192.setLabelString("GAIN");
-        deviceChoice192.setOffsetNid(258);
-        deviceChoice192.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel79.add(deviceChoice192, gridBagConstraints);
-
-        jPanel70.add(jPanel79);
-
-        jPanel80.setBorder(javax.swing.BorderFactory.createTitledBorder("65"));
-        jPanel80.setMinimumSize(new java.awt.Dimension(275, 40));
-        jPanel80.setPreferredSize(new java.awt.Dimension(275, 40));
-        jPanel80.setLayout(new java.awt.GridBagLayout());
-
-        deviceChoice193.setChoiceItems(new String[] {"HS", "LN"});
-        deviceChoice193.setIdentifier("");
-        deviceChoice193.setLabelString("HS/LN");
-        deviceChoice193.setOffsetNid(264);
-        deviceChoice193.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel80.add(deviceChoice193, gridBagConstraints);
-
-        deviceChoice194.setChoiceItems(new String[] {"AC", "DC"});
-        deviceChoice194.setIdentifier("");
-        deviceChoice194.setLabelString("AC/DC");
-        deviceChoice194.setOffsetNid(263);
-        deviceChoice194.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel80.add(deviceChoice194, gridBagConstraints);
-
-        deviceChoice195.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
-        deviceChoice195.setIdentifier("");
-        deviceChoice195.setLabelString("GAIN");
-        deviceChoice195.setOffsetNid(262);
-        deviceChoice195.setUpdateIdentifier("");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
-        jPanel80.add(deviceChoice195, gridBagConstraints);
-
-        jPanel70.add(jPanel80);
-
-        jPanel57.add(jPanel70);
-
-        jTabbedPane1.addTab("45...65", jPanel57);
-
-        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+	java.awt.GridBagConstraints gridBagConstraints;
+
+	deviceButtons1 = new DeviceButtons();
+	jPanel1 = new javax.swing.JPanel();
+	jPanel2 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	jPanel3 = new javax.swing.JPanel();
+	deviceField4 = new DeviceField();
+	jTabbedPane1 = new javax.swing.JTabbedPane();
+	jPanel6 = new javax.swing.JPanel();
+	jPanel7 = new javax.swing.JPanel();
+	jPanel9 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceChoice2 = new DeviceChoice();
+	deviceChoice3 = new DeviceChoice();
+	jPanel10 = new javax.swing.JPanel();
+	deviceChoice4 = new DeviceChoice();
+	deviceChoice5 = new DeviceChoice();
+	deviceChoice6 = new DeviceChoice();
+	jPanel11 = new javax.swing.JPanel();
+	deviceChoice7 = new DeviceChoice();
+	deviceChoice8 = new DeviceChoice();
+	deviceChoice9 = new DeviceChoice();
+	jPanel12 = new javax.swing.JPanel();
+	deviceChoice10 = new DeviceChoice();
+	deviceChoice11 = new DeviceChoice();
+	deviceChoice12 = new DeviceChoice();
+	jPanel13 = new javax.swing.JPanel();
+	deviceChoice13 = new DeviceChoice();
+	deviceChoice14 = new DeviceChoice();
+	deviceChoice15 = new DeviceChoice();
+	jPanel14 = new javax.swing.JPanel();
+	deviceChoice16 = new DeviceChoice();
+	deviceChoice17 = new DeviceChoice();
+	deviceChoice18 = new DeviceChoice();
+	jPanel15 = new javax.swing.JPanel();
+	deviceChoice19 = new DeviceChoice();
+	deviceChoice20 = new DeviceChoice();
+	deviceChoice21 = new DeviceChoice();
+	jPanel16 = new javax.swing.JPanel();
+	deviceChoice22 = new DeviceChoice();
+	deviceChoice23 = new DeviceChoice();
+	deviceChoice24 = new DeviceChoice();
+	jPanel17 = new javax.swing.JPanel();
+	deviceChoice25 = new DeviceChoice();
+	deviceChoice26 = new DeviceChoice();
+	deviceChoice27 = new DeviceChoice();
+	jPanel18 = new javax.swing.JPanel();
+	deviceChoice28 = new DeviceChoice();
+	deviceChoice29 = new DeviceChoice();
+	deviceChoice30 = new DeviceChoice();
+	jPanel19 = new javax.swing.JPanel();
+	deviceChoice31 = new DeviceChoice();
+	deviceChoice32 = new DeviceChoice();
+	deviceChoice33 = new DeviceChoice();
+	jPanel8 = new javax.swing.JPanel();
+	jPanel20 = new javax.swing.JPanel();
+	deviceChoice34 = new DeviceChoice();
+	deviceChoice35 = new DeviceChoice();
+	deviceChoice36 = new DeviceChoice();
+	jPanel21 = new javax.swing.JPanel();
+	deviceChoice37 = new DeviceChoice();
+	deviceChoice38 = new DeviceChoice();
+	deviceChoice39 = new DeviceChoice();
+	jPanel22 = new javax.swing.JPanel();
+	deviceChoice40 = new DeviceChoice();
+	deviceChoice41 = new DeviceChoice();
+	deviceChoice42 = new DeviceChoice();
+	jPanel23 = new javax.swing.JPanel();
+	deviceChoice43 = new DeviceChoice();
+	deviceChoice44 = new DeviceChoice();
+	deviceChoice45 = new DeviceChoice();
+	jPanel24 = new javax.swing.JPanel();
+	deviceChoice46 = new DeviceChoice();
+	deviceChoice47 = new DeviceChoice();
+	deviceChoice48 = new DeviceChoice();
+	jPanel25 = new javax.swing.JPanel();
+	deviceChoice49 = new DeviceChoice();
+	deviceChoice50 = new DeviceChoice();
+	deviceChoice51 = new DeviceChoice();
+	jPanel26 = new javax.swing.JPanel();
+	deviceChoice52 = new DeviceChoice();
+	deviceChoice53 = new DeviceChoice();
+	deviceChoice54 = new DeviceChoice();
+	jPanel27 = new javax.swing.JPanel();
+	deviceChoice55 = new DeviceChoice();
+	deviceChoice56 = new DeviceChoice();
+	deviceChoice57 = new DeviceChoice();
+	jPanel28 = new javax.swing.JPanel();
+	deviceChoice58 = new DeviceChoice();
+	deviceChoice59 = new DeviceChoice();
+	deviceChoice60 = new DeviceChoice();
+	jPanel29 = new javax.swing.JPanel();
+	deviceChoice61 = new DeviceChoice();
+	deviceChoice62 = new DeviceChoice();
+	deviceChoice63 = new DeviceChoice();
+	jPanel30 = new javax.swing.JPanel();
+	deviceChoice64 = new DeviceChoice();
+	deviceChoice65 = new DeviceChoice();
+	deviceChoice66 = new DeviceChoice();
+	jPanel32 = new javax.swing.JPanel();
+	jPanel33 = new javax.swing.JPanel();
+	jPanel34 = new javax.swing.JPanel();
+	deviceChoice67 = new DeviceChoice();
+	deviceChoice68 = new DeviceChoice();
+	deviceChoice69 = new DeviceChoice();
+	jPanel35 = new javax.swing.JPanel();
+	deviceChoice70 = new DeviceChoice();
+	deviceChoice71 = new DeviceChoice();
+	deviceChoice72 = new DeviceChoice();
+	jPanel36 = new javax.swing.JPanel();
+	deviceChoice73 = new DeviceChoice();
+	deviceChoice74 = new DeviceChoice();
+	deviceChoice75 = new DeviceChoice();
+	jPanel37 = new javax.swing.JPanel();
+	deviceChoice76 = new DeviceChoice();
+	deviceChoice77 = new DeviceChoice();
+	deviceChoice78 = new DeviceChoice();
+	jPanel38 = new javax.swing.JPanel();
+	deviceChoice79 = new DeviceChoice();
+	deviceChoice80 = new DeviceChoice();
+	deviceChoice81 = new DeviceChoice();
+	jPanel39 = new javax.swing.JPanel();
+	deviceChoice82 = new DeviceChoice();
+	deviceChoice83 = new DeviceChoice();
+	deviceChoice84 = new DeviceChoice();
+	jPanel40 = new javax.swing.JPanel();
+	deviceChoice85 = new DeviceChoice();
+	deviceChoice86 = new DeviceChoice();
+	deviceChoice87 = new DeviceChoice();
+	jPanel41 = new javax.swing.JPanel();
+	deviceChoice88 = new DeviceChoice();
+	deviceChoice89 = new DeviceChoice();
+	deviceChoice90 = new DeviceChoice();
+	jPanel42 = new javax.swing.JPanel();
+	deviceChoice91 = new DeviceChoice();
+	deviceChoice92 = new DeviceChoice();
+	deviceChoice93 = new DeviceChoice();
+	jPanel43 = new javax.swing.JPanel();
+	deviceChoice94 = new DeviceChoice();
+	deviceChoice95 = new DeviceChoice();
+	deviceChoice96 = new DeviceChoice();
+	jPanel44 = new javax.swing.JPanel();
+	deviceChoice97 = new DeviceChoice();
+	deviceChoice98 = new DeviceChoice();
+	deviceChoice99 = new DeviceChoice();
+	jPanel45 = new javax.swing.JPanel();
+	jPanel46 = new javax.swing.JPanel();
+	deviceChoice100 = new DeviceChoice();
+	deviceChoice101 = new DeviceChoice();
+	deviceChoice102 = new DeviceChoice();
+	jPanel47 = new javax.swing.JPanel();
+	deviceChoice103 = new DeviceChoice();
+	deviceChoice104 = new DeviceChoice();
+	deviceChoice105 = new DeviceChoice();
+	jPanel48 = new javax.swing.JPanel();
+	deviceChoice106 = new DeviceChoice();
+	deviceChoice107 = new DeviceChoice();
+	deviceChoice108 = new DeviceChoice();
+	jPanel49 = new javax.swing.JPanel();
+	deviceChoice109 = new DeviceChoice();
+	deviceChoice110 = new DeviceChoice();
+	deviceChoice111 = new DeviceChoice();
+	jPanel50 = new javax.swing.JPanel();
+	deviceChoice112 = new DeviceChoice();
+	deviceChoice113 = new DeviceChoice();
+	deviceChoice114 = new DeviceChoice();
+	jPanel51 = new javax.swing.JPanel();
+	deviceChoice115 = new DeviceChoice();
+	deviceChoice116 = new DeviceChoice();
+	deviceChoice117 = new DeviceChoice();
+	jPanel52 = new javax.swing.JPanel();
+	deviceChoice118 = new DeviceChoice();
+	deviceChoice119 = new DeviceChoice();
+	deviceChoice120 = new DeviceChoice();
+	jPanel53 = new javax.swing.JPanel();
+	deviceChoice121 = new DeviceChoice();
+	deviceChoice122 = new DeviceChoice();
+	deviceChoice123 = new DeviceChoice();
+	jPanel54 = new javax.swing.JPanel();
+	deviceChoice124 = new DeviceChoice();
+	deviceChoice125 = new DeviceChoice();
+	deviceChoice126 = new DeviceChoice();
+	jPanel55 = new javax.swing.JPanel();
+	deviceChoice127 = new DeviceChoice();
+	deviceChoice128 = new DeviceChoice();
+	deviceChoice129 = new DeviceChoice();
+	jPanel56 = new javax.swing.JPanel();
+	deviceChoice130 = new DeviceChoice();
+	deviceChoice131 = new DeviceChoice();
+	deviceChoice132 = new DeviceChoice();
+	jPanel57 = new javax.swing.JPanel();
+	jPanel58 = new javax.swing.JPanel();
+	jPanel59 = new javax.swing.JPanel();
+	deviceChoice133 = new DeviceChoice();
+	deviceChoice134 = new DeviceChoice();
+	deviceChoice135 = new DeviceChoice();
+	jPanel60 = new javax.swing.JPanel();
+	deviceChoice136 = new DeviceChoice();
+	deviceChoice137 = new DeviceChoice();
+	deviceChoice138 = new DeviceChoice();
+	jPanel61 = new javax.swing.JPanel();
+	deviceChoice139 = new DeviceChoice();
+	deviceChoice140 = new DeviceChoice();
+	deviceChoice141 = new DeviceChoice();
+	jPanel62 = new javax.swing.JPanel();
+	deviceChoice142 = new DeviceChoice();
+	deviceChoice143 = new DeviceChoice();
+	deviceChoice144 = new DeviceChoice();
+	jPanel63 = new javax.swing.JPanel();
+	deviceChoice145 = new DeviceChoice();
+	deviceChoice146 = new DeviceChoice();
+	deviceChoice147 = new DeviceChoice();
+	jPanel64 = new javax.swing.JPanel();
+	deviceChoice148 = new DeviceChoice();
+	deviceChoice149 = new DeviceChoice();
+	deviceChoice150 = new DeviceChoice();
+	jPanel65 = new javax.swing.JPanel();
+	deviceChoice151 = new DeviceChoice();
+	deviceChoice152 = new DeviceChoice();
+	deviceChoice153 = new DeviceChoice();
+	jPanel66 = new javax.swing.JPanel();
+	deviceChoice154 = new DeviceChoice();
+	deviceChoice155 = new DeviceChoice();
+	deviceChoice156 = new DeviceChoice();
+	jPanel67 = new javax.swing.JPanel();
+	deviceChoice157 = new DeviceChoice();
+	deviceChoice158 = new DeviceChoice();
+	deviceChoice159 = new DeviceChoice();
+	jPanel68 = new javax.swing.JPanel();
+	deviceChoice160 = new DeviceChoice();
+	deviceChoice161 = new DeviceChoice();
+	deviceChoice162 = new DeviceChoice();
+	jPanel69 = new javax.swing.JPanel();
+	deviceChoice163 = new DeviceChoice();
+	deviceChoice164 = new DeviceChoice();
+	deviceChoice165 = new DeviceChoice();
+	jPanel70 = new javax.swing.JPanel();
+	jPanel71 = new javax.swing.JPanel();
+	deviceChoice166 = new DeviceChoice();
+	deviceChoice167 = new DeviceChoice();
+	deviceChoice168 = new DeviceChoice();
+	jPanel72 = new javax.swing.JPanel();
+	deviceChoice169 = new DeviceChoice();
+	deviceChoice170 = new DeviceChoice();
+	deviceChoice171 = new DeviceChoice();
+	jPanel73 = new javax.swing.JPanel();
+	deviceChoice172 = new DeviceChoice();
+	deviceChoice173 = new DeviceChoice();
+	deviceChoice174 = new DeviceChoice();
+	jPanel74 = new javax.swing.JPanel();
+	deviceChoice175 = new DeviceChoice();
+	deviceChoice176 = new DeviceChoice();
+	deviceChoice177 = new DeviceChoice();
+	jPanel75 = new javax.swing.JPanel();
+	deviceChoice178 = new DeviceChoice();
+	deviceChoice179 = new DeviceChoice();
+	deviceChoice180 = new DeviceChoice();
+	jPanel76 = new javax.swing.JPanel();
+	deviceChoice181 = new DeviceChoice();
+	deviceChoice182 = new DeviceChoice();
+	deviceChoice183 = new DeviceChoice();
+	jPanel77 = new javax.swing.JPanel();
+	deviceChoice184 = new DeviceChoice();
+	deviceChoice185 = new DeviceChoice();
+	deviceChoice186 = new DeviceChoice();
+	jPanel78 = new javax.swing.JPanel();
+	deviceChoice187 = new DeviceChoice();
+	deviceChoice188 = new DeviceChoice();
+	deviceChoice189 = new DeviceChoice();
+	jPanel79 = new javax.swing.JPanel();
+	deviceChoice190 = new DeviceChoice();
+	deviceChoice191 = new DeviceChoice();
+	deviceChoice192 = new DeviceChoice();
+	jPanel80 = new javax.swing.JPanel();
+	deviceChoice193 = new DeviceChoice();
+	deviceChoice194 = new DeviceChoice();
+	deviceChoice195 = new DeviceChoice();
+
+	setDeviceProvider("localhost:5005");
+	setDeviceTitle("Femto Amplifier Setup");
+	setDeviceType("FEMTO");
+	setHeight(760);
+	setWidth(700);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+
+	jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Base Setup"));
+	jPanel1.setAlignmentX(0.0F);
+	jPanel1.setAlignmentY(0.0F);
+	jPanel1.setMinimumSize(new java.awt.Dimension(600, 95));
+	jPanel1.setPreferredSize(new java.awt.Dimension(600, 95));
+	jPanel1.setRequestFocusEnabled(false);
+	jPanel1.setLayout(new java.awt.GridLayout(2, 1));
+
+	jPanel2.setAlignmentX(0.0F);
+	jPanel2.setAlignmentY(0.0F);
+
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("NAME:");
+	deviceField1.setNumCols(16);
+	deviceField1.setOffsetNid(1);
+	jPanel2.add(deviceField1);
+
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("IP ADDRESS:");
+	deviceField2.setNumCols(16);
+	deviceField2.setOffsetNid(3);
+	jPanel2.add(deviceField2);
+
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("COM PORT:");
+	deviceField3.setNumCols(6);
+	deviceField3.setOffsetNid(4);
+	jPanel2.add(deviceField3);
+
+	jPanel1.add(jPanel2);
+
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Comment:");
+	deviceField4.setNumCols(40);
+	deviceField4.setOffsetNid(2);
+	jPanel3.add(deviceField4);
+
+	jPanel1.add(jPanel3);
+
+	getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
+
+	jTabbedPane1.setBorder(javax.swing.BorderFactory.createTitledBorder("Femto Amplifier Setup"));
+	jTabbedPane1.setMinimumSize(new java.awt.Dimension(570, 640));
+	jTabbedPane1.setPreferredSize(new java.awt.Dimension(570, 640));
+
+	jPanel6.setLayout(new java.awt.GridLayout(1, 2));
+
+	jPanel7.setLayout(new java.awt.GridLayout(11, 1));
+
+	jPanel9.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
+	jPanel9.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel9.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel9.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice1.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("HS/LN");
+	deviceChoice1.setOffsetNid(8);
+	deviceChoice1.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel9.add(deviceChoice1, gridBagConstraints);
+
+	deviceChoice2.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("AC/DC");
+	deviceChoice2.setOffsetNid(7);
+	deviceChoice2.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel9.add(deviceChoice2, gridBagConstraints);
+
+	deviceChoice3.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("GAIN");
+	deviceChoice3.setOffsetNid(6);
+	deviceChoice3.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel9.add(deviceChoice3, gridBagConstraints);
+
+	jPanel7.add(jPanel9);
+
+	jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
+	jPanel10.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel10.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel10.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice4.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString("HS/LN");
+	deviceChoice4.setOffsetNid(12);
+	deviceChoice4.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel10.add(deviceChoice4, gridBagConstraints);
+
+	deviceChoice5.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("AC/DC");
+	deviceChoice5.setOffsetNid(11);
+	deviceChoice5.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel10.add(deviceChoice5, gridBagConstraints);
+
+	deviceChoice6.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString("GAIN");
+	deviceChoice6.setOffsetNid(10);
+	deviceChoice6.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel10.add(deviceChoice6, gridBagConstraints);
+
+	jPanel7.add(jPanel10);
+
+	jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
+	jPanel11.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel11.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel11.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice7.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice7.setIdentifier("");
+	deviceChoice7.setLabelString("HS/LN");
+	deviceChoice7.setOffsetNid(16);
+	deviceChoice7.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel11.add(deviceChoice7, gridBagConstraints);
+
+	deviceChoice8.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString("AC/DC");
+	deviceChoice8.setOffsetNid(15);
+	deviceChoice8.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel11.add(deviceChoice8, gridBagConstraints);
+
+	deviceChoice9.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice9.setIdentifier("");
+	deviceChoice9.setLabelString("GAIN");
+	deviceChoice9.setOffsetNid(14);
+	deviceChoice9.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel11.add(deviceChoice9, gridBagConstraints);
+
+	jPanel7.add(jPanel11);
+
+	jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
+	jPanel12.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel12.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel12.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice10.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice10.setIdentifier("");
+	deviceChoice10.setLabelString("HS/LN");
+	deviceChoice10.setOffsetNid(20);
+	deviceChoice10.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel12.add(deviceChoice10, gridBagConstraints);
+
+	deviceChoice11.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice11.setIdentifier("");
+	deviceChoice11.setLabelString("AC/DC");
+	deviceChoice11.setOffsetNid(19);
+	deviceChoice11.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel12.add(deviceChoice11, gridBagConstraints);
+
+	deviceChoice12.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice12.setIdentifier("");
+	deviceChoice12.setLabelString("GAIN");
+	deviceChoice12.setOffsetNid(18);
+	deviceChoice12.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel12.add(deviceChoice12, gridBagConstraints);
+
+	jPanel7.add(jPanel12);
+
+	jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
+	jPanel13.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel13.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel13.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice13.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice13.setIdentifier("");
+	deviceChoice13.setLabelString("HS/LN");
+	deviceChoice13.setOffsetNid(24);
+	deviceChoice13.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel13.add(deviceChoice13, gridBagConstraints);
+
+	deviceChoice14.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice14.setIdentifier("");
+	deviceChoice14.setLabelString("AC/DC");
+	deviceChoice14.setOffsetNid(23);
+	deviceChoice14.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel13.add(deviceChoice14, gridBagConstraints);
+
+	deviceChoice15.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice15.setIdentifier("");
+	deviceChoice15.setLabelString("GAIN");
+	deviceChoice15.setOffsetNid(22);
+	deviceChoice15.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel13.add(deviceChoice15, gridBagConstraints);
+
+	jPanel7.add(jPanel13);
+
+	jPanel14.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
+	jPanel14.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel14.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel14.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice16.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice16.setIdentifier("");
+	deviceChoice16.setLabelString("HS/LN");
+	deviceChoice16.setOffsetNid(28);
+	deviceChoice16.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel14.add(deviceChoice16, gridBagConstraints);
+
+	deviceChoice17.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice17.setIdentifier("");
+	deviceChoice17.setLabelString("AC/DC");
+	deviceChoice17.setOffsetNid(27);
+	deviceChoice17.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel14.add(deviceChoice17, gridBagConstraints);
+
+	deviceChoice18.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice18.setIdentifier("");
+	deviceChoice18.setLabelString("GAIN");
+	deviceChoice18.setOffsetNid(26);
+	deviceChoice18.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel14.add(deviceChoice18, gridBagConstraints);
+
+	jPanel7.add(jPanel14);
+
+	jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
+	jPanel15.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel15.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel15.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice19.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice19.setIdentifier("");
+	deviceChoice19.setLabelString("HS/LN");
+	deviceChoice19.setOffsetNid(32);
+	deviceChoice19.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel15.add(deviceChoice19, gridBagConstraints);
+
+	deviceChoice20.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice20.setIdentifier("");
+	deviceChoice20.setLabelString("AC/DC");
+	deviceChoice20.setOffsetNid(31);
+	deviceChoice20.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel15.add(deviceChoice20, gridBagConstraints);
+
+	deviceChoice21.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice21.setIdentifier("");
+	deviceChoice21.setLabelString("GAIN");
+	deviceChoice21.setOffsetNid(30);
+	deviceChoice21.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel15.add(deviceChoice21, gridBagConstraints);
+
+	jPanel7.add(jPanel15);
+
+	jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
+	jPanel16.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel16.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel16.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice22.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice22.setIdentifier("");
+	deviceChoice22.setLabelString("HS/LN");
+	deviceChoice22.setOffsetNid(36);
+	deviceChoice22.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel16.add(deviceChoice22, gridBagConstraints);
+
+	deviceChoice23.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice23.setIdentifier("");
+	deviceChoice23.setLabelString("AC/DC");
+	deviceChoice23.setOffsetNid(35);
+	deviceChoice23.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel16.add(deviceChoice23, gridBagConstraints);
+
+	deviceChoice24.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice24.setIdentifier("");
+	deviceChoice24.setLabelString("GAIN");
+	deviceChoice24.setOffsetNid(34);
+	deviceChoice24.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel16.add(deviceChoice24, gridBagConstraints);
+
+	jPanel7.add(jPanel16);
+
+	jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("9"));
+	jPanel17.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel17.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel17.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice25.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice25.setIdentifier("");
+	deviceChoice25.setLabelString("HS/LN");
+	deviceChoice25.setOffsetNid(40);
+	deviceChoice25.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel17.add(deviceChoice25, gridBagConstraints);
+
+	deviceChoice26.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice26.setIdentifier("");
+	deviceChoice26.setLabelString("AC/DC");
+	deviceChoice26.setOffsetNid(39);
+	deviceChoice26.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel17.add(deviceChoice26, gridBagConstraints);
+
+	deviceChoice27.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice27.setIdentifier("");
+	deviceChoice27.setLabelString("GAIN");
+	deviceChoice27.setOffsetNid(38);
+	deviceChoice27.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel17.add(deviceChoice27, gridBagConstraints);
+
+	jPanel7.add(jPanel17);
+
+	jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("10"));
+	jPanel18.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel18.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel18.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice28.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice28.setIdentifier("");
+	deviceChoice28.setLabelString("HS/LN");
+	deviceChoice28.setOffsetNid(44);
+	deviceChoice28.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel18.add(deviceChoice28, gridBagConstraints);
+
+	deviceChoice29.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice29.setIdentifier("");
+	deviceChoice29.setLabelString("AC/DC");
+	deviceChoice29.setOffsetNid(43);
+	deviceChoice29.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel18.add(deviceChoice29, gridBagConstraints);
+
+	deviceChoice30.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice30.setIdentifier("");
+	deviceChoice30.setLabelString("GAIN");
+	deviceChoice30.setOffsetNid(42);
+	deviceChoice30.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel18.add(deviceChoice30, gridBagConstraints);
+
+	jPanel7.add(jPanel18);
+
+	jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("11"));
+	jPanel19.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel19.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel19.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice31.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice31.setIdentifier("");
+	deviceChoice31.setLabelString("HS/LN");
+	deviceChoice31.setOffsetNid(48);
+	deviceChoice31.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel19.add(deviceChoice31, gridBagConstraints);
+
+	deviceChoice32.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice32.setIdentifier("");
+	deviceChoice32.setLabelString("AC/DC");
+	deviceChoice32.setOffsetNid(47);
+	deviceChoice32.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel19.add(deviceChoice32, gridBagConstraints);
+
+	deviceChoice33.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice33.setIdentifier("");
+	deviceChoice33.setLabelString("GAIN");
+	deviceChoice33.setOffsetNid(46);
+	deviceChoice33.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel19.add(deviceChoice33, gridBagConstraints);
+
+	jPanel7.add(jPanel19);
+
+	jPanel6.add(jPanel7);
+
+	jPanel8.setLayout(new java.awt.GridLayout(11, 3));
+
+	jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("12"));
+	jPanel20.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel20.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel20.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice34.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice34.setIdentifier("");
+	deviceChoice34.setLabelString("HS/LN");
+	deviceChoice34.setOffsetNid(52);
+	deviceChoice34.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel20.add(deviceChoice34, gridBagConstraints);
+
+	deviceChoice35.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice35.setIdentifier("");
+	deviceChoice35.setLabelString("AC/DC");
+	deviceChoice35.setOffsetNid(51);
+	deviceChoice35.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel20.add(deviceChoice35, gridBagConstraints);
+
+	deviceChoice36.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice36.setIdentifier("");
+	deviceChoice36.setLabelString("GAIN");
+	deviceChoice36.setOffsetNid(50);
+	deviceChoice36.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel20.add(deviceChoice36, gridBagConstraints);
+
+	jPanel8.add(jPanel20);
+
+	jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("13"));
+	jPanel21.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel21.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel21.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice37.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice37.setIdentifier("");
+	deviceChoice37.setLabelString("HS/LN");
+	deviceChoice37.setOffsetNid(56);
+	deviceChoice37.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel21.add(deviceChoice37, gridBagConstraints);
+
+	deviceChoice38.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice38.setIdentifier("");
+	deviceChoice38.setLabelString("AC/DC");
+	deviceChoice38.setOffsetNid(55);
+	deviceChoice38.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel21.add(deviceChoice38, gridBagConstraints);
+
+	deviceChoice39.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice39.setIdentifier("");
+	deviceChoice39.setLabelString("GAIN");
+	deviceChoice39.setOffsetNid(54);
+	deviceChoice39.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel21.add(deviceChoice39, gridBagConstraints);
+
+	jPanel8.add(jPanel21);
+
+	jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("14"));
+	jPanel22.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel22.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel22.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice40.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice40.setIdentifier("");
+	deviceChoice40.setLabelString("HS/LN");
+	deviceChoice40.setOffsetNid(60);
+	deviceChoice40.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel22.add(deviceChoice40, gridBagConstraints);
+
+	deviceChoice41.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice41.setIdentifier("");
+	deviceChoice41.setLabelString("AC/DC");
+	deviceChoice41.setOffsetNid(59);
+	deviceChoice41.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel22.add(deviceChoice41, gridBagConstraints);
+
+	deviceChoice42.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice42.setIdentifier("");
+	deviceChoice42.setLabelString("GAIN");
+	deviceChoice42.setOffsetNid(58);
+	deviceChoice42.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel22.add(deviceChoice42, gridBagConstraints);
+
+	jPanel8.add(jPanel22);
+
+	jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("15"));
+	jPanel23.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel23.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel23.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice43.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice43.setIdentifier("");
+	deviceChoice43.setLabelString("HS/LN");
+	deviceChoice43.setOffsetNid(64);
+	deviceChoice43.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel23.add(deviceChoice43, gridBagConstraints);
+
+	deviceChoice44.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice44.setIdentifier("");
+	deviceChoice44.setLabelString("AC/DC");
+	deviceChoice44.setOffsetNid(63);
+	deviceChoice44.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel23.add(deviceChoice44, gridBagConstraints);
+
+	deviceChoice45.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice45.setIdentifier("");
+	deviceChoice45.setLabelString("GAIN");
+	deviceChoice45.setOffsetNid(62);
+	deviceChoice45.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel23.add(deviceChoice45, gridBagConstraints);
+
+	jPanel8.add(jPanel23);
+
+	jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("16"));
+	jPanel24.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel24.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel24.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice46.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice46.setIdentifier("");
+	deviceChoice46.setLabelString("HS/LN");
+	deviceChoice46.setOffsetNid(68);
+	deviceChoice46.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel24.add(deviceChoice46, gridBagConstraints);
+
+	deviceChoice47.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice47.setIdentifier("");
+	deviceChoice47.setLabelString("AC/DC");
+	deviceChoice47.setOffsetNid(67);
+	deviceChoice47.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel24.add(deviceChoice47, gridBagConstraints);
+
+	deviceChoice48.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice48.setIdentifier("");
+	deviceChoice48.setLabelString("GAIN");
+	deviceChoice48.setOffsetNid(66);
+	deviceChoice48.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel24.add(deviceChoice48, gridBagConstraints);
+
+	jPanel8.add(jPanel24);
+
+	jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("17"));
+	jPanel25.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel25.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel25.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice49.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice49.setIdentifier("");
+	deviceChoice49.setLabelString("HS/LN");
+	deviceChoice49.setOffsetNid(72);
+	deviceChoice49.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel25.add(deviceChoice49, gridBagConstraints);
+
+	deviceChoice50.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice50.setIdentifier("");
+	deviceChoice50.setLabelString("AC/DC");
+	deviceChoice50.setOffsetNid(71);
+	deviceChoice50.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel25.add(deviceChoice50, gridBagConstraints);
+
+	deviceChoice51.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice51.setIdentifier("");
+	deviceChoice51.setLabelString("GAIN");
+	deviceChoice51.setOffsetNid(70);
+	deviceChoice51.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel25.add(deviceChoice51, gridBagConstraints);
+
+	jPanel8.add(jPanel25);
+
+	jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("18"));
+	jPanel26.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel26.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel26.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice52.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice52.setIdentifier("");
+	deviceChoice52.setLabelString("HS/LN");
+	deviceChoice52.setOffsetNid(76);
+	deviceChoice52.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel26.add(deviceChoice52, gridBagConstraints);
+
+	deviceChoice53.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice53.setIdentifier("");
+	deviceChoice53.setLabelString("AC/DC");
+	deviceChoice53.setOffsetNid(75);
+	deviceChoice53.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel26.add(deviceChoice53, gridBagConstraints);
+
+	deviceChoice54.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice54.setIdentifier("");
+	deviceChoice54.setLabelString("GAIN");
+	deviceChoice54.setOffsetNid(74);
+	deviceChoice54.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel26.add(deviceChoice54, gridBagConstraints);
+
+	jPanel8.add(jPanel26);
+
+	jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("19"));
+	jPanel27.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel27.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel27.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice55.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice55.setIdentifier("");
+	deviceChoice55.setLabelString("HS/LN");
+	deviceChoice55.setOffsetNid(80);
+	deviceChoice55.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel27.add(deviceChoice55, gridBagConstraints);
+
+	deviceChoice56.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice56.setIdentifier("");
+	deviceChoice56.setLabelString("AC/DC");
+	deviceChoice56.setOffsetNid(79);
+	deviceChoice56.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel27.add(deviceChoice56, gridBagConstraints);
+
+	deviceChoice57.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice57.setIdentifier("");
+	deviceChoice57.setLabelString("GAIN");
+	deviceChoice57.setOffsetNid(78);
+	deviceChoice57.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel27.add(deviceChoice57, gridBagConstraints);
+
+	jPanel8.add(jPanel27);
+
+	jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("20"));
+	jPanel28.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel28.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel28.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice58.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice58.setIdentifier("");
+	deviceChoice58.setLabelString("HS/LN");
+	deviceChoice58.setOffsetNid(84);
+	deviceChoice58.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel28.add(deviceChoice58, gridBagConstraints);
+
+	deviceChoice59.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice59.setIdentifier("");
+	deviceChoice59.setLabelString("AC/DC");
+	deviceChoice59.setOffsetNid(83);
+	deviceChoice59.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel28.add(deviceChoice59, gridBagConstraints);
+
+	deviceChoice60.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice60.setIdentifier("");
+	deviceChoice60.setLabelString("GAIN");
+	deviceChoice60.setOffsetNid(82);
+	deviceChoice60.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel28.add(deviceChoice60, gridBagConstraints);
+
+	jPanel8.add(jPanel28);
+
+	jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("21"));
+	jPanel29.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel29.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel29.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice61.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice61.setIdentifier("");
+	deviceChoice61.setLabelString("HS/LN");
+	deviceChoice61.setOffsetNid(88);
+	deviceChoice61.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel29.add(deviceChoice61, gridBagConstraints);
+
+	deviceChoice62.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice62.setIdentifier("");
+	deviceChoice62.setLabelString("AC/DC");
+	deviceChoice62.setOffsetNid(87);
+	deviceChoice62.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel29.add(deviceChoice62, gridBagConstraints);
+
+	deviceChoice63.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice63.setIdentifier("");
+	deviceChoice63.setLabelString("GAIN");
+	deviceChoice63.setOffsetNid(86);
+	deviceChoice63.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel29.add(deviceChoice63, gridBagConstraints);
+
+	jPanel8.add(jPanel29);
+
+	jPanel30.setBorder(javax.swing.BorderFactory.createTitledBorder("22"));
+	jPanel30.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel30.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel30.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice64.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice64.setIdentifier("");
+	deviceChoice64.setLabelString("HS/LN");
+	deviceChoice64.setOffsetNid(92);
+	deviceChoice64.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel30.add(deviceChoice64, gridBagConstraints);
+
+	deviceChoice65.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice65.setIdentifier("");
+	deviceChoice65.setLabelString("AC/DC");
+	deviceChoice65.setOffsetNid(91);
+	deviceChoice65.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel30.add(deviceChoice65, gridBagConstraints);
+
+	deviceChoice66.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice66.setIdentifier("");
+	deviceChoice66.setLabelString("GAIN");
+	deviceChoice66.setOffsetNid(90);
+	deviceChoice66.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel30.add(deviceChoice66, gridBagConstraints);
+
+	jPanel8.add(jPanel30);
+
+	jPanel6.add(jPanel8);
+
+	jTabbedPane1.addTab("1...22", jPanel6);
+
+	jPanel32.setLayout(new java.awt.GridLayout(1, 2));
+
+	jPanel33.setLayout(new java.awt.GridLayout(11, 3));
+
+	jPanel34.setBorder(javax.swing.BorderFactory.createTitledBorder("23"));
+	jPanel34.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel34.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel34.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice67.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice67.setIdentifier("");
+	deviceChoice67.setLabelString("HS/LN");
+	deviceChoice67.setOffsetNid(96);
+	deviceChoice67.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel34.add(deviceChoice67, gridBagConstraints);
+
+	deviceChoice68.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice68.setIdentifier("");
+	deviceChoice68.setLabelString("AC/DC");
+	deviceChoice68.setOffsetNid(95);
+	deviceChoice68.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel34.add(deviceChoice68, gridBagConstraints);
+
+	deviceChoice69.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice69.setIdentifier("");
+	deviceChoice69.setLabelString("GAIN");
+	deviceChoice69.setOffsetNid(94);
+	deviceChoice69.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel34.add(deviceChoice69, gridBagConstraints);
+
+	jPanel33.add(jPanel34);
+
+	jPanel35.setBorder(javax.swing.BorderFactory.createTitledBorder("24"));
+	jPanel35.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel35.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel35.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice70.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice70.setIdentifier("");
+	deviceChoice70.setLabelString("HS/LN");
+	deviceChoice70.setOffsetNid(100);
+	deviceChoice70.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel35.add(deviceChoice70, gridBagConstraints);
+
+	deviceChoice71.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice71.setIdentifier("");
+	deviceChoice71.setLabelString("AC/DC");
+	deviceChoice71.setOffsetNid(99);
+	deviceChoice71.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel35.add(deviceChoice71, gridBagConstraints);
+
+	deviceChoice72.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice72.setIdentifier("");
+	deviceChoice72.setLabelString("GAIN");
+	deviceChoice72.setOffsetNid(98);
+	deviceChoice72.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel35.add(deviceChoice72, gridBagConstraints);
+
+	jPanel33.add(jPanel35);
+
+	jPanel36.setBorder(javax.swing.BorderFactory.createTitledBorder("25"));
+	jPanel36.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel36.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel36.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice73.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice73.setIdentifier("");
+	deviceChoice73.setLabelString("HS/LN");
+	deviceChoice73.setOffsetNid(104);
+	deviceChoice73.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel36.add(deviceChoice73, gridBagConstraints);
+
+	deviceChoice74.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice74.setIdentifier("");
+	deviceChoice74.setLabelString("AC/DC");
+	deviceChoice74.setOffsetNid(103);
+	deviceChoice74.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel36.add(deviceChoice74, gridBagConstraints);
+
+	deviceChoice75.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice75.setIdentifier("");
+	deviceChoice75.setLabelString("GAIN");
+	deviceChoice75.setOffsetNid(102);
+	deviceChoice75.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel36.add(deviceChoice75, gridBagConstraints);
+
+	jPanel33.add(jPanel36);
+
+	jPanel37.setBorder(javax.swing.BorderFactory.createTitledBorder("26"));
+	jPanel37.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel37.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel37.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice76.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice76.setIdentifier("");
+	deviceChoice76.setLabelString("HS/LN");
+	deviceChoice76.setOffsetNid(108);
+	deviceChoice76.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel37.add(deviceChoice76, gridBagConstraints);
+
+	deviceChoice77.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice77.setIdentifier("");
+	deviceChoice77.setLabelString("AC/DC");
+	deviceChoice77.setOffsetNid(107);
+	deviceChoice77.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel37.add(deviceChoice77, gridBagConstraints);
+
+	deviceChoice78.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice78.setIdentifier("");
+	deviceChoice78.setLabelString("GAIN");
+	deviceChoice78.setOffsetNid(106);
+	deviceChoice78.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel37.add(deviceChoice78, gridBagConstraints);
+
+	jPanel33.add(jPanel37);
+
+	jPanel38.setBorder(javax.swing.BorderFactory.createTitledBorder("27"));
+	jPanel38.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel38.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel38.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice79.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice79.setIdentifier("");
+	deviceChoice79.setLabelString("HS/LN");
+	deviceChoice79.setOffsetNid(112);
+	deviceChoice79.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel38.add(deviceChoice79, gridBagConstraints);
+
+	deviceChoice80.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice80.setIdentifier("");
+	deviceChoice80.setLabelString("AC/DC");
+	deviceChoice80.setOffsetNid(111);
+	deviceChoice80.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel38.add(deviceChoice80, gridBagConstraints);
+
+	deviceChoice81.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice81.setIdentifier("");
+	deviceChoice81.setLabelString("GAIN");
+	deviceChoice81.setOffsetNid(110);
+	deviceChoice81.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel38.add(deviceChoice81, gridBagConstraints);
+
+	jPanel33.add(jPanel38);
+
+	jPanel39.setBorder(javax.swing.BorderFactory.createTitledBorder("28"));
+	jPanel39.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel39.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel39.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice82.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice82.setIdentifier("");
+	deviceChoice82.setLabelString("HS/LN");
+	deviceChoice82.setOffsetNid(116);
+	deviceChoice82.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel39.add(deviceChoice82, gridBagConstraints);
+
+	deviceChoice83.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice83.setIdentifier("");
+	deviceChoice83.setLabelString("AC/DC");
+	deviceChoice83.setOffsetNid(115);
+	deviceChoice83.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel39.add(deviceChoice83, gridBagConstraints);
+
+	deviceChoice84.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice84.setIdentifier("");
+	deviceChoice84.setLabelString("GAIN");
+	deviceChoice84.setOffsetNid(114);
+	deviceChoice84.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel39.add(deviceChoice84, gridBagConstraints);
+
+	jPanel33.add(jPanel39);
+
+	jPanel40.setBorder(javax.swing.BorderFactory.createTitledBorder("29"));
+	jPanel40.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel40.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel40.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice85.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice85.setIdentifier("");
+	deviceChoice85.setLabelString("HS/LN");
+	deviceChoice85.setOffsetNid(120);
+	deviceChoice85.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel40.add(deviceChoice85, gridBagConstraints);
+
+	deviceChoice86.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice86.setIdentifier("");
+	deviceChoice86.setLabelString("AC/DC");
+	deviceChoice86.setOffsetNid(119);
+	deviceChoice86.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel40.add(deviceChoice86, gridBagConstraints);
+
+	deviceChoice87.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice87.setIdentifier("");
+	deviceChoice87.setLabelString("GAIN");
+	deviceChoice87.setOffsetNid(118);
+	deviceChoice87.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel40.add(deviceChoice87, gridBagConstraints);
+
+	jPanel33.add(jPanel40);
+
+	jPanel41.setBorder(javax.swing.BorderFactory.createTitledBorder("30"));
+	jPanel41.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel41.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel41.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice88.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice88.setIdentifier("");
+	deviceChoice88.setLabelString("HS/LN");
+	deviceChoice88.setOffsetNid(124);
+	deviceChoice88.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel41.add(deviceChoice88, gridBagConstraints);
+
+	deviceChoice89.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice89.setIdentifier("");
+	deviceChoice89.setLabelString("AC/DC");
+	deviceChoice89.setOffsetNid(123);
+	deviceChoice89.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel41.add(deviceChoice89, gridBagConstraints);
+
+	deviceChoice90.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice90.setIdentifier("");
+	deviceChoice90.setLabelString("GAIN");
+	deviceChoice90.setOffsetNid(122);
+	deviceChoice90.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel41.add(deviceChoice90, gridBagConstraints);
+
+	jPanel33.add(jPanel41);
+
+	jPanel42.setBorder(javax.swing.BorderFactory.createTitledBorder("31"));
+	jPanel42.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel42.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel42.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice91.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice91.setIdentifier("");
+	deviceChoice91.setLabelString("HS/LN");
+	deviceChoice91.setOffsetNid(128);
+	deviceChoice91.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel42.add(deviceChoice91, gridBagConstraints);
+
+	deviceChoice92.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice92.setIdentifier("");
+	deviceChoice92.setLabelString("AC/DC");
+	deviceChoice92.setOffsetNid(127);
+	deviceChoice92.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel42.add(deviceChoice92, gridBagConstraints);
+
+	deviceChoice93.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice93.setIdentifier("");
+	deviceChoice93.setLabelString("GAIN");
+	deviceChoice93.setOffsetNid(126);
+	deviceChoice93.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel42.add(deviceChoice93, gridBagConstraints);
+
+	jPanel33.add(jPanel42);
+
+	jPanel43.setBorder(javax.swing.BorderFactory.createTitledBorder("32"));
+	jPanel43.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel43.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel43.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice94.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice94.setIdentifier("");
+	deviceChoice94.setLabelString("HS/LN");
+	deviceChoice94.setOffsetNid(132);
+	deviceChoice94.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel43.add(deviceChoice94, gridBagConstraints);
+
+	deviceChoice95.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice95.setIdentifier("");
+	deviceChoice95.setLabelString("AC/DC");
+	deviceChoice95.setOffsetNid(131);
+	deviceChoice95.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel43.add(deviceChoice95, gridBagConstraints);
+
+	deviceChoice96.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice96.setIdentifier("");
+	deviceChoice96.setLabelString("GAIN");
+	deviceChoice96.setOffsetNid(130);
+	deviceChoice96.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel43.add(deviceChoice96, gridBagConstraints);
+
+	jPanel33.add(jPanel43);
+
+	jPanel44.setBorder(javax.swing.BorderFactory.createTitledBorder("33"));
+	jPanel44.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel44.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel44.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice97.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice97.setIdentifier("");
+	deviceChoice97.setLabelString("HS/LN");
+	deviceChoice97.setOffsetNid(136);
+	deviceChoice97.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel44.add(deviceChoice97, gridBagConstraints);
+
+	deviceChoice98.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice98.setIdentifier("");
+	deviceChoice98.setLabelString("AC/DC");
+	deviceChoice98.setOffsetNid(135);
+	deviceChoice98.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel44.add(deviceChoice98, gridBagConstraints);
+
+	deviceChoice99.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice99.setIdentifier("");
+	deviceChoice99.setLabelString("GAIN");
+	deviceChoice99.setOffsetNid(134);
+	deviceChoice99.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel44.add(deviceChoice99, gridBagConstraints);
+
+	jPanel33.add(jPanel44);
+
+	jPanel32.add(jPanel33);
+
+	jPanel45.setLayout(new java.awt.GridLayout(11, 3));
+
+	jPanel46.setBorder(javax.swing.BorderFactory.createTitledBorder("34"));
+	jPanel46.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel46.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel46.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice100.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice100.setIdentifier("");
+	deviceChoice100.setLabelString("HS/LN");
+	deviceChoice100.setOffsetNid(140);
+	deviceChoice100.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel46.add(deviceChoice100, gridBagConstraints);
+
+	deviceChoice101.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice101.setIdentifier("");
+	deviceChoice101.setLabelString("AC/DC");
+	deviceChoice101.setOffsetNid(139);
+	deviceChoice101.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel46.add(deviceChoice101, gridBagConstraints);
+
+	deviceChoice102.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice102.setIdentifier("");
+	deviceChoice102.setLabelString("GAIN");
+	deviceChoice102.setOffsetNid(138);
+	deviceChoice102.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel46.add(deviceChoice102, gridBagConstraints);
+
+	jPanel45.add(jPanel46);
+
+	jPanel47.setBorder(javax.swing.BorderFactory.createTitledBorder("35"));
+	jPanel47.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel47.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel47.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice103.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice103.setIdentifier("");
+	deviceChoice103.setLabelString("HS/LN");
+	deviceChoice103.setOffsetNid(144);
+	deviceChoice103.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel47.add(deviceChoice103, gridBagConstraints);
+
+	deviceChoice104.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice104.setIdentifier("");
+	deviceChoice104.setLabelString("AC/DC");
+	deviceChoice104.setOffsetNid(143);
+	deviceChoice104.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel47.add(deviceChoice104, gridBagConstraints);
+
+	deviceChoice105.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice105.setIdentifier("");
+	deviceChoice105.setLabelString("GAIN");
+	deviceChoice105.setOffsetNid(142);
+	deviceChoice105.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel47.add(deviceChoice105, gridBagConstraints);
+
+	jPanel45.add(jPanel47);
+
+	jPanel48.setBorder(javax.swing.BorderFactory.createTitledBorder("36"));
+	jPanel48.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel48.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel48.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice106.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice106.setIdentifier("");
+	deviceChoice106.setLabelString("HS/LN");
+	deviceChoice106.setOffsetNid(148);
+	deviceChoice106.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel48.add(deviceChoice106, gridBagConstraints);
+
+	deviceChoice107.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice107.setIdentifier("");
+	deviceChoice107.setLabelString("AC/DC");
+	deviceChoice107.setOffsetNid(147);
+	deviceChoice107.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel48.add(deviceChoice107, gridBagConstraints);
+
+	deviceChoice108.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice108.setIdentifier("");
+	deviceChoice108.setLabelString("GAIN");
+	deviceChoice108.setOffsetNid(146);
+	deviceChoice108.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel48.add(deviceChoice108, gridBagConstraints);
+
+	jPanel45.add(jPanel48);
+
+	jPanel49.setBorder(javax.swing.BorderFactory.createTitledBorder("37"));
+	jPanel49.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel49.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel49.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice109.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice109.setIdentifier("");
+	deviceChoice109.setLabelString("HS/LN");
+	deviceChoice109.setOffsetNid(152);
+	deviceChoice109.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel49.add(deviceChoice109, gridBagConstraints);
+
+	deviceChoice110.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice110.setIdentifier("");
+	deviceChoice110.setLabelString("AC/DC");
+	deviceChoice110.setOffsetNid(151);
+	deviceChoice110.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel49.add(deviceChoice110, gridBagConstraints);
+
+	deviceChoice111.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice111.setIdentifier("");
+	deviceChoice111.setLabelString("GAIN");
+	deviceChoice111.setOffsetNid(150);
+	deviceChoice111.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel49.add(deviceChoice111, gridBagConstraints);
+
+	jPanel45.add(jPanel49);
+
+	jPanel50.setBorder(javax.swing.BorderFactory.createTitledBorder("38"));
+	jPanel50.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel50.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel50.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice112.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice112.setIdentifier("");
+	deviceChoice112.setLabelString("HS/LN");
+	deviceChoice112.setOffsetNid(156);
+	deviceChoice112.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel50.add(deviceChoice112, gridBagConstraints);
+
+	deviceChoice113.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice113.setIdentifier("");
+	deviceChoice113.setLabelString("AC/DC");
+	deviceChoice113.setOffsetNid(155);
+	deviceChoice113.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel50.add(deviceChoice113, gridBagConstraints);
+
+	deviceChoice114.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice114.setIdentifier("");
+	deviceChoice114.setLabelString("GAIN");
+	deviceChoice114.setOffsetNid(154);
+	deviceChoice114.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel50.add(deviceChoice114, gridBagConstraints);
+
+	jPanel45.add(jPanel50);
+
+	jPanel51.setBorder(javax.swing.BorderFactory.createTitledBorder("39"));
+	jPanel51.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel51.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel51.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice115.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice115.setIdentifier("");
+	deviceChoice115.setLabelString("HS/LN");
+	deviceChoice115.setOffsetNid(160);
+	deviceChoice115.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel51.add(deviceChoice115, gridBagConstraints);
+
+	deviceChoice116.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice116.setIdentifier("");
+	deviceChoice116.setLabelString("AC/DC");
+	deviceChoice116.setOffsetNid(159);
+	deviceChoice116.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel51.add(deviceChoice116, gridBagConstraints);
+
+	deviceChoice117.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice117.setIdentifier("");
+	deviceChoice117.setLabelString("GAIN");
+	deviceChoice117.setOffsetNid(158);
+	deviceChoice117.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel51.add(deviceChoice117, gridBagConstraints);
+
+	jPanel45.add(jPanel51);
+
+	jPanel52.setBorder(javax.swing.BorderFactory.createTitledBorder("40"));
+	jPanel52.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel52.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel52.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice118.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice118.setIdentifier("");
+	deviceChoice118.setLabelString("HS/LN");
+	deviceChoice118.setOffsetNid(164);
+	deviceChoice118.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel52.add(deviceChoice118, gridBagConstraints);
+
+	deviceChoice119.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice119.setIdentifier("");
+	deviceChoice119.setLabelString("AC/DC");
+	deviceChoice119.setOffsetNid(163);
+	deviceChoice119.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel52.add(deviceChoice119, gridBagConstraints);
+
+	deviceChoice120.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice120.setIdentifier("");
+	deviceChoice120.setLabelString("GAIN");
+	deviceChoice120.setOffsetNid(162);
+	deviceChoice120.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel52.add(deviceChoice120, gridBagConstraints);
+
+	jPanel45.add(jPanel52);
+
+	jPanel53.setBorder(javax.swing.BorderFactory.createTitledBorder("41"));
+	jPanel53.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel53.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel53.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice121.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice121.setIdentifier("");
+	deviceChoice121.setLabelString("HS/LN");
+	deviceChoice121.setOffsetNid(168);
+	deviceChoice121.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel53.add(deviceChoice121, gridBagConstraints);
+
+	deviceChoice122.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice122.setIdentifier("");
+	deviceChoice122.setLabelString("AC/DC");
+	deviceChoice122.setOffsetNid(167);
+	deviceChoice122.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel53.add(deviceChoice122, gridBagConstraints);
+
+	deviceChoice123.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice123.setIdentifier("");
+	deviceChoice123.setLabelString("GAIN");
+	deviceChoice123.setOffsetNid(166);
+	deviceChoice123.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel53.add(deviceChoice123, gridBagConstraints);
+
+	jPanel45.add(jPanel53);
+
+	jPanel54.setBorder(javax.swing.BorderFactory.createTitledBorder("42"));
+	jPanel54.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel54.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel54.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice124.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice124.setIdentifier("");
+	deviceChoice124.setLabelString("HS/LN");
+	deviceChoice124.setOffsetNid(172);
+	deviceChoice124.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel54.add(deviceChoice124, gridBagConstraints);
+
+	deviceChoice125.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice125.setIdentifier("");
+	deviceChoice125.setLabelString("AC/DC");
+	deviceChoice125.setOffsetNid(171);
+	deviceChoice125.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel54.add(deviceChoice125, gridBagConstraints);
+
+	deviceChoice126.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice126.setIdentifier("");
+	deviceChoice126.setLabelString("GAIN");
+	deviceChoice126.setOffsetNid(170);
+	deviceChoice126.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel54.add(deviceChoice126, gridBagConstraints);
+
+	jPanel45.add(jPanel54);
+
+	jPanel55.setBorder(javax.swing.BorderFactory.createTitledBorder("43"));
+	jPanel55.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel55.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel55.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice127.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice127.setIdentifier("");
+	deviceChoice127.setLabelString("HS/LN");
+	deviceChoice127.setOffsetNid(176);
+	deviceChoice127.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel55.add(deviceChoice127, gridBagConstraints);
+
+	deviceChoice128.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice128.setIdentifier("");
+	deviceChoice128.setLabelString("AC/DC");
+	deviceChoice128.setOffsetNid(175);
+	deviceChoice128.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel55.add(deviceChoice128, gridBagConstraints);
+
+	deviceChoice129.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice129.setIdentifier("");
+	deviceChoice129.setLabelString("GAIN");
+	deviceChoice129.setOffsetNid(174);
+	deviceChoice129.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel55.add(deviceChoice129, gridBagConstraints);
+
+	jPanel45.add(jPanel55);
+
+	jPanel56.setBorder(javax.swing.BorderFactory.createTitledBorder("44"));
+	jPanel56.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel56.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel56.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice130.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice130.setIdentifier("");
+	deviceChoice130.setLabelString("HS/LN");
+	deviceChoice130.setOffsetNid(180);
+	deviceChoice130.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel56.add(deviceChoice130, gridBagConstraints);
+
+	deviceChoice131.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice131.setIdentifier("");
+	deviceChoice131.setLabelString("AC/DC");
+	deviceChoice131.setOffsetNid(179);
+	deviceChoice131.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel56.add(deviceChoice131, gridBagConstraints);
+
+	deviceChoice132.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice132.setIdentifier("");
+	deviceChoice132.setLabelString("GAIN");
+	deviceChoice132.setOffsetNid(178);
+	deviceChoice132.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel56.add(deviceChoice132, gridBagConstraints);
+
+	jPanel45.add(jPanel56);
+
+	jPanel32.add(jPanel45);
+
+	jTabbedPane1.addTab("23...44", jPanel32);
+
+	jPanel57.setLayout(new java.awt.GridLayout(1, 2));
+
+	jPanel58.setLayout(new java.awt.GridLayout(11, 3));
+
+	jPanel59.setBorder(javax.swing.BorderFactory.createTitledBorder("45"));
+	jPanel59.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel59.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel59.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice133.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice133.setIdentifier("");
+	deviceChoice133.setLabelString("HS/LN");
+	deviceChoice133.setOffsetNid(184);
+	deviceChoice133.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel59.add(deviceChoice133, gridBagConstraints);
+
+	deviceChoice134.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice134.setIdentifier("");
+	deviceChoice134.setLabelString("AC/DC");
+	deviceChoice134.setOffsetNid(183);
+	deviceChoice134.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel59.add(deviceChoice134, gridBagConstraints);
+
+	deviceChoice135.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice135.setIdentifier("");
+	deviceChoice135.setLabelString("GAIN");
+	deviceChoice135.setOffsetNid(182);
+	deviceChoice135.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel59.add(deviceChoice135, gridBagConstraints);
+
+	jPanel58.add(jPanel59);
+
+	jPanel60.setBorder(javax.swing.BorderFactory.createTitledBorder("46"));
+	jPanel60.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel60.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel60.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice136.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice136.setIdentifier("");
+	deviceChoice136.setLabelString("HS/LN");
+	deviceChoice136.setOffsetNid(188);
+	deviceChoice136.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel60.add(deviceChoice136, gridBagConstraints);
+
+	deviceChoice137.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice137.setIdentifier("");
+	deviceChoice137.setLabelString("AC/DC");
+	deviceChoice137.setOffsetNid(187);
+	deviceChoice137.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel60.add(deviceChoice137, gridBagConstraints);
+
+	deviceChoice138.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice138.setIdentifier("");
+	deviceChoice138.setLabelString("GAIN");
+	deviceChoice138.setOffsetNid(186);
+	deviceChoice138.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel60.add(deviceChoice138, gridBagConstraints);
+
+	jPanel58.add(jPanel60);
+
+	jPanel61.setBorder(javax.swing.BorderFactory.createTitledBorder("47"));
+	jPanel61.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel61.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel61.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice139.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice139.setIdentifier("");
+	deviceChoice139.setLabelString("HS/LN");
+	deviceChoice139.setOffsetNid(192);
+	deviceChoice139.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel61.add(deviceChoice139, gridBagConstraints);
+
+	deviceChoice140.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice140.setIdentifier("");
+	deviceChoice140.setLabelString("AC/DC");
+	deviceChoice140.setOffsetNid(191);
+	deviceChoice140.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel61.add(deviceChoice140, gridBagConstraints);
+
+	deviceChoice141.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice141.setIdentifier("");
+	deviceChoice141.setLabelString("GAIN");
+	deviceChoice141.setOffsetNid(190);
+	deviceChoice141.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel61.add(deviceChoice141, gridBagConstraints);
+
+	jPanel58.add(jPanel61);
+
+	jPanel62.setBorder(javax.swing.BorderFactory.createTitledBorder("48"));
+	jPanel62.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel62.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel62.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice142.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice142.setIdentifier("");
+	deviceChoice142.setLabelString("HS/LN");
+	deviceChoice142.setOffsetNid(196);
+	deviceChoice142.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel62.add(deviceChoice142, gridBagConstraints);
+
+	deviceChoice143.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice143.setIdentifier("");
+	deviceChoice143.setLabelString("AC/DC");
+	deviceChoice143.setOffsetNid(195);
+	deviceChoice143.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel62.add(deviceChoice143, gridBagConstraints);
+
+	deviceChoice144.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice144.setIdentifier("");
+	deviceChoice144.setLabelString("GAIN");
+	deviceChoice144.setOffsetNid(194);
+	deviceChoice144.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel62.add(deviceChoice144, gridBagConstraints);
+
+	jPanel58.add(jPanel62);
+
+	jPanel63.setBorder(javax.swing.BorderFactory.createTitledBorder("49"));
+	jPanel63.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel63.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel63.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice145.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice145.setIdentifier("");
+	deviceChoice145.setLabelString("HS/LN");
+	deviceChoice145.setOffsetNid(200);
+	deviceChoice145.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel63.add(deviceChoice145, gridBagConstraints);
+
+	deviceChoice146.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice146.setIdentifier("");
+	deviceChoice146.setLabelString("AC/DC");
+	deviceChoice146.setOffsetNid(199);
+	deviceChoice146.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel63.add(deviceChoice146, gridBagConstraints);
+
+	deviceChoice147.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice147.setIdentifier("");
+	deviceChoice147.setLabelString("GAIN");
+	deviceChoice147.setOffsetNid(198);
+	deviceChoice147.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel63.add(deviceChoice147, gridBagConstraints);
+
+	jPanel58.add(jPanel63);
+
+	jPanel64.setBorder(javax.swing.BorderFactory.createTitledBorder("50"));
+	jPanel64.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel64.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel64.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice148.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice148.setIdentifier("");
+	deviceChoice148.setLabelString("HS/LN");
+	deviceChoice148.setOffsetNid(204);
+	deviceChoice148.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel64.add(deviceChoice148, gridBagConstraints);
+
+	deviceChoice149.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice149.setIdentifier("");
+	deviceChoice149.setLabelString("AC/DC");
+	deviceChoice149.setOffsetNid(203);
+	deviceChoice149.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel64.add(deviceChoice149, gridBagConstraints);
+
+	deviceChoice150.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice150.setIdentifier("");
+	deviceChoice150.setLabelString("GAIN");
+	deviceChoice150.setOffsetNid(202);
+	deviceChoice150.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel64.add(deviceChoice150, gridBagConstraints);
+
+	jPanel58.add(jPanel64);
+
+	jPanel65.setBorder(javax.swing.BorderFactory.createTitledBorder("51"));
+	jPanel65.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel65.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel65.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice151.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice151.setIdentifier("");
+	deviceChoice151.setLabelString("HS/LN");
+	deviceChoice151.setOffsetNid(208);
+	deviceChoice151.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel65.add(deviceChoice151, gridBagConstraints);
+
+	deviceChoice152.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice152.setIdentifier("");
+	deviceChoice152.setLabelString("AC/DC");
+	deviceChoice152.setOffsetNid(207);
+	deviceChoice152.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel65.add(deviceChoice152, gridBagConstraints);
+
+	deviceChoice153.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice153.setIdentifier("");
+	deviceChoice153.setLabelString("GAIN");
+	deviceChoice153.setOffsetNid(206);
+	deviceChoice153.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel65.add(deviceChoice153, gridBagConstraints);
+
+	jPanel58.add(jPanel65);
+
+	jPanel66.setBorder(javax.swing.BorderFactory.createTitledBorder("52"));
+	jPanel66.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel66.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel66.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice154.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice154.setIdentifier("");
+	deviceChoice154.setLabelString("HS/LN");
+	deviceChoice154.setOffsetNid(212);
+	deviceChoice154.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel66.add(deviceChoice154, gridBagConstraints);
+
+	deviceChoice155.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice155.setIdentifier("");
+	deviceChoice155.setLabelString("AC/DC");
+	deviceChoice155.setOffsetNid(211);
+	deviceChoice155.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel66.add(deviceChoice155, gridBagConstraints);
+
+	deviceChoice156.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice156.setIdentifier("");
+	deviceChoice156.setLabelString("GAIN");
+	deviceChoice156.setOffsetNid(210);
+	deviceChoice156.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel66.add(deviceChoice156, gridBagConstraints);
+
+	jPanel58.add(jPanel66);
+
+	jPanel67.setBorder(javax.swing.BorderFactory.createTitledBorder("53"));
+	jPanel67.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel67.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel67.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice157.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice157.setIdentifier("");
+	deviceChoice157.setLabelString("HS/LN");
+	deviceChoice157.setOffsetNid(216);
+	deviceChoice157.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel67.add(deviceChoice157, gridBagConstraints);
+
+	deviceChoice158.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice158.setIdentifier("");
+	deviceChoice158.setLabelString("AC/DC");
+	deviceChoice158.setOffsetNid(215);
+	deviceChoice158.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel67.add(deviceChoice158, gridBagConstraints);
+
+	deviceChoice159.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice159.setIdentifier("");
+	deviceChoice159.setLabelString("GAIN");
+	deviceChoice159.setOffsetNid(214);
+	deviceChoice159.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel67.add(deviceChoice159, gridBagConstraints);
+
+	jPanel58.add(jPanel67);
+
+	jPanel68.setBorder(javax.swing.BorderFactory.createTitledBorder("54"));
+	jPanel68.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel68.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel68.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice160.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice160.setIdentifier("");
+	deviceChoice160.setLabelString("HS/LN");
+	deviceChoice160.setOffsetNid(220);
+	deviceChoice160.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel68.add(deviceChoice160, gridBagConstraints);
+
+	deviceChoice161.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice161.setIdentifier("");
+	deviceChoice161.setLabelString("AC/DC");
+	deviceChoice161.setOffsetNid(219);
+	deviceChoice161.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel68.add(deviceChoice161, gridBagConstraints);
+
+	deviceChoice162.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice162.setIdentifier("");
+	deviceChoice162.setLabelString("GAIN");
+	deviceChoice162.setOffsetNid(218);
+	deviceChoice162.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel68.add(deviceChoice162, gridBagConstraints);
+
+	jPanel58.add(jPanel68);
+
+	jPanel69.setBorder(javax.swing.BorderFactory.createTitledBorder("55"));
+	jPanel69.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel69.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel69.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice163.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice163.setIdentifier("");
+	deviceChoice163.setLabelString("HS/LN");
+	deviceChoice163.setOffsetNid(224);
+	deviceChoice163.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel69.add(deviceChoice163, gridBagConstraints);
+
+	deviceChoice164.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice164.setIdentifier("");
+	deviceChoice164.setLabelString("AC/DC");
+	deviceChoice164.setOffsetNid(223);
+	deviceChoice164.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel69.add(deviceChoice164, gridBagConstraints);
+
+	deviceChoice165.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice165.setIdentifier("");
+	deviceChoice165.setLabelString("GAIN");
+	deviceChoice165.setOffsetNid(222);
+	deviceChoice165.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel69.add(deviceChoice165, gridBagConstraints);
+
+	jPanel58.add(jPanel69);
+
+	jPanel57.add(jPanel58);
+
+	jPanel70.setLayout(new java.awt.GridLayout(11, 3));
+
+	jPanel71.setBorder(javax.swing.BorderFactory.createTitledBorder("56"));
+	jPanel71.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel71.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel71.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice166.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice166.setIdentifier("");
+	deviceChoice166.setLabelString("HS/LN");
+	deviceChoice166.setOffsetNid(228);
+	deviceChoice166.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel71.add(deviceChoice166, gridBagConstraints);
+
+	deviceChoice167.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice167.setIdentifier("");
+	deviceChoice167.setLabelString("AC/DC");
+	deviceChoice167.setOffsetNid(227);
+	deviceChoice167.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel71.add(deviceChoice167, gridBagConstraints);
+
+	deviceChoice168.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice168.setIdentifier("");
+	deviceChoice168.setLabelString("GAIN");
+	deviceChoice168.setOffsetNid(226);
+	deviceChoice168.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel71.add(deviceChoice168, gridBagConstraints);
+
+	jPanel70.add(jPanel71);
+
+	jPanel72.setBorder(javax.swing.BorderFactory.createTitledBorder("57"));
+	jPanel72.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel72.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel72.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice169.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice169.setIdentifier("");
+	deviceChoice169.setLabelString("HS/LN");
+	deviceChoice169.setOffsetNid(232);
+	deviceChoice169.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel72.add(deviceChoice169, gridBagConstraints);
+
+	deviceChoice170.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice170.setIdentifier("");
+	deviceChoice170.setLabelString("AC/DC");
+	deviceChoice170.setOffsetNid(231);
+	deviceChoice170.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel72.add(deviceChoice170, gridBagConstraints);
+
+	deviceChoice171.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice171.setIdentifier("");
+	deviceChoice171.setLabelString("GAIN");
+	deviceChoice171.setOffsetNid(230);
+	deviceChoice171.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel72.add(deviceChoice171, gridBagConstraints);
+
+	jPanel70.add(jPanel72);
+
+	jPanel73.setBorder(javax.swing.BorderFactory.createTitledBorder("58"));
+	jPanel73.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel73.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel73.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice172.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice172.setIdentifier("");
+	deviceChoice172.setLabelString("HS/LN");
+	deviceChoice172.setOffsetNid(236);
+	deviceChoice172.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel73.add(deviceChoice172, gridBagConstraints);
+
+	deviceChoice173.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice173.setIdentifier("");
+	deviceChoice173.setLabelString("AC/DC");
+	deviceChoice173.setOffsetNid(235);
+	deviceChoice173.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel73.add(deviceChoice173, gridBagConstraints);
+
+	deviceChoice174.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice174.setIdentifier("");
+	deviceChoice174.setLabelString("GAIN");
+	deviceChoice174.setOffsetNid(234);
+	deviceChoice174.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel73.add(deviceChoice174, gridBagConstraints);
+
+	jPanel70.add(jPanel73);
+
+	jPanel74.setBorder(javax.swing.BorderFactory.createTitledBorder("59"));
+	jPanel74.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel74.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel74.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice175.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice175.setIdentifier("");
+	deviceChoice175.setLabelString("HS/LN");
+	deviceChoice175.setOffsetNid(240);
+	deviceChoice175.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel74.add(deviceChoice175, gridBagConstraints);
+
+	deviceChoice176.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice176.setIdentifier("");
+	deviceChoice176.setLabelString("AC/DC");
+	deviceChoice176.setOffsetNid(239);
+	deviceChoice176.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel74.add(deviceChoice176, gridBagConstraints);
+
+	deviceChoice177.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice177.setIdentifier("");
+	deviceChoice177.setLabelString("GAIN");
+	deviceChoice177.setOffsetNid(238);
+	deviceChoice177.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel74.add(deviceChoice177, gridBagConstraints);
+
+	jPanel70.add(jPanel74);
+
+	jPanel75.setBorder(javax.swing.BorderFactory.createTitledBorder("60"));
+	jPanel75.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel75.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel75.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice178.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice178.setIdentifier("");
+	deviceChoice178.setLabelString("HS/LN");
+	deviceChoice178.setOffsetNid(244);
+	deviceChoice178.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel75.add(deviceChoice178, gridBagConstraints);
+
+	deviceChoice179.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice179.setIdentifier("");
+	deviceChoice179.setLabelString("AC/DC");
+	deviceChoice179.setOffsetNid(243);
+	deviceChoice179.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel75.add(deviceChoice179, gridBagConstraints);
+
+	deviceChoice180.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice180.setIdentifier("");
+	deviceChoice180.setLabelString("GAIN");
+	deviceChoice180.setOffsetNid(242);
+	deviceChoice180.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel75.add(deviceChoice180, gridBagConstraints);
+
+	jPanel70.add(jPanel75);
+
+	jPanel76.setBorder(javax.swing.BorderFactory.createTitledBorder("61"));
+	jPanel76.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel76.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel76.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice181.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice181.setIdentifier("");
+	deviceChoice181.setLabelString("HS/LN");
+	deviceChoice181.setOffsetNid(248);
+	deviceChoice181.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel76.add(deviceChoice181, gridBagConstraints);
+
+	deviceChoice182.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice182.setIdentifier("");
+	deviceChoice182.setLabelString("AC/DC");
+	deviceChoice182.setOffsetNid(247);
+	deviceChoice182.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel76.add(deviceChoice182, gridBagConstraints);
+
+	deviceChoice183.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice183.setIdentifier("");
+	deviceChoice183.setLabelString("GAIN");
+	deviceChoice183.setOffsetNid(246);
+	deviceChoice183.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel76.add(deviceChoice183, gridBagConstraints);
+
+	jPanel70.add(jPanel76);
+
+	jPanel77.setBorder(javax.swing.BorderFactory.createTitledBorder("62"));
+	jPanel77.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel77.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel77.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice184.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice184.setIdentifier("");
+	deviceChoice184.setLabelString("HS/LN");
+	deviceChoice184.setOffsetNid(252);
+	deviceChoice184.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel77.add(deviceChoice184, gridBagConstraints);
+
+	deviceChoice185.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice185.setIdentifier("");
+	deviceChoice185.setLabelString("AC/DC");
+	deviceChoice185.setOffsetNid(251);
+	deviceChoice185.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel77.add(deviceChoice185, gridBagConstraints);
+
+	deviceChoice186.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice186.setIdentifier("");
+	deviceChoice186.setLabelString("GAIN");
+	deviceChoice186.setOffsetNid(250);
+	deviceChoice186.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel77.add(deviceChoice186, gridBagConstraints);
+
+	jPanel70.add(jPanel77);
+
+	jPanel78.setBorder(javax.swing.BorderFactory.createTitledBorder("63"));
+	jPanel78.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel78.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel78.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice187.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice187.setIdentifier("");
+	deviceChoice187.setLabelString("HS/LN");
+	deviceChoice187.setOffsetNid(256);
+	deviceChoice187.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel78.add(deviceChoice187, gridBagConstraints);
+
+	deviceChoice188.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice188.setIdentifier("");
+	deviceChoice188.setLabelString("AC/DC");
+	deviceChoice188.setOffsetNid(255);
+	deviceChoice188.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel78.add(deviceChoice188, gridBagConstraints);
+
+	deviceChoice189.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice189.setIdentifier("");
+	deviceChoice189.setLabelString("GAIN");
+	deviceChoice189.setOffsetNid(254);
+	deviceChoice189.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel78.add(deviceChoice189, gridBagConstraints);
+
+	jPanel70.add(jPanel78);
+
+	jPanel79.setBorder(javax.swing.BorderFactory.createTitledBorder("64"));
+	jPanel79.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel79.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel79.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice190.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice190.setIdentifier("");
+	deviceChoice190.setLabelString("HS/LN");
+	deviceChoice190.setOffsetNid(260);
+	deviceChoice190.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel79.add(deviceChoice190, gridBagConstraints);
+
+	deviceChoice191.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice191.setIdentifier("");
+	deviceChoice191.setLabelString("AC/DC");
+	deviceChoice191.setOffsetNid(259);
+	deviceChoice191.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel79.add(deviceChoice191, gridBagConstraints);
+
+	deviceChoice192.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice192.setIdentifier("");
+	deviceChoice192.setLabelString("GAIN");
+	deviceChoice192.setOffsetNid(258);
+	deviceChoice192.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel79.add(deviceChoice192, gridBagConstraints);
+
+	jPanel70.add(jPanel79);
+
+	jPanel80.setBorder(javax.swing.BorderFactory.createTitledBorder("65"));
+	jPanel80.setMinimumSize(new java.awt.Dimension(275, 40));
+	jPanel80.setPreferredSize(new java.awt.Dimension(275, 40));
+	jPanel80.setLayout(new java.awt.GridBagLayout());
+
+	deviceChoice193.setChoiceItems(new String[] {"HS", "LN"});
+	deviceChoice193.setIdentifier("");
+	deviceChoice193.setLabelString("HS/LN");
+	deviceChoice193.setOffsetNid(264);
+	deviceChoice193.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel80.add(deviceChoice193, gridBagConstraints);
+
+	deviceChoice194.setChoiceItems(new String[] {"AC", "DC"});
+	deviceChoice194.setIdentifier("");
+	deviceChoice194.setLabelString("AC/DC");
+	deviceChoice194.setOffsetNid(263);
+	deviceChoice194.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel80.add(deviceChoice194, gridBagConstraints);
+
+	deviceChoice195.setChoiceItems(new String[] {"10^3", "10^4", "10^5", "10^6", "10^7", "10^8", "10^9"});
+	deviceChoice195.setIdentifier("");
+	deviceChoice195.setLabelString("GAIN");
+	deviceChoice195.setOffsetNid(262);
+	deviceChoice195.setUpdateIdentifier("");
+	gridBagConstraints = new java.awt.GridBagConstraints();
+	gridBagConstraints.insets = new java.awt.Insets(0, 0, 8, 0);
+	jPanel80.add(deviceChoice195, gridBagConstraints);
+
+	jPanel70.add(jPanel80);
+
+	jPanel57.add(jPanel70);
+
+	jTabbedPane1.addTab("45...65", jPanel57);
+
+	getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

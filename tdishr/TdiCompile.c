@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Compile.C
-        The interface to compiler.
+	The interface to compiler.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 
 #define MAXLINE 120
@@ -42,24 +42,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <strroutines.h>
-extern unsigned short OpcCompile, OpcEvaluate;
-extern int TdiIntrinsic();
+
+extern int Tdi1Evaluate();
 extern int TdiYacc();
 /*-------------------------------------------------------
-        Interface to compiler/parser.
-                expression = COMPILE(string, [arg1,...])
-        YACC converts TdiYacc.Y to TdiYacc.C to parse TDI statements. Also YACC subroutines.
-        LEX converts TdiLex.X to TdiLex.C for lexical analysis. Also LEX subroutines.
+	Interface to compiler/parser.
+	        expression = COMPILE(string, [arg1,...])
+	YACC converts TdiYacc.Y to TdiYacc.C to parse TDI statements. Also YACC subroutines.
+	LEX converts TdiLex.X to TdiLex.C for lexical analysis. Also LEX subroutines.
 
-        Limitations:
-        For recursion must pass LEX:
-                zone status bol cur end
-                tdiyylval tdiyyval
-                tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
-        For recursion must pass YACC also:
-                tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
-        Thus no recursion because the tdiyy's are built into LEX and YACC.
-        IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
+	Limitations:
+	For recursion must pass LEX:
+	        zone status bol cur end
+	        tdiyylval tdiyyval
+	        tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
+	For recursion must pass YACC also:
+	        tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
+	Thus no recursion because the tdiyy's are built into LEX and YACC.
+	IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
 */
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
@@ -143,7 +143,7 @@ static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,struct descriptor
   return status;
 }
 
-EXPORT int Tdi1Compile(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int Tdi1Compile(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   int status;
   GET_TDITHREADSTATIC_P;
   if (TdiThreadStatic_p->compiler_recursing == 1) {
@@ -151,7 +151,7 @@ EXPORT int Tdi1Compile(int opcode __attribute__((unused)), int narg, struct desc
     return TdiRECURSIVE;
   }
   INIT_AND_FREEXD_ON_EXIT(tmp);
-  status = TdiIntrinsic(OpcEvaluate, 1, list, &tmp);// using Tdi1Evaluate over TdiEvaluate saves 3 stack levels
+  status = Tdi1Evaluate(opcode, 1, list, &tmp);// using Tdi1Evaluate over TdiEvaluate saves 3 stack levels
   struct descriptor *text_ptr = tmp.pointer;
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
@@ -166,13 +166,13 @@ EXPORT int Tdi1Compile(int opcode __attribute__((unused)), int narg, struct desc
   Compile and evaluate an expression.
       result = EXECUTE(string, [arg1,...])
 */
-int Tdi1Execute(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Execute(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
   FREEXD_ON_EXIT(out_ptr);
   INIT_AND_FREEXD_ON_EXIT(tmp);
-  status = TdiIntrinsic(OpcCompile, narg, list, &tmp);
+  status = Tdi1Compile(opcode, narg, list, &tmp);
   if STATUS_OK
-    status = TdiIntrinsic(OpcEvaluate, 1, &tmp.pointer, out_ptr);
+    status = Tdi1Evaluate(opcode, 1, &tmp.pointer, out_ptr);
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   FREE_CANCEL(out_ptr);

@@ -23,8 +23,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Apd.C
-        Converts a list of Descriptors into a List Dict or Tuple.
-        Timo Schröder, IPP      2017
+	Converts a list of Descriptors into a List Dict or Tuple.
+	Timo Schröder, IPP      2017
 */
 
 #include "STATICdef.h"
@@ -39,9 +39,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiData();
 extern int TdiEvaluate();
-extern unsigned short OpcComma;
 int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
-  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OpcComma)
+  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OPC_COMMA)
     return unwrapCommaCount(((struct descriptor_r*)list[0])->ndesc, ((struct descriptor_r*)list[0])->dscptrs) + ndesc-1;
   return ndesc;
 }
@@ -49,7 +48,7 @@ int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
 int UnwrapCommaDesc(int ndesc, struct descriptor *list[], int *nout, struct descriptor *list_out[]){
   INIT_STATUS;
   struct descriptor_xd xd = EMPTY_XD;
-  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OpcComma)
+  if (list[0] && list[0]->class==CLASS_R && list[0]->dtype==DTYPE_FUNCTION && list[0]->length==2 && *(short*)list[0]->pointer==OPC_COMMA)
     status = UnwrapCommaDesc(((struct descriptor_r*)list[0])->ndesc, ((struct descriptor_r*)list[0])->dscptrs, nout, list_out);
   else {
     status = TdiData(list[0], &xd MDS_END_ARG);
@@ -72,8 +71,7 @@ int UnwrapComma(int narg, struct descriptor *list[], int *nout_p, struct descrip
   if STATUS_NOT_OK {
     int i;
     for ( i=0 ; i<nout ; i++ )
-      if ((*list_ptr)[i])
-        free((*list_ptr)[i]);
+      free((*list_ptr)[i]);
     free(*list_ptr);
   }
   return status;
@@ -108,7 +106,7 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
     for (i=1 ; i<alen ; i+=2) {
       if (alist[i]->class!=CLASS_S) {
 	status = ApdDICT_KEYCLS;
-        goto free_alist;
+	goto free_alist;
       }
     }
   }//TODO: Dict requires unique keys
@@ -122,18 +120,17 @@ int Tdi1Apd(int dtype, int narg, struct descriptor *list[], struct descriptor_xd
 free_alist :;
   int i;
   for ( i=0 ; i<alen ; i++ )
-    if (alist[i])
-      free(alist[i]);
+    free(alist[i]);
   free(alist);
   return status;
 }
 
-int Tdi1List(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1List(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_LIST, narg, list, out_ptr);
 }
-int Tdi1Tuple(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Tuple(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_TUPLE, narg, list, out_ptr);
 }
-int Tdi1Dict(int opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Dict(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_DICTIONARY, narg, list, out_ptr);
 }

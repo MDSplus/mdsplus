@@ -166,10 +166,9 @@ typedef struct _msghdr {
   signed char client_type;
   unsigned char ndims;
 #if defined(__CRAY) || defined(CRAY)
-  long dims[(MAX_DIMS + 1) / 2];
+  long dims[MAX_DIMS / 2];
 #else
   int dims[MAX_DIMS];
-  int fill;
 #endif
 } MsgHdr;
 

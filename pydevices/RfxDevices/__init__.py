@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -93,10 +93,23 @@ _mimport('MARTE_NE')
 _mimport('MARTE_WAVEGEN')
 _mimport('MARTE_XRAY')
 
+
+_mimport('MARTE2_COMPONENT')
+_mimport('MARTE2_SUPERVISOR')
+_mimport('MARTE2_GAM')
+_mimport('MARTE2_NI6259')
+_mimport('MARTE2_IN')
+_mimport('MARTE2_OUT')
+_mimport('MARTE2_STREAM')
+_mimport('EQUINOX_GAM')
+_mimport('PROVA_GAM')
 _mimport('MILL3')
 _mimport('NI6259AI')
+_mimport('NI6259EV')
 _mimport('NI6368AI')
 _mimport('NI6682')
+_mimport('NI6683')
+_mimport('SOFT_TRIGGER')
 _mimport('REDPYTADC')
 _mimport('RFX_PROTECTIONS')
 _mimport('RFXVICONTROL')
@@ -105,7 +118,13 @@ _mimport('SIS3820')
 _mimport('SPIDER')
 _mimport('SPIDER_SM')
 _mimport('ZELOS2150GV')
-
+_mimport('SPIDER_TIMING')
+_mimport('SPIDER_SETUP')
+_mimport('PV_WAVE_SETUP')
+_mimport('CRIO_FAU')
+_mimport('PI_CAM')
 _mimport('RFX_RPADC')
+_mimport('LINCMOS')
+_mimport('PLFE')
 
 #print('RfxDevices loaded.')

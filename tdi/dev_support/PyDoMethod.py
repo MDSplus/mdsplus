@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -60,5 +60,6 @@ def PyDoMethod(n,method,*args):
         raise
     except Exception as exc:
         stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
+        import traceback
+        traceback.print_exc()
         raise PyUNHANDLED_EXCEPTION
-

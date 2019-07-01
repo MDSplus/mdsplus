@@ -98,7 +98,7 @@ typedef struct _WaveInfo {
 } WaveInfo;
 
 #define DefaultDefaults (M_update | M_x_grid_labels | M_y_grid_labels | M_show_mode | M_step_plot | M_x_grid_lines |\
-                         M_y_grid_lines | M_database | M_shot | M_default_node | M_xmin | M_xmax | M_ymin | M_ymax )
+	                 M_y_grid_lines | M_database | M_shot | M_default_node | M_xmin | M_xmax | M_ymin | M_ymax )
 
 typedef struct _CutHeader {
   Boolean update;

@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -82,7 +82,7 @@ void parse_crate_db(struct CRATE *in, struct Crate_ *out)
 	  in->Phys_Name.Crate	// CAMAC crate number
       );
 
-  out->device = (in->DSFname[0] != '.') ? atoi(in->DSFname)	// valid /dev/sg#
+  out->device = (in->DSFname[0] != '.') ? strtol(in->DSFname,NULL,0)	// valid /dev/sg#
       : -1;			// in-valid
 
   out->type = in->HwyType;	// highway type

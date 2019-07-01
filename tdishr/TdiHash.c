@@ -23,20 +23,21 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiHash.C
-        Use hashing method to lookup a function name with fewest string compares.
-        The choice of size will vary but should be a few times larger than the number of names.
-        For 441 entries,  I found 991 gave .11 failure rate on first try.
-        Near 800 .23
-        Near 700 .4
-        Near 600 .7
-        Near 500 2 (3 string compares on the average)
-                index = TdiHash(string) to find the index.
+	Use hashing method to lookup a function name with fewest string compares.
+	The choice of size will vary but should be a few times larger than the number of names.
+	For 441 entries,  I found 991 gave .11 failure rate on first try.
+	Near 800 .23
+	Near 700 .4
+	Near 600 .7
+	Near 500 2 (3 string compares on the average)
+	        index = TdiHash(string) to find the index.
 */
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
 #define TdiHASH_MAX 991
 
 STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];
+#include "tdirefcat.h"
 #include "tdireffunction.h"
 #include <string.h>
 #include <stdio.h>
@@ -91,7 +92,7 @@ STATIC_ROUTINE int TdiHashAll()
 int TdiHash(int len, char *pstring)
 {
   int jh, jf;
-  static pthread_mutex_t lock;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
   jh = TdiHashOne(len, pstring);
@@ -111,18 +112,18 @@ int TdiHash(int len, char *pstring)
 }
 
 /*      test program for hashing
-        Also change the TdiHASH_MAX to a variable.
+	Also change the TdiHASH_MAX to a variable.
 int     main() {
 int     count, jf, k;
-        printf(" size  depth\n");
-        for (TdiHASH_MAX = 1025; --TdiHASH_MAX > TdiFUNCTION_MAX;) {
-                count = TdiHashAll();
-                printf("%5d  %g\n", TdiHASH_MAX, (float)count / (float)TdiHASH_MAX);
-                TdiREF_HASH[0] = 0;
-        }
-        TdiHASH_MAX = 991;
-        for (jf = 0; jf < TdiFUNCTION_MAX; ++jf)
-                if (jf != (k = TdiHash(99, TdiRefFunction[jf].name)))
-                        printf("%d  %s  %d\n", jf, TdiRefFunction[jf], k);
+	printf(" size  depth\n");
+	for (TdiHASH_MAX = 1025; TdiHASH_MAX-- > TdiFUNCTION_MAX;) {
+	        count = TdiHashAll();
+	        printf("%5d  %g\n", TdiHASH_MAX, (float)count / (float)TdiHASH_MAX);
+	        TdiREF_HASH[0] = 0;
+	}
+	TdiHASH_MAX = 991;
+	for (jf = 0; jf < TdiFUNCTION_MAX; ++jf)
+	        if (jf != (k = TdiHash(99, TdiRefFunction[jf].name)))
+	                printf("%d  %s  %d\n", jf, TdiRefFunction[jf], k);
 }
 */

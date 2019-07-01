@@ -17,7 +17,7 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
 
     /** Creates new form MARTE_MHD_CTRLSetup */
     public MARTE_MHD_CTRLSetup() {
-        initComponents();
+	initComponents();
     }
 
     /** This method is called from within the constructor to
@@ -29,2372 +29,2372 @@ public class MARTE_MHD_CTRLSetup extends DeviceSetup {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        deviceButtons1 = new DeviceButtons();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        deviceField1 = new DeviceField();
-        jPanel6 = new javax.swing.JPanel();
-        deviceField2 = new DeviceField();
-        deviceField3 = new DeviceField();
-        jPanel8 = new javax.swing.JPanel();
-        deviceChoice1 = new DeviceChoice();
-        deviceField6 = new DeviceField();
-        jPanel9 = new javax.swing.JPanel();
-        deviceField7 = new DeviceField();
-        deviceField8 = new DeviceField();
-        jPanel1 = new javax.swing.JPanel();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel3 = new javax.swing.JPanel();
-        deviceChoice2 = new DeviceChoice();
-        deviceChoice3 = new DeviceChoice();
-        deviceChoice4 = new DeviceChoice();
-        deviceChoice5 = new DeviceChoice();
-        deviceChoice6 = new DeviceChoice();
-        deviceField9 = new DeviceField();
-        deviceField4 = new DeviceField();
-        deviceField5 = new DeviceField();
-        deviceField48 = new DeviceField();
-        deviceField49 = new DeviceField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jPanel4 = new javax.swing.JPanel();
-        deviceTable1 = new DeviceTable();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jPanel14 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        deviceField10 = new DeviceField();
-        deviceField11 = new DeviceField();
-        deviceField12 = new DeviceField();
-        deviceField13 = new DeviceField();
-        deviceField14 = new DeviceField();
-        deviceField15 = new DeviceField();
-        deviceField16 = new DeviceField();
-        deviceField17 = new DeviceField();
-        deviceField18 = new DeviceField();
-        deviceField19 = new DeviceField();
-        deviceChoice7 = new DeviceChoice();
-        jPanel15 = new javax.swing.JPanel();
-        deviceField20 = new DeviceField();
-        deviceField21 = new DeviceField();
-        deviceField22 = new DeviceField();
-        deviceField23 = new DeviceField();
-        deviceField24 = new DeviceField();
-        deviceField25 = new DeviceField();
-        deviceField26 = new DeviceField();
-        deviceField27 = new DeviceField();
-        deviceField28 = new DeviceField();
-        deviceField29 = new DeviceField();
-        deviceChoice8 = new DeviceChoice();
-        jPanel16 = new javax.swing.JPanel();
-        deviceField30 = new DeviceField();
-        deviceField31 = new DeviceField();
-        deviceField32 = new DeviceField();
-        deviceField33 = new DeviceField();
-        deviceField34 = new DeviceField();
-        deviceField35 = new DeviceField();
-        deviceField36 = new DeviceField();
-        deviceField37 = new DeviceField();
-        deviceField38 = new DeviceField();
-        deviceField39 = new DeviceField();
-        deviceChoice9 = new DeviceChoice();
-        jPanel18 = new javax.swing.JPanel();
-        deviceField50 = new DeviceField();
-        deviceField51 = new DeviceField();
-        deviceField52 = new DeviceField();
-        deviceField53 = new DeviceField();
-        deviceField54 = new DeviceField();
-        deviceField55 = new DeviceField();
-        deviceField56 = new DeviceField();
-        deviceField57 = new DeviceField();
-        deviceField58 = new DeviceField();
-        deviceField59 = new DeviceField();
-        deviceChoice11 = new DeviceChoice();
-        jPanel19 = new javax.swing.JPanel();
-        deviceField60 = new DeviceField();
-        deviceField61 = new DeviceField();
-        deviceField62 = new DeviceField();
-        deviceField63 = new DeviceField();
-        deviceField64 = new DeviceField();
-        deviceField65 = new DeviceField();
-        deviceField66 = new DeviceField();
-        deviceField67 = new DeviceField();
-        deviceField68 = new DeviceField();
-        deviceField69 = new DeviceField();
-        deviceChoice12 = new DeviceChoice();
-        jPanel20 = new javax.swing.JPanel();
-        deviceField70 = new DeviceField();
-        deviceField71 = new DeviceField();
-        deviceField72 = new DeviceField();
-        deviceField73 = new DeviceField();
-        deviceField74 = new DeviceField();
-        deviceField75 = new DeviceField();
-        deviceField76 = new DeviceField();
-        deviceField77 = new DeviceField();
-        deviceField78 = new DeviceField();
-        deviceField79 = new DeviceField();
-        deviceChoice13 = new DeviceChoice();
-        jPanel21 = new javax.swing.JPanel();
-        deviceField80 = new DeviceField();
-        deviceField81 = new DeviceField();
-        deviceField82 = new DeviceField();
-        deviceField83 = new DeviceField();
-        deviceField84 = new DeviceField();
-        deviceField85 = new DeviceField();
-        deviceField86 = new DeviceField();
-        deviceField87 = new DeviceField();
-        deviceField88 = new DeviceField();
-        deviceField89 = new DeviceField();
-        deviceChoice14 = new DeviceChoice();
-        jPanel22 = new javax.swing.JPanel();
-        deviceField90 = new DeviceField();
-        deviceField91 = new DeviceField();
-        deviceField92 = new DeviceField();
-        deviceField93 = new DeviceField();
-        deviceField94 = new DeviceField();
-        deviceField95 = new DeviceField();
-        deviceField96 = new DeviceField();
-        deviceField97 = new DeviceField();
-        deviceField98 = new DeviceField();
-        deviceField99 = new DeviceField();
-        deviceChoice15 = new DeviceChoice();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jPanel11 = new javax.swing.JPanel();
-        jPanel23 = new javax.swing.JPanel();
-        deviceField100 = new DeviceField();
-        deviceField101 = new DeviceField();
-        deviceField102 = new DeviceField();
-        deviceField103 = new DeviceField();
-        deviceField104 = new DeviceField();
-        deviceField105 = new DeviceField();
-        deviceField106 = new DeviceField();
-        deviceField107 = new DeviceField();
-        deviceField108 = new DeviceField();
-        deviceField109 = new DeviceField();
-        deviceChoice16 = new DeviceChoice();
-        jPanel24 = new javax.swing.JPanel();
-        deviceField110 = new DeviceField();
-        deviceField111 = new DeviceField();
-        deviceField112 = new DeviceField();
-        deviceField113 = new DeviceField();
-        deviceField114 = new DeviceField();
-        deviceField115 = new DeviceField();
-        deviceField116 = new DeviceField();
-        deviceField117 = new DeviceField();
-        deviceField118 = new DeviceField();
-        deviceField119 = new DeviceField();
-        deviceChoice17 = new DeviceChoice();
-        jPanel25 = new javax.swing.JPanel();
-        deviceField120 = new DeviceField();
-        deviceField121 = new DeviceField();
-        deviceField122 = new DeviceField();
-        deviceField123 = new DeviceField();
-        deviceField124 = new DeviceField();
-        deviceField125 = new DeviceField();
-        deviceField126 = new DeviceField();
-        deviceField127 = new DeviceField();
-        deviceField128 = new DeviceField();
-        deviceField129 = new DeviceField();
-        deviceChoice18 = new DeviceChoice();
-        jPanel26 = new javax.swing.JPanel();
-        deviceField130 = new DeviceField();
-        deviceField131 = new DeviceField();
-        deviceField132 = new DeviceField();
-        deviceField133 = new DeviceField();
-        deviceField134 = new DeviceField();
-        deviceField135 = new DeviceField();
-        deviceField136 = new DeviceField();
-        deviceField137 = new DeviceField();
-        deviceField138 = new DeviceField();
-        deviceField139 = new DeviceField();
-        deviceChoice19 = new DeviceChoice();
-        jPanel27 = new javax.swing.JPanel();
-        deviceField140 = new DeviceField();
-        deviceField141 = new DeviceField();
-        deviceField142 = new DeviceField();
-        deviceField143 = new DeviceField();
-        deviceField144 = new DeviceField();
-        deviceField145 = new DeviceField();
-        deviceField146 = new DeviceField();
-        deviceField147 = new DeviceField();
-        deviceField148 = new DeviceField();
-        deviceField149 = new DeviceField();
-        deviceChoice20 = new DeviceChoice();
-        jPanel28 = new javax.swing.JPanel();
-        deviceField150 = new DeviceField();
-        deviceField151 = new DeviceField();
-        deviceField152 = new DeviceField();
-        deviceField153 = new DeviceField();
-        deviceField154 = new DeviceField();
-        deviceField155 = new DeviceField();
-        deviceField156 = new DeviceField();
-        deviceField157 = new DeviceField();
-        deviceField158 = new DeviceField();
-        deviceField159 = new DeviceField();
-        deviceChoice21 = new DeviceChoice();
-        jPanel29 = new javax.swing.JPanel();
-        deviceField160 = new DeviceField();
-        deviceField161 = new DeviceField();
-        deviceField162 = new DeviceField();
-        deviceField163 = new DeviceField();
-        deviceField164 = new DeviceField();
-        deviceField165 = new DeviceField();
-        deviceField166 = new DeviceField();
-        deviceField167 = new DeviceField();
-        deviceField168 = new DeviceField();
-        deviceField169 = new DeviceField();
-        deviceChoice22 = new DeviceChoice();
-        jPanel32 = new javax.swing.JPanel();
-        deviceField173 = new DeviceField();
-        deviceField174 = new DeviceField();
-        deviceField175 = new DeviceField();
-        deviceField176 = new DeviceField();
-        deviceField177 = new DeviceField();
-        deviceField178 = new DeviceField();
-        deviceField179 = new DeviceField();
-        deviceField180 = new DeviceField();
-        deviceField181 = new DeviceField();
-        deviceField182 = new DeviceField();
-        deviceChoice24 = new DeviceChoice();
-        jPanel12 = new javax.swing.JPanel();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
-        jPanel33 = new javax.swing.JPanel();
-        jPanel34 = new javax.swing.JPanel();
-        deviceChoice25 = new DeviceChoice();
-        deviceField183 = new DeviceField();
-        deviceField184 = new DeviceField();
-        deviceField185 = new DeviceField();
-        deviceField40 = new DeviceField();
-        deviceTable6 = new DeviceTable();
-        deviceTable7 = new DeviceTable();
-        deviceTable8 = new DeviceTable();
-        deviceTable9 = new DeviceTable();
-        jPanel39 = new javax.swing.JPanel();
-        jPanel40 = new javax.swing.JPanel();
-        deviceChoice28 = new DeviceChoice();
-        deviceField192 = new DeviceField();
-        deviceField193 = new DeviceField();
-        deviceField194 = new DeviceField();
-        deviceField41 = new DeviceField();
-        deviceTable18 = new DeviceTable();
-        deviceTable19 = new DeviceTable();
-        deviceTable20 = new DeviceTable();
-        deviceTable21 = new DeviceTable();
-        jPanel30 = new javax.swing.JPanel();
-        jPanel31 = new javax.swing.JPanel();
-        deviceChoice23 = new DeviceChoice();
-        deviceField170 = new DeviceField();
-        deviceField171 = new DeviceField();
-        deviceField172 = new DeviceField();
-        deviceField42 = new DeviceField();
-        deviceTable2 = new DeviceTable();
-        deviceTable3 = new DeviceTable();
-        deviceTable4 = new DeviceTable();
-        deviceTable5 = new DeviceTable();
-        jPanel35 = new javax.swing.JPanel();
-        jPanel36 = new javax.swing.JPanel();
-        deviceChoice26 = new DeviceChoice();
-        deviceField186 = new DeviceField();
-        deviceField187 = new DeviceField();
-        deviceField188 = new DeviceField();
-        deviceField43 = new DeviceField();
-        deviceTable10 = new DeviceTable();
-        deviceTable11 = new DeviceTable();
-        deviceTable12 = new DeviceTable();
-        deviceTable13 = new DeviceTable();
-        jPanel37 = new javax.swing.JPanel();
-        jPanel38 = new javax.swing.JPanel();
-        deviceChoice27 = new DeviceChoice();
-        deviceField189 = new DeviceField();
-        deviceField190 = new DeviceField();
-        deviceField191 = new DeviceField();
-        deviceField44 = new DeviceField();
-        deviceTable14 = new DeviceTable();
-        deviceTable15 = new DeviceTable();
-        deviceTable16 = new DeviceTable();
-        deviceTable17 = new DeviceTable();
-        jPanel41 = new javax.swing.JPanel();
-        jPanel42 = new javax.swing.JPanel();
-        deviceChoice29 = new DeviceChoice();
-        deviceField195 = new DeviceField();
-        deviceField196 = new DeviceField();
-        deviceField197 = new DeviceField();
-        deviceField45 = new DeviceField();
-        deviceTable22 = new DeviceTable();
-        deviceTable23 = new DeviceTable();
-        deviceTable24 = new DeviceTable();
-        deviceTable25 = new DeviceTable();
-        jPanel43 = new javax.swing.JPanel();
-        jPanel44 = new javax.swing.JPanel();
-        deviceChoice30 = new DeviceChoice();
-        deviceField198 = new DeviceField();
-        deviceField199 = new DeviceField();
-        deviceField200 = new DeviceField();
-        deviceField46 = new DeviceField();
-        deviceTable26 = new DeviceTable();
-        deviceTable27 = new DeviceTable();
-        deviceTable28 = new DeviceTable();
-        deviceTable29 = new DeviceTable();
-        jPanel45 = new javax.swing.JPanel();
-        jPanel46 = new javax.swing.JPanel();
-        deviceChoice31 = new DeviceChoice();
-        deviceField201 = new DeviceField();
-        deviceField202 = new DeviceField();
-        deviceField203 = new DeviceField();
-        deviceField47 = new DeviceField();
-        deviceTable30 = new DeviceTable();
-        deviceTable31 = new DeviceTable();
-        deviceTable32 = new DeviceTable();
-        deviceTable33 = new DeviceTable();
-        jPanel7 = new javax.swing.JPanel();
-        jPanel17 = new javax.swing.JPanel();
-        jPanel47 = new javax.swing.JPanel();
-        deviceTable34 = new DeviceTable();
-        jPanel48 = new javax.swing.JPanel();
-        deviceTable35 = new DeviceTable();
-        jPanel49 = new javax.swing.JPanel();
-        deviceTable36 = new DeviceTable();
-
-        setDeviceProvider("localhost");
-        setDeviceTitle("MARTe Setup");
-        setDeviceType("MARTE_MHD_CTRL");
-        setHeight(500);
-        setWidth(600);
-        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-
-        jPanel2.setLayout(new java.awt.GridLayout(4, 0));
-
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("Comment: ");
-        deviceField1.setNumCols(30);
-        deviceField1.setOffsetNid(1);
-        deviceField1.setTextOnly(true);
-        jPanel5.add(deviceField1);
-
-        jPanel2.add(jPanel5);
-
-        deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Start Sampling(s):");
-        deviceField2.setOffsetNid(8);
-        jPanel6.add(deviceField2);
-
-        deviceField3.setIdentifier("");
-        deviceField3.setLabelString("End Sampling(s):");
-        deviceField3.setOffsetNid(9);
-        jPanel6.add(deviceField3);
-
-        jPanel2.add(jPanel6);
-
-        deviceChoice1.setChoiceItems(new String[] {"None", "ModeControl", "VirtualShell"});
-        deviceChoice1.setIdentifier("");
-        deviceChoice1.setLabelString("Control: ");
-        deviceChoice1.setOffsetNid(12);
-        deviceChoice1.setUpdateIdentifier("");
-        jPanel8.add(deviceChoice1);
-
-        deviceField6.setIdentifier("");
-        deviceField6.setLabelString("Contr. Duration(s): ");
-        deviceField6.setOffsetNid(5);
-        jPanel8.add(deviceField6);
-
-        jPanel2.add(jPanel8);
-
-        deviceField7.setIdentifier("");
-        deviceField7.setLabelString("Trig. Time: ");
-        deviceField7.setNumCols(25);
-        deviceField7.setOffsetNid(4);
-        jPanel9.add(deviceField7);
-
-        deviceField8.setIdentifier("");
-        deviceField8.setLabelString("Freq. (Hz):");
-        deviceField8.setOffsetNid(3);
-        jPanel9.add(deviceField8);
-
-        jPanel2.add(jPanel9);
-
-        getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
-
-        jPanel1.setLayout(new java.awt.BorderLayout());
-
-        deviceChoice2.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice2.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice2.setConvert(true);
-        deviceChoice2.setIdentifier("");
-        deviceChoice2.setLabelString("Cleaning: ");
-        deviceChoice2.setOffsetNid(1339);
-        deviceChoice2.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice2);
-
-        deviceChoice3.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice3.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice3.setConvert(true);
-        deviceChoice3.setIdentifier("");
-        deviceChoice3.setLabelString("Extrapolation: ");
-        deviceChoice3.setOffsetNid(1345);
-        deviceChoice3.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice3);
-
-        deviceChoice4.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice4.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice4.setConvert(true);
-        deviceChoice4.setIdentifier("");
-        deviceChoice4.setLabelString("Reconfiguration: ");
-        deviceChoice4.setOffsetNid(1351);
-        deviceChoice4.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice4);
-
-        deviceChoice5.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice5.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice5.setConvert(true);
-        deviceChoice5.setIdentifier("");
-        deviceChoice5.setLabelString("Dynamic Decoupler: ");
-        deviceChoice5.setOffsetNid(1357);
-        deviceChoice5.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice5);
-
-        deviceChoice6.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice6.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice6.setConvert(true);
-        deviceChoice6.setIdentifier("");
-        deviceChoice6.setLabelString("Static Decoupler: ");
-        deviceChoice6.setOffsetNid(1363);
-        deviceChoice6.setUpdateIdentifier("");
-        jPanel3.add(deviceChoice6);
-
-        deviceField9.setIdentifier("");
-        deviceField9.setLabelString("Extrapolation Radius:");
-        deviceField9.setNumCols(5);
-        deviceField9.setOffsetNid(1375);
-        jPanel3.add(deviceField9);
-
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Start Freeze Time: ");
-        deviceField4.setOffsetNid(3277);
-        jPanel3.add(deviceField4);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("End Freeze Time ");
-        deviceField5.setOffsetNid(3283);
-        jPanel3.add(deviceField5);
-
-        deviceField48.setIdentifier("");
-        deviceField48.setLabelString("Start Bp Autozero (s, abs. time):");
-        deviceField48.setOffsetNid(3289);
-        jPanel3.add(deviceField48);
-
-        deviceField49.setIdentifier("");
-        deviceField49.setLabelString("End Bp Autozero (s, abs time):");
-        deviceField49.setOffsetNid(3295);
-        jPanel3.add(deviceField49);
-
-        jTabbedPane1.addTab("General", jPanel3);
-
-        jPanel4.setLayout(new java.awt.BorderLayout());
-
-        deviceTable1.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable1.setDisplayRowNumber(true);
-        deviceTable1.setIdentifier("");
-        deviceTable1.setLabelString("Cleaned modes");
-        deviceTable1.setNumCols(48);
-        deviceTable1.setNumRows(4);
-        deviceTable1.setOffsetNid(1369);
-        deviceTable1.setRefMode(1);
-        jPanel4.add(deviceTable1, java.awt.BorderLayout.CENTER);
-
-        jScrollPane1.setViewportView(jPanel4);
-
-        jTabbedPane1.addTab("Cleaning", jScrollPane1);
-
-        jPanel14.setLayout(new java.awt.GridLayout(8, 1));
-
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
-
-        deviceField10.setIdentifier("");
-        deviceField10.setLabelString("M: ");
-        deviceField10.setNumCols(4);
-        deviceField10.setOffsetNid(1381);
-        jPanel10.add(deviceField10);
-
-        deviceField11.setIdentifier("");
-        deviceField11.setLabelString("N: ");
-        deviceField11.setNumCols(4);
-        deviceField11.setOffsetNid(1387);
-        jPanel10.add(deviceField11);
-
-        deviceField12.setIdentifier("");
-        deviceField12.setLabelString("Freq: ");
-        deviceField12.setNumCols(4);
-        deviceField12.setOffsetNid(1393);
-        jPanel10.add(deviceField12);
-
-        deviceField13.setIdentifier("");
-        deviceField13.setLabelString("Amp: ");
-        deviceField13.setNumCols(4);
-        deviceField13.setOffsetNid(1399);
-        jPanel10.add(deviceField13);
-
-        deviceField14.setIdentifier("");
-        deviceField14.setLabelString("Phase: ");
-        deviceField14.setNumCols(4);
-        deviceField14.setOffsetNid(1405);
-        jPanel10.add(deviceField14);
-
-        deviceField15.setIdentifier("");
-        deviceField15.setLabelString("Start time: ");
-        deviceField15.setNumCols(4);
-        deviceField15.setOffsetNid(1411);
-        jPanel10.add(deviceField15);
-
-        deviceField16.setIdentifier("");
-        deviceField16.setLabelString("Rise time: ");
-        deviceField16.setNumCols(4);
-        deviceField16.setOffsetNid(1417);
-        jPanel10.add(deviceField16);
-
-        deviceField17.setIdentifier("");
-        deviceField17.setLabelString("End time: ");
-        deviceField17.setNumCols(4);
-        deviceField17.setOffsetNid(1423);
-        jPanel10.add(deviceField17);
-
-        deviceField18.setIdentifier("");
-        deviceField18.setLabelString("Fall time: ");
-        deviceField18.setNumCols(4);
-        deviceField18.setOffsetNid(1429);
-        jPanel10.add(deviceField18);
-
-        deviceField19.setIdentifier("");
-        deviceField19.setLabelString("Threshold: ");
-        deviceField19.setNumCols(4);
-        deviceField19.setOffsetNid(1435);
-        jPanel10.add(deviceField19);
-
-        deviceChoice7.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice7.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice7.setConvert(true);
-        deviceChoice7.setIdentifier("");
-        deviceChoice7.setLabelString("Relative Phase: ");
-        deviceChoice7.setOffsetNid(1441);
-        deviceChoice7.setUpdateIdentifier("");
-        jPanel10.add(deviceChoice7);
-
-        jPanel14.add(jPanel10);
-
-        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("M: ");
-        deviceField20.setNumCols(4);
-        deviceField20.setOffsetNid(1447);
-        jPanel15.add(deviceField20);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("N: ");
-        deviceField21.setNumCols(4);
-        deviceField21.setOffsetNid(1453);
-        jPanel15.add(deviceField21);
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("Freq: ");
-        deviceField22.setNumCols(4);
-        deviceField22.setOffsetNid(1459);
-        jPanel15.add(deviceField22);
-
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Amp: ");
-        deviceField23.setNumCols(4);
-        deviceField23.setOffsetNid(1465);
-        jPanel15.add(deviceField23);
-
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("Phase: ");
-        deviceField24.setNumCols(4);
-        deviceField24.setOffsetNid(1471);
-        jPanel15.add(deviceField24);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Start time: ");
-        deviceField25.setNumCols(4);
-        deviceField25.setOffsetNid(1477);
-        jPanel15.add(deviceField25);
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("Rise time: ");
-        deviceField26.setNumCols(4);
-        deviceField26.setOffsetNid(1483);
-        jPanel15.add(deviceField26);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("End time: ");
-        deviceField27.setNumCols(4);
-        deviceField27.setOffsetNid(1489);
-        jPanel15.add(deviceField27);
-
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("Fall time: ");
-        deviceField28.setNumCols(4);
-        deviceField28.setOffsetNid(1495);
-        jPanel15.add(deviceField28);
-
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Threshold: ");
-        deviceField29.setNumCols(4);
-        deviceField29.setOffsetNid(1501);
-        jPanel15.add(deviceField29);
-
-        deviceChoice8.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice8.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice8.setConvert(true);
-        deviceChoice8.setIdentifier("");
-        deviceChoice8.setLabelString("Relative Phase: ");
-        deviceChoice8.setOffsetNid(1507);
-        deviceChoice8.setUpdateIdentifier("");
-        jPanel15.add(deviceChoice8);
-
-        jPanel14.add(jPanel15);
-
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
-
-        deviceField30.setIdentifier("");
-        deviceField30.setLabelString("M: ");
-        deviceField30.setNumCols(4);
-        deviceField30.setOffsetNid(1513);
-        jPanel16.add(deviceField30);
-
-        deviceField31.setIdentifier("");
-        deviceField31.setLabelString("N: ");
-        deviceField31.setNumCols(4);
-        deviceField31.setOffsetNid(1519);
-        jPanel16.add(deviceField31);
-
-        deviceField32.setIdentifier("");
-        deviceField32.setLabelString("Freq: ");
-        deviceField32.setNumCols(4);
-        deviceField32.setOffsetNid(1525);
-        jPanel16.add(deviceField32);
-
-        deviceField33.setIdentifier("");
-        deviceField33.setLabelString("Amp: ");
-        deviceField33.setNumCols(4);
-        deviceField33.setOffsetNid(1531);
-        jPanel16.add(deviceField33);
-
-        deviceField34.setIdentifier("");
-        deviceField34.setLabelString("Phase: ");
-        deviceField34.setNumCols(4);
-        deviceField34.setOffsetNid(1537);
-        jPanel16.add(deviceField34);
-
-        deviceField35.setIdentifier("");
-        deviceField35.setLabelString("Start time: ");
-        deviceField35.setNumCols(4);
-        deviceField35.setOffsetNid(1543);
-        jPanel16.add(deviceField35);
-
-        deviceField36.setIdentifier("");
-        deviceField36.setLabelString("Rise time: ");
-        deviceField36.setNumCols(4);
-        deviceField36.setOffsetNid(1549);
-        jPanel16.add(deviceField36);
-
-        deviceField37.setIdentifier("");
-        deviceField37.setLabelString("End time: ");
-        deviceField37.setNumCols(4);
-        deviceField37.setOffsetNid(1555);
-        jPanel16.add(deviceField37);
-
-        deviceField38.setIdentifier("");
-        deviceField38.setLabelString("Fall time: ");
-        deviceField38.setNumCols(4);
-        deviceField38.setOffsetNid(1561);
-        jPanel16.add(deviceField38);
-
-        deviceField39.setIdentifier("");
-        deviceField39.setLabelString("Threshold: ");
-        deviceField39.setNumCols(4);
-        deviceField39.setOffsetNid(1567);
-        jPanel16.add(deviceField39);
-
-        deviceChoice9.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice9.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice9.setConvert(true);
-        deviceChoice9.setIdentifier("");
-        deviceChoice9.setLabelString("Relative Phase: ");
-        deviceChoice9.setOffsetNid(1573);
-        deviceChoice9.setUpdateIdentifier("");
-        jPanel16.add(deviceChoice9);
-
-        jPanel14.add(jPanel16);
-
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
-
-        deviceField50.setIdentifier("");
-        deviceField50.setLabelString("M: ");
-        deviceField50.setNumCols(4);
-        deviceField50.setOffsetNid(1579);
-        jPanel18.add(deviceField50);
-
-        deviceField51.setIdentifier("");
-        deviceField51.setLabelString("N: ");
-        deviceField51.setNumCols(4);
-        deviceField51.setOffsetNid(1585);
-        jPanel18.add(deviceField51);
-
-        deviceField52.setIdentifier("");
-        deviceField52.setLabelString("Freq: ");
-        deviceField52.setNumCols(4);
-        deviceField52.setOffsetNid(1591);
-        jPanel18.add(deviceField52);
-
-        deviceField53.setIdentifier("");
-        deviceField53.setLabelString("Amp: ");
-        deviceField53.setNumCols(4);
-        deviceField53.setOffsetNid(1597);
-        jPanel18.add(deviceField53);
-
-        deviceField54.setIdentifier("");
-        deviceField54.setLabelString("Phase: ");
-        deviceField54.setNumCols(4);
-        deviceField54.setOffsetNid(1603);
-        jPanel18.add(deviceField54);
-
-        deviceField55.setIdentifier("");
-        deviceField55.setLabelString("Start time: ");
-        deviceField55.setNumCols(4);
-        deviceField55.setOffsetNid(1609);
-        jPanel18.add(deviceField55);
-
-        deviceField56.setIdentifier("");
-        deviceField56.setLabelString("Rise time: ");
-        deviceField56.setNumCols(4);
-        deviceField56.setOffsetNid(1615);
-        jPanel18.add(deviceField56);
-
-        deviceField57.setIdentifier("");
-        deviceField57.setLabelString("End time: ");
-        deviceField57.setNumCols(4);
-        deviceField57.setOffsetNid(1621);
-        jPanel18.add(deviceField57);
-
-        deviceField58.setIdentifier("");
-        deviceField58.setLabelString("Fall time: ");
-        deviceField58.setNumCols(4);
-        deviceField58.setOffsetNid(1627);
-        jPanel18.add(deviceField58);
-
-        deviceField59.setIdentifier("");
-        deviceField59.setLabelString("Threshold: ");
-        deviceField59.setNumCols(4);
-        deviceField59.setOffsetNid(1633);
-        jPanel18.add(deviceField59);
-
-        deviceChoice11.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice11.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice11.setConvert(true);
-        deviceChoice11.setIdentifier("");
-        deviceChoice11.setLabelString("Relative Phase: ");
-        deviceChoice11.setOffsetNid(1639);
-        deviceChoice11.setUpdateIdentifier("");
-        jPanel18.add(deviceChoice11);
-
-        jPanel14.add(jPanel18);
-
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
-
-        deviceField60.setIdentifier("");
-        deviceField60.setLabelString("M: ");
-        deviceField60.setNumCols(4);
-        deviceField60.setOffsetNid(1645);
-        jPanel19.add(deviceField60);
-
-        deviceField61.setIdentifier("");
-        deviceField61.setLabelString("N: ");
-        deviceField61.setNumCols(4);
-        deviceField61.setOffsetNid(1651);
-        jPanel19.add(deviceField61);
-
-        deviceField62.setIdentifier("");
-        deviceField62.setLabelString("Freq: ");
-        deviceField62.setNumCols(4);
-        deviceField62.setOffsetNid(1657);
-        jPanel19.add(deviceField62);
-
-        deviceField63.setIdentifier("");
-        deviceField63.setLabelString("Amp: ");
-        deviceField63.setNumCols(4);
-        deviceField63.setOffsetNid(1663);
-        jPanel19.add(deviceField63);
-
-        deviceField64.setIdentifier("");
-        deviceField64.setLabelString("Phase: ");
-        deviceField64.setNumCols(4);
-        deviceField64.setOffsetNid(1669);
-        jPanel19.add(deviceField64);
-
-        deviceField65.setIdentifier("");
-        deviceField65.setLabelString("Start time: ");
-        deviceField65.setNumCols(4);
-        deviceField65.setOffsetNid(1675);
-        jPanel19.add(deviceField65);
-
-        deviceField66.setIdentifier("");
-        deviceField66.setLabelString("Rise time: ");
-        deviceField66.setNumCols(4);
-        deviceField66.setOffsetNid(1681);
-        jPanel19.add(deviceField66);
-
-        deviceField67.setIdentifier("");
-        deviceField67.setLabelString("End time: ");
-        deviceField67.setNumCols(4);
-        deviceField67.setOffsetNid(1687);
-        jPanel19.add(deviceField67);
-
-        deviceField68.setIdentifier("");
-        deviceField68.setLabelString("Fall time: ");
-        deviceField68.setNumCols(4);
-        deviceField68.setOffsetNid(1693);
-        jPanel19.add(deviceField68);
-
-        deviceField69.setIdentifier("");
-        deviceField69.setLabelString("Threshold: ");
-        deviceField69.setNumCols(4);
-        deviceField69.setOffsetNid(1699);
-        jPanel19.add(deviceField69);
-
-        deviceChoice12.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice12.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice12.setConvert(true);
-        deviceChoice12.setIdentifier("");
-        deviceChoice12.setLabelString("Relative Phase: ");
-        deviceChoice12.setOffsetNid(1705);
-        deviceChoice12.setUpdateIdentifier("");
-        jPanel19.add(deviceChoice12);
-
-        jPanel14.add(jPanel19);
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
-
-        deviceField70.setIdentifier("");
-        deviceField70.setLabelString("M: ");
-        deviceField70.setNumCols(4);
-        deviceField70.setOffsetNid(1711);
-        jPanel20.add(deviceField70);
-
-        deviceField71.setIdentifier("");
-        deviceField71.setLabelString("N: ");
-        deviceField71.setNumCols(4);
-        deviceField71.setOffsetNid(1717);
-        jPanel20.add(deviceField71);
-
-        deviceField72.setIdentifier("");
-        deviceField72.setLabelString("Freq: ");
-        deviceField72.setNumCols(4);
-        deviceField72.setOffsetNid(1723);
-        jPanel20.add(deviceField72);
-
-        deviceField73.setIdentifier("");
-        deviceField73.setLabelString("Amp: ");
-        deviceField73.setNumCols(4);
-        deviceField73.setOffsetNid(1729);
-        jPanel20.add(deviceField73);
-
-        deviceField74.setIdentifier("");
-        deviceField74.setLabelString("Phase: ");
-        deviceField74.setNumCols(4);
-        deviceField74.setOffsetNid(1735);
-        jPanel20.add(deviceField74);
-
-        deviceField75.setIdentifier("");
-        deviceField75.setLabelString("Start time: ");
-        deviceField75.setNumCols(4);
-        deviceField75.setOffsetNid(1741);
-        jPanel20.add(deviceField75);
-
-        deviceField76.setIdentifier("");
-        deviceField76.setLabelString("Rise time: ");
-        deviceField76.setNumCols(4);
-        deviceField76.setOffsetNid(1747);
-        jPanel20.add(deviceField76);
-
-        deviceField77.setIdentifier("");
-        deviceField77.setLabelString("End time: ");
-        deviceField77.setNumCols(4);
-        deviceField77.setOffsetNid(1753);
-        jPanel20.add(deviceField77);
-
-        deviceField78.setIdentifier("");
-        deviceField78.setLabelString("Fall time: ");
-        deviceField78.setNumCols(4);
-        deviceField78.setOffsetNid(1759);
-        jPanel20.add(deviceField78);
-
-        deviceField79.setIdentifier("");
-        deviceField79.setLabelString("Threshold: ");
-        deviceField79.setNumCols(4);
-        deviceField79.setOffsetNid(1765);
-        jPanel20.add(deviceField79);
-
-        deviceChoice13.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice13.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice13.setConvert(true);
-        deviceChoice13.setIdentifier("");
-        deviceChoice13.setLabelString("Relative Phase: ");
-        deviceChoice13.setOffsetNid(1771);
-        deviceChoice13.setUpdateIdentifier("");
-        jPanel20.add(deviceChoice13);
-
-        jPanel14.add(jPanel20);
-
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
-
-        deviceField80.setIdentifier("");
-        deviceField80.setLabelString("M: ");
-        deviceField80.setNumCols(4);
-        deviceField80.setOffsetNid(1777);
-        jPanel21.add(deviceField80);
-
-        deviceField81.setIdentifier("");
-        deviceField81.setLabelString("N: ");
-        deviceField81.setNumCols(4);
-        deviceField81.setOffsetNid(1783);
-        jPanel21.add(deviceField81);
-
-        deviceField82.setIdentifier("");
-        deviceField82.setLabelString("Freq: ");
-        deviceField82.setNumCols(4);
-        deviceField82.setOffsetNid(1789);
-        jPanel21.add(deviceField82);
-
-        deviceField83.setIdentifier("");
-        deviceField83.setLabelString("Amp: ");
-        deviceField83.setNumCols(4);
-        deviceField83.setOffsetNid(1795);
-        jPanel21.add(deviceField83);
-
-        deviceField84.setIdentifier("");
-        deviceField84.setLabelString("Phase: ");
-        deviceField84.setNumCols(4);
-        deviceField84.setOffsetNid(1801);
-        jPanel21.add(deviceField84);
-
-        deviceField85.setIdentifier("");
-        deviceField85.setLabelString("Start time: ");
-        deviceField85.setNumCols(4);
-        deviceField85.setOffsetNid(1807);
-        jPanel21.add(deviceField85);
-
-        deviceField86.setIdentifier("");
-        deviceField86.setLabelString("Rise time: ");
-        deviceField86.setNumCols(4);
-        deviceField86.setOffsetNid(1813);
-        jPanel21.add(deviceField86);
-
-        deviceField87.setIdentifier("");
-        deviceField87.setLabelString("End time: ");
-        deviceField87.setNumCols(4);
-        deviceField87.setOffsetNid(1819);
-        jPanel21.add(deviceField87);
-
-        deviceField88.setIdentifier("");
-        deviceField88.setLabelString("Fall time: ");
-        deviceField88.setNumCols(4);
-        deviceField88.setOffsetNid(1825);
-        jPanel21.add(deviceField88);
-
-        deviceField89.setIdentifier("");
-        deviceField89.setLabelString("Threshold: ");
-        deviceField89.setNumCols(4);
-        deviceField89.setOffsetNid(1831);
-        jPanel21.add(deviceField89);
-
-        deviceChoice14.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice14.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice14.setConvert(true);
-        deviceChoice14.setIdentifier("");
-        deviceChoice14.setLabelString("Relative Phase: ");
-        deviceChoice14.setOffsetNid(1837);
-        deviceChoice14.setUpdateIdentifier("");
-        jPanel21.add(deviceChoice14);
-
-        jPanel14.add(jPanel21);
-
-        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
-
-        deviceField90.setIdentifier("");
-        deviceField90.setLabelString("M: ");
-        deviceField90.setNumCols(4);
-        deviceField90.setOffsetNid(1843);
-        jPanel22.add(deviceField90);
-
-        deviceField91.setIdentifier("");
-        deviceField91.setLabelString("N: ");
-        deviceField91.setNumCols(4);
-        deviceField91.setOffsetNid(1849);
-        jPanel22.add(deviceField91);
-
-        deviceField92.setIdentifier("");
-        deviceField92.setLabelString("Freq: ");
-        deviceField92.setNumCols(4);
-        deviceField92.setOffsetNid(1855);
-        jPanel22.add(deviceField92);
-
-        deviceField93.setIdentifier("");
-        deviceField93.setLabelString("Amp: ");
-        deviceField93.setNumCols(4);
-        deviceField93.setOffsetNid(1861);
-        jPanel22.add(deviceField93);
-
-        deviceField94.setIdentifier("");
-        deviceField94.setLabelString("Phase: ");
-        deviceField94.setNumCols(4);
-        deviceField94.setOffsetNid(1867);
-        jPanel22.add(deviceField94);
-
-        deviceField95.setIdentifier("");
-        deviceField95.setLabelString("Start time: ");
-        deviceField95.setNumCols(4);
-        deviceField95.setOffsetNid(1873);
-        jPanel22.add(deviceField95);
-
-        deviceField96.setIdentifier("");
-        deviceField96.setLabelString("Rise time: ");
-        deviceField96.setNumCols(4);
-        deviceField96.setOffsetNid(1879);
-        jPanel22.add(deviceField96);
-
-        deviceField97.setIdentifier("");
-        deviceField97.setLabelString("End time: ");
-        deviceField97.setNumCols(4);
-        deviceField97.setOffsetNid(1885);
-        jPanel22.add(deviceField97);
-
-        deviceField98.setIdentifier("");
-        deviceField98.setLabelString("Fall time: ");
-        deviceField98.setNumCols(4);
-        deviceField98.setOffsetNid(1891);
-        jPanel22.add(deviceField98);
-
-        deviceField99.setIdentifier("");
-        deviceField99.setLabelString("Threshold: ");
-        deviceField99.setNumCols(4);
-        deviceField99.setOffsetNid(1897);
-        jPanel22.add(deviceField99);
-
-        deviceChoice15.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice15.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice15.setConvert(true);
-        deviceChoice15.setIdentifier("");
-        deviceChoice15.setLabelString("Relative Phase: ");
-        deviceChoice15.setOffsetNid(1903);
-        deviceChoice15.setUpdateIdentifier("");
-        jPanel22.add(deviceChoice15);
-
-        jPanel14.add(jPanel22);
-
-        jScrollPane2.setViewportView(jPanel14);
-
-        jTabbedPane1.addTab("Rot. Pert. FB", jScrollPane2);
-
-        jPanel11.setLayout(new java.awt.GridLayout(8, 0));
-
-        jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
-
-        deviceField100.setIdentifier("");
-        deviceField100.setLabelString("M: ");
-        deviceField100.setNumCols(4);
-        deviceField100.setOffsetNid(1909);
-        jPanel23.add(deviceField100);
-
-        deviceField101.setIdentifier("");
-        deviceField101.setLabelString("N: ");
-        deviceField101.setNumCols(4);
-        deviceField101.setOffsetNid(1915);
-        jPanel23.add(deviceField101);
-
-        deviceField102.setIdentifier("");
-        deviceField102.setLabelString("Freq: ");
-        deviceField102.setNumCols(4);
-        deviceField102.setOffsetNid(1921);
-        jPanel23.add(deviceField102);
-
-        deviceField103.setIdentifier("");
-        deviceField103.setLabelString("Amp: ");
-        deviceField103.setNumCols(4);
-        deviceField103.setOffsetNid(1927);
-        jPanel23.add(deviceField103);
-
-        deviceField104.setIdentifier("");
-        deviceField104.setLabelString("Phase: ");
-        deviceField104.setNumCols(4);
-        deviceField104.setOffsetNid(1933);
-        jPanel23.add(deviceField104);
-
-        deviceField105.setIdentifier("");
-        deviceField105.setLabelString("Start time: ");
-        deviceField105.setNumCols(4);
-        deviceField105.setOffsetNid(1939);
-        jPanel23.add(deviceField105);
-
-        deviceField106.setIdentifier("");
-        deviceField106.setLabelString("Rise time: ");
-        deviceField106.setNumCols(4);
-        deviceField106.setOffsetNid(1945);
-        jPanel23.add(deviceField106);
-
-        deviceField107.setIdentifier("");
-        deviceField107.setLabelString("End time: ");
-        deviceField107.setNumCols(4);
-        deviceField107.setOffsetNid(1951);
-        jPanel23.add(deviceField107);
-
-        deviceField108.setIdentifier("");
-        deviceField108.setLabelString("Fall time: ");
-        deviceField108.setNumCols(4);
-        deviceField108.setOffsetNid(1957);
-        jPanel23.add(deviceField108);
-
-        deviceField109.setIdentifier("");
-        deviceField109.setLabelString("Threshold: ");
-        deviceField109.setNumCols(4);
-        deviceField109.setOffsetNid(1963);
-        jPanel23.add(deviceField109);
-
-        deviceChoice16.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice16.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice16.setConvert(true);
-        deviceChoice16.setIdentifier("");
-        deviceChoice16.setLabelString("Relative Phase: ");
-        deviceChoice16.setOffsetNid(1969);
-        deviceChoice16.setUpdateIdentifier("");
-        jPanel23.add(deviceChoice16);
-
-        jPanel11.add(jPanel23);
-
-        jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
-
-        deviceField110.setIdentifier("");
-        deviceField110.setLabelString("M: ");
-        deviceField110.setNumCols(4);
-        deviceField110.setOffsetNid(1975);
-        jPanel24.add(deviceField110);
-
-        deviceField111.setIdentifier("");
-        deviceField111.setLabelString("N: ");
-        deviceField111.setNumCols(4);
-        deviceField111.setOffsetNid(1981);
-        jPanel24.add(deviceField111);
-
-        deviceField112.setIdentifier("");
-        deviceField112.setLabelString("Freq: ");
-        deviceField112.setNumCols(4);
-        deviceField112.setOffsetNid(1987);
-        jPanel24.add(deviceField112);
-
-        deviceField113.setIdentifier("");
-        deviceField113.setLabelString("Amp: ");
-        deviceField113.setNumCols(4);
-        deviceField113.setOffsetNid(1993);
-        jPanel24.add(deviceField113);
-
-        deviceField114.setIdentifier("");
-        deviceField114.setLabelString("Phase: ");
-        deviceField114.setNumCols(4);
-        deviceField114.setOffsetNid(1999);
-        jPanel24.add(deviceField114);
-
-        deviceField115.setIdentifier("");
-        deviceField115.setLabelString("Start time: ");
-        deviceField115.setNumCols(4);
-        deviceField115.setOffsetNid(2005);
-        jPanel24.add(deviceField115);
-
-        deviceField116.setIdentifier("");
-        deviceField116.setLabelString("Rise time: ");
-        deviceField116.setNumCols(4);
-        deviceField116.setOffsetNid(2011);
-        jPanel24.add(deviceField116);
-
-        deviceField117.setIdentifier("");
-        deviceField117.setLabelString("End time: ");
-        deviceField117.setNumCols(4);
-        deviceField117.setOffsetNid(2017);
-        jPanel24.add(deviceField117);
-
-        deviceField118.setIdentifier("");
-        deviceField118.setLabelString("Fall time: ");
-        deviceField118.setNumCols(4);
-        deviceField118.setOffsetNid(2023);
-        jPanel24.add(deviceField118);
-
-        deviceField119.setIdentifier("");
-        deviceField119.setLabelString("Threshold: ");
-        deviceField119.setNumCols(4);
-        deviceField119.setOffsetNid(2029);
-        jPanel24.add(deviceField119);
-
-        deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice17.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice17.setConvert(true);
-        deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Relative Phase: ");
-        deviceChoice17.setOffsetNid(2035);
-        deviceChoice17.setUpdateIdentifier("");
-        jPanel24.add(deviceChoice17);
-
-        jPanel11.add(jPanel24);
-
-        jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
-
-        deviceField120.setIdentifier("");
-        deviceField120.setLabelString("M: ");
-        deviceField120.setNumCols(4);
-        deviceField120.setOffsetNid(2041);
-        jPanel25.add(deviceField120);
-
-        deviceField121.setIdentifier("");
-        deviceField121.setLabelString("N: ");
-        deviceField121.setNumCols(4);
-        deviceField121.setOffsetNid(2047);
-        jPanel25.add(deviceField121);
-
-        deviceField122.setIdentifier("");
-        deviceField122.setLabelString("Freq: ");
-        deviceField122.setNumCols(4);
-        deviceField122.setOffsetNid(2053);
-        jPanel25.add(deviceField122);
-
-        deviceField123.setIdentifier("");
-        deviceField123.setLabelString("Amp: ");
-        deviceField123.setNumCols(4);
-        deviceField123.setOffsetNid(2059);
-        jPanel25.add(deviceField123);
-
-        deviceField124.setIdentifier("");
-        deviceField124.setLabelString("Phase: ");
-        deviceField124.setNumCols(4);
-        deviceField124.setOffsetNid(2065);
-        jPanel25.add(deviceField124);
-
-        deviceField125.setIdentifier("");
-        deviceField125.setLabelString("Start time: ");
-        deviceField125.setNumCols(4);
-        deviceField125.setOffsetNid(2071);
-        jPanel25.add(deviceField125);
-
-        deviceField126.setIdentifier("");
-        deviceField126.setLabelString("Rise time: ");
-        deviceField126.setNumCols(4);
-        deviceField126.setOffsetNid(2077);
-        jPanel25.add(deviceField126);
-
-        deviceField127.setIdentifier("");
-        deviceField127.setLabelString("End time: ");
-        deviceField127.setNumCols(4);
-        deviceField127.setOffsetNid(2083);
-        jPanel25.add(deviceField127);
-
-        deviceField128.setIdentifier("");
-        deviceField128.setLabelString("Fall time: ");
-        deviceField128.setNumCols(4);
-        deviceField128.setOffsetNid(2089);
-        jPanel25.add(deviceField128);
-
-        deviceField129.setIdentifier("");
-        deviceField129.setLabelString("Threshold: ");
-        deviceField129.setNumCols(4);
-        deviceField129.setOffsetNid(2095);
-        jPanel25.add(deviceField129);
-
-        deviceChoice18.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice18.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice18.setConvert(true);
-        deviceChoice18.setIdentifier("");
-        deviceChoice18.setLabelString("Relative Phase: ");
-        deviceChoice18.setOffsetNid(2101);
-        deviceChoice18.setUpdateIdentifier("");
-        jPanel25.add(deviceChoice18);
-
-        jPanel11.add(jPanel25);
-
-        jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
-
-        deviceField130.setIdentifier("");
-        deviceField130.setLabelString("M: ");
-        deviceField130.setNumCols(4);
-        deviceField130.setOffsetNid(2107);
-        jPanel26.add(deviceField130);
-
-        deviceField131.setIdentifier("");
-        deviceField131.setLabelString("N: ");
-        deviceField131.setNumCols(4);
-        deviceField131.setOffsetNid(2113);
-        jPanel26.add(deviceField131);
-
-        deviceField132.setIdentifier("");
-        deviceField132.setLabelString("Freq: ");
-        deviceField132.setNumCols(4);
-        deviceField132.setOffsetNid(2119);
-        jPanel26.add(deviceField132);
-
-        deviceField133.setIdentifier("");
-        deviceField133.setLabelString("Amp: ");
-        deviceField133.setNumCols(4);
-        deviceField133.setOffsetNid(2125);
-        jPanel26.add(deviceField133);
-
-        deviceField134.setIdentifier("");
-        deviceField134.setLabelString("Phase: ");
-        deviceField134.setNumCols(4);
-        deviceField134.setOffsetNid(2131);
-        jPanel26.add(deviceField134);
-
-        deviceField135.setIdentifier("");
-        deviceField135.setLabelString("Start time: ");
-        deviceField135.setNumCols(4);
-        deviceField135.setOffsetNid(2137);
-        jPanel26.add(deviceField135);
-
-        deviceField136.setIdentifier("");
-        deviceField136.setLabelString("Rise time: ");
-        deviceField136.setNumCols(4);
-        deviceField136.setOffsetNid(2143);
-        jPanel26.add(deviceField136);
-
-        deviceField137.setIdentifier("");
-        deviceField137.setLabelString("End time: ");
-        deviceField137.setNumCols(4);
-        deviceField137.setOffsetNid(2149);
-        jPanel26.add(deviceField137);
-
-        deviceField138.setIdentifier("");
-        deviceField138.setLabelString("Fall time: ");
-        deviceField138.setNumCols(4);
-        deviceField138.setOffsetNid(2155);
-        jPanel26.add(deviceField138);
-
-        deviceField139.setIdentifier("");
-        deviceField139.setLabelString("Threshold: ");
-        deviceField139.setNumCols(4);
-        deviceField139.setOffsetNid(2161);
-        jPanel26.add(deviceField139);
-
-        deviceChoice19.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice19.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice19.setConvert(true);
-        deviceChoice19.setIdentifier("");
-        deviceChoice19.setLabelString("Relative Phase: ");
-        deviceChoice19.setOffsetNid(2167);
-        deviceChoice19.setUpdateIdentifier("");
-        jPanel26.add(deviceChoice19);
-
-        jPanel11.add(jPanel26);
-
-        jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
-
-        deviceField140.setIdentifier("");
-        deviceField140.setLabelString("M: ");
-        deviceField140.setNumCols(4);
-        deviceField140.setOffsetNid(2173);
-        jPanel27.add(deviceField140);
-
-        deviceField141.setIdentifier("");
-        deviceField141.setLabelString("N: ");
-        deviceField141.setNumCols(4);
-        deviceField141.setOffsetNid(2179);
-        jPanel27.add(deviceField141);
-
-        deviceField142.setIdentifier("");
-        deviceField142.setLabelString("Freq: ");
-        deviceField142.setNumCols(4);
-        deviceField142.setOffsetNid(2185);
-        jPanel27.add(deviceField142);
-
-        deviceField143.setIdentifier("");
-        deviceField143.setLabelString("Amp: ");
-        deviceField143.setNumCols(4);
-        deviceField143.setOffsetNid(2191);
-        jPanel27.add(deviceField143);
-
-        deviceField144.setIdentifier("");
-        deviceField144.setLabelString("Phase: ");
-        deviceField144.setNumCols(4);
-        deviceField144.setOffsetNid(2197);
-        jPanel27.add(deviceField144);
-
-        deviceField145.setIdentifier("");
-        deviceField145.setLabelString("Start time: ");
-        deviceField145.setNumCols(4);
-        deviceField145.setOffsetNid(2203);
-        jPanel27.add(deviceField145);
-
-        deviceField146.setIdentifier("");
-        deviceField146.setLabelString("Rise time: ");
-        deviceField146.setNumCols(4);
-        deviceField146.setOffsetNid(2209);
-        jPanel27.add(deviceField146);
-
-        deviceField147.setIdentifier("");
-        deviceField147.setLabelString("End time: ");
-        deviceField147.setNumCols(4);
-        deviceField147.setOffsetNid(2215);
-        jPanel27.add(deviceField147);
-
-        deviceField148.setIdentifier("");
-        deviceField148.setLabelString("Fall time: ");
-        deviceField148.setNumCols(4);
-        deviceField148.setOffsetNid(2221);
-        jPanel27.add(deviceField148);
-
-        deviceField149.setIdentifier("");
-        deviceField149.setLabelString("Threshold: ");
-        deviceField149.setNumCols(4);
-        deviceField149.setOffsetNid(2227);
-        jPanel27.add(deviceField149);
-
-        deviceChoice20.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice20.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice20.setConvert(true);
-        deviceChoice20.setIdentifier("");
-        deviceChoice20.setLabelString("Relative Phase: ");
-        deviceChoice20.setOffsetNid(2233);
-        deviceChoice20.setUpdateIdentifier("");
-        jPanel27.add(deviceChoice20);
-
-        jPanel11.add(jPanel27);
-
-        jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
-
-        deviceField150.setIdentifier("");
-        deviceField150.setLabelString("M: ");
-        deviceField150.setNumCols(4);
-        deviceField150.setOffsetNid(2239);
-        jPanel28.add(deviceField150);
-
-        deviceField151.setIdentifier("");
-        deviceField151.setLabelString("N: ");
-        deviceField151.setNumCols(4);
-        deviceField151.setOffsetNid(2245);
-        jPanel28.add(deviceField151);
-
-        deviceField152.setIdentifier("");
-        deviceField152.setLabelString("Freq: ");
-        deviceField152.setNumCols(4);
-        deviceField152.setOffsetNid(2251);
-        jPanel28.add(deviceField152);
-
-        deviceField153.setIdentifier("");
-        deviceField153.setLabelString("Amp: ");
-        deviceField153.setNumCols(4);
-        deviceField153.setOffsetNid(2257);
-        jPanel28.add(deviceField153);
-
-        deviceField154.setIdentifier("");
-        deviceField154.setLabelString("Phase: ");
-        deviceField154.setNumCols(4);
-        deviceField154.setOffsetNid(2263);
-        jPanel28.add(deviceField154);
-
-        deviceField155.setIdentifier("");
-        deviceField155.setLabelString("Start time: ");
-        deviceField155.setNumCols(4);
-        deviceField155.setOffsetNid(2269);
-        jPanel28.add(deviceField155);
-
-        deviceField156.setIdentifier("");
-        deviceField156.setLabelString("Rise time: ");
-        deviceField156.setNumCols(4);
-        deviceField156.setOffsetNid(2275);
-        jPanel28.add(deviceField156);
-
-        deviceField157.setIdentifier("");
-        deviceField157.setLabelString("End time: ");
-        deviceField157.setNumCols(4);
-        deviceField157.setOffsetNid(2281);
-        jPanel28.add(deviceField157);
-
-        deviceField158.setIdentifier("");
-        deviceField158.setLabelString("Fall time: ");
-        deviceField158.setNumCols(4);
-        deviceField158.setOffsetNid(2287);
-        jPanel28.add(deviceField158);
-
-        deviceField159.setIdentifier("");
-        deviceField159.setLabelString("Threshold: ");
-        deviceField159.setNumCols(4);
-        deviceField159.setOffsetNid(2293);
-        jPanel28.add(deviceField159);
-
-        deviceChoice21.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice21.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice21.setConvert(true);
-        deviceChoice21.setIdentifier("");
-        deviceChoice21.setLabelString("Relative Phase: ");
-        deviceChoice21.setOffsetNid(2299);
-        deviceChoice21.setUpdateIdentifier("");
-        jPanel28.add(deviceChoice21);
-
-        jPanel11.add(jPanel28);
-
-        jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
-
-        deviceField160.setIdentifier("");
-        deviceField160.setLabelString("M: ");
-        deviceField160.setNumCols(4);
-        deviceField160.setOffsetNid(2305);
-        jPanel29.add(deviceField160);
-
-        deviceField161.setIdentifier("");
-        deviceField161.setLabelString("N: ");
-        deviceField161.setNumCols(4);
-        deviceField161.setOffsetNid(2311);
-        jPanel29.add(deviceField161);
-
-        deviceField162.setIdentifier("");
-        deviceField162.setLabelString("Freq: ");
-        deviceField162.setNumCols(4);
-        deviceField162.setOffsetNid(2317);
-        jPanel29.add(deviceField162);
-
-        deviceField163.setIdentifier("");
-        deviceField163.setLabelString("Amp: ");
-        deviceField163.setNumCols(4);
-        deviceField163.setOffsetNid(2323);
-        jPanel29.add(deviceField163);
-
-        deviceField164.setIdentifier("");
-        deviceField164.setLabelString("Phase: ");
-        deviceField164.setNumCols(4);
-        deviceField164.setOffsetNid(2329);
-        jPanel29.add(deviceField164);
-
-        deviceField165.setIdentifier("");
-        deviceField165.setLabelString("Start time: ");
-        deviceField165.setNumCols(4);
-        deviceField165.setOffsetNid(2335);
-        jPanel29.add(deviceField165);
-
-        deviceField166.setIdentifier("");
-        deviceField166.setLabelString("Rise time: ");
-        deviceField166.setNumCols(4);
-        deviceField166.setOffsetNid(2341);
-        jPanel29.add(deviceField166);
-
-        deviceField167.setIdentifier("");
-        deviceField167.setLabelString("End time: ");
-        deviceField167.setNumCols(4);
-        deviceField167.setOffsetNid(2347);
-        jPanel29.add(deviceField167);
-
-        deviceField168.setIdentifier("");
-        deviceField168.setLabelString("Fall time: ");
-        deviceField168.setNumCols(4);
-        deviceField168.setOffsetNid(2353);
-        jPanel29.add(deviceField168);
-
-        deviceField169.setIdentifier("");
-        deviceField169.setLabelString("Threshold: ");
-        deviceField169.setNumCols(4);
-        deviceField169.setOffsetNid(2359);
-        jPanel29.add(deviceField169);
-
-        deviceChoice22.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice22.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice22.setConvert(true);
-        deviceChoice22.setIdentifier("");
-        deviceChoice22.setLabelString("Relative Phase: ");
-        deviceChoice22.setOffsetNid(2365);
-        deviceChoice22.setUpdateIdentifier("");
-        jPanel29.add(deviceChoice22);
-
-        jPanel11.add(jPanel29);
-
-        jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
-
-        deviceField173.setIdentifier("");
-        deviceField173.setLabelString("M: ");
-        deviceField173.setNumCols(4);
-        deviceField173.setOffsetNid(2371);
-        jPanel32.add(deviceField173);
-
-        deviceField174.setIdentifier("");
-        deviceField174.setLabelString("N: ");
-        deviceField174.setNumCols(4);
-        deviceField174.setOffsetNid(2377);
-        jPanel32.add(deviceField174);
-
-        deviceField175.setIdentifier("");
-        deviceField175.setLabelString("Freq: ");
-        deviceField175.setNumCols(4);
-        deviceField175.setOffsetNid(2383);
-        jPanel32.add(deviceField175);
-
-        deviceField176.setIdentifier("");
-        deviceField176.setLabelString("Amp: ");
-        deviceField176.setNumCols(4);
-        deviceField176.setOffsetNid(2389);
-        jPanel32.add(deviceField176);
-
-        deviceField177.setIdentifier("");
-        deviceField177.setLabelString("Phase: ");
-        deviceField177.setNumCols(4);
-        deviceField177.setOffsetNid(2395);
-        jPanel32.add(deviceField177);
-
-        deviceField178.setIdentifier("");
-        deviceField178.setLabelString("Start time: ");
-        deviceField178.setNumCols(4);
-        deviceField178.setOffsetNid(2401);
-        jPanel32.add(deviceField178);
-
-        deviceField179.setIdentifier("");
-        deviceField179.setLabelString("Rise time: ");
-        deviceField179.setNumCols(4);
-        deviceField179.setOffsetNid(2407);
-        jPanel32.add(deviceField179);
-
-        deviceField180.setIdentifier("");
-        deviceField180.setLabelString("End time: ");
-        deviceField180.setNumCols(4);
-        deviceField180.setOffsetNid(2413);
-        jPanel32.add(deviceField180);
-
-        deviceField181.setIdentifier("");
-        deviceField181.setLabelString("Fall time: ");
-        deviceField181.setNumCols(4);
-        deviceField181.setOffsetNid(2419);
-        jPanel32.add(deviceField181);
-
-        deviceField182.setIdentifier("");
-        deviceField182.setLabelString("Threshold: ");
-        deviceField182.setNumCols(4);
-        deviceField182.setOffsetNid(2425);
-        jPanel32.add(deviceField182);
-
-        deviceChoice24.setChoiceIntValues(new int[] {0, 1, 2});
-        deviceChoice24.setChoiceItems(new String[] {"NO", "YES", "0,1"});
-        deviceChoice24.setConvert(true);
-        deviceChoice24.setIdentifier("");
-        deviceChoice24.setLabelString("Relative Phase: ");
-        deviceChoice24.setOffsetNid(2431);
-        deviceChoice24.setUpdateIdentifier("");
-        jPanel32.add(deviceChoice24);
-
-        jPanel11.add(jPanel32);
-
-        jScrollPane3.setViewportView(jPanel11);
-
-        jTabbedPane1.addTab("Rot. Pert. FF", jScrollPane3);
-
-        jPanel12.setLayout(new java.awt.BorderLayout());
-
-        jPanel33.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice25.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice25.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice25.setConvert(true);
-        deviceChoice25.setIdentifier("");
-        deviceChoice25.setLabelString("Hor. Field Control: ");
-        deviceChoice25.setOffsetNid(2437);
-        deviceChoice25.setUpdateIdentifier("");
-        jPanel34.add(deviceChoice25);
-
-        deviceField183.setIdentifier("");
-        deviceField183.setLabelString("Start Time: ");
-        deviceField183.setNumCols(4);
-        deviceField183.setOffsetNid(2467);
-        jPanel34.add(deviceField183);
-
-        deviceField184.setIdentifier("");
-        deviceField184.setLabelString("End Time: ");
-        deviceField184.setNumCols(4);
-        deviceField184.setOffsetNid(2473);
-        jPanel34.add(deviceField184);
-
-        deviceField185.setIdentifier("");
-        deviceField185.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField185.setNumCols(4);
-        deviceField185.setOffsetNid(2479);
-        jPanel34.add(deviceField185);
-
-        deviceField40.setIdentifier("");
-        deviceField40.setLabelString("Reference Cutoff Freq");
-        deviceField40.setNumCols(4);
-        deviceField40.setOffsetNid(3229);
-        jPanel34.add(deviceField40);
-
-        jPanel33.add(jPanel34);
-
-        deviceTable6.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable6.setDisplayRowNumber(true);
-        deviceTable6.setIdentifier("");
-        deviceTable6.setLabelString("Kp Amp.");
-        deviceTable6.setNumCols(48);
-        deviceTable6.setNumRows(4);
-        deviceTable6.setOffsetNid(2443);
-        deviceTable6.setRefMode(1);
-        deviceTable6.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable6);
-
-        deviceTable7.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable7.setDisplayRowNumber(true);
-        deviceTable7.setIdentifier("");
-        deviceTable7.setLabelString("Kp Phase");
-        deviceTable7.setNumCols(48);
-        deviceTable7.setNumRows(4);
-        deviceTable7.setOffsetNid(2449);
-        deviceTable7.setRefMode(2);
-        deviceTable7.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable7);
-
-        deviceTable8.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable8.setDisplayRowNumber(true);
-        deviceTable8.setIdentifier("");
-        deviceTable8.setLabelString("Ki");
-        deviceTable8.setNumCols(48);
-        deviceTable8.setNumRows(4);
-        deviceTable8.setOffsetNid(2455);
-        deviceTable8.setRefMode(1);
-        deviceTable8.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable8);
-
-        deviceTable9.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable9.setDisplayRowNumber(true);
-        deviceTable9.setIdentifier("");
-        deviceTable9.setLabelString("Kd");
-        deviceTable9.setNumCols(48);
-        deviceTable9.setNumRows(4);
-        deviceTable9.setOffsetNid(2461);
-        deviceTable9.setRefMode(1);
-        deviceTable9.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel33.add(deviceTable9);
-
-        jTabbedPane2.addTab("1", jPanel33);
-
-        jPanel39.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice28.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice28.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice28.setConvert(true);
-        deviceChoice28.setIdentifier("");
-        deviceChoice28.setLabelString("Hor. Field Control: ");
-        deviceChoice28.setOffsetNid(2485);
-        deviceChoice28.setUpdateIdentifier("");
-        jPanel40.add(deviceChoice28);
-
-        deviceField192.setIdentifier("");
-        deviceField192.setLabelString("Start Time: ");
-        deviceField192.setNumCols(4);
-        deviceField192.setOffsetNid(2515);
-        jPanel40.add(deviceField192);
-
-        deviceField193.setIdentifier("");
-        deviceField193.setLabelString("End Time: ");
-        deviceField193.setNumCols(4);
-        deviceField193.setOffsetNid(2521);
-        jPanel40.add(deviceField193);
-
-        deviceField194.setIdentifier("");
-        deviceField194.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField194.setNumCols(4);
-        deviceField194.setOffsetNid(2527);
-        jPanel40.add(deviceField194);
-
-        deviceField41.setIdentifier("");
-        deviceField41.setLabelString("Reference Cutoff Freq");
-        deviceField41.setNumCols(4);
-        deviceField41.setOffsetNid(3235);
-        jPanel40.add(deviceField41);
-
-        jPanel39.add(jPanel40);
-
-        deviceTable18.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable18.setDisplayRowNumber(true);
-        deviceTable18.setIdentifier("");
-        deviceTable18.setLabelString("Kp Amp.");
-        deviceTable18.setNumCols(48);
-        deviceTable18.setNumRows(4);
-        deviceTable18.setOffsetNid(2491);
-        deviceTable18.setRefMode(1);
-        deviceTable18.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable18);
-
-        deviceTable19.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable19.setDisplayRowNumber(true);
-        deviceTable19.setIdentifier("");
-        deviceTable19.setLabelString("Kp Phase");
-        deviceTable19.setNumCols(48);
-        deviceTable19.setNumRows(4);
-        deviceTable19.setOffsetNid(2497);
-        deviceTable19.setRefMode(2);
-        deviceTable19.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable19);
-
-        deviceTable20.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable20.setDisplayRowNumber(true);
-        deviceTable20.setIdentifier("");
-        deviceTable20.setLabelString("Ki");
-        deviceTable20.setNumCols(48);
-        deviceTable20.setNumRows(4);
-        deviceTable20.setOffsetNid(2503);
-        deviceTable20.setRefMode(1);
-        deviceTable20.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable20);
-
-        deviceTable21.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable21.setDisplayRowNumber(true);
-        deviceTable21.setIdentifier("");
-        deviceTable21.setLabelString("Kd");
-        deviceTable21.setNumCols(48);
-        deviceTable21.setNumRows(4);
-        deviceTable21.setOffsetNid(2509);
-        deviceTable21.setRefMode(1);
-        deviceTable21.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel39.add(deviceTable21);
-
-        jTabbedPane2.addTab("2", jPanel39);
-
-        jPanel30.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice23.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice23.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice23.setConvert(true);
-        deviceChoice23.setIdentifier("");
-        deviceChoice23.setLabelString("Hor. Field Control: ");
-        deviceChoice23.setOffsetNid(2533);
-        deviceChoice23.setUpdateIdentifier("");
-        jPanel31.add(deviceChoice23);
-
-        deviceField170.setIdentifier("");
-        deviceField170.setLabelString("Start Time: ");
-        deviceField170.setNumCols(4);
-        deviceField170.setOffsetNid(2563);
-        jPanel31.add(deviceField170);
-
-        deviceField171.setIdentifier("");
-        deviceField171.setLabelString("End Time: ");
-        deviceField171.setNumCols(4);
-        deviceField171.setOffsetNid(2569);
-        jPanel31.add(deviceField171);
-
-        deviceField172.setIdentifier("");
-        deviceField172.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField172.setNumCols(4);
-        deviceField172.setOffsetNid(2575);
-        jPanel31.add(deviceField172);
-
-        deviceField42.setIdentifier("");
-        deviceField42.setLabelString("Reference Cutoff Freq");
-        deviceField42.setNumCols(4);
-        deviceField42.setOffsetNid(3241);
-        jPanel31.add(deviceField42);
-
-        jPanel30.add(jPanel31);
-
-        deviceTable2.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable2.setDisplayRowNumber(true);
-        deviceTable2.setIdentifier("");
-        deviceTable2.setLabelString("Kp Amp.");
-        deviceTable2.setNumCols(48);
-        deviceTable2.setNumRows(4);
-        deviceTable2.setOffsetNid(2539);
-        deviceTable2.setRefMode(1);
-        deviceTable2.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable2);
-
-        deviceTable3.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable3.setDisplayRowNumber(true);
-        deviceTable3.setIdentifier("");
-        deviceTable3.setLabelString("Kp Phase");
-        deviceTable3.setNumCols(48);
-        deviceTable3.setNumRows(4);
-        deviceTable3.setOffsetNid(2545);
-        deviceTable3.setRefMode(2);
-        deviceTable3.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable3);
-
-        deviceTable4.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable4.setDisplayRowNumber(true);
-        deviceTable4.setIdentifier("");
-        deviceTable4.setLabelString("Ki");
-        deviceTable4.setNumCols(48);
-        deviceTable4.setNumRows(4);
-        deviceTable4.setOffsetNid(2551);
-        deviceTable4.setRefMode(1);
-        deviceTable4.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable4);
-
-        deviceTable5.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable5.setDisplayRowNumber(true);
-        deviceTable5.setIdentifier("");
-        deviceTable5.setLabelString("Kd");
-        deviceTable5.setNumCols(48);
-        deviceTable5.setNumRows(4);
-        deviceTable5.setOffsetNid(2557);
-        deviceTable5.setRefMode(1);
-        deviceTable5.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel30.add(deviceTable5);
-
-        jTabbedPane2.addTab("3", jPanel30);
-
-        jPanel35.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice26.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice26.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice26.setConvert(true);
-        deviceChoice26.setIdentifier("");
-        deviceChoice26.setLabelString("Hor. Field Control: ");
-        deviceChoice26.setOffsetNid(2581);
-        deviceChoice26.setUpdateIdentifier("");
-        jPanel36.add(deviceChoice26);
-
-        deviceField186.setIdentifier("");
-        deviceField186.setLabelString("Start Time: ");
-        deviceField186.setNumCols(4);
-        deviceField186.setOffsetNid(2611);
-        jPanel36.add(deviceField186);
-
-        deviceField187.setIdentifier("");
-        deviceField187.setLabelString("End Time: ");
-        deviceField187.setNumCols(4);
-        deviceField187.setOffsetNid(2617);
-        jPanel36.add(deviceField187);
-
-        deviceField188.setIdentifier("");
-        deviceField188.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField188.setNumCols(4);
-        deviceField188.setOffsetNid(2623);
-        jPanel36.add(deviceField188);
-
-        deviceField43.setIdentifier("");
-        deviceField43.setLabelString("Reference Cutoff Freq");
-        deviceField43.setNumCols(4);
-        deviceField43.setOffsetNid(3247);
-        jPanel36.add(deviceField43);
-
-        jPanel35.add(jPanel36);
-
-        deviceTable10.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable10.setDisplayRowNumber(true);
-        deviceTable10.setIdentifier("");
-        deviceTable10.setLabelString("Kp Amp.");
-        deviceTable10.setNumCols(48);
-        deviceTable10.setNumRows(4);
-        deviceTable10.setOffsetNid(2587);
-        deviceTable10.setRefMode(1);
-        deviceTable10.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable10);
-
-        deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable11.setDisplayRowNumber(true);
-        deviceTable11.setIdentifier("");
-        deviceTable11.setLabelString("Kp Phase");
-        deviceTable11.setNumCols(48);
-        deviceTable11.setNumRows(4);
-        deviceTable11.setOffsetNid(2593);
-        deviceTable11.setRefMode(2);
-        deviceTable11.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable11);
-
-        deviceTable12.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable12.setDisplayRowNumber(true);
-        deviceTable12.setIdentifier("");
-        deviceTable12.setLabelString("Ki");
-        deviceTable12.setNumCols(48);
-        deviceTable12.setNumRows(4);
-        deviceTable12.setOffsetNid(2599);
-        deviceTable12.setRefMode(1);
-        deviceTable12.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable12);
-
-        deviceTable13.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable13.setDisplayRowNumber(true);
-        deviceTable13.setIdentifier("");
-        deviceTable13.setLabelString("Kd");
-        deviceTable13.setNumCols(48);
-        deviceTable13.setNumRows(4);
-        deviceTable13.setOffsetNid(2605);
-        deviceTable13.setRefMode(1);
-        deviceTable13.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel35.add(deviceTable13);
-
-        jTabbedPane2.addTab("4", jPanel35);
-
-        jPanel37.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice27.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice27.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice27.setConvert(true);
-        deviceChoice27.setIdentifier("");
-        deviceChoice27.setLabelString("Hor. Field Control: ");
-        deviceChoice27.setOffsetNid(2629);
-        deviceChoice27.setUpdateIdentifier("");
-        jPanel38.add(deviceChoice27);
-
-        deviceField189.setIdentifier("");
-        deviceField189.setLabelString("Start Time: ");
-        deviceField189.setNumCols(4);
-        deviceField189.setOffsetNid(2659);
-        jPanel38.add(deviceField189);
-
-        deviceField190.setIdentifier("");
-        deviceField190.setLabelString("End Time: ");
-        deviceField190.setNumCols(4);
-        deviceField190.setOffsetNid(2665);
-        jPanel38.add(deviceField190);
-
-        deviceField191.setIdentifier("");
-        deviceField191.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField191.setNumCols(4);
-        deviceField191.setOffsetNid(2671);
-        jPanel38.add(deviceField191);
-
-        deviceField44.setIdentifier("");
-        deviceField44.setLabelString("Reference Cutoff Freq");
-        deviceField44.setNumCols(4);
-        deviceField44.setOffsetNid(3253);
-        jPanel38.add(deviceField44);
-
-        jPanel37.add(jPanel38);
-
-        deviceTable14.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable14.setDisplayRowNumber(true);
-        deviceTable14.setIdentifier("");
-        deviceTable14.setLabelString("Kp Amp.");
-        deviceTable14.setNumCols(48);
-        deviceTable14.setNumRows(4);
-        deviceTable14.setOffsetNid(2635);
-        deviceTable14.setRefMode(1);
-        deviceTable14.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable14);
-
-        deviceTable15.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable15.setDisplayRowNumber(true);
-        deviceTable15.setIdentifier("");
-        deviceTable15.setLabelString("Kp Phase");
-        deviceTable15.setNumCols(48);
-        deviceTable15.setNumRows(4);
-        deviceTable15.setOffsetNid(2641);
-        deviceTable15.setRefMode(2);
-        deviceTable15.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable15);
-
-        deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable16.setDisplayRowNumber(true);
-        deviceTable16.setIdentifier("");
-        deviceTable16.setLabelString("Ki");
-        deviceTable16.setNumCols(48);
-        deviceTable16.setNumRows(4);
-        deviceTable16.setOffsetNid(2647);
-        deviceTable16.setRefMode(1);
-        deviceTable16.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable16);
-
-        deviceTable17.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable17.setDisplayRowNumber(true);
-        deviceTable17.setIdentifier("");
-        deviceTable17.setLabelString("Kd");
-        deviceTable17.setNumCols(48);
-        deviceTable17.setNumRows(4);
-        deviceTable17.setOffsetNid(2653);
-        deviceTable17.setRefMode(1);
-        deviceTable17.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel37.add(deviceTable17);
-
-        jTabbedPane2.addTab("5", jPanel37);
-
-        jPanel41.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice29.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice29.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice29.setConvert(true);
-        deviceChoice29.setIdentifier("");
-        deviceChoice29.setLabelString("Hor. Field Control: ");
-        deviceChoice29.setOffsetNid(2677);
-        deviceChoice29.setUpdateIdentifier("");
-        jPanel42.add(deviceChoice29);
-
-        deviceField195.setIdentifier("");
-        deviceField195.setLabelString("Start Time: ");
-        deviceField195.setNumCols(4);
-        deviceField195.setOffsetNid(2707);
-        jPanel42.add(deviceField195);
-
-        deviceField196.setIdentifier("");
-        deviceField196.setLabelString("End Time: ");
-        deviceField196.setNumCols(4);
-        deviceField196.setOffsetNid(2713);
-        jPanel42.add(deviceField196);
-
-        deviceField197.setIdentifier("");
-        deviceField197.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField197.setNumCols(4);
-        deviceField197.setOffsetNid(2719);
-        jPanel42.add(deviceField197);
-
-        deviceField45.setIdentifier("");
-        deviceField45.setLabelString("Reference Cutoff Freq");
-        deviceField45.setNumCols(4);
-        deviceField45.setOffsetNid(3259);
-        jPanel42.add(deviceField45);
-
-        jPanel41.add(jPanel42);
-
-        deviceTable22.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable22.setDisplayRowNumber(true);
-        deviceTable22.setIdentifier("");
-        deviceTable22.setLabelString("Kp Amp.");
-        deviceTable22.setNumCols(48);
-        deviceTable22.setNumRows(4);
-        deviceTable22.setOffsetNid(2683);
-        deviceTable22.setRefMode(1);
-        deviceTable22.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable22);
-
-        deviceTable23.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable23.setDisplayRowNumber(true);
-        deviceTable23.setIdentifier("");
-        deviceTable23.setLabelString("Kp Phase");
-        deviceTable23.setNumCols(48);
-        deviceTable23.setNumRows(4);
-        deviceTable23.setOffsetNid(2689);
-        deviceTable23.setRefMode(2);
-        deviceTable23.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable23);
-
-        deviceTable24.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable24.setDisplayRowNumber(true);
-        deviceTable24.setIdentifier("");
-        deviceTable24.setLabelString("Ki");
-        deviceTable24.setNumCols(48);
-        deviceTable24.setNumRows(4);
-        deviceTable24.setOffsetNid(2695);
-        deviceTable24.setRefMode(1);
-        deviceTable24.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable24);
-
-        deviceTable25.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable25.setDisplayRowNumber(true);
-        deviceTable25.setIdentifier("");
-        deviceTable25.setLabelString("Kd");
-        deviceTable25.setNumCols(48);
-        deviceTable25.setNumRows(4);
-        deviceTable25.setOffsetNid(2701);
-        deviceTable25.setRefMode(1);
-        deviceTable25.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel41.add(deviceTable25);
-
-        jTabbedPane2.addTab("6", jPanel41);
-
-        jPanel43.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice30.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice30.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice30.setConvert(true);
-        deviceChoice30.setIdentifier("");
-        deviceChoice30.setLabelString("Hor. Field Control: ");
-        deviceChoice30.setOffsetNid(2725);
-        deviceChoice30.setUpdateIdentifier("");
-        jPanel44.add(deviceChoice30);
-
-        deviceField198.setIdentifier("");
-        deviceField198.setLabelString("Start Time: ");
-        deviceField198.setNumCols(4);
-        deviceField198.setOffsetNid(2755);
-        jPanel44.add(deviceField198);
-
-        deviceField199.setIdentifier("");
-        deviceField199.setLabelString("End Time: ");
-        deviceField199.setNumCols(4);
-        deviceField199.setOffsetNid(2761);
-        jPanel44.add(deviceField199);
-
-        deviceField200.setIdentifier("");
-        deviceField200.setLabelString("Reference Cutoff Freq.: ");
-        deviceField200.setNumCols(4);
-        deviceField200.setOffsetNid(2767);
-        jPanel44.add(deviceField200);
-
-        deviceField46.setIdentifier("");
-        deviceField46.setLabelString("Reference Cutoff Freq");
-        deviceField46.setNumCols(4);
-        deviceField46.setOffsetNid(3265);
-        jPanel44.add(deviceField46);
-
-        jPanel43.add(jPanel44);
-
-        deviceTable26.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable26.setDisplayRowNumber(true);
-        deviceTable26.setIdentifier("");
-        deviceTable26.setLabelString("Kp Amp.");
-        deviceTable26.setNumCols(48);
-        deviceTable26.setNumRows(4);
-        deviceTable26.setOffsetNid(2731);
-        deviceTable26.setRefMode(1);
-        deviceTable26.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable26);
-
-        deviceTable27.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable27.setDisplayRowNumber(true);
-        deviceTable27.setIdentifier("");
-        deviceTable27.setLabelString("Kp Phase");
-        deviceTable27.setNumCols(48);
-        deviceTable27.setNumRows(4);
-        deviceTable27.setOffsetNid(2737);
-        deviceTable27.setRefMode(2);
-        deviceTable27.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable27);
-
-        deviceTable28.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable28.setDisplayRowNumber(true);
-        deviceTable28.setIdentifier("");
-        deviceTable28.setLabelString("Ki");
-        deviceTable28.setNumCols(48);
-        deviceTable28.setNumRows(4);
-        deviceTable28.setOffsetNid(2743);
-        deviceTable28.setRefMode(1);
-        deviceTable28.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable28);
-
-        deviceTable29.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable29.setDisplayRowNumber(true);
-        deviceTable29.setIdentifier("");
-        deviceTable29.setLabelString("Kd");
-        deviceTable29.setNumCols(48);
-        deviceTable29.setNumRows(4);
-        deviceTable29.setOffsetNid(2749);
-        deviceTable29.setRefMode(1);
-        deviceTable29.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel43.add(deviceTable29);
-
-        jTabbedPane2.addTab("7", jPanel43);
-
-        jPanel45.setLayout(new java.awt.GridLayout(5, 1));
-
-        deviceChoice31.setChoiceIntValues(new int[] {0, 1});
-        deviceChoice31.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
-        deviceChoice31.setConvert(true);
-        deviceChoice31.setIdentifier("");
-        deviceChoice31.setLabelString("Hor. Field Control: ");
-        deviceChoice31.setOffsetNid(2773);
-        deviceChoice31.setUpdateIdentifier("");
-        jPanel46.add(deviceChoice31);
-
-        deviceField201.setIdentifier("");
-        deviceField201.setLabelString("Start Time: ");
-        deviceField201.setNumCols(4);
-        deviceField201.setOffsetNid(2803);
-        jPanel46.add(deviceField201);
-
-        deviceField202.setIdentifier("");
-        deviceField202.setLabelString("End Time: ");
-        deviceField202.setNumCols(4);
-        deviceField202.setOffsetNid(2809);
-        jPanel46.add(deviceField202);
-
-        deviceField203.setIdentifier("");
-        deviceField203.setLabelString("Derivative Cutoff Freq.: ");
-        deviceField203.setNumCols(4);
-        deviceField203.setOffsetNid(2815);
-        jPanel46.add(deviceField203);
-
-        deviceField47.setIdentifier("");
-        deviceField47.setLabelString("Reference Cutoff Freq");
-        deviceField47.setNumCols(4);
-        deviceField47.setOffsetNid(3271);
-        jPanel46.add(deviceField47);
-
-        jPanel45.add(jPanel46);
-
-        deviceTable30.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable30.setDisplayRowNumber(true);
-        deviceTable30.setIdentifier("");
-        deviceTable30.setLabelString("Kp Amp.");
-        deviceTable30.setNumCols(48);
-        deviceTable30.setNumRows(4);
-        deviceTable30.setOffsetNid(2779);
-        deviceTable30.setRefMode(1);
-        deviceTable30.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable30);
-
-        deviceTable31.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable31.setDisplayRowNumber(true);
-        deviceTable31.setIdentifier("");
-        deviceTable31.setLabelString("Kp Phase");
-        deviceTable31.setNumCols(48);
-        deviceTable31.setNumRows(4);
-        deviceTable31.setOffsetNid(2785);
-        deviceTable31.setRefMode(2);
-        deviceTable31.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable31);
-
-        deviceTable32.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable32.setDisplayRowNumber(true);
-        deviceTable32.setIdentifier("");
-        deviceTable32.setLabelString("Ki");
-        deviceTable32.setNumCols(48);
-        deviceTable32.setNumRows(4);
-        deviceTable32.setOffsetNid(2791);
-        deviceTable32.setRefMode(1);
-        deviceTable32.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable32);
-
-        deviceTable33.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
-        deviceTable33.setDisplayRowNumber(true);
-        deviceTable33.setIdentifier("");
-        deviceTable33.setLabelString("Kd");
-        deviceTable33.setNumCols(48);
-        deviceTable33.setNumRows(4);
-        deviceTable33.setOffsetNid(2797);
-        deviceTable33.setRefMode(1);
-        deviceTable33.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel45.add(deviceTable33);
-
-        jTabbedPane2.addTab("8", jPanel45);
-
-        jPanel12.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("ModeControl", jPanel12);
-
-        jPanel7.setLayout(new java.awt.BorderLayout());
-
-        jPanel17.setLayout(new java.awt.GridLayout(3, 1));
-
-        deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24"});
-        deviceTable34.setIdentifier("");
-        deviceTable34.setLabelString("Reconfigured Modes: ");
-        deviceTable34.setNumCols(48);
-        deviceTable34.setNumRows(4);
-        deviceTable34.setOffsetNid(3223);
-        deviceTable34.setRefMode(1);
-        deviceTable34.setRowNames(new String[] {"0", "1", "2", "-1"});
-        jPanel47.add(deviceTable34);
-
-        jPanel17.add(jPanel47);
-
-        deviceTable35.setBinary(true);
-        deviceTable35.setIdentifier("");
-        deviceTable35.setLabelString("Coil Enabled: ");
-        deviceTable35.setNumCols(48);
-        deviceTable35.setNumRows(4);
-        deviceTable35.setOffsetNid(3211);
-        jPanel48.add(deviceTable35);
-
-        jPanel17.add(jPanel48);
-
-        deviceTable36.setIdentifier("");
-        deviceTable36.setLabelString("Supercoild indexes: ");
-        deviceTable36.setNumCols(48);
-        deviceTable36.setNumRows(4);
-        deviceTable36.setOffsetNid(3217);
-        jPanel49.add(deviceTable36);
-
-        jPanel17.add(jPanel49);
-
-        jPanel7.add(jPanel17, java.awt.BorderLayout.CENTER);
-
-        jTabbedPane1.addTab("Reconfiguration", jPanel7);
-
-        jPanel1.add(jTabbedPane1, java.awt.BorderLayout.PAGE_START);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
+	deviceButtons1 = new DeviceButtons();
+	jPanel2 = new javax.swing.JPanel();
+	jPanel5 = new javax.swing.JPanel();
+	deviceField1 = new DeviceField();
+	jPanel6 = new javax.swing.JPanel();
+	deviceField2 = new DeviceField();
+	deviceField3 = new DeviceField();
+	jPanel8 = new javax.swing.JPanel();
+	deviceChoice1 = new DeviceChoice();
+	deviceField6 = new DeviceField();
+	jPanel9 = new javax.swing.JPanel();
+	deviceField7 = new DeviceField();
+	deviceField8 = new DeviceField();
+	jPanel1 = new javax.swing.JPanel();
+	jTabbedPane1 = new javax.swing.JTabbedPane();
+	jPanel3 = new javax.swing.JPanel();
+	deviceChoice2 = new DeviceChoice();
+	deviceChoice3 = new DeviceChoice();
+	deviceChoice4 = new DeviceChoice();
+	deviceChoice5 = new DeviceChoice();
+	deviceChoice6 = new DeviceChoice();
+	deviceField9 = new DeviceField();
+	deviceField4 = new DeviceField();
+	deviceField5 = new DeviceField();
+	deviceField48 = new DeviceField();
+	deviceField49 = new DeviceField();
+	jScrollPane1 = new javax.swing.JScrollPane();
+	jPanel4 = new javax.swing.JPanel();
+	deviceTable1 = new DeviceTable();
+	jScrollPane2 = new javax.swing.JScrollPane();
+	jPanel14 = new javax.swing.JPanel();
+	jPanel10 = new javax.swing.JPanel();
+	deviceField10 = new DeviceField();
+	deviceField11 = new DeviceField();
+	deviceField12 = new DeviceField();
+	deviceField13 = new DeviceField();
+	deviceField14 = new DeviceField();
+	deviceField15 = new DeviceField();
+	deviceField16 = new DeviceField();
+	deviceField17 = new DeviceField();
+	deviceField18 = new DeviceField();
+	deviceField19 = new DeviceField();
+	deviceChoice7 = new DeviceChoice();
+	jPanel15 = new javax.swing.JPanel();
+	deviceField20 = new DeviceField();
+	deviceField21 = new DeviceField();
+	deviceField22 = new DeviceField();
+	deviceField23 = new DeviceField();
+	deviceField24 = new DeviceField();
+	deviceField25 = new DeviceField();
+	deviceField26 = new DeviceField();
+	deviceField27 = new DeviceField();
+	deviceField28 = new DeviceField();
+	deviceField29 = new DeviceField();
+	deviceChoice8 = new DeviceChoice();
+	jPanel16 = new javax.swing.JPanel();
+	deviceField30 = new DeviceField();
+	deviceField31 = new DeviceField();
+	deviceField32 = new DeviceField();
+	deviceField33 = new DeviceField();
+	deviceField34 = new DeviceField();
+	deviceField35 = new DeviceField();
+	deviceField36 = new DeviceField();
+	deviceField37 = new DeviceField();
+	deviceField38 = new DeviceField();
+	deviceField39 = new DeviceField();
+	deviceChoice9 = new DeviceChoice();
+	jPanel18 = new javax.swing.JPanel();
+	deviceField50 = new DeviceField();
+	deviceField51 = new DeviceField();
+	deviceField52 = new DeviceField();
+	deviceField53 = new DeviceField();
+	deviceField54 = new DeviceField();
+	deviceField55 = new DeviceField();
+	deviceField56 = new DeviceField();
+	deviceField57 = new DeviceField();
+	deviceField58 = new DeviceField();
+	deviceField59 = new DeviceField();
+	deviceChoice11 = new DeviceChoice();
+	jPanel19 = new javax.swing.JPanel();
+	deviceField60 = new DeviceField();
+	deviceField61 = new DeviceField();
+	deviceField62 = new DeviceField();
+	deviceField63 = new DeviceField();
+	deviceField64 = new DeviceField();
+	deviceField65 = new DeviceField();
+	deviceField66 = new DeviceField();
+	deviceField67 = new DeviceField();
+	deviceField68 = new DeviceField();
+	deviceField69 = new DeviceField();
+	deviceChoice12 = new DeviceChoice();
+	jPanel20 = new javax.swing.JPanel();
+	deviceField70 = new DeviceField();
+	deviceField71 = new DeviceField();
+	deviceField72 = new DeviceField();
+	deviceField73 = new DeviceField();
+	deviceField74 = new DeviceField();
+	deviceField75 = new DeviceField();
+	deviceField76 = new DeviceField();
+	deviceField77 = new DeviceField();
+	deviceField78 = new DeviceField();
+	deviceField79 = new DeviceField();
+	deviceChoice13 = new DeviceChoice();
+	jPanel21 = new javax.swing.JPanel();
+	deviceField80 = new DeviceField();
+	deviceField81 = new DeviceField();
+	deviceField82 = new DeviceField();
+	deviceField83 = new DeviceField();
+	deviceField84 = new DeviceField();
+	deviceField85 = new DeviceField();
+	deviceField86 = new DeviceField();
+	deviceField87 = new DeviceField();
+	deviceField88 = new DeviceField();
+	deviceField89 = new DeviceField();
+	deviceChoice14 = new DeviceChoice();
+	jPanel22 = new javax.swing.JPanel();
+	deviceField90 = new DeviceField();
+	deviceField91 = new DeviceField();
+	deviceField92 = new DeviceField();
+	deviceField93 = new DeviceField();
+	deviceField94 = new DeviceField();
+	deviceField95 = new DeviceField();
+	deviceField96 = new DeviceField();
+	deviceField97 = new DeviceField();
+	deviceField98 = new DeviceField();
+	deviceField99 = new DeviceField();
+	deviceChoice15 = new DeviceChoice();
+	jScrollPane3 = new javax.swing.JScrollPane();
+	jPanel11 = new javax.swing.JPanel();
+	jPanel23 = new javax.swing.JPanel();
+	deviceField100 = new DeviceField();
+	deviceField101 = new DeviceField();
+	deviceField102 = new DeviceField();
+	deviceField103 = new DeviceField();
+	deviceField104 = new DeviceField();
+	deviceField105 = new DeviceField();
+	deviceField106 = new DeviceField();
+	deviceField107 = new DeviceField();
+	deviceField108 = new DeviceField();
+	deviceField109 = new DeviceField();
+	deviceChoice16 = new DeviceChoice();
+	jPanel24 = new javax.swing.JPanel();
+	deviceField110 = new DeviceField();
+	deviceField111 = new DeviceField();
+	deviceField112 = new DeviceField();
+	deviceField113 = new DeviceField();
+	deviceField114 = new DeviceField();
+	deviceField115 = new DeviceField();
+	deviceField116 = new DeviceField();
+	deviceField117 = new DeviceField();
+	deviceField118 = new DeviceField();
+	deviceField119 = new DeviceField();
+	deviceChoice17 = new DeviceChoice();
+	jPanel25 = new javax.swing.JPanel();
+	deviceField120 = new DeviceField();
+	deviceField121 = new DeviceField();
+	deviceField122 = new DeviceField();
+	deviceField123 = new DeviceField();
+	deviceField124 = new DeviceField();
+	deviceField125 = new DeviceField();
+	deviceField126 = new DeviceField();
+	deviceField127 = new DeviceField();
+	deviceField128 = new DeviceField();
+	deviceField129 = new DeviceField();
+	deviceChoice18 = new DeviceChoice();
+	jPanel26 = new javax.swing.JPanel();
+	deviceField130 = new DeviceField();
+	deviceField131 = new DeviceField();
+	deviceField132 = new DeviceField();
+	deviceField133 = new DeviceField();
+	deviceField134 = new DeviceField();
+	deviceField135 = new DeviceField();
+	deviceField136 = new DeviceField();
+	deviceField137 = new DeviceField();
+	deviceField138 = new DeviceField();
+	deviceField139 = new DeviceField();
+	deviceChoice19 = new DeviceChoice();
+	jPanel27 = new javax.swing.JPanel();
+	deviceField140 = new DeviceField();
+	deviceField141 = new DeviceField();
+	deviceField142 = new DeviceField();
+	deviceField143 = new DeviceField();
+	deviceField144 = new DeviceField();
+	deviceField145 = new DeviceField();
+	deviceField146 = new DeviceField();
+	deviceField147 = new DeviceField();
+	deviceField148 = new DeviceField();
+	deviceField149 = new DeviceField();
+	deviceChoice20 = new DeviceChoice();
+	jPanel28 = new javax.swing.JPanel();
+	deviceField150 = new DeviceField();
+	deviceField151 = new DeviceField();
+	deviceField152 = new DeviceField();
+	deviceField153 = new DeviceField();
+	deviceField154 = new DeviceField();
+	deviceField155 = new DeviceField();
+	deviceField156 = new DeviceField();
+	deviceField157 = new DeviceField();
+	deviceField158 = new DeviceField();
+	deviceField159 = new DeviceField();
+	deviceChoice21 = new DeviceChoice();
+	jPanel29 = new javax.swing.JPanel();
+	deviceField160 = new DeviceField();
+	deviceField161 = new DeviceField();
+	deviceField162 = new DeviceField();
+	deviceField163 = new DeviceField();
+	deviceField164 = new DeviceField();
+	deviceField165 = new DeviceField();
+	deviceField166 = new DeviceField();
+	deviceField167 = new DeviceField();
+	deviceField168 = new DeviceField();
+	deviceField169 = new DeviceField();
+	deviceChoice22 = new DeviceChoice();
+	jPanel32 = new javax.swing.JPanel();
+	deviceField173 = new DeviceField();
+	deviceField174 = new DeviceField();
+	deviceField175 = new DeviceField();
+	deviceField176 = new DeviceField();
+	deviceField177 = new DeviceField();
+	deviceField178 = new DeviceField();
+	deviceField179 = new DeviceField();
+	deviceField180 = new DeviceField();
+	deviceField181 = new DeviceField();
+	deviceField182 = new DeviceField();
+	deviceChoice24 = new DeviceChoice();
+	jPanel12 = new javax.swing.JPanel();
+	jTabbedPane2 = new javax.swing.JTabbedPane();
+	jPanel33 = new javax.swing.JPanel();
+	jPanel34 = new javax.swing.JPanel();
+	deviceChoice25 = new DeviceChoice();
+	deviceField183 = new DeviceField();
+	deviceField184 = new DeviceField();
+	deviceField185 = new DeviceField();
+	deviceField40 = new DeviceField();
+	deviceTable6 = new DeviceTable();
+	deviceTable7 = new DeviceTable();
+	deviceTable8 = new DeviceTable();
+	deviceTable9 = new DeviceTable();
+	jPanel39 = new javax.swing.JPanel();
+	jPanel40 = new javax.swing.JPanel();
+	deviceChoice28 = new DeviceChoice();
+	deviceField192 = new DeviceField();
+	deviceField193 = new DeviceField();
+	deviceField194 = new DeviceField();
+	deviceField41 = new DeviceField();
+	deviceTable18 = new DeviceTable();
+	deviceTable19 = new DeviceTable();
+	deviceTable20 = new DeviceTable();
+	deviceTable21 = new DeviceTable();
+	jPanel30 = new javax.swing.JPanel();
+	jPanel31 = new javax.swing.JPanel();
+	deviceChoice23 = new DeviceChoice();
+	deviceField170 = new DeviceField();
+	deviceField171 = new DeviceField();
+	deviceField172 = new DeviceField();
+	deviceField42 = new DeviceField();
+	deviceTable2 = new DeviceTable();
+	deviceTable3 = new DeviceTable();
+	deviceTable4 = new DeviceTable();
+	deviceTable5 = new DeviceTable();
+	jPanel35 = new javax.swing.JPanel();
+	jPanel36 = new javax.swing.JPanel();
+	deviceChoice26 = new DeviceChoice();
+	deviceField186 = new DeviceField();
+	deviceField187 = new DeviceField();
+	deviceField188 = new DeviceField();
+	deviceField43 = new DeviceField();
+	deviceTable10 = new DeviceTable();
+	deviceTable11 = new DeviceTable();
+	deviceTable12 = new DeviceTable();
+	deviceTable13 = new DeviceTable();
+	jPanel37 = new javax.swing.JPanel();
+	jPanel38 = new javax.swing.JPanel();
+	deviceChoice27 = new DeviceChoice();
+	deviceField189 = new DeviceField();
+	deviceField190 = new DeviceField();
+	deviceField191 = new DeviceField();
+	deviceField44 = new DeviceField();
+	deviceTable14 = new DeviceTable();
+	deviceTable15 = new DeviceTable();
+	deviceTable16 = new DeviceTable();
+	deviceTable17 = new DeviceTable();
+	jPanel41 = new javax.swing.JPanel();
+	jPanel42 = new javax.swing.JPanel();
+	deviceChoice29 = new DeviceChoice();
+	deviceField195 = new DeviceField();
+	deviceField196 = new DeviceField();
+	deviceField197 = new DeviceField();
+	deviceField45 = new DeviceField();
+	deviceTable22 = new DeviceTable();
+	deviceTable23 = new DeviceTable();
+	deviceTable24 = new DeviceTable();
+	deviceTable25 = new DeviceTable();
+	jPanel43 = new javax.swing.JPanel();
+	jPanel44 = new javax.swing.JPanel();
+	deviceChoice30 = new DeviceChoice();
+	deviceField198 = new DeviceField();
+	deviceField199 = new DeviceField();
+	deviceField200 = new DeviceField();
+	deviceField46 = new DeviceField();
+	deviceTable26 = new DeviceTable();
+	deviceTable27 = new DeviceTable();
+	deviceTable28 = new DeviceTable();
+	deviceTable29 = new DeviceTable();
+	jPanel45 = new javax.swing.JPanel();
+	jPanel46 = new javax.swing.JPanel();
+	deviceChoice31 = new DeviceChoice();
+	deviceField201 = new DeviceField();
+	deviceField202 = new DeviceField();
+	deviceField203 = new DeviceField();
+	deviceField47 = new DeviceField();
+	deviceTable30 = new DeviceTable();
+	deviceTable31 = new DeviceTable();
+	deviceTable32 = new DeviceTable();
+	deviceTable33 = new DeviceTable();
+	jPanel7 = new javax.swing.JPanel();
+	jPanel17 = new javax.swing.JPanel();
+	jPanel47 = new javax.swing.JPanel();
+	deviceTable34 = new DeviceTable();
+	jPanel48 = new javax.swing.JPanel();
+	deviceTable35 = new DeviceTable();
+	jPanel49 = new javax.swing.JPanel();
+	deviceTable36 = new DeviceTable();
+
+	setDeviceProvider("localhost");
+	setDeviceTitle("MARTe Setup");
+	setDeviceType("MARTE_MHD_CTRL");
+	setHeight(500);
+	setWidth(600);
+	getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+
+	jPanel2.setLayout(new java.awt.GridLayout(4, 0));
+
+	deviceField1.setIdentifier("");
+	deviceField1.setLabelString("Comment: ");
+	deviceField1.setNumCols(30);
+	deviceField1.setOffsetNid(1);
+	deviceField1.setTextOnly(true);
+	jPanel5.add(deviceField1);
+
+	jPanel2.add(jPanel5);
+
+	deviceField2.setIdentifier("");
+	deviceField2.setLabelString("Start Sampling(s):");
+	deviceField2.setOffsetNid(8);
+	jPanel6.add(deviceField2);
+
+	deviceField3.setIdentifier("");
+	deviceField3.setLabelString("End Sampling(s):");
+	deviceField3.setOffsetNid(9);
+	jPanel6.add(deviceField3);
+
+	jPanel2.add(jPanel6);
+
+	deviceChoice1.setChoiceItems(new String[] {"None", "ModeControl", "VirtualShell"});
+	deviceChoice1.setIdentifier("");
+	deviceChoice1.setLabelString("Control: ");
+	deviceChoice1.setOffsetNid(12);
+	deviceChoice1.setUpdateIdentifier("");
+	jPanel8.add(deviceChoice1);
+
+	deviceField6.setIdentifier("");
+	deviceField6.setLabelString("Contr. Duration(s): ");
+	deviceField6.setOffsetNid(5);
+	jPanel8.add(deviceField6);
+
+	jPanel2.add(jPanel8);
+
+	deviceField7.setIdentifier("");
+	deviceField7.setLabelString("Trig. Time: ");
+	deviceField7.setNumCols(25);
+	deviceField7.setOffsetNid(4);
+	jPanel9.add(deviceField7);
+
+	deviceField8.setIdentifier("");
+	deviceField8.setLabelString("Freq. (Hz):");
+	deviceField8.setOffsetNid(3);
+	jPanel9.add(deviceField8);
+
+	jPanel2.add(jPanel9);
+
+	getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
+
+	jPanel1.setLayout(new java.awt.BorderLayout());
+
+	deviceChoice2.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice2.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice2.setConvert(true);
+	deviceChoice2.setIdentifier("");
+	deviceChoice2.setLabelString("Cleaning: ");
+	deviceChoice2.setOffsetNid(1339);
+	deviceChoice2.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice2);
+
+	deviceChoice3.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice3.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice3.setConvert(true);
+	deviceChoice3.setIdentifier("");
+	deviceChoice3.setLabelString("Extrapolation: ");
+	deviceChoice3.setOffsetNid(1345);
+	deviceChoice3.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice3);
+
+	deviceChoice4.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice4.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice4.setConvert(true);
+	deviceChoice4.setIdentifier("");
+	deviceChoice4.setLabelString("Reconfiguration: ");
+	deviceChoice4.setOffsetNid(1351);
+	deviceChoice4.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice4);
+
+	deviceChoice5.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice5.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice5.setConvert(true);
+	deviceChoice5.setIdentifier("");
+	deviceChoice5.setLabelString("Dynamic Decoupler: ");
+	deviceChoice5.setOffsetNid(1357);
+	deviceChoice5.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice5);
+
+	deviceChoice6.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice6.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice6.setConvert(true);
+	deviceChoice6.setIdentifier("");
+	deviceChoice6.setLabelString("Static Decoupler: ");
+	deviceChoice6.setOffsetNid(1363);
+	deviceChoice6.setUpdateIdentifier("");
+	jPanel3.add(deviceChoice6);
+
+	deviceField9.setIdentifier("");
+	deviceField9.setLabelString("Extrapolation Radius:");
+	deviceField9.setNumCols(5);
+	deviceField9.setOffsetNid(1375);
+	jPanel3.add(deviceField9);
+
+	deviceField4.setIdentifier("");
+	deviceField4.setLabelString("Start Freeze Time: ");
+	deviceField4.setOffsetNid(3277);
+	jPanel3.add(deviceField4);
+
+	deviceField5.setIdentifier("");
+	deviceField5.setLabelString("End Freeze Time ");
+	deviceField5.setOffsetNid(3283);
+	jPanel3.add(deviceField5);
+
+	deviceField48.setIdentifier("");
+	deviceField48.setLabelString("Start Bp Autozero (s, abs. time):");
+	deviceField48.setOffsetNid(3289);
+	jPanel3.add(deviceField48);
+
+	deviceField49.setIdentifier("");
+	deviceField49.setLabelString("End Bp Autozero (s, abs time):");
+	deviceField49.setOffsetNid(3295);
+	jPanel3.add(deviceField49);
+
+	jTabbedPane1.addTab("General", jPanel3);
+
+	jPanel4.setLayout(new java.awt.BorderLayout());
+
+	deviceTable1.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable1.setDisplayRowNumber(true);
+	deviceTable1.setIdentifier("");
+	deviceTable1.setLabelString("Cleaned modes");
+	deviceTable1.setNumCols(48);
+	deviceTable1.setNumRows(4);
+	deviceTable1.setOffsetNid(1369);
+	deviceTable1.setRefMode(1);
+	jPanel4.add(deviceTable1, java.awt.BorderLayout.CENTER);
+
+	jScrollPane1.setViewportView(jPanel4);
+
+	jTabbedPane1.addTab("Cleaning", jScrollPane1);
+
+	jPanel14.setLayout(new java.awt.GridLayout(8, 1));
+
+	jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
+
+	deviceField10.setIdentifier("");
+	deviceField10.setLabelString("M: ");
+	deviceField10.setNumCols(4);
+	deviceField10.setOffsetNid(1381);
+	jPanel10.add(deviceField10);
+
+	deviceField11.setIdentifier("");
+	deviceField11.setLabelString("N: ");
+	deviceField11.setNumCols(4);
+	deviceField11.setOffsetNid(1387);
+	jPanel10.add(deviceField11);
+
+	deviceField12.setIdentifier("");
+	deviceField12.setLabelString("Freq: ");
+	deviceField12.setNumCols(4);
+	deviceField12.setOffsetNid(1393);
+	jPanel10.add(deviceField12);
+
+	deviceField13.setIdentifier("");
+	deviceField13.setLabelString("Amp: ");
+	deviceField13.setNumCols(4);
+	deviceField13.setOffsetNid(1399);
+	jPanel10.add(deviceField13);
+
+	deviceField14.setIdentifier("");
+	deviceField14.setLabelString("Phase: ");
+	deviceField14.setNumCols(4);
+	deviceField14.setOffsetNid(1405);
+	jPanel10.add(deviceField14);
+
+	deviceField15.setIdentifier("");
+	deviceField15.setLabelString("Start time: ");
+	deviceField15.setNumCols(4);
+	deviceField15.setOffsetNid(1411);
+	jPanel10.add(deviceField15);
+
+	deviceField16.setIdentifier("");
+	deviceField16.setLabelString("Rise time: ");
+	deviceField16.setNumCols(4);
+	deviceField16.setOffsetNid(1417);
+	jPanel10.add(deviceField16);
+
+	deviceField17.setIdentifier("");
+	deviceField17.setLabelString("End time: ");
+	deviceField17.setNumCols(4);
+	deviceField17.setOffsetNid(1423);
+	jPanel10.add(deviceField17);
+
+	deviceField18.setIdentifier("");
+	deviceField18.setLabelString("Fall time: ");
+	deviceField18.setNumCols(4);
+	deviceField18.setOffsetNid(1429);
+	jPanel10.add(deviceField18);
+
+	deviceField19.setIdentifier("");
+	deviceField19.setLabelString("Threshold: ");
+	deviceField19.setNumCols(4);
+	deviceField19.setOffsetNid(1435);
+	jPanel10.add(deviceField19);
+
+	deviceChoice7.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice7.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice7.setConvert(true);
+	deviceChoice7.setIdentifier("");
+	deviceChoice7.setLabelString("Relative Phase: ");
+	deviceChoice7.setOffsetNid(1441);
+	deviceChoice7.setUpdateIdentifier("");
+	jPanel10.add(deviceChoice7);
+
+	jPanel14.add(jPanel10);
+
+	jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
+
+	deviceField20.setIdentifier("");
+	deviceField20.setLabelString("M: ");
+	deviceField20.setNumCols(4);
+	deviceField20.setOffsetNid(1447);
+	jPanel15.add(deviceField20);
+
+	deviceField21.setIdentifier("");
+	deviceField21.setLabelString("N: ");
+	deviceField21.setNumCols(4);
+	deviceField21.setOffsetNid(1453);
+	jPanel15.add(deviceField21);
+
+	deviceField22.setIdentifier("");
+	deviceField22.setLabelString("Freq: ");
+	deviceField22.setNumCols(4);
+	deviceField22.setOffsetNid(1459);
+	jPanel15.add(deviceField22);
+
+	deviceField23.setIdentifier("");
+	deviceField23.setLabelString("Amp: ");
+	deviceField23.setNumCols(4);
+	deviceField23.setOffsetNid(1465);
+	jPanel15.add(deviceField23);
+
+	deviceField24.setIdentifier("");
+	deviceField24.setLabelString("Phase: ");
+	deviceField24.setNumCols(4);
+	deviceField24.setOffsetNid(1471);
+	jPanel15.add(deviceField24);
+
+	deviceField25.setIdentifier("");
+	deviceField25.setLabelString("Start time: ");
+	deviceField25.setNumCols(4);
+	deviceField25.setOffsetNid(1477);
+	jPanel15.add(deviceField25);
+
+	deviceField26.setIdentifier("");
+	deviceField26.setLabelString("Rise time: ");
+	deviceField26.setNumCols(4);
+	deviceField26.setOffsetNid(1483);
+	jPanel15.add(deviceField26);
+
+	deviceField27.setIdentifier("");
+	deviceField27.setLabelString("End time: ");
+	deviceField27.setNumCols(4);
+	deviceField27.setOffsetNid(1489);
+	jPanel15.add(deviceField27);
+
+	deviceField28.setIdentifier("");
+	deviceField28.setLabelString("Fall time: ");
+	deviceField28.setNumCols(4);
+	deviceField28.setOffsetNid(1495);
+	jPanel15.add(deviceField28);
+
+	deviceField29.setIdentifier("");
+	deviceField29.setLabelString("Threshold: ");
+	deviceField29.setNumCols(4);
+	deviceField29.setOffsetNid(1501);
+	jPanel15.add(deviceField29);
+
+	deviceChoice8.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice8.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice8.setConvert(true);
+	deviceChoice8.setIdentifier("");
+	deviceChoice8.setLabelString("Relative Phase: ");
+	deviceChoice8.setOffsetNid(1507);
+	deviceChoice8.setUpdateIdentifier("");
+	jPanel15.add(deviceChoice8);
+
+	jPanel14.add(jPanel15);
+
+	jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
+
+	deviceField30.setIdentifier("");
+	deviceField30.setLabelString("M: ");
+	deviceField30.setNumCols(4);
+	deviceField30.setOffsetNid(1513);
+	jPanel16.add(deviceField30);
+
+	deviceField31.setIdentifier("");
+	deviceField31.setLabelString("N: ");
+	deviceField31.setNumCols(4);
+	deviceField31.setOffsetNid(1519);
+	jPanel16.add(deviceField31);
+
+	deviceField32.setIdentifier("");
+	deviceField32.setLabelString("Freq: ");
+	deviceField32.setNumCols(4);
+	deviceField32.setOffsetNid(1525);
+	jPanel16.add(deviceField32);
+
+	deviceField33.setIdentifier("");
+	deviceField33.setLabelString("Amp: ");
+	deviceField33.setNumCols(4);
+	deviceField33.setOffsetNid(1531);
+	jPanel16.add(deviceField33);
+
+	deviceField34.setIdentifier("");
+	deviceField34.setLabelString("Phase: ");
+	deviceField34.setNumCols(4);
+	deviceField34.setOffsetNid(1537);
+	jPanel16.add(deviceField34);
+
+	deviceField35.setIdentifier("");
+	deviceField35.setLabelString("Start time: ");
+	deviceField35.setNumCols(4);
+	deviceField35.setOffsetNid(1543);
+	jPanel16.add(deviceField35);
+
+	deviceField36.setIdentifier("");
+	deviceField36.setLabelString("Rise time: ");
+	deviceField36.setNumCols(4);
+	deviceField36.setOffsetNid(1549);
+	jPanel16.add(deviceField36);
+
+	deviceField37.setIdentifier("");
+	deviceField37.setLabelString("End time: ");
+	deviceField37.setNumCols(4);
+	deviceField37.setOffsetNid(1555);
+	jPanel16.add(deviceField37);
+
+	deviceField38.setIdentifier("");
+	deviceField38.setLabelString("Fall time: ");
+	deviceField38.setNumCols(4);
+	deviceField38.setOffsetNid(1561);
+	jPanel16.add(deviceField38);
+
+	deviceField39.setIdentifier("");
+	deviceField39.setLabelString("Threshold: ");
+	deviceField39.setNumCols(4);
+	deviceField39.setOffsetNid(1567);
+	jPanel16.add(deviceField39);
+
+	deviceChoice9.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice9.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice9.setConvert(true);
+	deviceChoice9.setIdentifier("");
+	deviceChoice9.setLabelString("Relative Phase: ");
+	deviceChoice9.setOffsetNid(1573);
+	deviceChoice9.setUpdateIdentifier("");
+	jPanel16.add(deviceChoice9);
+
+	jPanel14.add(jPanel16);
+
+	jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
+
+	deviceField50.setIdentifier("");
+	deviceField50.setLabelString("M: ");
+	deviceField50.setNumCols(4);
+	deviceField50.setOffsetNid(1579);
+	jPanel18.add(deviceField50);
+
+	deviceField51.setIdentifier("");
+	deviceField51.setLabelString("N: ");
+	deviceField51.setNumCols(4);
+	deviceField51.setOffsetNid(1585);
+	jPanel18.add(deviceField51);
+
+	deviceField52.setIdentifier("");
+	deviceField52.setLabelString("Freq: ");
+	deviceField52.setNumCols(4);
+	deviceField52.setOffsetNid(1591);
+	jPanel18.add(deviceField52);
+
+	deviceField53.setIdentifier("");
+	deviceField53.setLabelString("Amp: ");
+	deviceField53.setNumCols(4);
+	deviceField53.setOffsetNid(1597);
+	jPanel18.add(deviceField53);
+
+	deviceField54.setIdentifier("");
+	deviceField54.setLabelString("Phase: ");
+	deviceField54.setNumCols(4);
+	deviceField54.setOffsetNid(1603);
+	jPanel18.add(deviceField54);
+
+	deviceField55.setIdentifier("");
+	deviceField55.setLabelString("Start time: ");
+	deviceField55.setNumCols(4);
+	deviceField55.setOffsetNid(1609);
+	jPanel18.add(deviceField55);
+
+	deviceField56.setIdentifier("");
+	deviceField56.setLabelString("Rise time: ");
+	deviceField56.setNumCols(4);
+	deviceField56.setOffsetNid(1615);
+	jPanel18.add(deviceField56);
+
+	deviceField57.setIdentifier("");
+	deviceField57.setLabelString("End time: ");
+	deviceField57.setNumCols(4);
+	deviceField57.setOffsetNid(1621);
+	jPanel18.add(deviceField57);
+
+	deviceField58.setIdentifier("");
+	deviceField58.setLabelString("Fall time: ");
+	deviceField58.setNumCols(4);
+	deviceField58.setOffsetNid(1627);
+	jPanel18.add(deviceField58);
+
+	deviceField59.setIdentifier("");
+	deviceField59.setLabelString("Threshold: ");
+	deviceField59.setNumCols(4);
+	deviceField59.setOffsetNid(1633);
+	jPanel18.add(deviceField59);
+
+	deviceChoice11.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice11.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice11.setConvert(true);
+	deviceChoice11.setIdentifier("");
+	deviceChoice11.setLabelString("Relative Phase: ");
+	deviceChoice11.setOffsetNid(1639);
+	deviceChoice11.setUpdateIdentifier("");
+	jPanel18.add(deviceChoice11);
+
+	jPanel14.add(jPanel18);
+
+	jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
+
+	deviceField60.setIdentifier("");
+	deviceField60.setLabelString("M: ");
+	deviceField60.setNumCols(4);
+	deviceField60.setOffsetNid(1645);
+	jPanel19.add(deviceField60);
+
+	deviceField61.setIdentifier("");
+	deviceField61.setLabelString("N: ");
+	deviceField61.setNumCols(4);
+	deviceField61.setOffsetNid(1651);
+	jPanel19.add(deviceField61);
+
+	deviceField62.setIdentifier("");
+	deviceField62.setLabelString("Freq: ");
+	deviceField62.setNumCols(4);
+	deviceField62.setOffsetNid(1657);
+	jPanel19.add(deviceField62);
+
+	deviceField63.setIdentifier("");
+	deviceField63.setLabelString("Amp: ");
+	deviceField63.setNumCols(4);
+	deviceField63.setOffsetNid(1663);
+	jPanel19.add(deviceField63);
+
+	deviceField64.setIdentifier("");
+	deviceField64.setLabelString("Phase: ");
+	deviceField64.setNumCols(4);
+	deviceField64.setOffsetNid(1669);
+	jPanel19.add(deviceField64);
+
+	deviceField65.setIdentifier("");
+	deviceField65.setLabelString("Start time: ");
+	deviceField65.setNumCols(4);
+	deviceField65.setOffsetNid(1675);
+	jPanel19.add(deviceField65);
+
+	deviceField66.setIdentifier("");
+	deviceField66.setLabelString("Rise time: ");
+	deviceField66.setNumCols(4);
+	deviceField66.setOffsetNid(1681);
+	jPanel19.add(deviceField66);
+
+	deviceField67.setIdentifier("");
+	deviceField67.setLabelString("End time: ");
+	deviceField67.setNumCols(4);
+	deviceField67.setOffsetNid(1687);
+	jPanel19.add(deviceField67);
+
+	deviceField68.setIdentifier("");
+	deviceField68.setLabelString("Fall time: ");
+	deviceField68.setNumCols(4);
+	deviceField68.setOffsetNid(1693);
+	jPanel19.add(deviceField68);
+
+	deviceField69.setIdentifier("");
+	deviceField69.setLabelString("Threshold: ");
+	deviceField69.setNumCols(4);
+	deviceField69.setOffsetNid(1699);
+	jPanel19.add(deviceField69);
+
+	deviceChoice12.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice12.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice12.setConvert(true);
+	deviceChoice12.setIdentifier("");
+	deviceChoice12.setLabelString("Relative Phase: ");
+	deviceChoice12.setOffsetNid(1705);
+	deviceChoice12.setUpdateIdentifier("");
+	jPanel19.add(deviceChoice12);
+
+	jPanel14.add(jPanel19);
+
+	jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
+
+	deviceField70.setIdentifier("");
+	deviceField70.setLabelString("M: ");
+	deviceField70.setNumCols(4);
+	deviceField70.setOffsetNid(1711);
+	jPanel20.add(deviceField70);
+
+	deviceField71.setIdentifier("");
+	deviceField71.setLabelString("N: ");
+	deviceField71.setNumCols(4);
+	deviceField71.setOffsetNid(1717);
+	jPanel20.add(deviceField71);
+
+	deviceField72.setIdentifier("");
+	deviceField72.setLabelString("Freq: ");
+	deviceField72.setNumCols(4);
+	deviceField72.setOffsetNid(1723);
+	jPanel20.add(deviceField72);
+
+	deviceField73.setIdentifier("");
+	deviceField73.setLabelString("Amp: ");
+	deviceField73.setNumCols(4);
+	deviceField73.setOffsetNid(1729);
+	jPanel20.add(deviceField73);
+
+	deviceField74.setIdentifier("");
+	deviceField74.setLabelString("Phase: ");
+	deviceField74.setNumCols(4);
+	deviceField74.setOffsetNid(1735);
+	jPanel20.add(deviceField74);
+
+	deviceField75.setIdentifier("");
+	deviceField75.setLabelString("Start time: ");
+	deviceField75.setNumCols(4);
+	deviceField75.setOffsetNid(1741);
+	jPanel20.add(deviceField75);
+
+	deviceField76.setIdentifier("");
+	deviceField76.setLabelString("Rise time: ");
+	deviceField76.setNumCols(4);
+	deviceField76.setOffsetNid(1747);
+	jPanel20.add(deviceField76);
+
+	deviceField77.setIdentifier("");
+	deviceField77.setLabelString("End time: ");
+	deviceField77.setNumCols(4);
+	deviceField77.setOffsetNid(1753);
+	jPanel20.add(deviceField77);
+
+	deviceField78.setIdentifier("");
+	deviceField78.setLabelString("Fall time: ");
+	deviceField78.setNumCols(4);
+	deviceField78.setOffsetNid(1759);
+	jPanel20.add(deviceField78);
+
+	deviceField79.setIdentifier("");
+	deviceField79.setLabelString("Threshold: ");
+	deviceField79.setNumCols(4);
+	deviceField79.setOffsetNid(1765);
+	jPanel20.add(deviceField79);
+
+	deviceChoice13.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice13.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice13.setConvert(true);
+	deviceChoice13.setIdentifier("");
+	deviceChoice13.setLabelString("Relative Phase: ");
+	deviceChoice13.setOffsetNid(1771);
+	deviceChoice13.setUpdateIdentifier("");
+	jPanel20.add(deviceChoice13);
+
+	jPanel14.add(jPanel20);
+
+	jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
+
+	deviceField80.setIdentifier("");
+	deviceField80.setLabelString("M: ");
+	deviceField80.setNumCols(4);
+	deviceField80.setOffsetNid(1777);
+	jPanel21.add(deviceField80);
+
+	deviceField81.setIdentifier("");
+	deviceField81.setLabelString("N: ");
+	deviceField81.setNumCols(4);
+	deviceField81.setOffsetNid(1783);
+	jPanel21.add(deviceField81);
+
+	deviceField82.setIdentifier("");
+	deviceField82.setLabelString("Freq: ");
+	deviceField82.setNumCols(4);
+	deviceField82.setOffsetNid(1789);
+	jPanel21.add(deviceField82);
+
+	deviceField83.setIdentifier("");
+	deviceField83.setLabelString("Amp: ");
+	deviceField83.setNumCols(4);
+	deviceField83.setOffsetNid(1795);
+	jPanel21.add(deviceField83);
+
+	deviceField84.setIdentifier("");
+	deviceField84.setLabelString("Phase: ");
+	deviceField84.setNumCols(4);
+	deviceField84.setOffsetNid(1801);
+	jPanel21.add(deviceField84);
+
+	deviceField85.setIdentifier("");
+	deviceField85.setLabelString("Start time: ");
+	deviceField85.setNumCols(4);
+	deviceField85.setOffsetNid(1807);
+	jPanel21.add(deviceField85);
+
+	deviceField86.setIdentifier("");
+	deviceField86.setLabelString("Rise time: ");
+	deviceField86.setNumCols(4);
+	deviceField86.setOffsetNid(1813);
+	jPanel21.add(deviceField86);
+
+	deviceField87.setIdentifier("");
+	deviceField87.setLabelString("End time: ");
+	deviceField87.setNumCols(4);
+	deviceField87.setOffsetNid(1819);
+	jPanel21.add(deviceField87);
+
+	deviceField88.setIdentifier("");
+	deviceField88.setLabelString("Fall time: ");
+	deviceField88.setNumCols(4);
+	deviceField88.setOffsetNid(1825);
+	jPanel21.add(deviceField88);
+
+	deviceField89.setIdentifier("");
+	deviceField89.setLabelString("Threshold: ");
+	deviceField89.setNumCols(4);
+	deviceField89.setOffsetNid(1831);
+	jPanel21.add(deviceField89);
+
+	deviceChoice14.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice14.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice14.setConvert(true);
+	deviceChoice14.setIdentifier("");
+	deviceChoice14.setLabelString("Relative Phase: ");
+	deviceChoice14.setOffsetNid(1837);
+	deviceChoice14.setUpdateIdentifier("");
+	jPanel21.add(deviceChoice14);
+
+	jPanel14.add(jPanel21);
+
+	jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
+
+	deviceField90.setIdentifier("");
+	deviceField90.setLabelString("M: ");
+	deviceField90.setNumCols(4);
+	deviceField90.setOffsetNid(1843);
+	jPanel22.add(deviceField90);
+
+	deviceField91.setIdentifier("");
+	deviceField91.setLabelString("N: ");
+	deviceField91.setNumCols(4);
+	deviceField91.setOffsetNid(1849);
+	jPanel22.add(deviceField91);
+
+	deviceField92.setIdentifier("");
+	deviceField92.setLabelString("Freq: ");
+	deviceField92.setNumCols(4);
+	deviceField92.setOffsetNid(1855);
+	jPanel22.add(deviceField92);
+
+	deviceField93.setIdentifier("");
+	deviceField93.setLabelString("Amp: ");
+	deviceField93.setNumCols(4);
+	deviceField93.setOffsetNid(1861);
+	jPanel22.add(deviceField93);
+
+	deviceField94.setIdentifier("");
+	deviceField94.setLabelString("Phase: ");
+	deviceField94.setNumCols(4);
+	deviceField94.setOffsetNid(1867);
+	jPanel22.add(deviceField94);
+
+	deviceField95.setIdentifier("");
+	deviceField95.setLabelString("Start time: ");
+	deviceField95.setNumCols(4);
+	deviceField95.setOffsetNid(1873);
+	jPanel22.add(deviceField95);
+
+	deviceField96.setIdentifier("");
+	deviceField96.setLabelString("Rise time: ");
+	deviceField96.setNumCols(4);
+	deviceField96.setOffsetNid(1879);
+	jPanel22.add(deviceField96);
+
+	deviceField97.setIdentifier("");
+	deviceField97.setLabelString("End time: ");
+	deviceField97.setNumCols(4);
+	deviceField97.setOffsetNid(1885);
+	jPanel22.add(deviceField97);
+
+	deviceField98.setIdentifier("");
+	deviceField98.setLabelString("Fall time: ");
+	deviceField98.setNumCols(4);
+	deviceField98.setOffsetNid(1891);
+	jPanel22.add(deviceField98);
+
+	deviceField99.setIdentifier("");
+	deviceField99.setLabelString("Threshold: ");
+	deviceField99.setNumCols(4);
+	deviceField99.setOffsetNid(1897);
+	jPanel22.add(deviceField99);
+
+	deviceChoice15.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice15.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice15.setConvert(true);
+	deviceChoice15.setIdentifier("");
+	deviceChoice15.setLabelString("Relative Phase: ");
+	deviceChoice15.setOffsetNid(1903);
+	deviceChoice15.setUpdateIdentifier("");
+	jPanel22.add(deviceChoice15);
+
+	jPanel14.add(jPanel22);
+
+	jScrollPane2.setViewportView(jPanel14);
+
+	jTabbedPane1.addTab("Rot. Pert. FB", jScrollPane2);
+
+	jPanel11.setLayout(new java.awt.GridLayout(8, 0));
+
+	jPanel23.setBorder(javax.swing.BorderFactory.createTitledBorder("1"));
+
+	deviceField100.setIdentifier("");
+	deviceField100.setLabelString("M: ");
+	deviceField100.setNumCols(4);
+	deviceField100.setOffsetNid(1909);
+	jPanel23.add(deviceField100);
+
+	deviceField101.setIdentifier("");
+	deviceField101.setLabelString("N: ");
+	deviceField101.setNumCols(4);
+	deviceField101.setOffsetNid(1915);
+	jPanel23.add(deviceField101);
+
+	deviceField102.setIdentifier("");
+	deviceField102.setLabelString("Freq: ");
+	deviceField102.setNumCols(4);
+	deviceField102.setOffsetNid(1921);
+	jPanel23.add(deviceField102);
+
+	deviceField103.setIdentifier("");
+	deviceField103.setLabelString("Amp: ");
+	deviceField103.setNumCols(4);
+	deviceField103.setOffsetNid(1927);
+	jPanel23.add(deviceField103);
+
+	deviceField104.setIdentifier("");
+	deviceField104.setLabelString("Phase: ");
+	deviceField104.setNumCols(4);
+	deviceField104.setOffsetNid(1933);
+	jPanel23.add(deviceField104);
+
+	deviceField105.setIdentifier("");
+	deviceField105.setLabelString("Start time: ");
+	deviceField105.setNumCols(4);
+	deviceField105.setOffsetNid(1939);
+	jPanel23.add(deviceField105);
+
+	deviceField106.setIdentifier("");
+	deviceField106.setLabelString("Rise time: ");
+	deviceField106.setNumCols(4);
+	deviceField106.setOffsetNid(1945);
+	jPanel23.add(deviceField106);
+
+	deviceField107.setIdentifier("");
+	deviceField107.setLabelString("End time: ");
+	deviceField107.setNumCols(4);
+	deviceField107.setOffsetNid(1951);
+	jPanel23.add(deviceField107);
+
+	deviceField108.setIdentifier("");
+	deviceField108.setLabelString("Fall time: ");
+	deviceField108.setNumCols(4);
+	deviceField108.setOffsetNid(1957);
+	jPanel23.add(deviceField108);
+
+	deviceField109.setIdentifier("");
+	deviceField109.setLabelString("Threshold: ");
+	deviceField109.setNumCols(4);
+	deviceField109.setOffsetNid(1963);
+	jPanel23.add(deviceField109);
+
+	deviceChoice16.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice16.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice16.setConvert(true);
+	deviceChoice16.setIdentifier("");
+	deviceChoice16.setLabelString("Relative Phase: ");
+	deviceChoice16.setOffsetNid(1969);
+	deviceChoice16.setUpdateIdentifier("");
+	jPanel23.add(deviceChoice16);
+
+	jPanel11.add(jPanel23);
+
+	jPanel24.setBorder(javax.swing.BorderFactory.createTitledBorder("2"));
+
+	deviceField110.setIdentifier("");
+	deviceField110.setLabelString("M: ");
+	deviceField110.setNumCols(4);
+	deviceField110.setOffsetNid(1975);
+	jPanel24.add(deviceField110);
+
+	deviceField111.setIdentifier("");
+	deviceField111.setLabelString("N: ");
+	deviceField111.setNumCols(4);
+	deviceField111.setOffsetNid(1981);
+	jPanel24.add(deviceField111);
+
+	deviceField112.setIdentifier("");
+	deviceField112.setLabelString("Freq: ");
+	deviceField112.setNumCols(4);
+	deviceField112.setOffsetNid(1987);
+	jPanel24.add(deviceField112);
+
+	deviceField113.setIdentifier("");
+	deviceField113.setLabelString("Amp: ");
+	deviceField113.setNumCols(4);
+	deviceField113.setOffsetNid(1993);
+	jPanel24.add(deviceField113);
+
+	deviceField114.setIdentifier("");
+	deviceField114.setLabelString("Phase: ");
+	deviceField114.setNumCols(4);
+	deviceField114.setOffsetNid(1999);
+	jPanel24.add(deviceField114);
+
+	deviceField115.setIdentifier("");
+	deviceField115.setLabelString("Start time: ");
+	deviceField115.setNumCols(4);
+	deviceField115.setOffsetNid(2005);
+	jPanel24.add(deviceField115);
+
+	deviceField116.setIdentifier("");
+	deviceField116.setLabelString("Rise time: ");
+	deviceField116.setNumCols(4);
+	deviceField116.setOffsetNid(2011);
+	jPanel24.add(deviceField116);
+
+	deviceField117.setIdentifier("");
+	deviceField117.setLabelString("End time: ");
+	deviceField117.setNumCols(4);
+	deviceField117.setOffsetNid(2017);
+	jPanel24.add(deviceField117);
+
+	deviceField118.setIdentifier("");
+	deviceField118.setLabelString("Fall time: ");
+	deviceField118.setNumCols(4);
+	deviceField118.setOffsetNid(2023);
+	jPanel24.add(deviceField118);
+
+	deviceField119.setIdentifier("");
+	deviceField119.setLabelString("Threshold: ");
+	deviceField119.setNumCols(4);
+	deviceField119.setOffsetNid(2029);
+	jPanel24.add(deviceField119);
+
+	deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice17.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice17.setConvert(true);
+	deviceChoice17.setIdentifier("");
+	deviceChoice17.setLabelString("Relative Phase: ");
+	deviceChoice17.setOffsetNid(2035);
+	deviceChoice17.setUpdateIdentifier("");
+	jPanel24.add(deviceChoice17);
+
+	jPanel11.add(jPanel24);
+
+	jPanel25.setBorder(javax.swing.BorderFactory.createTitledBorder("3"));
+
+	deviceField120.setIdentifier("");
+	deviceField120.setLabelString("M: ");
+	deviceField120.setNumCols(4);
+	deviceField120.setOffsetNid(2041);
+	jPanel25.add(deviceField120);
+
+	deviceField121.setIdentifier("");
+	deviceField121.setLabelString("N: ");
+	deviceField121.setNumCols(4);
+	deviceField121.setOffsetNid(2047);
+	jPanel25.add(deviceField121);
+
+	deviceField122.setIdentifier("");
+	deviceField122.setLabelString("Freq: ");
+	deviceField122.setNumCols(4);
+	deviceField122.setOffsetNid(2053);
+	jPanel25.add(deviceField122);
+
+	deviceField123.setIdentifier("");
+	deviceField123.setLabelString("Amp: ");
+	deviceField123.setNumCols(4);
+	deviceField123.setOffsetNid(2059);
+	jPanel25.add(deviceField123);
+
+	deviceField124.setIdentifier("");
+	deviceField124.setLabelString("Phase: ");
+	deviceField124.setNumCols(4);
+	deviceField124.setOffsetNid(2065);
+	jPanel25.add(deviceField124);
+
+	deviceField125.setIdentifier("");
+	deviceField125.setLabelString("Start time: ");
+	deviceField125.setNumCols(4);
+	deviceField125.setOffsetNid(2071);
+	jPanel25.add(deviceField125);
+
+	deviceField126.setIdentifier("");
+	deviceField126.setLabelString("Rise time: ");
+	deviceField126.setNumCols(4);
+	deviceField126.setOffsetNid(2077);
+	jPanel25.add(deviceField126);
+
+	deviceField127.setIdentifier("");
+	deviceField127.setLabelString("End time: ");
+	deviceField127.setNumCols(4);
+	deviceField127.setOffsetNid(2083);
+	jPanel25.add(deviceField127);
+
+	deviceField128.setIdentifier("");
+	deviceField128.setLabelString("Fall time: ");
+	deviceField128.setNumCols(4);
+	deviceField128.setOffsetNid(2089);
+	jPanel25.add(deviceField128);
+
+	deviceField129.setIdentifier("");
+	deviceField129.setLabelString("Threshold: ");
+	deviceField129.setNumCols(4);
+	deviceField129.setOffsetNid(2095);
+	jPanel25.add(deviceField129);
+
+	deviceChoice18.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice18.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice18.setConvert(true);
+	deviceChoice18.setIdentifier("");
+	deviceChoice18.setLabelString("Relative Phase: ");
+	deviceChoice18.setOffsetNid(2101);
+	deviceChoice18.setUpdateIdentifier("");
+	jPanel25.add(deviceChoice18);
+
+	jPanel11.add(jPanel25);
+
+	jPanel26.setBorder(javax.swing.BorderFactory.createTitledBorder("4"));
+
+	deviceField130.setIdentifier("");
+	deviceField130.setLabelString("M: ");
+	deviceField130.setNumCols(4);
+	deviceField130.setOffsetNid(2107);
+	jPanel26.add(deviceField130);
+
+	deviceField131.setIdentifier("");
+	deviceField131.setLabelString("N: ");
+	deviceField131.setNumCols(4);
+	deviceField131.setOffsetNid(2113);
+	jPanel26.add(deviceField131);
+
+	deviceField132.setIdentifier("");
+	deviceField132.setLabelString("Freq: ");
+	deviceField132.setNumCols(4);
+	deviceField132.setOffsetNid(2119);
+	jPanel26.add(deviceField132);
+
+	deviceField133.setIdentifier("");
+	deviceField133.setLabelString("Amp: ");
+	deviceField133.setNumCols(4);
+	deviceField133.setOffsetNid(2125);
+	jPanel26.add(deviceField133);
+
+	deviceField134.setIdentifier("");
+	deviceField134.setLabelString("Phase: ");
+	deviceField134.setNumCols(4);
+	deviceField134.setOffsetNid(2131);
+	jPanel26.add(deviceField134);
+
+	deviceField135.setIdentifier("");
+	deviceField135.setLabelString("Start time: ");
+	deviceField135.setNumCols(4);
+	deviceField135.setOffsetNid(2137);
+	jPanel26.add(deviceField135);
+
+	deviceField136.setIdentifier("");
+	deviceField136.setLabelString("Rise time: ");
+	deviceField136.setNumCols(4);
+	deviceField136.setOffsetNid(2143);
+	jPanel26.add(deviceField136);
+
+	deviceField137.setIdentifier("");
+	deviceField137.setLabelString("End time: ");
+	deviceField137.setNumCols(4);
+	deviceField137.setOffsetNid(2149);
+	jPanel26.add(deviceField137);
+
+	deviceField138.setIdentifier("");
+	deviceField138.setLabelString("Fall time: ");
+	deviceField138.setNumCols(4);
+	deviceField138.setOffsetNid(2155);
+	jPanel26.add(deviceField138);
+
+	deviceField139.setIdentifier("");
+	deviceField139.setLabelString("Threshold: ");
+	deviceField139.setNumCols(4);
+	deviceField139.setOffsetNid(2161);
+	jPanel26.add(deviceField139);
+
+	deviceChoice19.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice19.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice19.setConvert(true);
+	deviceChoice19.setIdentifier("");
+	deviceChoice19.setLabelString("Relative Phase: ");
+	deviceChoice19.setOffsetNid(2167);
+	deviceChoice19.setUpdateIdentifier("");
+	jPanel26.add(deviceChoice19);
+
+	jPanel11.add(jPanel26);
+
+	jPanel27.setBorder(javax.swing.BorderFactory.createTitledBorder("5"));
+
+	deviceField140.setIdentifier("");
+	deviceField140.setLabelString("M: ");
+	deviceField140.setNumCols(4);
+	deviceField140.setOffsetNid(2173);
+	jPanel27.add(deviceField140);
+
+	deviceField141.setIdentifier("");
+	deviceField141.setLabelString("N: ");
+	deviceField141.setNumCols(4);
+	deviceField141.setOffsetNid(2179);
+	jPanel27.add(deviceField141);
+
+	deviceField142.setIdentifier("");
+	deviceField142.setLabelString("Freq: ");
+	deviceField142.setNumCols(4);
+	deviceField142.setOffsetNid(2185);
+	jPanel27.add(deviceField142);
+
+	deviceField143.setIdentifier("");
+	deviceField143.setLabelString("Amp: ");
+	deviceField143.setNumCols(4);
+	deviceField143.setOffsetNid(2191);
+	jPanel27.add(deviceField143);
+
+	deviceField144.setIdentifier("");
+	deviceField144.setLabelString("Phase: ");
+	deviceField144.setNumCols(4);
+	deviceField144.setOffsetNid(2197);
+	jPanel27.add(deviceField144);
+
+	deviceField145.setIdentifier("");
+	deviceField145.setLabelString("Start time: ");
+	deviceField145.setNumCols(4);
+	deviceField145.setOffsetNid(2203);
+	jPanel27.add(deviceField145);
+
+	deviceField146.setIdentifier("");
+	deviceField146.setLabelString("Rise time: ");
+	deviceField146.setNumCols(4);
+	deviceField146.setOffsetNid(2209);
+	jPanel27.add(deviceField146);
+
+	deviceField147.setIdentifier("");
+	deviceField147.setLabelString("End time: ");
+	deviceField147.setNumCols(4);
+	deviceField147.setOffsetNid(2215);
+	jPanel27.add(deviceField147);
+
+	deviceField148.setIdentifier("");
+	deviceField148.setLabelString("Fall time: ");
+	deviceField148.setNumCols(4);
+	deviceField148.setOffsetNid(2221);
+	jPanel27.add(deviceField148);
+
+	deviceField149.setIdentifier("");
+	deviceField149.setLabelString("Threshold: ");
+	deviceField149.setNumCols(4);
+	deviceField149.setOffsetNid(2227);
+	jPanel27.add(deviceField149);
+
+	deviceChoice20.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice20.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice20.setConvert(true);
+	deviceChoice20.setIdentifier("");
+	deviceChoice20.setLabelString("Relative Phase: ");
+	deviceChoice20.setOffsetNid(2233);
+	deviceChoice20.setUpdateIdentifier("");
+	jPanel27.add(deviceChoice20);
+
+	jPanel11.add(jPanel27);
+
+	jPanel28.setBorder(javax.swing.BorderFactory.createTitledBorder("6"));
+
+	deviceField150.setIdentifier("");
+	deviceField150.setLabelString("M: ");
+	deviceField150.setNumCols(4);
+	deviceField150.setOffsetNid(2239);
+	jPanel28.add(deviceField150);
+
+	deviceField151.setIdentifier("");
+	deviceField151.setLabelString("N: ");
+	deviceField151.setNumCols(4);
+	deviceField151.setOffsetNid(2245);
+	jPanel28.add(deviceField151);
+
+	deviceField152.setIdentifier("");
+	deviceField152.setLabelString("Freq: ");
+	deviceField152.setNumCols(4);
+	deviceField152.setOffsetNid(2251);
+	jPanel28.add(deviceField152);
+
+	deviceField153.setIdentifier("");
+	deviceField153.setLabelString("Amp: ");
+	deviceField153.setNumCols(4);
+	deviceField153.setOffsetNid(2257);
+	jPanel28.add(deviceField153);
+
+	deviceField154.setIdentifier("");
+	deviceField154.setLabelString("Phase: ");
+	deviceField154.setNumCols(4);
+	deviceField154.setOffsetNid(2263);
+	jPanel28.add(deviceField154);
+
+	deviceField155.setIdentifier("");
+	deviceField155.setLabelString("Start time: ");
+	deviceField155.setNumCols(4);
+	deviceField155.setOffsetNid(2269);
+	jPanel28.add(deviceField155);
+
+	deviceField156.setIdentifier("");
+	deviceField156.setLabelString("Rise time: ");
+	deviceField156.setNumCols(4);
+	deviceField156.setOffsetNid(2275);
+	jPanel28.add(deviceField156);
+
+	deviceField157.setIdentifier("");
+	deviceField157.setLabelString("End time: ");
+	deviceField157.setNumCols(4);
+	deviceField157.setOffsetNid(2281);
+	jPanel28.add(deviceField157);
+
+	deviceField158.setIdentifier("");
+	deviceField158.setLabelString("Fall time: ");
+	deviceField158.setNumCols(4);
+	deviceField158.setOffsetNid(2287);
+	jPanel28.add(deviceField158);
+
+	deviceField159.setIdentifier("");
+	deviceField159.setLabelString("Threshold: ");
+	deviceField159.setNumCols(4);
+	deviceField159.setOffsetNid(2293);
+	jPanel28.add(deviceField159);
+
+	deviceChoice21.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice21.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice21.setConvert(true);
+	deviceChoice21.setIdentifier("");
+	deviceChoice21.setLabelString("Relative Phase: ");
+	deviceChoice21.setOffsetNid(2299);
+	deviceChoice21.setUpdateIdentifier("");
+	jPanel28.add(deviceChoice21);
+
+	jPanel11.add(jPanel28);
+
+	jPanel29.setBorder(javax.swing.BorderFactory.createTitledBorder("7"));
+
+	deviceField160.setIdentifier("");
+	deviceField160.setLabelString("M: ");
+	deviceField160.setNumCols(4);
+	deviceField160.setOffsetNid(2305);
+	jPanel29.add(deviceField160);
+
+	deviceField161.setIdentifier("");
+	deviceField161.setLabelString("N: ");
+	deviceField161.setNumCols(4);
+	deviceField161.setOffsetNid(2311);
+	jPanel29.add(deviceField161);
+
+	deviceField162.setIdentifier("");
+	deviceField162.setLabelString("Freq: ");
+	deviceField162.setNumCols(4);
+	deviceField162.setOffsetNid(2317);
+	jPanel29.add(deviceField162);
+
+	deviceField163.setIdentifier("");
+	deviceField163.setLabelString("Amp: ");
+	deviceField163.setNumCols(4);
+	deviceField163.setOffsetNid(2323);
+	jPanel29.add(deviceField163);
+
+	deviceField164.setIdentifier("");
+	deviceField164.setLabelString("Phase: ");
+	deviceField164.setNumCols(4);
+	deviceField164.setOffsetNid(2329);
+	jPanel29.add(deviceField164);
+
+	deviceField165.setIdentifier("");
+	deviceField165.setLabelString("Start time: ");
+	deviceField165.setNumCols(4);
+	deviceField165.setOffsetNid(2335);
+	jPanel29.add(deviceField165);
+
+	deviceField166.setIdentifier("");
+	deviceField166.setLabelString("Rise time: ");
+	deviceField166.setNumCols(4);
+	deviceField166.setOffsetNid(2341);
+	jPanel29.add(deviceField166);
+
+	deviceField167.setIdentifier("");
+	deviceField167.setLabelString("End time: ");
+	deviceField167.setNumCols(4);
+	deviceField167.setOffsetNid(2347);
+	jPanel29.add(deviceField167);
+
+	deviceField168.setIdentifier("");
+	deviceField168.setLabelString("Fall time: ");
+	deviceField168.setNumCols(4);
+	deviceField168.setOffsetNid(2353);
+	jPanel29.add(deviceField168);
+
+	deviceField169.setIdentifier("");
+	deviceField169.setLabelString("Threshold: ");
+	deviceField169.setNumCols(4);
+	deviceField169.setOffsetNid(2359);
+	jPanel29.add(deviceField169);
+
+	deviceChoice22.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice22.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice22.setConvert(true);
+	deviceChoice22.setIdentifier("");
+	deviceChoice22.setLabelString("Relative Phase: ");
+	deviceChoice22.setOffsetNid(2365);
+	deviceChoice22.setUpdateIdentifier("");
+	jPanel29.add(deviceChoice22);
+
+	jPanel11.add(jPanel29);
+
+	jPanel32.setBorder(javax.swing.BorderFactory.createTitledBorder("8"));
+
+	deviceField173.setIdentifier("");
+	deviceField173.setLabelString("M: ");
+	deviceField173.setNumCols(4);
+	deviceField173.setOffsetNid(2371);
+	jPanel32.add(deviceField173);
+
+	deviceField174.setIdentifier("");
+	deviceField174.setLabelString("N: ");
+	deviceField174.setNumCols(4);
+	deviceField174.setOffsetNid(2377);
+	jPanel32.add(deviceField174);
+
+	deviceField175.setIdentifier("");
+	deviceField175.setLabelString("Freq: ");
+	deviceField175.setNumCols(4);
+	deviceField175.setOffsetNid(2383);
+	jPanel32.add(deviceField175);
+
+	deviceField176.setIdentifier("");
+	deviceField176.setLabelString("Amp: ");
+	deviceField176.setNumCols(4);
+	deviceField176.setOffsetNid(2389);
+	jPanel32.add(deviceField176);
+
+	deviceField177.setIdentifier("");
+	deviceField177.setLabelString("Phase: ");
+	deviceField177.setNumCols(4);
+	deviceField177.setOffsetNid(2395);
+	jPanel32.add(deviceField177);
+
+	deviceField178.setIdentifier("");
+	deviceField178.setLabelString("Start time: ");
+	deviceField178.setNumCols(4);
+	deviceField178.setOffsetNid(2401);
+	jPanel32.add(deviceField178);
+
+	deviceField179.setIdentifier("");
+	deviceField179.setLabelString("Rise time: ");
+	deviceField179.setNumCols(4);
+	deviceField179.setOffsetNid(2407);
+	jPanel32.add(deviceField179);
+
+	deviceField180.setIdentifier("");
+	deviceField180.setLabelString("End time: ");
+	deviceField180.setNumCols(4);
+	deviceField180.setOffsetNid(2413);
+	jPanel32.add(deviceField180);
+
+	deviceField181.setIdentifier("");
+	deviceField181.setLabelString("Fall time: ");
+	deviceField181.setNumCols(4);
+	deviceField181.setOffsetNid(2419);
+	jPanel32.add(deviceField181);
+
+	deviceField182.setIdentifier("");
+	deviceField182.setLabelString("Threshold: ");
+	deviceField182.setNumCols(4);
+	deviceField182.setOffsetNid(2425);
+	jPanel32.add(deviceField182);
+
+	deviceChoice24.setChoiceIntValues(new int[] {0, 1, 2});
+	deviceChoice24.setChoiceItems(new String[] {"NO", "YES", "0,1"});
+	deviceChoice24.setConvert(true);
+	deviceChoice24.setIdentifier("");
+	deviceChoice24.setLabelString("Relative Phase: ");
+	deviceChoice24.setOffsetNid(2431);
+	deviceChoice24.setUpdateIdentifier("");
+	jPanel32.add(deviceChoice24);
+
+	jPanel11.add(jPanel32);
+
+	jScrollPane3.setViewportView(jPanel11);
+
+	jTabbedPane1.addTab("Rot. Pert. FF", jScrollPane3);
+
+	jPanel12.setLayout(new java.awt.BorderLayout());
+
+	jPanel33.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice25.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice25.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice25.setConvert(true);
+	deviceChoice25.setIdentifier("");
+	deviceChoice25.setLabelString("Hor. Field Control: ");
+	deviceChoice25.setOffsetNid(2437);
+	deviceChoice25.setUpdateIdentifier("");
+	jPanel34.add(deviceChoice25);
+
+	deviceField183.setIdentifier("");
+	deviceField183.setLabelString("Start Time: ");
+	deviceField183.setNumCols(4);
+	deviceField183.setOffsetNid(2467);
+	jPanel34.add(deviceField183);
+
+	deviceField184.setIdentifier("");
+	deviceField184.setLabelString("End Time: ");
+	deviceField184.setNumCols(4);
+	deviceField184.setOffsetNid(2473);
+	jPanel34.add(deviceField184);
+
+	deviceField185.setIdentifier("");
+	deviceField185.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField185.setNumCols(4);
+	deviceField185.setOffsetNid(2479);
+	jPanel34.add(deviceField185);
+
+	deviceField40.setIdentifier("");
+	deviceField40.setLabelString("Reference Cutoff Freq");
+	deviceField40.setNumCols(4);
+	deviceField40.setOffsetNid(3229);
+	jPanel34.add(deviceField40);
+
+	jPanel33.add(jPanel34);
+
+	deviceTable6.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable6.setDisplayRowNumber(true);
+	deviceTable6.setIdentifier("");
+	deviceTable6.setLabelString("Kp Amp.");
+	deviceTable6.setNumCols(48);
+	deviceTable6.setNumRows(4);
+	deviceTable6.setOffsetNid(2443);
+	deviceTable6.setRefMode(1);
+	deviceTable6.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel33.add(deviceTable6);
+
+	deviceTable7.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable7.setDisplayRowNumber(true);
+	deviceTable7.setIdentifier("");
+	deviceTable7.setLabelString("Kp Phase");
+	deviceTable7.setNumCols(48);
+	deviceTable7.setNumRows(4);
+	deviceTable7.setOffsetNid(2449);
+	deviceTable7.setRefMode(2);
+	deviceTable7.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel33.add(deviceTable7);
+
+	deviceTable8.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable8.setDisplayRowNumber(true);
+	deviceTable8.setIdentifier("");
+	deviceTable8.setLabelString("Ki");
+	deviceTable8.setNumCols(48);
+	deviceTable8.setNumRows(4);
+	deviceTable8.setOffsetNid(2455);
+	deviceTable8.setRefMode(1);
+	deviceTable8.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel33.add(deviceTable8);
+
+	deviceTable9.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable9.setDisplayRowNumber(true);
+	deviceTable9.setIdentifier("");
+	deviceTable9.setLabelString("Kd");
+	deviceTable9.setNumCols(48);
+	deviceTable9.setNumRows(4);
+	deviceTable9.setOffsetNid(2461);
+	deviceTable9.setRefMode(1);
+	deviceTable9.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel33.add(deviceTable9);
+
+	jTabbedPane2.addTab("1", jPanel33);
+
+	jPanel39.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice28.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice28.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice28.setConvert(true);
+	deviceChoice28.setIdentifier("");
+	deviceChoice28.setLabelString("Hor. Field Control: ");
+	deviceChoice28.setOffsetNid(2485);
+	deviceChoice28.setUpdateIdentifier("");
+	jPanel40.add(deviceChoice28);
+
+	deviceField192.setIdentifier("");
+	deviceField192.setLabelString("Start Time: ");
+	deviceField192.setNumCols(4);
+	deviceField192.setOffsetNid(2515);
+	jPanel40.add(deviceField192);
+
+	deviceField193.setIdentifier("");
+	deviceField193.setLabelString("End Time: ");
+	deviceField193.setNumCols(4);
+	deviceField193.setOffsetNid(2521);
+	jPanel40.add(deviceField193);
+
+	deviceField194.setIdentifier("");
+	deviceField194.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField194.setNumCols(4);
+	deviceField194.setOffsetNid(2527);
+	jPanel40.add(deviceField194);
+
+	deviceField41.setIdentifier("");
+	deviceField41.setLabelString("Reference Cutoff Freq");
+	deviceField41.setNumCols(4);
+	deviceField41.setOffsetNid(3235);
+	jPanel40.add(deviceField41);
+
+	jPanel39.add(jPanel40);
+
+	deviceTable18.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable18.setDisplayRowNumber(true);
+	deviceTable18.setIdentifier("");
+	deviceTable18.setLabelString("Kp Amp.");
+	deviceTable18.setNumCols(48);
+	deviceTable18.setNumRows(4);
+	deviceTable18.setOffsetNid(2491);
+	deviceTable18.setRefMode(1);
+	deviceTable18.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel39.add(deviceTable18);
+
+	deviceTable19.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable19.setDisplayRowNumber(true);
+	deviceTable19.setIdentifier("");
+	deviceTable19.setLabelString("Kp Phase");
+	deviceTable19.setNumCols(48);
+	deviceTable19.setNumRows(4);
+	deviceTable19.setOffsetNid(2497);
+	deviceTable19.setRefMode(2);
+	deviceTable19.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel39.add(deviceTable19);
+
+	deviceTable20.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable20.setDisplayRowNumber(true);
+	deviceTable20.setIdentifier("");
+	deviceTable20.setLabelString("Ki");
+	deviceTable20.setNumCols(48);
+	deviceTable20.setNumRows(4);
+	deviceTable20.setOffsetNid(2503);
+	deviceTable20.setRefMode(1);
+	deviceTable20.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel39.add(deviceTable20);
+
+	deviceTable21.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable21.setDisplayRowNumber(true);
+	deviceTable21.setIdentifier("");
+	deviceTable21.setLabelString("Kd");
+	deviceTable21.setNumCols(48);
+	deviceTable21.setNumRows(4);
+	deviceTable21.setOffsetNid(2509);
+	deviceTable21.setRefMode(1);
+	deviceTable21.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel39.add(deviceTable21);
+
+	jTabbedPane2.addTab("2", jPanel39);
+
+	jPanel30.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice23.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice23.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice23.setConvert(true);
+	deviceChoice23.setIdentifier("");
+	deviceChoice23.setLabelString("Hor. Field Control: ");
+	deviceChoice23.setOffsetNid(2533);
+	deviceChoice23.setUpdateIdentifier("");
+	jPanel31.add(deviceChoice23);
+
+	deviceField170.setIdentifier("");
+	deviceField170.setLabelString("Start Time: ");
+	deviceField170.setNumCols(4);
+	deviceField170.setOffsetNid(2563);
+	jPanel31.add(deviceField170);
+
+	deviceField171.setIdentifier("");
+	deviceField171.setLabelString("End Time: ");
+	deviceField171.setNumCols(4);
+	deviceField171.setOffsetNid(2569);
+	jPanel31.add(deviceField171);
+
+	deviceField172.setIdentifier("");
+	deviceField172.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField172.setNumCols(4);
+	deviceField172.setOffsetNid(2575);
+	jPanel31.add(deviceField172);
+
+	deviceField42.setIdentifier("");
+	deviceField42.setLabelString("Reference Cutoff Freq");
+	deviceField42.setNumCols(4);
+	deviceField42.setOffsetNid(3241);
+	jPanel31.add(deviceField42);
+
+	jPanel30.add(jPanel31);
+
+	deviceTable2.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable2.setDisplayRowNumber(true);
+	deviceTable2.setIdentifier("");
+	deviceTable2.setLabelString("Kp Amp.");
+	deviceTable2.setNumCols(48);
+	deviceTable2.setNumRows(4);
+	deviceTable2.setOffsetNid(2539);
+	deviceTable2.setRefMode(1);
+	deviceTable2.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel30.add(deviceTable2);
+
+	deviceTable3.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable3.setDisplayRowNumber(true);
+	deviceTable3.setIdentifier("");
+	deviceTable3.setLabelString("Kp Phase");
+	deviceTable3.setNumCols(48);
+	deviceTable3.setNumRows(4);
+	deviceTable3.setOffsetNid(2545);
+	deviceTable3.setRefMode(2);
+	deviceTable3.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel30.add(deviceTable3);
+
+	deviceTable4.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable4.setDisplayRowNumber(true);
+	deviceTable4.setIdentifier("");
+	deviceTable4.setLabelString("Ki");
+	deviceTable4.setNumCols(48);
+	deviceTable4.setNumRows(4);
+	deviceTable4.setOffsetNid(2551);
+	deviceTable4.setRefMode(1);
+	deviceTable4.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel30.add(deviceTable4);
+
+	deviceTable5.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable5.setDisplayRowNumber(true);
+	deviceTable5.setIdentifier("");
+	deviceTable5.setLabelString("Kd");
+	deviceTable5.setNumCols(48);
+	deviceTable5.setNumRows(4);
+	deviceTable5.setOffsetNid(2557);
+	deviceTable5.setRefMode(1);
+	deviceTable5.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel30.add(deviceTable5);
+
+	jTabbedPane2.addTab("3", jPanel30);
+
+	jPanel35.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice26.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice26.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice26.setConvert(true);
+	deviceChoice26.setIdentifier("");
+	deviceChoice26.setLabelString("Hor. Field Control: ");
+	deviceChoice26.setOffsetNid(2581);
+	deviceChoice26.setUpdateIdentifier("");
+	jPanel36.add(deviceChoice26);
+
+	deviceField186.setIdentifier("");
+	deviceField186.setLabelString("Start Time: ");
+	deviceField186.setNumCols(4);
+	deviceField186.setOffsetNid(2611);
+	jPanel36.add(deviceField186);
+
+	deviceField187.setIdentifier("");
+	deviceField187.setLabelString("End Time: ");
+	deviceField187.setNumCols(4);
+	deviceField187.setOffsetNid(2617);
+	jPanel36.add(deviceField187);
+
+	deviceField188.setIdentifier("");
+	deviceField188.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField188.setNumCols(4);
+	deviceField188.setOffsetNid(2623);
+	jPanel36.add(deviceField188);
+
+	deviceField43.setIdentifier("");
+	deviceField43.setLabelString("Reference Cutoff Freq");
+	deviceField43.setNumCols(4);
+	deviceField43.setOffsetNid(3247);
+	jPanel36.add(deviceField43);
+
+	jPanel35.add(jPanel36);
+
+	deviceTable10.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable10.setDisplayRowNumber(true);
+	deviceTable10.setIdentifier("");
+	deviceTable10.setLabelString("Kp Amp.");
+	deviceTable10.setNumCols(48);
+	deviceTable10.setNumRows(4);
+	deviceTable10.setOffsetNid(2587);
+	deviceTable10.setRefMode(1);
+	deviceTable10.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel35.add(deviceTable10);
+
+	deviceTable11.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable11.setDisplayRowNumber(true);
+	deviceTable11.setIdentifier("");
+	deviceTable11.setLabelString("Kp Phase");
+	deviceTable11.setNumCols(48);
+	deviceTable11.setNumRows(4);
+	deviceTable11.setOffsetNid(2593);
+	deviceTable11.setRefMode(2);
+	deviceTable11.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel35.add(deviceTable11);
+
+	deviceTable12.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable12.setDisplayRowNumber(true);
+	deviceTable12.setIdentifier("");
+	deviceTable12.setLabelString("Ki");
+	deviceTable12.setNumCols(48);
+	deviceTable12.setNumRows(4);
+	deviceTable12.setOffsetNid(2599);
+	deviceTable12.setRefMode(1);
+	deviceTable12.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel35.add(deviceTable12);
+
+	deviceTable13.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable13.setDisplayRowNumber(true);
+	deviceTable13.setIdentifier("");
+	deviceTable13.setLabelString("Kd");
+	deviceTable13.setNumCols(48);
+	deviceTable13.setNumRows(4);
+	deviceTable13.setOffsetNid(2605);
+	deviceTable13.setRefMode(1);
+	deviceTable13.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel35.add(deviceTable13);
+
+	jTabbedPane2.addTab("4", jPanel35);
+
+	jPanel37.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice27.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice27.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice27.setConvert(true);
+	deviceChoice27.setIdentifier("");
+	deviceChoice27.setLabelString("Hor. Field Control: ");
+	deviceChoice27.setOffsetNid(2629);
+	deviceChoice27.setUpdateIdentifier("");
+	jPanel38.add(deviceChoice27);
+
+	deviceField189.setIdentifier("");
+	deviceField189.setLabelString("Start Time: ");
+	deviceField189.setNumCols(4);
+	deviceField189.setOffsetNid(2659);
+	jPanel38.add(deviceField189);
+
+	deviceField190.setIdentifier("");
+	deviceField190.setLabelString("End Time: ");
+	deviceField190.setNumCols(4);
+	deviceField190.setOffsetNid(2665);
+	jPanel38.add(deviceField190);
+
+	deviceField191.setIdentifier("");
+	deviceField191.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField191.setNumCols(4);
+	deviceField191.setOffsetNid(2671);
+	jPanel38.add(deviceField191);
+
+	deviceField44.setIdentifier("");
+	deviceField44.setLabelString("Reference Cutoff Freq");
+	deviceField44.setNumCols(4);
+	deviceField44.setOffsetNid(3253);
+	jPanel38.add(deviceField44);
+
+	jPanel37.add(jPanel38);
+
+	deviceTable14.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable14.setDisplayRowNumber(true);
+	deviceTable14.setIdentifier("");
+	deviceTable14.setLabelString("Kp Amp.");
+	deviceTable14.setNumCols(48);
+	deviceTable14.setNumRows(4);
+	deviceTable14.setOffsetNid(2635);
+	deviceTable14.setRefMode(1);
+	deviceTable14.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel37.add(deviceTable14);
+
+	deviceTable15.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable15.setDisplayRowNumber(true);
+	deviceTable15.setIdentifier("");
+	deviceTable15.setLabelString("Kp Phase");
+	deviceTable15.setNumCols(48);
+	deviceTable15.setNumRows(4);
+	deviceTable15.setOffsetNid(2641);
+	deviceTable15.setRefMode(2);
+	deviceTable15.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel37.add(deviceTable15);
+
+	deviceTable16.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable16.setDisplayRowNumber(true);
+	deviceTable16.setIdentifier("");
+	deviceTable16.setLabelString("Ki");
+	deviceTable16.setNumCols(48);
+	deviceTable16.setNumRows(4);
+	deviceTable16.setOffsetNid(2647);
+	deviceTable16.setRefMode(1);
+	deviceTable16.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel37.add(deviceTable16);
+
+	deviceTable17.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable17.setDisplayRowNumber(true);
+	deviceTable17.setIdentifier("");
+	deviceTable17.setLabelString("Kd");
+	deviceTable17.setNumCols(48);
+	deviceTable17.setNumRows(4);
+	deviceTable17.setOffsetNid(2653);
+	deviceTable17.setRefMode(1);
+	deviceTable17.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel37.add(deviceTable17);
+
+	jTabbedPane2.addTab("5", jPanel37);
+
+	jPanel41.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice29.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice29.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice29.setConvert(true);
+	deviceChoice29.setIdentifier("");
+	deviceChoice29.setLabelString("Hor. Field Control: ");
+	deviceChoice29.setOffsetNid(2677);
+	deviceChoice29.setUpdateIdentifier("");
+	jPanel42.add(deviceChoice29);
+
+	deviceField195.setIdentifier("");
+	deviceField195.setLabelString("Start Time: ");
+	deviceField195.setNumCols(4);
+	deviceField195.setOffsetNid(2707);
+	jPanel42.add(deviceField195);
+
+	deviceField196.setIdentifier("");
+	deviceField196.setLabelString("End Time: ");
+	deviceField196.setNumCols(4);
+	deviceField196.setOffsetNid(2713);
+	jPanel42.add(deviceField196);
+
+	deviceField197.setIdentifier("");
+	deviceField197.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField197.setNumCols(4);
+	deviceField197.setOffsetNid(2719);
+	jPanel42.add(deviceField197);
+
+	deviceField45.setIdentifier("");
+	deviceField45.setLabelString("Reference Cutoff Freq");
+	deviceField45.setNumCols(4);
+	deviceField45.setOffsetNid(3259);
+	jPanel42.add(deviceField45);
+
+	jPanel41.add(jPanel42);
+
+	deviceTable22.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable22.setDisplayRowNumber(true);
+	deviceTable22.setIdentifier("");
+	deviceTable22.setLabelString("Kp Amp.");
+	deviceTable22.setNumCols(48);
+	deviceTable22.setNumRows(4);
+	deviceTable22.setOffsetNid(2683);
+	deviceTable22.setRefMode(1);
+	deviceTable22.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel41.add(deviceTable22);
+
+	deviceTable23.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable23.setDisplayRowNumber(true);
+	deviceTable23.setIdentifier("");
+	deviceTable23.setLabelString("Kp Phase");
+	deviceTable23.setNumCols(48);
+	deviceTable23.setNumRows(4);
+	deviceTable23.setOffsetNid(2689);
+	deviceTable23.setRefMode(2);
+	deviceTable23.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel41.add(deviceTable23);
+
+	deviceTable24.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable24.setDisplayRowNumber(true);
+	deviceTable24.setIdentifier("");
+	deviceTable24.setLabelString("Ki");
+	deviceTable24.setNumCols(48);
+	deviceTable24.setNumRows(4);
+	deviceTable24.setOffsetNid(2695);
+	deviceTable24.setRefMode(1);
+	deviceTable24.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel41.add(deviceTable24);
+
+	deviceTable25.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable25.setDisplayRowNumber(true);
+	deviceTable25.setIdentifier("");
+	deviceTable25.setLabelString("Kd");
+	deviceTable25.setNumCols(48);
+	deviceTable25.setNumRows(4);
+	deviceTable25.setOffsetNid(2701);
+	deviceTable25.setRefMode(1);
+	deviceTable25.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel41.add(deviceTable25);
+
+	jTabbedPane2.addTab("6", jPanel41);
+
+	jPanel43.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice30.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice30.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice30.setConvert(true);
+	deviceChoice30.setIdentifier("");
+	deviceChoice30.setLabelString("Hor. Field Control: ");
+	deviceChoice30.setOffsetNid(2725);
+	deviceChoice30.setUpdateIdentifier("");
+	jPanel44.add(deviceChoice30);
+
+	deviceField198.setIdentifier("");
+	deviceField198.setLabelString("Start Time: ");
+	deviceField198.setNumCols(4);
+	deviceField198.setOffsetNid(2755);
+	jPanel44.add(deviceField198);
+
+	deviceField199.setIdentifier("");
+	deviceField199.setLabelString("End Time: ");
+	deviceField199.setNumCols(4);
+	deviceField199.setOffsetNid(2761);
+	jPanel44.add(deviceField199);
+
+	deviceField200.setIdentifier("");
+	deviceField200.setLabelString("Reference Cutoff Freq.: ");
+	deviceField200.setNumCols(4);
+	deviceField200.setOffsetNid(2767);
+	jPanel44.add(deviceField200);
+
+	deviceField46.setIdentifier("");
+	deviceField46.setLabelString("Reference Cutoff Freq");
+	deviceField46.setNumCols(4);
+	deviceField46.setOffsetNid(3265);
+	jPanel44.add(deviceField46);
+
+	jPanel43.add(jPanel44);
+
+	deviceTable26.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable26.setDisplayRowNumber(true);
+	deviceTable26.setIdentifier("");
+	deviceTable26.setLabelString("Kp Amp.");
+	deviceTable26.setNumCols(48);
+	deviceTable26.setNumRows(4);
+	deviceTable26.setOffsetNid(2731);
+	deviceTable26.setRefMode(1);
+	deviceTable26.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel43.add(deviceTable26);
+
+	deviceTable27.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable27.setDisplayRowNumber(true);
+	deviceTable27.setIdentifier("");
+	deviceTable27.setLabelString("Kp Phase");
+	deviceTable27.setNumCols(48);
+	deviceTable27.setNumRows(4);
+	deviceTable27.setOffsetNid(2737);
+	deviceTable27.setRefMode(2);
+	deviceTable27.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel43.add(deviceTable27);
+
+	deviceTable28.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable28.setDisplayRowNumber(true);
+	deviceTable28.setIdentifier("");
+	deviceTable28.setLabelString("Ki");
+	deviceTable28.setNumCols(48);
+	deviceTable28.setNumRows(4);
+	deviceTable28.setOffsetNid(2743);
+	deviceTable28.setRefMode(1);
+	deviceTable28.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel43.add(deviceTable28);
+
+	deviceTable29.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable29.setDisplayRowNumber(true);
+	deviceTable29.setIdentifier("");
+	deviceTable29.setLabelString("Kd");
+	deviceTable29.setNumCols(48);
+	deviceTable29.setNumRows(4);
+	deviceTable29.setOffsetNid(2749);
+	deviceTable29.setRefMode(1);
+	deviceTable29.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel43.add(deviceTable29);
+
+	jTabbedPane2.addTab("7", jPanel43);
+
+	jPanel45.setLayout(new java.awt.GridLayout(5, 1));
+
+	deviceChoice31.setChoiceIntValues(new int[] {0, 1});
+	deviceChoice31.setChoiceItems(new String[] {"DISABLED", "ENABLED"});
+	deviceChoice31.setConvert(true);
+	deviceChoice31.setIdentifier("");
+	deviceChoice31.setLabelString("Hor. Field Control: ");
+	deviceChoice31.setOffsetNid(2773);
+	deviceChoice31.setUpdateIdentifier("");
+	jPanel46.add(deviceChoice31);
+
+	deviceField201.setIdentifier("");
+	deviceField201.setLabelString("Start Time: ");
+	deviceField201.setNumCols(4);
+	deviceField201.setOffsetNid(2803);
+	jPanel46.add(deviceField201);
+
+	deviceField202.setIdentifier("");
+	deviceField202.setLabelString("End Time: ");
+	deviceField202.setNumCols(4);
+	deviceField202.setOffsetNid(2809);
+	jPanel46.add(deviceField202);
+
+	deviceField203.setIdentifier("");
+	deviceField203.setLabelString("Derivative Cutoff Freq.: ");
+	deviceField203.setNumCols(4);
+	deviceField203.setOffsetNid(2815);
+	jPanel46.add(deviceField203);
+
+	deviceField47.setIdentifier("");
+	deviceField47.setLabelString("Reference Cutoff Freq");
+	deviceField47.setNumCols(4);
+	deviceField47.setOffsetNid(3271);
+	jPanel46.add(deviceField47);
+
+	jPanel45.add(jPanel46);
+
+	deviceTable30.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable30.setDisplayRowNumber(true);
+	deviceTable30.setIdentifier("");
+	deviceTable30.setLabelString("Kp Amp.");
+	deviceTable30.setNumCols(48);
+	deviceTable30.setNumRows(4);
+	deviceTable30.setOffsetNid(2779);
+	deviceTable30.setRefMode(1);
+	deviceTable30.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel45.add(deviceTable30);
+
+	deviceTable31.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable31.setDisplayRowNumber(true);
+	deviceTable31.setIdentifier("");
+	deviceTable31.setLabelString("Kp Phase");
+	deviceTable31.setNumCols(48);
+	deviceTable31.setNumRows(4);
+	deviceTable31.setOffsetNid(2785);
+	deviceTable31.setRefMode(2);
+	deviceTable31.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel45.add(deviceTable31);
+
+	deviceTable32.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable32.setDisplayRowNumber(true);
+	deviceTable32.setIdentifier("");
+	deviceTable32.setLabelString("Ki");
+	deviceTable32.setNumCols(48);
+	deviceTable32.setNumRows(4);
+	deviceTable32.setOffsetNid(2791);
+	deviceTable32.setRefMode(1);
+	deviceTable32.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel45.add(deviceTable32);
+
+	deviceTable33.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24", "23", "22", "21", "20", "19", "18", "17", "16", "15", "14", "13", "12", "11", "10", "9", "8", "7", "6", "5", "4", "3", "2", "1"});
+	deviceTable33.setDisplayRowNumber(true);
+	deviceTable33.setIdentifier("");
+	deviceTable33.setLabelString("Kd");
+	deviceTable33.setNumCols(48);
+	deviceTable33.setNumRows(4);
+	deviceTable33.setOffsetNid(2797);
+	deviceTable33.setRefMode(1);
+	deviceTable33.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel45.add(deviceTable33);
+
+	jTabbedPane2.addTab("8", jPanel45);
+
+	jPanel12.add(jTabbedPane2, java.awt.BorderLayout.CENTER);
+
+	jTabbedPane1.addTab("ModeControl", jPanel12);
+
+	jPanel7.setLayout(new java.awt.BorderLayout());
+
+	jPanel17.setLayout(new java.awt.GridLayout(3, 1));
+
+	deviceTable34.setColumnNames(new String[] {"0", "-1", "-2", "-3", "-4", "-5", "-6", "-7", "-8", "-9", "-10", "-11", "-12", "-13", "-14", "-15", "-16", "-17", "-18", "-19", "-20", "-21", "-22", "-23", "-24"});
+	deviceTable34.setIdentifier("");
+	deviceTable34.setLabelString("Reconfigured Modes: ");
+	deviceTable34.setNumCols(48);
+	deviceTable34.setNumRows(4);
+	deviceTable34.setOffsetNid(3223);
+	deviceTable34.setRefMode(1);
+	deviceTable34.setRowNames(new String[] {"0", "1", "2", "-1"});
+	jPanel47.add(deviceTable34);
+
+	jPanel17.add(jPanel47);
+
+	deviceTable35.setBinary(true);
+	deviceTable35.setIdentifier("");
+	deviceTable35.setLabelString("Coil Enabled: ");
+	deviceTable35.setNumCols(48);
+	deviceTable35.setNumRows(4);
+	deviceTable35.setOffsetNid(3211);
+	jPanel48.add(deviceTable35);
+
+	jPanel17.add(jPanel48);
+
+	deviceTable36.setIdentifier("");
+	deviceTable36.setLabelString("Supercoild indexes: ");
+	deviceTable36.setNumCols(48);
+	deviceTable36.setNumRows(4);
+	deviceTable36.setOffsetNid(3217);
+	jPanel49.add(deviceTable36);
+
+	jPanel17.add(jPanel49);
+
+	jPanel7.add(jPanel17, java.awt.BorderLayout.CENTER);
+
+	jTabbedPane1.addTab("Reconfiguration", jPanel7);
+
+	jPanel1.add(jTabbedPane1, java.awt.BorderLayout.PAGE_START);
+
+	getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
 

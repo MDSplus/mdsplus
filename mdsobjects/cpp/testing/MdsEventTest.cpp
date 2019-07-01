@@ -74,21 +74,21 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
     try {
     static char evname[100] = "empty";
     if(strcmp(evname,"empty") == 0)
-        sprintf(evname,"event_test_%d",getpid());
+	sprintf(evname,"event_test_%d",getpid());
 
     { // NULL EVENT //
 	pthread_t thread;
 	if (pthread_create(&thread, attrp, setevent, (void*)evname))
 	  throw std::runtime_error("ERROR: Could not create thread for setevent");
-        Event ev(evname);
+	Event ev(evname);
 	std::cout << "Waiting for wait\n" << std::flush;
-        ev.wait();
+	ev.wait();
 	std::cout << "Waiting for thread\n" << std::flush;
 	pthread_join(thread,NULL);
     }
 
     { // RAW EVENT //
-        static std::string str("test string to be compared");
+	static std::string str("test string to be compared");
 	void* args[] = {evname,&str};
 	pthread_t thread;
 	if (pthread_create(&thread, attrp, seteventraw, (void*)args))

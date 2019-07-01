@@ -113,19 +113,19 @@ public:
 
       int key = data->getKey();
       if (key < 0)
-         return -1;
+	 return -1;
       if (key >= m_iMaxSize)
-         key %= m_iHashSize;
+	 key %= m_iHashSize;
 
       const ItemPtrList& item_list = m_vHashPtr[key];
       for (typename ItemPtrList::const_iterator i = item_list.begin(); i != item_list.end(); ++ i)
       {
-         if (*data == ***i)
-         {
-            // copy the cached info
-            *data = ***i;
-            return 0;
-         }
+	 if (*data == ***i)
+	 {
+	    // copy the cached info
+	    *data = ***i;
+	    return 0;
+	 }
       }
 
       return -1;
@@ -144,31 +144,31 @@ public:
 
       int key = data->getKey();
       if (key < 0)
-         return -1;
+	 return -1;
       if (key >= m_iMaxSize)
-         key %= m_iHashSize;
+	 key %= m_iHashSize;
 
       T* curr = NULL;
 
       ItemPtrList& item_list = m_vHashPtr[key];
       for (typename ItemPtrList::iterator i = item_list.begin(); i != item_list.end(); ++ i)
       {
-         if (*data == ***i)
-         {
-            // update the existing entry with the new value
-            ***i = *data;
-            curr = **i;
+	 if (*data == ***i)
+	 {
+	    // update the existing entry with the new value
+	    ***i = *data;
+	    curr = **i;
 
-            // remove the current entry
-            m_StorageList.erase(*i);
-            item_list.erase(i);
+	    // remove the current entry
+	    m_StorageList.erase(*i);
+	    item_list.erase(i);
 
-            // re-insert to the front
-            m_StorageList.push_front(curr);
-            item_list.push_front(m_StorageList.begin());
+	    // re-insert to the front
+	    m_StorageList.push_front(curr);
+	    item_list.push_front(m_StorageList.begin());
 
-            return 0;
-         }
+	    return 0;
+	 }
       }
 
       // create new entry and insert to front
@@ -179,24 +179,24 @@ public:
       ++ m_iCurrSize;
       if (m_iCurrSize >= m_iMaxSize)
       {
-         // Cache overflow, remove oldest entry.
-         T* last_data = m_StorageList.back();
-         int last_key = last_data->getKey() % m_iHashSize;
+	 // Cache overflow, remove oldest entry.
+	 T* last_data = m_StorageList.back();
+	 int last_key = last_data->getKey() % m_iHashSize;
 
-         item_list = m_vHashPtr[last_key];
-         for (typename ItemPtrList::iterator i = item_list.begin(); i != item_list.end(); ++ i)
-         {
-            if (*last_data == ***i)
-            {
-               item_list.erase(i);
-               break;
-            }
-         }
+	 item_list = m_vHashPtr[last_key];
+	 for (typename ItemPtrList::iterator i = item_list.begin(); i != item_list.end(); ++ i)
+	 {
+	    if (*last_data == ***i)
+	    {
+	       item_list.erase(i);
+	       break;
+	    }
+	 }
 
-         last_data->release();
-         delete last_data;
-         m_StorageList.pop_back();
-         -- m_iCurrSize;
+	 last_data->release();
+	 delete last_data;
+	 m_StorageList.pop_back();
+	 -- m_iCurrSize;
       }
 
       return 0;
@@ -227,12 +227,12 @@ public:
    {
       for (typename std::list<T*>::iterator i = m_StorageList.begin(); i != m_StorageList.end(); ++ i)
       {
-         (*i)->release();
-         delete *i;
+	 (*i)->release();
+	 delete *i;
       }
       m_StorageList.clear();
       for (typename std::vector<ItemPtrList>::iterator i = m_vHashPtr.begin(); i != m_vHashPtr.end(); ++ i)
-         i->clear();
+	 i->clear();
       m_iCurrSize = 0;
    }
 

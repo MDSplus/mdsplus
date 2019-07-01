@@ -58,8 +58,7 @@ int main(int argc, char **argv)
       printf("%g\n", *(float *)ans.ptr);
     else
       printf("%s\n", (char *)ans.ptr);
-    if (ans.ptr)
-      free(ans.ptr);
+    free(ans.ptr);
   }
   return 1;
 }

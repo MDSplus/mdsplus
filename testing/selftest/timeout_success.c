@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
-    
+
 #if defined(__has_feature)
 #  if __has_feature(address_sanitizer) || __has_feature(thread_sanitizer)
     SKIP_TEST("timeout test disabled on sanitizer");
@@ -59,20 +59,20 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     BEGIN_TESTING(timeout success 10ms );
     usleep(1E4);
     END_TESTING;
-    
-    TEST_TIMEOUT(0.021);    
+
+    TEST_TIMEOUT(0.021);
     BEGIN_TESTING(timeout success 20ms);
     usleep(2E4);
     END_TESTING;
-    
-    // set time unit to double the seconds 
+
+    // set time unit to double the seconds
     // (suppose we are in a half expected speed machine )
     setenv("TEST_TIMEUNIT","2",1);
-            
+
     BEGIN_TESTING(timeout success 2*20ms);
     // simulate a 20ms expected operation in a half speed machine //
     usleep(4E4);
     END_TESTING;
 }
 
-#   endif    
+#   endif

@@ -23,10 +23,10 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi3Exponent.C
-        EXPONENT FIX_ROPRAND FRACTION SCALE SET_EXPONENT
-        Floating point elemental operations.
+	EXPONENT FIX_ROPRAND FRACTION SCALE SET_EXPONENT
+	Floating point elemental operations.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
@@ -63,10 +63,10 @@ extern int IsRoprand();
 *po = dtype##_FLOAT_EXPONENT(pi) ? dtype##_FLOAT_EXPONENT(pi) - dtype##_FLOAT_BIAS : 0; break;
 
 /*-------------------------------------------------------------------
-        F8X exponent part of model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0, EXPONENT(ROPRAND) is 0.
-                integer = EXPONENT(real)
+	F8X exponent part of model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	EXPONENT(1.0) is 1, EXPONENT(4.1) is 3, EXPONENT(0.0) is 0, EXPONENT(ROPRAND) is 0.
+	        integer = EXPONENT(real)
 */
 int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -103,9 +103,9 @@ int Tdi3Exponent(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*-------------------------------------------------------------------
-        Find the valid values.
-                FINITE(expression)
-        VAX dependent.
+	Find the valid values.
+	        FINITE(expression)
+	VAX dependent.
 */
 int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -166,14 +166,14 @@ int Tdi3Finite(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*-------------------------------------------------------------------
-        Fix any reserved operands (overflows, errors) in the data.
-        If the expression and replacement is complex both elements are replaced.
-        If the expression is complex but the replacement is real, replace either with that real.
-        This is computer dependent, reserved operand is VAX feature.
-                FIX_ROPRAND(expression, replacement)
-        NEED special case for no fixup? Remember we have fetched the data.
-        if-else is more efficient than ?: for loop.
-        NEED to understand why VAXC fetches 16/8 bytes for some struct copies in ?:.
+	Fix any reserved operands (overflows, errors) in the data.
+	If the expression and replacement is complex both elements are replaced.
+	If the expression is complex but the replacement is real, replace either with that real.
+	This is computer dependent, reserved operand is VAX feature.
+	        FIX_ROPRAND(expression, replacement)
+	NEED special case for no fixup? Remember we have fetched the data.
+	if-else is more efficient than ?: for loop.
+	NEED to understand why VAXC fetches 16/8 bytes for some struct copies in ?:.
 */
 
 #define do_complex(type,dtype) \
@@ -237,10 +237,10 @@ int Tdi3FixRoprand(struct descriptor *old_ptr,
     break;
 
 /*-------------------------------------------------------------------
-        F8X elemental for fraction part of model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        FRACTION(3.0) is .75, FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND.
-                real = FRACTION(real)
+	F8X elemental for fraction part of model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	FRACTION(3.0) is .75, FRACTION(0.0) is 0.0, FRACTION(ROPRAND) is ROPRAND.
+	        real = FRACTION(real)
 */
 int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -275,10 +275,10 @@ int Tdi3Fraction(struct descriptor *in_ptr, struct descriptor *out_ptr)
     break;
 
 /*-------------------------------------------------------------------
-        F8X elemental for reciprocal of the relative spacing of model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2. abs(X*b^(prec-offset)).
-        RRSPACING(3.0) is .75*2^24.
-                real = RRSPACING(real)
+	F8X elemental for reciprocal of the relative spacing of model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2. abs(X*b^(prec-offset)).
+	RRSPACING(3.0) is .75*2^24.
+	        real = RRSPACING(real)
 */
 int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -313,11 +313,11 @@ int Tdi3RrSpacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
     }\
     break;
 /*-------------------------------------------------------------------
-        F8X elemental to scale number of model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        SCALE(3.0, 2) is 12.0, SCALE(0.0, any) is 0.0, SCALE(ROPRAND, any) is ROPRAND.
-                real = SCALE(real, integer)
-        NEED overflow detection, complex.
+	F8X elemental to scale number of model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	SCALE(3.0, 2) is 12.0, SCALE(0.0, any) is 0.0, SCALE(ROPRAND, any) is ROPRAND.
+	        real = SCALE(real, integer)
+	NEED overflow detection, complex.
 */
 int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
@@ -359,11 +359,11 @@ int Tdi3Scale(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct des
     }\
     break;
 /*-------------------------------------------------------------------
-        F8X elemental to set exponent part of non-zeroes with model: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2.
-        SET_EXPONENT(3.0, 1) is 1.5, SET_EXPONENT(0.0, any) is 0.0, SET_EXPONENT(ROPRAND, any) is ROPRAND.
-                real = SET_EXPONENT(real, integer)
-        NEED overflow detection.
+	F8X elemental to set exponent part of non-zeroes with model: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2.
+	SET_EXPONENT(3.0, 1) is 1.5, SET_EXPONENT(0.0, any) is 0.0, SET_EXPONENT(ROPRAND, any) is ROPRAND.
+	        real = SET_EXPONENT(real, integer)
+	NEED overflow detection.
 */
 int Tdi3SetExponent(struct descriptor *in1_ptr,
 		    struct descriptor *in2_ptr, struct descriptor *out_ptr)
@@ -405,11 +405,11 @@ int Tdi3SetExponent(struct descriptor *in1_ptr,
     break;
 
 /*-------------------------------------------------------------------
-        F8X elemental for the absolute spacing of model numbers near the argument: sign * base**exponent * fraction.
-        This is computer-dependent. VAX base=2. base^(exp-prec)
-        SPACING(3.0) is 2^22.
-                real = SPACING(real)
-        NEED overflow detection.
+	F8X elemental for the absolute spacing of model numbers near the argument: sign * base**exponent * fraction.
+	This is computer-dependent. VAX base=2. base^(exp-prec)
+	SPACING(3.0) is 2^22.
+	        real = SPACING(real)
+	NEED overflow detection.
 */
 int Tdi3Spacing(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {

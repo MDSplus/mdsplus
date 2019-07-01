@@ -24,37 +24,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3And
+	        Name:   Tdi3And
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   18-FEB-1993
+	        Date:   18-FEB-1993
 
-                Purpose: Logical LOW-BIT tests on two operands
+	        Purpose: Logical LOW-BIT tests on two operands
 
-        For AB  = 00,01,10,11
-        FALSE   = 0,0,0,0       use 0b
-        AND     = 0,0,0,1       .
-        AND_NOT = 0,0,1,0       .
-        A       = 0,0,1,1       use a
-        NOR_NOT = 0,1,0,0       use AND_NOT(b,a)
-        B       = 0,1,0,1       use b
-        EOR     = 0,1,1,0       (is NEQV)
-        OR      = 0,1,1,1       .
-        NOR     = 1,0,0,0       .
+	For AB  = 00,01,10,11
+	FALSE   = 0,0,0,0       use 0b
+	AND     = 0,0,0,1       .
+	AND_NOT = 0,0,1,0       .
+	A       = 0,0,1,1       use a
+	NOR_NOT = 0,1,0,0       use AND_NOT(b,a)
+	B       = 0,1,0,1       use b
+	EOR     = 0,1,1,0       (is NEQV)
+	OR      = 0,1,1,1       .
+	NOR     = 1,0,0,0       .
 NEOR =  EOR_NOT = 1,0,0,1       (is EQV)
-        NOT B   = 1,0,1,0       use NOT(b)
-        OR_NOT  = 1,0,1,1       .
-        NOT A   = 1,1,0,0       use NOT(a)
-        NAND_NOT= 1,1,0,1       use OR_NOT(b,a)
-        NAND    = 1,1,1,0       .
-        TRUE    = 1,1,1,1       use -1b
+	NOT B   = 1,0,1,0       use NOT(b)
+	OR_NOT  = 1,0,1,1       .
+	NOT A   = 1,1,0,0       use NOT(a)
+	NAND_NOT= 1,1,0,1       use OR_NOT(b,a)
+	NAND    = 1,1,1,0       .
+	TRUE    = 1,1,1,1       use -1b
 
 ------------------------------------------------------------------------------
 
-        Call sequence:
+	Call sequence:
 
 int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -66,8 +66,8 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
-        Implementation only for unit8. cast is taken care of in TdiSame
+	Description:
+	Implementation only for unit8. cast is taken care of in TdiSame
 
 ------------------------------------------------------------------------------*/
 

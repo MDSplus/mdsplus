@@ -31,7 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *1    25-OCT-1994 08:22:42 TWF "Define Opc_function and Opcfunction symbols" */
 /*  CMS REPLACEMENT HISTORY, Element TDI$$OPC_DEF.C */
 #include <mdsplus/mdsconfig.h>
+#include <tdishr.h>
+
 #define COM
-#define OPC(name,builtin,p2,p3,p4,p5,p6,p7,p8,p9,p10,p11) EXPORT const unsigned short Opc##name = __LINE__ - 25;
+#define OPC(name,NAME, ...) EXPORT const opcode_t Opc##name = OPC_##NAME;
 #include "opcbuiltins.h"
 #undef OPC
+#undef COM

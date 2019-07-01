@@ -68,8 +68,6 @@ static int sinewave __attribute__ ((unused));
 #define A12_N_INP_STARTIDX   1
 #define A12_N_INP_ENDIDX     2
 
-//extern unsigned short OpcAdd, OpcMultiply, OpcValue;
-
 EXPORT int a12__store(struct descriptor *niddsc_ptr __attribute__ ((unused)))
 {
 
@@ -96,9 +94,9 @@ EXPORT int a12__store(struct descriptor *niddsc_ptr __attribute__ ((unused)))
   static DESCRIPTOR_FLOAT(coef_d, &coefficient);
   static short offset = 0;
   static struct descriptor_s offset_d = { 2, DTYPE_W, CLASS_S, (char *)&offset };
-  static DESCRIPTOR_FUNCTION_1(dvalue, (unsigned char *)&OpcValue, 0);
-  static DESCRIPTOR_FUNCTION_2(add_exp, (unsigned char *)&OpcAdd, &offset_d, &dvalue);
-  static DESCRIPTOR_FUNCTION_2(mult_exp, (unsigned char *)&OpcMultiply, &coef_d, &add_exp);
+  static DESCRIPTOR_FUNCTION_1(dvalue, &OpcValue, 0);
+  static DESCRIPTOR_FUNCTION_2(add_exp, &OpcAdd, &offset_d, &dvalue);
+  static DESCRIPTOR_FUNCTION_2(mult_exp, &OpcMultiply, &coef_d, &add_exp);
   static DESCRIPTOR(volts_str, "volts");
   static DESCRIPTOR_WITH_UNITS(volts, &mult_exp, &volts_str);
   static DESCRIPTOR_WINDOW(window, &start_d, &end_d, &trigger_d);

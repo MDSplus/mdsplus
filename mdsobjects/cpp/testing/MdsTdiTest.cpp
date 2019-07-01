@@ -56,8 +56,8 @@ void loadCmds(const char* filename){
     while (std::getline(file, str)){
       if (str[0]=='!' || str.length()==0) continue;
       if ((ncmd+1) > memlen) {
-        memlen += MEM_ALLOC;
-        cmds = (char**)realloc(cmds,memlen*sizeof(char*));
+	memlen += MEM_ALLOC;
+	cmds = (char**)realloc(cmds,memlen*sizeof(char*));
       }
       cmds[ncmd] = (char*)malloc(str.length()+1);
       strcpy(cmds[ncmd++],str.c_str());
@@ -78,8 +78,8 @@ int SingleThreadTest(int idx, int repeats){
       if (strlen(cmds[ic])==0 || *cmds[ic] == '#') continue;
       status = AutoPointer<Data>(MDSplus::execute(cmds[ic]))->getInt();
       if (!status) {
-        std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
-        err = 1;
+	std::cerr << "FAILED in cycle " << ii << " >> " << cmds[ic] << "\n";
+	err = 1;
       } else if (!(status&1)) throw MDSplus::MdsException(status);
     } catch (MDSplus::MdsException e) {
       std::cerr << "ERROR in cycle " << ii << ":=" << status << " >> " << cmds[ic] << "\n";
@@ -113,7 +113,7 @@ void MultiThreadTest() {
     for (thread_idx = 0 ; thread_idx<NUM_THREADS ; thread_idx++){
       results[thread_idx]=thread_idx;
       if (pthread_create(&threads[thread_idx], attrp, ThreadTest, &results[thread_idx]))
-        break;
+	break;
     }
     if (attrp) pthread_attr_destroy(attrp);
     if (thread_idx<NUM_THREADS) fprintf(stderr,"Could not create all %d threads\n", NUM_THREADS);
@@ -128,8 +128,8 @@ int main(int argc, char *argv[]){
     size_t stksize = -1; {
       pthread_attr_t attr;
       if (!pthread_attr_init(&attr)) {
-        pthread_attr_getstacksize(&attr, &stksize);
-        pthread_attr_destroy(&attr);
+	pthread_attr_getstacksize(&attr, &stksize);
+	pthread_attr_destroy(&attr);
       }
     }
     if (argc>1)
@@ -138,11 +138,11 @@ int main(int argc, char *argv[]){
       char* srcdir = std::getenv("srcdir");
       if (!srcdir) loadCmds("./MdsTdiTest.tdi");
       else {
-        char* filename = (char*)malloc(strlen(srcdir)+16);
-        memcpy(filename,srcdir,strlen(srcdir));
-        strcpy(filename+strlen(srcdir),"/MdsTdiTest.tdi");
-        loadCmds(filename);
-        free(filename);
+	char* filename = (char*)malloc(strlen(srcdir)+16);
+	memcpy(filename,srcdir,strlen(srcdir));
+	strcpy(filename+strlen(srcdir),"/MdsTdiTest.tdi");
+	loadCmds(filename);
+	free(filename);
       }
     }
     int single = 0;
@@ -151,6 +151,8 @@ int main(int argc, char *argv[]){
     TEST0(single=SingleThreadTest(0,1));
     END_TESTING;
     if (single) exit(1);
+
+    TEST_TIMEOUT(100);
 
     if (stksize<0x40000){
       std::cout << " -- [MultiThread] -- Skipped because the default thread stack size is too small (" << stksize/1024 << "kB < 256kB)." << std::flush;

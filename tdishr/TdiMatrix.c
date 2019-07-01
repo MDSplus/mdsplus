@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1MATRIX
-        Some matrix operations.
-                square_matrix = DIAGONAL([vector],[fill])
+	Some matrix operations.
+	        square_matrix = DIAGONAL([vector],[fill])
 
-        NEED signality for DIAGONAL, maybe.
-        Ken Klare, LANL CTR-7   (c)1990
+	NEED signality for DIAGONAL, maybe.
+	Ken Klare, LANL CTR-7   (c)1990
 */
 
 #include <STATICdef.h>
@@ -80,7 +80,7 @@ STATIC_ROUTINE int copy(int len, int n, char *x, int incx, char *y, int incy)
   return 1;
 }
 
-int Tdi1Diagonal(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Diagonal(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int cmode = -1, nside = 0;

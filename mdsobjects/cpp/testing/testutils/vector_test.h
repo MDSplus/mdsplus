@@ -15,7 +15,7 @@ inline ostream &
 operator << (ostream &o, const vector<T> &v) {
     typedef typename vector<T>::const_iterator iterator;
     for(iterator it = v.begin(); it < v.end(); ++it) {
-        o << *it << " ";
+	o << *it << " ";
     }
     return o;
 }
@@ -26,7 +26,7 @@ operator >> (istream &is, vector<T> &v) {
     T value;
     v.clear();
     while( !(is >> value).fail() )
-        v.push_back(value);
+	v.push_back(value);
     return is;
 }
 
@@ -43,9 +43,9 @@ template < typename _T1, typename _T2, typename _Alloc1, typename _Alloc2 >
 inline bool
 operator == (const std::vector<_T1,_Alloc1> &v1, const std::vector<_T2,_Alloc2> &v2) {
     if( v1.size() != v2.size() )
-        return false;
+	return false;
     for(size_t i=0; i<v1.size(); ++i)
-        if( !(v1[i]==static_cast<_T1>(v2[i])) ) return false;
+	if( !(v1[i]==static_cast<_T1>(v2[i])) ) return false;
     return true;
 }
 } // std

@@ -3,7 +3,7 @@
  * File: acq32ioctl.h - Application interface to acq32 Linux driver
  *
  * $RCSfile$
- * 
+ *
  * Copyright (C) 1999 D-TACQ Solutions Ltd
  * not to be used without owner's permission
  *
@@ -147,7 +147,7 @@ enum ChannelMode {
  * ioctls are less important that command strings:
  */
 
-/* 
+/*
  * channel commands - apply to row dev (non-volatile)
  *                    or channel dev (volatile)
  */

@@ -23,16 +23,16 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiGetArgs.C
-        Fetches signal, data, and category of each input.
-        Guesses input conversion and output category.
-        Empty XD if not a signal.
-        Empty XD or null units if not with_units.
-        Permits BUILD_UNITS(BUILD_SIGNAL(data),units) or BUILD_SIGNAL(BUILD_UNITS(data,units)) and others.
-        Internal routine called by
-                Tdi1Build       Tdi1Same        Tdi1Scalar      Tdi1Trans       Tdi1Trim
-                Tdi1RANGE       Tdi1SetRange    Tdi1Vector
+	Fetches signal, data, and category of each input.
+	Guesses input conversion and output category.
+	Empty XD if not a signal.
+	Empty XD or null units if not with_units.
+	Permits BUILD_UNITS(BUILD_SIGNAL(data),units) or BUILD_SIGNAL(BUILD_UNITS(data,units)) and others.
+	Internal routine called by
+	        Tdi1Build       Tdi1Same        Tdi1Scalar      Tdi1Trans       Tdi1Trim
+	        Tdi1RANGE       Tdi1SetRange    Tdi1Vector
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include <stdlib.h>
@@ -132,7 +132,7 @@ void UseNativeFloat(struct TdiCatStruct *cat)
 
 /*-------------------------------------------------------------------*/
 
-int TdiGetArgs(int opcode,
+int TdiGetArgs(opcode_t opcode,
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd sig[],
@@ -149,8 +149,8 @@ int TdiGetArgs(int opcode,
   int use_native = (fun_ptr->f2 != Tdi2Keep && fun_ptr->f2 != Tdi2Long2
 		    && fun_ptr->f2 != Tdi2Any && fun_ptr->f2 != Tdi2Cmplx);
 	/***************************
-        Get signal, units, and data.
-        ***************************/
+	Get signal, units, and data.
+	***************************/
   for (j = 0; j < narg; ++j) {
     sig[j] = uni[j] = dat[j] = EMPTY_XD;
     if STATUS_OK
@@ -158,10 +158,10 @@ int TdiGetArgs(int opcode,
   }
 
 	/******************************
-        Find category of data type.
-        Adjust out in f2 routine.
-        Make in into out in CVT_ARGS.
-        ******************************/
+	Find category of data type.
+	Adjust out in f2 routine.
+	Make in into out in CVT_ARGS.
+	******************************/
   if STATUS_OK
     for (nd = 0, nc = 0, j = 0; j < narg; ++j) {
       struct descriptor *dat_ptr = dat[j].pointer;
@@ -188,8 +188,8 @@ int TdiGetArgs(int opcode,
   }
 
 	/***********************************************
-        Output cat and dtype are guesses, checked later.
-        ***********************************************/
+	Output cat and dtype are guesses, checked later.
+	***********************************************/
   if STATUS_OK {
     cptr = &cats[narg];
     cptr->in_dtype = nd;

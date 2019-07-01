@@ -111,7 +111,7 @@ public class MdsPlusDescriptor extends Object
 		dtype = DTYPE_CSTRING;
 //		data = new byte[s.length()];
 		dims = new int[0];
-                data = s.getBytes();
+	        data = s.getBytes();
 //		s.getBytes(0,s.length(),data,0);
 	}
 
@@ -181,7 +181,7 @@ public class MdsPlusDescriptor extends Object
 		int samples = data.length/size;
 		byte ans[] = new byte[data.length];
 		for (int index=0; index<samples; index++)
-			for (int idx=0;idx<size;idx++) 
+			for (int idx=0;idx<size;idx++)
 				ans[index*size+idx] = data[(index+1)*size-idx-1];
 		return ans;
 	}
@@ -202,18 +202,18 @@ public class MdsPlusDescriptor extends Object
 			break;
 		case DTYPE_SHORT:
 		case DTYPE_USHORT:
-  			short sans[] = Short();
+			short sans[] = Short();
 			ans = new byte[sans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (byte)sans[i];
 			break;
 		case DTYPE_INT:
 		case DTYPE_UINT:
-  			int ians[] = Int();
+			int ians[] = Int();
 			ans = new byte[ians.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (byte)ians[i];
 			break;
 		case DTYPE_FLOAT:
-  			float fans[] = Float();
+			float fans[] = Float();
 			ans = new byte[fans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (byte)fans[i];
 			break;
@@ -227,7 +227,7 @@ public class MdsPlusDescriptor extends Object
 		}
 		return ans;
 	}
-	
+
 
 	/** returns the data as an array of shorts.
 	* @return an array of shorts.
@@ -241,7 +241,7 @@ public class MdsPlusDescriptor extends Object
 		{
 		case DTYPE_CHAR:
 		case DTYPE_UCHAR:
-  			byte bans[] = Byte();
+			byte bans[] = Byte();
 			ans = new short[bans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (short)bans[i];
 			break;
@@ -257,12 +257,12 @@ public class MdsPlusDescriptor extends Object
 			break;
 		case DTYPE_INT:
 		case DTYPE_UINT:
-  			int ians[] = Int();
+			int ians[] = Int();
 			ans = new short[ians.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (short)ians[i];
 			break;
 		case DTYPE_FLOAT:
-  			float fans[] = Float();
+			float fans[] = Float();
 			ans = new short[fans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (short)fans[i];
 			break;
@@ -289,7 +289,7 @@ public class MdsPlusDescriptor extends Object
 		{
 		case DTYPE_CHAR:
 		case DTYPE_UCHAR:
-  			byte bans[] = Byte();
+			byte bans[] = Byte();
 			ans = new int[bans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (int)bans[i];
 			break;
@@ -310,7 +310,7 @@ public class MdsPlusDescriptor extends Object
 				ans[index] = dis.readInt();
 			break;
 		case DTYPE_FLOAT:
-  			float fans[] = Float();
+			float fans[] = Float();
 			ans = new int[fans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (int)fans[i];
 			break;
@@ -337,7 +337,7 @@ public class MdsPlusDescriptor extends Object
 		{
 		case DTYPE_CHAR:
 		case DTYPE_UCHAR:
-  			byte bans[] = Byte();
+			byte bans[] = Byte();
 			ans = new float[bans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (float)bans[i];
 			break;
@@ -385,7 +385,7 @@ public class MdsPlusDescriptor extends Object
 		{
 		case DTYPE_CHAR:
 		case DTYPE_UCHAR:
-  			byte bans[] = Byte();
+			byte bans[] = Byte();
 			ans = new double[bans.length];
 			for (int i=0;i<ans.length;i++) ans[i] = (double)bans[i];
 			break;
@@ -428,7 +428,7 @@ public class MdsPlusDescriptor extends Object
 		String ans = null;
 		if ((dtype == DTYPE_CSTRING) && ((status & 1)==0) && (data.length > 0))
 //			ans = new String(data,0x00);
-                        ans = new String(data);
+	                ans = new String(data);
 		return ans;
 	}
 
@@ -438,12 +438,11 @@ public class MdsPlusDescriptor extends Object
 		String ans = null;
 		if ((dtype == DTYPE_CSTRING) && ((status & 1)==1) && (data.length > 0))
 //			ans = new String(data,0x00);
-                        ans = new String(data);
+	                ans = new String(data);
 		return ans;
 	}
-	
+
 
 
 }
 
-														

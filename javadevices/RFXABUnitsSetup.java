@@ -56,7 +56,7 @@ public class RFXABUnitsSetup extends DeviceSetup {
     jPanel4.setLayout(borderLayout2);
     jPanel5.setLayout(borderLayout3);
     deviceTable2.setRowNames(new String[] {"CL05_S", "CL5_S", "VL_S", "KP_I_S", "KI_I_S", "KD_I_S", "KP_V_S", "KI_V_S", "KP_RIP_S", "KI_RIP_S", "KP_FF_S", "OMEGA_P_S", "CL05_T", "CL5_T", "VL_T", "KP_I_T",
-        "KI_I_T", "KD_I_T", "KP_V_T", "KI_V_T", "KP_RIP_T", "KI_RIP_T", "KP_FF_T", "OMEGA_P_T"});
+	"KI_I_T", "KD_I_T", "KP_V_T", "KI_V_T", "KP_RIP_T", "KI_RIP_T", "KP_FF_T", "OMEGA_P_T"});
     deviceTable2.setEditable(false);
     deviceTable2.setDisplayRowNumber(true);
     deviceTable2.setColumnNames(new String[] {"A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "A10", "A11", "A12"});
@@ -72,7 +72,7 @@ public class RFXABUnitsSetup extends DeviceSetup {
     deviceTable1.setIdentifier("");
     deviceTable1.setColumnNames(new String[] {"B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8"});
     deviceTable1.setRowNames(new String[] {"CL05_S", "CL5_S", "VL_S", "KP_I_S", "KI_I_S", "KD_I_S", "KP_V_S", "KI_V_S", "KP_RIP_S", "KI_RIP_S", "KP_FF_S", "OMEGA_P_S", "CL05_T", "CL5_T", "VL_T", "KP_I_T",
-        "KI_I_T", "KD_I_T", "KP_V_T", "KI_V_T", "KP_RIP_T", "KI_RIP_T", "KP_FF_T", "OMEGA_P_T"});
+	"KI_I_T", "KD_I_T", "KP_V_T", "KI_V_T", "KP_RIP_T", "KI_RIP_T", "KP_FF_T", "OMEGA_P_T"});
     deviceTable1.setEditable(false);
     deviceTable1.setDisplayRowNumber(true);
     deviceField2.setOffsetNid(2);

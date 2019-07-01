@@ -6,6 +6,21 @@
 # This sets build options to be imported into jenkins build jobs
 # for the various operating systems supported.
 #
+RED() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
+}
+GREEN() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
+}
+NORMAL() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
+}
 printhelp() {
     cat <<EOF
 NAME
@@ -18,7 +33,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--pypi] [--make_jars ] [--make_epydocs ]
+                 [--make_jars ] [--make_epydocs ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -46,7 +61,7 @@ OPTIONS
        can just cp the jar files from the trigger directory location.
 
    --make_epydocs
-       Build the python docs using epydoc. This will replace the mdsobjects/python/doc
+       Build the python docs using epydoc. This will replace the python/MDSplus/doc
        directory in the trigger sources with updated epydoc documentation. This requires
        epydoc to be installed and usable on the system running the trigger script.
 
@@ -133,14 +148,12 @@ OPTIONS
     --color
        Output failure and success messages in color using ansi color
        escape sequences.
-
-    --pypi
-       Push python package to Python Package Index (http://pypi.python.org/)
-
 EOF
 }
 
 SRCDIR=$(realpath $(dirname ${0})/..)
+export GIT_DIR=${SRCDIR}/.git
+export GIT_WORK_TREE=${SRCDIR}
 
 opts=""
 parsecmd() {
@@ -180,6 +193,7 @@ parsecmd() {
 		TAG_RELEASE=yes
 		;;
 	    --publish)
+		opts="${opts} ${i}"
 		PUBLISH=yes
 		;;
 	    --valgrind)
@@ -211,9 +225,6 @@ parsecmd() {
 		opts="${opts} ${i}"
 		COLOR=yes
 		;;
-	    --pypi)
-		PUSH_TO_PYPI=yes
-		;;
 	    --promote_to=*)
 		PROMOTE_TO=${i#*=}
 		;;
@@ -238,64 +249,45 @@ cmdopts="$@"
 #
 parsecmd "$cmdopts"
 
-RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
-}
-
 if [ ! -z "${MAKE_JARS}" ]
 then
     if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} > make_jars.log 2>&1 )
     then
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 ===============================================
 
-Error creating java jar files. Trigger failed. 
+Error creating java jar files. Trigger failed.
 Look at make_jars.log artifact for more info .
 
 ===============================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
 fi
 
 if [ ! -z "${MAKE_EPYDOCS}" ]
 then
-    if ( ! ${SRCDIR}/mdsobjects/python/makedoc.sh ${SRCDIR}/mdsobjects/python/doc > make_epydocs.log 2>&1 )
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc > make_epydocs.log 2>&1 )
     then
-	RED $COLOR
+	RED
 	cat <<EOF >&2
 ===============================================
 
-Error creating python documentation. Trigger failed. 
+Error creating python documentation. Trigger failed.
 Look at make_epydocs.log artifact for more info .
 
 ===============================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 1
     fi
 fi
 
 if [ "$RELEASE" = "yes" -a "$PUBLISH" = "yes" ]
 then
-    RED $COLOR
+    RED
     cat <<EOF >&2
 ===============================================
 
@@ -308,18 +300,22 @@ FAILURE
 
 ===============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     exit 1
 fi
 
 BRANCH=${GIT_BRANCH##*/}
+if [ -z "${BRANCH}" ]
+then
+    BRANCH=$(git describe --tags | cut -d- -f1 | cut -d_ -f1)
+fi
 opts="$opts --branch=$BRANCH"
 
 if [ "$BUILD_CAUSE" = "GHPRBCAUSE" ]
 then
   if [ $(${SRCDIR}/deploy/commit_type_check.sh origin/$ghprbTargetBranch ${SRCDIR}/deploy/inv_commit_title.msg) = "BADCOMMIT" ]
   then
-      RED $COLOR
+      RED
       cat <<EOF >&2
 =========================================================
 
@@ -327,7 +323,7 @@ WARNING: Pull request contains an invalid commit title.
 
 =========================================================
 EOF
-      NORMAL $COLOR
+      NORMAL
 #      exit 1
   fi
 fi
@@ -341,7 +337,7 @@ then
 	MINOR=$(echo $PROMOTE_RELEASE_TAG | cut -f3 -d-)
 	RELEASEV=$(echo $PROMOTE_RELEASE_TAG | cut -f4 -d-)
     else
-      RED $COLOR
+      RED
       cat <<EOF >&2
 =========================================================
 
@@ -349,7 +345,7 @@ ERROR: Problem promoting ${BRANCH} to ${PROMOTE_TO}
 
 =========================================================
 EOF
-      NORMAL $COLOR
+      NORMAL
       exit 1
     fi
 fi
@@ -367,7 +363,7 @@ then
     NEW_RELEASE=no
     if [ -z ${RELEASE_TAG} ]
     then
-	RELEASE_TAG=$(git tag | grep ${BRANCH}_release | sort -V | awk '{line=$0} END{print line}');
+	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4);
     fi
     if [ -z ${RELEASE_TAG} ]
     then
@@ -379,12 +375,13 @@ then
 	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
 	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
     fi
+    GIT_COMMIT=$(git rev-list -n 1 HEAD)
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
 	if [ -z "${PROMOTE_TO}" ]
 	then
-	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg)
+	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg nomail)
 	else
 	    version_inc=PROMOTE
 	fi
@@ -393,7 +390,7 @@ then
 		NEW_RELEASE=yes
 		;;
 	    BADCOMMIT)
-		RED $COLOR
+		RED
 		cat <<EOF >&2
 =========================================================
 
@@ -401,13 +398,13 @@ WARNING: Commit contains an invalid commit title.
 
 =========================================================
 EOF
-		NORMAL $COLOR
+		NORMAL
 		#exit 1
 		NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
 	    SAME)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -417,11 +414,11 @@ INFO: All commits are of category Build, Docs or Tests.
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=no
 		;;
 	    MINOR)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -431,13 +428,13 @@ INFO: New features added. New release will be a minor
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=yes
 		let MINOR=$MINOR+1
 		let RELEASEV=0
 		;;
 	    PATCH)
-		GREEN $COLOR
+		GREEN
 		cat <<EOF >&2
 =========================================================
 
@@ -448,7 +445,7 @@ INFO: No new features added. Fix commits added so
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 		NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
@@ -463,23 +460,19 @@ INFO: Unknown release check return of $version_inc
 =========================================================
 
 EOF
-		NORMAL $COLOR
+		NORMAL
 	    	NEW_RELEASE=yes
 		let RELEASEV=$RELEASEV+1
 		;;
 	esac
     fi
     RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
-    RELEASE_VERSION=${MAJOR}.${MINOR}.${RELEASEV}
-    git log --decorate=full --no-merges > ${SRCDIR}/ChangeLog
-    opts="$opts --release=${RELEASE_VERSION} --gitcommit=${GIT_COMMIT}"
-    cat <<EOF > ${SRCDIR}/trigger.version
-NEW_RELEASE=${NEW_RELEASE}
-LAST_RELEASE_COMMIT=${LAST_RELEASE_COMMIT}
-RELEASE_TAG=${RELEASE_TAG}
-RELEASE_VERSION=${RELEASE_VERSION}
-EOF
-    GREEN $COLOR
+    if [ "$NEW_RELEASE" = "yes" ]
+    then
+	git tag -f last_release ${LAST_RELEASE_COMMIT}
+	git tag -f ${RELEASE_TAG}
+    fi
+    GREEN
     cat <<EOF
 =========================================================
 
@@ -487,58 +480,39 @@ Triggering release ${RELEASE_TAG} build
 
 =========================================================
 EOF
-    NORMAL $COLOR
-fi
-if [ "$PUBLISH" = "yes" ]
-then
-    if [ -r ${SRCDIR}/trigger.version ]
-    then
-	. ${SRCDIR}/trigger.version
-	opts="$opts --publish=${RELEASE_VERSION}"
-	GREEN $COLOR
-	cat <<EOF
-=========================================================
-
-Triggering publish release of ${RELEASE_TAG}
-
-=========================================================
-EOF
-	NORMAL $COLOR
-    else
-	RED $COLOR
-	cat <<EOF >&2
-=========================================================
-
-Attempt to publish a new release without first triggering
-a release build with the --release option.
-FAILURE
-
-=========================================================
-EOF
-	NORMAL $COLOR
-	exit 1
-    fi
+    NORMAL
+    opts="$opts --release"
 fi
 if [ "$TAG_RELEASE" = "yes" ]
 then
-    if [ -r ${SRCDIR}/trigger.version ]
-    then
-	. ${SRCDIR}/trigger.version
-	if [ "$NEW_RELEASE" = "yes" ]
-	then
-	   curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+    if ( git tag | grep last_release >/dev/null )
+    then 
+      	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
+      	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
   "name":"${RELEASE_TAG}",
   "body":"Commits since last release:\n\n
-$(git log --decorate=full --no-merges ${LAST_RELEASE_COMMIT}..HEAD | awk '{gsub("\"","\\\"");print $0"\\n"}')"
+$(git log --decorate=full --no-merges last_release..HEAD | awk '{gsub("\\\\","\\\\");gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
-	   if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-	   then
-	       RED $COLOR
-	       cat <<EOF >&2
+	if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+      	then
+		curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+{
+  "tag_name":"${RELEASE_TAG}",
+  "target_commitish":"${BRANCH}",
+  "name":"${RELEASE_TAG}",
+  "body":"New release. Commit messages could not be included"
+}
+EOF
+	 fi
+	 git tag -d last_release
+         if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+         then 
+     	     RED
+	     cat <<EOF >&2
 =========================================================
 
 Failed to tag a new release on github. Response/error
@@ -547,45 +521,10 @@ FAILURE
 
 =========================================================
 EOF
-	       cat ${WORKSPACE}/tag_release.log
-	       NORMAL $COLOR
-	       exit 1
-	   fi
-	fi
-    else
-	RED $COLOR
-	cat <<EOF >&2
-=========================================================
-
-Attempt to tag a new release without first triggering
-a release build with the --release option.
-FAILURE
-
-=========================================================
-EOF
-	NORMAL $COLOR
-	exit 1
-    fi
-    if [ "$PUSH_TO_PYPI" = "yes" ]
-    then
-	export BRANCH RELEASE_VERSION
-	if [ "$BRANCH" = "stable" ]
-	then
-	    pypi_name=MDSplus
-	else
-	    pypi_name=mdsplus-${BRANCH}
-	fi
-	if (! wget -O - "https://pypi.python.org/${pypi_name}/$RELEASE_VERSION" >/dev/null 2>&1 )
-	then
-	    tmpdir=$(mktemp -d)
-	    cd $tmpdir
-	    ${WORKSPACE}/configure --disable-java >/dev/null 2>&1
-	    rsync -a ${WORKSPACE}/mdsobjects/python mdsobjects/
-	    cd mdsobjects/python
-	    HOME=${KEYS} python setup.py sdist upload
-	    cd $WORKSPACE
-	    rm -Rf $tmpdir
-	fi
+	     cat ${WORKSPACE}/tag_release.log
+	     NORMAL
+	     exit 1
+         fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts

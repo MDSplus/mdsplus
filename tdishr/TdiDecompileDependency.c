@@ -23,15 +23,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1DecompileDependency
-        Decompile a dependency tree
+	Decompile a dependency tree
 
-        Author: Manduchi Gabriele
-                Istituto Gas Ionizzati del CNR - Padova (Italy)
+	Author: Manduchi Gabriele
+	        Istituto Gas Ionizzati del CNR - Padova (Italy)
 
-        Date:   3-MAY-1990
-        Revised: 18-May-1990 Ken Klare, CTR-7 LANL (c)1990 using precedence method
+	Date:   3-MAY-1990
+	Revised: 18-May-1990 Ken Klare, CTR-7 LANL (c)1990 using precedence method
 
-        Precedence:
+	Precedence:
 */
 #define P_WEAK  0		/*weakest */
 #define P_OR    4		/*OR(|) */
@@ -89,7 +89,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
     status = StrAppend(pout, (struct descriptor *)pin);
     break;
   case DTYPE_DEPENDENCY:
-    switch (*(short *)pin->pointer) {
+    switch (*(treedep_t*)pin->pointer) {
     case TreeDEPENDENCY_AND:
       now = P_AND;
       pwhich = (struct descriptor *)&AND;
@@ -114,7 +114,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
       status = StrAppend(pout, (struct descriptor *)&RIGHT_PAREN);
     break;
   case DTYPE_CONDITION:
-    switch (*((short *)pin->pointer)) {
+    switch (*((treecond_t*)pin->pointer)) {
     case TreeNEGATE_CONDITION:
       pwhich = (struct descriptor *)&NEGATE;
       break;
@@ -141,7 +141,7 @@ STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct desc
 }
 
 /*------------------------------------------------------------------*/
-int Tdi1DecompileDependency(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1DecompileDependency(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 			    struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {

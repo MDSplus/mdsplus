@@ -146,9 +146,9 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
       pptr->child = 0;
   }
   else {
-    for (nptr = child_of(dblist, pptr); 
-         nptr && (brother_of(dblist, nptr) != oldnode_ptr);
-         nptr = brother_of(dblist, nptr)) ;
+    for (nptr = child_of(dblist, pptr);
+	 nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+	 nptr = brother_of(dblist, nptr)) ;
     if (nptr) {
       if (oldnode_ptr->brother) {
 	nptr->brother = node_offset(brother_of(dblist, oldnode_ptr), nptr);
@@ -162,8 +162,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 	pptr->member = 0;
     }
     else {
-      for (nptr = member_of(pptr); 
-           nptr && (brother_of(dblist, nptr) != oldnode_ptr);
+      for (nptr = member_of(pptr);
+	   nptr && (brother_of(dblist, nptr) != oldnode_ptr);
 	   nptr = brother_of(dblist, nptr)) ;
       if (nptr) {
 	if (oldnode_ptr->brother) {
@@ -199,10 +199,8 @@ int _TreeRenameNode(void *dbid, int nid, char const *newname)
 
  cleanup:
 
-  if (upcase_name)
-    free(upcase_name);
-  if (newnode_name)
-    free(newnode_name);
+  free(upcase_name);
+  free(newnode_name);
   return status;
 }
 

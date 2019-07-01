@@ -60,8 +60,8 @@ static char * _new_unique_event_name(const char *prefix, ...) {
 static int astCount = 0;
 void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused)) ) {
     printf("received event in thread %ld, name=%s\n",
-           syscall(__NR_gettid),
-           (char *)arg);
+	   syscall(__NR_gettid),
+	   (char *)arg);
     astCount++;
     pthread_exit(0);
 }
@@ -72,9 +72,8 @@ void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute
 
 
 static void *handleMessage(void *info_in);
-static int pushEvent(pthread_t thread, int socket);
+static int pushEvent(pthread_t thread, SOCKET socket);
 static EventList *popEvent(int eventid);
-static int getSendSocket();
 static void getMulticastAddr(char const *eventName, char *retIp);
 
 
@@ -104,7 +103,7 @@ void test_handleMessage() {
     int flag = 1;
     int const SOCKET_ERROR = -1;
 #   endif
-    int udpSocket;
+    SOCKET udpSocket;
     char ipAddress[64];
     struct ip_mreq ipMreq;
     struct EventInfo *currInfo;
@@ -114,7 +113,7 @@ void test_handleMessage() {
 
     // create socket
     udpSocket = socket(AF_INET, SOCK_DGRAM, 0);
-    TEST1(udpSocket > 0);
+    TEST1(udpSocket != INVALID_SOCKET);
 
     // set address
     serverAddr.sin_family = AF_INET;
@@ -177,9 +176,9 @@ void test_pushEvent() {
     printf("pushEvent test\n");
     int i;
     for(i=0; i<10; ++i)
-        pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
+	pthread_create(&list[i].thread,NULL,_push_handler,&list[i]);
     for(i=0; i<10; ++i)
-        pthread_join(list[i].thread,0);
+	pthread_join(list[i].thread,0);
     END_TESTING
 }
 
@@ -195,9 +194,9 @@ void test_popEvent() {
     printf("popEvent test\n");
     int i;
     for(i=0; i<10; ++i)
-        pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
+	pthread_create(&list[i].thread,NULL,_pop_handler,&list[i]);
     for(i=0; i<10; ++i)
-        pthread_join(list[i].thread,0);
+	pthread_join(list[i].thread,0);
     END_TESTING
 }
 
@@ -214,7 +213,7 @@ static void * _thread_action(void *arg) {
     status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
     status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
     while(1) {
-        // do nothing .. //
+	// do nothing .. //
     }
     return NULL;
 }
@@ -223,12 +222,12 @@ void test_pthread_cancel_Suppresstion() {
     pthread_t thread[10];
     int i;
     for(i=0; i<10; ++i) {
-        pthread_create(&thread[i],NULL,_thread_action,NULL);
-        pthread_detach(thread[i]);
+	pthread_create(&thread[i],NULL,_thread_action,NULL);
+	pthread_detach(thread[i]);
     }
     usleep(10000);
     for(i=0; i<10; ++i) {
-        while( pthread_cancel(thread[i]) != 0 );
+	while( pthread_cancel(thread[i]) != 0 );
     }
 }
 

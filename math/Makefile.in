@@ -1,8 +1,9 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
 #### Remove following line after code causing warnings is fixed ####
 FCFLAGS+=-Wno-compare-reals -Wno-uninitialized
 @MINGW_TRUE@ DEF=${srcdir}/MdsMath.def
@@ -53,7 +54,7 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 umach.o : umach.f
 	$(COMPILE.f) $< $(OUTPUT_OPTION) -Wno-conversion
 
-EXPORTS = MdsMath.export
+EXPORTS = MdsMath.exports
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 

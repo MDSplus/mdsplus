@@ -1,4 +1,4 @@
-./usr/local/mdsplus/pydevices/HtsDevices/__init__.py
+./usr/local/mdsplus/pydevices/HtsDevices/acq2106_423st.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/README
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/__init__.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/acq400.py
@@ -8,3 +8,5 @@
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/setup.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq400_hapi/shotcontrol.py
 ./usr/local/mdsplus/pydevices/HtsDevices/acq435st.py
+./usr/local/mdsplus/pydevices/HtsDevices/cryocon18i.py
+./usr/local/mdsplus/pydevices/HtsDevices/cryocon24c.py

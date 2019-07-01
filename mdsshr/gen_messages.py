@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -103,8 +103,8 @@ MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
 """ % msg)
     f_inc.close()
 
-f_py=open("%s/mdsobjects/python/mdsExceptions.py"%sourcedir,'w')
-f_py.write("""# 
+f_py=open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w')
+f_py.write("""#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -155,16 +155,21 @@ class MDSplusException(MdsException):
       else:
           cls = MDSplusUnknown
       return cls.__new__(cls,*argv)
-  def __init__(self,status=None):
+  def __init__(self,status=None,message=None):
     if isinstance(status,int):
-      self.status=status
-    if not hasattr(self,'status'):
-      self.status=PyUNHANDLED_EXCEPTION.status
-      self.msgnam='Unknown'
-      self.message='Unknown exception'
-      self.fac='MDSplus'
-    if isinstance(status,str):
-      self.message = status
+      self.status = status
+    else:
+      if isinstance(status,str):
+          message = status
+      if not hasattr(self,'status'):
+        self.status=PyUNHANDLED_EXCEPTION.status
+        self.msgnam='Unknown'
+        self.message='Unknown exception'
+        self.fac='MDSplus'
+    if message is not None:
+        message = str(message)
+        if len(message)>0:
+            self.message = "%s:\n%s"%(self.message,message)
     self.severity=self.severities[self.status & 7]
     super(Exception,self).__init__(self.message)
 
@@ -187,13 +192,13 @@ class MDSplusUnknown(MDSplusException):
 def statusToException(status):
     return MDSplusException(status)
 
-def checkStatus(status,ignore=tuple()):
+def checkStatus(status,ignore=tuple(),message=None):
     if (status & 1)==0:
-        exception = MDSplusException(status)
+        exception = MDSplusException(status,message)
         if isinstance(exception, ignore):
             print(exception.message)
         else:
-            raise MDSplusException(status)
+            raise exception
 """)
 
 xmllist = {}

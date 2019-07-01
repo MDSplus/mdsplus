@@ -12,9 +12,9 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 
  class SetupDataDialog extends JDialog implements ActionListener,
-                                                  ItemListener,
-                                                  KeyListener,
-                                                  WaveformListener
+	                                          ItemListener,
+	                                          KeyListener,
+	                                          WaveformListener
  {
    public  static int   UNDEF_SHOT     = -99999;
 
@@ -58,8 +58,8 @@ import javax.swing.event.*;
 
     //GAB 2014
     JCheckBox continuous_update_b = new JCheckBox("Continuous Update");
-    
-    
+
+
     JCheckBox upd_limits_b = new JCheckBox("");
     JCheckBox upd_limits = new JCheckBox("Upd. Limits");
 
@@ -110,31 +110,31 @@ import javax.swing.event.*;
 	{
 
 	    if(x_expr != null) {
-	        if(!x_expr.equals(ws.x_expr))
-	            return false;
+		if(!x_expr.equals(ws.x_expr))
+		    return false;
 	    } else
-	        if(ws.x_expr != null && ws.x_expr.length() != 0)
-	            return false;
+		if(ws.x_expr != null && ws.x_expr.length() != 0)
+		    return false;
 
 	    if(y_expr != null) {
-	        if(!y_expr.equals(ws.y_expr))
-	            return false;
+		if(!y_expr.equals(ws.y_expr))
+		    return false;
 	    } else
-	        if(ws.y_expr != null && ws.y_expr.length() != 0)
-	            return false;
+		if(ws.y_expr != null && ws.y_expr.length() != 0)
+		    return false;
 
 	    if(label != null) {
-	        if(!label.equals(ws.label))
-	            return false;
+		if(!label.equals(ws.label))
+		    return false;
 	    } else
-	        if(ws.label != null  && ws.label.length() != 0)
-	            return false;
+		if(ws.label != null  && ws.label.length() != 0)
+		    return false;
 	    return true;
 	}
 
        public void copy(Data ws)
        {
-        if(ws.label != null)
+	if(ws.label != null)
 	       label = new String(ws.label);
 	    if(ws.x_expr != null)
 	       x_expr = new String(ws.x_expr);
@@ -162,84 +162,84 @@ import javax.swing.event.*;
 
       SError(Frame fw)
       {
-	        super(fw, "Error Setup", true);
+		super(fw, "Error Setup", true);
 
-	        JLabel label;
+		JLabel label;
 
-	        GridBagConstraints c = new GridBagConstraints();
-	        GridBagLayout gridbag = new GridBagLayout();
-	        getContentPane().setLayout(gridbag);
+		GridBagConstraints c = new GridBagConstraints();
+		GridBagLayout gridbag = new GridBagLayout();
+		getContentPane().setLayout(gridbag);
 
-	        c.insets = new Insets(4, 4, 4, 4);
-	        c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(4, 4, 4, 4);
+		c.fill = GridBagConstraints.BOTH;
 
-	        c.gridwidth = GridBagConstraints.BOTH;
-	        label = new JLabel("Error up");
-	        gridbag.setConstraints(label, c);
-	        getContentPane().add(label);
+		c.gridwidth = GridBagConstraints.BOTH;
+		label = new JLabel("Error up");
+		gridbag.setConstraints(label, c);
+		getContentPane().add(label);
 
-	        c.gridwidth = GridBagConstraints.REMAINDER;
-	        e_up = new JTextField(40);
-	        gridbag.setConstraints(e_up, c);
-	        getContentPane().add(e_up);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		e_up = new JTextField(40);
+		gridbag.setConstraints(e_up, c);
+		getContentPane().add(e_up);
 
-	        c.gridwidth = GridBagConstraints.BOTH;
-	        label = new JLabel("Error low");
-	        gridbag.setConstraints(label, c);
-	        getContentPane().add(label);
+		c.gridwidth = GridBagConstraints.BOTH;
+		label = new JLabel("Error low");
+		gridbag.setConstraints(label, c);
+		getContentPane().add(label);
 
-	        c.gridwidth = GridBagConstraints.REMAINDER;
-	        e_low = new JTextField(40);
-	        gridbag.setConstraints(e_low, c);
-	        getContentPane().add(e_low);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		e_low = new JTextField(40);
+		gridbag.setConstraints(e_low, c);
+		getContentPane().add(e_low);
 
-	        JPanel p = new JPanel();
-	        p.setLayout(new FlowLayout(FlowLayout.CENTER));
+		JPanel p = new JPanel();
+		p.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-	        ok = new JButton("Ok");
-	        ok.addActionListener(this);
-	        p.add(ok);
+		ok = new JButton("Ok");
+		ok.addActionListener(this);
+		p.add(ok);
 
-	        cancel = new JButton("Cancel");
-	        cancel.addActionListener(this);
-	        p.add(cancel);
+		cancel = new JButton("Cancel");
+		cancel.addActionListener(this);
+		p.add(cancel);
 
-	        c.gridwidth = GridBagConstraints.REMAINDER;
-	        gridbag.setConstraints(p, c);
-	        getContentPane().add(p);
+		c.gridwidth = GridBagConstraints.REMAINDER;
+		gridbag.setConstraints(p, c);
+		getContentPane().add(p);
 
 
        }
 
        public void resetError()
        {
-	        e_up.setText("");
-	        e_low.setText("");
+		e_up.setText("");
+		e_low.setText("");
        }
 
 
        public void setError(Data ws_in)
        {
-	        ws = ws_in;
-	        resetError();
-	        if(ws.up_err != null)
-	            e_up.setText(ws.up_err);
-	        if(ws.up_err != null)
-	            e_low.setText(ws.low_err);
+		ws = ws_in;
+		resetError();
+		if(ws.up_err != null)
+		    e_up.setText(ws.up_err);
+		if(ws.up_err != null)
+		    e_low.setText(ws.low_err);
        }
 
 
        public void actionPerformed(ActionEvent e)
        {
-	        Object ob = e.getSource();
+		Object ob = e.getSource();
 
-	        if(ob == ok) {
-	            ws.up_err   = new String(e_up.getText());
-	            ws.low_err  = new String(e_low.getText());
-	            setVisible(false);
-	        }
-	        if(ob == cancel)
-	            setVisible(false);
+		if(ob == ok) {
+		    ws.up_err   = new String(e_up.getText());
+		    ws.low_err  = new String(e_low.getText());
+		    setVisible(false);
+		}
+		if(ob == cancel)
+		    setVisible(false);
        }
    }
 
@@ -268,29 +268,29 @@ import javax.swing.event.*;
 
 	    list_model.addElement("Select this item to add new expression");
 	    sig_list = new JList<>(list_model);
-        JScrollPane scroll_sig_list = new JScrollPane(sig_list);
-        sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        sig_list.addListSelectionListener(
-	        new ListSelectionListener()
+	JScrollPane scroll_sig_list = new JScrollPane(sig_list);
+	sig_list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+	sig_list.addListSelectionListener(
+		new ListSelectionListener()
+		{
+	        public void valueChanged(ListSelectionEvent e)
 	        {
-                public void valueChanged(ListSelectionEvent e)
-                {
-                    if(e.getValueIsAdjusting())
-                        return;
-                    SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
-                }
-	        });
+	            if(e.getValueIsAdjusting())
+	                return;
+	            SList.this.signalSelect(((JList)e.getSource()).getSelectedIndex()-1);
+	        }
+		});
 
 	    sig_list.addKeyListener(
-	        new KeyAdapter()
-	        {
-	            public void keyPressed(KeyEvent e)
-	            {
-	                char key  = e.getKeyChar();
-	                if(key == KeyEvent.VK_DELETE)
-		                removeSignalSetup();
-	            }
-	        });
+		new KeyAdapter()
+		{
+		    public void keyPressed(KeyEvent e)
+		    {
+		        char key  = e.getKeyChar();
+		        if(key == KeyEvent.VK_DELETE)
+			        removeSignalSetup();
+		    }
+		});
 	    add("Center",scroll_sig_list);
 
 	    JPanel p = new JPanel(new GridLayout(4,1));
@@ -304,9 +304,9 @@ import javax.swing.event.*;
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    c.insets = new Insets(5,5,5,5);
 
-        p.setLayout(gridbag);
+	p.setLayout(gridbag);
 
-        mode1D = new JComboBox<>();
+	mode1D = new JComboBox<>();
 	    mode1D.addItem("Line");
 	    mode1D.addItem("No Line");
 	    mode1D.addItem("Step Plot");
@@ -314,7 +314,7 @@ import javax.swing.event.*;
 	    gridbag.setConstraints(mode1D, c);
 	    p.add(mode1D);
 
-        mode2D = new JComboBox<>();
+	mode2D = new JComboBox<>();
 	    mode2D.addItem("y & time");
 	    mode2D.addItem("x & y");
 	    mode2D.addItem("y & x");
@@ -331,7 +331,7 @@ import javax.swing.event.*;
 
 	    marker = new JComboBox<>();
 	    for(int i = 0; i < Signal.markerList.length; i++)
-	        marker.addItem(Signal.markerList[i]);
+		marker.addItem(Signal.markerList[i]);
 
 	    marker.addItemListener(this);
 	    gridbag.setConstraints(marker, c);
@@ -345,28 +345,28 @@ import javax.swing.event.*;
 	    c.fill =  GridBagConstraints.NONE;
 	    c.gridwidth = GridBagConstraints.REMAINDER;
 	    marker_step_t = new JTextField(3);
-            marker_step_t.addFocusListener(new FocusAdapter()
-            {
-                public void focusLost(FocusEvent e)
-                {
-                    if(getSignalSelect() != -1)
-                    {
-                            try {
-                                signals.elementAt(getSignalSelect()).marker_step = Integer.parseInt(marker_step_t.getText());
-                            } catch (NumberFormatException ex) {
-                                marker_step_t.setText("1");
-                            }
-                     }
-                }
-            }
-            );
+	    marker_step_t.addFocusListener(new FocusAdapter()
+	    {
+	        public void focusLost(FocusEvent e)
+	        {
+	            if(getSignalSelect() != -1)
+	            {
+	                    try {
+	                        signals.elementAt(getSignalSelect()).marker_step = Integer.parseInt(marker_step_t.getText());
+	                    } catch (NumberFormatException ex) {
+	                        marker_step_t.setText("1");
+	                    }
+	             }
+	        }
+	    }
+	    );
 
 	    gridbag.setConstraints(marker_step_t, c);
 	    p.add(marker_step_t);
 
 	    add("East", p);
 
-    	lab = new JLabel("");
+	lab = new JLabel("");
 	    add("South", lab);
 
 	    setOptionState(false);
@@ -379,25 +379,25 @@ import javax.swing.event.*;
 
       public int getSignalSelect()
       {
-        if(sig_list.getModel().getSize() == 2 && image_b.isSelected())
-            return 0;
-        else
-	        return sel_signal;
+	if(sig_list.getModel().getSize() == 2 && image_b.isSelected())
+	    return 0;
+	else
+		return sel_signal;
       }
 
       private void signalSelect(int sig)
       {
-        if(sig+1 >= sig_list.getModel().getSize())
-            return;
+	if(sig+1 >= sig_list.getModel().getSize())
+	    return;
 	    setSignalSelect(sig);
 	    int id = getSignalSelect() + 1;
 	    sig_list.setSelectedIndex(id);
 	    sig_list.ensureIndexIsVisible(id);
-        if(sig >= 0)
-            if(getSignalSelect() < signals.size())
-                putSignalSetup(signals.elementAt(getSignalSelect()));
-        else
-        	resetSignalSetup();
+	if(sig >= 0)
+	    if(getSignalSelect() < signals.size())
+	        putSignalSetup(signals.elementAt(getSignalSelect()));
+	else
+		resetSignalSetup();
 	    setOptionState(getSignalSelect() >= 0);
       }
 
@@ -407,36 +407,36 @@ import javax.swing.event.*;
 	    mode1D.setEnabled(state);
 	    mode2D.setEnabled(state);
 	    color.setEnabled(state);
-            if( getSignalSelect() == -1 )
-                marker_step_t.setEditable(false);
+	    if( getSignalSelect() == -1 )
+	        marker_step_t.setEditable(false);
       }
 
       public int getNumShot()
       {
-        if(shots != null)
-	        return shots.length;
+	if(shots != null)
+		return shots.length;
 	    else
-	        return 0;
+		return 0;
       }
 
       public void SetColorList()
       {
 	    String[] colors_name = main_scope.color_dialog.GetColorsName();
 	    if(color.getItemCount() != 0)
-	        color.removeAllItems();
+		color.removeAllItems();
 	    if(colors_name != null)
 	    {
-	        for(int i = 0; i < colors_name.length; i++)
-		        color.addItem(colors_name[i]);
+		for(int i = 0; i < colors_name.length; i++)
+			color.addItem(colors_name[i]);
 	    }
       }
 
     public int findSignalSetup(Data ws)
     {
-        for(int i=0; i < signals.size(); i++)
-            if(signals.elementAt(i).equals(ws))
-                return i;
-        return -1;
+	for(int i=0; i < signals.size(); i++)
+	    if(signals.elementAt(i).equals(ws))
+	        return i;
+	return -1;
     }
 
      public void updateSignalSetup(int idx, Data ws)
@@ -451,18 +451,18 @@ import javax.swing.event.*;
 	    int num_signal = signals.size();
 
 
-        if(shots != null && shots.length > 0)
-          	num_shot = shots.length;
+	if(shots != null && shots.length > 0)
+	  	num_shot = shots.length;
 
 	    if(getSignalSelect() != -1)
 	    {
-    	    start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
-	        end_idx   = start_idx + num_shot;
-	        for (i = 0; i < num_signal; i++)
+	    start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
+		end_idx   = start_idx + num_shot;
+		for (i = 0; i < num_signal; i++)
 		    if(i >= start_idx && i < end_idx)
 		    {
-		        list_model.removeElementAt(start_idx + 1);
-		        signals.removeElementAt(start_idx);
+			list_model.removeElementAt(start_idx + 1);
+			signals.removeElementAt(start_idx);
 		    }
 	    }
 	    signalSelect(-1);
@@ -474,55 +474,55 @@ import javax.swing.event.*;
      private void setMarkerTextState(int marker_idx)
      {
 	    if(marker_idx > 0 && marker_idx < 5 )
-	        marker_step_t.setEditable(true);
+		marker_step_t.setEditable(true);
 	    else {
-	        marker_step_t.setText("1");
-	        marker_step_t.setEditable(false);
+		marker_step_t.setText("1");
+		marker_step_t.setEditable(false);
 	    }
      }
 
      private int getPlotMode1D(Data ws)
      {
-        switch(ws.mode1D)
-        {
-            case Signal.MODE_LINE:
-                return 0;
-            case Signal.MODE_NOLINE:
-                return 1;
-            case Signal.MODE_STEP:
-                return 2;
-        }
-        return 0;
+	switch(ws.mode1D)
+	{
+	    case Signal.MODE_LINE:
+	        return 0;
+	    case Signal.MODE_NOLINE:
+	        return 1;
+	    case Signal.MODE_STEP:
+	        return 2;
+	}
+	return 0;
      }
 
      private void setPlotMode1D(Data ws, int mode)
      {
-        if(mode == 2)
-        {
-            ws.interpolate = true;
-            ws.mode1D = Signal.MODE_STEP;
-        }
-        else
-        {
-            if(mode == 0)
-            {
-                ws.interpolate = true;
-                ws.mode1D = Signal.MODE_LINE;
-            } else {
-                ws.interpolate = false;
-                ws.mode1D = Signal.MODE_NOLINE;
-            }
-        }
+	if(mode == 2)
+	{
+	    ws.interpolate = true;
+	    ws.mode1D = Signal.MODE_STEP;
+	}
+	else
+	{
+	    if(mode == 0)
+	    {
+	        ws.interpolate = true;
+	        ws.mode1D = Signal.MODE_LINE;
+	    } else {
+	        ws.interpolate = false;
+	        ws.mode1D = Signal.MODE_NOLINE;
+	    }
+	}
      }
 
      private int getPlotMode2D(Data ws)
      {
-        return ws.mode2D;
+	return ws.mode2D;
      }
 
      private void setPlotMode2D(Data ws, int mode)
      {
-        ws.mode2D = mode;
+	ws.mode2D = mode;
      }
 
 
@@ -531,17 +531,17 @@ import javax.swing.event.*;
      {
 
 	    if(ws.label != null)
-	        signal_label.setText(ws.label);
+		signal_label.setText(ws.label);
 	    else
-	        signal_label.setText("");
+		signal_label.setText("");
 	    if(ws.x_expr != null)
-	        x_expr.setText(ws.x_expr);
+		x_expr.setText(ws.x_expr);
 	    else
-	        x_expr.setText("");
+		x_expr.setText("");
 	    if(ws.y_expr != null)
-	        y_expr.setText(ws.y_expr);
+		y_expr.setText(ws.y_expr);
 	    else
-	        y_expr.setText("");
+		y_expr.setText("");
 
 	    mode1D.setSelectedIndex(getPlotMode1D(ws));
 	    mode2D.setSelectedIndex(getPlotMode2D(ws));
@@ -549,23 +549,23 @@ import javax.swing.event.*;
 	    marker.setSelectedIndex(ws.marker);
 	    marker_step_t.setText(""+ws.marker_step);
 	    setMarkerTextState(ws.marker);
-            
-            try
-            {
-                color.setSelectedIndex(ws.color_idx);
-            }
-            catch(Exception exc)
-            {
-                color.setSelectedIndex(0);                
-            }
-            
+
+	    try
+	    {
+	        color.setSelectedIndex(ws.color_idx);
+	    }
+	    catch(Exception exc)
+	    {
+	        color.setSelectedIndex(0);
+	    }
+
 	    if(error_w.isVisible())
-	        error_w.setError(ws);
+		error_w.setError(ws);
       }
 
       private void resetSignalSetup()
       {
-        signal_label.setText("");
+	signal_label.setText("");
 	    x_expr.setText("");
 	    y_expr.setText("");
 	    mode1D.setSelectedIndex(0);
@@ -581,7 +581,7 @@ import javax.swing.event.*;
       {
 	Data ws = new Data();
 
-        ws.label         = new String(signal_label.getText());
+	ws.label         = new String(signal_label.getText());
 	ws.x_expr        = new String(x_expr.getText());
 	ws.y_expr        = new String(y_expr.getText());
 	//ws.interpolate   = (mode1D.getSelectedIndex() == 0 ? true : false);
@@ -603,7 +603,7 @@ import javax.swing.event.*;
       {
 	    signalSelect(-1);
 	    if(signals.size() != 0)
-	        signals.removeAllElements();
+		signals.removeAllElements();
       }
 
       public void init(WaveInterface wi)
@@ -614,40 +614,40 @@ import javax.swing.event.*;
 	    {
 		    if(wi.shots != null)
 		    {
-	            shots = new long[wi.num_shot];
-	            for(int i = 0; i < wi.num_shot; i++)
-		            shots[i] = wi.shots[i];
-//    	        shot_str = wi.in_shot;
+		    shots = new long[wi.num_shot];
+		    for(int i = 0; i < wi.num_shot; i++)
+			    shots[i] = wi.shots[i];
+//    		shot_str = wi.in_shot;
 		    }
 
-	        list_num_shot = wi.num_shot;
-//	        shot_str = wi.in_shot;
+		list_num_shot = wi.num_shot;
+//		shot_str = wi.in_shot;
 
-	        for(int i = 0; i < wi.num_waves; i++)
-	        {
-		        ws = new Data();
-		        ws.label         = wi.in_label[i];
-		        ws.x_expr        = wi.in_x[i];
-		        ws.y_expr        = wi.in_y[i];
-		        ws.up_err	 = wi.in_up_err[i];
-		        ws.low_err	 = wi.in_low_err[i];
-		        ws.interpolate   = wi.interpolates[i];
-		        ws.mode2D        = wi.mode2D[i];
-		        ws.mode1D        = wi.mode1D[i];
- 		        ws.marker        = wi.markers[i];
-		        ws.marker_step	 = wi.markers_step[i];
-		        ws.color_idx     = wi.colors_idx[i];
-		        if(wi.shots != null)
-		            ws.shot = wi.shots[i];
-		        else
-		            ws.shot = UNDEF_SHOT;
-		        addSignalSetup(ws);
-	        }
-	        signalListRefresh();
+		for(int i = 0; i < wi.num_waves; i++)
+		{
+			ws = new Data();
+			ws.label         = wi.in_label[i];
+			ws.x_expr        = wi.in_x[i];
+			ws.y_expr        = wi.in_y[i];
+			ws.up_err	 = wi.in_up_err[i];
+			ws.low_err	 = wi.in_low_err[i];
+			ws.interpolate   = wi.interpolates[i];
+			ws.mode2D        = wi.mode2D[i];
+			ws.mode1D        = wi.mode1D[i];
+			ws.marker        = wi.markers[i];
+			ws.marker_step	 = wi.markers_step[i];
+			ws.color_idx     = wi.colors_idx[i];
+			if(wi.shots != null)
+			    ws.shot = wi.shots[i];
+			else
+			    ws.shot = UNDEF_SHOT;
+			addSignalSetup(ws);
+		}
+		signalListRefresh();
 	    }
 
 	    if(getSignalSelect() == -1 && wi.num_waves > 0)
-	        setSignalSelect(0);
+		setSignalSelect(0);
 
 	    signalSelect(getSignalSelect());
       }
@@ -670,30 +670,30 @@ import javax.swing.event.*;
 	    Data ws;
 
 	    if(y_expr.getText().length() == 0)
-	        return;
+		return;
 
 	    ws = getSignalSetup();
 	    idx = findSignalSetup(ws);
 	    if( idx == -1)
 	    {
-	        if(shots != null && shots.length != 0)
-	        {
-		        for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
-		        {
-		            ws.shot = shots[i];
-		            ws.color_idx = color_idx;
-		            color_idx = (color_idx + 1) %  main_scope.color_dialog.GetNumColor();
-		            addSignalSetup(ws);
-		            signalListAdd(ws);
-		        }
-	        }
-	        else
-	        {
-		        ws.shot = UNDEF_SHOT;
-		        addSignalSetup(ws);
-		        signalListAdd(ws);
-	        }
-	        signalSelect(findSignalSetup(ws));
+		if(shots != null && shots.length != 0)
+		{
+			for (int i = 0; i < shots.length; i++, ws = getSignalSetup())
+			{
+			    ws.shot = shots[i];
+			    ws.color_idx = color_idx;
+			    color_idx = (color_idx + 1) %  main_scope.color_dialog.GetNumColor();
+			    addSignalSetup(ws);
+			    signalListAdd(ws);
+			}
+		}
+		else
+		{
+			ws.shot = UNDEF_SHOT;
+			addSignalSetup(ws);
+			signalListAdd(ws);
+		}
+		signalSelect(findSignalSetup(ws));
 	    }
      }
 
@@ -702,43 +702,43 @@ import javax.swing.event.*;
        {
 
 		    if(shots != null && shots.length != 0)
-		        list_num_shot = shots.length;
+			list_num_shot = shots.length;
 		    else
-		        list_num_shot = 1;
+			list_num_shot = 1;
 
 		    main_scope.SetMainShot();
 		    in_shot = MdsWaveInterface.containMainShot(in_shot,
-		                                               main_scope.wave_panel.getMainShotStr());
+			                                       main_scope.wave_panel.getMainShotStr());
 		    long new_shots[] = wi.GetShotArray(in_shot);
 		    if(new_shots == null)
 		    {
-		        if(shots == null)
-		            return false;
-		        shots = null;
-		        return true;
+			if(shots == null)
+			    return false;
+			shots = null;
+			return true;
 		    }
 		    else
 		    {
-		        if(shots == null)
-		        {
-		            shots = new_shots;
-		            return true;
-		        } else {
-		            if(shots.equals(new_shots))
-		            {
-                        return false;
-		            }
-		            shots = new_shots;
-		            if(image_b.isSelected())
-		            {
-		                if(shots.length > 1)
-		                {
-		                    long sh[] = new long[1];
-		                    sh[0]=shots[0];
-		                    shots = sh;
-		                }
-		            }
-		        }
+			if(shots == null)
+			{
+			    shots = new_shots;
+			    return true;
+			} else {
+			    if(shots.equals(new_shots))
+			    {
+	                return false;
+			    }
+			    shots = new_shots;
+			    if(image_b.isSelected())
+			    {
+			        if(shots.length > 1)
+			        {
+			            long sh[] = new long[1];
+			            sh[0]=shots[0];
+			            shots = sh;
+			        }
+			    }
+			}
 		    }
 		    return true;
        }
@@ -756,54 +756,54 @@ import javax.swing.event.*;
 	    {
 		    for(int i = 0; i < n_shot; i++)
 		    {
-		        if(i < list_num_shot) {
-			        signals.setElementAt(signals.elementAt(j+i),k);
-		        } else {
-			        Data ws = new Data();
-			        ws.copy(signals.elementAt(j));
-			        color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
-			        ws.color_idx = color_idx;
-			        signals.insertElementAt(ws, k);
-		        }
-		        if(shots != null)
-		            signals.elementAt(k).shot = shots[i];
-		        else
-		            signals.elementAt(k).shot = UNDEF_SHOT;
+			if(i < list_num_shot) {
+				signals.setElementAt(signals.elementAt(j+i),k);
+			} else {
+				Data ws = new Data();
+				ws.copy(signals.elementAt(j));
+				color_idx = (color_idx + 1) % main_scope.color_dialog.GetNumColor();
+				ws.color_idx = color_idx;
+				signals.insertElementAt(ws, k);
+			}
+			if(shots != null)
+			    signals.elementAt(k).shot = shots[i];
+			else
+			    signals.elementAt(k).shot = UNDEF_SHOT;
 
-		        k++;
+			k++;
 		    }
 		    for(l = n_shot; l < list_num_shot; l++)
-		        signals.removeElementAt(j + n_shot);
+			signals.removeElementAt(j + n_shot);
 	     }
        }
 
        public void updateSignals()
        {
-	        int start_idx, end_idx;
-	        int num_shot = 1;
-	        int num_signal = signals.size();
+		int start_idx, end_idx;
+		int num_shot = 1;
+		int num_signal = signals.size();
 
-	        if(findSignalSetup(getSignalSetup()) != -1)
-	            return;
+		if(findSignalSetup(getSignalSetup()) != -1)
+		    return;
 
-	        if(getSignalSelect() != -1)
-	        {
-                if(shots != null && shots.length > 0)
-                    num_shot = shots.length;
+		if(getSignalSelect() != -1)
+		{
+	        if(shots != null && shots.length > 0)
+	            num_shot = shots.length;
 
-	            start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
-	            end_idx   = start_idx + num_shot;
+		    start_idx = (getSignalSelect()/num_shot) * num_shot; // Divisione intera
+		    end_idx   = start_idx + num_shot;
 
-	            for (int i = 0; i < num_signal; i++)
-		            if(i >= start_idx && i < end_idx)
-		            {
-		                signals.elementAt(i).label  = signal_label.getText();
-		                signals.elementAt(i).x_expr = x_expr.getText();
-		                signals.elementAt(i).y_expr = y_expr.getText();
-		                signalListReplace(i + 1, signals.elementAt(i));
-		            }
-	            signalSelect(start_idx);
-	        }
+		    for (int i = 0; i < num_signal; i++)
+			    if(i >= start_idx && i < end_idx)
+			    {
+			        signals.elementAt(i).label  = signal_label.getText();
+			        signals.elementAt(i).x_expr = x_expr.getText();
+			        signals.elementAt(i).y_expr = y_expr.getText();
+			        signalListReplace(i + 1, signals.elementAt(i));
+			    }
+		    signalSelect(start_idx);
+		}
 	    }
 
 	 public void updateError()
@@ -815,10 +815,10 @@ import javax.swing.event.*;
 
 	 public void signalListRefresh()
 	 {
-        if(list_model.size() > 1)
-        {
-            sig_list.setSelectedIndex(0);
-            list_model.removeRange(1, list_model.size() - 1);
+	if(list_model.size() > 1)
+	{
+	    sig_list.setSelectedIndex(0);
+	    list_model.removeRange(1, list_model.size() - 1);
 		}
 	    for(int i = 0; i < signals.size(); i++)
 		    signalListAdd(signals.elementAt(i));
@@ -830,7 +830,7 @@ import javax.swing.event.*;
 	     StringTokenizer st = new StringTokenizer(expr, "\n");
 	     if(st.countTokens() > 1)
 	     {
-	        out = st.nextToken() + "... ";
+		out = st.nextToken() + "... ";
 	     }
 	     return out;
 	  }
@@ -840,15 +840,15 @@ import javax.swing.event.*;
 
 	    if(ws.shot != UNDEF_SHOT)
 	    {
-    		if(ws.x_expr == null || ws.x_expr.length() == 0)
-		        list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " Shot : " + ws.shot);
+		if(ws.x_expr == null || ws.x_expr.length() == 0)
+			list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " Shot : " + ws.shot);
 		    else
-		        list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : " + ws.shot);
+			list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : " + ws.shot);
 	    } else {
 		    if(ws.x_expr == null || ws.x_expr.length() == 0)
-		        list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " Shot : Undef");
+			list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " Shot : Undef");
 		    else
-		        list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : Undef");
+			list_model.addElement("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : Undef");
 	    }
 	  }
 
@@ -857,36 +857,36 @@ import javax.swing.event.*;
 	    if(ws.shot != UNDEF_SHOT)
 	    {
 		    if(ws.x_expr == null || ws.x_expr.length() == 0)
-		        list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " Shot : " + ws.shot, idx);
+			list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " Shot : " + ws.shot, idx);
 		    else
-		        list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : " + ws.shot, idx);
+			list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : " + ws.shot, idx);
 	    } else {
 		    if(ws.x_expr == null || ws.x_expr.length() == 0)
-		        list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " Shot : Undef", idx);
+			list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " Shot : Undef", idx);
 		    else
-		        list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : Undef", idx);
+			list_model.setElementAt("Y : " + getExpressionList(ws.y_expr) + " X : " + getExpressionList(ws.x_expr) + " Shot : Undef", idx);
 	    }
 	}
 
       public void updateList() throws IOException
       {
 
- 	        if(getSignalSelect() == -1)
-    	    {
-		        signalList.addSignals();
+		if(getSignalSelect() == -1)
+	    {
+			signalList.addSignals();
 		    }
-	        else {
-	            if(y_expr.getText().trim().length() != 0)
-		            signalList.updateSignals();
-		        else
-		            removeSignalSetup();
+		else {
+		    if(y_expr.getText().trim().length() != 0)
+			    signalList.updateSignals();
+			else
+			    removeSignalSetup();
 		    }
 
-       	    if(evaluateShotList(shot.getText()))
-    	    {
-		        signalsRefresh();
-		        signalListRefresh();
-	        }
+	    if(evaluateShotList(shot.getText()))
+	    {
+			signalsRefresh();
+			signalListRefresh();
+		}
       }
 
 /*
@@ -897,11 +897,11 @@ import javax.swing.event.*;
 	    if(ob == marker_step_t && getSignalSelect() != -1)
 	    {
 		    try {
-		        signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
+			signals.elementAt(getSignalSelect()).marker_step = new Integer(marker_step_t.getText()).intValue();
 		    } catch (NumberFormatException ex) {
-		        marker_step_t.setText("1");
+			marker_step_t.setText("1");
 		    }
-    	 }
+	 }
       }
 */
 
@@ -910,30 +910,30 @@ import javax.swing.event.*;
 	    Object ob = e.getSource();
 
 	    if(ob instanceof JCheckBox)
-	        DefaultButtonChange(ob);
+		DefaultButtonChange(ob);
 
-    	if(getSignalSelect() == -1 || image_b.isSelected())
-	        return;
+	if(getSignalSelect() == -1 || image_b.isSelected())
+		return;
 
 	    if(ob == marker)
 	    {
-	        int m_idx =  marker.getSelectedIndex();
-	        signals.elementAt(getSignalSelect()).marker = m_idx;
-	        setMarkerTextState(m_idx);
-    	}
+		int m_idx =  marker.getSelectedIndex();
+		signals.elementAt(getSignalSelect()).marker = m_idx;
+		setMarkerTextState(m_idx);
+	}
 
 	    if(ob == mode1D)
 	    {
-	        setPlotMode1D(signals.elementAt(getSignalSelect()), mode1D.getSelectedIndex());
+		setPlotMode1D(signals.elementAt(getSignalSelect()), mode1D.getSelectedIndex());
 	    }
 
 	    if(ob == mode2D)
 	    {
-	        setPlotMode2D(signals.elementAt(getSignalSelect()), mode2D.getSelectedIndex());
+		setPlotMode2D(signals.elementAt(getSignalSelect()), mode2D.getSelectedIndex());
 	    }
 
 	    if(ob == color) {
-	        signals.elementAt(getSignalSelect()).color_idx = color.getSelectedIndex();
+		signals.elementAt(getSignalSelect()).color_idx = color.getSelectedIndex();
 	    }
 
       }
@@ -956,25 +956,25 @@ import javax.swing.event.*;
 
 	    getContentPane().setLayout(new BorderLayout());
 
-        JPanel p1 = new JPanel();
-        p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
+	JPanel p1 = new JPanel();
+	p1.setLayout(new BoxLayout(p1, BoxLayout.Y_AXIS));
 
-        JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	JPanel p2 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    lab_y = new JLabel("Y Expression:");
 	    p2.add(lab_y);
-        p1.add(p2);
+	p1.add(p2);
 
 	    y_expr = new JTextArea(50, 20);
- 		JScrollPane scroller = new JScrollPane(y_expr);
+		JScrollPane scroller = new JScrollPane(y_expr);
 	    p1.add(scroller);
 
-        JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	JPanel p3 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 	    lab_x = new JLabel("X Expression:");
 	    p3.add(lab_x);
-        p1.add(p3);
+	p1.add(p3);
 
 	    x_expr = new JTextArea(50, 20);
- 		scroller = new JScrollPane(x_expr);
+		scroller = new JScrollPane(x_expr);
 	    p1.add(scroller);
 
 	    JPanel p = new JPanel();
@@ -999,19 +999,19 @@ import javax.swing.event.*;
      */
      public void setExpressionString(String x, String y)
      {
-        if(image_b.isSelected())
-        {
-	        lab_x.setText("Times Expression:");
-	        lab_y.setText("Frames Expression:");
-        } else {
-	        lab_x.setText("X Expression:");
-	        lab_y.setText("Y Expression:");
-        }
+	if(image_b.isSelected())
+	{
+		lab_x.setText("Times Expression:");
+		lab_y.setText("Frames Expression:");
+	} else {
+		lab_x.setText("X Expression:");
+		lab_y.setText("Y Expression:");
+	}
 
 	    if(x != null)
-	        x_expr.setText(x);
+		x_expr.setText(x);
 	    if(y != null)
-	        y_expr.setText(y);
+		y_expr.setText(y);
      }
 
      public void actionPerformed(ActionEvent e)
@@ -1020,9 +1020,9 @@ import javax.swing.event.*;
 
 	    if(ob == ok)
 	    {
-	        conf_dialog.x_expr.setText(x_expr.getText());
-	        conf_dialog.y_expr.setText(y_expr.getText());
-	        updateDataSetup();
+		conf_dialog.x_expr.setText(x_expr.getText());
+		conf_dialog.y_expr.setText(y_expr.getText());
+		updateDataSetup();
 	    }
 	    setVisible(false);
      }
@@ -1059,20 +1059,20 @@ import javax.swing.event.*;
 		p3.add(y_expr);
 		p3.add(y_log);
 
-        JPanel p4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	JPanel p4 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		p4.add(y_label_b);
 		p4.add(y_label);
 
 		pix_y_min.setText("Pixel Y min");
 		p4.add(pix_y_min);
-        pix_y_min.setVisible(false);
+	pix_y_min.setVisible(false);
 
 		p4.add(y_min_b);
 		p4.add(y_min);
 
 		pix_y_max.setText("Pixel Y max");
 		p4.add(pix_y_max);
-        pix_y_max.setVisible(false);
+	pix_y_max.setVisible(false);
 
 		p4.add(y_max_b);
 		p4.add(y_max);
@@ -1085,18 +1085,18 @@ import javax.swing.event.*;
 		p5.add(x_expr);
 
 		p5.add(time_min_b);
-        time_min_b.setVisible(false);
+	time_min_b.setVisible(false);
 		p5.add(time_min);
-        time_min.setVisible(false);
+	time_min.setVisible(false);
 
 		p5.add(time_max_b);
 		p5.add(time_max);
-        time_max_b.setVisible(false);
-        time_max.setVisible(false);
+	time_max_b.setVisible(false);
+	time_max.setVisible(false);
 
 		p5.add(x_log);
 
-        JPanel p6 = new JPanel(new FlowLayout(FlowLayout.LEFT));
+	JPanel p6 = new JPanel(new FlowLayout(FlowLayout.LEFT));
 		p6.add(x_label_b);
 		p6.add(x_label);
 
@@ -1113,10 +1113,10 @@ import javax.swing.event.*;
 
 		p6.add(x_max_b);
 		p6.add(x_max);
-                
-                p6.add(continuous_update_b);
 
- 
+	        p6.add(continuous_update_b);
+
+
 
 		p6.add(keep_ratio_b);
 		keep_ratio_b.setVisible(false);
@@ -1128,15 +1128,15 @@ import javax.swing.event.*;
 		p7.add(shot);
 
        p7.add(upd_limits_b);
-        JPanel pp1 = new JPanel();
+	JPanel pp1 = new JPanel();
 
-        upd_limits.setMargin(new Insets(1,1,1,1));
-        BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
-        pp1.setBorder(bb);
+	upd_limits.setMargin(new Insets(1,1,1,1));
+	BevelBorder bb = (BevelBorder)BorderFactory.createBevelBorder(BevelBorder.LOWERED);
+	pp1.setBorder(bb);
 		pp1.add(upd_limits);
 		p7.add(pp1);
-                
-                
+
+
 		p7.add(horizontal_flip_b);
 		horizontal_flip_b.setVisible(false);
 
@@ -1147,13 +1147,13 @@ import javax.swing.event.*;
 		p8.add(def_node);
 
 		p8.add(vertical_flip_b);
-        vertical_flip_b.setVisible(false);
+	vertical_flip_b.setVisible(false);
 
-        p9.setBorder(BorderFactory.createLoweredBevelBorder());
-        signalList = new SList();
+	p9.setBorder(BorderFactory.createLoweredBevelBorder());
+	signalList = new SList();
 		p9.add("Center", signalList);
 
-        JPanel p10 = new JPanel();
+	JPanel p10 = new JPanel();
 		p10.setLayout(new FlowLayout());
 		p10.setBounds(12,347,660,40);
 		p10.add(ok);
@@ -1215,10 +1215,10 @@ import javax.swing.event.*;
       p9.setPreferredSize(p9.getSize());
 
       addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent e)
-            {
-                cancelOperation();
-            }
+	    public void windowClosing(WindowEvent e)
+	    {
+	        cancelOperation();
+	    }
       });
 
 
@@ -1233,18 +1233,17 @@ import javax.swing.event.*;
     public void Show(Waveform w, int col, int row)
     {
       wave = (jScopeMultiWave)w;
-      
+
 //    wave.addWaveformListener(this);
       wi = (MdsWaveInterface)wave.wi;
 
-      
+
       wi = new MdsWaveInterface(wave,
-                                ((MdsWaveInterface)wave.wi).dp,
-                                ((MdsWaveInterface)wave.wi).def_vals,
-                                wave.wi.cache_enabled);
+	                        ((MdsWaveInterface)wave.wi).dp,
+	                        ((MdsWaveInterface)wave.wi).def_vals);
 
       wi.defaults = ((MdsWaveInterface)wave.wi).defaults;
-      
+
       putWindowSetup((MdsWaveInterface)wave.wi);
       updateDataSetup();
       setLocationRelativeTo(w.getParent());
@@ -1275,8 +1274,8 @@ import javax.swing.event.*;
     boolean state = true;
     wi.defaults = 0xffffffff;
     if(wi.is_image)
-        wi.defaults = wi.defaults &  ~( (1 << MdsWaveInterface.B_y_max) +
-                                                      (1 << MdsWaveInterface.B_y_min));
+	wi.defaults = wi.defaults &  ~( (1 << MdsWaveInterface.B_y_max) +
+	                                              (1 << MdsWaveInterface.B_y_min));
 
 
 	title_b.setSelected(state);
@@ -1339,15 +1338,15 @@ import javax.swing.event.*;
 		    experiment_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break;
 		case MdsWaveInterface.B_x_max:
 		    if(image_b.isSelected())
-		        time_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
+			time_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		    else
-		        x_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
+			x_max_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		break;
 		case MdsWaveInterface.B_x_min:
 		    if(image_b.isSelected())
-		        time_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
+			time_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		    else
-		        x_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
+			x_min_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);
 		break;
 		case MdsWaveInterface.B_x_label:
 		    x_label_b.setSelected(((flags & (1<<i)) == 1<<i)?true:false);break;
@@ -1410,24 +1409,24 @@ import javax.swing.event.*;
 
    public void PutDefaultValues()
    {
-        boolean def_flag;
+	boolean def_flag;
 
 	    defaultButtonOperation(title, def_flag = title_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
 	    putShotValue(shot_b.isSelected());
 	    defaultButtonOperation(experiment, def_flag = experiment_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
 	    if(image_b.isSelected())
 	    {
-	        defaultButtonOperation(time_max, def_flag = time_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
-	        if(!def_flag)
-	            time_max.setText(wi.cin_timemax);
-	        defaultButtonOperation(time_min, def_flag = time_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
-	        if(!def_flag)
-	            time_min.setText(wi.cin_timemin);
-	        x_min.setText(wi.cin_xmin);
-	        x_max.setText(wi.cin_xmax);
+		defaultButtonOperation(time_max, def_flag = time_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+		if(!def_flag)
+		    time_max.setText(wi.cin_timemax);
+		defaultButtonOperation(time_min, def_flag = time_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+		if(!def_flag)
+		    time_min.setText(wi.cin_timemin);
+		x_min.setText(wi.cin_xmin);
+		x_max.setText(wi.cin_xmax);
 	    } else {
-	        defaultButtonOperation(x_max, def_flag = x_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
-	        defaultButtonOperation(x_min, def_flag = x_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
+		defaultButtonOperation(x_max, def_flag = x_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_max, def_flag));
+		defaultButtonOperation(x_min, def_flag = x_min_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_min, def_flag));
 	    }
 	    defaultButtonOperation(x_label, def_flag = x_label_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_x_label, def_flag));
 	    defaultButtonOperation(y_max, def_flag = y_max_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_y_max, def_flag));
@@ -1443,18 +1442,18 @@ import javax.swing.event.*;
    {
        if (wi == null)
        {
-           eraseForm();
-           return;
+	   eraseForm();
+	   return;
        }
 
        if (wi.is_image)
-           wi.defaults = wi.defaults & ~ ( (1 << MdsWaveInterface.B_y_max) +
-                                          (1 << MdsWaveInterface.B_y_min));
+	   wi.defaults = wi.defaults & ~ ( (1 << MdsWaveInterface.B_y_max) +
+	                                  (1 << MdsWaveInterface.B_y_min));
 
        setImageDialog(wi.is_image);
 
        //this.wi.evaluated_shot = wi.evaluated_shot;
-       
+
        this.wi.colorMap = wi.colorMap;
 
        this.wi.cexperiment = wi.cexperiment;
@@ -1482,7 +1481,7 @@ import javax.swing.event.*;
        this.wi.legend_y = wi.legend_y;
        this.wi.show_legend = wi.show_legend;
        this.wi.reversed = wi.reversed;
-       
+
        this.wi.is_image = wi.is_image;
        this.wi.keep_ratio = wi.keep_ratio;
        this.wi.horizontal_flip = wi.horizontal_flip;
@@ -1503,10 +1502,10 @@ import javax.swing.event.*;
        y_expr.setText("");
        x_log.setSelected(wi.x_log);
        y_log.setSelected(wi.y_log);
-       
+
        //GAB 2014
        continuous_update_b.setSelected(wi.isContinuousUpdate);
-       
+
        //upd_limits.setSelected(wi.cin_upd_limits);
 //	}
 //	else {
@@ -1524,82 +1523,82 @@ import javax.swing.event.*;
   {
     if(state)
     {
-        sig_label.setVisible(false);
-        signal_label.setVisible(false);
+	sig_label.setVisible(false);
+	signal_label.setVisible(false);
 
-        time_min_b.setVisible(true);
-        time_min.setVisible(true);
-        time_max_b.setVisible(true);
-        time_max.setVisible(true);
+	time_min_b.setVisible(true);
+	time_min.setVisible(true);
+	time_max_b.setVisible(true);
+	time_max.setVisible(true);
 
 
 		pix_x_max.setVisible(true);
 		pix_x_min.setVisible(true);
 		x_max_b.setVisible(false);
 		x_min_b.setVisible(false);
-                //GAB 2014
-                continuous_update_b.setVisible(false);
-                
+	        //GAB 2014
+	        continuous_update_b.setVisible(false);
+
 		pix_y_max.setVisible(true);
 		pix_y_min.setVisible(true);
 		y_max_b.setVisible(false);
 		y_min_b.setVisible(false);
 
-        upd_limits_b.setVisible(false);
+	upd_limits_b.setVisible(false);
 		upd_limits.getParent().setVisible(false);
 
-        x_log.setVisible(false);
-        y_log.setVisible(false);
+	x_log.setVisible(false);
+	y_log.setVisible(false);
 
-        signalList.setVisible(false);
-        p9.setVisible(false);
+	signalList.setVisible(false);
+	p9.setVisible(false);
 
-        error.setVisible(false);
-        keep_ratio_b.setVisible(true);
-        horizontal_flip_b.setVisible(true);
-        vertical_flip_b.setVisible(true);
+	error.setVisible(false);
+	keep_ratio_b.setVisible(true);
+	horizontal_flip_b.setVisible(true);
+	vertical_flip_b.setVisible(true);
 		y_lab.setText("Frames");
 		x_lab.setText("Times");
 		x_expr.setPreferredSize(null);
-        x_expr.setColumns(24);
+	x_expr.setColumns(24);
     } else {
 
-        sig_label.setVisible(true);
-        signal_label.setVisible(true);
+	sig_label.setVisible(true);
+	signal_label.setVisible(true);
 
-        time_min_b.setVisible(false);
-        time_min.setVisible(false);
-        time_max_b.setVisible(false);
-        time_max.setVisible(false);
+	time_min_b.setVisible(false);
+	time_min.setVisible(false);
+	time_max_b.setVisible(false);
+	time_max.setVisible(false);
 
 		pix_x_max.setVisible(false);
 		pix_x_min.setVisible(false);
 		x_max_b.setVisible(true);
 		x_min_b.setVisible(true);
 //Contunius update is experimental and therefore not shown in production interface
-                continuous_update_b.setVisible(false);
+	        continuous_update_b.setVisible(false);
 
 		pix_y_max.setVisible(false);
 		pix_y_min.setVisible(false);
 		y_max_b.setVisible(true);
 		y_min_b.setVisible(true);
 
-        upd_limits_b.setVisible(true);
+	upd_limits_b.setVisible(true);
 		upd_limits.getParent().setVisible(true);
 
-        x_log.setVisible(true);
-        y_log.setVisible(true);
-        signalList.setVisible(true);
-        p9.setVisible(true);
-        error.setVisible(true);
-        x_lab.setVisible(true);
-        keep_ratio_b.setVisible(false);
-        horizontal_flip_b.setVisible(false);
-        vertical_flip_b.setVisible(false);
+	x_log.setVisible(true);
+	y_log.setVisible(true);
+	signalList.setVisible(true);
+	p9.setVisible(true);
+	error.setVisible(true);
+	x_lab.setVisible(true);
+	keep_ratio_b.setVisible(false);
+	horizontal_flip_b.setVisible(false);
+	vertical_flip_b.setVisible(false);
 		y_lab.setText("Y");
 		x_lab.setText("X");
 		x_expr.setPreferredSize(null);
-        x_expr.setColumns(58);
+	x_expr.setColumns(58);
     }
     pack();
     x_expr.setPreferredSize(x_expr.getSize());
@@ -1648,7 +1647,7 @@ import javax.swing.event.*;
 
 	MdsWaveInterface wave_wi = (MdsWaveInterface)wave.wi;
 
-    	if(wave_wi == null) return true;
+	if(wave_wi == null) return true;
 
 	if( wave_wi.getModified() ) return true;
 
@@ -1669,45 +1668,45 @@ import javax.swing.event.*;
 	if(upd_limits.isSelected() != wave_wi.cin_upd_limits)		      return true;
 	if(!main_scope.equalsString(y_max.getText(),   wave_wi.cin_ymax))     return true;
 	if(!main_scope.equalsString(y_min.getText(),   wave_wi.cin_ymin))     return true;
-        if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;
-	if(y_log.isSelected() != wave_wi.y_log)				            return true;
-        
+	if(!main_scope.equalsString(y_label.getText(), wave_wi.cin_ylabel))   return true;
+	if(y_log.isSelected() != wave_wi.y_log)					    return true;
+
        // if(!main_scope.equalsString(shot.getText(),   wave_wi.cin_shot))            return true;
        if(!main_scope.equalsString(shot.getText(),   wave_wi.in_shot))         return true;
 
-        
-        if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;
-        if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;
+
+	if(!main_scope.equalsString(upd_event.getText(),   wave_wi.cin_upd_event))  return true;
+	if(!main_scope.equalsString(def_node.getText(),    wave_wi.cin_def_node))   return true;
 	if(!main_scope.equalsString(experiment.getText(), wave_wi.cexperiment))     return true;
-	if(getDefaultFlags() != wave_wi.defaults)				                  return true;
-	if(image_b.isSelected() != wave_wi.is_image)				                  return true;
-	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)				          return true;        
+	if(getDefaultFlags() != wave_wi.defaults)					          return true;
+	if(image_b.isSelected() != wave_wi.is_image)					          return true;
+	if(keep_ratio_b.isSelected() != wave_wi.keep_ratio)					  return true;
 	if(horizontal_flip_b.isSelected() != wave_wi.horizontal_flip)				  return true;
 	if(vertical_flip_b.isSelected() != wave_wi.vertical_flip)				  return true;
-        
-        for(int i = 0 ; i < wave_wi.num_waves; i++)
+
+	for(int i = 0 ; i < wave_wi.num_waves; i++)
 	{
 	    if(!main_scope.equalsString(s[i].x_expr,  wave_wi.in_x[i]))        return true;
 	    if(!main_scope.equalsString(s[i].y_expr,  wave_wi.in_y[i]))        return true;
 	    if(!main_scope.equalsString(s[i].up_err,  wave_wi.in_up_err[i]))   return true;
 	    if(!main_scope.equalsString(s[i].low_err, wave_wi.in_low_err[i]))  return true;
 	}
-        //GAB 2014
-        //if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
+	//GAB 2014
+	//if(continuous_update_b.isSelected() != wave_wi.isContinuousUpdate) return true;
 
-        return false;
+	return false;
     }
 
     private void updateDataSetup()
     {
-        setCursor(new Cursor(Cursor.WAIT_CURSOR));
-        try
-        {
-	        signalList.updateList();
+	setCursor(new Cursor(Cursor.WAIT_CURSOR));
+	try
+	{
+		signalList.updateList();
 	    } catch (Throwable e) {
 		    JOptionPane.showMessageDialog(null, e.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
 	    }
-        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
    }
 
    private void updateGlobalWI()
@@ -1745,7 +1744,7 @@ import javax.swing.event.*;
 	    wi.cin_xlabel    = x_label.getText();
       if(!y_label_b.isSelected() && !main_scope.equalsString(y_label.getText(), wi.cin_ylabel))
 	    wi.cin_ylabel    = y_label.getText();
-      
+
       //GAB 2014
       //wi.isContinuousUpdate = continuous_update_b.isSelected();
       wi.isContinuousUpdate = false;
@@ -1753,88 +1752,88 @@ import javax.swing.event.*;
 
    private int updateWI()
    {
-          Data[] s;
-          int num_signal;
+	  Data[] s;
+	  int num_signal;
 
-          s = signalList.getSignals();
-          num_signal = s.length;
+	  s = signalList.getSignals();
+	  num_signal = s.length;
 
-          if(num_signal == 0)
-          {
-               if(wave.wi != null)
-                   wave.wi.Erase();
-               return 1;
-          }
+	  if(num_signal == 0)
+	  {
+	       if(wave.wi != null)
+	           wave.wi.Erase();
+	       return 1;
+	  }
 
-          wi.setModified(isChanged(s));
-          main_scope.setChange(wi.getModified());
-          wi.is_image = image_b.isSelected();
-          wi.keep_ratio = keep_ratio_b.isSelected();
-          wi.horizontal_flip = horizontal_flip_b.isSelected();
-          wi.vertical_flip = vertical_flip_b.isSelected();
+	  wi.setModified(isChanged(s));
+	  main_scope.setChange(wi.getModified());
+	  wi.is_image = image_b.isSelected();
+	  wi.keep_ratio = keep_ratio_b.isSelected();
+	  wi.horizontal_flip = horizontal_flip_b.isSelected();
+	  wi.vertical_flip = vertical_flip_b.isSelected();
 
-          
-          
-          if(!wi.getModified())
-          {
+
+
+	  if(!wi.getModified())
+	  {
 /*
-                if(wi.is_image)
-                {
-                    if( wave.frames != null )
-                    {
-                        wave.frames.setHorizontalFlip(wi.horizontal_flip);
-                        wave.frames.setVerticalFlip(wi.vertical_flip);
-                    }
-                    return 0;
-                }
-*/              
-                for(int i = 0; i < wave.wi.num_waves; i++)
-                {
-                    wave.wi.markers[i]      = s[i].marker;
-                    wave.wi.markers_step[i] = s[i].marker_step;
-                    wave.wi.interpolates[i] = s[i].interpolate;
-                    wave.wi.mode2D[i]       = s[i].mode2D;
-                    wave.wi.mode1D[i]       = s[i].mode1D;
+	        if(wi.is_image)
+	        {
+	            if( wave.frames != null )
+	            {
+	                wave.frames.setHorizontalFlip(wi.horizontal_flip);
+	                wave.frames.setVerticalFlip(wi.vertical_flip);
+	            }
+	            return 0;
+	        }
+*/
+	        for(int i = 0; i < wave.wi.num_waves; i++)
+	        {
+	            wave.wi.markers[i]      = s[i].marker;
+	            wave.wi.markers_step[i] = s[i].marker_step;
+	            wave.wi.interpolates[i] = s[i].interpolate;
+	            wave.wi.mode2D[i]       = s[i].mode2D;
+	            wave.wi.mode1D[i]       = s[i].mode1D;
 //		    wave.wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
-                    wave.wi.colors_idx[i]   = s[i].color_idx;
-                    wave.wi.in_label[i]     = s[i].label;
-                }
-                return 0;
-          }
+	            wave.wi.colors_idx[i]   = s[i].color_idx;
+	            wave.wi.in_label[i]     = s[i].label;
+	        }
+	        return 0;
+	  }
 
-          updateGlobalWI();
+	  updateGlobalWI();
 
-          wi.num_waves = num_signal;
+	  wi.num_waves = num_signal;
 
-          wi.experiment     = new String(experiment.getText());
-          wi.in_shot        = new String(shot.getText());
-          wi.in_def_node    = new String(def_node.getText());
+	  wi.experiment     = new String(experiment.getText());
+	  wi.in_shot        = new String(shot.getText());
+	  wi.in_def_node    = new String(def_node.getText());
      // wi.in_upd_event   = new String(upd_event.getText());
      // wi.cin_upd_event   = new String(upd_event.getText());
-          wi.in_xmax        = new String(x_max.getText());
-          wi.in_xmin        = new String(x_min.getText());
+	  wi.in_xmax        = new String(x_max.getText());
+	  wi.in_xmin        = new String(x_min.getText());
 
-          wi.in_timemax        = new String(time_max.getText());
-          wi.in_timemin        = new String(time_min.getText());
+	  wi.in_timemax        = new String(time_max.getText());
+	  wi.in_timemin        = new String(time_min.getText());
 
-          wi.in_ymax        = new String(y_max.getText());
-          wi.in_ymin        = new String(y_min.getText());
-          wi.in_title       = new String(title.getText());
-          wi.in_xlabel      = new String(x_label.getText());
-          wi.in_ylabel      = new String(y_label.getText());
+	  wi.in_ymax        = new String(y_max.getText());
+	  wi.in_ymin        = new String(y_min.getText());
+	  wi.in_title       = new String(title.getText());
+	  wi.in_xlabel      = new String(x_label.getText());
+	  wi.in_ylabel      = new String(y_label.getText());
 
-          wi.x_log        = x_log.isSelected();
-          wi.y_log        = y_log.isSelected();
-          wi.in_upd_limits   = upd_limits.isSelected();
-          wi.num_shot     = signalList.getNumShot();
-          wi.defaults     = getDefaultFlags();
+	  wi.x_log        = x_log.isSelected();
+	  wi.y_log        = y_log.isSelected();
+	  wi.in_upd_limits   = upd_limits.isSelected();
+	  wi.num_shot     = signalList.getNumShot();
+	  wi.defaults     = getDefaultFlags();
 
-          wi.in_label     = new String[num_signal];
-          wi.in_x         = new String[num_signal];
-          wi.in_y         = new String[num_signal];
+	  wi.in_label     = new String[num_signal];
+	  wi.in_x         = new String[num_signal];
+	  wi.in_y         = new String[num_signal];
 
-          wi.in_up_err    = new String[num_signal];
-          wi.in_low_err   = new String[num_signal];
+	  wi.in_up_err    = new String[num_signal];
+	  wi.in_low_err   = new String[num_signal];
       wi.markers      = new int[num_signal];
       wi.markers_step = new int[num_signal];
       wi.colors_idx   = new int[num_signal];
@@ -1846,44 +1845,44 @@ import javax.swing.event.*;
       wi.isContinuousUpdate = false;
 
       if(s[0].shot != UNDEF_SHOT)
-        wi.shots        = new long[num_signal];
+	wi.shots        = new long[num_signal];
 
-          for(int i = 0; i < num_signal; i++)
-          {
-                if(s[i].label != null)
-                        wi.in_label[i]         = new String(s[i].label);
+	  for(int i = 0; i < num_signal; i++)
+	  {
+	        if(s[i].label != null)
+	                wi.in_label[i]         = new String(s[i].label);
 
-                if(s[i].x_expr != null)
-                        wi.in_x[i]         = new String(s[i].x_expr);
-                if(s[i].y_expr != null)
-                        wi.in_y[i]         = new String(s[i].y_expr);
+	        if(s[i].x_expr != null)
+	                wi.in_x[i]         = new String(s[i].x_expr);
+	        if(s[i].y_expr != null)
+	                wi.in_y[i]         = new String(s[i].y_expr);
 
-                if(wi.shots != null)
-                        wi.shots[i]        = s[i].shot;
+	        if(wi.shots != null)
+	                wi.shots[i]        = s[i].shot;
 
-                    if(!wi.is_image)
-                    {
-                    wi.markers[i]      = s[i].marker;
-                    wi.markers_step[i] = s[i].marker_step;
-                    wi.interpolates[i] = s[i].interpolate;
-                    wi.mode2D[i]       = s[i].mode2D;
-                    wi.mode1D[i]       = s[i].mode1D;
-                    if(s[i].up_err != null)
-                            wi.in_up_err[i] = new String(s[i].up_err);
-                    if(s[i].low_err != null)
-                            wi.in_low_err[i] = new String(s[i].low_err);
-//	            wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
-                    wi.colors_idx[i]   = s[i].color_idx;
-                }
-              }
+	            if(!wi.is_image)
+	            {
+	            wi.markers[i]      = s[i].marker;
+	            wi.markers_step[i] = s[i].marker_step;
+	            wi.interpolates[i] = s[i].interpolate;
+	            wi.mode2D[i]       = s[i].mode2D;
+	            wi.mode1D[i]       = s[i].mode1D;
+	            if(s[i].up_err != null)
+	                    wi.in_up_err[i] = new String(s[i].up_err);
+	            if(s[i].low_err != null)
+	                    wi.in_low_err[i] = new String(s[i].low_err);
+//		    wi.colors[i]       = main_scope.color_dialog.GetColorAt(s[i].color_idx);
+	            wi.colors_idx[i]   = s[i].color_idx;
+	        }
+	      }
 
-              //if(wi.shots[0] == jScope.UNDEF_SHOT)
-                  //   wi.shots = null;
+	      //if(wi.shots[0] == jScope.UNDEF_SHOT)
+	          //   wi.shots = null;
 
 
-              wave.wi = wi;
+	      wave.wi = wi;
 
-              return 0;
+	      return 0;
      }
 
    private int checkSetup()
@@ -1891,20 +1890,20 @@ import javax.swing.event.*;
 	    int error = 0;
 	    boolean def_exp = true, def_shot = true;
 
-        main_scope.SetStatusLabel("");
+	main_scope.SetStatusLabel("");
 
 	    if(experiment.getText() == null || experiment.getText().trim().length() == 0)
-	        def_exp = false;
+		def_exp = false;
 
 	    if(shot.getText() == null || shot.getText().trim().length() == 0)
-	        def_shot = false;
+		def_shot = false;
 
 	    if(def_exp ^ def_shot)
 	    {
-	        if(!def_shot) {
-		        JOptionPane.showMessageDialog(null, "Experiment defined but undefined shot", "alert", JOptionPane.ERROR_MESSAGE);
-                //return 1;
-                error = 1;
+		if(!def_shot) {
+			JOptionPane.showMessageDialog(null, "Experiment defined but undefined shot", "alert", JOptionPane.ERROR_MESSAGE);
+	        //return 1;
+	        error = 1;
 		    }
 	    }
 
@@ -1913,7 +1912,7 @@ import javax.swing.event.*;
 	    if(updateWI() != 0)
 	    {
 		    JOptionPane.showMessageDialog(null, "Nothing to evaluate", "alert", JOptionPane.ERROR_MESSAGE);
-	        error = 1;
+		error = 1;
 	    }
 
 	    return error;
@@ -1923,36 +1922,36 @@ import javax.swing.event.*;
 
    private  void applyWaveform()
    {
-        checkSetup();
-        {
-            setCursor(new Cursor(Cursor.WAIT_CURSOR));
-            try
-            {
-                main_scope.wave_panel.Refresh(wave, "Update ");
-	        } catch (Throwable e) {
-	            main_scope.SetStatusLabel("Error during apply: "+e);
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-	        }
-            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-        }
+	checkSetup();
+	{
+	    setCursor(new Cursor(Cursor.WAIT_CURSOR));
+	    try
+	    {
+	        main_scope.wave_panel.Refresh(wave, "Update ");
+		} catch (Throwable e) {
+		    main_scope.SetStatusLabel("Error during apply: "+e);
+	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
+	    setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	}
    }
 
     public void processWaveformEvent(WaveformEvent e)
     {
-        jScopeMultiWave w = (jScopeMultiWave)e.getSource();
-        wave.removeWaveformListener(this);
-        switch(e.getID())
-        {
-             case WaveformEvent.END_UPDATE :
-                String full_error = ((MdsWaveInterface)w.wi).getErrorString();//main_scope.wave_panel.GetBriefError());
-                if(full_error != null)
-                {
-		            JOptionPane.showMessageDialog(this, full_error,
-		                                            "alert", JOptionPane.ERROR_MESSAGE);
-                }
-                setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-             break;
-        }
+	jScopeMultiWave w = (jScopeMultiWave)e.getSource();
+	wave.removeWaveformListener(this);
+	switch(e.getID())
+	{
+	     case WaveformEvent.END_UPDATE :
+	        String full_error = ((MdsWaveInterface)w.wi).getErrorString();//main_scope.wave_panel.GetBriefError());
+	        if(full_error != null)
+	        {
+			    JOptionPane.showMessageDialog(this, full_error,
+			                                    "alert", JOptionPane.ERROR_MESSAGE);
+	        }
+	        setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+	     break;
+	}
     }
 
    private void cancelOperation()
@@ -1967,7 +1966,7 @@ import javax.swing.event.*;
       Object ob = e.getSource();
 
       if(getCursor().getType() == Cursor.WAIT_CURSOR)
-        return;
+	return;
 
       if(ob == erase) {
 	    eraseForm();
@@ -1977,54 +1976,54 @@ import javax.swing.event.*;
       }
 
       if(ob == cancel)
-        cancelOperation();
+	cancelOperation();
 
       if(ob == apply || ob == ok)
       {
-            wave.addWaveformListener(this);
-            applyWaveform();
-            if(ob == ok)
-            {
-                //wave.removeWaveformListener(this);
-                setVisible(false);
-                signalList.reset();
-            }
+	    wave.addWaveformListener(this);
+	    applyWaveform();
+	    if(ob == ok)
+	    {
+	        //wave.removeWaveformListener(this);
+	        setVisible(false);
+	        signalList.reset();
+	    }
 	   }
 
       if(ob == reset)
       {
-	        signalList.reset();
-	        putWindowSetup((MdsWaveInterface)wave.wi);
+		signalList.reset();
+		putWindowSetup((MdsWaveInterface)wave.wi);
       }
 
       if(ob == error && y_expr.getText().trim().length() != 0)
       {
-            if(signalList.getSignalSelect() == -1)
-            /*
-            Check if the list is in add mode (signal selectet -1)
-            in this case before to add error signal must be added
-            to the list
-            */
-	            updateDataSetup();
+	    if(signalList.getSignalSelect() == -1)
+	    /*
+	    Check if the list is in add mode (signal selectet -1)
+	    in this case before to add error signal must be added
+	    to the list
+	    */
+		    updateDataSetup();
 
-            if(signalList.getSignalSelect() != -1)
-            {
-                /*
-                Only if is selected a signal in the list
-                the error signal dialog can be shown
-                */
-	            signalList.updateError();
-	            error_w.setLocationRelativeTo(this);
-	            error_w.setVisible(true);
-	        }
+	    if(signalList.getSignalSelect() != -1)
+	    {
+	        /*
+	        Only if is selected a signal in the list
+	        the error signal dialog can be shown
+	        */
+		    signalList.updateError();
+		    error_w.setLocationRelativeTo(this);
+		    error_w.setVisible(true);
+		}
       }
 
       if(ob == expand)
       {
-	        expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
-	        expand_expr.setSize(600,400);
-	        expand_expr.setLocationRelativeTo(this);
-	        expand_expr.setVisible(true);
+		expand_expr.setExpressionString(x_expr.getText(), y_expr.getText());
+		expand_expr.setSize(600,400);
+		expand_expr.setLocationRelativeTo(this);
+		expand_expr.setVisible(true);
       }
    }
 
@@ -2046,7 +2045,7 @@ import javax.swing.event.*;
 	    {
 	      updateDataSetup();
 	      e.consume();
-        }
+	}
      }
 
      if(ob instanceof TextField)
@@ -2054,70 +2053,70 @@ import javax.swing.event.*;
 	    if(ob == x_max || ob == y_max || ob == x_min
 	       || ob == y_min || ob == shot || ob == time_max || ob == time_min)
 	    {
-                if(!Character.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
-                    return;
-            }
-        }
+	        if(!Character.isDigit(key) && key != KeyEvent.VK_DELETE && key != '.' && key != '+' && key != '-')
+	            return;
+	    }
+	}
     }
 
    private void  defaultButtonOperation(Object obj, boolean state, String val)
    {
-        if(obj instanceof JTextField)
-        {
-            JTextField text = (JTextField)obj;
-	        if(state) {
-	            text.setForeground(Color.blue);
-	            text.setEditable(false);
-	        } else {
-	            text.setForeground(Color.black);
-	            text.setEditable(true);
-	        }
-	        if(val != null && val.trim().length() != 0)
-	            text.setText(val);
-	        else
-	            text.setText("");
+	if(obj instanceof JTextField)
+	{
+	    JTextField text = (JTextField)obj;
+		if(state) {
+		    text.setForeground(Color.blue);
+		    text.setEditable(false);
+		} else {
+		    text.setForeground(Color.black);
+		    text.setEditable(true);
+		}
+		if(val != null && val.trim().length() != 0)
+		    text.setText(val);
+		else
+		    text.setText("");
 	    }
 	    if(obj instanceof JCheckBox)
-            {
-            JCheckBox  check = (JCheckBox)obj;
-            if(state)
-            {
-	            check.setEnabled(false);
-	            check.setForeground(Color.blue);
-            } else {
-	            check.setForeground(Color.black);
-	            check.setEnabled(true);
-            }
-	        if(val != null && val.trim().length() != 0 && val.equals("false"))
-	            check.setSelected(false);
-	        else
-	            check.setSelected(true);
-        }
+	    {
+	    JCheckBox  check = (JCheckBox)obj;
+	    if(state)
+	    {
+		    check.setEnabled(false);
+		    check.setForeground(Color.blue);
+	    } else {
+		    check.setForeground(Color.black);
+		    check.setEnabled(true);
+	    }
+		if(val != null && val.trim().length() != 0 && val.equals("false"))
+		    check.setSelected(false);
+		else
+		    check.setSelected(true);
+	}
    }
 
    private void putShotValue(boolean def_flag)
    {
-        if(def_flag)
-            wi.defaults |= (1 << MdsWaveInterface.B_shot);
-        else
-            wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
+	if(def_flag)
+	    wi.defaults |= (1 << MdsWaveInterface.B_shot);
+	else
+	    wi.defaults &= ~(1 << MdsWaveInterface.B_shot);
 
 	    switch(wi.GetShotIdx())
-        {
+	{
 		    case 0:
-		        shot.setForeground(Color.black);
-		        shot.setEditable(true);
+			shot.setForeground(Color.black);
+			shot.setEditable(true);
 		    break;
 		    case 1:
-		        shot.setForeground(Color.blue);
-		        shot.setEditable(false);
+			shot.setForeground(Color.blue);
+			shot.setEditable(false);
 		    break;
 		    case 2:
-		        shot.setForeground(Color.red);
-		        shot.setEditable(false);
+			shot.setForeground(Color.red);
+			shot.setEditable(false);
 		    break;
-        }
-        shot.setText(wi.GetUsedShot());
+	}
+	shot.setText(wi.GetUsedShot());
    }
 
    private void  DefaultButtonChange(Object ob)
@@ -2126,7 +2125,7 @@ import javax.swing.event.*;
 
 	if(ob == title_b)
 	    defaultButtonOperation(title, def_flag = title_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_title, def_flag));
-        if(ob == shot_b)
+	if(ob == shot_b)
 	    putShotValue(shot_b.isSelected());
 	if(ob == experiment_b)
 	    defaultButtonOperation(experiment, def_flag = experiment_b.isSelected(), wi.GetDefaultValue(MdsWaveInterface.B_exp, def_flag));
@@ -2159,14 +2158,14 @@ import javax.swing.event.*;
 	    Object ob = e.getSource();
 	    if(ob instanceof JCheckBox)
 	    {
-	        if(ob == image_b)
-            {
-                eraseForm();
-                setImageDialog(image_b.isSelected());
-                return;
-            }
-	        DefaultButtonChange(ob);
-        }
+		if(ob == image_b)
+	    {
+	        eraseForm();
+	        setImageDialog(image_b.isSelected());
+	        return;
+	    }
+		DefaultButtonChange(ob);
+	}
     }
 
 	class SymContainer extends java.awt.event.ContainerAdapter

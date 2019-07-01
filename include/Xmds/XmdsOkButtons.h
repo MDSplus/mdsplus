@@ -9,11 +9,11 @@
 
 		Type:   C include
 
-     		Author:	Josh Stillerman
+		Author:	Josh Stillerman
 
 		Date:   24-FEB-1993
 
-    		Purpose: Public declarations for  okbutton widget
+		Purpose: Public declarations for  okbutton widget
 
 ------------------------------------------------------------------------------
    Copyright (c) 1989

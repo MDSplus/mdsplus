@@ -106,7 +106,7 @@ EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 
     if (*ctx == 0) {
       node_ptr = nid_to_node(dblist, nid);
-      *ctx = swapint((char *)&node_ptr->tag_link);
+      loadint32(ctx,&node_ptr->tag_link);
     } else if (*ctx == -1) {
       *ctx = 0;
     }
@@ -116,7 +116,7 @@ EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
       for (i = 0; i < sizeof(TAG_NAME) && name[i] != ' '; i++) ;
       char *answer = strncpy(malloc(i + 1), name, i);
       answer[i] = '\0';
-      *ctx = swapint((char *)&(info_ptr->tag_info + *ctx - 1)->tag_link);
+      loadint32(ctx,&(info_ptr->tag_info + *ctx - 1)->tag_link);
       if (*ctx == 0)
 	*ctx = -1;
       return answer;
@@ -190,7 +190,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
       break;
     case 1:
       if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0) {
-	*nodeptr = tsearch.info->node + swapint((char *)&tsearch.info->tag_info->node_idx);
+	*nodeptr = tsearch.info->node + swapint32(&tsearch.info->tag_info->node_idx);
 	*tagidx = 1;
 	return TreeNORMAL;
       } else
@@ -201,8 +201,8 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
 			 (size_t)tsearch.info->header->tags, sizeof(int), BsearchCompare)) != 0) {
 	*nodeptr =
 	    tsearch.info->node +
-	    swapint((char *)&(tsearch.info->tag_info + swapint((char *)idx))->node_idx);
-	*tagidx = swapint((char *)idx) + 1;
+	    swapint32(&(tsearch.info->tag_info + swapint32(idx))->node_idx);
+	*tagidx = swapint32(idx) + 1;
 	return TreeNORMAL;
       } else
 	status = TreeTNF;
@@ -236,7 +236,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
 STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 {
   struct tag_search *tsearch = (struct tag_search *)this_one;
-  char *tag = (tsearch->info->tag_info + swapint((char *)compare_one))->name;
+  char *tag = (tsearch->info->tag_info + swapint32(compare_one))->name;
 
 /******************************************
  This routine is called by bsearch during

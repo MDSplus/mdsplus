@@ -36,19 +36,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #define COM
 
-#define OPC(name,builtin,f1,f2,f3,i1,i2,o1,o2,m1,m2,token) extern int Tdi1##f1(), Tdi2##f2(), Tdi3##f3();
+#define OPC(name,builtin,f1,f2,f3,...) extern int Tdi1##f1(), Tdi2##f2(), Tdi3##f3();
 #include "opcbuiltins.h"
 #undef OPC
 
 
 
 	/******************************
-        Shorthand for conversions:
-        Destinctive forms.
-        VV=logical 0/1
-        XX=lowest support.
-        YY=highest.
-        ******************************/
+	Shorthand for conversions:
+	Destinctive forms.
+	VV=logical 0/1
+	XX=lowest support.
+	YY=highest.
+	******************************/
 
 #define DTYPE_SUBSCRIPT DTYPE_L
 #define DTYPE_UNITS     DTYPE_T
@@ -72,10 +72,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 const struct TdiFunctionStruct TdiRefFunction[] = {
 #define OPC(name,builtin,f1,f2,f3,i1,i2,o1,o2,m1,m2,token) {#builtin,&Tdi1##f1,&Tdi2##f2,&Tdi3##f3, \
-           DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,token},
+	   DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,LEX_##token},
 #include "opcbuiltins.h"
 #undef OPC
   {0}
 };
-
-const int TdiFUNCTION_MAX = sizeof(TdiRefFunction) / sizeof(struct TdiFunctionStruct) - 1;

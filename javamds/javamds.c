@@ -246,6 +246,9 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
     if (type != FLOAT && type != DOUBLE) {	/*Legal only if used to retrieve the shot number */
       int_ris = malloc(sizeof(int));
       switch (xd.pointer->dtype) {
+      default:
+	strcpy(error_message, "Invalid array dtype");
+	return 0;
       case DTYPE_BU:
       case DTYPE_B:
 	int_ris[0] = *((char *)xd.pointer->pointer);
@@ -307,7 +310,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((char *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -331,7 +334,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -355,7 +358,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((int *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -379,7 +382,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((float *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -402,7 +405,7 @@ static void *MdsGetArray(char *in, int *out_dim, int type)
 	int_ris[i] = ((double *)arr_ptr->pointer)[i];
 	break;
       case QUADWORD:
-	free((char *)quad_ris);
+	free(quad_ris);
 	MdsFree1Dx(&xd, NULL);
 	return NULL;
 	break;
@@ -503,7 +506,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_GetFloatArrayNative(
   }
   jarr = (*env)->NewFloatArray(env, dim);
   (*env)->SetFloatArrayRegion(env, jarr, 0, dim, out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -526,7 +529,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetDoubleArrayNativ
   }
   jarr = (*env)->NewDoubleArray(env, dim);
   (*env)->SetDoubleArrayRegion(env, jarr, 0, dim, out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -547,7 +550,7 @@ JNIEXPORT jdoubleArray JNICALL Java_jScope_LocalDataProvider_GetLongArrayNative(
   }
   jarr = (*env)->NewLongArray(env, dim);
   (*env)->SetLongArrayRegion(env, jarr, 0, dim, (const jlong *)out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -570,7 +573,7 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_GetIntArray(JNIEnv * e
   jarr = (*env)->NewIntArray(env, dim);
   (*env)->SetIntArrayRegion(env, jarr, 0, dim, (const jint *)out_ptr);
 
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -591,7 +594,7 @@ JNIEXPORT jbyteArray JNICALL Java_jScope_LocalDataProvider_GetByteArray(JNIEnv *
   }
   jarr = (*env)->NewByteArray(env, dim);
   (*env)->SetByteArrayRegion(env, jarr, 0, dim, (const jbyte *)out_ptr);
-  free((char *)out_ptr);
+  free(out_ptr);
   return jarr;
 }
 
@@ -859,14 +862,14 @@ JNIEXPORT jobject JNICALL Java_jScope_LocalDataProvider_getInfo
     memcpy(retDims, dims, dimct * sizeof(int));
     retDtype = dtype;
     switch(dtype) {
-        case DTYPE_B:
-        case DTYPE_BU: retPixelSize = 1; break;
-        case DTYPE_W:
-        case DTYPE_WU: retPixelSize = 2; break;
-        case DTYPE_L:
-        case DTYPE_LU: retPixelSize = 4; break;
-        case DTYPE_Q:
-        case DTYPE_QU: retPixelSize = 8; break;
+	case DTYPE_B:
+	case DTYPE_BU: retPixelSize = 1; break;
+	case DTYPE_W:
+	case DTYPE_WU: retPixelSize = 2; break;
+	case DTYPE_L:
+	case DTYPE_LU: retPixelSize = 4; break;
+	case DTYPE_Q:
+	case DTYPE_QU: retPixelSize = 8; break;
 	default: retPixelSize = 1;
     }
    } else {
@@ -1115,7 +1118,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
     }
     jarr = (*env)->NewFloatArray(env, actSegments);
     (*env)->SetFloatArrayRegion(env, jarr, 0, actSegments, farr);
-    free((char *)farr);
+    free(farr);
     return jarr;
   } else {
     for (idx = 0; idx < actSegments; idx++) {
@@ -1151,7 +1154,7 @@ JNIEXPORT jfloatArray JNICALL Java_jScope_LocalDataProvider_getSegmentTimes
       }
       MdsFree1Dx(&timesXds[idx], 0);
     }
-    free((char *)timesXds);
+    free(timesXds);
     return jarr;
   }
 }
@@ -1247,8 +1250,8 @@ JNIEXPORT jintArray JNICALL Java_jScope_LocalDataProvider_getSegmentIdxs
   }
   jarr = (*env)->NewIntArray(env, nRows);
   (*env)->SetIntArrayRegion(env, jarr, 0, nRows, (const jint *)arr);
-  free((char *)arr);
-  free((char *)dims);
+  free(arr);
+  free(dims);
   return jarr;
 }
 
@@ -1565,7 +1568,7 @@ EXPORT void deviceSetup(char *deviceName, char *treeName, int shot, char *rootNa
   if (env == 0) {		/* Java virtual machine does not exist yet */
     vm_args.version = JNI_VERSION_1_2;	//0x00010001;
     options[0].optionString = "-Djava.compiler=NONE";	/* disable JIT */
-    options[1].optionString = "-Djava.class.path=.";	// /usr/local/mdsplus/java/classes/jTraverser.jar";           
+    options[1].optionString = "-Djava.class.path=.";	// /usr/local/mdsplus/java/classes/jTraverser.jar";
     options[2].optionString = "-verbose:jni";	/* print JNI-related messages */
 
     vm_args.nOptions = 2;

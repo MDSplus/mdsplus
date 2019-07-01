@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -633,7 +633,7 @@ class DIO4(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot start DIO4 Device')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return
+        return 1
 
 
 
@@ -677,7 +677,7 @@ class DIO4(Device):
             if status == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW reset')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
 
 
@@ -783,7 +783,7 @@ class DIO4(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot write trigger parameters for channel %d'%(c+1))
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return
+        return 1
 
 
     def TRIGGER(self):
@@ -845,56 +845,57 @@ class DIO4(Device):
                         Data.execute('DevLogErr($1, $2)', self.nid, 'Error setting trigger mode')
                         raise mdsExceptions.TclFAILED_ESSENTIAL
 #SW EVENT
-        #huge = Data.execute('HUGE(0)')
-        #if getattr(self, 'out_ev_sw').isOn():
-        #    try:
-        #        evName = getattr(self, 'out_ev_sw_name').data()
-        #    except:
-        #        evName = ''
-        #    if evName != '':
-        #        evCode = Data.execute('TimingDecodeEvent($1)', evName)
-        #    else:
-        #        evCode = 0
-        #    if evCode != 0:
-        #        setattr(self,'out_ev_sw_code', evCode)
-        #    else:
-        #        try:
-        #            evCode = getattr(self, 'out_ev_sw_code').data()
-        #        except:
-        #            evCode = 0
-        #    if evCode == 0:
-        #        Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for software channel')
-        #        raise mdsExceptions.TclFAILED_ESSENTIAL
-        #
-        #    try:
-        #        evTime = getattr(self, 'out_ev_sw_time').data()
-        #    except:
-        #        evTime = huge
-        #    if evTime == huge:
-        #        Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software channel')
-        #        raise mdsExceptions.TclFAILED_ESSENTIAL
-        #    nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
-        #    status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
-        #    if status == -1:
-        #        Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
-        #        raise mdsExceptions.TclFAILED_ESSENTIAL
-        #
-        #    if swMode == 'REMOTE':
-        #        status = Data.execute('MdsValue("DIO4HWEventTrigger(0, $1, $2)", $1,$2)', boardId, c, evCode)
-        #        if status == 0:
-        #            Data.execute('MdsDisconnect()')
-        #            Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW event trigger')
-        #            raise mdsExceptions.TclFAILED_ESSENTIAL
-        #    else:
-        #        status = Data.execute("DIO4HWEventTrigger(0, $1, $2)", boardId, c, evCode)
-        #        if status == 0:
-        #            Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
-        #            raise mdsExceptions.TclFAILED_ESSENTIAL
-        #
-        #
-        #
-        #else:
-        #    print('OFF')
+        huge = Data.execute('HUGE(0)')
+        if getattr(self, 'out_ev_sw').isOn():
+            try:
+                evName = getattr(self, 'out_ev_sw_name').data()
+            except:
+                evName = ''
+            if evName != '':
+                evCode = Data.execute('TimingDecodeEvent($1)', evName)
+            else:
+                evCode = 0
+            print "SW Event ",evCode 
+            if evCode != 0:
+                setattr(self,'out_ev_sw_code', evCode)
+            else:
+                try:
+                    evCode = getattr(self, 'out_ev_sw_code').data()
+                except:
+                    evCode = 0
+            if evCode == 0:
+                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for software channel')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+        
+            try:
+                evTime = getattr(self, 'out_ev_sw_time').data()
+            except:
+                evTime = huge
+            if evTime == huge:
+                Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software channel')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+            nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
+            status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
+            if status == -1:
+                Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
+
+        
+            if swMode == 'REMOTE':
+                status = Data.execute('MdsValue("DIO4HWEventTrigger(0, $1, $2)", $1,$2)', boardId, evCode)
+                if status == 0:
+                    Data.execute('MdsDisconnect()')
+                    Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute remote HW event trigger')
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
+            else:
+                status = Data.execute("DIO4HWEventTrigger(0, $1, $2)", boardId, evCode)
+                if status == 0:
+                    Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
+                    raise mdsExceptions.TclFAILED_ESSENTIAL        
+        else:
+            print('SW EVENT OFF')
+
+        """
         if getattr(self, 'out_ev_sw').isOn():
             try:
                 if Device.debug: print('SW CHANNEL IS ON')
@@ -915,7 +916,9 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event Code specification for software channel')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        """
+
+        return 1
 
 
 ###################################################
@@ -946,7 +949,7 @@ class DIO4(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open device')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
+        return 1
 
     def removeInfo(self):
         del(DIO4.handles[self.nid])

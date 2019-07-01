@@ -110,6 +110,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define X_OF_INT(val) (int)(((unsigned int)(val) >> BITSY) & MASK(BITSX))
 #define Y_OF_INT(val) (int)((unsigned int)(val) & MASK(BITSY))
 #define SWAP_SHORTS(in,out)         ((short *)out)[0] = ((short *)in)[1],((short *)out)[1] = ((short *)in)[0]
+#define DEFINED_OVERFLOW(a,op,b) (signed)( ((unsigned)(a)) op ((unsigned)(b)) )         // use defined + and - operations on unsigned
+
 
 typedef struct {
   int l;
@@ -122,8 +124,7 @@ struct HEADER {
 STATIC_CONSTANT signed char FIELDSY = BITSY + BITSX;
 STATIC_CONSTANT int FIELDSX = 2;
 
-int MdsCmprs(int const *nitems_ptr,
-	     struct descriptor_a const *items_dsc_ptr, struct descriptor_a *pack_dsc_ptr, int *bit_ptr)
+int MdsCmprs(const int *const nitems_ptr, const mdsdsc_a_t *const items_dsc_ptr, mdsdsc_a_t *const pack_dsc_ptr, int *const bit_ptr)
 {
   int nitems = *nitems_ptr;
   int step = items_dsc_ptr->length;
@@ -139,7 +140,7 @@ int MdsCmprs(int const *nitems_ptr,
   register int j, yy;
   register int i, *p32, *pn, *pe;
   struct HEADER header;
-  int maxim, mark, old, best, test;
+  int old, best, test;
   int ye, xe, yn, xn, xsum, *ptally;
   int tally[MAXY + 1];
   signed char yn_c;
@@ -245,12 +246,12 @@ Do this in runs.
  *             compiler the other <= tests do not work.
  *        if overflow, put in flag value
  ***********/
-      int32_t ans = *p32 - old;
+      int32_t ans = DEFINED_OVERFLOW(*p32, -, old);
       if ((((uint32_t)ans) == 0x80000000) || (old<0 ? ans<*p32 : ans>*p32)) {
-        *pn++=ans;
-        yy = 32;
+	*pn++=ans;
+	yy = 32;
       } else {
-        i = *pn++ = ans;
+	i = *pn++ = ans;
 	delta = (uint32_t)((i < 0) ? -i : i);
 	if (delta <= 64) {
 	  yy = signif[delta];
@@ -305,18 +306,19 @@ Do this in runs.
 	}
       }
       xe = tally[yn - 1];
-    }
-  /*********************
-  Build exception table.
-  Assume 2's complement.
-  *********************/
-    mark = (int)(0xFFFFFFFF << (yn - 1));
-    maxim = ~mark;
-    for (pn = diff, pe = exce, j = xe; --j >= 0;) {
-      while (*pn <= maxim && *pn > mark)
-	++pn;
-      *pe++ = *pn;
-      *pn++ = mark;
+
+    /*********************
+    Build exception table.
+    Assume 2's complement.
+    *********************/
+      int mark = (int)(0xFFFFFFFF << (yn - 1));
+      int maxim = ~mark;
+      for (pn = diff, pe = exce, j = xe; --j >= 0;) {
+	while (*pn <= maxim && *pn > mark)
+	  ++pn;
+	*pe++ = *pn;
+	*pn++ = mark;
+      }
     }
 
   /******************************
@@ -339,8 +341,7 @@ Do this in runs.
 	MdsXpand.C
 	Expand compressed data.
 */
-EXPORT int MdsXpand(int *nitems_ptr,
-	     struct descriptor_a *pack_dsc_ptr, struct descriptor_a *items_dsc_ptr, int *bit_ptr)
+EXPORT int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr, mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr)
 {
   int nitems = *nitems_ptr;
   char *ppack =
@@ -416,13 +417,13 @@ Note the sign-extended unpacking.
     case DTYPE_B:
     case DTYPE_BU:
 #define load(type) { type *newone;\
-                     for (newone = (type *)px; --j >= 0;pn++,newone++)\
-                     {\
-                        old += (xe && (*pn == mark)) ? *pe++ : *pn ;\
-                        *newone = (type)old;\
-                     }\
-                     px = (PF)newone;\
-                   }
+	             for (newone = (type *)px; --j >= 0;pn++,newone++)\
+	             {\
+	                old = DEFINED_OVERFLOW(old, +,(xe && (*pn == mark)) ? *pe++ : *pn); \
+	                *newone = (type)old;\
+	             }\
+	             px = (PF)newone;\
+	           }
  case_BU:load(char);
       break;
     case DTYPE_W:

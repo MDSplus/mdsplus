@@ -51,8 +51,8 @@ static int astCount = 0;
 
 void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
-           syscall(__NR_gettid),
-           (char *)arg);
+	   syscall(__NR_gettid),
+	   (char *)arg);
     pthread_mutex_lock(&astCount_lock);
     astCount++;
     pthread_mutex_unlock(&astCount_lock);
@@ -65,8 +65,8 @@ static int first = 0,second = 0;
 
 void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
-           syscall(__NR_gettid),
-           (char *)arg);
+	   syscall(__NR_gettid),
+	   (char *)arg);
     pthread_mutex_lock(&first_lock);
     first=1;
     pthread_mutex_unlock(&first_lock);
@@ -74,8 +74,8 @@ void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attr
 
 void eventAstSecond(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
     printf("received event in thread %ld, name=%s\n",
-           syscall(__NR_gettid),
-           (char *)arg);
+	   syscall(__NR_gettid),
+	   (char *)arg);
     pthread_mutex_lock(&second_lock);
     second=1;
     pthread_mutex_unlock(&second_lock);
@@ -98,26 +98,26 @@ int main(int argc, char **args)
     pthread_mutex_init(&second_lock, NULL);
     BEGIN_TESTING(UdpEvents);
     if (argc < 2) {
-        iterations=3;
+	iterations=3;
     } else {
-        iterations=atoi(args[1]);
-        printf("Doing %d iterations\n",iterations);
+	iterations=strtol(args[1],NULL,0);
+	printf("Doing %d iterations\n",iterations);
     }
 
     for (i=0;i<iterations;i++) {
-        sprintf(eventname,"ev_test_%d_%d",i,getpid());
+	sprintf(eventname,"ev_test_%d_%d",i,getpid());
 
-        status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
-        TEST0( status%1 );
-        wait();
-        status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );
-        status = MDSEvent(eventname,0,0);
-        TEST0( status%1 );
-        wait();
-        status = MDSEventCan(ev_id);
-        TEST0( status%1 );
-        wait();
+	status = MDSEventAst(eventname, eventAst, eventname, &ev_id);
+	TEST0( status%1 );
+	wait();
+	status = MDSEvent(eventname,0,0);
+	TEST0( status%1 );
+	status = MDSEvent(eventname,0,0);
+	TEST0( status%1 );
+	wait();
+	status = MDSEventCan(ev_id);
+	TEST0( status%1 );
+	wait();
     }
     pthread_mutex_lock(&astCount_lock);
     TEST1(astCount == 2*iterations);

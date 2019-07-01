@@ -29,8 +29,8 @@ public class LabeledExprEditor extends JPanel implements Editor
     {
 	expr.setEditable(editable);
     }
-    
+
     public Data getData() {return expr.getData();}
     public void setData(Data data) {expr.setData(data);}
-    
+
 }

@@ -8,7 +8,7 @@ package jScope;
  *
  * @author manduchi
  */
-public interface SignalListener 
+public interface SignalListener
 {
     void signalUpdated(boolean changeLimits);
 }

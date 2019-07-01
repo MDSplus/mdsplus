@@ -3,7 +3,7 @@ package jScope;
 /* $Id$ */
 import java.util.EventListener;
 
-public interface WaveformListener extends EventListener 
+public interface WaveformListener extends EventListener
 {
     public void processWaveformEvent(WaveformEvent e);
 }

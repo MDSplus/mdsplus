@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element FIR.C */
 /*------------------------------------------------------------------------------
 
-	Name:	FIR   
+	Name:	FIR
 
 	Type:   C function
 
@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Hanning;
 	Hamming;
 	Blackmann.
-	
+
 ------------------------------------------------------------------------------*/
 #include <math.h>
 #include <stdlib.h>
@@ -118,7 +118,7 @@ static Filter *Fir(double fc, double s_f, int n, void (*Window) (double *, int))
       filter->units[0].num[i] = w[i] * sin(wc * (i - alpha)) / (PI * (i - alpha));
     else
       filter->units[0].num[i] = wc / PI;
-  free((char *)w);
+  free(w);
   return filter;
 }
 

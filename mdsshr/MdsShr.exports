@@ -3,11 +3,13 @@ LibCallg
 LibConvertDateString
 LibCreateVmZone
 LibFindFile
+LibFindFileCaseBlind
 LibFindFileEnd
 LibFindFileRecurseCaseBlind
 LibFindImageSymbol
 LibFindImageSymbolErrString
 LibFreeVm
+LibGetHostAddr
 LibGetVm
 LibInsertTree
 LibLookupTree
@@ -105,4 +107,3 @@ LibDeleteVmZone
 MdsRelease
 LockMdsShrMutex
 UnlockMdsShrMutex
-MdsFloatToTime

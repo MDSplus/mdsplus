@@ -69,7 +69,7 @@ EXPORT int IdlMdsClose(int argc, void **argv)
   int status;
   BlockSig(SIGALRM);
   if (argc > 1)
-    status = TreeClose((char *)argv[0], ((char *)argv[1] - (char *)0));
+    status = TreeClose((char *)argv[0], (int)(intptr_t)argv[1]);
   else {
     status = TreeClose(0, 0);
     while (TreeClose(0, 0) & 1) ;
@@ -83,7 +83,7 @@ EXPORT int IdlMdsOpen(int argc, void **argv)
   int status = 0;
   if (argc == 2) {
     BlockSig(SIGALRM);
-    status = TreeOpen((char *)argv[0], ((char *)argv[1] - (char *)0), 0);
+    status = TreeOpen((char *)argv[0], (int)(intptr_t)argv[1], 0);
     UnBlockSig(SIGALRM);
   }
   return status;
@@ -393,6 +393,7 @@ EXPORT int IdlMdsValue(int argc, void **argv)
       ((char *)argv[2])[0] = 0;
       if (mdsValueAnswer.pointer->class == CLASS_S) {
 	switch (mdsValueAnswer.pointer->dtype) {
+	default:break; // TODO: handle invalid dtypes
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if answer gt 127 then answer = fix(answer)-256");
 	  MDS_ATTR_FALLTHROUGH
@@ -454,9 +455,10 @@ EXPORT int IdlMdsValue(int argc, void **argv)
 		  ((ptr->arsize / ptr->length) > 0) ? (ptr->arsize / ptr->length) : 1);
 	  strcat(dims,dim);
 	}
-        dims[strlen(dims)-1]='\0';
+	dims[strlen(dims)-1]='\0';
 	strcat(dims,")");
 	switch (mdsValueAnswer.pointer->dtype) {
+	default:break; // TODO: handle invalid dtypes
 	case DTYPE_B:
 	  strcpy((char *)argv[2], "if max(answer) gt 127 then answer = fix(answer)-256");
 	  MDS_ATTR_FALLTHROUGH

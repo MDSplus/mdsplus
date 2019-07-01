@@ -2,7 +2,6 @@ Tcl('abort server gub')
 Error: Problem aborting server 'gub'
 Error message was: %SERVER-E-PATH_DOWN, Path to server lost
 mdsdcl: --> failed on line 'abort server gub'
-Server 'gub' unknown
 266436674
 Tcl('set command tcl')
 1
@@ -140,7 +139,7 @@ Tcl('close')
 Tcl('set tree main/shot=1')
 265388067
 Tcl('create pulse 2')
-265388115
+265389633
 Tcl('set tree main/shot=2')
 265388067
 Tcl('dir ***')
@@ -158,7 +157,7 @@ Total of 13 nodes.
 Tcl('set tree main/shot=1')
 265388067
 Tcl('delete pulse 2')
-1
+265389633
 Tcl('close')
 265388041
 Tcl('clean main/shot=1/override')
@@ -255,7 +254,6 @@ Tcl('show db')
 
 265388041
 Tcl('show server gub')
-Server 'gub' unknown
 Checking server: gub
 Error connecting to server
 2752521
@@ -272,14 +270,28 @@ This tree has been modified. Either use the WRITE
 command before closing to save modifications or
 use CLOSE/CONFIRM to discard changes.
 
-mdsdcl: --> failed on line 'close'
+mdsdcl: --> failed on line 'close          '
 265388378
 Tcl('set tree main')
 265388041
 Tcl('delete pulse 1')
-1
+265389633
 _status=Tcl(['set tree main','dir','close'],_out,_err)
 265388041
 write(*,"output=",_out,"error=",_err),_status 
-output=error=
+output=
+                                                                                                                       
+                                                                                                                       
+
+\MAIN::TOP
+
+ :MEMBER       :NUMERIC      :SIGNAL       :TEXT        
+
+  CHILD         SUBTREE     
+
+Total of 6 nodes.
+
+                                                                                                                       
+error=
+
 265388041

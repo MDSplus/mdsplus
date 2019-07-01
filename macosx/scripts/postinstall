@@ -31,7 +31,7 @@ then
 fi
 
 date > /var/log/mdsplus_postinstall
-pushd ${MDSPLUS_DIR}/mdsobjects/python >> /var/log/mdsplus_postinstall 2>&1
+pushd ${MDSPLUS_DIR}/python/MDSplus >> /var/log/mdsplus_postinstall 2>&1
 python setup.py install >>/var/log/mdsplus_postinstall 2>&1
 popd >> /var/log/mdsplus_postinstall 2>&1
 pushd ${MDSPLUS_DIR}/tdi/MitDevices >> /var/log/mdsplus_postinstall 2>&1

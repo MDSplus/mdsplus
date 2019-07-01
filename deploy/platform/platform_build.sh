@@ -8,29 +8,24 @@
 #
 set -e
 volume() {
-    if [ ! -z "$1" ]
-    then
-	echo "-v $(realpath ${1}):${2}"
-    fi
+  if [ ! -z "$1" ]
+  then echo "-v $(realpath ${1}):${2}"
+  fi
 }
-
 RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
 }
 GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
 }
 NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
 }
 spacedelim() {
     if [ ! -z "$1" ]
@@ -67,8 +62,8 @@ rundocker(){
         echo "Building installers for ${arch} using ${image}"
         if [ ! -z "$INTERACTIVE" ]
         then
-            echo "run ${SRCDIR}/deploy/platform/platform_docker_build.sh"
-            echo "or  NOMAKE=1 ${SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "run ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "or  NOMAKE=1 ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
         fi
         #
         # If there are both 32-bit and 64-bit packages for the platform
@@ -92,6 +87,7 @@ rundocker(){
             docker run --cap-add=SYS_PTRACE -t $stdio --cidfile=${WORKSPACE}/${OS}_docker-cid \
 		   -u $(id -u):$(id -g) --privileged \
 		   -h $DISTNAME \
+		   -e "srcdir=${DOCKER_SRCDIR}"\
 		   -e "ARCH=${arch}" \
 		   -e "ARCHES=${ARCH}" \
 		   -e "BRANCH" \
@@ -115,8 +111,6 @@ rundocker(){
 		   -e "HOME=/workspace" \
 		   -e "JARS_DIR=$jars_dir" \
 		   -e "TEST_TIMEUNIT" \
-		   -e "WINHOST" \
-		   -e "WINREMBLD" \
 		   -v ${SRCDIR}:${DOCKER_SRCDIR} \
 		   -v ${WORKSPACE}:/workspace \
 		   $port_forwarding \
@@ -124,7 +118,6 @@ rundocker(){
 		   $(volume "${RELEASEDIR}" /release) \
 		   $(volume "${PUBLISHDIR}" /publish) \
 		   $(volume "${KEYS}" /sign_keys) \
-		   $(volume "${WINBLD}" /winbld) \
 		   ${image} $program
             status=$?
             if [ -r ${WORKSPACE}/${OS}_docker-cid ]
@@ -136,7 +129,7 @@ rundocker(){
 	done
         if [ ! "$status" = "0" ]
         then
-    	RED $COLOR
+    	RED
     	cat <<EOF >&2
 ======================================================
 
@@ -145,7 +138,7 @@ status when exiting from ${image}
 
 ======================================================
 EOF
-    	NORMAL $COLOR
+    	NORMAL
     	exit $status
         fi
         let idx=idx+1

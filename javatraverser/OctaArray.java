@@ -7,7 +7,7 @@ public class OctaArray extends ArrayData
     {
 	return new OctaArray(datum, unsigned);
     }
-    
+
     public OctaArray(long datum[], boolean unsigned)
     {
 	length = datum.length/2;
@@ -20,14 +20,14 @@ public class OctaArray extends ArrayData
 	    this.datum[i] = datum[i];
     }
     public OctaArray(long datum[]) { this(datum, false); }
-    public int [] getIntArray() 
+    public int [] getIntArray()
     {
 	int ris [] = new int[datum.length];
 	for(int i = 0; i < datum.length; i++)
 	    ris[i] = (int)datum[2*i];
 	return ris;
     }
-    public float [] getFloatArray() 
+    public float [] getFloatArray()
     {
 	float ris [] = new float[datum.length];
 	for(int i = 0; i < datum.length; i++)

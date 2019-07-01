@@ -87,7 +87,7 @@ int main(int argc, char **argv)
 	break;
       case 't':
 	if (strlen(argv[i]) > 3 && argv[i][2] == ':')
-	  timeout = atoi(&argv[i][3]);
+	  timeout = strtol(&argv[i][3],NULL,0);
 	break;
       default:
 	printhelp(argv[0]);
@@ -120,7 +120,7 @@ int main(int argc, char **argv)
       showdata = 1;
       break;
     case 't':
-      timeout = atoi(optarg);
+      timeout = strtol(optarg,NULL,0);
       break;
     case 'D':
       showdata = 1;

@@ -33,7 +33,7 @@
  * dmaexreg.h   Device Register Header File for    *
  * dmaex.c 09-July-1996                            *
  *                                                 *
- * Device register offsets for DMAEX device        * 
+ * Device register offsets for DMAEX device        *
  ***************************************************/
 
 #define DMAEX_CSR_OFF   0	/* One byte control/status register */

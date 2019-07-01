@@ -23,38 +23,38 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Subscript.C
-        Select portions of a data array.
-                array[subscript...]
+	Select portions of a data array.
+	        array[subscript...]
 
-        Subscripts may be any DATA-able form:
-        *       A null pointer is the full range.
-        2       A scalar is a single value. If the last m subscripts are
-                scalars the rank of the result is m less.
-        4:5     A range is a block of elements.
-        *:5     An un-opened range is from the lower bound.
-        4:*     An unclosed range is to the upper bound.
-        4:4     A single element range is rank 1 but has the same size as a scalar.
-        5:4     An improper range is an error (undetected). ///An empty array.///
-        6:12:2  A stepped range implies the points at the stepped values.
-        [3,2]   A vector is a list of elements. Duplicates are permitted.
-        []      The null vector keep the rank but has zero size.
-        [3]     A single element vector keeps rank but has the same size as a scalar.
-        other   Expressions are treated by what they produce.
+	Subscripts may be any DATA-able form:
+	*       A null pointer is the full range.
+	2       A scalar is a single value. If the last m subscripts are
+	        scalars the rank of the result is m less.
+	4:5     A range is a block of elements.
+	*:5     An un-opened range is from the lower bound.
+	4:*     An unclosed range is to the upper bound.
+	4:4     A single element range is rank 1 but has the same size as a scalar.
+	5:4     An improper range is an error (undetected). ///An empty array.///
+	6:12:2  A stepped range implies the points at the stepped values.
+	[3,2]   A vector is a list of elements. Duplicates are permitted.
+	[]      The null vector keep the rank but has zero size.
+	[3]     A single element vector keeps rank but has the same size as a scalar.
+	other   Expressions are treated by what they produce.
 
-        Insufficient subscripts are treated as *.
-        The subscripts for a signal references the independent axes, the dimensions.
-        An unstepped range for signals implies all points in the bounded region.
-                2:5.5 will be 2.0 to 5.5 seconds or whatever.
-        More complex ranges must use $VALUE, e.g.,
-                signal[[*:2:$VALUE,5.5:*:$VALUE]] for all but 2 to 5.5.
-        Subscripting converts signal dimensions into lists. You get one chance for times.
-        The result of subscripting can be subscripted by array position only.
+	Insufficient subscripts are treated as *.
+	The subscripts for a signal references the independent axes, the dimensions.
+	An unstepped range for signals implies all points in the bounded region.
+	        2:5.5 will be 2.0 to 5.5 seconds or whatever.
+	More complex ranges must use $VALUE, e.g.,
+	        signal[[*:2:$VALUE,5.5:*:$VALUE]] for all but 2 to 5.5.
+	Subscripting converts signal dimensions into lists. You get one chance for times.
+	The result of subscripting can be subscripted by array position only.
 
-        See also Tdi1Cull.C for culling and extending.
-        See also Tdi1ItoX.C for index to axis conversion and vice versa.
-        See also Tdi1Map below for index subscripting.
+	See also Tdi1Cull.C for culling and extending.
+	See also Tdi1ItoX.C for index to axis conversion and vice versa.
+	See also Tdi1Map below for index subscripting.
 
-        Ken Klare, LANL P-4     (c)1990,1991
+	Ken Klare, LANL P-4     (c)1990,1991
 */
 #include <STATICdef.h>
 #include "tdirefcat.h"
@@ -70,7 +70,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcValue;
 
 extern int TdiGetArgs();
 extern int TdiMasterData();
@@ -97,7 +96,7 @@ typedef struct {
   int x[2];
 } quadw;
 
-int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -105,14 +104,14 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
   register int j, len;
-  int stride[MAXDIM + 1], *px[MAXDIM], count[MAXDIM];
+  int stride[MAX_DIMS + 1], *px[MAX_DIMS], count[MAX_DIMS];
   struct descriptor_signal *psig;
   struct descriptor_dimension *pdim;
   struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
   array_coeff *pdat, *pdi = 0;
-  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAXDIM,1,0,{0}};
+  array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAX_DIMS,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
-  struct descriptor_xd ii[MAXDIM], xx[MAXDIM];
+  struct descriptor_xd ii[MAX_DIMS], xx[MAX_DIMS];
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   ddim.pointer = (char *)&dim;
@@ -145,8 +144,8 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   stride[0] = len = pdat->length;
 
 	/****************************
-        Set up first element address.
-        ****************************/
+	Set up first element address.
+	****************************/
   pin = pdat->pointer;
   switch (pdat->class) {
   case CLASS_S:
@@ -156,7 +155,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   case CLASS_A:
     if ((bounded = pdat->aflags.bounds) == 1)
       pin = pdat->a0;
-    if ((dimct = pdat->dimct) > MAXDIM) {
+    if ((dimct = pdat->dimct) > MAX_DIMS) {
       status = TdiNDIM_OVER;
       goto baddat;
     } else if (pdat->aflags.coeff)
@@ -175,13 +174,13 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   }
 
 	/***************************************
-        Signals are indexed by their dimensions.
-        Arrays are indexed by integers.
-        Open ranges in CULL. Remove units.
-        (1) * range.
-        (2) dimension is candidate.
-        (3) just the data.
-        ***************************************/
+	Signals are indexed by their dimensions.
+	Arrays are indexed by integers.
+	Open ranges in CULL. Remove units.
+	(1) * range.
+	(2) dimension is candidate.
+	(3) just the data.
+	***************************************/
   for (dim = 0; dim < dimct; ++dim) {
     ii[dim] = EMPTY_XD;
     xx[dim] = EMPTY_XD;
@@ -271,19 +270,19 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
   if (STATUS_NOT_OK)
     goto badsub;
 	/********************************************
-        We know the shape and type, so get the space.
-        Result is scalar if all indices are scalar.
-        Remove top dimensions with scalar indices.
-        Copy the selected values.
-        ********************************************/
+	We know the shape and type, so get the space.
+	Result is scalar if all indices are scalar.
+	Remove top dimensions with scalar indices.
+	Copy the selected values.
+	********************************************/
   if (psig && psig->ndesc > highdim + 2)
     psig->ndesc = (unsigned char)(highdim + 2);
   if (psig)
     for (j = psig->ndesc; --j >= 0;)
       psig->dimensions[j] = xx[j].pointer;
   if (highest <= 0) {
-    unsigned short llen = (unsigned short)0;
-    unsigned char dtype = (unsigned char)DTYPE_MISSING;
+    length_t llen = 0;
+    dtype_t dtype = DTYPE_MISSING;
     if (arr.arsize)
       status = MdsGet1DxS(&pdat->length, &pdat->dtype, out_ptr);
     else
@@ -291,7 +290,7 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
     if STATUS_OK
       _MOVC3(len, pin, out_ptr->pointer->pointer);
   } else {
-    arr.dimct = (unsigned char)highest;
+    arr.dimct = (dimct_t)highest;
     arr.aflags.coeff = (unsigned char)(highest > 1);
     status = MdsGet1DxA((struct descriptor_a *)&arr, &pdat->length, &pdat->dtype, out_ptr);
     if (STATUS_NOT_OK)
@@ -300,10 +299,10 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
       goto empty;
     pout = out_ptr->pointer->pointer;
 		/*****************************************
-                This is the way you can do multiple loops.
-                For efficiency, we write out inner loop.
-                Subtract the offset of innermost loop.
-                *****************************************/
+	        This is the way you can do multiple loops.
+	        For efficiency, we write out inner loop.
+	        Subtract the offset of innermost loop.
+	        *****************************************/
     for (j = highest; --j > 0;)
       count[j] = 0;
     pin -= len * *px[0];
@@ -311,9 +310,9 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
  inner:for (j = 0; j < row; j += sizeof(int))
       _MOVC3(len, pin + len * *(int *)((char *)px[0] + j), pout), pout += len;
 		/******************************************************
-                Find the index to increment, reset those that overflow.
-                Must avoid reading beyond end of vector.
-                ******************************************************/
+	        Find the index to increment, reset those that overflow.
+	        Must avoid reading beyond end of vector.
+	        ******************************************************/
     for (j = 0; ++j < highest;) {
       if (++count[j] < ((int)(arr.m[j]))) {
 	pin += stride[j] * (*(px[j] + count[j]) - *(px[j] + count[j] - 1));
@@ -324,8 +323,8 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
     }
   }
 	/************************
-        Dimensions of new signal.
-        ************************/
+	Dimensions of new signal.
+	************************/
  empty:
   if STATUS_OK
     status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
@@ -343,13 +342,13 @@ int Tdi1Subscript(int opcode, int narg, struct descriptor *list[], struct descri
 }
 
 /*----------------------------------------------------------------------------
-        Integer subscripts of an array may be taken with MAP(A,B).
-        MAP gives shape and signality of B and data and units from A.
-        B may include open ranges, vectors, or almost anything.
-        Each B value out of range uses extreme values of A.
-        A is treated as a linear array and subscripting is to nearest integer.
+	Integer subscripts of an array may be taken with MAP(A,B).
+	MAP gives shape and signality of B and data and units from A.
+	B may include open ranges, vectors, or almost anything.
+	Each B value out of range uses extreme values of A.
+	A is treated as a linear array and subscripting is to nearest integer.
 */
-int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -372,8 +371,8 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
   range[0].pointer = (char *)&left;
   range[1].pointer = (char *)&right;
 	/*************************
-        Get array A and its units.
-        *************************/
+	Get array A and its units.
+	*************************/
   status = TdiDataWithUnits(list[0], &dwu MDS_END_ARG);
   if (STATUS_NOT_OK)
     goto bad;
@@ -382,21 +381,17 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
   len = pa->length;
   abase = pa->pointer;
   left = 0;
-  switch (pa->class) {
-  case CLASS_A:
-    if (pa->aflags.bounds) {
-      abase = pa->a0;
-      left = (pa->pointer - abase) / len;
-    }
-    break;
+  if (pa->class == CLASS_A && pa->aflags.bounds) {
+    abase = pa->a0;
+    left = (pa->pointer - abase) / len;
   }
   N_ELEMENTS(pa, right);
   right += left - 1;
 
 	/********************************************
-        Get subscript expression B and its signality.
-        Must have default ranges defined before get.
-        ********************************************/
+	Get subscript expression B and its signality.
+	Must have default ranges defined before get.
+	********************************************/
   TdiThreadStatic_p->TdiRANGE_PTRS[0] = &range[0];
   TdiThreadStatic_p->TdiRANGE_PTRS[1] = &range[1];
   TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
@@ -435,8 +430,8 @@ int Tdi1Map(int opcode, int narg __attribute__ ((unused)), struct descriptor *li
     }
 
 	/********************************
-        Shape of B with data type from A.
-        ********************************/
+	Shape of B with data type from A.
+	********************************/
   if STATUS_OK
     status = TdiGetShape(1, &dat[0], len, pa->dtype, &cmode, out_ptr);
   if STATUS_OK {

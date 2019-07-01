@@ -111,17 +111,17 @@ int main(int argc, char* argv[])
       int ss;
       while (ssize < size)
       {
-         if (UDT::ERROR == (ss = UDT::send(client, data + ssize, size - ssize, 0)))
-         {
-            cout << "send:" << UDT::getlasterror().getErrorMessage() << endl;
-            break;
-         }
+	 if (UDT::ERROR == (ss = UDT::send(client, data + ssize, size - ssize, 0)))
+	 {
+	    cout << "send:" << UDT::getlasterror().getErrorMessage() << endl;
+	    break;
+	 }
 
-         ssize += ss;
+	 ssize += ss;
       }
 
       if (ssize < size)
-         break;
+	 break;
    }
 
    UDT::close(client);
@@ -144,23 +144,23 @@ DWORD WINAPI monitor(LPVOID s)
    while (true)
    {
       #ifndef WIN32
-         sleep(1);
+	 sleep(1);
       #else
-         Sleep(1000);
+	 Sleep(1000);
       #endif
 
       if (UDT::ERROR == UDT::perfmon(u, &perf))
       {
-         cout << "perfmon: " << UDT::getlasterror().getErrorMessage() << endl;
-         break;
+	 cout << "perfmon: " << UDT::getlasterror().getErrorMessage() << endl;
+	 break;
       }
 
-      cout << perf.mbpsSendRate << "\t\t" 
-           << perf.msRTT << "\t" 
-           << perf.pktCongestionWindow << "\t" 
-           << perf.usPktSndPeriod << "\t\t\t" 
-           << perf.pktRecvACK << "\t" 
-           << perf.pktRecvNAK << endl;
+      cout << perf.mbpsSendRate << "\t\t"
+	   << perf.msRTT << "\t"
+	   << perf.pktCongestionWindow << "\t"
+	   << perf.usPktSndPeriod << "\t\t\t"
+	   << perf.pktRecvACK << "\t"
+	   << perf.pktRecvNAK << endl;
    }
 
    #ifndef WIN32

@@ -28,11 +28,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 		Type:   C function
 
-     		Author:	TOM FREDIAN
+		Author:	TOM FREDIAN
 
 		Date:   23-APR-1992
 
-    		Purpose: Checkin routine for action monitor
+		Purpose: Checkin routine for action monitor
 
 ------------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
    Management.
 ---------------------------------------------------------------------------
 
- 	Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 

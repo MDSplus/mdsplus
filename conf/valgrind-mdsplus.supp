@@ -1,4 +1,19 @@
 {
+   Bug in getnameinfo
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__libc_alloc_buffer_allocate
+   fun:__resolv_conf_allocate
+   fun:__resolv_conf_load
+   fun:__resolv_conf_get_current
+   fun:__res_vinit
+   fun:__resolv_context_get
+   fun:gethostbyaddr_r@@GLIBC_*
+   fun:gni_host_inet_name.isra.1
+   fun:getnameinfo
+}
+{
    seen in rhel6
    Memcheck:Param
    timer_create(evp)
@@ -108,4 +123,31 @@
    fun:malloc
    ...
    fun:xmlInitParser_supp
+}
+
+{
+   dont complain about detached threads
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+   fun:allocate_stack
+   fun:pthread_create*
+}
+
+{
+   dont complain about loaded libs in loadLib 
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_error
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen*
+   fun:loadLib
 }

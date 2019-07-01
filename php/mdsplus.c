@@ -122,8 +122,7 @@ static void php_mdsplus_init_globals(zend_mdsplus_globals *mdsplus_globals)
 /* }}} */
 static void mdsplus_replace_error(char *msg, int do_not_copy)
 {
-  if (mdsplus_error_msg)
-    free(mdsplus_error_msg);
+  free(mdsplus_error_msg);
   if (do_not_copy)
     mdsplus_error_msg = msg;
   else
@@ -150,7 +149,7 @@ static char *mdsplus_translate_status(int socket, int status)
  */
 PHP_MINIT_FUNCTION(mdsplus)
 {
-  /* If you have INI entries, uncomment these lines 
+  /* If you have INI entries, uncomment these lines
      ZEND_INIT_MODULE_GLOBALS(mdsplus, php_mdsplus_init_globals, NULL);
      REGISTER_INI_ENTRIES();
    */
@@ -258,9 +257,9 @@ PHP_FUNCTION(mdsplus_connect)
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */
@@ -282,9 +281,9 @@ PHP_FUNCTION(mdsplus_disconnect)
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */
@@ -319,9 +318,9 @@ PHP_FUNCTION(mdsplus_open)
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */
@@ -349,9 +348,9 @@ PHP_FUNCTION(mdsplus_close)
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */
@@ -488,8 +487,7 @@ PHP_FUNCTION(mdsplus_value)
 	  memcpy(ans.ptr, dptr, numbytes);
       } else
 	ans.ptr = NULL;
-      if (mem)
-	free(mem);
+      free(mem);
     }
 
   }
@@ -553,8 +551,7 @@ PHP_FUNCTION(mdsplus_value)
 		  ans.dtype);
 	  mdsplus_replace_error(error, 0);
 	  RETVAL_FALSE;
-	  if (ans.ptr)
-	    free(ans.ptr);
+	  free(ans.ptr);
 	  return;
 	}
       }
@@ -573,14 +570,13 @@ PHP_FUNCTION(mdsplus_value)
     mdsplus_replace_error(error, 1);
     RETVAL_FALSE;
   }
-  if (ans.ptr)
-    free(ans.ptr);
+  free(ans.ptr);
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */
@@ -675,8 +671,7 @@ PHP_FUNCTION(mdsplus_put)
 	  memcpy(ans.ptr, dptr, numbytes);
       } else
 	ans.ptr = NULL;
-      if (mem)
-	free(mem);
+      free(mem);
     }
 
   }
@@ -701,8 +696,7 @@ PHP_FUNCTION(mdsplus_put)
     mdsplus_replace_error(error, 1);
   }
  done_mdsplus_put:
-  if (ans.ptr)
-    free(ans.ptr);
+  free(ans.ptr);
   if (status & 1) {
     RETURN_TRUE;
   } else {
@@ -711,9 +705,9 @@ PHP_FUNCTION(mdsplus_put)
 }
 
 /* }}} */
-/* The previous line is meant for vim and emacs, so it can correctly fold and 
-   unfold functions in source code. See the corresponding marks just before 
-   function definition, where the functions purpose is also documented. Please 
+/* The previous line is meant for vim and emacs, so it can correctly fold and
+   unfold functions in source code. See the corresponding marks just before
+   function definition, where the functions purpose is also documented. Please
    follow this convention for the convenience of others editing your code.
 */
 /* Every user-visible function in PHP should document itself in the source */

@@ -8,7 +8,7 @@ raddds.py specializes Acq400 for RADCELF triple DDS device
 
  - eg
   - uut1.s0.set_arm = 1
- - compared to 
+ - compared to
   - set.site1 set_arm=1
 
 - monitors transient status on uut, provides blocking events
@@ -22,11 +22,11 @@ import acq400
 import netclient
 
 class RAD3DDS(acq400.Acq400):
-    
+
     def __init__(self, _uut, monitor=True):
             acq400.Acq400.__init__(self, _uut, monitor)
             site = 4
-            for sm in [ 'ddsA', 'ddsB', 'ddsC']:                
+            for sm in [ 'ddsA', 'ddsB', 'ddsC']:
                 self.svc[sm] = netclient.Siteclient(self.uut, acq400.AcqPorts.SITE0+site)
                 self.mod_count += 1
                 site += 1
@@ -34,4 +34,4 @@ class RAD3DDS(acq400.Acq400):
             for sm in [ 'clkdA', 'clkdB']:
                 self.svc[sm] = netclient.Siteclient(self.uut, acq400.AcqPorts.SITE0+site)
                 self.mod_count += 1
-                site += 1                
+                site += 1

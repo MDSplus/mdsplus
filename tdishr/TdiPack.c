@@ -23,26 +23,25 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Pack.C
-        F8X transformation to pack an array into a vector under control of a mask.
+	F8X transformation to pack an array into a vector under control of a mask.
 
-                PACK(ARRAY, MASK, [VECTOR])
+	        PACK(ARRAY, MASK, [VECTOR])
 
-        ARRAY   the source when MASK is true, must be array.
-        MASK    logical conformable with ARRAY, missing is false.
-        VECTOR  vector with as many elements as trues in MASK or
-                with at least as many elements as ARRAY if MASK is scalar true.
-                We accept a scalar and short arrays and match types.
-        Result type is confomation of ARRAY and VECTOR.
-        Result size is VECTOR size if present,
-                number of trues in MASK if not scalar true,
-                else ARRAY size.
-        Result class is a vector.
+	ARRAY   the source when MASK is true, must be array.
+	MASK    logical conformable with ARRAY, missing is false.
+	VECTOR  vector with as many elements as trues in MASK or
+	        with at least as many elements as ARRAY if MASK is scalar true.
+	        We accept a scalar and short arrays and match types.
+	Result type is confomation of ARRAY and VECTOR.
+	Result size is VECTOR size if present,
+	        number of trues in MASK if not scalar true,
+	        else ARRAY size.
+	Result class is a vector.
 
-        Ken Klare, LANL CTR-7   (c)1990
+	Ken Klare, LANL CTR-7   (c)1990
 */
 
 #include <STATICdef.h>
-#define _MOVC3(a,b,c) memcpy(c,b,a)
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
@@ -58,7 +57,7 @@ extern int TdiCvtArgs();
 extern int Tdi2Pack();
 extern int TdiConvert();
 
-int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int lena, lenm, numa, numm, numv = 0, bytes, j, cmode = -1;
@@ -86,28 +85,28 @@ int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_
       numv = -1;
 
 	/*******************************************************************************
-        * Array MASK: Conform ARRAY to MASK (we use smaller). Result is condensed ARRAY.
-        * Scalar MASK: Result is ARRAY for true or null for false.
-        *******************************************************************************/
+	* Array MASK: Conform ARRAY to MASK (we use smaller). Result is condensed ARRAY.
+	* Scalar MASK: Result is ARRAY for true or null for false.
+	*******************************************************************************/
     if (dat[1].pointer->class == CLASS_A) {
       lenm = dat[1].pointer->length;
       numa = bytes / lena;
       numm = (int)((struct descriptor_a *)dat[1].pointer)->arsize / lenm;
-      pi = parr->pointer;
 #ifdef WORDS_BIGENDIAN
       pm = dat[1].pointer->pointer + lenm - 1;
 #else
       pm = dat[1].pointer->pointer;
 #endif
-      po = pi;
-
       if (numa < numm)
 	numm = numa;
       if (numv >= 0 && numm > numv)
 	numm = numv;
+      pi = parr->pointer;
+      po = pi;
       for (; --numm >= 0; pm += lenm, pi += lena)
 	if (*pm & 1) {
-	  _MOVC3(lena, pi, po);
+	  if (po<pi) // only copy if memory does not overlap
+	    memcpy(po, pi,lena);
 	  po += lena;
 	};
       bytes = po - dat[0].pointer->pointer;
@@ -115,11 +114,11 @@ int Tdi1Pack(int opcode, int narg, struct descriptor *list[], struct descriptor_
       bytes = 0;
 
 	/*********************************************
-        * Possibly augmented by VECTOR.
-        * (-2) If it is a scalar, fill out ARRAY.
-        * (++) If it is a vector, copy to VECTOR.
-        * (-1) If missing/too short, use partial XD.
-        *********************************************/
+	* Possibly augmented by VECTOR.
+	* (-2) If it is a scalar, fill out ARRAY.
+	* (++) If it is a vector, copy to VECTOR.
+	* (-1) If missing/too short, use partial XD.
+	*********************************************/
     parr->aflags.coeff = 0;
     parr->aflags.bounds = 0;
     parr->dimct = 1;

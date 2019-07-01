@@ -36,9 +36,9 @@ namespace detail {
 
 #define _MDS_TESTING_TYPE_TRAIT_IMPL_SP1(trait,spec,result) \
     template<> struct trait<spec> \
-        { typedef result type; }; \
+	{ typedef result type; }; \
     template<> struct trait<spec##Array>       \
-        { typedef std::vector<result> type; }; \
+	{ typedef std::vector<result> type; }; \
     /**/
 
 template < typename T >

@@ -5,6 +5,24 @@
 # Build mdsplus for a selected operating system for testing or
 # generating installers.
 #
+SRCDIR=$(realpath $(dirname ${0})/..)
+export GIT_DIR=${SRCDIR}/.git
+export GIT_WORK_TREE=${SRCDIR}
+RED() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[31m"
+  fi
+}
+GREEN() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[32m"
+  fi
+}
+NORMAL() {
+  if [ "$COLOR" = "yes" ]
+  then echo -e "\033[0m"
+  fi
+}
 printhelp() {
     cat <<EOF
 NAME
@@ -21,9 +39,8 @@ SYNOPSIS
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name] [--color] [--winhost=hostname]
-               [--winbld=dir] [--winrembld=dir] [--gitcommit=commit]
-               [--jars] [--make-jars] [--docker-srcdir=dir]
+               [--arch=name] [--color] 
+               [--jars] [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
     The build.sh script is used for building, testing and deploy MDSplus
@@ -119,7 +136,6 @@ OPTIONS
    --release[=version]
        Build the installers for the target operating system and place
        them in the directory specified by  the --releasedir option.
-       If the version is omitted the version will be set to 1.2.3.
        During new release builds the version will be determined from
        release tags. If just doing test builds the version can be omitted.
 
@@ -180,22 +196,12 @@ OPTIONS
        If this option is specified, success and failure messages will be
        output using ansi color escape sequences.
 
-    --winhost=hostname
-       Specify the windows system host which has a wsgi application used to
-       build the Visual Studio version of the cpp objects dll.
-
-    --winbld=directory
-       Specify the directory on the linux host with the windows share mounted.
-
-    --winrembld=directory
-       Specify the directory on the windows system host of the windows share.
-
-    --gitcommit=commit
-       Set by trigger jenkins job representing the commit hash of the sources.
-
     --jars
        Set by trigger job to indicate that build job should get the java jar
        files from the trigger source directory instead of building them.
+
+    --jars-dir=dirspec
+       Use java jars from specified directory tree.
 
     --make-jars
        Triggers the generation of the java programs (.jar files)
@@ -295,7 +301,6 @@ parsecmd() {
 		EVENT_PORT="${i#*=}"
 		;;
 	    --release)
-		RELEASE_VERSION=1.2.3
 		RELEASE=yes
 		;;
             --release=*)
@@ -303,7 +308,6 @@ parsecmd() {
 		RELEASE=yes
 		;;
 	    --publish)
-		RELEASE_VERSION=1.2.3
 		PUBLISH=yes
 		;;
             --publish=*)
@@ -370,20 +374,11 @@ parsecmd() {
 	    -i)
 		INTERACTIVE="1"
 		;;
-	    --winhost=*)
-		WINHOST="${i#*=}"
-		;;
-	    --winbld=*)
-		WINBLD="${i#*=}"
-		;;
-	    --winrembld=*)
-		WINREMBLD="${i#*=}"
-		;;
-	    --gitcommit=*)
-		GIT_COMMIT="${i#*=}"
-		;;
 	    --jars)
-		JARS_DIR="$(realpath $(dirname ${0})/../jars)"
+		JARS_DIR="${JARS_DIR-$(realpath $(dirname ${0})/../jars)}"
+		;;
+	    --jars-dir=*)
+		JARS_DIR="$(realpath ${i#*=})"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
@@ -412,7 +407,6 @@ opts="$@"
 #
 parsecmd "$opts"
 
-SRCDIR=$(realpath $(dirname ${0})/..)
 if [ -z "${DOCKER_SRCDIR}" ]
 then
    DOCKER_SRCDIR="${SRCDIR}"
@@ -445,30 +439,15 @@ Build script executing with the following combined options:
 EOF
 parsecmd "${trigger_opts} ${os_opts} ${opts}"
 
-RED() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[31;47m"
-    fi
-}
-GREEN() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[32;47m"
-    fi
-}
-NORMAL() {
-    if [ "$1" = "yes" ]
-    then
-	echo -e "\033[m"
-    fi
-}
+TAG=$(git describe --tags)
+RELEASE_VERSION="${RELEASE_VERSION-$(echo $TAG | cut -d- -f2,3,4 | tr '-' '.')}"
+BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
     if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
     then
-	GREEN $COLOR
+	GREEN
 	cat <<EOF
 ==================================================================
 
@@ -477,7 +456,7 @@ The build will be skipped.
 
 ==================================================================
 EOF
-	NORMAL $COLOR
+	NORMAL
 	exit 0
     fi
 fi
@@ -661,17 +640,13 @@ OS=${OS} \
   UPDATEPKG=${UPDATEPKG} \
   COLOR=$COLOR \
   ARCH=${ARCH} \
-  WINHOST="${WINHOST}" \
-  WINBLD="${WINBLD}" \
-  WINREMBLD="${WINREMBLD}" \
-  GIT_COMMIT="${GIT_COMMIT}" \
   INTERACTIVE="$INTERACTIVE" \
   JARS_DIR="$JARS_DIR" \
   CONFIGURE_PARAMS="$CONFIGURE_PARAMS" \
   ${SRCDIR}/deploy/platform/platform_build.sh
 if [ "$?" != "0" ]
 then
-    RED $COLOR
+    RED
     cat <<EOF >&2
 ============================================
 
@@ -679,10 +654,10 @@ Failure: The build was unsuccessful!
 
 ============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     exit 1
 else
-    GREEN $COLOR
+    GREEN
     cat <<EOF
 ============================================
 
@@ -690,7 +665,7 @@ Success!
 
 ============================================
 EOF
-    NORMAL $COLOR
+    NORMAL
     if [ "$PUBLISH" = "yes" ]
     then
 	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}

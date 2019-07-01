@@ -1,4 +1,5 @@
 
+
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  TESTS SECTION   /////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
@@ -6,7 +7,7 @@
 
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS   = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
-
+TESTS_ENVIRONMENT += MDSPLUS_VERSION_CHECK=off
 
 # ///  select test form env variable  //////////////////////////////////////// #
 
@@ -68,7 +69,7 @@ if ENABLE_SANITIZE
   # // sanitizer options specific (overload this in your Makefile.am) //
   LSAN_OPTIONS       ?=
   ASAN_OPTIONS       ?=
-  TSAN_OPTIONS       ?=
+  TSAN_OPTIONS       ?= second_deadlock_stack=1
   UBSAN_OPTIONS      ?=
 
   # // suppressions files (overload this in your Makefile.am) //

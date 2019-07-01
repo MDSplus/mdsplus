@@ -73,6 +73,8 @@ int TreeSetDbi(DBI_ITM * dbi_itm_ptr)
   return _TreeSetDbi(*TreeCtx(), dbi_itm_ptr);
 }
 
+#define NEED_EDIT if (!(IS_OPEN_FOR_EDIT(dblist))) return TreeNOEDIT;
+
 int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
@@ -82,17 +84,18 @@ int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
 
  Executable:
 */
-  if (!(IS_OPEN_FOR_EDIT(dblist)))
-    return TreeNOEDIT;
+
   if (dblist->remote)
     return SetDbiRemote(dbid, dbi_itm_ptr);
   for (itm_ptr = dbi_itm_ptr; itm_ptr->code != NciEND_OF_LIST && status & 1; itm_ptr++) {
     switch (itm_ptr->code) {
     case DbiVERSIONS_IN_MODEL:
+      NEED_EDIT
       dblist->tree_info->header->versions_in_model = (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
       break;
     case DbiVERSIONS_IN_PULSE:
+      NEED_EDIT
       dblist->tree_info->header->versions_in_pulse = (*(unsigned int *)itm_ptr->pointer) != 0;
       dblist->modified = 1;
       break;

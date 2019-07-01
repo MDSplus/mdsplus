@@ -47,11 +47,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*
  * HISTORY
  */
-/* 
- * (c) Copyright 1989, 1990, 1991, 1992, 1993 OPEN SOFTWARE FOUNDATION, INC. 
- * ALL RIGHTS RESERVED 
+/*
+ * (c) Copyright 1989, 1990, 1991, 1992, 1993 OPEN SOFTWARE FOUNDATION, INC.
+ * ALL RIGHTS RESERVED
 */
-/* 
+/*
  * Motif Release 1.2.3
 */
 #ifdef REV_INFO
@@ -217,7 +217,7 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
 int DEBUG = FALSE;
 char outfilename[80];
 char debugfilename[80];
-
+
 main(argc, argv)
 int argc;
 char **argv;
@@ -316,7 +316,7 @@ char **argv;
 
   exit(0);
 }
-
+
 emit_globals()
 {
   _db_globals globals;
@@ -341,7 +341,7 @@ emit_globals()
 	    globals.uil_max_reason, globals.uil_max_enumval,
 	    globals.uil_max_enumset, globals.key_k_keyword_count, globals.key_k_keyword_max_length);
 }
-
+
 emit_header(header)
 _db_header_ptr header;
 {
@@ -352,7 +352,7 @@ _db_header_ptr header;
 	    "\n\nTableId=%d, NumEntries=%d, TableSize=%d \n",
 	    header->table_id, header->num_items, header->table_size);
 }
-
+
 emit_chars(table_id)
 int table_id;
 {
@@ -426,7 +426,7 @@ int table_id;
     }
   }
 }
-
+
 emit_ints_and_string(table_id)
 int table_id;
 {
@@ -462,7 +462,7 @@ int table_id;
   }
 
 }
-
+
 emit_char_table(table_id)
 int table_id;
 {
@@ -515,7 +515,7 @@ int table_id;
     }
   }
 }
-
+
 emit_length_and_string(table_id)
 int table_id;
 {
@@ -630,7 +630,7 @@ int table_id;
   }
   free(lengths);
 }
-
+
 emit_shorts(table_id)
 int table_id;
 {
@@ -639,7 +639,7 @@ int table_id;
   int i;
 
   switch (table_id) {
-    /* 
+    /*
      * All tables are 1 based unless otherwise noted
      */
   case Charset_Lang_Codes_Table:
@@ -692,7 +692,7 @@ int table_id;
     }
   }
 }
-
+
 emit_int_and_table_shorts(table_id)
 int table_id;
 {
@@ -721,7 +721,7 @@ int table_id;
     }
   }
 }
-
+
 emit_ints(table_id)
 int table_id;
 {

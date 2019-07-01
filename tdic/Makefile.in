@@ -1,9 +1,11 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
-@MINGW_TRUE@ DEF=${srcdir}/tdishrext.def
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
+@MINGW_TRUE@ DEF=${srcdir}/TdiShrExt.def
 
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
 TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@
@@ -12,7 +14,7 @@ SOURCES = \
         TdiShrExt.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = tdishrext.exports
+EXPORTS = TdiShrExt.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TdiShrExt.a @MAKEBINDIR@tdic$(EXE)
 
@@ -39,7 +41,8 @@ install: $(libdir) $(bindir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-@MAKEBINDIR@tdic$(EXE): tdic.c
+@MINGW_TRUE@@MAKEBINDIR@tdic$(EXE): tdic.c icon.o
+@MINGW_FALSE@@MAKEBINDIR@tdic$(EXE): tdic.c
 	$(LINK.c) $(OUTPUT_OPTION) $^ $(TDIC_LIBS)
 
 tdishrext.exports: tdishrext.def

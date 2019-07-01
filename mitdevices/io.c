@@ -227,7 +227,7 @@ EXPORT int DMARead2(short *buffer, const char *fname, int *chan, int *samples, i
       }
       sam += (region[idx] * coeffs[i]);
       /*
-         printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
+	 printf("idx = %d src= %d ans = %f ", idx, (int)region[idx], sam);
        */
     }
     /* printf("|"); */
@@ -278,7 +278,7 @@ EXPORT int DMARead3(short *buffer, const char *fname, int *start, int *end, int 
   for (samples_to_go = length / 2; samples_to_go > 0; samples_to_go -= buffer_def.nsamples) {
     buffer_def.nsamples = MIN(samples_to_go, MAX_CHUNK_SIZE);
     /*
-       printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n", 
+       printf("about to ioctl istart = %d, istride= %d, nsamples = %d \n",
        buffer_def.istart, buffer_def.istride, buffer_def.nsamples);
      */
     rc = ioctl(fd, ACQ32_IOREAD_LOCALBUF, &buffer_def);

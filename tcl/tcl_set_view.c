@@ -64,7 +64,6 @@ EXPORT int TclSetView(void *ctx, char **error, char **output __attribute__ ((unu
     sprintf(*error, "Error: Bad time specified, use dd-mon-yyy hh:mm:ss format.\n"
 	    "All fields required!\n" "Error message was: %s\n", msg);
   }
-  if (viewDateStr)
-    free(viewDateStr);
+  free(viewDateStr);
   return status;
 }

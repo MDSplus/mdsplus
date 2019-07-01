@@ -75,7 +75,7 @@ int check_micro_version = CHECK_MICRO_VERSION;
 static int non_pass(int val);
 static Fixture *fixture_create(SFun fun, int ischecked);
 static void tcase_add_fixture(TCase * tc, SFun setup, SFun teardown,
-                              int ischecked);
+	                      int ischecked);
 static void tr_init(TestResult * tr);
 static void suite_free(Suite * s);
 static void tcase_free(TCase * tc);
@@ -86,9 +86,9 @@ Suite *suite_create(const char *name)
 
     s = (Suite *)emalloc(sizeof(Suite)); /* freed in suite_free */
     if(name == NULL)
-        s->name = "";
+	s->name = "";
     else
-        s->name = name;
+	s->name = name;
     s->tclst = check_list_create();
     return s;
 }
@@ -99,14 +99,14 @@ int suite_tcase(Suite * s, const char *tcname)
     TCase *tc;
 
     if(s == NULL)
-        return 0;
+	return 0;
 
     l = s->tclst;
     for(check_list_front(l); !check_list_at_end(l); check_list_advance(l))
     {
-        tc = (TCase *)check_list_val(l);
-        if(strcmp(tcname, tc->name) == 0)
-            return 1;
+	tc = (TCase *)check_list_val(l);
+	if(strcmp(tcname, tc->name) == 0)
+	    return 1;
     }
 
     return 0;
@@ -117,11 +117,11 @@ static void suite_free(Suite * s)
     List *l;
 
     if(s == NULL)
-        return;
+	return;
     l = s->tclst;
     for(check_list_front(l); !check_list_at_end(l); check_list_advance(l))
     {
-        tcase_free((TCase *)check_list_val(l));
+	tcase_free((TCase *)check_list_val(l));
     }
     check_list_free(s->tclst);
     free(s);
@@ -135,38 +135,38 @@ TCase *tcase_create(const char *name)
     TCase *tc = (TCase *)emalloc(sizeof(TCase)); /*freed in tcase_free */
 
     if(name == NULL)
-        tc->name = "";
+	tc->name = "";
     else
-        tc->name = name;
+	tc->name = name;
 
     env = getenv("CK_DEFAULT_TIMEOUT");
     if(env != NULL)
     {
-        char *endptr = NULL;
-        double tmp = strtod(env, &endptr);
+	char *endptr = NULL;
+	double tmp = strtod(env, &endptr);
 
-        if(tmp >= 0 && endptr != env && (*endptr) == '\0')
-        {
-            timeout_sec = tmp;
-        }
+	if(tmp >= 0 && endptr != env && (*endptr) == '\0')
+	{
+	    timeout_sec = tmp;
+	}
     }
 
     env = getenv("CK_TIMEOUT_MULTIPLIER");
     if(env != NULL)
     {
-        char *endptr = NULL;
-        double tmp = strtod(env, &endptr);
+	char *endptr = NULL;
+	double tmp = strtod(env, &endptr);
 
-        if(tmp >= 0 && endptr != env && (*endptr) == '\0')
-        {
-            timeout_sec = timeout_sec * tmp;
-        }
+	if(tmp >= 0 && endptr != env && (*endptr) == '\0')
+	{
+	    timeout_sec = timeout_sec * tmp;
+	}
     }
 
     tc->timeout.tv_sec = (time_t) floor(timeout_sec);
     tc->timeout.tv_nsec =
-        (long)((timeout_sec -
-                floor(timeout_sec)) * (double)NANOS_PER_SECONDS);
+	(long)((timeout_sec -
+	        floor(timeout_sec)) * (double)NANOS_PER_SECONDS);
 
     tc->tflst = check_list_create();
     tc->unch_sflst = check_list_create();
@@ -197,17 +197,17 @@ static void tcase_free(TCase * tc)
 void suite_add_tcase(Suite * s, TCase * tc)
 {
     if(s == NULL || tc == NULL)
-        return;
+	return;
     check_list_add_end(s->tclst, tc);
 }
 
 void _tcase_add_test(TCase * tc, TFun fn, const char *name, int _signal,
-                     int allowed_exit_value, int start, int end)
+	             int allowed_exit_value, int start, int end)
 {
     TF *tf;
 
     if(tc == NULL || fn == NULL || name == NULL)
-        return;
+	return;
     tf = (TF *)emalloc(sizeof(TF));   /* freed in tcase_free */
     tf->fn = fn;
     tf->loop_start = start;
@@ -240,27 +240,27 @@ void tcase_add_checked_fixture(TCase * tc, SFun setup, SFun teardown)
 }
 
 static void tcase_add_fixture(TCase * tc, SFun setup, SFun teardown,
-                              int ischecked)
+	                      int ischecked)
 {
     if(setup)
     {
-        if(ischecked)
-            check_list_add_end(tc->ch_sflst,
-                               fixture_create(setup, ischecked));
-        else
-            check_list_add_end(tc->unch_sflst,
-                               fixture_create(setup, ischecked));
+	if(ischecked)
+	    check_list_add_end(tc->ch_sflst,
+	                       fixture_create(setup, ischecked));
+	else
+	    check_list_add_end(tc->unch_sflst,
+	                       fixture_create(setup, ischecked));
     }
 
     /* Add teardowns at front so they are run in reverse order. */
     if(teardown)
     {
-        if(ischecked)
-            check_list_add_front(tc->ch_tflst,
-                                 fixture_create(teardown, ischecked));
-        else
-            check_list_add_front(tc->unch_tflst,
-                                 fixture_create(teardown, ischecked));
+	if(ischecked)
+	    check_list_add_front(tc->ch_tflst,
+	                         fixture_create(teardown, ischecked));
+	else
+	    check_list_add_front(tc->unch_tflst,
+	                         fixture_create(teardown, ischecked));
     }
 }
 
@@ -269,22 +269,22 @@ void tcase_set_timeout(TCase * tc, double timeout)
 #if defined(HAVE_FORK)
     if(timeout >= 0)
     {
-        char *env = getenv("CK_TIMEOUT_MULTIPLIER");
+	char *env = getenv("CK_TIMEOUT_MULTIPLIER");
 
-        if(env != NULL)
-        {
-            char *endptr = NULL;
-            double tmp = strtod(env, &endptr);
+	if(env != NULL)
+	{
+	    char *endptr = NULL;
+	    double tmp = strtod(env, &endptr);
 
-            if(tmp >= 0 && endptr != env && (*endptr) == '\0')
-            {
-                timeout = timeout * tmp;
-            }
-        }
+	    if(tmp >= 0 && endptr != env && (*endptr) == '\0')
+	    {
+	        timeout = timeout * tmp;
+	    }
+	}
 
-        tc->timeout.tv_sec = (time_t) floor(timeout);
-        tc->timeout.tv_nsec =
-            (long)((timeout - floor(timeout)) * (double)NANOS_PER_SECONDS);
+	tc->timeout.tv_sec = (time_t) floor(timeout);
+	tc->timeout.tv_nsec =
+	    (long)((timeout - floor(timeout)) * (double)NANOS_PER_SECONDS);
     }
 #else
     (void)tc;
@@ -294,7 +294,7 @@ void tcase_set_timeout(TCase * tc, double timeout)
 }
 
 void tcase_fn_start(const char *fname CK_ATTRIBUTE_UNUSED, const char *file,
-                    int line)
+	            int line)
 {
     send_ctx_info(CK_CTX_TEST);
     send_loc_info(file, line);
@@ -323,12 +323,12 @@ void _ck_assert_failed(const char *file, int line, const char *expr, ...)
      */
     if(msg != NULL)
     {
-        vsnprintf(buf, BUFSIZ, msg, ap);
-        to_send = buf;
+	vsnprintf(buf, BUFSIZ, msg, ap);
+	to_send = buf;
     }
     else
     {
-        to_send = expr;
+	to_send = expr;
     }
 
     va_end(ap);
@@ -336,12 +336,12 @@ void _ck_assert_failed(const char *file, int line, const char *expr, ...)
     if(cur_fork_status() == CK_FORK)
     {
 #if defined(HAVE_FORK) && HAVE_FORK==1
-        _exit(1);
+	_exit(1);
 #endif /* HAVE_FORK */
     }
     else
     {
-        longjmp(error_jmp_buffer, 1);
+	longjmp(error_jmp_buffer, 1);
     }
 }
 
@@ -351,7 +351,7 @@ SRunner *srunner_create(Suite * s)
 
     sr->slst = check_list_create();
     if(s != NULL)
-        check_list_add_end(sr->slst, s);
+	check_list_add_end(sr->slst, s);
     sr->stats = (TestStats *)emalloc(sizeof(TestStats));     /* freed in srunner_free */
     sr->stats->n_checked = sr->stats->n_failed = sr->stats->n_errors = 0;
     sr->resultlst = check_list_create();
@@ -376,7 +376,7 @@ SRunner *srunner_create(Suite * s)
 void srunner_add_suite(SRunner * sr, Suite * s)
 {
     if(s == NULL)
-        return;
+	return;
 
     check_list_add_end(sr->slst, s);
 }
@@ -387,21 +387,21 @@ void srunner_free(SRunner * sr)
     TestResult *tr;
 
     if(sr == NULL)
-        return;
+	return;
 
     free(sr->stats);
     l = sr->slst;
     for(check_list_front(l); !check_list_at_end(l); check_list_advance(l))
     {
-        suite_free((Suite *)check_list_val(l));
+	suite_free((Suite *)check_list_val(l));
     }
     check_list_free(sr->slst);
 
     l = sr->resultlst;
     for(check_list_front(l); !check_list_at_end(l); check_list_advance(l))
     {
-        tr = (TestResult *)check_list_val(l);
-        tr_free(tr);
+	tr = (TestResult *)check_list_val(l);
+	tr_free(tr);
     }
     check_list_free(sr->resultlst);
 
@@ -428,12 +428,12 @@ TestResult **srunner_failures(SRunner * sr)
 
     rlst = sr->resultlst;
     for(check_list_front(rlst); !check_list_at_end(rlst);
-        check_list_advance(rlst))
+	check_list_advance(rlst))
     {
-        TestResult *tr = (TestResult *)check_list_val(rlst);
+	TestResult *tr = (TestResult *)check_list_val(rlst);
 
-        if(non_pass(tr->rtype))
-            trarray[i++] = tr;
+	if(non_pass(tr->rtype))
+	    trarray[i++] = tr;
 
     }
     return trarray;
@@ -449,9 +449,9 @@ TestResult **srunner_results(SRunner * sr)
 
     rlst = sr->resultlst;
     for(check_list_front(rlst); !check_list_at_end(rlst);
-        check_list_advance(rlst))
+	check_list_advance(rlst))
     {
-        trarray[i++] = (TestResult *)check_list_val(rlst);
+	trarray[i++] = (TestResult *)check_list_val(rlst);
     }
     return trarray;
 }
@@ -472,7 +472,7 @@ TestResult *tr_create(void)
 
 static void tr_init(TestResult * tr)
 {
-    tr->ctx = CK_CTX_INVALID;    
+    tr->ctx = CK_CTX_INVALID;
     tr->line = -1;
     tr->rtype = CK_TEST_RESULT_INVALID;
     tr->msg = NULL;
@@ -525,9 +525,9 @@ static enum fork_status _fstat = CK_FORK;
 void set_fork_status(enum fork_status fstat)
 {
     if(fstat == CK_FORK || fstat == CK_NOFORK || fstat == CK_FORK_GETENV)
-        _fstat = fstat;
+	_fstat = fstat;
     else
-        eprintf("Bad status in set_fork_status", __FILE__, __LINE__);
+	eprintf("Bad status in set_fork_status", __FILE__, __LINE__);
 }
 
 enum fork_status cur_fork_status(void)
@@ -557,19 +557,19 @@ clockid_t check_get_clockid()
  * will result in an assert(0).
  */
 #ifdef HAVE_LIBRT
-        timer_t timerid;
+	timer_t timerid;
 
-        if(timer_create(CLOCK_MONOTONIC, NULL, &timerid) == 0)
-        {
-            timer_delete(timerid);
-            clockid = CLOCK_MONOTONIC;
-        }
-        else
-        {
-            clockid = CLOCK_REALTIME;
-        }
+	if(timer_create(CLOCK_MONOTONIC, NULL, &timerid) == 0)
+	{
+	    timer_delete(timerid);
+	    clockid = CLOCK_MONOTONIC;
+	}
+	else
+	{
+	    clockid = CLOCK_REALTIME;
+	}
 #else
-        clockid = CLOCK_MONOTONIC;
+	clockid = CLOCK_MONOTONIC;
 #endif
     }
 

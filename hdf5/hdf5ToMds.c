@@ -258,7 +258,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data __attrib
 	break;
       }
       if (dtype)
-        PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
+	PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
       break;
     case H5T_FLOAT:
       nid = AddNode(name, TreeUSAGE_NUMERIC);
@@ -278,7 +278,7 @@ static int mds_find_attr(hid_t attr_id, const char *name, void *op_data __attrib
 	break;
       }
       if (dtype)
-        PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
+	PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 1);
       break;
     case H5T_TIME:
       printf("dataset is time ---- UNSUPPORTED\n");
@@ -418,7 +418,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	  dtype = 0;
 	  break;
 	}
-        if (dtype)
+	if (dtype)
 	  PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
 	break;
       case H5T_FLOAT:
@@ -437,7 +437,7 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	  dtype = 0;
 	  break;
 	}
-        if (dtype)
+	if (dtype)
 	  PutData(obj, nid, dtype, htype, size, n_ds_dims, ds_dims, 0);
 	break;
       case H5T_TIME:
@@ -482,20 +482,20 @@ static int mds_find_objs(hid_t group, const char *name, void *op_data)
 	printf("dataset is vlen ---- UNSUPPORTED\n");
 	break;
       case H5T_NO_CLASS:
-        printf("dataset is no_clasee ---- UNSUPPORTED\n");
-        break;
+	printf("dataset is no_clasee ---- UNSUPPORTED\n");
+	break;
       case H5T_REFERENCE:
-        printf("dataset is reference ---- UNSUPPORTED\n");
-        break;
+	printf("dataset is reference ---- UNSUPPORTED\n");
+	break;
       case H5T_ENUM:
-        printf("dataset is enum ---- UNSUPPORTED\n");
-        break;
+	printf("dataset is enum ---- UNSUPPORTED\n");
+	break;
       case H5T_NCLASSES:
-        printf("dataset is nclasses ---- UNSUPPORTED\n");
-        break;
+	printf("dataset is nclasses ---- UNSUPPORTED\n");
+	break;
       default:
-        printf("dataset is UNRECOGNIZED CASE ---- UNSUPPORTED\n");
-        break;
+	printf("dataset is UNRECOGNIZED CASE ---- UNSUPPORTED\n");
+	break;
       }
       H5Tclose(type);
       H5Dclose(obj);
@@ -555,7 +555,7 @@ int main(int argc, const char *argv[])
     exit(EXIT_FAILURE);
   }
 
-  status = TreeOpenNew((char *)tree, atoi(shot));
+  status = TreeOpenNew((char *)tree, strtol(shot,NULL,0));
   if (!status & 1) {
     printf("Error creating new tree for treename /%s/, shot number /%s/\n", tree, shot);
     exit(EXIT_FAILURE);

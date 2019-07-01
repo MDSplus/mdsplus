@@ -35,6 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <mds_stdarg.h>
+#include <strroutines.h>
 #ifndef O_BINARY
 #define O_BINARY 0
 #endif
@@ -42,14 +43,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define O_RANDOM 0
 #endif
 
-extern int StrFree1Dx();
-
 static inline int minInt(int a, int b) { return a < b ? a : b; }
 
 #define read_nci \
  if (nci_version != version)\
  {\
     nid_to_tree_nidx(dblist, (&nid), info, node_number);\
+    TreeCallHookFun("TreeNidHook","GetNci",info->treenam, info->shot, nid, NULL); \
     status = TreeCallHook(GetNci,info,nid_in);\
     if (status && STATUS_NOT_OK) break;\
     status = TreeGetNciW(info, node_number, &nci,version);\
@@ -57,7 +57,7 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
     if STATUS_NOT_OK break;\
  }
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
-#define set_retlen(length) if (itm->buffer_length < (int)length) { status = TreeBUFFEROVF; break; } else retlen=length
+#define set_retlen(length) if (itm->buffer_length < (int)(length)) { status = TreeBUFFEROVF; break; } else retlen=(length)
 
 static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs);
 static const char *nonode = "<no-node>   ";
@@ -67,11 +67,6 @@ extern void **TreeCtx();
 char *TreeGetMinimumPath(int *def_nid_in, int nid_in)
 {
   return _TreeGetMinimumPath(*TreeCtx(), def_nid_in, nid_in);
-}
-
-int TreeGetNci(int nid_in, struct nci_itm *nci_itm)
-{
-  return _TreeGetNci(*TreeCtx(), nid_in, nci_itm);
 }
 
 char *TreeGetPath(int nid_in)
@@ -84,8 +79,16 @@ int TreeIsOn(int nid)
   return _TreeIsOn(*TreeCtx(), nid);
 }
 
-int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
-{
+int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
+  int status;
+  CTX_PUSH(&dbid);
+  status = TreeGetNci(nid_in, nci_itm);
+  CTX_POP(&dbid);
+  return status;
+}
+
+int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
+  void*dbid = *TreeCtx();
   INIT_STATUS_AS TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID nid = *(NID *) & nid_in;
@@ -100,7 +103,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
   NODE *cng_node;
   int node_exists;
   int depth;
-  int64_t rfa_l;
+  uint64_t rfa_l;
   int count = 0;
   NID *out_nids;
   NID *end_nids;
@@ -210,15 +213,12 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       read_nci;
       set_retlen(sizeof(rfa_l));
       rfa_l = RfaToSeek(nci.DATA_INFO.DATA_LOCATION.rfa);
-      memcpy(itm->pointer, &rfa_l, minInt(sizeof(unsigned int), itm->buffer_length));
+      memcpy(itm->pointer, &rfa_l, minInt(sizeof(rfa_l), itm->buffer_length));
       break;
     case NciCONGLOMERATE_ELT:
       break_on_no_node;
       set_retlen(sizeof(node->conglomerate_elt));
-      if (swapshort((char *)&node->conglomerate_elt))
-	*(unsigned short *)itm->pointer = swapshort((char *)&node->conglomerate_elt);
-      else
-	*(unsigned short *)itm->pointer = 0;
+      loadint16(itm->pointer,&node->conglomerate_elt);
       break;
     case NciPARENT:
       break_on_no_node;
@@ -264,18 +264,17 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       break;
     case NciCONGLOMERATE_NIDS:
       break_on_no_node;
-      if (swapshort((char *)&node->conglomerate_elt)) {
+      if (node->conglomerate_elt) {
 	out_nid = nid;
-	out_nid.node -= (swapshort((char *)&node->conglomerate_elt) - 1);
-	cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
-	for (i = 0;
-	     (i < itm->buffer_length / 4) && (swapshort((char *)&cng_node->conglomerate_elt) > i);
-	     i++) {
-	  set_retlen((sizeof(NID) * (i + 1)));
+	out_nid.node -= (swapint16(&node->conglomerate_elt) - 1);
+	cng_node = node - swapint16(&node->conglomerate_elt) + 1;
+	int len = itm->buffer_length>>2;// /4;
+	for (i=0 ; i<len && i< swapint16(&cng_node->conglomerate_elt) ; i++) {
 	  *((NID *) (itm->pointer) + i) = out_nid;
 	  cng_node++;
 	  out_nid.node++;
 	}
+	set_retlen(sizeof(NID)*i);
       } else
 	retlen = 0;
       break;
@@ -300,9 +299,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
     case NciNUMBER_OF_ELTS:
       break_on_no_node;
       set_retlen(sizeof(count));
-      count = 0;
-      cng_node = node - swapshort((char *)&node->conglomerate_elt) + 1;
-      for (count = 0; swapshort((char *)&cng_node->conglomerate_elt) > count; count++, cng_node++) ;
+      cng_node = node - swapint16(&node->conglomerate_elt) + 1;
+      for (count = 0; swapint16(&cng_node->conglomerate_elt) > count; count++, cng_node++) ;
       *(int *)(itm->pointer) = count;
       break;
     case NciCHILDREN_NIDS:
@@ -348,8 +346,8 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
       break;
     case NciORIGINAL_PART_NAME:
       break_on_no_node;
-      if (swapshort((char *)&node->conglomerate_elt)) {
-	struct descriptor string_d = { 0, DTYPE_T, CLASS_D, 0 };
+      if (node->conglomerate_elt) {
+	struct descriptor_d string_d = { 0, DTYPE_T, CLASS_D, 0 };
 	DESCRIPTOR_NID(nid_dsc, 0);
 	DESCRIPTOR(part_name, "PART_NAME");
 	nid_dsc.pointer = (char *)&nid;
@@ -453,8 +451,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm)
 	    path_string = string;
 	    string = temp;
 	  }
-	  if (path_string)
-	    free(path_string);
+	  free(path_string);
 	  free(part);
 	}
       } else
@@ -755,8 +752,8 @@ int _TreeOpenNciR(TREE_INFO * info)
       free(filename);
       status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
       if STATUS_NOT_OK {
-        free(info->nci_file);
-        info->nci_file = NULL;
+	free(info->nci_file);
+	info->nci_file = NULL;
       }
     }
   }
@@ -765,8 +762,7 @@ int _TreeOpenNciR(TREE_INFO * info)
 
 void TreeFree(void *ptr)
 {
-  if (ptr)
-    free(ptr);
+  free(ptr);
 }
 
 int64_t RfaToSeek(unsigned char *rfa)

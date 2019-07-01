@@ -3,16 +3,18 @@ include @top_builddir@/Makefile.inc
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
+MKDIR_P=@MKDIR_P@
+@AX_RECONFIGURE_TARGET@
 
-CFLAGS += $(THREAD) @GLOBUS_CFLAGS@ @XML_CPPFLAGS@
+CFLAGS  += $(THREAD) @GLOBUS_CFLAGS@ @XML_CPPFLAGS@
 LDFLAGS += $(THREAD)
+
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsShr.dll.a
 @MINGW_TRUE@ DEF=${srcdir}/MdsShr.def
 @MINGW_TRUE@ XML_LIBS=-Wl,-Bstatic -lxml2 -lz @LIBLZMA@ -Wl,-Bdynamic -liconv
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@
 LIBS=@LIBS@ @LIBDL@ $(XML_LIBS) @CLOCK_GETTIME_LIB@ $(LIBSOCKET) \
 @MINGW_TRUE@ -liphlpapi
-
 
 lib_LIBRARIES = MdsShr
 libStatic = $(addsuffix .a, $(addprefix @MAKELIBDIR@@LIBPRE@, $(lib_LIBRARIES)))
@@ -35,13 +37,19 @@ SOURCES = \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \
-	mds_dsc_string.c \
-	MdsFloatToTime.c \
-	UdpEvents.c \
-	UdpEventSettings.c
+        MdsVersionInfo.c \
+        mds_dsc_string.c \
+        UdpEvents.c \
+        UdpEventSettings.c
 
 OBJECTS = $(SOURCES:.c=.o) 
            
+## Version info for git needs to be checked for tag each time
+.PHONY: MdsVersionInfo.o
+MdsVersionInfo.o: CFLAGS := $(CFLAGS) -D_GIT_TAG=$(GIT_TAG)
+MdsVersionInfo.o: MdsVersionInfo.c
+	$(COMPILE.c) $(OUTPUT_OPTION) $<
+
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@ $(libs)
 

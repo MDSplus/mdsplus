@@ -78,8 +78,8 @@ int main(int argc, char* argv[])
    {
       if (UDT::INVALID_SOCK == (fhandle = UDT::accept(serv, (sockaddr*)&clientaddr, &addrlen)))
       {
-         cout << "accept: " << UDT::getlasterror().getErrorMessage() << endl;
-         return 0;
+	 cout << "accept: " << UDT::getlasterror().getErrorMessage() << endl;
+	 return 0;
       }
 
       char clienthost[NI_MAXHOST];
@@ -88,11 +88,11 @@ int main(int argc, char* argv[])
       cout << "new connection: " << clienthost << ":" << clientservice << endl;
 
       #ifndef WIN32
-         pthread_t filethread;
-         pthread_create(&filethread, NULL, sendfile, new UDTSOCKET(fhandle));
-         pthread_detach(filethread);
+	 pthread_t filethread;
+	 pthread_create(&filethread, NULL, sendfile, new UDTSOCKET(fhandle));
+	 pthread_detach(filethread);
       #else
-         CreateThread(NULL, 0, sendfile, new UDTSOCKET(fhandle), 0, NULL);
+	 CreateThread(NULL, 0, sendfile, new UDTSOCKET(fhandle), 0, NULL);
       #endif
    }
 

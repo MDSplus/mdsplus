@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi3Power.C
-        Raise number to a power (integral, real, or complex).
+	Raise number to a power (integral, real, or complex).
 
-        WARNING can destroy inputs, which must differ from output.
-        WARNING 0^0 is undefined, for r^r and c^c ROPRAND, for i^i 1. (OTS$POWJJ gives 0.)
-        WARNING accuracy of float base not as good as OTS$ routines, which use double.
-        Ken Klare, LANL P-4     (c)1990,1991
+	WARNING can destroy inputs, which must differ from output.
+	WARNING 0^0 is undefined, for r^r and c^c ROPRAND, for i^i 1. (OTS$POWJJ gives 0.)
+	WARNING accuracy of float base not as good as OTS$ routines, which use double.
+	Ken Klare, LANL P-4     (c)1990,1991
 */
 #include <STATICdef.h>
 #include <string.h>
@@ -56,9 +56,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
   struct descriptor duno;
 
 	/*******************************************
-        For real/complex exponent, z = EXP(LOG(x)*y)
-        Need HC routines, not available on VAX.
-        *******************************************/
+	For real/complex exponent, z = EXP(LOG(x)*y)
+	Need HC routines, not available on VAX.
+	*******************************************/
   if (y->dtype != DTYPE_L) {
     if (x->class != CLASS_A && z->class == CLASS_A) {
       status = TdiConvert(x, z);
@@ -71,9 +71,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
       status = Tdi3Exp(z, z);
   }
 	/******************************************
-        Scalar integer exponent, look once at bits.
-        Clobbers x and x&z must be different.
-        ******************************************/
+	Scalar integer exponent, look once at bits.
+	Clobbers x and x&z must be different.
+	******************************************/
   else if (y->class != CLASS_A) {
     if ((yy = *(int *)y->pointer) <= 0) {
       if (yy == 0)
@@ -98,9 +98,9 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
     }
   }
 	/************************
-        Must do it the hard way.
-        Copy to keep scalar base.
-        ************************/
+	Must do it the hard way.
+	Copy to keep scalar base.
+	************************/
   else {
     char xx[32];
     struct descriptor dx = { 0, 0, CLASS_S, 0 };
@@ -144,8 +144,8 @@ int Tdi3Power(struct descriptor *x, struct descriptor *y, struct descriptor_a *z
 }
 
 /*-------------------------------------------------------------
-        Tdi3Merge.C
-        Assign value from either true or false source according to mask.
+	Tdi3Merge.C
+	Assign value from either true or false source according to mask.
 */
 typedef struct {
   int q0, q1;

@@ -110,6 +110,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_git_revision.m4 \
+	$(top_srcdir)/m4/ax_reconfigure_targets.m4 \
 	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
@@ -429,12 +431,21 @@ FORLD = @FORLD@
 FOR_LDFLAGS = @FOR_LDFLAGS@
 FOR_LINKSHARED = @FOR_LINKSHARED@
 GEN_DEVICE = @GEN_DEVICE@
+GIT_BRANCH = @GIT_BRANCH@
+GIT_COMMIT = @GIT_COMMIT@
+GIT_COMMIT_DATE = @GIT_COMMIT_DATE@
+GIT_REMOTE = @GIT_REMOTE@
+GIT_REMOTE_URL = @GIT_REMOTE_URL@
+GIT_SRCDIR = @GIT_SRCDIR@
+GIT_TAG = @GIT_TAG@
 GLOBUS_CFLAGS = @GLOBUS_CFLAGS@
 GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_AWK = @HAVE_AWK@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_GIT = @HAVE_GIT@
 HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
@@ -467,6 +478,7 @@ JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
+JRE = @JRE@
 LD = @LD@
 LDARC = @LDARC@
 LDFLAGS = @LDFLAGS@
@@ -543,8 +555,6 @@ READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
 READLINE_LIBS = @READLINE_LIBS@
 READLINK = @READLINK@
-RELEASE_BRANCH = @RELEASE_BRANCH@
-RELEASE_COMMIT = @RELEASE_COMMIT@
 RELEASE_DATE = @RELEASE_DATE@
 RELEASE_MAJOR = @RELEASE_MAJOR@
 RELEASE_MINOR = @RELEASE_MINOR@
@@ -568,7 +578,8 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
-TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ $(am__append_1)
+TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ MDSPLUS_VERSION_CHECK=off \
+	$(am__append_1)
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -701,7 +712,9 @@ TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
-	test-dev-py.tdi
+	test-mdsip.tdi \
+	test-dev-py.tdi \
+	test-tab.tdi
 
 
 # if VALGRIND_TESTS is defined this list is executed with valgrind
@@ -711,7 +724,9 @@ VALGRIND_TESTS = \
 	test-tcl.tdi \
 	test-tdishr.tdi \
 	test-treeshr.tdi \
-	test-dev-py.tdi
+	test-mdsip.tdi \
+	test-dev-py.tdi \
+	test-tab.tdi
 
 
 # Files produced by tests that must be purged
@@ -1121,7 +1136,7 @@ tests: rebuild-tests
 @ENABLE_SANITIZE_TRUE@  # // sanitizer options specific (overload this in your Makefile.am) //
 @ENABLE_SANITIZE_TRUE@  LSAN_OPTIONS       ?=
 @ENABLE_SANITIZE_TRUE@  ASAN_OPTIONS       ?=
-@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?=
+@ENABLE_SANITIZE_TRUE@  TSAN_OPTIONS       ?= second_deadlock_stack=1
 @ENABLE_SANITIZE_TRUE@  UBSAN_OPTIONS      ?=
 
 @ENABLE_SANITIZE_TRUE@  # // suppressions files (overload this in your Makefile.am) //

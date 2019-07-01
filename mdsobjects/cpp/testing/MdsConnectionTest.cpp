@@ -45,9 +45,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 using namespace MDSplus;
 using namespace testing;
+static char test[256];
 
-
-
+inline static Data* cnx_get(Connection* cnx,const char*cmd) {
+  strcpy(test,cmd);
+  return cnx->get(test);
+}
 
 void _test_tree_open(const char *prot, const unsigned short port, const char* mode){
     MdsIpInstancer mdsip(prot,port,mode);
@@ -65,21 +68,24 @@ void _test_tree_open(const char *prot, const unsigned short port, const char* mo
       usleep(500000);
     }
     std::cout << "success: starting test\n" << std::flush;
-    // test client-server communication //
-    unique_ptr<Data> data = cnx->get("ZERO(10)");
+    // test client-server communication with max 8 dims//
+    unique_ptr<Data> data = cnx_get(cnx,"zero([1,1,1,1,1,1,1,1],1)");
+    TEST1( AutoString(data->getString()).string == "[[[[[[[[0]]]]]]]]");
 
-    data = cnx->get("DECOMPILE(`TreeShr->TreeDbid:P())");
-    TEST0( AutoString(data->getString()).string == "Pointer(0)" );
+    data = cnx_get(cnx,"DECOMPILE(`TreeShr->TreeDbid:P())");
+    TEST0( AutoString(data->getString()).string == "Pointer(0)");
 
-    data = cnx->get("setTimeContext()");
+    data = cnx_get(cnx,"setTimeContext()");
     TEST1(data->getInt() == 1 && "setTimeContext()");
 
     // test tree opening //
-    data = cnx->get("setenv('t_connect_path=.')");
-    cnx->openTree((char*)"t_connect",1);
+    data = cnx_get(cnx,"setenv('t_connect_path=.')");
+
+    strcpy(test,"t_connect");
+    cnx->openTree(test,1);
 
     Data *args[] = { new Int32(5552368),
-                     new Float64(111.234) };
+	             new Float64(111.234) };
     cnx->put("test_cnx",(char*)"$+10",args,1);
     data = cnx->get("test_cnx");
     TEST1( data->getInt() == 5552378 && "$+10");
@@ -102,7 +108,8 @@ void _test_tree_open(const char *prot, const unsigned short port, const char* mo
 void test_tree_open(const char *prot, const unsigned short port, const char* mode){
   try {
     _test_tree_open(prot, port, mode);
-  } catch (...) {
+  } catch (const std::exception& e) {
+    std::cout << "ERROR: " << test << '\n' << e.what() << '\n' << std::flush;
     TEST0("exception");
   }
 }
@@ -146,7 +153,12 @@ int main(int argc, char *argv[])
     //  TEST CONNECTION TO REMOTE TREE  ////////////////////////////////////////////
     ////////////////////////////////////////////////////////////////////////////////
 
-    // local  (includes: ssh, htmp) //
+    // thread //
+    BEGIN_TESTING(Connection thread);
+    test_tree_open("thread",0,NULL);
+    END_TESTING;
+
+    // local  (includes: ssh, html) //
     BEGIN_TESTING(Connection local);
     test_tree_open("local",0,NULL);
     END_TESTING;

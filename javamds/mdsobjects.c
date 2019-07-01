@@ -454,7 +454,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       jfloats = (*env)->NewFloatArray(env, length);
       if(jfloats)
 	(*env)->SetFloatArrayRegion(env, jfloats, 0, length, (jfloat *) float_buf);
-      free((char *)float_buf);
+      free(float_buf);
       args[0].l = jfloats;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -475,7 +475,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       jdoubles = (*env)->NewDoubleArray(env, length);
       if(jdoubles)
 	(*env)->SetDoubleArrayRegion(env, jdoubles, 0, length, (jdouble *) double_buf);
-      free((char *)double_buf);
+      free(double_buf);
       args[0].l = jdoubles;
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
@@ -502,7 +502,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       if (is_ca)
 	MdsFree1Dx(&ca_xd, 0);
       return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-     default: 
+     default:
       sprintf(message, "Datatype %d not supported for class CLASS_A", desc->dtype);
       exc = (*env)->FindClass(env, "MdsException");
       (*env)->ThrowNew(env, exc, message);
@@ -518,9 +518,20 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 
     record_d = (struct descriptor_r *)desc;
 //printf("CLASS_R %d\n", record_d->dtype);
-    if (record_d->dtype != DTYPE_PARAM && record_d->dtype != DTYPE_WITH_UNITS
-	&& record_d->dtype != DTYPE_WITH_ERROR) {
-      switch (record_d->dtype) {
+    switch (record_d->dtype) {
+      case DTYPE_PARAM:
+	return DescripToObject(env, record_d->dscptrs[0],
+			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0),
+			       unitsObj, errorObj, DescripToObject(env, record_d->dscptrs[2], 0, 0,
+								   0, 0));
+      case DTYPE_WITH_UNITS:
+	return DescripToObject(env, record_d->dscptrs[0], helpObj,
+			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0), errorObj,
+			       validationObj);
+      case DTYPE_WITH_ERROR:
+	return DescripToObject(env, record_d->dscptrs[0],
+			       helpObj, unitsObj, DescripToObject(env, record_d->dscptrs[1], 0, 0,
+								  0, 0), validationObj);
       case DTYPE_SIGNAL:
 	cls = (*env)->FindClass(env, "MDSplus/Signal");
 	constr =
@@ -612,7 +623,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	    (*env)->GetStaticMethodID(env, cls, "getData",
 				      "(LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)LMDSplus/Range;");
 	break;
-      default: 
+      default:
 	sprintf(message, "Datatype %d not supported for class CLASS_R", desc->dtype);
 	exc = (*env)->FindClass(env, "MdsException");
 	(*env)->ThrowNew(env, exc, message);
@@ -621,8 +632,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
       obj = (*env)->CallStaticObjectMethodA(env, cls, constr, args);
       data_cls = (*env)->FindClass(env, "MDSplus/Data");
       jobjects = (*env)->NewObjectArray(env, record_d->ndesc, data_cls, 0);
-      if(jobjects)
-      {
+      if(jobjects) {
 	for (i = count = 0; count < record_d->ndesc; i++, count++) {
 	  (*env)->SetObjectArrayElement(env, jobjects, i,
 					DescripToObject(env, record_d->dscptrs[i], 0, 0, 0, 0));
@@ -649,25 +659,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
 	}
 	(*env)->SetIntField(env, obj, opcode_fid, opcode);
       }
-    } else {
-      switch (record_d->dtype) {
-      case DTYPE_PARAM:
-	return DescripToObject(env, record_d->dscptrs[0],
-			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0),
-			       unitsObj, errorObj, DescripToObject(env, record_d->dscptrs[2], 0, 0,
-								   0, 0));
-      case DTYPE_WITH_UNITS:
-	return DescripToObject(env, record_d->dscptrs[0], helpObj,
-			       DescripToObject(env, record_d->dscptrs[1], 0, 0, 0, 0), errorObj,
-			       validationObj);
-      case DTYPE_WITH_ERROR:
-	return DescripToObject(env, record_d->dscptrs[0],
-			       helpObj, unitsObj, DescripToObject(env, record_d->dscptrs[1], 0, 0,
-								  0, 0), validationObj);
-      }
-    }
-    return obj;
-
+      return obj;
   case CLASS_APD:
     args[1].l = helpObj;
     args[2].l = unitsObj;
@@ -701,7 +693,7 @@ static jobject DescripToObject(JNIEnv * env, struct descriptor *desc,
     }
     args[0].l = jobjects;
     return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-  default: 
+  default:
       sprintf(message, "class %d not supported", desc->class);
       exc = (*env)->FindClass(env, "MdsException");
       (*env)->ThrowNew(env, exc, message);
@@ -800,7 +792,7 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
   dtype = (*env)->GetIntField(env, obj, dtype_fid),
       dclass = (*env)->GetIntField(env, obj, dclass_fid);
 
-//      printf("%d %d\n", dtype, dclass); 
+//      printf("%d %d\n", dtype, dclass);
 
   getUnitsFid = (*env)->GetFieldID(env, cls, "units", "LMDSplus/Data;");
   getHelpFid = (*env)->GetFieldID(env, cls, "help", "LMDSplus/Data;");
@@ -1065,11 +1057,11 @@ static struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj)
 //printf("CLASS_R\n");
 
     opcode_fid = (*env)->GetFieldID(env, cls, "opcode", "I");
-//printf("%x\n", opcode_fid); 
+//printf("%x\n", opcode_fid);
     opcode = (*env)->GetIntField(env, obj, opcode_fid);
-//printf("%d\n", opcode); 
+//printf("%d\n", opcode);
     descs_fid = (*env)->GetFieldID(env, cls, "descs", "[LMDSplus/Data;");
-//printf("%x\n", descs_fid); 
+//printf("%x\n", descs_fid);
 
     jdescs = (*env)->GetObjectField(env, obj, descs_fid);
     ndescs = (*env)->GetArrayLength(env, jdescs);
@@ -1131,9 +1123,9 @@ static void FreeDescrip(struct descriptor *desc)
 /*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
 
   switch (desc->class) {
+  default:break;
   case CLASS_S:
-    if (desc->pointer)
-      free(desc->pointer);
+    free(desc->pointer);
     break;
   case CLASS_A:
     if (desc->pointer)
@@ -1152,7 +1144,7 @@ static void FreeDescrip(struct descriptor *desc)
       FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
     break;
   }
-  free((char *)desc);
+  free(desc);
 }
 
 /*
@@ -1293,7 +1285,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject obj)
   buf[decD->length] = 0;
   MdsFree1Dx(&outXd, NULL);
   ris = (*env)->NewStringUTF(env, buf);
-  free((char *)buf);
+  free(buf);
   return ris;
 }
 
@@ -1703,7 +1695,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
   jnids = (*env)->NewIntArray(env, numNids);
   if(jnids)
     (*env)->SetIntArrayRegion(env, jnids, 0, numNids, (const jint *)nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 }
 
@@ -1858,10 +1850,10 @@ JNIEXPORT jint JNICALL Java_MDSplus_Tree_getCurrent(JNIEnv * env, jclass cls __a
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_createPulseFile
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jint shot) {
-  int status, retNids;
+  int status;
   void *ctx = getCtx(ctx1, ctx2);
 
-  status = _TreeCreatePulseFile(ctx, shot, 0, &retNids);
+  status = _TreeCreatePulseFile(ctx, shot, 0, NULL);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2176,7 +2168,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
   jnids = (*env)->NewIntArray(env, nNids);
   if(jnids)
     (*env)->SetIntArrayRegion(env, jnids, 0, nNids, (const jint *)nids);
-  free((char *)nids);
+  free(nids);
   return jnids;
 
 }
@@ -2948,7 +2940,7 @@ static jobject releaseEventDescr(int64_t eventId)
     else
       eventDescrHead = currDescr->nxt;
     retObj = currDescr->eventObj;
-    free((char *)currDescr);
+    free(currDescr);
   }
   UnlockMdsShrMutex(&eventMutex);
   return retObj;
@@ -3152,7 +3144,7 @@ static char getNDims(struct descriptor *dsc)
 
 static void getDims(struct descriptor *dsc, int *dims)
 {
-  ARRAY_BOUNDS(char *, MAX_DIMS_R) * arrPtr;
+  ARRAY_BOUNDS(char *, MAX_DIMS) * arrPtr;
   int i;
 
   if (dsc->class != CLASS_A)
@@ -3189,11 +3181,11 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes;
   void *mem = 0;
   struct descriptor scalarDsc = { 0, 0, CLASS_S, 0 };
-  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS_R, 0);
+  DESCRIPTOR_A_COEFF(arrayDsc, 0, 0, 0, MAX_DIMS, 0);
 
   expr = (*env)->GetStringUTFChars(env, jExpr, 0);
   nArgs = (*env)->GetArrayLength(env, jargs);
@@ -3214,21 +3206,21 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Connection_get
     status = SendArg(sockId, i + 1, dtype, nArgs + 1, length, nDims, dims, ptr);
     FreeDescrip(dscs[i]);
     if STATUS_NOT_OK {
-      free((char *)dscs);
+      free(dscs);
       exc = (*env)->FindClass(env, "MDSplus/MdsException");
       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
       return NULL;
     }
   }
 
-  free((char *)dscs);
+  free(dscs);
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
     return NULL;
   }
-//   printf("RECEIVED dtype: %d length: %d ndims: %d dim1: %d dim2: %d numBytes: %d\n", 
+//   printf("RECEIVED dtype: %d length: %d ndims: %d dim1: %d dim2: %d numBytes: %d\n",
 //	dtype, length, nDims, dims[0], dims[1], numBytes);
   if (nDims == 0) {
     scalarDsc.length = numBytes;
@@ -3343,7 +3335,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
   char dtype, nDims;
   short length;
   void *ptr;
-  int dims[MAX_DIMS_R];
+  int dims[MAX_DIMS];
   int numBytes, varIdx;
   void *mem = 0;
 
@@ -3389,13 +3381,13 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
     status = SendArg(sockId, i + 1, dtype, nArgs + 1, length, nDims, dims, ptr);
     FreeDescrip(dscs[i]);
     if STATUS_NOT_OK {
-      free((char *)dscs);
+      free(dscs);
       exc = (*env)->FindClass(env, "MDSplus/MdsException");
       (*env)->ThrowNew(env, exc, MdsGetMsg(status));
       return;
     }
   }
-  free((char *)dscs);
+  free(dscs);
   status = GetAnswerInfoTS(sockId, &dtype, &length, &nDims, dims, &numBytes, &ptr, &mem);
   if STATUS_NOT_OK {
     exc = (*env)->FindClass(env, "MDSplus/MdsException");

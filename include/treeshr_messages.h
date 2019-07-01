@@ -70,6 +70,7 @@
 #define TreeLOCK_FAILURE         0xfd18fb2
 #define TreeFILE_NOT_FOUND       0xfd18faa
 #define TreeCANCEL               0xfd18c80
+#define TreeUNSUPTHICKOP         0xfd18c88
 #define TreeNOSEGMENTS           0xfd18fba
 #define TreeINVDTYPE             0xfd18fc2
 #define TreeINVSHAPE             0xfd18fca

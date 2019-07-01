@@ -100,8 +100,8 @@ static void freeResources(struct descriptor_xd *startTimeXds, struct descriptor_
     MdsFree1Dx(&startTimeXds[i], 0);
     MdsFree1Dx(&endTimeXds[i], 0);
   }
-  free((char *)startTimeXds);
-  free((char *)endTimeXds);
+  free(startTimeXds);
+  free(endTimeXds);
 }
 
 EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc,
@@ -122,7 +122,7 @@ EXPORT int _XTreeGetSegmentList(void *dbid, int nid, struct descriptor *startDsc
   struct descriptor endIdxDsc = { sizeof(int), DTYPE_L, CLASS_S, (char *)&endIdx };
   DESCRIPTOR_RANGE(idxDsc, &startIdxDsc, &endIdxDsc, 0);
   DESCRIPTOR_SIGNAL_2(retSignalDsc, (struct descriptor *)&idxDsc, 0, 0, 0);
-  char currType;
+  dtype_t currType;
   int isSigCandidate;
   char *startTimesBuf, *endTimesBuf;
 

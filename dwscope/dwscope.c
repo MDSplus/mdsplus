@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
- 		Name:   DWScope
+		Name:   DWScope
 
 		Type:   C main program
 
@@ -397,8 +397,8 @@ int main(int argc, String * argv)
   defaultfile = strlen(defaultfile) ? XtNewString(defaultfile) : XtNewString("my.scope");
   XtAppAddActions(AppContext, actions, XtNumber(actions));
   XtAugmentTranslations(TopWidget, XtParseTranslationTable("#augment <ResizeRequest> : Resize() \n\
-                                                                     <Unmap> : Shrink()\n\
-                                                                     <Map> : Expand()"));
+	                                                             <Unmap> : Shrink()\n\
+	                                                             <Map> : Expand()"));
   MrmOpenHierarchy(XtNumber(hierarchy_names), hierarchy_names, 0, &drm_hierarchy);
   MrmFetchWidget(drm_hierarchy, "scope", TopWidget, &MainWidget, &class);
   MrmCloseHierarchy(drm_hierarchy);
@@ -2029,15 +2029,15 @@ static void RestoreDatabase(String dbname, Widget w)
   if (override_shot)
     XmTextFieldSetString(XtNameToWidget(TopWidget, "*override_shot"), override_shot);
   ReplaceString(&ScopePrintFile, GetResource(scopedb, "Scope.print_file", "dwscope.ps"), 0);
-  ScopePrintPortrait = atoi(GetResource(scopedb, "Scope.print_portrait", "0"));
-  ScopePrintWindowTitle = atoi(GetResource(scopedb, "Scope.print_window_title", "0"));
+  ScopePrintPortrait = strtol(GetResource(scopedb, "Scope.print_portrait", "0"),NULL,0);
+  ScopePrintWindowTitle = strtol(GetResource(scopedb, "Scope.print_window_title", "0"),NULL,0);
   default_printer = getenv("PRINTER");
   if (default_printer == 0)
     default_printer = "To file";
   ReplaceString(&ScopePrinter, GetResource(scopedb, "Scope.printer", default_printer), 0);
   ScopePrintToFile = strcmp(ScopePrinter, "To file") == 0;
 /*
-  ScopePrintToFile = atoi(GetResource(scopedb, "Scope.print_to_file", "0"));
+  ScopePrintToFile = strtol(GetResource(scopedb, "Scope.print_to_file", "0"),NULL,0);
 */
   GetWaveFromDb(scopedb, "Scope.global", 0, 0, &GlobalWave);
   SetWindowTitles();
@@ -2052,12 +2052,12 @@ static void RestoreDatabase(String dbname, Widget w)
     /* PreventResize = TRUE; */
   }
   MenusHeight = 66;
-  Columns = min(max(atoi(GetResource(scopedb, "Scope.columns", "1")), 1), MaxCols);
+  Columns = min(max(strtol(GetResource(scopedb, "Scope.columns", "1"),NULL,0), 1), MaxCols);
   for (c = 0; c < MaxCols; c++) {
     char resource[50];
     sprintf(resource, "Scope.rows_in_column_%d", c + 1);
     resource[strlen(resource) - 1] = '1' + c;
-    Rows[c] = c < Columns ? min(max(atoi(GetResource(scopedb, resource, "1")), 1), MaxRows) : 0;
+    Rows[c] = c < Columns ? min(max(strtol(GetResource(scopedb, resource, "1"),NULL,0), 1), MaxRows) : 0;
     if (Rows[c])
       XtVaSetValues(Pane[c], XtNheight, height, NULL);
     for (r = 0; r < MaxRows; r++) {
@@ -2089,7 +2089,7 @@ static void RestoreDatabase(String dbname, Widget w)
     static char resource[] = "Scope.vpane_n";
     int position;
     resource[12] = '1' + c;
-    position = atoi(GetResource(scopedb, resource, "-1"));
+    position = strtol(GetResource(scopedb, resource, "-1"),NULL,0);
     if (position <= 0 || position >= 1000)
       position = (c + 1) * 1000 / Columns;
     XtVaSetValues(Sash[c], XmNleftPosition, position, NULL);

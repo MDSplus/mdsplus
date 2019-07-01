@@ -27,126 +27,219 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#if defined(__APPLE__) || defined(__MACH__)
+#define _MACOSX;
+#endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
 #define MAXEXPR 16384
 #include <tdishr.h>
+#include <mdsshr.h>
+#include <libroutines.h>
+#include <ctype.h>
 
 static char *history_file=NULL;
 
-static void tdiputs(char *line);
+#define COM
+#define OPC(name,NAME,...) #NAME,
+const char* builtins[] = {
+#include <opcbuiltins.h>
+};
+#undef OPC
+#undef COM
 
-static char *getExpression(FILE *f_in, char *command) {
-  char line_in[MAXEXPR] = {0};
-  char *ans;
-  if ( f_in == NULL ) {
-    ans = readline("");
-  } else {
-    ans = fgets(line_in, MAXEXPR-1, f_in);
-    if (ans) {
-      if (ans[strlen(ans)-1]=='\n')
-	ans[strlen(ans)-1]='\0';
-      ans=strdup(ans);
+static char ** character_names = NULL;
+char *character_name_generator(const char *text, int state){
+  // default to filepath completion if we are doing strings
+#ifndef _MACOSX
+  if (rl_completion_quote_character) return NULL;
+#endif
+  if (!character_names) {
+    void* ctx = NULL;
+    uint16_t i;
+    char req[] = "MDS_PATH:*.*";
+    mdsdsc_t rqd = { sizeof(req), DTYPE_T, CLASS_S, req };
+    mdsdsc_t ans = { 0 , DTYPE_T, CLASS_D, NULL};
+    size_t maxlen = 512, curlen = sizeof(builtins)/sizeof(void*);
+    character_names = malloc(sizeof(void*)*maxlen);
+    memcpy(character_names,builtins,sizeof(builtins));
+    int status;
+    for (;;) {
+      status = LibFindFileRecurseCaseBlind(&rqd,&ans,&ctx);
+      if (STATUS_NOT_OK || !ctx || ans.length<4) break;
+      ans.pointer = realloc(ans.pointer, ans.length+1);ans.pointer[ans.length] = '\0';
+      char *c,*p = ans.pointer;
+      for (;(c=strchr(p,'/'));p=c+1);
+#ifdef _WIN32
+      for (;(c=strchr(p,'\\'));p=c+1);
+#endif
+      size_t mlen = strlen(p);
+      for (i=0 ; i<mlen ; i++)
+	p[i] = tolower(p[i]);
+      if      (strcmp(&p[mlen-3],".py" )==0) mlen-= 3;
+      else if (strcmp(&p[mlen-4],".fun")==0) mlen-= 4;
+      else continue;
+      p[mlen] = '\0';
+      if (curlen>=maxlen) {
+	maxlen *= 2;
+	character_names = realloc(character_names,sizeof(void*)*maxlen);
+      }
+      character_names[curlen++] = strdup(p);
     }
+    character_names = realloc(character_names,sizeof(void*)*(curlen+1));
+    character_names[curlen] = NULL;
+    LibFindFileEnd(&ctx);
+    free(ans.pointer);
   }
-  if (ans && strlen(ans) > 0 && ans[strlen(ans)-1] == '\\' ) {
-    ans[strlen(ans)-1]='\0';
-    ans = getExpression(f_in, ans);
+  static int list_index, len;
+  char *name;
+  if (!state) {
+    list_index = 0;
+    len = strlen(text);
   }
-  if (command) {
-    char *newcmd=strcpy(malloc(strlen(command)+strlen(ans)+1),command);
-    strcat(newcmd,ans);
-    free(command);
-    free(ans);
-    ans = newcmd;
-  }
+  // use case sensitivity to distinguish between builtins and tdi.funs
+  while ((name = character_names[list_index++]))
+    if (strncmp(name, text, len) == 0) {
+      if (name[0] == '$') // constants like $PI
+	return strdup(name);
+      size_t len = strlen(name);
+      char *match = memcpy(malloc(len+2),name,len);
+      match[len]='(';match[len+1]='\0';
+      return match;
+    }
+  return NULL;
+}
+
+char **character_name_completion(const char *text,
+    int start __attribute__((__unused__)), int end __attribute__((__unused__))){
+#ifndef _MACOSX
+  rl_attempted_completion_over = !rl_completion_quote_character;
+#endif
+  return rl_completion_matches(text, character_name_generator);
+}
+
+static char *getExpression(FILE *f_in) {
+  char buf[MAXEXPR] = {0};
+  char  *ans = NULL;
+  size_t alen = 0;
+  int append;
+  do {
+    char  *next;
+    size_t nlen;
+    if ( f_in == NULL ) {
+      next = readline("");
+      if (next)
+	nlen = strlen(next);
+      else nlen = 0;
+    } else {
+      next = fgets(buf, MAXEXPR, f_in);
+      if (next) {
+	nlen = strlen(next);
+	if (next[nlen-1]=='\n')
+	  next[--nlen]='\0';
+	next = strdup(next);
+      } else nlen = 0;
+    }
+    if (nlen<=0) {
+      if (ans) {
+	free(next);
+	next = ans;
+      } else
+	ans = next;
+      break;
+    }
+    append = next[nlen-1] == '\\';
+    if (append) next[--nlen]='\0';
+    if (ans) {
+      if (nlen>0) {
+	ans = realloc(ans,alen+nlen+1);
+	memcpy(ans+alen,next,nlen+1);
+	alen = alen + nlen;
+      }
+      free(next);
+      next = ans;
+    } else {
+      ans = next;
+      alen = nlen;
+    }
+  } while (append);
   return ans;
 }
 
 int main(int argc, char **argv)
 {
   FILE *f_in = NULL;
+  FILE *f_out= NULL;
   int status = 1;
-  static struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
-  static EMPTYXD(ans);
-  static EMPTYXD(output_unit);
-  static DESCRIPTOR(out_unit_stdout, "PUBLIC _OUTPUT_UNIT=*");
-  static DESCRIPTOR(out_unit_other, "PUBLIC _OUTPUT_UNIT=FOPEN($,'w')");
-  static DESCRIPTOR(reset_output_unit, "PUBLIC _OUTPUT_UNIT=$");
+  rl_attempted_completion_function = character_name_completion;
+  rl_completer_quote_characters = "\"'";
+  rl_completer_word_break_characters = " ,;[{(+-*\\/^<>=:&|!?~";
+  struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
+  EMPTYXD(ans);
   char *command=NULL;
-  static DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
-  static DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
+  DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
+  DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
   if (argc > 1) {
     f_in = fopen(argv[1], "r");
-    if (f_in == (FILE *) 0) {
+    if (!f_in) {
       printf("Error opening input file /%s/\n", argv[1]);
-      return 1;
+      exit(1);
     }
   } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
-    char *sep = "\\";
+#define S_SEP_S "%s\\%s"
 #else
     char *home = getenv("HOME");
-    char *sep = "/";
+#define S_SEP_S "%s/%s"
 #endif
     if (home) {
       char *history = ".tditest";
-      history_file = malloc(strlen(history) + strlen(home) + strlen(history) + 1);
-      sprintf(history_file, "%s%s%s", home, sep, history);
+      history_file = malloc(strlen(history) + strlen(home) + 2);
+      sprintf(history_file, S_SEP_S, home, history);
       read_history(history_file);
     }
   }
+  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
   if (argc > 2) {
-    struct descriptor out_d = { 0, DTYPE_T, CLASS_S, 0 };
-    out_d.length = (unsigned short)strlen(argv[2]);
-    out_d.pointer = argv[2];
-    TdiExecute((struct descriptor *)&out_unit_other, &out_d, &output_unit MDS_END_ARG);
+    f_out = fopen(argv[2],"w");
+    if (!f_out) {
+      printf("Error opening input file /%s/\n", argv[2]);
+      exit(1);
+    }
+    output_unit.length  = sizeof(void*);
+    output_unit.dtype   = DTYPE_POINTER;
+    output_unit.pointer = (char*)&f_out;
   } else
-    TdiExecute((struct descriptor *)&out_unit_stdout, &output_unit MDS_END_ARG);
-  while ((command=getExpression(f_in,NULL)) != NULL &&
-	 strcasecmp(command,"exit") != 0 &&
-	 strcasecmp(command,"quit") != 0) {
+    f_out = stdout;
+  while ((command=getExpression(f_in))
+      && strcasecmp(command,"exit") != 0
+      && strcasecmp(command,"quit") != 0   ) {
     int comment = command[0] == '!';
     if (!comment) {
-      TdiExecute((struct descriptor *)&reset_output_unit, &output_unit, &ans MDS_END_ARG);
-      if (f_in) tdiputs(command);
+      if (f_in) {
+	fprintf(f_out,"%s\n",command);
+	fflush(f_out);
+      }
     }
     if (!comment) {
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
-      if (status&1) {
-	add_history(command);
+      add_history(command);
+      if (status&1)
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
-      }
       else
 	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
+      fflush(f_out);
     }
-    if (command) {
-      free(command);
-      command=NULL;
-    }
-  }
-  if (command) {
     free(command);
   }
+  free(command);
+  MdsFree1Dx(&ans,NULL);
   if (history_file) {
     write_history(history_file);
     free(history_file);
   }
   return !(status&1);
-}
-
-static void tdiputs(char *line)
-{
-  static EMPTYXD(ans);
-  static DESCRIPTOR(write_it, "WRITE(_OUTPUT_UNIT,$)");
-  struct descriptor line_d = { 0, DTYPE_T, CLASS_S, 0 };
-  line_d.length = (unsigned short)strlen(line);
-  line_d.pointer = line;
-  if (line[line_d.length - 1] == '\n')
-    line_d.length--;
-  TdiExecute((struct descriptor *)&write_it, &line_d, &ans MDS_END_ARG);
-  fflush(stdout);
 }

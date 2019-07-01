@@ -24,37 +24,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*------------------------------------------------------------------------------
 
-                Name:   Tdi3Iand   
+	        Name:   Tdi3Iand
 
-                Type:   C function
+	        Type:   C function
 
-                Author: TOM FREDIAN
+	        Author: TOM FREDIAN
 
-                Date:   18-FEB-1993
+	        Date:   18-FEB-1993
 
-                Purpose: Bitwise logical operations on two operands 
+	        Purpose: Bitwise logical operations on two operands
 
-        For AB  = 00,01,10,11
-        FALSE   = 0,0,0,0       use 0b
-        AND     = 0,0,0,1       .
-        AND_NOT = 0,0,1,0       .
-        A       = 0,0,1,1       use a
-        NOR_NOT = 0,1,0,0       use AND_NOT(b,a)
-        B       = 0,1,0,1       use b
-        EOR     = 0,1,1,0       (is NEQV)
-        OR      = 0,1,1,1       .
-        NOR     = 1,0,0,0       .
+	For AB  = 00,01,10,11
+	FALSE   = 0,0,0,0       use 0b
+	AND     = 0,0,0,1       .
+	AND_NOT = 0,0,1,0       .
+	A       = 0,0,1,1       use a
+	NOR_NOT = 0,1,0,0       use AND_NOT(b,a)
+	B       = 0,1,0,1       use b
+	EOR     = 0,1,1,0       (is NEQV)
+	OR      = 0,1,1,1       .
+	NOR     = 1,0,0,0       .
 NEOR =  EOR_NOT = 1,0,0,1       (is EQV)
-        NOT B   = 1,0,1,0       use NOT(b)
-        OR_NOT  = 1,0,1,1       .
-        NOT A   = 1,1,0,0       use NOT(a)
-        NAND_NOT= 1,1,0,1       use OR_NOT(b,a)
-        NAND    = 1,1,1,0       .
-        TRUE    = 1,1,1,1       use -1b
+	NOT B   = 1,0,1,0       use NOT(b)
+	OR_NOT  = 1,0,1,1       .
+	NOT A   = 1,1,0,0       use NOT(a)
+	NAND_NOT= 1,1,0,1       use OR_NOT(b,a)
+	NAND    = 1,1,1,0       .
+	TRUE    = 1,1,1,1       use -1b
 
 ------------------------------------------------------------------------------
 
-        Call sequence: 
+	Call sequence:
 
 int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 
@@ -66,7 +66,7 @@ int Tdi3Iand(struct descriptor *in1, struct descriptor *in2, struct descriptor *
    Management.
 ---------------------------------------------------------------------------
 
-        Description:
+	Description:
 
 ------------------------------------------------------------------------------*/
 
@@ -139,9 +139,9 @@ extern void DoubleToWideInt();
     case 0: \
     case 3: while (nout--) {for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
     case 1: while (nout--) {in1p = (float *)in1->pointer;\
-                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
+	                    for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
     case 2: while (nout--) {in2p = (float *)in2->pointer;\
-                            for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
+	                    for (j=0;j<2;j++) { OperateFloatOne(dtype,operator) in1p++; in2p++; }} break; \
   }\
   break;\
 }
@@ -149,8 +149,8 @@ extern void DoubleToWideInt();
 #define OperateDoubleOne(dtype,operator) \
       if (CvtConvertFloat(in1p,dtype,&a,DTYPE_NATIVE_DOUBLE,0) && CvtConvertFloat(in2p,dtype,&b,DTYPE_NATIVE_DOUBLE,0)) \
       { unsigned int a_int[2],b_int[2];\
-        DoubleToWideInt(&a,2,a_int); DoubleToWideInt(&b,2,b_int); \
-        for (i=0;i<2;i++) {*outp++ = not(a_int[i] operator b_int[i]);}\
+	DoubleToWideInt(&a,2,a_int); DoubleToWideInt(&b,2,b_int); \
+	for (i=0;i<2;i++) {*outp++ = not(a_int[i] operator b_int[i]);}\
       }\
       else { *outp++ = (unsigned int)0; *outp++ = (unsigned int)0; }
 
@@ -182,9 +182,9 @@ extern void DoubleToWideInt();
     case 0: \
     case 3: while (nout--) {for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
     case 1: while (nout--) {in1p = (double *)in1->pointer;\
-                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
+	                    for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
     case 2: while (nout--) {in2p = (double *)in2->pointer;\
-                            for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
+	                    for (j=0;j<2;j++) {OperateDoubleOne(dtype,operator) in1p++; in2p++; }} break; \
   }\
   break;\
 }

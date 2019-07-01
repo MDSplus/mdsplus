@@ -28,131 +28,131 @@ public abstract class DeviceComponent extends JPanel
     public int getOffsetNid() {return offsetNid; }
     public void setIdentifier(String identifier)
     {
-        this.identifier = identifier;
+	this.identifier = identifier;
     }
     public String getIdentifier()
     {
-        return identifier;
+	return identifier;
     }
     public void setUpdateIdentifier(String updateIdentifier)
     {
-        this.updateIdentifier = updateIdentifier;
+	this.updateIdentifier = updateIdentifier;
     }
     public String getUpdateIdentifier() {return updateIdentifier; }
 
 
     public void configure(int baseNid, boolean readOnly)
     {
-        configure(baseNid);
+	configure(baseNid);
     }
 
     public void configure(int baseNid)
     {
-        this.baseNid = baseNid;
-        nidData = new NidData(baseNid+offsetNid);
-        baseNidData = new NidData(baseNid);
-        if(mode == DATA)
-        {
-            try {
-                init_data = curr_data = subtree.getData(nidData, Tree.context);
-            }catch(Exception e) {init_data = curr_data = null;}
+	this.baseNid = baseNid;
+	nidData = new NidData(baseNid+offsetNid);
+	baseNidData = new NidData(baseNid);
+	if(mode == DATA)
+	{
+	    try {
+	        init_data = curr_data = subtree.getData(nidData, Tree.context);
+	    }catch(Exception e) {init_data = curr_data = null;}
 
 
 
-        }
-        else init_data = null;
-        //if(mode != DISPATCH)
-        {
-            try {
-                init_on = curr_on = subtree.isOn(nidData, Tree.context);
-            } catch(Exception e)
-            {
-                System.out.println("Error configuring device: " + e);
-            }
-        }
-        if(!is_initialized)
-        {
-            initializeData(curr_data, curr_on);
-            is_initialized = true;
-        }
-        else
-            displayData(curr_data, curr_on);
+	}
+	else init_data = null;
+	//if(mode != DISPATCH)
+	{
+	    try {
+	        init_on = curr_on = subtree.isOn(nidData, Tree.context);
+	    } catch(Exception e)
+	    {
+	        System.out.println("Error configuring device: " + e);
+	    }
+	}
+	if(!is_initialized)
+	{
+	    initializeData(curr_data, curr_on);
+	    is_initialized = true;
+	}
+	else
+	    displayData(curr_data, curr_on);
     }
 
     public void reset()
     {
-        curr_data = init_data;
-        curr_on = init_on;
-        displayData(curr_data, curr_on);
+	curr_data = init_data;
+	curr_on = init_on;
+	displayData(curr_data, curr_on);
     }
 
     public void apply() throws Exception
     {
-        if(!enabled) return;
-        if(mode == DATA)
-        {
-            curr_data = getData();
+	if(!enabled) return;
+	if(mode == DATA)
+	{
+	    curr_data = getData();
 /*            if(curr_data instanceof PathData)
-            {
-                try {
-                    curr_data = subtree.resolve((PathData)curr_data, Tree.context);
-                }catch(Exception exc){}
-            }
+	    {
+	        try {
+	            curr_data = subtree.resolve((PathData)curr_data, Tree.context);
+	        }catch(Exception exc){}
+	    }
   */
-            if(editable && isDataChanged())
-            {
-                try {
-                subtree.putData(nidData, curr_data, Tree.context);
-                } catch(Exception e)
-                {
-                    System.out.println("Error writing device data: " + e);
-                    System.out.println(curr_data);
-                    throw e;
-                }
-            }
-        }
-        if(mode != DISPATCH && supportsState())
-        {
-            curr_on = getState();
-            try {
-                subtree.setOn(nidData, curr_on, Tree.context);
-            }catch(Exception e)
-            {
-                System.out.println("Error writing device state: " + e);
-            }
-        }
+	    if(editable && isDataChanged())
+	    {
+	        try {
+	        subtree.putData(nidData, curr_data, Tree.context);
+	        } catch(Exception e)
+	        {
+	            System.out.println("Error writing device data: " + e);
+	            System.out.println(curr_data);
+	            throw e;
+	        }
+	    }
+	}
+	if(mode != DISPATCH && supportsState())
+	{
+	    curr_on = getState();
+	    try {
+	        subtree.setOn(nidData, curr_on, Tree.context);
+	    }catch(Exception e)
+	    {
+	        System.out.println("Error writing device state: " + e);
+	    }
+	}
     }
 
     public void apply(int currBaseNid) throws Exception
     {
-        NidData currNidData = new NidData(currBaseNid+offsetNid);
-        if(!enabled) return;
-        if(mode == DATA)
-        {
-            curr_data = getData();
-            if(editable)// && isDataChanged())
-            {
-                try {
-                subtree.putData(currNidData, curr_data, Tree.context);
-                } catch(Exception e)
-                {
-                    System.out.println("Error writing device data: " + e);
-                    System.out.println("at node: " + subtree.getInfo(nidData, Tree.context).getFullPath());
-                    System.out.println(curr_data);
-                    throw e;
-                }
-            }
-        }
-        if(mode != DISPATCH && supportsState())
-        {
-            curr_on = getState();
-            try {
-                subtree.setOn(currNidData, curr_on, Tree.context);
-            }catch(Exception e)
-            {
-                System.out.println("Error writing device state: " + e);
-            }
-        }
+	NidData currNidData = new NidData(currBaseNid+offsetNid);
+	if(!enabled) return;
+	if(mode == DATA)
+	{
+	    curr_data = getData();
+	    if(editable)// && isDataChanged())
+	    {
+	        try {
+	        subtree.putData(currNidData, curr_data, Tree.context);
+	        } catch(Exception e)
+	        {
+	            System.out.println("Error writing device data: " + e);
+	            System.out.println("at node: " + subtree.getInfo(nidData, Tree.context).getFullPath());
+	            System.out.println(curr_data);
+	            throw e;
+	        }
+	    }
+	}
+	if(mode != DISPATCH && supportsState())
+	{
+	    curr_on = getState();
+	    try {
+	        subtree.setOn(currNidData, curr_on, Tree.context);
+	    }catch(Exception e)
+	    {
+	        System.out.println("Error writing device state: " + e);
+	    }
+	}
     }
 
 
@@ -160,25 +160,25 @@ public abstract class DeviceComponent extends JPanel
 
     protected void redisplay()
     {
-        Container curr_container;
-        Component curr_component = this;
-        do {
-            curr_container = curr_component.getParent();
-            curr_component = curr_container;
-        }while ((curr_container != null) && !(curr_container instanceof Window));
+	Container curr_container;
+	Component curr_component = this;
+	do {
+	    curr_container = curr_component.getParent();
+	    curr_component = curr_container;
+	}while ((curr_container != null) && !(curr_container instanceof Window));
        /* if(curr_container != null)
-        {
-            ((Window)curr_container).pack();
-            ((Window)curr_container).setVisible(true);
-        }*/
+	{
+	    ((Window)curr_container).pack();
+	    ((Window)curr_container).setVisible(true);
+	}*/
     }
 
 //Event handling in DW setup
     DeviceSetup master = null;
     public String getUpdateId(DeviceSetup master)
     {
-        this.master = master;
-        return updateIdentifier;
+	this.master = master;
+	return updateIdentifier;
     }
     public void fireUpdate(String updateId, Data newExpr){}
     //To be subclassed
@@ -197,11 +197,11 @@ public abstract class DeviceComponent extends JPanel
     protected boolean supportsState(){return false;}
     public void setEnable()
     {
-        enabled = true;
+	enabled = true;
     }
     public void setDisable()
     {
-        enabled = false;
+	enabled = false;
     }
 
     public void reportDataChanged(Object data)
@@ -220,25 +220,25 @@ public abstract class DeviceComponent extends JPanel
     protected void stateChanged(int offsetNid, boolean state){}
     protected boolean isDataChanged()
     {
-        return true;
+	return true;
     }
     protected boolean isChanged()
     {
-        try
-        {
-            String initDecompiled = Tree.dataToString(init_data);
-            String currDecompiled = Tree.dataToString(curr_data);
-            //System.out.println("Comparing " + initDecompiled + "  " + currDecompiled);
-            return! (initDecompiled.equals(currDecompiled));
-        }
-        catch (Exception exc)
-        {
-            return false;
-        }
+	try
+	{
+	    String initDecompiled = Tree.dataToString(init_data);
+	    String currDecompiled = Tree.dataToString(curr_data);
+	    //System.out.println("Comparing " + initDecompiled + "  " + currDecompiled);
+	    return! (initDecompiled.equals(currDecompiled));
+	}
+	catch (Exception exc)
+	{
+	    return false;
+	}
     }
     protected boolean isStateChanged()
     {
-        return !(init_on == curr_on);
+	return !(init_on == curr_on);
     }
 
     //Get an object incuding all related info (will be data except for DeviceWaveform
@@ -246,17 +246,17 @@ public abstract class DeviceComponent extends JPanel
 
     public void setHighlight(boolean isHighlighted)
     {
-        this.isHighlighted = isHighlighted;
-        Component currParent, currGrandparent = this;
-        do {
-            currParent = currGrandparent;
-            currGrandparent = currParent.getParent();
-            if(currGrandparent instanceof JTabbedPane)
-            {
-                int idx = ((JTabbedPane)currGrandparent).indexOfComponent(currParent);
-                ((JTabbedPane)currGrandparent).setForegroundAt(idx, isHighlighted?Color.red:Color.black);
-            }
-        }while(!(currGrandparent instanceof DeviceSetup));
+	this.isHighlighted = isHighlighted;
+	Component currParent, currGrandparent = this;
+	do {
+	    currParent = currGrandparent;
+	    currGrandparent = currParent.getParent();
+	    if(currGrandparent instanceof JTabbedPane)
+	    {
+	        int idx = ((JTabbedPane)currGrandparent).indexOfComponent(currParent);
+	        ((JTabbedPane)currGrandparent).setForegroundAt(idx, isHighlighted?Color.red:Color.black);
+	    }
+	}while(!(currGrandparent instanceof DeviceSetup));
     }
 
 }

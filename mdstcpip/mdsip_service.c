@@ -177,7 +177,7 @@ static int InstallService()
 //    sprintf(cmd, "%%MDSPLUS_DIR%%\\%s\\mdsip_service.exe --port=%s --hostfile=\"%s\" %s", dirname,
 //	    GetPortname(), GetHostfile(), opts);
     sprintf(cmd, "mdsip_service.exe --port=%s --hostfile=\"%s\" %s",
-          GetPortname(), GetHostfile(), opts);
+	  GetPortname(), GetHostfile(), opts);
     hService =
 	CreateService(hSCManager, ServiceName(1), ServiceName(0), SERVICE_ALL_ACCESS,
 		      SERVICE_WIN32_OWN_PROCESS, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, cmd,
@@ -213,7 +213,7 @@ static short GetPort()
   short port;
   char *name = GetPortname();
   struct servent *sp;
-  port = htons((short)atoi(name));
+  port = htons((short)strtol(name,NULL,0));
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (sp == NULL) {
@@ -242,7 +242,6 @@ static int ServiceMain(int argc, char **argv)
   SOCKET s;
   int status;
   static struct sockaddr_in sin;
-  int tablesize = FD_SETSIZE;
   extern fd_set FdActive();
   struct timeval timeout = { 1, 0 };
   int error_count = 0;
@@ -283,8 +282,8 @@ static int ServiceMain(int argc, char **argv)
     }
     FD_ZERO(&fdactive);
     FD_SET(s, &fdactive);
-    for (readfds = fdactive; !shut; readfds = fdactive) {
-      if (select(tablesize, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
+    for (readfds=fdactive; !shut; readfds=fdactive) {
+      if (select(s+1, &readfds, 0, 0, &timeout) != SOCKET_ERROR) {
 	error_count = 0;
 	if (FD_ISSET(s, &readfds)) {
 	  int len = sizeof(struct sockaddr_in);

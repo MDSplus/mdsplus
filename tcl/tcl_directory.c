@@ -26,6 +26,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <tdishr.h>
+#include <mds_stdarg.h>
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -235,8 +237,7 @@ EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char *
       mdsdclFlushOutput(*output);
     }
     TreeFindNodeEnd(&ctx1);
-    if (nodnam)
-      free(nodnam);
+    free(nodnam);
   }
   sprintf(msg, "%s\nTotal of %d node%s.\n", full ? "" : "\n", found,
 	  ((found > 1) || (found == 0)) ? "s" : "");
@@ -343,7 +344,7 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
       }
       if (nciFlags & NciM_COMPRESS_SEGMENTS)
 	strcat(msg, "compress segments\n");
-	
+
       if (strlen(msg) > 0) {
 	tclAppend(output, "      ");
 	tclAppend(output, msg);
@@ -387,6 +388,21 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
 	tclAppend(output, msg);
 	free(pathnam);
       }
+      DESCRIPTOR(expression,"DevHelp($)");
+      EMPTYXD(help_d);
+      struct descriptor nid_d={4, DTYPE_NID, CLASS_S, (char *)&nid};
+      int stat=TdiExecute((struct descriptor *)&expression, &nid_d, &help_d MDS_END_ARG);
+      if (stat & 1 && help_d.pointer != NULL) {
+	char *help=MdsDescrToCstring(help_d.pointer);
+	if (strlen(help) > 0) {
+	  tclAppend(output,"      Device Help: ");
+	  tclAppend(output,help);
+	  tclAppend(output,"\n");
+	}
+	free(help);
+      }
+      MdsFree1Dx(&help_d,0);
+
     }
   }
   return status;

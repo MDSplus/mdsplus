@@ -1349,10 +1349,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111221.add(deviceChoice2111212, null);
     jPanel111221.add(deviceChoice21111221, null);
     jPanel121120.add(deviceChannel1220,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1220.add(jPanel111220, BorderLayout.EAST);
     jPanel121120.add(deviceChannel125,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel125.add(jPanel111221, BorderLayout.EAST);
     jPanel111220.add(deviceChoice11112112, null);
     jPanel111220.add(deviceChoice111320, null);
@@ -1364,10 +1364,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112215.add(deviceChoice2111219, null);
     jPanel1112215.add(deviceChoice211112215, null);
     jPanel121127.add(deviceChannel12212,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12212.add(jPanel1112214, BorderLayout.EAST);
     jPanel121127.add(deviceChannel12213,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12213.add(jPanel1112215, BorderLayout.EAST);
     jPanel1112214.add(deviceChoice11112116, null);
     jPanel1112214.add(deviceChoice11132111, null);
@@ -1379,10 +1379,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112213.add(deviceChoice2111218, null);
     jPanel1112213.add(deviceChoice211112213, null);
     jPanel121126.add(deviceChannel12210,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12210.add(jPanel1112212, BorderLayout.EAST);
     jPanel121126.add(deviceChannel12211,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12211.add(jPanel1112213, BorderLayout.EAST);
     jPanel1112212.add(deviceChoice11112113, null);
     jPanel1112212.add(deviceChoice1113218, null);
@@ -1394,10 +1394,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112211.add(deviceChoice2111217, null);
     jPanel1112211.add(deviceChoice211112211, null);
     jPanel121125.add(deviceChannel1228,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1228.add(jPanel1112210, BorderLayout.EAST);
     jPanel121125.add(deviceChannel1229,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1229.add(jPanel1112211, BorderLayout.EAST);
     jPanel1112210.add(deviceChoice11112117, null);
     jPanel1112210.add(deviceChoice1113215, null);
@@ -1409,10 +1409,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111229.add(deviceChoice2111216, null);
     jPanel111229.add(deviceChoice21111229, null);
     jPanel121124.add(deviceChannel1226,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1226.add(jPanel111228, BorderLayout.EAST);
     jPanel121124.add(deviceChannel1227,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1227.add(jPanel111229, BorderLayout.EAST);
     jPanel111228.add(deviceChoice11112114, null);
     jPanel111228.add(deviceChoice1113212, null);
@@ -1424,10 +1424,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111227.add(deviceChoice2111215, null);
     jPanel111227.add(deviceChoice21111227, null);
     jPanel121123.add(deviceChannel1224,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1224.add(jPanel111226, BorderLayout.EAST);
     jPanel121123.add(deviceChannel1225,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1225.add(jPanel111227, BorderLayout.EAST);
     jPanel111226.add(deviceChoice11112118, null);
     jPanel111226.add(deviceChoice111329, null);
@@ -1439,10 +1439,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111225.add(deviceChoice2111214, null);
     jPanel111225.add(deviceChoice21111225, null);
     jPanel121122.add(deviceChannel1222,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1222.add(jPanel111224, BorderLayout.EAST);
     jPanel121122.add(deviceChannel1223,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1223.add(jPanel111225, BorderLayout.EAST);
     jPanel111224.add(deviceChoice11112115, null);
     jPanel111224.add(deviceChoice111326, null);
@@ -1454,10 +1454,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111223.add(deviceChoice2111213, null);
     jPanel111223.add(deviceChoice21111223, null);
     jPanel121121.add(deviceChannel1221,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1221.add(jPanel111222, BorderLayout.EAST);
     jPanel121121.add(deviceChannel126,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel126.add(jPanel111223, BorderLayout.EAST);
     jPanel111222.add(deviceChoice11112119, null);
     jPanel111222.add(deviceChoice111323, null);
@@ -1470,10 +1470,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel11126.add(deviceChoice211120, null);
     jPanel11126.add(deviceChoice2111121, null);
     jPanel12118.add(deviceChannel127,     new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel127.add(jPanel11127, BorderLayout.EAST);
     jPanel12118.add(deviceChannel124,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 0), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 0), -24, -10));
     deviceChannel124.add(jPanel11126, BorderLayout.EAST);
     jPanel11127.add(deviceChoice111120, null);
     jPanel11127.add(deviceChoice11130, null);
@@ -1486,10 +1486,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112119.add(deviceChoice2111211, null);
     jPanel1112119.add(deviceChoice211112113, null);
     jPanel121119.add(deviceChannel12118,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12118.add(jPanel1112118, BorderLayout.EAST);
     jPanel121119.add(deviceChannel12119,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12119.add(jPanel1112119, BorderLayout.EAST);
     jPanel1112118.add(deviceChoice11112111, null);
     jPanel1112118.add(deviceChoice11131113, null);
@@ -1501,10 +1501,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112117.add(deviceChoice2111210, null);
     jPanel1112117.add(deviceChoice211112111, null);
     jPanel121118.add(deviceChannel12116,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12116.add(jPanel1112116, BorderLayout.EAST);
     jPanel121118.add(deviceChannel12117,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12117.add(jPanel1112117, BorderLayout.EAST);
     jPanel1112116.add(deviceChoice11112110, null);
     jPanel1112116.add(deviceChoice11131110, null);
@@ -1516,10 +1516,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112115.add(deviceChoice211129, null);
     jPanel1112115.add(deviceChoice21111219, null);
     jPanel121117.add(deviceChannel12114,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12114.add(jPanel1112114, BorderLayout.EAST);
     jPanel121117.add(deviceChannel12115,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12115.add(jPanel1112115, BorderLayout.EAST);
     jPanel1112114.add(deviceChoice1111225, null);
     jPanel1112114.add(deviceChoice1113117, null);
@@ -1531,10 +1531,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112113.add(deviceChoice211128, null);
     jPanel1112113.add(deviceChoice21111217, null);
     jPanel121116.add(deviceChannel12112,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12112.add(jPanel1112112, BorderLayout.EAST);
     jPanel121116.add(deviceChannel12113,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12113.add(jPanel1112113, BorderLayout.EAST);
     jPanel1112112.add(deviceChoice1111221, null);
     jPanel1112112.add(deviceChoice1113114, null);
@@ -1546,10 +1546,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel1112111.add(deviceChoice211127, null);
     jPanel1112111.add(deviceChoice21111215, null);
     jPanel121115.add(deviceChannel12110,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel12110.add(jPanel1112110, BorderLayout.EAST);
     jPanel121115.add(deviceChannel12111,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -22, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -22, -10));
     deviceChannel12111.add(jPanel1112111, BorderLayout.EAST);
     jPanel1112110.add(deviceChoice1111226, null);
     jPanel1112110.add(deviceChoice1113111, null);
@@ -1561,10 +1561,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111219.add(deviceChoice211126, null);
     jPanel111219.add(deviceChoice21111213, null);
     jPanel121114.add(deviceChannel1218,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1218.add(jPanel111218, BorderLayout.EAST);
     jPanel121114.add(deviceChannel1219,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1219.add(jPanel111219, BorderLayout.EAST);
     jPanel111218.add(deviceChoice1111222, null);
     jPanel111218.add(deviceChoice111318, null);
@@ -1576,10 +1576,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111217.add(deviceChoice211125, null);
     jPanel111217.add(deviceChoice21111211, null);
     jPanel121113.add(deviceChannel1216,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1216.add(jPanel111216, BorderLayout.EAST);
     jPanel121113.add(deviceChannel1217,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1217.add(jPanel111217, BorderLayout.EAST);
     jPanel111216.add(deviceChoice1111227, null);
     jPanel111216.add(deviceChoice111315, null);
@@ -1591,10 +1591,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111215.add(deviceChoice211124, null);
     jPanel111215.add(deviceChoice2111129, null);
     jPanel121112.add(deviceChannel1214,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1214.add(jPanel111214, BorderLayout.EAST);
     jPanel121112.add(deviceChannel1215,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1215.add(jPanel111215, BorderLayout.EAST);
     jPanel111214.add(deviceChoice1111223, null);
     jPanel111214.add(deviceChoice111312, null);
@@ -1606,10 +1606,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111213.add(deviceChoice211123, null);
     jPanel111213.add(deviceChoice2111127, null);
     jPanel121111.add(deviceChannel1212,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1212.add(jPanel111212, BorderLayout.EAST);
     jPanel121111.add(deviceChannel1213,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1213.add(jPanel111213, BorderLayout.EAST);
     jPanel111212.add(deviceChoice1111228, null);
     jPanel111212.add(deviceChoice11139, null);
@@ -1621,10 +1621,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel111211.add(deviceChoice211122, null);
     jPanel111211.add(deviceChoice2111125, null);
     jPanel121110.add(deviceChannel1210,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1210.add(jPanel111210, BorderLayout.EAST);
     jPanel121110.add(deviceChannel1211,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel1211.add(jPanel111211, BorderLayout.EAST);
     jPanel111210.add(deviceChoice1111224, null);
     jPanel111210.add(deviceChoice11136, null);
@@ -1636,10 +1636,10 @@ public class RFXANSALDOSetup extends DeviceSetup {
     jPanel11129.add(deviceChoice211121, null);
     jPanel11129.add(deviceChoice2111123, null);
     jPanel12119.add(deviceChannel128,   new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel128.add(jPanel11128, BorderLayout.EAST);
     jPanel12119.add(deviceChannel129,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
+	    ,GridBagConstraints.NORTH, GridBagConstraints.NONE, new Insets(2, 100, 6, 110), -24, -10));
     deviceChannel129.add(jPanel11129, BorderLayout.EAST);
     jPanel11128.add(deviceChoice1111229, null);
     jPanel11128.add(deviceChoice11133, null);

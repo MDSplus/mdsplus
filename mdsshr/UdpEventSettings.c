@@ -291,7 +291,7 @@ EXPORT void InitializeEventSettings()
 	    if (settings[i] == NULL) {
 	      settings[i] = getProperty(doc, "UdpEvents", xml_setting[i]);
 	      if (settings[i] == NULL)
-	        missing = 1;
+		missing = 1;
 #ifdef DEBUG
 	      else
 		fprintf(stderr," %s=\"%s\"",environ_var[i],settings[i]);

@@ -23,20 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Decompile.C
-        Convert expression into text.
-                status = TdiDecompile(&compiled_dsc, [&maximum_elements_dsc], &out_xd);
+	Convert expression into text.
+	        status = TdiDecompile(&compiled_dsc, [&maximum_elements_dsc], &out_xd);
 
-        Limitation: 65535 bytes of text.
-        based on work by Josh Stillerman 28-DEC-1988
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1993,1994
+	Limitation: 65535 bytes of text.
+	based on work by Josh Stillerman 28-DEC-1988
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1993,1994
 */
 
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
 #define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
-
-extern unsigned short OpcDecompile;
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -59,13 +57,12 @@ extern int TdiGetLong();
 extern int TdiDecompileDeindent();
 extern int Tdi0Decompile_R();
 extern int TdiConvert();
-extern int TdiEvaluate();
+extern int Tdi1Evaluate();
 extern int TdiTrace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
-int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
+EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
@@ -92,9 +89,9 @@ int Tdi1Decompile(int opcode __attribute__ ((unused)), int narg, struct descript
 }
 
 /*-------------------------------------------------------
-        Decompile an expression into text, recursively.
-        Uses dynamic string initialized and freed outside.
-        Precedence is used by function evaluation.
+	Decompile an expression into text, recursively.
+	Uses dynamic string initialized and freed outside.
+	Precedence is used by function evaluation.
 */
 #define P_ARG   88
 //STATIC_CONSTANT unsigned char htab[16] =
@@ -127,7 +124,7 @@ int TdiSingle(int val, struct descriptor_d *out_ptr)
 }
 
 /*-------------------------------------------------------
-        Handle arrays and arrays of pointers to descriptors.
+	Handle arrays and arrays of pointers to descriptors.
 */
 STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 			      int level, char **item_ptr_ptr, struct descriptor_d *out_ptr)
@@ -137,8 +134,9 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
       a_ptr->aflags.coeff ? a_ptr->m[level] : (int)a_ptr->arsize /
       max((unsigned int)1, a_ptr->length);
   int j, status;
-
-  status = StrAppend(out_ptr, (struct descriptor *)&LEFT_BRACKET);
+  if (in_ptr->class != CLASS_APD)
+     status = StrAppend(out_ptr, (struct descriptor *)&LEFT_BRACKET);
+  else status = MDSplusSUCCESS;
   if (level > 0)
     for (j = n; --j >= 0 && STATUS_OK;) {
       status = tdi_vector(in_ptr, level - 1, item_ptr_ptr, out_ptr);
@@ -172,19 +170,23 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 	  status = Tdi0Decompile(&one, P_ARG, out_ptr);
 	  break;
 	}
-      if (++j < n && STATUS_OK)
-	status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+      if (++j < n && STATUS_OK) {
+	if (j&1 || a_ptr->dtype != DTYPE_DICTIONARY)
+	  status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+	else
+	  status = StrAppend(out_ptr, (struct descriptor *)&COMMA_SPACE);
+      }
     }
     *item_ptr_ptr = pitem;
   }
-  if STATUS_OK
+  if (STATUS_OK && in_ptr->class != CLASS_APD)
     status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_BRACKET);
   return status;
 }
 
 	/******************
-        Squeeze out spaces.
-        ******************/
+	Squeeze out spaces.
+	******************/
 STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
 {
   int n = cdsc_ptr->length;
@@ -200,8 +202,8 @@ STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
 }
 
 	/*****************************
-        Neater floating point numbers.
-        *****************************/
+	Neater floating point numbers.
+	*****************************/
 STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descriptor *pdc)
 {
   int status, sum, j, shift;
@@ -209,7 +211,7 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
   char *plim = pwas + pdc->length;
   char *pdec, *plast, *pexp, *ppass;
 
-  status = TdiConvert(pfloat, pdc MDS_END_ARG);
+  status = TdiConvert(pfloat, pdc);
   if STATUS_NOT_OK
     return status;
 
@@ -217,8 +219,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
   while (pwas < plim) {
     ppass = pwas;
 		/****************************
-                Skip spaces and leading zero.
-                ****************************/
+	        Skip spaces and leading zero.
+	        ****************************/
     while (*pwas == ' ')
       pwas++;
     if (*pwas == '-')
@@ -250,8 +252,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
     if (!pdec)
       pdec = pwas;
 		/*********************************
-                Zero and $ROPRAND should be quick.
-                *********************************/
+	        Zero and $ROPRAND should be quick.
+	        *********************************/
     if (plast == pdec) {
       if (*pdec == '$')
 	for (; pwas < plim && *pwas != ',';)
@@ -273,8 +275,8 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       continue;
     }
 		/*******************
-                We hit the exponent.
-                *******************/
+	        We hit the exponent.
+	        *******************/
     pexp = pwas;
     switch (*pwas) {
     case 'E':
@@ -308,12 +310,12 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       return TdiNOT_NUMBER;
     }
 		/*************************
-                Make a number of exponent.
-                Adjust by thousands.
-                .1e6    100.e3          .1e3    100.e0          .1e0    .1e0 special    .1e-3   100.e-6
-                .1e5    10.e3           .1e2    10.e0           .1e-1   10.e-3          .1e-4   10.e-6
-                .1e4    1000.e0 special .1e1    1.e0            .1e-2   1.e-3           .1e-5   1.e-6
-                *************************/
+	        Make a number of exponent.
+	        Adjust by thousands.
+	        .1e6    100.e3          .1e3    100.e0          .1e0    .1e0 special    .1e-3   100.e-6
+	        .1e5    10.e3           .1e2    10.e0           .1e-1   10.e-3          .1e-4   10.e-6
+	        .1e4    1000.e0 special .1e1    1.e0            .1e-2   1.e-3           .1e-5   1.e-6
+	        *************************/
     while (pwas < plim && *pwas == '0')
       *pwas++ = ' ';
     sum = 0;
@@ -330,11 +332,11 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       sum = sum - shift;
     }
 		/************************
-                Shift the decimal point.
-                Remove trailing zeroes.
-                Kill decimal at exponent.
-                Remove E0 (F_Floating).
-                ************************/
+	        Shift the decimal point.
+	        Remove trailing zeroes.
+	        Kill decimal at exponent.
+	        Remove E0 (F_Floating).
+	        ************************/
     for (j = shift; --j >= 0; pdec++)
       *pdec = *(pdec + 1);
     if (plast > pdec)
@@ -380,16 +382,16 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };
-  int status = MDSplusSUCCESS, j, dtype, n1, n2;
+  int status = MDSplusSUCCESS, j, n1, n2;
   char n1c;
   cdsc.pointer = c0;
 	/******************
-        Watch null pointer.
-        ******************/
+	Watch null pointer.
+	******************/
   if (!in_ptr)
     return StrAppend(out_ptr, (struct descriptor *)&STAR);
 
-  dtype = in_ptr->dtype;
+  dtype_t dtype = (dtype_t)in_ptr->dtype;
   switch (in_ptr->class) {
   default:
     status = StrAppend(out_ptr, (struct descriptor *)&CLASS);
@@ -408,8 +410,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	status = TdiSingle(dtype, out_ptr);
       break;
 		/****************************************
-                Printing characters are added as a block.
-                ****************************************/
+	        Printing characters are added as a block.
+	        ****************************************/
     case DTYPE_T:
       {
 	DESCRIPTOR(QUOTE, "\"");
@@ -431,8 +433,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	  else
 	    switch (*cptr) {
 			/******************
-                        Special characters.
-                        ******************/
+	                Special characters.
+	                ******************/
 	    case '\\':
 	      c0[1] = '\\';
 	      break;		/*backslash */
@@ -462,8 +464,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	      if (*cptr >= ' ' && *cptr <= '~')
 		continue;	/*most printing codes */
 			/********************************
-                        Octal form of control characters.
-                        ********************************/
+	                Octal form of control characters.
+	                ********************************/
 	      cdsc.length = 4;
 	      c0[1] = (char)(((*cptr >> 6) & 7) | '0');
 	      c0[2] = (char)(((*cptr >> 3) & 7) | '0');
@@ -487,7 +489,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 
     case DTYPE_L:
       /*cdsc.length = 11; */
-      status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
+      status = TdiConvert(in_ptr, &cdsc);
       if STATUS_OK
 	status = noblanks(&cdsc);
       if STATUS_OK
@@ -502,17 +504,15 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_QU:
     case DTYPE_O:
     case DTYPE_OU:
-      cdsc.length = (unsigned short)(in_ptr->length * 2.4 + 1.6);
-      status = TdiConvert(in_ptr, &cdsc MDS_END_ARG);
+      cdsc.length = (unsigned short)(TdiREF_CAT[dtype].digits);
+      status = TdiConvert(in_ptr, &cdsc);
       if STATUS_OK
 	status = noblanks(&cdsc);
       if STATUS_OK {
 	struct descriptor sdsc = { 0, DTYPE_T, CLASS_S, 0 };
 	sdsc.length = (unsigned short)strlen(TdiREF_CAT[dtype].name);
 	sdsc.pointer = TdiREF_CAT[dtype].name;
-	status =
-	    StrConcat((struct descriptor *)out_ptr,
-		      (struct descriptor *)out_ptr, &cdsc, &sdsc MDS_END_ARG);
+	status = StrConcat((struct descriptor *)out_ptr,(struct descriptor *)out_ptr, &cdsc, &sdsc MDS_END_ARG);
       }
       break;
     case DTYPE_D:
@@ -521,41 +521,34 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_H:
     case DTYPE_FS:
     case DTYPE_FT:
-      cdsc.length = (unsigned short)((in_ptr->length - 1) * 8 * .30103 + 6.8);
+      cdsc.length = (unsigned short)(TdiREF_CAT[dtype].digits);
       status = closeup((char)TdiREF_CAT[dtype].fname[0], in_ptr, &cdsc);
       if STATUS_OK
 	status = StrAppend(out_ptr, (struct descriptor *)&cdsc);
       break;
-
     case DTYPE_DC:
+      dtype = DTYPE_D;
+      goto complex;
     case DTYPE_FC:
+      dtype = DTYPE_F;
+      goto complex;
     case DTYPE_GC:
+      dtype = DTYPE_G;
+      goto complex;
     case DTYPE_HC:
+      dtype = DTYPE_H;
+      goto complex;
     case DTYPE_FSC:
+      dtype = DTYPE_FS;
+      goto complex;
     case DTYPE_FTC:
       {
+      dtype = DTYPE_FT;
+      goto complex;
+complex: ;
 	struct descriptor temp = *in_ptr;
+	temp.dtype = dtype;
 	StrAppend(out_ptr, (struct descriptor *)&CMPLX);
-	switch (temp.dtype) {
-	case DTYPE_DC:
-	  temp.dtype = DTYPE_D;
-	  break;
-	case DTYPE_FC:
-	  temp.dtype = DTYPE_F;
-	  break;
-	case DTYPE_GC:
-	  temp.dtype = DTYPE_G;
-	  break;
-	case DTYPE_HC:
-	  temp.dtype = DTYPE_H;
-	  break;
-	case DTYPE_FSC:
-	  temp.dtype = DTYPE_FS;
-	  break;
-	case DTYPE_FTC:
-	  temp.dtype = DTYPE_FT;
-	  break;
-	}
 	temp.length /= 2;
 	Tdi0Decompile(&temp, P_ARG, out_ptr);
 	StrAppend(out_ptr, (struct descriptor *)&COMMA);
@@ -570,8 +563,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       break;
 
 		/*****************
-                TDI special types.
-                *****************/
+	        TDI special types.
+	        *****************/
     case DTYPE_MISSING:
       if (in_ptr->class != CLASS_XD)
 	status = StrAppend(out_ptr, (struct descriptor *)&MISSING);
@@ -583,8 +576,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       break;
 
 		/*********
-                MDS types.
-                *********/
+	        MDS types.
+	        *********/
     case DTYPE_NID:
       {
 	char *path = TreeGetMinimumPath(0, *(int *)in_ptr->pointer);
@@ -598,9 +591,9 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       break;
     case DTYPE_PATH:
 			/*****************************************************
-                        Convert forward refs to nid to reduce to minimum path.
-                        Then back to string. If it fails, use path as is.
-                        *****************************************************/
+	                Convert forward refs to nid to reduce to minimum path.
+	                Then back to string. If it fails, use path as is.
+	                *****************************************************/
       {
 	int nid;
 	char *path = MdsDescrToCstring((struct descriptor *)in_ptr);
@@ -628,10 +621,10 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     case DTYPE_POINTER:{
 	char outstr[11+2*in_ptr->length];
 	struct descriptor out = { 0, DTYPE_T, CLASS_S, outstr };
-        if (in_ptr->length==4)
-          out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
-        else
-          out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer);
+	if (in_ptr->length==4)
+	  out.length = sprintf(outstr, "Pointer(%#"PRIx32")", *(uint32_t *)in_ptr->pointer);
+	else
+	  out.length = sprintf(outstr, "Pointer(%#"PRIx64")", *(uint64_t *)in_ptr->pointer);
 	status = StrAppend(out_ptr, (struct descriptor *)&out);
 	break;
       }
@@ -639,19 +632,19 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     break;
 
 	/***********
-        MDS records.
-        ***********/
+	MDS records.
+	***********/
   case CLASS_R:
     status = Tdi0Decompile_R(in_ptr, prec, out_ptr);
     break;
 
 	/**********************************
-        Compressed data should be expanded.
-        **********************************/
+	Compressed data should be expanded.
+	**********************************/
   case CLASS_CA:
     {
       struct descriptor_xd tmp = EMPTY_XD;
-      status = TdiEvaluate(in_ptr, &tmp MDS_END_ARG);
+      status = Tdi1Evaluate(OPC_EVALUATE, 1, &in_ptr, &tmp);
       if STATUS_OK
 	status = Tdi0Decompile(tmp.pointer, prec, out_ptr);
       MdsFree1Dx(&tmp, NULL);
@@ -659,8 +652,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
     break;
 
 	/******************
-        Arrays in brackets.
-        ******************/
+	Arrays in brackets.
+	******************/
   case CLASS_APD:
   case CLASS_A:
     {
@@ -672,8 +665,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       int more = count > TdiDECOMPILE_MAX || a_ptr->arsize >= 32768;
 
 		/**************************************
-                Special data types made easier to read.
-                **************************************/
+	        Special data types made easier to read.
+	        **************************************/
       switch (dtype) {
       case DTYPE_BU:
 	bptr = "Byte_Unsigned(";
@@ -690,6 +683,15 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       case DTYPE_W:
 	bptr = "Word(";
 	break;
+      case DTYPE_LIST:
+	bptr = "List(";
+	break;
+      case DTYPE_TUPLE:
+	bptr = "Tuple(";
+	break;
+      case DTYPE_DICTIONARY:
+	bptr = "Dict(";
+	break;
       default:
 	bptr = 0;
 	break;
@@ -700,12 +702,18 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 	text.pointer = bptr;
 	status = StrAppend(out_ptr, (struct descriptor *)&text);
       }
-
+      if (in_ptr->class == CLASS_APD) {
+	if (count>0 && STATUS_OK){
+	  if (in_ptr->dtype == DTYPE_DICTIONARY)
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA_SPACE);
+	  else
+	    status = StrAppend(out_ptr, (struct descriptor *)&COMMA);
+	}
+      }
 		/*****************************************
-                Specify bounds of array. SET_RANGE(l:u,...
-                *****************************************/
-      if (a_ptr->aflags.bounds) {
-	more = 1;
+	        Specify bounds of array. SET_RANGE(l:u,...
+	        *****************************************/
+      else if (a_ptr->aflags.bounds) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
 	  if STATUS_OK
@@ -720,8 +728,8 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       }
 
 		/******************************************
-                Specify shape of array. SET_RANGE(size, ...
-                ******************************************/
+	        Specify shape of array. SET_RANGE(size, ...
+	        ******************************************/
       else if (more) {
 	status = StrAppend(out_ptr, (struct descriptor *)&SET_RANGE);
 	for (j = 0; j < dimct; ++j) {
@@ -733,27 +741,37 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
       }
 
 		/*********************************
-                Specify data of array. [value,...]
-                *********************************/
-      if (count > TdiDECOMPILE_MAX) {
-	struct descriptor one = *in_ptr;
-	one.class = CLASS_S;
-	if STATUS_OK
-	  status = Tdi0Decompile(&one, P_ARG, out_ptr);
+	        Specify data of array. [value,...]
+	        *********************************/
+      if (more) {
+	if STATUS_OK {
+	  if (in_ptr->class == CLASS_APD) {
+	    status = Tdi0Decompile(((mdsdsc_t**)in_ptr->pointer)[0], P_ARG, out_ptr);
+	    if (in_ptr->dtype == DTYPE_DICTIONARY && STATUS_OK) {
+	      status = StrAppend(out_ptr, (mdsdsc_t*)&COMMA);
+	      if STATUS_OK
+		status = Tdi0Decompile(((mdsdsc_t**)in_ptr->pointer)[1], P_ARG, out_ptr);
+	    }
+	  } else {
+	    struct descriptor one = *in_ptr;
+	    one.class = CLASS_S;
+	    status = Tdi0Decompile(&one, P_ARG, out_ptr);
+	  }
+	}
 	if STATUS_OK
 	  status = StrAppend(out_ptr, (struct descriptor *)&MORE);
       } else {
 	char *pitem = (char *)a_ptr->pointer;
 	status = tdi_vector((struct descriptor *)a_ptr, dimct - 1, &pitem, out_ptr);
       }
-      if (more && STATUS_OK)
+      if ((more || a_ptr->aflags.bounds) && in_ptr->class != CLASS_APD && STATUS_OK)
 	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
       if (bptr && STATUS_OK)
 	status = StrAppend(out_ptr, (struct descriptor *)&RIGHT_PAREN);
     }
     break;
-  }				/*switch class */
+  }	/*switch class */
   if STATUS_NOT_OK
-    TdiTrace(OpcDecompile, 1, in_ptr, out_ptr);
+    TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
   return status;
 }

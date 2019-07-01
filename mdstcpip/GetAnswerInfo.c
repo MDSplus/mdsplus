@@ -22,6 +22,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#ifdef DEBUG
+ #include <stdio.h>
+#endif
 #include "mdsip_connections.h"
 #include <stdlib.h>
 #include <status.h>
@@ -52,47 +55,60 @@ inline int GetAnswerInfoTS(int id, char *dtype, short *length, char *ndims, int 
 
 int GetAnswerInfoTO(int id, char *dtype, short *length, char *ndims, int *dims, int *numbytes,
 		    void **dptr, void **mout, int timeout_msec){
+  Connection* c = FindConnectionSending(id);
+  if (!c) return MDSplusERROR;
   INIT_STATUS;
   int i;
   Message *m;
-  *mout = 0;
-  *numbytes = 0;
-  Connection* c = FindConnection(id,NULL);
   m = GetMdsMsgTOC(c, &status, timeout_msec);
   UnlockConnection(c);
+  if (!m && status == SsINTERNAL) {
+    DisconnectConnection(id);
+    status = MDSplusERROR;
+  }
   if STATUS_NOT_OK {
+    free(m);
+    *mout = NULL;
     *dtype = 0;
     *length = 0;
     *ndims = 0;
     *numbytes = 0;
     *dptr = 0;
-    if (m) {
-      free(m);
-      *mout = 0;
-    }
     return status;
   }
+  int datalen = (int)(m->h.msglen - sizeof(MsgHdr));
+  *numbytes = m->h.length;
   if (m->h.ndims) {
-    *numbytes = m->h.length;
     for (i = 0; i < m->h.ndims; i++) {
 #ifdef __CRAY
       dims[i] = i % 2 ? m->h.dims[i / 2] & 0xffffffff : (*m)->h.dims[i / 2] >> 32;
 #else
-      dims[i] = m->h.dims[i];
+      if (m->h.dims[i])
+	dims[i] = m->h.dims[i];
+      else {
+	if (datalen>*numbytes && datalen%*numbytes) {
+	  dims[i] = datalen/ *numbytes;
+	  m->h.ndims = i+1;
+	} else if (datalen==*numbytes && m->h.ndims == i+1) {
+	  dims[i] = 1;
+	} else {
+	  m->h.ndims = i;
+	  break; // dont mult numbytes
+	}
+      }
 #endif
       *numbytes *= dims[i];
 #ifdef DEBUG
       printf("dim[%d] = %d\n", i, dims[i]);
 #endif
     }
-    for (i = m->h.ndims; i < MAX_DIMS_R; i++)
+    for (i = m->h.ndims; i < MAX_DIMS; i++)
       dims[i] = 0;
   } else {
-    *numbytes = m->h.length;
-    for (i = 0; i < MAX_DIMS_R; i++)
+    for (i = 0; i < MAX_DIMS; i++)
       dims[i] = 0;
   }
-  if ((int)(sizeof(MsgHdr) + *numbytes) != m->h.msglen) {
+  if (*numbytes != datalen) {
     *numbytes = 0;
     if (m) {
       free(m);

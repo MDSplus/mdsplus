@@ -39,6 +39,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define TRIANGULAR 1
 #define SQUARE 2
 #define SINUSOIDAL 3
+#define SAWTOOTH 4
+
+
+
+static void createSawtoothWaveform(int number_of_samples, double offset, double level, float *buf)
+{
+    int i;
+
+    // create one complete Sawtooth period in volts
+
+    double m = 1./number_of_samples;
+
+    for(i = 0; i <  number_of_samples; i++)
+            buf[i] = (float)(offset + 2 * level * m * i - level );
+
+}
 
 
 static void createTriangularWaveform(int number_of_samples, double offset, double level, float *buf)
@@ -240,6 +256,7 @@ uint32_t generateWaveformOnOneChannel_6368(uint8_t selectedCard, uint8_t channel
     	    		case TRIANGULAR : createTriangularWaveform(number_of_samples, offset, level,  write_array[i]); break;
     	    		case SQUARE : createSquareWaveform(number_of_samples, offset, level,  write_array[i]); break;
     	    		case SINUSOIDAL : createSinusoidalWaveform(number_of_samples, offset, level,  write_array[i]); break;
+    	    		case SAWTOOTH : createSawtoothWaveform(number_of_samples, offset, level,  write_array[i]); break;
         	}
     	}
 
@@ -374,6 +391,8 @@ uint32_t generateWaveformOnOneChannel_6259 (uint8_t selectedCard, uint8_t channe
         {        
     	    case TRIANGULAR : createTriangularWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
     	    case SQUARE : createSquareWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
+    	    case SINUSOIDAL : createSinusoidalWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
+    	    case SAWTOOTH : createSawtoothWaveform(number_of_samples, offset, level,  scaledWriteArray); break;
         }
 
 
@@ -414,6 +433,8 @@ uint32_t generateWaveformOnOneChannel_6259 (uint8_t selectedCard, uint8_t channe
                 goto out_6259;
         }
 
+        close(fdChannel);
+
         retval = pxi6259_start_ao(fdConfig);
         if (retval) {
                 printf ("err: Starting task. retval: %d\n",retval);
@@ -426,10 +447,10 @@ uint32_t generateWaveformOnOneChannel_6259 (uint8_t selectedCard, uint8_t channe
 out_6259:
         if (pxi6259_stop_ao(fdConfig))
                 printf ("err: Stoping task. retval: %x\n",retval * -1);
-
+/*
         close(fdChannel);
         //sleep(1);
-/*
+
         retval = pxi6259_load_ao_conf(fdConfig, &ao_conf);
         if (retval) {
                 printf ("err: load task. retval: %x\n",retval * -1);
@@ -442,9 +463,17 @@ out_6259:
         if (fdChannel < 0) {
                 printf ("Error Opening Channel! FD: %d\n",fdChannel);
         }
-
+*/
         for( i = 0; i <  number_of_samples; i++)
             scaledWriteArray[i] = (float)0.;
+
+        // Open channels
+        sprintf(str,"%s.%d.ao.%d",RESOURCE_NAME_DAQ,selectedCard,channel);
+        fdChannel = open(str, O_RDWR | O_NONBLOCK);
+        if (fdChannel < 0) {
+                printf ("Error Opening Channel! FD: %d\n",fdChannel);
+                return -1;
+        }
 
         retval = pxi6259_write_ao(fdChannel, scaledWriteArray, number_of_samples);
         if (retval != number_of_samples) {
@@ -460,7 +489,7 @@ out_6259:
 
         if (pxi6259_stop_ao(fdConfig))
                 printf ("err: Stoping task. retval: %x\n",retval * -1);
-*/
+
 
 
         close(fdChannel);
@@ -489,13 +518,15 @@ int main (int argc, char** argv){
                 channel = atoi(argv[3]);
                 minValue = atof(argv[4]);
                 maxValue = atof(argv[5]);
-                frequency = atoi(argv[6]);
+                frequency = atof(argv[6]);
                 if( strcmp( argv[7], "T" ) == 0 )
                     waveType = TRIANGULAR;
                 else  if( strcmp( argv[7], "Sq" ) == 0)
                     waveType = SQUARE;
                 else  if( strcmp( argv[7], "Si" ) == 0 )
                     waveType = SINUSOIDAL;
+                else  if( strcmp( argv[7], "Sa" ) == 0 )
+                    waveType = SAWTOOTH;
 
         } 
         else if ( argc == 1 ) 
@@ -511,9 +542,9 @@ int main (int argc, char** argv){
 
         } else {
                 printf ("\nPlease define arguments for AO waveform signal generation example! Run as:\n");
-                printf ("\n./generateTriangularWave [device {6368/6259}] [card] [channel (0..3)] [Min value] [Max value] [frequency] [<T>riangular | <Sq>uare | <Si>nusoidal ])\n");
+                printf ("\n./generateTriangularWave [device {6368/6259}] [card] [channel (0..3)] [Min value] [Max value] [frequency] [<T>riangular | <Sq>uare | <Si>nusoidal | <Sa>wtooth ])\n");
                 printf ("\nIf only one argument is provided, preset settings will be chosen!\n");
-                printf ("Preset values: device: 6368 card: 0, channels: 0, MinValue: 0, MaxValue : 5, ferquency : 100, waveType : T(riangular)\n\n");
+                printf ("Preset values: device: 6368 card: 0, channels: 0, MinValue: 0, MaxValue : 5, frequency : 100, waveType : T(riangular)\n\n");
                 return 0;
         }
 

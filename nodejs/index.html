@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>WebScope</title>
+  <!-- author: Gianluca.Moro@unipd.it -->
+  <!-- production -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
+  <!-- development -->
+  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.common.dev.js"></script> -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Last on 20190320: v1.45.3 -->
+
+  <style>
+
+    .btnAction {
+      -moz-box-shadow: 3px 4px 0px 0px #899599;
+      -webkit-box-shadow: 3px 4px 0px 0px #899599;
+      box-shadow: 3px 4px 0px 0px #899599;
+      background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #bab1ba));
+      background:-moz-linear-gradient(top, #ededed 5%, #bab1ba 100%);
+      background:-webkit-linear-gradient(top, #ededed 5%, #bab1ba 100%);
+      background:-o-linear-gradient(top, #ededed 5%, #bab1ba 100%);
+      background:-ms-linear-gradient(top, #ededed 5%, #bab1ba 100%);
+      background:linear-gradient(to bottom, #ededed 5%, #bab1ba 100%);
+      filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#bab1ba',GradientType=0);
+      background-color:#ededed;
+      -moz-border-radius:15px;
+      -webkit-border-radius:15px;
+      border-radius:15px;
+      border:1px solid #d6bcd6;
+      display:inline-block;
+      cursor:pointer;
+      /* color:#3a8a9e; */
+      /* font-family:Arial; */
+      /* font-size:17px; */
+      padding:3px 25px;
+      text-decoration:none;
+      text-shadow:0px 1px 0px #e1e2ed;
+      margin:3px;
+      margin-bottom: 6px;
+    }
+    .btnAction:hover{
+      background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #bab1ba), color-stop(1, #ededed));
+      background:-moz-linear-gradient(top, #bab1ba 5%, #ededed 100%);
+      background:-webkit-linear-gradient(top, #bab1ba 5%, #ededed 100%);
+      background:-o-linear-gradient(top, #bab1ba 5%, #ededed 100%);
+      background:-ms-linear-gradient(top, #bab1ba 5%, #ededed 100%);
+      background:linear-gradient(to bottom, #bab1ba 5%, #ededed 100%);
+      filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#bab1ba', endColorstr='#ededed',GradientType=0);
+      background-color:#bab1ba;
+    }
+    .btnAction:active{
+      position:relative;
+      top:1px;
+    }
+    @media all and (max-width:30em){
+      .btnAction {
+        display:block;
+        margin:0.2em auto;
+      }
+    }
+
+
+/* DivTable.com */
+.divTable{
+    display: table;
+    width: 100%;
+}
+.divTableRow {
+    display: table-row;
+}
+.divTableHeading {
+    background-color: #EEE;
+    display: table-header-group;
+}
+.divTableCell, .divTableHead {
+    border: 0px solid #000000;
+    display: table-cell;
+    /* padding: 3px 10px; */
+}
+.divTableHeading {
+    background-color: #EEE;
+    display: table-header-group;
+    font-weight: bold;
+}
+.divTableFoot {
+    background-color: #EEE;
+    display: table-footer-group;
+    font-weight: bold;
+}
+.divTableBody {
+    display: table-row-group;
+}
+/* End of DivTable.com */
+
+    .wasteBasketPanelSvg { height: 15px; width: 10px; }
+    .wasteBasketPanelButton { float: right; background-color: #f2f2f2; }
+
+    .wasteBasketSignalSvg { height: 15px; width: 10px; }
+    .wasteBasketSignalButton { float: right; background-color: #f2f2f2; }
+
+    .hideShowConfigurationSvg { height: 30px; width: 20px; }
+    .hideShowConfigurationButton { float: left; background-color: #f2f2f2; }
+
+    .inputFieldPanel  { text-align: center; width: 95%; margin: 3px }
+    .inputFieldSignal { text-align: center; width: 95%; margin: 1px }
+
+  </style>
+
+</head>
+
+<body>
+
+<!-- waste basket -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display: none;">
+  <symbol id="wasteBasket" viewbox="0 0 448 512">  
+    <path d="M192 188v216c0 6.627-5.373 12-12 12h-24c-6.627 0-12-5.373-12-12V188c0-6.627 5.373-12 12-12h24c6.627 0 12 5.373 12 12zm100-12h-24c-6.627 0-12 5.373-12 12v216c0 6.627 5.373 12 12 12h24c6.627 0 12-5.373 12-12V188c0-6.627-5.373-12-12-12zm132-96c13.255 0 24 10.745 24 24v12c0 6.627-5.373 12-12 12h-20v336c0 26.51-21.49 48-48 48H80c-26.51 0-48-21.49-48-48V128H12c-6.627 0-12-5.373-12-12v-12c0-13.255 10.745-24 24-24h74.411l34.018-56.696A48 48 0 0 1 173.589 0h100.823a48 48 0 0 1 41.16 23.304L349.589 80H424zm-269.611 0h139.223L276.16 50.913A6 6 0 0 0 271.015 48h-94.028a6 6 0 0 0-5.145 2.913L154.389 80zM368 128H80v330a6 6 0 0 0 6 6h276a6 6 0 0 0 6-6V128z"/>
+  </symbol>
+</svg>
+
+<!-- dotted menu -->
+<svg version="1.1" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" style="display: none">
+  <symbol id="dottedMenu" viewbox="0 0 100 100">  
+    <circle cx="18.132" cy="26.545" r="7.131"/>
+    <rect x="33.619" y="21.486" width="56.292" height="10.118"/>
+    <circle cx="18.132" cy="51.219" r="7.131"/>
+    <rect x="33.619" y="46.159" width="56.292" height="10.118"/>
+    <circle cx="18.132" cy="76.033" r="7.131"/>
+    <rect x="33.619" y="70.975" width="56.292" height="10.117"/>
+  </symbol>
+</svg>
+
+<!-- circle -->
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="circle" viewbox="0 0 100 100">
+    <circle cx="50" cy="50" r="40">
+  </symbol>
+</svg>
+
+<!-- END of Reusable components -->
+
+<div id="app">
+
+  <span v-if="$root.isRunningGraph"><div></div></span>
+  <span v-else>
+    <button @click.prevent="$root.hideShowConfiguration()" class="hideShowConfigurationButton" style="margin: 10px">
+      <svg class="hideShowConfigurationSvg"><use xlink:href="#dottedMenu"></svg>
+    </button>
+  </span>
+
+  <br>
+
+  <span v-if="isVisibleConfiguration">
+  <div style="display: inline-block; border-style: ridge; border-color: silver; width: 28%; float:left; padding: 3px;">
+   <span v-if="isVisibleAddPanel">
+    <center>Panels and signals configuration</center>
+    <div>
+	<div class="divTable">
+	  <div class="divTableBody">
+	    <div class="divTableRow">
+	      <div class="divTableCell">Panel</div>
+	      <div class="divTableCell">
+                <input v-model="panelName" placeholder="Insert panel name"  class="inputFieldPanel"><br/>
+	      </div>
+	    </div>
+	    <div class="divTableRow">
+	      <div class="divTableCell">Length[s]</div>
+	      <div class="divTableCell">
+		<input v-model="panelWindowLength" type="number" class="inputFieldSignal">
+	      </div>
+	    </div>
+	  </div>
+	</div>
+      <center>
+        <button @click.prevent="addPanel" class="btnAction">Add Panel</button>
+      </center>
+    </div>
+   </span>
+    <panel-list :panels="panels"></panel-list>
+
+   <span v-if="$root.isRunningGraph"><div></div></span>
+   <span v-else>
+    <br><hr><br>
+    <center>
+    <button class="btnAction" @click.prevent="startGraph()">START GRAPH</button><br><br>
+    </center>
+   </span>
+
+
+  </div>
+
+
+  </span>
+
+  <div :style="{ width: graphComputedWidth + '%' }" style="display: inline-block; border-style: ridge; border-color: silver; float: right; padding: 3px;">
+      <graph-window-list :panels="panels" :charts="charts" :restylevent="restylevent"></graph-window-list>
+
+    </center>
+  </div>
+
+</div>
+
+<template id="panel-list">
+  <div>
+    <panel v-for="(panel, key, index) in panels" :panel="panel" :key="key" :index="index"></panel>
+  </div>
+</template>
+
+
+
+<template id="panel">
+  <div>
+    <hr>
+    <div style="margin:7px; float: left">
+      Panel:&nbsp;<b>{{ panel.name }}</b>&nbsp;[{{ panel.windowLength }}samples]
+    </div>
+   <span v-if="$root.isRunningGraph"><div></div></span>
+   <span v-else>
+    <button @click.prevent="$root.removePanel(panel.name)" class="wasteBasketPanelButton" style="margin: 3px">
+      <svg class="wasteBasketPanelSvg"><use xlink:href="#wasteBasket"></svg>
+    </button>
+   </span>
+
+    <signal-list :signals="panel.signals" :panel="panel"></signal-list>
+
+   <span v-if="$root.isRunningGraph"><div></div></span>
+   <span v-else>
+    <div style="margin-left:5px" >
+      <div class="divTable">
+        <div class="divTableBody">
+	  <div class="divTableRow">
+	    <div class="divTableCell">Signal</div>
+	    <div class="divTableCell">
+              <input v-model="$root.signalName" placeholder="Insert signal name" class="inputFieldSignal">
+	    </div>
+	  </div>
+	  <div class="divTableRow">
+	    <div class="divTableCell">Color</div>
+	    <div class="divTableCell">
+              <input v-model="$root.signalColor" type="color" class="inputFieldSignal">
+	    </div>
+	  </div>
+	</div>
+      </div> <!-- end table -->
+      <center>
+        <button @click.prevent="$root.addSignal(panel.name)" class="btnAction">Add Signal</button><br/>
+      </center>
+    </div>
+   </span>
+  </div>
+</template>
+
+<template id="signal-list">
+  <div style="margin:5px" >
+    <signal v-for="(signal, key, index) in signals" :signal="signal" :panel="panel" :key="key" :index="index"></signal>
+  </div>
+</template>
+
+<template id="signal">
+  <div style="display: table; width: 100%; padding: 2px; vertical-align: middle;">
+    <div v-bind:style="{ background: signal.color}" style="width: 20px; float:left">&nbsp;</div>
+    &nbsp;<b>{{ signal.name }}</b> 
+   <span v-if="$root.isRunningGraph"><div></div></span>
+   <span v-else>
+    <button @click.prevent="$root.removeSignal(panel.name, signal.name)" class="wasteBasketSignalButton">
+      <svg class="wasteBasketSignalSvg"><use xlink:href="#wasteBasket"></svg>
+    </button>
+   </span>
+  </div>
+</template>
+
+<template id="graph-window-list">
+  <div>
+    <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
+  </div>
+</template>
+
+
+<template id="reactive-chart">
+  <!-- height: 20vh; means: 20% of visible window -- height: 440px; -->
+  <div :ref="panel.name" style="width: 100%;  border: 1px; border-style: solid">
+    <!-- Panel: <b>{{ panel.name }}</b> -->
+  </div>
+</template>
+
+
+<script>
+
+var lastUpdate = Date.now();
+
+/* GRAPH */
+Vue.component("reactive-chart", {
+  props: ["panel", "charts", "index", "restylevent"],
+  template: '#reactive-chart', //'<div :ref="chart.uuid"></div>',
+  mounted() {
+    for (i=0; i<this.charts.length; i++) {
+      Plotly.newPlot(this.$refs[this.charts[i].uuid], this.charts[i].traces, this.charts[i].layout);
+    }
+  },
+  watch: {
+    restylevent: {
+      handler: function() {
+//console.log("a");
+        for (i=0; i<this.charts.length; i++) {
+          //Plotly.newPlot(
+          Plotly.react(
+            this.$refs[this.charts[i].uuid],
+            this.charts[i].traces,
+            this.charts[i].layout
+          );
+        }
+      }
+    },
+
+    charts: {
+      handler: function() {
+       var current = Date.now();
+       if (current - lastUpdate < 100) {
+         return; 
+       }
+
+       lastUpdate = Date.now();
+       //console.log(current);
+
+
+        for (i=0; i<this.charts.length; i++) {
+          Plotly.react(
+            this.$refs[this.charts[i].uuid],
+            this.charts[i].traces,
+            this.charts[i].layout
+          );
+            var qq = 1;
+        }
+      },
+      deep: true
+    }
+
+
+  }
+
+
+});
+
+
+/* End GRAPH */
+
+Vue.component('panel-list', {
+  template: '#panel-list',
+  props: ['panels']
+})
+Vue.component('panel', {
+  template: '#panel',
+  props: ['panel']
+})
+
+Vue.component('signal-list', {
+  template: '#signal-list',
+  props: ['panel', 'signals']
+})
+Vue.component('signal', {
+  template: '#signal',
+  props: ['panel', 'signal']
+});
+
+Vue.component('graph-window-list', {
+  template: '#graph-window-list',
+  props: ['panels', 'charts', 'restylevent']
+})
+
+
+var defaultLayoutOptions = {
+  title:'Vue - Plotly',
+  xaxis: {
+    title: 'xaxis title'
+  },
+  yaxis: {
+    title: 'yaxis title'
+  }
+};
+
+var defaultLineOptions = {
+  color: "#5e9e7e",
+  width: 1,
+  shape: "line"
+};
+
+var vm = new Vue({
+  el: '#app',
+  data: function () {
+   return {
+     charts: [
+       {
+         uuid: "Temperature",
+         traces: [
+           {
+             x: [],
+             y: [],
+             line: defaultLineOptions,
+           }
+         ],
+         layout: defaultLayoutOptions,
+       }
+      ],
+
+    panels: [
+       { name: 'Temperature',
+         windowLength: 120,
+
+         signals: [
+           { name: 'p1s1', color: 'red' },
+           { name: 'p1s2', color: 'blue' },
+           { name: 'p2s1', color: 'green' },
+         ]},
+//       { name: 'Pressure',
+//         windowLength: 60,
+//         datacollection: null,
+//         signals: [
+//           { name: 'p2s1', color: 'green' },
+//           // { name: 'p2s2', color: 'green' },
+//         ]},
+
+    ],
+    panelName: '',
+    panelWindowLength: 120,
+    signalName: '',
+    signalColor: '#000000',
+    isVisibleConfiguration: true,
+    isVisibleAddPanel: false,
+    isRunningGraph: false,
+    restylevent: null,
+   } // end return
+  },
+
+  //watch: {
+  //  dataCollection: function (val, oldVal) {
+  //    console.log('WATCH: new: %s, old: %s', val, oldVal); // OK var is updated
+  //  },
+  //},
+
+  computed: {
+    graphComputedWidth() {
+        if (this.isVisibleConfiguration) {
+          return 68;
+        } else {
+          return 98;
+        }
+    }
+  },
+
+  created() {
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize();
+
+    // parse parameters
+    var url = window.location.href;
+    //console.log("\n\nURL: " + url);
+    var params = { panel: "", length: 0, s: [], c: []};
+    var parser = document.createElement('a');
+    parser.href = url;
+    var query = parser.search.substring(1);
+    var vars = query.split('&');   
+    for (var i = 0; i < vars.length; i++) {
+	var pair = vars[i].split('=');
+        if (pair[0] == "panel") params.panel = decodeURIComponent(pair[1]);
+        if (pair[0] == "length") params.length = decodeURIComponent(pair[1]);
+        if (pair[0] == "s") params.s.push(decodeURIComponent(pair[1]));
+        if (pair[0] == "c") params.c.push(decodeURIComponent(pair[1]));
+    }
+    var st = [];
+    for (var i=0; i<params.s.length; i++) {
+        var col;
+        if(typeof params.c[i] === 'undefined') {
+            col = 'black';
+        } else {
+           col = params.c[i];
+        }
+	st.push({name: params.s[i], color: col});
+    }
+
+    if (params.panel != "") {
+        this.panels = [ {
+            name: params.panel,
+	    windowLength: params.length,
+            signals: st,
+        } ];  
+        console.log("Panel:");
+        console.log(this.panels);
+        this.startGraph();
+    }
+
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize)
+  },
+
+  methods: {
+    handleResize: function() {
+      this.charts[0].layout.height = window.innerHeight-120;
+      this.charts[0].layout.width = window.innerWidth-100;
+    },
+
+    addPanel: function() {
+
+      // NO MULTIPANEL
+      if (this.panels.length == 1) {
+        return;
+      }
+      this.isVisibleAddPanel = false;
+
+      if (this.panelName == '') {
+        this.panelName = "__panel" + (this.panels.length+1);
+        console.log("Generated panel name!");
+      }
+      console.log("Adding panel: " + this.panelName);
+      this.panels.push({
+        name: this.panelName,
+        windowLength: this.panelWindowLength,
+        signals: []
+      });
+      this.panelName = '';
+      this.panelWindowLength = 30;
+    },
+    removePanel: function(name) {
+      //console.log("Removing panel: " + name);
+      this.panels = this.panels.filter(function(value, index, arr){
+        return value.name != name;
+      });
+      this.isVisibleAddPanel = true;
+    },
+    addSignal: function(panelName) {
+      objIndex = this.panels.findIndex((obj => obj.name == panelName));
+      if (this.signalName == '') {
+        this.signalName = "__signal" + (this.panels[objIndex].signals.length+1);
+        console.log("Generated signal name!");
+      }
+      console.log("Adding signal " + this.signalName + " to panel " + panelName);
+      this.panels[objIndex].signals.push({
+          name: this.signalName,
+          color: this.signalColor,
+        });
+        this.signalName = '';
+        this.signalColor = '#000000';
+    },
+    removeSignal: function(panelName, signalName) {
+      //console.log("Removing signal: " + signalName + " from panel " + panelName);
+      objIndex = this.panels.findIndex((obj => obj.name == panelName));
+      this.panels[objIndex].signals = this.panels[objIndex].signals.filter(function(value, index, arr){
+        return value.name != signalName;
+      });
+    },
+
+    hideShowConfiguration: function() {
+      this.isVisibleConfiguration = !this.isVisibleConfiguration;
+      this.restylevent = new Date().getTime(); // timestamp of last update
+    },
+
+    graphWidth: function() {
+      return '68';
+    },
+
+    //
+    // graph management
+    //
+
+    updateChart: function (receivedMsg) {
+      //console.log('RECEIVED ' + receivedMsg);
+      var msgArray = receivedMsg.split(" ");
+      var msgProgressiveId = msgArray[0]; // 
+      var msgShotNumber    = msgArray[1]; //
+      var msgSignalName    = msgArray[2]; //
+      var msgFormat        = msgArray[3]; // "L" - date as UTC, "F" - date as ms, "A" - date UTC and reset array
+      var msgLength        = parseInt(msgArray[4]); //
+
+      if (msgArray.length != 5 + 2*msgLength) {
+        console.log("Wrong format for incoming message: " + receivedMsg);
+        return; // something wrong - cannot parse message
+      }
+
+      var msgLabels = msgArray.slice(5, 5+msgLength);
+
+      if ((msgFormat == "L") || (msgFormat == "A") || (msgFormat == "l") || (msgFormat == "a")) {
+          msgLabels = msgLabels.map(function (x) {
+              return (new Date(parseInt(x)));
+          });
+      }
+
+      var msgValues = msgArray.slice(5+msgLength, 5+2*msgLength);
+
+      for (i=0; i<this.panels.length; i++) {
+	for (j=0; j<this.panels[i].signals.length; j++) {
+          if (this.panels[i].signals[j].name == msgSignalName) {
+            //
+            // we found the incoming signal in this panel
+            //
+	    this.charts[i].traces[j].name = msgSignalName;
+            if (msgFormat == "A") {
+                this.charts[i].traces[j].x = msgLabels;
+                this.charts[i].traces[j].y = msgValues;
+            } else {
+                this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
+                this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+            }
+            //console.log(this.panels[i].windowLength + " " + this.charts[i].traces[j].x.length);
+            if (this.panels[i].windowLength > 0 && this.charts[i].traces[j].x.length > this.panels[i].windowLength) {
+              this.charts[i].traces[j].x = this.charts[i].traces[j].x.slice(-this.panels[i].windowLength);
+              this.charts[i].traces[j].y = this.charts[i].traces[j].y.slice(-this.panels[i].windowLength);
+            }
+
+          }
+        }
+        this.charts[i].layout.datarevision = new Date().getTime(); // timestamp of last update
+      }
+    }, // end updateChart()
+
+
+    /* */
+    /* function to start SSE */
+    ServerSentEventStart: function (signals) {
+      console.log("Starting ServerSentEventStart for " + signals);
+      var eventSource = new EventSource("/sse?" + signals);
+      var callbackFunc = this.updateChart;
+      //var callbackPanels = this.panels;
+      eventSource.onmessage = function (event) {
+        var received_msg = event.data;
+        //console.log('RECEIVED: ' + received_msg);
+        // RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
+        // RECEIVED: 2960 666 p1s2 F 1 3132.000000 7.453648
+        // RECEIVED: 3183 666 p1s2 F 1 3355.000000 -7.996949
+
+        // RECEIVED: 1403 666 cicciobombo L 1 1553705772843 8.614104
+        callbackFunc(received_msg);
+      };
+    },
+
+    startGraph: function() {
+      //console.log("startGraph: IN");
+      if (this.isRunningGraph) { return; }
+      this.isVisibleConfiguration = false;
+      this.isRunningGraph = true;
+
+      // init graph structure
+      this.charts = [];
+      for(i=0; i<this.panels.length; i++) {
+        this.charts.push({
+            uuid: this.panels[i].name,
+            traces: [],
+            layout: {
+                title: this.panels[i].name,
+                xaxis: { title: 't' },
+                yaxis: { title: 'y' },
+                height: window.innerHeight-120,
+                width: window.innerWidth-100,
+              },
+          });
+        for (j=0; j<this.panels[i].signals.length; j++) {
+          this.charts[i].traces.push({
+              x: [],
+              y: [],
+              line: { color: this.panels[i].signals[j].color, width:1, shape: "line" },
+              //type: "pointcloud",
+            });            
+        }
+      }
+
+      // start Server    
+      sgns = this.panels.map(p => p.signals).flat().map(x => x.name).join(",");     
+      this.ServerSentEventStart("signals=" + sgns); // "signals=s1,s2,s3"
+      this.restylevent = new Date().getTime(); // timestamp of last update
+    },
+
+
+
+
+  }
+});
+
+</script>
+
+</body>
+</html>

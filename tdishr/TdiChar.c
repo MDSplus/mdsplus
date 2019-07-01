@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi3Char.C
-        All the elemental character routines.
+	All the elemental character routines.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <string.h>
 #include <mdsdescrip.h>
@@ -44,8 +44,8 @@ STATIC_CONSTANT char false = 0;
 STATIC_CONSTANT struct descriptor false_dsc = { 1, DTYPE_T, CLASS_S, (char *)&false };
 
 /*------------------------------------------------------------------------------
-        F8X elemental, adjust string left, if there are blanks at left, and add blanks at right.
-                string = ADJUSTL(string)
+	F8X elemental, adjust string left, if there are blanks at left, and add blanks at right.
+	        string = ADJUSTL(string)
 */
 int Tdi3Adjustl(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -70,8 +70,8 @@ int Tdi3Adjustl(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, adjust string right, if there are blanks at right and add blanks at left.
-                string = ADJUSTR(string)
+	F8X elemental, adjust string right, if there are blanks at right and add blanks at left.
+	        string = ADJUSTR(string)
 */
 int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -96,8 +96,8 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, converts integer into ASCII (assumed) text byte.
-                text = CHAR(integer)
+	F8X elemental, converts integer into ASCII (assumed) text byte.
+	        text = CHAR(integer)
 */
 int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute__ ((unused)),
 	     struct descriptor *out_ptr)
@@ -116,9 +116,9 @@ int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute_
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, concatenate text strings pairwise.
-                string = CONCAT(string, string ...)
-                string = string // string ...
+	F8X elemental, concatenate text strings pairwise.
+	        string = CONCAT(string, string ...)
+	        string = string // string ...
 */
 int Tdi3Concat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct descriptor *out_ptr)
 {
@@ -141,10 +141,10 @@ int Tdi3Concat(struct descriptor *in1_ptr, struct descriptor *in2_ptr, struct de
 }
 
 /*------------------------------------------------------------------------------
-        DCL elemental, extract a delimited text string, DCL form.
-                ELEMENT(number, delimiter, string)
-        Limitation: generally only good for scalars if we were to trim.
-        Need to trim the result.
+	DCL elemental, extract a delimited text string, DCL form.
+	        ELEMENT(number, delimiter, string)
+	Limitation: generally only good for scalars if we were to trim.
+	Need to trim the result.
 */
 int Tdi3Element(struct descriptor *number_ptr,
 		struct descriptor *delim_ptr,
@@ -178,9 +178,9 @@ int Tdi3Element(struct descriptor *number_ptr,
 }
 
 /*------------------------------------------------------------------------------
-        DCL elemental, extract a text string, DCL form.
-                EXTRACT(start, length, string)
-        Limitation: length must be a scalar, I think.
+	DCL elemental, extract a text string, DCL form.
+	        EXTRACT(start, length, string)
+	Limitation: length must be a scalar, I think.
 */
 int Tdi3Extract(struct descriptor *start_ptr,
 		struct descriptor *length_ptr,
@@ -209,20 +209,20 @@ int Tdi3Extract(struct descriptor *start_ptr,
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, converts ASCII (assumed) text into integer byte.
-                byte = IACHAR(ascii-text)
-                byte = ICHAR(text)
+	F8X elemental, converts ASCII (assumed) text into integer byte.
+	        byte = IACHAR(ascii-text)
+	        byte = ICHAR(text)
 */
 int Tdi3Ichar(struct descriptor *in_ptr, struct descriptor *out_ptr){
   return Tdi3Char(in_ptr,NULL,out_ptr);
 }
 
 /*------------------------------------------------------------------------------
-        Modified F8X elemental, scan a string for first substring, gives offset.
-                string = INDEX(char-string, char-set, [back])
-        Examples:
-                INDEX("FORTRAN", "R") is 2              offset of first R
-                INDEX("FORTRAN", "R", $TRUE) is 5       offset from left of first R, left to right
+	Modified F8X elemental, scan a string for first substring, gives offset.
+	        string = INDEX(char-string, char-set, [back])
+	Examples:
+	        INDEX("FORTRAN", "R") is 2              offset of first R
+	        INDEX("FORTRAN", "R", $TRUE) is 5       offset from left of first R, left to right
 */
 int Tdi3Index(struct descriptor *str_ptr,
 	      struct descriptor *sub_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
@@ -257,8 +257,8 @@ int Tdi3Index(struct descriptor *str_ptr,
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, find length of string with trailing blanks and tabs removed.
-        Example: LEN_TRIM([" A B "," "]) is [4,0]
+	F8X elemental, find length of string with trailing blanks and tabs removed.
+	Example: LEN_TRIM([" A B "," "]) is [4,0]
 */
 int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -279,9 +279,9 @@ int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*------------------------------------------------------------------------------
-        F8X elemental, repeat a text string ncopies times.
-                REPEAT(string, ncopies)
-        Limitation: ncopies must be a scalar.
+	F8X elemental, repeat a text string ncopies times.
+	        REPEAT(string, ncopies)
+	Limitation: ncopies must be a scalar.
 */
 int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribute__ ((unused)),
 	       struct descriptor *out_ptr)
@@ -298,11 +298,11 @@ int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribut
 }
 
 /*------------------------------------------------------------------------------
-        Modified F8X elemental, scan a string for a character in a set of characters, gives offset.
-                string = SCAN(char-string, char-set, [back])
-        Examples:
-                SCAN("FORTRAN", "TR") is 2              offset of first R
-                SCAN("FORTRAN", "TR", $TRUE) is 4       offset from left of first R, left to right
+	Modified F8X elemental, scan a string for a character in a set of characters, gives offset.
+	        string = SCAN(char-string, char-set, [back])
+	Examples:
+	        SCAN("FORTRAN", "TR") is 2              offset of first R
+	        SCAN("FORTRAN", "TR", $TRUE) is 4       offset from left of first R, left to right
 */
 int Tdi3Scan(struct descriptor *str_ptr,
 	     struct descriptor *set_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
@@ -325,8 +325,8 @@ int Tdi3Scan(struct descriptor *str_ptr,
   while (--n >= 0) {
     if (*bac_dsc.pointer & 1) {
 			/********************************************************************
-                        FIND_LAST_IN_SET by checking INDEX(set, char) from right to left.
-                        ********************************************************************/
+	                FIND_LAST_IN_SET by checking INDEX(set, char) from right to left.
+	                ********************************************************************/
       tmp_dsc.pointer = str_dsc.pointer + str_len;
       while (--tmp_dsc.pointer >= str_dsc.pointer)
 	if (StrPosition(&set_dsc, &tmp_dsc, 0) != 0)
@@ -343,8 +343,8 @@ int Tdi3Scan(struct descriptor *str_ptr,
 }
 
 /*------------------------------------------------------------------------------
-        Elemental function to convert a string or builtin name to its opcode.
-        Gives -1 if not found.
+	Elemental function to convert a string or builtin name to its opcode.
+	Gives -1 if not found.
 */
 int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -360,16 +360,16 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
   N_ELEMENTS(out_ptr, n);
   for (; --n >= 0; tmp_dsc.pointer += step) {
 		/****************************************************
-                Case insensitive and ignore trailing blanks and tabs.
-                ****************************************************/
+	        Case insensitive and ignore trailing blanks and tabs.
+	        ****************************************************/
     status = StrUpcase((struct descriptor *)&one_dsc, (struct descriptor *)&tmp_dsc);
     if STATUS_OK
       status = StrTrim((struct descriptor *)&one_dsc, (struct descriptor *)&one_dsc, 0);
     if STATUS_NOT_OK
       break;
 		/******************************
-                Ignore leading Opc designator.
-                ******************************/
+	        Ignore leading Opc designator.
+	        ******************************/
     len = one_dsc.length;
     str_ptr = one_dsc.pointer;
     if (len > 4 && strncmp(str_ptr, "Opc", 4) == 0) {
@@ -383,8 +383,8 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*------------------------------------------------------------------------------
-        Translate character of a string.
-                string = TRANSLATE(string, translation, match)
+	Translate character of a string.
+	        string = TRANSLATE(string, translation, match)
 */
 int Tdi3Translate(struct descriptor *str_ptr,
 		  struct descriptor *tra_ptr,
@@ -397,8 +397,8 @@ int Tdi3Translate(struct descriptor *str_ptr,
 }
 
 /*------------------------------------------------------------------------------
-        Convert a string to uppercase.
-                string = UPCASE(string)
+	Convert a string to uppercase.
+	        string = UPCASE(string)
 */
 int Tdi3Upcase(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {
@@ -409,12 +409,12 @@ int Tdi3Upcase(struct descriptor *in_ptr, struct descriptor *out_ptr)
 }
 
 /*------------------------------------------------------------------------------
-        Modified F8X elemental, verifies that a set of characters contains all the characters in a string, gives offset.
-                string = VERIFY(char-string, char-set, [back])
-        Examples:
-                VERIFY("ABBA", "AB") is -1      all are in set
-                VERIFY("ABBA", "A") is 1        offset from left of first non-A
-                VERIFY("ABBA", "A", $TRUE) is 2 offset from left of last non-A
+	Modified F8X elemental, verifies that a set of characters contains all the characters in a string, gives offset.
+	        string = VERIFY(char-string, char-set, [back])
+	Examples:
+	        VERIFY("ABBA", "AB") is -1      all are in set
+	        VERIFY("ABBA", "A") is 1        offset from left of first non-A
+	        VERIFY("ABBA", "A", $TRUE) is 2 offset from left of last non-A
 */
 int Tdi3Verify(struct descriptor *str_ptr,
 	       struct descriptor *set_ptr, struct descriptor *bac_ptr, struct descriptor *out_ptr)
@@ -437,8 +437,8 @@ int Tdi3Verify(struct descriptor *str_ptr,
   while (--n >= 0) {
     if (*bac_dsc.pointer & 1) {
 			/********************************************************************
-                        FIND_LAST_NOT_IN_SET by checking INDEX(set, char) from right to left.
-                        ********************************************************************/
+	                FIND_LAST_NOT_IN_SET by checking INDEX(set, char) from right to left.
+	                ********************************************************************/
       tmp_dsc.pointer = str_dsc.pointer + str_len;
       while (--tmp_dsc.pointer >= str_dsc.pointer)
 	if (StrPosition(&set_dsc, &tmp_dsc, 0) == 0)

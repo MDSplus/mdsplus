@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -61,7 +61,7 @@ int MSGLVL(int level)
 
   c = getenv(DEBUG_VAR_NAME);	// get debug variable
   if (c) {			// if not NULL ...
-    dbglvl = atoi(c);		// convert to numeric
+    dbglvl = strtol(c,NULL,0);		// convert to numeric
     return (dbglvl >= level) ? TRUE : FALSE;
   } else			// ... is not set
     return FALSE;

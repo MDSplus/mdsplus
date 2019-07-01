@@ -60,7 +60,7 @@ JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv * env, jobject obj)
   buf[dec_d->length] = 0;
   MdsFree1Dx(&out_xd, NULL);
   ris = (*env)->NewStringUTF(env, buf);
-  free((char *)buf);
+  free(buf);
   return ris;
 }
 
@@ -438,7 +438,7 @@ EXPORT jobject DescripToObject(JNIEnv * env, struct descriptor * desc)
 				MdsFree1Dx(&float_xd, 0);
 				if(is_ca) MdsFree1Dx(&ca_xd, 0);
 				return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
-			case DTYPE_DOUBLE: 
+			case DTYPE_DOUBLE:
 				cls = (*env)->FindClass(env, "DoubleArray");
 				constr = (*env)->GetStaticMethodID(env, cls, "getData", "([D)LData;");
 				jdoubles = (*env)->NewDoubleArray(env, length);
@@ -910,9 +910,9 @@ EXPORT void FreeDescrip(struct descriptor *desc)
 /*printf("FreeDescrip class %d dtype %d\n", desc->class, desc->dtype);*/
 
   switch (desc->class) {
+  default:break;
   case CLASS_S:
-    if (desc->pointer)
-      free(desc->pointer);
+    free(desc->pointer);
     break;
   case CLASS_A:
     if (desc->pointer)
@@ -931,5 +931,5 @@ EXPORT void FreeDescrip(struct descriptor *desc)
       FreeDescrip(((struct descriptor **)array_d->pointer)[i]);
     break;
   }
-  free((char *)desc);
+  free(desc);
 }

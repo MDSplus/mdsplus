@@ -2,10 +2,10 @@ public class DeviceReset extends DeviceControl
 {
     public DeviceReset()
     {
-        setText("Reset");
+	setText("Reset");
     }
     protected void doOperation(DeviceSetup deviceSetup)
     {
-        deviceSetup.reset();
+	deviceSetup.reset();
     }
 }

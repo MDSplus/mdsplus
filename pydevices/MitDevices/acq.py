@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ class Acq(MDSplus.Device):
 
     acq_parts=[
         {'path':':NODE','type':'text','value':'192.168.0.254'},
-        {'path':':COMMENT','type':'text'},
+        {'path':':COMMENT','type':'text','help':'Place to document device'},
         ]
 
     for i in range(6):
@@ -548,7 +548,7 @@ add_cmd get.trig >> $settingsf
             print("finishing doInit")
 
     def storeClock(self):
-        clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+        clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         if self.debugging():
             print("clock_src = %s" % (clock_src,))
         try:
@@ -630,7 +630,7 @@ add_cmd get.trig >> $settingsf
             print("starting trigger")
         try:
             boardip = self.getBoardIp()
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
             if self.debugging() :
                 print("executing trigger on board %s, trig_src is %s."% (boardip, trig_src,))
             trig_src = trig_src[2:]

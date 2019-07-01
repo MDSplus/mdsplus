@@ -85,14 +85,24 @@ abs_top_srcdir = @abs_top_srcdir@
 top_builddir = @abs_top_builddir@
 top_srcdir = @abs_top_srcdir@
 
+@MINGW_TRUE@icon.o : icon.rc
+@MINGW_TRUE@	@WINDRES@ $^ -o $@
 
 $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddir@ $(bindir) $(libdir) $(sysconfdir)):
 	$(MKDIR_P) $@
 
 .DEFAULT_GOAL := all
 
-# docker build targets
+## enable help command 
+@TARGET_SELFHELP@
+HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
+
+## docker build targets
 @AX_DOCKER_BUILD_TARGETS@
+
+## git release tags
+@AX_GIT_REVISION_TARGETS@
+
 
 .PHONY: reconfigure
 reconfigure: ##@miscellaneous rerun configure script again using last arguments passed
@@ -103,4 +113,5 @@ reconfigure: ##@miscellaneous rerun configure script again using last arguments 
 	echo ; \
 	cd '$(top_builddir)' && \
 	$(top_srcdir)/configure $(shell $(abs_top_builddir)/config.status --config);
+
 

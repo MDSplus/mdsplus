@@ -63,9 +63,9 @@ int main(int argc, char **argv)
   char* monitor = "ACTION_MONITOR";
   int i;
   for (i=1 ; i<argc ; i++)
-    if (strcmp(argv[i],"-monitor"))
+    if (strcmp(argv[i],"-monitor")==0)
       if (++i<argc)
-        monitor=argv[i];
+	monitor=argv[i];
   CheckIn(monitor);
   DoTimer();
   return 0;

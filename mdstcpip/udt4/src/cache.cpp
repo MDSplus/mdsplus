@@ -78,7 +78,7 @@ bool CInfoBlock::operator==(const CInfoBlock& obj)
    for (int i = 0; i < 4; ++ i)
    {
       if (m_piIP[i] != obj.m_piIP[i])
-         return false;
+	 return false;
    }
 
    return true;

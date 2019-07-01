@@ -50,6 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <status.h>
 #include <fcntl.h>
 #include <stdlib.h>
+#include <mdsshr.h>
 #include <string.h>
 #include <errno.h>
 #include <mdsplus/mdsconfig.h>
@@ -66,7 +67,7 @@ static int gsi_authorize(Connection* c, char *username);
 static int gsi_connect(Connection* c, char *protocol, char *host);
 static int gsi_reuseCheck(char *host, char *unique, size_t buflen);
 static IoRoutines gsi_routines = {
-  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL
+  gsi_connect, gsi_send, gsi_recv, NULL, gsi_listen, gsi_authorize, gsi_reuseCheck, gsi_disconnect, NULL, NULL
 };
 
 static int MDSIP_SNDBUF = 32768;
@@ -93,7 +94,7 @@ static short GetPort(char *pname)
   struct servent *sp;
   if (name == 0 || strcmp(name, "mdsip") == 0)
     name = "mdsips";
-  port = htons((short)atoi(name));
+  port = htons((short)strtol(name,NULL,0));
   if (port == 0) {
     sp = getservbyname(name, "tcp");
     if (sp == NULL) {
@@ -147,20 +148,17 @@ static int gsi_authorize(Connection* c, char *username)
     OM_uint32 status, mstatus;
     gss_name_t peer;
     char *match_string[2] = { 0, 0 };
-    time_t tim = time(0);
-    char *timestr = ctime(&tim);
-    timestr[strlen(timestr) - 1] = 0;
-    doit(res,
-	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
-				GLOBUS_XIO_TCP_GET_REMOTE_CONTACT, &hostname), "Get Remote Contact",
+    char now[32];Now32(now);
+    doit(res,globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
+	GLOBUS_XIO_TCP_GET_REMOTE_CONTACT, &hostname),
+	"Get Remote Contact",
 	 return C_ERROR);
-    doit(res,
-	 globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
-				GLOBUS_XIO_TCP_GET_REMOTE_NUMERIC_CONTACT, &hostip),
-	 "Get Remote Numeric Contact", return 0);
-    doit(res,
-	 globus_xio_handle_cntl(info->xio_handle, info->gsi_driver, GLOBUS_XIO_GSI_GET_PEER_NAME,
-				&peer), "Get Peer Name", return 0);
+    doit(res, globus_xio_handle_cntl(info->xio_handle, info->tcp_driver,
+	GLOBUS_XIO_TCP_GET_REMOTE_NUMERIC_CONTACT, &hostip),
+	"Get Remote Numeric Contact", return 0);
+    doit(res,globus_xio_handle_cntl(info->xio_handle, info->gsi_driver,
+	GLOBUS_XIO_GSI_GET_PEER_NAME, &peer),
+	"Get Peer Name", return 0);
     status = gss_display_name(&mstatus, peer, &peer_name_buffer, GLOBUS_NULL);
     //gss_release_name(&mstatus,&peer);
     if (status != GSS_S_COMPLETE) {
@@ -182,7 +180,7 @@ static int gsi_authorize(Connection* c, char *username)
     sprintf(info->connection_name, "%s - %s@%s [%s]", (char *)peer_name_buffer.value, username,
 	    &match_string[0][strlen((char *)peer_name_buffer.value) + 1],
 	    &match_string[1][strlen((char *)peer_name_buffer.value) + 1]);
-    printf("%s (pid %d) Connection received from %s\r\n", timestr, getpid(), info->connection_name);
+    printf("%s (pid %d) Connection received from %s\r\n", now, getpid(), info->connection_name);
     //gss_release_buffer(&status,&peer_name_buffer);
     ans = CheckClient(username, 2, match_string);
     if (ans && GetMulti() == 0) {
@@ -251,10 +249,8 @@ static int gsi_disconnect(Connection* c){
   GSI_INFO *info = getGsiInfoC(c);
   if (info) {
     if (info->connection_name) {
-      time_t tim = time(0);
-      char *timestr = ctime(&tim);
-      timestr[strlen(timestr) - 1] = 0;
-      printf("%s (pid %d) Connection disconnected from %s\r\n", timestr, getpid(),
+      char now[32];Now32(now);
+      printf("%s (pid %d) Connection disconnected from %s\r\n", now, getpid(),
 	     info->connection_name);
       free(info->connection_name);
     }
@@ -482,9 +478,7 @@ static int gsi_listen(int argc, char **argv)
     res = globus_xio_open(info.xio_handle, NULL, server_attr);
     testStatus(res, "get handle to connection");
     status = AcceptConnection("gsi", "gsi", 0, &info, sizeof(info), &id, &username);
-    while STATUS_OK {
-      status = DoMessage(id);
-    }
+    if STATUS_OK while (DoMessage(id));
   }
   return C_OK;
 }

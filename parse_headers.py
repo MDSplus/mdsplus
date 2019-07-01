@@ -1,4 +1,9 @@
 #!/usr/bin/python
+"""
+call 'python parse_headers.py'
+edit 'python/MDSplus/compound.py' and trunk file below '### parse_headers.py ###'
+call 'cat /tmp/compound_rest.py >> python/MDSplus/compound.py'
+"""
 forceref = ('$EXPT','$SHOT','$SHOTNAME','$DEFAULT','GETNCI',
   'MAKE_FUNCTION','BUILD_FUNCTION','EXT_FUNCTION'
   'MAKE_PROCEDURE','BUILD_PROCEDURE',
@@ -12,13 +17,13 @@ def opc(f=sys.stdout):
     with file(filepath) as opcf:
         lines = opcf.readlines()
     opcode = 0
-    f.write('MAXDIM = 8\n')
+    f.write('MAX_DIMS = 8\n')
     for line in lines:
         if not line.startswith('OPC ('):
             continue
         args = line[5:].split(')',2)[0].split(',',12)
         name,NAME,f1,f2,f3,i1,i2,o1,o2,m1,m2,token = tuple(arg.strip('\t ') for arg in args)
-        m1i,m2i = int(m1),int(eval(m2.replace('MAXDIM','8')))
+        m1i,m2i = int(m1),int(eval(m2.replace('MAX_DIMS','8')))
         pyname = NAME.replace("$","d")
         if   NAME in forceref:
             parent = '_dat.TreeRef,Function'
@@ -39,7 +44,20 @@ def opc(f=sys.stdout):
         else:
             super(BUILD_RANGE,self).__init__(*args)\n
 """)
+        elif NAME in ('PRIVATE','PUBLIC'):
+            f.write("""
+    def assign(self,value):
+        EQUALS(self,value).evaluate()
+        return self
+""")
         else: f.write('\n\n')
         opcode+=1
+    f.write("""
+_c = None
+for _c in globals().values():
+    if isinstance(_c,Function.__class__) and issubclass(_c,Function) and _c is not Function:
+        Function.opcodeToClass[_c.opcode]=_c
+del(_c)
+""")
 with open('/tmp/compound_rest.py','w+') as f:
     opc(f)

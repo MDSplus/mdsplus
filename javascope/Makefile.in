@@ -100,6 +100,8 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
 	$(top_srcdir)/m4/ax_compiler_version.m4 \
+	$(top_srcdir)/m4/ax_git_revision.m4 \
+	$(top_srcdir)/m4/ax_reconfigure_targets.m4 \
 	$(top_srcdir)/m4/ax_target_selfhelp.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
@@ -178,8 +180,8 @@ am__can_run_installinfo = \
   esac
 am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java \
-	jScope/LocalDataProviderInfo.java jScope/MdsDataClient.java \
-	jScope/MdsIOException.java jScope/MdsPlusBrowseSignals.java \
+	jScope/LocalDataProviderInfo.java jScope/MdsIOException.java \
+	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java jScope/AboutWindow.java \
 	jScope/ASCIIDataProvider.java jScope/AsdexDataProvider.java \
 	jScope/AsynchDataSource.java jScope/Base64.java \
@@ -187,7 +189,6 @@ am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
 	jScope/ColorMap.java jScope/ConnectionEvent.java \
 	jScope/ConnectionListener.java jScope/ContourSignal.java \
 	jScope/DataAccess.java jScope/DataAccessURL.java \
-	jScope/DataCached.java jScope/DataCacheObject.java \
 	jScope/DataProvider.java jScope/DataServerItem.java \
 	jScope/Descriptor.java jScope/FakeTWUProperties.java \
 	jScope/FontSelection.java jScope/FrameData.java \
@@ -232,7 +233,9 @@ am__dist_java_JAVA_DIST = jScope.java jScope/CompositeWaveDisplay.java \
 	jScope/WaveformListener.java jScope/WaveformManager.java \
 	jScope/WaveformMetrics.java jScope/WaveInterface.java \
 	jScope/WavePopup.java jScope/XYData.java \
-	jScope/XYWaveData.java jScope/WaveDataListener.java
+	jScope/XYWaveData.java jScope/WaveDataListener.java \
+	jScope/MdsConnectionLocal.java jScope/MdsConnectionSSH.java \
+	jScope/SSHDataProvider.java
 am__java_sources = $(dist_java_JAVA)
 DATA = $(dist_docs_DATA) $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
@@ -308,12 +311,21 @@ FORLD = @FORLD@
 FOR_LDFLAGS = @FOR_LDFLAGS@
 FOR_LINKSHARED = @FOR_LINKSHARED@
 GEN_DEVICE = @GEN_DEVICE@
+GIT_BRANCH = @GIT_BRANCH@
+GIT_COMMIT = @GIT_COMMIT@
+GIT_COMMIT_DATE = @GIT_COMMIT_DATE@
+GIT_REMOTE = @GIT_REMOTE@
+GIT_REMOTE_URL = @GIT_REMOTE_URL@
+GIT_SRCDIR = @GIT_SRCDIR@
+GIT_TAG = @GIT_TAG@
 GLOBUS_CFLAGS = @GLOBUS_CFLAGS@
 GLOBUS_FLAVOR = @GLOBUS_FLAVOR@
 GLOBUS_LIBS = @GLOBUS_LIBS@
 GLOBUS_LOCATION = @GLOBUS_LOCATION@
 GREP = @GREP@
+HAVE_AWK = @HAVE_AWK@
 HAVE_DOCKER = @HAVE_DOCKER@
+HAVE_GIT = @HAVE_GIT@
 HAVE_MOTIF = @HAVE_MOTIF@
 HAVE_VISIBILITY = @HAVE_VISIBILITY@
 HAVE_WINE = @HAVE_WINE@
@@ -346,6 +358,7 @@ JAVA_ONLY = @JAVA_ONLY@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
+JRE = @JRE@
 LD = @LD@
 LDARC = @LDARC@
 LDFLAGS = @LDFLAGS@
@@ -422,8 +435,6 @@ READLINE_CPPFLAGS = @READLINE_CPPFLAGS@
 READLINE_LDFLAGS = @READLINE_LDFLAGS@
 READLINE_LIBS = @READLINE_LIBS@
 READLINK = @READLINK@
-RELEASE_BRANCH = @RELEASE_BRANCH@
-RELEASE_COMMIT = @RELEASE_COMMIT@
 RELEASE_DATE = @RELEASE_DATE@
 RELEASE_MAJOR = @RELEASE_MAJOR@
 RELEASE_MINOR = @RELEASE_MINOR@
@@ -572,7 +583,7 @@ COMMON_SRC = \
 	jScope/Base64.java                    jScope/ColorDialog.java             jScope/ColorMapDialog.java        \
 	jScope/ColorMap.java                  jScope/ConnectionEvent.java         jScope/ConnectionListener.java    \
 	jScope/ContourSignal.java             jScope/DataAccess.java              jScope/DataAccessURL.java         \
-	jScope/DataCached.java                jScope/DataCacheObject.java         jScope/DataProvider.java          \
+	jScope/DataProvider.java                                                                                    \
 	jScope/DataServerItem.java            jScope/Descriptor.java              jScope/FakeTWUProperties.java     \
 	jScope/FontSelection.java             jScope/FrameData.java               jScope/Frames.java                \
 	jScope/FtuDataProvider.java           jScope/Grid.java                    jScope/ImageTransferable.java     \
@@ -602,7 +613,8 @@ COMMON_SRC = \
 	jScope/WaveformEditor.java            jScope/WaveformEditorListener.java  jScope/WaveformEvent.java         \
 	jScope/Waveform.java                  jScope/WaveformListener.java        jScope/WaveformManager.java       \
 	jScope/WaveformMetrics.java           jScope/WaveInterface.java           jScope/WavePopup.java             \
-        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java
+        jScope/XYData.java		      jScope/XYWaveData.java		  jScope/WaveDataListener.java	    \
+	jScope/MdsConnectionLocal.java	      jScope/MdsConnectionSSH.java	  jScope/SSHDataProvider.java 
 
 WAVEDISPLAY_SRC = 
 JSCOPE_SRC = \
@@ -610,7 +622,6 @@ JSCOPE_SRC = \
 	jScope/CompositeWaveDisplay.java \
 	jScope/LocalDataProvider.java    \
 	jScope/LocalDataProviderInfo.java    \
-	jScope/MdsDataClient.java        \
 	jScope/MdsIOException.java       \
 	jScope/MdsPlusBrowseSignals.java \
 	jScope/TextorBrowseSignals.java

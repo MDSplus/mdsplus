@@ -64,7 +64,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  DEC/CMS REPLACEMENT HISTORY, Element FILTER.C */
 /*------------------------------------------------------------------------------
 
-	Name:	FILTER   
+	Name:	FILTER
 
 	Type:   C function
 
@@ -81,13 +81,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	DoFilter(Filter *filter, float *in, float *out, int *n_samples)
 	    perform digital filtering as specified in structure filter. in and out must be already allocated.
 
-	DoFilterResample(Filter *filter, float *in, float *out, int *n_samples, int *start_idx, int *delta_idx, 
+	DoFilterResample(Filter *filter, float *in, float *out, int *n_samples, int *start_idx, int *delta_idx,
 		int *max_out_samples)
 	    perform digital filtering as specified in structure filter. but only samples corresponding
 	    to start_idx + N*delta_idx (N >=0) are stored in out.
 	    In and out must be already allocated.
 
-	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_samples, int *start_idx, int *delta_idx, 
+	DoFilterResampleVME(Filter *filter, short *in, float *out, int *n_samples, int *start_idx, int *delta_idx,
 		int *max_out_samples, int step_raw)
 	    same as DoFilterResample, except that input are 12 bit representation of an integer number
 
@@ -181,10 +181,10 @@ EXPORT void DoFilterResample(Filter * filter, float *in, float *out, int *n_s, i
 /* Free storage */
   for (i = 0; i < filter->num_parallels; i++)
     if (filter->units[i].den_degree > 0)
-      free((char *)history[i]);
-  free((char *)history);
-  free((char *)curr_out);
-  free((char *)curr_idx);
+      free(history[i]);
+  free(history);
+  free(curr_out);
+  free(curr_idx);
 
 /* First sample equal for input and output */
   if (start == 0)
@@ -258,10 +258,10 @@ EXPORT void DoFilterResampleVME(Filter * filter, short *in, float *out, int *n_s
 /* Free storage */
   for (i = 0; i < filter->num_parallels; i++)
     if (filter->units[i].den_degree > 0)
-      free((char *)history[i]);
-  free((char *)history);
-  free((char *)curr_out);
-  free((char *)curr_idx);
+      free(history[i]);
+  free(history);
+  free(curr_out);
+  free(curr_idx);
 /* First sample equal for input and output */
   if (start == 0)
     out[0] = in[start];
@@ -350,12 +350,12 @@ EXPORT void FreeFilter(Filter * filter)
   int i;
 
   for (i = 0; i < filter->num_parallels; i++) {
-    free((char *)filter->units[i].num);
+    free(filter->units[i].num);
     if (filter->units[i].den_degree)
-      free((char *)filter->units[i].den);
+      free(filter->units[i].den);
   }
-  free((char *)filter->units);
-  free((char *)filter);
+  free(filter->units);
+  free(filter);
 }
 
 static void NormalizeFilter(Filter * filter)
@@ -373,7 +373,7 @@ static void NormalizeFilter(Filter * filter)
   }
 }
 
-//Prepare the description of a butterworth 
+//Prepare the description of a butterworth
 EXPORT Filter *prepareFilter(float cutFreq, float samplingFreq, int numPoles)
 {
   Filter *outFilter;

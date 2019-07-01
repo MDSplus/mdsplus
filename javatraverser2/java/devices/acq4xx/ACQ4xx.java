@@ -7,24 +7,24 @@ import mds.data.descriptor_s.NODE;
 
 class ACQ4xx extends Device{
     class Channel extends Device{
-        protected Channel(final NODE<?> node, final int nargs){
-            super(ACQ4xx.this.frame, node, ACQ4xx.this.editable, nargs);
-            this.pane.setLayout(new GridLayout(1, 0));
-        }
+	protected Channel(final NODE<?> node, final int nargs){
+	    super(ACQ4xx.this.frame, node, ACQ4xx.this.editable, nargs);
+	    this.pane.setLayout(new GridLayout(1, 0));
+	}
     }
     class Master extends Device{
-        protected Master(final NODE<?> node, final int nargs){
-            super(ACQ4xx.this.frame, node, ACQ4xx.this.editable, nargs);
-            this.pane.setLayout(new GridLayout(1, 0));
-        }
+	protected Master(final NODE<?> node, final int nargs){
+	    super(ACQ4xx.this.frame, node, ACQ4xx.this.editable, nargs);
+	    this.pane.setLayout(new GridLayout(1, 0));
+	}
     }
 
     protected ACQ4xx(final Frame frame, final NODE<?> head, final boolean editable, final int nargs){
-        super(frame, head, editable, nargs);
+	super(frame, head, editable, nargs);
     }
 
     @SuppressWarnings("static-method")
     public Master getMaster() {
-        return null;
+	return null;
     }
 }

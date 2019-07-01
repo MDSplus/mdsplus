@@ -61,8 +61,7 @@ EXPORT int TclSetDefault(void *ctx, char **error, char **output __attribute__ ((
     sprintf(*error,"Error: Problem setting default to node '%s'\n"
 	    "Error message was: %s\n", nodename, msg);
   }
-  if (nodename)
-    free(nodename);
+  free(nodename);
   return sts;
 }
 

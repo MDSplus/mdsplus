@@ -58,7 +58,7 @@ typedef struct _Condition_p {
 
 // FREE
 static void __attribute__((unused)) free_if(void *ptr){
-  if (*(void**)ptr) free(*(void**)ptr);
+  free(*(void**)ptr);
 }
 #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
 #define FREE_IF(ptr,c)      pthread_cleanup_pop(c);
@@ -122,13 +122,22 @@ pthread_cond_destroy(&(input)->cond);\
 pthread_mutex_destroy(&(input)->mutex);\
 pthread_mutex_unlock(destroy_lock);\
 } while(0)
-#define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
+#define CONDITION_DESTROY_PTR(input,destroy_lock) do{\
+pthread_mutex_lock(destroy_lock);\
+if (input){\
+pthread_cond_destroy(&(input)->cond);\
+pthread_mutex_destroy(&(input)->mutex);\
+free(input);(input)=NULL;}\
+pthread_mutex_unlock(destroy_lock);\
+} while(0)
+#define CREATE_THREAD(thread, stacksize, target, args)\
 pthread_attr_t attr;\
 pthread_attr_init(&attr);\
 pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE stacksize);\
-int c_status = pthread_create(&thread, &attr, (void *)target, args);\
-pthread_attr_destroy(&attr);\
-pthread_detach(thread);
+int c_status = pthread_create(&thread, &attr, (void *)target, (void*)args);\
+pthread_attr_destroy(&attr)
+#define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
+CREATE_THREAD(thread, stacksize, target, args);if (!c_status) pthread_detach(thread);
 
 #define CONDITION_START_THREAD(input, thread, stacksize, target, args) do{\
 _CONDITION_LOCK(input);\
@@ -193,10 +202,10 @@ static char* _getUserName(){
     {
       user_p = getlogin();
       if (user_p && strlen(user_p)>0){
-        strcpy(user,user_p);
-        user_p = user;
+	strcpy(user,user_p);
+	user_p = user;
       } else
-        user_p = "Linux User";
+	user_p = "Linux User";
     }
 #endif
 #endif

@@ -29,8 +29,10 @@
 ./usr/local/mdsplus/include/camdef.h
 ./usr/local/mdsplus/include/camshr.h
 ./usr/local/mdsplus/include/camshr_messages.h
+./usr/local/mdsplus/include/classdef.h
 ./usr/local/mdsplus/include/dbidef.h
 ./usr/local/mdsplus/include/dcl.h
+./usr/local/mdsplus/include/dtypedef.h
 ./usr/local/mdsplus/include/int128.h
 ./usr/local/mdsplus/include/ipdesc.h
 ./usr/local/mdsplus/include/libroutines.h

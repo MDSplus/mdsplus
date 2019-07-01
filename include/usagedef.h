@@ -1,27 +1,38 @@
+#pragma once
 /*  USAGEDEF.H ************************************
 
 Node Usage definitions
 
 **************************************************/
-
-#ifndef USAGEDEF_H
-
-#define TreeUSAGE_ANY       0
-#define TreeUSAGE_NONE      1 /******* USAGE_NONE is now USAGE_STRUCTURE *******/
-#define TreeUSAGE_STRUCTURE 1
-#define TreeUSAGE_ACTION    2
-#define TreeUSAGE_DEVICE    3
-#define TreeUSAGE_DISPATCH  4
-#define TreeUSAGE_NUMERIC   5
-#define TreeUSAGE_SIGNAL    6
-#define TreeUSAGE_TASK      7
-#define TreeUSAGE_TEXT      8
-#define TreeUSAGE_WINDOW    9
-#define TreeUSAGE_AXIS     10
-#define TreeUSAGE_SUBTREE  11
-#define TreeUSAGE_COMPOUND_DATA 12
-#define TreeUSAGE_MAXIMUM  TreeUSAGE_COMPOUND_DATA
-#define TreeUSAGE_SUBTREE_REF 14 /* Runtime only special usage */
-#define TreeUSAGE_SUBTREE_TOP 15 /* Runtime only special usage */
-
+#include <inttypes.h>
+#ifdef MDSOBJECTSCPPSHRVS_EXPORTS
+// visual studio uses int types for typedef
+# define TYPEDEF(bytes) enum
+# define ENDDEF(type,name) ;typedef type name
+#else
+# define TYPEDEF(bytes) typedef enum __attribute__((__packed__))
+# define ENDDEF(type,name) name
 #endif
+TYPEDEF(1) {
+TreeUSAGE_ANY		=0,
+TreeUSAGE_STRUCTURE	=1,
+TreeUSAGE_ACTION	=2,
+TreeUSAGE_DEVICE	=3,
+TreeUSAGE_DISPATCH	=4,
+TreeUSAGE_NUMERIC	=5,
+TreeUSAGE_SIGNAL	=6,
+TreeUSAGE_TASK		=7,
+TreeUSAGE_TEXT		=8,
+TreeUSAGE_WINDOW	=9,
+TreeUSAGE_AXIS		=10,
+TreeUSAGE_SUBTREE	=11,
+TreeUSAGE_COMPOUND_DATA	=12,
+/* upper limit for valid usage_t */
+TreeUSAGE_MAXIMUM,
+/* Runtime only special usage */
+TreeUSAGE_SUBTREE_REF,
+TreeUSAGE_SUBTREE_TOP
+} ENDDEF(uint8_t,usage_t);
+#undef TYPEDEF
+#undef ENDDEF
+#define TreeUSAGE_NONE TreeUSAGE_STRUCTURE

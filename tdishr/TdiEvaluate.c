@@ -23,19 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Evaluate.C
-        Resolve NID, PATH, and FUNCTION data types and return a dynamic block.
-        The output descriptor must be class XD, it will be and XD-DSC.
-        The major entry point for evaluation of expressions.
-                status = TdiEvaluate(&in_dsc, &out_dsc)
+	Resolve NID, PATH, and FUNCTION data types and return a dynamic block.
+	The output descriptor must be class XD, it will be and XD-DSC.
+	The major entry point for evaluation of expressions.
+	        status = TdiEvaluate(&in_dsc, &out_dsc)
 
-        Thomas W. Fredian, MIT PFC      19-Sep-1988     copyrighted
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Thomas W. Fredian, MIT PFC      19-Sep-1988     copyrighted
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 
 RULES OF THE GAME:
-        If "in" is a descriptor and an XD or D, it is freed.
-        To avoid an XD release use its data pointer.
+	If "in" is a descriptor and an XD or D, it is freed.
+	To avoid an XD release use its data pointer.
 
-        "out" must be an XD. It will be an XD-DSC, usually.
+	"out" must be an XD. It will be an XD-DSC, usually.
 */
 
 #include <STATICdef.h>
@@ -59,7 +59,7 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-int Tdi1Evaluate(int opcode __attribute__ ((unused)),
+EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__ ((unused)),
 		 int narg __attribute__ ((unused)),
 		 struct descriptor *list[], struct descriptor_xd *out_ptr)
 // SsINTERNAL: requires MdsCopyDxXd
@@ -81,8 +81,7 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
     real stuff, we can just copy its descriptor.
     Release any lingering output unless it is our input.
     ***************************************************/
-    switch (list[0]->dtype) {
-    case DTYPE_DSC:
+    if (list[0]->dtype == DTYPE_DSC) {
       if (list[0]->pointer == 0)
 	return TdiNULL_PTR;
       switch (((struct descriptor *)(list[0]->pointer))->dtype) {
@@ -105,7 +104,6 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
 	  return status;
 	}
       }
-      break;
     }
     MDS_ATTR_FALLTHROUGH
 
@@ -152,7 +150,7 @@ int Tdi1Evaluate(int opcode __attribute__ ((unused)),
     case DTYPE_FUNCTION:
       pfun = (struct descriptor_function *)list[0];
       status = TdiIntrinsic(*(unsigned short *)pfun->pointer,
-          pfun->ndesc, pfun->arguments, out_ptr);
+	  pfun->ndesc, pfun->arguments, out_ptr);
       break;
     case DTYPE_PARAM:
     case DTYPE_SIGNAL:

@@ -77,10 +77,8 @@ EXPORT int TclRename(void *ctx, char **error, char **output __attribute__ ((unus
   } else {
     *error = strdup("Error: source node parameter missing\n");
   }
-  if (srcnam)
-    free(srcnam);
-  if (destnam)
-    free(destnam);
+  free(srcnam);
+  free(destnam);
 
   return sts;
 }

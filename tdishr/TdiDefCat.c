@@ -23,19 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TDI$$DEF_CAT.C
-        Data type information table definitions.
-        Used by Tdi1Same and others.
+	Data type information table definitions.
+	Used by Tdi1Same and others.
 
-        requirements for type matching
-        maximum real size minus 1
-        (Some significance can be lost:
-        Unsigned to signed loses 1 bit,
-        L to F and Q to D lose 7 bits,
-        Q to G loses 10 bits,
-        O to H loses 15 bits, and
-        D to G loses 3 bits.)
+	requirements for type matching
+	maximum real size minus 1
+	(Some significance can be lost:
+	Unsigned to signed loses 1 bit,
+	L to F and Q to D lose 7 bits,
+	Q to G loses 10 bits,
+	O to H loses 15 bits, and
+	D to G loses 3 bits.)
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
+	Ken Klare, LANL CTR-7   (c)1989,1990
 */
 #include <STATICdef.h>
 #include "tdirefcat.h"
@@ -46,16 +46,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define G_SYM   "G"
 #define D_SYM   "V"
 
+// digits for integers: length * 2.4 + 1.6 [1:4,2:6,4:11,8:20,16:40]
 const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"MISSING", 0, 0, 0, 0},	/*0 Z=unsecified */
   {"V", 0x7fff, 0, 0, 0},	/*1 aligned bit string (bits) */
   {"BU", 0x8100, 1, 4, 0},	/*2 byte unsigned */
-  {"WU", 0x8101, 2, 8, 0},	/*3 byte unsigned */
-  {"LU", 0x8103, 4, 12, 0},	/*4 long unsigned */
+  {"WU", 0x8101, 2, 6, 0},	/*3 byte unsigned */
+  {"LU", 0x8103, 4, 11, 0},	/*4 long unsigned */
   {"QU", 0x8107, 8, 20, 0},	/*5 quadword unsigned */
   {"B", 0x8300, 1, 4, 0},	/*6 byte */
-  {"W", 0x8301, 2, 8, 0},	/*7 word */
-  {"L", 0x8303, 4, 12, 0},	/*8 long */
+  {"W", 0x8301, 2, 6, 0},	/*7 word */
+  {"L", 0x8303, 4, 11, 0},	/*8 long */
   {"Q", 0x8307, 8, 20, 0},	/*9 quadword */
   {"F", 0x8703, 4, 16, F_SYM},	/*10 f-real */
   {"D", 0x8707, 8, 24, D_SYM},	/*11 d-real */
@@ -72,8 +73,8 @@ const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"ZI", 0x7fff, 0, 0, 0},	/*22 sequence of instructions */
   {"ZEM", 0x7fff, 2, 0, 0},	/*23 procedure entry mask */
   {"DSC", 0x7fff, 8, 0, 0},	/*24 descriptor */
-  {"OU", 0x810f, 16, 36, 0},	/*25 octaword unsigned */
-  {"O", 0x830f, 16, 36, 0},	/*26 octaword */
+  {"OU", 0x810f, 16, 40, 0},	/*25 octaword unsigned */
+  {"O", 0x830f, 16, 40, 0},	/*26 octaword */
   {"G", 0x8707, 8, 24, G_SYM},	/*27 g-real */
   {"H", 0x8f0f, 16, 40, "H"},	/*28 h-real */
   {"GC", 0x9707, 16, 48, G_SYM},	/*29 g-complex */
@@ -105,4 +106,4 @@ const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"FTC", 0x9707, 16, 48, FT_SYM}	/*55 ieee double floating complex */
 };
 
-const unsigned char TdiCAT_MAX = sizeof(TdiREF_CAT) / sizeof(struct TdiCatStruct_table);
+const tdicat_t TdiCAT_MAX = sizeof(TdiREF_CAT) / sizeof(struct TdiCatStruct_table);

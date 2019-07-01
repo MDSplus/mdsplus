@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Trim.C
-        Generic transformation with single string output.
+	Generic transformation with single string output.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <STATICdef.h>
 #include "tdinelements.h"
@@ -46,7 +46,7 @@ extern int TdiGetArgs();
 extern int TdiCvtArgs();
 extern int TdiMasterData();
 
-int Tdi1Trim(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];
@@ -64,8 +64,8 @@ int Tdi1Trim(int opcode, int narg, struct descriptor *list[], struct descriptor_
       status = TdiINVCLADSC;
   }
 	/***********************
-        Go off and do something.
-        ***********************/
+	Go off and do something.
+	***********************/
   if STATUS_OK
     status = (*fun_ptr->f3) (dat[0].pointer, out_ptr);
   if STATUS_OK
@@ -82,7 +82,7 @@ int Tdi1Trim(int opcode, int narg, struct descriptor *list[], struct descriptor_
 }
 
 /*--------------------------------------------------------------
-        F90 transformation, string trailing blanks removed.
+	F90 transformation, string trailing blanks removed.
 */
 int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
@@ -97,18 +97,18 @@ int Tdi3Trim(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 }
 
 /*--------------------------------------------------------------
-        Convert opcode to builtin name.
+	Convert opcode to builtin name.
 */
 int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  unsigned int ind = 0xffffffff;
+  int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < (unsigned int)TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < (int)TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = { 0, DTYPE_T, CLASS_S, 0 };
-    str2.length = (unsigned short)strlen(name_ptr);
+    str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
     status = MdsGet1DxS(&str2.length, &dtype, out_ptr);
     if STATUS_OK
@@ -119,22 +119,22 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 }
 
 /*--------------------------------------------------------------
-        Convert opcode to string name.
+	Convert opcode to string name.
 */
 int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
   STATIC_CONSTANT DESCRIPTOR(str1, "OPC" "$");
-  unsigned int ind = 0xffffffff;
+  int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char dtype = (unsigned char)DTYPE_T;
+  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
-  if (STATUS_OK && ind < (unsigned int)TdiFUNCTION_MAX) {
+  if (STATUS_OK && ind < TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;
     struct descriptor str2 = { 0, DTYPE_T, CLASS_S, 0 };
-    unsigned short total;
-    str2.length = (unsigned short)strlen(name_ptr);
+    length_t total;
+    str2.length = (length_t)strlen(name_ptr);
     str2.pointer = name_ptr;
-    total = (unsigned short)(str1.length + str2.length);
+    total = (length_t)(str1.length + str2.length);
     status = MdsGet1DxS(&total, &dtype, out_ptr);
     if STATUS_OK
       status =

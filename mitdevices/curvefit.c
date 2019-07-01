@@ -22,7 +22,7 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-/* 
+/*
  * Curve fitting routines for DT200 CPCI digitizers.
  * adapted from B5910 code.
  *
@@ -101,8 +101,8 @@ EXPORT int SplineFit(int *num_knots, float *knots_x, float *knots_y, int *num_v,
     csakm_(num_knots, knots_x, knots_y, fbreak, cscoef);
     for (i = 0; i < *num_v; i++)
       y[i] = csval_(&x[i], num_knots, fbreak, cscoef);
-    free((char *)fbreak);
-    free((char *)cscoef);
+    free(fbreak);
+    free(cscoef);
     return 1;
   } else
     return LinFit(num_knots, knots_x, knots_y, num_v, x, y);

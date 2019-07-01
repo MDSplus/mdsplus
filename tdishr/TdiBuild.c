@@ -23,9 +23,9 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Build.C
-        Generic builds and such.
+	Generic builds and such.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991
+	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
 #include <stdlib.h>
 #include <mdsdescrip.h>
@@ -45,10 +45,10 @@ extern int TdiCvtArgs();
 extern int TdiMasterData();
 
 /*--------------------------------------------------------------
-        Return without evaluation. Passes paths, nids, and functions.
-                any = AS_IS(any)
+	Return without evaluation. Passes paths, nids, and functions.
+	        any = AS_IS(any)
 */
-int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1AsIs(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -58,34 +58,34 @@ int Tdi1AsIs(int opcode __attribute__ ((unused)), int narg __attribute__ ((unuse
 }
 
 /*--------------------------------------------------------------
-        Make a class-R record of pointers.
-        Standard generic call:
-                result = BUILD_xxxx(arg1,...)
+	Make a class-R record of pointers.
+	Standard generic call:
+	        result = BUILD_xxxx(arg1,...)
 
-        The first argument is evaluated for
-        BUILD_CONDITION (byte modifier)
-        BUILD_DEPENDENCY (byte op_code)
-        BUILD_DISPATCH (byte type)
-        BUILD_FUNCTION (word opcode)
-        BUILD_CALL (byte dtype)
-        and the remaining arguments are shifted by one.
-        Each argument is NOT evaluated to get "real" data or to do further builds:
-        BUILD_ACTION(BUILD_DISPATCH(...),BUILD_TASK(...))
+	The first argument is evaluated for
+	BUILD_CONDITION (byte modifier)
+	BUILD_DEPENDENCY (byte op_code)
+	BUILD_DISPATCH (byte type)
+	BUILD_FUNCTION (word opcode)
+	BUILD_CALL (byte dtype)
+	and the remaining arguments are shifted by one.
+	Each argument is NOT evaluated to get "real" data or to do further builds:
+	BUILD_ACTION(BUILD_DISPATCH(...),BUILD_TASK(...))
 
-        Limitations:
-                254 arguments in some uses plus 1 for output.
-                No type checking at build time.
-                No arrays of descriptors.
+	Limitations:
+	        254 arguments in some uses plus 1 for output.
+	        No type checking at build time.
+	        No arrays of descriptors.
 */
-int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *ptr;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
   int j, k, modif;
-  unsigned short modif_s;
-  unsigned char modif_c;
+  uint16_t modif_s;
+  uint8_t  modif_c;
 
   build.length = 0;
   build.dtype = fun_ptr->o1;
@@ -95,13 +95,13 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
     switch (fun_ptr->o2) {
     case DTYPE_BU:
       build.length = 1;
-      modif_c = (unsigned char)modif;
-      build.pointer = &modif_c;
+      modif_c = (uint8_t)modif;
+      build.pointer = (uint8_t*)&modif_c;
       break;
     case DTYPE_WU:
       build.length = 2;
-      modif_s = (unsigned short)modif;
-      build.pointer = (unsigned char *)&modif_s;
+      modif_s = (uint16_t)modif;
+      build.pointer = (uint8_t*)&modif_s;
       break;
     default:
       status = TdiINVDTYDSC;
@@ -123,12 +123,12 @@ int Tdi1Build(int opcode, int narg, struct descriptor *list[], struct descriptor
 }
 
 /*--------------------------------------------------------------
-        Make text into data type path.
-                BUILD_PATH(string)
-                BUILD_EVENT(string)
-        WARNING: BUILD_PATH and BUILD_EVENT should be called MAKE_xxx.
+	Make text into data type path.
+	        BUILD_PATH(string)
+	        BUILD_EVENT(string)
+	WARNING: BUILD_PATH and BUILD_EVENT should be called MAKE_xxx.
 */
-int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd sig[1], uni[1], dat[1];
@@ -141,8 +141,8 @@ int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descri
   if STATUS_OK
     status = TdiCvtArgs(narg, dat, cats);
 	/*********************************
-        Change from text to path or event.
-        *********************************/
+	Change from text to path or event.
+	*********************************/
   if STATUS_OK {
     dat[0].pointer->dtype = TdiRefFunction[opcode].o1;
     status = MdsCopyDxXd((struct descriptor *)&dat[0], out_ptr);
@@ -159,13 +159,13 @@ int Tdi1BuildPath(int opcode, int narg, struct descriptor *list[], struct descri
 }
 
 /*--------------------------------------------------------------
-        Evaluate arguments before building into the given data type.
-        Use in returning calculations using local variables from a FUN.
-        Some arguments may be "unevaluated" by using an AS_IS(arg).
-        This can be used to pass back expressions evaluated in an outer FUN.
-        So BUILD_xxx(x,y,...) is the same as MAKE_xxx(AS_IS(x),AS_IS(y),...).
+	Evaluate arguments before building into the given data type.
+	Use in returning calculations using local variables from a FUN.
+	Some arguments may be "unevaluated" by using an AS_IS(arg).
+	This can be used to pass back expressions evaluated in an outer FUN.
+	So BUILD_xxx(x,y,...) is the same as MAKE_xxx(AS_IS(x),AS_IS(y),...).
 */
-int Tdi1Make(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *ptr;

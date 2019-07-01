@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*************************************************************************\
 * Copyright (c) 2010 - RFX.
 * EPICS BASE is distributed subject to a Software License Agreement found
-* in file LICENSE that is included with this distribution. 
+* in file LICENSE that is included with this distribution.
 \*************************************************************************/
 
 
@@ -80,7 +80,7 @@ static void callbackFunc(CALLBACK *pcallback)
 {
      struct dbCommon  *precord;
      rset      *prset;
-     
+
      callbackGetUser(precord,pcallback);
      prset = (rset *)(precord->rset);
      dbScanLock(precord);
@@ -100,24 +100,24 @@ static long init_record(mdsexprRecord *prec)
     /* INP must be CONSTANT, PV_LINK, DB_LINK or CA_LINK*/
 /*    switch (prec->inp.type) {
     case CONSTANT:
-        prec->nord = 0;
-        break;
+	prec->nord = 0;
+	break;
     case PV_LINK:
     case DB_LINK:
     case CA_LINK:
-          pcallback = (CALLBACK *)(calloc(1,sizeof(CALLBACK)));
-          callbackSetCallback(callbackFunc,pcallback);
-          callbackSetUser(prec,pcallback);
-          prec->dpvt = (void *)pcallback;
-        break;
+	  pcallback = (CALLBACK *)(calloc(1,sizeof(CALLBACK)));
+	  callbackSetCallback(callbackFunc,pcallback);
+	  callbackSetUser(prec,pcallback);
+	  prec->dpvt = (void *)pcallback;
+	break;
     default:
-        recGblRecordError(S_db_badField, (void *)prec,
-            "devMpSoft (init_record) Illegal INP field");
-        return(S_db_badField);
+	recGblRecordError(S_db_badField, (void *)prec,
+	    "devMpSoft (init_record) Illegal INP field");
+	return(S_db_badField);
     }
 */
     if(strlen(prec->exp) > 0 || (prec->loc == mdsexprLOCREM_Remote)) //If an experiment name is defined, or it is remote open it
-    	prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip, 
+	prec->errs = openMds(prec->exp, prec->shot, (prec->loc == mdsexprLOCREM_Local), prec->dsip,
 		0, &prec->tidx, prec->errm);
     else
 	prec->tidx = -1;
@@ -178,26 +178,26 @@ static long asynchRead(CALLBACK *pcallback)
 
 //    dbGetLink(&prec->inp, prec->ftvl, prec->bptr, 0, &nRequest);
 /*    if (nRequest > 0) {
-        prec->nord = nRequest;
-        if (prec->tsel.type == CONSTANT &&
-            prec->tse == epicsTimeEventDeviceTime)
-            dbGetTimeStamp(&prec->inp, &prec->time);
+	prec->nord = nRequest;
+	if (prec->tsel.type == CONSTANT &&
+	    prec->tse == epicsTimeEventDeviceTime)
+	    dbGetTimeStamp(&prec->inp, &prec->time);
 
 //extern int writeMds(int nodeId, double *vals, int nVals, int dim1, int dim2, int dataIdx, int isEpicsTime, long epicsTime, int preTrigger, double period, double trigger, char *errMsg);
 
-        if(prec->dim1 > 0 && prec->dim2 > 0)
+	if(prec->dim1 > 0 && prec->dim2 > 0)
 	    nRows = prec->nord/(prec->dim1*prec->dim2);
-    	else if(prec->dim1 > 0)
+	else if(prec->dim1 > 0)
 	    nRows = prec->nord/prec->dim1;
-    	else
+	else
 	    nRows = prec->nord;
 
 	currTime = (unsigned long)prec->time.nsec + ((unsigned long)prec->time.secPastEpoch * 1000000000L);
 
-    	prec->errs = writeMds(prec->nid, prec->bptr, prec->ftvl, prec->pre, nRows, prec->dim1, prec->dim2, prec->didx, 
+	prec->errs = writeMds(prec->nid, prec->bptr, prec->ftvl, prec->pre, nRows, prec->dim1, prec->dim2, prec->didx,
 	    prec->prd, prec->trig, currTime, prec->errm, prec->dbg);
- 
-        prec->didx += nRows;
+
+	prec->didx += nRows;
     }
 */
     callbackRequest(pcallback);
@@ -210,32 +210,32 @@ static long read_mp(mdsexprRecord *prec)
     long nRequest = prec->nelm;
      CALLBACK *pcallback = (CALLBACK *)prec->dpvt;
      if(prec->pact) {
-          prec->udf = FALSE;
-          return 0;
+	  prec->udf = FALSE;
+	  return 0;
      }
      prec->pact=TRUE;
 
 /*************************Set Intermediate result to 0 UNTIL SET BY asyncRead*********************************/
      switch(prec->ftvl) {
-	    	case DBF_CHAR: 
-	    	case DBF_UCHAR: 
+		case DBF_CHAR:
+		case DBF_UCHAR:
 		    *((char *)prec->bptr) = 0;
 		    break;
-	    	case DBF_SHORT: 
-	    	case DBF_USHORT: 
+		case DBF_SHORT:
+		case DBF_USHORT:
 		    *((short *)prec->bptr) = 0;
 		    break;
-	    	case DBF_LONG: 
-	    	case DBF_ULONG: 
+		case DBF_LONG:
+		case DBF_ULONG:
 		    *((int *)prec->bptr) = 0;
 		    break;
-	    	case DBF_FLOAT: 
+		case DBF_FLOAT:
 		    *((float *)prec->bptr) = 0;
 		    break;
-	    	case DBF_DOUBLE: 
+		case DBF_DOUBLE:
 		    *((double *)prec->bptr) = 0;
 		    break;
-	    	case DBF_STRING: 
+		case DBF_STRING:
 		    *((double *)prec->bptr) = 0;
 		    break;
 	}

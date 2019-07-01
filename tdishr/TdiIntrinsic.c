@@ -23,31 +23,32 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      TdiIntrinsic.C
-        Dispatch internal functions to their routines.
-        These are extensions of the basic types.
-        All operation must be defined in our table.
-        Each standard FUNCTION is called:
-                status = Tdi1name(opcode, narg, &list, &out)
-        NOTE first and second arguments are passed by value.
-        The returned expression is not re-evaluated.
-        This is used by Tdi1Evaluate for expression evaluation
-        and by TDISHR$SHARE.MAR for external calls.
-        If output is class XD, free it when we can and make it the result.
-        If output is class D, then try to grab S or D class. Type is set by data.
-        If output is class S or A, then try to convert into it. Only VMS result types.
-        Can use this to get scalar text of a long by:
-                DESCRIPTOR(output_dsc, "12345678");
-                status = TdiLong(&input_dsc, &output_dsc);
-        If input_dsc describes -123.4, then output_dsc will describe "bbbb-123".
-        WARNING, this depends on string writable.
-        WARNING, STR$ routines signal rather that return the error.
+	Dispatch internal functions to their routines.
+	These are extensions of the basic types.
+	All operation must be defined in our table.
+	Each standard FUNCTION is called:
+	        status = Tdi1name(opcode, narg, &list, &out)
+	NOTE first and second arguments are passed by value.
+	The returned expression is not re-evaluated.
+	This is used by Tdi1Evaluate for expression evaluation
+	and by TDISHR$SHARE.MAR for external calls.
+	If output is class XD, free it when we can and make it the result.
+	If output is class D, then try to grab S or D class. Type is set by data.
+	If output is class S or A, then try to convert into it. Only VMS result types.
+	Can use this to get scalar text of a long by:
+	        DESCRIPTOR(output_dsc, "12345678");
+	        status = TdiLong(&input_dsc, &output_dsc);
+	If input_dsc describes -123.4, then output_dsc will describe "bbbb-123".
+	WARNING, this depends on string writable.
+	WARNING, STR$ routines signal rather that return the error.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1991,1992
+	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 #define PREC_COMMA 92
 #define MAXLINE 120
 #define MAXFRAC 40
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
+#define OPC_ENUM
 
 #include <STATICdef.h>
 #include "tdithreadsafe.h"
@@ -62,7 +63,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <tdishr_messages.h>
-#include <treeshr_messages.h>
+#include <tdishr.h>
+#include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 typedef struct _bounds {
@@ -71,7 +73,6 @@ typedef struct _bounds {
 } BOUNDS;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-extern unsigned short OpcCompile;
 extern int TdiFaultHandlerNoFixup();
 extern int Tdi0Decompile();
 extern int TdiConvert();
@@ -116,7 +117,7 @@ STATIC_ROUTINE void numb(int count)
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int TdiTrace(int opcode __attribute__ ((unused)),
+int TdiTrace(opcode_t opcode __attribute__ ((unused)),
 	     int narg __attribute__ ((unused)),
 	     struct descriptor *list[] __attribute__ ((unused)),
 	     struct descriptor_xd *out_ptr)
@@ -136,7 +137,7 @@ int TdiTrace(int opcode __attribute__ ((unused)),
   return MDSplusSUCCESS;
 }
 
-static inline void TRACE(int opcode, int narg,
+static inline void TRACE(opcode_t opcode, int narg,
 	  struct descriptor *list[],
 	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
 {
@@ -146,7 +147,7 @@ static inline void TRACE(int opcode, int narg,
   unsigned short now = message->length;
   int j;
   struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
-  if (opcode >= 0 && opcode <= TdiFUNCTION_MAX) {
+  if (opcode < TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
       add("%TDI Requires");
@@ -199,7 +200,7 @@ void cleanup_list(void* fixed_in) {
 	free(fixed->a[fixed->n]);
 }
 
-EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+EXPORT int TdiIntrinsic(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
@@ -207,6 +208,7 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(out_ptr);
+  status = MDSplusSUCCESS;
   struct descriptor *dsc_ptr;
   TdiThreadStatic_p->TdiIntrinsic_recursion_count++;
   if (narg < fun_ptr->m1)
@@ -336,17 +338,24 @@ EXPORT int TdiIntrinsic(int opcode, int narg, struct descriptor *list[], struct 
   FREE_CANCEL(out_ptr);
   return status;
 }
+EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+  int status;
+  CTX_PUSH(ctx);
+  status = TdiIntrinsic(opcode, narg, list, out_ptr);
+  CTX_POP(ctx);
+  return status;
+}
 
 /*--------------------------------------------------------------
-        Set debugging printout.
-                message = DEBUG([option])
-        Where option is bitwise combination of:
-                1 to prepend first error message
-                2 to print the current message
-                4 to clear the message buffer
+	Set debugging printout.
+	        message = DEBUG([option])
+	Where option is bitwise combination of:
+	        1 to prepend first error message
+	        2 to print the current message
+	        4 to clear the message buffer
 		8 return message before clear
 */
-int Tdi1Debug(int opcode __attribute__ ((unused)),
+int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)
@@ -374,7 +383,7 @@ int Tdi1Debug(int opcode __attribute__ ((unused)),
       printf("%.*s", message->length, message->pointer);
     if (option & 4) {
       if (option & 8)
-        status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
+	status = MdsCopyDxXd((struct descriptor *)message, out_ptr);
       StrFree1Dx(message);
       return status;
     }

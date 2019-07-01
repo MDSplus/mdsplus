@@ -1,8 +1,11 @@
 include @top_builddir@/Makefile.inc
 
-srcdir = @srcdir@
-builddir = @builddir@
-VPATH = @srcdir@
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+MKDIR_P=@MKDIR_P@
+@AX_RECONFIGURE_TARGET@
+
 X_CFLAGS=@X_CFLAGS@
 CFLAGS+=$(X_CFLAGS)
 CFLAGS+=-Wno-unused-parameter
@@ -42,7 +45,7 @@ XmdsXdBoxDialogButton.c \
 XmdsXdBoxOnOffButton.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = xmdsshr.export
+EXPORTS = XmdsShr.exports
 
 all:    @MAKEUIDDIR@ \
         @MAKEUIDDIR@xmds_usage_icons.uid \
@@ -77,6 +80,7 @@ install: $(libdir) @uiddir@
 	if test "@SHARETYPE@" != ".a" ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@libXmdsShr.a @libdir@; \
 	fi;
+
 
 @MAKEUIDDIR@xmds_usage_icons.uid: ${srcdir}/xmds_usage_icons.uil
 	$(UIL) -o $@ ${srcdir}/xmds_usage_icons.uil

@@ -24,7 +24,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /* zutil.c -- target dependent utility functions for the compression library
  * Copyright (C) 1995-1998 Jean-loup Gailly.
- * For conditions of distribution and use, see copyright notice in zlib.h 
+ * For conditions of distribution and use, see copyright notice in zlib.h
  */
 
 /* @(#) $Id$ */
@@ -57,7 +57,7 @@ const char *ZEXPORT zlibVersion()
   return ZLIB_VERSION;
 }
 
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 
 #ifndef verbose
 #define verbose 0

@@ -11,20 +11,20 @@ package jScope;
 
 /**
  * Class XYData is the container of signals returned by WaveData instances.  Code immplementing WaveData
- * interface will use this class only via its constructor methods. 
- * Besides X and Y arrays, resolution and increasingX information is defined here. Resolution is computed 
+ * interface will use this class only via its constructor methods.
+ * Besides X and Y arrays, resolution and increasingX information is defined here. Resolution is computed
  * in jScope as NumberOfSamples/XRange and compared with the declared resolution on the XYData instance in order
- * to activate the asyncronous retrieval mechanism (that occurs when a resampled signal is zoomed and 
+ * to activate the asyncronous retrieval mechanism (that occurs when a resampled signal is zoomed and
  * more resolution is required in the zoomed region).
  * increasingX flag specifies whether the X samples are in increasing order. jScope
- * handles dynamic resampling only when this flag is true. 
+ * handles dynamic resampling only when this flag is true.
  *
  * @see WaveData
  */
- 
- 
- 
- public class XYData 
+
+
+
+ public class XYData
 {
     double resolution; //Number of points/interval
     boolean increasingX;
@@ -45,7 +45,7 @@ package jScope;
     {
        this(x, y, resolution, increasingX, x[0], x[x.length - 1]);
     }
-    
+
    /**
      * XYData Constructor
      *
@@ -58,15 +58,15 @@ package jScope;
      */
     public XYData(double x[], float y[], double resolution, boolean increasingX, double xMin, double xMax)
     {
-        this.resolution = resolution;
-        this.increasingX = increasingX;
-        this.x = x;
-        this.y = y;
-        this.xMin = xMin;
-        this.xMax = xMax;
-        nSamples = (x.length < y.length)?x.length:y.length;
+	this.resolution = resolution;
+	this.increasingX = increasingX;
+	this.x = x;
+	this.y = y;
+	this.xMin = xMin;
+	this.xMax = xMax;
+	nSamples = (x.length < y.length)?x.length:y.length;
     }
-    
+
    /**
      * XYData Constructor with automatic derivation of increasingX flag
      *
@@ -76,28 +76,28 @@ package jScope;
      */
     public XYData(double x[], float y[], double resolution)
     {
-        this.resolution = resolution;
-        this.x = x;
-        this.y = y;
-        increasingX = true;
-        nSamples = (x.length < y.length)?x.length:y.length;
-        if(nSamples > 0)
-        {
-            xMin = xMax = x[0];
-            for(int i = 1; i < x.length; i++)
-            {
-                if(x[i-1] > x[i])
-                {
-                    increasingX = false;
-                }
-                if(x[i] > xMax)
-                    xMax = x[i];
-                if(x[i] < xMin)
-                    xMin = x[i];
-            }
-        }
+	this.resolution = resolution;
+	this.x = x;
+	this.y = y;
+	increasingX = true;
+	nSamples = (x.length < y.length)?x.length:y.length;
+	if(nSamples > 0)
+	{
+	    xMin = xMax = x[0];
+	    for(int i = 1; i < x.length; i++)
+	    {
+	        if(x[i-1] > x[i])
+	        {
+	            increasingX = false;
+	        }
+	        if(x[i] > xMax)
+	            xMax = x[i];
+	        if(x[i] < xMin)
+	            xMin = x[i];
+	    }
+	}
     }
-    
+
    /**
      * XYData Constructor with absolute times and automatic derivation of increasingX flag
      *
@@ -107,31 +107,31 @@ package jScope;
      */
     public XYData(long x[], float y[], double resolution)
     {
-        this.resolution = resolution;
-        this.xLong = x;
-        this.y = y;
-        this.x = new double[x.length];
-        for(int i = 0; i < x.length; i++)
-            this.x[i] = x[i];
-        increasingX = true;
-        nSamples = (x.length < y.length)?x.length:y.length;
-        if(nSamples > 0)
-        {
-            xMin = xMax = x[0];
-            for(int i = 1; i < x.length; i++)
-            {
-                if(x[i-1] > x[i])
-                {
-                    increasingX = false;
-                }
-                if(x[i] > xMax)
-                    xMax = x[i];
-                if(x[i] < xMin)
-                    xMin = x[i];
-            }
-        }
+	this.resolution = resolution;
+	this.xLong = x;
+	this.y = y;
+	this.x = new double[x.length];
+	for(int i = 0; i < x.length; i++)
+	    this.x[i] = x[i];
+	increasingX = true;
+	nSamples = (x.length < y.length)?x.length:y.length;
+	if(nSamples > 0)
+	{
+	    xMin = xMax = x[0];
+	    for(int i = 1; i < x.length; i++)
+	    {
+	        if(x[i-1] > x[i])
+	        {
+	            increasingX = false;
+	        }
+	        if(x[i] > xMax)
+	            xMax = x[i];
+	        if(x[i] < xMin)
+	            xMin = x[i];
+	    }
+	}
     }
-    
+
    /**
      * XYData Constructor with absolute times
      *
@@ -144,13 +144,13 @@ package jScope;
      */
     public XYData(long[]x, float[]y, double  resolution, boolean increasingX)
     {
-        this.resolution = resolution;
-        this.increasingX = increasingX;
-        this.xLong = x;
-        this.y = y;
-        this.x = new double[x.length];
-        for(int i = 0; i < x.length; i++)
-            this.x[i] = x[i];
-        nSamples = (x.length < y.length)?x.length:y.length;
+	this.resolution = resolution;
+	this.increasingX = increasingX;
+	this.xLong = x;
+	this.y = y;
+	this.x = new double[x.length];
+	for(int i = 0; i < x.length; i++)
+	    this.x[i] = x[i];
+	nSamples = (x.length < y.length)?x.length:y.length;
    }
 }

@@ -16,69 +16,69 @@ public class Compound extends Data {
 	/**
 	 * Opcode, used only by some derived classes.
 	 */
-        int opcode;
+	int opcode;
 	/**
 	 * The data (descriptor) array.
 	 */
 	Data[] descs;
 
 	public Compound(Data help, Data units, Data error, Data validation)
-        {
-           super(help, units, error, validation);
+	{
+	   super(help, units, error, validation);
 	}
 
 	public int getNumDescs()
-        {
+	{
 		return descs.length;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public Data getDescAt(int idx)
-        {   
-            return descs[idx];
+	{
+	    return descs[idx];
 	}
 
 	/**
-	 * 
+	 *
 	 * @param idx
 	 */
 	public void setDescAt(int idx, Data desc)
-        {
-            descs[idx] = desc;
+	{
+	    descs[idx] = desc;
 
 	}
 
 	public Data[] getDescs()
-        {
+	{
 		return descs;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param dscs
 	 */
 	public void setDescs(Data[] dscs)
-        {
-            this.descs = dscs;
+	{
+	    this.descs = dscs;
 	}
-        
-        protected void resizeDescs(int newDim)
-        {
-            if(descs == null)
-            {
-                descs = new Data[newDim];
-            }
-            else
-            {
-                if(newDim <= descs.length) return;
-                Data newDescs[] = new Data[newDim];
-                for(int i = 0; i  < descs.length; i++)
-                    newDescs[i] = descs[i];
-                descs = newDescs;
-            }
-        }
+
+	protected void resizeDescs(int newDim)
+	{
+	    if(descs == null)
+	    {
+	        descs = new Data[newDim];
+	    }
+	    else
+	    {
+	        if(newDim <= descs.length) return;
+	        Data newDescs[] = new Data[newDim];
+	        for(int i = 0; i  < descs.length; i++)
+	            newDescs[i] = descs[i];
+	        descs = newDescs;
+	    }
+	}
 
 }

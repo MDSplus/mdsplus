@@ -186,8 +186,7 @@ EXPORT int incaa4___store(struct descriptor *niddsc_ptr __attribute__ ((unused))
   start_addr = (mar - samps_per_chan * active_chans + memsize) % memsize;
   max_idx = setup->ptsc - 1;
   min_idx = setup->ptsc - samps_per_chan;
-  if (raw.pointer)
-    free(raw.pointer);
+  free(raw.pointer);
   raw.pointer = malloc(samps_per_chan * 2);
   for (chan = 0; ((chan < active_chans) && (status & 1)); chan++) {
     int input_nid =

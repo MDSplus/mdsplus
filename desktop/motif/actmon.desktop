@@ -1,0 +1,13 @@
+[Desktop Entry]
+Version=1.0
+Encoding=UTF-8
+Name=ActMon
+Type=Application
+Exec=actmon
+Icon=/usr/local/mdsplus/pixmaps/actlog.png
+X-GNOME-DocPath=
+Terminal=false
+Name[en_US]=actmon
+GenericName[en_US]=actmon
+Comment[en_US]=MDSplus action monitor
+Categories=GNOME;Application;MDSplus;X-Red-Hat-Base;

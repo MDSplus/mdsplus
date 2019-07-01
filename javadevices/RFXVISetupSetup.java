@@ -64,7 +64,7 @@ public class RFXVISetupSetup extends DeviceSetup
     deviceChoice1.setOffsetNid(2);
     deviceChoice1.setLabelString("FIlling Type: ");
     deviceChoice1.setChoiceItems(new String[] {"Open Loop Continuous Flux", "Closed Loop Continuous Flux", "Pulsed Flux", "Fixed Charge", "Open Loop Continuous Flux + Pulsed Flux",
-        "Closed Loop Continuous Flux + Pulsed Flux", "Fixed Charge + Pulsed Flux"});
+	"Closed Loop Continuous Flux + Pulsed Flux", "Fixed Charge + Pulsed Flux"});
     deviceChoice1.setUpdateIdentifier("");
     deviceChoice1.setIdentifier("");
     deviceField3.setOffsetNid(3);
@@ -95,7 +95,7 @@ public class RFXVISetupSetup extends DeviceSetup
     jPanel3.add(deviceField2, null);
     this.getContentPane().add(jTabbedPane1, BorderLayout.CENTER);
     //jTabbedPane1.add(jPanel6,   "PZ Puffing");
-    jTabbedPane1.add(jPanel6,   "H2 injection");	
+    jTabbedPane1.add(jPanel6,   "H2 injection");
     //jTabbedPane1.add(jPanel5,    "PZ Filling");
     jTabbedPane1.add(jPanel5,    "He/impurities injection");
     jPanel5.add(deviceWave1,  BorderLayout.CENTER);

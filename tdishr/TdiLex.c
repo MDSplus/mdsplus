@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <STATICdef.h>
 #include "stdio.h"
 #include <treeshr_messages.h>
+#include "mdsdescrip.h"
 #define U(x) ((x)&0377)
 #define NLSTATE tdiyyprevious=YYNEWLINE
 #define BEGIN tdiyybgin = tdiyysvec + 1 +
@@ -144,20 +145,6 @@ extern "C" {
 extern int TdiConvert();
 extern struct marker *TdiYylvalPtr;
 
-extern unsigned short Opcdollar, OpcZero,
-    OpcAdd, OpcAnd, OpcConcat, OpcDivide, OpcEq,
-    OpcGe, OpcGt, OpcIand, OpcInot, OpcIor,
-    OpcLe, OpcLt, OpcMultiply, OpcNe, OpcNot, OpcOr,
-    OpcPower, OpcPreDec, OpcPreInc, OpcPromote, OpcDtypeRange,
-    OpcShiftLeft, OpcShiftRight, OpcSubtract;
-
-extern int
- LEX_ERROR, LEX_IDENT, LEX_VBL, LEX_TEXT, LEX_VALUE,
- LEX_IN, LEX_LAND, LEX_LEQ, LEX_LEQV, LEX_LGE, LEX_LOR, LEX_MUL,
- LEX_ADD, LEX_CONCAT, LEX_IAND, LEX_INC, LEX_IOR,
- LEX_POINT, LEX_POWER, LEX_PROMO, LEX_RANGE, LEX_SHIFT, LEX_BINEQ,
- LEX_LANDS, LEX_LEQS, LEX_LGES, LEX_LORS, LEX_MULS, LEX_UNARYS;
-
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 STATIC_ROUTINE int TdiLexBinEq(int token);
 
@@ -173,13 +160,13 @@ STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
 }
 
 /*--------------------------------------------------------
-        Remove comment from the Lex input stream.
-        Nested comments allowed. Len is not used.
-        Limitation:     Not ANSI C standard use of delimiters.
+	Remove comment from the Lex input stream.
+	Nested comments allowed. Len is not used.
+	Limitation:     Not ANSI C standard use of delimiters.
 */
 STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
-                                 unsigned char *str __attribute__ ((unused)),
-                                 struct marker *mark_ptr __attribute__ ((unused)))
+	                         unsigned char *str __attribute__ ((unused)),
+	                         struct marker *mark_ptr __attribute__ ((unused)))
 {
   char c, c1;
   int count = 1;
@@ -204,15 +191,15 @@ STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
 }
 
 /*--------------------------------------------------------
-        Convert floating point values with the follow
+	Convert floating point values with the follow
 ing
-        syntax to internal representation via descriptors:
-                [sign] decimal [fraction] exponent
-                or [sign] [decimal] fraction [exponent]
-        where:  decimal         [+|-] 0-9...
-                fraction        . 0-9...
-                exponent        [E|F|D|G|H|S|T] [+|-] 0-9...
-        NEED to size based on exponent range and number of digits.
+	syntax to internal representation via descriptors:
+	        [sign] decimal [fraction] exponent
+	        or [sign] [decimal] fraction [exponent]
+	where:  decimal         [+|-] 0-9...
+	        fraction        . 0-9...
+	        exponent        [E|F|D|G|H|S|T] [+|-] 0-9...
+	NEED to size based on exponent range and number of digits.
 */
 STATIC_CONSTANT DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
 STATIC_CONSTANT DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
@@ -227,7 +214,7 @@ STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r
     double tmp;
     struct descriptor tmp_d = { sizeof(double), DTYPE_NATIVE_DOUBLE, CLASS_S, 0 };
     tmp_d.pointer = (char *)&tmp;
-    tmp = atof(str_c);
+    tmp = strtod(str_c,NULL);
     return TdiConvert(&tmp_d, out_d);
   } else {
     float tmp;
@@ -261,15 +248,15 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
   str_dsc.pointer = (char *)str;
   upcase(str, str_len);
 	/*******************
-        Find final location.
-        *******************/
+	Find final location.
+	*******************/
   bad = StrFindFirstNotInSet((struct descriptor *)&str_dsc, (struct descriptor *)&valid_dsc);
   if (bad > 0)
     str_dsc.length = bad - 1;
 
 	/**********************
-        Find special exponents.
-        **********************/
+	Find special exponents.
+	**********************/
   idx = StrFindFirstInSet((struct descriptor *)&str_dsc, (struct descriptor *)&dfghst_dsc);
   if (idx) {
     switch (tst = str[idx - 1]) {
@@ -316,9 +303,9 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 }
 
 /*--------------------------------------------------------
-        Convert Lex input to identifier name or builtin.
-        Clobbers string with upcase. IDENT token returns name.
-        Note, Lex strings are NUL terminated.
+	Convert Lex input to identifier name or builtin.
+	Clobbers string with upcase. IDENT token returns name.
+	Note, Lex strings are NUL terminated.
 */
 STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
@@ -326,30 +313,30 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
   unsigned char *str_l;
   GET_TDITHREADSTATIC_P;
 /*
-        upcase(str,len);
+	upcase(str,len);
 */
   mark_ptr->builtin = -1;
   MAKE_S(DTYPE_T, len, mark_ptr->rptr);
   _MOVC3(mark_ptr->rptr->length, str, (char *)mark_ptr->rptr->pointer);
 
 	/*****************************
-        $ marks next compile argument.
-        $nnn marks nnn-th argument.
-        *****************************/
+	$ marks next compile argument.
+	$nnn marks nnn-th argument.
+	*****************************/
   if (str[0] == '$') {
     for (j = len; --j > 0;)
       if (str[j] < '0' || str[j] > '9')
 	break;
     if (j == 0) {
-      mark_ptr->builtin = Opcdollar;
+      mark_ptr->builtin = OPC_$;
       return (LEX_IDENT);
     }
   } else if (str[0] == '_')
     return (LEX_VBL);
 
 	/**********************
-        Search of initial list.
-        **********************/
+	Search of initial list.
+	**********************/
   str_l = (unsigned char *)strncpy((char *)malloc(len + 1), (char *)str, len);
   str_l[len] = 0;
   j = TdiHash(len, str_l);
@@ -361,9 +348,9 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
   }
 
 	/**********************************************
-        Note difference of pointers is divided by step.
-        Standard function gives number. Token if named.
-        **********************************************/
+	Note difference of pointers is divided by step.
+	Standard function gives number. Token if named.
+	**********************************************/
   mark_ptr->builtin = (short)j;
   token = TdiRefFunction[j].token;
   if ((token & LEX_K_NAMED) != 0) {
@@ -379,34 +366,34 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
 }
 
 /*--------------------------------------------------------
-        Convert integer values with the following syntax
-        to internal representation via descriptors:
-                [space]...[sign][radix][digit]...[type]
-        where:  sign    +       ignored
-                        -       negative
-                radix   0B b    binary          digit   0-1
-        (digit          0O o    octal                   0-7
-        required)       0D d    decimal(float)          0-9
-                        0X x    hexadecimal             0-9A-Fa-f
-                type    SB b    signed byte
-                        SW w    signed word
-                        SL l    signed long
-                        SQ q    signed quadword
-                        SO o    signed octaword
-                        UB bu   unsigned byte
-                        UW wu   unsigned word
-                        UL lu   unsigned long
-                        UQ qu   unsigned quadword
-                        UO ou   unsigned octaword
-        CAUTION must use unsigned char to avoid sign extend in hex.
-        WARNING without following digit B and O radix become byte and octaword.
-        WARNING hexadecimal strings must use SB or UB for bytes.
+	Convert integer values with the following syntax
+	to internal representation via descriptors:
+	        [space]...[sign][radix][digit]...[type]
+	where:  sign    +       ignored
+	                -       negative
+	        radix   0B b    binary          digit   0-1
+	(digit          0O o    octal                   0-7
+	required)       0D d    decimal(float)          0-9
+	                0X x    hexadecimal             0-9A-Fa-f
+	        type    SB b    signed byte
+	                SW w    signed word
+	                SL l    signed long
+	                SQ q    signed quadword
+	                SO o    signed octaword
+	                UB bu   unsigned byte
+	                UW wu   unsigned word
+	                UL lu   unsigned long
+	                UQ qu   unsigned quadword
+	                UO ou   unsigned octaword
+	CAUTION must use unsigned char to avoid sign extend in hex.
+	WARNING without following digit B and O radix become byte and octaword.
+	WARNING hexadecimal strings must use SB or UB for bytes.
 
-        Limitations:
-        Depends on contiguous character set, 0-9 A-F a-f.
-        Depends on right-to-left byte assignment.
-        Depends on ones- or twos-complement.
-        NEED size based on range, thus no overflow.
+	Limitations:
+	Depends on contiguous character set, 0-9 A-F a-f.
+	Depends on right-to-left byte assignment.
+	Depends on ones- or twos-complement.
+	NEED size based on range, thus no overflow.
 */
 #define len1 8			/*length of a word in bits */
 #define num1 16			/*number of words to accumulate, octaword */
@@ -431,26 +418,26 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
   int length, is_signed, tst, type;
 
 	/******************************
-        Remove leading blanks and tabs.
-        ******************************/
+	Remove leading blanks and tabs.
+	******************************/
   while (now < end && (*now == ' ' || *now == '\t'))
     ++now;
   upcase(now, str_len);
 
 	/*********
-        Save sign.
-        *********/
+	Save sign.
+	*********/
   if (now >= end)
     sign = '+';
   else if ((sign = *now) == '-' || sign == '+')
     ++now;
 
 	/***************************************************
-        Select radix. Must be followed by appropriate digit.
-        Leading zero is required in our LEX.
-        Watch, 0bu a proper unsigned byte is good and
-        0bub a binary with no digits is bad. Reject 0b33.
-        ***************************************************/
+	Select radix. Must be followed by appropriate digit.
+	Leading zero is required in our LEX.
+	Watch, 0bu a proper unsigned byte is good and
+	0bub a binary with no digits is bad. Reject 0b33.
+	***************************************************/
   if (now < end && *now == '0')
     ++now;
   if (now + 1 < end) {
@@ -484,8 +471,8 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
     radix = 10;
 
 	/**************
-        Convert number.
-        **************/
+	Convert number.
+	**************/
   for (qptr = &qq[0]; qptr < &qq[num1]; ++qptr)
     *qptr = 0;
   for (; now < end; ++now) {
@@ -506,10 +493,10 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
   }
 
 	/***********************************************************
-        Negative numbers do negation until nonzero, then complement.
-        Works for 1 or 2's complement, not sign and magnitude.
-        Unsigned overflow: carry | sign, signed: carry | wrong sign.
-        ***********************************************************/
+	Negative numbers do negation until nonzero, then complement.
+	Works for 1 or 2's complement, not sign and magnitude.
+	Unsigned overflow: carry | sign, signed: carry | wrong sign.
+	***********************************************************/
   if (sign == '-') {
     for (qptr = &qq[0]; qptr < &qq[num1]; ++qptr)
       if ((*qptr = (char)(-*qptr)) != 0)
@@ -519,8 +506,8 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
   }
 
 	/*******************************
-        Find output size and signedness.
-        *******************************/
+	Find output size and signedness.
+	*******************************/
   is_signed = -1;
   type = 2;
   if (now < end)
@@ -586,8 +573,8 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
     }
 
 	/*******************************
-        Remove trailing blanks and tabs.
-        *******************************/
+	Remove trailing blanks and tabs.
+	*******************************/
   while (now < end && (*now == ' ' || *now == '\t'))
     ++now;
 
@@ -598,8 +585,8 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
   _MOVC3(length, (char *)qq, (char *)mark_ptr->rptr->pointer);
 
 	/*************************
-        Check the high order bits.
-        *************************/
+	Check the high order bits.
+	*************************/
   if (now < end && *now != '\0')
     status = TdiEXTRANEOUS;
 
@@ -628,7 +615,7 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
 }
 
 /*--------------------------------------------------------
-        Convert Lex input to NID or absolute PATH.
+	Convert Lex input to NID or absolute PATH.
 */
 int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
 {
@@ -665,7 +652,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
 }
 
 /*--------------------------------------------------------
-        Remove arrow and trailing punctation.
+	Remove arrow and trailing punctation.
 */
 STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_ptr)
 {
@@ -680,9 +667,9 @@ STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_
 }
 
 /*--------------------------------------------------------
-        Recognize some graphic punctuation Lex symbols for YACC.
-        Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
-        Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
+	Recognize some graphic punctuation Lex symbols for YACC.
+	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
+	Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
 */
 STATIC_ROUTINE int TdiLexBinEq(int token)
 {
@@ -706,36 +693,36 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
   mark_ptr->rptr = 0;
 
 	/********************
-        Two graphic operator.
-        ********************/
+	Two graphic operator.
+	********************/
   switch (c0) {
   case '!':
     if (c1 == '=') {
-      mark_ptr->builtin = OpcNe;
+      mark_ptr->builtin = OPC_NE;
       return TdiLexBinEq(LEX_LEQS);
     }
     break;
   case '&':
     if (c1 == '&') {
-      mark_ptr->builtin = OpcAnd;
+      mark_ptr->builtin = OPC_AND;
       return TdiLexBinEq(LEX_LANDS);
     }
     break;
   case '*':
     if (c1 == '*') {
-      mark_ptr->builtin = OpcPower;
+      mark_ptr->builtin = OPC_POWER;
       return TdiLexBinEq(LEX_POWER);
     }
     break;
   case '+':
     if (c1 == '+') {
-      mark_ptr->builtin = OpcPreInc;
+      mark_ptr->builtin = OPC_PRE_INC;
       return (LEX_INC);
     }
     break;
   case '-':
     if (c1 == '-') {
-      mark_ptr->builtin = OpcPreDec;
+      mark_ptr->builtin = OPC_PRE_DEC;
       return (LEX_INC);
     }
 /***
@@ -745,53 +732,53 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
     break;
   case '.':
     if (c1 == '.') {
-      mark_ptr->builtin = OpcDtypeRange;
+      mark_ptr->builtin = OPC_DTYPE_RANGE;
       return (LEX_RANGE);
     }
     break;
   case '/':
     if (c1 == '/') {
-      mark_ptr->builtin = OpcConcat;
+      mark_ptr->builtin = OPC_CONCAT;
       return TdiLexBinEq(LEX_CONCAT);
     }
     break;
 /***                     else if (c1 == '*') return (TdiLexComment(len, str, mark_ptr) == 0) ? input() : 0; break; ***/
-/***                    if (c1 == '=') {mark_ptr->builtin = OpcNe;              return TdiLexBinEq      (LEX_LEQS);}*/
+/***                    if (c1 == '=') {mark_ptr->builtin = OPC_NE;             return TdiLexBinEq      (LEX_LEQS);}*/
 /***                    if (c1 == ')') {                                        return                  ']';} break;***/
 /***    case '(' :      if (c1 == '/') {                                        return                  '[';} break;***/
   case '<':
     if (c1 == '<') {
-      mark_ptr->builtin = OpcShiftLeft;
+      mark_ptr->builtin = OPC_SHIFT_LEFT;
       return TdiLexBinEq(LEX_SHIFT);
     }
     if (c1 == '=') {
-      mark_ptr->builtin = OpcLe;
+      mark_ptr->builtin = OPC_LE;
       return TdiLexBinEq(LEX_LGES);
     }
     if (c1 == '>') {
-      mark_ptr->builtin = OpcNe;
+      mark_ptr->builtin = OPC_NE;
       return TdiLexBinEq(LEX_LEQS);
     }
     break;
   case '=':
     if (c1 == '=') {
-      mark_ptr->builtin = OpcEq;
+      mark_ptr->builtin = OPC_EQ;
       return TdiLexBinEq(LEX_LEQS);
     }
     break;
   case '>':
     if (c1 == '=') {
-      mark_ptr->builtin = OpcGe;
+      mark_ptr->builtin = OPC_GE;
       return TdiLexBinEq(LEX_LGES);
     }
     if (c1 == '>') {
-      mark_ptr->builtin = OpcShiftRight;
+      mark_ptr->builtin = OPC_SHIFT_RIGHT;
       return TdiLexBinEq(LEX_SHIFT);
     }
     break;
   case '|':
     if (c1 == '|') {
-      mark_ptr->builtin = OpcOr;
+      mark_ptr->builtin = OPC_OR;
       return TdiLexBinEq(LEX_LORS);
     }
     break;
@@ -799,48 +786,48 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
   unput(c1);
 
 	/********************
-        One graphic operator.
-        ********************/
+	One graphic operator.
+	********************/
   switch (c0) {
   case '!':
-    mark_ptr->builtin = OpcNot;
+    mark_ptr->builtin = OPC_NOT;
     return (LEX_UNARYS);
-/****   case '%' :      mark_ptr->builtin = OpcMod;             return TdiLexBinEq      (LEX_MULS);****/
+/****   case '%' :      mark_ptr->builtin = OPC_MOD;             return TdiLexBinEq      (LEX_MULS);****/
   case '&':
-    mark_ptr->builtin = OpcIand;
+    mark_ptr->builtin = OPC_IAND;
     return TdiLexBinEq(LEX_IAND);
   case '*':
-    mark_ptr->builtin = OpcMultiply;
+    mark_ptr->builtin = OPC_MULTIPLY;
     return TdiLexBinEq('*');
   case '+':
-    mark_ptr->builtin = OpcAdd;
+    mark_ptr->builtin = OPC_ADD;
     return TdiLexBinEq(LEX_ADD);
   case '-':
-    mark_ptr->builtin = OpcSubtract;
+    mark_ptr->builtin = OPC_SUBTRACT;
     return TdiLexBinEq(LEX_ADD);
   case '/':
-    mark_ptr->builtin = OpcDivide;
+    mark_ptr->builtin = OPC_DIVIDE;
     return TdiLexBinEq(LEX_MULS);
   case ':':
-    mark_ptr->builtin = OpcDtypeRange;
+    mark_ptr->builtin = OPC_DTYPE_RANGE;
     return (LEX_RANGE);
   case '<':
-    mark_ptr->builtin = OpcLt;
+    mark_ptr->builtin = OPC_LT;
     return TdiLexBinEq(LEX_LGES);
   case '>':
-    mark_ptr->builtin = OpcGt;
+    mark_ptr->builtin = OPC_GT;
     return TdiLexBinEq(LEX_LGES);
   case '@':
-    mark_ptr->builtin = OpcPromote;
+    mark_ptr->builtin = OPC_PROMOTE;
     return (LEX_PROMO);
   case '^':
-    mark_ptr->builtin = OpcPower;
+    mark_ptr->builtin = OPC_POWER;
     return TdiLexBinEq(LEX_POWER);
   case '|':
-    mark_ptr->builtin = OpcIor;
+    mark_ptr->builtin = OPC_IOR;
     return TdiLexBinEq(LEX_IOR);
   case '~':
-    mark_ptr->builtin = OpcInot;
+    mark_ptr->builtin = OPC_INOT;
     return (LEX_UNARYS);
   }
   mark_ptr->builtin = -1;
@@ -848,12 +835,12 @@ STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
 }
 
 /*--------------------------------------------------------
-        C-style text in matching quotes. Strict: must end in quote. Continuation: \ before newline.
-        Limitation: Text is ASCII dependent in quotes.
-        Limitation: No wide characters. L'\xabc'
-        Code all ANSI C escapes.
-        On \ followed by non-standard we remove \.
-        NEED overflow check on octal and hex. Watch sign extend of char.
+	C-style text in matching quotes. Strict: must end in quote. Continuation: \ before newline.
+	Limitation: Text is ASCII dependent in quotes.
+	Limitation: No wide characters. L'\xabc'
+	Code all ANSI C escapes.
+	On \ followed by non-standard we remove \.
+	NEED overflow check on octal and hex. Watch sign extend of char.
 */
 
 int TdiLexQuote(int len __attribute__ ((unused)),

@@ -421,7 +421,7 @@ JNIEXPORT void JNICALL Java_Database_setFlags(JNIEnv * env, jobject obj __attrib
     nid = (*env)->GetIntField(env, jnid, nid_fid);
     status = TreeSetNci(nid, itmlst);
     if (!(status & 1))
-        RaiseException(env, MdsGetMsg(status), status);
+	RaiseException(env, MdsGetMsg(status), status);
 }
 
 JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint jflags) {
@@ -435,7 +435,7 @@ JNIEXPORT void JNICALL Java_Database_clearFlags(JNIEnv * env, jobject obj __attr
     nid = (*env)->GetIntField(env, jnid, nid_fid);
     status = TreeSetNci(nid, itmlst);
     if (!(status & 1))
-        RaiseException(env, MdsGetMsg(status), status);
+	RaiseException(env, MdsGetMsg(status), status);
 }
 
 JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid) {
@@ -750,7 +750,7 @@ JNIEXPORT jobjectArray JNICALL Java_Database_getSons
     (*env)->SetObjectArrayElement(env, jnids, i, jnid);
   }
   if (num_nids > 0)
-    free((char *)nids);
+    free(nids);
   /*
      //printf("\nEnd getSons"); */
   return jnids;
@@ -977,14 +977,14 @@ EXPORT int doAction(int nid)
   int method_nid, i;
   struct descriptor nid_d = { sizeof(int), DTYPE_NID, CLASS_S, 0 };
   struct descriptor retStatus_d = { sizeof(int), DTYPE_L, CLASS_S, (char *)&retStatus };
-  char type = DTYPE_L;
+  dtype_t type = DTYPE_L;
   DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
   struct descriptor_d *decArgs;
   char *currPtr;
   int argLen, numArgs;
 
   nid_d.pointer = (char *)&method_nid;
-  call_d.pointer = (unsigned char *)&type;
+  call_d.pointer = &type;
   status = TreeGetRecord(nid, &xd);
   if (!(status & 1))
     return status;
@@ -1037,7 +1037,7 @@ EXPORT int doAction(int nid)
 	break;
       }
       // Try to distingush between system error success execution  return  0 code
-      // and error execution should be return a code < 255 
+      // and error execution should be return a code < 255
       // and MDSplus essror code which has this convention odd number success
       // even number error with a value larger than 255
       status = *(int *)(xd1.pointer->pointer);
@@ -1128,7 +1128,7 @@ EXPORT int doAction(int nid)
 	break;
       }
       // Try to distingush between system error success execution  return  0 code
-      // and error execution should be return a code < 255 
+      // and error execution should be return a code < 255
       // and MDSplus essror code which has this convention odd number success
       // even number error with a value larger than 255
       status = *(int *)(xd1.pointer->pointer);
@@ -1230,7 +1230,7 @@ JNIEXPORT jint JNICALL Java_Database_doAction(JNIEnv * env, jobject obj __attrib
   //      RaiseException(env, (status == 0)?"Cannot execute action":MdsGetMsg(status), status);
 }
 
-//Cesare Feb 2014: Java_Database_doDeviceMethod support routine 
+//Cesare Feb 2014: Java_Database_doDeviceMethod support routine
 static char *MdsGetString(char *in)
 {
   char error_message[512];
@@ -1289,7 +1289,7 @@ JNIEXPORT void JNICALL Java_Database_doDeviceMethod
   status = TreeDoMethod(&nid_dsc, &method_dsc, &stat_d MDS_END_ARG);
   (*env)->ReleaseStringUTFChars(env, jmethod, method);
   if (!(status & 1) || !(stat & 1)) {
-//Cesare Feb 2014: Fix nethod remporte message  
+//Cesare Feb 2014: Fix nethod remporte message
 
     char outMsg[1024];
     char *lastMsg;

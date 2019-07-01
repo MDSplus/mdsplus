@@ -42,15 +42,18 @@ static int64_t ViewDate = -1;
 extern void **TreeCtx();
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
-
-int TreeGetRecord(int nid_in, struct descriptor_xd *dsc)
-{
-  return _TreeGetRecord(*TreeCtx(), nid_in, dsc);
+int TreeGetRecord(int nid_in, struct descriptor_xd *dsc);
+int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc){
+  int status;
+  CTX_PUSH(&dbid);
+  status = TreeGetRecord(nid_in, dsc);
+  CTX_POP(&dbid);
+  return status;
 }
 
-int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
-{
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
+  void* dbid = *TreeCtx();
+  PINO_DATABASE *dblist = (PINO_DATABASE *)dbid;
   NID *nid = (NID *) & nid_in;
   struct descriptor *dptr;
   int status;
@@ -66,6 +69,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
     return GetRecordRemote(dblist, nid_in, dsc);
   nid_to_tree_nidx(dblist, nid, info, nidx);
   if (info) {
+    TreeCallHookFun("TreeNidHook","GetNci",info->treenam, info->shot, nid, NULL);
     status = TreeCallHook(GetNci, info, nid_in);
     if (status && STATUS_NOT_OK)
       return 0;
@@ -74,6 +78,7 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
       status = TreeGetNciW(info, nidx, &nci, 0);
       if STATUS_OK {
 	if (nci.length) {
+	  TreeCallHookFun("TreeNidHook","GetData", info->treenam, info->shot, nid, NULL);
 	  status = TreeCallHook(GetData, info, nid_in);
 	  if (status && STATUS_NOT_OK)
 	    return 0;
@@ -107,9 +112,9 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		  status = TreeBADRECORD;
 	      } else {
 		if (nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
-		  unsigned char dsc_dtype = DTYPE_DSC;
-		  int dlen = nci.length - 8;
-		  unsigned int ddlen = dlen + sizeof(struct descriptor);
+		  dtype_t dsc_dtype = DTYPE_DSC;
+		  length_t dlen = nci.length - 8;
+		  l_length_t ddlen = dlen + sizeof(struct descriptor);
 		  status = MdsGet1Dx(&ddlen, &dsc_dtype, dsc, 0);
 		  dptr = dsc->pointer;
 		  dptr->length = dlen;
@@ -120,13 +125,13 @@ int _TreeGetRecord(void *dbid, int nid_in, struct descriptor_xd *dsc)
 		  if (dptr->dtype != DTYPE_T) {
 		    switch (dptr->length) {
 		    case 2:
-		      *(short *)dptr->pointer = swapshort(dptr->pointer);
+		      *(int16_t*)dptr->pointer = swapint16(dptr->pointer);
 		      break;
 		    case 4:
-		      *(int *)dptr->pointer = swapint(dptr->pointer);
+		      *(int32_t*)dptr->pointer = swapint32(dptr->pointer);
 		      break;
 		    case 8:
-		      *(int64_t *) dptr->pointer = swapquad(dptr->pointer);
+		      *(int64_t*)dptr->pointer = swapint64(dptr->pointer);
 		      break;
 		    }
 		  }
@@ -316,8 +321,8 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 	  status = TreeReopenDatafile(info);
       }
       if STATUS_OK {
-	unsigned int partlen = min(swapshort((char *)&hdr.rlength) - 10, buffer_space);
-	int nidx = swapint((char *)&hdr.node_number);
+	unsigned int partlen = min(swapint16(&hdr.rlength) - 10, buffer_space);
+	int nidx = swapint32(&hdr.node_number);
 	if (first)
 	  *nodenum = nidx;
 	else if (*nodenum != nidx) {
@@ -370,7 +375,7 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 	if (STATUS_OK && deleted)
 	  status = TreeReopenDatafile(info);
       }
-      *nodenum = swapint((char *)&((RECORD_HEADER *) buffer)->node_number);
+      loadint32(nodenum,&((RECORD_HEADER *) buffer)->node_number);
       for (bptr_in = buffer, bptr = record + *buffer_size, bytes_remaining = *buffer_size;
 	   bytes_remaining;) {
 	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_remaining);

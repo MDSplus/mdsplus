@@ -55,7 +55,6 @@ EXPORT int TclShowCurrent(void *ctx, char **error, char **output)
   } else {
     *error = strdup("Failed to get shotid.\n");
   }
-  if (experiment)
-    free(experiment);
+  free(experiment);
   return 1;
 }

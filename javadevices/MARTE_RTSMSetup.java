@@ -71,32 +71,6 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         jPanel13 = new javax.swing.JPanel();
         deviceField18 = new DeviceField();
         deviceField19 = new DeviceField();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jPanel14 = new javax.swing.JPanel();
-        jPanel15 = new javax.swing.JPanel();
-        deviceField20 = new DeviceField();
-        deviceField21 = new DeviceField();
-        jPanel16 = new javax.swing.JPanel();
-        deviceField22 = new DeviceField();
-        deviceField23 = new DeviceField();
-        jPanel17 = new javax.swing.JPanel();
-        deviceField24 = new DeviceField();
-        deviceField25 = new DeviceField();
-        jPanel18 = new javax.swing.JPanel();
-        deviceField26 = new DeviceField();
-        deviceField27 = new DeviceField();
-        jPanel19 = new javax.swing.JPanel();
-        deviceField28 = new DeviceField();
-        deviceField29 = new DeviceField();
-        jPanel20 = new javax.swing.JPanel();
-        deviceField30 = new DeviceField();
-        deviceField31 = new DeviceField();
-        jPanel21 = new javax.swing.JPanel();
-        deviceField32 = new DeviceField();
-        deviceField33 = new DeviceField();
-        jPanel22 = new javax.swing.JPanel();
-        deviceField34 = new DeviceField();
-        deviceField35 = new DeviceField();
         jScrollPane3 = new javax.swing.JScrollPane();
         jPanel23 = new javax.swing.JPanel();
         jPanel24 = new javax.swing.JPanel();
@@ -253,8 +227,34 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         jPanel76 = new javax.swing.JPanel();
         deviceField130 = new DeviceField();
         deviceField131 = new DeviceField();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jPanel14 = new javax.swing.JPanel();
+        jPanel15 = new javax.swing.JPanel();
+        deviceField20 = new DeviceField();
+        deviceField21 = new DeviceField();
+        jPanel16 = new javax.swing.JPanel();
+        deviceField22 = new DeviceField();
+        deviceField23 = new DeviceField();
+        jPanel17 = new javax.swing.JPanel();
+        deviceField24 = new DeviceField();
+        deviceField25 = new DeviceField();
+        jPanel18 = new javax.swing.JPanel();
+        deviceField26 = new DeviceField();
+        deviceField27 = new DeviceField();
+        jPanel19 = new javax.swing.JPanel();
+        deviceField28 = new DeviceField();
+        deviceField29 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceField30 = new DeviceField();
+        deviceField31 = new DeviceField();
+        jPanel21 = new javax.swing.JPanel();
+        deviceField32 = new DeviceField();
+        deviceField33 = new DeviceField();
+        jPanel22 = new javax.swing.JPanel();
+        deviceField34 = new DeviceField();
+        deviceField35 = new DeviceField();
 
-        setDeviceProvider("localhost");
+        setDeviceProvider("schmivl.nbtf");
         setDeviceTitle("MARTe Real Time State Machine");
         setDeviceType("MARTE_RTSM");
         setHeight(600);
@@ -305,6 +305,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable1.setNumCols(8);
         deviceTable1.setNumRows(1);
         deviceTable1.setOffsetNid(1045);
+        deviceTable1.setUseExpressions(true);
         jPanel77.add(deviceTable1);
 
         deviceTable2.setColumnNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
@@ -313,6 +314,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable2.setNumCols(8);
         deviceTable2.setNumRows(1);
         deviceTable2.setOffsetNid(1051);
+        deviceTable2.setUseExpressions(true);
         jPanel77.add(deviceTable2);
 
         jPanel4.add(jPanel77);
@@ -326,6 +328,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable3.setNumRows(8);
         deviceTable3.setOffsetNid(1057);
         deviceTable3.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        deviceTable3.setUseExpressions(true);
         jPanel78.add(deviceTable3);
 
         deviceTable4.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
@@ -335,6 +338,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable4.setNumRows(8);
         deviceTable4.setOffsetNid(1063);
         deviceTable4.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        deviceTable4.setUseExpressions(true);
         jPanel78.add(deviceTable4);
 
         deviceTable5.setColumnNames(new String[] {"1", "2", "3", "4", "5", "6", "7", "8"});
@@ -344,6 +348,7 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         deviceTable5.setNumRows(8);
         deviceTable5.setOffsetNid(1069);
         deviceTable5.setRowNames(new String[] {"State1", "State2", "State3", "State4", "State5", "State6", "State7", "State8"});
+        deviceTable5.setUseExpressions(true);
         jPanel78.add(deviceTable5);
 
         jPanel4.add(jPanel78);
@@ -504,140 +509,6 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         jScrollPane1.setViewportView(jPanel5);
 
         jTabbedPane1.addTab("State 1 Waves", jScrollPane1);
-
-        jPanel14.setLayout(new java.awt.GridLayout(8, 1));
-
-        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 1"));
-
-        deviceField20.setIdentifier("");
-        deviceField20.setLabelString("X: ");
-        deviceField20.setNumCols(30);
-        deviceField20.setOffsetNid(1139);
-        jPanel15.add(deviceField20);
-
-        deviceField21.setIdentifier("");
-        deviceField21.setLabelString("Y: ");
-        deviceField21.setNumCols(30);
-        deviceField21.setOffsetNid(1140);
-        jPanel15.add(deviceField21);
-
-        jPanel14.add(jPanel15);
-
-        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 2"));
-
-        deviceField22.setIdentifier("");
-        deviceField22.setLabelString("X: ");
-        deviceField22.setNumCols(30);
-        deviceField22.setOffsetNid(1144);
-        jPanel16.add(deviceField22);
-
-        deviceField23.setIdentifier("");
-        deviceField23.setLabelString("Y: ");
-        deviceField23.setNumCols(30);
-        deviceField23.setOffsetNid(1145);
-        jPanel16.add(deviceField23);
-
-        jPanel14.add(jPanel16);
-
-        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 3"));
-
-        deviceField24.setIdentifier("");
-        deviceField24.setLabelString("X: ");
-        deviceField24.setNumCols(30);
-        deviceField24.setOffsetNid(1149);
-        jPanel17.add(deviceField24);
-
-        deviceField25.setIdentifier("");
-        deviceField25.setLabelString("Y: ");
-        deviceField25.setNumCols(30);
-        deviceField25.setOffsetNid(1150);
-        jPanel17.add(deviceField25);
-
-        jPanel14.add(jPanel17);
-
-        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 4"));
-
-        deviceField26.setIdentifier("");
-        deviceField26.setLabelString("X: ");
-        deviceField26.setNumCols(30);
-        deviceField26.setOffsetNid(1154);
-        jPanel18.add(deviceField26);
-
-        deviceField27.setIdentifier("");
-        deviceField27.setLabelString("Y: ");
-        deviceField27.setNumCols(30);
-        deviceField27.setOffsetNid(1155);
-        jPanel18.add(deviceField27);
-
-        jPanel14.add(jPanel18);
-
-        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 5"));
-
-        deviceField28.setIdentifier("");
-        deviceField28.setLabelString("X: ");
-        deviceField28.setNumCols(30);
-        deviceField28.setOffsetNid(1159);
-        jPanel19.add(deviceField28);
-
-        deviceField29.setIdentifier("");
-        deviceField29.setLabelString("Y: ");
-        deviceField29.setNumCols(30);
-        deviceField29.setOffsetNid(1160);
-        jPanel19.add(deviceField29);
-
-        jPanel14.add(jPanel19);
-
-        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 6"));
-
-        deviceField30.setIdentifier("");
-        deviceField30.setLabelString("X: ");
-        deviceField30.setNumCols(30);
-        deviceField30.setOffsetNid(1164);
-        jPanel20.add(deviceField30);
-
-        deviceField31.setIdentifier("");
-        deviceField31.setLabelString("Y: ");
-        deviceField31.setNumCols(30);
-        deviceField31.setOffsetNid(1165);
-        jPanel20.add(deviceField31);
-
-        jPanel14.add(jPanel20);
-
-        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 7"));
-
-        deviceField32.setIdentifier("");
-        deviceField32.setLabelString("X: ");
-        deviceField32.setNumCols(30);
-        deviceField32.setOffsetNid(1169);
-        jPanel21.add(deviceField32);
-
-        deviceField33.setIdentifier("");
-        deviceField33.setLabelString("Y: ");
-        deviceField33.setNumCols(30);
-        deviceField33.setOffsetNid(1170);
-        jPanel21.add(deviceField33);
-
-        jPanel14.add(jPanel21);
-
-        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 8"));
-
-        deviceField34.setIdentifier("");
-        deviceField34.setLabelString("X: ");
-        deviceField34.setNumCols(30);
-        deviceField34.setOffsetNid(1174);
-        jPanel22.add(deviceField34);
-
-        deviceField35.setIdentifier("");
-        deviceField35.setLabelString("Y: ");
-        deviceField35.setNumCols(30);
-        deviceField35.setOffsetNid(1175);
-        jPanel22.add(deviceField35);
-
-        jPanel14.add(jPanel22);
-
-        jScrollPane2.setViewportView(jPanel14);
-
-        jTabbedPane1.addTab("State 2 Waves", jScrollPane2);
 
         jPanel23.setLayout(new java.awt.GridLayout(8, 1));
 
@@ -1447,6 +1318,140 @@ public class MARTE_RTSMSetup extends DeviceSetup {
         jScrollPane8.setViewportView(jPanel68);
 
         jTabbedPane1.addTab("State 8 Waves", jScrollPane8);
+
+        jPanel14.setLayout(new java.awt.GridLayout(8, 1));
+
+        jPanel15.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 1"));
+
+        deviceField20.setIdentifier("");
+        deviceField20.setLabelString("X: ");
+        deviceField20.setNumCols(30);
+        deviceField20.setOffsetNid(1139);
+        jPanel15.add(deviceField20);
+
+        deviceField21.setIdentifier("");
+        deviceField21.setLabelString("Y: ");
+        deviceField21.setNumCols(30);
+        deviceField21.setOffsetNid(1140);
+        jPanel15.add(deviceField21);
+
+        jPanel14.add(jPanel15);
+
+        jPanel16.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 2"));
+
+        deviceField22.setIdentifier("");
+        deviceField22.setLabelString("X: ");
+        deviceField22.setNumCols(30);
+        deviceField22.setOffsetNid(1144);
+        jPanel16.add(deviceField22);
+
+        deviceField23.setIdentifier("");
+        deviceField23.setLabelString("Y: ");
+        deviceField23.setNumCols(30);
+        deviceField23.setOffsetNid(1145);
+        jPanel16.add(deviceField23);
+
+        jPanel14.add(jPanel16);
+
+        jPanel17.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 3"));
+
+        deviceField24.setIdentifier("");
+        deviceField24.setLabelString("X: ");
+        deviceField24.setNumCols(30);
+        deviceField24.setOffsetNid(1149);
+        jPanel17.add(deviceField24);
+
+        deviceField25.setIdentifier("");
+        deviceField25.setLabelString("Y: ");
+        deviceField25.setNumCols(30);
+        deviceField25.setOffsetNid(1150);
+        jPanel17.add(deviceField25);
+
+        jPanel14.add(jPanel17);
+
+        jPanel18.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 4"));
+
+        deviceField26.setIdentifier("");
+        deviceField26.setLabelString("X: ");
+        deviceField26.setNumCols(30);
+        deviceField26.setOffsetNid(1154);
+        jPanel18.add(deviceField26);
+
+        deviceField27.setIdentifier("");
+        deviceField27.setLabelString("Y: ");
+        deviceField27.setNumCols(30);
+        deviceField27.setOffsetNid(1155);
+        jPanel18.add(deviceField27);
+
+        jPanel14.add(jPanel18);
+
+        jPanel19.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 5"));
+
+        deviceField28.setIdentifier("");
+        deviceField28.setLabelString("X: ");
+        deviceField28.setNumCols(30);
+        deviceField28.setOffsetNid(1159);
+        jPanel19.add(deviceField28);
+
+        deviceField29.setIdentifier("");
+        deviceField29.setLabelString("Y: ");
+        deviceField29.setNumCols(30);
+        deviceField29.setOffsetNid(1160);
+        jPanel19.add(deviceField29);
+
+        jPanel14.add(jPanel19);
+
+        jPanel20.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 6"));
+
+        deviceField30.setIdentifier("");
+        deviceField30.setLabelString("X: ");
+        deviceField30.setNumCols(30);
+        deviceField30.setOffsetNid(1164);
+        jPanel20.add(deviceField30);
+
+        deviceField31.setIdentifier("");
+        deviceField31.setLabelString("Y: ");
+        deviceField31.setNumCols(30);
+        deviceField31.setOffsetNid(1165);
+        jPanel20.add(deviceField31);
+
+        jPanel14.add(jPanel20);
+
+        jPanel21.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 7"));
+
+        deviceField32.setIdentifier("");
+        deviceField32.setLabelString("X: ");
+        deviceField32.setNumCols(30);
+        deviceField32.setOffsetNid(1169);
+        jPanel21.add(deviceField32);
+
+        deviceField33.setIdentifier("");
+        deviceField33.setLabelString("Y: ");
+        deviceField33.setNumCols(30);
+        deviceField33.setOffsetNid(1170);
+        jPanel21.add(deviceField33);
+
+        jPanel14.add(jPanel21);
+
+        jPanel22.setBorder(javax.swing.BorderFactory.createTitledBorder("Wave 8"));
+
+        deviceField34.setIdentifier("");
+        deviceField34.setLabelString("X: ");
+        deviceField34.setNumCols(30);
+        deviceField34.setOffsetNid(1174);
+        jPanel22.add(deviceField34);
+
+        deviceField35.setIdentifier("");
+        deviceField35.setLabelString("Y: ");
+        deviceField35.setNumCols(30);
+        deviceField35.setOffsetNid(1175);
+        jPanel22.add(deviceField35);
+
+        jPanel14.add(jPanel22);
+
+        jScrollPane2.setViewportView(jPanel14);
+
+        jTabbedPane1.addTab("State 2 Waves", jScrollPane2);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 

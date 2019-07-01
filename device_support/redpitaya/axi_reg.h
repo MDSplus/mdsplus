@@ -18,7 +18,7 @@ static int dev_mem_fd = 0;
 int axi_reg_Init()
 {
     if (!dev_mem_fd) {
-        if((dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) { return RP_EOMD; }
+	if((dev_mem_fd = open("/dev/mem", O_RDWR | O_SYNC)) == -1) { return RP_EOMD; }
     }
     return RP_OK;
 }
@@ -26,9 +26,9 @@ int axi_reg_Init()
 int axi_reg_Release()
 {
     if (dev_mem_fd) {
-        if(close(dev_mem_fd) < 0) {
-            return RP_ECMD;
-        }
+	if(close(dev_mem_fd) < 0) {
+	    return RP_ECMD;
+	}
     }
     return RP_OK;
 }

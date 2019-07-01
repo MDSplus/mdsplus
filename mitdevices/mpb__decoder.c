@@ -113,7 +113,7 @@ typedef struct {
 #define ALWAYS_LOW          4
 #define HIGH_PULSES         5
 /*        illegal           6
-          illegal                         7
+	  illegal                         7
 *****************************/
 
 /** clock source settings ****/
@@ -238,7 +238,7 @@ EXPORT int mpb__decoder___init(struct descriptor *niddsc_ptr __attribute__ ((unu
        put it in incrementing mode
        step the counters twice
        (this will insure that we are
-        not at Terminal Count)
+	not at Terminal Count)
   ***************************/
   for (chan = 0; chan < 5; chan++) {
     static DecoderSetup reg = { 4, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };	/* always low, start low, count up */
@@ -824,8 +824,8 @@ static int GatedClockGetSetup(Widget w, int nid, int channel, DecoderSetup * set
     static int gnid;
     static DESCRIPTOR_NID(gate, &gnid);
     static DESCRIPTOR(output_exp, "PACK($1+$2,REPLICATE([1,0],0,SIZE($1)/2)) : \
-                                       PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : \
-                                       $3");
+	                               PACK($1,REPLICATE([0,1],0,SIZE($1)/2)) : \
+	                               $3");
     int event_nid = nid + MPB__DECODER_N_START_EVENT;
     static DESCRIPTOR_FLOAT(dt1_dsc, &dt1);
     static DESCRIPTOR_FLOAT(dt2_dsc, &dt2);

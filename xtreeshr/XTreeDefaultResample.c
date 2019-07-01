@@ -27,696 +27,396 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
+#include <pthread_port.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <xtreeshr.h>
 
-#define INTERPOLATION 1
-#define CLOSEST_SAMPLE 2
-#define PREVIOUS_SAMPLE 3
-#define MINMAX 4
+typedef enum{
+AVERAGE,
+INTERPOLATION,
+CLOSEST,
+PREVIOUS,
+MINMAX,
+} res_mode_t;
 
-//static int lessThan(struct descriptor *in1D, struct descriptor *in2D, char *less);
-//static int getMinMax(struct descriptor *dimD, char isMin, struct descriptor_xd *outXd);
+//static int lessThan(mdsdsc_t*in1D, mdsdsc_t*in2D, char *less);
+//static int getMinMax(mdsdsc_t*dimD, char isMin, mdsdsc_xd_t *outXd);
 extern int TdiDecompile();
 extern int TdiCompile();
 extern int TdiData();
 extern int TdiFloat();
 extern int TdiEvaluate();
-extern int XTreeConvertToLongTime(struct descriptor *timeD, int64_t * converted);
-extern int XTreeConvertToLongDelta(struct descriptor *deltaD, int64_t * converted);
+extern int XTreeConvertToDouble(mdsdsc_t*timeD, double *converted);
 
-static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
-				    struct descriptor *endD, struct descriptor *deltaD, char mode,
-				    struct descriptor_xd *outSignalXd);
+static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD,
+	    mdsdsc_t*endD, mdsdsc_t*deltaD, const res_mode_t mode,
+	    mdsdsc_xd_t *outSignalXd);
 
-/*
-static void printDecompiled(struct descriptor *inD)
-{
-  int status;
-  EMPTYXD(out_xd);
-  char *buf;
-
-  status = TdiDecompile(inD, &out_xd MDS_END_ARG);
-  if (!(status & 1)) {
-    printf("%s\n", MdsGetMsg(status));
-    return;
+inline static double *convertTimebaseToDouble(mds_signal_t *inSignalD, int *outSamples, dtype_t *isQ){
+  if (inSignalD->ndesc<3) {
+    ARRAY_COEFF(char *, MAX_DIMS) *dataD = (void*)inSignalD->data;
+    if (dataD->dimct == 1)
+      *outSamples = dataD->arsize / dataD->length;
+    else
+      *outSamples = dataD->m[dataD->dimct-1];
+    return NULL;
   }
-  buf = malloc(out_xd.pointer->length + 1);
-  memcpy(buf, out_xd.pointer->pointer, out_xd.pointer->length);
-  buf[out_xd.pointer->length] = 0;
-  out_xd.pointer->pointer[out_xd.pointer->length - 1] = 0;
-  printf("%s\n", buf);
-  free(buf);
-  MdsFree1Dx(&out_xd, 0);
-}
-*/
-
-//64 bit time-based resampling function. It is assumed here that the 64 bit representation of time is the count
-//of a given, fixed amount of time, starting from a given time in the past
-//The closest point is selected as representative for a given time
-static void resample(int64_t start, int64_t end, int64_t delta, int64_t * inTimebase,
-		     int inTimebaseSamples, int numDims, int *dims, char *inData, int dataSize,
-		     char dataType, int mode, char *outData, int64_t * outDim, int *retSamples)
-{
-	int i, j, timebaseIdx, outIdx, itemSize, outSamples, startIdx, timebaseSamples;
-	int64_t refTime, delta1, delta2;
-	int64_t *timebase;
-	char *data;
-	int numDataItems;
-	int prevTimebaseIdx;
-
-	double prevData, nextData, currData;
-
-	itemSize = dataSize;
-	for (i = 0; i < numDims - 1; i++)
-		itemSize *= dims[i];
-
-	numDataItems = itemSize / dataSize;
-
-	if (start < inTimebase[0])
-		start = inTimebase[0];
-	if (end > inTimebase[inTimebaseSamples - 1])
-		end = inTimebase[inTimebaseSamples - 1];
-
-	timebaseIdx = outIdx = outSamples = 0;
-
-	for (startIdx = 0; startIdx < inTimebaseSamples && inTimebase[startIdx] < start; startIdx++) ;
-
-	if (startIdx == inTimebaseSamples)	//Not possible in any case
-	{
-    	*retSamples = 0;
-    	return;
-  	}
-
-  	timebase = &inTimebase[startIdx];
-  	timebaseSamples = inTimebaseSamples - startIdx;
-  	data = &inData[startIdx * itemSize];
-
-  	refTime = start;
-	if (delta) {
-		prevTimebaseIdx = timebaseIdx;
-		while (refTime <= end)
-		{
-			while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
-				timebaseIdx++;
-			switch (mode) {
-				case CLOSEST_SAMPLE:
-			//Select closest sample
-					if (timebaseIdx > 0 && timebaseIdx < timebaseSamples) {
-						delta1 = timebase[timebaseIdx] - refTime;
-						delta2 = refTime - timebase[timebaseIdx - 1];
-						if (delta2 < delta1)
-							timebaseIdx--;
-					}
-					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
-					break;
-				case PREVIOUS_SAMPLE:
-			//Select closest sample
-					if (timebaseIdx > 0 && timebaseIdx < timebaseSamples) {
-						timebaseIdx--;
-					}
-					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
-					break;
-				case INTERPOLATION:
-                                        if(timebaseIdx <= 0)
-						timebaseIdx = 1;  //Avoid referring to negative indexes
-					switch (dataType) {
-						case DTYPE_BU:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((unsigned char *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((unsigned char *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((unsigned char *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_B:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((char *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((char *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((char *)&outData[outSamples * itemSize])[i] = currData;
-							}
-							break;
-						case DTYPE_WU:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((unsigned short *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((unsigned short *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((unsigned short *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_W:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((short *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((short *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((short *)&outData[outSamples * itemSize])[i] = currData;
-							}
-							break;
-						case DTYPE_LU:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((unsigned int *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((unsigned int *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((unsigned int *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_L:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((int *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((int *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((int *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_QU:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((uint64_t *) (&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((uint64_t *) (&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((uint64_t *) (&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_Q:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((int64_t *) (&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((int64_t *) (&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((int64_t *) (&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_FLOAT:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((float *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((float *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((float *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-						case DTYPE_DOUBLE:
-							for (i = 0; i < numDataItems; i++) {
-								prevData = ((double *)(&data[(timebaseIdx - 1) * itemSize]))[i];
-								nextData = ((double *)(&data[timebaseIdx * itemSize]))[i];
-								currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1])
-								/ (timebase[timebaseIdx] - timebase[timebaseIdx - 1]);
-								((double *)(&outData[outSamples * itemSize]))[i] = currData;
-							}
-							break;
-					}
-					break;
-				case MINMAX:     //Two points for every (resampled) sample!!!!!!!!!!!
-					switch (dataType) {
-						case DTYPE_BU:
-							for (i = 0; i < numDataItems; i++) {
-								unsigned char currData, minData, maxData;
-								minData = maxData = ((unsigned char *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((unsigned char *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((unsigned char *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((unsigned char *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_B:
-							for (i = 0; i < numDataItems; i++) {
-								char currData, minData, maxData;
-								minData = maxData = ((char *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((char *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((char *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((char *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_WU:
-							for (i = 0; i < numDataItems; i++) {
-								unsigned short currData, minData, maxData;
-								minData = maxData = ((unsigned short *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((unsigned short *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((unsigned short *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((unsigned short *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_W:
-							for (i = 0; i < numDataItems; i++) {
-								short currData, minData, maxData;
-								minData = maxData = ((short *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((short *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((short *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((short *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_LU:
-							for (i = 0; i < numDataItems; i++) {
-								unsigned int currData, minData, maxData;
-								minData = maxData = ((unsigned int *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((unsigned int *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((unsigned int *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((unsigned int *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_L:
-							for (i = 0; i < numDataItems; i++) {
-								int currData, minData, maxData;
-								minData = maxData = ((int *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((int *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((int *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((int *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_QU:
-							for (i = 0; i < numDataItems; i++) {
-								uint64_t currData, minData, maxData;
-								minData = maxData = ((uint64_t *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((uint64_t *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((uint64_t *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((uint64_t *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_Q:
-							for (i = 0; i < numDataItems; i++) {
-								int64_t currData, minData, maxData;
-								minData = maxData = ((int64_t *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((int64_t *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((int64_t *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((int64_t *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_FLOAT:
-							for (i = 0; i < numDataItems; i++) {
-								float currData, minData, maxData;
-								minData = maxData = ((float *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((float *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((float *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((float *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-						case DTYPE_DOUBLE:
-							for (i = 0; i < numDataItems; i++) {
-								double currData, minData, maxData;
-								minData = maxData = ((double *)(&data[(prevTimebaseIdx) * itemSize]))[i];
-								for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++)
-								{
-									currData = ((double *)(&data[j * itemSize]))[i];
-									if(currData > maxData)
-										maxData = currData;
-									if(currData < minData)
-										minData = currData;
-								}
-								((double *)(&outData[2*outSamples * itemSize]))[i] = minData;
-								((double *)(&outData[(2*outSamples+1) * itemSize]))[i] = maxData;
-							}
-							break;
-					}
-					break;
-				default:		//Not able to do interpolation
-					if (timebaseIdx > 0 && timebaseIdx < timebaseSamples) {
-						timebaseIdx--;
-					}
-					memcpy(&outData[outSamples * itemSize], &data[timebaseIdx * itemSize], itemSize);
-			}
-			if(mode == MINMAX) //twice the number of points
-			{
-    			outDim[2*outSamples] = refTime - delta/2;
-    			outDim[2*outSamples+1] = refTime;
-			}
-			else
-   				outDim[outSamples] = refTime;
-			outSamples++;
-    		refTime += delta;
-			prevTimebaseIdx = timebaseIdx;
-  		}
-		if(mode == MINMAX)
- 			*retSamples = 2*outSamples;
-		else
- 			*retSamples = outSamples;
-	}
-	else  //delta == NULL
-	{
-    	while (timebaseIdx < *retSamples && timebase[timebaseIdx] <= end)
-		{
-      		memcpy(&outData[timebaseIdx * itemSize], &data[timebaseIdx * itemSize], itemSize);
-      		outDim[timebaseIdx] = timebase[timebaseIdx];
-      		timebaseIdx++;
-    	}
-    	*retSamples = timebaseIdx;
-  	}
-}
-
-//The default resample handles int64 timebases
-//return 0 if the conversion is  not possible
-static int64_t *convertTimebaseToInt64(struct descriptor_signal *inSignalD, int *outSamples, int *isFloat)
-{
-  struct descriptor_a *currDim;
-  double *doublePtr;
-  float *floatPtr;
-  int64_t *outPtr;
-  int numSamples, i, status;
+  double *outPtr = NULL;
   EMPTYXD(currXd);
-
-  currDim = (struct descriptor_a *)inSignalD->dimensions[0];
-  //If timebase already using 64 bit int
-  if (currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)) {
+  int numSamples, i;
+  mdsdsc_a_t *currDim = (mdsdsc_a_t *)inSignalD->dimensions[0];
+  if (currDim->class != CLASS_A) {
+    if IS_NOT_OK(TdiData(currDim, &currXd MDS_END_ARG))
+      goto return_out;
+    currDim = (mdsdsc_a_t *)currXd.pointer;
+  }
+  if (currDim->class != CLASS_A || currDim->arsize == 0)
+    goto return_out;
+  if (currDim->dtype == DTYPE_DOUBLE) {
+    numSamples = currDim->arsize / currDim->length;
+    outPtr = malloc(currDim->arsize);
+    memcpy(outPtr,currDim->pointer,currDim->arsize);
+    *outSamples = numSamples;
+    goto return_out;
+  }
+  if (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU) {
+    *isQ = currDim->dtype;
     outPtr = malloc(currDim->arsize);
     numSamples = currDim->arsize / currDim->length;
     for (i = 0; i < numSamples; i++)
-      outPtr[i] = ((int64_t *) currDim->pointer)[i];
+      outPtr[i] = ((double)((int64_t *)currDim->pointer)[i]) / 1e9;
     *outSamples = numSamples;
-    return outPtr;
+    goto return_out;
   }
-  //otherwise evaluate it
-  status = TdiData(currDim, &currXd MDS_END_ARG);
-  if (status & 1) {
-    currDim = (struct descriptor_a *)currXd.pointer;
-    if (currDim->class == CLASS_A && (currDim->dtype == DTYPE_Q || currDim->dtype == DTYPE_QU)) {
-      outPtr = malloc(currDim->arsize);
-      numSamples = currDim->arsize / currDim->length;
-      for (i = 0; i < numSamples; i++)
-	outPtr[i] = ((int64_t *) currDim->pointer)[i];
-      *outSamples = numSamples;
-      MdsFree1Dx(&currXd, 0);
-      return outPtr;
-    }
-    *isFloat = 1;
-    status = TdiFloat(&currXd, &currXd MDS_END_ARG);
+  if (currDim->dtype != DTYPE_FLOAT) {
+    if IS_NOT_OK(TdiFloat(currDim, &currXd MDS_END_ARG))
+      goto return_out;
+    currDim = (mdsdsc_a_t *)currXd.pointer;
   }
-  currDim = (struct descriptor_a *)currXd.pointer;
-  if (!(status & 1) || currDim->class != CLASS_A
-      || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE))
-    //Cannot perform conversion
-  {
-    MdsFree1Dx(&currXd, 0);
-    return 0;
-  }
+  if (currDim->class != CLASS_A || (currDim->dtype != DTYPE_FLOAT && currDim->dtype != DTYPE_DOUBLE))
+    goto return_out; //Cannot perform conversion
   numSamples = currDim->arsize / currDim->length;
-  outPtr = malloc(8 * numSamples);
+  outPtr = malloc(sizeof(double) * numSamples);
   if (currDim->dtype == DTYPE_FLOAT) {
-    floatPtr = (float *)currDim->pointer;
+    const float *floatPtr = (float *)currDim->pointer;
     for (i = 0; i < numSamples; i++)
-      MdsFloatToTime(floatPtr[i], &outPtr[i]);
-  } else			//currDim->dtype == DTYPE_DOUBLE)
-  {
-    doublePtr = (double *)currDim->pointer;
-    for (i = 0; i < numSamples; i++)
-      MdsFloatToTime(doublePtr[i], &outPtr[i]);
-  }
+      outPtr[i] = floatPtr[i];
+  } else //currDim->dtype == DTYPE_DOUBLE)
+    memcpy(outPtr,currDim->pointer,currDim->arsize);
   *outSamples = numSamples;
-  MdsFree1Dx(&currXd, 0);
+return_out: ;
+  MdsFree1Dx(&currXd, NULL);
   return outPtr;
 }
 
-//Handle resampling in when dimension is specified as a range
-typedef ARRAY_COEFF(char, 256) Array_coeff_type;
-
-EXPORT struct descriptor_xd *XTreeResampleClosest(struct descriptor_signal *inSignalD,
-						  struct descriptor *startD,
-						  struct descriptor *endD,
-						  struct descriptor *deltaD)
-{
+EXPORT mdsdsc_xd_t *XTreeResampleClosest(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD)
+{// deprecated
   static EMPTYXD(retXd);
-  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, CLOSEST, &retXd);
   return &retXd;
 }
 
-EXPORT struct descriptor_xd *XTreeResamplePrevious(struct descriptor_signal *inSignalD,
-						   struct descriptor *startD,
-						   struct descriptor *endD,
-						   struct descriptor *deltaD)
-{
+EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD)
+{// deprecated
   static EMPTYXD(retXd);
-  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS_SAMPLE, &retXd);
+  XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, PREVIOUS, &retXd);
   return &retXd;
 }
 
-EXPORT int XTreeDefaultResample(struct descriptor_signal *inSignalD, struct descriptor *startD,
-				struct descriptor *endD, struct descriptor *deltaD,
-				struct descriptor_xd *outSignalXd)
-{
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, INTERPOLATION, outSignalXd);
+static res_mode_t default_mode = AVERAGE;
+static void get_default() {
+  char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
+  if(!resampleMode) return;
+       if(!strcasecmp(resampleMode, "Average"))
+    default_mode = AVERAGE;
+  else if(!strcasecmp(resampleMode, "MinMax"))
+    default_mode = MINMAX;
+  else if(!strcasecmp(resampleMode, "Interp"))
+    default_mode = INTERPOLATION;
+  else if(!strcasecmp(resampleMode, "Closest"))
+    default_mode = CLOSEST;
+  else if(!strcasecmp(resampleMode, "Previous"))
+    default_mode = PREVIOUS;
+  TranslateLogicalFree(resampleMode);
+}
+int XTreeDefaultResample(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,get_default);
+  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, default_mode, outSignalXd);
 }
 
-EXPORT int XTreeMinMaxResample(struct descriptor_signal *inSignalD, struct descriptor *startD,
-				struct descriptor *endD, struct descriptor *deltaD,
-				struct descriptor_xd *outSignalXd)
+#define RESAMPLE_FUN(name,mode) \
+int name(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){\
+  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, mode, outSignalXd);}
+
+EXPORT RESAMPLE_FUN(XTreeAverageResample, AVERAGE)
+EXPORT RESAMPLE_FUN(XTreeClosestResample, CLOSEST)
+EXPORT RESAMPLE_FUN(XTreePreviousResample,PREVIOUS)
+EXPORT RESAMPLE_FUN(XTreeInterpResample,  INTERPOLATION)
+EXPORT RESAMPLE_FUN(XTreeMinMaxResample,  MINMAX)
+
+extern int getShape(mdsdsc_t*dataD, int *dims, int *numDims);
+
+static int XTreeDefaultResampleMode(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD,
+	const res_mode_t mode, mdsdsc_xd_t *outSignalXd)
 {
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, MINMAX, outSignalXd);
-}
+  int status;
 
-static int getShape(struct descriptor *dataD, int *dims, int *numDims)
-{
-    int i;
-    ARRAY_COEFF(char *, 64) *arrPtr;
-    if(dataD->class != CLASS_A)
-    {
-//	printf("Internal error resample!!!!\n");
-	return 0;
-    }
-    arrPtr = (void *)dataD;
-    if(arrPtr->dimct == 1)
-    {
-        *numDims = 1;
-	dims[0] = arrPtr->arsize/arrPtr->length;
-    }
-    else
-    {
-        *numDims = arrPtr->dimct;
-	for(i = 0; i < arrPtr->dimct; i++)
-	    dims[i] = arrPtr->m[i];
-    }
-    return 1;
-}
-
-
-static int XTreeDefaultResampleMode(struct descriptor_signal *inSignalD, struct descriptor *startD,
-				    struct descriptor *endD, struct descriptor *inDeltaD, char mode,
-				    struct descriptor_xd *outSignalXd)
-{
-  //char resampleExpr[64];
-  //struct descriptor resampleExprD = { 0, DTYPE_T, CLASS_S, resampleExpr };
-  //struct descriptor_a *arrayD;
-  //char *shapeExpr = "SHAPE(DATA($1))";
-  //struct descriptor shapeExprD = { strlen(shapeExpr), DTYPE_T, CLASS_S, shapeExpr };
-
-  int64_t start64, end64, delta64, *timebase64, *outDim;
-//      float *timebaseFloat;
-  double *timebaseDouble;
-  int dims[64];
-  int numDims;
-  int numTimebaseSamples;
-  int outSamples, itemSize;
-  int isFloat = 0;
-  int status, i, currIdx;
-  int numYSamples;
-  char *outData;
-  struct descriptor_a *dataD;
-  //EMPTYXD(shapeXd);
+  // Get shapes(dimensions) for data
   EMPTYXD(dataXd);
-
-  DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, 255, 0);
-  DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
-  DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
-  struct descriptor *deltaD;
-
-  deltaD = inDeltaD;
-  if (startD) {
-    status = XTreeConvertToLongTime(startD, &start64);
-    if (!(status & 1))
-      return status;
-  }
-  if (endD) {
-    status = XTreeConvertToLongTime(endD, &end64);
-    if (!(status & 1))
-      return status;
-  }
-  if (deltaD) {
-    status = XTreeConvertToLongDelta(deltaD, &delta64);
-    if (!(status & 1))
-      return status;
-    if (delta64 == 0)
-      deltaD = 0;
-  }
-
-//This version handles only 64 bit time format
-
-  timebase64 = convertTimebaseToInt64(inSignalD, &numTimebaseSamples, &isFloat);
-  if (!timebase64)
-    return 0;			//Cannot convert timebase to 64 bit int
-
-  if (!startD)
-    start64 = timebase64[0];
-  if (!endD)
-    end64 = timebase64[numTimebaseSamples - 1];
-
-  if (start64 < timebase64[0])
-    start64 = timebase64[0];
-  if (end64 > timebase64[numTimebaseSamples - 1])
-    end64 = timebase64[numTimebaseSamples - 1];
-
-//Get shapes(dimensions) for data
+  mdsdsc_a_t *dataD;
   if (inSignalD->data->class == CLASS_A) {
-    dataD = (struct descriptor_a *)inSignalD->data;
+    dataD = (mdsdsc_a_t *)inSignalD->data;
   } else {
     status = TdiData(inSignalD->data, &dataXd MDS_END_ARG);
-    if (status & 1)
-      dataD = (struct descriptor_a *)dataXd.pointer;
-    else
-      return status;
+    if STATUS_NOT_OK return status;
+    dataD = (mdsdsc_a_t *)dataXd.pointer;
   }
-  numYSamples = dataD->arsize/dataD->length;
-
-
-  status = getShape((struct descriptor *)dataD, dims, &numDims);
-  if (!(status & 1)) {
+  int dims[MAX_DIMS];
+  int numDims;
+  status = getShape((mdsdsc_t*)dataD, dims, &numDims);
+  if STATUS_NOT_OK {
     MdsFree1Dx(&dataXd, 0);
     return status;
   }
 
-  /*
-  status = TdiCompile(&shapeExprD, dataD, &shapeXd MDS_END_ARG);
-  if (!(status & 1)) {
+  // get timebase
+  dtype_t isQ = 0;
+  double start, end, delta, *fulltimebase;
+  int numTimebase, numData = (numDims <= 1) ? (int)(dataD->arsize/dataD->length) : dims[numDims-1];
+  fulltimebase = convertTimebaseToDouble(inSignalD, &numTimebase, &isQ);
+  if (!fulltimebase) {
     MdsFree1Dx(&dataXd, 0);
-    return status;
+    MdsCopyDxXd((mdsdsc_t*)&inSignalD, outSignalXd);
+    return 3;	//Cannot convert timebase to 64 bit int
   }
-  status = TdiData(&shapeXd, &shapeXd MDS_END_ARG);
-  if (!(status & 1)) {
-    MdsFree1Dx(&dataXd, 0);
-    return status;
-  }
-  arrayD = (struct descriptor_a *)shapeXd.pointer;
-  numDims = arrayD->arsize / arrayD->length;
-  dims = (int *)arrayD->pointer;
-
-*/
-
-  itemSize = dataD->length;
-  for (i = 0; i < numDims - 1; i++)
-    itemSize *= dims[i];
-  //Make sure enough room is allocated
-  if (!deltaD) {
-    //Count number of copied samples
-    for (currIdx = 0; currIdx < numTimebaseSamples && currIdx < numYSamples && timebase64[currIdx] < start64; currIdx++) ;
-    for (outSamples = 0; currIdx < numTimebaseSamples && currIdx < numYSamples && timebase64[currIdx] <= end64;
-	 currIdx++, outSamples++) ;
-  } else
-    outSamples = (end64 - start64) / delta64 + 1;
-
-//  outData = malloc(outSamples * itemSize);
-  outData = malloc(2* outSamples * itemSize);  //Make enough room for MINMAX mode
-//  outDim = malloc(outSamples * 8);
-  outDim = malloc(2 * outSamples * 8);
 
   //Check data array too short
-  if ((int)(dataD->arsize / dataD->length) < numTimebaseSamples)
-    numTimebaseSamples = dataD->arsize / dataD->length;
+  if (numData < numTimebase) numTimebase = numData;
 
-  resample(start64, end64, (deltaD) ? delta64 : 0, timebase64, numTimebaseSamples, numDims, dims,
-	   dataD->pointer, dataD->length, dataD->dtype, mode, outData, outDim, &outSamples);
+  int startIdx = 0;
+  if (startD) {
+    status = XTreeConvertToDouble(startD, &start);
+    if STATUS_NOT_OK return status;
+    if (start < fulltimebase[0])
+      start = fulltimebase[0];
+    for (; startIdx < numTimebase && fulltimebase[startIdx] < start ; startIdx++);
+  } else start = fulltimebase[0];
+  if (endD) {
+    status = XTreeConvertToDouble(endD, &end);
+    if STATUS_NOT_OK return status;
+    if (end > fulltimebase[numTimebase - 1])
+      end = fulltimebase[numTimebase - 1];
+  } else end = fulltimebase[numTimebase - 1];
+  if (deltaD) {
+    status = XTreeConvertToDouble(deltaD, &delta);
+    if STATUS_NOT_OK return status;
+  } else delta = 0;
 
-  //Build array descriptor for out data
-  outDataArray.length = dataD->length;
-  outDataArray.dtype = dataD->dtype;
-  outDataArray.pointer = outDataArray.a0 = outData;
-  outDataArray.arsize = itemSize * outSamples;
-  outDataArray.dimct = numDims;
-  for (i = 0; i < numDims - 1; i++) {
-    outDataArray.m[i] = dims[i];
+  int i, j;
+  double prevData, nextData, currData;
+  int itemSize = dataD->arsize/numData;
+  int numDataItems = itemSize/dataD->length;
+  int outItemSize;
+  DESCRIPTOR_A_COEFF(outDataArray, 0, 0, 0, MAX_DIMS, 0);
+  if (mode == AVERAGE && delta>0) { // use FLOAT or DOUBLE
+  } else {
+    outDataArray.length = dataD->length;
+    outDataArray.dtype = dataD->dtype;
   }
+  // Make sure enough room is allocated
+  char   *outData;
+  double *outDim;
+  int timebaseIdx = 0;
+  int timebaseSamples = numTimebase - startIdx;
+  double *timebase = &fulltimebase[startIdx];
+  char *data = &dataD->pointer[startIdx * itemSize];
+  int outSamples = 0;
+  if (delta>0 && startIdx < numTimebase) {
+    double refTime = start;
+    double delta1 = delta/2;
+    double delta2 = delta+delta1;
+    switch (mode) {
+      case MINMAX:
+      case AVERAGE:
+	refTime += delta;
+	end     += delta;
+      break;default:break;
+    }
+    int reqSamples = (int)((end - start) / delta + 1.5);
+    if (mode == AVERAGE) {// use FLOAT or DOUBLE
+      if (dataD->length<8) {
+	outDataArray.length = sizeof(float);
+	outDataArray.dtype  = DTYPE_FLOAT;
+      } else {
+	outDataArray.length = sizeof(double);
+	outDataArray.dtype  = DTYPE_DOUBLE;
+      }
+      outItemSize = itemSize*outDataArray.length/dataD->length;
+    } else {
+      if (mode == MINMAX) reqSamples *=2;//Make enough room for MINMAX mode
+      outItemSize = itemSize;
+      outDataArray.length = dataD->length;
+      outDataArray.dtype = dataD->dtype;
+    }
+    outData = malloc(reqSamples * outItemSize);
+    outDim  = malloc(reqSamples * sizeof(double));
+    int prevTimebaseIdx = timebaseIdx;
+    while (refTime <= end) {
+      while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] < refTime)
+	timebaseIdx++;
+      switch (mode) {
+	case CLOSEST: // Select closest sample
+	  if (timebaseIdx > 0) {
+	    delta1 = timebase[timebaseIdx] - refTime;
+	    delta2 = refTime - timebase[timebaseIdx - 1];
+	    if (delta2 < delta1) timebaseIdx--;
+	  }
+	  memcpy(&outData[outSamples * outItemSize], &data[timebaseIdx * itemSize], itemSize);
+	  break;
+	case PREVIOUS: //Select closest sample
+	  if (timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+	    timebaseIdx--;
+	  memcpy(&outData[outSamples * outItemSize], &data[timebaseIdx * itemSize], itemSize);
+	  break;
+	case INTERPOLATION:
+#define INTERPOLATION_FORLOOP(type) for (i = 0; i < numDataItems; i++) { \
+  prevData = ((type *)(&data[(timebaseIdx - 1) * itemSize]))[i]; \
+  nextData = ((type *)(&data[timebaseIdx * itemSize]))[i]; \
+  currData = prevData + (nextData - prevData) * (refTime - timebase[timebaseIdx - 1]) / (timebase[timebaseIdx] - timebase[timebaseIdx - 1]); \
+  ((type *)(&outData[outSamples * outItemSize]))[i] = currData; \
+}
+	  if(timebaseIdx <= 0) timebaseIdx = 1;  //Avoid referring to negative indexes
+	  switch (dataD->dtype) {
+	    case DTYPE_BU:	INTERPOLATION_FORLOOP( uint8_t);break;
+	    case DTYPE_B:	INTERPOLATION_FORLOOP(  int8_t);break;
+	    case DTYPE_WU:	INTERPOLATION_FORLOOP(uint16_t);break;
+	    case DTYPE_W:	INTERPOLATION_FORLOOP( int16_t);break;
+	    case DTYPE_LU:	INTERPOLATION_FORLOOP(uint32_t);break;
+	    case DTYPE_L:	INTERPOLATION_FORLOOP( int32_t);break;
+	    case DTYPE_QU:	INTERPOLATION_FORLOOP(uint64_t);break;
+	    case DTYPE_Q:	INTERPOLATION_FORLOOP( int64_t);break;
+	    case DTYPE_FLOAT:	INTERPOLATION_FORLOOP(   float);break;
+	    case DTYPE_DOUBLE:	INTERPOLATION_FORLOOP(  double);break;
+	    default:break;
+	  }
+	  break;
+	case MINMAX:     //Two points for every (resampled) sample!!!!!!!!!!!
+#define MINMAX_FORLOOP(type) for (i = 0; i < numDataItems; i++) { \
+type currData, minData, maxData; \
+minData = maxData = ((type *)(&data[(prevTimebaseIdx) * itemSize]))[i]; \
+for(j = prevTimebaseIdx + 1; j < timebaseIdx && j<numTimebase ; j++){ \
+  currData = ((type *)(&data[j * itemSize]))[i]; \
+  if(currData > maxData) maxData = currData; \
+  if(currData < minData) minData = currData; \
+} \
+((type *)(&outData[(outSamples  ) * outItemSize]))[i] = minData; \
+((type *)(&outData[(outSamples+1) * outItemSize]))[i] = maxData; \
+}
+	  switch (dataD->dtype) {
+	    case DTYPE_BU:	MINMAX_FORLOOP( uint8_t);break;
+	    case DTYPE_B:	MINMAX_FORLOOP(  int8_t);break;
+	    case DTYPE_WU:	MINMAX_FORLOOP(uint16_t);break;
+	    case DTYPE_W:	MINMAX_FORLOOP( int16_t);break;
+	    case DTYPE_LU:	MINMAX_FORLOOP(uint32_t);break;
+	    case DTYPE_L:	MINMAX_FORLOOP( int32_t);break;
+	    case DTYPE_QU:	MINMAX_FORLOOP(uint64_t);break;
+	    case DTYPE_Q:	MINMAX_FORLOOP( int64_t);break;
+	    case DTYPE_FLOAT:	MINMAX_FORLOOP(   float);break;
+	    case DTYPE_DOUBLE:	MINMAX_FORLOOP(  double);break;
+	    default:break;
+	  }
+	  break;
+	case AVERAGE:
+#define AVERAGE_FORLOOP(type_out,type) for (i = 0; i < numDataItems; i++) { \
+type_out accData = ((type *)(&data[(prevTimebaseIdx) * itemSize]))[i]; \
+for(j = prevTimebaseIdx + 1; j < timebaseIdx; j++) \
+  accData += ((type *)(&data[j * itemSize]))[i]; \
+const int range = (timebaseIdx-prevTimebaseIdx); \
+((type_out *)(&outData[outSamples * outItemSize]))[i] = range>0 ? accData / range : accData; \
+}
+	  switch (dataD->dtype) {
+	    case DTYPE_BU:	AVERAGE_FORLOOP( float, uint8_t);break;
+	    case DTYPE_B:	AVERAGE_FORLOOP( float,  int8_t);break;
+	    case DTYPE_WU:	AVERAGE_FORLOOP( float,uint16_t);break;
+	    case DTYPE_W:	AVERAGE_FORLOOP( float, int16_t);break;
+	    case DTYPE_LU:	AVERAGE_FORLOOP( float,uint32_t);break;
+	    case DTYPE_L:	AVERAGE_FORLOOP( float, int32_t);break;
+	    case DTYPE_QU:	AVERAGE_FORLOOP(double,uint64_t);break;
+	    case DTYPE_Q:	AVERAGE_FORLOOP(double, int64_t);break;
+	    case DTYPE_FLOAT:	AVERAGE_FORLOOP( float,   float);break;
+	    case DTYPE_DOUBLE:	AVERAGE_FORLOOP(double,  double);break;
+	    default:break;
+	  }
+	  break;
+	default://Not able to do interpolation
+	  if (timebaseIdx > 0 && timebaseIdx < timebaseSamples)
+	    timebaseIdx--;
+	  memcpy(&outData[outSamples * outItemSize], &data[timebaseIdx * itemSize], itemSize);
+	  break;
+      }
+      switch (mode) {
+	case MINMAX:
+	case AVERAGE:
+	refTime -= delta1;
+	if(mode == MINMAX) //twice the number of points
+	  outDim[outSamples++] = refTime;
+	outDim[outSamples++] = refTime;
+	refTime += delta2;
+	break;
+      default:
+	outDim[outSamples++] = refTime;
+	refTime += delta;
+	break;
+      }
+      prevTimebaseIdx = timebaseIdx;
+    }
+  } else { //delta <= 0
+    while (timebaseIdx < timebaseSamples && timebase[timebaseIdx] <= end) timebaseIdx++;
+    outData = data;
+    outDim  = timebase;
+    outSamples = timebaseIdx;
+    outItemSize = itemSize;
+    outDataArray.length = dataD->length;
+    outDataArray.dtype = dataD->dtype;
+  }
+
+  DESCRIPTOR_A(outDimArray, 0, 0, 0, 0);
+  DESCRIPTOR_SIGNAL_1(outSignalD, &outDataArray, 0, &outDimArray);
+  //Build array descriptor for out data
+  outDataArray.pointer = outDataArray.a0 = outData;
+  outDataArray.arsize = outItemSize * outSamples;
+  outDataArray.dimct = numDims;
+  for (i = 0; i < numDims - 1; i++)
+    outDataArray.m[i] = dims[i];
   outDataArray.m[numDims - 1] = outSamples;
   //If originally float, convert  dimension to float
-  if (isFloat) {
-    timebaseDouble = (double *)malloc(outSamples * sizeof(double));
+  int64_t *timebaseQ;
+  if (isQ) {
+    timebaseQ = (int64_t *)malloc(outSamples * sizeof(int64_t));
     for (i = 0; i < outSamples; i++)
-      MdsTimeToDouble(outDim[i], &timebaseDouble[i]);
+      timebaseQ[i] = (int64_t)((outDim[i] * 1e9) + 0.5);
+    outDimArray.length = sizeof(int64_t);
+    outDimArray.arsize = sizeof(int64_t) * outSamples;
+    outDimArray.dtype = isQ;
+    outDimArray.pointer = outDataArray.a0 = (char *)timebaseQ;
+  } else {
+    timebaseQ = NULL;
     outDimArray.length = sizeof(double);
     outDimArray.arsize = sizeof(double) * outSamples;
     outDimArray.dtype = DTYPE_DOUBLE;
-    outDimArray.pointer = outDataArray.a0 = (char *)timebaseDouble;
-  }
-
-  else {
-    outDimArray.length = 8;
-    outDimArray.arsize = 8 * outSamples;
-    outDimArray.dtype = DTYPE_Q;
     outDimArray.pointer = outDataArray.a0 = (char *)outDim;
   }
 
-  MdsCopyDxXd((struct descriptor *)&outSignalD, outSignalXd);
-  free((char *)timebase64);
-  free((char *)outDim);
-  if (isFloat)
-    free((char *)timebaseDouble);
-  free((char *)outData);
-  //MdsFree1Dx(&shapeXd, 0);
+  MdsCopyDxXd((mdsdsc_t*)&outSignalD, outSignalXd);
+  free(fulltimebase);
+  free(timebaseQ);
+  if (timebase != outDim) {
+    free(outData);
+    free(outDim);
+  }
   MdsFree1Dx(&dataXd, 0);
-
   return 1;
 }

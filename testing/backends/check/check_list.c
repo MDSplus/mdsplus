@@ -70,8 +70,8 @@ static void maybe_grow(List * lp)
 {
     if(lp->n_elts >= lp->max_elts)
     {
-        lp->max_elts *= LGROW;
-        lp->data = (void **)erealloc(lp->data, lp->max_elts * sizeof(lp->data[0]));
+	lp->max_elts *= LGROW;
+	lp->data = (void **)erealloc(lp->data, lp->max_elts * sizeof(lp->data[0]));
     }
 }
 
@@ -90,7 +90,7 @@ List *check_list_create(void)
 void check_list_add_front(List * lp, void *val)
 {
     if(lp == NULL)
-        return;
+	return;
     maybe_grow(lp);
     memmove(lp->data + 1, lp->data, lp->n_elts * sizeof lp->data[0]);
     lp->last++;
@@ -102,7 +102,7 @@ void check_list_add_front(List * lp, void *val)
 void check_list_add_end(List * lp, void *val)
 {
     if(lp == NULL)
-        return;
+	return;
     maybe_grow(lp);
     lp->last++;
     lp->n_elts++;
@@ -113,15 +113,15 @@ void check_list_add_end(List * lp, void *val)
 int check_list_at_end(List * lp)
 {
     if(lp->current == -1)
-        return 1;
+	return 1;
     else
-        return (lp->current > lp->last);
+	return (lp->current > lp->last);
 }
 
 void check_list_front(List * lp)
 {
     if(lp->current == -1)
-        return;
+	return;
     lp->current = 0;
 }
 
@@ -129,7 +129,7 @@ void check_list_front(List * lp)
 void check_list_free(List * lp)
 {
     if(lp == NULL)
-        return;
+	return;
 
     free(lp->data);
     free(lp);
@@ -138,9 +138,9 @@ void check_list_free(List * lp)
 void *check_list_val(List * lp)
 {
     if(lp == NULL)
-        return NULL;
+	return NULL;
     if(lp->current == -1 || lp->current > lp->last)
-        return NULL;
+	return NULL;
 
     return lp->data[lp->current];
 }
@@ -148,9 +148,9 @@ void *check_list_val(List * lp)
 void check_list_advance(List * lp)
 {
     if(lp == NULL)
-        return;
+	return;
     if(check_list_at_end(lp))
-        return;
+	return;
     lp->current++;
 }
 
@@ -158,9 +158,9 @@ void check_list_advance(List * lp)
 void check_list_apply(List * lp, void (*fp) (void *))
 {
     if(lp == NULL || fp == NULL)
-        return;
+	return;
 
     for(check_list_front(lp); !check_list_at_end(lp); check_list_advance(lp))
-        fp(check_list_val(lp));
+	fp(check_list_val(lp));
 
 }

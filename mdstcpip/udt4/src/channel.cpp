@@ -106,7 +106,7 @@ void CChannel::open(const sockaddr* addr)
       socklen_t namelen = m_iSockAddrSize;
 
       if (0 != ::bind(m_iSocket, addr, namelen))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
    }
    else
    {
@@ -121,10 +121,10 @@ void CChannel::open(const sockaddr* addr)
       hints.ai_socktype = SOCK_DGRAM;
 
       if (0 != ::getaddrinfo(NULL, "0", &hints, &res))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
 
       if (0 != ::bind(m_iSocket, res->ai_addr, res->ai_addrlen))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
 
       ::freeaddrinfo(res);
    }
@@ -144,14 +144,14 @@ void CChannel::setUDPSockOpt()
       // BSD system will fail setsockopt if the requested buffer size exceeds system maximum value
       int maxsize = 64000;
       if (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVBUF, (char*)&m_iRcvBufSize, sizeof(int)))
-         ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVBUF, (char*)&maxsize, sizeof(int));
+	 ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVBUF, (char*)&maxsize, sizeof(int));
       if (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char*)&m_iSndBufSize, sizeof(int)))
-         ::setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char*)&maxsize, sizeof(int));
+	 ::setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char*)&maxsize, sizeof(int));
    #else
       // for other systems, if requested is greated than maximum, the maximum value will be automactally used
       if ((0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVBUF, (char*)&m_iRcvBufSize, sizeof(int))) ||
-          (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char*)&m_iSndBufSize, sizeof(int))))
-         throw CUDTException(1, 3, NET_ERROR);
+	  (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_SNDBUF, (char*)&m_iSndBufSize, sizeof(int))))
+	 throw CUDTException(1, 3, NET_ERROR);
    #endif
 
    timeval tv;
@@ -169,15 +169,15 @@ void CChannel::setUDPSockOpt()
       // UNIX does not support SO_RCVTIMEO
       int opts = ::fcntl(m_iSocket, F_GETFL);
       if (-1 == ::fcntl(m_iSocket, F_SETFL, opts | O_NONBLOCK))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
    #elif WIN32
       DWORD ot = 1; //milliseconds
       if (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVTIMEO, (char *)&ot, sizeof(DWORD)))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
    #else
       // Set receiving time-out value
       if (0 != ::setsockopt(m_iSocket, SOL_SOCKET, SO_RCVTIMEO, (char *)&tv, sizeof(timeval)))
-         throw CUDTException(1, 3, NET_ERROR);
+	 throw CUDTException(1, 3, NET_ERROR);
    #endif
 }
 
@@ -231,7 +231,7 @@ int CChannel::sendto(const sockaddr* addr, CPacket& packet) const
    // convert control information into network order
    if (packet.getFlag())
       for (int i = 0, n = packet.getLength() / 4; i < n; ++ i)
-         *((uint32_t *)packet.m_pcData + i) = htonl(*((uint32_t *)packet.m_pcData + i));
+	 *((uint32_t *)packet.m_pcData + i) = htonl(*((uint32_t *)packet.m_pcData + i));
 
    // convert packet header into network order
    //for (int j = 0; j < 4; ++ j)
@@ -274,7 +274,7 @@ int CChannel::sendto(const sockaddr* addr, CPacket& packet) const
    if (packet.getFlag())
    {
       for (int l = 0, n = packet.getLength() / 4; l < n; ++ l)
-         *((uint32_t *)packet.m_pcData + l) = ntohl(*((uint32_t *)packet.m_pcData + l));
+	 *((uint32_t *)packet.m_pcData + l) = ntohl(*((uint32_t *)packet.m_pcData + l));
    }
 
    return res;
@@ -283,7 +283,7 @@ int CChannel::sendto(const sockaddr* addr, CPacket& packet) const
 int CChannel::recvfrom(sockaddr* addr, CPacket& packet) const
 {
    #ifndef WIN32
-      msghdr mh;   
+      msghdr mh;
       mh.msg_name = addr;
       mh.msg_namelen = m_iSockAddrSize;
       mh.msg_iov = packet.m_PacketVector;
@@ -293,13 +293,13 @@ int CChannel::recvfrom(sockaddr* addr, CPacket& packet) const
       mh.msg_flags = 0;
 
       #ifdef UNIX
-         fd_set set;
-         timeval tv;
-         FD_ZERO(&set);
-         FD_SET(m_iSocket, &set);
-         tv.tv_sec = 0;
-         tv.tv_usec = 10000;
-         ::select(m_iSocket+1, &set, NULL, &set, &tv);
+	 fd_set set;
+	 timeval tv;
+	 FD_ZERO(&set);
+	 FD_SET(m_iSocket, &set);
+	 tv.tv_sec = 0;
+	 tv.tv_usec = 10000;
+	 ::select(m_iSocket+1, &set, NULL, &set, &tv);
       #endif
 
       int res = ::recvmsg(m_iSocket, &mh, 0);
@@ -333,7 +333,7 @@ int CChannel::recvfrom(sockaddr* addr, CPacket& packet) const
    if (packet.getFlag())
    {
       for (int j = 0, n = packet.getLength() / 4; j < n; ++ j)
-         *((uint32_t *)packet.m_pcData + j) = ntohl(*((uint32_t *)packet.m_pcData + j));
+	 *((uint32_t *)packet.m_pcData + j) = ntohl(*((uint32_t *)packet.m_pcData + j));
    }
 
    return packet.getLength();

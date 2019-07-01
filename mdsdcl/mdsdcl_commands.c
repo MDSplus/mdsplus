@@ -194,8 +194,8 @@ EXPORT int mdsdcl_type(void *ctx, char **error __attribute__ ((unused)), char **
 }
 
 	/****************************************************************
-         * mdsdcl_set_hyphen:
-         ****************************************************************/
+	 * mdsdcl_set_hyphen:
+	 ****************************************************************/
 
 EXPORT int mdsdcl_set_hyphen(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
 {
@@ -219,8 +219,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
   char *verify = 0;
   cli_get_value(ctx, "P1", &verify);
   MDSDCL_VERIFY = verify && (toupper(verify[0]) == 'V');
-  if (verify)
-    free(verify);
+  free(verify);
   return MdsdclSUCCESS;
 }
 
@@ -245,16 +244,13 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   status = setenv(name,value,1);
   if (status) {
     *error = malloc(100);
-    sprintf(*error, "putenv returned %d. Environment variable not set.", status);
-    perror("error from putenv");
+    sprintf(*error, "setenv returned %d. Environment variable not set.", status);
     status = MdsdclERROR;
   } else
     status = MdsdclSUCCESS;
  done:
-  if (name)
-    free(name);
-  if (value)
-    free(value);
+  free(name);
+  free(value);
   return (status);
 }
 
@@ -265,24 +261,24 @@ EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unu
   if (value[0]=='\0') {
       value = getenv(name);
       if (value){
-         fprintf(stderr, "'%s'='%s'\n",name,value);
-         //free(value);
-      } else
-         fprintf(stderr, "'%s'= not defined\n",name);
+	 *output = malloc(strlen(name)+strlen(value)+7);
+	 sprintf(*output, "%s=%s\n",name,value);
+	 //free(value);
+      } else {
+	 *error = malloc(strlen(name)+19);
+	 sprintf(*error, "\"%s\" not defined\n",name);
+      }
   } else {
     value[0] = '\0'; value++;
-    fprintf(stderr, "'%s'='%s'\n",name,value);
     status = setenv(name,value,1);
     if (status) {
       *error = malloc(100);
-      perror("error from putenv");
-      sprintf(*error, "Attempting putenv(\"%s\")\n", value);
+      sprintf(*error, "setenv returned %d. Environment variable not set.", status);
       status = MdsdclERROR;
     } else
       status = MdsdclSUCCESS;
   }
-  if (name)
-    free(name);
+  free(name);
   return (status);
 }
 
@@ -306,8 +302,7 @@ EXPORT int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((u
     cmd_dsc.pointer = cmd;
   }
   status = LibSpawn(&cmd_dsc, waitFlag, notifyFlag);
-  if (cmd)
-    free(cmd);
+  free(cmd);
   if (status) {
     *error = malloc(100);
     sprintf(*error, "Spawn returned: %d\n", status);
@@ -382,8 +377,7 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
       char *home = getenv("HOME");
       char *sep = "/";
 #endif
-      if (history_file)
-	free(history_file);
+      free(history_file);
       if (home) {
 	history_file = malloc(strlen(history) + strlen(home) + 100);
 	sprintf(history_file, "%s%s%s", home, sep, history);
@@ -427,8 +421,7 @@ EXPORT int mdsdcl_help(void *ctx, char **error, char **output)
   int status;
   cli_get_value(ctx, "P1", &p1);
   status = mdsdcl_do_help(p1, error, output);
-  if (p1)
-    free(p1);
+  free(p1);
   return status;
 }
 
@@ -481,8 +474,7 @@ EXPORT int mdsdcl_define(void *ctx, char **error, char **output __attribute__ ((
       add_history(line);
     line = 0;
   }
-  if (line)
-    free(line);
+  free(line);
   return MdsdclSUCCESS;
 }
 
@@ -524,8 +516,7 @@ EXPORT int mdsdcl_show_macro(void *ctx, char **error, char **output)
     for (l = MLIST; l; l = l->next)
       mdsdcl_print_macro(l, full, output);
   }
-  if (name)
-    free(name);
+  free(name);
   return MdsdclSUCCESS;
 }
 
@@ -640,7 +631,7 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
     int time;
     int failed = 0;
     if (times_s) {
-      times = atoi(times_s);
+      times = strtol(times_s,NULL,0);
       free(times_s);
     }
     for (time = 0; (failed == 0) && (time < times); time++) {
@@ -682,24 +673,15 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
       free(l);
     }
   }
-  if (name)
-    free(name);
-  if (defname)
-    free(defname);
-  if (p1)
-    free(p1);
-  if (p2)
-    free(p2);
-  if (p3)
-    free(p3);
-  if (p4)
-    free(p4);
-  if (p5)
-    free(p5);
-  if (p6)
-    free(p6);
-  if (p7)
-    free(p7);
+  free(name);
+  free(defname);
+  free(p1);
+  free(p2);
+  free(p3);
+  free(p4);
+  free(p5);
+  free(p6);
+  free(p7);
   //mdsdclSetOutputRtn(oldOutputRtn);
   return status;
 }
@@ -748,8 +730,7 @@ EXPORT int mdsdcl_delete_macro(void *ctx, char **error, char **output __attribut
     *error = strdup("Error: Either specify macro name or use the /ALL qualifier.\n");
     status = MdsdclERROR;
   }
-  if (name)
-    free(name);
+  free(name);
   return status;
 }
 

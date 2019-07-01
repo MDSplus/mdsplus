@@ -75,7 +75,7 @@ int swapPixel( short *buf, int32_t size)
 	for(  i = 0; i < size; i++ )
 		buf[i] = swapShort(buf[i]);
 
-	return 0;	
+	return 0;
 }
 
 
@@ -104,7 +104,7 @@ int kappaOpen(const char *cameraName, void **cameraHandle)
 
 	_CHECK(SDK4DevGetControl(hDev, &hCtrl));
 	//_CHECK(SDK4SetPacketSize (hCtrl, 8192));
- 	SDK4GetPacketSize (hCtrl, &size);
+	SDK4GetPacketSize (hCtrl, &size);
 	cout << "Packet size : " << size << endl;
    return success;
 Exit:
@@ -162,7 +162,7 @@ int kappaSetExposureMode(void *cameraHandle, SDK4_ENUM_EXPOSUREMODE expmode)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetExposureMode(hCtrl, expmode));	
+	_CHECK(SDK4SetExposureMode(hCtrl, expmode));
 #ifdef debug
 	cout << "Exposure mode set to: " << ExposureModeToString(expmode) << endl;
 #endif
@@ -207,7 +207,7 @@ int kappaSetExposure(void *cameraHandle, float expTime)
 	}
 
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetExposure(hCtrl, kExposure));	
+	_CHECK(SDK4SetExposure(hCtrl, kExposure));
 
 #ifdef debug
 	double espo;
@@ -223,7 +223,7 @@ int kappaSetExposure(void *cameraHandle, float expTime)
 		case 6: espo = 0.1; break;
 		case 7: espo = 1; break;
 	}
-        espo=espo*kExposure.counter;
+	espo=espo*kExposure.counter;
 	cout << "Exposure set to " << espo << " s" << endl;
 #endif
     return success;
@@ -238,7 +238,7 @@ int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetAET(hCtrl, aet));	
+	_CHECK(SDK4SetAET(hCtrl, aet));
 #ifdef debug
 	switch(aet)
 	{
@@ -246,7 +246,7 @@ int kappaSetAET(void *cameraHandle, SDK4_ENUM_AET aet)
 		case 1: cout << "AET ON" << endl; break;
 		case 2: cout << "AET PUSH" << endl; break;
 		case 3: cout << "AET ON EXT" << endl; break;
-	}	
+	}
 #endif
     return success;
 Exit:
@@ -261,18 +261,18 @@ int kappaSetAutoExposureLevel(void *cameraHandle, uint32_t lev)
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	if(lev>=0 && lev<=255)
-        {
-	 _CHECK(SDK4SetAutoExposureLevel(hCtrl, lev));	
+	{
+	 _CHECK(SDK4SetAutoExposureLevel(hCtrl, lev));
 #ifdef debug
 	cout << "Auto Exposure level set to: " << lev << endl;
-#endif	
+#endif
 	}
 	else
-        {
+	{
 #ifdef debug
 	cout << "Auto Exposure level must be in range 0-255." << endl;
 	return error;
-#endif	 
+#endif
 	}
 
     return success;
@@ -287,20 +287,20 @@ int kappaSetGain(void *cameraHandle, uint32_t gain)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	
+
 	if(gain>=0 && gain<=511)
-        {
-	 	_CHECK(SDK4SetGain(hCtrl, gain));
+	{
+		_CHECK(SDK4SetGain(hCtrl, gain));
 #ifdef debug
 	cout << "Gain set to: " << gain << endl;
-#endif	
+#endif
 	}
 	else
-        {
+	{
 #ifdef debug
 	cout << "Gain must be in range 0-511." << endl;
 	return error;
-#endif	 
+#endif
 	}
     return success;
 Exit:
@@ -314,14 +314,14 @@ int kappaSetAGC(void *cameraHandle, SDK4_ENUM_AGC agc)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetAGC(hCtrl, agc));	
+	_CHECK(SDK4SetAGC(hCtrl, agc));
 #ifdef debug
 	switch(agc)
 	{
 		case 0: cout << "AGC OFF" << endl; break;
 		case 1: cout << "AGC ON" << endl; break;
 		case 2: cout << "AGC PUSH" << endl; break;
-	}	
+	}
 #endif
     return success;
 Exit:
@@ -335,13 +335,13 @@ int kappaSetSoftTrigger(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetSoftTrigger(hCtrl, uOnOff));	
+	_CHECK(SDK4SetSoftTrigger(hCtrl, uOnOff));
 #ifdef debug
 	switch(uOnOff)
 	{
 		case 0: cout << "Soft Trigger Switch OFF" << endl; break;
 		case 1: cout << "Soft Trigger Switch ON" << endl; break;
-	}	
+	}
 #endif
     return success;
 Exit:
@@ -355,9 +355,9 @@ int kappaSetTriggerTimer(void *cameraHandle, uint32_t time) //time in ms. accura
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetTriggerTimer(hCtrl, time));	
+	_CHECK(SDK4SetTriggerTimer(hCtrl, time));
 #ifdef debug
-	cout << "Trigger timer set to " << time << " ms" << endl; 
+	cout << "Trigger timer set to " << time << " ms" << endl;
 #endif
     return success;
 Exit:
@@ -371,13 +371,13 @@ int kappaSetSlowScan(void *cameraHandle, SDK4_ENUM_SWITCH uOnOff)
 {
 	CTRL_HANDLE hCtrl;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetSlowScan(hCtrl, uOnOff));	
+	_CHECK(SDK4SetSlowScan(hCtrl, uOnOff));
 #ifdef debug
 	switch(uOnOff)
 	{
 		case 0: cout << "Slow Scan OFF" << endl; break;
 		case 1: cout << "Slow Scan ON" << endl; break;
-	}	
+	}
 #endif
     return success;
 Exit:
@@ -393,7 +393,7 @@ int kappaGetReadoutAreaLimits(void *cameraHandle, SDK4_ENUM_ROADOMAIN select, in
 	SDK4_KAREA roa;
 
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4GetReadoutAreaLimits(hCtrl, select, &roa));	
+	_CHECK(SDK4GetReadoutAreaLimits(hCtrl, select, &roa));
 
 	*x = roa.start.xPos;
 	*y = roa.start.yPos;
@@ -410,7 +410,7 @@ int kappaGetReadoutAreaLimits(void *cameraHandle, SDK4_ENUM_ROADOMAIN select, in
 	 cout << "Readout Area Limits (start x position): " << roa.start.xPos << endl;
 	 cout << "Readout Area Limits (start y position): " << roa.start.yPos << endl;
 	 cout << "Readout Area Limits (end x position): " << roa.end.xPos << endl;
-	 cout << "Readout Area Limits (end y position): " << roa.end.yPos << endl;		
+	 cout << "Readout Area Limits (end y position): " << roa.end.yPos << endl;
 #endif
     return success;
 Exit:
@@ -428,12 +428,12 @@ int kappaSetReadoutArea(void *cameraHandle, int x, int y, int width, int height)
 	roa.end.yPos = y+height;
 
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
-	_CHECK(SDK4SetReadoutArea(hCtrl, roa));	
+	_CHECK(SDK4SetReadoutArea(hCtrl, roa));
 #ifdef debug
 	 cout << "Readout Area set to (start x position): " << roa.start.xPos << endl;
 	 cout << "Readout Area set to (start y position): " << roa.start.yPos << endl;
 	 cout << "Readout Area set to (end x position): " << roa.end.xPos << endl;
-	 cout << "Readout Area set to (end y position): " << roa.end.yPos << endl;	
+	 cout << "Readout Area set to (end y position): " << roa.end.yPos << endl;
 #endif
     return success;
 Exit:
@@ -447,13 +447,13 @@ int kappaSetBinning(void *cameraHandle, int binHor, int binVer)
 {
 	SDK4_KBINNING bin;
 	CTRL_HANDLE hCtrl;
-   	bin.horizontal=binHor;
+	bin.horizontal=binHor;
 	if(bin.horizontal > 8)
 	    bin.horizontal = 8;
 	if(bin.horizontal < 1)
 	    bin.horizontal = 1;
-	
-   	bin.vertical=binVer;
+
+	bin.vertical=binVer;
 	if(bin.vertical > 8)
 	    bin.vertical = 8;
 	if(bin.vertical < 1)
@@ -500,10 +500,10 @@ int kappaSetMeasureWindow(void *cameraHandle, int x, int y, int width, int heigh
 	SDK4_ENUM_MEASUREWINDOWSELECT select = 0;
 	SDK4_KAREA mwin;
 	CTRL_HANDLE hCtrl;
-   	mwin.start.xPos=x;
-   	mwin.start.yPos=y;
-   	mwin.end.xPos=x+width;
-   	mwin.end.yPos=y+height;
+	mwin.start.xPos=x;
+	mwin.start.yPos=y;
+	mwin.end.xPos=x+width;
+	mwin.end.yPos=y+height;
 	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	_CHECK(SDK4SetMeasureWindow(hCtrl, select, mwin));
 #ifdef debug
@@ -515,7 +515,7 @@ int kappaSetMeasureWindow(void *cameraHandle, int x, int y, int width, int heigh
 	 cout << "Measure Window set to (start x position): " << mwin.start.xPos << endl;
 	 cout << "Measure Window set to (start y position): " << mwin.start.yPos << endl;
 	 cout << "Measure Window set to (end x position): " << mwin.end.xPos << endl;
-	 cout << "Measure Window set to (end y position): " << mwin.end.yPos << endl;	
+	 cout << "Measure Window set to (end y position): " << mwin.end.yPos << endl;
 #endif
     return success;
 Exit:
@@ -530,8 +530,8 @@ int kappaGetIp(void *cameraHandle, char *ip)
 	int32_t size = 24;
 	CTRL_HANDLE hCtrl;
 
-        //Camera Setup
-	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));	
+	//Camera Setup
+	_CHECK(SDK4DevGetControl(cameraHandle, &hCtrl));
 	_CHECK(SDK4GetCurrentIPAddress(hCtrl, ip, &size));
 #ifdef debug
 	cout << "Camera IP Address: " << ip << endl;
@@ -548,12 +548,12 @@ int kappaPrintInfo(void *cameraHandle)
 {
 	static char sModel[256];
 	int32_t sizeModel=sizeof(sModel);
-	
+
 	char sClassId[256];
 	int32_t sizeClassId=sizeof(sClassId);
-	
+
     uint32_t uPayloadSize=0;
-		
+
 	//image params
     int32_t width=0;
     int32_t height=0;
@@ -565,7 +565,7 @@ int kappaPrintInfo(void *cameraHandle)
 	_CHECK(SDK4DevGetClassID(cameraHandle,sClassId,&sizeClassId));
 	_CHECK(SDK4DevGetModel(cameraHandle,sModel,&sizeModel));
 	_CHECK(SDK4DevGetDataStream(cameraHandle,&hDataStream));
-  
+
 	//DataStream
 	_CHECK(SDK4DSGetWidth(hDataStream,&width));
 	_CHECK(SDK4DSGetHeight(hDataStream,&height));
@@ -575,7 +575,7 @@ int kappaPrintInfo(void *cameraHandle)
 	cout << endl;
 	cout << "ClassID     = " << sClassId << endl;
 	cout << "Model       = " << sModel << endl;
-	cout << endl;	
+	cout << endl;
 	cout << "Width       = " << dec << width  << endl;
 	cout << "Height      = " << dec << height << endl;
 	cout << "Format      = " << hex << format << endl ;
@@ -597,7 +597,7 @@ int kappaStartAcquisition(void *cameraHandle, void **buffer, int32_t *width, int
 	_CHECK(SDK4DSGetWidth(hDataStream, width));
 	_CHECK(SDK4DSGetHeight(hDataStream, height));
 	_CHECK(SDK4DSGetPayloadSize(hDataStream, payloadSize));
-	
+
 	BUFFER_HANDLE *tmpBuffer;
 
 	tmpBuffer = (BUFFER_HANDLE *)malloc(sizeof(BUFFER_HANDLE) *5);
@@ -606,7 +606,7 @@ int kappaStartAcquisition(void *cameraHandle, void **buffer, int32_t *width, int
 	{
 		_CHECK(SDK4DSAllocAndAnnounceBuffer(hDataStream, *payloadSize,NULL, &tmpBuffer[i]));
 		_CHECK(SDK4DSQueueBuffer(hDataStream, tmpBuffer[i]));
-	}		
+	}
 	_CHECK(SDK4DevStartAcquisition(cameraHandle));
 
     return success;
@@ -622,9 +622,9 @@ int kappaStopAcquisition(void *cameraHandle, void *buffer)
 
 	_CHECK(SDK4DevStopAcquisition(cameraHandle));
 
-    DS_HANDLE hDataStream;	
+    DS_HANDLE hDataStream;
 	_CHECK(SDK4DevGetDataStream(cameraHandle,&hDataStream));
-		
+
 	_CHECK(SDK4DSFlushQueue(hDataStream));
 	for(int i=0;i<5;i++)
 	{
@@ -662,7 +662,7 @@ int kappaGetFrame(void *cameraHandle, int32_t *status, void *frame)
 			if(bComplete)
 			{
 				*status=1; //complete
-				memcpy(frame, pBuffer, uPayloadSize);	
+				memcpy(frame, pBuffer, uPayloadSize);
 			}
 			else
 			{

@@ -220,14 +220,14 @@ Data::~Data() {
 
 void MDSplus::deleteData(Data *data) {
 	if (data->refCount <= 1) {
-        if(data->units) { data->units->decRefCount(); deleteData(data->units); }
-        if(data->error) { data->error->decRefCount(); deleteData(data->error); }
-        if(data->help) { data->help->decRefCount(); deleteData(data->help); }
-        if(data->validation) { data->validation->decRefCount(); deleteData(data->validation); }
-        delete data;
-        data = NULL;
+	if(data->units) { data->units->decRefCount(); deleteData(data->units); }
+	if(data->error) { data->error->decRefCount(); deleteData(data->error); }
+	if(data->help) { data->help->decRefCount(); deleteData(data->help); }
+	if(data->validation) { data->validation->decRefCount(); deleteData(data->validation); }
+	delete data;
+	data = NULL;
     } else {
-        data->decRefCount();
+	data->decRefCount();
     }
 }
 
@@ -271,8 +271,8 @@ Data * Data::getValidation() {
 static void setMember(Data *&target, Data *member) {
     if(target) { target->decRefCount(); deleteData(target); }
     if(member) {
-        target = member;
-        target->incRefCount();
+	target = member;
+	target->incRefCount();
     }
 }
 
@@ -694,11 +694,11 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	int status;
     Data * res;
     try {
-        AutoPointer<Tree> actTree(getActiveTree());
-        res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+	AutoPointer<Tree> actTree(getActiveTree());
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
     } catch(MdsException &exc)
     {
-        res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
     }
 
 	if(!(status & 1))
@@ -734,8 +734,8 @@ Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
 		}
-        if(tree)
-            setActiveTree(tree);
+	if(tree)
+	    setActiveTree(tree);
 		int status;
 		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, &status);
 		for(i = 0; i < nArgs; i++)
@@ -887,7 +887,7 @@ void Data::plot()
 		scope->plot(this, dim);
 		scope->show();
 		delete scope;
-        deleteData(dim);
+	deleteData(dim);
 }
 
 
@@ -993,7 +993,7 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 	if(data->clazz == CLASS_A)
 	{
 		arrayData = (Array *)data;
-        //If passed data is an array, its dimensions must match the remaining dimensions
+	//If passed data is an array, its dimensions must match the remaining dimensions
 		if(arrayData->nDims != nDims - getNumDims)
 		{
 			delete [] rowDims;
@@ -1007,13 +1007,13 @@ void Array::setElementAt(int *getDims, int getNumDims, Data *data)
 				throw MdsException("Invalid passed dimensions in Array::setElementAt");
 			}
 		}
-        //Dimensionality check passed: copy passed Array
+	//Dimensionality check passed: copy passed Array
 		memcpy(ptr + (length * startIdx), arrayData->ptr, rowDims[getNumDims-1] * length);
 	}
 	else //data->clazz == CLASS_S
 	{
 		scalarData = (Scalar *)data;
-        //Propagate the passed scalar to all the remaining dimensions
+	//Propagate the passed scalar to all the remaining dimensions
 		for(i = 0; i < rowDims[getNumDims - 1]; i++)
 			memcpy(ptr + ((startIdx + i) * length), scalarData->ptr, length);
 	}
@@ -1031,20 +1031,20 @@ char *Array::getByteArray(int *numElements)
 	{
 		switch(dtype) {
 
-        case DTYPE_B: retArr[i] = numeric_cast<char>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<char>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<char>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<char>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<char>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<char>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<char>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<char>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<char>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<char>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getByteArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<char>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<char>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<char>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<char>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<char>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<char>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<char>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<char>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<char>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<char>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getByteArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -1057,20 +1057,20 @@ unsigned char *Array::getByteUnsignedArray(int *numElements)
 	for(int i = 0; i < size; i++)
 	{
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<unsigned char>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<unsigned char>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<unsigned char>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<unsigned char>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<unsigned char>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<unsigned char>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<unsigned char>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<unsigned char>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned char>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned char>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getByteUnsignedArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<unsigned char>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<unsigned char>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<unsigned char>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<unsigned char>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<unsigned char>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<unsigned char>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<unsigned char>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<unsigned char>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned char>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned char>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getByteUnsignedArray() not supported for Complex data type");
 		}
 	}
 	*numElements = size;
@@ -1083,20 +1083,20 @@ short *Array::getShortArray(int *numElements)
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
 
-        case DTYPE_B: retArr[i] = numeric_cast<short>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<short>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<short>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<short>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<short>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<short>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<short>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<short>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<short>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<short>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getShortArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<short>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<short>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<short>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<short>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<short>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<short>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<short>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<short>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<short>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<short>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getShortArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1107,20 +1107,20 @@ unsigned short *Array::getShortUnsignedArray(int *numElements)
 	int size = arsize/length;
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<unsigned short>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<unsigned short>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<unsigned short>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<unsigned short>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<unsigned short>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<unsigned short>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<unsigned short>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<unsigned short>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned short>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned short>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getShortUnsignedArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<unsigned short>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<unsigned short>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<unsigned short>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<unsigned short>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<unsigned short>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<unsigned short>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<unsigned short>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<unsigned short>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned short>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned short>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getShortUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1131,20 +1131,20 @@ int *Array::getIntArray(int *numElements)
 	int *retArr = new int[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<int>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<int>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<int>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<int>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<int>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<int>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<int>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<int>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<int>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<int>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getIntArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<int>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<int>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<int>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<int>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<int>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<int>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<int>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<int>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<int>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<int>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getIntArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1155,20 +1155,20 @@ unsigned int *Array::getIntUnsignedArray(int *numElements)
 	unsigned int *retArr = new unsigned int[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<unsigned int>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<unsigned int>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<unsigned int>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<unsigned int>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<unsigned int>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<unsigned int>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<unsigned int>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<unsigned int>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned int>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned int>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getIntUnsignedArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<unsigned int>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<unsigned int>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<unsigned int>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<unsigned int>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<unsigned int>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<unsigned int>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<unsigned int>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<unsigned int>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned int>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned int>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getIntUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1179,20 +1179,20 @@ int64_t *Array::getLongArray(int *numElements)
 	int64_t *retArr = new int64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<long>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<long>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<long>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<long>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<long>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<long>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<long>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<long>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<long>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<long>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getLongArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<long>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<long>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<long>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<long>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<long>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<long>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<long>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<long>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<long>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<long>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getLongArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1204,20 +1204,20 @@ uint64_t *Array::getLongUnsignedArray(int *numElements)
 	uint64_t *retArr = new uint64_t[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<unsigned long>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<unsigned long>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<unsigned long>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<unsigned long>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<unsigned long>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<unsigned long>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<unsigned long>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<unsigned long>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned long>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned long>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getLongUnsignedArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<unsigned long>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<unsigned long>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<unsigned long>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<unsigned long>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<unsigned long>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<unsigned long>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<unsigned long>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<unsigned long>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<unsigned long>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<unsigned long>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getLongUnsignedArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1229,20 +1229,20 @@ float *Array::getFloatArray(int *numElements)
 	float *retArr = new float[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<float>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<float>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<float>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<float>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<float>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<float>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<float>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<float>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<float>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<float>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getFloatArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<float>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<float>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<float>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<float>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<float>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<float>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<float>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<float>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<float>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<float>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getFloatArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1253,20 +1253,20 @@ double *Array::getDoubleArray(int *numElements)
 	double *retArr = new double[size];
 	for(int i = 0; i < size; i++)
 		switch(dtype) {
-        case DTYPE_B: retArr[i] = numeric_cast<double>(*(char *)&ptr[i * length]); break;
-        case DTYPE_BU: retArr[i] = numeric_cast<double>(*(unsigned char *)&ptr[i * length]); break;
-        case DTYPE_W: retArr[i] = numeric_cast<double>(*(short *)&ptr[i * length]); break;
-        case DTYPE_WU: retArr[i] = numeric_cast<double>(*(unsigned short *)&ptr[i * length]); break;
-        case DTYPE_L: retArr[i] = numeric_cast<double>(*(int *)&ptr[i * length]); break;
-        case DTYPE_LU: retArr[i] = numeric_cast<double>(*(unsigned int *)&ptr[i * length]); break;
-        case DTYPE_Q: retArr[i] = numeric_cast<double>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_QU: retArr[i] = numeric_cast<double>(*(int64_t *)&ptr[i * length]); break;
-        case DTYPE_FLOAT: retArr[i] = numeric_cast<double>(*(float *)&ptr[i * length]); break;
-        case DTYPE_DOUBLE: retArr[i] = numeric_cast<double>(*(double *)&ptr[i * length]); break;
-        case DTYPE_FSC:
-        case DTYPE_FTC:
-            delete [] retArr;
-            throw MdsException("getDoubleArray() not supported for Complex data type");
+	case DTYPE_B: retArr[i] = numeric_cast<double>(*(char *)&ptr[i * length]); break;
+	case DTYPE_BU: retArr[i] = numeric_cast<double>(*(unsigned char *)&ptr[i * length]); break;
+	case DTYPE_W: retArr[i] = numeric_cast<double>(*(short *)&ptr[i * length]); break;
+	case DTYPE_WU: retArr[i] = numeric_cast<double>(*(unsigned short *)&ptr[i * length]); break;
+	case DTYPE_L: retArr[i] = numeric_cast<double>(*(int *)&ptr[i * length]); break;
+	case DTYPE_LU: retArr[i] = numeric_cast<double>(*(unsigned int *)&ptr[i * length]); break;
+	case DTYPE_Q: retArr[i] = numeric_cast<double>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_QU: retArr[i] = numeric_cast<double>(*(int64_t *)&ptr[i * length]); break;
+	case DTYPE_FLOAT: retArr[i] = numeric_cast<double>(*(float *)&ptr[i * length]); break;
+	case DTYPE_DOUBLE: retArr[i] = numeric_cast<double>(*(double *)&ptr[i * length]); break;
+	case DTYPE_FSC:
+	case DTYPE_FTC:
+	    delete [] retArr;
+	    throw MdsException("getDoubleArray() not supported for Complex data type");
 		}
 	*numElements = size;
 	return retArr;
@@ -1282,9 +1282,9 @@ std::complex<double> *Array::getComplexArray(int *numElements)
 				retArr[i] = std::complex<double>(((float *)ptr)[2*i], ((float *)ptr)[2*i+1]); break;
 			case DTYPE_FTC:
 				retArr[i] = std::complex<double>(((double *)ptr)[2*i], ((double *)ptr)[2*i+1]); break;
-            default:
-            delete [] retArr;
-            throw MdsException("getComplexArray() not supported for non Complex data types");
+	    default:
+	    delete [] retArr;
+	    throw MdsException("getComplexArray() not supported for non Complex data types");
 
 		}
 	*numElements = size;
@@ -1316,7 +1316,7 @@ char **Array::getStringArray(int *numElements)
 
 bool String::equals(Data *data) {
     if(data->clazz != clazz || data->dtype != dtype)
-        return false;
+	return false;
 
     AutoString second(((String *)data)->getString());
     return std::string(ptr) == second.string;

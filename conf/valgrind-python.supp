@@ -601,3 +601,10 @@
    ...
    fun:_PyMethodDef_RawFastCallKeywords
 }
+
+{
+   debian python 2.7
+   Memcheck:Addr4
+   fun:long_dealloc.lto_priv.328
+   fun:frame_dealloc
+}

@@ -46,6 +46,7 @@ buildrelease() {
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/64/bin_x86_64/*.lib ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/32/bin_x86/*.lib ${MDSPLUS_DIR}/bin_x86/
+      cp -r ${srcdir}/icons ${MDSPLUS_DIR}/
     fi
     popd
     ###

@@ -33,7 +33,7 @@
 #if defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
 
 /* C99 says to define __STDC_LIMIT_MACROS before including stdint.h,
- * if you want the limit (max/min) macros for int types. 
+ * if you want the limit (max/min) macros for int types.
  */
 #ifndef __STDC_LIMIT_MACROS
 #define __STDC_LIMIT_MACROS 1
@@ -50,7 +50,7 @@ typedef uint32_t flex_uint32_t;
 typedef signed char flex_int8_t;
 typedef short int flex_int16_t;
 typedef int flex_int32_t;
-typedef unsigned char flex_uint8_t; 
+typedef unsigned char flex_uint8_t;
 typedef unsigned short int flex_uint16_t;
 typedef unsigned int flex_uint32_t;
 
@@ -177,14 +177,14 @@ typedef size_t yy_size_t;
 
     #define YY_LESS_LINENO(n)
     #define YY_LINENO_REWIND_TO(ptr)
-    
+
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
-        yy_size_t yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	yy_size_t yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		*yy_cp = yyg->yy_hold_char; \
 		YY_RESTORE_YY_MORE_OFFSET \
 		yyg->yy_c_buf_p = yy_cp = yy_bp + yyless_macro_arg - YY_MORE_ADJ; \
@@ -234,7 +234,7 @@ struct yy_buffer_state
 
     int yy_bs_lineno; /**< The line count. */
     int yy_bs_column; /**< The column count. */
-    
+
 	/* Whether to try to fill the input buffer when we reach the
 	 * end of it.
 	 */
@@ -266,8 +266,8 @@ struct yy_buffer_state
  * Returns the top of the stack, or NULL.
  */
 #define YY_CURRENT_BUFFER ( yyg->yy_buffer_stack \
-                          ? yyg->yy_buffer_stack[yyg->yy_buffer_stack_top] \
-                          : NULL)
+	                  ? yyg->yy_buffer_stack[yyg->yy_buffer_stack_top] \
+	                  : NULL)
 
 /* Same as previous macro, but useful when we know that the buffer stack is not
  * NULL or when we need an lvalue. For internal use only.
@@ -301,9 +301,9 @@ void yytreepathfree (void * ,yyscan_t yyscanner );
 #define yy_set_interactive(is_interactive) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){ \
-        yytreepathensure_buffer_stack (yyscanner); \
+	yytreepathensure_buffer_stack (yyscanner); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
+	    yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_is_interactive = is_interactive; \
 	}
@@ -311,9 +311,9 @@ void yytreepathfree (void * ,yyscan_t yyscanner );
 #define yy_set_bol(at_bol) \
 	{ \
 	if ( ! YY_CURRENT_BUFFER ){\
-        yytreepathensure_buffer_stack (yyscanner); \
+	yytreepathensure_buffer_stack (yyscanner); \
 		YY_CURRENT_BUFFER_LVALUE =    \
-            yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
+	    yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner); \
 	} \
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = at_bol; \
 	}
@@ -357,77 +357,77 @@ struct yy_trans_info
 	};
 static yyconst flex_int16_t yy_accept[136] =
     {   0,
-        0,    0,   15,   13,   12,    9,    9,    7,   13,   13,
-        8,   13,   13,    9,    9,   10,    7,    0,    8,    0,
-        9,    0,    8,    0,   11,    0,    2,    9,    6,   10,
-        3,    4,    8,    5,   11,    6,    2,    0,    9,   10,
-        8,    5,   11,    2,    0,    9,   10,    8,    5,   11,
-        2,    1,    9,   10,    8,    5,   11,    2,    1,    9,
+	0,    0,   15,   13,   12,    9,    9,    7,   13,   13,
+	8,   13,   13,    9,    9,   10,    7,    0,    8,    0,
+	9,    0,    8,    0,   11,    0,    2,    9,    6,   10,
+	3,    4,    8,    5,   11,    6,    2,    0,    9,   10,
+	8,    5,   11,    2,    0,    9,   10,    8,    5,   11,
+	2,    1,    9,   10,    8,    5,   11,    2,    1,    9,
        10,    8,    5,   11,    2,    1,    9,   10,    8,    5,
        11,    2,    1,    9,   10,    8,    5,   11,    2,    1,
-        9,   10,    8,    5,   11,    2,    1,    9,   10,    8,
-        5,   11,    2,    1,    9,   10,    8,    5,   11,    2,
+	9,   10,    8,    5,   11,    2,    1,    9,   10,    8,
+	5,   11,    2,    1,    9,   10,    8,    5,   11,    2,
 
-        1,   10,    8,    5,   11,    2,    1,    5,    2,    1,
-        5,    2,    1,    2,    1,    2,    1,    2,    1,    2,
-        1,    2,    1,    2,    1,    2,    1,    2,    1,    2,
-        1,    1,    1,    1,    0
+	1,   10,    8,    5,   11,    2,    1,    5,    2,    1,
+	5,    2,    1,    2,    1,    2,    1,    2,    1,    2,
+	1,    2,    1,    2,    1,    2,    1,    2,    1,    2,
+	1,    1,    1,    1,    0
     } ;
 
 static yyconst YY_CHAR yy_ec[256] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    3,    1,    1,    1,
-        1,    4,    1,    1,    5,    6,    1,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    7,    1,    1,
-        1,    1,    3,    1,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        1,    8,    1,    9,    3,    1,    3,    3,    3,    3,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    3,    1,    1,    1,
+	1,    4,    1,    1,    5,    6,    1,    3,    3,    3,
+	3,    3,    3,    3,    3,    3,    3,    7,    1,    1,
+	1,    1,    3,    1,    3,    3,    3,    3,    3,    3,
+	3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+	3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+	1,    8,    1,    9,    3,    1,    3,    3,    3,    3,
 
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
-        3,    3,    1,    1,    1,   10,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+	3,    3,    3,    3,    3,    3,    3,    3,    3,    3,
+	3,    3,    1,    1,    1,   10,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
 
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	1,    1,    1,    1,    1
     } ;
 
 static yyconst YY_CHAR yy_meta[11] =
     {   0,
-        1,    1,    2,    2,    1,    1,    3,    1,    4,    5
+	1,    1,    2,    2,    1,    1,    3,    1,    4,    5
     } ;
 
 static yyconst flex_uint16_t yy_base[241] =
     {   0,
-        0,  154,  161,  163,  163,    0,  156,  163,    8,  152,
+	0,  154,  161,  163,  163,    0,  156,  163,    8,  152,
       149,  147,    0,    0,  152,    0,  163,  149,  145,  143,
-        0,  145,    0,  142,    0,  140,  142,    0,    0,    0,
+	0,  145,    0,  142,    0,  140,  142,    0,    0,    0,
       163,  163,    0,    0,    0,  163,  141,  140,    0,    0,
-        0,    0,    0,  139,    0,    0,    0,    0,    0,    0,
+	0,    0,    0,  139,    0,    0,    0,    0,    0,    0,
       138,    0,    0,    0,    0,    0,    0,  137,    0,    0,
-        0,    0,    0,    0,  136,    0,    0,    0,    0,    0,
-        0,  135,    0,    0,    0,    0,    0,    0,  134,    0,
-        0,    0,    0,    0,    0,  133,    0,    0,    0,    0,
-        0,    0,  132,    0,  163,    0,    0,    0,    0,  131,
+	0,    0,    0,    0,  136,    0,    0,    0,    0,    0,
+	0,  135,    0,    0,    0,    0,    0,    0,  134,    0,
+	0,    0,    0,    0,    0,  133,    0,    0,    0,    0,
+	0,    0,  132,    0,  163,    0,    0,    0,    0,  131,
 
-        0,  163,  163,    0,  163,  130,    0,    0,    0,    0,
+	0,  163,  163,    0,  163,  130,    0,    0,    0,    0,
       163,    0,    0,    0,    0,    0,    0,    0,    0,    0,
-        0,    0,    0,    0,    0,    0,    0,    0,    0,  163,
-        0,    0,    0,  163,  163,  134,   17,   19,   22,  133,
+	0,    0,    0,    0,    0,    0,    0,    0,    0,  163,
+	0,    0,    0,  163,  163,  134,   17,   19,   22,  133,
       132,  131,  130,  129,   26,  128,  127,  126,  125,  124,
        28,  123,  122,  121,  120,  119,   30,  118,  117,  116,
       115,  114,  113,   32,  112,  111,  110,  109,  108,  107,
@@ -473,7 +473,7 @@ static yyconst flex_int16_t yy_def[241] =
 
 static yyconst flex_uint16_t yy_nxt[174] =
     {   0,
-        4,    5,    6,    7,    8,    9,   10,    4,   11,   12,
+	4,    5,    6,    7,    8,    9,   10,    4,   11,   12,
        16,   16,   17,   18,  134,  133,   19,   20,   21,   21,
        23,  132,   23,   25,  131,  130,   25,   37,   37,   44,
        44,   51,   51,   58,   58,   65,   65,   72,   72,   79,
@@ -496,8 +496,8 @@ static yyconst flex_uint16_t yy_nxt[174] =
 
 static yyconst flex_int16_t yy_chk[174] =
     {   0,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        9,    9,    9,    9,  240,  239,    9,    9,  137,  137,
+	1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+	9,    9,    9,    9,  240,  239,    9,    9,  137,  137,
       138,  238,  138,  139,  237,  236,  139,  145,  145,  151,
       151,  157,  157,  164,  164,  171,  171,  178,  178,  185,
       185,  192,  192,  199,  199,  206,  206,  212,  212,  215,
@@ -513,7 +513,7 @@ static yyconst flex_int16_t yy_chk[174] =
       144,  143,  142,  141,  140,  136,  106,  100,   93,   86,
        79,   72,   65,   58,   51,   44,   38,   37,   27,   26,
        24,   22,   20,   19,   18,   15,   12,   11,   10,    7,
-        3,    2,  135,  135,  135,  135,  135,  135,  135,  135,
+	3,    2,  135,  135,  135,  135,  135,  135,  135,  135,
       135,  135,  135
     } ;
 
@@ -648,7 +648,7 @@ extern int yytreepathwrap (yyscan_t yyscanner );
 #endif
 
 #ifndef YY_NO_UNPUT
-    
+
 #endif
 
 #ifndef yytext_ptr
@@ -1395,9 +1395,9 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
 	if ( ! YY_CURRENT_BUFFER ){
-        yytreepathensure_buffer_stack (yyscanner);
+	yytreepathensure_buffer_stack (yyscanner);
 		YY_CURRENT_BUFFER_LVALUE =
-            yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner);
+	    yytreepath_create_buffer(yyin,YY_BUF_SIZE ,yyscanner);
 	}
 
 	yytreepath_init_buffer(YY_CURRENT_BUFFER,input_file ,yyscanner);
@@ -1458,7 +1458,7 @@ static void yytreepath_load_buffer_state  (yyscan_t yyscanner)
     YY_BUFFER_STATE yytreepath_create_buffer  (FILE * file, int  size , yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
-    
+
 	b = (YY_BUFFER_STATE) yytreepathalloc(sizeof( struct yy_buffer_state ) ,yyscanner );
 	if ( ! b )
 		YY_FATAL_ERROR( "out of dynamic memory in yytreepath_create_buffer()" );
@@ -1519,12 +1519,12 @@ static void yytreepath_load_buffer_state  (yyscan_t yyscanner)
      * In that case, we don't want to reset the lineno or column.
      */
     if (b != YY_CURRENT_BUFFER){
-        b->yy_bs_lineno = 1;
-        b->yy_bs_column = 0;
+	b->yy_bs_lineno = 1;
+	b->yy_bs_column = 0;
     }
 
-        b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
-    
+	b->yy_is_interactive = file ? (isatty( fileno(file) ) > 0) : 0;
+
 	errno = oerrno;
 }
 
@@ -1623,16 +1623,16 @@ static void yytreepathensure_buffer_stack (yyscan_t yyscanner)
 		/* First allocation is just for 2 elements, since we don't know if this
 		 * scanner will even need a stack. We use 2 instead of 1 to avoid an
 		 * immediate realloc on the next call.
-         */
+	 */
       num_to_alloc = 1; /* After all that talk, this was set to 1 anyways... */
 		yyg->yy_buffer_stack = (struct yy_buffer_state**)yytreepathalloc
 								(num_to_alloc * sizeof(struct yy_buffer_state*)
 								, yyscanner);
 		if ( ! yyg->yy_buffer_stack )
 			YY_FATAL_ERROR( "out of dynamic memory in yytreepathensure_buffer_stack()" );
-								  
+
 		memset(yyg->yy_buffer_stack, 0, num_to_alloc * sizeof(struct yy_buffer_state*));
-				
+
 		yyg->yy_buffer_stack_max = num_to_alloc;
 		yyg->yy_buffer_stack_top = 0;
 		return;
@@ -1661,12 +1661,12 @@ static void yytreepathensure_buffer_stack (yyscan_t yyscanner)
  * @param base the character buffer
  * @param size the size in bytes of the character buffer
  * @param yyscanner The scanner object.
- * @return the newly allocated buffer state object. 
+ * @return the newly allocated buffer state object.
  */
 YY_BUFFER_STATE yytreepath_scan_buffer  (char * base, yy_size_t  size , yyscan_t yyscanner)
 {
 	YY_BUFFER_STATE b;
-    
+
 	if ( size < 2 ||
 	     base[size-2] != YY_END_OF_BUFFER_CHAR ||
 	     base[size-1] != YY_END_OF_BUFFER_CHAR )
@@ -1702,7 +1702,7 @@ YY_BUFFER_STATE yytreepath_scan_buffer  (char * base, yy_size_t  size , yyscan_t
  */
 YY_BUFFER_STATE yytreepath_scan_string (yyconst char * yystr , yyscan_t yyscanner)
 {
-    
+
 	return yytreepath_scan_bytes(yystr,(int) strlen(yystr) ,yyscanner);
 }
 
@@ -1719,7 +1719,7 @@ YY_BUFFER_STATE yytreepath_scan_bytes  (yyconst char * yybytes, int  _yybytes_le
 	char *buf;
 	yy_size_t n;
 	yy_size_t i;
-    
+
 	/* Get memory for full buffer, including space for trailing EOB's. */
 	n = (yy_size_t) _yybytes_len + 2;
 	buf = (char *) yytreepathalloc(n ,yyscanner );
@@ -1762,8 +1762,8 @@ static void yynoreturn yy_fatal_error (yyconst char* msg , yyscan_t yyscanner)
 	do \
 		{ \
 		/* Undo effects of setting up yytext. */ \
-        yy_size_t yyless_macro_arg = (n); \
-        YY_LESS_LINENO(yyless_macro_arg);\
+	yy_size_t yyless_macro_arg = (n); \
+	YY_LESS_LINENO(yyless_macro_arg);\
 		yytext[yyleng] = yyg->yy_hold_char; \
 		yyg->yy_c_buf_p = yytext + yyless_macro_arg; \
 		yyg->yy_hold_char = *yyg->yy_c_buf_p; \
@@ -1789,10 +1789,10 @@ YY_EXTRA_TYPE yytreepathget_extra  (yyscan_t yyscanner)
 int yytreepathget_lineno  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    
-        if (! YY_CURRENT_BUFFER)
-            return 0;
-    
+
+	if (! YY_CURRENT_BUFFER)
+	    return 0;
+
     return yylineno;
 }
 
@@ -1802,10 +1802,10 @@ int yytreepathget_lineno  (yyscan_t yyscanner)
 int yytreepathget_column  (yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
-    
-        if (! YY_CURRENT_BUFFER)
-            return 0;
-    
+
+	if (! YY_CURRENT_BUFFER)
+	    return 0;
+
     return yycolumn;
 }
 
@@ -1864,10 +1864,10 @@ void yytreepathset_lineno (int  _line_number , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-        /* lineno is only valid if an input buffer exists. */
-        if (! YY_CURRENT_BUFFER )
-           YY_FATAL_ERROR( "yytreepathset_lineno called with no buffer" );
-    
+	/* lineno is only valid if an input buffer exists. */
+	if (! YY_CURRENT_BUFFER )
+	   YY_FATAL_ERROR( "yytreepathset_lineno called with no buffer" );
+
     yylineno = _line_number;
 }
 
@@ -1879,10 +1879,10 @@ void yytreepathset_column (int  _column_no , yyscan_t yyscanner)
 {
     struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;
 
-        /* column is only valid if an input buffer exists. */
-        if (! YY_CURRENT_BUFFER )
-           YY_FATAL_ERROR( "yytreepathset_column called with no buffer" );
-    
+	/* column is only valid if an input buffer exists. */
+	if (! YY_CURRENT_BUFFER )
+	   YY_FATAL_ERROR( "yytreepathset_column called with no buffer" );
+
     yycolumn = _column_no;
 }
 
@@ -1929,15 +1929,15 @@ int yytreepathlex_init(yyscan_t* ptr_yy_globals)
 
 {
     if (ptr_yy_globals == NULL){
-        errno = EINVAL;
-        return 1;
+	errno = EINVAL;
+	return 1;
     }
 
     *ptr_yy_globals = (yyscan_t) yytreepathalloc ( sizeof( struct yyguts_t ), NULL );
 
     if (*ptr_yy_globals == NULL){
-        errno = ENOMEM;
-        return 1;
+	errno = ENOMEM;
+	return 1;
     }
 
     /* By setting to 0xAA, we expose bugs in yy_init_globals. Leave at 0x00 for releases. */
@@ -1962,23 +1962,23 @@ int yytreepathlex_init_extra(YY_EXTRA_TYPE yy_user_defined,yyscan_t* ptr_yy_glob
     yytreepathset_extra (yy_user_defined, &dummy_yyguts);
 
     if (ptr_yy_globals == NULL){
-        errno = EINVAL;
-        return 1;
+	errno = EINVAL;
+	return 1;
     }
-	
+
     *ptr_yy_globals = (yyscan_t) yytreepathalloc ( sizeof( struct yyguts_t ), &dummy_yyguts );
-	
+
     if (*ptr_yy_globals == NULL){
-        errno = ENOMEM;
-        return 1;
+	errno = ENOMEM;
+	return 1;
     }
-    
+
     /* By setting to 0xAA, we expose bugs in
     yy_init_globals. Leave at 0x00 for releases. */
     memset(*ptr_yy_globals,0x00,sizeof(struct yyguts_t));
-    
+
     yytreepathset_extra (yy_user_defined, *ptr_yy_globals);
-    
+
     return yy_init_globals ( *ptr_yy_globals );
 }
 
@@ -2032,8 +2032,8 @@ int yytreepathlex_destroy  (yyscan_t yyscanner)
 	yyg->yy_buffer_stack = NULL;
 
     /* Destroy the start condition stack. */
-        yytreepathfree(yyg->yy_start_stack ,yyscanner );
-        yyg->yy_start_stack = NULL;
+	yytreepathfree(yyg->yy_start_stack ,yyscanner );
+	yyg->yy_start_stack = NULL;
 
     /* Reset the globals. This is important in a non-reentrant scanner so the next time
      * yytreepathlex() is called, initialization will occur. */
@@ -2107,11 +2107,11 @@ void yytreepathfree (void * ptr , yyscan_t yyscanner)
 
 
 /*
-STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ) 
+STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
 {
   const char * names[] = {
     "TAG_TREE",
-    "TAG", 
+    "TAG",
     "CHILD",
     "MEMBER",
     "CHILD_OR_MEMBER",
@@ -2126,13 +2126,13 @@ STATIC_ROUTINE const char  *SearchTypeName(enum yytreepathtokentype typ)
   return names[typ-TAG_TREE];
 }
 
-STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx) 
+STATIC_ROUTINE void PrintCtx(SEARCH_CTX *ctx)
 {
   SEARCH_TERM *ptr;
   printf ("Print Context for %s\n", ctx->wildcard);
-  for ( ptr=ctx->terms; 
-        ptr; 
-        ptr=ptr->next) {
+  for ( ptr=ctx->terms;
+	ptr;
+	ptr=ptr->next) {
     printf("\t%s -%s-\n", SearchTypeName(ptr->search_type), ptr->term);
   }
 }
@@ -2178,43 +2178,44 @@ static char *strtrim(char *str)
   return str;
 }
 
-EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
+EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
 {
+  int status = TreeINVPATH;
+
 //  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  char *wild_path = strdup(path);
-  char *p;
-  int status;
-  yyscan_t scanner;
-  wild_path = strtrim(wild_path);
-  while ((p = strstr(wild_path, "***"))) {
+  if (path && strlen(path)) {
+    char *wild_path = strdup(path);
+    char *p;
+    yyscan_t scanner;
+    wild_path = strtrim(wild_path);
+    while ((p = strstr(wild_path, "***"))) {
       *p++ = '~';
       *p++ = '~';
       *p++ = '~';
+    }
+
+    yytreepathlex_init_extra(ctx, &scanner);
+    ctx->wildcard = strdup(wild_path);
+
+    yytreepath_scan_string(wild_path, scanner);
+
+    while((status = yytreepathlex(scanner)) > 0) ;
+    if (status == 0) {
+      /* now merge in trailing search clauses */
+      ctx->terms=SquishSearches(ctx->terms);
+      /* check if any terms are wild */
+      *wild = strchr(wild_path, '*') ||
+	      strchr(wild_path, '%') ||
+	      strstr(wild_path, "~~~") ||
+	      strstr(wild_path, "...") ||
+	      strstr(wild_path, ":::") ||
+	      strstr(wild_path, "^^^") ;
+    }
+    yytreepathlex_destroy(scanner);
+    free(wild_path);
   }
 
-  yytreepathlex_init_extra(ctx, &scanner);
-  ctx->wildcard = strdup(wild_path);
-
-  yytreepath_scan_string(wild_path, scanner);
-
-  while((status = yytreepathlex(scanner)) > 0) ;
-  if (status == 0) {
-    /* now merge in trailing search clauses */
-    ctx->terms=SquishSearches(ctx->terms);
-    /* check if any terms are wild */
-    *wild = strchr(wild_path, '*') || 
-            strchr(wild_path, '%') || 
-            strstr(wild_path, "~~~") || 
-            strstr(wild_path, "...") || 
-            strstr(wild_path, ":::") || 
-            strstr(wild_path, "^^^") ;
-  }
-  yytreepathlex_destroy(scanner);
-  free(wild_path);
-
-//  PrintCtx(ctx);
-
-  return(status ==0) ? TreeNORMAL : 0;
+  return(status ==0) ? TreeNORMAL : status;
 }
 
 STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
@@ -2231,7 +2232,7 @@ STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
     char *cptr = str;
     while(*cptr) {
       if (isPunctuation(*cptr)) {
-        cptr++;
+	cptr++;
       } else {
        break;
      }

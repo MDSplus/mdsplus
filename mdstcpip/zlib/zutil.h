@@ -186,7 +186,7 @@ extern void zmemzero OF((Bytef * dest, uInt len));
 #endif
 
 /* Diagnostic functions */
-#ifdef DEBUG
+#ifdef ZLIB_DEBUG
 #include <stdio.h>
 extern int z_verbose;
 extern void z_error OF((char *m));
@@ -210,7 +210,7 @@ voidpf zcalloc OF((voidpf opaque, unsigned items, unsigned size));
 void zcfree OF((voidpf opaque, voidpf ptr));
 
 #define ZALLOC(strm, items, size) \
-           (*((strm)->zalloc))((strm)->opaque, (items), (size))
+	   (*((strm)->zalloc))((strm)->opaque, (items), (size))
 #define ZFREE(strm, addr)  (*((strm)->zfree))((strm)->opaque, (voidpf)(addr))
 #define TRY_FREE(s, p) {if (p) ZFREE(s, p);}
 

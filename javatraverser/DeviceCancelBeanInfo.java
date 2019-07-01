@@ -2,15 +2,15 @@ import java.beans.*;
 import java.awt.*;
 public class DeviceCancelBeanInfo extends SimpleBeanInfo
 {
-    public PropertyDescriptor [] getPropertyDescriptors()  
+    public PropertyDescriptor [] getPropertyDescriptors()
     {
-        return new PropertyDescriptor[] {};
+	return new PropertyDescriptor[] {};
     }
     public Image getIcon(int kind)
     {
-        return loadImage("DeviceCancel.gif");
+	return loadImage("DeviceCancel.gif");
     }
-    
+
 }
-       
+
 /* Do nothing and prevent editing by means of bean builders */

@@ -23,20 +23,18 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1DtypeRange.C
-        Create array of stepped values of most data types. Default delta is 1.
-                vector = from : to : [delta]
-        Example, 3..11..2) returns [3, 5, 7, 9, 11].
+	Create array of stepped values of most data types. Default delta is 1.
+	        vector = from : to : [delta]
+	Example, 3..11..2) returns [3, 5, 7, 9, 11].
 
-        The begin, end, or delta may be vectors.
-        In which case they are matched.
-        The result is a simple vector concatenation.
-        Example, 3..[4,5] is [3,4,3,4,5].
+	The begin, end, or delta may be vectors.
+	In which case they are matched.
+	The result is a simple vector concatenation.
+	Example, 3..[4,5] is [3,4,3,4,5].
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
-        NEED faster code for longs and maybe floats.
+	Ken Klare, LANL CTR-7   (c)1989,1990
+	NEED faster code for longs and maybe floats.
 */
-
-extern unsigned short OpcValue;
 
 #include <STATICdef.h>
 #include "tdinelements.h"
@@ -73,12 +71,12 @@ extern int TdiNint();
 
 extern struct descriptor *TdiItoXSpecial;
 
-int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  unsigned short len;
-  unsigned char dtype;
+  length_t len;
+  dtype_t dtype;
   int cmode = -1, j, nseg = 0, nnew = narg;
   int *pl, tot = 0;
   struct descriptor *new[3];
@@ -92,15 +90,15 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
   new[1] = list[1];
   new[2] = narg > 2 ? list[2] : 0;
 	/**********************************************
-        * Specials for X_TO_I axis-to-index conversion.
-        * No axis increment implies all points between.
-        * *:*:$VALUE is done internally in X_TO_I.
-        * x:y:$VALUE is I_TO_X(X_TO_I(x),X_TO_I(y)) with
-        *       missing x or y taken as first or last.
-        * x:y:z is normal range with missing computed.
-        **********************************************/
+	* Specials for X_TO_I axis-to-index conversion.
+	* No axis increment implies all points between.
+	* *:*:$VALUE is done internally in X_TO_I.
+	* x:y:$VALUE is I_TO_X(X_TO_I(x),X_TO_I(y)) with
+	*       missing x or y taken as first or last.
+	* x:y:z is normal range with missing computed.
+	**********************************************/
   if (new[2]
-      && new[2]->dtype == DTYPE_FUNCTION && *(unsigned short *)new[2]->pointer == OpcValue) {
+      && new[2]->dtype == DTYPE_FUNCTION && *(unsigned short *)new[2]->pointer == OPC_$VALUE) {
     DESCRIPTOR_RANGE(range, 0, 0, 0);
     range.begin = &dx0;
     range.ending = &dx1;
@@ -140,8 +138,8 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
     nnew = 2;
 
 	/******************************************
-        Fetch signals and data and data's category.
-        ******************************************/
+	Fetch signals and data and data's category.
+	******************************************/
   if STATUS_OK
     status = TdiGetArgs(opcode, nnew, new, sig, uni, dat, cats);
   if STATUS_OK
@@ -150,9 +148,9 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
 	status = TdiNULL_PTR;
 
 	/******************************************
-        Adjust category needed to match data types.
-        Do any conversions to match types.
-        ******************************************/
+	Adjust category needed to match data types.
+	Do any conversions to match types.
+	******************************************/
   if STATUS_OK
     status = Tdi2Range(nnew, uni, dat, cats, 0);
   if STATUS_OK
@@ -161,11 +159,11 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
   len = cats[nnew].digits;
 
 	/********************************************
-        The number of elements in each segment.
-        Expression: LONG(MAX((end-begin)/delta+1,0)).
-        Total number of elements is sum of above.
-        WARNING 3$ routines require type match.
-        ********************************************/
+	The number of elements in each segment.
+	Expression: LONG(MAX((end-begin)/delta+1,0)).
+	Total number of elements is sum of above.
+	WARNING 3$ routines require type match.
+	********************************************/
   if STATUS_OK
     status = TdiSubtract(&dat[1], dat[0].pointer, &nelem MDS_END_ARG);
   if (new[2] && STATUS_OK)
@@ -185,9 +183,9 @@ int Tdi1DtypeRange(int opcode, int narg, struct descriptor *list[], struct descr
       tot += *pl++;
 
 	/**************************
-        Output array size is known.
-        Get the array and stuff it.
-        **************************/
+	Output array size is known.
+	Get the array and stuff it.
+	**************************/
   arr.arsize = tot;
   if STATUS_OK
     status = MdsGet1DxA((struct descriptor_a *)&arr, &len, &dtype, out_ptr);

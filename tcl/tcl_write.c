@@ -51,12 +51,10 @@ EXPORT int TclWrite(void *ctx, char **error __attribute__ ((unused)), char **out
     char *shotidStr = 0;
     int shotid;
     cli_get_value(ctx, "SHOTID", &shotidStr);
-    shotid = atoi(shotidStr);
+    shotid = strtol(shotidStr,NULL,0);
     sts = TreeWriteTree(exp, shotid);
-    if (exp)
-      free(exp);
-    if (shotidStr)
-      free(shotidStr);
+    free(exp);
+    free(shotidStr);
   } else {
     sts = TreeWriteTree(0, 0);
   }

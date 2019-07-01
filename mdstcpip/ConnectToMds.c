@@ -40,6 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define LOAD_GETUSERNAME
 #include <pthread_port.h>
 #include "mdsip_connections.h"
+#include "mdsIo.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Parse Host  ////////////////////////////////////////////////////////////////
@@ -91,13 +92,14 @@ static int doLogin(Connection* c)
   m->h.msglen = sizeof(MsgHdr) + length;
   m->h.dtype = DTYPE_CSTRING;
   m->h.status = c->compression_level;
-  m->h.ndims = 0;
+  m->h.ndims = 1;
+  m->h.dims[0] = MDSIP_VERSION;
   memcpy(m->bytes, user_p, length);
   status = SendMdsMsgC(c, m, 0);
   free(m);
   if STATUS_OK {
     m = GetMdsMsgTOC(c, &status, 10000);
-    if (m == 0 || STATUS_NOT_OK) {
+    if (!m || STATUS_NOT_OK) {
       printf("Error in connect\n");
       return MDSplusERROR;
     } else {
@@ -108,9 +110,10 @@ static int doLogin(Connection* c)
       }
       // SET CLIENT COMPRESSION FROM SERVER //
       c->compression_level= (m->h.status & 0x1e) >> 1;
+      c->client_type = m->h.client_type;
+      if (m->h.ndims>0) c->version = m->h.dims[0];
     }
-    if (m)
-      free(m);
+    free(m);
   } else {
     fprintf(stderr,"Error connecting to server (DoLogin)\n");
     fflush(stderr);
@@ -144,10 +147,8 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen)
     }
   } else
     memset(unique, 0, buflen);
-  if (protocol)
-    free(protocol);
-  if (host)
-    free(host);
+  free(protocol);
+  free(host);
   return ok;
 }
 
@@ -170,15 +171,13 @@ int ConnectToMds(char *hostin)
     if (c->io && c->io->connect) {
       c->compression_level = GetCompressionLevel();
       if (c->io->connect(c, protocol, host)<0 || IS_NOT_OK(doLogin(c))) {
-        DisconnectConnectionC(c);
+	DisconnectConnectionC(c);
       } else {
-        id = AddConnection(c);
+	id = AddConnection(c);
       }
     }
   }
-  if (host)
-    free(host);
-  if (protocol)
-    free(protocol);
+  free(host);
+  free(protocol);
   return id;
 }

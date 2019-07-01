@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //      MIT / PSFC
 //      Cambridge, MA 02139  USA
 //
-//      This is a port of the MDSplus system software from VMS to Linux, 
+//      This is a port of the MDSplus system software from VMS to Linux,
 //      specifically:
 //                      CAMAC subsystem, ie libCamShr.so and verbs.c for CTS.
 //-------------------------------------------------------------------------
@@ -66,9 +66,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // Tue Apr  3 16:42:08 EDT 2001 -- changed file count test to '<='
 //-------------------------------------------------------------------------
 // Looks up a entry name in one of the data bases.
-//              During lookup, a semaphore should be set to prevent the 
-//              data file from being updated 'under our feet.' 
-//              If the semaphore is set, we should wait until it is 
+//              During lookup, a semaphore should be set to prevent the
+//              data file from being updated 'under our feet.'
+//              If the semaphore is set, we should wait until it is
 //              released. Lookup is via a binary search so is
 //              relatively fast.
 //
@@ -77,7 +77,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //              If return value is -1, then lookup() failed,
 //              otherwise, success
 //
-// input:       db type, 
+// input:       db type,
 //                      pointer to the name of a logical module name
 // output:      -1 indicates not found; >= 0 is index in db file
 //-------------------------------------------------------------------------

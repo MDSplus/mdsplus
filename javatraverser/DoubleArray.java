@@ -15,21 +15,21 @@ public class DoubleArray extends ArrayData
 	    dtype = DTYPE_DOUBLE;
 	    this.datum = new double[datum.length];
 	    for(int i = 0; i < datum.length; i++)
-	        this.datum[i] = datum[i];
+		this.datum[i] = datum[i];
 	    this.flags = flags;
     }
-    public int [] getIntArray() 
+    public int [] getIntArray()
     {
 	    int ris [] = new int[datum.length];
 	    for(int i = 0; i < datum.length; i++)
-	        ris[i] = (int)datum[i];
+		ris[i] = (int)datum[i];
 	    return ris;
     }
     public float [] getFloatArray()
     {
 	    float ris [] = new float[datum.length];
 	    for(int i = 0; i < datum.length; i++)
-	        ris[i] = (float)datum[i];
+		ris[i] = (float)datum[i];
 	    return ris;
     }
     public int getFlags(){return flags;}

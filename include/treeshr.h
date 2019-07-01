@@ -12,7 +12,7 @@ extern "C" {
 #else
 #ifdef EXPORT
 #undef EXPORT
-#endif	
+#endif
 #define EXPORT
 #endif
 #include <mdstypes.h>
@@ -22,15 +22,7 @@ extern "C" {
 extern int treeshr_errno;
 extern int TREE_BLOCKID;
 
-
-
-
-#ifndef MDSDESCRIP_H_DEFINED
-  struct descriptor;
-  struct descriptor_a;
-  struct descriptor_r;
-  struct descriptor_xd;
-#endif
+#include <mdsdescrip.h>
 
 #ifndef DBIDEF_H
   struct dbi_itm;
@@ -60,6 +52,7 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeCreatePulseFile(int shot, int numnids, int *nids);
   extern EXPORT int _TreeCreatePulseFile(void *dbid, int shot, int numnids, int *nids);
   extern EXPORT int TreeCreateTreeFiles(char *tree, int shot, int source_shot);
+  extern EXPORT void **TreeCtx();
   extern EXPORT void *TreeDbid();
   extern EXPORT void *_TreeDbid(void **dbid);
   extern EXPORT void TreeDeleteNodeExecute(void);
@@ -70,9 +63,10 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeDeleteNodeInitialize(void *dbid, int nid, int *count, int reset);
   extern EXPORT int TreeDeletePulseFile(int shotid, int all_versions);
   extern EXPORT int _TreeDeletePulseFile(void *dbid, int shotid, int all_versions);
-  extern EXPORT int TreeDoMethod(struct descriptor *nid, struct descriptor *method, ...);
-  extern EXPORT int _TreeDoMethod(void *dbid, struct descriptor *nid, struct descriptor *method,
-				  ...);
+  extern EXPORT int TreeDoMethod(mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr, ...);
+  extern EXPORT int _TreeDoMethod(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr, ...);
+  extern EXPORT int TreeDoMethodA(mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr, int nargs_in, mdsdsc_t **arglist_in, mdsdsc_xd_t *out_ptr);
+  extern EXPORT int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr, int nargs_in, mdsdsc_t **arglist_in, mdsdsc_xd_t *out_ptr);
   extern EXPORT int TreeDoMethod_HANDLER(int *sig_args, int *mech_args);
   extern EXPORT int TreeEditing();
   extern EXPORT int _TreeEditing(void *dbid);
@@ -85,8 +79,7 @@ extern int TREE_BLOCKID;
   extern EXPORT char *TreeFindNodeTags(int nid, void **ctx); /********** Use TreeFree(result) *****/
   extern EXPORT char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);/********** Use TreeFree(result) *****/
   extern EXPORT int TreeFindNodeWild(char const *path, int *nid, void **ctx, int usage_mask);
-  extern EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx,
-				      int usage_mask);
+  extern EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int usage_mask);
   extern EXPORT void TreeFindTagEnd(void **ctx);
   extern EXPORT char *TreeFindTagWild(char *wild, int *nidout, void **search_ctx);
   extern EXPORT char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx);
@@ -192,6 +185,8 @@ extern int TREE_BLOCKID;
 				     struct descriptor_a *initialData, int idx, int filled);
   extern EXPORT int TreePutSegment(int nid, const int rowidx, struct descriptor_a *data);
   extern EXPORT int _TreePutSegment(void *dbid, int nid, const int rowidx, struct descriptor_a *data);
+  extern EXPORT int TreeSetRowsFilled(int nid, int rows_filled);
+  extern EXPORT int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
   extern EXPORT int TreeUpdateSegment(int nid, struct descriptor *start, struct descriptor *end,
 				      struct descriptor *dim, int idx);
   extern EXPORT int _TreeUpdateSegment(void *dbid, int nid, struct descriptor *start,
@@ -270,6 +265,18 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeGetSegmentScale(int nid, struct descriptor_xd *value);
   extern EXPORT int _TreeSetSegmentScale(void *dbid, int nid, struct descriptor *value);
   extern EXPORT int TreeSetSegmentScale(int nid, struct descriptor *value);
+
+  extern EXPORT int _TreeExecute(void *dbid, ...);
+  extern EXPORT int _TreeEvaluate(void *dbid, ...);
+  extern EXPORT int _TreeDecompile(void *dbid, ...);
+  extern EXPORT int _TreeCompile(void *dbid, ...);
+
+  extern EXPORT void* TreeCtxPush(void** ctx);
+  extern EXPORT void  TreeCtxPop(void* ps);
+  extern EXPORT void* TreeDbidPush(void* dbid);
+  extern EXPORT void* TreeDbidPop(void* ps);
+  #define CTX_PUSH(ctx) pthread_cleanup_push(TreeCtxPop,TreeCtxPush(ctx))
+  #define CTX_POP(ctx)  pthread_cleanup_pop(1)
 
 #ifdef __cplusplus
 }

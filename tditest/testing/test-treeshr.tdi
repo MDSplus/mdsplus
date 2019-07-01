@@ -89,8 +89,11 @@ TreePutRecord(member,42)
 member
 TreePutRecord(member,build_with_units(1:1000,'volts'))
 member
-TreeClose('main',_shot)
 TreeOpen('main',-1,1)
+TreeOpenEdit('main',_shot)
+!should reopen _shot in edit mode
+TreeClose('main',_shot)
+!should leave model open and top tree
 TreeDeletePulseFile(_shot)
 TreeClose()
 TreeOpenNew('main',_shot)
@@ -182,7 +185,7 @@ segs
 MakeSegment(segs,11,20,11:20,data(1:10),*, 9)
 segs
 TreePutRecord(segs,)
-BeginSegment(segs,0.,99.,0.:99.,zero(100,0))
+BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 putsegment(segs,-1,data(0:9))
 getsegment(segs,0)
 segs

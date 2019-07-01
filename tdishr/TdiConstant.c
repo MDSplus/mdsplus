@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1Constant.C
-        Get descriptor of a constant value.
-        Note $NARG (number of arguments) is in Tdi1Var.
-        Note $VALUE (raw of signal, data of param) is in TdiGetData.
-        They are not constants, but context values.
+	Get descriptor of a constant value.
+	Note $NARG (number of arguments) is in Tdi1Var.
+	Note $VALUE (raw of signal, data of param) is in TdiGetData.
+	They are not constants, but context values.
 
-        Ken Klare, LANL P-4     (c)1989,1990,1992
+	Ken Klare, LANL P-4     (c)1989,1990,1992
 */
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
+int Tdi1Constant(opcode_t opcode, int narg __attribute__ ((unused)),
 		 struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
 
@@ -46,40 +46,40 @@ int Tdi1Constant(int opcode, int narg __attribute__ ((unused)),
 }
 
 /*------------------------------------------------
-        Descriptor definitions of constants, MKS.
+	Descriptor definitions of constants, MKS.
 
-        Valid units (*=basic +=supplementary):
-        m       meter*
-        kg      kilogram*
-        s       second*
-        A       ampere*
-        K       kelvin*
-        mol     mole*
-        cd      candela*
-        rad     radian+
-        sr      steradian+
-        Hz      hertz
-        J       joule
-        N       newton
-        Pa      pascal
-        W       watt
-        C       coulomb
-        V       volt
-        (omega) ohm
-        S       siemens
-        F       farad
-        Wb      weber
-        H       henry
-        T       tesla
-        lm      lumen
-        lx      lux
-        Bq      becquerel
-        Gy      gray
+	Valid units (*=basic +=supplementary):
+	m       meter*
+	kg      kilogram*
+	s       second*
+	A       ampere*
+	K       kelvin*
+	mol     mole*
+	cd      candela*
+	rad     radian+
+	sr      steradian+
+	Hz      hertz
+	J       joule
+	N       newton
+	Pa      pascal
+	W       watt
+	C       coulomb
+	V       volt
+	(omega) ohm
+	S       siemens
+	F       farad
+	Wb      weber
+	H       henry
+	T       tesla
+	lm      lumen
+	lx      lux
+	Bq      becquerel
+	Gy      gray
 
 Major sources:
 "The 1986 Adjustment of the Fundamental Physical Constants..." by Cohen and Taylor
 "1980 Revised NRL Plasma Formulary" by Book.
-        NEED to remove / ** / when ANSI C permits sharp-sharp
+	NEED to remove / ** / when ANSI C permits sharp-sharp
 */
 typedef void (*MISSING) ();
 typedef unsigned char BU;
@@ -92,34 +92,34 @@ typedef unsigned int FROP;
 #define DTYPE_FROP      DTYPE_F
 
 #define DATUM(type, x, data) \
-        STATIC_CONSTANT type                    d##x = data;\
-        STATIC_CONSTANT struct descriptor       Tdi##x##Constant = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-        struct descriptor *Tdi3##x(){return &Tdi##x##Constant;}
+	STATIC_CONSTANT type                    d##x = data;\
+	STATIC_CONSTANT struct descriptor       Tdi##x##Constant = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	struct descriptor *Tdi3##x(){return &Tdi##x##Constant;}
 
 #define DERR(type, x, data, error) \
-        STATIC_CONSTANT type                    d##x = data;\
-        STATIC_CONSTANT type                    e##x = error;\
-        STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-        STATIC_CONSTANT struct descriptor       de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-        STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(Tdi##x##Constant,&dd##x,&de##x);\
-        struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
+	STATIC_CONSTANT type                    d##x = data;\
+	STATIC_CONSTANT type                    e##x = error;\
+	STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT struct descriptor       de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+	STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(Tdi##x##Constant,&dd##x,&de##x);\
+	struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define UNITS(type, x, data, units) \
-        STATIC_CONSTANT type                    d##x = data;\
-        STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-        STATIC_CONSTANT DESCRIPTOR(             du##x, units);\
-        STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dd##x,&du##x);\
-        struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
+	STATIC_CONSTANT type                    d##x = data;\
+	STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT DESCRIPTOR(             du##x, units);\
+	STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dd##x,&du##x);\
+	struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define UERR(type, x, data, error, units) \
-        STATIC_CONSTANT type                    d##x = data;\
-        STATIC_CONSTANT type                    e##x = error;\
-        STATIC_CONSTANT DESCRIPTOR(du##x, units);\
-        STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
-        STATIC_CONSTANT struct descriptor       de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
-        STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
-        STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
-        struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
+	STATIC_CONSTANT type                    d##x = data;\
+	STATIC_CONSTANT type                    e##x = error;\
+	STATIC_CONSTANT DESCRIPTOR(du##x, units);\
+	STATIC_CONSTANT struct descriptor       dd##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&d##x};\
+	STATIC_CONSTANT struct descriptor       de##x = {sizeof(type), DTYPE_##type, CLASS_S, (char *)&e##x};\
+	STATIC_CONSTANT DESCRIPTOR_WITH_ERROR(dwe##x,&dd##x,&de##x);\
+	STATIC_CONSTANT DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
+	struct descriptor *Tdi3##x(){return (struct descriptor *)&Tdi##x##Constant;}
 
 #define II {(float)0., (float)1.}
 #define RR 0x8000

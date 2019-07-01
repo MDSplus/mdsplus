@@ -23,22 +23,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 /*      Tdi1SetRange
-        Set the upper and lower bounds of an array.
-                SET_RANGE(range0,... array)
+	Set the upper and lower bounds of an array.
+	        SET_RANGE(range0,... array)
 
-        Each range specifier must be:
-                * : * or missing
-                lower : *
-                lower : upper
-                upper or * : upper
-        If the lower or upper bound is missing or * it is computed,
-        If both are missing or the argument is omitted, no change is made.
-        The result will have that many subscripts. Fortran-8x requires match.
-        Missing values are supplied from the source array and require that dimension.
-        Subscript triads are not allowed.
+	Each range specifier must be:
+	        * : * or missing
+	        lower : *
+	        lower : upper
+	        upper or * : upper
+	If the lower or upper bound is missing or * it is computed,
+	If both are missing or the argument is omitted, no change is made.
+	The result will have that many subscripts. Fortran-8x requires match.
+	Missing values are supplied from the source array and require that dimension.
+	Subscript triads are not allowed.
 
-        Ken Klare, LANL CTR-7   (c)1989,1990
-        NEED way to specify character string subscript range
+	Ken Klare, LANL CTR-7   (c)1989,1990
+	NEED way to specify character string subscript range
 */
 
 #include <STATICdef.h>
@@ -57,19 +57,19 @@ extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_BU, 0, 1);
   struct descriptor_xd sig[1], uni[1], dat[1], tmp = EMPTY_XD;
   struct descriptor_range *prange;
   struct TdiCatStruct cats[2];
-  array_bounds *pa = 0, arr;
+  array_bounds *pa = 0, arr = {0};
   int bounds = 0, coeff = 0, defhi, deflo, dimct, hi, j, lo, ndim = 0, cmode = 0;
 
 	/******************
-        Get the data basis.
-        ******************/
+	Get the data basis.
+	******************/
   status = TdiGetArgs(opcode, 1, &list[narg - 1], sig, uni, dat, cats);
 
   if STATUS_OK {
@@ -78,8 +78,8 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
     if (pa == 0)
       status = TdiNULL_PTR;
 		/*******************
-                Accept scalars also.
-                *******************/
+	        Accept scalars also.
+	        *******************/
     else
       switch (pa->class) {
       case CLASS_S:
@@ -103,20 +103,20 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
   arr.dimct = (unsigned char)(dimct = narg - 1);
 
 	/******************************
-        For each input, check defaults.
-        ******************************/
+	For each input, check defaults.
+	******************************/
   for (j = 0; j < dimct; ++j) {
 
 		/*********************
-                Omitted, use original.
-                *********************/
+	        Omitted, use original.
+	        *********************/
     defhi = deflo = 0;
     if (list[j] == 0)
       defhi = deflo = 1;
 
 		/*****************
-                Get data or range.
-                *****************/
+	        Get data or range.
+	        *****************/
     else {
       unsigned char omits[] = {(unsigned char)DTYPE_RANGE,0};
       if STATUS_OK
@@ -126,8 +126,8 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
       prange = (struct descriptor_range *)tmp.pointer;
 
 			/**********************************
-                        Simple limit is number of elements.
-                        **********************************/
+	                Simple limit is number of elements.
+	                **********************************/
       if (prange->dtype != DTYPE_RANGE) {
 	lo = 0;
 	status = TdiGetLong(&tmp, &hi);
@@ -147,8 +147,8 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
     }
 
 		/***************************
-                Fill in defaults, if we can.
-                ***************************/
+	        Fill in defaults, if we can.
+	        ***************************/
     if (STATUS_OK && (defhi || deflo)) {
       if (j >= ndim)
 	status = TdiINVDTYDSC;
@@ -188,15 +188,15 @@ int Tdi1SetRange(int opcode, int narg, struct descriptor *list[], struct descrip
     status = MdsGet1DxA((struct descriptor_a *)&arr, &pa->length, &pa->dtype, out_ptr);
   }
 	/***********************
-        Copy/expand data to new.
-        ***********************/
+	Copy/expand data to new.
+	***********************/
   if STATUS_OK
     status = TdiConvert(pa, out_ptr->pointer MDS_END_ARG);
 
 	/******************************
-        Embed result in signal, if any.
-        Then free input.
-        ******************************/
+	Embed result in signal, if any.
+	Then free input.
+	******************************/
   if STATUS_OK
     status = TdiMasterData(1, sig, uni, &cmode, out_ptr);
   if (sig[0].pointer)

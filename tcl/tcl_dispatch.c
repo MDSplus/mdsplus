@@ -59,26 +59,21 @@ extern int TdiData();
 
 #define IS_WILD(T)   (strcspn(T,"*%") < strlen(T))
 
-#define SYNCINIT int SyncId = 0
-#define SYNCPASS &SyncId
-#define SYNCWAIT ServerWait(SyncId)
-
 #define INIT_TCLSTATUS INIT_STATUS_AS TclNORMAL
-
-static void *dispatch_table = 0;
 
 extern int ServerFailedEssential();
 
 extern int TdiIdentOf();
-
+#include "../treeshr/treeshrp.h"
+#define DBID_TABLE (((PINO_DATABASE*)TreeDbid())->dispatch_table)
 /****************************************************************
  * TclDispatch_close:
  ****************************************************************/
 EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
 {
   char *ident;
-  if (IS_NOT_OK(cli_present(ctx, "SERVER")) && dispatch_table)
-    ServerDispatchClose(dispatch_table);
+  if (IS_NOT_OK(cli_present(ctx, "SERVER")))
+    ServerDispatchClose(DBID_TABLE);
   else {
     while IS_OK(cli_get_value(ctx, "SERVER", &ident)) {
       FREE_ON_EXIT(ident);
@@ -96,11 +91,7 @@ EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute_
   INIT_TCLSTATUS;
   INIT_AND_FREE_ON_EXIT(char*,monitor);
   cli_get_value(ctx, "MONITOR", &monitor);
-  if (dispatch_table){
-    ServerFreeDispatchTable(dispatch_table);
-    dispatch_table = NULL;
-  }
-  status = ServerBuildDispatchTable(0, monitor, &dispatch_table);
+  status = ServerBuildDispatchTable(0, monitor, &DBID_TABLE);
   if STATUS_NOT_OK {
     char *msg = MdsGetMsg(status);
     *error = malloc(strlen(msg) + 100);
@@ -110,30 +101,53 @@ EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute_
   return status;
 }
 
+static void syncwait(void* syncid_p) {
+  ServerWait(*(int*)syncid_p);
+}
+
 /***************************************************************
  * TclDispatch:
  ***************************************************************/
+/***************************************************************
+ * TclDispatch_command:
+ ***************************************************************/
+typedef struct {
+  char* treenode;
+  void* svr;
+  void* xd;
+  int*  sid;
+} cln_act_t;
+static void cln_act(void* cin) {
+  cln_act_t* c = (cln_act_t*)cin;
+  free(c->treenode);
+  if (c->svr) free_d(c->svr);
+  if (c->xd) free_xd(c->xd);
+  if (c->sid) {
+    syncwait(c->sid);
+    free(c->sid);
+  }
+}
 EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused))){
-  INIT_TCLSTATUS;
-  INIT_AND_FREE_ON_EXIT(char*,treenode);
-  int iostatus;
-  int nid;
-  int waiting = cli_present(ctx, "WAIT") != MdsdclNEGATED;
-  if IS_NOT_OK(cli_get_value(ctx, "NODE", &treenode)){
+  int status, sync, IOS;
+  cln_act_t c = {0};
+  pthread_cleanup_push(cln_act,(void*)&c);
+  status = TclNORMAL;
+  sync = cli_present(ctx, "WAIT") != MdsdclNEGATED;
+  IOS = SsINTERNAL;
+  if IS_NOT_OK(cli_get_value(ctx, "NODE", &c.treenode)){
     status = MdsdclERROR;
     *error = strdup("Error: Missing node path.\n");
     goto cleanup;
   }
-  status = TreeFindNode(treenode, &nid);
+  EMPTYXD(xd);c.xd=&xd;
+  struct descriptor_d svr = {0,DTYPE_T,CLASS_D,0};c.svr=&svr;
+  int nid;
+  status = TreeFindNode(c.treenode, &nid);
   if STATUS_OK {
-    struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)0 };
-    INIT_AND_FREED_ON_EXIT(ident,DTYPE_T);
-    INIT_AND_FREEXD_ON_EXIT(xd);
-    niddsc.pointer = (char *)&nid;
+    struct descriptor niddsc = { 4, DTYPE_NID, CLASS_S, (char *)&nid };
     status = TdiIdentOf(&niddsc, &xd MDS_END_ARG);
     if STATUS_OK
-      status = TdiData(&xd, &ident MDS_END_ARG);
-    FREEXD_NOW(&xd);
+      status = TdiData(&xd, &svr MDS_END_ARG);
     if STATUS_OK {
       static char treename[13];
       static DESCRIPTOR(nullstr, "\0");
@@ -143,27 +157,26 @@ EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((un
       {0, 0, 0, 0}
       };
       TreeGetDbi(itmlst);
-      StrAppend(&ident, (struct descriptor *)&nullstr);
-      SYNCINIT;
-      status =
-          ServerDispatchAction(SYNCPASS, ident.pointer, treename, shot, nid, NULL, NULL,
-               waiting ? &iostatus : NULL, NULL, NULL, 0);
-      if STATUS_OK {
-        if (waiting) {
-          SYNCWAIT;
-          status = iostatus;
-        }
-      }
+      StrAppend(&svr, (struct descriptor *)&nullstr);
+      int *iostatusp;
+      if (sync) {
+	c.sid = calloc(1,sizeof(int));
+	IOS = SsINTERNAL;
+	iostatusp = &IOS;
+      } else
+	iostatusp = NULL;
+      status = ServerDispatchAction(c.sid,svr.pointer,treename,shot,nid,NULL,NULL,iostatusp,NULL,NULL,0);
     }
-    FREED_NOW(&ident);
   }
   if STATUS_NOT_OK {
     char *msg = MdsGetMsg(status);
-    *error = malloc(strlen(msg) + strlen(treenode) + 100);
-    sprintf(*error, "Error dispatching node %s\n" "Error message was: %s\n", treenode, msg);
+    *error = malloc(strlen(msg) + strlen(c.treenode) + 100);
+    sprintf(*error, "Error dispatching node %s\n" "Error message was: %s\n", c.treenode, msg);
   }
 cleanup: ;
-  FREE_NOW(treenode);
+  pthread_cleanup_pop(1);
+  if (STATUS_OK && sync)
+    return IOS;
   return status;
 }
 
@@ -282,13 +295,13 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       void *ctx1 = NULL;
       char *server = NULL;
       while ((server = ServerFindServers(&ctx1, ident))) {
-        FREE_ON_EXIT(server);
+	FREE_ON_EXIT(server);
 	tclAppend(output, "Checking server: ");
 	tclAppend(output, server);
 	tclAppend(output, "\n");
 	mdsdclFlushOutput(*output);
 	char *info=NULL;
-        FREE_ON_EXIT(info);
+	FREE_ON_EXIT(info);
 	if (dooutput) {
 	  tclAppend(output, info = ServerGetInfo(full, server));
 	  tclAppend(output, "\n");
@@ -304,9 +317,9 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
       tclAppend(output, "\n");
       mdsdclFlushOutput(*output);
       FREE_ON_EXIT(info);
-      info = ServerGetInfo(full, ident); 
+      info = ServerGetInfo(full, ident);
       if (dooutput) {
-	tclAppend(output, info); 
+	tclAppend(output, info);
 	tclAppend(output, "\n");
       }
       FREE_NOW(info);
@@ -316,7 +329,7 @@ EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unuse
   return status;
 }
 
-static void printIt(char *output){
+static inline void printIt(char *output){
   fprintf(stdout, "%s\n", output);
 }
 
@@ -336,9 +349,8 @@ EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute_
   cli_get_value(ctx, "SYNCH", &synch_str);
   sscanf(synch_str, "%d", &synch);
   synch = synch >= 1 ? synch : 1;
-  if (dispatch_table)
-    status = ServerDispatchPhase(NULL, dispatch_table,
-			      phase, (char)noaction, synch, output_rtn, monitor);
+  if (DBID_TABLE)
+    status = ServerDispatchPhase(NULL, DBID_TABLE, phase, (char)noaction, synch, output_rtn, monitor);
   else
     status = TclNO_DISPATCH_TABLE;
   if STATUS_NOT_OK {
@@ -370,42 +382,64 @@ static void CommandDone(DispatchedCommand * command){
   free(command);
 }
 
+/***************************************************************
+ * TclDispatch_command:
+ ***************************************************************/
+typedef struct {
+  char* svr;
+  char* tab;
+  DispatchedCommand* cmd;
+  int*  sid;
+} cln_cmd_t;
+static void cln_cmd(void* cin) {
+  cln_cmd_t* c = (cln_cmd_t*)cin;
+  free(c->svr);
+  free(c->tab);
+  if (c->sid) {
+    syncwait(c->sid);
+    free(c->sid);
+  } else
+   free(c->cmd);
+}
 EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused))){
-  INIT_TCLSTATUS,stat1=ServerPATH_DOWN;
-  INIT_AND_FREE_ON_EXIT(char*,ident);
-  INIT_AND_FREE_ON_EXIT(char*,cli);
-  if IS_NOT_OK(cli_get_value(ctx, "SERVER", &ident)){
+  int status, sync, IOS;
+  cln_cmd_t c = {0};
+  pthread_cleanup_push(cln_cmd,(void*)&c);
+  status = TclNORMAL;
+  sync = 0;
+  IOS = SsINTERNAL;
+  if IS_NOT_OK(cli_get_value(ctx, "SERVER", &c.svr)){
     status = MdsdclERROR;
     *error = strdup("Error: Missing server ident.\n");
     goto cleanup;
   }
-  cli_get_value(ctx, "TABLE", &cli);
-  INIT_AS_AND_FREE_ON_EXIT(DispatchedCommand*,command,calloc(1,sizeof(DispatchedCommand)));
-  cli_get_value(ctx, "P1", &command->command);
-  if(command->command){
-    int sync = IS_OK(cli_present(ctx, "WAIT"));
+  c.cmd = calloc(1,sizeof(DispatchedCommand));
+  cli_get_value(ctx, "TABLE", &c.tab);
+  cli_get_value(ctx, "P1", &c.cmd->command);
+  if(c.cmd->command){
+    sync = IS_OK(cli_present(ctx, "WAIT"));
+    int *iostatusp;
     if (sync) {
-      command->status = MDSplusSUCCESS;
-      SYNCINIT;
-      status = ServerDispatchCommand(SYNCPASS, ident, cli, command->command, CommandDone, command, &stat1, NULL, 0);
-      if STATUS_OK SYNCWAIT;
+      c.sid = calloc(1,sizeof(int));
+      c.cmd->status = IOS;
+      iostatusp = &IOS;
     } else {
-     command->status = ServerPATH_DOWN;
-     status = ServerDispatchCommand(0, ident, cli, command->command, CommandDone, command, &command->status, NULL, 0);
+      c.cmd->status = ServerPATH_DOWN;
+      iostatusp = &c.cmd->status;
     }
+    status = ServerDispatchCommand(c.sid, c.svr, c.tab, c.cmd->command, CommandDone, c.cmd, iostatusp, NULL, 0);
     if STATUS_NOT_OK {
       char *msg = MdsGetMsg(status);
       *error = malloc(100 + strlen(msg));
       sprintf(*error, "Error: Problem dispatching async command.\n" "Error message was: %s\n", msg);
-    } else if (sync) status = stat1;
-  } else {
+    }
+    c.cmd = NULL;
+  } else
     status = MdsdclMISSING_VALUE;
-    free(command);
-  }
-  FREE_CANCEL(command);
 cleanup: ;
-  FREE_NOW(cli);
-  FREE_NOW(ident);
+  pthread_cleanup_pop(1);
+  if (STATUS_OK && sync)
+    return IOS;
   return status;
 }
 
@@ -413,7 +447,7 @@ cleanup: ;
  * TclDispatch_check:
  ***************************************************************/
 EXPORT int TclDispatch_check(void *ctx, char **error, char **output __attribute__ ((unused))){
-  if IS_OK(ServerFailedEssential(dispatch_table, cli_present(ctx, "RESET"))) {
+  if (ServerFailedEssential(DBID_TABLE, cli_present(ctx, "RESET"))) {
     *error = strdup("Error: A essential action failed!\n");
     return TclFAILED_ESSENTIAL;
   } else

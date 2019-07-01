@@ -1,8 +1,10 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@
-VPATH = @srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
 @MINGW_TRUE@ DEF=${srcdir}/MdsSql.def
 
 CFLAGS+=@SYBASE_INC@ @TARGET_ARCH@

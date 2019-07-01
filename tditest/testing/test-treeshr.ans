@@ -21,7 +21,6 @@ getnci('%ember','fullpath')
 getnci('\n','fullpath')
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI("\n", "fullpath")
-%TDI Error in EVALUATE(GETNCI("\n", "fullpath"))
 %TDI Error in EXECUTE("getnci('\\n','fullpath')")
 
 _tim=getnci(member,'time_inserted')
@@ -35,13 +34,13 @@ size(.subtree:a12:stop_trig)
 kind(.subtree:a12:stop_trig)
 52BU
 'total of '//text(size(getnci('***','nid_number','signal')))//' signals'
-"total of          389 signals"
+"total of         389 signals"
 'total of '//text(size(getnci('***','nid_number','action')))//' actions'
-"total of          100 actions"
+"total of         100 actions"
 'total of '//text(size(getnci('***','nid_number','numeric')))//' numerics'
-"total of          957 numerics"
+"total of         957 numerics"
 'total of '//text(size(_nids=getnci('***','nid_number','subtree')))//' subtrees'
-"total of            2 subtrees"
+"total of           2 subtrees"
 getnci(_nids,'fullpath')
 ["\\MAIN::TOP.SUBTREE    ","\\MAIN::TOP.SUBTREE.GUB"]
 TreeClose()
@@ -147,7 +146,6 @@ getnci(.subtree:a12,"brother")
 getnci(.subtree:a12,"child")
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "child")
-%TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "child"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"child")')
 
 getnci(.subtree:a12,"member")
@@ -157,7 +155,6 @@ getnci(.subtree:a12,"parent")
 getnci(.subtree:a12,"children_nids")
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI(.SUBTREE:A12, "children_nids")
-%TDI Error in EVALUATE(GETNCI(.SUBTREE:A12, "children_nids"))
 %TDI Error in EXECUTE('getnci(.subtree:a12,"children_nids")')
 
 getnci(.subtree:a12,"conglomerate_nids")
@@ -175,7 +172,7 @@ getnci(.subtree:a12,"on")
 getnci(.subtree:a12,"rlength")
 58LU
 TreeCreatePulseFile(_shot)
-265388115
+265389633
 TreeClose('main',-1)
 265388041
 TreeOpen('main',_shot)
@@ -188,12 +185,14 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 265389633
 member
 Build_With_Units(1 : 1000, "volts")
-TreeClose('main',_shot)
-265388041
 TreeOpen('main',-1,1)
 265388041
+TreeOpenEdit('main',_shot)
+265388041
+TreeClose('main',_shot)
+265388041
 TreeDeletePulseFile(_shot)
-1
+265389633
 TreeClose()
 265388041
 TreeOpenNew('main',_shot)
@@ -309,7 +308,6 @@ getnci(\child,'nid_number')
 getnci('\\child_tag2','nid_number')
 %TREE-W-NNF, Node Not Found
 %TDI Error in GETNCI("\\child_tag2", "nid_number")
-%TDI Error in EVALUATE(GETNCI("\\child_tag2", "nid_number"))
 %TDI Error in EXECUTE("getnci('\\\\child_tag2','nid_number')")
 
 getnci(\child_tag3,'nid_number')
@@ -382,7 +380,7 @@ segs
 Build_Signal([1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9], *, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
 TreePutRecord(segs,)
 265389633
-BeginSegment(segs,0.,99.,0.:99.,zero(100,0))
+BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 265388041
 putsegment(segs,-1,data(0:9))
 265389633
@@ -409,4 +407,4 @@ TreeClose()
 TreeOpen('main',-1,1)
 265388041
 TreeDeletePulseFile(_shot)
-1
+265389633

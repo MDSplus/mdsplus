@@ -1,7 +1,12 @@
 include @top_builddir@/Makefile.inc
 
-VPATH = @srcdir@
+srcdir=@srcdir@
+builddir=@builddir@ 
+VPATH=@srcdir@
+@AX_RECONFIGURE_TARGET@
+
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@XTreeShr.dll.a
+@MINGW_TRUE@ DEF=${srcdir}/XTreeShr.def
 
 CPPFLAGS+=@SRBINCLUDE@
 
@@ -13,7 +18,7 @@ SOURCES = \
 	XTreeGetSegmentList.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = XXTreeShr.exports
+EXPORTS = XTreeShr.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@XTreeShr.a $(IMPLIB)
 
