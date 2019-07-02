@@ -24,7 +24,6 @@
 #
 import numpy as np
 import MDSplus
-from MDSplus import Event,Range
 import threading
 import Queue
 import socket
@@ -157,7 +156,7 @@ class ACQ435ST(MDSplus.Device):
 
             self.dims = []
             for i in range(self.nchans):
-                self.dims.append(Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
+                self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
 
             self.device_thread.start()
 
@@ -177,10 +176,10 @@ class ACQ435ST(MDSplus.Device):
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
                 segment += 1
-                Event.setevent(event_name)
+                MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
