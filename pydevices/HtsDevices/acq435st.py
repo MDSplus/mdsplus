@@ -24,8 +24,11 @@
 #
 import numpy as np
 import MDSplus
+from MDSplus import Event,Range
 import threading
-from queue import Queue, Empty
+import Queue
+import socket
+import time
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -86,11 +89,11 @@ class ACQ435ST(MDSplus.Device):
 
 
     for i in range(32):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+        parts.append({'path':':INPUT_%3.3d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
                       'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     del i
 
     debug=None
@@ -111,14 +114,14 @@ class ACQ435ST(MDSplus.Device):
             self.nchans = 32
 
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%2.2d'%(i+1)))
-                self.decim.append(getattr(self.dev, 'input_%2.2d_decimate' %(i+1)).data())
+                self.chans.append(getattr(self.dev, 'input_%3.3d'%(i+1)))
+                self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
-            self.empty_buffers = Queue()
-            self.full_buffers = Queue()
+            self.empty_buffers = Queue.Queue()
+            self.full_buffers = Queue.Queue()
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
@@ -148,10 +151,14 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
-            
-            if self.seg_length % decimator:		
-                 self.seg_length = (self.seg_length // decimator + 1) * decimator		
-             
+
+            if self.seg_length % decimator:
+                self.seg_length = (self.seg_length // decimator + 1) * decimator
+
+            self.dims = []
+            for i in range(self.nchans):
+                self.dims.append(Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
+
             self.device_thread.start()
 
             segment = 0
@@ -161,23 +168,19 @@ class ACQ435ST(MDSplus.Device):
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
-                except Empty:
+                except Queue.Empty:
                     continue
 
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
-                    slength = self.seg_length/self.decim[i]
-                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        begin = segment * slength * deltat
-                        end   = begin + (slength - 1) * deltat
-                        dim   = MDSplus.Range(begin, end, deltat)
-                        c.makeSegment(begin, end, dim, b)
+                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
+                        self.dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
                 segment += 1
-                MDSplus.Event.setevent(event_name)
+                Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
@@ -204,8 +207,6 @@ class ACQ435ST(MDSplus.Device):
                 self.running = False
 
             def run(self):
-                import socket
-                import time
                 if self.debug:
                     print("DeviceWorker running")
 
@@ -219,7 +220,7 @@ class ACQ435ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Empty:
+                    except Queue.Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
@@ -235,14 +236,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("We have Got a timeout.")
+                        print("Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' received timed out, retry later')
+                            print (' recv timed out, retry later')
                             continue
                         else:
                             print (e)
@@ -260,7 +261,7 @@ class ACQ435ST(MDSplus.Device):
                             self.full_buffers.put(buf)
 
     def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%2.2d' % num)
+        chan=self.__getattr__('INPUT_%3.3d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
@@ -304,9 +305,9 @@ class ACQ435ST(MDSplus.Device):
         offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
 
         for i in range(32):
-            coeff = self.__getattr__('input_%2.2d_coefficient'%(i+1))
+            coeff = self.__getattr__('input_%3.3d_coefficient'%(i+1))
             coeff.record = coeffs[i]
-            offset = self.__getattr__('input_%2.2d_offset'%(i+1))
+            offset = self.__getattr__('input_%3.3d_offset'%(i+1))
             offset.record = offsets[i]
         self.running.on=True
         thread = self.MDSWorker(self)
