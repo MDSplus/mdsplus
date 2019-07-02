@@ -22,9 +22,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import numpy
+import numpy as np
 import MDSplus
+from MDSplus import Event,Range
 import threading
+import Queue
+import socket
+import time
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -85,11 +89,11 @@ class ACQ435ST(MDSplus.Device):
 
 
     for i in range(32):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+        parts.append({'path':':INPUT_%3.3d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
                       'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%3.3d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     del i
 
     debug=None
@@ -169,11 +173,11 @@ class ACQ435ST(MDSplus.Device):
 
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
-                for c in chans:
+                for c in self.chans:
                     if c.on:
-                        b = buffer[i::self.nchans*decim[i]]
+                        b = buffer[i::self.nchans*self.decim[i]]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        self.dims[i] = Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
                 segment += 1
                 Event.setevent(event_name)
@@ -188,7 +192,7 @@ class ACQ435ST(MDSplus.Device):
 
             def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = mds.debug
+                self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
@@ -207,7 +211,7 @@ class ACQ435ST(MDSplus.Device):
                     print("DeviceWorker running")
 
                 self.running = True
-
+                first = True
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.connect((self.node_addr,4210))
                 s.settimeout(6)
@@ -257,7 +261,7 @@ class ACQ435ST(MDSplus.Device):
                             self.full_buffers.put(buf)
 
     def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%2.2d' % num)
+        chan=self.__getattr__('INPUT_%3.3d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
@@ -301,12 +305,12 @@ class ACQ435ST(MDSplus.Device):
         offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
 
         for i in range(32):
-            coeff = self.__getattr__('input_%2.2d_coefficient'%(i+1))
+            coeff = self.__getattr__('input_%3.3d_coefficient'%(i+1))
             coeff.record = coeffs[i]
-            offset = self.__getattr__('input_%2.2d_offset'%(i+1))
+            offset = self.__getattr__('input_%3.3d_offset'%(i+1))
             offset.record = offsets[i]
         self.running.on=True
-        thread = self.Worker(self)
+        thread = self.MDSWorker(self)
         thread.start()
     INIT=init
 
