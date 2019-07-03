@@ -26,8 +26,6 @@ import numpy as np
 import MDSplus
 import threading
 import Queue
-import socket
-import time
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -206,6 +204,8 @@ class ACQ435ST(MDSplus.Device):
                 self.running = False
 
             def run(self):
+                import socket
+                import time
                 if self.debug:
                     print("DeviceWorker running")
 
