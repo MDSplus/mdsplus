@@ -88,11 +88,11 @@ class ACQ435ST(MDSplus.Device):
 
 
     for i in range(32):
-        parts.append({'path':':INPUT_%3.3d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
                       'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-        parts.append({'path':':INPUT_%3.3d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%3.3d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     del i
 
     debug=None
@@ -113,8 +113,8 @@ class ACQ435ST(MDSplus.Device):
             self.nchans = 32
 
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'input_%3.3d'%(i+1)))
-                self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
+                self.chans.append(getattr(self.dev, 'input_%2.2d'%(i+1)))
+                self.decim.append(getattr(self.dev, 'input_%2.2d_decimate' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
@@ -260,7 +260,7 @@ class ACQ435ST(MDSplus.Device):
                             self.full_buffers.put(buf)
 
     def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%3.3d' % num)
+        chan=self.__getattr__('INPUT_%2.2d' % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
@@ -304,9 +304,9 @@ class ACQ435ST(MDSplus.Device):
         offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
 
         for i in range(32):
-            coeff = self.__getattr__('input_%3.3d_coefficient'%(i+1))
+            coeff = self.__getattr__('input_%2.2d_coefficient'%(i+1))
             coeff.record = coeffs[i]
-            offset = self.__getattr__('input_%3.3d_offset'%(i+1))
+            offset = self.__getattr__('input_%2.2d_offset'%(i+1))
             offset.record = offsets[i]
         self.running.on=True
         thread = self.MDSWorker(self)
