@@ -207,7 +207,7 @@ int _TreeBeginTimestampedSegment(void *dbid, int nid, struct descriptor_a *initi
 /* write new EMPTY timestamped (int64_t) segment so data can be added row by row
  * like _TreeMakeSegment but rows_filled will be initialized with 0
  */
-  return _TreeMakeTimestampedSegment(dbid, nid, 0, initialValue, idx, 0);
+  return _TreeMakeTimestampedSegment(dbid, nid, NULL, initialValue, idx, 0);
 }
 int TreeBeginTimestampedSegment(int nid, struct descriptor_a *initialValue, int idx){
   return _TreeBeginTimestampedSegment(*TreeCtx(), nid, initialValue, idx);
@@ -758,9 +758,12 @@ inline static int putdim_ts(vars_t* vars, int64_t * timestamps) {
   const int rows = vars->shead.dims[vars->shead.dimct-1];
   const int bufsize = sizeof(int64_t)*rows;
   char *buffer;
-  if (vars->rows_filled<rows) {
+  if (!timestamps)
+    fbuffer = buffer = calloc(bufsize,1);
+  else if (vars->rows_filled<rows) {
     int off;
-    fbuffer = buffer = memcpy(malloc(bufsize),timestamps,off = sizeof(int64_t)*vars->rows_filled);
+    fbuffer = buffer = malloc(bufsize);
+    memcpy(buffer,timestamps,off = sizeof(int64_t)*vars->rows_filled);
     memset(buffer+off, 0, bufsize - off);
   } else {
     fbuffer = NULL;// nothing to free

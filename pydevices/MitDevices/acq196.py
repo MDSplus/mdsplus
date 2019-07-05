@@ -81,21 +81,21 @@ class ACQ196(acq.Acq):
             print "have active chan\n";
 
         try:
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
         except Exception, e:
             raise DevBAD_TRIG_SRC(str(e))
         if self.debugging():
             print "have trig_src\n";
 
         try:
-            clock_src=self.clock_src.record.getOriginalPartName().getString()[1:]
+            clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
         except Exception, e:
             raise DevBAD_CLOCK_SRC(str(e))
         if self.debugging():
             print "have clock src\n";
 
         try:
-            clock_out=self.clock_out.record.getOriginalPartName().getString()[1:]
+            clock_out=str(self.clock_out.record.getOriginalPartName())[1:]
         except:
             clock_out=None
 

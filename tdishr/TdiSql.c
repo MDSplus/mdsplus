@@ -61,11 +61,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef HAVE_SYBASE
 #include <ctype.h>
 
-#ifdef  __ALPHA			/**---AXP---**/
-#undef   DTYPE_D
-#define  DTYPE_D DTYPE_G
-#endif
-
 #ifndef MAX
 #define MAX(a,b) (((a) > (b)) ? (a): (b))
 #endif

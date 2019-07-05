@@ -301,31 +301,38 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
     signal(SIGABRT, ABORT);
-    if (to_msec<0)
-      recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
-    else {
 #ifdef _TCP
-      struct timeval timeout;
+    struct timeval to,timeout;
+    if (to_msec<0) {
+      timeout.tv_sec  = 10;
+      timeout.tv_usec = 0;
+    } else {
       timeout.tv_sec  = to_msec/1000;
-      timeout.tv_usec = (to_msec%1000)*1000;
-      fd_set readfds;
-      FD_ZERO(&readfds);
-      FD_SET(sock, &readfds);
-      recved = select(sock+1, &readfds, NULL, NULL, &timeout);
+      timeout.tv_usec =(to_msec%1000)*1000;
+    }
+    fd_set rf,readfds;
+    FD_ZERO(&readfds);
+    FD_SET(sock, &readfds);
+    do {
+      to = timeout; rf = readfds;
+      recved = select(sock+1, &rf, NULL, NULL, &to);
 #else
-      struct pollfd fd;
-      fd.fd = sock;
-      fd.events = POLLIN;
-      recved = poll(&fd, 1, to_msec);
+    struct pollfd fd;
+    fd.fd = sock;
+    fd.events = POLLIN;
+    int to_val = to_msec<0 ? 10 : to_msec;
+    do {
+      recved = poll(&fd, 1, to_val);
 #endif
-      switch (recved) {
-      case -1: break; // Error
-      case  0: break; // Timeout
-      default: // for select this will be 1
+      if (recved > 0) {// for select this will be 1
 	recved = RECV(sock, bptr, num, MSG_NOSIGNAL);
 	break;
       }
-    }
+      if (recved < 0) {
+        if (errno == EAGAIN) continue;
+	break; // Error
+      }
+    } while (to_msec<0); // else timeout
     PopSocket(sock);
   }
   return recved;
@@ -419,7 +426,7 @@ int runServerMode(Options *options  __attribute__((unused))){
   SOCKLEN_T len = sizeof(sin);
   if (GETPEERNAME(sock, (struct sockaddr *)&sin, &len) == 0)
     MdsSetClientAddr(((struct sockaddr_in*)&sin)->sin_addr.s_addr);
-  Client *client = memset(malloc(sizeof(Client)), 0, sizeof(Client));
+  Client *client = calloc(1,sizeof(Client));
   client->id = id;
   client->sock = sock;
   client->next = ClientList;
