@@ -44,9 +44,9 @@ runtests() {
 }
 makelist(){
     dpkg -c $1 | \
-    grep -v python/dist | \
-    grep -v python/build | \
-    grep -v python/doc | \
+    grep -v MDSplus/dist | \
+    grep -v MDSplus/build | \
+    grep -v MDSplus/doc | \
     grep -v egg-info | \
     grep -v '/$' | \
     awk '{for (i=6; i<NF; i++) printf $i " "; print $NF}' | \

@@ -1389,9 +1389,9 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
-	  mdsobjects/python/_version.py
-          mdsobjects/python/docs/Makefile
-          mdsobjects/python/tests/Makefile
+	  python/MDSplus/_version.py
+          python/MDSplus/docs/Makefile
+          python/MDSplus/tests/Makefile
           mdsobjects/java/Makefile
           mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile

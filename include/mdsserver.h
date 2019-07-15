@@ -28,11 +28,6 @@ typedef enum { build_table_begin = 1,
   done
 } MonitorMode;
 
-#ifdef __ALPHA
-#pragma member_alignment save
-#pragma nomember_alignment
-#endif
-
 typedef struct {
   char flush;
 } DoAbortMsg;
@@ -113,9 +108,5 @@ typedef struct {
   } u;
   int status;
 } DispatchEvent;
-
-#ifdef __ALPHA
-#pragma member_alignment restore
-#endif
 
 #endif

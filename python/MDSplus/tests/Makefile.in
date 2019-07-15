@@ -103,7 +103,7 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
 check_PROGRAMS =
-subdir = mdsobjects/python/tests
+subdir = python/MDSplus/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -748,9 +748,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign mdsobjects/python/tests/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign python/MDSplus/tests/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign mdsobjects/python/tests/Makefile
+	  $(AUTOMAKE) --foreign python/MDSplus/tests/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \

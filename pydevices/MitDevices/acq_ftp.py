@@ -199,7 +199,7 @@ class ACQ_FTP(MDSplus.Device):
     def trigger(self, arg):
         boardip = self.getBoardIp()
         try:
-            trig_src=self.trig_src.record.getOriginalPartName().getString()[1:]
+            trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
         except:
             print "could not read trigger source"
             return 0

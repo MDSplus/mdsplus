@@ -91,7 +91,7 @@ Connection *FindConnectionWithLock(int id, con_t state){
   CONNECTIONLIST_LOCK;
   c = _FindConnection(id, NULL);
   if (c) {
-    while (c->state && !(c->state & CON_DISCONNECT)) {
+    while (c->state & ~CON_DISCONNECT) {
       DBG("Connection %02d -- %02x waiting\n",c->id,state);
       pthread_cond_wait(&c->cond,&connection_mutex);
     }
@@ -201,6 +201,7 @@ void DisconnectConnectionC(Connection *c){
   FreeDescriptors(c);
   free(c->protocol);
   free(c->info_name);
+  free(c->rm_user);
   TreeFreeDbid(c->DBID);
   pthread_cond_destroy(&c->cond);
   free(c);
@@ -210,16 +211,22 @@ int DisconnectConnection(int conid){
   Connection *p, *c;
   CONNECTIONLIST_LOCK;
   c = _FindConnection(conid, &p);
-  if (c) {
-    c->state |= CON_DISCONNECT;
+  if (c && c->state & CON_DISCONNECT) c = NULL;
+  else if (c) {
+    c->state |= CON_DISCONNECT; // sets disconnect
     pthread_cond_broadcast(&c->cond);
-    if (c->state & !CON_DISCONNECT) {
+    if (c->state & ~CON_DISCONNECT) { // if any task but disconnect
       struct timespec tp;
       clock_gettime(CLOCK_REALTIME, &tp);
-      tp.tv_sec += 10; // wait upto 10 seconds to allow current task to finish
-      while (c->state & !CON_DISCONNECT && pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      tp.tv_sec += 10;
+      // wait upto 10 seconds to allow current task to finish
+      // while exits if no other task but disconnect or on timeout
+      while (c->state & ~CON_DISCONNECT && !pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
+      if (c->state & ~CON_DISCONNECT)
+        fprintf(stderr,"DisconnectConnection: Timeout waiting for connection %d state=%d", conid, c->state);
+      c = _FindConnection(conid, &p); // we were waiting, so we need to update p
     }
-    // remove after tast is complete
+    // remove after task is complete
     if (p)      p->next = c->next;
     else ConnectionList = c->next;
   }
@@ -240,11 +247,11 @@ Connection* NewConnectionC(char *protocol){
   IoRoutines *io = LoadIo(protocol);
   if (io) {
     RUN_FUNCTION_ONCE(registerHandler);
-    connection = memset(malloc(sizeof(Connection)), 0, sizeof(Connection));
+    connection = calloc(1,sizeof(Connection));
     connection->io = io;
     connection->readfd = -1;
     connection->message_id = -1;
-    connection->protocol = strcpy(malloc(strlen(protocol) + 1), protocol);
+    connection->protocol = strdup(protocol);
     connection->id = INVALID_CONNECTION_ID;
     connection->state = CON_IDLE;
     _TreeNewDbid(&connection->DBID);
@@ -476,7 +483,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
     m_user = GetMdsMsgTOC(c, &status, 10000);
     if (!m_user || STATUS_NOT_OK) {
       free(m_user);
-      if (usr) *usr = NULL;
+      *usr = NULL;
       DisconnectConnectionC(c);
       return MDSplusERROR;
     }
@@ -487,13 +494,14 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       memcpy(user, m_user->bytes, m_user->h.length);
       user[m_user->h.length] = 0;
     }
+    c->rm_user = user;
     user_p = user ? user : "?";
     status = authorizeClient(c, user_p);
     // SET COMPRESSION //
     if STATUS_OK {
       c->compression_level = m_user->h.status & 0xf;
       c->client_type = m_user->h.client_type;
-      *usr = strcpy(malloc(strlen(user_p) + 1), user_p);
+      *usr = strdup(user_p);
       if (m_user->h.ndims>0)
 	c->version = m_user->h.dims[0];
     } else
@@ -502,13 +510,11 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       fprintf(stderr, "Access denied: %s\n",user_p);
     else
       fprintf(stderr, "Connected: %s\n",user_p);
-    free(user);
     m.h.status = STATUS_OK ? (1 | (c->compression_level << 1)) : 0;
     m.h.client_type = m_user ? m_user->h.client_type : 0;
     m.h.ndims = 1;
     m.h.dims[0] = MDSIP_VERSION;
-    if (m_user)
-      MdsIpFree(m_user);
+    MdsIpFree(m_user);
     // reply to client //
     SendMdsMsgC(c, &m, 0);
     if STATUS_OK {
@@ -516,7 +522,7 @@ int AcceptConnection(char *protocol, char *info_name, SOCKET readfd, void *info,
       *id = AddConnection(c);
     } else
       DisconnectConnectionC(c);
-    fflush(stderr);
+    //fflush(stderr); stderr needs no flush
   }
   return status;
 }

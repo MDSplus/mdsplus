@@ -91,8 +91,9 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
       if (IS_OK(cli_present(ctx, "ARGUMENT"))) {
 	while (argc<255 && IS_OK(cli_get_value(ctx, "ARGUMENT", &arg))) {
 	  struct descriptor arg_dsc = { strlen(arg), DTYPE_T, CLASS_S, arg };
+          struct descriptor *arg_dsc_ptr = &arg_dsc;
 	  xdarg[argc] = xd; // empty_xd
-	  status = TdiIntrinsic(OPC_COMPILE,1,&arg_dsc,&xdarg[argc]);
+	  status = TdiIntrinsic(OPC_COMPILE,1,&arg_dsc_ptr,&xdarg[argc]);
 	  free(arg);
 	  if STATUS_OK {
 	    arglist[argc] = xdarg[argc].pointer;

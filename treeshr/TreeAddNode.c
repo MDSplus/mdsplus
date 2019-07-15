@@ -172,7 +172,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	    new_ptr->name[i] = ' ';
 	  new_ptr->child = 0;
 	  loadint16(&new_ptr->conglomerate_elt, &idx);
-	  if (is_child || usage == TreeUSAGE_STRUCTURE
+	  if ((is_child && (usage == TreeUSAGE_ANY)) || usage == TreeUSAGE_STRUCTURE
 	      || usage == TreeUSAGE_SUBTREE) {
 	    status = TreeInsertChild(parent, new_ptr, dblist->tree_info->header->sort_children);
 	    new_ptr->usage = usage == TreeUSAGE_SUBTREE ? TreeUSAGE_SUBTREE : TreeUSAGE_STRUCTURE;
