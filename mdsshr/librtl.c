@@ -802,6 +802,9 @@ EXPORT int LibResetVmZone(ZoneList **const zone)
   return MDSplusSUCCESS;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   VmList *list = NULL;
@@ -823,6 +826,8 @@ EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **cons
   free(list);
   return MDSplusSUCCESS;
 }
+#pragma GCC diagnostic pop
+
 EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
   return LibFreeVm(len, vm, zone);
 }
