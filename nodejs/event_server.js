@@ -1,3 +1,5 @@
+// GMY V20190717083800
+
 var SSE = require('sse')
   , http = require('http');
 
@@ -12,18 +14,28 @@ var fs = require("fs");
 var sse;
 
 //check arguments
-if(process.argv.length != 4 && process.argv.length != 5)
+if(process.argv.length != 3 && process.argv.length != 4)
 {
-    console.log('Usage: mode event_server.js  <Event Port>  <SSE Port> [debug]' );
+    console.log('Usage: mode event_server.js <SSE Port> [debug]' );
     process.exit();
 }
 
 var debug = false;
-if(process.argv[4] == 'debug')
+if(process.argv[3] == 'debug')
+{
     debug = true;
+    console.log("DEBUG enabled");
+}
+var eventPort;
+  try {
+     eventPort= parseInt(process.env['mdsevent_port']);
+     if (process.env['mdsevent_port'] == undefined)
+        eventPort = 4000
+  }catch(err) {eventPort = 4000;}
+  
+console.log('Event port: ' + eventPort);
 
-var eventPort = parseInt(process.argv[2]);
-var ssePort = parseInt(process.argv[3]); 
+var ssePort = parseInt(process.argv[2]); 
 
 app.get('/streams', function(req, res) {
       if(debug)console.log('REQUEST FOR NAME: '+req.query.name); 
@@ -38,6 +50,21 @@ app.get('/', function(req, res) {
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
+
+app.get('/m', function(req, res) {
+      if(debug)console.log('REQUEST FOR NAME: /'); 
+      var data = fs.readFileSync('mindex.html', 'utf8');
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end(data.toString());
+});
+
+app.get('/mindex.html', function(req, res) {
+      if(debug)console.log('REQUEST FOR NAME: /'); 
+      var data = fs.readFileSync('mindex.html', 'utf8');
+      res.writeHead(404, {'Content-Type': 'text/html'});
+      res.end(data.toString());
+});
+
 
 app.get('/w', function(req, res) {
       if(debug)console.log('REQUEST FOR NAME: /'); 
@@ -212,8 +239,25 @@ function handleEvent(msg, rinfo)
 eventServer.bind(eventPort, function(){
     eventServer.setBroadcast(true);
     eventServer.setMulticastTTL(128);
+    var multicastAddress;
+    try {
+	multicastAddress = process.env['mdsevent_address'];
+	if (multicastAddress != undefined)
+	{
+	  eventServer.addMembership(multicastAddress);
+	  console.log('Multicast Address: ' + multicastAddress);
+	}
+	else
+	{
+	  eventServer.addMembership("224.0.0.175");
+	  eventServer.addMembership("225.0.0.175");
+	}
+	
+    }catch(err)
+    {
 	eventServer.addMembership("224.0.0.175");
 	eventServer.addMembership("225.0.0.175");
+    }
 });
 
 

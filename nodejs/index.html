@@ -3,16 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
+  <meta name="author" content="Gianluca.Moro@unipd.it"> 
+  <!-- Version: see variable versionNumber -->
   <title>WebScope</title>
-  <!-- author: Gianluca.Moro@unipd.it -->
-  <!-- production -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
-  <!-- development -->
-  <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.common.dev.js"></script> -->
   <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Last on 20190320: v1.45.3 -->
 
   <style>
 
+    /* buttons style */
     .btnAction {
       -moz-box-shadow: 3px 4px 0px 0px #899599;
       -webkit-box-shadow: 3px 4px 0px 0px #899599;
@@ -61,38 +60,37 @@
       }
     }
 
-
-/* DivTable.com */
-.divTable{
-    display: table;
-    width: 100%;
-}
-.divTableRow {
-    display: table-row;
-}
-.divTableHeading {
-    background-color: #EEE;
-    display: table-header-group;
-}
-.divTableCell, .divTableHead {
-    border: 0px solid #000000;
-    display: table-cell;
-    /* padding: 3px 10px; */
-}
-.divTableHeading {
-    background-color: #EEE;
-    display: table-header-group;
-    font-weight: bold;
-}
-.divTableFoot {
-    background-color: #EEE;
-    display: table-footer-group;
-    font-weight: bold;
-}
-.divTableBody {
-    display: table-row-group;
-}
-/* End of DivTable.com */
+    /* DivTable.com */
+    .divTable{
+        display: table;
+        width: 100%;
+    }
+    .divTableRow {
+        display: table-row;
+    }
+    .divTableHeading {
+        background-color: #EEE;
+        display: table-header-group;
+    }
+    .divTableCell, .divTableHead {
+        border: 0px solid #000000;
+        display: table-cell;
+        /* padding: 3px 10px; */
+    }
+    .divTableHeading {
+        background-color: #EEE;
+        display: table-header-group;
+        font-weight: bold;
+    }
+    .divTableFoot {
+        background-color: #EEE;
+        display: table-footer-group;
+        font-weight: bold;
+    }
+    .divTableBody {
+        display: table-row-group;
+    }
+    /* End of DivTable.com */
 
     .wasteBasketPanelSvg { height: 15px; width: 10px; }
     .wasteBasketPanelButton { float: right; background-color: #f2f2f2; }
@@ -112,187 +110,167 @@
 
 <body>
 
-<!-- waste basket -->
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display: none;">
-  <symbol id="wasteBasket" viewbox="0 0 448 512">  
-    <path d="M192 188v216c0 6.627-5.373 12-12 12h-24c-6.627 0-12-5.373-12-12V188c0-6.627 5.373-12 12-12h24c6.627 0 12 5.373 12 12zm100-12h-24c-6.627 0-12 5.373-12 12v216c0 6.627 5.373 12 12 12h24c6.627 0 12-5.373 12-12V188c0-6.627-5.373-12-12-12zm132-96c13.255 0 24 10.745 24 24v12c0 6.627-5.373 12-12 12h-20v336c0 26.51-21.49 48-48 48H80c-26.51 0-48-21.49-48-48V128H12c-6.627 0-12-5.373-12-12v-12c0-13.255 10.745-24 24-24h74.411l34.018-56.696A48 48 0 0 1 173.589 0h100.823a48 48 0 0 1 41.16 23.304L349.589 80H424zm-269.611 0h139.223L276.16 50.913A6 6 0 0 0 271.015 48h-94.028a6 6 0 0 0-5.145 2.913L154.389 80zM368 128H80v330a6 6 0 0 0 6 6h276a6 6 0 0 0 6-6V128z"/>
-  </symbol>
-</svg>
+  <!-- embedded icons -->
 
-<!-- dotted menu -->
-<svg version="1.1" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" style="display: none">
-  <symbol id="dottedMenu" viewbox="0 0 100 100">  
-    <circle cx="18.132" cy="26.545" r="7.131"/>
-    <rect x="33.619" y="21.486" width="56.292" height="10.118"/>
-    <circle cx="18.132" cy="51.219" r="7.131"/>
-    <rect x="33.619" y="46.159" width="56.292" height="10.118"/>
-    <circle cx="18.132" cy="76.033" r="7.131"/>
-    <rect x="33.619" y="70.975" width="56.292" height="10.117"/>
-  </symbol>
-</svg>
+  <!-- waste basket -->
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display: none;">
+    <symbol id="wasteBasket" viewbox="0 0 448 512">  
+      <path d="M192 188v216c0 6.627-5.373 12-12 12h-24c-6.627 0-12-5.373-12-12V188c0-6.627 5.373-12 12-12h24c6.627 0 12 5.373 12 12zm100-12h-24c-6.627 0-12 5.373-12 12v216c0 6.627 5.373 12 12 12h24c6.627 0 12-5.373 12-12V188c0-6.627-5.373-12-12-12zm132-96c13.255 0 24 10.745 24 24v12c0 6.627-5.373 12-12 12h-20v336c0 26.51-21.49 48-48 48H80c-26.51 0-48-21.49-48-48V128H12c-6.627 0-12-5.373-12-12v-12c0-13.255 10.745-24 24-24h74.411l34.018-56.696A48 48 0 0 1 173.589 0h100.823a48 48 0 0 1 41.16 23.304L349.589 80H424zm-269.611 0h139.223L276.16 50.913A6 6 0 0 0 271.015 48h-94.028a6 6 0 0 0-5.145 2.913L154.389 80zM368 128H80v330a6 6 0 0 0 6 6h276a6 6 0 0 0 6-6V128z"/>
+    </symbol>
+  </svg>
 
-<!-- circle -->
-<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-  <symbol id="circle" viewbox="0 0 100 100">
-    <circle cx="50" cy="50" r="40">
-  </symbol>
-</svg>
+  <!-- dotted menu -->
+  <svg version="1.1" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" style="display: none">
+    <symbol id="dottedMenu" viewbox="0 0 100 100">  
+      <circle cx="18.132" cy="26.545" r="7.131"/>
+      <rect x="33.619" y="21.486" width="56.292" height="10.118"/>
+      <circle cx="18.132" cy="51.219" r="7.131"/>
+      <rect x="33.619" y="46.159" width="56.292" height="10.118"/>
+      <circle cx="18.132" cy="76.033" r="7.131"/>
+      <rect x="33.619" y="70.975" width="56.292" height="10.117"/>
+    </symbol>
+  </svg>
 
-<!-- END of Reusable components -->
+  <!-- circle -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+    <symbol id="circle" viewbox="0 0 100 100">
+      <circle cx="50" cy="50" r="40">
+    </symbol>
+  </svg>
 
-<div id="app">
+  <!-- END of embedded icons -->
 
-  <span v-if="$root.isRunningGraph"><div></div></span>
-  <span v-else>
-    <button @click.prevent="$root.hideShowConfiguration()" class="hideShowConfigurationButton" style="margin: 10px">
-      <svg class="hideShowConfigurationSvg"><use xlink:href="#dottedMenu"></svg>
-    </button>
-  </span>
+  <div id="app">
+  
+    <div align="right"><b>Shot #{{ panels[0].signals[0].lastShotNumber }}</b></div>
 
-  <br>
-
-  <span v-if="isVisibleConfiguration">
-  <div style="display: inline-block; border-style: ridge; border-color: silver; width: 28%; float:left; padding: 3px;">
-   <span v-if="isVisibleAddPanel">
-    <center>Panels and signals configuration</center>
-    <div>
-	<div class="divTable">
-	  <div class="divTableBody">
-	    <div class="divTableRow">
-	      <div class="divTableCell">Panel</div>
-	      <div class="divTableCell">
-                <input v-model="panelName" placeholder="Insert panel name"  class="inputFieldPanel"><br/>
+    <!-- Configuration block -->
+    <span v-if="isVisibleConfiguration">
+    <div style="display: inline-block; border-style: ridge; border-color: silver; width: 28%; float:left; padding: 3px;">
+      <span v-if="isVisibleAddPanel">
+        <center>Panels and signals configuration</center>
+        <div>
+    	  <div class="divTable">
+  	    <div class="divTableBody">
+	      <div class="divTableRow">
+	        <div class="divTableCell">Panel</div>
+	        <div class="divTableCell">
+                  <input v-model="panelName" placeholder="Insert panel name"  class="inputFieldPanel"><br/>
+	        </div>
 	      </div>
-	    </div>
-	    <div class="divTableRow">
-	      <div class="divTableCell">Length[s]</div>
-	      <div class="divTableCell">
-		<input v-model="panelWindowLength" type="number" class="inputFieldSignal">
+	      <div class="divTableRow">
+	        <div class="divTableCell">Length[s]</div>
+	        <div class="divTableCell">
+		  <input v-model="panelWindowLength" type="number" class="inputFieldSignal">
+	        </div>
 	      </div>
 	    </div>
 	  </div>
-	</div>
+          <center>
+            <button @click.prevent="addPanel" class="btnAction">Add Panel</button>
+          </center>
+        </div>
+      </span>
+
+      <panel-list :panels="panels"></panel-list>
+
+      <br><hr><br>
       <center>
-        <button @click.prevent="addPanel" class="btnAction">Add Panel</button>
+      <button class="btnAction" @click.prevent="startGraph()">START GRAPH</button><br><br>
       </center>
     </div>
-   </span>
-    <panel-list :panels="panels"></panel-list>
+    </span>
+    <!-- END OF isVisibleConfiguration -->
 
-   <span v-if="$root.isRunningGraph"><div></div></span>
-   <span v-else>
-    <br><hr><br>
-    <center>
-    <button class="btnAction" @click.prevent="startGraph()">START GRAPH</button><br><br>
-    </center>
-   </span>
-
-
-  </div>
-
-
-  </span>
-
-  <div :style="{ width: graphComputedWidth + '%' }" style="display: inline-block; border-style: ridge; border-color: silver; float: right; padding: 3px;">
+    <!-- graph area -->
+    <div :style="{ width: graphComputedWidth + '%' }" style="display: inline-block; border-style: ridge; border-color: silver; float: right; padding: 3px;">
       <graph-window-list :panels="panels" :charts="charts" :restylevent="restylevent"></graph-window-list>
-
-    </center>
-  </div>
-
-</div>
-
-<template id="panel-list">
-  <div>
-    <panel v-for="(panel, key, index) in panels" :panel="panel" :key="key" :index="index"></panel>
-  </div>
-</template>
-
-
-
-<template id="panel">
-  <div>
-    <hr>
-    <div style="margin:7px; float: left">
-      Panel:&nbsp;<b>{{ panel.name }}</b>&nbsp;[{{ panel.windowLength }}samples]
     </div>
-   <span v-if="$root.isRunningGraph"><div></div></span>
-   <span v-else>
-    <button @click.prevent="$root.removePanel(panel.name)" class="wasteBasketPanelButton" style="margin: 3px">
-      <svg class="wasteBasketPanelSvg"><use xlink:href="#wasteBasket"></svg>
-    </button>
-   </span>
 
-    <signal-list :signals="panel.signals" :panel="panel"></signal-list>
+    <br>
+    <font color="white">{{ versionNumber }}</font>
 
-   <span v-if="$root.isRunningGraph"><div></div></span>
-   <span v-else>
-    <div style="margin-left:5px" >
-      <div class="divTable">
-        <div class="divTableBody">
-	  <div class="divTableRow">
-	    <div class="divTableCell">Signal</div>
-	    <div class="divTableCell">
-              <input v-model="$root.signalName" placeholder="Insert signal name" class="inputFieldSignal">
+  </div>
+
+  <!-- templates to build GUI-->
+  <template id="panel-list">
+    <div>
+      <panel v-for="(panel, key, index) in panels" :panel="panel" :key="key" :index="index"></panel>
+    </div>
+  </template>
+
+  <template id="panel">
+    <div>
+      <hr>
+      <div style="margin:7px; float: left">
+        Panel:&nbsp;<b>{{ panel.name }}</b>&nbsp;[{{ panel.windowLength }}samples]
+      </div>
+      <button @click.prevent="$root.removePanel(panel.name)" class="wasteBasketPanelButton" style="margin: 3px">
+        <svg class="wasteBasketPanelSvg"><use xlink:href="#wasteBasket"></svg>
+      </button>
+
+      <signal-list :signals="panel.signals" :panel="panel"></signal-list>
+
+      <div style="margin-left:5px" >
+        <div class="divTable">
+          <div class="divTableBody">
+	    <div class="divTableRow">
+	      <div class="divTableCell">Signal</div>
+	      <div class="divTableCell">
+                <input v-model="$root.signalName" placeholder="Insert signal name" class="inputFieldSignal">
+	      </div>
+	    </div>
+	    <div class="divTableRow">
+	      <div class="divTableCell">Color</div>
+	      <div class="divTableCell">
+                <input v-model="$root.signalColor" type="color" class="inputFieldSignal">
+	      </div>
 	    </div>
 	  </div>
-	  <div class="divTableRow">
-	    <div class="divTableCell">Color</div>
-	    <div class="divTableCell">
-              <input v-model="$root.signalColor" type="color" class="inputFieldSignal">
-	    </div>
-	  </div>
-	</div>
-      </div> <!-- end table -->
-      <center>
-        <button @click.prevent="$root.addSignal(panel.name)" class="btnAction">Add Signal</button><br/>
-      </center>
+        </div> <!-- end table -->
+        <center>
+          <button @click.prevent="$root.addSignal(panel.name)" class="btnAction">Add Signal</button><br/>
+        </center>
+      </div>
     </div>
-   </span>
-  </div>
-</template>
+  </template>
 
-<template id="signal-list">
-  <div style="margin:5px" >
-    <signal v-for="(signal, key, index) in signals" :signal="signal" :panel="panel" :key="key" :index="index"></signal>
-  </div>
-</template>
+  <template id="signal-list">
+    <div style="margin:5px" >
+      <signal v-for="(signal, key, index) in signals" :signal="signal" :panel="panel" :key="key" :index="index"></signal>
+    </div>
+  </template>
 
-<template id="signal">
-  <div style="display: table; width: 100%; padding: 2px; vertical-align: middle;">
-    <div v-bind:style="{ background: signal.color}" style="width: 20px; float:left">&nbsp;</div>
-    &nbsp;<b>{{ signal.name }}</b> 
-   <span v-if="$root.isRunningGraph"><div></div></span>
-   <span v-else>
-    <button @click.prevent="$root.removeSignal(panel.name, signal.name)" class="wasteBasketSignalButton">
-      <svg class="wasteBasketSignalSvg"><use xlink:href="#wasteBasket"></svg>
-    </button>
-   </span>
-  </div>
-</template>
+  <template id="signal">
+    <div style="display: table; width: 100%; padding: 2px; vertical-align: middle;">
+      <div v-bind:style="{ background: signal.color}" style="width: 20px; float:left">&nbsp;</div>
+        &nbsp;<b>{{ signal.name }}</b> 
+      <button @click.prevent="$root.removeSignal(panel.name, signal.name)" class="wasteBasketSignalButton">
+        <svg class="wasteBasketSignalSvg"><use xlink:href="#wasteBasket"></svg>
+      </button>
+    </div>
+  </template>
 
-<template id="graph-window-list">
-  <div>
-    <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
-  </div>
-</template>
+  <template id="graph-window-list">
+    <div>
+      <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
+    </div>
+  </template>
 
-
-<template id="reactive-chart">
-  <!-- height: 20vh; means: 20% of visible window -- height: 440px; -->
-  <div :ref="panel.name" style="width: 100%;  border: 1px; border-style: solid">
-    <!-- Panel: <b>{{ panel.name }}</b> -->
-  </div>
-</template>
+  <template id="reactive-chart">
+    <div :ref="panel.name" style="width: 100%;  border: 1px; border-style: solid"></div>
+  </template>
 
 
 <script>
 
 var lastUpdate = Date.now();
+var isThereDataToPlot = false;
 
 /* GRAPH */
 Vue.component("reactive-chart", {
   props: ["panel", "charts", "index", "restylevent"],
-  template: '#reactive-chart', //'<div :ref="chart.uuid"></div>',
+  template: '#reactive-chart', 
   mounted() {
     for (i=0; i<this.charts.length; i++) {
       Plotly.newPlot(this.$refs[this.charts[i].uuid], this.charts[i].traces, this.charts[i].layout);
@@ -301,9 +279,7 @@ Vue.component("reactive-chart", {
   watch: {
     restylevent: {
       handler: function() {
-//console.log("a");
         for (i=0; i<this.charts.length; i++) {
-          //Plotly.newPlot(
           Plotly.react(
             this.$refs[this.charts[i].uuid],
             this.charts[i].traces,
@@ -316,13 +292,15 @@ Vue.component("reactive-chart", {
     charts: {
       handler: function() {
        var current = Date.now();
+
+       // limit update frequency to 10Hz (100ms)
        if (current - lastUpdate < 100) {
+         isThereDataToPlot = true;
          return; 
        }
 
        lastUpdate = Date.now();
-       //console.log(current);
-
+       isThereDataToPlot = false;
 
         for (i=0; i<this.charts.length; i++) {
           Plotly.react(
@@ -330,16 +308,11 @@ Vue.component("reactive-chart", {
             this.charts[i].traces,
             this.charts[i].layout
           );
-            var qq = 1;
         }
       },
       deep: true
     }
-
-
   }
-
-
 });
 
 
@@ -349,6 +322,7 @@ Vue.component('panel-list', {
   template: '#panel-list',
   props: ['panels']
 })
+
 Vue.component('panel', {
   template: '#panel',
   props: ['panel']
@@ -358,6 +332,7 @@ Vue.component('signal-list', {
   template: '#signal-list',
   props: ['panel', 'signals']
 })
+
 Vue.component('signal', {
   template: '#signal',
   props: ['panel', 'signal']
@@ -368,14 +343,13 @@ Vue.component('graph-window-list', {
   props: ['panels', 'charts', 'restylevent']
 })
 
-
 var defaultLayoutOptions = {
-  title:'Vue - Plotly',
+  title:'WebScope',
   xaxis: {
-    title: 'xaxis title'
+    title: 'xaxis'
   },
   yaxis: {
-    title: 'yaxis title'
+    title: 'yaxis'
   }
 };
 
@@ -406,37 +380,29 @@ var vm = new Vue({
     panels: [
        { name: 'Temperature',
          windowLength: 120,
+         xlabel: 't',
+         ylabel: 'y',
 
          signals: [
-           { name: 'p1s1', color: 'red' },
-           { name: 'p1s2', color: 'blue' },
-           { name: 'p2s1', color: 'green' },
+           { name: 'p1s1', lastShotNumber: -2, color: 'red' },
+           { name: 'p1s2', lastShotNumber: -2, color: 'blue' },
+           { name: 'p2s1', lastShotNumber: -2, color: 'green' },
          ]},
-//       { name: 'Pressure',
-//         windowLength: 60,
-//         datacollection: null,
-//         signals: [
-//           { name: 'p2s1', color: 'green' },
-//           // { name: 'p2s2', color: 'green' },
-//         ]},
 
     ],
     panelName: '',
     panelWindowLength: 120,
+    xlabel: 't',
+    ylabel: 'y',
     signalName: '',
     signalColor: '#000000',
     isVisibleConfiguration: true,
     isVisibleAddPanel: false,
-    isRunningGraph: false,
+    versionNumber: '20190716161300',
     restylevent: null,
+    isDebug: 0,
    } // end return
   },
-
-  //watch: {
-  //  dataCollection: function (val, oldVal) {
-  //    console.log('WATCH: new: %s, old: %s', val, oldVal); // OK var is updated
-  //  },
-  //},
 
   computed: {
     graphComputedWidth() {
@@ -452,10 +418,9 @@ var vm = new Vue({
     window.addEventListener('resize', this.handleResize)
     this.handleResize();
 
-    // parse parameters
+    // parse URL parameters
     var url = window.location.href;
-    //console.log("\n\nURL: " + url);
-    var params = { panel: "", length: 0, s: [], c: []};
+    var params = { panel: "", length: 0, xlabel: "t", ylabel: "y",  s: [], c: [] };
     var parser = document.createElement('a');
     parser.href = url;
     var query = parser.search.substring(1);
@@ -466,6 +431,9 @@ var vm = new Vue({
         if (pair[0] == "length") params.length = decodeURIComponent(pair[1]);
         if (pair[0] == "s") params.s.push(decodeURIComponent(pair[1]));
         if (pair[0] == "c") params.c.push(decodeURIComponent(pair[1]));
+        if (pair[0] == "xlabel") params.xlabel = decodeURIComponent(pair[1]);
+        if (pair[0] == "ylabel") params.ylabel = decodeURIComponent(pair[1]);
+        if (pair[0] == "debug") this.isDebug = decodeURIComponent(pair[1]);
     }
     var st = [];
     for (var i=0; i<params.s.length; i++) {
@@ -475,17 +443,17 @@ var vm = new Vue({
         } else {
            col = params.c[i];
         }
-	st.push({name: params.s[i], color: col});
+	st.push({name: params.s[i], lastShotNumber: -2, color: col});
     }
 
     if (params.panel != "") {
         this.panels = [ {
             name: params.panel,
 	    windowLength: params.length,
+            xlabel: params.xlabel,
+            ylabel: params.ylabel,
             signals: st,
         } ];  
-        console.log("Panel:");
-        console.log(this.panels);
         this.startGraph();
     }
 
@@ -516,10 +484,14 @@ var vm = new Vue({
       this.panels.push({
         name: this.panelName,
         windowLength: this.panelWindowLength,
+        xlabel: this.xlabel,
+        ylabel: this.ylabel,
         signals: []
       });
       this.panelName = '';
       this.panelWindowLength = 30;
+      this.xlabel = 't';
+      this.ylabel = 'y';
     },
     removePanel: function(name) {
       //console.log("Removing panel: " + name);
@@ -537,6 +509,7 @@ var vm = new Vue({
       console.log("Adding signal " + this.signalName + " to panel " + panelName);
       this.panels[objIndex].signals.push({
           name: this.signalName,
+          lastShotNumber: -2, 
           color: this.signalColor,
         });
         this.signalName = '';
@@ -555,16 +528,12 @@ var vm = new Vue({
       this.restylevent = new Date().getTime(); // timestamp of last update
     },
 
-    graphWidth: function() {
-      return '68';
-    },
-
     //
     // graph management
     //
 
     updateChart: function (receivedMsg) {
-      //console.log('RECEIVED ' + receivedMsg);
+      if (this.isDebug == 1) {console.log('l=' + this.panels[0].windowLength + ' RECEIVED ' + receivedMsg); }
       var msgArray = receivedMsg.split(" ");
       var msgProgressiveId = msgArray[0]; // 
       var msgShotNumber    = msgArray[1]; //
@@ -579,9 +548,17 @@ var vm = new Vue({
 
       var msgLabels = msgArray.slice(5, 5+msgLength);
 
+      //console.log("msgFormat=" + msgFormat);
+
       if ((msgFormat == "L") || (msgFormat == "A") || (msgFormat == "l") || (msgFormat == "a")) {
           msgLabels = msgLabels.map(function (x) {
               return (new Date(parseInt(x)));
+          });
+      }
+
+      if ((msgFormat == "F") || (msgFormat == "f")) {
+          msgLabels = msgLabels.map(function (x) {
+              return (parseFloat(x));
           });
       }
 
@@ -593,14 +570,20 @@ var vm = new Vue({
             //
             // we found the incoming signal in this panel
             //
-	    this.charts[i].traces[j].name = msgSignalName;
-            if (msgFormat == "A") {
+ 	    this.charts[i].traces[j].name = msgSignalName;
+            if (msgFormat == "A" || this.panels[i].signals[j].lastShotNumber != msgShotNumber) {
                 this.charts[i].traces[j].x = msgLabels;
                 this.charts[i].traces[j].y = msgValues;
             } else {
-                this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
-                this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+                var len = this.charts[i].traces[j].x.length;
+                if (len == 0 || msgLabels[0] >= this.charts[i].traces[j].x[len-1]) {
+                    this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
+                    this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+                } else {
+                    if (this.isDebug == 1) { console.log("Skipping len=" + len + " msgLabels[0]=" + msgLabels[0] + " this.charts[i].traces[j].x[len-1]=" + this.charts[i].traces[j].x[len-1] + " type:" + typeof msgLabels[0]); }
+                }
             }
+            this.panels[i].signals[j].lastShotNumber = msgShotNumber;
             //console.log(this.panels[i].windowLength + " " + this.charts[i].traces[j].x.length);
             if (this.panels[i].windowLength > 0 && this.charts[i].traces[j].x.length > this.panels[i].windowLength) {
               this.charts[i].traces[j].x = this.charts[i].traces[j].x.slice(-this.panels[i].windowLength);
@@ -624,20 +607,14 @@ var vm = new Vue({
       eventSource.onmessage = function (event) {
         var received_msg = event.data;
         //console.log('RECEIVED: ' + received_msg);
-        // RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
-        // RECEIVED: 2960 666 p1s2 F 1 3132.000000 7.453648
-        // RECEIVED: 3183 666 p1s2 F 1 3355.000000 -7.996949
-
-        // RECEIVED: 1403 666 cicciobombo L 1 1553705772843 8.614104
+        // example: RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
+        // example: RECEIVED: 1403 666 ccci L 1 1553705772843 8.614104
         callbackFunc(received_msg);
       };
     },
 
     startGraph: function() {
-      //console.log("startGraph: IN");
-      if (this.isRunningGraph) { return; }
       this.isVisibleConfiguration = false;
-      this.isRunningGraph = true;
 
       // init graph structure
       this.charts = [];
@@ -647,8 +624,8 @@ var vm = new Vue({
             traces: [],
             layout: {
                 title: this.panels[i].name,
-                xaxis: { title: 't' },
-                yaxis: { title: 'y' },
+                xaxis: { title: this.panels[i].xlabel },
+                yaxis: { title: this.panels[i].ylabel },
                 height: window.innerHeight-120,
                 width: window.innerWidth-100,
               },
@@ -658,20 +635,22 @@ var vm = new Vue({
               x: [],
               y: [],
               line: { color: this.panels[i].signals[j].color, width:1, shape: "line" },
-              //type: "pointcloud",
             });            
         }
+        setInterval( function() { 
+          if (isThereDataToPlot) {
+            isThereDataToPlot = false;
+            this.restylevent = new Date().getTime(); // timestamp of last update
+
+          }
+        }.bind(this), 1000);
       }
 
       // start Server    
       sgns = this.panels.map(p => p.signals).flat().map(x => x.name).join(",");     
-      this.ServerSentEventStart("signals=" + sgns); // "signals=s1,s2,s3"
       this.restylevent = new Date().getTime(); // timestamp of last update
+      this.ServerSentEventStart("signals=" + sgns); // example string: "signals=s1,s2,s3"
     },
-
-
-
-
   }
 });
 

@@ -3926,7 +3926,40 @@ public:
     /// can not be deleted.
     ///
     void deletePulse(int shot);
-
+    
+    // Evaluate an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiEvaluate(Data *data);
+    
+    // Compute an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiData(Data *data);
+    
+    // Compile an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiCompile(const char *expr);
+    Data *tdiCompile(const char *expr, Data *arg1);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
+    
+    // Compile an expression with arguments in the context of the tree - ThreaSafe, provided setActiveTree is not used
+    Data *tdiCompile(const char *expr, int nArgs ...);
+    
+    // Execute an  expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiExecute(const char *expr);
+    Data *tdiExecute(const char *expr, Data *arg1);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
+    
+    // Execute an expression with arguments in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiExecute(const char *expr, int nArgs ...);
 
     StringArray *findTags(char *wild);
     void removeTag(char const * tagName);

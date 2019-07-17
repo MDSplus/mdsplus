@@ -427,6 +427,41 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	tree->write(); // tree open in edit mode so must call write to avoid memory leak //
 	delete tree;
     }
+    
+    {  //tdiData(), tdiEvaluate(), tdiCompile(), tdiExecute()
+	Tree * tree = new Tree("t_tree",1,"NEW");
+	AutoData<TreeNode> node = (tree->addNode("VAL","NUMERIC"));
+	AutoData<Data> currVal = new Int32(123);
+	node->putData(currVal);
+	tree->write();
+	
+	std::cout << "CREATO PULSE FILE" << std::endl;
+	
+	
+	AutoData <Data> compiled = tree->tdiCompile("VAL");
+	std::cout << "COMPILATO" << std::endl;
+	AutoData <Data> evaluated = tree->tdiData(compiled);
+	TEST1(evaluated->getInt() == 123);
+	std::cout << "VALUTATO" << std::endl;
+
+	Data * addVal = new Int32(1);
+	AutoData <Data> compiled1 = tree->tdiCompile("VAL+$", addVal);
+	std::cout << "COMPILATO 1" << std::endl;
+	AutoData <Data> evaluated1 = tree->tdiData(compiled1);
+	TEST1(evaluated1->getInt() == 124);
+	AutoData <Data> evaluated2 = tree->tdiEvaluate(compiled1);
+	TEST1(evaluated2->getInt() == 124);
+	
+	AutoData <Data> evaluated3 = tree->tdiExecute("VAL");
+	TEST1(evaluated3->getInt() == 123);
+
+	AutoData <Data> evaluated4 = tree->tdiExecute("VAL+$", addVal);
+	TEST1(evaluated4->getInt() == 124);
+	
+	deleteData(addVal);
+	
+    }
+    
 
     END_TESTING;
 }
