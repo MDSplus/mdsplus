@@ -435,18 +435,12 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	node->putData(currVal);
 	tree->write();
 	
-	std::cout << "CREATO PULSE FILE" << std::endl;
-	
-	
 	AutoData <Data> compiled = tree->tdiCompile("VAL");
-	std::cout << "COMPILATO" << std::endl;
 	AutoData <Data> evaluated = tree->tdiData(compiled);
 	TEST1(evaluated->getInt() == 123);
-	std::cout << "VALUTATO" << std::endl;
 
 	Data * addVal = new Int32(1);
 	AutoData <Data> compiled1 = tree->tdiCompile("VAL+$", addVal);
-	std::cout << "COMPILATO 1" << std::endl;
 	AutoData <Data> evaluated1 = tree->tdiData(compiled1);
 	TEST1(evaluated1->getInt() == 124);
 	AutoData <Data> evaluated2 = tree->tdiEvaluate(compiled1);
