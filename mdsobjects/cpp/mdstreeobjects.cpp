@@ -35,7 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cctype>
 
 #include <string.h>
-#include <stdarg.h>
 
 using namespace MDSplus;
 using namespace std;
