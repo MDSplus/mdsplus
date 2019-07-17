@@ -567,6 +567,10 @@ void CUDT::listen()
 
    m_bListening = true;
 }
+#pragma GCC diagnostic push
+#if defined(__GNUC__) && __GNUC__ >= 9
+#pragma GCC diagnostic ignored "-Wdeprecated-copy"
+#endif
 
 void CUDT::connect(const sockaddr* serv_addr)
 {
@@ -690,6 +694,7 @@ void CUDT::connect(const sockaddr* serv_addr)
    if (e.getErrorCode() != 0)
       throw e;
 }
+#pragma GCC diagnostic pop
 
 int CUDT::connect(const CPacket& response) throw ()
 {
