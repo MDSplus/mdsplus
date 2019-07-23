@@ -934,7 +934,6 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 		revDims[i] = dims[nDims-i-1];
 	
 	//Otherwise return an array
-//	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
 	return (Data *)createArrayData(dtype, length, nDims - getNumDims, revDims, ptr+(startIdx * length), 0,0,0,0);
 }
 
