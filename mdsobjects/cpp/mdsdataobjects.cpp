@@ -695,7 +695,7 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
     Data * res;
     try {
 	AutoPointer<Tree> actTree(getActiveTree());
-	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree, &status);
     } catch(MdsException &exc)
     {
 	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
