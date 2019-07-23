@@ -7,652 +7,167 @@
   <!-- Version: see variable versionNumber -->
   <title>WebScope</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
-  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script> <!-- Last on 20190320: v1.45.3 -->
 
   <style>
-
-    /* buttons style */
-    .btnAction {
-      -moz-box-shadow: 3px 4px 0px 0px #899599;
-      -webkit-box-shadow: 3px 4px 0px 0px #899599;
-      box-shadow: 3px 4px 0px 0px #899599;
-      background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #ededed), color-stop(1, #bab1ba));
-      background:-moz-linear-gradient(top, #ededed 5%, #bab1ba 100%);
-      background:-webkit-linear-gradient(top, #ededed 5%, #bab1ba 100%);
-      background:-o-linear-gradient(top, #ededed 5%, #bab1ba 100%);
-      background:-ms-linear-gradient(top, #ededed 5%, #bab1ba 100%);
-      background:linear-gradient(to bottom, #ededed 5%, #bab1ba 100%);
-      filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#ededed', endColorstr='#bab1ba',GradientType=0);
-      background-color:#ededed;
-      -moz-border-radius:15px;
-      -webkit-border-radius:15px;
-      border-radius:15px;
-      border:1px solid #d6bcd6;
-      display:inline-block;
-      cursor:pointer;
-      /* color:#3a8a9e; */
-      /* font-family:Arial; */
-      /* font-size:17px; */
-      padding:3px 25px;
-      text-decoration:none;
-      text-shadow:0px 1px 0px #e1e2ed;
-      margin:3px;
-      margin-bottom: 6px;
-    }
-    .btnAction:hover{
-      background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #bab1ba), color-stop(1, #ededed));
-      background:-moz-linear-gradient(top, #bab1ba 5%, #ededed 100%);
-      background:-webkit-linear-gradient(top, #bab1ba 5%, #ededed 100%);
-      background:-o-linear-gradient(top, #bab1ba 5%, #ededed 100%);
-      background:-ms-linear-gradient(top, #bab1ba 5%, #ededed 100%);
-      background:linear-gradient(to bottom, #bab1ba 5%, #ededed 100%);
-      filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#bab1ba', endColorstr='#ededed',GradientType=0);
-      background-color:#bab1ba;
-    }
-    .btnAction:active{
-      position:relative;
-      top:1px;
-    }
-    @media all and (max-width:30em){
-      .btnAction {
-        display:block;
-        margin:0.2em auto;
-      }
-    }
-
-    /* DivTable.com */
-    .divTable{
-        display: table;
-        width: 100%;
-    }
-    .divTableRow {
-        display: table-row;
-    }
-    .divTableHeading {
-        background-color: #EEE;
-        display: table-header-group;
-    }
-    .divTableCell, .divTableHead {
-        border: 0px solid #000000;
-        display: table-cell;
-        /* padding: 3px 10px; */
-    }
-    .divTableHeading {
-        background-color: #EEE;
-        display: table-header-group;
-        font-weight: bold;
-    }
-    .divTableFoot {
-        background-color: #EEE;
-        display: table-footer-group;
-        font-weight: bold;
-    }
-    .divTableBody {
-        display: table-row-group;
-    }
-    /* End of DivTable.com */
-
-    .wasteBasketPanelSvg { height: 15px; width: 10px; }
-    .wasteBasketPanelButton { float: right; background-color: #f2f2f2; }
-
-    .wasteBasketSignalSvg { height: 15px; width: 10px; }
-    .wasteBasketSignalButton { float: right; background-color: #f2f2f2; }
-
-    .hideShowConfigurationSvg { height: 30px; width: 20px; }
-    .hideShowConfigurationButton { float: left; background-color: #f2f2f2; }
-
-    .inputFieldPanel  { text-align: center; width: 95%; margin: 3px }
-    .inputFieldSignal { text-align: center; width: 95%; margin: 1px }
-
+    .flagOfItalySvg { height: 15px; width: 10px; }
   </style>
 
 </head>
 
+
 <body>
 
-  <!-- embedded icons -->
-
-  <!-- waste basket -->
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" style="display: none;">
-    <symbol id="wasteBasket" viewbox="0 0 448 512">  
-      <path d="M192 188v216c0 6.627-5.373 12-12 12h-24c-6.627 0-12-5.373-12-12V188c0-6.627 5.373-12 12-12h24c6.627 0 12 5.373 12 12zm100-12h-24c-6.627 0-12 5.373-12 12v216c0 6.627 5.373 12 12 12h24c6.627 0 12-5.373 12-12V188c0-6.627-5.373-12-12-12zm132-96c13.255 0 24 10.745 24 24v12c0 6.627-5.373 12-12 12h-20v336c0 26.51-21.49 48-48 48H80c-26.51 0-48-21.49-48-48V128H12c-6.627 0-12-5.373-12-12v-12c0-13.255 10.745-24 24-24h74.411l34.018-56.696A48 48 0 0 1 173.589 0h100.823a48 48 0 0 1 41.16 23.304L349.589 80H424zm-269.611 0h139.223L276.16 50.913A6 6 0 0 0 271.015 48h-94.028a6 6 0 0 0-5.145 2.913L154.389 80zM368 128H80v330a6 6 0 0 0 6 6h276a6 6 0 0 0 6-6V128z"/>
-    </symbol>
-  </svg>
-
-  <!-- dotted menu -->
-  <svg version="1.1" viewBox="0 0 100 100" xml:space="preserve" xmlns="http://www.w3.org/2000/svg" style="display: none">
-    <symbol id="dottedMenu" viewbox="0 0 100 100">  
-      <circle cx="18.132" cy="26.545" r="7.131"/>
-      <rect x="33.619" y="21.486" width="56.292" height="10.118"/>
-      <circle cx="18.132" cy="51.219" r="7.131"/>
-      <rect x="33.619" y="46.159" width="56.292" height="10.118"/>
-      <circle cx="18.132" cy="76.033" r="7.131"/>
-      <rect x="33.619" y="70.975" width="56.292" height="10.117"/>
-    </symbol>
-  </svg>
-
-  <!-- circle -->
-  <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
-    <symbol id="circle" viewbox="0 0 100 100">
-      <circle cx="50" cy="50" r="40">
-    </symbol>
-  </svg>
-
-  <!-- END of embedded icons -->
-
   <div id="app">
-  
-    <div align="right"><b>Shot #{{ panels[0].signals[0].lastShotNumber }}</b></div>
+    <!-- <div align="right"><b></b></div> -->
+   <p style="display:inline" onclick="alert('Usage:\nURL:PORT/?panel=NAME1&s=SIGNALNAME&mnext&panel=NAME2&s=SIGNALNAME\nParameters:\n- panel=NAME: name of the panel\n- length=nnn: number of samples\n- xlabel=LABEL: label of X axis\n- ylabel=LABEL: label of Y axis\n- s=NAME: name of signal (you can show as many signals as you want)\n- c=COLOR: signal color (default: black, can be: yellow,red,blue,cyan,green,...)\n- debug=1: enable debug messages\n- mnext: show another panel with a different set of signals); after this parameter, a panel parameter and related infos must be present\n\nFor other information:\nBackend usage: Gabriele.Manduchi@igi.cnr.it\nFrontend usage: Gianluca.Moro@igi.cnr.it')">
 
-    <!-- Configuration block -->
-    <span v-if="isVisibleConfiguration">
-    <div style="display: inline-block; border-style: ridge; border-color: silver; width: 28%; float:left; padding: 3px;">
-      <span v-if="isVisibleAddPanel">
-        <center>Panels and signals configuration</center>
-        <div>
-    	  <div class="divTable">
-  	    <div class="divTableBody">
-	      <div class="divTableRow">
-	        <div class="divTableCell">Panel</div>
-	        <div class="divTableCell">
-                  <input v-model="panelName" placeholder="Insert panel name"  class="inputFieldPanel"><br/>
-	        </div>
-	      </div>
-	      <div class="divTableRow">
-	        <div class="divTableCell">Length[s]</div>
-	        <div class="divTableCell">
-		  <input v-model="panelWindowLength" type="number" class="inputFieldSignal">
-	        </div>
-	      </div>
-	    </div>
-	  </div>
-          <center>
-            <button @click.prevent="addPanel" class="btnAction">Add Panel</button>
-          </center>
-        </div>
-      </span>
+    <!-- Flag of ITER -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 81 54">
+    <path d="M-.375.075H80.03v53.167H-.375z" fill="#fd8609"/>
+    <ellipse cx="41" cy="54" rx="32" ry="32" fill="#fff"/>
+    <text x="2" y="296" font-weight="bold" font-size="2.8" font-family="sans-serif" fill="#fff">
+    <tspan x="2" y="4">china</tspan>
+    <tspan x="2" y="8">eu</tspan>
+    <tspan x="2" y="12">india</tspan>
+    <tspan x="2" y="16">japan</tspan>
+    <tspan x="2" y="20">korea</tspan>
+    <tspan x="2" y="24">russia</tspan>
+    <tspan x="2" y="28">usa</tspan></text>
+    <text x="32" y="345" font-weight="bold" font-size="18" font-family="sans-serif" fill="#fd8609">
+    <tspan x="32" y="54">iter</tspan></text>
+    </svg>
 
-      <panel-list :panels="panels"></panel-list>
+    <!-- Flag of Europe -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 30 20">
+    <rect width="30" height="20" style="fill:rgb(0%,20%,60%)"/>
+    <path d="M15 15.4L15.7 17.7 13.8 16.3 16.2 16.3 14.3 17.7ZM15 15.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M15 2.1L15.7 4.3 13.8 2.9 16.2 2.9 14.3 4.3ZM15 2.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M11.7 14.5L12.4 16.8 10.5 15.4 12.9 15.4 10.9 16.8ZM11.7 14.5" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M9.2 12.1L10 14.3 8 12.9 10.4 12.9 8.5 14.3ZM9.2 12.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M8.3 8.8L9.1 11 7.1 9.6 9.5 9.6 7.6 11ZM8.3 8.8" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M9.2 5.4L10 7.7 8 6.3 10.4 6.3 8.5 7.7ZM9.2 5.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M11.7 3L12.4 5.2 10.5 3.8 12.9 3.8 10.9 5.2ZM11.7 3" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M18.3 14.5L17.6 16.8 19.5 15.4 17.1 15.4 19.1 16.8ZM18.3 14.5" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M20.8 12.1L20 14.3 22 12.9 19.6 12.9 21.5 14.3ZM20.8 12.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M21.7 8.8L20.9 11 22.9 9.6 20.5 9.6 22.4 11ZM21.7 8.8" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M20.8 5.4L20 7.7 22 6.3 19.6 6.3 21.5 7.7ZM20.8 5.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    <path d="M18.3 3L17.6 5.2 19.5 3.8 17.1 3.8 19.1 5.2ZM18.3 3" style="stroke:none;fill:rgb(100%,80%,0%);"/>
+    </svg>
 
-      <br><hr><br>
-      <center>
-      <button class="btnAction" @click.prevent="startGraph()">START GRAPH</button><br><br>
-      </center>
+    <!-- Flag of India -->
+    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+      viewBox="0 0 225 150" width="30" height="20">
+      <rect width="225" height="150" fill="#f93"/><rect width="225" height="50" y="50" fill="#fff"/>
+      <rect width="225" height="50" y="100" fill="#128807"/><g transform="translate(112.5,75)">
+      <circle r="20" fill="#008"/><circle r="17.5" fill="#fff"/><circle r="3.5" fill="#008"/>
+      <g id="d"><g id="c"><g id="b"><g id="a">
+      <circle r="0.875" fill="#008" transform="rotate(7.5) translate(17.5)"/>
+      <path fill="#008" d="M 0,17.5 0.6,7 C 0.6,7 0,2 0,2 0,2 -0.6,7 -0.6,7 L 0,17.5 z"/></g>
+      <use xlink:href="#a" transform="rotate(15)"/></g><use xlink:href="#b" transform="rotate(30)"/></g>
+      <use xlink:href="#c" transform="rotate(60)"/></g><use xlink:href="#d" transform="rotate(120)"/>
+      <use xlink:href="#d" transform="rotate(-120)"/></g>
+    </svg>
+
+    <!-- Flag of Italy -->
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 3 2">
+      <rect width="1" height="2" fill="#009246"/>
+      <rect width="1" height="2" x="1" fill="#fff"/>
+      <rect width="1" height="2" x="2" fill="#ce2b37"/>
+    </svg>
+
+
+    <font size="4"><b>{{ currentDate }} {{ currentTime }}</b> </font>
+    <div style="float: right"><font size="4"><b>SPIDER Beam Source</b> </font></div>
+  </p>
+
+    <div v-if="mposition === 'v'">
+    <iframe v-for="q in subQuery" :src=q style="border:none; width: 100%" :style="{ height: computedIframeh + 'vh' }">Panel graph - IFRAME not supported by your browser</iframe>
+<!--    <iframe v-for="q in subQuery" :src=q style="border:none;">Panel graph - IFRAME not supported by your browser</iframe> -->
+
     </div>
-    </span>
-    <!-- END OF isVisibleConfiguration -->
 
-    <!-- graph area -->
-    <div :style="{ width: graphComputedWidth + '%' }" style="display: inline-block; border-style: ridge; border-color: silver; float: right; padding: 3px;">
-      <graph-window-list :panels="panels" :charts="charts" :restylevent="restylevent"></graph-window-list>
+    <div v-else>
+    <iframe v-for="q in subQuery" :src=q style="height: 99vh; border:none;" :style="{ width: computedIframew + 'vw' }">Panel graph - IFRAME not supported by your browser</iframe>
     </div>
 
-    <br>
     <font color="white">{{ versionNumber }}</font>
 
   </div>
 
-  <!-- templates to build GUI-->
-  <template id="panel-list">
-    <div>
-      <panel v-for="(panel, key, index) in panels" :panel="panel" :key="key" :index="index"></panel>
-    </div>
-  </template>
-
-  <template id="panel">
-    <div>
-      <hr>
-      <div style="margin:7px; float: left">
-        Panel:&nbsp;<b>{{ panel.name }}</b>&nbsp;[{{ panel.windowLength }}samples]
-      </div>
-      <button @click.prevent="$root.removePanel(panel.name)" class="wasteBasketPanelButton" style="margin: 3px">
-        <svg class="wasteBasketPanelSvg"><use xlink:href="#wasteBasket"></svg>
-      </button>
-
-      <signal-list :signals="panel.signals" :panel="panel"></signal-list>
-
-      <div style="margin-left:5px" >
-        <div class="divTable">
-          <div class="divTableBody">
-	    <div class="divTableRow">
-	      <div class="divTableCell">Signal</div>
-	      <div class="divTableCell">
-                <input v-model="$root.signalName" placeholder="Insert signal name" class="inputFieldSignal">
-	      </div>
-	    </div>
-	    <div class="divTableRow">
-	      <div class="divTableCell">Color</div>
-	      <div class="divTableCell">
-                <input v-model="$root.signalColor" type="color" class="inputFieldSignal">
-	      </div>
-	    </div>
-	  </div>
-        </div> <!-- end table -->
-        <center>
-          <button @click.prevent="$root.addSignal(panel.name)" class="btnAction">Add Signal</button><br/>
-        </center>
-      </div>
-    </div>
-  </template>
-
-  <template id="signal-list">
-    <div style="margin:5px" >
-      <signal v-for="(signal, key, index) in signals" :signal="signal" :panel="panel" :key="key" :index="index"></signal>
-    </div>
-  </template>
-
-  <template id="signal">
-    <div style="display: table; width: 100%; padding: 2px; vertical-align: middle;">
-      <div v-bind:style="{ background: signal.color}" style="width: 20px; float:left">&nbsp;</div>
-        &nbsp;<b>{{ signal.name }}</b> 
-      <button @click.prevent="$root.removeSignal(panel.name, signal.name)" class="wasteBasketSignalButton">
-        <svg class="wasteBasketSignalSvg"><use xlink:href="#wasteBasket"></svg>
-      </button>
-    </div>
-  </template>
-
-  <template id="graph-window-list">
-    <div>
-      <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
-    </div>
-  </template>
-
-  <template id="reactive-chart">
-    <div :ref="panel.name" style="width: 100%;  border: 1px; border-style: solid"></div>
-  </template>
-
-
 <script>
-
-var lastUpdate = Date.now();
-var isThereDataToPlot = false;
-
-/* GRAPH */
-Vue.component("reactive-chart", {
-  props: ["panel", "charts", "index", "restylevent"],
-  template: '#reactive-chart', 
-  mounted() {
-    for (i=0; i<this.charts.length; i++) {
-      Plotly.newPlot(this.$refs[this.charts[i].uuid], this.charts[i].traces, this.charts[i].layout);
-    }
-  },
-  watch: {
-    restylevent: {
-      handler: function() {
-        for (i=0; i<this.charts.length; i++) {
-          Plotly.react(
-            this.$refs[this.charts[i].uuid],
-            this.charts[i].traces,
-            this.charts[i].layout
-          );
-        }
-      }
-    },
-
-    charts: {
-      handler: function() {
-       var current = Date.now();
-
-       // limit update frequency to 10Hz (100ms)
-       if (current - lastUpdate < 100) {
-         isThereDataToPlot = true;
-         return; 
-       }
-
-       lastUpdate = Date.now();
-       isThereDataToPlot = false;
-
-        for (i=0; i<this.charts.length; i++) {
-          Plotly.react(
-            this.$refs[this.charts[i].uuid],
-            this.charts[i].traces,
-            this.charts[i].layout
-          );
-        }
-      },
-      deep: true
-    }
-  }
-});
-
-
-/* End GRAPH */
-
-Vue.component('panel-list', {
-  template: '#panel-list',
-  props: ['panels']
-})
-
-Vue.component('panel', {
-  template: '#panel',
-  props: ['panel']
-})
-
-Vue.component('signal-list', {
-  template: '#signal-list',
-  props: ['panel', 'signals']
-})
-
-Vue.component('signal', {
-  template: '#signal',
-  props: ['panel', 'signal']
-});
-
-Vue.component('graph-window-list', {
-  template: '#graph-window-list',
-  props: ['panels', 'charts', 'restylevent']
-})
-
-var defaultLayoutOptions = {
-  title:'WebScope',
-  xaxis: {
-    title: 'xaxis'
-  },
-  yaxis: {
-    title: 'yaxis'
-  }
-};
-
-var defaultLineOptions = {
-  color: "#5e9e7e",
-  width: 1,
-  shape: "line"
-};
 
 var vm = new Vue({
   el: '#app',
   data: function () {
-   return {
-     charts: [
-       {
-         uuid: "Temperature",
-         traces: [
-           {
-             x: [],
-             y: [],
-             line: defaultLineOptions,
-           }
-         ],
-         layout: defaultLayoutOptions,
-       }
-      ],
-
-    panels: [
-       { name: 'Temperature',
-         windowLength: 120,
-         xlabel: 't',
-         ylabel: 'y',
-
-         signals: [
-           { name: 'p1s1', lastShotNumber: -2, color: 'red' },
-           { name: 'p1s2', lastShotNumber: -2, color: 'blue' },
-           { name: 'p2s1', lastShotNumber: -2, color: 'green' },
-         ]},
-
-    ],
-    panelName: '',
-    panelWindowLength: 120,
-    xlabel: 't',
-    ylabel: 'y',
-    signalName: '',
-    signalColor: '#000000',
-    isVisibleConfiguration: true,
-    isVisibleAddPanel: false,
-    versionNumber: '20190716161300',
-    restylevent: null,
-    isDebug: 0,
-   } // end return
+    return {
+      lastShotNumber: -1,
+      isDebug: 1,
+      mpanel:1, // number of panels to show
+      mposition: 'h', // disposition - 'v'=vertically piled - 'h'=horizontal alignment
+      msize: [], // if present, percent of each panel, otherwise equally distributed
+      subQuery: [],
+      currentDate: '',
+      currentTime: '',
+      versionNumber: '20190722140000',
+    } // end return
   },
 
   computed: {
-    graphComputedWidth() {
-        if (this.isVisibleConfiguration) {
-          return 68;
-        } else {
-          return 98;
-        }
-    }
+    computedIframeh() {
+        return ( Math.floor(100 / this.mpanel) - 1 ); 
+    },
+    computedIframew() {
+        return ( Math.floor(100 / this.mpanel) - 1 ); 
+    },
   },
 
   created() {
-    window.addEventListener('resize', this.handleResize)
-    this.handleResize();
-
     // parse URL parameters
     var url = window.location.href;
-    var params = { panel: "", length: 0, xlabel: "t", ylabel: "y",  s: [], c: [] };
     var parser = document.createElement('a');
     parser.href = url;
     var query = parser.search.substring(1);
+    if (this.isDebug) { console.log("Page initialization with parameters: " + query); }
     var vars = query.split('&');   
     for (var i = 0; i < vars.length; i++) {
 	var pair = vars[i].split('=');
-        if (pair[0] == "panel") params.panel = decodeURIComponent(pair[1]);
-        if (pair[0] == "length") params.length = decodeURIComponent(pair[1]);
-        if (pair[0] == "s") params.s.push(decodeURIComponent(pair[1]));
-        if (pair[0] == "c") params.c.push(decodeURIComponent(pair[1]));
-        if (pair[0] == "xlabel") params.xlabel = decodeURIComponent(pair[1]);
-        if (pair[0] == "ylabel") params.ylabel = decodeURIComponent(pair[1]);
-        if (pair[0] == "debug") this.isDebug = decodeURIComponent(pair[1]);
-    }
-    var st = [];
-    for (var i=0; i<params.s.length; i++) {
-        var col;
-        if(typeof params.c[i] === 'undefined') {
-            col = 'black';
-        } else {
-           col = params.c[i];
-        }
-	st.push({name: params.s[i], lastShotNumber: -2, color: col});
+        if (pair[0] == "mnext")     this.mpanel++;
+        if (pair[0] == "mposition") this.mposition = decodeURIComponent(pair[1]);
+        if (pair[0] == "msize")     this.msize = decodeURIComponent(pair[1]).split(',');
+        if (pair[0] == "debug")     this.isDebug = decodeURIComponent(pair[1]);
     }
 
-    if (params.panel != "") {
-        this.panels = [ {
-            name: params.panel,
-	    windowLength: params.length,
-            xlabel: params.xlabel,
-            ylabel: params.ylabel,
-            signals: st,
-        } ];  
-        this.startGraph();
+    this.subQuery = query.split("mnext");
+    for (var i=0; i<this.subQuery.length; i++) {
+      if (this.subQuery[i].charAt(0) === '&') this.subQuery[i] = this.subQuery[i].slice(1);
+      if (this.subQuery[i].charAt(this.subQuery[i].length -1) === '&') this.subQuery[i] = this.subQuery[i].slice(0, -1);
+      this.subQuery[i] = "/panel.html?" + this.subQuery[i];
     }
 
-  },
-  destroyed() {
-    window.removeEventListener('resize', this.handleResize)
+    if (this.isDebug) { 
+      console.log("Configuration: mpanel=" + this.mpanel + " mposition=" + this.mposition + " msize=" + this.msize + " debug=" + this.isDebug); 
+      console.log("Query for each panel: " + this.subQuery);
+    }
   },
 
-  methods: {
-    handleResize: function() {
-      this.charts[0].layout.height = window.innerHeight-120;
-      this.charts[0].layout.width = window.innerWidth-100;
-    },
-
-    addPanel: function() {
-
-      // NO MULTIPANEL
-      if (this.panels.length == 1) {
-        return;
-      }
-      this.isVisibleAddPanel = false;
-
-      if (this.panelName == '') {
-        this.panelName = "__panel" + (this.panels.length+1);
-        console.log("Generated panel name!");
-      }
-      console.log("Adding panel: " + this.panelName);
-      this.panels.push({
-        name: this.panelName,
-        windowLength: this.panelWindowLength,
-        xlabel: this.xlabel,
-        ylabel: this.ylabel,
-        signals: []
-      });
-      this.panelName = '';
-      this.panelWindowLength = 30;
-      this.xlabel = 't';
-      this.ylabel = 'y';
-    },
-    removePanel: function(name) {
-      //console.log("Removing panel: " + name);
-      this.panels = this.panels.filter(function(value, index, arr){
-        return value.name != name;
-      });
-      this.isVisibleAddPanel = true;
-    },
-    addSignal: function(panelName) {
-      objIndex = this.panels.findIndex((obj => obj.name == panelName));
-      if (this.signalName == '') {
-        this.signalName = "__signal" + (this.panels[objIndex].signals.length+1);
-        console.log("Generated signal name!");
-      }
-      console.log("Adding signal " + this.signalName + " to panel " + panelName);
-      this.panels[objIndex].signals.push({
-          name: this.signalName,
-          lastShotNumber: -2, 
-          color: this.signalColor,
-        });
-        this.signalName = '';
-        this.signalColor = '#000000';
-    },
-    removeSignal: function(panelName, signalName) {
-      //console.log("Removing signal: " + signalName + " from panel " + panelName);
-      objIndex = this.panels.findIndex((obj => obj.name == panelName));
-      this.panels[objIndex].signals = this.panels[objIndex].signals.filter(function(value, index, arr){
-        return value.name != signalName;
-      });
-    },
-
-    hideShowConfiguration: function() {
-      this.isVisibleConfiguration = !this.isVisibleConfiguration;
-      this.restylevent = new Date().getTime(); // timestamp of last update
-    },
-
-    //
-    // graph management
-    //
-
-    updateChart: function (receivedMsg) {
-      if (this.isDebug == 1) {console.log('l=' + this.panels[0].windowLength + ' RECEIVED ' + receivedMsg); }
-      var msgArray = receivedMsg.split(" ");
-      var msgProgressiveId = msgArray[0]; // 
-      var msgShotNumber    = msgArray[1]; //
-      var msgSignalName    = msgArray[2]; //
-      var msgFormat        = msgArray[3]; // "L" - date as UTC, "F" - date as ms, "A" - date UTC and reset array
-      var msgLength        = parseInt(msgArray[4]); //
-
-      if (msgArray.length != 5 + 2*msgLength) {
-        console.log("Wrong format for incoming message: " + receivedMsg);
-        return; // something wrong - cannot parse message
-      }
-
-      var msgLabels = msgArray.slice(5, 5+msgLength);
-
-      //console.log("msgFormat=" + msgFormat);
-
-      if ((msgFormat == "L") || (msgFormat == "A") || (msgFormat == "l") || (msgFormat == "a")) {
-          msgLabels = msgLabels.map(function (x) {
-              return (new Date(parseInt(x)));
-          });
-      }
-
-      if ((msgFormat == "F") || (msgFormat == "f")) {
-          msgLabels = msgLabels.map(function (x) {
-              return (parseFloat(x));
-          });
-      }
-
-      var msgValues = msgArray.slice(5+msgLength, 5+2*msgLength);
-
-      for (i=0; i<this.panels.length; i++) {
-	for (j=0; j<this.panels[i].signals.length; j++) {
-          if (this.panels[i].signals[j].name == msgSignalName) {
-            //
-            // we found the incoming signal in this panel
-            //
- 	    this.charts[i].traces[j].name = msgSignalName;
-            if (msgFormat == "A" || this.panels[i].signals[j].lastShotNumber != msgShotNumber) {
-                this.charts[i].traces[j].x = msgLabels;
-                this.charts[i].traces[j].y = msgValues;
-            } else {
-                var len = this.charts[i].traces[j].x.length;
-                if (len == 0 || msgLabels[0] >= this.charts[i].traces[j].x[len-1]) {
-                    this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
-                    this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
-                } else {
-                    if (this.isDebug == 1) { console.log("Skipping len=" + len + " msgLabels[0]=" + msgLabels[0] + " this.charts[i].traces[j].x[len-1]=" + this.charts[i].traces[j].x[len-1] + " type:" + typeof msgLabels[0]); }
-                }
-            }
-            this.panels[i].signals[j].lastShotNumber = msgShotNumber;
-            //console.log(this.panels[i].windowLength + " " + this.charts[i].traces[j].x.length);
-            if (this.panels[i].windowLength > 0 && this.charts[i].traces[j].x.length > this.panels[i].windowLength) {
-              this.charts[i].traces[j].x = this.charts[i].traces[j].x.slice(-this.panels[i].windowLength);
-              this.charts[i].traces[j].y = this.charts[i].traces[j].y.slice(-this.panels[i].windowLength);
-            }
-
-          }
-        }
-        this.charts[i].layout.datarevision = new Date().getTime(); // timestamp of last update
-      }
-    }, // end updateChart()
-
-
-    /* */
-    /* function to start SSE */
-    ServerSentEventStart: function (signals) {
-      console.log("Starting ServerSentEventStart for " + signals);
-      var eventSource = new EventSource("/sse?" + signals);
-      var callbackFunc = this.updateChart;
-      //var callbackPanels = this.panels;
-      eventSource.onmessage = function (event) {
-        var received_msg = event.data;
-        //console.log('RECEIVED: ' + received_msg);
-        // example: RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
-        // example: RECEIVED: 1403 666 ccci L 1 1553705772843 8.614104
-        callbackFunc(received_msg);
-      };
-    },
-
-    startGraph: function() {
-      this.isVisibleConfiguration = false;
-
-      // init graph structure
-      this.charts = [];
-      for(i=0; i<this.panels.length; i++) {
-        this.charts.push({
-            uuid: this.panels[i].name,
-            traces: [],
-            layout: {
-                title: this.panels[i].name,
-                xaxis: { title: this.panels[i].xlabel },
-                yaxis: { title: this.panels[i].ylabel },
-                height: window.innerHeight-120,
-                width: window.innerWidth-100,
-              },
-          });
-        for (j=0; j<this.panels[i].signals.length; j++) {
-          this.charts[i].traces.push({
-              x: [],
-              y: [],
-              line: { color: this.panels[i].signals[j].color, width:1, shape: "line" },
-            });            
-        }
-        setInterval( function() { 
-          if (isThereDataToPlot) {
-            isThereDataToPlot = false;
-            this.restylevent = new Date().getTime(); // timestamp of last update
-
-          }
-        }.bind(this), 1000);
-      }
-
-      // start Server    
-      sgns = this.panels.map(p => p.signals).flat().map(x => x.name).join(",");     
-      this.restylevent = new Date().getTime(); // timestamp of last update
-      this.ServerSentEventStart("signals=" + sgns); // example string: "signals=s1,s2,s3"
-    },
-  }
 });
+
+var week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+var timerID = setInterval(updateTime, 1000);
+updateTime();
+function updateTime() {
+    var cd = new Date();
+    vm.currentTime = zeroPadding(cd.getHours(), 2) + ':' + zeroPadding(cd.getMinutes(), 2) + ':' + zeroPadding(cd.getSeconds(), 2);
+    vm.currentDate =  zeroPadding(cd.getDate(), 2) + '/' + zeroPadding(cd.getMonth()+1, 2) + '/' + zeroPadding(cd.getFullYear(), 4) + ' ' + week[cd.getDay()];
+};
+
+function zeroPadding(num, digit) {
+    var zero = '';
+    for(var i = 0; i < digit; i++) {
+        zero += '0';
+    }
+    return (zero + num).slice(-digit);
+}
 
 </script>
 

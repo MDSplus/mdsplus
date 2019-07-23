@@ -51,28 +51,19 @@ app.get('/', function(req, res) {
       res.end(data.toString());
 });
 
-app.get('/m', function(req, res) {
-      if(debug)console.log('REQUEST FOR NAME: /'); 
-      var data = fs.readFileSync('mindex.html', 'utf8');
+app.get('/p', function(req, res) {
+      if(debug)console.log('REQUEST FOR NAME: /p'); 
+      var data = fs.readFileSync('panel.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
 
-app.get('/mindex.html', function(req, res) {
-      if(debug)console.log('REQUEST FOR NAME: /'); 
-      var data = fs.readFileSync('mindex.html', 'utf8');
+app.get('/panel.html', function(req, res) {
+      if(debug)console.log('REQUEST FOR NAME: /panel.html'); 
+      var data = fs.readFileSync('panel.html', 'utf8');
       res.writeHead(404, {'Content-Type': 'text/html'});
       res.end(data.toString());
 });
-
-
-app.get('/w', function(req, res) {
-      if(debug)console.log('REQUEST FOR NAME: /'); 
-      var data = fs.readFileSync('scope/index.html', 'utf8');
-      res.writeHead(404, {'Content-Type': 'text/html'});
-      res.end(data.toString());
-});
-
 
 
 function parseGetRequest(inputString) {

@@ -152,6 +152,9 @@ Tree::Tree(char const *name, int shot, void *ctx): name(name), shot(shot), ctx(c
 {
 }
 
+Tree::Tree(Tree *tree): name(tree->name), shot(tree->shot), ctx(tree->ctx), fromActiveTree(true)
+{
+}
 
 Tree::Tree(char const *name, int shot, char const *mode): name(name), shot(shot), ctx(nullptr), fromActiveTree(false)
 {
@@ -672,10 +675,16 @@ TreeNode::TreeNode(int nid, Tree *tree, Data *units, Data *error, Data *help, Da
 	if(!tree && nid != 0) //exclude the case in which this constructor has been called in a TreePath instantiation
 		throw MdsException("A Tree instance must be defined when ceating TreeNode instances");
 	this->nid = nid;
-	this->tree = tree;
+	this->tree = new Tree(tree);
 	clazz = CLASS_S;
 	dtype = DTYPE_NID;
 	setAccessory(units, error, help, validation);
+}
+
+void TreeNode::setTree(Tree *tree) 
+{
+    if(this->tree) delete this->tree; 
+    this->tree = new Tree(tree);
 }
 
 EXPORT void *TreeNode::operator new(size_t sz)
@@ -686,6 +695,8 @@ EXPORT void TreeNode::operator delete(void *p)
 {
     ::operator delete(p);
 }
+
+TreeNode::~TreeNode() {if(tree) delete tree;}
 
 std::string  TreeNode::getNciString(int itm)
 {

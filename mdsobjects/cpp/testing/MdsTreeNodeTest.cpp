@@ -163,11 +163,11 @@ void main_test(){
 	unique_ptr<TreeNode> node = tree->getNode("test_node");
 
 	// getTree()
-	TEST1( node->getTree() == tree );
+	TEST1( node->getTree()->getNameStr() == tree->getNameStr() &&  node->getTree()->getShot() == tree->getShot());
 
 	// setTree()
 	node->setTree(tree2);
-	TEST1( node->getTree() == tree2 );
+	TEST1(node->getTree()->getNameStr() == tree2->getNameStr() &&  node->getTree()->getShot() == tree2->getShot());
 	node->setTree(tree);
 
 	// getPath()
