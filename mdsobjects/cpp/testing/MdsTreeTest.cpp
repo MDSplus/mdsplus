@@ -453,6 +453,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 	TEST1(evaluated4->getInt() == 124);
 	
 	deleteData(addVal);
+	delete tree;
 	
     }
     
