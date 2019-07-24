@@ -927,8 +927,16 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 
 	if(getNumDims == nDims) //return a scalar
 		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
+	
+	int *revDims = new int[nDims - getNumDims+1];
+	//Dimensions must be reversed in order to feed them to createArrayData
+	for(int i = 0; i < nDims - getNumDims+1; i++)
+		revDims[i] = dims[nDims-i-1];
+	
 	//Otherwise return an array
-	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
+	Data *retData =  (Data *)createArrayData(dtype, length, nDims - getNumDims, revDims, ptr+(startIdx * length), 0,0,0,0);
+	delete[] revDims;
+	return retData;
 }
 
 
@@ -948,9 +956,11 @@ Array *Array::getSubArray(int startDim, int nSamples)
 	//Compute startIdx of selected data portion
 	int startIdx = startDim * rowItems;
 	int *newDims = new int[nDims];
+
+	//Dimension must be reverted since createArrayData uses the array DESCRIPTOR_A dimension order
 	for(i = 1; i < nDims; i++)
-		newDims[i] = dims[i];
-	newDims[0] = nSamples;
+		newDims[nDims - i-1] = dims[i];
+	newDims[nDims - 1] = nSamples;
 
 	Array *retArr = (Array *)createArrayData(dtype, length, nDims, newDims, ptr+(startIdx * length), 0,0,0,0);
 	delete [] newDims;

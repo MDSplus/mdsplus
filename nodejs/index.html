@@ -8,9 +8,6 @@
   <title>WebScope</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
 
-  <style>
-    .flagOfItalySvg { height: 15px; width: 10px; }
-  </style>
 
 </head>
 
@@ -19,7 +16,7 @@
 
   <div id="app">
     <!-- <div align="right"><b></b></div> -->
-   <p style="display:inline" onclick="alert('Usage:\nURL:PORT/?panel=NAME1&s=SIGNALNAME&mnext&panel=NAME2&s=SIGNALNAME\nParameters:\n- panel=NAME: name of the panel\n- length=nnn: number of samples\n- xlabel=LABEL: label of X axis\n- ylabel=LABEL: label of Y axis\n- s=NAME: name of signal (you can show as many signals as you want)\n- c=COLOR: signal color (default: black, can be: yellow,red,blue,cyan,green,...)\n- debug=1: enable debug messages\n- mnext: show another panel with a different set of signals); after this parameter, a panel parameter and related infos must be present\n\nFor other information:\nBackend usage: Gabriele.Manduchi@igi.cnr.it\nFrontend usage: Gianluca.Moro@igi.cnr.it')">
+   <p style="display:inline" onclick="alert('Usage:\nURL:PORT/?htitle=TITLE&panel=NAME1&s=SIGNALNAME&mnext&panel=NAME2&s=SIGNALNAME\nParameters:\n- htitle=TITLE: title shown in the header\n- panel=NAME: name of the panel\n- length=nnn: number of samples\n- xlabel=LABEL: label of X axis\n- ylabel=LABEL: label of Y axis\n- s=NAME: name of signal (you can show as many signals as you want)\n- c=COLOR: signal color (default: black, can be: yellow,red,blue,cyan,green,...)\n- debug=1: enable debug messages\n- mnext: show another panel with a different set of signals); after this parameter, a panel parameter and related infos must be present\n\nFor other information:\nBackend usage: Gabriele.Manduchi@igi.cnr.it\nFrontend usage: Gianluca.Moro@igi.cnr.it')">
 
     <!-- Flag of ITER -->
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 81 54">
@@ -77,7 +74,7 @@
 
 
     <font size="4"><b>{{ currentDate }} {{ currentTime }}</b> </font>
-    <div style="float: right"><font size="4"><b>SPIDER Beam Source</b> </font></div>
+    <div style="float: right"><font size="4"><b>{{ htitle }}</b> </font></div>
   </p>
 
     <div v-if="mposition === 'v'">
@@ -102,6 +99,7 @@ var vm = new Vue({
     return {
       lastShotNumber: -1,
       isDebug: 1,
+      htitle:'', // header title
       mpanel:1, // number of panels to show
       mposition: 'h', // disposition - 'v'=vertically piled - 'h'=horizontal alignment
       msize: [], // if present, percent of each panel, otherwise equally distributed
@@ -132,6 +130,7 @@ var vm = new Vue({
     for (var i = 0; i < vars.length; i++) {
 	var pair = vars[i].split('=');
         if (pair[0] == "mnext")     this.mpanel++;
+        if (pair[0] == "htitle")    this.htitle = decodeURIComponent(pair[1]);
         if (pair[0] == "mposition") this.mposition = decodeURIComponent(pair[1]);
         if (pair[0] == "msize")     this.msize = decodeURIComponent(pair[1]).split(',');
         if (pair[0] == "debug")     this.isDebug = decodeURIComponent(pair[1]);
@@ -145,7 +144,7 @@ var vm = new Vue({
     }
 
     if (this.isDebug) { 
-      console.log("Configuration: mpanel=" + this.mpanel + " mposition=" + this.mposition + " msize=" + this.msize + " debug=" + this.isDebug); 
+      console.log("Configuration: htitle=" + this.htitle + " mpanel=" + this.mpanel + " mposition=" + this.mposition + " msize=" + this.msize + " debug=" + this.isDebug); 
       console.log("Query for each panel: " + this.subQuery);
     }
   },
