@@ -928,13 +928,15 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 	if(getNumDims == nDims) //return a scalar
 		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
 	
-	int revDims[nDims - getNumDims+1];
+	int *revDims = new int[nDims - getNumDims+1];
 	//Dimensions must be reversed in order to feed them to createArrayData
 	for(int i = 0; i < nDims - getNumDims+1; i++)
 		revDims[i] = dims[nDims-i-1];
 	
 	//Otherwise return an array
-	return (Data *)createArrayData(dtype, length, nDims - getNumDims, revDims, ptr+(startIdx * length), 0,0,0,0);
+	Data *retData =  (Data *)createArrayData(dtype, length, nDims - getNumDims, revDims, ptr+(startIdx * length), 0,0,0,0);
+	delete[] revDims;
+	return retData;
 }
 
 
