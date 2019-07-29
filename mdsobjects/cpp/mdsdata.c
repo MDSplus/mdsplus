@@ -292,7 +292,7 @@ void *convertFromDsc(void *ptr, void *tree)
 	  MdsFree1Dx(&caXd, 0);
 	return res;
       } else {
-	int dims = arrDscPtr->arsize / arrDscPtr->length;
+	int dims = (arrDscPtr->arsize > 0)?arrDscPtr->arsize / arrDscPtr->length:0;
 	void *res =
 	    createArrayData(arrDscPtr->dtype, arrDscPtr->length, 1, &dims, arrDscPtr->pointer,
 			    unitsData, errorData, helpData, validationData);
