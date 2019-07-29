@@ -1,8 +1,8 @@
 JAVAROOT = $(builddir)
 CLASSES = $(JAVAROOT)/*.class
 
-JSCOPEJAR = $(top_builddir)/javascope/jScope.jar
-JTRAVERSERJAR = $(top_builddir)/javatraverser/jTraverser.jar
+JSCOPEJAR = $(top_builddir)/java/jscope/jScope.jar
+JTRAVERSERJAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
 
 javadir = $(exec_prefix)/java/classes
@@ -11,7 +11,7 @@ dist_java_DATA = jDispatcher.properties
 
 if USE_JARS_DIR
 
-jDispatcher.jar : @JARS_DIR@/javadispatcher/jDispatcher.jar
+jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 	cp $< $@
 
 else

@@ -1368,14 +1368,16 @@ AC_OUTPUT(Makefile.inc
           hdf5/Makefile
           idlmdsevent/Makefile
           idlmdswidgets/Makefile
-          javaclient/Makefile
-          javadispatcher/Makefile
           javamds/Makefile
-          javascope/Makefile
-          javatraverser/Makefile
-          javatraverser2/Makefile
-          javatraverser2/java/mds/mdslib/Makefile
-          javadevices/Makefile
+          java/mdsplus/Makefile
+          java/mdsobjects/Makefile
+          java/mdsobjects/docs/Makefile
+          java/jdispatcher/Makefile
+          java/jscope/Makefile
+          java/jtraverser/Makefile
+          java/jtraverser2/Makefile
+          java/jtraverser2/java/mds/mdslib/Makefile
+          java/jdevices/Makefile
           LabView/Makefile
           manpages/Makefile
           macosx/Makefile
@@ -1392,8 +1394,6 @@ AC_OUTPUT(Makefile.inc
 	  python/MDSplus/_version.py
           python/MDSplus/docs/Makefile
           python/MDSplus/tests/Makefile
-          mdsobjects/java/Makefile
-          mdsobjects/java/docs/Makefile
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile

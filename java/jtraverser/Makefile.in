@@ -90,9 +90,9 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@MINGW_FALSE@am__append_1 = jTraverser2
-@MINGW_FALSE@am__append_2 = jTraverser2.template
-subdir = javatraverser2
+@MINGW_FALSE@am__append_1 = $(bin_SCRIPTS)
+@MINGW_FALSE@am__append_2 = jTraverser.template
+subdir = java/jtraverser
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -169,7 +169,6 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
-SOURCES =
 DIST_SOURCES =
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -179,6 +178,24 @@ am__can_run_installinfo = \
 am__java_sources = $(java_JAVA)
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
+# Read a list of newline-separated strings from the standard input,
+# and print each of them once, without duplicates.  Input order is
+# *not* preserved.
+am__uniquify_input = $(AWK) '\
+  BEGIN { nonempty = 0; } \
+  { items[$$0] = 1; nonempty = 1; } \
+  END { if (nonempty) { for (i in items) print i; }; } \
+'
+# Make sure the list of sources is unique.  This is necessary because,
+# e.g., the same source file might be shared among _SOURCES variables
+# for different programs/libraries.
+am__define_uniq_tagged_files = \
+  list='$(am__tagged_files)'; \
+  unique=`for i in $$list; do \
+    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
+  done | $(am__uniquify_input)`
+ETAGS = etags
+CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -487,56 +504,199 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = $(am__append_2)
-dist_java_DATA = jTraverser2.jar
-CLEANFILES = $(java_DATA) $(addprefix $(JAVAROOT)/,$(java_JAR) \
-	debug/DEBUG.class) $(am__append_1)
-JAVAROOT = $(abs_builddir)/classes
+EXTRA_DIST = servlet-2_3-fcs-classfiles.zip $(am__append_2)
+CLEANFILES = $(java_DATA) $(am__append_1)
+dist_java_DATA = jTraverser.jar DeviceBeans.jar
+JAVAROOT = $(builddir)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-@MINGW_FALSE@bin_SCRIPTS = jTraverser2 $(JAVAROOT)
+@MINGW_FALSE@bin_SCRIPTS = jTraverser
 
 # Create the shell script that runs the program
-@MINGW_TRUE@bin_SCRIPTS = traverser2.bat $(JAVAROOT)
+@MINGW_TRUE@bin_SCRIPTS = traverser.bat
 
 #$(INSTALL) -D $< $@
 # Build the class files
-CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar
+SOURCES = \
+	ActionData.java\
+	ActionEditor.java\
+	ApdData.java\
+	ArgEditor.java\
+	ArrayData.java\
+	AtomicData.java\
+	AxisEditor.java\
+	ByteArray.java\
+	ByteData.java\
+	CallData.java\
+	CompileTree.java\
+	ComplexData.java\
+	CompoundData.java\
+	ConditionData.java\
+	ConglomData.java\
+	Convert.java\
+	Data.java\
+	DataChangeEvent.java\
+	DataChangeListener.java\
+	DataEditor.java\
+	DataId.java\
+	DataListener.java\
+	Database.java\
+	DatabaseException.java\
+	DecompileTree.java\
+	DependencyData.java\
+	DeviceApply.java\
+	DeviceButtons.java\
+	DeviceCancel.java\
+	DeviceChannel.java\
+	DeviceChoice.java\
+	DeviceCloseListener.java \
+	DeviceComponent.java\
+	DeviceControl.java\
+	DeviceCustomizer.java\
+	DeviceDispatch.java\
+	DeviceDispatchField.java\
+	DeviceField.java\
+	DeviceLabel.java\
+	DeviceMultiComponent.java\
+	DeviceOk.java\
+	DeviceParameters.java\
+	DeviceParametersBeanInfo.java\
+	DeviceReset.java\
+	DeviceSetup.java\
+	DeviceSetupBeanInfo.java\
+	DeviceTable.java\
+	DeviceTableBeanInfo.java\
+	DeviceTableCustomizer.java\
+	DeviceUpdateListener.java \
+	DeviceWave.java\
+	DeviceWaveDisplay.java\
+	DeviceWaveDisplayBeanInfo.java\
+	DeviceWaveDisplayCustomizer.java\
+	DeviceWaveParameters.java\
+	DeviceWaveParametersBeanInfo.java\
+	DimensionData.java\
+	DispatchData.java\
+	DispatchEditor.java\
+	DisplayData.java\
+	DisplayNci.java\
+	DisplayTags.java\
+	DoubleArray.java\
+	DoubleData.java\
+	Editor.java\
+	EventData.java\
+	ExprEditor.java\
+	FloatArray.java\
+	FloatData.java\
+	FrameRepository.java\
+	FunctionData.java\
+	IdentData.java\
+	IllegalDataException.java\
+	IntArray.java\
+	IntData.java\
+	LabeledExprEditor.java\
+	LoadPulse.java \
+	MethodData.java\
+	MethodEditor.java\
+	ModifyData.java\
+	NidData.java\
+	Node.java\
+	NodeBeanInfo.java\
+	NodeDataPropertyEditor.java\
+	NodeDisplayData.java\
+	NodeDisplayNci.java\
+	NodeDisplayTags.java\
+	NodeEditor.java\
+	NodeId.java\
+	NodeInfo.java\
+	NodeInfoPropertyEditor.java\
+	NodeModifyData.java\
+	OctaArray.java\
+	OctaData.java\
+	ParameterData.java\
+	ParameterEditor.java\
+	PathData.java\
+	ProcedureData.java\
+	ProcedureEditor.java\
+	ProgramData.java\
+	ProgramEditor.java\
+	PythonEditor.java\
+	QuadArray.java\
+	QuadData.java\
+	RangeData.java\
+	RangeEditor.java\
+	RemoteTree.java\
+	RoutineData.java\
+	RoutineEditor.java\
+	ShortArray.java\
+	ShortData.java\
+	SignalData.java\
+	SlopeData.java\
+	StringArray.java\
+	StringData.java\
+	SyntaxException.java\
+	TaskEditor.java\
+	Tree.java\
+	TreeDialog.java\
+	TreeNode.java\
+	UnsupportedDataException.java\
+	WindowData.java\
+	WindowEditor.java\
+	WithErrorData.java\
+	WithUnitsData.java\
+	jTraverser.java\
+	DeviceApplyBeanInfo.java \
+	DeviceButtonsBeanInfo.java \
+	DeviceButtonsCustomizer.java \
+	DeviceCancelBeanInfo.java \
+	DeviceChannelBeanInfo.java \
+	DeviceChannelCustomizer.java \
+	DeviceChoiceBeanInfo.java \
+	DeviceChoiceCustomizer.java \
+	DeviceDispatchBeanInfo.java \
+	DeviceFieldBeanInfo.java \
+	DeviceFieldCustomizer.java \
+	DeviceLabelBeanInfo.java \
+	DeviceLabelCustomizer.java \
+	DeviceOkBeanInfo.java \
+	DeviceResetBeanInfo.java \
+	DeviceTableBeanInfo.java \
+	DeviceTableCustomizer.java \
+	DeviceWaveBeanInfo.java \
+	DeviceWaveCustomizer.java \
+	FloatArrayEditor.java \
+	IntArrayEditor.java \
+	LoadFile.java \
+	StoreFile.java
+
+GIFS = \
+	DeviceApply.gif    \
+	DeviceButtons.gif  \
+	DeviceCancel.gif   \
+	DeviceChannel.gif  \
+	DeviceChoice.gif   \
+	DeviceDispatch.gif \
+	DeviceField.gif    \
+	DeviceOk.gif       \
+	DeviceReset.gif    \
+	DeviceSetup.gif    \
+	action.gif         \
+	axis.gif           \
+	compound.gif       \
+	device.gif         \
+	dispatch.gif       \
+	numeric.gif        \
+	signal.gif         \
+	structure.gif      \
+	subtree.gif        \
+	task.gif           \
+	text.gif           \
+	window.gif
+
+@USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
 
 # Build the final jar
-TRAV_GIFS = $(addprefix ${srcdir}/java/,$(TRAV_GIF))
-java_SRC = $(TRAV_SRC) $(TOOLS_SRC) $(MDS_SRC)
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=.class) $(TRAV_GIF)
-JSCH = $(abs_srcdir)/jsch-0.1.54.jar
-MANIFEST = $(abs_builddir)/JTMANIFEST.mf
-@USE_JARS_DIR_FALSE@java_DATA = jTraverser2.jar
-@USE_JARS_DIR_FALSE@java_JAVA = $(addprefix ${srcdir}/java/,$(java_SRC) debug/DEBUG.java)
-
-# Giant list of source files follow
-TRAV_SRC = \
-	jtraverser/*.java\
-	jtraverser/dialogs/*.java\
-	jtraverser/editor/*.java\
-	jtraverser/editor/usage/*.java\
-	devices/*.java\
-	devices/acq4xx/*.java\
-	jTraverser.java
-
-TOOLS_SRC = jtraverser/tools/*.java
-MDS_SRC = \
-	mds/*.java\
-	mds/data/*.java\
-	mds/data/descriptor/*.java\
-	mds/data/descriptor_a/*.java\
-	mds/data/descriptor_apd/*.java\
-	mds/data/descriptor_r/*.java\
-	mds/data/descriptor_r/function/*.java\
-	mds/data/descriptor_s/*.java\
-	mds/mdslib/*.java\
-	mds/mdsip/*.java
-
-TRAV_GIF = jtraverser/*.gif
+@USE_JARS_DIR_FALSE@java_DATA = jTraverser.jar DeviceBeans.jar 
 all: all-am
 
 .SUFFIXES:
@@ -549,9 +709,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign javatraverser2/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/jtraverser/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign javatraverser2/Makefile
+	  $(AUTOMAKE) --foreign java/jtraverser/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -675,12 +835,58 @@ uninstall-javaDATA:
 	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
-tags TAGS:
 
-ctags CTAGS:
+ID: $(am__tagged_files)
+	$(am__define_uniq_tagged_files); mkid -fID $$unique
+tags: tags-am
+TAGS: tags
 
-cscope cscopelist:
+tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	set x; \
+	here=`pwd`; \
+	$(am__define_uniq_tagged_files); \
+	shift; \
+	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
+	  test -n "$$unique" || unique=$$empty_fix; \
+	  if test $$# -gt 0; then \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      "$$@" $$unique; \
+	  else \
+	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
+	      $$unique; \
+	  fi; \
+	fi
+ctags: ctags-am
 
+CTAGS: ctags
+ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
+	$(am__define_uniq_tagged_files); \
+	test -z "$(CTAGS_ARGS)$$unique" \
+	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
+	     $$unique
+
+GTAGS:
+	here=`$(am__cd) $(top_builddir) && pwd` \
+	  && $(am__cd) $(top_srcdir) \
+	  && gtags -i $(GTAGS_ARGS) "$$here"
+cscopelist: cscopelist-am
+
+cscopelist-am: $(am__tagged_files)
+	list='$(am__tagged_files)'; \
+	case "$(srcdir)" in \
+	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
+	  *) sdir=$(subdir)/$(srcdir) ;; \
+	esac; \
+	for i in $$list; do \
+	  if test -f "$$i"; then \
+	    echo "$(subdir)/$$i"; \
+	  else \
+	    echo "$$sdir/$$i"; \
+	  fi; \
+	done >> $(top_builddir)/cscope.files
+
+distclean-tags:
+	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -756,7 +962,7 @@ clean-am: clean-generic clean-javaJAVA mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic
+distclean-am: clean-am distclean-generic distclean-tags
 
 dvi: dvi-am
 
@@ -820,45 +1026,40 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binSCRIPTS install-data install-data-am \
-	install-dist_javaDATA install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-javaDATA install-javaJAVA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am uninstall-binSCRIPTS uninstall-dist_javaDATA \
+.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
+	clean-javaJAVA cscopelist-am ctags ctags-am distclean \
+	distclean-generic distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binSCRIPTS \
+	install-data install-data-am install-dist_javaDATA install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-javaDATA \
+	install-javaJAVA install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags tags-am uninstall uninstall-am \
+	uninstall-binSCRIPTS uninstall-dist_javaDATA \
 	uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
-@MINGW_FALSE@jTraverser2: $(srcdir)/jTraverser2.template
+@MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
 @MINGW_FALSE@	cp $< $@
 
-$(JAVAROOT):
-	mkdir -p $@
-
-$(JSCH):
-	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
-
-$(MANIFEST): $(srcdir)/JTMANIFEST.mf
-	cp -f $< $@ &&\
-	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
-
-@USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/javatraverser2/jTraverser2.jar
+@USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/javatraverser/jTraverser.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-# Build the final jar
-@USE_JARS_DIR_FALSE@jTraverser2.jar: $(JSCH) $(MANIFEST)
-@USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$(abs_builddir)/jTraverser2.jar" &&\
-@USE_JARS_DIR_FALSE@	cd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	$(JAR) u0fm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF)
+@USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/javatraverser/DeviceBeans.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@jTraverser.jar: $(GIFS) classjava.stamp
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
+
+@USE_JARS_DIR_FALSE@DeviceBeans.jar: classjava.stamp $(GIFS) DeviceBeansManifest.mf
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	  $(JAR) c0fm $@ ${srcdir}/DeviceBeansManifest.mf \
+@USE_JARS_DIR_FALSE@	  $(java_JAVA:.java=*.class) $(addprefix -C ${srcdir} ,$(GIFS))
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

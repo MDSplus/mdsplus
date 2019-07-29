@@ -89,7 +89,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = mdsobjects/java
+subdir = java/mdsobjects
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -501,7 +501,7 @@ uiddir = @uiddir@
 CLEANFILES = $(java_DATA) MDSplus/*.class
 AM_JAVACFLAGS = $(JAVAVERSION)
 JAVAROOT = $(builddir)
-CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/java/jscope/jScope.jar
 javadir = $(exec_prefix)/java/classes
 # Giant list of source files follow
 SOURCES = MDSplus/Action.java\
@@ -580,9 +580,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__confi
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign mdsobjects/java/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/mdsobjects/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign mdsobjects/java/Makefile
+	  $(AUTOMAKE) --foreign java/mdsobjects/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -855,7 +855,7 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .PRECIOUS: Makefile
 
 
-@USE_JARS_DIR_TRUE@mdsobjects.jar : @JARS_DIR@/mdsobjects/java/mdsobjects.jar
+@USE_JARS_DIR_TRUE@mdsobjects.jar : @JARS_DIR@/java/mdsobjects/mdsobjects.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@mdsobjects.jar: classjava.stamp

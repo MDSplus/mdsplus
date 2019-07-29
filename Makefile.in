@@ -11,17 +11,17 @@ VPATH=@srcdir@
 
 
 JAVA_JAR = \
-	   javascope \
-	   javatraverser \
-	   javatraverser2 \
-	   javadispatcher \
-	   javadevices \
-	   javaclient \
-	   mdsobjects/java
+	   java/jscope \
+	   java/jtraverser \
+	   java/jtraverser2 \
+	   java/jdispatcher \
+	   java/jdevices \
+	   java/mdsplus \
+	   java/mdsobjects
 
 JAVA_APS = \
 	   javamds \
-	   javatraverser2/java/mds/mdslib
+	   java/jtraverser2/java/mds/mdslib
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \

@@ -18,7 +18,7 @@ endif
 
 #$(INSTALL) -D $< $@
 # Build the class files
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/javascope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar
 
 SOURCES = \
 	ActionData.java\

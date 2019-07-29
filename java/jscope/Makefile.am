@@ -36,10 +36,10 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 if USE_JARS_DIR
-jScope.jar: @JARS_DIR@/javascope/jScope.jar
+jScope.jar: @JARS_DIR@/java/jscope/jScope.jar
 	cp $< $@
 
-WaveDisplay.jar: @JARS_DIR@/javascope/WaveDisplay.jar
+WaveDisplay.jar: @JARS_DIR@/java/jscope/WaveDisplay.jar
 	cp $< $@
 
 else

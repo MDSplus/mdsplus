@@ -1,7 +1,7 @@
 CLEANFILES = $(java_DATA) MDSplus/*.class
 AM_JAVACFLAGS = $(JAVAVERSION)
 JAVAROOT = $(builddir)
-CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/javascope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=.:$(top_builddir)/java/jscope/jScope.jar
 javadir = $(exec_prefix)/java/classes
 # Giant list of source files follow
 
@@ -71,7 +71,7 @@ java_DATA = mdsobjects.jar
 
 if USE_JARS_DIR
 
-mdsobjects.jar : @JARS_DIR@/mdsobjects/java/mdsobjects.jar
+mdsobjects.jar : @JARS_DIR@/java/mdsobjects/mdsobjects.jar
 	cp $< $@
 
 else
