@@ -488,6 +488,10 @@ uiddir = @uiddir@
 
 # common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)
 MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
@@ -501,7 +505,7 @@ java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR) 
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template

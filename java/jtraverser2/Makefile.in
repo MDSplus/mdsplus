@@ -488,6 +488,10 @@ uiddir = @uiddir@
 
 # common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)
 MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
@@ -498,15 +502,12 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
 java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
-MDSPLUSAPI = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI)
+CLASSPATH_ENV = CLASSPATH=$(MDSPLUS_API_JAR)
 @MINGW_FALSE@bin_SCRIPTS = jTraverser2
-
-# Create the shell script that runs the program
 @MINGW_TRUE@bin_SCRIPTS = traverser2.bat
 @MINGW_FALSE@EXTRA_DIST = jTraverser2.template
 SOURCE = \
@@ -853,9 +854,9 @@ maven-clean:
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(MDSPLUSAPI) "$(abs_builddir)/jTraverser2.jar" &&\
-@USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser" >>MANIFEST.MF &&\
-@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR) $(GIF_SRC)
+@USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
+@USE_JARS_DIR_FALSE@	cp -f $(MDSPLUS_API_JAR) $@ &&\
+@USE_JARS_DIR_FALSE@	$(JAR) umf $(MANIFEST) $@ $(java_JAR) $(GIF_SRC)
 @MINGW_FALSE@jTraverser2: $(srcdir)/jTraverser2.template
 @MINGW_FALSE@	cp $< $@
 

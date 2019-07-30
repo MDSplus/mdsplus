@@ -142,7 +142,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT)$${CLASSPATH:+":$$CLASSPATH"}
 am__installdirs = "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"
 am__java_sources = $(java_JAVA)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
@@ -174,7 +173,7 @@ am__uninstall_files_from_dir = { \
   }
 DATA = $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -482,18 +481,31 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+
+# common makefile for java packages
+MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)
-CLASSES = $(JAVAROOT)/MdsPlus/*.class
+MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
+docsdir = $(exec_prefix)/java/classes/docs
+CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
+java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
+java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
+java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+java_srcdir = $(srcdir)
 java_DATA = MdsPlus.jar
-@USE_JARS_DIR_FALSE@java_JAVA = MdsPlus.java MdsPlusEvent.java \
-@USE_JARS_DIR_FALSE@	MdsPlusEvents.java MdsPlusException.java \
-@USE_JARS_DIR_FALSE@	MdsPlusDescriptor.java
-CLEANFILES = $(CLASSES) MdsPlus.jar
+CLASSPATH_ENV = 
+SOURCE = MdsPlus/*.java
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -513,6 +525,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -649,7 +662,7 @@ maintainer-clean-generic:
 	@echo "it deletes files that may require special tools to rebuild."
 clean: clean-am
 
-clean-am: clean-generic clean-javaJAVA clean-local mostlyclean-am
+clean-am: clean-generic clean-javaJAVA mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -716,29 +729,49 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	clean-local cscopelist-am ctags-am distclean distclean-generic \
-	distdir dvi dvi-am html html-am info info-am install \
-	install-am install-data install-data-am install-dvi \
-	install-dvi-am install-exec install-exec-am install-html \
-	install-html-am install-info install-info-am install-javaDATA \
-	install-javaJAVA install-man install-pdf install-pdf-am \
-	install-ps install-ps-am install-strip installcheck \
-	installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
-	pdf-am ps ps-am tags-am uninstall uninstall-am \
-	uninstall-javaDATA uninstall-javaJAVA
+	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-javaDATA install-javaJAVA \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
+	uninstall uninstall-am uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
+
+$(JAVAROOT):
+	mkdir -p $@
+
+$(MANIFEST):
+	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+.PHONY: maven-build maven-tests maven-clean
+
+maven-build:
+	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
+	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
+	$(MVN) package -DskipTests
+
+maven-deploy: mdsplus-api.jar
+	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
+
+maven-tests:
+	$(TEST_ENVIRONMENT) $(MVN) test
+
+maven-clean:
+	$(MVN) clean
 
 @USE_JARS_DIR_TRUE@MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@MdsPlus.jar: classjava.stamp
-@USE_JARS_DIR_FALSE@	$(JAR) c0f $@ $(CLASSES)
-
-clean-local:
-	-rm -rf $(JAVAROOT)/MdsPlus
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_CLS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

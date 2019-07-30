@@ -3,7 +3,7 @@ include ../Makefile.am
 java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR) 
 
 if USE_JARS_DIR
 

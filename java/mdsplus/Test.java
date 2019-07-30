@@ -1,6 +1,6 @@
 import MdsPlus.*;
   import java.awt.*;
-  public class Class1 {
+  public class Test {
 	  public static void main(String[] args) {
 	  try {
 	          float xValue[];

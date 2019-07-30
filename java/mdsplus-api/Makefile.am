@@ -8,7 +8,7 @@ java_DATA = mdsplus-api.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCH)
 
 $(JSCH):
-	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
+	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
 if USE_JARS_DIR
 
@@ -20,7 +20,7 @@ else
 mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(JSCH) $@ &&\
-	$(JAR) umf MANIFEST.MF $@ $(java_JAR)
+	$(JAR) umf $(MANIFEST) $@ $(java_JAR)
 
 endif
 
@@ -35,3 +35,4 @@ SOURCE =\
  mds/data/descriptor_s/*.java\
  mds/mdslib/*.java\
  mds/mdsip/*.java
+

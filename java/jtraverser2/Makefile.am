@@ -1,12 +1,10 @@
 include ../Makefile.am
 
-MDSPLUSAPI=$(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI)
+CLASSPATH_ENV = CLASSPATH=$(MDSPLUS_API_JAR)
 
 if USE_JARS_DIR
 
@@ -21,13 +19,12 @@ jTraverser2.jar: classjava.stamp $(MANIFEST.MF)
 	@ echo "Creating JAR: $@ ...";\
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
-	cp -f $(MDSPLUSAPI) "$(abs_builddir)/jTraverser2.jar" &&\
-	echo "Main-Class: jTraverser" >>MANIFEST.MF &&\
-	$(JAR) umf MANIFEST.MF $@ $(java_JAR) $(GIF_SRC)
+	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
+	cp -f $(MDSPLUS_API_JAR) $@ &&\
+	$(JAR) umf $(MANIFEST) $@ $(java_JAR) $(GIF_SRC)
 
 endif
 
-# Create the shell script that runs the program
 if MINGW
 bin_SCRIPTS = traverser2.bat
 else

@@ -486,6 +486,10 @@ uiddir = @uiddir@
 
 # common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)
 MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
@@ -803,7 +807,7 @@ maven-clean:
 	$(MVN) clean
 
 $(JSCH):
-	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
+	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
 @USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
@@ -811,7 +815,7 @@ $(JSCH):
 @USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	cp -f $(JSCH) $@ &&\
-@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR)
+@USE_JARS_DIR_FALSE@	$(JAR) umf $(MANIFEST) $@ $(java_JAR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

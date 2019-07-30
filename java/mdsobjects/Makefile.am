@@ -1,15 +1,8 @@
-JAVAROOT = $(builddir)
-CLEANFILES = $(java_CLS) $(java_DATA)
-CLASSPATH_ENV = CLASSPATH=../jscope/jScope.jar
+include ../Makefile.am
 
-javadir = $(exec_prefix)/java/classes
-
-java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
-
+java_srcdir = $(srcdir)
 java_DATA = mdsobjects.jar
-java_JAVA = $(wildcard $(srcdir)/MDSplus/*.java)
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
@@ -23,3 +16,5 @@ mdsobjects.jar: classjava.stamp
 	$(JAR) cf $@ $(java_JAR)
 
 endif
+
+SOURCE = MDSplus/*.java

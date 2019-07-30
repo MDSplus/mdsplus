@@ -4,7 +4,7 @@ EXTRA_DIST = *.form
 
 java_srcdir = $(srcdir)
 java_DATA = jDevices.jar
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jtraverser/jTraverser.jar
+CLASSPATH_ENV = CLASSPATH=$(JTRAVERSER_JAR)
 
 if USE_JARS_DIR
 

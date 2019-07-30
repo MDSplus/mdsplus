@@ -1,8 +1,8 @@
-JAVAROOT = $(builddir)
-CLASSES = $(JAVAROOT)/MdsPlus/*.class
+include ../Makefile.am
 
-javadir = $(exec_prefix)/java/classes
+java_srcdir = $(srcdir)
 java_DATA = MdsPlus.jar
+CLASSPATH_ENV =
 
 if USE_JARS_DIR
 
@@ -11,18 +11,9 @@ MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 
 else
 
-java_JAVA = MdsPlus.java
-java_JAVA += MdsPlusEvent.java
-java_JAVA += MdsPlusEvents.java
-java_JAVA += MdsPlusException.java
-java_JAVA += MdsPlusDescriptor.java
-
 MdsPlus.jar: classjava.stamp
-	$(JAR) c0f $@ $(CLASSES)
+	$(JAR) cf $@ $(java_CLS)
 
 endif
 
-CLEANFILES = $(CLASSES) MdsPlus.jar
-
-clean-local:
-	-rm -rf $(JAVAROOT)/MdsPlus
+SOURCE = MdsPlus/*.java

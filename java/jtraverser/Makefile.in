@@ -490,6 +490,10 @@ uiddir = @uiddir@
 
 # common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)
 MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
@@ -506,7 +510,7 @@ java_srcdir = $(srcdir)
 java_resdir = $(srcdir)
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
 @MINGW_FALSE@bin_SCRIPTS = jTraverser
 @MINGW_TRUE@bin_SCRIPTS = traverser.bat
 SOURCE = *.java

@@ -7,7 +7,7 @@ java_srcdir = $(srcdir)
 java_resdir = $(srcdir)
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
