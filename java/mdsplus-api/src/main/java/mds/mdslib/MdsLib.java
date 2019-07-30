@@ -27,22 +27,22 @@ public final class MdsLib extends Mds{
 
 	private static final String loadLibraryFromJar(final String libname) {
 		if(libname == null || libname.length() < 3) return "The libname has to be at least 3 characters long: " + libname;
-		final boolean is64bit = System.getenv("ProgramFiles(x86)") != null;
+		final boolean is64bit = System.getProperty("sun.arch.data.model").equals("64");
 		final boolean isWin = System.getProperty("os.name", "").startsWith("Win");
 		final String suffix = isWin ? ".dll" : ".so";
 		final String libfileroot = isWin ? libname : "lib" + libname;
 		final String libfilename = libfileroot + suffix;
 		final String libinjar = "/lib/" + (is64bit ? "amd64" : "x86") + '/' + libfilename;
 		File libpath = new File(System.getProperty("user.dir"), libfilename);
-		if(libpath.exists()) try{
+		if(libpath.exists()) try{ // load from PWD
 			System.load(libpath.getAbsolutePath());
 			return MdsLib.testLib(libname);
-		}catch(final UnsatisfiedLinkError exc){/**/}
-		try{
+		}catch(final UnsatisfiedLinkError exc){/*next*/}
+		try{ // load from PATH/LD_LIBRARY_PATH
 			System.loadLibrary(libname);
 			return MdsLib.testLib(libname);
-		}catch(final UnsatisfiedLinkError exc){/**/}
-		try{
+		}catch(final UnsatisfiedLinkError exc){/*next*/}
+		try{ // load from jar if available
 			@SuppressWarnings("resource")
 			final InputStream is = MdsLib.class.getResourceAsStream(libinjar);
 			if(is == null) throw new FileNotFoundException("File '" + libinjar + "' was not found inside JAR: " + libinjar);
