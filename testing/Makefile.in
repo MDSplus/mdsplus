@@ -967,12 +967,12 @@ clean-local:
 # //////////////////////////////////////////////////////////////////////////// #
 
 TEST_DIRS ?= \
-			   python/MDSplus/tests \
-			   mdsshr/testing \
-			   mdslib/testing \
-			   mdsobjects/cpp/testing \
-			   tditest/testing
-#               testing/selftest
+	python/MDSplus/tests \
+	mdsshr/testing \
+	mdslib/testing \
+	mdsobjects/cpp/testing \
+	tditest/testing
+#	testing/selftest
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 

@@ -975,13 +975,13 @@ $(java_DATA): classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
 @USE_JARS_DIR_FALSE@	  $(MKDIR_P) $(builddir)/jdocs; \
 @USE_JARS_DIR_FALSE@	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
-@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
+@USE_JARS_DIR_FALSE@	  $(JAR) cf $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
 @USE_JARS_DIR_FALSE@		     -C $(srcdir) colors1.tbl; \
 @USE_JARS_DIR_FALSE@	  rm -Rf $(builddir)/jdocs;
 
 @USE_JARS_DIR_FALSE@WaveDisplay.jar:
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
+@USE_JARS_DIR_FALSE@	  $(JAR) cf $@ $(WAVEDISPLAY_CLASS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

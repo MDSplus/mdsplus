@@ -47,13 +47,13 @@ jScope.jar: colors1.tbl
 	@ echo "Creating JAR: $@ ..."; \
 	  $(MKDIR_P) $(builddir)/jdocs; \
 	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
-	  $(JAR) c0f $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
+	  $(JAR) cf $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
 		     -C $(srcdir) colors1.tbl; \
 	  rm -Rf $(builddir)/jdocs;
 
 WaveDisplay.jar:
 	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) c0f $@ $(WAVEDISPLAY_CLASS)
+	  $(JAR) cf $@ $(WAVEDISPLAY_CLASS)
 
 dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
 COMMON_CLASS = $(COMMON_SRC:.java=*.class)
