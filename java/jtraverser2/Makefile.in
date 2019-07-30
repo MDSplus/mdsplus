@@ -833,7 +833,7 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 	cp -f $< $@ &&\
 	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
 
-@USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/javatraverser2/jTraverser2.jar
+@USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 # Build the final jar

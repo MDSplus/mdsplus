@@ -29,10 +29,10 @@ GIFS = $(wildcard *.gif)
 
 if USE_JARS_DIR
 
-jTraverser.jar : @JARS_DIR@/javatraverser/jTraverser.jar
+jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
 	cp $< $@
 
-DeviceBeans.jar : @JARS_DIR@/javatraverser/DeviceBeans.jar
+DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 	cp $< $@
 
 else

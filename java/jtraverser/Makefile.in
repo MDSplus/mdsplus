@@ -876,10 +876,10 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 @MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
 @MINGW_FALSE@	cp $< $@
 
-@USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/javatraverser/jTraverser.jar
+@USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/javatraverser/DeviceBeans.jar
+@USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@jTraverser.jar: classjava.stamp

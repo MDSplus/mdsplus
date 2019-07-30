@@ -40,7 +40,7 @@ $(MANIFEST): $(srcdir)/JTMANIFEST.mf
 
 if USE_JARS_DIR
 
-jTraverser2.jar : @JARS_DIR@/javatraverser2/jTraverser2.jar
+jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 	cp $< $@
 
 else

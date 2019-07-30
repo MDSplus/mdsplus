@@ -493,20 +493,7 @@ CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
 javadir = $(exec_prefix)/java/classes
 java_DATA = jDispatcher.jar
 dist_java_DATA = jDispatcher.properties
-@USE_JARS_DIR_FALSE@java_JAVA = Action.java ActionServer.java \
-@USE_JARS_DIR_FALSE@	Balancer.java InfoServer.java \
-@USE_JARS_DIR_FALSE@	jDispatcherIp.java jDispatcher.java \
-@USE_JARS_DIR_FALSE@	jDispatchMonitor.java jServer.java \
-@USE_JARS_DIR_FALSE@	KillServer.java MdsActionsMonitor.java \
-@USE_JARS_DIR_FALSE@	MdsHelper.java MdsIp.java \
-@USE_JARS_DIR_FALSE@	MdsMonitorEvent.java MdsMonitor.java \
-@USE_JARS_DIR_FALSE@	MdsServerEvent.java MdsServer.java \
-@USE_JARS_DIR_FALSE@	MdsServerListener.java MonitorEvent.java \
-@USE_JARS_DIR_FALSE@	MonitorListener.java NetworkEvent.java \
-@USE_JARS_DIR_FALSE@	NetworkListener.java ServerEvent.java \
-@USE_JARS_DIR_FALSE@	ServerInfo.java Server.java \
-@USE_JARS_DIR_FALSE@	ServerListener.java ServerShowDialog.java \
-@USE_JARS_DIR_FALSE@	ServersInfoPanel.java
+@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard *.java)
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template

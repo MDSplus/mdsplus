@@ -32,7 +32,7 @@ $(MANIFEST):
 
 if USE_JARS_DIR
 
-mdsplus-api.jar : @JARS_DIR@/mdsplus/mdsplus-api.jar
+mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 	cp $< $@
 
 else

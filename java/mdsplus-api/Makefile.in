@@ -789,7 +789,7 @@ $(JSCH):
 $(MANIFEST):
 	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">$@
 
-@USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/mdsplus/mdsplus-api.jar
+@USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 # Build the final jar

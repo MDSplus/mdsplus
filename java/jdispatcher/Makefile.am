@@ -16,33 +16,7 @@ jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 
 else
 
-java_JAVA = Action.java
-java_JAVA += ActionServer.java
-java_JAVA += Balancer.java
-java_JAVA += InfoServer.java
-java_JAVA += jDispatcherIp.java
-java_JAVA += jDispatcher.java
-java_JAVA += jDispatchMonitor.java
-java_JAVA += jServer.java
-java_JAVA += KillServer.java
-java_JAVA += MdsActionsMonitor.java
-java_JAVA += MdsHelper.java
-java_JAVA += MdsIp.java
-java_JAVA += MdsMonitorEvent.java
-java_JAVA += MdsMonitor.java
-java_JAVA += MdsServerEvent.java
-java_JAVA += MdsServer.java
-java_JAVA += MdsServerListener.java
-java_JAVA += MonitorEvent.java
-java_JAVA += MonitorListener.java
-java_JAVA += NetworkEvent.java
-java_JAVA += NetworkListener.java
-java_JAVA += ServerEvent.java
-java_JAVA += ServerInfo.java
-java_JAVA += Server.java
-java_JAVA += ServerListener.java
-java_JAVA += ServerShowDialog.java
-java_JAVA += ServersInfoPanel.java
+java_JAVA = $(wildcard *.java)
 
 jDispatcher.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \

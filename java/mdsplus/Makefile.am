@@ -6,7 +6,7 @@ java_DATA = MdsPlus.jar
 
 if USE_JARS_DIR
 
-MdsPlus.jar : @JARS_DIR@/javaclient/MdsPlus.jar
+MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 	cp $< $@
 
 else

@@ -731,7 +731,7 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 .PRECIOUS: Makefile
 
 
-@USE_JARS_DIR_TRUE@MdsPlus.jar : @JARS_DIR@/javaclient/MdsPlus.jar
+@USE_JARS_DIR_TRUE@MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@MdsPlus.jar: classjava.stamp
