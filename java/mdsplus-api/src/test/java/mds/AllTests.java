@@ -39,10 +39,10 @@ public class AllTests{
 	}
 
 	public static Mds setUpBeforeClass() throws Exception {
-                final String hostinfo = AllTests.local ? "localhost" : AllTests.host;
+		final String hostinfo = AllTests.local ? "localhost" : AllTests.host;
 		final boolean use_ssh = AllTests.local ? false :  AllTests.ssh;
-                final int use_port = use_ssh ? 22 :  AllTests.port;
-		final Provider provider = new Provider(AllTests.host, use_port, AllTests.user, use_ssh);
+		final int use_port = use_ssh ? 22 :  AllTests.port;
+		final Provider provider = new Provider(hostinfo, use_port, AllTests.user, use_ssh);
 		Mds mds = null;
 		if(!AllTests.mdsip) mds = new MdsLib();
 		else{

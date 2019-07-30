@@ -5,6 +5,7 @@ import debug.DEBUG;
 import mds.MdsException;
 import mds.TCL;
 import mds.TreeShr.SegmentInfo;
+import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
@@ -266,6 +267,22 @@ public abstract class NODE<T>extends Descriptor_S<T>{
 		if(rec_dtype == DTYPE.NID || rec_dtype == DTYPE.PATH) return ((NODE<?>)this.getNciRecord()).followReference();
 		return this;
 	}
+
+	/**
+	 * Returns the data of the Descriptor, i.e. DATA($THIS) but avoids mdslib due to tree ref
+	 *
+	 * @throws MdsException
+	 **/
+	@Override
+	public Descriptor<?> getData(final DTYPE... omits) {
+		try{
+			if(this instanceof DATA) return this;
+			return this.getData_(omits);
+		}catch(final MdsException e){
+			return Missing.NEW;
+		}
+	}
+
 
 	public final Descriptor<?> getNci(final String name) throws MdsException {
 		if(DEBUG.D) System.err.println(name);
