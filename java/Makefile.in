@@ -13,7 +13,6 @@
 # PARTICULAR PURPOSE.
 
 @SET_MAKE@
-
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -89,7 +88,7 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-subdir = java/mdsobjects
+subdir = java
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -142,38 +141,11 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-am__installdirs = "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT)$${CLASSPATH:+":$$CLASSPATH"}
+am__installdirs = "$(DESTDIR)$(javadir)"
 am__java_sources = $(java_JAVA)
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = f=`echo $$p | sed -e 's|^.*/||'`;
-am__install_max = 40
-am__nobase_strip_setup = \
-  srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*|]/\\\\&/g'`
-am__nobase_strip = \
-  for p in $$list; do echo "$$p"; done | sed -e "s|$$srcdirstrip/||"
-am__nobase_list = $(am__nobase_strip_setup); \
-  for p in $$list; do echo "$$p $$p"; done | \
-  sed "s| $$srcdirstrip/| |;"' / .*\//!s/ .*/ ./; s,\( .*\)/[^/]*$$,\1,' | \
-  $(AWK) 'BEGIN { files["."] = "" } { files[$$2] = files[$$2] " " $$1; \
-    if (++n[$$2] == $(am__install_max)) \
-      { print $$2, files[$$2]; n[$$2] = 0; files[$$2] = "" } } \
-    END { for (dir in files) print dir, files[dir] }'
-am__base_list = \
-  sed '$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;$$!N;s/\n/ /g' | \
-  sed '$$!N;$$!N;$$!N;$$!N;s/\n/ /g'
-am__uninstall_files_from_dir = { \
-  test -z "$$files" \
-    || { test ! -d "$$dir" && test ! -f "$$dir" && test ! -r "$$dir"; } \
-    || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
-         $(am__cd) "$$dir" && rm -f $$files; }; \
-  }
-DATA = $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -498,14 +470,10 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
 java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
-java_srcdir = $(srcdir)
-java_DATA = mdsobjects.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
-SOURCE = MDSplus/*.java
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -514,9 +482,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/mdsobjects/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign java/mdsobjects/Makefile
+	  $(AUTOMAKE) --foreign java/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -525,7 +493,6 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -564,27 +531,6 @@ uninstall-javaJAVA:
 
 clean-javaJAVA:
 	-rm -f *.class classjava.stamp
-install-javaDATA: $(java_DATA)
-	@$(NORMAL_INSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	if test -n "$$list"; then \
-	  echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
-	  $(MKDIR_P) "$(DESTDIR)$(javadir)" || exit 1; \
-	fi; \
-	for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  echo "$$d$$p"; \
-	done | $(am__base_list) | \
-	while read files; do \
-	  echo " $(INSTALL_DATA) $$files '$(DESTDIR)$(javadir)'"; \
-	  $(INSTALL_DATA) $$files "$(DESTDIR)$(javadir)" || exit $$?; \
-	done
-
-uninstall-javaDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
-	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
-	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
 tags TAGS:
 
 ctags CTAGS:
@@ -624,9 +570,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile classjava.stamp $(DATA)
+all-am: Makefile classjava.stamp
 installdirs:
-	for dir in "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
+	for dir in "$(DESTDIR)$(javadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -680,7 +626,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-javaDATA install-javaJAVA
+install-data-am: install-javaJAVA
 
 install-dvi: install-dvi-am
 
@@ -724,7 +670,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-javaDATA uninstall-javaJAVA
+uninstall-am: uninstall-javaJAVA
 
 .MAKE: install-am install-strip
 
@@ -733,12 +679,12 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 	dvi-am html html-am info info-am install install-am \
 	install-data install-data-am install-dvi install-dvi-am \
 	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-javaDATA install-javaJAVA \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
-	uninstall uninstall-am uninstall-javaDATA uninstall-javaJAVA
+	install-info install-info-am install-javaJAVA install-man \
+	install-pdf install-pdf-am install-ps install-ps-am \
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
+	uninstall-am uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
@@ -766,13 +712,6 @@ maven-tests:
 
 maven-clean:
 	$(MVN) clean
-
-@USE_JARS_DIR_TRUE@mdsobjects.jar : @JARS_DIR@/java/mdsobjects/mdsobjects.jar
-@USE_JARS_DIR_TRUE@	cp $< $@
-
-@USE_JARS_DIR_FALSE@mdsobjects.jar: classjava.stamp
-@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

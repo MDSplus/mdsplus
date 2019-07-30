@@ -1,5 +1,5 @@
 # common makefile for java packages
-MVN=mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
+MVN=mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
 
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
@@ -30,11 +30,12 @@ $(MANIFEST):
 .PHONY: maven-build maven-tests maven-clean
 
 maven-build:
-	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
-	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
 	$(MVN) package -DskipTests
 
-maven-deploy: mdsplus-api.jar
+
+maven-deploy:
+	pushd $(top_srcdir)/java &&( find . -name pom.xml -exec /bin/sh -c 'mkdir -p $(dirname $1);cp -f $0 $1' '{}' $(abs_builddir)'{}' ';'; popd)&&\
+	$(MVN) versions:set -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION) -DartifactId=* &&\
 	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
 
 maven-tests:

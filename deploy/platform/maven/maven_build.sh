@@ -17,7 +17,7 @@ if [ ! -z $PUBLISHDIR ]
 then mkdir -p "$PUBLISHDIR"
 fi
 
-MVN="mvn -Dmaven.repo.local=/workspace/.m2/repository -DoutputDirectory=\$PWD -DsourceDirectory=/mdsplus-api/src"
+MVN="mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=/maven"
 if [ ! -z $KEYS ]
 then MVN="$MVN -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml"
 fi
@@ -44,12 +44,12 @@ fi
 docker run -t -a stdout -a stderr --cidfile="${WORKSPACE}/docker-cid" \
    -e MVN \
    -e "HOME=/workspace" \
-   $(volume "${SRCDIR}/java/mdsplus-api" /mdsplus-api) \
+   $(volume "${SRCDIR}/java" /maven) \
    $(volume "${WORKSPACE}" /workspace) \
    $(volume "${KEYS}" /sign_keys) \
    ${DOCKERIMAGE} /bin/sh -c "
-	mkdir -p /workspace/mdsplus-api
-	cd /workspace/mdsplus-api
-	cat /mdsplus-api/pom.xml|sed -e 's/0.0.0-SNAPSHOT/${RELEASE_VERSION}/'>./pom.xml&&
+	rm -rf /workspace/maven;mkdir -p /workspace/maven;cd /workspace/maven
+	find /maven -name pom.xml -exec /bin/sh -c 'mkdir -p "\$"(dirname /workspace"\$"0);cp "\$"0 /workspace"\$"0' '{}' ';'
+        ${MVN} versions:set -DgenerateBackupPoms=false -DnewVersion=${RELEASE_VERSION} -DartifactId=* &&\
 	${MVN} $MVNGOAL
 "
