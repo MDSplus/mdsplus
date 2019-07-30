@@ -17,7 +17,15 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
 
+if USE_JARS_DIR
+
+java_JAVA =
+
+else
+
 java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+
+endif
 
 $(JAVAROOT):
 	mkdir -p $@

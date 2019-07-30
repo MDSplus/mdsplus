@@ -499,7 +499,8 @@ GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
-java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+@USE_JARS_DIR_TRUE@java_JAVA = 
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = mdsplus-api.jar
