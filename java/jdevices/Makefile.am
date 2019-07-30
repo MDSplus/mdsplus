@@ -1,14 +1,16 @@
 EXTRA_DIST = *.form
-CLEANFILES = $(java_DATA)
-
 JAVAROOT = $(builddir)
+CLEANFILES = $(java_CLS) $(java_DATA)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jtraverser/jTraverser.jar
+
 javadir = $(exec_prefix)/java/classes
 
-# Giant list of source files follow
-SOURCES = $(wildcard *.java)
+java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
+java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
+java_JAR = $(java_SRC:.java=*.class)
 
 java_DATA = jDevices.jar
+java_JAVA = $(wildcard $(srcdir)/*.java)
 
 if USE_JARS_DIR
 
@@ -17,12 +19,8 @@ jDevices.jar: @JARS_DIR@/java/jdevices/jDevices.jar
 
 else
 
-java_JAVA = $(SOURCES)
-
-# Build the final jar
-
 jDevices.jar: classjava.stamp
-	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+	@ echo "Creating JAR: $@ ..."; \
+	$(JAR) cf $@ $(java_JAR)
 
 endif
-

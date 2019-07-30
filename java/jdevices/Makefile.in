@@ -135,6 +135,7 @@ AM_V_at = $(am__v_at_@AM_V@)
 am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
 am__v_at_0 = @
 am__v_at_1 = 
+SOURCES =
 DIST_SOURCES =
 am__can_run_installinfo = \
   case $$AM_UPDATE_INFO_DIR in \
@@ -172,24 +173,6 @@ am__uninstall_files_from_dir = { \
   }
 DATA = $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-# Read a list of newline-separated strings from the standard input,
-# and print each of them once, without duplicates.  Input order is
-# *not* preserved.
-am__uniquify_input = $(AWK) '\
-  BEGIN { nonempty = 0; } \
-  { items[$$0] = 1; nonempty = 1; } \
-  END { if (nonempty) { for (i in items) print i; }; } \
-'
-# Make sure the list of sources is unique.  This is necessary because,
-# e.g., the same source file might be shared among _SOURCES variables
-# for different programs/libraries.
-am__define_uniq_tagged_files = \
-  list='$(am__tagged_files)'; \
-  unique=`for i in $$list; do \
-    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
-  done | $(am__uniquify_input)`
-ETAGS = etags
-CTAGS = ctags
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
@@ -499,15 +482,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 EXTRA_DIST = *.form
-CLEANFILES = $(java_DATA)
 JAVAROOT = $(builddir)
+CLEANFILES = $(java_CLS) $(java_DATA)
 CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jtraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
-
-# Giant list of source files follow
-SOURCES = $(wildcard *.java)
+java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
+java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
+java_JAR = $(java_SRC:.java=*.class)
 java_DATA = jDevices.jar
-@USE_JARS_DIR_FALSE@java_JAVA = $(SOURCES)
+java_JAVA = $(wildcard $(srcdir)/*.java)
 all: all-am
 
 .SUFFIXES:
@@ -590,58 +573,12 @@ uninstall-javaDATA:
 	@list='$(java_DATA)'; test -n "$(javadir)" || list=; \
 	files=`for p in $$list; do echo $$p; done | sed -e 's|^.*/||'`; \
 	dir='$(DESTDIR)$(javadir)'; $(am__uninstall_files_from_dir)
+tags TAGS:
 
-ID: $(am__tagged_files)
-	$(am__define_uniq_tagged_files); mkid -fID $$unique
-tags: tags-am
-TAGS: tags
+ctags CTAGS:
 
-tags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
-	set x; \
-	here=`pwd`; \
-	$(am__define_uniq_tagged_files); \
-	shift; \
-	if test -z "$(ETAGS_ARGS)$$*$$unique"; then :; else \
-	  test -n "$$unique" || unique=$$empty_fix; \
-	  if test $$# -gt 0; then \
-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	      "$$@" $$unique; \
-	  else \
-	    $(ETAGS) $(ETAGSFLAGS) $(AM_ETAGSFLAGS) $(ETAGS_ARGS) \
-	      $$unique; \
-	  fi; \
-	fi
-ctags: ctags-am
+cscope cscopelist:
 
-CTAGS: ctags
-ctags-am: $(TAGS_DEPENDENCIES) $(am__tagged_files)
-	$(am__define_uniq_tagged_files); \
-	test -z "$(CTAGS_ARGS)$$unique" \
-	  || $(CTAGS) $(CTAGSFLAGS) $(AM_CTAGSFLAGS) $(CTAGS_ARGS) \
-	     $$unique
-
-GTAGS:
-	here=`$(am__cd) $(top_builddir) && pwd` \
-	  && $(am__cd) $(top_srcdir) \
-	  && gtags -i $(GTAGS_ARGS) "$$here"
-cscopelist: cscopelist-am
-
-cscopelist-am: $(am__tagged_files)
-	list='$(am__tagged_files)'; \
-	case "$(srcdir)" in \
-	  [\\/]* | ?:[\\/]*) sdir="$(srcdir)" ;; \
-	  *) sdir=$(subdir)/$(srcdir) ;; \
-	esac; \
-	for i in $$list; do \
-	  if test -f "$$i"; then \
-	    echo "$(subdir)/$$i"; \
-	  else \
-	    echo "$$sdir/$$i"; \
-	  fi; \
-	done >> $(top_builddir)/cscope.files
-
-distclean-tags:
-	-rm -f TAGS ID GTAGS GRTAGS GSYMS GPATH tags
 
 distdir: $(DISTFILES)
 	@srcdirstrip=`echo "$(srcdir)" | sed 's/[].[^$$\\*]/\\\\&/g'`; \
@@ -717,7 +654,7 @@ clean-am: clean-generic clean-javaJAVA mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
-distclean-am: clean-am distclean-generic distclean-tags
+distclean-am: clean-am distclean-generic
 
 dvi: dvi-am
 
@@ -779,18 +716,17 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 
 .MAKE: install-am install-strip
 
-.PHONY: CTAGS GTAGS TAGS all all-am check check-am clean clean-generic \
-	clean-javaJAVA cscopelist-am ctags ctags-am distclean \
-	distclean-generic distclean-tags distdir dvi dvi-am html \
-	html-am info info-am install install-am install-data \
-	install-data-am install-dvi install-dvi-am install-exec \
-	install-exec-am install-html install-html-am install-info \
-	install-info-am install-javaDATA install-javaJAVA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am tags tags-am uninstall \
-	uninstall-am uninstall-javaDATA uninstall-javaJAVA
+.PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
+	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
+	dvi-am html html-am info info-am install install-am \
+	install-data install-data-am install-dvi install-dvi-am \
+	install-exec install-exec-am install-html install-html-am \
+	install-info install-info-am install-javaDATA install-javaJAVA \
+	install-man install-pdf install-pdf-am install-ps \
+	install-ps-am install-strip installcheck installcheck-am \
+	installdirs maintainer-clean maintainer-clean-generic \
+	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
+	uninstall uninstall-am uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
@@ -798,10 +734,9 @@ uninstall-am: uninstall-javaDATA uninstall-javaJAVA
 @USE_JARS_DIR_TRUE@jDevices.jar: @JARS_DIR@/java/jdevices/jDevices.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-# Build the final jar
-
 @USE_JARS_DIR_FALSE@jDevices.jar: classjava.stamp
-@USE_JARS_DIR_FALSE@	$(JAR) c0f $@ $(java_JAVA:.java=*.class)
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -842,7 +842,7 @@ public class TreeManager extends JPanel{
 				TreeManager.this.reportChange();
 			}
 		});
-		String builddate = "unknown";
+		String version = "unknown";
 		try{
 			final Class<jTraverserFacade> clazz = jTraverserFacade.class;
 			final String className = clazz.getSimpleName() + ".class";
@@ -851,14 +851,14 @@ public class TreeManager extends JPanel{
 				final String manifestPath = classPath.substring(0, classPath.lastIndexOf("!") + 1) + "/META-INF/MANIFEST.MF";
 				final Manifest manifest = new Manifest(new URL(manifestPath).openStream());
 				final Attributes attr = manifest.getMainAttributes();
-				builddate = attr.getValue("Build-Date").substring(0, 10);
+				version = attr.getValue("Implementation-Version");
 			}
 		}catch(final Exception e){
 			e.printStackTrace();
 		}
+		this.status.setText(new StringBuilder(64).append("jTaverser started (Version: ").append(version).append(")").toString());
 		this.progress.setLayout(new BorderLayout(0, 0));
 		this.progress.add(this.status, BorderLayout.CENTER);
-		this.status.setText(new StringBuilder(64).append("jTaverser started (Build-Date ").append(builddate).append(")").toString());
 		MdsException.setStatusLabel(this.status);
 		if(MdsLib.lib_loaded == null) this.addMds(new MdsLib().setActive());
 	}

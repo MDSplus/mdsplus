@@ -90,8 +90,6 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
-@MINGW_FALSE@am__append_1 = jTraverser2
-@MINGW_FALSE@am__append_2 = jTraverser2.template
 subdir = java/jtraverser2
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -487,43 +485,36 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = $(am__append_2)
-dist_java_DATA = jTraverser2.jar
-CLEANFILES = $(java_DATA) $(addprefix $(JAVAROOT)/,$(java_JAR) \
-	debug/DEBUG.class) $(am__append_1)
 JAVAROOT = $(builddir)
+CLEANFILES = $(java_CLS) $(java_DATA) $(bin_SCRIPTS)
+CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI)
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
+GIFS_SRC = $(wildcard $(addprefix ${srcdir}/src/main/resources/,$(GIF_SRC)))
+java_SRC = $(subst $(srcdir)/src/main/java/,,$(java_JAVA))
+java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
+java_JAR = $(java_SRC:.java=*.class)
+dist_java_DATA = jTraverser2.jar
+java_DATA = jTraverser2.jar
+java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(SOURCE) debug/DEBUG.java))
+MDSPLUSAPI = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 @MINGW_FALSE@bin_SCRIPTS = jTraverser2
 
 # Create the shell script that runs the program
 @MINGW_TRUE@bin_SCRIPTS = traverser2.bat
+@MINGW_FALSE@EXTRA_DIST = jTraverser2.template
 
-#$(INSTALL) -D $< $@
-# Build the class files
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI):$(JAVAROOT)
-
-# Build the final jar
-TRAV_GIFS = $(wildcard $(addprefix ${srcdir}/src/main/resources/,$(TRAV_GIF)))
-java_SRC = $(subst $(srcdir)/src/main/java/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
-MDSPLUSAPI = $(builddir)/../mdsplus-api/mdsplus-api.jar
-MANIFEST = $(abs_builddir)/JTMANIFEST.mf
-@USE_JARS_DIR_FALSE@java_DATA = jTraverser2.jar
-@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(TRAV_SRC) $(TOOLS_SRC) debug/DEBUG.java))
-
-# Giant list of source files follow
-TRAV_SRC = \
+# list of source files
+SOURCE = \
 	jtraverser/*.java\
 	jtraverser/dialogs/*.java\
 	jtraverser/editor/*.java\
 	jtraverser/editor/usage/*.java\
+	jtraverser/tools/*.java\
 	devices/*.java\
 	jTraverser.java
 
-TOOLS_SRC = jtraverser/tools/*.java
-TRAV_GIF = jtraverser/*.gif
+GIF_SRC = jtraverser/*.gif
 all: all-am
 
 .SUFFIXES:
@@ -823,26 +814,23 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .PRECIOUS: Makefile
 
-@MINGW_FALSE@jTraverser2: $(srcdir)/jTraverser2.template
-@MINGW_FALSE@	cp $< $@
 
 $(JAVAROOT):
 	mkdir -p $@
 
-$(MANIFEST): $(srcdir)/JTMANIFEST.mf
-	cp -f $< $@ &&\
-	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">>$@
-
 @USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-# Build the final jar
-@USE_JARS_DIR_FALSE@jTraverser2.jar: $(MANIFEST)
+@USE_JARS_DIR_FALSE@jTraverser2.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(TRAV_GIFS) $(JAVAROOT)/jtraverser &&\
+@USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(MDSPLUSAPI) "$(abs_builddir)/jTraverser2.jar" &&\
 @USE_JARS_DIR_FALSE@	cd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	$(JAR) ufm "$(abs_builddir)/jTraverser2.jar" $(MANIFEST) $(java_JAR) $(TRAV_GIF)
+@USE_JARS_DIR_FALSE@	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
+@USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser"                   >>MANIFEST.MF &&\
+@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR: debug/DEBUG.class=) $(GIF_SRC)
+@MINGW_FALSE@jTraverser2: $(srcdir)/jTraverser2.template
+@MINGW_FALSE@	cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

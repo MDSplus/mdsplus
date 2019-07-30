@@ -786,17 +786,15 @@ $(JAVAROOT):
 $(JSCH):
 	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
-$(MANIFEST):
-	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">$@
-
 @USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 # Build the final jar
-@USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) $(java_CLS)
-@USE_JARS_DIR_FALSE@	cp -f $(JSCH) "$(abs_builddir)/mdsplus-api.jar" &&\
+@USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) classjava.stamp
+@USE_JARS_DIR_FALSE@	cp -f $(JSCH) $@ &&\
 @USE_JARS_DIR_FALSE@	pushd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	($(JAR) u0f "$(abs_builddir)/mdsplus-api.jar" $(java_JAR) ;	popd)
+@USE_JARS_DIR_FALSE@	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
+@USE_JARS_DIR_FALSE@	($(JAR) umf MANIFEST.MF $@ $(java_JAR) ;	popd)
 
 .PHONY: maven-build maven-tests maven-clean
 

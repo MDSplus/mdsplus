@@ -486,18 +486,18 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVAROOT = $(builddir)
-CLASSES = $(JAVAROOT)/*.class
-JSCOPEJAR = $(top_builddir)/java/jscope/jScope.jar
-JTRAVERSERJAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPEJAR):$(JTRAVERSERJAR)
+CLEANFILES = $(java_CLS) $(java_DATA) $(bin_SCRIPTS)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
 javadir = $(exec_prefix)/java/classes
-java_DATA = jDispatcher.jar
+java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
+java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
+java_JAR = $(java_SRC:.java=*.class)
 dist_java_DATA = jDispatcher.properties
-@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard *.java)
+java_DATA = jDispatcher.jar
+java_JAVA = $(wildcard $(srcdir)/*.java)
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
-CLEANFILES = $(CLASSES) jDispatcher.jar $(bin_SCRIPTS)
 all: all-am
 
 .SUFFIXES:
@@ -803,7 +803,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 @USE_JARS_DIR_FALSE@jDispatcher.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	  $(JAR) c0f $@ $(CLASSES)
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR)
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@

@@ -24,9 +24,11 @@ java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
 java_JAR = $(java_SRC:.java=*.class)
 
-SOURCES = *.java
-GIFS = $(wildcard *.gif)
+GIFS = $(subst $(srcdir)/,,$(wildcard ${srcdir}/*.gif))
+java_DATA = jTraverser.jar DeviceBeans.jar
+java_JAVA = $(wildcard $(srcdir)/*.java)
 
+# Build the final jar
 if USE_JARS_DIR
 
 jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
@@ -37,13 +39,10 @@ DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 
 else
 
-# Build the final jar
-java_DATA = jTraverser.jar DeviceBeans.jar
-java_JAVA = $(wildcard $(addprefix $(srcdir)/,$(SOURCES) debug/DEBUG.java))
-
 jTraverser.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
-	$(JAR) cf $@ $(java_JAR) $(addprefix -C ${srcdir} ,$(GIFS))
+	echo $(JAR) cf $@ $(java_JAR) $(addprefix -C $(srcdir) ,$(GIFS)); \
+	$(JAR) cf $@ $(java_JAR) $(addprefix -C $(srcdir) ,$(GIFS))
 
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ..."; \

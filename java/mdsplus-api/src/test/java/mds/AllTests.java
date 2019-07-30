@@ -20,17 +20,15 @@ public class AllTests{
 	private static boolean			mdslib		= true;
 	private static boolean			mdsip		= true;
 	private static boolean			local		= true;
-	private static final boolean	use_ssh		= local ? false : true;
-	private static final boolean	remote_win	= false;
-	private static final boolean	local_win	= System.getProperty("os.name").startsWith("Win");
-	// System.getenv("test_mdsip") == null ? true :
-	// Integer.valueOf(System.getenv("test_mdsip")).intValue() != 0;
-	public static final int			port		= AllTests.use_ssh ? 22 : 8000;
-	public static final String		tree		= "test";
-	public static final String		treepath	= (AllTests.local ? AllTests.local_win : AllTests.remote_win) ? "C:\\Temp" : "/tmp";
-	private static final String		user		= AllTests.local ? "user" : "cloud";
-	private static final String		host		= AllTests.local ? "localhost" : "mds-data-1";										// "gatezero.rzg.mpg.de"; // "gate.rzg.mpg.de"; //
+	private static final boolean		ssh		= true;
+	private static final boolean		remote_win	= false;
+	private static final boolean		local_win	= System.getProperty("os.name").startsWith("Win");
+	private static final int		port		= 8000;
+	private static final String		treepath	= (AllTests.local ? AllTests.local_win : AllTests.remote_win) ? "C:\\Temp" : "/tmp";
+	private static final String		user		= System.getProperty("user.name");
+	private static final String		host		= System.getenv("MDSIP_SERVER");
 	private static final String		killcmd		= AllTests.local_win ? "taskkill /im mdsip.exe /F" : "kill -s 9 $pidof mdsip";
+	public static final String		tree		= "test";
 	static{// clean up test files
 		if(!AllTests.mdslib) MdsLib.lib_loaded = "use disabled";
 		if(AllTests.mdsip && AllTests.local) try{
@@ -41,7 +39,10 @@ public class AllTests{
 	}
 
 	public static Mds setUpBeforeClass() throws Exception {
-		final Provider provider = new Provider(AllTests.host, AllTests.port, AllTests.user, AllTests.use_ssh);
+                final String hostinfo = AllTests.local ? "localhost" : AllTests.host;
+		final boolean use_ssh = AllTests.local ? false :  AllTests.ssh;
+                final int use_port = use_ssh ? 22 :  AllTests.port;
+		final Provider provider = new Provider(AllTests.host, use_port, AllTests.user, use_ssh);
 		Mds mds = null;
 		if(!AllTests.mdsip) mds = new MdsLib();
 		else{

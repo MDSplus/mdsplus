@@ -26,10 +26,6 @@ $(JAVAROOT):
 $(JSCH):
 	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
-$(MANIFEST):
-	date -u "+Built-Date: %Y-%m-%d %H:%M:%S">$@
-
-
 if USE_JARS_DIR
 
 mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
@@ -41,10 +37,11 @@ java_DATA = mdsplus-api.jar
 java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(MDS_SRC) debug/DEBUG.java))
 
 # Build the final jar
-mdsplus-api.jar: $(JSCH) $(java_CLS)
-	cp -f $(JSCH) "$(abs_builddir)/mdsplus-api.jar" &&\
+mdsplus-api.jar: $(JSCH) classjava.stamp
+	cp -f $(JSCH) $@ &&\
 	pushd $(JAVAROOT) &&\
-	($(JAR) u0f "$(abs_builddir)/mdsplus-api.jar" $(java_JAR) ;	popd)
+	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
+	($(JAR) umf MANIFEST.MF $@ $(java_JAR) ;	popd)
 
 endif
 
