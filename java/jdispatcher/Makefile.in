@@ -177,7 +177,7 @@ am__can_run_installinfo = \
 am__java_sources = $(java_JAVA)
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -485,23 +485,31 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+
+# common makefile for java packages
+MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
 JAVAROOT = $(builddir)
-CLEANFILES = $(java_CLS) $(java_DATA) $(bin_SCRIPTS)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
+MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
-java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
+docsdir = $(exec_prefix)/java/classes/docs
+CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
+java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
+java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-java_JAVA = $(wildcard $(srcdir)/*.java)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
 @MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
 @MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
+SOURCE = *.java
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -521,6 +529,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -797,6 +806,30 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .PRECIOUS: Makefile
 
+
+$(JAVAROOT):
+	mkdir -p $@
+
+$(MANIFEST):
+	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+.PHONY: maven-build maven-tests maven-clean
+
+maven-build:
+	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
+	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
+	$(MVN) package -DskipTests
+
+maven-deploy: mdsplus-api.jar
+	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
+
+maven-tests:
+	$(TEST_ENVIRONMENT) $(MVN) test
+
+maven-clean:
+	$(MVN) clean
 
 @USE_JARS_DIR_TRUE@jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 @USE_JARS_DIR_TRUE@	cp $< $@

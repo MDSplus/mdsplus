@@ -1,27 +1,11 @@
-MVN=mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
-
-EXTRA_DIST =
-dist_java_DATA = mdsplus-api.jar
-CLEANFILES = $(java_DATA) $(addprefix $(JAVAROOT)/,$(java_JAR) debug/DEBUG.class)
-
-JAVAROOT = $(builddir)
-javadir = $(exec_prefix)/java/classes
-docsdir = $(exec_prefix)/java/classes/docs
-
-#$(INSTALL) -D $< $@
-# Build the class files
-CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
-
-
-# Build the final jar
-java_SRC = $(subst $(srcdir)/src/main/java/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
+include ../Makefile.am
 
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 
-$(JAVAROOT):
-	mkdir -p $@
+java_srcdir = $(srcdir)/src/main/java
+dist_java_DATA = mdsplus-api.jar
+java_DATA = mdsplus-api.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCH)
 
 $(JSCH):
 	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
@@ -33,20 +17,14 @@ mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 
 else
 
-java_DATA = mdsplus-api.jar
-java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(MDS_SRC) debug/DEBUG.java))
-
-# Build the final jar
-mdsplus-api.jar: $(JSCH) classjava.stamp
+mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
+	@ echo "Creating JAR: $@ ...";\
 	cp -f $(JSCH) $@ &&\
-	pushd $(JAVAROOT) &&\
-	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
-	($(JAR) umf MANIFEST.MF $@ $(java_JAR) ;	popd)
+	$(JAR) umf MANIFEST.MF $@ $(java_JAR)
 
 endif
 
-# lists of source files
-MDS_SRC =\
+SOURCE =\
  mds/*.java\
  mds/data/*.java\
  mds/data/descriptor/*.java\
@@ -57,20 +35,3 @@ MDS_SRC =\
  mds/data/descriptor_s/*.java\
  mds/mdslib/*.java\
  mds/mdsip/*.java
-
-.PHONY: maven-build maven-tests maven-clean
-
-maven-build:
-	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
-	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
-	$(MVN) package -DskipTests &&\
-	cp target/mdsplus-api-${RELEASE_VERSION}-jar-with-dependencies.jar mdsplus-api.jar
-
-maven-deploy: mdsplus-api.jar
-	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
-
-maven-tests:
-	$(TEST_ENVIRONMENT) $(MVN) test
-
-maven-clean:
-	$(MVN) clean

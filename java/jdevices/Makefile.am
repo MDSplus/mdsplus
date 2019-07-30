@@ -1,16 +1,10 @@
+include ../Makefile.am
+
 EXTRA_DIST = *.form
-JAVAROOT = $(builddir)
-CLEANFILES = $(java_CLS) $(java_DATA)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jtraverser/jTraverser.jar
 
-javadir = $(exec_prefix)/java/classes
-
-java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
-
+java_srcdir = $(srcdir)
 java_DATA = jDevices.jar
-java_JAVA = $(wildcard $(srcdir)/*.java)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jtraverser/jTraverser.jar
 
 if USE_JARS_DIR
 
@@ -24,3 +18,5 @@ jDevices.jar: classjava.stamp
 	$(JAR) cf $@ $(java_JAR)
 
 endif
+
+SOURCE = *.java

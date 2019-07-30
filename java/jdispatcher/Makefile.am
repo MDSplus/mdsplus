@@ -1,16 +1,9 @@
-JAVAROOT = $(builddir)
-CLEANFILES = $(java_CLS) $(java_DATA) $(bin_SCRIPTS)
-CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
+include ../Makefile.am
 
-javadir = $(exec_prefix)/java/classes
-
-java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
-
+java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-java_JAVA = $(wildcard $(srcdir)/*.java)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar:$(top_builddir)/java/jtraverser/jTraverser.jar
 
 if USE_JARS_DIR
 
@@ -35,3 +28,4 @@ endif
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@
 
+SOURCE = *.java

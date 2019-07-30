@@ -177,7 +177,7 @@ am__can_run_installinfo = \
 am__java_sources = $(java_JAVA)
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -485,40 +485,44 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+
+# common makefile for java packages
+MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
 JAVAROOT = $(builddir)
-CLEANFILES = $(java_CLS) $(java_DATA) $(bin_SCRIPTS)
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI)
+MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-GIFS_SRC = $(wildcard $(addprefix ${srcdir}/src/main/resources/,$(GIF_SRC)))
-java_SRC = $(subst $(srcdir)/src/main/java/,,$(java_JAVA))
+CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
+java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
+java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+MDSPLUSAPI = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(SOURCE) debug/DEBUG.java))
-MDSPLUSAPI = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
+CLASSPATH_ENV = CLASSPATH=$(MDSPLUSAPI)
 @MINGW_FALSE@bin_SCRIPTS = jTraverser2
 
 # Create the shell script that runs the program
 @MINGW_TRUE@bin_SCRIPTS = traverser2.bat
 @MINGW_FALSE@EXTRA_DIST = jTraverser2.template
-
-# list of source files
 SOURCE = \
-	jtraverser/*.java\
-	jtraverser/dialogs/*.java\
-	jtraverser/editor/*.java\
-	jtraverser/editor/usage/*.java\
-	jtraverser/tools/*.java\
-	devices/*.java\
-	jTraverser.java
+ jtraverser/*.java\
+ jtraverser/dialogs/*.java\
+ jtraverser/editor/*.java\
+ jtraverser/editor/usage/*.java\
+ jtraverser/tools/*.java\
+ devices/*.java\
+ jTraverser.java
 
 GIF_SRC = jtraverser/*.gif
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -538,6 +542,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -818,17 +823,39 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 $(JAVAROOT):
 	mkdir -p $@
 
+$(MANIFEST):
+	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+.PHONY: maven-build maven-tests maven-clean
+
+maven-build:
+	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
+	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
+	$(MVN) package -DskipTests
+
+maven-deploy: mdsplus-api.jar
+	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
+
+maven-tests:
+	$(TEST_ENVIRONMENT) $(MVN) test
+
+maven-clean:
+	$(MVN) clean
+
 @USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_FALSE@jTraverser2.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@:PHONY $(MANIFEST.MF)
+
+@USE_JARS_DIR_FALSE@jTraverser2.jar: classjava.stamp $(MANIFEST.MF)
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(MDSPLUSAPI) "$(abs_builddir)/jTraverser2.jar" &&\
-@USE_JARS_DIR_FALSE@	cd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
-@USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser"                   >>MANIFEST.MF &&\
-@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR: debug/DEBUG.class=) $(GIF_SRC)
+@USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser" >>MANIFEST.MF &&\
+@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR) $(GIF_SRC)
 @MINGW_FALSE@jTraverser2: $(srcdir)/jTraverser2.template
 @MINGW_FALSE@	cp $< $@
 

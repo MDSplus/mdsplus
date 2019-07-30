@@ -175,7 +175,7 @@ am__uninstall_files_from_dir = { \
   }
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -483,28 +483,25 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+
+# common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
-EXTRA_DIST = 
-dist_java_DATA = mdsplus-api.jar
-CLEANFILES = $(java_DATA) $(addprefix $(JAVAROOT)/,$(java_JAR) debug/DEBUG.class)
 JAVAROOT = $(builddir)
+MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-
-#$(INSTALL) -D $< $@
-# Build the class files
-CLASSPATH_ENV = CLASSPATH=$(JSCH):$(JAVAROOT)
-
-# Build the final jar
-java_SRC = $(subst $(srcdir)/src/main/java/,,$(java_JAVA))
+CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
+java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
+java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
-@USE_JARS_DIR_FALSE@java_DATA = mdsplus-api.jar
-@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(srcdir)/src/main/java/,$(MDS_SRC) debug/DEBUG.java))
-
-# lists of source files
-MDS_SRC = \
+java_srcdir = $(srcdir)/src/main/java
+dist_java_DATA = mdsplus-api.jar
+java_DATA = mdsplus-api.jar
+CLASSPATH_ENV = CLASSPATH=$(JSCH)
+SOURCE = \
  mds/*.java\
  mds/data/*.java\
  mds/data/descriptor/*.java\
@@ -519,7 +516,7 @@ MDS_SRC = \
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -539,6 +536,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -783,26 +781,17 @@ uninstall-am: uninstall-dist_javaDATA uninstall-javaDATA \
 $(JAVAROOT):
 	mkdir -p $@
 
-$(JSCH):
-	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
-
-@USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
-@USE_JARS_DIR_TRUE@	cp $< $@
-
-# Build the final jar
-@USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) classjava.stamp
-@USE_JARS_DIR_FALSE@	cp -f $(JSCH) $@ &&\
-@USE_JARS_DIR_FALSE@	pushd $(JAVAROOT) &&\
-@USE_JARS_DIR_FALSE@	echo "Implementation-Version: $(RELEASE_VERSION)">MANIFEST.MF &&\
-@USE_JARS_DIR_FALSE@	($(JAR) umf MANIFEST.MF $@ $(java_JAR) ;	popd)
+$(MANIFEST):
+	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
 
 .PHONY: maven-build maven-tests maven-clean
 
 maven-build:
 	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
 	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
-	$(MVN) package -DskipTests &&\
-	cp target/mdsplus-api-${RELEASE_VERSION}-jar-with-dependencies.jar mdsplus-api.jar
+	$(MVN) package -DskipTests
 
 maven-deploy: mdsplus-api.jar
 	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
@@ -812,6 +801,17 @@ maven-tests:
 
 maven-clean:
 	$(MVN) clean
+
+$(JSCH):
+	wget -O $(JSCH) http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
+
+@USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
+@USE_JARS_DIR_TRUE@	cp $< $@
+
+@USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
+@USE_JARS_DIR_FALSE@	cp -f $(JSCH) $@ &&\
+@USE_JARS_DIR_FALSE@	$(JAR) umf MANIFEST.MF $@ $(java_JAR)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -179,7 +179,7 @@ am__can_run_installinfo = \
 am__java_sources = $(java_JAVA)
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -487,30 +487,34 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-EXTRA_DIST = servlet-2_3-fcs-classfiles.zip $(am__append_2)
-CLEANFILES = $(java_DATA) $(am__append_1)
-dist_java_DATA = jTraverser.jar DeviceBeans.jar
+
+# common makefile for java packages
+MVN = mvn -Dmaven.repo.local=/workspace/m2-repo -DoutputDirectory=$(abs_builddir)/target -DsourceDirectory=$(abs_srcdir)/src
 JAVAROOT = $(builddir)
+MANIFEST = $(JAVAROOT)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-@MINGW_FALSE@bin_SCRIPTS = jTraverser
-
-# Create the shell script that runs the program
-@MINGW_TRUE@bin_SCRIPTS = traverser.bat
-
-#$(INSTALL) -D $< $@
-# Build the class files
-CLASSPATH_ENV = CLASSPATH=$(builddir)/../jscope/jScope.jar
-java_SRC = $(subst $(srcdir)/,,$(java_JAVA))
+CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS) \
+	$(am__append_1)
+GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(java_SRC:.java=*.class)
-GIFS = $(subst $(srcdir)/,,$(wildcard ${srcdir}/*.gif))
+java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
+java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
+EXTRA_DIST = servlet-2_3-fcs-classfiles.zip $(am__append_2)
+java_srcdir = $(srcdir)
+java_resdir = $(srcdir)
+dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-java_JAVA = $(wildcard $(srcdir)/*.java)
+CLASSPATH_ENV = CLASSPATH=$(top_builddir)/java/jscope/jScope.jar
+@MINGW_FALSE@bin_SCRIPTS = jTraverser
+@MINGW_TRUE@bin_SCRIPTS = traverser.bat
+SOURCE = *.java
+GIF_SRC = *.gif
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am  $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -530,6 +534,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
+$(srcdir)/../Makefile.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -806,10 +811,30 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .PRECIOUS: Makefile
 
-@MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
-@MINGW_FALSE@	cp $< $@
 
-# Build the final jar
+$(JAVAROOT):
+	mkdir -p $@
+
+$(MANIFEST):
+	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
+	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+.PHONY: maven-build maven-tests maven-clean
+
+maven-build:
+	cp -f $(abs_srcdir)/pom.xml ./pom.xml &&\
+	$(MVN) versions:set -DnewVersion=${RELEASE_VERSION} &&\
+	$(MVN) package -DskipTests
+
+maven-deploy: mdsplus-api.jar
+	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
+
+maven-tests:
+	$(TEST_ENVIRONMENT) $(MVN) test
+
+maven-clean:
+	$(MVN) clean
 
 @USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
@@ -818,14 +843,16 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@jTraverser.jar: classjava.stamp
-@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	echo $(JAR) cf $@ $(java_JAR) $(addprefix -C $(srcdir) ,$(GIFS)); \
-@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR) $(addprefix -C $(srcdir) ,$(GIFS))
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
+@USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/ &&\
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR) $(GIF_SRC)
 
 @USE_JARS_DIR_FALSE@DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
-@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	cp -f jTraverser.jar $@ && \
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
+@USE_JARS_DIR_FALSE@	cp -f jTraverser.jar $@ &&\
 @USE_JARS_DIR_FALSE@	$(JAR) ufm $@ ${srcdir}/DeviceBeansManifest.mf
+@MINGW_FALSE@$(bin_SCRIPTS): $(srcdir)/jTraverser.template
+@MINGW_FALSE@	cp $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
