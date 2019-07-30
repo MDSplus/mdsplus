@@ -12,11 +12,44 @@ volume() {
   then echo "-v $(realpath ${1}):${2}"
   fi
 }
-MVN="mvn -Dmaven.repo.local=/workspace/m2-repo -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DoutputDirectory=/workspace/target -DsourceDirectory=/mdsplus-api/src"
-docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/docker-cid \
+
+if [ ! -z $PUBLISHDIR ]
+then mkdir -p "$PUBLISHDIR"
+fi
+
+MVN="mvn -Dmaven.repo.local=/workspace/.m2/repository -DoutputDirectory=\$PWD -DsourceDirectory=/mdsplus-api/src"
+if [ ! -z $KEYS ]
+then MVN="$MVN -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml"
+fi
+
+# setup goal
+if [ "$TEST" = "yes" ]
+then MVNGOAL=
+else MVNGOAL="-DskipTests"
+fi
+if [ -z $KEYS ]
+then MVNGOAL="$MVNGOAL -Dgpg.skip"
+fi
+if   [ "$PUBLISH" = "yes" ]
+then
+ if [ -z $KEYS ]
+ then MVNGOAL="$MVNGOAL install"
+ else MVNGOAL="$MVNGOAL deploy"
+ fi
+elif [ "$RELEASE" = "yes" ]
+then MVNGOAL="$MVNGOAL package"
+else MVNGOAL="$MVNGOAL test"
+fi
+
+docker run -t -a stdout -a stderr --cidfile="${WORKSPACE}/docker-cid" \
    -e MVN \
    -e "HOME=/workspace" \
-   -v ${SRCDIR}/java/mdsplus-api:/mdsplus-api \
-   -v ${WORKSPACE}:/workspace \
+   $(volume "${SRCDIR}/java/mdsplus-api" /mdsplus-api) \
+   $(volume "${WORKSPACE}" /workspace) \
    $(volume "${KEYS}" /sign_keys) \
-   ${DOCKERIMAGE} /bin/sh -c "cd /workspace;cp /mdsplus-api/pom.xml .;${MVN} versions:set -DnewVersion=${RELEASE_VERSION}&&${MVN} -DskipTests deploy"
+   ${DOCKERIMAGE} /bin/sh -c "
+	mkdir -p /workspace/mdsplus-api
+	cd /workspace/mdsplus-api
+	cat /mdsplus-api/pom.xml|sed -e 's/0.0.0-SNAPSHOT/${RELEASE_VERSION}/'>./pom.xml&&
+	${MVN} $MVNGOAL
+"
