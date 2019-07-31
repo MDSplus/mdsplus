@@ -716,9 +716,20 @@ class Tree(object):
                                               _C.c_int32(int(shot)),
                                               _C.c_int32(1)))
 
-    def dir(self):
+    def dirTop(self):
         """list descendants of top"""
         self.top.dir()
+
+    def dir(self):
+        """Return current default dir
+        """
+        self.default.dir()
+        #print('Fernandos return current default dir')
+        #nid=_C.c_int32(0)
+        #_exc.checkStatus(
+        #        _TreeShr._TreeGetDefaultNid(self.ctx,
+        #                                    _C.byref(nid)))
+        #return TreeNode(nid.value,self).dir()
 
     def __dir__(self):
         """used for tab completion"""
