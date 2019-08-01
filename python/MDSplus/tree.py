@@ -716,10 +716,6 @@ class Tree(object):
                                               _C.c_int32(int(shot)),
                                               _C.c_int32(1)))
 
-    def dirTop(self):
-        """list descendants of top"""
-        self.top.dir()
-
     def dir(self):
         """Return current default dir"""
         self.default.dir()
