@@ -1303,6 +1303,7 @@ int _TreeGetNumSegments(void *dbid, int nid, int *num){
 }
 
 static int (*_TdiExecute) () = NULL;
+static int (*_TdiCompile) () = NULL;
 /* checks last segment and trims it down to last written row if necessary */
 static int trim_last_segment(void* dbid, struct descriptor_xd *dim, int filled_rows){
   INIT_TREESUCCESS;
@@ -1366,11 +1367,11 @@ static int trim_last_segment(void* dbid, struct descriptor_xd *dim, int filled_r
       return status;
     }
 fallback: ;
-    status = LibFindImageSymbol_C("TdiShr", "_TdiExecute", &_TdiExecute);
+    status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
     if STATUS_OK {
       STATIC_CONSTANT DESCRIPTOR(expression, "execute('$1[$2 : $2+$3-1]',$1,lbound($1,-1),$2)");
       DESCRIPTOR_LONG(row_d, &filled_rows);
-      status = _TdiExecute(&dbid,&expression,dim,&row_d,dim MDS_END_ARG);
+      status = _TdiCompile(&dbid,&expression,dim,&row_d,dim MDS_END_ARG);
     }
   return status;
 }
