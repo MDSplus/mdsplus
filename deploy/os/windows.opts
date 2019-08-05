@@ -1,1 +1,1 @@
---platform=windows --distname=Windows --dockerimage=mdsplus/docker:windows
+--platform=windows --distname=Windows --dockerimage=mdsplus/builder:windows
