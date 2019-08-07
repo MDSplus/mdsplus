@@ -384,10 +384,10 @@ BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 265388041
 putsegment(segs,-1,data(0:9))
 265389633
-getsegment(segs,0)
-Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
-segs
-Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
+data(getsegment(segs, 0))
+[0,1,2,3,4,5,6,7,8,9]
+data(dim_of(getsegment(segs, 0)))
+[0.,1.,2.,3.,4.,5.,6.,7.,8.,9.]
 TreeWrite('main',_shot)
 265388041
 TreeClose()
