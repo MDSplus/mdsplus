@@ -294,6 +294,7 @@ static char *GetRegistry(const HKEY where, const char *const pathname)
 
 
 EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag __attribute__ ((unused))){
+  if (MdsSandbox()) return MDSplusSANDBOX;
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -342,6 +343,7 @@ static void child_done(int sig   )
 
 EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag)
 {
+  if (MdsSandbox()) return MDSplusSANDBOX;
   char *sh = "/bin/sh";
   pid_t pid, xpid;
   char *cmdstring = MdsDescrToCstring(cmd);

@@ -63,7 +63,8 @@ class MDSplusException(MdsException):
     if message is not None:
         message = str(message)
         if len(message)>0:
-            self.message = "%s:\n%s"%(self.message,message)
+            self.message = "%s:
+%s"%(self.message,message)
     self.severity=self.severities[self.status & 7]
     super(Exception,self).__init__(self.message)
 
@@ -2211,7 +2212,7 @@ MDSplusException.statusDict[265392104] = TreeINVTAG
 
 class TreeNOPATH(TreeException):
   status=265392114
-  message="No 'treename'_path environment variable defined. Cannot locate tree files."
+  message="No 'treename'_path or default_tree_path environment variables defined. Cannot locate tree files."
   msgnam="NOPATH"
 
 MDSplusException.statusDict[265392112] = TreeNOPATH
@@ -2522,6 +2523,14 @@ class MDSplusFATAL(MDSplusException):
   msgnam="FATAL"
 
 MDSplusException.statusDict[65568] = MDSplusFATAL
+
+
+class MDSplusSANDBOX(MDSplusException):
+  status=65578
+  message="Function disabled for security reasons"
+  msgnam="SANDBOX"
+
+MDSplusException.statusDict[65576] = MDSplusSANDBOX
 
 
 class SsException(MDSplusException):
