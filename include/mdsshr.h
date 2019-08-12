@@ -91,7 +91,7 @@ extern int MdsFree1Dx(mdsdsc_xd_t *const dsc, void **const zone);
 extern int MdsMsg(const int status, const char *const fmt, ...);
 extern int MDSQueueEvent(const char *const event, int *const eventid);
 extern int MDSGetEventQueue(const int eventid, const int timeout, int *const data_len, char **const data);
-extern int MdsSandbox();
+extern int MdsSandboxEnabled();
 extern int MdsSerializeDscIn(const char *const in, mdsdsc_xd_t *const out);
 extern int MdsSerializeDscOutZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out,
 	int (*const fixupNid) (),void *const fixupNidArg,

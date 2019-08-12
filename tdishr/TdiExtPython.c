@@ -313,7 +313,7 @@ static inline int is_callable(PyObject *fun, const char* funname, const char* fu
     Py_DecRef(fun);
     return FALSE;
   }
-  if ((strcasecmp("py",funname) == 0) && (MdsSandbox() == 1)) {
+  if ((strcasecmp("py",funname) == 0) && (MdsSandboxEnabled() == 1)) {
     printf("Error, item called '%s' in '%s' is not callable. The py() function is currently disabled\n", funname, fullpath);
     Py_DecRef(fun);
     return FALSE;
@@ -437,7 +437,7 @@ static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,
     }
   } else fprintf(stderr, "Failed getting module tdi_functions\n");
   if (PyErr_Occurred()) PyErr_Print();
-  if ((strcasecmp("py",filename)==0) && (MdsSandbox()==1)) return MDSplusSANDBOX;
+  if ((strcasecmp("py",filename)==0) && (MdsSandboxEnabled()==1)) return MDSplusSANDBOX;
   PyObject *pyFunction = PyObject_GetAttrString(tdi_functions, filename);
   if (!pyFunction) {
     if (PyErr_Occurred()) PyErr_Print();

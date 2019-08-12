@@ -34,7 +34,7 @@ SOURCES = \
         MdsGetSetShotId.c \
         MdsGetStdMsg.c \
         MdsPk.c \
-	MdsSandbox.c \
+        MdsSandbox.c \
         MdsSerialize.c \
         MdsShrThreadSafe.c \
         MdsXdRoutines.c \

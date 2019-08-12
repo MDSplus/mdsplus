@@ -68,7 +68,7 @@ MdsMsg
 MdsPutEnv
 MdsRelease
 MdsReleaseDsc
-MdsSandbox
+MdsSandboxEnabled
 MdsSerializeDscIn
 MdsSerializeDscOut
 MdsSerializeDscOutZ

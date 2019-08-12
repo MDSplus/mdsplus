@@ -30,7 +30,7 @@ MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
 MdsGetCurrentShotId
-MdsSandbox
+MdsSandboxEnabled
 MdsSerializeDscIn
 MdsSerializeDscOut
 MdsSerializeDscOutZ

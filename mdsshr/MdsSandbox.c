@@ -6,6 +6,6 @@ EXPORT void MdsEnableSandbox() {
   sandbox=1;
 }
 
-EXPORT int MdsSandbox() {
+EXPORT int MdsSandboxEnabled() {
   return sandbox;
 }
