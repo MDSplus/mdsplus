@@ -1,1 +1,1 @@
---platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined,thread --dockerimage=mdsplus/docker:fc20 --distname=fc20
+--platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined,thread --dockerimage=mdsplus/builder:fc20 --distname=fc20
