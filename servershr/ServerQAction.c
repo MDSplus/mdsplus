@@ -757,20 +757,26 @@ static int SendReply(SrvJob * job, int replyType, int status_in, int length, cha
     int bytes;
     memset(reply, 0, 60);
     sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
-    bytes = send(sock, reply, 60, MSG_DONTWAIT);
-    if (bytes == 60) {
-      try_again = FALSE;
-      if (length) {
-	bytes = send(sock, msg, length, MSG_DONTWAIT);
-	if (bytes == length)
+    bytes = send(sock, reply, 30, MSG_DONTWAIT);
+    if (bytes == 30) {
+      bytes = send(sock, &reply[30], 30, MSG_DONTWAIT);
+
+      if (bytes == 30) {
+        try_again = FALSE;
+        if (length) {
+	  bytes = send(sock, msg, length, MSG_DONTWAIT);
+	  if (bytes == length)
+	    status = MDSplusSUCCESS;
+        } else
 	  status = MDSplusSUCCESS;
-      } else
-	status = MDSplusSUCCESS;
+      }
     }
     if STATUS_NOT_OK {
-      char* ip = (char*)&job->h.addr;
-      char now[32];Now32(now);
-      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ip[0],ip[1],ip[2],ip[3], job->h.port);
+      if (Debug) {
+        char* ip = (char*)&job->h.addr;
+        char now[32];Now32(now);
+        printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ip[0],ip[1],ip[2],ip[3], job->h.port);
+      }
       RemoveClient(job);
     }
   } while(try_again--);
