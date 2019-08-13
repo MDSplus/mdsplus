@@ -75,6 +75,11 @@ static int BecomeUser(char *remuser, struct descriptor *local_user)
       MdsFree(luser);
       return 0;
     }
+    if (strcmp(luser,"SANDBOX") == 0) {
+      MdsEnableSandbox();
+      free(luser);
+      luser=strdup("nobody");
+    }
     int status = -1;
     const int is_root = remuser && strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
     char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;

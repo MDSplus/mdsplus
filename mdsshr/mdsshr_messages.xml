@@ -45,6 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="SUCCESS"  value="1"  severity="Success"  text="Success"/>
     <status name="ERROR"    value="2"  severity="Error"    text="Error"/>
     <status name="FATAL"    value="4"  severity="Fatal"    text="Fatal"/>
+    <status name="SANDBOX"  value="5"  severity="Error"    text="Function disabled for security reasons"/>
   </facility>
   <facility name="Ss" value="0">
     <status name="SUCCESS"  value="0"  severity="Success" text="Success"/>

@@ -169,7 +169,7 @@ class MDSplusException(MdsException):
     if message is not None:
         message = str(message)
         if len(message)>0:
-            self.message = "%s:\n%s"%(self.message,message)
+            self.message = "%s:%s"%(self.message,message)
     self.severity=self.severities[self.status & 7]
     super(Exception,self).__init__(self.message)
 
