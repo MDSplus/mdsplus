@@ -724,7 +724,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   int msglen;
   int num;
   int nbytes;
-  nbytes = recv(c->reply_sock, reply, 60, 0);
+  nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60) {
     RemoveClient(c, fdactive);
     return;
