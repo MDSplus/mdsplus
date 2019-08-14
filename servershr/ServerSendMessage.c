@@ -724,13 +724,10 @@ static void DoMessage(Client * c, fd_set * fdactive)
   int msglen;
   int num;
   int nbytes;
-  int i;
-  for (i=0;i<2;i++) {
-    nbytes = recv(c->reply_sock, reply+(i*30), 30, MSG_WAITALL);
-    if (nbytes != 30) {
-      RemoveClient(c, fdactive);
-      return;
-    }
+  nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
+  if (nbytes != 60) {
+    RemoveClient(c, fdactive);
+    return;
   }
   num = sscanf(reply, "%d %d %d %d", &jobid, &replyType, &status, &msglen);
   if (num != 4) {
@@ -741,7 +738,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   if (msglen != 0) {
     msg = (char *)malloc(msglen + 1);
     msg[msglen] = 0;
-    nbytes = recv(c->reply_sock, msg, msglen, 0);
+    nbytes = recv(c->reply_sock, msg, msglen, MSG_WAITALL);
     if (nbytes != msglen) {
       free(msg);
       RemoveClient(c, fdactive);
