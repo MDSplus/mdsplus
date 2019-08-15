@@ -1,6 +1,6 @@
 include ../Makefile.inc.am
 
-java_srcdir = $(srcdir)
+java_srcdir = $(srcdir)/src/main/java
 java_DATA = MdsPlus.jar
 CLASSPATH_ENV =
 
