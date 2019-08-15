@@ -540,7 +540,7 @@ uiddir = @uiddir@
 DX_PACKAGE_NAME = mdsobjects_java
 DX_TITLE = MDSplus Java interface
 DX_BRIEF = "MDSplus object oriented interface"
-DX_PAGES = ../MDSplus \
+DX_PAGES = ../src/main/java/MDSplus \
            index.md
 
 DX_EXCLUDE_PAGES = 
