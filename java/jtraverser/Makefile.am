@@ -3,8 +3,8 @@ include ../Makefile.inc.am
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 
 
-java_srcdir = $(srcdir)
-java_resdir = $(srcdir)
+java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)

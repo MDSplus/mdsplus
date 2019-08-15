@@ -505,8 +505,8 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip $(am__append_3)
-java_srcdir = $(srcdir)
-java_resdir = $(srcdir)
+java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
