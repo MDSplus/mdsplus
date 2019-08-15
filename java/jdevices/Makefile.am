@@ -3,6 +3,7 @@ include ../Makefile.inc.am
 EXTRA_DIST = *.form
 
 java_srcdir = $(srcdir)
+java_resdir = $(srcdir)
 java_DATA = jDevices.jar
 CLASSPATH_ENV = CLASSPATH=$(JTRAVERSER_JAR)
 
@@ -15,8 +16,10 @@ else
 
 jDevices.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
+	cp -f $(JAVA_RES) $(JAVAROOT)/;\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
 
 SOURCE = *.java
+RESOURCES = *.form

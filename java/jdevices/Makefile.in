@@ -496,15 +496,17 @@ MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
-GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
 EXTRA_DIST = *.form
 java_srcdir = $(srcdir)
+java_resdir = $(srcdir)
 java_DATA = jDevices.jar
 CLASSPATH_ENV = CLASSPATH=$(JTRAVERSER_JAR)
 SOURCE = *.java
+RESOURCES = *.form
 all: all-am
 
 .SUFFIXES:
@@ -796,6 +798,7 @@ $(MANIFEST):
 
 @USE_JARS_DIR_FALSE@jDevices.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	cp -f $(JAVA_RES) $(JAVAROOT)/;\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
