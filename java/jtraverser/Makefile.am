@@ -19,15 +19,15 @@ DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 
 else
 
-jTraverser.jar: classjava.stamp
+jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(GIFS_SRC) $(JAVAROOT)/ &&\
-	$(JAR) cf $@ -C $(JAVAROOT) .
+	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
+
 
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
-	cp -f jTraverser.jar $@ &&\
-	$(JAR) ufm $@ ${srcdir}/DeviceBeansManifest.mf
+	ln -rsfT ./jTraverser.jar $@
 
 endif
 

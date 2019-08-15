@@ -827,15 +827,14 @@ $(MANIFEST):
 @USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_FALSE@jTraverser.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/ &&\
-@USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
+@USE_JARS_DIR_FALSE@	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
 
 @USE_JARS_DIR_FALSE@DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
-@USE_JARS_DIR_FALSE@	cp -f jTraverser.jar $@ &&\
-@USE_JARS_DIR_FALSE@	$(JAR) ufm $@ ${srcdir}/DeviceBeansManifest.mf
+@USE_JARS_DIR_FALSE@	ln -rsfT ./jTraverser.jar $@
 @MINGW_FALSE@jTraverser: $(srcdir)/jTraverser.template
 @MINGW_FALSE@	cp $< $@
 
