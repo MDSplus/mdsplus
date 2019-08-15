@@ -2,8 +2,8 @@ include ../Makefile.inc.am
 
 EXTRA_DIST = *.form
 
-java_srcdir = $(srcdir)
-java_resdir = $(srcdir)
+java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
 java_DATA = jDevices.jar
 CLASSPATH_ENV = CLASSPATH=$(JTRAVERSER_JAR)
 
