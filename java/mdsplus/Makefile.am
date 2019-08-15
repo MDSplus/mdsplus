@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)
 java_DATA = MdsPlus.jar
@@ -12,7 +12,8 @@ MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 else
 
 MdsPlus.jar: classjava.stamp
-	$(JAR) cf $@ $(java_CLS)
+	@ echo "Creating JAR: $@ ..."; \
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
 

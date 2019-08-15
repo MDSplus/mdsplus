@@ -141,9 +141,6 @@ am__can_run_installinfo = \
     n|no|NO) false;; \
     *) (install-info --version) >/dev/null 2>&1;; \
   esac
-CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(srcdir)/$(JAVAROOT)$${CLASSPATH:+":$$CLASSPATH"}
-am__installdirs = "$(DESTDIR)$(javadir)"
-am__java_sources = $(java_JAVA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
 am__DIST_COMMON = $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -453,24 +450,10 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-
-# common makefile for java packages
 MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
-MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
-JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
-JAVAROOT = $(builddir)
-MANIFEST = $(JAVAROOT)/MANIFEST.MF
-javadir = $(exec_prefix)/java/classes
-docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
-GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
-java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
-@USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
-@USE_JARS_DIR_TRUE@java_JAVA = 
+JAVA_DIRS = mdsplus mdsplus-api jscope jtraverser jtraverser2 mdsobjects jdevices jdispatcher
+all_DIRS = $(addprefix all__, $(JAVA_DIRS)) 
+clean_DIRS = $(addprefix clean__, $(JAVA_DIRS)) 
 all: all-am
 
 .SUFFIXES:
@@ -503,35 +486,6 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
-
-classjava.stamp: $(am__java_sources)
-	@list1='$?'; list2=; if test -n "$$list1"; then \
-	  for p in $$list1; do \
-	    if test -f $$p; then d=; else d="$(srcdir)/"; fi; \
-	    list2="$$list2 $$d$$p"; \
-	  done; \
-	  echo '$(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) '"$$list2"; \
-	  $(CLASSPATH_ENV) $(JAVAC) -d $(JAVAROOT) $(AM_JAVACFLAGS) $(JAVACFLAGS) $$list2; \
-	else :; fi
-	echo timestamp > $@
-install-javaJAVA: classjava.stamp
-	@$(NORMAL_INSTALL)
-	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
-	echo " $(MKDIR_P) '$(DESTDIR)$(javadir)'"; \
-	$(MKDIR_P) "$(DESTDIR)$(javadir)"; \
-	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
-	echo " $(INSTALL_DATA)" "$$@" "'$(DESTDIR)$(javadir)/$$p'"; \
-	$(INSTALL_DATA) "$$@" "$(DESTDIR)$(javadir)"
-
-uninstall-javaJAVA:
-	@$(NORMAL_UNINSTALL)
-	@test -n "$(java_JAVA)" && test -n "$(javadir)" || exit 0; \
-	set x *.class; shift; test "$$1" != "*.class" || exit 0; \
-	echo " ( cd '$(DESTDIR)$(javadir)' && rm -f" "$$@" ")"; \
-	cd "$(DESTDIR)$(javadir)" && rm -f "$$@"
-
-clean-javaJAVA:
-	-rm -f *.class classjava.stamp
 tags TAGS:
 
 ctags CTAGS:
@@ -571,11 +525,8 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile classjava.stamp
+all-am: Makefile
 installdirs:
-	for dir in "$(DESTDIR)$(javadir)"; do \
-	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -598,7 +549,6 @@ install-strip:
 mostlyclean-generic:
 
 clean-generic:
-	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-test -z "$(CONFIG_CLEAN_FILES)" || rm -f $(CONFIG_CLEAN_FILES)
@@ -607,9 +557,7 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
-
-clean-am: clean-generic clean-javaJAVA mostlyclean-am
+clean-am: clean-generic mostlyclean-am
 
 distclean: distclean-am
 	-rm -f Makefile
@@ -627,7 +575,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-javaJAVA
+install-data-am:
 
 install-dvi: install-dvi-am
 
@@ -671,34 +619,25 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-javaJAVA
+uninstall-am:
 
 .MAKE: install-am install-strip
 
-.PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
-	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-javaJAVA install-man \
-	install-pdf install-pdf-am install-ps install-ps-am \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-generic pdf pdf-am ps ps-am tags-am uninstall \
-	uninstall-am uninstall-javaJAVA
+.PHONY: all all-am check check-am clean clean-generic cscopelist-am \
+	ctags-am distclean distclean-generic distdir dvi dvi-am html \
+	html-am info info-am install install-am install-data \
+	install-data-am install-dvi install-dvi-am install-exec \
+	install-exec-am install-html install-html-am install-info \
+	install-info-am install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags-am uninstall uninstall-am
 
 .PRECIOUS: Makefile
 
 
-$(JAVAROOT):
-	mkdir -p $@
-
-$(MANIFEST):
-	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
-	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
-	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
-
-.PHONY: maven-build maven-tests maven-clean
+.PHONY: maven-build maven-tests maven-clean java java_tests
 
 maven-build:
 	$(MVN) package -DskipTests
@@ -713,6 +652,14 @@ maven-tests:
 
 maven-clean:
 	$(MVN) clean
+
+.PHONY: $(all_DIRS) $(clean_DIRS)
+$(all_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all__%=%) all
+all: $(all_DIRS)
+$(clean_DIRS):
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+clean: $(clean_DIRS)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

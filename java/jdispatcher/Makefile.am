@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
@@ -14,14 +14,14 @@ else
 
 jDispatcher.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
-	$(JAR) cf $@ $(java_JAR)
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
 
 if MINGW 
-bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
+bin_SCRIPTS += jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 else
-bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
+bin_SCRIPTS += jDispatcherIp jDispatchMonitor jServer
 EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
 endif
 

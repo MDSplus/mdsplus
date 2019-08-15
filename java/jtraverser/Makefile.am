@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 
@@ -22,7 +22,7 @@ else
 jTraverser.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(GIFS_SRC) $(JAVAROOT)/ &&\
-	$(JAR) cf $@ $(java_JAR) $(GIF_SRC)
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
@@ -32,12 +32,11 @@ DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 endif
 
 if MINGW
-bin_SCRIPTS = traverser.bat
+bin_SCRIPTS += traverser.bat
 else
-bin_SCRIPTS = jTraverser
-CLEANFILES += $(bin_SCRIPTS)
+bin_SCRIPTS += jTraverser
 EXTRA_DIST += jTraverser.template
-$(bin_SCRIPTS): $(srcdir)/jTraverser.template
+jTraverser: $(srcdir)/jTraverser.template
 	cp $< $@
 endif
 

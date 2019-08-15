@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
@@ -13,23 +13,21 @@ jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 
 else
 
-:PHONY $(MANIFEST.MF)
-
-jTraverser2.jar: classjava.stamp $(MANIFEST.MF)
+jTraverser2.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
-	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
+	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
 	cp -f $(MDSPLUS_API_JAR) $@ &&\
-	$(JAR) umf $(MANIFEST) $@ $(java_JAR) $(GIF_SRC)
+	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 
 if MINGW
-bin_SCRIPTS = traverser2.bat
+bin_SCRIPTS += traverser2.bat
 else
-bin_SCRIPTS = jTraverser2
-EXTRA_DIST  = jTraverser2.template
+bin_SCRIPTS += jTraverser2
+EXTRA_DIST = jTraverser2.template
 jTraverser2: $(srcdir)/jTraverser2.template
 	cp $< $@
 endif

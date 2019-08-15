@@ -14,6 +14,9 @@
 
 @SET_MAKE@
 
+# common makefile for java packages
+
+
 VPATH = @srcdir@
 am__is_gnu_make = { \
   if test -z '$(MAKELEVEL)'; then \
@@ -123,27 +126,6 @@ mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = $(top_builddir)/include/mdsplus/mdsconfig.h
 CONFIG_CLEAN_FILES =
 CONFIG_CLEAN_VPATH_FILES =
-AM_V_P = $(am__v_P_@AM_V@)
-am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
-am__v_P_0 = false
-am__v_P_1 = :
-AM_V_GEN = $(am__v_GEN_@AM_V@)
-am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
-am__v_GEN_0 = @echo "  GEN     " $@;
-am__v_GEN_1 = 
-AM_V_at = $(am__v_at_@AM_V@)
-am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
-am__v_at_0 = @
-am__v_at_1 = 
-SOURCES =
-DIST_SOURCES =
-am__can_run_installinfo = \
-  case $$AM_UPDATE_INFO_DIR in \
-    n|no|NO) false;; \
-    *) (install-info --version) >/dev/null 2>&1;; \
-  esac
-am__installdirs = "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"
-am__java_sources = $(java_JAVA)
 am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
 am__vpath_adj = case $$p in \
     $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
@@ -171,9 +153,32 @@ am__uninstall_files_from_dir = { \
     || { echo " ( cd '$$dir' && rm -f" $$files ")"; \
          $(am__cd) "$$dir" && rm -f $$files; }; \
   }
+am__installdirs = "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" \
+	"$(DESTDIR)$(javadir)"
+SCRIPTS = $(bin_SCRIPTS)
+AM_V_P = $(am__v_P_@AM_V@)
+am__v_P_ = $(am__v_P_@AM_DEFAULT_V@)
+am__v_P_0 = false
+am__v_P_1 = :
+AM_V_GEN = $(am__v_GEN_@AM_V@)
+am__v_GEN_ = $(am__v_GEN_@AM_DEFAULT_V@)
+am__v_GEN_0 = @echo "  GEN     " $@;
+am__v_GEN_1 = 
+AM_V_at = $(am__v_at_@AM_V@)
+am__v_at_ = $(am__v_at_@AM_DEFAULT_V@)
+am__v_at_0 = @
+am__v_at_1 = 
+SOURCES =
+DIST_SOURCES =
+am__can_run_installinfo = \
+  case $$AM_UPDATE_INFO_DIR in \
+    n|no|NO) false;; \
+    *) (install-info --version) >/dev/null 2>&1;; \
+  esac
+am__java_sources = $(java_JAVA)
 DATA = $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.inc.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -481,22 +486,18 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-
-# common makefile for java packages
-MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
 JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
-JAVAROOT = $(builddir)
-MANIFEST = $(JAVAROOT)/MANIFEST.MF
+JAVAROOT = $(builddir)/classes
+bin_SCRIPTS = $(JAVAROOT)
+MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
 GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
 java_srcdir = $(srcdir)
@@ -506,7 +507,7 @@ SOURCE = MdsPlus/*.java
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.inc.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -526,7 +527,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../Makefile.am $(am__empty):
+$(srcdir)/../Makefile.inc.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -536,6 +537,41 @@ $(top_srcdir)/configure: @MAINTAINER_MODE_TRUE@ $(am__configure_deps)
 $(ACLOCAL_M4): @MAINTAINER_MODE_TRUE@ $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(am__aclocal_m4_deps):
+install-binSCRIPTS: $(bin_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || list=; \
+	if test -n "$$list"; then \
+	  echo " $(MKDIR_P) '$(DESTDIR)$(bindir)'"; \
+	  $(MKDIR_P) "$(DESTDIR)$(bindir)" || exit 1; \
+	fi; \
+	for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  if test -f "$$d$$p"; then echo "$$d$$p"; echo "$$p"; else :; fi; \
+	done | \
+	sed -e 'p;s,.*/,,;n' \
+	    -e 'h;s|.*|.|' \
+	    -e 'p;x;s,.*/,,;$(transform)' | sed 'N;N;N;s,\n, ,g' | \
+	$(AWK) 'BEGIN { files["."] = ""; dirs["."] = 1; } \
+	  { d=$$3; if (dirs[d] != 1) { print "d", d; dirs[d] = 1 } \
+	    if ($$2 == $$4) { files[d] = files[d] " " $$1; \
+	      if (++n[d] == $(am__install_max)) { \
+		print "f", d, files[d]; n[d] = 0; files[d] = "" } } \
+	    else { print "f", d "/" $$4, $$1 } } \
+	  END { for (d in files) print "f", d, files[d] }' | \
+	while read type dir files; do \
+	     if test "$$dir" = .; then dir=; else dir=/$$dir; fi; \
+	     test -z "$$files" || { \
+	       echo " $(INSTALL_SCRIPT) $$files '$(DESTDIR)$(bindir)$$dir'"; \
+	       $(INSTALL_SCRIPT) $$files "$(DESTDIR)$(bindir)$$dir" || exit $$?; \
+	     } \
+	; done
+
+uninstall-binSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	@list='$(bin_SCRIPTS)'; test -n "$(bindir)" || exit 0; \
+	files=`for p in $$list; do echo "$$p"; done | \
+	       sed -e 's,.*/,,;$(transform)'`; \
+	dir='$(DESTDIR)$(bindir)'; $(am__uninstall_files_from_dir)
 
 classjava.stamp: $(am__java_sources)
 	@list1='$?'; list2=; if test -n "$$list1"; then \
@@ -625,9 +661,9 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile classjava.stamp $(DATA)
+all-am: Makefile $(SCRIPTS) classjava.stamp $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
+	for dir in "$(DESTDIR)$(bindir)" "$(DESTDIR)$(javadir)" "$(DESTDIR)$(javadir)"; do \
 	  test -z "$$dir" || $(MKDIR_P) "$$dir"; \
 	done
 install: install-am
@@ -687,7 +723,7 @@ install-dvi: install-dvi-am
 
 install-dvi-am:
 
-install-exec-am:
+install-exec-am: install-binSCRIPTS
 
 install-html: install-html-am
 
@@ -725,21 +761,23 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-javaDATA uninstall-javaJAVA
+uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
+	uninstall-javaJAVA
 
 .MAKE: install-am install-strip
 
 .PHONY: all all-am check check-am clean clean-generic clean-javaJAVA \
 	cscopelist-am ctags-am distclean distclean-generic distdir dvi \
 	dvi-am html html-am info info-am install install-am \
-	install-data install-data-am install-dvi install-dvi-am \
-	install-exec install-exec-am install-html install-html-am \
-	install-info install-info-am install-javaDATA install-javaJAVA \
-	install-man install-pdf install-pdf-am install-ps \
-	install-ps-am install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-generic pdf pdf-am ps ps-am tags-am \
-	uninstall uninstall-am uninstall-javaDATA uninstall-javaJAVA
+	install-binSCRIPTS install-data install-data-am install-dvi \
+	install-dvi-am install-exec install-exec-am install-html \
+	install-html-am install-info install-info-am install-javaDATA \
+	install-javaJAVA install-man install-pdf install-pdf-am \
+	install-ps install-ps-am install-strip installcheck \
+	installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-generic pdf \
+	pdf-am ps ps-am tags-am uninstall uninstall-am \
+	uninstall-binSCRIPTS uninstall-javaDATA uninstall-javaJAVA
 
 .PRECIOUS: Makefile
 
@@ -748,31 +786,16 @@ $(JAVAROOT):
 	mkdir -p $@
 
 $(MANIFEST):
-	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
-
-.PHONY: maven-build maven-tests maven-clean
-
-maven-build:
-	$(MVN) package -DskipTests
-
-maven-deploy:
-	pushd $(top_srcdir)/java &&( find . -name pom.xml -exec /bin/sh -c 'mkdir -p $(dirname $1);cp -f $0 $1' '{}' $(abs_builddir)'{}' ';'; popd)&&\
-	$(MVN) versions:set -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION) -DartifactId=* &&\
-	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
-
-maven-tests:
-	$(TEST_ENVIRONMENT) $(MVN) test
-
-maven-clean:
-	$(MVN) clean
 
 @USE_JARS_DIR_TRUE@MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@MdsPlus.jar: classjava.stamp
-@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_CLS)
+@USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

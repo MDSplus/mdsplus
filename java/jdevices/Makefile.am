@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 EXTRA_DIST = *.form
 
@@ -15,7 +15,7 @@ else
 
 jDevices.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
-	$(JAR) cf $@ $(java_JAR)
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
 

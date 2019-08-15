@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 
@@ -20,7 +20,7 @@ else
 mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(JSCH) $@ &&\
-	$(JAR) umf $(MANIFEST) $@ $(java_JAR)
+	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 

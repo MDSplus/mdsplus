@@ -1,4 +1,4 @@
-include ../Makefile.am
+include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)
 java_DATA = mdsobjects.jar
@@ -13,7 +13,7 @@ else
 
 mdsobjects.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
-	$(JAR) cf $@ $(java_JAR)
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif
 

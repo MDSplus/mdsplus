@@ -14,6 +14,8 @@
 
 @SET_MAKE@
 
+# common makefile for java packages
+
 
 VPATH = @srcdir@
 am__is_gnu_make = { \
@@ -90,6 +92,8 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 target_triplet = @target@
+@MINGW_TRUE@am__append_1 = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
+@MINGW_FALSE@am__append_2 = jDispatcherIp jDispatchMonitor jServer
 subdir = java/jdispatcher
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
@@ -177,7 +181,7 @@ am__can_run_installinfo = \
 am__java_sources = $(java_JAVA)
 DATA = $(dist_java_DATA) $(java_DATA)
 am__tagged_files = $(HEADERS) $(SOURCES) $(TAGS_FILES) $(LISP)
-am__DIST_COMMON = $(srcdir)/../Makefile.am $(srcdir)/Makefile.in
+am__DIST_COMMON = $(srcdir)/../Makefile.inc.am $(srcdir)/Makefile.in
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMTAR = @AMTAR@
@@ -485,36 +489,30 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
-
-# common makefile for java packages
-MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
 JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
-JAVAROOT = $(builddir)
-MANIFEST = $(JAVAROOT)/MANIFEST.MF
+JAVAROOT = $(builddir)/classes
+bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
+MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = $(java_DATA) $(java_CLS) debug/DEBUG.class $(bin_SCRIPTS)
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
 GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
-java_CLS = $(addprefix $(JAVAROOT)/,$(java_SRC:.java=.class))
-java_JAR = $(subst .java,*.class,$(subst debug/DEBUG.java,,$(java_SRC)))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
 java_srcdir = $(srcdir)
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
 CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR) 
-@MINGW_FALSE@bin_SCRIPTS = jDispatcherIp jDispatchMonitor jServer
-@MINGW_TRUE@bin_SCRIPTS = jDispatcherIp.bat jDispatchMonitor.bat jServer.bat
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
 SOURCE = *.java
 all: all-am
 
 .SUFFIXES:
-$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.am $(am__configure_deps)
+$(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/../Makefile.inc.am $(am__configure_deps)
 	@for dep in $?; do \
 	  case '$(am__configure_deps)' in \
 	    *$$dep*) \
@@ -534,7 +532,7 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	    echo ' cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe)'; \
 	    cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@ $(am__depfiles_maybe);; \
 	esac;
-$(srcdir)/../Makefile.am $(am__empty):
+$(srcdir)/../Makefile.inc.am $(am__empty):
 
 $(top_builddir)/config.status: $(top_srcdir)/configure $(CONFIG_STATUS_DEPENDENCIES)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
@@ -816,32 +814,16 @@ $(JAVAROOT):
 	mkdir -p $@
 
 $(MANIFEST):
-	echo "Specification-Versionn: $(RELEASE_VERSION)"	 >$@
+	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
-
-.PHONY: maven-build maven-tests maven-clean
-
-maven-build:
-	$(MVN) package -DskipTests
-
-maven-deploy:
-	pushd $(top_srcdir)/java &&( find . -name pom.xml -exec /bin/sh -c 'mkdir -p $(dirname $1);cp -f $0 $1' '{}' $(abs_builddir)'{}' ';'; popd)&&\
-	$(MVN) versions:set -DgenerateBackupPoms=false -DnewVersion=$(RELEASE_VERSION) -DartifactId=* &&\
-	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
-
-maven-tests:
-	$(TEST_ENVIRONMENT) $(MVN) test
-
-maven-clean:
-	$(MVN) clean
 
 @USE_JARS_DIR_TRUE@jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@jDispatcher.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ..."; \
-@USE_JARS_DIR_FALSE@	$(JAR) cf $@ $(java_JAR)
+@USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
 jDispatcherIp jDispatchMonitor jServer: %: %.template
 	cp $^ $@
