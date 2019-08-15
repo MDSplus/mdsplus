@@ -499,7 +499,7 @@ MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
-GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
@@ -518,7 +518,7 @@ SOURCE = \
  devices/*.java\
  jTraverser.java
 
-GIF_SRC = jtraverser/*.gif
+RESOURCES = jtraverser/*.gif
 all: all-am
 
 .SUFFIXES:
@@ -834,7 +834,7 @@ $(MANIFEST):
 @USE_JARS_DIR_FALSE@jTraverser2.jar: classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
-@USE_JARS_DIR_FALSE@	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
+@USE_JARS_DIR_FALSE@	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
 @USE_JARS_DIR_FALSE@	cp -f $(MDSPLUS_API_JAR) $@ &&\
 @USE_JARS_DIR_FALSE@	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .

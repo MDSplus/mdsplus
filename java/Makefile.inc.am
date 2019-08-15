@@ -12,7 +12,7 @@ javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
 CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
 
-GIFS_SRC = $(wildcard $(addprefix $(java_resdir)/,$(GIF_SRC)))
+JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 
 if USE_JARS_DIR

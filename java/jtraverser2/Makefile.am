@@ -16,7 +16,7 @@ else
 jTraverser2.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	mkdir -p $(JAVAROOT)/jtraverser &&\
-	cp -f $(GIFS_SRC) $(JAVAROOT)/jtraverser &&\
+	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
 	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
 	cp -f $(MDSPLUS_API_JAR) $@ &&\
 	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
@@ -40,4 +40,4 @@ SOURCE =\
  jtraverser/tools/*.java\
  devices/*.java\
  jTraverser.java
-GIF_SRC = jtraverser/*.gif
+RESOURCES = jtraverser/*.gif

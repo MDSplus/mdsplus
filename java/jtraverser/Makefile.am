@@ -21,7 +21,7 @@ else
 
 jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
-	cp -f $(GIFS_SRC) $(JAVAROOT)/ &&\
+	cp -f $(JAVA_RES) $(JAVAROOT)/ &&\
 	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
 
 
@@ -41,4 +41,4 @@ jTraverser: $(srcdir)/jTraverser.template
 endif
 
 SOURCE = *.java
-GIF_SRC = *.gif
+RESOURCES = *.gif
