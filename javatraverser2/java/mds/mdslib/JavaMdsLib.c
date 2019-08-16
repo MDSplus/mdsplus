@@ -6,11 +6,12 @@
 #include <stdlib.h> //free
 #include <string.h> //strlen
 #include <mdstypes.h> //DTYPE
+#include <status.h> //DTYPE
 
 extern int TdiIntrinsic();
 extern int TdiEvaluate();
-extern int MdsSerializeDscOut(struct descriptor const *in, struct descriptor_xd *out);
-extern int MdsSerializeDscIn(char const *in, struct descriptor_xd *out);
+extern int MdsSerializeDscOut(mdsdsc_t const *in, mdsdsc_xd_t *out);
+extern int MdsSerializeDscIn(char const *in, mdsdsc_xd_t *out);
 
 static void RaiseException(JNIEnv * env, int status) {
   jclass cls = (*env)->FindClass(env, "mds/MdsException");
@@ -20,12 +21,12 @@ static void RaiseException(JNIEnv * env, int status) {
   (*env)->Throw(env, exc);
 }
 
-int thisTdiExecute(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int thisTdiExecute(int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   int status = 1;
   EMPTYXD(tmp);
   status = TdiIntrinsic(99, narg, list, &tmp);
-  if (status & 1)
+  if STATUS_OK
     status = TdiEvaluate(tmp.pointer, out_ptr MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
   return status;
@@ -36,9 +37,9 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
   jsize i,j,jargdim;
   jbyteArray jarg,result = NULL;
   jsize nargs = args ? (*env)->GetArrayLength(env,args) : 0;
-  struct descriptor* list[nargs+1];
+  mdsdsc_t* list[nargs+1];
   char* const expr = (char*)(*env)->GetStringUTFChars(env, jexpr, 0);
-  list[0] = &(struct descriptor){strlen(expr), DTYPE_T, CLASS_S, expr};
+  list[0] = &(mdsdsc_t){strlen(expr), DTYPE_T, CLASS_S, expr};
   for(i = 0; i < nargs; ++i) {
     EMPTYXD(xd);
     jarg = (jbyteArray)((*env)->GetObjectArrayElement(env,args, i));
@@ -56,41 +57,46 @@ JNIEXPORT jbyteArray JNICALL Java_mds_mdslib_MdsLib_evaluate(JNIEnv * env, jobje
     //printf("5-%d\n",(int)i);
     (*env)->ReleaseByteArrayElements(env, jarg, jbytes, 0);
     //printf("6-%d\n",(int)i);
-    if (!(status & 1)) break;
+    if STATUS_NOT_OK {
+      for(;i-->0;) free(list[i+1]);
+      break;
+    }
     list[i+1] = xd.pointer;
   }
-  if ((status & 1)){
+  if STATUS_OK {
     //printf("10-%d\n",(int)nargs);
     EMPTYXD(xd);
     status = thisTdiExecute(nargs+1, list, &xd);
     (*env)->ReleaseStringUTFChars(env, jexpr, expr);
-    if ((status & 1)){
+    if STATUS_OK {
       EMPTYXD(xds);
       //printf("11\n");
       status = MdsSerializeDscOut(xd.pointer, &xds);
-      if ((status & 1)){
-	//printf("12\n");
-	struct descriptor_a* bytes_d = (struct descriptor_a*)xds.pointer;
-	if (bytes_d) {
-	  //printf("13\n");
-	  int size = bytes_d->arsize;
-	  result = (*env)->NewByteArray(env, size);
-	  if (result) {
-	    //printf("14+%d\n",(int)size);
-	    char* bytes = (char*)bytes_d->pointer;
-	    jbyte* jbytes = malloc(size*sizeof(jbyte));
-	    for (i = 0; i < size; i++)
-	      jbytes[i] = bytes[i];
-	    (*env)->SetByteArrayRegion(env, result, 0, size, jbytes);
-	    free(jbytes);
-	  }
-	}
+      if STATUS_OK {
+        //printf("12\n");
+        mdsdsc_a_t* bytes_d = (mdsdsc_a_t*)xds.pointer;
+        if (bytes_d) {
+          //printf("13\n");
+          int size = bytes_d->arsize;
+          result = (*env)->NewByteArray(env, size);
+          if (result) {
+            //printf("14+%d\n",(int)size);
+            char* const bytes = (char*)bytes_d->pointer;
+            jbyte* jbytes = malloc(size*sizeof(jbyte));
+            for (i = 0; i < size; i++)
+              jbytes[i] = bytes[i];
+            (*env)->SetByteArrayRegion(env, result, 0, size, jbytes);
+            free(jbytes);
+          }
+        }
       }
       MdsFree1Dx(&xds, NULL);
     }
     MdsFree1Dx(&xd, NULL);
+    for(i = 0; i < nargs; ++i)
+      free(list[i+1]);
   }
-  if (!(status & 1))
+  if STATUS_NOT_OK
     RaiseException(env, status);
   return result;
 }
