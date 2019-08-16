@@ -22,7 +22,7 @@ JAVA_JAR = \
 
 JAVA_APS = \
 	   javamds \
-	   java/mdsplus-api/src/main/java/mds/mdslib
+	   java/mdsplus-api/src/main/jni/mds/mdslib
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \

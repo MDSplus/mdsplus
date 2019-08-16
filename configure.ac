@@ -1372,7 +1372,7 @@ AC_OUTPUT(Makefile.inc
           java/Makefile
           java/mdsplus/Makefile
           java/mdsplus-api/Makefile
-          java/mdsplus-api/src/main/java/mds/mdslib/Makefile
+          java/mdsplus-api/src/main/jni/mds/mdslib/Makefile
           java/mdsobjects/Makefile
           java/mdsobjects/docs/Makefile
           java/jdispatcher/Makefile
