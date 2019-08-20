@@ -63,6 +63,7 @@ int main(int argc, char *argv[])
     
     _TreeGetDefaultNid(dbid, &nidout);
     startnid = nidout;
+    _TreeFindNode(dbid, "cryocon18i::top:cryo18i", &nidout);
     _TreeFindNodeRelative(dbid, "cryo18i", startnid, &nidout);
     
     return 0;
