@@ -449,7 +449,7 @@ EXPORT void MdsFree(void *const ptr)
 EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
-  memcpy(out, in->pointer, in->length);
+  if (in->length>0) memcpy(out, in->pointer, in->length);
   out[in->length] = 0;
   return out;
 }

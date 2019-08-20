@@ -882,7 +882,6 @@ class Tree(object):
         @param tree: Name of tree
         @type tree: str
         @param inc: Increment (default: 1)
-        @return shot: New current shot number for the specified tree
         @rtype int
         """
         if isinstance(self,(Tree,)): # instancemethod: args shifted by one
