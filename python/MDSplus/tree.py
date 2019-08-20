@@ -789,15 +789,16 @@ class Tree(object):
         @return: Node if found
         @rtype: TreeNode
         """
+
         if isinstance(name,(int,_scr.Int32)):
             ans = TreeNode(name,self)
         else:
-            n=_C.c_int32(0)
+            nid=_C.c_int32(0)
             _exc.checkStatus(
                     _TreeShr._TreeFindNode(self.ctx,
                                            _ver.tobytes(str(name)),
-                                           _C.byref(n)))
-            return TreeNode(int(n.value),self)
+                                           _C.byref(nid)))
+            return TreeNode(int(nid.value),self)
         return ans
 
     def _getNodeWildIter(self, name, *usage):
@@ -845,6 +846,7 @@ class Tree(object):
         @return: TreeNodeArray of nodes matching the wildcard path specification and usage types.
         @rtype: TreeNodeArray
         """
+        print("Python Tree() getNodeWild()")
         return TreeNodeArray([nid for nid in self._getNodeWildIter(name,*usage)],self)
 
     @classmethodX
@@ -1186,6 +1188,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         item = Nci._nci_item(buflen,code,pointer)
         _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(item)))
         retlen = item.retlen.contents.value
+
         if rtype is str:
             return _ver.tostr(ans.value[0:retlen].rstrip())
         if rtype is None:
@@ -1854,6 +1857,19 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         return self.nid
 
+    #def getNode(self,path):
+    #    """Return tree node where path is relative to this node
+    #    @param path: Path relative to this node
+    #    @type path: str
+    #    @return: node matching path
+    #    @rtype: TreeNode
+    #    """
+    #   if path[0] == '\\':
+    #       return self.tree.getNode(path)
+    #   elif not path[0]  in ':.':
+    #       path=':'+path
+    #   return self.tree.getNode(self.fullpath+path)
+
     def getNode(self,path):
         """Return tree node where path is relative to this node
         @param path: Path relative to this node
@@ -1861,11 +1877,18 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @return: node matching path
         @rtype: TreeNode
         """
-        if path[0] == '\\':
-            return self.tree.getNode(path)
-        elif not path[0]  in ':.':
-            path=':'+path
-        return self.tree.getNode(self.fullpath+path)
+        print("Python TreeNode() getNode", path)
+        if isinstance(path,(int,_scr.Int32)):
+            ans = TreeNode(path,self.tree)
+        else:       
+            nidout=_C.c_int32(0)
+            _exc.checkStatus(
+                        _TreeShr._TreeFindNodeRelative(self.ctx,
+                                               _ver.tobytes(str(path)),
+                                               _C.c_int32(self.nid),
+                                               _C.byref(nidout)))
+            return TreeNode(int(nidout.value),self.tree)
+        return ans
 
     def getNodeName(self):
         """Return node name
