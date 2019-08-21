@@ -820,6 +820,7 @@ class Tree(object):
                                      _C.byref(nid),
                                      _C.byref(ctx),
                                      _C.c_int32(usage_mask)) & 1 != 0:
+                print("in python while wild")
                 yield nid.value
         except GeneratorExit:
             pass
@@ -1877,7 +1878,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @return: node matching path
         @rtype: TreeNode
         """
-        print("Python TreeNode() getNode", path)
+        print("Python TreeNode() getNode", path, self.tree)
         if isinstance(path,(int,_scr.Int32)):
             ans = TreeNode(path,self.tree)
         else:       

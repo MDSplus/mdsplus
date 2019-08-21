@@ -111,9 +111,9 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int startnid = node_to_nid(dblist, dblist->default_node, NULL);
-  _TreeFindNodeWildRelative(dbid, path, startnid, nid_out, ctx_inout, usage_mask);
+  int status   = _TreeFindNodeWildRelative(dbid, path, startnid, nid_out, ctx_inout, usage_mask);
 
-  return TreeNORMAL;
+  return status;
 }
 
 EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask)
@@ -137,7 +137,6 @@ EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid,
     *ctx_inout = ctx;
     NODELIST *tail=NULL;
     ctx->default_node = dblist->default_node;
-
 
     NID innid;
     innid.node=startnid;
@@ -173,8 +172,8 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int startnid = node_to_nid(dblist, dblist->default_node, NULL);
-  _TreeFindNodeRelative(dblist, path, startnid, outnid);
-  return TreeNORMAL;
+  int status   = _TreeFindNodeRelative(dblist, path, startnid, outnid);
+  return status;
 }
 
 EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int *outnid)
