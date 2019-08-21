@@ -1469,13 +1469,15 @@ void TreeNode::putRow(Data *data, int64_t *time, int size)
 
 TreeNode *TreeNode::getNode(char const * relPath)
 {
+	std::cout << "In C++ TreeNode getNode, relPathS" << std::endl;
 	int defNid;
 	int newNid;
 	resolveNid();
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
-	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	// if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
+	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(status & 1) status = _TreeFindNodeRelative(tree->getCtx(), relPath, nid,&newNid);
 	if(!(status & 1))
 	{
 		status = _TreeSetDefaultNid(tree->getCtx(), defNid);
@@ -1486,14 +1488,17 @@ TreeNode *TreeNode::getNode(char const * relPath)
 
 TreeNode *TreeNode::getNode(String *relPathStr)
 {
+	std::cout << "In C++ TreeNode getNode, relPathStr" << std::endl;
 	int defNid;
 	int newNid;
 	resolveNid();
 	AutoArray<char> relPath(relPathStr->getString());
 	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.ptr, &newNid);
-	if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
+	// if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.ptr, &newNid);
+	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
+	if(status & 1) status = _TreeFindNodeRelative(tree->getCtx(), relPath.ptr, nid, &newNid);
+
 	if(!(status & 1))
 		throw MdsException(status);
 	return new TreeNode(newNid, tree);
