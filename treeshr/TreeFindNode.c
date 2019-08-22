@@ -138,10 +138,11 @@ EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid,
     NODELIST *tail=NULL;
     ctx->default_node = dblist->default_node;
 
-    NID innid;
-    innid.node=startnid;
-    innid.tree=0;
-    NODE *startn = nid_to_node(dblist, &innid);
+    // NID innid;
+    // innid.node=startnid;
+    // innid.tree=0;
+    // NODE *startn = nid_to_node(dblist, &innid);
+    NODE *startn = nid_to_node(dblist, (NID *)&startnid);
 
     ctx->answers = Search(dblist, ctx, ctx->terms, startn, &tail);
     ctx->answers = Filter(ctx->answers, usage_mask);
@@ -205,10 +206,12 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int
   }
   ctx.default_node = dblist->default_node;
 
-  NID innid;
-  innid.node=startnid;
-  innid.tree=0;
-  NODE *startn = nid_to_node(dblist, &innid);
+  // NID innid;
+  // innid.node=startnid;
+  // innid.tree=0;
+  // NODE *startn = nid_to_node(dblist, &innid);
+  NODE *startn = nid_to_node(dblist, (NID *)&startnid);
+
   
   answer = Search(dblist, &ctx, ctx.terms, startn, &tail);
 
