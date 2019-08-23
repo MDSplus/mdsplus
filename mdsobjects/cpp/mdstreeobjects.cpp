@@ -1470,38 +1470,56 @@ void TreeNode::putRow(Data *data, int64_t *time, int size)
 TreeNode *TreeNode::getNode(char const * relPath)
 {
 	std::cout << "In C++ TreeNode getNode, relPathS" << std::endl;
-	int defNid;
 	int newNid;
 	resolveNid();
-	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	// if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath, &newNid);
-	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
-	if(status & 1) status = _TreeFindNodeRelative(tree->getCtx(), relPath, nid,&newNid);
+	
+	int status = _TreeFindNodeRelative(tree->getCtx(), relPath, nid,&newNid);
+
 	if(!(status & 1))
-	{
-		status = _TreeSetDefaultNid(tree->getCtx(), defNid);
 		throw MdsException(status);
-	}
 	return new TreeNode(newNid, tree);
 }
 
 TreeNode *TreeNode::getNode(String *relPathStr)
 {
 	std::cout << "In C++ TreeNode getNode, relPathStr" << std::endl;
-	int defNid;
 	int newNid;
 	resolveNid();
 	AutoArray<char> relPath(relPathStr->getString());
-	int status = _TreeGetDefaultNid(tree->getCtx(), &defNid);
-	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), nid);
-	// if(status & 1) status = _TreeFindNode(tree->getCtx(), relPath.ptr, &newNid);
-	// if(status & 1) status = _TreeSetDefaultNid(tree->getCtx(), defNid);
-	if(status & 1) status = _TreeFindNodeRelative(tree->getCtx(), relPath.ptr, nid, &newNid);
+
+	int status = _TreeFindNodeRelative(tree->getCtx(), relPath.ptr, nid, &newNid);
 
 	if(!(status & 1))
 		throw MdsException(status);
 	return new TreeNode(newNid, tree);
+}
+
+TreeNodeArray *TreeNode::getNodeWild(char const * path, int usageMask)
+{
+	std::cout << "In C++ TreeNode getNodeWild..." << std::endl;
+	int status;
+	void *wildCtx = 0;
+
+	std::vector<int> nids;
+	nids.reserve(10000);
+
+	int temp = 0;
+	while ((status = _TreeFindNodeWildRelative(tree->getCtx(), path, nid, &temp, &wildCtx, usageMask)) & 1)
+		nids.push_back(temp);
+	_TreeFindNodeEnd(tree->getCtx(), &wildCtx);
+
+	TreeNode **retNodes = new TreeNode *[nids.size()];
+	for(std::size_t i = 0; i < nids.size(); ++i)
+		retNodes[i] = new TreeNode(nids[i], tree);
+
+	TreeNodeArray *nodeArray = new TreeNodeArray(retNodes, nids.size());
+	delete[] retNodes;
+	return nodeArray;
+}
+
+TreeNodeArray *TreeNode::getNodeWild(char const *path)
+{
+	return getNodeWild(path, -1);
 }
 
 TreeNode *TreeNode::addNode(char const * name, char const * usage)
