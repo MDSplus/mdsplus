@@ -21,7 +21,8 @@ SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
 CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/#include <mdsplus/mdsconfig.h>
+*/
+#include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
 #include <mdsplus/mdsplus.h>
@@ -35,12 +36,18 @@ extern void **TreeCtx();
  * Exported routines
  */
 EXPORT char *TreeAbsPath(char const *inpath);
+
 EXPORT int TreeFindNode(char const *path, int *outnid);
+EXPORT int TreeFindNodeRelative(char const *path, int startnid, int *outnid);
+EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid);
+EXPORT int _TreeFindNodeRelative(void *dbid, char const *path,  int startnid, int *outnid);
+
 EXPORT int TreeFindNodeWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask);
-EXPORT int TreeFindNodeEnd(void **ctx_in);
+EXPORT int TreeFindNodeWildRelative(char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask);
 EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask);
-EXPORT int _TreeFindNode (void *dbid, char const *path, int *outnid);
-EXPORT int _TreeFindNodeWild(void *dbid,  char const *path, int *nid_out, void **ctx_inout, int usage_mask);
+EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask);
+
+EXPORT int TreeFindNodeEnd(void **ctx_in);
 EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
 /*
  * Static internal routines
@@ -76,9 +83,19 @@ EXPORT int TreeFindNode(char const *path, int *outnid)
   return _TreeFindNode(*TreeCtx(), path, outnid);
 }
 
+EXPORT int TreeFindNodeRelative(char const *path, int start, int *outnid)
+{
+  return _TreeFindNodeRelative(*TreeCtx(), path, start, outnid);
+}
+
 EXPORT int TreeFindNodeWild(char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
    return _TreeFindNodeWild(*TreeCtx(), path, nid_out, ctx_inout, usage_mask);
+}
+
+EXPORT int TreeFindNodeWildRelative(char const *path, int start, int *nid_out, void **ctx_inout, int usage_mask)
+{
+   return _TreeFindNodeWildRelative(*TreeCtx(), path, start, nid_out, ctx_inout, usage_mask);
 }
 
 EXPORT int TreeFindNodeEnd(void **ctx_in)
@@ -89,7 +106,17 @@ EXPORT char *TreeAbsPath(char const *inpath)
 {
   return _TreeAbsPath(*TreeCtx(), inpath);
 }
+
 EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
+{
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  int startnid = node_to_nid(dblist, dblist->default_node, NULL);
+  int status   = _TreeFindNodeWildRelative(dbid, path, startnid, nid_out, ctx_inout, usage_mask);
+
+  return status;
+}
+
+EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask)
 {
   int status = TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
@@ -110,14 +137,18 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
     *ctx_inout = ctx;
     NODELIST *tail=NULL;
     ctx->default_node = dblist->default_node;
-    ctx->answers = Search(dblist, ctx, ctx->terms, dblist->default_node, &tail);
+
+    NODE *startn = nid_to_node(dblist, (NID *)&startnid);
+
+    ctx->answers = Search(dblist, ctx, ctx->terms, startn, &tail);
     ctx->answers = Filter(ctx->answers, usage_mask);
+
     if (ctx->answers && (ctx->answers->node == ctx->default_node) && wild) {
       NODELIST *tmp = ctx->answers;
       ctx->answers = ctx->answers->next;
       free(tmp);
     }
- }
+  }
   else {
     ctx = *ctx_inout;
   }
@@ -136,6 +167,14 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
 
 EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 {
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  int startnid = node_to_nid(dblist, dblist->default_node, NULL);
+  int status   = _TreeFindNodeRelative(dblist, path, startnid, outnid);
+  return status;
+}
+
+EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int *outnid)
+{
   int status = TreeNORMAL;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
@@ -143,8 +182,9 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   NODELIST *answer = NULL;
   NODELIST *tail = NULL;
 
-  if (!IS_OPEN(dblist))
+  if (!IS_OPEN(dblist)) {
     return TreeNOT_OPEN;
+  }
   if (dblist->remote)
     return FindNodeRemote(dblist, path, outnid);
 
@@ -160,9 +200,12 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
     status = TreeNOWILD;
     goto done;
   }
-  ctx.default_node = dblist->default_node;
-//  ctx.terms->start_node = ctx.default_node;
-  answer = Search(dblist, &ctx, ctx.terms, dblist->default_node, &tail);
+  // ctx.default_node = dblist->default_node;
+
+  NODE *startn = nid_to_node(dblist, (NID *)&startnid);
+
+  answer = Search(dblist, &ctx, ctx.terms, startn, &tail);
+
   if (answer) {
     *outnid = node_to_nid(dblist, answer->node, (NID *)outnid);
     FreeNodeList(answer);
@@ -174,6 +217,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
   FreeSearchCtx(&ctx);
   return (status & 1) ? TreeNORMAL : status;
 }
+
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
 {
   if (ctx) {
@@ -320,7 +364,7 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     }
 
     default: {
-      printf("Search for type %d not implimented\n", term->search_type);
+      printf("Search for type %d not implemented\n", term->search_type);
       return NULL;
       break;
     }
@@ -611,6 +655,9 @@ STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
   NODELIST *ptr;
   NODELIST *previous=list;
   NODELIST *answer=list;
+
+  /* printf("In Filter() list %s and mask %d \n", *list, usage_mask); */
+
   for (ptr=list; ptr;) {
     if(!((1<<((ptr->node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : ptr->node->usage)) & usage_mask)) {
       NODELIST *tmp=ptr;

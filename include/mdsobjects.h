@@ -2930,6 +2930,10 @@ public:
     /// Retrieve node from this tree by its realPath string
     virtual TreeNode *getNode(String *relPathStr);
 
+    //Retrieve node from this tree by its realPath string with a wild card
+    virtual TreeNodeArray *getNodeWild(char const * path, int usageMask);
+    virtual TreeNodeArray *getNodeWild(char const *path);
+
     virtual Data *getData();
     virtual void putData(Data *data);
     virtual void deleteData();
