@@ -611,6 +611,8 @@ void *TreeNode::convertToDsc()
 Data *TreeNode::data()
 {
 	Data *d = getData();
+	AutoLock lock(treeMutex);
+	setActiveTree(tree);
 	Data *outD = d->data();
 	MDSplus::deleteData(d);
 	return outD;
