@@ -1,6 +1,5 @@
 _shot=3
 3
-!current_shot('subtree')
 TreeOpen('main',-1,1)
 265388041
 member
@@ -66,7 +65,6 @@ getnci(.subtree:a12,"minpath")
 ".SUBTREE:A12"
 getnci(.subtree:a12,"node_name")
 "A12         "
-!getnci(.subtree:a12:name,"original_part_name")
 getnci(.subtree:a12,"path")
 "\\SUBTREE::TOP:A12"
 getnci(.subtree:a12,"compressible")
@@ -191,10 +189,8 @@ TreeOpen('main',-1,1)
 265388041
 TreeOpenEdit('main',_shot)
 265388041
-!should reopen _shot in edit mode
 TreeClose('main',_shot)
 265388041
-!should leave model open and top tree
 TreeDeletePulseFile(_shot)
 265389633
 TreeClose()
