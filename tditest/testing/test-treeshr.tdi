@@ -199,3 +199,8 @@ data(signal)[1:100]
 TreeClose()
 TreeOpen('main',-1,1)
 TreeDeletePulseFile(_shot)
+TreeClose()
+TreeOpen('subtree', -1)
+Tcl('dir *:***:startidx')
+Tcl('dir *:input_01:startidx')
+dir 1*
