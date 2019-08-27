@@ -59,7 +59,7 @@ newline \n
 {childstart}{0,1}{ancestor_search}{alphaplus}{0,12} {
   addSearchTerm(yyscanner, ANCESTOR_SEARCH, yyget_text( yyscanner ));
 }
-{childstart}{0,1}|{memberstart}{child_or_member_search}|{old_child_or_member_search} {
+{childstart}{0,1}|{memberstart}{0,1}{child_or_member_search}|{old_child_or_member_search} {
   addSearchTerm(yyscanner, CHILD_OR_MEMBER_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{parent} {
