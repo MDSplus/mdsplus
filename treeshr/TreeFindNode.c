@@ -480,6 +480,7 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
 
+  *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
   while (queue) {
     NODE *n;
@@ -509,6 +510,7 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
 
+  *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
   while (queue) {
     NODE *n;
@@ -538,6 +540,7 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
 
+  *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
   answer = AddNodeList(answer, tail, start);
   while (queue) {
