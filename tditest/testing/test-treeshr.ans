@@ -410,9 +410,9 @@ TreeDeletePulseFile(_shot)
 265389633
 TreeClose()
 265388041
-TreeOpen('subtree', -1, 1)
+TreeOpen('subtree', -1)
 265388067
-tcl('dir *:***:startidx')
+Tcl('dir *:***:startidx')
 
 \SUBTREE::A12_INPUT_1
 
