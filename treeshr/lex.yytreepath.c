@@ -2154,7 +2154,7 @@ static char *strtrim(char *str)
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
-  int status;
+  int status = 1;
 
 //  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   if (path && strlen(path)) {
