@@ -25,6 +25,7 @@ STATIC_ROUTINE int isPunctuation(char c)
 alphaplus     [a-zA-Z_0-9\*\?%]
 nodestart     [:a-zA-Z\*\?%]
 childstart    \.
+memberstart   :
 child_or_memberstart ~
 parent        \-
 ancestor      \^
@@ -58,7 +59,7 @@ newline \n
 {childstart}{0,1}{ancestor_search}{alphaplus}{0,12} {
   addSearchTerm(yyscanner, ANCESTOR_SEARCH, yyget_text( yyscanner ));
 }
-{childstart}{0,1}{child_or_member_search}|{old_child_or_member_search} {
+{childstart}{0,1}|{memberstart}{0,1}{child_or_member_search}|{old_child_or_member_search} {
   addSearchTerm(yyscanner, CHILD_OR_MEMBER_SEARCH, yyget_text( yyscanner ));
 }
 {childstart}{0,1}{parent} {
@@ -160,7 +161,7 @@ static char *strtrim(char *str)
 
 EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild) 
 {
-  int status = TreeINVPATH;
+  int status = 1;
 
 //  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   if (path && strlen(path)) {
@@ -195,7 +196,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
     free(wild_path);
   }
 
-  return(status ==0) ? TreeNORMAL : status;
+  return(status ==0) ? TreeNORMAL : TreeINVPATH;
 }
 
 STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)
