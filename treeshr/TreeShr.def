@@ -149,9 +149,11 @@ _TreeEditing
 _TreeEndConglomerate
 _TreeFileName
 _TreeFindNode
+_TreeFindNodeRelative
 _TreeFindNodeEnd
 _TreeFindNodeTags
 _TreeFindNodeWild
+_TreeFindNodeWildRelative
 _TreeFindTag
 _TreeFindTagWild
 _TreeFlushOff

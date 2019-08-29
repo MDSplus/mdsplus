@@ -1,1 +1,1 @@
---platform=redhat --valgrind=memcheck,helgrind --dockerimage=mdsplus/docker:fc17 --distname=fc17
+--platform=redhat --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:fc17 --distname=fc17

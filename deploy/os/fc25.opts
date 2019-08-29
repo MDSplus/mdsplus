@@ -1,1 +1,1 @@
---platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined --dockerimage=mdsplus/docker:fc25 --distname=fc25
+--platform=redhat --valgrind=memcheck,helgrind --sanitize=address,undefined --dockerimage=mdsplus/builder:fc25 --distname=fc25

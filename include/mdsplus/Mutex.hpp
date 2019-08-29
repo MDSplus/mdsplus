@@ -39,7 +39,13 @@ public:
 private:
 #if defined (MDS_PTHREAD)
 	pthread_mutex_t mutex;
-	void _create() { pthread_mutex_init(&mutex, NULL); }
+	void _create() 
+	{ 
+	    pthread_mutexattr_t attr;
+	    pthread_mutexattr_init(&attr);
+	    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+	    pthread_mutex_init(&mutex, &attr);
+	}
 	void _lock() { pthread_mutex_lock(&mutex); }
 	void _unlock() { pthread_mutex_unlock(&mutex); }
 	void _destroy() { pthread_mutex_destroy(&mutex); }

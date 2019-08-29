@@ -171,7 +171,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = mds.debug
+                self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
