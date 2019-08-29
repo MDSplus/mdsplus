@@ -115,8 +115,7 @@ void BlockAndRows(){
   n->setSegmentScale(unique_ptr<Data>(compile("$VALUE*2")));
   TEST1(AutoString(unique_ptr<Data>(n->getSegmentScale())->decompile()).string == "$VALUE * 2");
   TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, $VALUE * 2, [1,7], [-1Q,0Q])");
-  AutoData<Data> nData = n->data(); 
-  std::vector<int> data = nData->getIntArray();
+  std::vector<int> data = n->getIntArray();
   TEST1(data[0]==2);
   TEST1(data[1]==14);
 }
