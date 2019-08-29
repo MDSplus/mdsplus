@@ -292,30 +292,30 @@ parsecmd() {
 		TEST_RELEASE=yes
 		;;
 	    --test_format=*)
-		eval "TEST_FORMAT=${i#*=}"
+		TEST_FORMAT="${i#*=}"
 		;;
 	    --test_timeunit=*)
-		eval "TEST_TIMEUNIT=${i#*=}"
+		TEST_TIMEUNIT="${i#*=}"
 		;;
 	    --eventport=*)
-		eval "EVENT_PORT=${i#*=}"
+		EVENT_PORT="${i#*=}"
 		;;
 	    --release)
 		RELEASE=yes
 		;;
             --release=*)
-		eval "RELEASE_VERSION=${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		RELEASE=yes
 		;;
 	    --publish)
 		PUBLISH=yes
 		;;
             --publish=*)
-		eval "RELEASE_VERSION=${i#*=}"
+		RELEASE_VERSION="${i#*=}"
 		PUBLISH=yes
 		;;
 	    --platform=*)
-		eval "PLATFORM=${i#*=}"
+		PLATFORM="${i#*=}"
 		;;
 	    --valgrind)
 		ENABLE_VALGRIND=yes
@@ -323,7 +323,7 @@ parsecmd() {
 	    --valgrind=*)
 		if [ "${ENABLE_VALGRIND}" = "yes" ]
 		then
-		    eval "VALGRIND_TOOLS=${i#*=}"
+		    VALGRIND_TOOLS="${i#*=}"
 		fi
 		;;
 	    --sanitize)
@@ -332,35 +332,35 @@ parsecmd() {
 	    --sanitize=*)
 		if [ "$ENABLE_SANITIZE" = "yes" ]
 		then
-		    eval "SANITIZE=${i#*=}"
+		    SANITIZE="${i#*=}"
 		fi
 		;;
 	    --branch=*)
-		eval "BRANCH=${i#*=}"
+		BRANCH="${i#*=}"
 		;;
 	    --workspace=*)
-		eval "NEW_WORKSPACE=${i#*=}"
+		NEW_WORKSPACE="${i#*=}"
 		;;
 	    --releasedir=*)
-		eval "RELEASEDIR=${i#*=}"
+		RELEASEDIR="${i#*=}"
 		;;
 	    --publishdir=*)
-		eval "PUBLISHDIR=${i#*=}"
+		PUBLISHDIR="${i#*=}"
 		;;
 	    --dockerimage=*)
-		eval "DOCKERIMAGE=${i#*=}"
+		DOCKERIMAGE="${i#*=}"
 		;;
 	    --dockerfile=*)
-		eval "DOCKERFILE=${i#*=}"
+		DOCKERFILE="${i#*=}"
 		;;
 	    --keys=*)
-		eval "KEYS=${i#*=}"
+		KEYS="${i#*=}"
 		;;
 	    --distname=*)
-		eval "DISTNAME=${i#*=}"
+		DISTNAME="${i#*=}"
 		;;
 	    --arch=*)
-		eval "ARCH=${i#*=}"
+		ARCH="${i#*=}"
 		;;
 	    --dockerpull)
 		DOCKERPULL=yes
@@ -375,10 +375,10 @@ parsecmd() {
 		INTERACTIVE="1"
 		;;
 	    --jars)
-		JARS_DIR=${JARS_DIR-$(realpath $(dirname ${0})/../jars)}
+		JARS_DIR="${JARS_DIR-$(realpath $(dirname ${0})/../jars)}"
 		;;
 	    --jars-dir=*)
-		eval "JARS_DIR=$(realpath ${i#*=})"
+		JARS_DIR="$(realpath ${i#*=})"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
@@ -387,7 +387,7 @@ parsecmd() {
 		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
 	    --docker-srcdir=*)
-		eval "DOCKER_SRCDIR=${i#*=}"
+		DOCKER_SRCDIR="${i#*=}"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"

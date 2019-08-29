@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
-#include <errno.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -711,9 +710,7 @@ static SOCKET AttachPort(uint32_t addr, uint16_t port){
     if (connect(sock, (struct sockaddr *)&sin, sizeof(sin)) == -1) {
       shutdown(sock, 2);
       close(sock);
-      uint8_t* ip = (uint8_t*)&addr;
-      char now[32];Now32(now);
-      fprintf(stderr,"%s, ERROR Cannot connect to %u.%u.%u.%u:%u",now, ip[0],ip[1],ip[2],ip[3], port);perror(" ");
+      perror("Error establishing reply connection to mdstcl client (i.e. dispatcher)");
       return INVALID_SOCKET;
     }
     new = (ClientList *) malloc(sizeof(ClientList));
@@ -745,52 +742,41 @@ static void RemoveClient(SrvJob * job){
     }
   }
 }
-
-
-#ifndef _WIN32
-static void reset_sigpipe_handler() {
-  signal(SIGPIPE, SIG_DFL);
-}
-#endif
 // both
 static int SendReply(SrvJob * job, int replyType, int status_in, int length, char *msg){
-  int status;
+  INIT_STATUS_ERROR;
+  SOCKET sock;
 #ifndef _WIN32
   signal(SIGPIPE, SIG_IGN);
-  pthread_cleanup_push((void*)reset_sigpipe_handler,NULL);
 #endif
-  status = MDSplusERROR;
-  SOCKET sock;
-  long msg_len = msg ? (long)strlen(msg) : 0;
   int try_again = TRUE;
   do{
-    errno = 0;
     sock = AttachPort(job->h.addr, (uint16_t)job->h.port);
     if (sock == INVALID_SOCKET) break;
     char reply[60];
     int bytes;
     memset(reply, 0, 60);
-    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg_len);
+    sprintf(reply, "%d %d %d %ld", job->h.jobid, replyType, status_in, msg ? (long)strlen(msg) : 0);
     bytes = send(sock, reply, 60, MSG_DONTWAIT);
     if (bytes == 60) {
-      bytes = send(sock, msg, length, MSG_DONTWAIT);
-      if (bytes == length) {
+      try_again = FALSE;
+      if (length) {
+	bytes = send(sock, msg, length, MSG_DONTWAIT);
+	if (bytes == length)
+	  status = MDSplusSUCCESS;
+      } else
 	status = MDSplusSUCCESS;
-	break;
-      }
     }
     if STATUS_NOT_OK {
-      try_again = errno == EPIPE;
-      if (Debug) {
-	uint8_t* ip = (uint8_t*)&job->h.addr;
-	char now[32];Now32(now);
-	fprintf(stderr,"%s, Dropped connection to %u.%u.%u.%u:%u", now, ip[0],ip[1],ip[2],ip[3], job->h.port);perror(" ");
-      }
+      char* ip = (char*)&job->h.addr;
+      char now[32];Now32(now);
+      printf("%s: Dropped connection to %u.%u.%u.%u:%u\n", now, ip[0],ip[1],ip[2],ip[3], job->h.port);
       RemoveClient(job);
     }
   } while(try_again--);
 #ifndef _WIN32
-  pthread_cleanup_pop(1);
+  signal(SIGPIPE, SIG_DFL);
 #endif
   return status;
 }
+
