@@ -46,8 +46,7 @@ tests: rebuild-tests
 	echo "//// Performing tests /////"; \
 	export TEST_FORMAT=${TEST_FORMAT}; \
 	status=0; \
-	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
-	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
+	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
 	exit $$status
 
 

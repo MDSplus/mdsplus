@@ -442,7 +442,7 @@ EXPORT void EventStream::run()
     str[bufSize] = 0;
     int shot, numSamples;
     char timeFormat[16], name[256];
-    std::cout << "RECEIVED EVENT " << eventName << " WITH DATA  " << str << std::endl;
+    //std::cout << "RECEIVED EVENT " << eventName << " WITH DATA  " << str << std::endl;
     int readItems = sscanf(str, "%d %s %s %d", &shot, name, timeFormat, &numSamples);
     if(readItems < 4)
     {

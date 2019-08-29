@@ -251,7 +251,7 @@ parsecmd "$cmdopts"
 
 if [ ! -z "${MAKE_JARS}" ]
 then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} > make_jars.log 2>&1 )
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
     then
 	RED
 	cat <<EOF >&2
@@ -269,7 +269,7 @@ fi
 
 if [ ! -z "${MAKE_EPYDOCS}" ]
 then
-    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc > make_epydocs.log 2>&1 )
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
     then
 	RED
 	cat <<EOF >&2
@@ -528,4 +528,3 @@ EOF
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts
-
