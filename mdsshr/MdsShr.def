@@ -53,7 +53,6 @@ MdsCopyDxXdZ
 MdsDecompress
 MdsDescrToCstring
 MdsDtypeString
-MdsEnableSandbox
 MdsFree
 MdsFree1Dx
 MdsGet1Dx
@@ -68,7 +67,6 @@ MdsMsg
 MdsPutEnv
 MdsRelease
 MdsReleaseDsc
-MdsSandboxEnabled
 MdsSerializeDscIn
 MdsSerializeDscOut
 MdsSerializeDscOutZ
