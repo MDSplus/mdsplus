@@ -78,6 +78,7 @@ extern int MdsCopyDxXdZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out, void *
 	int (*const fixup_nid)(), void *const fixup_nid_arg,
 	int (*const fixup_path)(),void *const fixup_path_arg);
 extern char *MdsDescrToCstring(const mdsdsc_t *const string_dsc);
+extern void MdsEnableSandbox();
 extern int MDSfprintf(FILE *const fp, const char *const fmt, ...);
 extern void MdsFree(void *const ptr);
 extern int MdsGet1Dx(const l_length_t *const len, const dtype_t *const dtype, mdsdsc_xd_t *const dsc, void **const zone);
@@ -90,6 +91,7 @@ extern int MdsFree1Dx(mdsdsc_xd_t *const dsc, void **const zone);
 extern int MdsMsg(const int status, const char *const fmt, ...);
 extern int MDSQueueEvent(const char *const event, int *const eventid);
 extern int MDSGetEventQueue(const int eventid, const int timeout, int *const data_len, char **const data);
+extern int MdsSandboxEnabled();
 extern int MdsSerializeDscIn(const char *const in, mdsdsc_xd_t *const out);
 extern int MdsSerializeDscOutZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out,
 	int (*const fixupNid) (),void *const fixupNidArg,

@@ -187,8 +187,8 @@ segs
 TreePutRecord(segs,)
 BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 putsegment(segs,-1,data(0:9))
-getsegment(segs,0)
-segs
+data(getsegment(segs, 0))
+data(dim_of(getsegment(segs, 0)))
 TreeWrite('main',_shot)
 TreeClose()
 TreeShr->TreeCompressDatafile(ref('main'),val(_shot))

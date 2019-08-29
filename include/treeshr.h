@@ -72,14 +72,22 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeEditing(void *dbid);
   extern EXPORT int TreeEndConglomerate();
   extern EXPORT int _TreeEndConglomerate(void *dbid);
+
   extern EXPORT int TreeFindNode(char const *path, int *nid);
   extern EXPORT int _TreeFindNode(void *dbid, char const *path, int *nid);
+  extern EXPORT int TreeFindNodeRelative(char const *path, int startnid, int *nid);
+  extern EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int *nid);
+
   extern EXPORT int TreeFindNodeEnd(void **ctx);
   extern EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
   extern EXPORT char *TreeFindNodeTags(int nid, void **ctx); /********** Use TreeFree(result) *****/
   extern EXPORT char *_TreeFindNodeTags(void *dbid, int nid, void **ctx);/********** Use TreeFree(result) *****/
+
   extern EXPORT int TreeFindNodeWild(char const *path, int *nid, void **ctx, int usage_mask);
   extern EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid, void **ctx, int usage_mask);
+  extern EXPORT int TreeFindNodeWildRelative(char const *path, int startnid, int *nid, void **ctx, int usage_mask);
+  extern EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid, void **ctx, int usage_mask);
+
   extern EXPORT void TreeFindTagEnd(void **ctx);
   extern EXPORT char *TreeFindTagWild(char *wild, int *nidout, void **search_ctx);
   extern EXPORT char *_TreeFindTagWild(void *dbid, char *wild, int *nidout, void **ctx);

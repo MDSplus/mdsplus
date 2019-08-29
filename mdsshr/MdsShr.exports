@@ -23,12 +23,14 @@ MdsCopyDxXd
 MdsCopyDxXdZ
 MdsDecompress
 MdsDescrToCstring
+MdsEnableSandbox
 MdsFree1Dx
 MdsFree
 MdsGet1Dx
 MdsGet1DxA
 MdsGet1DxS
 MdsGetCurrentShotId
+MdsSandboxEnabled
 MdsSerializeDscIn
 MdsSerializeDscOut
 MdsSerializeDscOutZ
