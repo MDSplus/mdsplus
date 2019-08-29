@@ -24,7 +24,6 @@
 #define MDSplusSUCCESS           0x10009
 #define MDSplusERROR             0x10012
 #define MDSplusFATAL             0x10024
-#define MDSplusSANDBOX           0x1002a
 #define SsSUCCESS                0x1
 #define SsINTOVF                 0x47c
 #define SsINTERNAL               -0x1
