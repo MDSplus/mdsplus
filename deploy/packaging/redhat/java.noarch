@@ -4,6 +4,7 @@
 ./usr/local/mdsplus/desktop/java/jtraverser2.desktop
 ./usr/local/mdsplus/java
 ./usr/local/mdsplus/java/classes
+./usr/local/mdsplus/java/classes/mdsplus-api.jar
 ./usr/local/mdsplus/java/classes/DeviceBeans.jar
 ./usr/local/mdsplus/java/classes/MdsPlus.jar
 ./usr/local/mdsplus/java/classes/MindTerm.jar

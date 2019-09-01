@@ -102,6 +102,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
+	$(top_srcdir)/m4/m4_ax_check_java_version.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
 	$(top_srcdir)/m4/m4_ax_docker_build.m4 \
 	$(top_srcdir)/m4/m4_ax_is_release.m4 \
@@ -564,6 +565,21 @@ libMdsTest_a_SOURCES = base_backend.c
 libMdsTestBackend_a_CFLAGS = -D_TESTING -I${srcdir}/backends/check $(AM_CFLAGS)
 libMdsTestBackend_a_SOURCES = check_backend.c
 MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
+@ENABLE_JAVA_FALSE@JAVA_TEST_DIRS = 
+
+# //////////////////////////////////////////////////////////////////////////// #
+# //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
+@ENABLE_JAVA_TRUE@JAVA_TEST_DIRS = java/mdsplus-api/tests
+PYTHON_TEST_DIRS = \
+	python/MDSplus/tests
+
+C_TEST_DIRS = \
+	mdsshr/testing \
+	mdslib/testing \
+	mdsobjects/cpp/testing \
+	tditest/testing
+
 tests_DIRS = $(addprefix tests__$(top_builddir)/, $(TEST_DIRS))
 rebuild_tests_DIRS = $(addprefix rebuild_tests__$(top_builddir)/, $(TEST_DIRS))
 clean_DIRS = $(addprefix clean__$(top_builddir)/, $(TEST_DIRS))
@@ -961,18 +977,12 @@ all-local: $(MdsTestShr)
 
 clean-local:
 	-$(RM) $(MdsTestShr)
-
-# //////////////////////////////////////////////////////////////////////////// #
-# //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
+#	testing/selftest
 
 TEST_DIRS ?= \
-			   python/MDSplus/tests \
-			   mdsshr/testing \
-			   mdslib/testing \
-			   mdsobjects/cpp/testing \
-			   tditest/testing
-#               testing/selftest
+	$(PYTHON_TEST_DIRS) \
+	$(C_TEST_DIRS) \
+	$(JAVA_TEST_DIRS)
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 

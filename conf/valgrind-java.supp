@@ -1,0 +1,154 @@
+{
+   unexpected issue on jenkins server; TreePutTimestampedSegment not called from mds.MdsShr_Test
+   Memcheck:Param
+   write(buf)
+   obj:/usr/lib64/libpthread-2.25.so
+   fun:MDS_IO_WRITE
+   fun:write_property
+   fun:_TreePutTimestampedSegment
+   fun:TreePutTimestampedSegment
+   fun:LibCallg
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Addr4
+   obj:*
+   ...
+   fun:JNI_CreateJavaVM
+   fun:JavaMain
+   fun:start_thread
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Addr4
+   obj:*
+   ...
+   fun:JVM_FindClassFromCaller
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Addr4
+   obj:*
+   ...
+   fun:jni_RegisterNatives
+   ...
+   fun:JVM_RegisterUnsafeMethods
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Addr4
+   obj:*
+   ...
+   fun:*JavaCall*Thread
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Addr4
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Cond
+   fun:_ZN7Monitor7TrySpinEP6Thread.part.*
+}
+
+{
+   jmv java-8-oracle
+   Memcheck:Leak
+   fun:malloc
+   fun:_ZN2os6mallocEm10MemoryTypeRK15NativeCallStack
+}
+
+{
+   jmv java-8-oracle 
+   Memcheck:Leak
+   fun:malloc
+   fun:JLI_MemAlloc
+   ...
+   fun:JLI_Launch
+   fun:main
+}
+
+{
+   jmv java-8-oracle
+   Helgrind:Race
+   fun:_ZN*
+}
+
+{
+   jvm java-8-openjdk
+   Memcheck:Addr4
+   obj:*
+   ...
+   obj:**/libjvm.so
+}
+
+{
+   jvm java-8-openjdk
+   Memcheck:Addr4
+   obj:*
+   obj:*
+}
+
+{
+   jvm java-8-openjdk
+   Memcheck:Cond
+   obj:**/libjvm.so
+}
+
+{
+   jvm java-8-openjdk
+   Memcheck:Leak
+   fun:malloc
+   obj:**/libjvm.so
+}
+
+{
+   jvm java-8-openjdk
+   Memcheck:Leak
+   fun:malloc
+   obj:**/libjli.so
+}
+
+{
+   jvm java-8-openjdk
+   Helgrind:Race
+   obj:**/libjvm.so
+}
+
+{
+   jvm java-8-openjdk
+   Helgrind:Race
+   obj:*
+   ...
+   obj:**/libjvm.so
+}

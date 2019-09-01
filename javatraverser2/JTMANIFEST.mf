@@ -1,2 +1,0 @@
-Main-Class: jTraverser
-Class-Path: devicebeans.jar jScope.jar .
