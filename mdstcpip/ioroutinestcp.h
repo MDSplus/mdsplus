@@ -249,7 +249,15 @@ static int io_listen(int argc, char **argv){
   {0, 0, 0, 0, 0}
   };
 #ifndef _WIN32
-  signal(SIGCHLD, ChildSignalHandler);
+  struct sigaction act;
+  act.sa_handler = ChildSignalHandler;
+  sigemptyset (&act.sa_mask);
+#ifdef SA_RESTART // attempt to resume interrupted io
+  act.sa_flags = SA_RESTART;
+#else
+  act.sa_flags = 0;
+#endif
+  sigaction (SIGCHLD, &act, NULL);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
   if (options[0].present && options[0].value)

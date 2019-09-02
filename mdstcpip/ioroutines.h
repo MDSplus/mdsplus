@@ -11,7 +11,6 @@
 #include "mdsip_connections.h"
 #include <status.h>
 #include <STATICdef.h>
-#include <signal.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <string.h>
