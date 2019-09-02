@@ -18,7 +18,7 @@ then
   git checkout ${BRANCH} -b $(whoami)-promote-${BRANCH}-${PROMOTE_TO}
   git rebase -q -s ours ${PROMOTE_TO}
   set +e
-  git merge stable -q -s recursive -X theirs 2>/dev/null
+  git merge $(PROMOTE_TO) -q -s recursive -X theirs 2>/dev/null
   set -e
   git status | grep "modified:" | awk '{system("git checkout '${PROMOTE_TO}' -- "$2)}'
   git status | grep "deleted by us:" | awk '{system("git rm "$4)}'
