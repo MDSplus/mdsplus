@@ -219,7 +219,7 @@ class Nci(object):
     _IS_MEMBER=2
     SET_FLAGS          =( 1,_C.c_uint32,4,int)
     CLEAR_FLAGS        =( 2,_C.c_uint32,4,int)
-    TIME_INSERTED      =( 4,_C.c_uint64,8,int)
+    TIME_INSERTED      =( 4,_C.c_uint64,8,_scr.Uint64)
     OWNER_ID           =( 5,_C.c_uint32,4,int)
     CLASS              =( 6,_C.c_uint8 ,1,int)
     DTYPE              =( 7,_C.c_uint8 ,1,int)
@@ -249,7 +249,7 @@ class Nci(object):
     NUMBER_OF_ELTS     =(32,_C.c_uint32, 4,int)
     DATA_IN_NCI        =(33,_C.c_uint32, 4,bool)
     ERROR_ON_PUT       =(34,_C.c_uint32, 4,bool)
-    RFA                =(35,_C.c_uint64, 8,int)
+    RFA                =(35,_C.c_uint64, 8,_scr.Uint64)
     IO_STATUS          =(36,_C.c_uint32, 4,int)
     IO_STV             =(37,_C.c_uint32, 4,int)
     DTYPE_STR          =(38,_C.c_char_p,64,str)
@@ -425,6 +425,7 @@ class Tree(object):
     def open(self, mode='NORMAL'):
         try:
             env_name = '%s_path'%self.tree.lower()
+
             if not self.path is None:
                 old_path = _mds.getenv(env_name)
                 _mds.setenv(env_name,self.path)
@@ -717,8 +718,8 @@ class Tree(object):
                                               _C.c_int32(1)))
 
     def dir(self):
-        """list descendants of top"""
-        self.top.dir()
+        """Return current default dir"""
+        self.default.dir()
 
     def __dir__(self):
         """used for tab completion"""
@@ -789,15 +790,16 @@ class Tree(object):
         @return: Node if found
         @rtype: TreeNode
         """
+
         if isinstance(name,(int,_scr.Int32)):
             ans = TreeNode(name,self)
         else:
-            n=_C.c_int32(0)
+            nid=_C.c_int32(0)
             _exc.checkStatus(
                     _TreeShr._TreeFindNode(self.ctx,
                                            _ver.tobytes(str(name)),
-                                           _C.byref(n)))
-            return TreeNode(int(n.value),self)
+                                           _C.byref(nid)))
+            return TreeNode(int(nid.value),self)
         return ans
 
     def _getNodeWildIter(self, name, *usage):
@@ -882,7 +884,6 @@ class Tree(object):
         @param tree: Name of tree
         @type tree: str
         @param inc: Increment (default: 1)
-        @return shot: New current shot number for the specified tree
         @rtype int
         """
         if isinstance(self,(Tree,)): # instancemethod: args shifted by one
@@ -1187,6 +1188,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         item = Nci._nci_item(buflen,code,pointer)
         _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(item)))
         retlen = item.retlen.contents.value
+
         if rtype is str:
             return _ver.tostr(ans.value[0:retlen].rstrip())
         if rtype is None:
@@ -1862,11 +1864,17 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @return: node matching path
         @rtype: TreeNode
         """
-        if path[0] == '\\':
-            return self.tree.getNode(path)
-        elif not path[0]  in ':.':
-            path=':'+path
-        return self.tree.getNode(self.fullpath+path)
+        if isinstance(path,(int,_scr.Int32)):
+            ans = TreeNode(path,self.tree)
+        else:       
+            nidout=_C.c_int32(0)
+            _exc.checkStatus(
+                        _TreeShr._TreeFindNodeRelative(self.ctx,
+                                               _ver.tobytes(str(path)),
+                                               _C.c_int32(self.nid),
+                                               _C.byref(nidout)))
+            return TreeNode(int(nidout.value),self.tree)
+        return ans
 
     def getNodeName(self):
         """Return node name
@@ -1875,20 +1883,42 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         return self.node_name
 
+
     def getNodeWild(self,path,*usage):
-        """Return tree nodes where path is relative to this node
-        @param path: Path relative to this node
-        @type path: str
-        @return: node matching path
+        """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found.
+        @param name: Node name. May include wildcards.
+        @type name: str
+        @param usage: Optional list of node usages (i.e. "Numeric","Signal",...). Reduces return set by including only nodes with these usages.
+        @type usage: str
+        @return: TreeNodeArray of nodes matching the wildcard path specification and usage types.
         @rtype: TreeNodeArray
         """
+        return TreeNodeArray([nid for nid in self._getNodeWildIter(path,*usage)],self.tree)
+
+    def _getNodeWildIter(self, name, *usage):
+        if len(usage) == 0:
+            usage_mask=0xFFFF
+        else :
+            try:
+                usage_mask=0
+                for u in usage:
+                    usage_mask |= 1 << _usage_table[u.upper()]
+            except KeyError:
+                raise UsageError(u)
+
+        nid=_C.c_int32(0)
+        ctx=_C.c_void_p(0)
         try:
-            olddef=self.tree.default
-            self.tree.default=self
-            ans = self.tree.getNodeWild(path,*usage)
-        finally:
-            self.tree.default=olddef
-        return ans
+            while _TreeShr._TreeFindNodeWildRelative(self.ctx,
+                                     _ver.tobytes(name),
+                                     _C.c_int32(self.nid),
+                                     _C.byref(nid),
+                                     _C.byref(ctx),
+                                     _C.c_int32(usage_mask)) & 1 != 0:
+                yield nid.value
+        except GeneratorExit:
+            pass
+        _TreeShr._TreeFindNodeEnd(self.ctx, _C.pointer(ctx))
 
     def getNumChildren(self):
         """Return number of children nodes.

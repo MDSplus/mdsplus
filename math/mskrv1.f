@@ -97,10 +97,11 @@ C
 C DETERMINE POLYGONAL ARCLENGTHS
 C
       S(1) = 0.
-      DO 1 I = 2,N
+      DO I = 2,N
         IM1 = I-1
-    1   S(I) = S(IM1)+SQRT((X(I)-X(IM1))**2+
-     *         (Y(I)-Y(IM1))**2)
+        S(I) = S(IM1)+SQRT((X(I)-X(IM1))**2+
+     *       (Y(I)-Y(IM1))**2)
+      END DO
 C
 C DENORMALIZE TENSION FACTOR
 C
@@ -171,7 +172,7 @@ C
       YP(1) = (DY1-SLPP1Y)/DIAG1
       TEMP(1) = SDIAG1/DIAG1
       IF (N .EQ. 2) GO TO 9
-      DO 8 I = 2,NM1
+      DO I = 2,NM1
         DELS2 = S(I+1)-S(I)
         DX2 = (X(I+1)-X(I))/DELS2
         DY2 = (Y(I+1)-Y(I))/DELS2
@@ -184,17 +185,19 @@ C
         DX1 = DX2
         DY1 = DY2
         DIAG1 = DIAG2
-    8   SDIAG1 = SDIAG2
+        SDIAG1 = SDIAG2
+      END DO
     9 DIAG = DIAG1-SDIAG1*TEMP(NM1)
       XP(N) = (SLPPNX-DX1-SDIAG1*XP(NM1))/DIAG
       YP(N) = (SLPPNY-DY1-SDIAG1*YP(NM1))/DIAG
 C
 C PERFORM BACK SUBSTITUTION
 C
-      DO 10 I = 2,N
+      DO I = 2,N
         IBAK = NP1-I
         XP(IBAK) = XP(IBAK)-TEMP(IBAK)*XP(IBAK+1)
-   10   YP(IBAK) = YP(IBAK)-TEMP(IBAK)*YP(IBAK+1)
+        YP(IBAK) = YP(IBAK)-TEMP(IBAK)*YP(IBAK+1)
+      END DO
       RETURN
 C
       END

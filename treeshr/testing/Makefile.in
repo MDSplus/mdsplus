@@ -117,6 +117,7 @@ am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/m4_ac_search_readline.m4 \
 	$(top_srcdir)/m4/m4_am_path_xml2.m4 \
 	$(top_srcdir)/m4/m4_ax_check_enable_debug.m4 \
+	$(top_srcdir)/m4/m4_ax_check_java_version.m4 \
 	$(top_srcdir)/m4/m4_ax_configure_args.m4 \
 	$(top_srcdir)/m4/m4_ax_docker_build.m4 \
 	$(top_srcdir)/m4/m4_ax_is_release.m4 \
@@ -1233,8 +1234,7 @@ tests: rebuild-tests
 	echo "//// Performing tests /////"; \
 	export TEST_FORMAT=${TEST_FORMAT}; \
 	status=0; \
-	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $(TEST_SUITE_LOG) || status=$$?;\
-	$(MAKE) -k $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
+	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
 	exit $$status
 
 # //////////////////////////////////////////////////////////////////////////// #

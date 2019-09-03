@@ -294,6 +294,7 @@ static char *GetRegistry(const HKEY where, const char *const pathname)
 
 
 EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag __attribute__ ((unused))){
+  if (MdsSandboxEnabled()) return MDSplusSANDBOX;
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;
   void *arglist[255];
@@ -342,6 +343,7 @@ static void child_done(int sig   )
 
 EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag)
 {
+  if (MdsSandboxEnabled()) return MDSplusSANDBOX;
   char *sh = "/bin/sh";
   pid_t pid, xpid;
   char *cmdstring = MdsDescrToCstring(cmd);
@@ -447,7 +449,7 @@ EXPORT void MdsFree(void *const ptr)
 EXPORT char *MdsDescrToCstring(const mdsdsc_t *const in)
 {
   char *out = malloc((size_t)in->length + 1);
-  memcpy(out, in->pointer, in->length);
+  if (in->length>0) memcpy(out, in->pointer, in->length);
   out[in->length] = 0;
   return out;
 }
@@ -802,6 +804,9 @@ EXPORT int LibResetVmZone(ZoneList **const zone)
   return MDSplusSUCCESS;
 }
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wclobbered"
+
 EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
 {
   VmList *list = NULL;
@@ -823,6 +828,8 @@ EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **cons
   free(list);
   return MDSplusSUCCESS;
 }
+#pragma GCC diagnostic pop
+
 EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
   return LibFreeVm(len, vm, zone);
 }

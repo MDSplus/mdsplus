@@ -996,7 +996,7 @@ Function .onInit
 FunctionEnd ; .onInit
 
 Function .onGUIEnd
-	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+	SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 	${ShowLog}
 FunctionEnd
 ### END INSTALLER ###
@@ -1009,7 +1009,7 @@ Function un.onInit
 functionEnd ; un.onInit
 
 Function un.onGUIEnd
-	SendMessage ${HWND_BROADCAST} ${WM_WININICHANGE} 0 "STR:Environment" /TIMEOUT=5000
+	SendMessage ${HWND_BROADCAST} ${WM_SETTINGCHANGE} 0 "STR:Environment" /TIMEOUT=5000
 FunctionEnd
  
 Section uninstall

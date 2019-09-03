@@ -42,14 +42,26 @@ clean-local:
 # //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
+if ENABLE_JAVA
+JAVA_TEST_DIRS = java/mdsplus-api/tests
+else
+JAVA_TEST_DIRS = 
+endif
+
+PYTHON_TEST_DIRS = \
+	python/MDSplus/tests
+
+C_TEST_DIRS = \
+	mdsshr/testing \
+	mdslib/testing \
+	mdsobjects/cpp/testing \
+	tditest/testing
+#	testing/selftest
 
 TEST_DIRS ?= \
-			   python/MDSplus/tests \
-			   mdsshr/testing \
-			   mdslib/testing \
-			   mdsobjects/cpp/testing \
-			   tditest/testing
-#               testing/selftest
+	$(PYTHON_TEST_DIRS) \
+	$(C_TEST_DIRS) \
+	$(JAVA_TEST_DIRS)
 
 TEST_OUTDIR  ?= ${top_builddir}/testing
 

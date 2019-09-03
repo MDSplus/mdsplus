@@ -152,7 +152,10 @@ c test for new *max* slope
       temp1 = (y(i)+epsln-yeye)/dx
       test = temp1 - smax
       if (sgn.le.0.0) test = -test
-      if (test) 80, 90, 100
+      if (test.LT.0) GO TO 80
+      if (test.EQ.0) GO TO 90
+      GO TO 100
+c      if (test) 80, 90, 100
    80 continue
 c test for end of candidate segment
       test = temp1 - smin
@@ -166,11 +169,17 @@ c test for new *min* slope
       temp2 = (y(i)-epsln-yeye)/dx
       test = temp2 - smax
       if (sgn.le.0.0) test = -test
-      if (test) 110, 120, 140
+      if (test.lt.0) GO TO 110
+      if (test.eq.0) GO TO 120
+      GO TO 140
+c      if (test) 110, 120, 140
   110 continue
       test = smin - temp2
       if (sgn.le.0.0) test = -test
-      if (test) 120, 130, 60
+      if (test.lt.0) GO TO 120
+      if (test.eq.0) GO TO 130
+      GO TO 60
+c      if (test) 120, 130, 60
   120 continue
       smin = temp2
   130 continue
@@ -211,7 +220,10 @@ c check for pivot at new eye point
         temp1 = (y(l+1)-temp2)/dx
         test = temp1 - smax
         if (sgn.le.0.0) test = -test
-        if (test) 180, 190, 200
+        if (test.lt.0) GO TO 180
+        if (test.eq.0) GO TO 190
+        GO TO 200
+c        if (test) 180, 190, 200
   180   continue
         smax = temp1
   190   continue

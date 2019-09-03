@@ -384,10 +384,10 @@ BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 265388041
 putsegment(segs,-1,data(0:9))
 265389633
-getsegment(segs,0)
-Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
-segs
-Build_Signal([0,1,2,3,4,5,6,7,8,9], *, [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.])
+data(getsegment(segs, 0))
+[0,1,2,3,4,5,6,7,8,9]
+data(dim_of(getsegment(segs, 0)))
+[0.,1.,2.,3.,4.,5.,6.,7.,8.,9.]
 TreeWrite('main',_shot)
 265388041
 TreeClose()
@@ -408,3 +408,1398 @@ TreeOpen('main',-1,1)
 265388041
 TreeDeletePulseFile(_shot)
 265389633
+TreeClose()
+265388041
+TreeOpen('subtree', -1)
+265388067
+Tcl('dir *:***:startidx')
+
+\SUBTREE::A12_INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::A12_INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::A12_INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::A12_INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A12:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::A12_INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:A14:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_02
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_03
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_04
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_05
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_06
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_07
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_08
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_09
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_16
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_17
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_18
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_19
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_20
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_21
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_22
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_23
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_24
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_25
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_26
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_27
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_28
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_29
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_30
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_31
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:EC727:INPUT_32
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_16
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_17
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_18
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_19
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_20
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_21
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_22
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_23
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_24
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_25
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_26
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_27
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_28
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_29
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_30
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_31
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_32
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H908:INPUT_9
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:H912:INPUT_9
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_02
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_03
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_04
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_05
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_06
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_07
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_08
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_09
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_16
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA4:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA4:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA4:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA4:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA6:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_02
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_03
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_04
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_05
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_06
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_07
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_08
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_09
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_16
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JORGER_TR812:CHANNEL_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L6810:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L6810:INPUT_02
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L6810:INPUT_03
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L6810:INPUT_04
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8210:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8210:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8210:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8210:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_02
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_03
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_04
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_05
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_06
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_07
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_08
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_09
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_10
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_11
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_12
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_13
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_14
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_15
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_16
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_17
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_18
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_19
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_20
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_21
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_22
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_23
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_24
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_25
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_26
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_27
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_28
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_29
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_30
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_31
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_32
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590:INPUT_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8590_SCLR:INPUT_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_7
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2812:INPUT_8
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2814:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2814:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2814:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2814:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2824:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2825:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2825:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2825:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2825:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2860:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2860:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2860:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:T2860:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_1
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_2
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_3
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_4
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_5
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:TR612:INPUT_6
+
+ :STARTIDX    
+
+Total of 1 node.
+
+
+Grand total of 224 nodes.
+1
+Tcl('dir *:input_01:startidx')
+
+\SUBTREE::TOP:EC727:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:INCAA16:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:JOERGER_TR16:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L6810:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+\SUBTREE::TOP:L8212_32:INPUT_01
+
+ :STARTIDX    
+
+Total of 1 node.
+
+
+Grand total of 5 nodes.
+1
+dir 1*
+%TDI-E-BOMB, Bad punctuation, could not compile the text
+%TDI Error compiling region marked by ^
+dir 1*
+  ^ ^
+%TDI Error in EXECUTE("dir 1*")
+
