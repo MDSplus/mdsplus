@@ -72,8 +72,59 @@ static void unlock_socket_list() {  pthread_mutex_unlock(&socket_list_mutex); }
 #define LOCK_SOCKET_LIST   pthread_mutex_lock(&socket_list_mutex);pthread_cleanup_push(unlock_socket_list, NULL);
 #define UNLOCK_SOCKET_LIST pthread_cleanup_pop(1);
 
+
+#ifdef _TCP
+static void socket_list_cleanup(){
+  LOCK_SOCKET_LIST;
+  Socket *s;
+  for (s = SocketList; s; s = s->next)
+    shutdown(s->socket, SHUT_RDWR);
+  UNLOCK_SOCKET_LIST;
+}
+
+// https://www.gnu.org/software/libc/manual/html_node/Termination-in-Handler.html
+static volatile sig_atomic_t fatal_error_in_progress = 0;
+# ifndef _WIN32
+static struct sigaction act;
+# endif
+static void signal_handler(int sig) {
+  if (!fatal_error_in_progress) {
+      fatal_error_in_progress = 1;
+      socket_list_cleanup();
+  }
+  signal(sig, SIG_DFL);
+  raise(sig);
+}
+static void set_signal_handler(int sig) {
+# ifdef _WIN32
+  void *old = signal(sig, signal_handler);
+  if (old != SIG_DFL)
+    signal(sig, old);
+# else
+  struct sigaction old;
+  if (!sigaction(sig, &act, &old) && old.sa_handler != SIG_DFL)
+    sigaction(sig, &old, NULL);
+# endif
+}
+#endif
+
 static void PushSocket(SOCKET socket){
   LOCK_SOCKET_LIST;
+#ifdef _TCP
+  static int initialized = FALSE;
+  if (!initialized) {
+# ifndef _WIN32
+    sigemptyset (&act.sa_mask);
+    act.sa_flags = 0;
+    act.sa_handler = signal_handler;
+# endif
+    atexit(socket_list_cleanup);
+    initialized = TRUE;
+  }
+  set_signal_handler(SIGABRT);
+  set_signal_handler(SIGTERM);
+  set_signal_handler(SIGINT);
+#endif
   Socket *new = malloc(sizeof(Socket));
   new->socket = socket;
   new->next = SocketList;
@@ -92,14 +143,6 @@ static void PopSocket(SOCKET socket){
       SocketList = s->next;
     free(s);
   }
-  UNLOCK_SOCKET_LIST;
-}
-
-static void ABORT(int sigval __attribute__ ((unused))){
-  Socket *s;
-  LOCK_SOCKET_LIST;
-  for (s = SocketList; s; s = s->next)
-      shutdown(s->socket, 2);
   UNLOCK_SOCKET_LIST;
 }
 
@@ -300,7 +343,6 @@ static ssize_t io_recv_to(Connection* c, void *bptr, size_t num, int to_msec){
   ssize_t recved = -1;
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
-    signal(SIGABRT, ABORT);
 #ifdef _TCP
     struct timeval to,timeout;
     if (to_msec<0) {
@@ -344,7 +386,6 @@ static int io_check(Connection* c){
   ssize_t err = -1;
   if (sock != INVALID_SOCKET) {
     PushSocket(sock);
-    signal(SIGABRT, ABORT);
     struct timeval timeout = {0,0};
     fd_set readfds;
     FD_ZERO(&readfds);
@@ -395,7 +436,7 @@ static int io_disconnect(Connection* con){
       free(c);
     }
 #ifdef _TCP
-    err = shutdown(sock, 2);
+    err = shutdown(sock, SHUT_RDWR);
 #endif
     err = close(sock);
   }
