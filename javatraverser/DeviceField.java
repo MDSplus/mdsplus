@@ -12,10 +12,16 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.JComponent;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import javax.swing.TransferHandler;
+import java.awt.datatransfer.DataFlavor;
+import java.util.*;
 
 public class DeviceField extends DeviceComponent
 {
@@ -35,6 +41,51 @@ public class DeviceField extends DeviceComponent
   protected String initialField;
 
   private boolean reportingChange = false;
+  private TransferHandler origTH;
+
+  //Inner class ToTransferHandler to handle drag and drop 
+    class ToTransferHandler extends TransferHandler
+    {
+	public int getSourceActions(JComponent comp)
+	{
+	    return COPY_OR_MOVE;
+	}
+	public Transferable createTransferable(JComponent comp)
+	{
+	    return new StringSelection(textF.getSelectedText());
+	}
+	public boolean canImport(TransferHandler.TransferSupport support)
+	{
+	    if(support.isDrop() && support.isDataFlavorSupported(DataFlavor.stringFlavor))
+	        return true;
+	    return false;
+	}
+	public boolean importData(TransferHandler.TransferSupport support)
+	{
+	   if(!canImport(support))
+	        return origTH.importData(support);
+	    if(!editable)
+		return false;
+	    try {
+
+	        String data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
+		if(data.indexOf(":\\") != -1)
+		{
+	            StringTokenizer st = new StringTokenizer(data, ":");
+	            String experiment = st.nextToken();
+	            String path = data.substring(experiment.length()+1);
+		    textF.setText(path);
+		}
+		else
+		    textF.setText(data);
+	    }catch(Exception exc)
+	    {
+	        return false;
+	    }
+	    return true;
+	}
+     } //End Inner class ToTransferHandler
+
 
   public void setNumCols(int numCols)
   {
@@ -130,6 +181,9 @@ public class DeviceField extends DeviceComponent
     add(textF = new JTextField(10));
     textF.setEnabled(editable);
     textF.setEditable(editable);
+    origTH = textF.getTransferHandler();
+    textF.setTransferHandler(new ToTransferHandler());
+
     //setLayout(gridbag = new GridBagLayout());
     initializing = false;
   }

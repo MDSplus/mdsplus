@@ -98,10 +98,10 @@ class MARTE2_SUPERVISOR(Device):
       info['data_sources'] = retData
       info['name'] = self.getNode('name').data()
 
-      print('#######################')
-      print(info)
-      print('@@@@@@@@@@@@@@@@@@@@@@@')
-      print(threadMap)
+#      print('#######################')
+#      print(info)
+#      print('@@@@@@@@@@@@@@@@@@@@@@@')
+#      print(threadMap)
       return info, threadMap
 
 

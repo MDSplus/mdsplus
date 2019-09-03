@@ -1172,7 +1172,12 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	{
 	    if(curr_tree == null) return null;
 	    try {
-	        return new StringSelection(topExperiment + ":" + Tree.getCurrentNode().getFullPath());
+                String fullPath = Tree.getCurrentNode().getFullPath();
+		int colonIdx;
+		if(fullPath.charAt(0) == '\\' && (colonIdx = fullPath.indexOf(':')) != -1) //If is in the form \tree::tag
+		    fullPath = "\\"+fullPath.substring(colonIdx+ 2);
+		
+	        return new StringSelection(topExperiment + ":" + fullPath);
 	    }catch(Exception exc) {return null;}
 	}
     }

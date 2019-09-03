@@ -62,6 +62,7 @@ class MARTE2_COMPONENT(Device):
         parts.append({'path':'.OUTPUTS.'+sigName, 'type':'structure'})
 	parts.append({'path':'.OUTPUTS.'+sigName+':NAME', 'type':'text', 'value':output['name']})
 	parts.append({'path':'.OUTPUTS.'+sigName+':TYPE', 'type':'text', 'value':output['type']})
+	parts.append({'path':'.OUTPUTS.'+sigName+':SAMPLES', 'type':'numeric', 'value': 1})
 	parts.append({'path':'.OUTPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(output['dimensions']))})
 	if 'seg_len' in output:
 	  parts.append({'path':'.OUTPUTS.'+sigName+':SEG_LEN', 'type':'numeric', 'value':output['seg_len']})
@@ -219,6 +220,7 @@ class MARTE2_COMPONENT(Device):
                 continue  #dimensions set to -1 means that the output is not used
             outputDict['value_nid'] = output.getNode(':value')
             outputDict['seg_len'] = output.getNode(':seg_len').data()
+            outputDict['samples'] = output.getNode(':samples').data()
             outputDicts.append(outputDict)
           except:
             pass
@@ -288,10 +290,10 @@ class MARTE2_COMPONENT(Device):
           inputSigs = dev.getNode('.INPUTS')
           for inputChan in inputSigs.getChildren():
             try:
+              print('^^^^^  ', inputChan.getNode('VALUE'))
               inputNid =  inputChan.getNode('VALUE').getData().getNid()
             except:
-              print('ERROR: Inconsistent Input for device '+ dev.getFullPath()+ ' : '+ inputChan)
-              return False
+              continue
             if inputNid == outValueNode.getNid():
               if self.sameSynchSource(dev):
                 return isSynch
@@ -358,7 +360,7 @@ class MARTE2_COMPONENT(Device):
         gamText += '        DataSource = '+gamName+'_Timer\n'
         gamText += '        Type = uint32\n'
         gamText += '        NumberOfElements = 1\n'
-        gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
+        gamText += '        Frequency = '+str(round(1./period), 4)+'\n'
         gamText += '      }\n'
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
@@ -397,7 +399,7 @@ class MARTE2_COMPONENT(Device):
           gamText += '        DataSource = '+gamName+'_Timer\n'
           gamText += '        Type = uint32\n'
           gamText += '        NumberOfElements = 1\n'
-          gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
+          gamText += '        Frequency = '+str(round(1./period),4)+'\n'
           gamText += '      }\n'
           gamText += '    }\n'
           gamText += '    OutputSignals = {\n'
@@ -521,7 +523,7 @@ class MARTE2_COMPONENT(Device):
         frequency = 1./period
 
         dataSourceText += '    StartTime = '+str(startTime)+'\n'
-        dataSourceText += '    Frequency = '+str(int(round(frequency)))+'\n'
+        dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
         dataSourceText += '    Signals = { \n'
         for nodeDict in nonGamInputNodes:
           dataSourceText += '      '+nodeDict['name']+' = {\n'
@@ -763,7 +765,7 @@ class MARTE2_COMPONENT(Device):
           gamText += '        DataSource = '+dataSourceName+'_Timer\n'
           gamText += '        Type = uint32\n'
           gamText += '        NumberOfElements = 1\n'
-          gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
+          gamText += '        Frequency = '+str(round(1./period,4))+'\n'
           gamText += '      }\n'
           gamText += '    }\n'
           gamText += '    OutputSignals = {\n'
@@ -813,12 +815,7 @@ class MARTE2_COMPONENT(Device):
       dataSourceText += '  }\n'
       dataSources.append(dataSourceText)
 
-    #We need to declare out DDB, out MdsWriter and 2 IOGAMs (From this DataSource to DDB and from DDB to MdsWriter)
-      dataSourceText = '  +'+dataSourceName+'_Output_DDB = {\n'
-      dataSourceText += '    Class = GAMDataSource\n'
-      dataSourceText += '  }\n'
-      dataSources.append(dataSourceText)
-
+#A MDSWriter is always addeds
       dataSourceText = '  +'+dataSourceName+'_TreeOutput = {\n'
       dataSourceText += '    Class = MDSWriter\n'
       dataSourceText += '    NumberOfBuffers = 10000\n'
@@ -836,16 +833,16 @@ class MARTE2_COMPONENT(Device):
       currTimebase = self.getNode('timebase').evaluate()
 
       if isinstance(currTimebase, Range):
-         period = currTimebase.delta.data()
+        period = currTimebase.delta.data()
       else:
-         currTimebase = currTimebase.data()
-         period = currTimebase[1] - currTimebase[0]
-
+        currTimebase = currTimebase.data()
+        period = currTimebase[1] - currTimebase[0]
+ 
 #If trigger is defined put it as first signal
       if outputTrigger != None:
-	dataSourceText += '      Trigger = {\n'
-	dataSourceText += '      type = uint8\n'
-	dataSourceText += '    }\n'
+        dataSourceText += '      Trigger = {\n'
+        dataSourceText += '      type = uint8\n'
+        dataSourceText += '    }\n'
       for outputDict in outputDicts:
         dataSourceText += '      '+outputDict['name']+' = {\n'
         dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath()+'"\n'
@@ -854,6 +851,11 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '        AutomaticSegmentation = 0\n'
         dataSourceText += '      }\n'
       dataSourceText += '    }\n'
+      dataSourceText += '  }\n'
+      dataSources.append(dataSourceText)
+
+      dataSourceText = '  +'+dataSourceName+'_Output_DDB = {\n'
+      dataSourceText += '    Class = GAMDataSource\n'
       dataSourceText += '  }\n'
       dataSources.append(dataSourceText)
 
@@ -866,11 +868,13 @@ class MARTE2_COMPONENT(Device):
       for outputDict in outputDicts:
         gamText += '      '+outputDict['name'] + ' = {\n'
         gamText += '        DataSource = '+dataSourceName+'\n'
+        samples = outputDict['samples']
+        gamText += '        Samples = '+str(samples)+'\n'
         if isSynch and firstOut:
           firstOut = False
           period = timebase.getDescAt(2).data() #Must be correct(will be checked before)
-          frequency = round(1./period)
-          gamText += '        Frequency = '+str(frequency)+'\n'
+          frequency = 1./period
+          gamText += '        Frequency = '+str(round(frequency, 4))+'\n'
         gamText += '      }\n'
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
@@ -888,8 +892,12 @@ class MARTE2_COMPONENT(Device):
           numberOfElements = 1
           for currDim in outputDict['dimensions']:
             numberOfElements *= currDim
-        gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
-        gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+        samples = outputDict['samples']
+        if samples > 1:
+          gamText += '        NumberOfDimensions = 1\n'
+        else:
+          gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+        gamText += '        NumberOfElements = '+str(numberOfElements * samples)+'\n'
         gamText += '      }\n'
         if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], True):
           synchThreadSignals.append(outputDict['name'])
@@ -927,6 +935,7 @@ class MARTE2_COMPONENT(Device):
         gamText += '      '+outputDict['name'] + ' = {\n'
         gamText += '        DataSource = '+dataSourceName+'_TreeOutput\n'
         gamText += '        Type = '+outputDict['type']+'\n'
+        gamText += '        Samples = '+str(outputDict['samples'])+'\n'
         if outputDict['dimensions'] == 0:
           numberOfElements = 1
           numberOfDimensions = 0
@@ -941,7 +950,7 @@ class MARTE2_COMPONENT(Device):
 
       if outputTrigger != None:
 	gamText += '      Trigger = {\n'
-	gamText += '      DataSource = '+gamName+'_TreeOutput\n'
+	gamText += '      DataSource = '+dataSourceName+'_TreeOutput\n'
 	gamText += '      type = uint8\n'
 	gamText += '    }\n'
 
@@ -950,60 +959,59 @@ class MARTE2_COMPONENT(Device):
       gams.append(gamText)
 
       if len(synchThreadSignals) > 0:  # Some outputs are connected to devices on separate synchronized theads
-        dataSourceText = '  +'+gamName+'_Output_Synch = {\n'
+        dataSourceText = '  +'+dataSourceName+'_Output_Synch = {\n'
         dataSourceText += '    Class = RealTimeThreadSynchronisation\n'
         dataSourceText += ' }\n'
         dataSources.append(dataSourceText)
 
-        gamList.append(gamName+'_Output_Synch_IOGAM')
-        gamText = '  +'+gamName+'_output_Synch_IOGAM = {\n'
+        gamList.append(dataSourceName+'_Output_Synch_IOGAM')
+        gamText = '  +'+dataSourceName+'_output_Synch_IOGAM = {\n'
         gamText += '    Class = IOGAM\n'
         gamText += '    InputSignals = {\n'
         for signal in synchThreadSignals:
           gamText += '      '+signal+' = {\n'
-          gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+          gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
           gamText += '      }\n'
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
         for signal in synchThreadSignals:
           gamText += '      '+signal+' = {\n'
-          gamText += '        DataSource = '+gamName+'_Output_Synch\n'
+          gamText += '        DataSource = '+dataSourceName+'_Output_Synch\n'
           gamText += '      }\n'
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
 
       if len(asynchThreadSignals) > 0:  # Some outputs are connected to devices on separate synchronized theads
-        dataSourceText = '  +'+gamName+'_Output_Asynch = {\n'
+        dataSourceText = '  +'+dataSourceName+'_Output_Asynch = {\n'
         dataSourceText += '    Class = RealTimeThreadAsyncBridge\n'
         dataSourceText += ' }\n'
         dataSources.append(dataSourceText)
 
-        gamList.append(gamName+'_Output_Asynch_IOGAM')
-        gamText = '  +'+gamName+'_output_Asynch_IOGAM = {\n'
+        gamList.append(dataSourceName+'_Output_Asynch_IOGAM')
+        gamText = '  +'+dataSourceName+'_output_Asynch_IOGAM = {\n'
         gamText += '    Class = IOGAM\n'
         gamText += '    InputSignals = {\n'
         for signal in synchThreadSignals:
           gamText += '      '+signal+' = {\n'
-          gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+          gamText += '        DataSource = '+dataSourceName+'_Output_DDB\n'
           gamText += '      }\n'
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
         for signal in synchThreadSignals:
           gamText += '      '+signal+' = {\n'
-          gamText += '        DataSource = '+gamName+'_Output_Asynch\n'
+          gamText += '        DataSource = '+dataSourceName+'_Output_Asynch\n'
           gamText += '      }\n'
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
 
-
-
-
 #######################OUTPUT
 
     def getMarteOutputInfo(self, threadMap, gams, dataSources, gamList):
       configDict = self.getGamInfo()
+      print('$$$$$$$$$$$$$$$$$$$')
+      print(configDict)
       dataSourceName = configDict['gamName']
       dataSourceClass = configDict['gamClass']
       timebase = configDict['timebase']
@@ -1047,7 +1055,8 @@ class MARTE2_COMPONENT(Device):
         gamText += '        DataSource = '+dataSourceName+'_Timer\n'
         gamText += '        Type = uint32\n'
         gamText += '        NumberOfElements = 1\n'
-        gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
+#        gamText += '        Frequency = '+str(int(round(1./period)))+'\n'
+        gamText += '        Frequency = '+str(round(1./period, 4))+'\n'
         gamText += '      }\n'
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
@@ -1076,7 +1085,7 @@ class MARTE2_COMPONENT(Device):
             prevTimebase = TreeNode(timebase, self.getTree())
             timebase = prevTimebase.getData()
         origName = prevTimebase.getParent().getFullPath()
-        #Check whether the synchronization source is a Sunch Input. Only in this case, the origin DDB is its output DDB
+        #Check whether the synchronization source is a Synch Input. Only in this case, the origin DDB is its output DDB
         originMode = prevTimebase.getParent().getNode('mode').data()
         if originMode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
           timerDDB = origName+'_Output_DDB'
@@ -1104,7 +1113,7 @@ class MARTE2_COMPONENT(Device):
         else:  #Normal reference
           isTreeRef = False
           try:
-	    sourceNode = inputDict['value'].getParent().getParent().getParent()
+ 	    sourceNode = inputDict['value'].getParent().getParent().getParent()
             sourceGamName = self.convertPath(sourceNode.getFullPath())
             signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
@@ -1140,7 +1149,7 @@ class MARTE2_COMPONENT(Device):
                   numberOfElements *= currDim
               gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
               gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
-        gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
+ #       gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
         gamText += '      }\n'
       gamText += '    }\n'
 
@@ -1162,6 +1171,7 @@ class MARTE2_COMPONENT(Device):
             numberOfElements *= currDim
         gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
         gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+        gamText = self.addSignalParameters(outputDict['value_nid'].getParent().getNode('parameters'), gamText) #For output devices parameters are copied to out
         gamText += '      }\n'
       gamText += '    }\n'
       gamText += '  }\n'
@@ -1184,7 +1194,8 @@ class MARTE2_COMPONENT(Device):
         frequency = 1./period
 
         dataSourceText += '    StartTime = '+str(startTime)+'\n'
-        dataSourceText += '    Frequency = '+str(int(round(frequency)))+'\n'
+#        dataSourceText += '    Frequency = '+str(int(round(frequency)))+'\n'
+        dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
         dataSourceText += '    Signals = { \n'
         for nodeDict in nonGamInputNodes:
           dataSourceText += '      '+nodeDict['name']+' = {\n'
@@ -1204,6 +1215,11 @@ class MARTE2_COMPONENT(Device):
 	  else:
 	    dataSourceText += '        UseColumnOrder = 0\n'
           dataSourceText += '      }\n'
+        dataSourceText += '      timebase = {\n'
+        dataSourceText += '        NumberOfElements = 1\n'
+        dataSourceText += '        Type = uint64\n'
+        dataSourceText += '	 }\n'
+
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
@@ -1258,6 +1274,41 @@ class MARTE2_COMPONENT(Device):
 	self.getMarteInputInfo(threadMap, gams, dataSources, gamList, False)
       else:
 	self.getMarteOutputInfo(threadMap, gams, dataSources, gamList)
+
+#Utility methods
+
+    #return information about the connection. Returned dictionary fields: gam_class, gam_nid, dimensions, type, samples. None if the input is not connected
+    def getInputChanInfo(self, valNid):
+      try:
+        print(valNid)
+        chanNid = valNid.getData()
+        print(chanNid)
+        if not(isinstance(chanNid, TreeNode) or isinstance(chanNid, TreePath)):  #Link to other component up in the chain
+          return None 
+        if isinstance(chanNid, TreePath):
+            chanNid = TreeNode(chanNid, self.getTree())
+        print(chanNid)
+        chanNid = chanNid.getParent()
+	retInfo = {}
+        retInfo['gam_nid'] = chanNid.getParent().getParent()
+        retInfo['gam_class'] = chanNid.getParent().getParent().getNode(':GAM_CLASS').data()  #Must not generate exception
+        try:
+          retInfo['dimensions'] = chanNid.getNode(':DIMENSIONS').data()
+        except:
+          retInfo['dimensions'] = None
+        try:
+          retInfo['type'] = chanNid.getNode(':TYPE').data()
+        except:
+          retInfo['type'] = None
+        try:
+          retInfo['samples'] = chanNid.getNode(':SAMPLES').data()
+        except:
+          retInfo['samples'] = None
+      except: #not connected
+        return None
+      return retInfo
+
+ 
 
 #Prpeparatory work before reading MARTe2 information. To be overridden by subclasses/
     def prepareMarteInfo(self):
