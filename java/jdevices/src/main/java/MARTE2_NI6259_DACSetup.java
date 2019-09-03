@@ -54,6 +54,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
         deviceChoice6 = new DeviceChoice();
         jPanel13 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
+        deviceButtons1 = new DeviceButtons();
 
         setDeviceProvider("scdevail.rfx.local:8100");
         setDeviceTitle("MARTe2 NI 6250 DAC");
@@ -180,12 +181,14 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
         jTabbedPane1.addTab("Chan 4", jPanel11);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private DeviceButtons deviceButtons1;
     private DeviceChoice deviceChoice1;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
