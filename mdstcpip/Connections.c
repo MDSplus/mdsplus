@@ -223,7 +223,7 @@ int DisconnectConnection(int conid){
       // while exits if no other task but disconnect or on timeout
       while (c->state & ~CON_DISCONNECT && !pthread_cond_timedwait(&c->cond,&connection_mutex,&tp));
       if (c->state & ~CON_DISCONNECT)
-        fprintf(stderr,"DisconnectConnection: Timeout waiting for connection %d state=%d", conid, c->state);
+        fprintf(stderr,"DisconnectConnection: Timeout waiting for connection %d state=%d\n", conid, c->state);
       c = _FindConnection(conid, &p); // we were waiting, so we need to update p
     }
     // remove after task is complete
