@@ -39,6 +39,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <tdishr_messages.h>
 #include <mdsshr.h>
+#include <treeshr.h>
+#include <string.h>
+#include <strroutines.h>
 
 
 
@@ -185,6 +188,20 @@ int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
   return status;
 }
 
+static int fixup_nid(int *nid, void *unused __attribute__ ((unused)), struct descriptor *path)
+{
+  char *path_c = TreeGetPath(*nid);
+  if (path_c) {
+    struct descriptor path_d = { 0, DTYPE_T, CLASS_S, 0 };
+    path_d.length = (unsigned short)strlen(path_c);
+    path_d.pointer = path_c;
+    StrCopyDx(path, &path_d);
+    TreeFree(path_c);
+  }
+  return 1;
+}
+
+
 /*--------------------------------------------------------------
 	Automatic evaluation of constants does what is safe to do.
 	Examples: F_COMPLEX(1,5) becomes DTYPE_FC: CMPLX(.1E1,.5E1).
@@ -212,7 +229,6 @@ int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 	NEED to worry about CLASS_OF, DTYPE_OF, SCALAR, C-statements.
 	What about DTYPE_MISSING? It is generated only by evaluation.
 */
-
 int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
 {
   GET_TDITHREADSTATIC_P;
@@ -227,8 +243,14 @@ int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
   this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   if (ndesc < this_ptr->m1 || ndesc > this_ptr->m2)
     goto doit;			/*force an error */
-  if ((this_ptr->token & LEX_K_IMMED) == 0)
-    return MDSplusSUCCESS;
+  if ((this_ptr->token & LEX_K_IMMED) == 0) {
+    int status = MDSplusSUCCESS;
+    if (opcode == OPC_FUN) {
+      EMPTYXD(ans);
+      int status = MdsCopyDxXdZ((mdsdsc_t *)out_ptr, (mdsdsc_xd_t *)&ans, &TdiRefZone.l_zone, fixup_nid, NULL, NULL, NULL);           if STATUS_OK *out_ptr_ptr=(struct descriptor_function *)ans.pointer;
+    }
+    return status;
+  }
 	/******************
 	Test for VMS types.
 	BUILD_xxx always.
