@@ -3011,6 +3011,8 @@ wait(.01)
 !
 data(build_signal(1:10,*,*))
 data_with_units(build_signal(10*$VALUE,build_with_units(1:10,"counts"),*))
+data(*)
+data(*)[0]
 !
 ! Functions implemented in TdiItoX.c
 !
