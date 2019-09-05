@@ -1325,7 +1325,7 @@ int TdiYacc(){
 	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
       tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
       tdiyyval.mark.rptr->ndesc += 2;
-      /*++TdiRefZone.l_rel_path; */
+      ++TdiRefZone.l_rel_path;
     } break;
   case 100: // stmt : BREAK ';'
     {
@@ -1394,7 +1394,8 @@ int TdiYacc(){
     }
     break;
   case 113: // stmt : fun stmt
-    {				/*TdiRefZone.l_rel_path--; */
+    {
+      TdiRefZone.l_rel_path--;
       tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
     } break;
   case 114: // stmt : '`' stmt
