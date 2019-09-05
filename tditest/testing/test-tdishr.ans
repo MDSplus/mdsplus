@@ -6273,3 +6273,7 @@ decompile(`dict(,"a",1,"b",2),1)
 'Dict(, "a",1 /*** etc. ***/)'
 decompile(`zero(32758,1))
 "Set_Range(32758,0 /*** etc. ***/)"
+fun nid()nid
+Fun nid () {
+	nid;
+}
