@@ -1,23 +1,23 @@
 #!/bin/bash
 #
-# runs $srcdir/bootstrap in a controlled maner
-mkdir -p ${WORKSPACE}
+# runs maven in a controlled maner
+mkdir -p $WORKSPACE
 cleanup() {
-  docker rm $(cat ${WORKSPACE}/docker-cid)
-  rm -f ${WORKSPACE}/docker-cid
+  docker rm $(cat $WORKSPACE/docker-cid)
+  rm -f $WORKSPACE/docker-cid
 }
 trap cleanup EXIT
 volume() {
-  if [ ! -z "$1" ]
-  then echo "-v $(realpath ${1}):${2}"
+  if [ -n "$1" ]
+  then echo "-v $(realpath $1):$2"
   fi
 }
 
-if [ ! -z $PUBLISHDIR ]
+if [ -n "$PUBLISHDIR" ]
 then mkdir -p "$PUBLISHDIR"
 fi
 
-MVN="mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=/maven"
+MVN="mvn -B -Dmaven.repo.local=/release/maven/repository -DsourceDirectory=/maven"
 if [ ! -z $KEYS ]
 then MVN="$MVN -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml"
 fi
@@ -41,15 +41,25 @@ then MVNGOAL="$MVNGOAL package"
 else MVNGOAL="$MVNGOAL test"
 fi
 
-docker run -t -a stdout -a stderr --cidfile="${WORKSPACE}/docker-cid" \
-   -e MVN \
-   -e "HOME=/workspace" \
-   $(volume "${SRCDIR}/java" /maven) \
-   $(volume "${WORKSPACE}" /workspace) \
-   $(volume "${KEYS}" /sign_keys) \
-   ${DOCKERIMAGE} /bin/sh -c "
-	rm -rf /workspace/maven;mkdir -p /workspace/maven;cd /workspace/maven
-	find /maven -name pom.xml -exec /bin/sh -c 'mkdir -p "\$"(dirname /workspace"\$"0);cp "\$"0 /workspace"\$"0' '{}' ';'
-        ${MVN} versions:set -DgenerateBackupPoms=false -DnewVersion=${RELEASE_VERSION} -DartifactId=* &&\
-	${MVN} $MVNGOAL
-"
+if [ -n "$INTERACTIVE" ]
+then
+ PROGRAM=/bin/bash
+ echo run /scripts/run_maven.sh
+ INTERACTIVE="-i"
+else PROGRAM=/scripts/run_maven.sh
+fi
+
+docker run -t $INTERACTIVE -u $(id -u) --network=host -a stdout -a stderr --cidfile="$WORKSPACE/docker-cid" \
+   -e MVN="$MVN" \
+   -e MVNGOAL="$MVNGOAL" \
+   -e RELEASE_VERSION="$RELEASE_VERSION" \
+   -e GNUPGHOME=/sign_keys/.gnupg \
+   -e HOME=/release/maven \
+   $(volume "$REPOSITORY" /repository) \
+   $(volume "$WORKSPACE" /root) \
+   $(volume "$SRCDIR/deploy/platform/maven" /scripts) \
+   $(volume "$SRCDIR/java" /maven) \
+   $(volume "$RELEASEDIR" /release) \
+   $(volume "$WORKSPACE" /workspace) \
+   $(volume "$KEYS" /sign_keys) \
+   $DOCKERIMAGE $PROGRAM
