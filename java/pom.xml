@@ -141,10 +141,6 @@
 							</goals>
 						</execution>
 					</executions>
-					<configuration>
-						<keyname>E061506F</keyname>
-						<homedir>/sign_keys/.gnupg</homedir>
-					</configuration>
 				</plugin>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
