@@ -9,5 +9,6 @@ do
 done
 cd /workspace/maven||exit $?
 mkdir -p /release/maven
-$MVN versions:set -DgenerateBackupPoms=false -DnewVersion=$RELEASE_VERSION -DartifactId=* &&\
+
+$MVN versions:set -DgenerateBackupPoms=false -DnewVersion=$RELEASE_VERSION -DartifactId=*
 $MVN $MVNGOAL

@@ -49,9 +49,14 @@ then
 else PROGRAM=/scripts/run_maven.sh
 fi
 
+if [ "$BRANCH" != "alpha" ]
+then RELEASE_VERSION=0.0.0-SNAPSHOT
+fi
+
 docker run -t $INTERACTIVE -u $(id -u) --network=host -a stdout -a stderr --cidfile="$WORKSPACE/docker-cid" \
    -e MVN="$MVN" \
    -e MVNGOAL="$MVNGOAL" \
+   -e BRANCH="$BRANCH" \
    -e RELEASE_VERSION="$RELEASE_VERSION" \
    -e GNUPGHOME=/sign_keys/.gnupg \
    -e HOME=/release/maven \
