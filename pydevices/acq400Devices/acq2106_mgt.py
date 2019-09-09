@@ -232,6 +232,10 @@ class ACQ2106_MGT(MDSplus.Device):
         print("Finished capture.")
     CAPTURE=capture
 
+    def soft_trigger(self):
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut.s0.soft_trigger = 1
+
 
     def pull(self):
         print("Starting host pull now.")
