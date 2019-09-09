@@ -70,7 +70,7 @@ class ACQ2106_MGT(MDSplus.Device):
     del i
 
     debug=None
-    # uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
+
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -86,11 +86,9 @@ class ACQ2106_MGT(MDSplus.Device):
             self.chans = []
             self.decim = []
             self.nchans = 16 # TODO: FIX THIS
-            # self.uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
 
             for i in range(self.nchans):
                 self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(i+1)))
-                # self.decim.append(getattr(self.dev, 'INPUT_%2.2d_decimate' %(i+1)).data())
                 self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
@@ -120,7 +118,6 @@ class ACQ2106_MGT(MDSplus.Device):
 
             event_name = self.dev.seg_event.data()
 
-            trig = self.dev.trigger.data()
             if self.dev.hw_filter.length > 0:
                 dt = 1./self.dev.freq.data() * 2 ** self.dev.hw_filter.data()
             else:
@@ -133,8 +130,6 @@ class ACQ2106_MGT(MDSplus.Device):
 
             self.dims = []
             for i in range(self.nchans):
-                # print "i = {}".format(i)
-                # print "self decim = {}".format(self.decim)
                 self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
 
             self.device_thread.start()
@@ -194,9 +189,6 @@ class ACQ2106_MGT(MDSplus.Device):
 
                 self.running = True
 
-                ###############################################################
-                # INSERT TRANSIENT CAPTURE HERE.
-                ###############################################################
                 first = True
 
                 # trigger time out count initialization:
