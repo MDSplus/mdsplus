@@ -37,7 +37,6 @@ except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
 class ACQ2106_MGT(MDSplus.Device):
-    print("Hello world1")
     """
     D-Tacq ACQ2106_MGT support.
 
@@ -91,7 +90,6 @@ class ACQ2106_MGT(MDSplus.Device):
         NUM_BUFFERS = 20
 
         def __init__(self,dev):
-            print("Hello world4")
             super(ACQ2106_MGT.MDSWorker,self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
@@ -186,7 +184,6 @@ class ACQ2106_MGT(MDSplus.Device):
             running = False
 
             def __init__(self,mds):
-                print("Hello world3")
                 threading.Thread.__init__(self)
                 self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
@@ -258,7 +255,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
 
     def pull(self):
-        print("Hello world")
+        print("Starting host pull now.")
         import os
         import sys
         from threading import Thread
