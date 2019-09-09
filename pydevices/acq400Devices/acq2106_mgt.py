@@ -219,9 +219,34 @@ class ACQ2106_MGT(MDSplus.Device):
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
-        print("Running init NOW!")
+        print('Running init')
+
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+
+        trig_types=[ 'hard', 'soft', 'automatic']
+        trg = self.trig_mode.data()
+
+        if trg == 'hard':
+            trg_dx = 0
+        elif trg == 'automatic':
+            trg_dx = 1
+        elif trg == 'soft':
+            trg_dx = 1
+
+        # The default case is to use the trigger set by sync_role.
+        if self.trig_mode.data() == 'role_default':
+            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+        else:
+            # If the user has specified a trigger.
+            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+
+        # Now we set the trigger to be soft when desired.
+        if trg == 'soft':
+            uut.s0.transient = 'SOFT_TRIGGER=0'
+        if trg == 'automatic':
+            uut.s0.transient = 'SOFT_TRIGGER=1'
+
+        print('Finished init')
 
     def capture(self):
         print("Capturing now.")
