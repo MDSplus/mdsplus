@@ -147,14 +147,13 @@ class ACQ2106_MGT(MDSplus.Device):
 
                 i = 0
                 cycle = 1
-                c = self.chans[0]
-                # if c.on:
-                print "Making segment now! Buf len: {}, cycle = {}".format(len(buf), cycle)
-                cycle += 1
-                b = buf
-                c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length, self.dims[i].ending + self.seg_length, self.decim[i])
-                i += 1
+                for c in self.chans:
+                    if c.on:
+                        b = buf[i::self.nchans]
+                        print "Making segment now! Buf len: {}, channel: {}".format(len(b), i+1)
+                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
+                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                    i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
 
