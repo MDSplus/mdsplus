@@ -58,7 +58,6 @@ class ACQ2106_MGT(MDSplus.Device):
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
 
-    print "Test: {}".format(parts[0]["value"])
     uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
     nchans = uut.nchan()
     for i in range(nchans):
