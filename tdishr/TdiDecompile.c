@@ -211,9 +211,14 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
   char *plim = pwas + pdc->length;
   char *pdec, *plast, *pexp, *ppass;
 
+  
   status = TdiConvert(pfloat, pdc);
   if STATUS_NOT_OK
     return status;
+
+  plim = pwas + pdc->length;
+  //printf("%f\n", *(float *)pfloat->pointer);
+  //printf("%d   PWAS: %s\n", pdc->length, pwas);
 
   *plim = '\0';
   while (pwas < plim) {
@@ -226,7 +231,7 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
     if (*pwas == '-')
       pwas++;
     /*Only for VAX TdiConvert.MAR 0.123E+12, careful about 0. */
-    if (pwas + 2 < plim && *pwas == '0' && *(pwas + 1) == '.'
+    if (pwas + 2 < plim && *pwas == '0' && (*(pwas + 1) == '.'||*(pwas + 1) == ',')
 	&& *(pwas + 2) >= '0' && *(pwas + 2) <= '9')
       *pwas++ = ' ';
     pdec = 0;
@@ -235,12 +240,13 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
       if (*pwas == '0' || *pwas == ' ') ;
       else if (*pwas > '0' && *pwas <= '9')
 	plast = pwas;
-      else if (*pwas == '.')
+      else if (*pwas == '.' || *pwas == ',')
 	pdec = pwas;
       else
 	break;
       pwas++;
     }
+    
     if (pwas >= plim) {
       char *pwas_save = pwas;
       if (pdec && (pdec < (pwas - 1)))
@@ -277,6 +283,7 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
 		/*******************
 	        We hit the exponent.
 	        *******************/
+//printf("PWAS1: %s\n", pwas);
     pexp = pwas;
     switch (*pwas) {
     case 'E':
