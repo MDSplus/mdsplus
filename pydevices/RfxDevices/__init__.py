@@ -130,5 +130,6 @@ _mimport('PI_CAM')
 _mimport('RFX_RPADC')
 _mimport('LINCMOS')
 _mimport('PLFE')
+_mimport('DEMOADC')
 
 #print('RfxDevices loaded.')
