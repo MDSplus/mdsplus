@@ -131,5 +131,6 @@ _mimport('RFX_RPADC')
 _mimport('LINCMOS')
 _mimport('PLFE')
 _mimport('DEMOADC')
+_mimport('DEMOSTREAM')
 
 #print('RfxDevices loaded.')
