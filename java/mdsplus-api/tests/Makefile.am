@@ -1,3 +1,4 @@
+JAVACFLAGS = -encoding UTF-8
 include ../../Makefile.tests.am
 
 MAIN_JARS = mdsplus-api.jar

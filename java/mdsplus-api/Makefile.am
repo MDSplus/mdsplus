@@ -1,3 +1,4 @@
+JAVACFLAGS = -encoding UTF-8
 include ../Makefile.inc.am
 
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
