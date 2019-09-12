@@ -93,16 +93,23 @@ public abstract class Mds{
 			throw new MdsException(cls.getSimpleName(), e);
 		}
 	}
-	protected transient HashSet<MdsListener>			mdslisteners	= new HashSet<MdsListener>();
+	protected transient HashSet<TransferEventListener>	translisteners	= new HashSet<TransferEventListener>();
+	protected transient HashSet<ContextEventListener>	ctxlisteners	= new HashSet<ContextEventListener>();
 	protected transient boolean[]						event_flags		= new boolean[Mds.MAX_NUM_EVENTS];
 	protected transient Hashtable<Integer, EventItem>	hashEventId		= new Hashtable<Integer, EventItem>();
 	protected transient Hashtable<String, EventItem>	hashEventName	= new Hashtable<String, EventItem>();
 	protected transient HashSet<String>					defined_funs	= new HashSet<String>();
 	private int											mds_end_arg		= 0;
 
-	public final void addMdsListener(final MdsListener l) {
-		if(l != null) synchronized(this.mdslisteners){
-			this.mdslisteners.add(l);
+	public final void addTransferEventListener(final TransferEventListener l) {
+		if(l != null) synchronized(this.translisteners){
+			this.translisteners.add(l);
+		}
+	}
+
+	public final void addContextEventListener(final ContextEventListener l) {
+		if(l != null) synchronized(this.ctxlisteners){
+			this.ctxlisteners.add(l);
 		}
 	}
 
@@ -364,10 +371,17 @@ public abstract class Mds{
 		return eventid;
 	}
 
-	public final void removeMdsListener(final MdsListener l) {
+	public final void removeContextEventListener(final ContextEventListener l) {
 		if(l == null) return;
-		synchronized(this.mdslisteners){
-			this.mdslisteners.remove(l);
+		synchronized(this.ctxlisteners){
+			this.ctxlisteners.remove(l);
+		}
+	}
+
+	public final void removeTransferEventListener(final TransferEventListener l) {
+		if(l == null) return;
+		synchronized(this.translisteners){
+			this.translisteners.remove(l);
 		}
 	}
 
@@ -401,13 +415,6 @@ public abstract class Mds{
 	 */
 	@SuppressWarnings("rawtypes")
 	protected abstract <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> request) throws MdsException;
-
-	protected final void dispatchMdsEvent(final MdsEvent e) {
-		synchronized(this.mdslisteners){
-			if(this.mdslisteners != null) for(final MdsListener listener : this.mdslisteners)
-				listener.processMdsEvent(e);
-		}
-	}
 
 	protected final void dispatchUpdateEvent(final int eventid) {
 		final Integer eventid_obj = new Integer(eventid);
@@ -453,10 +460,9 @@ public abstract class Mds{
 	}
 
 	private final void dispatchUpdateEvent(final EventItem eventItem) {
-		final UpdateEvent e = new UpdateEvent(this, eventItem.name);
 		synchronized(eventItem.listener){
 			for(final UpdateEventListener el : eventItem.listener)
-				el.processUpdateEvent(e);
+				el.handleUpdateEvent(this, eventItem.name);
 		}
 	}
 
