@@ -1,6 +1,7 @@
 from MDSplus import *
 from threading import Thread
 from ctypes import CDLL, c_int, c_char_p, c_short, byref
+from datetime import datetime
 
 class DEMOSTREAM(Device):
     """A Demo 1 Channel, 16 bit stream digitizer"""
@@ -39,13 +40,14 @@ class DEMOSTREAM(Device):
     class AsynchStore(Thread):
 
 
-        def configure(self, deviceLib, addr, period, dataNode, triggerTime):
+        def configure(self, deviceLib, addr, period, dataNode, triggerTime, event = None):
             self.deviceLib = deviceLib
             self.addr = addr
             self.dataNode = dataNode
             self.period = period
             self.currTime = triggerTime
             self.stopped = False;
+            self.prevSecond = 0
 
 
         def run(self):
@@ -64,6 +66,11 @@ class DEMOSTREAM(Device):
                 dim = Range(startTime, endTime, Float64(self.period))
                 self.dataNode.makeSegment(startTime, endTime, dim, dataArr)
                 self.currTime += self.period * DEMOSTREAM.NUM_CHUNK_SAMPLES
+
+                currSecond = datetime.now().second
+                if currSecond > self.prevSecond + 2:
+                   Event.setevent('DEMOSTREAM_READY')
+                   self.prevSecond = currSecond
 
         def stop(self):
             self.stopped = True
