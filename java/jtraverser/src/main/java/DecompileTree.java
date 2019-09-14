@@ -92,7 +92,7 @@ public class DecompileTree
 	        NodeInfo info = mdsTree.getInfo(members[i], 0);
 	        if(info.getUsage() == NodeInfo.USAGE_DEVICE)
 	            docMember = (Element) document.createElement("device");
-	        if(info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
+	        else if(info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
 	            docMember = (Element) document.createElement("compound_data");
 	        else
 	            docMember = (Element) document.createElement("member");
