@@ -1534,7 +1534,7 @@ private:
 /// ordered sequence of data. Nothing in common with software objects
 /// signalling systems.
 
-class Signal: public Compound {
+class EXPORT Signal: public Compound {
 public:
 #ifndef DOXYGEN // hide this part from documentation
     Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
