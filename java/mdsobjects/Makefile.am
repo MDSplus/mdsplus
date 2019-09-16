@@ -1,3 +1,5 @@
+JAVASOURCE = 6
+JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
 include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java

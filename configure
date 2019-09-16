@@ -7769,7 +7769,7 @@ rm -rf conftest*
 fi
 
 
-JAVACFLAGS="-encoding UTF-8"
+JAVACFLAGS="-encoding UTF-8 -source \$(JAVASOURCE)"
 FOR_LINKSHARED=""
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to build shared libraries" >&5
@@ -8070,19 +8070,20 @@ fi
 
 # Check whether --with-java_target was given.
 if test "${with_java_target+set}" = set; then :
-  withval=$with_java_target; JAVAVERSION="-source $withval -target $withval"
+  withval=$with_java_target; as_fn_append JAVACFLAGS " -target $withval"
 else
-  JAVAVERSION=
+  as_fn_append JAVACFLAGS " -target \$(JAVASOURCE)"
 fi
 
 
 
 # Check whether --with-java_bootclasspath was given.
 if test "${with_java_bootclasspath+set}" = set; then :
-  withval=$with_java_bootclasspath; as_fn_append JAVAVERSION " -bootclasspath $withval"
+  withval=$with_java_bootclasspath; as_fn_append JAVACFLAGS " -bootclasspath $withval"
+else
+  as_fn_append JAVACFLAGS " \$(JAVABOOTCLASSPATH)"
 fi
 
-as_fn_append JAVACFLAGS " ${JAVAVERSION}"
 
 case $enable_java in #(
   yes) :
