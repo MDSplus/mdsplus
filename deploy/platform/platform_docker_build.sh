@@ -160,7 +160,7 @@ make_jars() {
   rm -Rf /workspace/jars
   mkdir -p /workspace/jars
   pushd /workspace/jars
-  ${srcdir}/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=${srcdir}/rt.jar
+  ${srcdir}/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=${srcdir}/java/rt.jar
   if [ -z "$NOMAKE" ]; then
     $MAKE
   fi
