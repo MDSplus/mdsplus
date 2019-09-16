@@ -868,7 +868,6 @@ GLOBUSLICENSE_TRUE
 RMIC
 JAR
 JAVAC
-JAVAVERSION
 READLINK
 JAVAC_PATH_NAME
 ENABLE_JAVA_FALSE
@@ -8081,11 +8080,9 @@ fi
 # Check whether --with-java_bootclasspath was given.
 if test "${with_java_bootclasspath+set}" = set; then :
   withval=$with_java_bootclasspath; as_fn_append JAVAVERSION " -bootclasspath $withval"
-else
-  as_fn_append JAVAVERSION
 fi
 
-
+as_fn_append JAVACFLAGS " ${JAVAVERSION}"
 
 case $enable_java in #(
   yes) :

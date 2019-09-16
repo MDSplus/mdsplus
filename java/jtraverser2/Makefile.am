@@ -1,3 +1,4 @@
+JAVACFLAGS = -encoding UTF-8
 include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
