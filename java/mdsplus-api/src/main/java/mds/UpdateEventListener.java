@@ -9,10 +9,11 @@ import java.util.EventListener;
 public interface UpdateEventListener extends EventListener{
 	/**
 	 * Called by the DataProvider implementation to notify jScope that an asynchronous event has been received.
-	 *
-	 * @param e
+	 * 
+	 * @param source
+	 *            The Object where the Event got dispatched.
+	 * @param name
 	 *            The UpdateEvent describing the event (i.e. its name) just occurred.
-	 * @see UpdateEvent
 	 */
-	public void processUpdateEvent(UpdateEvent e);
+	public void handleUpdateEvent(Mds source, String name);
 }
