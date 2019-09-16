@@ -1,15 +1,17 @@
 #!/bin/bash
 #
-# runs $srcdir/bootstrap in a controlled maner
-mkdir -p ${WORKSPACE}
+# runs $srcdir/bootstrap in a controlled manner
+cid=/tmp/bootstrap-docker-cid
 cleanup() {
-  docker rm $(cat ${WORKSPACE}/docker-cid)
-  rm -f ${WORKSPACE}/docker-cid
+ if [ -f $cid ]
+ then
+  docker rm -f $(cat $cid)
+  rm -f $cid
+ fi
 }
-trap cleanup EXIT
-docker run -t -a stdout -a stderr --cidfile=${WORKSPACE}/docker-cid \
+trap cleanup EXIT INT
+docker run -t -a stdout -a stderr --cidfile=$cid \
    -u $(id -u):$(id -g) --privileged \
-   -e "HOME=/workspace" \
+   -e "HOME=/tmp" \
    -v ${SRCDIR}:${DOCKER_SRCDIR} \
-   -v ${WORKSPACE}:/workspace \
    ${DOCKERIMAGE} /bin/sh -c "cd ${SRCDIR};./bootstrap"
