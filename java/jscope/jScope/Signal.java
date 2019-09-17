@@ -2161,8 +2161,12 @@ public class Signal implements WaveDataListener
 	        yY2D = x_data.getY2D();
 	        zY2D = x_data.getZ();
 
-	        if(xY2D != null && yY2D != null && zY2D != null && ((x2D != null && x2D.length != xY2D.length) || (x2DLong != null && x2DLong.length != xY2D.length)
-	             && y2D.length != yY2D.length && z.length != zY2D.length))
+
+	        if( ( xY2D == null || yY2D == null || zY2D == null) ||
+                    ( xY2D != null && yY2D != null && zY2D != null && 
+                     ((x2D != null && x2D.length != xY2D.length) || (x2DLong != null && x2DLong.length != xY2D.length) && 
+                     y2D.length != yY2D.length && z.length != zY2D.length) )
+                  )
 	        {
 	            xY2D = null;
 	            yY2D = null;

@@ -826,6 +826,13 @@ Fix bug : shot expression must be always evaluated.
 	    WaveInterface.WriteLine(out, prompt + "bitClip: ",
 	                        "" + colorMap.bitClip);
 
+            WaveInterface.WriteLine(out, prompt + "paletteMax: ",
+                                "" + colorMap.getMax());
+            WaveInterface.WriteLine(out, prompt + "paletteMin: ",
+                                "" + colorMap.getMin());
+            
+            
+
 	}
 
 	WaveInterface.WriteLine(out, prompt + "experiment: ", cexperiment);
@@ -1092,11 +1099,22 @@ Fix bug : shot expression must be always evaluated.
 	            prop = pr.getProperty(prompt + ".bitClip");
 	            if (prop != null)
 	                colorMap.bitClip = new Boolean(prop).booleanValue();
+                    
+                    prop = pr.getProperty(prompt + ".paletteMax");
+                    if (prop != null)
+                        colorMap.setMax ( Float.parseFloat(prop) ) ;
+                    
+                    prop = pr.getProperty(prompt + ".paletteMin");
+                    if (prop != null)
+                        colorMap.setMin( Float.parseFloat(prop) );
+                    
 	        }
 	        catch(Exception exc)
 	        {
 	            colorMap.bitShift = 0;
 	            colorMap.bitClip = false;
+                    colorMap.setMax( Float.MAX_VALUE );
+                    colorMap.setMin( Float.MIN_VALUE );
 	        }
 	    }
 

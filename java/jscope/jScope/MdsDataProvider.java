@@ -714,9 +714,9 @@ public class MdsDataProvider
 	    if(segmentMode == SEGMENTED_NO) //Store in TDI variable only non segmented data
 	    {
 	        yExpr =  in_y;
-	        _jscope_set = true;
+	        _jscope_set = false;
 	        if(in_x == null)
-	            xExpr = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var );";
+	            xExpr = "DIM_OF( " + in_y + " );";
 	        else
 	            xExpr = in_x;
 	    }
@@ -725,11 +725,11 @@ public class MdsDataProvider
 	        if(in_x == null)
 	        {
 	            yExpr =  in_y;
-	            xExpr = "__jScope_var = (" +in_y+") ; DIM_OF(__jScope_var);";
+	            xExpr = "DIM_OF( " + in_y + " );";
 	        }
 	        else
 	        {
-	            yExpr =  in_y;
+	            yExpr = in_y;
 	            xExpr = in_x;
 	        }
 	    }
@@ -897,7 +897,8 @@ public class MdsDataProvider
 	private long x2DLong[];
 	public double[] getX2D()
 	{
-	    String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 0);";
+	    String in = "DIM_OF(" + in_y + ", 0);";
+
 	    try {
 	        RealArray realArray = GetRealArray(in);
 	        if( realArray.isLong() )
@@ -921,7 +922,7 @@ public class MdsDataProvider
 
 	public float[] getY2D()
 	{
-	    String in = "__jScope_var = ("+in_y+") ; DIM_OF( __jScope_var, 1);";
+	    String in = "DIM_OF( " + in_y + ", 1);";
 	    try {
 	        return GetFloatArray(in);
 	    }catch(Exception exc){return null;}
@@ -937,14 +938,14 @@ public class MdsDataProvider
 	}
 	public float[] getX_X2D()
 	{
-	    String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 0);";
+	    String in = "DIM_OF( " + in_x + ", 0);";
 	    try {
 	        return GetFloatArray(in);
 	    }catch(Exception exc){return null;}
 	}
 	public float[] getX_Y2D()
 	{
-	    String in = "__jScope_var = ("+in_x+") ; DIM_OF( __jScope_var, 1);";
+	    String in = "DIM_OF( " + in_x + ", 1);";
 	    try {
 	        return GetFloatArray(in);
 	    }catch(Exception exc){return null;}
@@ -1413,7 +1414,7 @@ public class MdsDataProvider
 
 	String in;
 	if(row != -1)
-	  in = "_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+_in;
+	  in = "( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+_in+" ; )";
 	else
 	  in = _in;
 	error = null;
@@ -1579,7 +1580,7 @@ public class MdsDataProvider
 	        return 0;
 	    Descriptor desc;
 	    if(row != -1)
-		desc= mds.MdsValue("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in);
+		desc= mds.MdsValue("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in+" ; )");
 	    else
 		desc= mds.MdsValue(in);
 
@@ -1615,12 +1616,12 @@ public class MdsDataProvider
 
     public WaveData GetWaveData(String in, int row, int col, int index)
     {
-	return new SimpleWaveData("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in, experiment, shot);
+	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in+" ; )", experiment, shot);
     }
 
     public WaveData GetWaveData(String in_y, String in_x, int col, int row, int index)
     {
-	return new SimpleWaveData("_ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in_y, in_x, experiment, shot);
+	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in_y+" ; )", in_x, experiment, shot);
     }
 
     public float[] GetFloatArray(String in) throws IOException
