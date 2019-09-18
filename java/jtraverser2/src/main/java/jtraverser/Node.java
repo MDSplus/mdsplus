@@ -18,6 +18,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import devices.Device;
 import mds.MdsException;
+import mds.data.DATA;
 import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
@@ -97,7 +98,7 @@ public class Node{
 			MdsException.stderr("Error expanding nodes", exc);
 		}
 		try{
-			final Descriptor<?> data = fromNode.getData();
+			final Descriptor<?> data = fromNode.getRecord();
 			if(data != null) if(!(data instanceof Action)) toNode.setData(data);
 		}catch(final MdsException exc){/**/}
 		for(int i = 0; i < fromNode.children.length; i++)
@@ -313,9 +314,15 @@ public class Node{
 		return this.children;
 	}
 
-	public final Descriptor<?> getData() throws MdsException {
+	public final DATA<?> getData() throws MdsException {
 		if(this.isSegmented())//
-		    return this.nid.getSegment(0);
+			return (DATA<?>) this.nid.getSegmentData(0);
+		return this.nid.getDATA();
+	}
+
+	public final Descriptor<?> getRecord() throws MdsException {
+		if(this.isSegmented())//
+			return this.nid.getSegment(0);
 		return this.nid.getRecord();
 	}
 
@@ -329,9 +336,9 @@ public class Node{
 		return this.dclass;
 	}
 
-	public final byte getDType() {
-		if(this.dtype == -1) return this.readDType();
-		return this.dtype;
+	public final DTYPE getDType() {
+		if(this.dtype == -1) this.readDType();
+		return DTYPE.values()[this.dtype&0xff];
 	}
 
 	public final Flags getFlags() {
@@ -380,7 +387,7 @@ public class Node{
 			sb.append("</nobr></td></tr><tr><td align=\"left\">Data:</td><td align=\"left\">");
 			if(this.getLength() == 0) sb.append("<nobr>There is no data stored for this node</nobr>");
 			else{
-				final String ldtype = DTYPE.getName(this.getDType());
+				final String ldtype = this.getDType().name();
 				final String ldclass = Descriptor.getDClassName(this.getDClass());
 				sb.append("<nobr>").append(ldtype).append(Node.tab).append(ldclass).append(Node.tab).append(this.getLength()).append(" B (").append(this.getRLength()).append(" B)</nobr>");
 				sb.append("</td></tr><tr><td align=\"left\">Inserted:</td><td align=\"left\">");
@@ -466,7 +473,7 @@ public class Node{
 			if(lusage == NODE.USAGE_STRUCTURE || lusage == NODE.USAGE_SUBTREE || this.getLength() == 0) this.tooltip_text = info;
 			else{
 				try{
-					final Descriptor<?> data = this.getData();
+					final Descriptor<?> data = this.getRecord();
 					text = data.toStringX().replace("<", "&lt;").replace(">", "&gt;").replace("\t", "&nbsp&nbsp&nbsp&nbsp ").replace("\n", "<br>");
 				}catch(final MdsException e){
 					text = e.getMessage();

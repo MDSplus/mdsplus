@@ -43,7 +43,6 @@ public final class MdsLib extends Mds{
 			return MdsLib.testLib(libname);
 		}catch(final UnsatisfiedLinkError exc){/*next*/}
 		try{ // load from jar if available
-			@SuppressWarnings("resource")
 			final InputStream is = MdsLib.class.getResourceAsStream(libinjar);
 			if(is == null) throw new FileNotFoundException("File '" + libinjar + "' was not found inside JAR: " + libinjar);
 			try{
@@ -58,7 +57,6 @@ public final class MdsLib extends Mds{
 				else libpath.createNewFile();
 				if(!libpath.exists()) throw new FileNotFoundException("Could not create file '" + libpath.getAbsolutePath() + "'.");
 				libpath.deleteOnExit();
-				@SuppressWarnings("resource")
 				final OutputStream os = new FileOutputStream(libpath);
 				try{
 					int readBytes;
