@@ -33,7 +33,7 @@ public interface WaveData
      * @exception java.io.IOException
      * @see XYData
      */
-     XYData getData(double xmin, double xmax, int numPoints) throws Exception;
+     XYData getData(double xmin, double xmax, int numPoints) throws IOException;
 
     /**
      * Get X and Y data for unidimensional signals within a given time interval expressed in absolute times
@@ -48,7 +48,7 @@ public interface WaveData
      * @exception java.io.IOException
      * @see XYData
      */
-     XYData getData(long xmin, long xmax, int numPoints) throws Exception;
+     XYData getData(long xmin, long xmax, int numPoints) throws IOException;
 
 
     /**
@@ -61,7 +61,7 @@ public interface WaveData
      * @return The  XYData instance describing X and Y values of the returned signal.
      * @see XYData
      */
-     XYData getData(int numPoints) throws Exception;
+     XYData getData(int numPoints) throws IOException;
 
 
    /**

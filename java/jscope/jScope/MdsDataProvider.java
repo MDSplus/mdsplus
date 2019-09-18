@@ -16,16 +16,16 @@ public class MdsDataProvider
 {
     protected String provider;
     protected String experiment;
-    String default_node;
+    String prev_default_node = null;
+    String default_node = null;
     String environment_vars;
-    private boolean def_node_changed = false;
     protected long shot;
     boolean open, connected;
     MdsConnection mds;
     String error;
     private boolean use_compression = false;
     int var_idx = 0;
-
+ 
     boolean is_tunneling = false;
     String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
@@ -396,6 +396,7 @@ public class MdsDataProvider
 	String title = null;
 	String xLabel = null;
 	String yLabel = null;
+        String defaultNode = null;
 	boolean titleEvaluated = false;
 	boolean xLabelEvaluated = false;
 	boolean yLabelEvaluated = false;
@@ -404,10 +405,11 @@ public class MdsDataProvider
 	AsynchDataSource asynchSource = null;
 
 
-	public SimpleWaveData(String in_y, String experiment, long shot)
+	public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode)
 	{
 	    this.wd_experiment = experiment;
 	    this.wd_shot = shot;
+            this.defaultNode = defaultNode;
 	    if(checkForAsynchRequest(in_y))
 	    {
 	       this.in_y = "[]";
@@ -446,10 +448,11 @@ public class MdsDataProvider
 	    }
 	 }
 
-	public SimpleWaveData(String in_y, String in_x, String experiment, long shot)
+	public SimpleWaveData(String in_y, String in_x, String experiment, long shot, String defaultNode)
 	{
 	    this.wd_experiment = experiment;
 	    this.wd_shot = shot;
+            this.defaultNode = defaultNode;
 	    if(checkForAsynchRequest(in_y))
 	    {
 	        this.in_y = "[]";
@@ -679,20 +682,20 @@ public class MdsDataProvider
 	}
 
 	//GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
-	public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+	public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 	{
 	    return getData(xmin, xmax, numPoints, false);
 	}
-	public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+	public XYData getData(long xmin, long xmax, int numPoints) throws IOException
 	{
 	    return getData((double)xmin, (double)xmax, numPoints, true);
 	}
-	public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws Exception
+	public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws IOException
 	{
 	     String xExpr, yExpr;
 	     XYData res = null;
 
-	     if (!CheckOpen(this.wd_experiment, this.wd_shot))
+	     if (!CheckOpen(this.wd_experiment, this.wd_shot, this.defaultNode))
 	        return null;
 
 	     if(segmentMode == SEGMENTED_UNKNOWN)
@@ -882,7 +885,7 @@ public class MdsDataProvider
 	    }
 
 	 }
-	 public XYData getData(int numPoints)throws Exception
+	 public XYData getData(int numPoints)throws IOException
 	 {
 	     return getData(-Double.MAX_VALUE, Double.MAX_VALUE, numPoints);
 	 }
@@ -1371,8 +1374,10 @@ public class MdsDataProvider
 	        return desc.byte_data;
 	    case Descriptor.DTYPE_CSTRING:
 	        if ( (desc.status & 1) == 0)
+                {
 	            error = desc.error;
-	         throw new IOException(error);
+                    throw new IOException(error);
+                }
        }
        throw new IOException(error);
     }
@@ -1461,7 +1466,6 @@ public class MdsDataProvider
 	        || (def_node.length() == 0 && default_node != null))
 	    {
 	        default_node = (def_node.length() == 0) ? null : def_node;
-	        def_node_changed = true;
 	    }
 	    return;
 	}
@@ -1616,12 +1620,12 @@ public class MdsDataProvider
 
     public WaveData GetWaveData(String in, int row, int col, int index)
     {
-	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in+" ; )", experiment, shot);
+	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in+" ; )", experiment, shot, default_node);
     }
 
     public WaveData GetWaveData(String in_y, String in_x, int col, int row, int index)
     {
-	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in_y+" ; )", in_x, experiment, shot);
+	return new SimpleWaveData("( _ROW = " + row +"; _COLUMN = " + col + "; _INDEX = " + index +"; "+in_y+" ; )", in_x, experiment, shot, default_node);
     }
 
     public float[] GetFloatArray(String in) throws IOException
@@ -1727,8 +1731,11 @@ public class MdsDataProvider
 	    break;
 	    case Descriptor.DTYPE_CSTRING:
 	        if ( (desc.status & 1) == 0)
+                {
 	            error = desc.error;
-	        break;
+                    throw new IOException(error);
+                }
+
 	    default:
 	        error = "Data type code : " + desc.dtype +
 	            " not yet supported ";
@@ -1874,10 +1881,10 @@ public class MdsDataProvider
 
     protected synchronized boolean CheckOpen() throws IOException
     {
-	return CheckOpen( this.experiment,  this.shot);
+	return CheckOpen( this.experiment,  this.shot, null);
     }
 
-    protected synchronized boolean CheckOpen(String experiment, long shot) throws IOException
+    protected synchronized boolean CheckOpen(String experiment, long shot, String defaultNode) throws IOException
     {
 	int status;
 	if (!connected)
@@ -1907,7 +1914,6 @@ public class MdsDataProvider
 	        && descr.int_data.length > 0 && (descr.int_data[0] % 2 == 1))
 	    {
 	        open = true;
-	        def_node_changed = true;
 	        this.shot = shot;
 	        this.experiment = experiment;
 
@@ -1933,23 +1939,26 @@ public class MdsDataProvider
 	        return false;
 	    }
 	}
-	if (open && def_node_changed)
+	if (open)
 	{
-	    if (default_node != null) {
+	    if (defaultNode != null && (prev_default_node == null || !defaultNode.equals(prev_default_node)))
+            {
 		Descriptor descr;
 		if(default_node.trim().charAt(0) == '\\')
-		    descr = mds.MdsValue("TreeSetDefault(\"\\" + default_node + "\")");
+		    descr = mds.MdsValue("TreeSetDefault(\"\\" + defaultNode + "\")");
 		else
-		    descr = mds.MdsValue("TreeSetDefault(\"\\\\" + default_node + "\")");
-
-	       if ((descr.int_data[0] & 1 ) == 0)
- //                   mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
-	            mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
-	    } else
-//                mds.MdsValue("TreeSetDefault(\"\\\\" + experiment + "::TOP\")");
-	        mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
-
-	    def_node_changed = false;
+		    descr = mds.MdsValue("TreeSetDefault(\"\\\\" + defaultNode + "\")");
+                prev_default_node = defaultNode;
+	        if ((descr.int_data[0] & 1 ) == 0)
+                {
+ 	            mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+                    prev_default_node = null;
+                }
+	    } else if (defaultNode == null && prev_default_node != null)
+            {
+                mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+                prev_default_node = null;
+            }
 	}
 	return true;
     }

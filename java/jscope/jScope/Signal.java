@@ -7,6 +7,7 @@ import java.awt.geom.Point2D;
 import java.text.*;
 
 import java.util.*;
+import java.io.*;
 
 /**
  * The DataSignal class encapsulates a description of a
@@ -524,17 +525,17 @@ public class Signal implements WaveDataListener
      * @param _n_points the total number of points in the Signal
      */
 
-   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal)
+   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal) throws IOException
    {
        this(data, x_data, xminVal, xmaxVal, null, null);
    }
 
-   public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal)
+   public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal)  throws IOException
    {
        this(data, x_data, xminVal, xmaxVal, null, null);
    }
 
-   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData, WaveData upErrData)
+   public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData, WaveData upErrData) throws IOException
    {
 	error = (lowErrData != null || upErrData != null);
 	asym_error = (lowErrData != null && upErrData != null);
@@ -554,23 +555,14 @@ public class Signal implements WaveDataListener
 
 	data.addWaveDataListener(this);
 
-	try {
-	    checkData(saved_xmin, saved_xmax);
+        checkData(saved_xmin, saved_xmax);
 
-	    if(saved_xmin == -Double.MAX_VALUE)
-	        saved_xmin = this.xmin;
-	    if(saved_xmax == Double.MAX_VALUE)
-	        saved_xmax = this.xmax;
-
-
-	}catch(Exception exc)
-	{
-	    System.out.println("Signal exception: " + exc);
-	    exc.printStackTrace();
-	}
-	//data.addWaveDataListener(this);
+        if(saved_xmin == -Double.MAX_VALUE)
+            saved_xmin = this.xmin;
+        if(saved_xmax == Double.MAX_VALUE)
+            saved_xmax = this.xmax;
    }
-    public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData)
+    public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData) throws IOException
    {
 	xMinLong = xminVal;
 	xMaxLong = xmaxVal;
@@ -608,12 +600,12 @@ public class Signal implements WaveDataListener
 	data.addWaveDataListener(this);
    }
 
-    public Signal(WaveData data, double xmin, double xmax)
+    public Signal(WaveData data, double xmin, double xmax) throws IOException
    {
        this(data, null, xmin, xmax);
    }
 
-    public Signal(float _x[], float _y[], int _n_points)
+    public Signal(float _x[], float _y[], int _n_points) throws IOException
     {
 	error = asym_error = false;
 	data = new XYWaveData(_x, _y, _n_points);
@@ -627,7 +619,7 @@ public class Signal implements WaveDataListener
 	checkIncreasingX();
     }
 
-    public Signal(double _x[], float _y[], int _n_points)
+    public Signal(double _x[], float _y[], int _n_points) throws IOException
     {
 	error = asym_error = false;
 	 data = new XYWaveData(_x, _y, _n_points);
@@ -997,13 +989,13 @@ public class Signal implements WaveDataListener
 	return z[idx];
     }
 
-    public double[] getX() throws Exception
+    public double[] getX() throws IOException
     {
 	if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
 	    return sliceX;
 	 return x;
     }
-    public float[] getY() throws Exception
+    public float[] getY() throws IOException
     {
        if(type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
 	    return sliceY;
@@ -2048,7 +2040,7 @@ public class Signal implements WaveDataListener
     }
 
 
-    void checkData(double xMin, double xMax) throws Exception
+    void checkData(double xMin, double xMax) throws IOException
     {
 	int numDimensions;
 	try {

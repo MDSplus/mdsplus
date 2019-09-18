@@ -141,19 +141,19 @@ class JetDataProvider implements DataProvider
 	{
 	    return null;
 	}
-	 public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+	 public XYData getData(long xmin, long xmax, int numPoints) throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
 	     return new XYData(x, y, Double.MAX_VALUE);
 	 }
-	 public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+	 public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
 	     return new XYData(x, y, Double.MAX_VALUE);
 	 }
-	 public XYData getData(int numPoints)throws Exception
+	 public XYData getData(int numPoints)throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
