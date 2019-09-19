@@ -2102,12 +2102,12 @@ public class Waveform
     wm.ComputeFactors(d);
     for (int i = 0; i < cOnLevel.size(); i++)
     {
-      Vector<Point2D.Float> c = cOnLevel.elementAt(i);
+      Vector<Point2D.Double> c = cOnLevel.elementAt(i);
       int cx[] = new int[c.size()];
       int cy[] = new int[c.size()];
       for (int j = 0; j < c.size(); j++)
       {
-	  Point2D.Float p = c.elementAt(j);
+	Point2D.Double p = c.elementAt(j);
 	cx[j] = wm.XPixel(p.x);
 	cy[j] = wm.YPixel(p.y);
       }
