@@ -511,10 +511,17 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
   int i;
-  char client_type = c->client_type;
+  char client_type;
   Message *m;
   JMdsEventInfo *info;
   int len;
+  //Check Connection: if down, cancel the event and return
+  if(!c)
+  {
+      MDSEventCan(e->eventid);
+      return;
+  }
+  client_type = c->client_type;
   LockAsts();
   if (CType(client_type) == JAVA_CLIENT) {
     len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
