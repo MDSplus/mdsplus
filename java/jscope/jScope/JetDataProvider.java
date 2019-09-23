@@ -99,6 +99,7 @@ class JetDataProvider implements DataProvider
 	    this.in_x = in_x;
 	}
 
+        public boolean supportsStreaming() { return false;}
 	public int getNumDimension()throws IOException
 	{
 	    GetFloatArray(in_y, DATA);
@@ -448,7 +449,7 @@ class JetDataProvider implements DataProvider
 	}
     }
 
-    public long[] GetShots(String in) throws IOException
+    public long[] GetShots(String in, String experiment) throws IOException
     {
 	error_string = null;
 	long [] result;

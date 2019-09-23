@@ -2530,16 +2530,6 @@ public class Signal implements WaveDataListener
 
     public void setXLimits(double xmin, double xmax, int mode)
     {
-/*        if(freezeMode != NOT_FREEZED) //If adding samples when freezed
-	{
-	    if(xmin >= this.xmin && xmax <= this.xmax)
-	    {
-	        this.xmin = xmin;
-	        this.xmax = xmax;
-	    }
-	    return;
-	}
- */
 	xLimitsInitialized = true;
 	if(xmin != -Double.MAX_VALUE)
 	{
@@ -2586,30 +2576,6 @@ public class Signal implements WaveDataListener
 	    RegionDescriptor currReg = lowResRegions.elementAt(i);
 	    double currLower = currReg.lowerBound;
 	    double currUpper = currReg.upperBound;
-	    //Error bars are assumed to be used only for small signals and should not arrive here. In case make it not asynchronous
-/*            if(up_errorData != null)
-	    {
-	        try {
-//                    XYData currError = up_errorData.getData(currLower, currUpper, NUM_POINTS);
-	            XYData currError = up_errorData.getData(xmin, xmax, Integer.MAX_VALUE);
-	            upError = currError.y;
-	        }catch(Exception exc)
-	        {
-	            System.out.println("Cannot evaluate error: "+ exc);
-	        }
-	    }
-	    if(low_errorData != null)
-	    {
-	        try {
-//                    XYData currError = low_errorData.getData(currLower, currUpper, NUM_POINTS);
-	            XYData currError = low_errorData.getData(xmin, xmax, Integer.MAX_VALUE);
-	            lowError = currError.y;
-	        }catch(Exception exc)
-	        {
-	            System.out.println("Cannot evaluate error: "+ exc);
-	        }
-	    } */
-//            if ((mode & AT_CREATION) == 0)
 	    if (((mode & DO_NOT_UPDATE) == 0)&&(currLower != saved_xmin  || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
 	        data.getDataAsync(currLower, currUpper, NUM_POINTS);
 	}
@@ -2617,6 +2583,10 @@ public class Signal implements WaveDataListener
 	//fireSignalUpdated();
    }
 
+    public boolean supportsStreaming()
+    {
+        return data.supportsStreaming();
+    }
     public void setYmin(double ymin, int mode)
     {
 	if(ymin == -Double.MAX_VALUE)
@@ -3381,4 +3351,107 @@ public class Signal implements WaveDataListener
     }
     int getFreezeMode() { return freezeMode;}
     void setFreezeMode(int freezeMode) { this.freezeMode = freezeMode;}
+    
+    //Gabriele Sept 2019: more efficient update on event for growing signals
+    public boolean updateSignal()
+    {
+        if(longXLimits) 
+            return false;  //For the moment use only relative times
+        double currXMax;
+        if(x != null && x.length > 0)
+            currXMax = x[x.length - 1];
+        else
+            currXMax = xmin;
+        data.getDataAsync(currXMax, Double.MAX_VALUE, NUM_POINTS);
+        return true;
+    }   
+    
+    //reset all region info building a single region with resolution=NUM_POINTS/(xmax - xmin)
+    public void mergeRegions()
+    {
+        if(x == null || x.length < 1)
+            return;
+        double currXMin = x[0];
+        double currXMax = x[x.length - 1];
+        double currResolution = 3*NUM_POINTS/(currXMax - currXMin);
+        double currDelta = (currXMax - currXMin)/(3*NUM_POINTS);
+        int newPoints = 0;
+        double currX = currXMin - currDelta/2;
+        int currIdx = 0;
+        int currOutIdx = 0;
+        float currYMin = Float.MAX_VALUE;
+        float currYMax = -Float.MAX_VALUE;
+        while(currX <= currXMax + currDelta/2)
+        {
+            while(currOutIdx < x.length&&x[currOutIdx] < currX)
+            {
+                if(y[currOutIdx] < currYMin)
+                    currYMin = y[currOutIdx];
+                if(y[currOutIdx] > currYMax)
+                    currYMax = y[currOutIdx];
+                currOutIdx++;
+            }
+            if(currOutIdx == x.length)
+                break;
+            if(currYMin == currYMax)
+            {
+                newPoints++;
+            }
+            else if (currYMin != Float.MAX_VALUE)
+            {
+                newPoints+=2;
+            }
+            currIdx++;
+            currX = currXMin - currDelta/2 + currIdx * currDelta;
+            if(currOutIdx < y.length)
+            {
+                currYMin = Float.MAX_VALUE;
+                currYMax = -Float.MAX_VALUE;
+            }
+        }
+        double [] newX = new double[newPoints];
+        float [] newY = new float[newPoints];
+        currX = currXMin - currDelta/2;
+        currIdx = currOutIdx = newPoints = 0;
+        currYMin = Float.MAX_VALUE;
+        currYMax = -Float.MAX_VALUE;
+        while(currX <= currXMax+currDelta/2)
+        {
+            while(currOutIdx < x.length&&x[currOutIdx] < currX)
+            {
+                if(y[currOutIdx] < currYMin)
+                    currYMin = y[currOutIdx];
+                if(y[currOutIdx] > currYMax)
+                    currYMax = y[currOutIdx];
+                currOutIdx++;
+            }
+            if(currOutIdx == x.length)
+                break;
+            if(currYMin == currYMax)
+            {
+                newX[newPoints] = x[(currOutIdx == 0)?currOutIdx:currOutIdx-1];
+                newY[newPoints] = currYMin;
+                newPoints++;
+            }
+            else if (currYMin != Float.MAX_VALUE)
+            {
+                newX[newPoints] = x[(currOutIdx == 0)?currOutIdx:currOutIdx-1];
+                newY[newPoints] = currYMin;
+                newPoints++;
+                newX[newPoints] = x[(currOutIdx == 0)?currOutIdx:currOutIdx-1];
+                newY[newPoints] = currYMax;
+                newPoints++;
+            }
+            currIdx++;
+            currX = currXMin - currDelta/2 + currIdx * currDelta;
+            currYMin = Float.MAX_VALUE;
+            currYMax = -Float.MAX_VALUE;
+        }
+        x = newX;
+        y = newY;
+        resolutionManager.resetRegions();
+ 	resolutionManager.appendRegion(new RegionDescriptor(currXMin, currXMax, currResolution));
+    }
+    
+    
 }

@@ -34,6 +34,7 @@ class TwuWaveData
     {
 	init(dp, in_y, in_x);
     }
+    public boolean supportsStreaming() { return false;}
 
     protected void
     init (TwuDataProvider dp, String in_y, String in_x)

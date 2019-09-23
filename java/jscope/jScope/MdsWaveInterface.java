@@ -27,7 +27,7 @@ class MdsWaveInterface
     public boolean default_is_update = true;
     jScopeDefaultValues def_vals;
     MdsWaveInterface prev_wi = null;
-
+    long prevShot = -1;
     public String previous_shot = "";
 
     public MdsWaveInterface(Waveform wave, DataProvider dp,
@@ -271,7 +271,7 @@ class MdsWaveInterface
 	return out;
     }
 
-    public void UpdateShot() throws IOException
+    public long[] GetShots() throws IOException
     {
 	long curr_shots[] = null;
 
@@ -279,33 +279,7 @@ class MdsWaveInterface
 	String main_shot_str = ( (jScopeWaveContainer) (wave.getParent())).
 	    getMainShotStr();
 	String c_shot_str = containMainShot(this.GetUsedShot(), main_shot_str);
-/* 12-2-2009
-	if( !getModified() && in_shot != null && c_shot_str != null)
-	{
-
-	    setModified( !in_shot.equals( c_shot_str ) );
-
-	    if(! getModified() )
-	        return;
-	}
- */
 	error = null;
-
-/*
-Fix bug : shot expression must be always evaluated.
-	if (c_shot_str != null)
-	{
-	    if (previous_shot.equals(c_shot_str) && !previous_shot.equals("0"))
-	        return;
-	    previous_shot = new String(c_shot_str);
-	}
-	else
-	{
-	    if (previous_shot.equals("not defined"))
-	        return;
-	    previous_shot = "not defined";
-	}
-*/
 	if (UseDefaultShot())
 	{
 
@@ -340,6 +314,11 @@ Fix bug : shot expression must be always evaluated.
 	}
 
 	in_shot = c_shot_str;
+        return curr_shots;
+    }
+    public void UpdateShot() throws IOException
+    {
+	long curr_shots[] = GetShots();
 	if (!UpdateShot(curr_shots))
 	    previous_shot = "not defined";
     }
@@ -662,6 +641,27 @@ Fix bug : shot expression must be always evaluated.
 	    error = e.getMessage();
 	}
     }
+    public synchronized boolean refreshOnEvent() throws Exception
+    {
+        long shots[] = GetShots();
+        if(shots == null)
+            return false;
+        if(shots.length != 1 || shots[0] != prevShot)
+        {
+            prevShot = shots[0];
+            return false; //Not served, must resort to full update
+        }
+        for(int sigIdx = 0; sigIdx < signals.length; sigIdx++)
+        {
+           if(signals[sigIdx] != null)
+           {
+               if(!signals[sigIdx].supportsStreaming() || !signals[sigIdx].updateSignal())
+                   return false;
+               signals[sigIdx].mergeRegions();
+           }
+        }
+        return true;
+     }
 
     public void Erase()
     {

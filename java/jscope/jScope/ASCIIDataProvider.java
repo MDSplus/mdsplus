@@ -35,6 +35,7 @@ class ASCIIDataProvider implements DataProvider
 	int    dimension;
 	Properties x_prop = new Properties();
 	Properties y_prop = new Properties();
+        public boolean supportsStreaming() { return false;}
 	public SimpleWaveData(String in_y)
 	{
 	    file_y = getPathValue(in_y);
@@ -414,7 +415,7 @@ class ASCIIDataProvider implements DataProvider
 	return Double.parseDouble(in);
     }
 
-    public long[] GetShots(String in) throws IOException
+    public long[] GetShots(String in, String experiment) throws IOException
     {
 	error = null;
 	long [] result;

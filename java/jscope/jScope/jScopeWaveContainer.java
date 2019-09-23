@@ -1279,7 +1279,7 @@ remove 28/06/2005
 	    if( !server_item.class_name.equals("NotConnectedDataProvider") )
 	    {
 	        //Check data server connection
-	        if( dp.GetShots("0") == null )
+	        if( dp.GetShots("0", "xx") == null )
 	            throw(new Exception("Cannot connect to " + server_item.class_name + " data server"));
 	    }
 

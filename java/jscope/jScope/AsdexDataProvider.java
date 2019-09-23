@@ -19,6 +19,7 @@ class AsdexDataProvider extends MdsDataProvider
 	boolean _jscope_set = false;
 	int v_idx;
 
+       public boolean supportsStreaming() { return false;}
 	public SimpleWaveData(String in_y)
 	{
 	    this.in_y = in_y;
