@@ -147,8 +147,6 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       rDsc = (mdsdsc_r_t*)dsc;
       if(rDsc->dtype == DTYPE_SIGNAL)
 	  break; //If the expression includes a Signal descriptor, the time base may be different from that of the segmented node
-      if(rDsc->dtype == DTYPE_FUNCTION)
-	  break;  //If the expression  goes through a fun, the time base may be different from that of the segmented node
       for (i = 0; i < rDsc->ndesc; i++) {
 	if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
 	  return nid;
