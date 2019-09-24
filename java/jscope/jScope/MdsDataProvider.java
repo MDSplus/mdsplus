@@ -25,14 +25,14 @@ public class MdsDataProvider
     String error;
     private boolean use_compression = false;
     int var_idx = 0;
- 
+    
     boolean is_tunneling = false;
     String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
 
-    static boolean debug = true;
+    static boolean debug = false;
 
     class SegmentedFrameData
 	implements FrameData
@@ -1001,7 +1001,8 @@ public class MdsDataProvider
 	}
 	public void getDataAsync(double lowerBound, double upperBound, int numPoints)
 	{
- //           System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
+ 
+            if(debug) System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
 	    updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
 	}
     } //END Inner Class SimpleWaveData
