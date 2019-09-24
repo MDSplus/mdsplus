@@ -490,6 +490,9 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+JAVASOURCE = 6
+JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
+RT6JAR = $(top_srcdir)/java/rt6.jar
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
@@ -812,6 +815,7 @@ uninstall-am: uninstall-binSCRIPTS uninstall-dist_javaDATA \
 
 .PRECIOUS: Makefile
 
+JAVASOURCE ?= 6 -bootclasspath $(RT6JAR)
 
 $(JAVAROOT):
 	mkdir -p $@
