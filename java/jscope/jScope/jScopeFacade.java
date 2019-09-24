@@ -118,7 +118,7 @@ public class jScopeFacade
     JWindow aboutScreen;
 
     static boolean enableNetworkSelection = true;
-    static String mdsDataServer = null; //If enableNetworkSelection == false, mdsDataServer contains the mdsio address.
+    static String mdsDataServer = null; //If enableNetworkSelection == false, mdsDataServer contains the mdsip address.
     static String sshDataServer = null; //If enableNetworkSelection == false, either mdsDataServer or sshDataServer contains the mdsio address.
 			  //If enableNetworkSelection == false and mdsDataServer null and sshDataServer == null, LocalDataProvider is selected instead
 
@@ -2365,13 +2365,34 @@ public class jScopeFacade
 	if (e.getID() == ConnectionEvent.LOST_CONNECTION)
 	{
 
-	    JOptionPane.showMessageDialog(this,
+
+            if(!enableNetworkSelection) //Creation of DataProvider  based on command line
+            {
+                if(JOptionPane.showConfirmDialog(this,
+	                                  e.info + "  Reconnect To Data Server?",
+	                                  "alert processConnectionEvent",
+	                                  JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                    System.exit(0);
+                if (mdsDataServer != null)
+                    SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER",
+	                 "MdsDataProvider", null, null, null));
+                else if (sshDataServer != null)
+                    SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER",
+	                  "SSHDataProvider", null, null, null));
+                else
+                    SetDataServer(new DataServerItem("local access", "", "",
+	                  "LocalDataProvider", null, null, null));
+            }
+            else
+            {
+                JOptionPane.showMessageDialog(this,
 	                                  e.info,
 	                                  "alert processConnectionEvent",
 	                                  JOptionPane.ERROR_MESSAGE);
 
-	    SetDataServer(new DataServerItem("Not Connected", null, null,
+                SetDataServer(new DataServerItem("Not Connected", null, null,
 	                                     "NotConnectedDataProvider", null, null, null));
+            }
 	    return;
 	}
 
