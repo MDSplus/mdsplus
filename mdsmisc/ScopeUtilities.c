@@ -466,7 +466,20 @@ EXPORT int IsSegmented(char *const expr) {
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
   int segNid = recIsSegmented(xd.pointer);
   MdsFree1Dx(&xd, NULL);
-  return segNid != 0;
+  return segNid;
+}
+
+//Check if the passed expression contains at least one segmented node
+EXPORT struct descriptor_xd *GetPathOf(int *nid) {
+  static EMPTYXD(retXd);
+  mdsdsc_t pathD = {0, DTYPE_T, CLASS_S, 0};
+  char *path = TreeGetPath(*nid);
+  if(!path) return NULL;
+  pathD.length = strlen(path);
+  pathD.pointer = path;
+  MdsCopyDxXd(&pathD, &retXd);
+  TreeFree(path);
+  return &retXd;
 }
 
 EXPORT int TestGetHelp(char *const expr) {

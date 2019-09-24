@@ -32,7 +32,7 @@ public class MdsDataProvider
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
 
-    static boolean debug = false;
+    static boolean debug = true;
 
     class SegmentedFrameData
 	implements FrameData
@@ -394,6 +394,7 @@ public class MdsDataProvider
 	static final int UNKNOWN = -1;
 	int numDimensions = UNKNOWN;
 	int segmentMode = SEGMENTED_UNKNOWN;
+        String segmentNodeName;
 	int v_idx;
 	boolean isXLong = false;
 	String title = null;
@@ -412,6 +413,19 @@ public class MdsDataProvider
             return segmentMode == SEGMENTED_YES;
        }
 
+       public String duplicateBackslashes(String inStr)
+       {
+           StringBuffer outStr = new StringBuffer();
+           for(int i = 0; i < inStr.length(); i++)
+           {
+               if(inStr.charAt(i) == '\\')
+               {
+                    outStr.append('\\');
+               }
+               outStr.append(inStr.charAt(i));     
+           }
+           return outStr.toString();
+       }
 	public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode)
 	{
 	    this.wd_experiment = experiment;
@@ -431,24 +445,22 @@ public class MdsDataProvider
 	    if(segmentMode == SEGMENTED_UNKNOWN)
 	    {
 	        Vector<Descriptor> args = new Vector<>();
-	        String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
-	        args.addElement(new Descriptor(null, fixedY));
+//	        String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
+	        String fixedY = duplicateBackslashes(in_y);
 	        try {
-	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
-                    if(debug) System.out.println("IS SEGMENTED "+in_y+" : "+(retData[0] > 0));
-	            if(retData[0] > 0)
+                    String segExpr = "long(MdsMisc->IsSegmented(\""+fixedY+"\"))";
+	            int[] retData = GetIntArray(segExpr);
+                    if(debug) System.out.println(segExpr+ " " +retData[0]);
+	            if(retData[0] != 0)
+                    {
 	                segmentMode = SEGMENTED_YES;
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
-
- /*
- //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
- //                   if(numSegments[0] > 0)
-	                segmentMode = SEGMENTED_YES;
-	            else
-	                segmentMode = SEGMENTED_NO;
- */               }
-	        catch(Exception exc)
+                }
+	        catch(IOException exc)
 	        {
 	            error = null;
 	            segmentMode = SEGMENTED_UNKNOWN;
@@ -481,15 +493,14 @@ public class MdsDataProvider
 	        try {
 	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
 	            if(retData[0] > 0)
+                    {
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
 	                segmentMode = SEGMENTED_YES;
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
-/*                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-	            if(numSegments[0] > 0)
-	                segmentMode = SEGMENTED_YES;
-	            else
-	                segmentMode = SEGMENTED_NO;
-*/                }catch(Exception exc)
+                }catch(Exception exc)
 	        {
 	            error = null;
 	            segmentMode = SEGMENTED_UNKNOWN;
@@ -527,7 +538,8 @@ public class MdsDataProvider
 	    else
 	    {
 	        if(segmentMode == SEGMENTED_YES)
-	            expr = "shape(GetSegment(" + in_y +",0))";
+	            expr = "shape(GetSegment(" + segmentNodeName +",0))";
+//	            expr = "shape(GetSegment(" + in_y +",0))";
 	        else
 	        {
 	            _jscope_set = true;
@@ -594,7 +606,8 @@ public class MdsDataProvider
 	            {
 	                if(segmentMode == SEGMENTED_YES)
 	                {
-	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+//	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+	                    expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
 	                    xLabel = GetStringValue(expr);
 	               }
 	                else
@@ -626,7 +639,8 @@ public class MdsDataProvider
 	        {
 	            if(segmentMode == SEGMENTED_YES)
 	            {
-	                expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
+//	                expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
+	                expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 1)))";
 	                yLabel = GetStringValue(expr);
 	             }
 	            else
@@ -649,7 +663,8 @@ public class MdsDataProvider
 	    }
 	    if(segmentMode == SEGMENTED_YES)
 	    {
-	        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+//	        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+	        expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
 	        yLabel = GetStringValue(expr);
 	    }
 	    else
@@ -715,7 +730,11 @@ public class MdsDataProvider
 	        try {
 	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
 	            if(retData[0] > 0)
+                    {
 	                segmentMode = SEGMENTED_YES;
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
 	        }catch(Exception exc)
@@ -2092,7 +2111,7 @@ public class MdsDataProvider
 
     protected String GetStringValue(String expr) throws IOException
     {
-        if(debug) System.out.println("GeStringValuet "+expr);
+        if(debug) System.out.println("GeStringValue "+expr);
 	String out = GetString(expr, -1, -1, -1);
 	if (out == null || out.length() == 0 || error != null)
 	{

@@ -3403,12 +3403,9 @@ public class Signal implements WaveDataListener
             }
             currIdx++;
             currX = currXMin - currDelta/2 + currIdx * currDelta;
-            if(currOutIdx < y.length)
-            {
-                currYMin = Float.MAX_VALUE;
-                currYMax = -Float.MAX_VALUE;
-            }
-        }
+            currYMin = Float.MAX_VALUE;
+            currYMax = -Float.MAX_VALUE;
+    }
         double [] newX = new double[newPoints];
         float [] newY = new float[newPoints];
         currX = currXMin - currDelta/2;
