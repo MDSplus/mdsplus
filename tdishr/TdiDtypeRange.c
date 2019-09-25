@@ -170,11 +170,8 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct 
     status = TdiDivide(&nelem, dat[2].pointer, &nelem MDS_END_ARG);
   if STATUS_OK
     status = TdiDim(&nelem, &minus_one, &nelem MDS_END_ARG);
-  if (STATUS_OK && nelem.pointer->dtype != DTYPE_L) {
-    status = TdiNint(&nelem, &nelem MDS_END_ARG);
-    if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
-      status = TdiLong(&nelem, &nelem MDS_END_ARG);
-  }
+  if (STATUS_OK && nelem.pointer->dtype != DTYPE_L)
+    status = TdiLong(&nelem, &nelem MDS_END_ARG);
   if STATUS_OK {
     N_ELEMENTS(nelem.pointer, nseg);
   }
