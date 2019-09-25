@@ -141,6 +141,7 @@ public class XYWaveData implements WaveData
     /*
      * Read data within specified interval. either Xmin or xmax cna specify no limit (-Float.MAX_VALUE, Float.MAX_VALUE)
      */
+     public boolean supportsStreaming() { return false;}
      public XYData getData(long xmin, long xmax, int numPoints)
      {
 	 return getData((double)xmin, (double)xmax, numPoints);
@@ -336,6 +337,10 @@ public class XYWaveData implements WaveData
     public void addWaveDataListener(WaveDataListener listener)
     {
 	listeners.addElement(listener);
+    }
+    public void removeWaveDataListener(WaveDataListener listener)
+    {
+        listeners.remove(listener);
     }
     void fireListeners(double []x, float []y, double resolution)
     {

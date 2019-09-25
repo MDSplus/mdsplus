@@ -25,13 +25,14 @@ public class MdsDataProvider
     String error;
     private boolean use_compression = false;
     int var_idx = 0;
- 
+    
     boolean is_tunneling = false;
     String tunnel_provider = "127.0.0.1:8000";
     SshTunneling ssh_tunneling;
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
 
+    static boolean debug = false;
 
     class SegmentedFrameData
 	implements FrameData
@@ -176,6 +177,7 @@ public class MdsDataProvider
 	}
 	public byte[] GetFrameAt(int idx) throws IOException
 	{
+            if(debug) System.out.println("GetFrameAt "+idx);
 	    //System.out.println("GET FRAME AT " + idx);
 	    int segmentIdx = startSegment + idx / framesPerSegment;
 	    int segmentOffset = (idx % framesPerSegment) * dim.width * dim.height * bytesPerPixel;
@@ -340,6 +342,7 @@ public class MdsDataProvider
 
 	public byte[] GetFrameAt(int idx) throws IOException
 	{
+            if(debug) System.out.println("GetFrameAt "+idx);
 	    byte[] b_img = null;
 
 	    if (mode == BITMAP_IMAGE_8 || mode == BITMAP_IMAGE_16 ||
@@ -391,6 +394,7 @@ public class MdsDataProvider
 	static final int UNKNOWN = -1;
 	int numDimensions = UNKNOWN;
 	int segmentMode = SEGMENTED_UNKNOWN;
+        String segmentNodeName;
 	int v_idx;
 	boolean isXLong = false;
 	String title = null;
@@ -404,7 +408,24 @@ public class MdsDataProvider
 	long wd_shot;
 	AsynchDataSource asynchSource = null;
 
+       public boolean supportsStreaming() 
+       { 
+            return segmentMode == SEGMENTED_YES;
+       }
 
+       public String duplicateBackslashes(String inStr)
+       {
+           StringBuffer outStr = new StringBuffer();
+           for(int i = 0; i < inStr.length(); i++)
+           {
+               if(inStr.charAt(i) == '\\')
+               {
+                    outStr.append('\\');
+               }
+               outStr.append(inStr.charAt(i));     
+           }
+           return outStr.toString();
+       }
 	public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode)
 	{
 	    this.wd_experiment = experiment;
@@ -424,23 +445,22 @@ public class MdsDataProvider
 	    if(segmentMode == SEGMENTED_UNKNOWN)
 	    {
 	        Vector<Descriptor> args = new Vector<>();
-	        String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
-	        args.addElement(new Descriptor(null, fixedY));
+//	        String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
+	        String fixedY = duplicateBackslashes(in_y);
 	        try {
-	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
-	            if(retData[0] > 0)
+                    String segExpr = "long(MdsMisc->IsSegmented(\""+fixedY+"\"))";
+	            int[] retData = GetIntArray(segExpr);
+                    if(debug) System.out.println(segExpr+ " " +retData[0]);
+	            if(retData[0] != 0)
+                    {
 	                segmentMode = SEGMENTED_YES;
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
-
- /*
- //                   int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
- //                   if(numSegments[0] > 0)
-	                segmentMode = SEGMENTED_YES;
-	            else
-	                segmentMode = SEGMENTED_NO;
- */               }
-	        catch(Exception exc)
+                }
+	        catch(IOException exc)
 	        {
 	            error = null;
 	            segmentMode = SEGMENTED_UNKNOWN;
@@ -473,15 +493,14 @@ public class MdsDataProvider
 	        try {
 	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
 	            if(retData[0] > 0)
+                    {
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
 	                segmentMode = SEGMENTED_YES;
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
-/*                    int[] numSegments = GetIntArray("GetNumSegments("+in_y+")");
-	            if(numSegments[0] > 0)
-	                segmentMode = SEGMENTED_YES;
-	            else
-	                segmentMode = SEGMENTED_NO;
-*/                }catch(Exception exc)
+                }catch(Exception exc)
 	        {
 	            error = null;
 	            segmentMode = SEGMENTED_UNKNOWN;
@@ -519,7 +538,8 @@ public class MdsDataProvider
 	    else
 	    {
 	        if(segmentMode == SEGMENTED_YES)
-	            expr = "shape(GetSegment(" + in_y +",0))";
+	            expr = "shape(GetSegment(" + segmentNodeName +",0))";
+//	            expr = "shape(GetSegment(" + in_y +",0))";
 	        else
 	        {
 	            _jscope_set = true;
@@ -586,7 +606,8 @@ public class MdsDataProvider
 	            {
 	                if(segmentMode == SEGMENTED_YES)
 	                {
-	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+//	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+	                    expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
 	                    xLabel = GetStringValue(expr);
 	               }
 	                else
@@ -618,7 +639,8 @@ public class MdsDataProvider
 	        {
 	            if(segmentMode == SEGMENTED_YES)
 	            {
-	                expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
+//	                expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
+	                expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 1)))";
 	                yLabel = GetStringValue(expr);
 	             }
 	            else
@@ -641,7 +663,8 @@ public class MdsDataProvider
 	    }
 	    if(segmentMode == SEGMENTED_YES)
 	    {
-	        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+//	        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+	        expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
 	        yLabel = GetStringValue(expr);
 	    }
 	    else
@@ -695,6 +718,8 @@ public class MdsDataProvider
 	     String xExpr, yExpr;
 	     XYData res = null;
 
+             if(debug) System.out.println("GET DATA " + in_y + "   Start: "+xmin + "   End: " + xmax);
+             
 	     if (!CheckOpen(this.wd_experiment, this.wd_shot, this.defaultNode))
 	        return null;
 
@@ -705,7 +730,11 @@ public class MdsDataProvider
 	        try {
 	            byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
 	            if(retData[0] > 0)
+                    {
 	                segmentMode = SEGMENTED_YES;
+                        segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC("+retData[0]+")");
+                        if(debug) System.out.println("Segmented Node: " + segmentNodeName);
+                    }
 	            else
 	                segmentMode = SEGMENTED_NO;
 	        }catch(Exception exc)
@@ -970,9 +999,14 @@ public class MdsDataProvider
 	    if(asynchSource != null)
 	        asynchSource.addDataListener(listener);
 	}
+	public void removeWaveDataListener(WaveDataListener listener)
+	{
+            waveDataListenersV.remove(listener);
+	}
 	public void getDataAsync(double lowerBound, double upperBound, int numPoints)
 	{
- //           System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
+ 
+            if(debug) System.out.println("***GET DATA ASYNCH "+lowerBound+"  " + upperBound+"  " + numPoints);
 	    updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
 	}
     } //END Inner Class SimpleWaveData
@@ -1324,6 +1358,7 @@ public class MdsDataProvider
     public byte[] GetFrameAt(String in_frame, int frame_idx) throws IOException
     {
 
+        if(debug) System.out.println("GetFrameAt "+in_frame+ "  " + frame_idx);
 	String exp = GetExperimentName(in_frame);
 
 	String in = "JavaGetFrameAt(\"" + exp + "\",\" " + in_frame + "\"," +
@@ -1340,6 +1375,7 @@ public class MdsDataProvider
 
     public  synchronized  byte[] GetByteArray(String in, Vector<Descriptor> args) throws IOException
     {
+        if(debug) System.out.println("GetByteArray "+in);
 	byte out_byte[] = null;
 	ByteArrayOutputStream dosb = new ByteArrayOutputStream();
 	DataOutputStream dos = new DataOutputStream(dosb);
@@ -1560,6 +1596,7 @@ public class MdsDataProvider
     {
 	error = null;
 
+        if(debug) System.out.println("GetFloat "+in);
 	//First check Whether this is a date
 	try {
 	    Calendar cal = Calendar.getInstance();
@@ -1630,6 +1667,7 @@ public class MdsDataProvider
 
     public float[] GetFloatArray(String in) throws IOException
     {
+        if(debug) System.out.println("GetFloatArray "+in);
 	RealArray realArray = GetRealArray(in);
 	if (realArray == null)
 	    return null;
@@ -1638,6 +1676,7 @@ public class MdsDataProvider
 
     public double[] GetDoubleArray(String in) throws IOException
     {
+        if(debug) System.out.println("GetDoubleArray "+in);
 	RealArray realArray = GetRealArray(in);
 	if (realArray == null)
 	    return null;
@@ -1646,7 +1685,7 @@ public class MdsDataProvider
 
     public synchronized RealArray GetRealArray(String in) throws IOException
     {
-
+        if(debug) System.out.println("GetRealArray "+in);
 	RealArray out;
 	ConnectionEvent e = new ConnectionEvent(this, 1, 0);
 	DispatchConnectionEvent(e);
@@ -1744,20 +1783,22 @@ public class MdsDataProvider
 	return out;
     }
 
-    public long[] GetShots(String in) throws IOException
+    public long[] GetShots(String in, String experiment) throws IOException
     {
+        if(debug) System.out.println("GetShots "+in + "  " + experiment);
 	//To shot evaluation don't execute check
 	//if a pulse file is open
 	CheckConnection();
 	//try
 	{
-
+            
 	    return GetLongArray(in);
 	}
     }
 
     public int[] GetIntArray(String in) throws IOException
     {
+        if(debug) System.out.println("GetIntArray "+in);
 	if (!CheckOpen())
 	    throw new IOException("Tree not open");
 	return GetIntegerArray(in);
@@ -1765,6 +1806,7 @@ public class MdsDataProvider
 
     private synchronized long[] GetLongArray(String in) throws IOException
     {
+        if(debug) System.out.println("GetLongArray "+in);
 	long out_data[];
 
 	Descriptor desc = mds.MdsValue(in);
@@ -1804,6 +1846,7 @@ public class MdsDataProvider
 
     private synchronized int[] GetIntegerArray(String in) throws IOException
     {
+        if(debug) System.out.println("GetIntegerArray "+in);
 	int out_data[];
 
 	Descriptor desc = mds.MdsValue(in);
@@ -2073,6 +2116,7 @@ public class MdsDataProvider
 
     protected String GetStringValue(String expr) throws IOException
     {
+        if(debug) System.out.println("GeStringValue "+expr);
 	String out = GetString(expr, -1, -1, -1);
 	if (out == null || out.length() == 0 || error != null)
 	{

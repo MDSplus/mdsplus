@@ -50,6 +50,12 @@ public interface WaveData
      */
      XYData getData(long xmin, long xmax, int numPoints) throws IOException;
 
+    /**
+     *Check whether this data supports streaming
+      *
+     * @return True if streaming is supported, false otherwise
+     **/
+     boolean supportsStreaming();
 
     /**
      * Get X and Y data for unidimensional signals
@@ -117,6 +123,11 @@ public interface WaveData
      * @see WaveDataListener
     */
     void addWaveDataListener(WaveDataListener listener);
+
+  /**
+     * Unregister  a WaveData listener.  
+    */
+    void removeWaveDataListener(WaveDataListener listener);
 
 
     /**

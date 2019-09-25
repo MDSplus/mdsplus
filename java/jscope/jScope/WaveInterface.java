@@ -1187,7 +1187,7 @@ public class WaveInterface
 	return outStr;
     }
 
-    static public long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
+    public static long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
 	IOException
     {
 	long shot_list[] = null;
@@ -1199,7 +1199,7 @@ public class WaveInterface
 	String shotExpr = in_shots;
 	if( exp != null )
 	    shotExpr = processShotExpression(in_shots, exp);
-	shot_list = dp.GetShots( shotExpr );
+	shot_list = dp.GetShots( shotExpr, exp );
 	if (shot_list == null || shot_list.length == 0 ||
 	    shot_list.length > MAX_NUM_SHOT)
 	{

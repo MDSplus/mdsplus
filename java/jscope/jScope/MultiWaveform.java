@@ -605,7 +605,6 @@ public class MultiWaveform
 
 	int i;
 
-	waveform_signal = null;
 	if (curr_point_sig_idx == -1 ||
 	    curr_point_sig_idx >= signals.size() ||
 	    signals.elementAt(curr_point_sig_idx) == null)
@@ -619,6 +618,8 @@ public class MultiWaveform
 	else
 	    i = curr_point_sig_idx;
 
+        if(waveform_signal != null)
+            waveform_signal.dispose();
 	waveform_signal = new Signal(signals.elementAt(i));
 
 

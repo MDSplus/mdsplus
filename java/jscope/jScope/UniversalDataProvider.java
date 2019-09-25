@@ -176,10 +176,10 @@ class UniversalDataProvider implements DataProvider
 	}
    }
 
-    public long[] GetShots(String in)
+    public long[] GetShots(String in, String experiment)
     {
 	try {
-	    return defaultProvider.GetShots(in);
+	    return defaultProvider.GetShots(in, experiment);
 	}catch(Exception exc){error = ""+exc;return null;}
      }
 
