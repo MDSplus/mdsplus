@@ -482,7 +482,7 @@ INSTALL_STRIP_PROGRAM = @INSTALL_STRIP_PROGRAM@
 JAR = @JAR@
 JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
-JAVACFLAGS = -encoding UTF-8
+JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVA_APS = @JAVA_APS@
 JAVA_JAR = @JAVA_JAR@
@@ -681,6 +681,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+JAVASOURCE = 8
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
@@ -702,6 +703,7 @@ SUFFIXES = .log .tap .xml
 # .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
+RT6JAR = $(top_srcdir)/java/rt6.jar
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
@@ -1420,6 +1422,7 @@ test-env:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
+JAVASOURCE ?= 6 -bootclasspath $(RT6JAR)
 
 $(JAVAROOT):
 	mkdir -p $@

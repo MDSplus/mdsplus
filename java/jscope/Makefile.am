@@ -1,4 +1,4 @@
-JAVACFLAGS = -encoding UTF-8
+JAVASOURCE = 8
 JAVAROOT = $(builddir)
 EXTRA_DIST = $(MINDTERM)
 CLEANFILES = $(java_DATA)

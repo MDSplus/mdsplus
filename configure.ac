@@ -127,7 +127,7 @@ AS_CASE(["$host"],
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
 
-JAVACFLAGS="-encoding UTF-8"
+JAVACFLAGS="-encoding UTF-8 -source \$(JAVASOURCE)"
 FOR_LINKSHARED=""
 
 AC_MSG_CHECKING([whether to build shared libraries])
@@ -217,15 +217,14 @@ AC_ARG_WITH([jdk],
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
                             [specify version of compiled mdsobjects classes (i.e. 6)])],
-            [AS_VAR_SET([JAVAVERSION], ["-source $withval -target $withval"])],
-            [AS_VAR_SET([JAVAVERSION], [])])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
 
 AC_ARG_WITH([java_bootclasspath],
 	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
                             [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [AS_VAR_APPEND([JAVAVERSION], [" -bootclasspath $withval"])],
-            [])
-AS_VAR_APPEND([JAVACFLAGS],[" ${JAVAVERSION}"])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
