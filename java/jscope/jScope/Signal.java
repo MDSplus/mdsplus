@@ -898,7 +898,7 @@ public class Signal implements WaveDataListener
 	}
 
 	startIndexToUpdate = s.startIndexToUpdate;
-	signalListeners = s.signalListeners;
+	//signalListeners = s.signalListeners;
 	freezeMode = s.freezeMode;
 
 	longXLimits = s.longXLimits;
@@ -956,6 +956,11 @@ public class Signal implements WaveDataListener
 	name = s.name;
     }
 
+    void dispose()
+    {
+        if(data != null)
+            data.removeWaveDataListener(this);
+    }
     boolean hasError() {return error;}
     boolean hasAsymError() {return asym_error;}
     public final boolean hasX()

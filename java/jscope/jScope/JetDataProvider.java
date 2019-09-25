@@ -169,6 +169,7 @@ class JetDataProvider implements DataProvider
 	public long []getXLong(){System.out.println("BADABUM!!"); return null;}
 	public boolean isXLong(){return false;}
 	public void addWaveDataListener(WaveDataListener listener){}
+	public void removeWaveDataListener(WaveDataListener listener){}
 	public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
 
 

@@ -247,15 +247,16 @@ class TwuWaveData
 	     return new XYData(x, y, Double.MAX_VALUE);
 	 }
 
-    public float[] getZ(){System.out.println("BADABUM!!"); return null;}
-    public double[] getX2D(){System.out.println("BADABUM!!"); return null;}
-    public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
-    public float[] getY2D(){System.out.println("BADABUM!!"); return null;}
-    public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
-    public long []getXLong(){System.out.println("BADABUM!!"); return null;}
-    public boolean isXLong(){return false;}
-    public void addWaveDataListener(WaveDataListener listener){}
-    public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
+        public float[] getZ(){System.out.println("BADABUM!!"); return null;}
+        public double[] getX2D(){System.out.println("BADABUM!!"); return null;}
+        public long[] getX2DLong(){System.out.println("BADABUM!!"); return null;}
+        public float[] getY2D(){System.out.println("BADABUM!!"); return null;}
+        public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
+        public long []getXLong(){System.out.println("BADABUM!!"); return null;}
+        public boolean isXLong(){return false;}
+        public void addWaveDataListener(WaveDataListener listener){}
+        public void removeWaveDataListener(WaveDataListener listener){}
+        public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
 
 
 }

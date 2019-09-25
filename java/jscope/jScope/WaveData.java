@@ -124,6 +124,11 @@ public interface WaveData
     */
     void addWaveDataListener(WaveDataListener listener);
 
+  /**
+     * Unregister  a WaveData listener.  
+    */
+    void removeWaveDataListener(WaveDataListener listener);
+
 
     /**
      * Get the title associated with that signal. It is displayed if no title is defined in the setup data

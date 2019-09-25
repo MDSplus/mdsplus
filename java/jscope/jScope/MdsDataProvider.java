@@ -999,6 +999,10 @@ public class MdsDataProvider
 	    if(asynchSource != null)
 	        asynchSource.addDataListener(listener);
 	}
+	public void removeWaveDataListener(WaveDataListener listener)
+	{
+            waveDataListenersV.remove(listener);
+	}
 	public void getDataAsync(double lowerBound, double upperBound, int numPoints)
 	{
  
