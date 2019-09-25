@@ -338,6 +338,10 @@ public class XYWaveData implements WaveData
     {
 	listeners.addElement(listener);
     }
+    public void removeWaveDataListener(WaveDataListener listener)
+    {
+        listeners.remove(listener);
+    }
     void fireListeners(double []x, float []y, double resolution)
     {
 	for(int i = 0; i < listeners.size(); i++)
