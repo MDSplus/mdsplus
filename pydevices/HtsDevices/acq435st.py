@@ -148,25 +148,15 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
-
-            
-            self.dims = []
-            
-            for i in range(self.nchans):
-                dim_range = [0.0, (self.seg_length-1)*dt]
-                if self.seg_length % decimator:
-                    self.dims.append(MDSplus.CULL(dim_range, None, MDSplus.Range(0.0, (self.seg_length-1)*dt, dt*self.decim[i])).getArgumentAt(2).data())
-                else:
-                    self.dims.append(MDSplus.CULL(dim_range, None, MDSplus.Range(0.0, (self.seg_length-1)*dt, dt*self.decim[i])).getArgumentAt(2).data()[:-1])
-
+             
             self.device_thread.start()
 
-            print(self.dims[0])
-
             segment = 0
+            begin   = 0.0
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
+
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -179,15 +169,13 @@ class ACQ435ST(MDSplus.Device):
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
                         
-                        begin  =self.dims[i][0]
-                        ending =self.dims[i][-1]
-                        dim_limits=[begin + self.seg_length*dt, ending + self.seg_length*dt]
-
-                        c.makeSegment(begin, ending, self.dims[i], b)
-                        self.dims[i] = (MDSplus.CULL(dim_limits, None, MDSplus.Range(begin + self.seg_length*dt, ending + self.seg_length*dt, dt*self.decim[i])).getArgumentAt(2).data())
+                        dim_limits=[begin, begin + self.seg_length*dt - 1]
+                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
+                        c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
 
                     i += 1
                 segment += 1
+                begin   += self.seg_length*dt
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
