@@ -149,14 +149,19 @@ class ACQ435ST(MDSplus.Device):
 
             decimator = lcma(self.decim)
 
-            if self.seg_length % decimator:
-                self.seg_length = (self.seg_length // decimator + 1) * decimator
-
+            
             self.dims = []
+            
             for i in range(self.nchans):
-                self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
+                dim_range = [0.0, (self.seg_length-1)*dt]
+                if self.seg_length % decimator:
+                    self.dims.append(MDSplus.CULL(dim_range, None, MDSplus.Range(0.0, (self.seg_length-1)*dt, dt*self.decim[i])).getArgumentAt(2).data())
+                else:
+                    self.dims.append(MDSplus.CULL(dim_range, None, MDSplus.Range(0.0, (self.seg_length-1)*dt, dt*self.decim[i])).getArgumentAt(2).data()[:-1])
 
             self.device_thread.start()
+
+            print(self.dims[0])
 
             segment = 0
             first = True
@@ -173,8 +178,14 @@ class ACQ435ST(MDSplus.Device):
                 for c in self.chans:
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        
+                        begin  =self.dims[i][0]
+                        ending =self.dims[i][-1]
+                        dim_limits=[begin + self.seg_length*dt, ending + self.seg_length*dt]
+
+                        c.makeSegment(begin, ending, self.dims[i], b)
+                        self.dims[i] = (MDSplus.CULL(dim_limits, None, MDSplus.Range(begin + self.seg_length*dt, ending + self.seg_length*dt, dt*self.decim[i])).getArgumentAt(2).data())
+
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
@@ -235,14 +246,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        print("We have Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            print (' received timed out, retry later')
                             continue
                         else:
                             print (e)
