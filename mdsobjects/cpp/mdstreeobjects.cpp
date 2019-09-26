@@ -1226,13 +1226,13 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 	makeSegment(start, end, time, initialData);
 }
 
-void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
 {
-	const int RES_FACTOR = 100;
-	//Resampled aray always converted to float, Assumed 1D array
+	const int RES_FACTOR = resFactor;
+	//Resampled array always converted to float, Assumed 1D array
 	int numRows;
 	float *arrSamples = initialData->getFloatArray(&numRows);
-	float *resSamples = new float[numRows/RES_FACTOR];
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
 	for(int i = 0; i < numRows; i+= RES_FACTOR)
 	{
 		float avgVal = arrSamples[i];
@@ -1273,6 +1273,81 @@ void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialDa
 	if(!(status & 1))
 		throw MdsException(status);
 }
+void TreeNode::beginSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
+{
+	const int RES_FACTOR = resFactor;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float avgVal = arrSamples[i];
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			avgVal += arrSamples[i+j];
+		}
+		avgVal /= RES_FACTOR;
+		resSamples[i/RES_FACTOR] = avgVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR,numRows);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
+	resampledNode->beginSegment(start, end, resDim, resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		AutoData<Data> resModeD(new String("Resample"));
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		AutoData<Data> resSamplesD(new Int32(RES_FACTOR));
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+	}
+	beginSegment(start, end, time, initialData);
+}
+void TreeNode::beginSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
+{
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[2* numRows/resFactor + 1]; //It has top keep minimum and maximum. Ensure enough room even if numRows is not a multiplier of resFactor
+	for(int i = 0; i < numRows; i+= resFactor)
+	{
+		float minVal = arrSamples[i];
+		float maxVal = minVal;
+		for(int j = 0; j < resFactor && i+j < numRows; j++)
+		{
+			if(arrSamples[i+j] < minVal)
+				minVal = arrSamples[i+j];
+			if(arrSamples[i+j] > maxVal)
+				maxVal = arrSamples[i+j];
+		}
+		resSamples[2*i/resFactor] = minVal;
+		resSamples[2*i/resFactor+1] = maxVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", resFactor/2,numRows);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
+	resampledNode->beginSegment(start, end, resDim, resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		AutoData<Data> resModeD(new String("MinMax"));
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		AutoData<Data> resSamplesD(new Int32(resFactor/2));
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+	}
+	beginSegment(start, end, time, initialData);
+}
 
 void TreeNode::putSegment(Array *data, int ofs)
 {
@@ -1282,6 +1357,59 @@ void TreeNode::putSegment(Array *data, int ofs)
 	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw MdsException(status);
+}
+
+void TreeNode::putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode, int resFactor)
+{
+	const int RES_FACTOR = resFactor;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = data->getFloatArray(&numRows);
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float avgVal = arrSamples[i];
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			avgVal += arrSamples[i+j];
+		}
+		avgVal /= RES_FACTOR;
+		resSamples[i/RES_FACTOR] = avgVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
+	if(numRows > RES_FACTOR)
+	    resampledNode->putSegment(resData, ofs);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	putSegment(data, ofs);
+}
+void TreeNode::putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode, int resFactor)
+{
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = data->getFloatArray(&numRows);
+	float *resSamples = new float[2* numRows/resFactor + 1]; //It has top keep minimum and maximum. Ensure enough room even if numRows is not a multiplier of resFactor
+	for(int i = 0; i < numRows; i+= resFactor)
+	{
+		float minVal = arrSamples[i];
+		float maxVal = minVal;
+		for(int j = 0; j < resFactor && i+j < numRows; j++)
+		{
+			if(arrSamples[i+j] < minVal)
+				minVal = arrSamples[i+j];
+			if(arrSamples[i+j] > maxVal)
+				maxVal = arrSamples[i+j];
+		}
+		resSamples[2*i/resFactor] = minVal;
+		resSamples[2*i/resFactor+1] = maxVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
+	resampledNode->putSegment(resData, ofs);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	putSegment(data, ofs);
 }
 
 void TreeNode::updateSegment(Data *start, Data *end, Data *time)
