@@ -3085,10 +3085,22 @@ public:
     virtual void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
 	//Begin and fill a new data segment. At the same time make a resampled version
-    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
+    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
+
+	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples)
+    virtual void beginSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
+
+	//Begin and fill a new data segment. At the same time make a resampled version
+    virtual void beginSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
     /// Write (part of) data segment
     virtual void putSegment(Array *data, int ofs);
+    
+    /// Write (part of) data segment
+    virtual void putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode, int resFactor = 100);
+
+    /// Write (part of) data segment
+    virtual void putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode, int resFactor = 100);
 
     /// Update start, end time and dimension for the last segment
     virtual void updateSegment(Data *start, Data *end, Data *time);
