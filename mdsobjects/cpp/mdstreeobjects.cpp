@@ -1599,7 +1599,6 @@ void TreeNode::putRow(Data *data, int64_t *time, int size)
 
 TreeNode *TreeNode::getNode(char const * relPath)
 {
-	std::cout << "In C++ TreeNode getNode, relPathS" << std::endl;
 	int newNid;
 	resolveNid();
 	
@@ -1612,7 +1611,6 @@ TreeNode *TreeNode::getNode(char const * relPath)
 
 TreeNode *TreeNode::getNode(String *relPathStr)
 {
-	std::cout << "In C++ TreeNode getNode, relPathStr" << std::endl;
 	int newNid;
 	resolveNid();
 	AutoArray<char> relPath(relPathStr->getString());
