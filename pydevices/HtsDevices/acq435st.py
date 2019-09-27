@@ -25,7 +25,7 @@
 import numpy as np
 import MDSplus
 import threading
-import Queue
+from queue import Queue
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
