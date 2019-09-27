@@ -394,7 +394,7 @@ parsecmd() {
 		;;
 	esac
     done
-    if [ ! -z "${unknownopts}" ]
+    if [ -n "${unknownopts}" ]
     then
 	printhelp
 	2>&1 echo "Unknown option(s) specified: ${unknownopts}"
@@ -540,7 +540,7 @@ fi
 # from coma delimited to space delimited
 #
 spacedelim() {
-    if [ ! -z "$1" ]
+    if [ -n "$1" ]
     then
 	if [ "$1" = "skip" ]
 	then
@@ -560,14 +560,14 @@ DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
 if [ "$DOCKERPULL" = "yes" ]
 then
-    if [ ! -z "$DOCKERIMAGE" ]
+    if [ -n "$DOCKERIMAGE" ]
     then
 	for img in ${DOCKERIMAGE}
 	do
 	    docker pull $img
 	done
     fi
-elif [ ! -z "$DOCKERFILE" ]
+elif [ -n "$DOCKERFILE" ]
 then
     #
     # build docker images if specified.
@@ -602,12 +602,12 @@ then
     TEST_FORMAT=log
 fi
 
-if [ ! -z "$RELEASEDIR" ]
+if [ -n "$RELEASEDIR" ]
 then
     RELEASEDIR=${RELEASEDIR}/${DISTNAME}
 fi
 
-if [ ! -z "$PUBLISHDIR" ]
+if [ -n "$PUBLISHDIR" ]
 then
     PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
 fi

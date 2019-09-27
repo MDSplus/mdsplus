@@ -93,14 +93,14 @@ void BlockAndRows(){
     int d[2] = {0,7};  unique_ptr<Int32Array> s = new Int32Array(d,2);
     n->beginTimestampedSegment(s);
   }
-  TEST1(AutoString(unique_ptr<Data>(n->getData())->decompile()).string == "Build_Signal(0, [], *, [])");
+  TEST1(AutoString(unique_ptr<Data>(n->getData())->decompile()).string == "Build_Signal([], *, [])");
   // beginning adding row increments next_row to 1
   {
     int  d[1] = {1};    unique_ptr<Int32Array> s = new Int32Array(d,1);
     int64_t t= -1;
     n->putRow(s,&t,10);
   }
-  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, [1], *, [-1Q])");
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal([1], *, [-1Q])");
   TEST1(AutoString(unique_ptr<Data>(n->getSegment(0))->decompile()).string == "[1]");
   /**************************************************************
    beginning a new block set next_row back to 0 of the new block
@@ -110,11 +110,11 @@ void BlockAndRows(){
     int d[2] = {0,0};  unique_ptr<Int32Array> s = new Int32Array(d,2);
     n->beginTimestampedSegment(s);
   }
-  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, [1,7], *, [-1Q,0Q])");
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal([1,7], *, [-1Q,0Q])");
   TEST1(AutoString(unique_ptr<Data>(n->getSegment(0))->decompile()).string == "[1,7]");
   n->setSegmentScale(unique_ptr<Data>(compile("$VALUE*2")));
   TEST1(AutoString(unique_ptr<Data>(n->getSegmentScale())->decompile()).string == "$VALUE * 2");
-  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal(0, $VALUE * 2, [1,7], [-1Q,0Q])");
+  TEST1(AutoString(unique_ptr<Data>(n->getData()    )->decompile()).string == "Build_Signal($VALUE * 2, [1,7], [-1Q,0Q])");
   AutoData<Data> nData = n->data(); 
   std::vector<int> data = nData->getIntArray();
   TEST1(data[0]==2);

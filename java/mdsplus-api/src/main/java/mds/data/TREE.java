@@ -3,12 +3,11 @@ package mds.data;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import mds.ContextEventListener;
 import mds.Mds;
 import mds.Mds.Request;
 import mds.MdsApi;
-import mds.MdsEvent;
 import mds.MdsException;
-import mds.MdsListener;
 import mds.Shr.StringStatus;
 import mds.TreeShr.DescriptorStatus;
 import mds.TreeShr.IntegerStatus;
@@ -31,7 +30,7 @@ import mds.data.descriptor_s.Pointer;
 import mds.data.descriptor_s.StringDsc;
 import mds.mdsip.MdsIp;
 
-public final class TREE implements MdsListener, CTX{
+public final class TREE implements ContextEventListener, CTX{
 	public final static class NodeInfo{
 		public static final String	members			= "IF_ERROR(GETNCI(GETNCI(_n,'MEMBER_NIDS'),'NID_NUMBER'),[])";
 		public static final String	children		= "IF_ERROR(GETNCI(GETNCI(_n,'CHILDREN_NIDS'),'NID_NUMBER'),[])";
@@ -813,21 +812,9 @@ public final class TREE implements MdsListener, CTX{
 	}
 
 	@Override
-	public void processMdsEvent(final MdsEvent e) {
-		switch(e.getID()){
-			case MdsEvent.IDLE:
-			case MdsEvent.TRANSFER:
-				break;
-			case MdsEvent.HAVE_CONTEXT:
-				this.ready = true;
-				break;
-			case MdsEvent.LOST_CONTEXT:
-				this.ctx.setAddress(0);
-				this.ready = false;
-				break;
-			default:
-				System.out.println(e.getID() + e.getInfo());
-		}
+	public void handleContextEvent(Mds source, String info, boolean ok) {
+		if(!ok) this.ctx.setAddress(0);
+		this.ready = ok;
 	}
 
 	public final TREE putRecord(final int nid, final Descriptor<?> data) throws MdsException {
@@ -1007,7 +994,7 @@ public final class TREE implements MdsListener, CTX{
 
 	private final void updateListener(final boolean opened_in) {
 		this.opened = opened_in;
-		if(this.opened) this.mds.addMdsListener(this);
-		else this.mds.removeMdsListener(this);
+		if(this.opened) this.mds.addContextEventListener(this);
+		else this.mds.removeContextEventListener(this);
 	}
 }

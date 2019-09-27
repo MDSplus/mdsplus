@@ -25,7 +25,7 @@
 import numpy as np
 import MDSplus
 import threading
-import Queue
+from queue import Queue
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -148,20 +148,15 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
-
-            if self.seg_length % decimator:
-                self.seg_length = (self.seg_length // decimator + 1) * decimator
-
-            self.dims = []
-            for i in range(self.nchans):
-                self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
-
+             
             self.device_thread.start()
 
             segment = 0
+            begin   = 0.0
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
+
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -173,10 +168,14 @@ class ACQ435ST(MDSplus.Device):
                 for c in self.chans:
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        
+                        dim_limits=[begin, begin + self.seg_length*dt - 1]
+                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
+                        c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
+
                     i += 1
                 segment += 1
+                begin   += self.seg_length*dt
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
@@ -235,14 +234,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        print("We have Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            print (' received timed out, retry later')
                             continue
                         else:
                             print (e)

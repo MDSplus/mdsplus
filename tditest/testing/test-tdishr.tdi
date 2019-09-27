@@ -3011,6 +3011,8 @@ wait(.01)
 !
 data(build_signal(1:10,*,*))
 data_with_units(build_signal(10*$VALUE,build_with_units(1:10,"counts"),*))
+data(*)
+data(*)[0]
 !
 ! Functions implemented in TdiItoX.c
 !
@@ -3132,3 +3134,5 @@ decompile(`list(,"a",1,"b",2),1)
 decompile(`tuple(,"a",1,"b",2),1)
 decompile(`dict(,"a",1,"b",2),1)
 decompile(`zero(32758,1))
+! test if functions compile without treectx when containing pathlike NIDs
+fun nid()nid

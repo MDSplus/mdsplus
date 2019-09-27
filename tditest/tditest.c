@@ -27,8 +27,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 #if defined(__APPLE__) || defined(__MACH__)
-#define _MACOSX;
+#define _MACOSX
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
@@ -118,11 +119,57 @@ char **character_name_completion(const char *text,
   return rl_completion_matches(text, character_name_generator);
 }
 
+static void keyboard_interrupt(int signo __attribute__((__unused__))) {
+  fprintf(stderr,"KeyboardInterrupt\n");
+}
+#ifdef _WIN32
+static inline void set_readline_handlers() {
+  signal(SIGINT, SIG_IGN);
+}
+static inline void set_execute_handlers() {
+  signal(SIGINT, keyboard_interrupt);
+}
+#else // _WIN32
+static struct sigaction act;
+# ifdef HAVE_RL_SET_SIGNALS
+static inline void set_readline_handlers() {
+  rl_catch_signals = 1;
+  rl_set_signals();
+}
+static inline void set_execute_handlers() {
+  rl_clear_signals();
+}
+# else // HAVE_RL_SET_SIGNALS
+#  ifdef _MACOSX
+#   define _rl_sigint SIG_IGN
+#  else // _MACOSX
+static void _rl_sigint(int signo __attribute__((__unused__))) {
+  // reset readline line buffer and state before printing new prompt
+  rl_free_line_state ();
+  rl_cleanup_after_signal ();
+  RL_UNSETSTATE(RL_STATE_ISEARCH|RL_STATE_NSEARCH|RL_STATE_VIMOTION|RL_STATE_NUMERICARG|RL_STATE_MULTIKEY);
+  rl_line_buffer[rl_point = rl_end = rl_mark = 0] = 0;
+  printf("\n");
+}
+#  endif // !_MACOSX
+static inline void set_readline_handlers() {
+  act.sa_handler = _rl_sigint;
+  sigaction(SIGINT, &act, NULL);
+}
+static inline void set_execute_handlers() {
+  act.sa_handler = keyboard_interrupt;
+  sigaction(SIGINT, &act, NULL);
+}
+# endif // !HAVE_RL_SET_SIGNALS
+#endif // !_WIN32
+
 static char *getExpression(FILE *f_in) {
   char buf[MAXEXPR] = {0};
   char  *ans = NULL;
   size_t alen = 0;
   int append;
+  if (f_in == NULL)
+    set_readline_handlers();
   do {
     char  *next;
     size_t nlen;
@@ -212,6 +259,16 @@ int main(int argc, char **argv)
     output_unit.pointer = (char*)&f_out;
   } else
     f_out = stdout;
+  // initialize SIGINT handler
+#ifdef _WIN32
+  signal(SIGINT,keyboard_interrupt);
+#else
+  sigemptyset (&act.sa_mask);
+  act.sa_flags = 0;
+  act.sa_handler = keyboard_interrupt;
+  sigaction(SIGINT, &act, NULL);
+#endif
+  set_readline_handlers();
   while ((command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
@@ -225,9 +282,11 @@ int main(int argc, char **argv)
     if (!comment) {
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
+      set_execute_handlers();
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
+      set_readline_handlers();
       add_history(command);
-      if (status&1)
+      if STATUS_OK
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
 	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
@@ -241,5 +300,5 @@ int main(int argc, char **argv)
     write_history(history_file);
     free(history_file);
   }
-  return !(status&1);
+  return STATUS_NOT_OK;
 }

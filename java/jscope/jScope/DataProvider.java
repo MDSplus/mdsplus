@@ -248,6 +248,6 @@ public interface DataProvider
 	 * Evaluate the passed string to provide an array of shot numbers.
 	*  @param inShots The shot(s) specification as typed in the "Shot" field of jScope panel
 	 */
-	public long[]   GetShots(String inShots) throws IOException;
+	public long[]   GetShots(String inShots, String experiment) throws IOException;
 
      }

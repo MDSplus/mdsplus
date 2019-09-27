@@ -1359,6 +1359,11 @@ void *Compound::convertToDsc()
 	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode, descs.size(), (void **)(&descs[0])));
 }
 
+void *Signal::convertToDsc()
+{
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, 0, (void *)&opcode, descs.size(), (void **)(&descs[0])));
+}
+
 void *Apd::convertToDsc()
 {
 	return completeConversionToDsc(convertToApdDsc(dtype, descs.size(), (void **)&descs[0]));

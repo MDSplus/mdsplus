@@ -147,8 +147,6 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
       rDsc = (mdsdsc_r_t*)dsc;
       if(rDsc->dtype == DTYPE_SIGNAL)
 	  break; //If the expression includes a Signal descriptor, the time base may be different from that of the segmented node
-      if(rDsc->dtype == DTYPE_FUNCTION)
-	  break;  //If the expression  goes through a fun, the time base may be different from that of the segmented node
       for (i = 0; i < rDsc->ndesc; i++) {
 	if (rDsc->dscptrs[i] && (nid = recIsSegmented(rDsc->dscptrs[i])))
 	  return nid;
@@ -170,7 +168,8 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
 **/
 
 #define MAX64 0x7FFFFFFFFFFFFFFFL
-inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin, mdsdsc_t *const xMax, int *const estimatedSegmentSamples, double *const dMin, double *const dMax, int *const dIsLong) {
+inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *const xMin, mdsdsc_t *const xMax, int *const estimatedSegmentSamples, 
+					 double *const dMin, double *const dMax, double *const sMin, double *const sMax, int *const dIsLong) {
 /* return the number of samples the signal holds based on meta information
    or -1 if something went wrong
  */
@@ -228,18 +227,25 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
     numActSegments = numSegments;
     endIdx = numSegments - 1;
   }
+  
+  
   status = TreeGetSegmentInfo(nid, startIdx, &dtype, &dimct, dims, &nextRow);
   if STATUS_NOT_OK goto return_neg1;
-  segmentSamples = dims[dimct - 1];
+  
+  segmentSamples = nextRow;
+//  segmentSamples = dims[dimct - 1];
+
   //Compute duration
   status = TreeGetSegmentLimits(nid, startIdx, &xd, NULL);
   if STATUS_OK status = TdiData(xd.pointer, &xd MDS_END_ARG);
   if STATUS_NOT_OK goto return_neg1;
-  const double xmin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
+  *sMin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
+  const double xmin = to_doublex(xMin->pointer,xMin->dtype,-INFINITY,TRUE);
   status = TreeGetSegmentLimits(nid, endIdx, NULL, &xd);
   if STATUS_OK status = TdiData((mdsdsc_t*)&xd, &xd MDS_END_ARG);
   if STATUS_NOT_OK goto return_neg1;
-  const double xmax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
+  *sMax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
+  const double xmax = to_doublex(xMax->pointer,xMax->dtype, INFINITY,TRUE);
   MdsFree1Dx(&xd, NULL);
   *dMin = xmin;
   *dMax = xmax;
@@ -247,11 +253,25 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   return segmentSamples * (int64_t)numActSegments;
 return_neg1: ;
   if (xMin && IS_OK(TdiData(xMin, &xd MDS_END_ARG)))
-    *dMin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
-  else *dMin = -INFINITY;
+  {
+    *sMin = to_doublex(xd.pointer->pointer,xd.pointer->dtype,-INFINITY,TRUE);
+    *dMin = to_doublex(xMin->pointer,xMin->dtype,-INFINITY,TRUE);
+  }
+  else
+  {
+      *sMin = -INFINITY;
+      *dMin = -INFINITY;
+  }
   if (xMax && IS_OK(TdiData(xMax, &xd MDS_END_ARG)))
-    *dMax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
-  else *dMax =  INFINITY;
+  {
+    *sMax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
+    *dMax = to_doublex(xMax->pointer,xMax->dtype, INFINITY,TRUE);
+  }
+  else
+  {
+      *sMax =  INFINITY;
+      *dMax =  INFINITY;
+  }
   MdsFree1Dx(&xd, NULL);
   return -1;
 }
@@ -468,7 +488,20 @@ EXPORT int IsSegmented(char *const expr) {
   if IS_NOT_OK(TdiCompile(&exprD, &xd MDS_END_ARG)) return FALSE;
   int segNid = recIsSegmented(xd.pointer);
   MdsFree1Dx(&xd, NULL);
-  return segNid != 0;
+  return segNid;
+}
+
+//Check if the passed expression contains at least one segmented node
+EXPORT struct descriptor_xd *GetPathOf(int *nid) {
+  static EMPTYXD(retXd);
+  mdsdsc_t pathD = {0, DTYPE_T, CLASS_S, 0};
+  char *path = TreeGetPath(*nid);
+  if(!path) return NULL;
+  pathD.length = strlen(path);
+  pathD.pointer = path;
+  MdsCopyDxXd(&pathD, &retXd);
+  TreeFree(path);
+  return &retXd;
 }
 
 EXPORT int TestGetHelp(char *const expr) {
@@ -638,13 +671,16 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   EMPTYXD(xXd);
   int estimatedSegmentSamples = 0;
   int isLong = FALSE;
-  double xmin = -INFINITY, xmax = INFINITY, delta;
+  double xmin = -INFINITY, xmax = INFINITY, smin = -INFINITY, smax = -INFINITY, delta;
   mdsdsc_t *xMinP,*xMaxP,*deltaP, deltaD = {sizeof(double), DTYPE_DOUBLE, CLASS_S, (char* )&delta};
-  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax, &isLong);
-
-  const double estimatedDuration = xmax - xmin;
+  
+  int64_t estimatedSamples = estimateNumSamples(inY, inXMin, inXMax, &estimatedSegmentSamples, &xmin, &xmax, &smin, &smax, &isLong);
+  const double estimatedDuration = smax - smin;
   xMinP = (xmin > -INFINITY) ? inXMin : NULL;
   xMaxP = (xmax <  INFINITY) ? inXMax : NULL;
+  
+  //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples, NUM_SAMPLES_THRESHOLD);
+  
   if (estimatedSamples > NUM_SAMPLES_THRESHOLD) {
     //First guess on delta
     delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD;
@@ -652,15 +688,16 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
     if (delta > estimatedSegmentSamples/10.)
       delta = estimatedSegmentSamples/10.;
     //In any case don't make it too big in respect of the single segment size (at minimum 10 samples )pairs) per segment
+
     delta *= (estimatedDuration/estimatedSamples);
     if (isLong) delta /= 1e9; // quick compensation of xtreeshr conversion
+    
     deltaP = (delta>1e-9) ? &deltaD : NULL;
   } else deltaP = NULL;
   //Set limits if any
-
   int status = TreeSetTimeContext(xMinP,xMaxP,deltaP);
+
   if STATUS_OK status = TdiEvaluate(inY, &yXd MDS_END_ARG);
-  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
   if STATUS_NOT_OK goto return_err;
   // Get Y, title, and yLabel, if any
   EMPTYXD(title);EMPTYXD(xLabel);EMPTYXD(yLabel);
@@ -672,9 +709,16 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   else //Get xLabel, if any
     status = TdiEvaluate(inX, &xXd MDS_END_ARG);
   if STATUS_NOT_OK goto return_err;
+ 
   recGetUnits(xXd.pointer, &xLabel);
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
+
+
+  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
+
+
+
   int nSamples;
   if STATUS_OK status = getNSamples(&yXd,&xXd,&nSamples);
   if STATUS_NOT_OK goto return_err;
@@ -683,8 +727,8 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   float *y = getFloatArray(yArrD,nSamples);
   int retSamples;
   float retResolution;
+  
   trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution);
-
   DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT,  (char *)y,     sizeof(float ) * retSamples);
   DESCRIPTOR_WITH_UNITS(yDataU,&yData,yLabel.pointer);
   mdsdsc_t *yObj = yLabel.pointer ? (mdsdsc_t *)&yDataU : (mdsdsc_t *)&yData;
@@ -808,6 +852,7 @@ static mdsdsc_xd_t*getPackedDsc(mdsdsc_xd_t*retXd){
 EXPORT mdsdsc_xd_t* GetXYSignal(char *inY, char *inX, float *inXMin, float *inXMax, int *reqNSamples) {
   static EMPTYXD(retXd);
   const size_t len = strlen(inY);
+//printf("GET XY SIGNAL %s xmin: %f  xmax: %f Req samples: %d  \n", inY, *inXMin, *inXMax, *reqNSamples);
   if (len==0) return(encodeError("Y data must not be NULL or empty.",__LINE__,&retXd));
   EMPTYXD(yXd);
   EMPTYXD(xXd);

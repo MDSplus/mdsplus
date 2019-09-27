@@ -104,8 +104,8 @@ extern int TdiResetGetRecord();
 typedef struct link {
   struct link *left, *right;	/* binary tree links */
   unsigned short reserved;	/* tree flags */
-  struct descriptor_xd xd;	/* data descriptor */
-  struct descriptor name_dsc;	/* name descriptor */
+  mdsdsc_xd_t xd;	/* data descriptor */
+  mdsdsc_t name_dsc;	/* name descriptor */
   unsigned char name[1];	/* unchanging name */
 } node_type;
 typedef struct {
@@ -115,17 +115,17 @@ typedef struct {
   int _public;			/* is public */
 } block_type;
 typedef struct {
-  struct descriptor match;
+  mdsdsc_t match;
   block_type *block_ptr;
   int count;
 } user_type;
 
-STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
-STATIC_CONSTANT struct descriptor EMPTDY_S = { 0, DTYPE_T, CLASS_S, 0 };
-STATIC_CONSTANT struct descriptor_xd NULL_XD = { 0, 0, 0, 0, 0 };
+STATIC_CONSTANT mdsdsc_d_t EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+STATIC_CONSTANT mdsdsc_t EMPTDY_S = { 0, DTYPE_T, CLASS_S, 0 };
+STATIC_CONSTANT mdsdsc_xd_t NULL_XD = { 0, 0, 0, 0, 0 };
 
 STATIC_CONSTANT unsigned char true = 1;
-STATIC_CONSTANT struct descriptor true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
+STATIC_CONSTANT mdsdsc_t true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
 
 static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_PUBLIC pthread_mutex_lock(&public_lock)
@@ -141,14 +141,14 @@ STATIC_THREADSAFE block_type _public = { 0, 0, 0, 1 };
 
 STATIC_CONSTANT DESCRIPTOR(star, "*");
 STATIC_CONSTANT DESCRIPTOR(percent, "%");
-struct descriptor *Tdi3Narg(){
+mdsdsc_t *Tdi3Narg(){
   return &TdiGetThreadStatic()->TdiVar_new_narg_d;
 }
 
 /*--------------------------------------------------------------
 	Put a byte to output.
 */
-int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr){
+int TdiPutLogical(unsigned char data, mdsdsc_xd_t *out_ptr){
   INIT_STATUS;
   length_t len = (length_t)sizeof(unsigned char);
   dtype_t dtype = DTYPE_BU;
@@ -163,7 +163,7 @@ int TdiPutLogical(unsigned char data, struct descriptor_xd *out_ptr){
 /*--------------------------------------------------------------
 	Comparison routine.
 */
-STATIC_ROUTINE int compare(struct descriptor *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused))){
+STATIC_ROUTINE int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused))){
   return StrCaseBlindCompare(key_ptr, &node_ptr->name_dsc);
 }
 
@@ -171,7 +171,7 @@ STATIC_ROUTINE int compare(struct descriptor *key_ptr, node_type * node_ptr, blo
 	Allocation routine, does not set data field.
 	ASSUMED called only once per node.
 */
-STATIC_ROUTINE int allocate(struct descriptor *key_ptr,
+STATIC_ROUTINE int allocate(mdsdsc_t *key_ptr,
 			    node_type ** node_ptr_ptr, block_type * block_ptr){
   INIT_STATUS;
   unsigned int len = sizeof(struct link) - 1 + key_ptr->length;
@@ -202,14 +202,14 @@ STATIC_ROUTINE int allocate(struct descriptor *key_ptr,
 */
 #define _private (*(block_type*)&TdiThreadStatic_p->TdiVar_private)
 STATIC_ROUTINE int TdiFindIdent(int search,
-	                        struct descriptor_r *ident_ptr,
-	                        struct descriptor *key_ptr,
+	                        mdsdsc_r_t *ident_ptr,
+	                        mdsdsc_t *key_ptr,
 	                        node_type ** node_ptr_ptr, block_type ** block_ptr_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  struct descriptor key_dsc;
-  struct descriptor_d name_dsc;
+  mdsdsc_t key_dsc;
+  mdsdsc_d_t name_dsc;
   node_type *node_ptr;
   int code;
 
@@ -225,7 +225,7 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	********************************************/
       case DTYPE_T:
       case DTYPE_IDENT: {
-	key_dsc = *(struct descriptor *)ident_ptr;
+	key_dsc = *(mdsdsc_t *)ident_ptr;
 	key_dsc.dtype = DTYPE_T;
 	key_dsc.class = CLASS_S;
 	if (search & 1) {
@@ -284,11 +284,11 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	        ***************************************/
       if (code == OPC_PUBLIC)
 	status = TdiFindIdent(search & ~1,
-	                 (struct descriptor_r *)ident_ptr->dscptrs[0],
+	                 (mdsdsc_r_t *)ident_ptr->dscptrs[0],
 	                 &key_dsc, &node_ptr, block_ptr_ptr);
       else if (code == OPC_PRIVATE)
 	status = TdiFindIdent(search & ~2,
-	                 (struct descriptor_r *)ident_ptr->dscptrs[0],
+	                 (mdsdsc_r_t *)ident_ptr->dscptrs[0],
 	                 &key_dsc, &node_ptr, block_ptr_ptr);
       else if (code == OPC_EQUALS || code == OPC_EQUALS_FIRST
 	       || code == OPC_POST_DEC || code == OPC_PRE_DEC
@@ -297,16 +297,16 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 	status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
 	if STATUS_OK
 	  status = TdiFindIdent(search,
-	                   (struct descriptor_r *)ident_ptr->dscptrs[0],
+	                   (mdsdsc_r_t *)ident_ptr->dscptrs[0],
 			   &key_dsc, &node_ptr, block_ptr_ptr);
 	FREEXD_NOW(tmp);
       } else if (code == OPC_VAR) {
 	name_dsc = EMPTY_D;
 	status = TdiData(ident_ptr->dscptrs[0], &name_dsc MDS_END_ARG);
 	if STATUS_OK
-	  status = TdiFindIdent(search, (struct descriptor_r *)&name_dsc,
+	  status = TdiFindIdent(search, (mdsdsc_r_t *)&name_dsc,
 	                   &key_dsc, &node_ptr, block_ptr_ptr);
-	StrFree1Dx((struct descriptor_d *)&name_dsc);
+	StrFree1Dx((mdsdsc_d_t *)&name_dsc);
       } else
 	status = TdiINV_OPC;
       break;
@@ -327,12 +327,12 @@ STATIC_ROUTINE int TdiFindIdent(int search,
 }
 
 int TdiFindSymbol(char* name){
-  struct descriptor_s ident_ptr = { strlen(name), DTYPE_T, CLASS_S, name };
+  mdsdsc_s_t ident_ptr = { strlen(name), DTYPE_T, CLASS_S, name };
   node_type *node_ptr;
   block_type *block_ptr = NULL;
   int status;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(7, (struct descriptor_r *)&ident_ptr, 0, &node_ptr, &block_ptr);
+  status = TdiFindIdent(7, (mdsdsc_r_t *)&ident_ptr, 0, &node_ptr, &block_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
   return STATUS_OK ? (block_ptr==&_public ? 2 : 1) : (status==TdiUNKNOWN_VAR ? 0 : -1);
 }
@@ -340,12 +340,12 @@ int TdiFindSymbol(char* name){
 /*--------------------------------------------------------------
 	Get active variable for VAR and EVALUATE. Copies to MDSSHR space.
 */
-int TdiGetIdent(struct descriptor *ident_ptr, struct descriptor_xd *data_ptr){
+int TdiGetIdent(mdsdsc_t *ident_ptr, mdsdsc_xd_t *data_ptr){
   node_type *node_ptr;
   block_type *block_ptr = NULL;
   INIT_STATUS;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, &block_ptr);
+  status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, &block_ptr);
 #ifdef DEBUG
   char string[64];
   memcpy(string,ident_ptr->pointer,ident_ptr->length);string[ident_ptr->length] = '\0';
@@ -363,21 +363,21 @@ int TdiGetIdent(struct descriptor *ident_ptr, struct descriptor_xd *data_ptr){
 	Keep an XD-DSC of whatever.
 	Assumes we are given XD or class-0.
 */
-int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr){
-  struct descriptor key_dsc = EMPTDY_S;
+int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
+  mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr = NULL;
-  struct descriptor_d upstr = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_d_t upstr = { 0, DTYPE_T, CLASS_D, 0 };
   INIT_STATUS;
   STATIC_CONSTANT int zero = 0;
   if (ident_ptr->dtype == DTYPE_DSC)
-    return TdiPutIdent((struct descriptor_r *)ident_ptr->pointer, data_ptr);
+    return TdiPutIdent((mdsdsc_r_t *)ident_ptr->pointer, data_ptr);
 	/************************************
 	Find where we should place the stuff.
 	************************************/
   UNLOCK_PUBLIC_PUSH;
   status = TdiFindIdent(3, ident_ptr, &key_dsc, 0, &block_ptr);
-  StrUpcase((struct descriptor *)&upstr, &key_dsc);
+  StrUpcase((mdsdsc_t *)&upstr, &key_dsc);
 #ifdef DEBUG
   char string[64];
   memcpy(string,key_dsc.pointer,key_dsc.length);string[key_dsc.length] = '\0';
@@ -408,15 +408,15 @@ int TdiPutIdent(struct descriptor_r *ident_ptr, struct descriptor_xd *data_ptr){
 	IDENT names are not evaluated.
 	PUBLIC or PRIVATE(ident or text) overrides block_ptr.
 */
-STATIC_ROUTINE int wild_loop(int (*doit) (),struct descriptor *arg,user_type* user_p) {
+STATIC_ROUTINE int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
   int status;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (struct descriptor_r *)arg, &user_p->match, 0, &user_p->block_ptr);
+  status = TdiFindIdent(3, (mdsdsc_r_t *)arg, &user_p->match, 0, &user_p->block_ptr);
   if STATUS_OK
     status = StrUpcase(&user_p->match, &user_p->match);
   if STATUS_OK {
-    if (StrPosition(&user_p->match, (struct descriptor *)&star, 0)
-      || StrPosition(&user_p->match, (struct descriptor *)&percent, 0)) {
+    if (StrPosition(&user_p->match, (mdsdsc_t *)&star, 0)
+      || StrPosition(&user_p->match, (mdsdsc_t *)&percent, 0)) {
       status = LibTraverseTree((void **)&user_p->block_ptr->head, doit, user_p);
     } else {
       node_type *node_ptr;
@@ -432,8 +432,8 @@ STATIC_ROUTINE int wild_loop(int (*doit) (),struct descriptor *arg,user_type* us
 }
 STATIC_ROUTINE int wild(int (*doit) (),
 			int narg,
-			struct descriptor *list[],
-			block_type * block_ptr, struct descriptor_xd *out_ptr)
+			mdsdsc_t *list[],
+			block_type * block_ptr, mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   user_type user = { {0, DTYPE_T, CLASS_D, 0}, 0, 0 };
@@ -446,7 +446,7 @@ STATIC_ROUTINE int wild(int (*doit) (),
       status = wild_loop(doit,list[j],&user);
   }
   if (user.match.class == CLASS_D)
-    StrFree1Dx((struct descriptor_d *)&user.match);
+    StrFree1Dx((mdsdsc_d_t *)&user.match);
   if STATUS_OK
     status = TdiPutLong(&user.count, out_ptr);
   return status;
@@ -511,7 +511,7 @@ STATIC_ROUTINE int free_all(node_type ** pnode)
 /*--------------------------------------------------------------
 	Release variables.
 */
-int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -526,15 +526,15 @@ int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, struct de
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
 */
-int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor key_dsc = EMPTDY_S;
+  mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
   int found;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
+  status = TdiFindIdent(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr);
   if STATUS_OK
     status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
@@ -551,15 +551,15 @@ int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 /*--------------------------------------------------------------
 	Check for argument present.
 */
-int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor key_dsc = EMPTDY_S;
+  mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
   int found;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (struct descriptor_r *)list[0], &key_dsc, 0, &block_ptr);
+  status = TdiFindIdent(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr);
   if STATUS_OK
     status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
@@ -661,18 +661,18 @@ int compile_fun(mdsdsc_t *entry,char *file) {
   } else
     status = TdiUNKNOWN_VAR;
   if STATUS_OK {
-    struct descriptor_function *pfun = (struct descriptor_function *)tmp.pointer;
+    mds_function_t *pfun = (mds_function_t *)tmp.pointer;
     if (pfun->dtype == DTYPE_FUNCTION) {
       unsigned short code = *(unsigned short *)pfun->pointer;
       if (code == OPC_FUN) {
-	struct descriptor_function *pfun2 = (struct descriptor_function *)pfun->arguments[0];
+	mds_function_t *pfun2 = (mds_function_t *)pfun->arguments[0];
 	if (pfun2->dtype == DTYPE_FUNCTION) {
 	  code = *(unsigned short *)pfun2->pointer;
 	  if (code == OPC_PRIVATE || code == OPC_PUBLIC)
-	    pfun2 = (struct descriptor_function *)pfun2->arguments[0];
+	    pfun2 = (mds_function_t *)pfun2->arguments[0];
 	}
-	StrUpcase((struct descriptor *)pfun2, (struct descriptor *)pfun2);
-	if (StrCompare(entry, (struct descriptor *)pfun2) == 0)
+	StrUpcase((mdsdsc_t *)pfun2, (mdsdsc_t *)pfun2);
+	if (StrCompare(entry, (mdsdsc_t *)pfun2) == 0)
 	  status = TdiEvaluate(&tmp, &tmp MDS_END_ARG);
       }
     }
@@ -693,7 +693,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
   // look up method: check cached, check python, or load
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+  status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, 0);
   if (status==TdiUNKNOWN_VAR) {
     INIT_AND_FREE_ON_EXIT(char*,pyfile);
     INIT_AND_FREE_ON_EXIT(char*,funfile);
@@ -703,12 +703,12 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       char *funname;
       status = loadPyFunction(pyfile,&funname);
       if STATUS_OK {
-	struct descriptor function = {strlen(funname),DTYPE_T,CLASS_S,funname};
-	struct descriptor_xd tmp = EMPTY_XD;
-	status = MdsCopyDxXd((struct descriptor *)&function, &tmp);
+	mdsdsc_t function = {strlen(funname),DTYPE_T,CLASS_S,funname};
+	mdsdsc_xd_t tmp = EMPTY_XD;
+	status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
 	free(funname);
 	if STATUS_OK {
-	  status = TdiPutIdent((struct descriptor_r *)ident_ptr, &tmp);
+	  status = TdiPutIdent((mdsdsc_r_t *)ident_ptr, &tmp);
 	  MdsFree1Dx(&tmp, NULL);
 	}
       }
@@ -718,12 +718,12 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       status = compile_fun(ident_ptr,funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
-    if STATUS_OK status = TdiFindIdent(7, (struct descriptor_r *)ident_ptr, 0, &node_ptr, 0);
+    if STATUS_OK status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, 0);
   }
   pthread_cleanup_pop(1);
   if STATUS_NOT_OK return status;
-  struct descriptor_r *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
-  if ((formal_ptr = (struct descriptor_r *)node_ptr->xd.pointer) == 0) return TdiUNKNOWN_VAR;
+  mdsdsc_r_t *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
+  if ((formal_ptr = (mdsdsc_r_t *)node_ptr->xd.pointer) == 0) return TdiUNKNOWN_VAR;
   if (formal_ptr->dtype == DTYPE_T) {
     char *funname = malloc(formal_ptr->length+1);
     FREE_ON_EXIT(funname);
@@ -737,7 +737,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
   if ((nformal = formal_ptr->ndesc - 2) < nactual)
     return TdiEXTRA_ARG;
   GET_TDITHREADSTATIC_P;
-  struct descriptor_xd tmp = EMPTY_XD;
+  mdsdsc_xd_t tmp = EMPTY_XD;
   node_type *old_head, *new_head = 0;
   int *new_narg = &TdiThreadStatic_p->TdiVar_new_narg;
   int old_narg = *new_narg;
@@ -748,7 +748,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
 	 OUT arguments are not evaluated.
 	 **************************************/
   for (j = 0; j < nformal && STATUS_OK; ++j) {
-    formal_arg_ptr = (struct descriptor_r *)formal_ptr->dscptrs[j + 2];
+    formal_arg_ptr = (mdsdsc_r_t *)formal_ptr->dscptrs[j + 2];
     if (formal_arg_ptr == 0) {
       status = TdiNULL_PTR;
       break;
@@ -757,7 +757,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       code = *(unsigned short *)formal_arg_ptr->pointer;
       opt = (code == OPC_OPTIONAL);
       if (opt) {
-	formal_arg_ptr = (struct descriptor_r *)formal_arg_ptr->dscptrs[0];
+	formal_arg_ptr = (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0];
 	if (formal_arg_ptr == 0) {
 	  status = TdiNULL_PTR;
 	  break;
@@ -774,13 +774,13 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
 	        All other words are bad here.
 	        ****************************/
     if (code == OPC_IN || code == OPC_INOUT || code == OPC_OUT) {
-      formal_arg_ptr = (struct descriptor_r *)formal_arg_ptr->dscptrs[0];
+      formal_arg_ptr = (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0];
       if (formal_arg_ptr->dtype != DTYPE_T) {
 	status = TdiINVDTYDSC;
 	break;
       }
     } else if (code == OPC_AS_IS)
-      formal_arg_ptr = (struct descriptor_r *)formal_arg_ptr->dscptrs[0];
+      formal_arg_ptr = (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0];
     else if (formal_arg_ptr->dtype != DTYPE_IDENT && (formal_arg_ptr->dtype != DTYPE_T || !opt)) {
       status = TdiINVDTYDSC;
       break;
@@ -800,9 +800,9 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       _private.head = old_head;
     } else {
       if (code == OPC_AS_IS) {
-	status = MdsCopyDxXd((struct descriptor *)actual_ptr, &tmp);
+	status = MdsCopyDxXd((mdsdsc_t *)actual_ptr, &tmp);
       } else if (actual_ptr->dtype == DTYPE_IDENT) {
-	status = TdiGetIdent((struct descriptor *)actual_ptr, &tmp);
+	status = TdiGetIdent((mdsdsc_t *)actual_ptr, &tmp);
 	if (opt && status == TdiUNKNOWN_VAR)
 	  status = MDSplusSUCCESS;
       } else {
@@ -836,11 +836,11 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
 	Send outputs back up the line.
 	*****************************/
   for (j = 0; j < nactual && STATUS_OK; ++j) {
-    formal_arg_ptr = (struct descriptor_r *)formal_ptr->dscptrs[j + 2];
+    formal_arg_ptr = (mdsdsc_r_t *)formal_ptr->dscptrs[j + 2];
     if (actual_arg_ptr[j]
 	&& formal_arg_ptr->dtype == DTYPE_FUNCTION && formal_arg_ptr->ndesc == 1) {
       if ((code = *(unsigned short *)formal_arg_ptr->pointer) == OPC_OPTIONAL) {
-	formal_arg_ptr = (struct descriptor_r *)formal_arg_ptr->dscptrs[0];
+	formal_arg_ptr = (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0];
 	if (formal_arg_ptr->dtype != DTYPE_FUNCTION || formal_arg_ptr->ndesc != 1)
 	  code = 0;
 	else
@@ -848,7 +848,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       }
       if (code == OPC_INOUT || code == OPC_OUT) {
 	status =
-	    TdiFindIdent(7, (struct descriptor_r *)formal_arg_ptr->dscptrs[0], 0, &node_ptr, 0);
+	    TdiFindIdent(7, (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0], 0, &node_ptr, 0);
 				/**************************
 	                        Do this with old variables.
 	                        **************************/
@@ -871,7 +871,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
 /***************************************************************
 	Replace variable. Assumed called by INTRINSIC so that out_ptr is XD-DSC.
 */
-int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
 
@@ -880,65 +880,65 @@ int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	Place the data or clear the variable.
 	************************************/
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
   else
-    TdiPutIdent((struct descriptor_r *)list[0], 0);
+    TdiPutIdent((mdsdsc_r_t *)list[0], 0);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Store in first argument of binary opertor.
 */
-int Tdi1EqualsFirst(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1EqualsFirst(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
 
-  if (list[0]->dtype != DTYPE_FUNCTION || ((struct descriptor_function *)list[0])->ndesc != 2)
+  if (list[0]->dtype != DTYPE_FUNCTION || ((mds_function_t *)list[0])->ndesc != 2)
     status = TdiINVDTYDSC;
   else
-    status = TdiEquals(((struct descriptor_r *)list[0])->dscptrs[0], list[0], out_ptr MDS_END_ARG);
+    status = TdiEquals(((mdsdsc_r_t *)list[0])->dscptrs[0], list[0], out_ptr MDS_END_ARG);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Decrement a variable before use.
 */
-int Tdi1PreDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PreDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
 
   status = TdiSubtract(list[0], &true_dsc, out_ptr MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Increment a variable before use.
 */
-int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
 
   status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Decrement a variable after use.
 */
-int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd tmp = EMPTY_XD;
+  mdsdsc_xd_t tmp = EMPTY_XD;
 
   status = TdiGetIdent(list[0], out_ptr);
   if STATUS_OK
     status = TdiSubtract(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], &tmp);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], &tmp);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -946,15 +946,15 @@ int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 /*--------------------------------------------------------------
 	Increment a variable after use.
 */
-int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd tmp = EMPTY_XD;
+  mdsdsc_xd_t tmp = EMPTY_XD;
   status = TdiGetIdent(list[0], out_ptr);
   if STATUS_OK
     status = TdiAdd(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], &tmp);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], &tmp);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -964,7 +964,7 @@ int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	PRIVATE and PUBLIC must have text argument, not expression.
 	They are keywords, not standard functions. NEED we change this?
 */
-int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -981,7 +981,7 @@ int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Find by identifier.
 	PRIVATE and PUBLIC must have text argument, not expression.
 */
-int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   int status;
   LOCK_PUBLIC_PUSH;
@@ -998,7 +998,7 @@ int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__(
 /*--------------------------------------------------------------
 	Find by text expression.
 */
-int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   INIT_AND_FREEXD_ON_EXIT(tmp);
@@ -1016,7 +1016,7 @@ int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, struct descripto
 /***************************************************************
 	Define a function by reconstruction.
 */
-int Tdi1Fun(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   DESCRIPTOR_FUNCTION(hold, 0, 255);
@@ -1027,9 +1027,9 @@ int Tdi1Fun(opcode_t opcode, int narg, struct descriptor *list[], struct descrip
   for (j = narg; --j >= 0;)
     if ((hold.arguments[j] = list[j]) == 0)
       return TdiNULL_PTR;
-  status = MdsCopyDxXd((struct descriptor *)&hold, out_ptr);
+  status = MdsCopyDxXd((mdsdsc_t *)&hold, out_ptr);
   if STATUS_OK
-    status = TdiPutIdent((struct descriptor_r *)list[0], out_ptr);
+    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
@@ -1073,8 +1073,8 @@ int Tdi1ResetPublic()
 STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 {
   INIT_STATUS;
-  struct descriptor_d tmp = EMPTY_D;
-  struct descriptor_r *rptr = (struct descriptor_r *)node_ptr->xd.pointer;
+  mdsdsc_d_t tmp = EMPTY_D;
+  mdsdsc_r_t *rptr = (mdsdsc_r_t *)node_ptr->xd.pointer;
 
   if (node_ptr->xd.class == 0)
     return 1;
@@ -1108,7 +1108,7 @@ STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
 /*--------------------------------------------------------------
 	Display private variables.
 */
-int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   GET_TDITHREADSTATIC_P;
   DBG("TdiShowPrivate: %"PRIxPTR"\n",(uintptr_t)(void*)_private.head);
   return wild((int (*)())show_one, narg, list, &_private, out_ptr);
@@ -1117,7 +1117,7 @@ int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, struct d
 /*--------------------------------------------------------------
 	Display public variables.
 */
-int Tdi1ShowPublic(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1ShowPublic(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   LOCK_PUBLIC_PUSH;
   status = wild((int (*)())show_one, narg, list, &_public, out_ptr);
