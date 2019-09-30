@@ -2581,6 +2581,12 @@ public class Signal implements WaveDataListener
 	    RegionDescriptor currReg = lowResRegions.elementAt(i);
 	    double currLower = currReg.lowerBound;
 	    double currUpper = currReg.upperBound;
+            //Try to merge adjacent regions
+            while(i < lowResRegions.size() - 1 && lowResRegions.elementAt(i+1).lowerBound <= currUpper)
+            {
+                currUpper = lowResRegions.elementAt(i+1).upperBound;
+                i++;
+            }
 	    if (((mode & DO_NOT_UPDATE) == 0)&&(currLower != saved_xmin  || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
 	        data.getDataAsync(currLower, currUpper, NUM_POINTS);
 	}

@@ -1,11 +1,5 @@
 FUN PUBLIC NIpxi6259AnalogInputScaled(IN _sig, IN _coeff, IN _gain) 
 {
-    _data = data(_sig);
-    _numSmp = size( _data );
-    _data_scaled = zero( _numSmp , float(0) );
-    _coeff_values = data( _coeff );
-    _n_coeff = size( _coeff_values );
-
 
     _gain_divider = [1.0, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0];
 /*
