@@ -18,8 +18,8 @@ Created on Sun Jan  8 12:36:38 2017
 @author: pgm
 """
 
-import acq400
-import netclient
+from . import acq400
+from . import netclient
 
 class RAD3DDS(acq400.Acq400):
 
