@@ -160,7 +160,8 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
 }
 
 #define NUM_SEGMENTS_THRESHOLD 10
-#define NUM_SAMPLES_THRESHOLD 10000000
+//#define NUM_SAMPLES_THRESHOLD 10000000  5 MSamples appearst to be a better tradeoff for enabling smart resampling
+#define NUM_SAMPLES_THRESHOLD 5000000
 
 /**
 * Make an estimation of the number of samples in the specified interval. -1 is returned when
