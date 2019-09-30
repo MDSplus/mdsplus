@@ -32,7 +32,7 @@ public class MdsDataProvider
     static final long RESAMPLE_TRESHOLD = 1000000000;
     static final int MAX_PIXELS = 20000;
 
-    static boolean debug = true;
+    static boolean debug = false;
 
     class SegmentedFrameData
 	implements FrameData
