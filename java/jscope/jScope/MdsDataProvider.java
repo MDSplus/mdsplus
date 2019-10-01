@@ -1049,18 +1049,8 @@ public class MdsDataProvider
 	synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
 	        Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong, long updateTime)
 	{
-	    if(updateTime > 0)  //If a delayed request for update NOTE NOT USED!!!!Use MdsStreamingDataProvider instead
-	    {
-	        for(int i = 0; i < requestsV.size(); i++)
-	        {
-	            UpdateDescriptor currUpdateDescr = requestsV.elementAt(i);
-	            if(currUpdateDescr.updateTime > 0 && currUpdateDescr.simpleWaveData == simpleWaveData)
-	                return; //Another delayed update request for that signal is already in the pending list
-	        }
-	    }
 	    requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints,
 	            waveDataListenersV, simpleWaveData, isXLong, updateTime));
-
 	    notify();
 	}
 	synchronized void enableAsyncUpdate(boolean enabled)
@@ -1104,17 +1094,12 @@ public class MdsDataProvider
 	            {
 	               requestsV.removeElementAt(requestsV.size() - 1);
 	               int k = 0;
-	               //remove older requests for the same waveform
-	               while(k < requestsV.size())
-	               {
-	                   if(requestsV.elementAt(k).simpleWaveData == currUpdate.simpleWaveData)
-	                       requestsV.removeElementAt(k);
-	                   else
-	                       k++;
-	               }
-
 	               XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 
+                       if(debug)
+                           System.out.println("UPDATE Lower Bound: " + currUpdate.updateLowerBound + "   Upper bound: " + currUpdate.updateUpperBound
+                           + "  Resolution: "+ ((currData == null)?"None":(""+currData.resolution)));
+                       
 	               if( currData == null || currData.nSamples == 0 )
 	                   continue;
 	               for(int j = 0; j < currUpdate.waveDataListenersV.size(); j++)
