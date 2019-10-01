@@ -297,6 +297,7 @@ public class DecompileTree
 	        if(info.isCompressOnPut()) flags += (flags.length() > 0)?",COMPRESS_ON_PUT":"COMPRESS_ON_PUT";
 	        if(info.isNoWriteModel()) flags += (flags.length() > 0)?",NO_WRITE_MODEL":"NO_WRITE_MODEL";
 	        if(info.isNoWriteShot()) flags += (flags.length() > 0)?",NO_WRITE_SHOT":"NO_WRITE_SHOT";
+	        if(info.isCompressSegments()) flags += (flags.length() > 0)?",COMPRESS_SEGMENTS":"COMPRESS_SEGMENTS";
 
 	        if(flags.length() > 0)
 	            node.setAttribute("FLAGS", flags);

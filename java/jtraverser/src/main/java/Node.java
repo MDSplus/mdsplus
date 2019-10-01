@@ -486,6 +486,8 @@ public class Node
 	return true;
     }
 
+    public int getNumSegments() { return info.getNumSegments();}
+
     private ImageIcon loadIcon(String gifname)
     {
 	String base = System.getProperty("icon_base");
@@ -602,7 +604,7 @@ public class Node
 	}
 	Tree.setCurrentNode(savedTreeNode);
     }
-
+   
     public static void copySubtreeContent(Node fromNode, Node toNode)
     {
 	try
