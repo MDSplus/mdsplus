@@ -119,9 +119,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            def truncate(f, n):
-                return math.floor(f * 10 ** n) / 10 ** n
-
             if self.dev.debug:
                 print("MDSWorker running")
 
