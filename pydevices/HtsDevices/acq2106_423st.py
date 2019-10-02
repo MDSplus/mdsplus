@@ -23,7 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-from MDSplus import Event,Range,CULL
 import threading
 from queue import Queue, Empty
 import time
@@ -151,12 +150,12 @@ class _ACQ2106_423ST(MDSplus.Device):
                         b = buffer[i::self.nchans*self.decim[i]]
                         
                         dim_limits=[begin, begin + self.seg_length*dt - 1]
-                        cull_dim  =CULL(dim_limits, None, Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
+                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
                         c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
                     i += 1
                 segment += 1
                 begin   += self.seg_length*dt
-                Event.setevent(event_name)
+                MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
