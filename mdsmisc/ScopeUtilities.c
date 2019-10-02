@@ -347,7 +347,7 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
     }
   }
   *retPoints = outIdx;
-  if(treeshrResampled)  //If resampling has been performed by treeshr
+  if(treeshrResampled && endIdx != startIdx)  //If resampling has been performed by treeshr
       *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
 }
 
