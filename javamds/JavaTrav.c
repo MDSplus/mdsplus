@@ -459,6 +459,22 @@ JNIEXPORT jint JNICALL Java_Database_getFlags(JNIEnv * env, jobject obj __attrib
   return nci_flags;
 }
 
+JNIEXPORT jint JNICALL Java_Database_getNumSegments(JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid) {
+  int nid, status, numSegments;
+  jfieldID nid_fid;
+  jclass cls = (*env)->GetObjectClass(env, jnid);
+
+  nid_fid = (*env)->GetFieldID(env, cls, "datum", "I");
+  nid = (*env)->GetIntField(env, jnid, nid_fid);
+
+  status = TreeGetNumSegments(nid, &numSegments);
+  if (!(status & 1)) {
+    RaiseException(env, MdsGetMsg(status), status);
+    return 0;
+  }
+  return numSegments;
+}
+
 JNIEXPORT jobject JNICALL Java_Database_getInfo
 (JNIEnv * env, jobject obj __attribute__ ((unused)), jobject jnid, jint context __attribute__ ((unused))) {
   int nid, status;
@@ -473,6 +489,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   static unsigned char dtype, class, usage;
   static char time_str[256], name[16], fullpath[512], minpath[512], path[512];
   unsigned short asctime_len;
+  int numSegments;
   struct descriptor time_dsc = { 256, DTYPE_T, CLASS_S, time_str };
 
   struct nci_itm nci_list[] = {
@@ -501,7 +518,11 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
     RaiseException(env, MdsGetMsg(status), status);
     return NULL;
   }
-
+  status = TreeGetNumSegments(nid, &numSegments);
+  if (!(status & 1)) {
+    RaiseException(env, MdsGetMsg(status), status);
+    return NULL;
+  }
   name[name_len] = 0;
   fullpath[fullpath_len] = 0;
   minpath[minpath_len] = 0;
@@ -509,7 +530,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   cls = (*env)->FindClass(env, "NodeInfo");
   constr =
       (*env)->GetStaticMethodID(env, cls, "getNodeInfo",
-				"(BBBIIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)LNodeInfo;");
+				"(BBBIIIIILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;I)LNodeInfo;");
   if (time_inserted[0] || time_inserted[1]) {
     LibSysAscTim(&asctime_len, &time_dsc, time_inserted);
     time_str[asctime_len] = 0;
@@ -528,6 +549,7 @@ JNIEXPORT jobject JNICALL Java_Database_getInfo
   args[10].l = (*env)->NewStringUTF(env, fullpath);
   args[11].l = (*env)->NewStringUTF(env, minpath);
   args[12].l = (*env)->NewStringUTF(env, path);
+  args[13].i = numSegments;
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
