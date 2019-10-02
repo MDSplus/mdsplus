@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-from MDSplus import Event,Range
+from MDSplus import Event,Range,CULL
 import threading
 import Queue
 import time
@@ -132,16 +132,10 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             decimator = lcma(self.decim)
 
-            if self.seg_length % decimator:
-                self.seg_length = (self.seg_length // decimator + 1) * decimator
-
-            self.dims = []
-            for i in range(self.nchans):
-                self.dims.append(Range(0., truncate((self.seg_length-1)*dt,3), dt*self.decim[i]))
-
             self.device_thread.start()
 
             segment = 0
+            begin   = 0.0
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
             while running.on and segment < max_segments:
@@ -155,10 +149,13 @@ class _ACQ2106_423ST(MDSplus.Device):
                 for c in self.chans:
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = Range(self.dims[i].begin + truncate(self.seg_length*dt,3), self.dims[i].ending + truncate(self.seg_length*dt,3), dt*self.decim[i])
+                        
+                        dim_limits=[begin, begin + self.seg_length*dt - 1]
+                        cull_dim  =CULL(dim_limits, None, Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
+                        c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
                     i += 1
                 segment += 1
+                begin   += self.seg_length*dt
                 Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
