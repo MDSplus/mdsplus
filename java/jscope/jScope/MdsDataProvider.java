@@ -818,6 +818,8 @@ public class MdsDataProvider
 			dis.readFully(errorBuf);
 			throw new Exception(new String(errorBuf));
 		    }
+                    if(debug)
+                        System.out.println("********************RET RESOLUTION: " + fRes);
 	           if(fRes >= 1E10)
 	                dRes = Double.MAX_VALUE;
 	            else
@@ -1945,7 +1947,17 @@ public class MdsDataProvider
 	        this.shot = shot;
 	        this.experiment = experiment;
 
-	        if( environment_vars != null && environment_vars.length() > 0 )
+                Descriptor descr1 = mds.MdsValue("setenv(\'MDSPLUS_DEFAULT_RESAMPLE_MODE=MinMax\')");
+                switch (descr1.dtype)
+                {
+                    case Descriptor.DTYPE_CSTRING:
+                        if ( (descr1.status & 1) == 0)
+                        {
+                            error = descr1.error;
+                            return false;
+                        }
+                }
+ 	        if( environment_vars != null && environment_vars.length() > 0 )
 	        {
 	            this.SetEnvironmentSpecific(environment_vars);
 	            if(error != null)
