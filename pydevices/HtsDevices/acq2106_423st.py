@@ -25,7 +25,7 @@
 import MDSplus
 from MDSplus import Event,Range,CULL
 import threading
-import Queue
+from queue import Queue, Empty
 import time
 import socket
 import math
@@ -101,8 +101,8 @@ class _ACQ2106_423ST(MDSplus.Device):
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
-            self.empty_buffers = Queue.Queue()
-            self.full_buffers = Queue.Queue()
+            self.empty_buffers = Queue()
+            self.full_buffers  = Queue()
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
@@ -141,7 +141,7 @@ class _ACQ2106_423ST(MDSplus.Device):
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
-                except Queue.Empty:
+                except Empty:
                     continue
 
                 buffer = np.frombuffer(buf, dtype='int16')
@@ -197,7 +197,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Queue.Empty:
+                    except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
                         
