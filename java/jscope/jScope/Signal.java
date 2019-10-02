@@ -1916,6 +1916,7 @@ public class Signal implements WaveDataListener
 	}
 	if (xmin == xmax)
 	    xmax = xmin + (float) 1E-10;
+        
     }
 
     /**
