@@ -168,10 +168,10 @@ class ACQ435ST(MDSplus.Device):
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
                         
-                        dim_limits=[begin, begin + self.seg_length*dt - 1]
                         begin = (segment * self.seg_length*dt)
-                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
-                        c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
+                        dim_limits=[begin, begin + (self.seg_length -1)*dt]
+                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + (self.seg_length-1)*dt, dt*self.decim[i]))
+                        c.makeSegment(begin, begin + (self.seg_length-1)*dt, cull_dim, b)
 
                     i += 1
                 segment += 1
@@ -217,7 +217,7 @@ class ACQ435ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Queue.Empty:
+                    except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
