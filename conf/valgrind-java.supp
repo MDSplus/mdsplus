@@ -152,3 +152,39 @@
    ...
    obj:**/libjvm.so
 }
+
+{
+   jvm java-8-openjdk (rare)
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:__libc_alloc_buffer_allocate
+   fun:__resolv_conf_allocate
+   fun:__resolv_conf_load
+   fun:__resolv_conf_get_current
+   fun:__res_vinit
+   fun:__resolv_context_get
+   fun:gaih_inet.constprop.7
+   fun:getaddrinfo
+   fun:Java_java_net_Inet4AddressImpl_lookupAllHostAddr
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.171-3.b10.fc26.x86_64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.171-3.b10.fc26.x86_64/jre/lib/amd64/server/libjvm.so
+   obj:/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.171-3.b10.fc26.x86_64/jre/lib/amd64/server/libjvm.so
+   fun:JVM_InvokeMethod
+   obj:*
+}
