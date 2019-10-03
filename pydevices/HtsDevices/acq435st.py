@@ -152,7 +152,6 @@ class ACQ435ST(MDSplus.Device):
             self.device_thread.start()
 
             segment = 0
-            begin   = 0.0
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
@@ -170,12 +169,12 @@ class ACQ435ST(MDSplus.Device):
                         b = buffer[i::self.nchans*self.decim[i]]
                         
                         dim_limits=[begin, begin + self.seg_length*dt - 1]
+                        begin = (segment * self.seg_length*dt)
                         cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
                         c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
 
                     i += 1
                 segment += 1
-                begin   += self.seg_length*dt
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
