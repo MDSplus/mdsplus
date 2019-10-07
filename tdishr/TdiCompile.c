@@ -116,7 +116,8 @@ static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,struct descriptor
   TdiThreadStatic_p->compiler_recursing = 1;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)cleanup_compile,(void*)TdiThreadStatic_p);
-  status = LibCreateVmZone(&TdiRefZone.l_zone);
+  if (!TdiRefZone.l_zone)
+    status = LibCreateVmZone(&TdiRefZone.l_zone);
   TdiRefZone.l_status = TdiBOMB;  // In case we bomb out
   TdiRefZone.a_begin  = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
   TdiRefZone.a_end    = TdiRefZone.a_cur + text_ptr->length;

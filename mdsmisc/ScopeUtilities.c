@@ -160,7 +160,9 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
 }
 
 #define NUM_SEGMENTS_THRESHOLD 10
-#define NUM_SAMPLES_THRESHOLD 10000000
+//#define NUM_SAMPLES_THRESHOLD 10000000  5 MSamples appearst to be a better tradeoff for enabling smart resampling
+//#define NUM_SAMPLES_THRESHOLD 5000000
+#define NUM_SAMPLES_THRESHOLD 500000
 
 /**
 * Make an estimation of the number of samples in the specified interval. -1 is returned when
@@ -278,13 +280,21 @@ return_neg1: ;
 
 //Perform trim on site (do not realloc arrays) return the actual number of points
 //the type of X array is unknown, element size is passed in xSize
-static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamples, const int reqPoints, const double xMin, const double xMax, int *const retPoints, float *const retResolution) {
-  if(nSamples < 10 * reqPoints) {
+static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamples, const int reqPoints, const double xMin, const double xMax, 
+			    int *const retPoints, float *const retResolution, int treeshrResampled) {
+
+  /*  if(nSamples < 10 * reqPoints) {
     //Does not perform any compression
     *retResolution = 1E12;
     *retPoints = nSamples;
+  if(treeshrResampled)
+  {
+      *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
+      printf("AMENDED RESOLUTION: %f\n", *retResolution);
+  }
     return;
   }
+  */
   //From here, consider xMin and xMax
   int startIdx, endIdx;
 
@@ -293,6 +303,15 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
   for(  endIdx = startIdx;   endIdx < nSamples && to_doublex(&x->pointer[  endIdx * x->length], x->dtype,xMax,TRUE) <  xMax;   endIdx++);
   if(  endIdx == nSamples)   endIdx--;
   const int deltaIdx = ((endIdx - startIdx) < 10 * reqPoints) ? 1 : (endIdx - startIdx + 1) / reqPoints;
+ 
+  if(nSamples < 10 * reqPoints) {
+    //Does not perform any compression
+    *retResolution = 1E12;
+    *retPoints = nSamples;
+    if(treeshrResampled && endIdx != startIdx)  //If resampling has been performed by treeshr
+      *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
+    return;
+  }
 
   int curIdx = startIdx;
   int outIdx = 0;
@@ -328,6 +347,8 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
     }
   }
   *retPoints = outIdx;
+  if(treeshrResampled && endIdx != startIdx)  //If resampling has been performed by treeshr
+      *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
 }
 
 static int recGetXxxx(const mdsdsc_t *const dsc_in, mdsdsc_xd_t *const xd_out, const int getHelp) {
@@ -728,7 +749,9 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   int retSamples;
   float retResolution;
   
-  trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution);
+  trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution, deltaP != NULL);
+  
+  
   DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT,  (char *)y,     sizeof(float ) * retSamples);
   DESCRIPTOR_WITH_UNITS(yDataU,&yData,yLabel.pointer);
   mdsdsc_t *yObj = yLabel.pointer ? (mdsdsc_t *)&yDataU : (mdsdsc_t *)&yData;
@@ -846,6 +869,7 @@ static mdsdsc_xd_t*getPackedDsc(mdsdsc_xd_t*retXd){
   idx = pack_meta(title,xLabel,yLabel,retResolution,retArr,idx);
   DESCRIPTOR_A(retArrD, 1, DTYPE_B, retArr, retSize);
   MdsCopyDxXd((mdsdsc_t *)&retArrD, retXd);
+  
   return retXd;
 }
 
