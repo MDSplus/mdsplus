@@ -703,8 +703,10 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   //printf("ESTIMATED SAMPLES: %d  THRESHOLD: %d\n", estimatedSamples, NUM_SAMPLES_THRESHOLD);
   
   if (estimatedSamples > NUM_SAMPLES_THRESHOLD) {
-    //First guess on delta
-    delta = 100 * estimatedSamples/NUM_SAMPLES_THRESHOLD;
+    delta = estimatedSamples/reqNSamples;
+    if(xmin > -INFINITY && xmax < INFINITY && smax > smin)
+      delta *= (xmax - xmin)/(smax - smin);
+    
     //Now delta represents the number of samples to be compressed in a min-max mair
     if (delta > estimatedSegmentSamples/10.)
       delta = estimatedSegmentSamples/10.;
