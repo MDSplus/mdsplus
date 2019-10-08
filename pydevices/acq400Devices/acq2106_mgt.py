@@ -191,7 +191,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 first = True
 
                 # trigger time out count initialization:
-                rc = acq400_hapi.MgtDramPullClient("acq2106_157")
+                rc = acq400_hapi.MgtDramPullClient(self.node_addr)
 
                 try:
                     for buf in rc.get_blocks(16, ncols=(2**22)/16/2, data_size=2):
