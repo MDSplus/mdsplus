@@ -229,7 +229,7 @@ int main(int argc, char **argv)
   if (argc > 1) {
     f_in = fopen(argv[1], "r");
     if (!f_in) {
-      printf("Error opening input file /%s/\n", argv[1]);
+      printf("Error opening input file '%s'\n", argv[1]);
       exit(1);
     }
   } else {
@@ -251,7 +251,7 @@ int main(int argc, char **argv)
   if (argc > 2) {
     f_out = fopen(argv[2],"w");
     if (!f_out) {
-      printf("Error opening input file /%s/\n", argv[2]);
+      printf("Error opening output file '%s'\n", argv[2]);
       exit(1);
     }
     output_unit.length  = sizeof(void*);
@@ -284,17 +284,16 @@ int main(int argc, char **argv)
       expr_dsc.pointer = command;
       set_execute_handlers();
       status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
-      set_readline_handlers();
-      add_history(command);
       if STATUS_OK
 	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
 	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
+      set_readline_handlers();
+      add_history(command);
       fflush(f_out);
     }
     free(command);
   }
-  free(command);
   MdsFree1Dx(&ans,NULL);
   if (history_file) {
     write_history(history_file);
