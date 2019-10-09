@@ -207,7 +207,8 @@ typedef struct {
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
 	Dynamic memory pointed to must be freed
-	using the pointer and length.
+	using the pointer and l_length.
+	length is not used and 0 by default.
 	The descriptor is usually on the stack.
 *************************************************/
 typedef uint32_t l_length_t;
@@ -217,7 +218,7 @@ typedef struct descriptor_xd {
 } mdsdsc_xd_t;
 
 #define EMPTYXD(name) mdsdsc_xd_t\
-  name = {(length_t)0, DTYPE_DSC, CLASS_XD, 0, 0}
+  name = {0, DTYPE_DSC, CLASS_XD, 0, 0}
 
 /************************************************
   CLASS_XS extended static descriptor definition.

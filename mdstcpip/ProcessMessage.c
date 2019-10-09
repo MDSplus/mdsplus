@@ -495,7 +495,7 @@ static void GetErrorText(int status, struct descriptor_xd *xd){
   static int one = 1;
   static DESCRIPTOR_LONG(get_messages, &one);
   TdiDebug(&get_messages, xd MDS_END_ARG);
-  if (!xd->length) {
+  if (!xd->pointer) {
     static DESCRIPTOR(unknown, "unknown error occured");
     struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
     if ((message.pointer = MdsGetMsg(status)) != NULL) {
