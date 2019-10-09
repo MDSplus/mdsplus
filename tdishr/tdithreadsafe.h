@@ -10,13 +10,11 @@
 #define TDI_STACK_SIZE	3
 #define TDI_STACK_IDX	TdiThreadStatic_p->stack_idx
 #define TDI_STACK	TdiThreadStatic_p->stack[TDI_STACK_IDX]
-#define TDI_STACK1	TdiThreadStatic_p->stack[TDI_STACK_IDX+1]
 #define TDI_VAR_PRIVATE	TdiThreadStatic_p->var_private
 #define TDI_INTRINSIC_MSG	TdiThreadStatic_p->intrinsic_msg
 #define TDI_INTRINSIC_STAT	TdiThreadStatic_p->intrinsic_stat
 #define TDI_INTRINSIC_REC	TdiThreadStatic_p->intrinsic_rec
 #define TDI_RANGE_PTRS		TdiThreadStatic_p->range_ptrs
-#define TDI_ON_ERROR		TdiThreadStatic_p->on_error
 #define TDI_SELF_PTR		TdiThreadStatic_p->self_ptr
 #define TDI_VAR_NEW_NARG	TdiThreadStatic_p->var_new_narg
 #define TDI_VAR_NEW_NARG_D	TdiThreadStatic_p->var_new_narg_d
@@ -49,7 +47,6 @@ typedef struct _thread_static {
   mdsdsc_d_t	 intrinsic_msg;	// TdiIntrinsic
   int intrinsic_rec;		// TdiIntrinsic
   int intrinsic_stat;		// TdiIntrinsic
-  int on_error;		// TdiStatement
 } ThreadStatic;
 
 extern ThreadStatic *TdiGetThreadStatic();
