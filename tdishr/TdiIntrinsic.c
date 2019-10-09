@@ -63,7 +63,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <tdishr_messages.h>
-#include <tdishr.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>

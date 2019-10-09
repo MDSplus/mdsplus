@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <STATICdef.h>
 #include <string.h>
-#include <tdishr.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"

@@ -5,7 +5,7 @@
 #define TDITHREADSAFE_H
 #include <pthread_port.h>
 
-#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiGetThreadStatic()
+#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiThreadStatic(NULL)
 
 #define TDI_STACK_SIZE	3
 #define TDI_STACK_IDX	TdiThreadStatic_p->stack_idx
@@ -25,7 +25,7 @@
 #define TDI_INDENT		TDI_STACK.indent
 #define TDI_REFZONE		TDI_STACK.refzone
 
-typedef struct _thread_static {
+typedef struct {
   int stack_idx;
   struct stack {
     TdiRefZone_t refzone;	// TdiCompile
@@ -49,7 +49,13 @@ typedef struct _thread_static {
   int intrinsic_stat;		// TdiIntrinsic
 } ThreadStatic;
 
-extern ThreadStatic *TdiGetThreadStatic();
+typedef struct {
+ ThreadStatic *p;
+ int free_me;
+} ThreadStatic_ref;
+
+extern ThreadStatic *TdiThreadStatic(ThreadStatic *in);
+
 extern void LockTdiMutex(pthread_mutex_t *, int *);
 extern void UnlockTdiMutex(pthread_mutex_t *);
 
