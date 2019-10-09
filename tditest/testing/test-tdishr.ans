@@ -6277,3 +6277,5 @@ fun nid()nid
 Fun nid () {
 	nid;
 }
+`compile("1")
+1

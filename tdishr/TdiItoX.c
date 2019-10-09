@@ -148,9 +148,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   unsigned char omits[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   dk0.pointer = (char *)&k0;
   dk1.pointer = (char *)&k1;
-  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
-  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
-  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
+  keep[0] = TDI_RANGE_PTRS[0];
+  keep[1] = TDI_RANGE_PTRS[1];
+  keep[2] = TDI_RANGE_PTRS[2];
 	/************************************************************
 	Remove and save outer WITH_UNITS.
 	8-Apr-1991 allow BUILD_WITH_UNITS(BUILD_DIM(,range),units).
@@ -505,9 +505,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	} else if (arg1) {
 	  struct descriptor_range *rptr = (struct descriptor_range *)list[1];
 	  MdsFree1Dx(out_ptr, NULL);
-	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = &dk0;
-	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = &dk1;
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = flag ? 0 : dimen.pointer;
+	  TDI_RANGE_PTRS[0] = &dk0;
+	  TDI_RANGE_PTRS[1] = &dk1;
+	  TDI_RANGE_PTRS[2] = flag ? 0 : dimen.pointer;
 						/******************************************************
 						 * For subscripts of signals, want range step to be all.
 						 ******************************************************/
@@ -522,9 +522,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	    status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
 	  } else
 	    status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
-	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
-	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
+	  TDI_RANGE_PTRS[0] = keep[0];
+	  TDI_RANGE_PTRS[1] = keep[1];
+	  TDI_RANGE_PTRS[2] = keep[2];
 	  arg1 = cats[0].in_dtype != DTYPE_MISSING;
 	} else
 	  status = TdiDtypeRange(&dk0, &dk1, out_ptr MDS_END_ARG);

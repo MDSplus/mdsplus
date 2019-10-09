@@ -42,6 +42,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdithreadsafe.h"
 #include <mdsshr.h>
 #include <strroutines.h>
+#define DEBUG
+#ifdef DEBUG
+ #define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+ #define DBG(...) {/**/}
+#endif
 
 extern int Tdi1Evaluate();
 extern int TdiYacc();
@@ -51,25 +57,19 @@ extern int TdiYacc();
 	YACC converts TdiYacc.Y to TdiYacc.C to parse TDI statements. Also YACC subroutines.
 	LEX converts TdiLex.X to TdiLex.C for lexical analysis. Also LEX subroutines.
 
-	Limitations:
-	For recursion must pass LEX:
-	        zone status bol cur end
-	        tdiyylval tdiyyval
-	        tdiyytext[YYLMAX] tdiyyleng tdiyymorfg tdiyytchar tdiyyin? tdiyyout?
-	For recursion must pass YACC also:
-	        tdiyydebug? tdiyyv[YYMAXDEPTH] tdiyychar tdiyynerrs tdiyyerrflag
-	Thus no recursion because the tdiyy's are built into LEX and YACC.
-	IMMEDIATE (`) must never call COMPILE. NEED to prevent this.
+	supports (`) on COMPILE
 */
 
 static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static void cleanup_compile(ThreadStatic * TdiThreadStatic_p){
-  LibResetVmZone(&TdiRefZone.l_zone);
-  if (TdiRefZone.a_begin) {
-    free(TdiRefZone.a_begin);
-    TdiRefZone.a_begin=NULL;
+  LibResetVmZone(&TDI_REFZONE.l_zone);
+  if (TDI_REFZONE.a_begin) {
+    free(TDI_REFZONE.a_begin);
+    TDI_REFZONE.a_begin=NULL;
   }
-  pthread_mutex_unlock(&lock);
+  TDI_COMPILE_REC = FALSE;
+  if (TDI_STACK_IDX==0) // makes it reentrant
+    pthread_mutex_unlock(&lock);
 }
 
 static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p) {
@@ -80,15 +80,14 @@ static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p)
     || status==TreeNNF
     || status==TdiBOMB)) return;
   static const DESCRIPTOR(compile_err, "%TDI Error compiling region marked by ^\n");
-  struct descriptor_d *message = &TdiThreadStatic_p->TdiIntrinsic_message;
-  if (!TdiRefZone.a_begin || message->length >= MAXMESS)
+  if (!TDI_REFZONE.a_begin || TDI_INTRINSIC_MSG.length >= MAXMESS)
     return;
   // b------x----c----e
   // '-l_ok-'-xc-'-ce-'
-  char *b = TdiRefZone.a_begin;
-  char *e = TdiRefZone.a_end;
-  char *c = MINMAX(b, TdiRefZone.a_cur, e);
-  char *x = MINMAX(b, b + TdiRefZone.l_ok, c);
+  char *b = TDI_REFZONE.a_begin;
+  char *e = TDI_REFZONE.a_end;
+  char *c = MINMAX(b, TDI_REFZONE.a_cur, e);
+  char *x = MINMAX(b, b + TDI_REFZONE.l_ok, c);
   int xc = MINMAX(0, c-x, MAXLINE);
   int ce = MINMAX(0, e-c, MAXLINE);
   int bx = MINMAX(0, x-b, MAXLINE);
@@ -97,63 +96,63 @@ static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p)
   if (bx+xc+ce > MAXLINE)
     bx = MINMAX(0, bx, MAXFRAC);
   int len = bx+xc+2;
-  struct descriptor marker = { len, DTYPE_T, CLASS_S, memset(malloc(len+1),' ',len) };
-  struct descriptor region = { bx+xc+ce, DTYPE_T, CLASS_S, x-bx };
+  mdsdsc_t marker = { len, DTYPE_T, CLASS_S, memset(malloc(len+1),' ',len) };
+  mdsdsc_t region = { bx+xc+ce, DTYPE_T, CLASS_S, x-bx };
   marker.pointer[bx]='^';
   marker.pointer[0] = marker.pointer[len-1]='\n';
   if (xc>0)
     marker.pointer[bx+xc]='^';
   else if (bx>0)
     marker.pointer[bx]='^';
-  StrAppend(message,(struct descriptor *)&compile_err);
-  StrAppend(message,(struct descriptor *)&region);
-  StrAppend(message,(struct descriptor *)&marker);
+  StrAppend(&TDI_INTRINSIC_MSG,(mdsdsc_t *)&compile_err);
+  StrAppend(&TDI_INTRINSIC_MSG,(mdsdsc_t *)&region);
+  StrAppend(&TDI_INTRINSIC_MSG,(mdsdsc_t *)&marker);
   free(marker.pointer);
 }
 
-static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,struct descriptor * text_ptr, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr) {
+static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status;
-  TdiThreadStatic_p->compiler_recursing = 1;
-  pthread_mutex_lock(&lock);
+  if (TDI_STACK_IDX==0) // makes it reentrant
+    pthread_mutex_lock(&lock);
+  TDI_COMPILE_REC = TRUE;
   pthread_cleanup_push((void*)cleanup_compile,(void*)TdiThreadStatic_p);
-  if (!TdiRefZone.l_zone)
-    status = LibCreateVmZone(&TdiRefZone.l_zone);
-  TdiRefZone.l_status = TdiBOMB;  // In case we bomb out
-  TdiRefZone.a_begin  = TdiRefZone.a_cur = memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
-  TdiRefZone.a_end    = TdiRefZone.a_cur + text_ptr->length;
-  TdiRefZone.l_ok     = 0;
-  TdiRefZone.l_narg   = narg - 1;
-  TdiRefZone.l_iarg   = 0;
-  TdiRefZone.a_list   = list;
-  if (IS_NOT_OK(TdiYacc()) && IS_OK(TdiRefZone.l_status))
+  if (!TDI_REFZONE.l_zone)
+    status = LibCreateVmZone(&TDI_REFZONE.l_zone);
+  TDI_REFZONE.l_status = TdiBOMB;  // In case we bomb out
+  TDI_REFZONE.a_begin  = TDI_REFZONE.a_cur = memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
+  TDI_REFZONE.a_end    = TDI_REFZONE.a_cur + text_ptr->length;
+  TDI_REFZONE.l_ok     = 0;
+  TDI_REFZONE.l_narg   = narg - 1;
+  TDI_REFZONE.l_iarg   = 0;
+  TDI_REFZONE.a_list   = list;
+  if (IS_NOT_OK(TdiYacc()) && IS_OK(TDI_REFZONE.l_status))
     status = TdiSYNTAX;
   else
-    status = TdiRefZone.l_status;
+    status = TDI_REFZONE.l_status;
  /************************
   Move from temporary zone.
   ************************/
   if STATUS_OK {
-    if (TdiRefZone.a_result == 0)
+    if (TDI_REFZONE.a_result == 0)
       MdsFree1Dx(out_ptr, NULL);
     else
-      status = MdsCopyDxXd((struct descriptor *)TdiRefZone.a_result, out_ptr);
+      status = MdsCopyDxXd((mdsdsc_t *)TDI_REFZONE.a_result, out_ptr);
   }
   add_compile_info(status,TdiThreadStatic_p);
   pthread_cleanup_pop(1);
-  TdiThreadStatic_p->compiler_recursing = 0;
   return status;
 }
 
-EXPORT int Tdi1Compile(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   GET_TDITHREADSTATIC_P;
-  if (TdiThreadStatic_p->compiler_recursing == 1) {
-    fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
+  if (TDI_COMPILE_REC) {
+    fprintf(stderr, "Error: Recursive calls to TDI Compile\n");
     return TdiRECURSIVE;
   }
   INIT_AND_FREEXD_ON_EXIT(tmp);
   status = Tdi1Evaluate(opcode, 1, list, &tmp);// using Tdi1Evaluate over TdiEvaluate saves 3 stack levels
-  struct descriptor *text_ptr = tmp.pointer;
+  mdsdsc_t *text_ptr = tmp.pointer;
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
   else if (STATUS_OK && text_ptr->length > 0)
@@ -167,7 +166,7 @@ EXPORT int Tdi1Compile(opcode_t opcode, int narg, struct descriptor *list[], str
   Compile and evaluate an expression.
       result = EXECUTE(string, [arg1,...])
 */
-int Tdi1Execute(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Execute(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   INIT_STATUS;
   FREEXD_ON_EXIT(out_ptr);
   INIT_AND_FREEXD_ON_EXIT(tmp);
