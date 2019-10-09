@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include "../tdishr/tdithreadsafe.h"
 #include <tdishr.h>
 #include <libroutines.h>
 #include <strroutines.h>
@@ -484,7 +485,7 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
   return m;
 }
 
-static void GetErrorText(int status, struct descriptor_xd *xd){
+static void GetErrorText(int status, mdsdsc_xd_t *xd){
   static DESCRIPTOR(unknown, "unknown error occured");
   struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
   if ((message.pointer = MdsGetMsg(status)) != NULL) {
@@ -547,20 +548,21 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
  * Problems with the implementation are likely to be fixed in all locations.
  */
 typedef struct {
-  void      **ctx;
-  int       status;
+  void		**ctx;
+  int		status;
 #ifndef _WIN32
-  Condition *const condition;
+  Condition	*const condition;
 #endif
-  Connection           *const connection;
-  struct descriptor_xd *const xd_out;
-  void                 *tdicontext[6];
+  ThreadStatic	*TdiThreadStatic_p;
+  Connection	*const connection;
+  mdsdsc_xd_t	*const xd_out;
+  void		*tdicontext[6];
 } worker_args_t;
 
 typedef struct {
-  worker_args_t        *const wa;
-  struct descriptor_xd *const xdp;
-  void                 *pc;
+  worker_args_t	*const wa;
+  mdsdsc_xd_t	*const xdp;
+  void		*pc;
 } worker_cleanup_t;
 
 static void WorkerCleanup(void *args) {
@@ -578,6 +580,7 @@ static void WorkerCleanup(void *args) {
 static int WorkerThread(void *args) {
   EMPTYXD(xd);
   worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
+  TdiThreadStatic(wc.wa->TdiThreadStatic_p);
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   wc.pc = TreeCtxPush(wc.wa->ctx);
   TdiRestoreContext(wc.wa->tdicontext);
@@ -588,7 +591,7 @@ static int WorkerThread(void *args) {
   return wc.wa->status;
 }
 
-static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
+static inline int executeCommand(Connection* connection, mdsdsc_xd_t* ans_xd) {
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
 #ifdef _WIN32
   worker_args_t wa = {
@@ -596,6 +599,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   Condition WorkerRunning = CONDITION_INITIALIZER;
   worker_args_t wa = {.condition = &WorkerRunning,
 #endif
+  .TdiThreadStatic_p=TdiThreadStatic(NULL),
   .status = -1, .connection = connection, .xd_out = ans_xd};
   if (GetContextSwitching()) {
     wa.ctx = &connection->DBID;
