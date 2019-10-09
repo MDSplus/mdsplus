@@ -148,7 +148,7 @@ EXPORT int Tdi1Compile(opcode_t opcode, int narg, struct descriptor *list[], str
   int status;
   GET_TDITHREADSTATIC_P;
   if (TdiThreadStatic_p->compiler_recursing == 1) {
-    fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported");
+    fprintf(stderr, "Error: Recursive calls to TDI Compile is not supported\n");
     return TdiRECURSIVE;
   }
   INIT_AND_FREEXD_ON_EXIT(tmp);
