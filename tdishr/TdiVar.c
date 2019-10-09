@@ -142,7 +142,8 @@ STATIC_THREADSAFE block_type _public = { 0, 0, 0, 1 };
 STATIC_CONSTANT DESCRIPTOR(star, "*");
 STATIC_CONSTANT DESCRIPTOR(percent, "%");
 mdsdsc_t *Tdi3Narg(){
-  return &TdiGetThreadStatic()->TdiVar_new_narg_d;
+  GET_TDITHREADSTATIC_P;
+  return &TDI_VAR_NEW_NARG_D;
 }
 
 /*--------------------------------------------------------------
@@ -200,7 +201,7 @@ STATIC_ROUTINE int allocate(mdsdsc_t *key_ptr,
 	search: 1=private 2=public 4=check that it exists.
 	if block_ptr is returned and public public_lock is acquired
 */
-#define _private (*(block_type*)&TdiThreadStatic_p->TdiVar_private)
+#define _private (*(block_type*)&TDI_VAR_PRIVATE)
 STATIC_ROUTINE int TdiFindIdent(int search,
 	                        mdsdsc_r_t *ident_ptr,
 	                        mdsdsc_t *key_ptr,
@@ -739,8 +740,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
   GET_TDITHREADSTATIC_P;
   mdsdsc_xd_t tmp = EMPTY_XD;
   node_type *old_head, *new_head = 0;
-  int *new_narg = &TdiThreadStatic_p->TdiVar_new_narg;
-  int old_narg = *new_narg;
+  int old_narg = TDI_VAR_NEW_NARG;
 	/**************************************
 	 Now copy input arguments into new head.
 	 Pick up some keywords from prototype.
@@ -826,7 +826,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
 	**************************/
   old_head = _private.head;
   _private.head = new_head;
-  *new_narg = nactual;
+  TDI_VAR_NEW_NARG = nactual;
   if STATUS_OK {
     status = TdiEvaluate(formal_ptr->dscptrs[1], out_ptr MDS_END_ARG);
     if (status == TdiRETURN)
@@ -864,7 +864,7 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
   TdiDeallocate(&tmp MDS_END_ARG);
   MdsFree1Dx(&tmp, NULL);
   _private.head = old_head;
-  *new_narg = old_narg;
+  TDI_VAR_NEW_NARG = old_narg;
   return status;
 }
 

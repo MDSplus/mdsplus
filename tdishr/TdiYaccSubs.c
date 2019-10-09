@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <mdsplus/mdsplus.h>
-#include "STATICdef.h"
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -40,7 +39,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdsshr.h>
 
-
+//#define DEBUG
+#ifdef DEBUG
+ #define DBG(...) fprintf(stderr,__VA_ARGS__)
+#else
+ #define DBG(...) {/**/}
+#endif
 
 extern int Tdi1Build();
 extern int TdiEvaluate();
@@ -67,22 +71,22 @@ int TdiYacc_ARG(struct marker *mark_ptr)
   unsigned char *c_ptr;
 
   if (len == 1)
-    ++TdiRefZone.l_iarg;
+    ++TDI_REFZONE.l_iarg;
   else {
-    TdiRefZone.l_iarg = 0;
+    TDI_REFZONE.l_iarg = 0;
     c_ptr = mark_ptr->rptr->pointer;
     for (; --len > 0;)
-      TdiRefZone.l_iarg = TdiRefZone.l_iarg * 10 + (*++c_ptr - '0');
+      TDI_REFZONE.l_iarg = TDI_REFZONE.l_iarg * 10 + (*++c_ptr - '0');
   }
-  if (TdiRefZone.l_iarg > TdiRefZone.l_narg)
+  if (TDI_REFZONE.l_iarg > TDI_REFZONE.l_narg)
     return TdiMISS_ARG;
-  ptr = TdiRefZone.a_list[TdiRefZone.l_iarg];
+  ptr = TDI_REFZONE.a_list[TDI_REFZONE.l_iarg];
   mark_ptr->builtin = -1;
 
 	/*******************************
 	Size it and copy it to our zone.
 	*******************************/
-  status = MdsCopyDxXdZ(ptr, &junk, &TdiRefZone.l_zone, NULL, NULL, NULL, NULL);
+  status = MdsCopyDxXdZ(ptr, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL);
   if (status & 1)
     mark_ptr->rptr = (struct descriptor_r *)junk.pointer;
   return status;
@@ -92,7 +96,7 @@ int TdiYacc_ARG(struct marker *mark_ptr)
 	Build a descriptor, return its pointer for intrinsic functions of TDI.
 	Get memory from compiler-defined virtual memory.
 */
-DESCRIPTOR_FUNCTION_0(EMPTY_FUN, 0);
+static const DESCRIPTOR_FUNCTION_0(EMPTY_FUN, 0);
 
 int TdiYacc_BUILD(int ndesc,
 		  int nused,
@@ -107,8 +111,8 @@ int TdiYacc_BUILD(int ndesc,
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
 
-  TdiRefZone.l_status = LibGetVm(&vm_size, (void **)&tmp, &TdiRefZone.l_zone);
-  if IS_NOT_OK(TdiRefZone.l_status)
+  TDI_REFZONE.l_status = LibGetVm(&vm_size, (void **)&tmp, &TDI_REFZONE.l_zone);
+  if IS_NOT_OK(TDI_REFZONE.l_status)
     return MDSplusERROR;
   out->builtin = -1;
   out->rptr = (struct descriptor_r *)tmp;
@@ -119,7 +123,7 @@ int TdiYacc_BUILD(int ndesc,
   tmp->ndesc = (unsigned char)nused;
   switch (nused) {
   default:
-    TdiRefZone.l_status = TdiEXTRA_ARG;
+    TDI_REFZONE.l_status = TdiEXTRA_ARG;
     return MDSplusERROR;
   case 4:
     tmp->arguments[3] = (struct descriptor *)arg4->rptr;
@@ -143,13 +147,13 @@ int TdiYacc_BUILD(int ndesc,
 	If resolved, can change record pointer.
 	*******************************************/
   if (nused > this_ptr->m2) {
-    TdiRefZone.l_status = TdiYacc_IMMEDIATE(&out->rptr);
+    TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&out->rptr);
     return MDSplusERROR;
   }				/*Force an error */
   if (ndesc >= 254)
     return MDSplusSUCCESS;
   if (nused < this_ptr->m1) {
-    TdiRefZone.l_status = TdiYacc_IMMEDIATE(&out->rptr);
+    TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&out->rptr);
     return MDSplusERROR;
   }				/*Force an error */
   return TdiYacc_RESOLVE(&out->rptr);
@@ -163,22 +167,26 @@ int TdiYacc_BUILD(int ndesc,
 int TdiYacc_IMMEDIATE(struct descriptor_xd **dsc_ptr_ptr)
 {
   GET_TDITHREADSTATIC_P;
+  if (TDI_STACK_IDX >= TDI_STACK_SIZE-1) {
+    fprintf(stderr, "Error: Too many recursive calls using '`': only %d supported\n",TDI_STACK_SIZE);
+    return TdiRECURSIVE;
+  }
   struct descriptor_xd xd = EMPTY_XD, junk = EMPTY_XD, *ptr = *dsc_ptr_ptr;
-  int status;
-
-	/*********************************************************
-	Must not send compile XD-DSC to MDS, it may give it back.
-	And if we release it below, we have trouble.
-	*********************************************************/
+  /*********************************************************
+  Must not send compile XD-DSC to MDS, it may give it back.
+  And if we release it below, we have trouble.
+  *********************************************************/
   while (ptr && ptr->class == CLASS_XD && ptr->dtype == DTYPE_DSC)
     ptr = (struct descriptor_xd *)ptr->pointer;
-  status = TdiEvaluate(ptr, &xd MDS_END_ARG);
+  ++TDI_STACK_IDX;DBG("TDI_STACK_IDX = %d\n",TDI_STACK_IDX);
+  int status = TdiEvaluate(ptr, &xd MDS_END_ARG);
+  --TDI_STACK_IDX;DBG("TDI_STACK_IDX = %d\n",TDI_STACK_IDX);
 
 	/*******************
 	Copy it to our zone.
 	*******************/
   if STATUS_OK
-    status = MdsCopyDxXdZ(xd.pointer, &junk, &TdiRefZone.l_zone, NULL, NULL, NULL, NULL);
+    status = MdsCopyDxXdZ(xd.pointer, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL);
   if STATUS_OK
     *dsc_ptr_ptr = (struct descriptor_xd *)junk.pointer;
   MdsFree1Dx(&xd, NULL);
@@ -251,7 +259,7 @@ int TdiYacc_RESOLVE(struct descriptor_function **out_ptr_ptr)
 	return MDSplusSUCCESS;
     }
  doit:
-  if IS_OK(TdiRefZone.l_status = TdiYacc_IMMEDIATE((struct descriptor_xd **)out_ptr_ptr))
+  if IS_OK(TDI_REFZONE.l_status = TdiYacc_IMMEDIATE((struct descriptor_xd **)out_ptr_ptr))
     return MDSplusSUCCESS;
   return MDSplusERROR;
 }

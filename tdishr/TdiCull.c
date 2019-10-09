@@ -63,7 +63,7 @@ extern int Tdi2Range();
 
 extern unsigned short OpcValue;
 STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
-STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGEE, 0, 0, (struct descriptor *)&value);
+STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGE, 0, 0, (struct descriptor *)&value);
 
 /**********************************************
 	Redo culled array or scalar.
@@ -288,25 +288,25 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
 	while (new[2] && new[2]->class == CLASS_XD)
 	  new[2] = (struct descriptor_range *)new[2]->pointer;
 	struct descriptor *keep[3];
-	memcpy(keep,TdiThreadStatic_p->TdiRANGE_PTRS,sizeof(keep));
-	TdiThreadStatic_p->TdiRANGE_PTRS[0] = &dx0;
-	TdiThreadStatic_p->TdiRANGE_PTRS[1] = &dx1;
-	TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
+	memcpy(keep,TDI_RANGE_PTRS,sizeof(keep));
+	TDI_RANGE_PTRS[0] = &dx0;
+	TDI_RANGE_PTRS[1] = &dx1;
+	TDI_RANGE_PTRS[2] = 0;
 	if (in.pointer->dtype == DTYPE_DIMENSION) {
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = in.pointer;
+	  TDI_RANGE_PTRS[2] = in.pointer;
 		/************************************************************
 	        Dimensions conversion with missing increment uses all values.
 	        ************************************************************/
 	  if (new[2]->dtype == DTYPE_RANGE
 	      && (new[2]->ndesc == 2 || (new[2]->ndesc == 3 && new[2]->deltaval == 0))) {
-	    fake_range = EMPTY_RANGEE;
+	    fake_range = EMPTY_RANGE;
 	    fake_range.begin = new[2]->begin;
 	    fake_range.ending = new[2]->ending;
 	    new[2] = &fake_range;
 	  }
 	}
 	status = TdiGetArgs(opcode, 3, new, sig, uni, dat, cats);
-	memcpy(TdiThreadStatic_p->TdiRANGE_PTRS,keep,sizeof(keep));
+	memcpy(TDI_RANGE_PTRS,keep,sizeof(keep));
       }
       if STATUS_OK
 	status = Tdi2Range(3, uni, dat, cats, 0);
