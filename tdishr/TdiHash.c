@@ -33,7 +33,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	        index = TdiHash(string) to find the index.
 */
 #include <STATICdef.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #define TdiHASH_MAX 991
 
 STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];

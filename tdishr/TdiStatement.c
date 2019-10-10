@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 
 extern int TdiIntrinsic();

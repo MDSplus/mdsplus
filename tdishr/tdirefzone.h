@@ -21,7 +21,7 @@ typedef struct {
 } TdiRefZone_t;
 
 #include <libroutines.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 struct marker {
   struct descriptor_r *rptr;

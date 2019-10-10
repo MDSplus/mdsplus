@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 extern int TdiGetData();
 extern int TdiData();

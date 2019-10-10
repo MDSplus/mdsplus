@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include "../tdishr/tdithreadsafe.h"
+#include "../tdishr/tdithreadstatic.h"
 #include <tdishr.h>
 #include <libroutines.h>
 #include <strroutines.h>

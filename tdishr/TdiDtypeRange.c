@@ -40,7 +40,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>

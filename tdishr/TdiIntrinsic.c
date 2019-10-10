@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OPC_ENUM
 
 #include <STATICdef.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"

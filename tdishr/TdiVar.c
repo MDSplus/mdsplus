@@ -62,7 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
 #include "STATICdef.h"
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
