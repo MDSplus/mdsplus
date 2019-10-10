@@ -221,17 +221,59 @@ int main(int argc, char **argv)
   rl_attempted_completion_function = character_name_completion;
   rl_completer_quote_characters = "\"'";
   rl_completer_word_break_characters = " ,;[{(+-*\\/^<>=:&|!?~";
-  struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(ans);
   char *command=NULL;
-  DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
-  DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
-  if (argc > 1) {
-    f_in = fopen(argv[1], "r");
-    if (!f_in) {
-      printf("Error opening input file '%s'\n", argv[1]);
+  char error_out_c[64], clear_errors_c[64];
+  DESCRIPTOR(mdsconnect, "MDSCONNECT($)");
+  DESCRIPTOR(mdsvalue,   "MDSVALUE('DECOMPILE(`EXECUTE($))',$)");
+  char *server = NULL, *script = NULL, *logfile = NULL;
+  int i = 1;
+  while (argc > i) {
+    if (strcmp(argv[i],"--server")==0)
+       server = argv[++i];
+    else {
+      if (script)
+        logfile = argv[i];
+      else
+        script = argv[i];
+    }
+    i++;
+  }
+  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
+  output_unit.length  = sizeof(void*);
+  output_unit.dtype   = DTYPE_POINTER;
+  output_unit.pointer = (char*)&f_out;
+  if (logfile) {
+    f_out = fopen(logfile,"w");
+    if (!f_out) {
+      printf("Error opening log file '%s'\n", logfile);
       exit(1);
     }
+    fprintf(stderr,"logging output into '%s'\n", logfile);
+  } else
+    f_out = stdout;
+  if (server) {
+    fprintf(stderr,"connection to '%s'\n", server);
+    DESCRIPTOR_FROM_CSTRING(server_dsc,server);
+    set_execute_handlers();
+    status = TdiExecute((mdsdsc_t *)&mdsconnect, (mdsdsc_t *)&server_dsc, &ans MDS_END_ARG);
+    set_readline_handlers();
+    strcpy(error_out_c,"WRITE($,MDSVALUE('DEBUG(13)'))");
+    strcpy(clear_errors_c,"WRITE($,$),MDSVALUE('DEBUG(4)')");
+  } else {
+    strcpy(error_out_c,"WRITE($,DEBUG(13))");
+    strcpy(clear_errors_c,"WRITE($,DECOMPILE($)),DEBUG(4)");
+  }
+  DESCRIPTOR_FROM_CSTRING(error_out,error_out_c);
+  DESCRIPTOR_FROM_CSTRING(clear_errors,clear_errors_c);
+  if (script) {
+    f_in = fopen(script, "r");
+    if (!f_in) {
+      printf("Error opening input file '%s'\n", script);
+      exit(1);
+    }
+    fprintf(stderr,"running script '%s'\n", script);
   } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
@@ -247,18 +289,6 @@ int main(int argc, char **argv)
       read_history(history_file);
     }
   }
-  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
-  if (argc > 2) {
-    f_out = fopen(argv[2],"w");
-    if (!f_out) {
-      printf("Error opening output file '%s'\n", argv[2]);
-      exit(1);
-    }
-    output_unit.length  = sizeof(void*);
-    output_unit.dtype   = DTYPE_POINTER;
-    output_unit.pointer = (char*)&f_out;
-  } else
-    f_out = stdout;
   // initialize SIGINT handler
 #ifdef _WIN32
   signal(SIGINT,keyboard_interrupt);
@@ -283,14 +313,19 @@ int main(int argc, char **argv)
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       set_execute_handlers();
-      status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
+      if (server) {
+        status = TdiExecute((mdsdsc_t *)&mdsvalue,(mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
+        if (STATUS_OK && !ans.pointer)
+          status = 0;
+      } else
+        status = TdiExecute((mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
       if STATUS_OK
-	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+	TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
-	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
+	TdiExecute((mdsdsc_t *)&error_out, &output_unit, &ans MDS_END_ARG);
+      fflush(f_out);
       set_readline_handlers();
       add_history(command);
-      fflush(f_out);
     }
     free(command);
   }
