@@ -484,26 +484,14 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
   return m;
 }
 
-static void ResetErrors() {
-  static int four = 4;
-  static DESCRIPTOR_LONG(clear_messages, &four);
-  static DESCRIPTOR(messages, "");
-  TdiDebug(&clear_messages, &messages MDS_END_ARG);
-}
-
 static void GetErrorText(int status, struct descriptor_xd *xd){
-  static int one = 1;
-  static DESCRIPTOR_LONG(get_messages, &one);
-  TdiDebug(&get_messages, xd MDS_END_ARG);
-  if (!xd->pointer) {
-    static DESCRIPTOR(unknown, "unknown error occured");
-    struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
-    if ((message.pointer = MdsGetMsg(status)) != NULL) {
-      message.length = strlen(message.pointer);
-      MdsCopyDxXd(&message, xd);
-    } else
-      MdsCopyDxXd((struct descriptor *)&unknown, xd);
-  }
+  static DESCRIPTOR(unknown, "unknown error occured");
+  struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
+  if ((message.pointer = MdsGetMsg(status)) != NULL) {
+    message.length = strlen(message.pointer);
+    MdsCopyDxXd(&message, xd);
+  } else
+    MdsCopyDxXd((struct descriptor *)&unknown, xd);
 }
 
 static void ClientEventAst(MdsEventList * e, int data_len, char *data)
@@ -593,12 +581,9 @@ static int WorkerThread(void *args) {
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   wc.pc = TreeCtxPush(wc.wa->ctx);
   TdiRestoreContext(wc.wa->tdicontext);
-  ResetErrors();
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
   if IS_OK(wc.wa->status)
     wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
-  else
-    GetErrorText(wc.wa->status, wc.wa->xd_out);
   pthread_cleanup_pop(1);
   return wc.wa->status;
 }
@@ -784,6 +769,8 @@ static Message *ExecuteMessage(Connection * connection) {
   else {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
     status = executeCommand(connection,&ans_xd);
+    if STATUS_NOT_OK
+      GetErrorText(status, &ans_xd);
     if (GetCompressionLevel() != connection->compression_level) {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())
