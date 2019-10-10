@@ -593,9 +593,12 @@ static int WorkerThread(void *args) {
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   wc.pc = TreeCtxPush(wc.wa->ctx);
   TdiRestoreContext(wc.wa->tdicontext);
+  ResetErrors();
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
   if IS_OK(wc.wa->status)
     wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
+  else
+    GetErrorText(wc.wa->status, wc.wa->xd_out);
   pthread_cleanup_pop(1);
   return wc.wa->status;
 }
@@ -780,11 +783,8 @@ static Message *ExecuteMessage(Connection * connection) {
   // NORMAL TDI COMMAND //
   else {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
-    ResetErrors();
     status = executeCommand(connection,&ans_xd);
-    if STATUS_NOT_OK
-      GetErrorText(status, &ans_xd);
-    else if (GetCompressionLevel() != connection->compression_level) {
+    if (GetCompressionLevel() != connection->compression_level) {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())
 	connection->compression_level = GetMaxCompressionLevel();
