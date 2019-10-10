@@ -228,9 +228,12 @@ int main(int argc, char **argv)
   DESCRIPTOR(mdsconnect, "MDSCONNECT($)");
   DESCRIPTOR(mdsvalue,   "MDSVALUE('DECOMPILE(`EXECUTE($))',$)");
   char *server = NULL, *script = NULL, *logfile = NULL;
+  int verbose = FALSE;
   int i = 1;
   while (argc > i) {
-    if (strcmp(argv[i],"--server")==0)
+    if (strcmp(argv[i],"-v")==0)
+      verbose = TRUE;
+    else if (strcmp(argv[i],"--server")==0)
        server = argv[++i];
     else {
       if (script)
@@ -250,14 +253,19 @@ int main(int argc, char **argv)
       printf("Error opening log file '%s'\n", logfile);
       exit(1);
     }
-    fprintf(stderr,"logging output into '%s'\n", logfile);
+    if (verbose) fprintf(stderr,"Writing output to file '%s'\n", logfile);
   } else
     f_out = stdout;
   if (server) {
-    fprintf(stderr,"connection to '%s'\n", server);
     DESCRIPTOR_FROM_CSTRING(server_dsc,server);
     set_execute_handlers();
     status = TdiExecute((mdsdsc_t *)&mdsconnect, (mdsdsc_t *)&server_dsc, &ans MDS_END_ARG);
+    if STATUS_OK status = *(int*)ans.pointer->pointer;
+    if STATUS_NOT_OK {
+      fprintf(stderr,"Error connecting to server '%s'\n", server);
+      exit(1);
+    }
+    if (verbose) fprintf(stderr,"Connected to server '%s'\n", server);
     set_readline_handlers();
     strcpy(error_out_c,"WRITE($,MDSVALUE('DEBUG(13)'))");
     strcpy(clear_errors_c,"WRITE($,$),MDSVALUE('DEBUG(4)')");
@@ -270,10 +278,10 @@ int main(int argc, char **argv)
   if (script) {
     f_in = fopen(script, "r");
     if (!f_in) {
-      printf("Error opening input file '%s'\n", script);
+      if (verbose) printf("Error opening input file '%s'\n", script);
       exit(1);
     }
-    fprintf(stderr,"running script '%s'\n", script);
+    if (verbose) fprintf(stderr,"Executing script '%s'\n", script);
   } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
