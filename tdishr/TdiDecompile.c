@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #ifdef max
 #undef max
 #endif

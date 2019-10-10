@@ -57,7 +57,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsplus.h>
 #include <stdio.h>
 #include <string.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
