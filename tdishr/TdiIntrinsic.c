@@ -328,7 +328,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
       goto done;
     status = stat1;
   }
-  TRACE(opcode, narg, list, out_ptr);
+  if (TDI_INTRINSIC_REC>=0)
+    TRACE(opcode, narg, list, out_ptr);
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
