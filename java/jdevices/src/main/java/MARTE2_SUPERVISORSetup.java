@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -31,6 +34,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         jPanel2 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
+        jButton1 = new javax.swing.JButton();
         jPanel4 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
@@ -266,6 +270,14 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField1.setOffsetNid(2);
         deviceField1.setTextOnly(true);
         jPanel3.add(deviceField1);
+
+        jButton1.setText("Check");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton1);
 
         jPanel2.add(jPanel3);
 
@@ -1205,6 +1217,19 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         getAccessibleContext().setAccessibleName("");
     }// </editor-fold>//GEN-END:initComponents
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String msg;
+        try {
+            Data exprData = subtree.dataFromExpr("checkMarte(\'"+subtree.getName()+"\', "+baseNid+")");
+            Data msgData = subtree.evaluateData(exprData, 0);
+            msg = msgData.getString();
+            if(msg.equals(""))
+                msg = "Configuration OK";
+        } catch(Exception exc){msg = exc.toString();}
+        JOptionPane.showMessageDialog(this, msg);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private DeviceButtons deviceButtons1;
@@ -1316,6 +1341,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
     private DeviceField deviceField97;
     private DeviceField deviceField98;
     private DeviceField deviceField99;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel100;

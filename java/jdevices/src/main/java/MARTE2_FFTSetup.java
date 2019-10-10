@@ -37,11 +37,11 @@ public class MARTE2_FFTSetup extends DeviceSetup {
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8123");
+        setDeviceProvider("scdevail.rfx.local:8100");
         setDeviceTitle("MARTe2 FFT GAM");
         setDeviceType("MARTE2_FFT");
         setHeight(200);
-        setWidth(700);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         deviceField1.setIdentifier("");
@@ -57,9 +57,9 @@ public class MARTE2_FFTSetup extends DeviceSetup {
         jPanel2.add(deviceChoice2);
 
         deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Out Segment len:");
+        deviceField4.setLabelString("Out Segment len (0 to disable writing in tree):");
         deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(22);
+        deviceField4.setOffsetNid(26);
         jPanel2.add(deviceField4);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);

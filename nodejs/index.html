@@ -7,96 +7,9 @@
   <!-- Version: see variable versionNumber -->
   <title>WebScope</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
-<<<<<<< HEAD
 </head>
 
 <!-- help message shown when clicking on the header -->
-=======
-
-
-</head>
-
-
-<body>
-
-  <div id="app">
-    <!-- <div align="right"><b></b></div> -->
-   <p style="display:inline" onclick="alert('Usage:\nURL:PORT/?htitle=TITLE&panel=NAME1&s=SIGNALNAME&mnext&panel=NAME2&s=SIGNALNAME\nParameters:\n- htitle=TITLE: title shown in the header\n- panel=NAME: name of the panel\n- length=nnn: number of samples\n- xlabel=LABEL: label of X axis\n- ylabel=LABEL: label of Y axis\n- s=NAME: name of signal (you can show as many signals as you want)\n- c=COLOR: signal color (default: black, can be: yellow,red,blue,cyan,green,...)\n- debug=1: enable debug messages\n- mnext: show another panel with a different set of signals); after this parameter, a panel parameter and related infos must be present\n\nFor other information:\nBackend usage: Gabriele.Manduchi@igi.cnr.it\nFrontend usage: Gianluca.Moro@igi.cnr.it')">
-
-    <!-- Flag of ITER -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 81 54">
-    <path d="M-.375.075H80.03v53.167H-.375z" fill="#fd8609"/>
-    <ellipse cx="41" cy="54" rx="32" ry="32" fill="#fff"/>
-    <text x="2" y="296" font-weight="bold" font-size="2.8" font-family="sans-serif" fill="#fff">
-    <tspan x="2" y="4">china</tspan>
-    <tspan x="2" y="8">eu</tspan>
-    <tspan x="2" y="12">india</tspan>
-    <tspan x="2" y="16">japan</tspan>
-    <tspan x="2" y="20">korea</tspan>
-    <tspan x="2" y="24">russia</tspan>
-    <tspan x="2" y="28">usa</tspan></text>
-    <text x="32" y="345" font-weight="bold" font-size="18" font-family="sans-serif" fill="#fd8609">
-    <tspan x="32" y="54">iter</tspan></text>
-    </svg>
-
-    <!-- Flag of Europe -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 30 20">
-    <rect width="30" height="20" style="fill:rgb(0%,20%,60%)"/>
-    <path d="M15 15.4L15.7 17.7 13.8 16.3 16.2 16.3 14.3 17.7ZM15 15.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M15 2.1L15.7 4.3 13.8 2.9 16.2 2.9 14.3 4.3ZM15 2.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M11.7 14.5L12.4 16.8 10.5 15.4 12.9 15.4 10.9 16.8ZM11.7 14.5" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M9.2 12.1L10 14.3 8 12.9 10.4 12.9 8.5 14.3ZM9.2 12.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M8.3 8.8L9.1 11 7.1 9.6 9.5 9.6 7.6 11ZM8.3 8.8" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M9.2 5.4L10 7.7 8 6.3 10.4 6.3 8.5 7.7ZM9.2 5.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M11.7 3L12.4 5.2 10.5 3.8 12.9 3.8 10.9 5.2ZM11.7 3" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M18.3 14.5L17.6 16.8 19.5 15.4 17.1 15.4 19.1 16.8ZM18.3 14.5" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M20.8 12.1L20 14.3 22 12.9 19.6 12.9 21.5 14.3ZM20.8 12.1" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M21.7 8.8L20.9 11 22.9 9.6 20.5 9.6 22.4 11ZM21.7 8.8" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M20.8 5.4L20 7.7 22 6.3 19.6 6.3 21.5 7.7ZM20.8 5.4" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    <path d="M18.3 3L17.6 5.2 19.5 3.8 17.1 3.8 19.1 5.2ZM18.3 3" style="stroke:none;fill:rgb(100%,80%,0%);"/>
-    </svg>
-
-    <!-- Flag of India -->
-    <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
-      viewBox="0 0 225 150" width="30" height="20">
-      <rect width="225" height="150" fill="#f93"/><rect width="225" height="50" y="50" fill="#fff"/>
-      <rect width="225" height="50" y="100" fill="#128807"/><g transform="translate(112.5,75)">
-      <circle r="20" fill="#008"/><circle r="17.5" fill="#fff"/><circle r="3.5" fill="#008"/>
-      <g id="d"><g id="c"><g id="b"><g id="a">
-      <circle r="0.875" fill="#008" transform="rotate(7.5) translate(17.5)"/>
-      <path fill="#008" d="M 0,17.5 0.6,7 C 0.6,7 0,2 0,2 0,2 -0.6,7 -0.6,7 L 0,17.5 z"/></g>
-      <use xlink:href="#a" transform="rotate(15)"/></g><use xlink:href="#b" transform="rotate(30)"/></g>
-      <use xlink:href="#c" transform="rotate(60)"/></g><use xlink:href="#d" transform="rotate(120)"/>
-      <use xlink:href="#d" transform="rotate(-120)"/></g>
-    </svg>
-
-    <!-- Flag of Italy -->
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 3 2">
-      <rect width="1" height="2" fill="#009246"/>
-      <rect width="1" height="2" x="1" fill="#fff"/>
-      <rect width="1" height="2" x="2" fill="#ce2b37"/>
-    </svg>
-
-
-    <font size="4"><b>{{ currentDate }} {{ currentTime }}</b> </font>
-    <div style="float: right"><font size="4"><b>{{ htitle }}</b> </font></div>
-  </p>
-
-    <div v-if="mposition === 'v'">
-    <iframe v-for="q in subQuery" :src=q style="border:none; width: 100%" :style="{ height: computedIframeh + 'vh' }">Panel graph - IFRAME not supported by your browser</iframe>
-<!--    <iframe v-for="q in subQuery" :src=q style="border:none;">Panel graph - IFRAME not supported by your browser</iframe> -->
-
-    </div>
-
-    <div v-else>
-    <iframe v-for="q in subQuery" :src=q style="height: 99vh; border:none;" :style="{ width: computedIframew + 'vw' }">Panel graph - IFRAME not supported by your browser</iframe>
-    </div>
-
-    <font color="white">{{ versionNumber }}</font>
-
-  </div>
-
->>>>>>> a24f95fbf66b4b8e0d02472d27da28fdb4f5ad7e
 <script>
 var helpMessage = 
 'WebScope - Usage:' +
@@ -125,7 +38,6 @@ var helpMessage =
 '\n';
 </script>
 
-<<<<<<< HEAD
 <body style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
 
   <!-- the Vue.js app -->
@@ -218,13 +130,10 @@ function removeBorderAmp(str) {
     return str;
 }
 
-=======
->>>>>>> a24f95fbf66b4b8e0d02472d27da28fdb4f5ad7e
 var vm = new Vue({
   el: '#app',
   data: function () {
     return {
-<<<<<<< HEAD
       htitle: '',         // header title
       currentDate: '',
       currentTime: '',
@@ -234,31 +143,12 @@ var vm = new Vue({
       subQuery: [],       // query for each frame 
       isDebug: 0,
       versionNumber: '201908011100',
-=======
-      lastShotNumber: -1,
-      isDebug: 1,
-      htitle:'', // header title
-      mpanel:1, // number of panels to show
-      mposition: 'h', // disposition - 'v'=vertically piled - 'h'=horizontal alignment
-      msize: [], // if present, percent of each panel, otherwise equally distributed
-      subQuery: [],
-      currentDate: '',
-      currentTime: '',
-      versionNumber: '20190722140000',
->>>>>>> a24f95fbf66b4b8e0d02472d27da28fdb4f5ad7e
     } // end return
   },
 
   computed: {
     computedIframeh() {
-<<<<<<< HEAD
         return ( Math.floor(90 / this.mpanels.length) ); 
-=======
-        return ( Math.floor(100 / this.mpanel) - 1 ); 
-    },
-    computedIframew() {
-        return ( Math.floor(100 / this.mpanel) - 1 ); 
->>>>>>> a24f95fbf66b4b8e0d02472d27da28fdb4f5ad7e
     },
   },
 
@@ -272,7 +162,6 @@ var vm = new Vue({
     var vars = query.split('&');   
     for (var i = 0; i < vars.length; i++) {
 	var pair = vars[i].split('=');
-<<<<<<< HEAD
         if (pair[0] == "mnextnl")   this.mpanels.push(1);
         if (pair[0] == "mnext")     this.mpanels[this.mpanels.length-1]++;
         if (pair[0] == "htitle")    this.htitle = decodeURIComponent(pair[1]);
@@ -295,46 +184,6 @@ var vm = new Vue({
   },
 
 });
-=======
-        if (pair[0] == "mnext")     this.mpanel++;
-        if (pair[0] == "htitle")    this.htitle = decodeURIComponent(pair[1]);
-        if (pair[0] == "mposition") this.mposition = decodeURIComponent(pair[1]);
-        if (pair[0] == "msize")     this.msize = decodeURIComponent(pair[1]).split(',');
-        if (pair[0] == "debug")     this.isDebug = decodeURIComponent(pair[1]);
-    }
-
-    this.subQuery = query.split("mnext");
-    for (var i=0; i<this.subQuery.length; i++) {
-      if (this.subQuery[i].charAt(0) === '&') this.subQuery[i] = this.subQuery[i].slice(1);
-      if (this.subQuery[i].charAt(this.subQuery[i].length -1) === '&') this.subQuery[i] = this.subQuery[i].slice(0, -1);
-      this.subQuery[i] = "/panel.html?" + this.subQuery[i];
-    }
-
-    if (this.isDebug) { 
-      console.log("Configuration: htitle=" + this.htitle + " mpanel=" + this.mpanel + " mposition=" + this.mposition + " msize=" + this.msize + " debug=" + this.isDebug); 
-      console.log("Query for each panel: " + this.subQuery);
-    }
-  },
-
-});
-
-var week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-var timerID = setInterval(updateTime, 1000);
-updateTime();
-function updateTime() {
-    var cd = new Date();
-    vm.currentTime = zeroPadding(cd.getHours(), 2) + ':' + zeroPadding(cd.getMinutes(), 2) + ':' + zeroPadding(cd.getSeconds(), 2);
-    vm.currentDate =  zeroPadding(cd.getDate(), 2) + '/' + zeroPadding(cd.getMonth()+1, 2) + '/' + zeroPadding(cd.getFullYear(), 4) + ' ' + week[cd.getDay()];
-};
-
-function zeroPadding(num, digit) {
-    var zero = '';
-    for(var i = 0; i < digit; i++) {
-        zero += '0';
-    }
-    return (zero + num).slice(-digit);
-}
->>>>>>> a24f95fbf66b4b8e0d02472d27da28fdb4f5ad7e
 
 <!-- clock management -->
 var week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];

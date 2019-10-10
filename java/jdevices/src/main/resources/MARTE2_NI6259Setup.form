@@ -138,7 +138,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Samples: "/>
-                <Property name="offsetNid" type="int" value="53"/>
+                <Property name="offsetNid" type="int" value="57"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -227,14 +227,6 @@
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
-            <Component class="DeviceField" name="deviceField6">
-              <Properties>
-                <Property name="identifier" type="java.lang.String" value=""/>
-                <Property name="labelString" type="java.lang.String" value="Segment len:"/>
-                <Property name="numCols" type="int" value="5"/>
-                <Property name="offsetNid" type="int" value="55"/>
-              </Properties>
-            </Component>
           </SubComponents>
         </Container>
       </SubComponents>
@@ -277,7 +269,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="60"/>
+                <Property name="offsetNid" type="int" value="64"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -291,7 +283,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="66"/>
+                <Property name="offsetNid" type="int" value="70"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -306,8 +298,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="69"/>
+                <Property name="offsetNid" type="int" value="73"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField7">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="59"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -341,7 +340,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="80"/>
+                <Property name="offsetNid" type="int" value="84"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -355,7 +354,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="86"/>
+                <Property name="offsetNid" type="int" value="90"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -370,8 +369,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="89"/>
+                <Property name="offsetNid" type="int" value="93"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField8">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="79"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -405,7 +411,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="100"/>
+                <Property name="offsetNid" type="int" value="104"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -419,7 +425,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="106"/>
+                <Property name="offsetNid" type="int" value="110"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -434,8 +440,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="109"/>
+                <Property name="offsetNid" type="int" value="113"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField9">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="99"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -469,7 +482,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="120"/>
+                <Property name="offsetNid" type="int" value="124"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -483,7 +496,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="126"/>
+                <Property name="offsetNid" type="int" value="130"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -498,8 +511,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="129"/>
+                <Property name="offsetNid" type="int" value="133"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField10">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="119"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -533,7 +553,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="140"/>
+                <Property name="offsetNid" type="int" value="144"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -547,7 +567,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="146"/>
+                <Property name="offsetNid" type="int" value="150"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -562,8 +582,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="149"/>
+                <Property name="offsetNid" type="int" value="153"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField11">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="139"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -597,7 +624,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="160"/>
+                <Property name="offsetNid" type="int" value="164"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -611,7 +638,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="166"/>
+                <Property name="offsetNid" type="int" value="170"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -626,8 +653,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="169"/>
+                <Property name="offsetNid" type="int" value="173"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField12">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="159"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -661,7 +695,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="180"/>
+                <Property name="offsetNid" type="int" value="184"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -675,7 +709,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="186"/>
+                <Property name="offsetNid" type="int" value="190"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -690,8 +724,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="189"/>
+                <Property name="offsetNid" type="int" value="193"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField13">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="179"/>
               </Properties>
             </Component>
           </SubComponents>
@@ -725,7 +766,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Range: "/>
-                <Property name="offsetNid" type="int" value="200"/>
+                <Property name="offsetNid" type="int" value="204"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -739,7 +780,7 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Polarity: "/>
-                <Property name="offsetNid" type="int" value="206"/>
+                <Property name="offsetNid" type="int" value="210"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
               </Properties>
             </Component>
@@ -754,8 +795,15 @@
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Input Mode: "/>
-                <Property name="offsetNid" type="int" value="209"/>
+                <Property name="offsetNid" type="int" value="213"/>
                 <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField14">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Segment len (0 to disable writing in tree):"/>
+                <Property name="offsetNid" type="int" value="199"/>
               </Properties>
             </Component>
           </SubComponents>

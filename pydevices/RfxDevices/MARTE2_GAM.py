@@ -26,7 +26,6 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class MARTE2_GAM(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.name = 'TestGAM'
     MARTE2_COMPONENT.inputs = [{'name': 'Input1', 'type': 'int32', 'dimensions': 0, 'parameters':{}}, 
         {'name': 'Input2', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
         {'name': 'Input3', 'type': 'int32', 'dimensions': 0, 'parameters':{}},

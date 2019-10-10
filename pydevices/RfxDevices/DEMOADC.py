@@ -20,10 +20,10 @@ class DEMOADC(Device):
 #
 #in the following methods, defice fields are referred by the syntax: self.<field_name>, where field_name is derived by the 
 #path of the corresponding tree node relative to the subtree (as specified by the corresponding path dictionary item), where #letters are lowercase and the dots and colons are replaced by underscores (except the first one). 
-#For example, tree node :NAME is accessed by field self.name and .CHANNEL_1:DATA by field self.channel_1_data
+#For example, tree node :ADDR is accessed by field self.addr and .CHANNEL_1:DATA by field self.channel_1_data
 #All there firlds are TreeNode instances and therefore all TreeNode methods such as Data() or putData() can be used.
 
-    parts=[{'path':':NAME','type':'text'}, {'path':':COMMENT','type':'text'},
+    parts=[{'path':':ADDR','type':'text'}, {'path':':COMMENT','type':'text'},
 	{'path':':CLOCK_FREQ','type':'numeric', 'value':10000},
    	{'path':':TRIG_SOURCE','type':'numeric', 'value':0},
    	{'path':':PTS','type':'numeric', 'value':1000}]
@@ -47,22 +47,22 @@ class DEMOADC(Device):
     def init(self):
 #Need to import some classes from MDSplus package
 #The device will be configured via a shared library (libDemoAdc in the MDSplus distribution) defining the following routines:
-# initialize(char *name, int clockFreq, int postTriggerSamples)
+# initialize(char *addr, int clockFreq, int postTriggerSamples)
 # where clockFreq can have the following values:
 #  - 1 -> clock freq. = 1KHz
 #  - 2 -> clock freq. = 5KHz
 #  - 3 -> clock freq. = 10KHz
 #  - 4 -> clock freq. = 50 KHz
 #  - 5 -> clock freq. = 100KHz
-# trigger(char *name)
-# acquire(char *name, short *c1, short *c2 short *c3, short *c4)
+# trigger(char *addr)
+# acquire(char *addr, short *c1, short *c2 short *c3, short *c4)
 # the routine acquire returns 4  simulated sinusoidal waveform signals at the following frequencies:
 # Channel 1: 10Hz
 # Channel 2: 50 Hz
 # Channel 3: 100 Hz
 # Channel 4: 200Hz
 #
-# The name argument passed to all device routines is not used and simulates the device identifier
+# The addr argument passed to all device routines is not used and simulates the device identifier
 # used in real devices
 #
 #Since we need to link against a shaed library from python, we need ctypes package.
@@ -81,13 +81,12 @@ class DEMOADC(Device):
 #2) read and evaluate (in the case the content is an expression) its content via TreeNode.data() method 
 #all data access operation will be but in a try block in order to check for missing or wrong configuration data
 	try:
-   	    name = self.name
-#we expect to get a string in name
+   	    addr = self.addr
+#we expect to get a string in addr
 	except:
-	    print 'Missing Name in device'
+	    print 'Missing addr in device'
 	    return 0
-        print('letto Name')
-
+ 
 #read the clock frequency and convert to clock mode. We use a dictionary for the conversion, and assume 
 	clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
 	try:
@@ -106,7 +105,7 @@ class DEMOADC(Device):
 
 #all required configuation collected. Call external routine initialize passing the right parameters
 #we use ctypes functions to convert python variable to appropriate C types to be passed to the external routine
-	deviceLib.initialize(c_char_p(name), c_int(clockMode), c_int(pts))
+	deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(pts))
 #return success
 	return 1
 
@@ -126,12 +125,12 @@ class DEMOADC(Device):
 	    return 0
 
 
-#get name
+#get addr
 	try:
-   	    name = self.name
-#we expect to get a string in name
+   	    addr = self.addr
+#we expect to get a string in addr
 	except:
-	    print 'Missing Name in device'
+	    print 'Missing Addr in device'
 	    return 0
 
 
@@ -143,7 +142,7 @@ class DEMOADC(Device):
 	rawChan.append(DataArray())
 	rawChan.append(DataArray())
 
-	status = deviceLib.acquire(c_char_p(name), byref(rawChan[0]), byref(rawChan[1]), byref(rawChan[2]), byref(rawChan[3]))
+	status = deviceLib.acquire(c_char_p(addr), byref(rawChan[0]), byref(rawChan[1]), byref(rawChan[2]), byref(rawChan[3]))
 	if status == -1:
 	    print 'Acquisition Failed'
 	    return 0
