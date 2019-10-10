@@ -584,7 +584,9 @@ static int WorkerThread(void *args) {
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   wc.pc = TreeCtxPush(wc.wa->ctx);
   TdiRestoreContext(wc.wa->tdicontext);
+  --wc.wa->TDI_INTRINSIC_REC;
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
+  ++wc.wa->TDI_INTRINSIC_REC;
   if IS_OK(wc.wa->status)
     wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
