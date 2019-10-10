@@ -72,8 +72,8 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
     case DTYPE_SIGNAL:
       *signal_ptr = *data_ptr;
       *data_ptr = EMPTY_XD;
-      keep = TdiThreadStatic_p->TdiSELF_PTR;
-      TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
+      keep = TDI_SELF_PTR;
+      TDI_SELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
       status = TdiGetData(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
       if STATUS_OK
 	switch (data_ptr->pointer->dtype) {
@@ -91,7 +91,7 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
 	  MdsFree1Dx(units_ptr, NULL);
 	  break;
 	}
-      TdiThreadStatic_p->TdiSELF_PTR = keep;
+      TDI_SELF_PTR = keep;
       break;
     case DTYPE_WITH_UNITS:
       tmp = *data_ptr;

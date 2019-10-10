@@ -2,8 +2,8 @@
 #ifdef getc
 #undef getc
 #endif
-#define getc(file)		(TdiRefZone.a_cur < TdiRefZone.a_end ? *TdiRefZone.a_cur++ : \
-				(TdiRefZone.a_cur++ == TdiRefZone.a_end ? ';' : 0))
+#define getc(file)		(TDI_REFZONE.a_cur < TDI_REFZONE.a_end ? *TDI_REFZONE.a_cur++ : \
+				(TDI_REFZONE.a_cur++ == TDI_REFZONE.a_end ? ';' : 0))
 #ifdef output
 #undef output
 #endif
@@ -12,6 +12,6 @@
 #ifdef unput
 #undef unput
 #endif
-#define unput(c)	--TdiRefZone.a_cur
-#define pos()		(TdiYylvalPtr->w_ok = TdiRefZone.a_cur - TdiRefZone.a_begin)
+#define unput(c)	--TDI_REFZONE.a_cur
+#define pos()		(TdiYylvalPtr->w_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin)
 #define nlpos()
