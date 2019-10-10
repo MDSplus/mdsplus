@@ -152,10 +152,10 @@ STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
   GET_TDITHREADSTATIC_P;
 #ifdef _WIN32
   const char* newline= "\r\n\t\t\t\t\t\t\t";
-  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8)+1;
+  int identlen = ((TDI_INDENT += step) < 8 ? TDI_INDENT : 8)+1;
 #else
   const char* newline= "\n\t\t\t\t\t\t\t";
-  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8);
+  int identlen = ((TDI_INDENT += step) < 8 ? TDI_INDENT : 8);
 #endif
   struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
   new.length = pout->length + identlen;

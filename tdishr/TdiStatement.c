@@ -206,14 +206,14 @@ int Tdi1IfError(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
   INIT_STATUS;
   int keep, j;
   GET_TDITHREADSTATIC_P;
-  keep = TdiON_ERROR;
-  TdiON_ERROR = 0;
+  keep = TDI_ON_ERROR;
+  TDI_ON_ERROR = FALSE;
   for (j = 0; j < narg; ++j) {
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
     if STATUS_OK
       break;
   }
-  TdiON_ERROR = keep;
+  TDI_ON_ERROR = keep;
   if (j >= narg)
     status = MdsFree1Dx(out_ptr, NULL);
   return status;
