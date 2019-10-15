@@ -876,8 +876,7 @@ fi
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires external="true" package="setuptools"/>
-    <requires external="True" package="python-devel"/>
+    <!-- requires external="true" package="setuptools"/ -->
     <requires external="true" package="numpy"/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
@@ -1003,20 +1002,17 @@ AutoReqProv: yes
  <ubuntu>
  </ubuntu>
  <external_packages platform="redhat">
-   <python-devel/>
    <setuptools package="python-setuptools"/>
    <numpy/>
    <xinetd/>
    <java/>
  </external_packages>
  <external_packages platform="alpine">
-   <python-devel package="python-dev"/>
    <setuptools package="py-setuptools"/>
    <numpy/>
    <java/>
  </external_packages>
  <external_packages platform="debian">
-   <python-devel package="python-dev"/>
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
    <xinetd package="busybox"/>
