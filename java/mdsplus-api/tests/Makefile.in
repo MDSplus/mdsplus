@@ -1422,7 +1422,6 @@ test-env:
 @HAVE_WINE_TRUE@	echo "%PATH% = $(shell $${TESTS_ENVIRONMENT} wine cmd /c 'echo %PATH%' 2>/dev/null)"; \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \
 @HAVE_WINE_TRUE@	${TESTS_ENVIRONMENT} wineconsole
-JAVASOURCE ?= 6 -bootclasspath $(RT6JAR)
 
 $(JAVAROOT):
 	mkdir -p $@
