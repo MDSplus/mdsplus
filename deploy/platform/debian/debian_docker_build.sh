@@ -33,7 +33,7 @@ case "${ARCH}" in
     ;;
 esac
 
-if [[ "$OS" == "debian_wheezy" ]]
+if [ "${OS:0:7}" = "debian7" ]
 then
   export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
 fi
@@ -95,7 +95,7 @@ buildrelease() {
 	then
 	   continue
 	fi
-        if [[ x${pkg} == x*_bin ]]
+        if [ "${pkg: -4}" = "_bin" ] # ends with _bin
         then
           checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.$ARCH
         else
