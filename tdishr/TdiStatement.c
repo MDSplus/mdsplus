@@ -36,7 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 
 extern int TdiIntrinsic();
@@ -204,18 +204,14 @@ int Tdi1If(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor
 int Tdi1IfError(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  int keep, j;
-  GET_TDITHREADSTATIC_P;
-  keep = TDI_ON_ERROR;
-  TDI_ON_ERROR = FALSE;
+  int j;
   for (j = 0; j < narg; ++j) {
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
     if STATUS_OK
       break;
   }
-  TDI_ON_ERROR = keep;
-  if (j >= narg)
-    status = MdsFree1Dx(out_ptr, NULL);
+  if STATUS_NOT_OK
+    MdsFree1Dx(out_ptr, NULL);
   return status;
 }
 

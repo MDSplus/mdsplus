@@ -56,7 +56,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <string.h>
 #include <strings.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 int TdiGetRecord(int nid, mdsdsc_xd_t *out);
 

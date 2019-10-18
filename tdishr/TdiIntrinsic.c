@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OPC_ENUM
 
 #include <STATICdef.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
@@ -63,7 +63,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 #include <tdishr_messages.h>
-#include <tdishr.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
@@ -329,7 +328,8 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
       goto done;
     status = stat1;
   }
-  TRACE(opcode, narg, list, out_ptr);
+  if (TDI_INTRINSIC_REC>=0)
+    TRACE(opcode, narg, list, out_ptr);
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);

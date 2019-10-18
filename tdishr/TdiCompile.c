@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <treeshr_messages.h>
 #include <tdishr_messages.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include <mdsshr.h>
 #include <strroutines.h>
 #define DEBUG
