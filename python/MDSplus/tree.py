@@ -2677,9 +2677,10 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         olddef=self.tree.default
         self.tree.default=self
-        ans=self.tree.tcl(cmd)
-        self.tree.default=olddef
-        return ans
+        try:
+            return self.tree.tcl(cmd)
+        finally:
+            self.tree.default=olddef
 
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
