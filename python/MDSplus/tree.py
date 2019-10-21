@@ -1645,12 +1645,13 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @rtype: None
         """
         arglist=[self.ctx]
-        xd=_dsc.descriptor_xd()
+        xd=_dsc.Descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
-        argsobj+= list(map(_dat.Data,args))
+        arglist+=list(map(_dat.Data.byref,argsobj))
+        arglist+=[len(args)]
+        argsobj= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.ref,_ver.MdsEND_ARG]
-        _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
+        _exc.checkStatus(_TreeShr._TreeDoMethodA(*arglist))
         return xd._setTree(self.tree).value
 
     @classmethod
