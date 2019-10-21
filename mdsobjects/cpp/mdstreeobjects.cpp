@@ -1627,7 +1627,6 @@ TreeNode *TreeNode::getNode(String *relPathStr)
 
 TreeNodeArray *TreeNode::getNodeWild(char const * path, int usageMask)
 {
-	std::cout << "In C++ TreeNode getNodeWild..." << std::endl;
 	int status;
 	void *wildCtx = 0;
 
