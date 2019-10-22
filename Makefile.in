@@ -223,7 +223,7 @@ ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
 java/jdevices: java/jtraverser
-java/jdispatcher: java/jscope java/jtraverser
+java/jdispatcher: java/jscope java/jtraverser java/mdsobjects
 javamds: mdstcpip
 java/jtraverser: java/jscope
 java/jtraverser2: java/mdsplus-api

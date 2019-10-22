@@ -980,8 +980,8 @@ JNIEXPORT jobject JNICALL Java_Database_addDevice
   return (*env)->CallStaticObjectMethodA(env, cls, constr, args);
 }
 
-//static int doAction(int nid)
-EXPORT int doAction(int nid)
+static int doAction(int nid)
+//EXPORT int doAction(int nid)
 {
   extern int TdiEvaluate();
   int status;
