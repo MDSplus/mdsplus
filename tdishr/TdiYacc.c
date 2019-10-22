@@ -55,10 +55,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NOT and INOT of AND OR etc., form NAND or AND_NOT etc. See KNOT1 and KNOT2. Not after 9/25/89.
 -*/
 #include <mdsplus/mdsplus.h>
-#include <STATICdef.h>
 #include <stdio.h>
 #include <string.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefzone.h"
@@ -79,7 +78,7 @@ extern int TdiYacc_ARG();
 extern int TdiLexPath();
 
 #define YYMAXDEPTH      250
-#define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TdiRefZone.l_ok = TdiRefZone.a_cur - TdiRefZone.a_begin;}while(0)
+#define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
 #define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
 
@@ -94,16 +93,13 @@ extern int TdiLexPath();
 #define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL ))
 #define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
 
-STATIC_THREADSAFE struct marker _EMPTY_MARKER = { 0 };
+static const struct marker _EMPTY_MARKER = { 0 };
 
 #include "tdiyacc.h"
 
 #define tdiyyclearin tdiyychar = -1
 #define tdiyyerrok tdiyyerrflag = 0
-extern int tdiyychar;
-#ifndef YYMAXDEPTH
-#define YYMAXDEPTH 150
-#endif
+
 
 /* __YYSCLASS defines the scoping/storage class for global objects
  * that are NOT renamed by the -p option.  By default these names
@@ -116,13 +112,9 @@ extern int tdiyychar;
 #ifndef __YYSCLASS
 #define __YYSCLASS STATIC_THREADSAFE
 #endif
-YYSTYPE tdiyylval;
-__YYSCLASS YYSTYPE tdiyyval;
 typedef int tdiyytabelem;
 #define YYERRCODE 256
 
-
-YYSTYPE *TdiYylvalPtr = &tdiyylval;
 __YYSCLASS tdiyytabelem tdiyyexca[] = {
   -1, 0,
   0, 120,
@@ -608,13 +600,12 @@ __YYSCLASS char *tdiyyreds[] = {
 ** yacc user known macros and defines
 */
 #define YYERROR         goto tdiyyerrlab
-
-#ifndef __RUNTIME_YYMAXDEPTH
-#define YYACCEPT        {return MDSplusSUCCESS;}
-#define YYABORT         {return MDSplusERROR;}
+#ifdef  __RUNTIME_YYMAXDEPTH
+# define YYACCEPT        {free_stacks(); return MDSplusSUCCESS;}
+# define YYABORT         {free_stacks(); return MDSplusERROR;}
 #else
-#define YYACCEPT        {free_stacks(); return MDSplusSUCCESS;}
-#define YYABORT         {free_stacks(); return MDSplusERROR;}
+# define YYACCEPT        {return MDSplusSUCCESS;}
+# define YYABORT         {return MDSplusERROR;}
 #endif
 
 #define YYBACKUP( newtoken, newvalue ) {\
@@ -639,12 +630,6 @@ __YYSCLASS char *tdiyyreds[] = {
 /*
 ** global variables used by the parser
 */
-#ifndef __RUNTIME_YYMAXDEPTH
-__YYSCLASS YYSTYPE tdiyyv[YYMAXDEPTH];	/* value stack */
-__YYSCLASS int tdiyys[YYMAXDEPTH];	/* state stack */
-#else
-__YYSCLASS YYSTYPE *tdiyyv;	/* pointer to malloc'ed value stack */
-__YYSCLASS int *tdiyys;		/* pointer to malloc'ed stack stack */
 
 #if defined(__STDC__) || defined (__cplusplus)
 #include <stdlib.h>
@@ -654,23 +639,14 @@ extern char *realloc();
 extern void free();
 #endif				/* __STDC__ or __cplusplus */
 
-STATIC_ROUTINE int allocate_stacks();
-STATIC_ROUTINE void free_stacks();
+#ifdef __RUNTIME_YYMAXDEPTH
+static int allocate_stacks();
+static void free_stacks();
 #ifndef YYINCREMENT
 #define YYINCREMENT (YYMAXDEPTH/2) + 10
 #endif
 #endif				/* __RUNTIME_YYMAXDEPTH */
-long tdiyymaxdepth = YYMAXDEPTH;
 
-__YYSCLASS YYSTYPE *tdiyypv;	/* top of value stack */
-__YYSCLASS int *tdiyyps;		/* top of state stack */
-
-__YYSCLASS int tdiyystate;		/* current state */
-__YYSCLASS int tdiyytmp;		/* extra var (lasts between blocks) */
-
-int tdiyynerrs;			/* number of errors */
-__YYSCLASS int tdiyyerrflag;	/* error recovery flag */
-int tdiyychar;			/* current input token number */
 
 /*
 ** tdiyyparse - return 0 if worked, 1 if syntax error not recovered from
@@ -678,26 +654,33 @@ int tdiyychar;			/* current input token number */
 // TdiYacc aka tdiyyparse         TdiYacc
 
 int TdiYacc(){
+  YYSTYPE tdiyylval;
+  YYSTYPE tdiyyval;
   GET_TDITHREADSTATIC_P;
+  long tdiyymaxdepth = YYMAXDEPTH;
   YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
-
   /*
    ** Initialize externals - tdiyyparse may be called more than once
    */
 #ifdef __RUNTIME_YYMAXDEPTH
-  if (allocate_stacks())
+  YYSTYPE *tdiyyv;	/* pointer to malloc'ed value stack */
+  int *tdiyys;		/* pointer to malloc'ed stack stack */
+  if (allocate_stacks(tdiyymaxdepth))
     YYABORT;
+#else
+  YYSTYPE tdiyyv[YYMAXDEPTH];  /* value stack */
+  int tdiyys[YYMAXDEPTH];      /* state stack */
 #endif
   tdiyyval.mark.w_ok=0;
   //  tdiyypv = &tdiyyv[-1];
-  tdiyypv = tdiyyv - 1;
+  YYSTYPE *tdiyypv = tdiyyv - 1;
   //  tdiyyps = &tdiyys[-1];
-  tdiyyps = tdiyys - 1;
-  tdiyystate = 0;
-  tdiyytmp = 0;
-  tdiyynerrs = 0;
-  tdiyyerrflag = 0;
-  tdiyychar = -1;
+  int *tdiyyps = tdiyys - 1;
+  int tdiyystate = 0;
+  int tdiyytmp = 0;
+  int tdiyynerrs = 0;
+  int tdiyyerrflag = 0;
+  int tdiyychar = -1;
 
   {
     YYSTYPE *tdiyy_pv;	/* top of value stack */
@@ -754,7 +737,7 @@ int TdiYacc(){
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
       goto tdiyy_default;		/* simple state */
-    if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
+    if ((tdiyychar < 0) && ((tdiyychar = TdiLex(&tdiyylval)) < 0))
       tdiyychar = 0;		/* reached EOF */
     YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
@@ -770,7 +753,7 @@ int TdiYacc(){
 
  tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
-      if ((tdiyychar < 0) && ((tdiyychar = TdiLex()) < 0))
+      if ((tdiyychar < 0) && ((tdiyychar = TdiLex(&tdiyylval)) < 0))
 	tdiyychar = 0;		/* reached EOF */
       YYDEBUG_("received token ")
       /*
@@ -901,8 +884,8 @@ int TdiYacc(){
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TdiRefZone.l_status & 1))
+      TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
+      if (!(TDI_REFZONE.l_status & 1))
 	tdiyyerror(0);
     }
     break;
@@ -927,11 +910,11 @@ int TdiYacc(){
 	  tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-2].mark.rptr;
 	  ++tdiyyval.mark.rptr->ndesc;
 	} else {
-	  TdiRefZone.l_status = TdiEXTRA_ARG;
+	  TDI_REFZONE.l_status = TdiEXTRA_ARG;
 	  return MDSplusERROR;
       } else {
 	unsigned int vmlen = sizeof(struct descriptor_range);
-	LibGetVm(&vmlen, (void **)&tdiyyval.mark.rptr, &TdiRefZone.l_zone);
+	LibGetVm(&vmlen, (void **)&tdiyyval.mark.rptr, &TDI_REFZONE.l_zone);
 	tdiyyval.mark.rptr->length = 0;
 	tdiyyval.mark.rptr->dtype = DTYPE_RANGE;
 	tdiyyval.mark.rptr->class = CLASS_R;
@@ -1152,19 +1135,19 @@ int TdiYacc(){
     break;
   case 74: // using0 : USING '('
     {
-      ++TdiRefZone.l_rel_path;
+      ++TDI_REFZONE.l_rel_path;
     }
     break;
   case 75: // using : using0 ass ',' ass ','
     {
       _FULL2(OPC_ABORT, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
-      --TdiRefZone.l_rel_path;
+      --TDI_REFZONE.l_rel_path;
     }
     break;
   case 76: // using : using0 ass ',' ','
     {
       _FULL2(OPC_ABORT, tdiyypvt[-2].mark, _EMPTY_MARKER, tdiyyval.mark);
-      --TdiRefZone.l_rel_path;
+      --TDI_REFZONE.l_rel_path;
     }
     break;
   case 78: // opt : /* empty */
@@ -1229,7 +1212,7 @@ int TdiYacc(){
 	    && strlen(TdiREF_CAT[j].name) == tdiyypvt[-3].mark.rptr->length)
 	  break;
       if (j < 0) {
-	TdiRefZone.l_status = TdiINVDTYDSC;
+	TDI_REFZONE.l_status = TdiINVDTYDSC;
 	return MDSplusERROR;
       }
       tdiyyval.mark.rptr->dtype = DTYPE_CALL;
@@ -1252,7 +1235,7 @@ int TdiYacc(){
   case 86: // postX : using0 ass ',' ass ')'
     {
       _JUST2(OPC_USING, tdiyypvt[-3].mark, tdiyypvt[-1].mark, tdiyyval.mark);
-      --TdiRefZone.l_rel_path;
+      --TDI_REFZONE.l_rel_path;
     }
     break;
   case 88: // textX : textX TEXT
@@ -1279,7 +1262,7 @@ int TdiYacc(){
 	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
 	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_ARG) {
-	    if (!((TdiRefZone.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1))
+	    if (!((TDI_REFZONE.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1))
 	      tdiyyerror(0);
 	  } else {
 	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_CONST)
@@ -1289,11 +1272,11 @@ int TdiYacc(){
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
       else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == LEX_ERROR) {
-	TdiRefZone.l_ok = tdiyypvt[-1].mark.w_ok;
-	TdiRefZone.a_cur = TdiRefZone.a_begin + TdiRefZone.l_ok + tdiyypvt[-0].mark.rptr->length;
+	TDI_REFZONE.l_ok = tdiyypvt[-1].mark.w_ok;
+	TDI_REFZONE.a_cur = TDI_REFZONE.a_begin + TDI_REFZONE.l_ok + tdiyypvt[-0].mark.rptr->length;
 	return MDSplusERROR;
       } else
-	TdiRefZone.l_ok = tdiyypvt[-0].mark.w_ok;
+	TDI_REFZONE.l_ok = tdiyypvt[-0].mark.w_ok;
     }
     break;
   case 95: // primaX : bracket ']'
@@ -1325,7 +1308,7 @@ int TdiYacc(){
 	tdiyyval.mark.rptr->dscptrs[j + 2] = tdiyyval.mark.rptr->dscptrs[j];
       tdiyyval.mark.rptr->dscptrs[0] = (struct descriptor *)tdiyypvt[-3].mark.rptr;
       tdiyyval.mark.rptr->ndesc += 2;
-      ++TdiRefZone.l_rel_path;
+      ++TDI_REFZONE.l_rel_path;
     } break;
   case 100: // stmt : BREAK ';'
     {
@@ -1395,15 +1378,15 @@ int TdiYacc(){
     break;
   case 113: // stmt : fun stmt
     {
-      TdiRefZone.l_rel_path--;
+      TDI_REFZONE.l_rel_path--;
       tdiyyval.mark.rptr->dscptrs[1] = (struct descriptor *)tdiyypvt[-0].mark.rptr;
     } break;
   case 114: // stmt : '`' stmt
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TdiRefZone.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TdiRefZone.l_status & 1))
+      TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
+      if (!(TDI_REFZONE.l_status & 1))
 	tdiyyerror(0);
     }
     break;
@@ -1436,8 +1419,8 @@ int TdiYacc(){
   case 119: // program : stmt_lst
     {
       _RESOLVE(tdiyyval.mark);	/*statements */
-      TdiRefZone.a_result = (struct descriptor_d *)tdiyyval.mark.rptr;
-      TdiRefZone.l_status = 1;
+      TDI_REFZONE.a_result = (struct descriptor_d *)tdiyyval.mark.rptr;
+      TDI_REFZONE.l_status = 1;
     } break;
   case 120: // program : /* empty */
     {
@@ -1450,7 +1433,7 @@ int TdiYacc(){
     break;
   case 122: // program : error
     {
-      TdiRefZone.l_status = TdiSYNTAX;
+      TDI_REFZONE.l_status = TdiSYNTAX;
     }
     break;
   }
@@ -1459,12 +1442,11 @@ int TdiYacc(){
 
 #ifdef __RUNTIME_YYMAXDEPTH
 
-STATIC_ROUTINE int allocate_stacks()
+STATIC_ROUTINE int allocate_stacks(const long size)
 {
-  GET_THREADSTATIC_P;
   /* allocate the tdiyys and tdiyyv stacks */
-  tdiyys = (int *)malloc(tdiyymaxdepth * sizeof(int));
-  tdiyyv = (YYSTYPE *) malloc(tdiyymaxdepth * sizeof(YYSTYPE));
+  tdiyys = (int *)malloc(size * sizeof(int));
+  tdiyyv = (YYSTYPE *) malloc(size * sizeof(YYSTYPE));
 
   if (tdiyys == 0 || tdiyyv == 0) {
     tdiyyerror((nl_msg(30004, "unable to allocate space for yacc stacks")));

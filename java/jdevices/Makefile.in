@@ -787,7 +787,6 @@ uninstall-am: uninstall-binSCRIPTS uninstall-javaDATA \
 
 .PRECIOUS: Makefile
 
-JAVASOURCE ?= 6 -bootclasspath $(RT6JAR)
 
 $(JAVAROOT):
 	mkdir -p $@

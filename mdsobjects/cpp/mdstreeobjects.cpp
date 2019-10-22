@@ -1377,7 +1377,7 @@ void TreeNode::putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode,
 		resSamples[i/RES_FACTOR] = avgVal;
 	}
 	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
-	if(numRows > RES_FACTOR)
+	if(numRows > RES_FACTOR)  //Avoid writing null sized arrays
 	    resampledNode->putSegment(resData, ofs);
 	delete[] arrSamples;
 	delete[] resSamples;
@@ -1404,8 +1404,11 @@ void TreeNode::putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode, in
 		resSamples[2*i/resFactor] = minVal;
 		resSamples[2*i/resFactor+1] = maxVal;
 	}
-	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
-	resampledNode->putSegment(resData, ofs);
+	if(numRows > resFactor) //Avoid writing null sized arrays
+	{
+	    AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
+	    resampledNode->putSegment(resData, ofs);
+	}
 	delete[] arrSamples;
 	delete[] resSamples;
 

@@ -26,52 +26,64 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsconfig.h>
 #include <libroutines.h>
 #include <STATICdef.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <string.h>
 /* Key for the thread-specific buffer */
-STATIC_THREADSAFE pthread_key_t buffer_key;
-STATIC_ROUTINE void buffer_destroy(void *buf){
-  ThreadStatic *ts = (ThreadStatic *) buf;
-  StrFree1Dx(&ts->TdiIntrinsic_message);
-  LibResetVmZone(&ts->TdiVar_private.head_zone);
-  LibResetVmZone(&ts->TdiVar_private.data_zone);
+static pthread_key_t buffer_key;
+
+static inline ThreadStatic *ThreadStatic_create() {
+  ThreadStatic *TdiThreadStatic_p = (ThreadStatic *) calloc(1,sizeof(ThreadStatic)); // zeros everything
+  LibCreateVmZone(&TDI_VAR_PRIVATE.head_zone);
+  LibCreateVmZone(&TDI_VAR_PRIVATE.data_zone);
+  TDI_INTRINSIC_STAT = SsSUCCESS;
+  TDI_INTRINSIC_MSG.dtype = DTYPE_T;
+  TDI_INTRINSIC_MSG.class = CLASS_D;
+  TDI_VAR_NEW_NARG_D.length = sizeof(int);
+  TDI_VAR_NEW_NARG_D.dtype = DTYPE_L;
+  TDI_VAR_NEW_NARG_D.class = CLASS_S;
+  TDI_VAR_NEW_NARG_D.pointer = (char *)&TDI_VAR_NEW_NARG;
+  for (; TDI_STACK_IDX<TDI_STACK_SIZE ; TDI_STACK_IDX++ ) {
+    TDI_INDENT = 1;
+    TDI_DECOMPILE_MAX = 0xffff;
+  }
+  TDI_STACK_IDX = 0;
+  return TdiThreadStatic_p;
+}
+static void ThreadStatic_destroy(ThreadStatic *TdiThreadStatic_p) {
+  if (!TdiThreadStatic_p) return;
+  LibResetVmZone(&TDI_VAR_PRIVATE.head_zone);
+  LibResetVmZone(&TDI_VAR_PRIVATE.data_zone);
+  StrFree1Dx(&TDI_INTRINSIC_MSG);
+  free(TdiThreadStatic_p);
+}
+static void buffer_destroy(void *buf){
+  ThreadStatic_ref *ref = (ThreadStatic_ref *) buf;
+  if (ref->free_me)
+    ThreadStatic_destroy(ref->p);
   free(buf);
 }
-STATIC_ROUTINE void buffer_key_alloc(){
+static void buffer_key_alloc(){
   pthread_key_create(&buffer_key, buffer_destroy);
 }
 /* Return the thread-specific buffer */
-ThreadStatic *TdiGetThreadStatic(){
+EXPORT ThreadStatic *TdiThreadStatic(ThreadStatic *in){
   RUN_FUNCTION_ONCE(buffer_key_alloc);
-  ThreadStatic *p = (ThreadStatic *) pthread_getspecific(buffer_key);
-  if (!p) {
-    p = (ThreadStatic *) calloc(1,sizeof(ThreadStatic));
-    p->TdiGetData_recursion_count = 0;
-    p->TdiIntrinsic_mess_stat = -1;
-    p->TdiIntrinsic_recursion_count = 0;
-    p->TdiIntrinsic_message.length = 0;
-    p->TdiIntrinsic_message.dtype = DTYPE_T;
-    p->TdiIntrinsic_message.class = CLASS_D;
-    p->TdiIntrinsic_message.pointer = 0;
-    p->TdiVar_private.head = 0;
-    LibCreateVmZone(&p->TdiVar_private.head_zone);
-    LibCreateVmZone(&p->TdiVar_private.data_zone);
-    p->TdiVar_private.public = 0;
-    p->TdiVar_new_narg = 0;
-    p->TdiVar_new_narg_d.length = sizeof(int);
-    p->TdiVar_new_narg_d.dtype = DTYPE_L;
-    p->TdiVar_new_narg_d.class = CLASS_S;
-    p->TdiVar_new_narg_d.pointer = (char *)&p->TdiVar_new_narg;
-    p->compiler_recursing = 0;
-    pthread_setspecific(buffer_key, (void *)p);
-    p->TdiIndent = 1;
-    p->TdiDecompile_max = 0xffff;
-    p->TdiOnError = 0;
+  ThreadStatic_ref *ref = (ThreadStatic_ref *) pthread_getspecific(buffer_key);
+  if (ref && !in) return ref->p;
+  if (!ref) ref = calloc(1,sizeof(ThreadStatic_ref));
+  if (in) {
+    ThreadStatic_destroy(ref->p);
+    ref->p = in;
+    ref->free_me = FALSE;
+  } else if (!ref->p) {
+    ref->p = ThreadStatic_create();
+    ref->free_me = TRUE;
   }
-  return p;
+  pthread_setspecific(buffer_key, (void *)ref);
+  return ref->p;
 }
 
 void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
@@ -83,7 +95,7 @@ void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
     pthread_mutexattr_init(&m_attr);
     pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(mutex, &m_attr);
-    *initialized = 1;
+    *initialized = TRUE;
   }
   pthread_mutex_unlock(&initMutex);
   pthread_mutex_lock(mutex);

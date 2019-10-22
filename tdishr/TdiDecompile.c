@@ -34,8 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <STATICdef.h>
 
-#define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
-
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -47,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #ifdef max
 #undef max
 #endif
@@ -66,17 +64,17 @@ EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, str
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
-  TdiThreadStatic_p->TdiIndent = 1;
+  TDI_INDENT = 1;
   if (narg > 1 && list[1])
-    status = TdiGetLong(list[1], &TdiDECOMPILE_MAX);
+    status = TdiGetLong(list[1], &TDI_DECOMPILE_MAX);
   else
-    TdiDECOMPILE_MAX = 0xffff;
+    TDI_DECOMPILE_MAX = 0xffff;
   if STATUS_OK
     status = Tdi0Decompile(list[0], 9999, &answer);
-  while (status == StrSTRTOOLON && TdiDECOMPILE_MAX > 10) {
-    TdiDECOMPILE_MAX /= 10;
-    if (TdiDECOMPILE_MAX > 100)
-      TdiDECOMPILE_MAX = 100;
+  while (status == StrSTRTOOLON && TDI_DECOMPILE_MAX > 10) {
+    TDI_DECOMPILE_MAX /= 10;
+    if (TDI_DECOMPILE_MAX > 100)
+      TDI_DECOMPILE_MAX = 100;
     StrFree1Dx(&answer);
     status = Tdi0Decompile(list[0], 9999, &answer);
   }
@@ -669,7 +667,7 @@ complex: ;
       int coeff = a_ptr->aflags.coeff;
       int dimct = coeff ? a_ptr->dimct : 1;
       unsigned int count = (int)a_ptr->arsize / max(1, length);
-      int more = count > TdiDECOMPILE_MAX || a_ptr->arsize >= 32768;
+      int more = count > TDI_DECOMPILE_MAX || a_ptr->arsize >= 32768;
 
 		/**************************************
 	        Special data types made easier to read.

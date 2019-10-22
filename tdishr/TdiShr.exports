@@ -456,6 +456,7 @@ TdiShot
 TdiShotname
 TdiT0
 TdiThis
+TdiThreadStatic
 TdiTorr
 TdiTrue
 TdiValue
