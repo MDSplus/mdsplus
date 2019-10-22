@@ -1648,9 +1648,12 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         xd=_dsc.Descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
         arglist+=list(map(_dat.Data.byref,argsobj))
-        arglist+=[len(args)]
-        argsobj= list(map(_dat.Data,args))
-        arglist+= list(map(_dat.Data.byref,argsobj))
+        arglist.append(len(args))
+        if len(args)>0:
+            argsobj= list(map(_dat.Data,args))
+            arglist.append(_N.array(map(_dat.Data.byref,argsobj)))
+        else:
+            arglist.append(_C.c_void_p(0))
         arglist+=[xd.ref]
         _exc.checkStatus(_TreeShr._TreeDoMethodA(*arglist))
         return xd._setTree(self.tree).value
