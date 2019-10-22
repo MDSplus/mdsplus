@@ -1651,6 +1651,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         arglist+=[len(args)]
         argsobj= list(map(_dat.Data,args))
         arglist+= list(map(_dat.Data.byref,argsobj))
+        arglist+=[xd.ref]
         _exc.checkStatus(_TreeShr._TreeDoMethodA(*arglist))
         return xd._setTree(self.tree).value
 
