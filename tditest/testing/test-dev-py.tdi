@@ -10,6 +10,7 @@ Tcl('set node tdidev/shot/model/off/nocompress/do_not/log')
 Tcl('dir/full tdidev')
 Tcl('show data tdidev')
 getnci(tdidev:name,"original_part_name")
+py(['from MDSplus import Tree','print(Tree().TDIDEV.NAME.doMethod("part_name"))'])
 ! python device 
 Tcl('add node pydev/model=cygnet4k')
 !Tcl('decompile pydev') # python3 and pyhton2 behave differently

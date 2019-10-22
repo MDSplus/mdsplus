@@ -61,6 +61,9 @@ Tcl('show data tdidev')
 1
 getnci(tdidev:name,"original_part_name")
 ":NAME"
+py(['from MDSplus import Tree','print(Tree().TDIDEV.NAME.doMethod("part_name"))'])
+:NAME
+1
 Tcl('add node pydev/model=cygnet4k')
 265388041
 Tcl('dir/full pydev')
