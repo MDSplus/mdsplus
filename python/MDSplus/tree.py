@@ -2669,6 +2669,19 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                                             _C.c_int32(int(rows_filled))))
 
 
+    def tcl(self,cmd):
+        """Issue a tcl command with this node being the default node
+        @param cmd: tcl command string
+        @type cmd: str
+        @rtype: int
+        """
+        olddef=self.tree.default
+        self.tree.default=self
+        try:
+            return self.tree.tcl(cmd)
+        finally:
+            self.tree.default=olddef
+
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
         @param start: index of first row of segment
