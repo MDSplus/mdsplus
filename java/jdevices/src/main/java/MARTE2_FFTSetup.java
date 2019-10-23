@@ -28,39 +28,55 @@ public class MARTE2_FFTSetup extends DeviceSetup {
 
         deviceButtons1 = new DeviceButtons();
         jPanel2 = new javax.swing.JPanel();
+        jPanel5 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
-        deviceChoice2 = new DeviceChoice();
+        deviceField5 = new DeviceField();
+        jPanel6 = new javax.swing.JPanel();
         deviceField4 = new DeviceField();
+        deviceChoice2 = new DeviceChoice();
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8123");
+        setDeviceProvider("scdevail.rfx.local:8200");
         setDeviceTitle("MARTe2 FFT GAM");
         setDeviceType("MARTE2_FFT");
-        setHeight(200);
-        setWidth(700);
+        setHeight(300);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+
+        jPanel2.setLayout(new java.awt.GridLayout(2, 1));
 
         deviceField1.setIdentifier("");
         deviceField1.setLabelString("Num. Samples");
+        deviceField1.setNumCols(4);
         deviceField1.setOffsetNid(7);
-        jPanel2.add(deviceField1);
+        jPanel5.add(deviceField1);
+
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("MdsWriter CPU Mask: ");
+        deviceField5.setNumCols(4);
+        deviceField5.setOffsetNid(22);
+        jPanel5.add(deviceField5);
+
+        jPanel2.add(jPanel5);
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Out Segment len (0 to disable writing in tree):");
+        deviceField4.setNumCols(5);
+        deviceField4.setOffsetNid(28);
+        jPanel6.add(deviceField4);
 
         deviceChoice2.setChoiceItems(new String[] {"int16", "int32", "float32", "float64"});
         deviceChoice2.setIdentifier("");
         deviceChoice2.setLabelString("Input type: ");
         deviceChoice2.setOffsetNid(10);
         deviceChoice2.setUpdateIdentifier("");
-        jPanel2.add(deviceChoice2);
+        jPanel6.add(deviceChoice2);
 
-        deviceField4.setIdentifier("");
-        deviceField4.setLabelString("Out Segment len:");
-        deviceField4.setNumCols(5);
-        deviceField4.setOffsetNid(22);
-        jPanel2.add(deviceField4);
+        jPanel2.add(jPanel6);
 
         getContentPane().add(jPanel2, java.awt.BorderLayout.PAGE_START);
 
@@ -95,9 +111,12 @@ public class MARTE2_FFTSetup extends DeviceSetup {
     private DeviceField deviceField2;
     private DeviceField deviceField3;
     private DeviceField deviceField4;
+    private DeviceField deviceField5;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JPanel jPanel6;
     // End of variables declaration//GEN-END:variables
 }

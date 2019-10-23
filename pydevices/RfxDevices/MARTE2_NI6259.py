@@ -78,7 +78,8 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
     def prepareMarteInfo(self):
       print('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))')
       self.timebase.putData(Data.compile('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))'))
-#put the same value of Samples and seggment lengthin all output nodes
+      self.outputs_time_idx = 1  #The second produced signal is time
+#put the same value of Samples and segment lengthin all output nodes
       self.outputs_adc1_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc2_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc3_0_samples.putData(self.outputs_adc0_0_samples.data())
@@ -86,12 +87,7 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
       self.outputs_adc5_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc6_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc7_0_samples.putData(self.outputs_adc0_0_samples.data())
-      self.outputs_adc1_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc2_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc3_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc4_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc5_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc6_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
-      self.outputs_adc7_0_seg_len.putData(self.outputs_adc0_0_seg_len.data())
+ 
+
 
 

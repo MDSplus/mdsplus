@@ -55,7 +55,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         jPanel10 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8123");
+        setDeviceProvider("scdevail.rfx.local:8200");
         setDeviceTitle("MARTe2 Stream");
         setDeviceType("MARTE2_STREAM");
         setHeight(500);
@@ -125,7 +125,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField3.setIdentifier("");
         deviceField3.setLabelString("Value: ");
         deviceField3.setNumCols(35);
-        deviceField3.setOffsetNid(37);
+        deviceField3.setOffsetNid(38);
         jPanel4.add(deviceField3);
 
         jPanel1.add(jPanel4);
@@ -135,7 +135,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField4.setIdentifier("");
         deviceField4.setLabelString("Value: ");
         deviceField4.setNumCols(35);
-        deviceField4.setOffsetNid(43);
+        deviceField4.setOffsetNid(45);
         jPanel5.add(deviceField4);
 
         jPanel1.add(jPanel5);
@@ -145,7 +145,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField5.setIdentifier("");
         deviceField5.setLabelString("Value: ");
         deviceField5.setNumCols(35);
-        deviceField5.setOffsetNid(49);
+        deviceField5.setOffsetNid(52);
         jPanel6.add(deviceField5);
 
         jPanel1.add(jPanel6);
@@ -155,7 +155,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField6.setIdentifier("");
         deviceField6.setLabelString("Value: ");
         deviceField6.setNumCols(35);
-        deviceField6.setOffsetNid(55);
+        deviceField6.setOffsetNid(59);
         jPanel7.add(deviceField6);
 
         jPanel1.add(jPanel7);
@@ -165,7 +165,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Value: ");
         deviceField7.setNumCols(35);
-        deviceField7.setOffsetNid(61);
+        deviceField7.setOffsetNid(66);
         jPanel8.add(deviceField7);
 
         jPanel1.add(jPanel8);
@@ -175,7 +175,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Value: ");
         deviceField8.setNumCols(35);
-        deviceField8.setOffsetNid(67);
+        deviceField8.setOffsetNid(73);
         jPanel9.add(deviceField8);
 
         jPanel1.add(jPanel9);
@@ -185,7 +185,7 @@ public class MARTE2_STREAMSetup extends DeviceSetup {
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Value: ");
         deviceField9.setNumCols(35);
-        deviceField9.setOffsetNid(73);
+        deviceField9.setOffsetNid(80);
         jPanel10.add(deviceField9);
 
         jPanel1.add(jPanel10);
