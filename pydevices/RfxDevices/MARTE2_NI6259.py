@@ -87,7 +87,7 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
       self.outputs_adc5_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc6_0_samples.putData(self.outputs_adc0_0_samples.data())
       self.outputs_adc7_0_samples.putData(self.outputs_adc0_0_samples.data())
-
+ 
 
 
 

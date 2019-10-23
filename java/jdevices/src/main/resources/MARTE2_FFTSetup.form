@@ -2,10 +2,10 @@
 
 <Form version="1.7" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8200"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 FFT GAM"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_FFT"/>
-    <Property name="height" type="int" value="200"/>
+    <Property name="height" type="int" value="300"/>
     <Property name="width" type="int" value="800"/>
   </Properties>
   <AccessibilityProperties>
@@ -43,39 +43,63 @@
         </Constraint>
       </Constraints>
 
-      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+      <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+        <Property name="columns" type="int" value="1"/>
+        <Property name="rows" type="int" value="2"/>
+      </Layout>
       <SubComponents>
-        <Component class="DeviceField" name="deviceField1">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Num. Samples"/>
-            <Property name="offsetNid" type="int" value="7"/>
-          </Properties>
-        </Component>
-        <Component class="DeviceChoice" name="deviceChoice2">
-          <Properties>
-            <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-              <StringArray count="4">
-                <StringItem index="0" value="int16"/>
-                <StringItem index="1" value="int32"/>
-                <StringItem index="2" value="float32"/>
-                <StringItem index="3" value="float64"/>
-              </StringArray>
-            </Property>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Input type: "/>
-            <Property name="offsetNid" type="int" value="10"/>
-            <Property name="updateIdentifier" type="java.lang.String" value=""/>
-          </Properties>
-        </Component>
-        <Component class="DeviceField" name="deviceField4">
-          <Properties>
-            <Property name="identifier" type="java.lang.String" value=""/>
-            <Property name="labelString" type="java.lang.String" value="Out Segment len (0 to disable writing in tree):"/>
-            <Property name="numCols" type="int" value="5"/>
-            <Property name="offsetNid" type="int" value="26"/>
-          </Properties>
-        </Component>
+        <Container class="javax.swing.JPanel" name="jPanel5">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField1">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Num. Samples"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="7"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField5">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="MdsWriter CPU Mask: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="22"/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
+        <Container class="javax.swing.JPanel" name="jPanel6">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+          <SubComponents>
+            <Component class="DeviceField" name="deviceField4">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Out Segment len (0 to disable writing in tree):"/>
+                <Property name="numCols" type="int" value="5"/>
+                <Property name="offsetNid" type="int" value="28"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceChoice" name="deviceChoice2">
+              <Properties>
+                <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
+                  <StringArray count="4">
+                    <StringItem index="0" value="int16"/>
+                    <StringItem index="1" value="int32"/>
+                    <StringItem index="2" value="float32"/>
+                    <StringItem index="3" value="float64"/>
+                  </StringArray>
+                </Property>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Input type: "/>
+                <Property name="offsetNid" type="int" value="10"/>
+                <Property name="updateIdentifier" type="java.lang.String" value=""/>
+              </Properties>
+            </Component>
+          </SubComponents>
+        </Container>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="jPanel1">

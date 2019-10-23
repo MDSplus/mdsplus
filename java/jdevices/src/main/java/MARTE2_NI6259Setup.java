@@ -32,13 +32,15 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceField2 = new DeviceField();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
-        deviceField1 = new DeviceField();
         deviceChoice1 = new DeviceChoice();
-        deviceField5 = new DeviceField();
         jPanel3 = new javax.swing.JPanel();
         deviceChoice2 = new DeviceChoice();
         deviceChoice3 = new DeviceChoice();
         deviceChoice4 = new DeviceChoice();
+        jPanel12 = new javax.swing.JPanel();
+        deviceField5 = new DeviceField();
+        deviceField6 = new DeviceField();
+        deviceField1 = new DeviceField();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jPanel4 = new javax.swing.JPanel();
         deviceChoice5 = new DeviceChoice();
@@ -81,14 +83,14 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice28 = new DeviceChoice();
         deviceField14 = new DeviceField();
 
-        setDeviceProvider("scdevail.rfx.local:8100");
+        setDeviceProvider("scdevail.rfx.local:8200");
         setDeviceTitle("MARTe2 NI6259");
         setDeviceType("MARTE2_NI6259");
         setHeight(300);
-        setWidth(1200);
+        setWidth(1000);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
-        jPanel1.setLayout(new java.awt.GridLayout(2, 0));
+        jPanel1.setLayout(new java.awt.GridLayout(3, 0));
 
         deviceField2.setIdentifier("");
         deviceField2.setLabelString("Board Id: ");
@@ -107,23 +109,12 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceField4.setOffsetNid(16);
         jPanel2.add(deviceField4);
 
-        deviceField1.setIdentifier("");
-        deviceField1.setLabelString("CPUs");
-        deviceField1.setNumCols(4);
-        deviceField1.setOffsetNid(31);
-        jPanel2.add(deviceField1);
-
         deviceChoice1.setChoiceItems(new String[] {"SI_TC", "PFI0", "PFI1", "PFI2", "PFI3", "PFI4", "PFI5", "PFI6", "PFI7", "PFI8", "PFI9", "PFI10", "PFI11", "PFI12", "PFI13", "PFI14", "PFI15", "RTSI0", "RTSI1", "RTSI2", "RTSI3", "RTSI4", "RTSI5", "RTSI6", "RTSI7", "RTSI8", "RTSI9", "RTSI10", "RTSI11", "RTSI12", "RTSI13", "RTSI14", "RTSI15", "RTSI16", "RTSI17", "PULSE", "GPCRT0_OUT", "STAR_TRIGGER", "GPCTR1_OUT", "SCXI_TRIG1", "ANALOG_TRIGGER", "LOW"});
         deviceChoice1.setIdentifier("");
         deviceChoice1.setLabelString("Clock Sample Source: ");
         deviceChoice1.setOffsetNid(19);
         deviceChoice1.setUpdateIdentifier("");
         jPanel2.add(deviceChoice1);
-
-        deviceField5.setIdentifier("");
-        deviceField5.setLabelString("Samples: ");
-        deviceField5.setOffsetNid(57);
-        jPanel2.add(deviceField5);
 
         jPanel1.add(jPanel2);
 
@@ -150,33 +141,52 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
 
         jPanel1.add(jPanel3);
 
+        deviceField5.setIdentifier("");
+        deviceField5.setLabelString("Samples: ");
+        deviceField5.setOffsetNid(58);
+        jPanel12.add(deviceField5);
+
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Storage CPUs");
+        deviceField6.setNumCols(4);
+        deviceField6.setOffsetNid(38);
+        jPanel12.add(deviceField6);
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Acq. CPUs");
+        deviceField1.setNumCols(4);
+        deviceField1.setOffsetNid(31);
+        jPanel12.add(deviceField1);
+
+        jPanel1.add(jPanel12);
+
         getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
 
         deviceChoice5.setChoiceFloatValues(new float[] {0.1f, 0.2f, 0.5f, 1.0f, 2.0f, 5.0f, 10.0f});
         deviceChoice5.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice5.setIdentifier("");
         deviceChoice5.setLabelString("Input Range: ");
-        deviceChoice5.setOffsetNid(64);
+        deviceChoice5.setOffsetNid(65);
         deviceChoice5.setUpdateIdentifier("");
         jPanel4.add(deviceChoice5);
 
         deviceChoice6.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice6.setIdentifier("");
         deviceChoice6.setLabelString("Input Polarity: ");
-        deviceChoice6.setOffsetNid(70);
+        deviceChoice6.setOffsetNid(71);
         deviceChoice6.setUpdateIdentifier("");
         jPanel4.add(deviceChoice6);
 
         deviceChoice7.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice7.setIdentifier("");
         deviceChoice7.setLabelString("Input Mode: ");
-        deviceChoice7.setOffsetNid(73);
+        deviceChoice7.setOffsetNid(74);
         deviceChoice7.setUpdateIdentifier("");
         jPanel4.add(deviceChoice7);
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField7.setOffsetNid(59);
+        deviceField7.setOffsetNid(60);
         jPanel4.add(deviceField7);
 
         jTabbedPane1.addTab("Ch 1", jPanel4);
@@ -185,27 +195,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice8.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice8.setIdentifier("");
         deviceChoice8.setLabelString("Input Range: ");
-        deviceChoice8.setOffsetNid(84);
+        deviceChoice8.setOffsetNid(85);
         deviceChoice8.setUpdateIdentifier("");
         jPanel5.add(deviceChoice8);
 
         deviceChoice9.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice9.setIdentifier("");
         deviceChoice9.setLabelString("Input Polarity: ");
-        deviceChoice9.setOffsetNid(90);
+        deviceChoice9.setOffsetNid(91);
         deviceChoice9.setUpdateIdentifier("");
         jPanel5.add(deviceChoice9);
 
         deviceChoice10.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice10.setIdentifier("");
         deviceChoice10.setLabelString("Input Mode: ");
-        deviceChoice10.setOffsetNid(93);
+        deviceChoice10.setOffsetNid(94);
         deviceChoice10.setUpdateIdentifier("");
         jPanel5.add(deviceChoice10);
 
         deviceField8.setIdentifier("");
         deviceField8.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField8.setOffsetNid(79);
+        deviceField8.setOffsetNid(80);
         jPanel5.add(deviceField8);
 
         jTabbedPane1.addTab("Ch 2", jPanel5);
@@ -214,27 +224,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice11.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice11.setIdentifier("");
         deviceChoice11.setLabelString("Input Range: ");
-        deviceChoice11.setOffsetNid(104);
+        deviceChoice11.setOffsetNid(105);
         deviceChoice11.setUpdateIdentifier("");
         jPanel6.add(deviceChoice11);
 
         deviceChoice12.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice12.setIdentifier("");
         deviceChoice12.setLabelString("Input Polarity: ");
-        deviceChoice12.setOffsetNid(110);
+        deviceChoice12.setOffsetNid(111);
         deviceChoice12.setUpdateIdentifier("");
         jPanel6.add(deviceChoice12);
 
         deviceChoice13.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice13.setIdentifier("");
         deviceChoice13.setLabelString("Input Mode: ");
-        deviceChoice13.setOffsetNid(113);
+        deviceChoice13.setOffsetNid(114);
         deviceChoice13.setUpdateIdentifier("");
         jPanel6.add(deviceChoice13);
 
         deviceField9.setIdentifier("");
         deviceField9.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField9.setOffsetNid(99);
+        deviceField9.setOffsetNid(100);
         jPanel6.add(deviceField9);
 
         jTabbedPane1.addTab("Ch 3", jPanel6);
@@ -243,27 +253,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice17.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice17.setIdentifier("");
         deviceChoice17.setLabelString("Input Range: ");
-        deviceChoice17.setOffsetNid(124);
+        deviceChoice17.setOffsetNid(125);
         deviceChoice17.setUpdateIdentifier("");
         jPanel8.add(deviceChoice17);
 
         deviceChoice18.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice18.setIdentifier("");
         deviceChoice18.setLabelString("Input Polarity: ");
-        deviceChoice18.setOffsetNid(130);
+        deviceChoice18.setOffsetNid(131);
         deviceChoice18.setUpdateIdentifier("");
         jPanel8.add(deviceChoice18);
 
         deviceChoice19.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice19.setIdentifier("");
         deviceChoice19.setLabelString("Input Mode: ");
-        deviceChoice19.setOffsetNid(133);
+        deviceChoice19.setOffsetNid(134);
         deviceChoice19.setUpdateIdentifier("");
         jPanel8.add(deviceChoice19);
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField10.setOffsetNid(119);
+        deviceField10.setOffsetNid(120);
         jPanel8.add(deviceField10);
 
         jTabbedPane1.addTab("Ch 4", jPanel8);
@@ -272,27 +282,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice14.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice14.setIdentifier("");
         deviceChoice14.setLabelString("Input Range: ");
-        deviceChoice14.setOffsetNid(144);
+        deviceChoice14.setOffsetNid(145);
         deviceChoice14.setUpdateIdentifier("");
         jPanel7.add(deviceChoice14);
 
         deviceChoice15.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice15.setIdentifier("");
         deviceChoice15.setLabelString("Input Polarity: ");
-        deviceChoice15.setOffsetNid(150);
+        deviceChoice15.setOffsetNid(151);
         deviceChoice15.setUpdateIdentifier("");
         jPanel7.add(deviceChoice15);
 
         deviceChoice16.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice16.setIdentifier("");
         deviceChoice16.setLabelString("Input Mode: ");
-        deviceChoice16.setOffsetNid(153);
+        deviceChoice16.setOffsetNid(154);
         deviceChoice16.setUpdateIdentifier("");
         jPanel7.add(deviceChoice16);
 
         deviceField11.setIdentifier("");
         deviceField11.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField11.setOffsetNid(139);
+        deviceField11.setOffsetNid(140);
         jPanel7.add(deviceField11);
 
         jTabbedPane1.addTab("Ch 5", jPanel7);
@@ -301,27 +311,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice20.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice20.setIdentifier("");
         deviceChoice20.setLabelString("Input Range: ");
-        deviceChoice20.setOffsetNid(164);
+        deviceChoice20.setOffsetNid(165);
         deviceChoice20.setUpdateIdentifier("");
         jPanel9.add(deviceChoice20);
 
         deviceChoice21.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice21.setIdentifier("");
         deviceChoice21.setLabelString("Input Polarity: ");
-        deviceChoice21.setOffsetNid(170);
+        deviceChoice21.setOffsetNid(171);
         deviceChoice21.setUpdateIdentifier("");
         jPanel9.add(deviceChoice21);
 
         deviceChoice22.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice22.setIdentifier("");
         deviceChoice22.setLabelString("Input Mode: ");
-        deviceChoice22.setOffsetNid(173);
+        deviceChoice22.setOffsetNid(174);
         deviceChoice22.setUpdateIdentifier("");
         jPanel9.add(deviceChoice22);
 
         deviceField12.setIdentifier("");
         deviceField12.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField12.setOffsetNid(159);
+        deviceField12.setOffsetNid(160);
         jPanel9.add(deviceField12);
 
         jTabbedPane1.addTab("Ch 6", jPanel9);
@@ -330,27 +340,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice23.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice23.setIdentifier("");
         deviceChoice23.setLabelString("Input Range: ");
-        deviceChoice23.setOffsetNid(184);
+        deviceChoice23.setOffsetNid(185);
         deviceChoice23.setUpdateIdentifier("");
         jPanel10.add(deviceChoice23);
 
         deviceChoice24.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice24.setIdentifier("");
         deviceChoice24.setLabelString("Input Polarity: ");
-        deviceChoice24.setOffsetNid(190);
+        deviceChoice24.setOffsetNid(191);
         deviceChoice24.setUpdateIdentifier("");
         jPanel10.add(deviceChoice24);
 
         deviceChoice25.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice25.setIdentifier("");
         deviceChoice25.setLabelString("Input Mode: ");
-        deviceChoice25.setOffsetNid(193);
+        deviceChoice25.setOffsetNid(194);
         deviceChoice25.setUpdateIdentifier("");
         jPanel10.add(deviceChoice25);
 
         deviceField13.setIdentifier("");
         deviceField13.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField13.setOffsetNid(179);
+        deviceField13.setOffsetNid(180);
         jPanel10.add(deviceField13);
 
         jTabbedPane1.addTab("Ch 7", jPanel10);
@@ -359,27 +369,27 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
         deviceChoice26.setChoiceItems(new String[] {"0.1", "0.2", "0.5", "1", "2", "5", "10"});
         deviceChoice26.setIdentifier("");
         deviceChoice26.setLabelString("Input Range: ");
-        deviceChoice26.setOffsetNid(204);
+        deviceChoice26.setOffsetNid(205);
         deviceChoice26.setUpdateIdentifier("");
         jPanel11.add(deviceChoice26);
 
         deviceChoice27.setChoiceItems(new String[] {"Bipolar", "Unipolar"});
         deviceChoice27.setIdentifier("");
         deviceChoice27.setLabelString("Input Polarity: ");
-        deviceChoice27.setOffsetNid(210);
+        deviceChoice27.setOffsetNid(211);
         deviceChoice27.setUpdateIdentifier("");
         jPanel11.add(deviceChoice27);
 
         deviceChoice28.setChoiceItems(new String[] {"Differential", "RSE", "NRSE"});
         deviceChoice28.setIdentifier("");
         deviceChoice28.setLabelString("Input Mode: ");
-        deviceChoice28.setOffsetNid(213);
+        deviceChoice28.setOffsetNid(214);
         deviceChoice28.setUpdateIdentifier("");
         jPanel11.add(deviceChoice28);
 
         deviceField14.setIdentifier("");
         deviceField14.setLabelString("Segment len (0 to disable writing in tree):");
-        deviceField14.setOffsetNid(199);
+        deviceField14.setOffsetNid(200);
         jPanel11.add(deviceField14);
 
         jTabbedPane1.addTab("Ch 8", jPanel11);
@@ -428,12 +438,14 @@ public class MARTE2_NI6259Setup extends DeviceSetup {
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;

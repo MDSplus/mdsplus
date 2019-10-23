@@ -56,8 +56,9 @@ class MARTE2_COMPONENT(Device):
       parts.append({'path':'.OUTPUTS:TRIGGER', 'type': 'numeric'})
       parts.append({'path':'.OUTPUTS:PRE_TRIGGER', 'type': 'numeric', 'value':0})
       parts.append({'path':'.OUTPUTS:POST_TRIGGER', 'type': 'numeric', 'value': 100})
-      parts.append({'path':'.OUTPUTS:OUT_TIME', 'type': 'signal'})  #reference time for the device valid for all devices except SynchInput
+      parts.append({'path':'.OUTPUTS:OUT_TIME', 'type': 'signal'})  		#reference time for the device valid for all devices except SynchInput
       parts.append({'path':'.OUTPUTS:TIME_IDX', 'type': 'numeric', 'value':0})  #Used only by SynchInput devices to identify which output is the time
+      parts.append({'path':'.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value':15})  	#CPU Mask for MdsWriter thread
       idx = 1
       nameList = []
       for output in cls.outputs:
@@ -103,6 +104,11 @@ class MARTE2_COMPONENT(Device):
 	parts.append({'path':'.INPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(input['dimensions']))})
         parts.append({'path':'.INPUTS.'+sigName+':COL_ORDER', 'type':'text', 'value':'NO'})
  	parts.append({'path':'.INPUTS.'+sigName+':VALUE', 'type':'numeric'})
+        if 'name' in input:
+	    parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text', 'value': input['name']})
+        else:
+ 	    parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text'})
+
  	pars = input['parameters']
 	idx = 1
 	parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
@@ -207,6 +213,10 @@ class MARTE2_COMPONENT(Device):
             inputDict['value'] = input.getNode('value').getData() #NOT data()
             inputDict['value_nid'] = input.getNode('value')
             inputDict['col_order'] = input.getNode('col_order').data().upper()=='YES'
+            try:
+              inputDict['name'] = input.getNode('name').data()  #Name is optional
+            except:
+              pass
             inputDicts.append(inputDict)
           except:
             pass
@@ -241,10 +251,12 @@ class MARTE2_COMPONENT(Device):
         outTimeIdx = self.outputs_time_idx.data()
         preTrigger = self.outputs_pre_trigger.data()
         postTrigger = self.outputs_post_trigger.data()
+	cpuMask = self.outputs_cpu_mask.data()
 
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
 	  'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts, 
-	  'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger, 'postTrigger':postTrigger, 'storeSignals':storeSignals}
+	  'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger, 
+	  'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask}
       else:
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
 	  'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts}
@@ -260,6 +272,7 @@ class MARTE2_COMPONENT(Device):
         if threadMap[nid1][idx] != threadMap[nid2][idx]:
           return False
       return True
+
 
 
     def sameSynchSource(self, dev):
@@ -376,7 +389,7 @@ class MARTE2_COMPONENT(Device):
         gamText += '        DataSource = '+gamName+'_Timer\n'
         gamText += '        Type = uint32\n'
         gamText += '        NumberOfElements = 1\n'
-        gamText += '        Frequency = '+str(round(1./period), 4)+'\n'
+        gamText += '        Frequency = '+str(round(1./period, 4))+'\n'
         gamText += '      }\n'
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
@@ -487,12 +500,21 @@ class MARTE2_COMPONENT(Device):
 	      isTreeRef = True
 	    else:
               sourceGamName = self.convertPath(sourceNode.getFullPath())
-              signalGamName = inputDict['value'].getParent().getNode(':name').data()
+              if 'name' in inputDict:
+                  signalGamName = inputDict['name']
+                  aliasName = inputDict['value'].getParent().getNode(':name').data() 
+              else:
+                  signalGamName = inputDict['value'].getParent().getNode(':name').data() 
           except:
 	    isTreeRef = True
 	  if isTreeRef:
-	    signalName = self.convertPath(inputDict['value_nid'].getPath())
-            nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
+            if 'name' in inputDict:
+              signalName = inputDict['name']
+              aliasName = self.convertPath(inputDict['value_nid'].getPath())
+              nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':aliasName, 'col_order':inputDict['col_order']})
+            else:
+	      signalName = self.convertPath(inputDict['value_nid'].getPath())
+              nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
             gamText += '      '+signalName+' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeInput\n'
 	  else:
@@ -503,6 +525,8 @@ class MARTE2_COMPONENT(Device):
 	      gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
             else:
  	      gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
+          if 'name' in inputDict:
+              gamText += '        Alias = "'+aliasName+'"\n'
 
         if 'type' in inputDict:
           gamText += '        Type = '+inputDict['type']+'\n'
@@ -561,7 +585,7 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    NumberOfBuffers = '+ str(configDict['preTrigger']+configDict['postTrigger']+1)+'\n'
         dataSourceText += '    NumberOfPreTriggers = '+str(configDict['preTrigger'])+'\n'
         dataSourceText += '    NumberOfPostTriggers = '+str(configDict['postTrigger'])+'\n'
-        dataSourceText += '    CPUMask = 15\n'
+        dataSourceText += '    CPUMask = '+ str(configDict['cpuMask'])+'\n'
         dataSourceText += '    StackSize = 10000000\n'
         dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
         dataSourceText += '    PulseNumber = '+str(self.getTree().shot)+'\n'
@@ -893,7 +917,7 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    NumberOfBuffers = '+ str(configDict['preTrigger']+configDict['postTrigger']+1)+'\n'
         dataSourceText += '    NumberOfPreTriggers = '+str(configDict['preTrigger'])+'\n'
         dataSourceText += '    NumberOfPostTriggers = '+str(configDict['postTrigger'])+'\n'
-        dataSourceText += '    CPUMask = 15\n'
+        dataSourceText += '    CPUMask = '+ str(configDict['cpuMask'])+'\n'
         dataSourceText += '    StackSize = 10000000\n'
         dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
         dataSourceText += '    PulseNumber = '+str(self.getTree().shot)+'\n'
@@ -935,7 +959,7 @@ class MARTE2_COMPONENT(Device):
             dataSourceText += '      '+outputDict['name']+' = {\n'
             dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath()+'"\n'
             dataSourceText += '        Period = '+str(period/outputDict['samples'])+'\n' #We must keep into account the number of samples in an input device
-            dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
+            dataSourceText += '       MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
             dataSourceText += '        AutomaticSegmentation = 0\n'
 #Keep track of index of time signal for synchronizing input devices
             if isSynch and outIdx == configDict['outTimeIdx'] and outputTrigger != None:
@@ -969,7 +993,8 @@ class MARTE2_COMPONENT(Device):
           firstOut = False
           period = timebase.getDescAt(2).data() #Must be correct(will be checked before)
           frequency = 1./period
-          gamText += '        Frequency = '+str(round(frequency, 4))+'\n'
+         # gamText += '        Frequency = '+str(round(frequency, 10))+'\n'
+          gamText += '        Frequency = '+str(round(frequency))+'\n'
         gamText += '      }\n'
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
@@ -1552,7 +1577,7 @@ class MARTE2_COMPONENT(Device):
         inType = inputDict['value'].getParent().getNode(':TYPE').getData()
         if inType != inputDict['type']:
           return 'Type mismatch for input '+str(inputIdx)+': expected '+inputDict['type']+'  found '+inType
-        if len(inputDict['dimensions']) == 1 and inputDict['dimensions'][0] == inputDict['value'].getParent().getNode(':SAMPLES').getData():
+        if not np.isscalar(inputDict['dimensions']) and len(inputDict['dimensions']) == 1 and inputDict['dimensions'][0] == inputDict['value'].getParent().getNode(':SAMPLES').getData():
           continue  #for ADC producing a set of sampled every cycle
         inDimensions = inputDict['value'].getParent().getNode(':DIMENSIONS').getData()
         if inDimensions != inputDict['dimensions']:
