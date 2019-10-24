@@ -50,7 +50,7 @@ public abstract class Editor extends JPanel{
 						local = Editor.this.getData().getLocal();
 					else
 						local = new Signal(Editor.this.getData(), Editor.this.value.getLocal(), null).getLocal();
-					GraphPanel.newPlot(local.toFloatArray(), null, null, Editor.this.getName()).setVisible(true);
+					GraphPanel.newPlot(local.toFloatArray(), null, JOptionPane.getRootFrame(), Editor.this.getName()).setVisible(true);
 				}catch(final Exception e){
 					e.printStackTrace();
 				}
