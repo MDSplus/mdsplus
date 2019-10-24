@@ -138,7 +138,6 @@ class ACQ2106_MGT(MDSplus.Device):
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
-            print "max_segments = {}".format(max_segments)
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -150,7 +149,6 @@ class ACQ2106_MGT(MDSplus.Device):
                 for c in self.chans:
                     if c.on:
                         b = buf[i::self.nchans]
-                        print "Making segment now! Buf len: {}, channel: {}".format(len(b), i+1)
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
                         self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
@@ -179,7 +177,6 @@ class ACQ2106_MGT(MDSplus.Device):
                 self.io_buffer_size = 4096
 
             def stop(self):
-                print "Setting running to false 1"
                 self.running = False
 
             def run(self):
@@ -279,7 +276,6 @@ class ACQ2106_MGT(MDSplus.Device):
 
 
     def stop(self):
-        print "Setting running to false 2"
         self.running.on = False
     STOP=stop
 
