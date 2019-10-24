@@ -67,7 +67,7 @@ int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descr
 {
   INIT_STATUS;
   array_bounds *pa = 0;
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   int dim, rank = 0;
 
@@ -242,7 +242,7 @@ int Tdi1Ebound(opcode_t opcode, int narg, struct descriptor *list[], struct desc
 {
   INIT_STATUS;
   array_bounds *pa = 0;
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct descriptor_xd outs[MAX_DIMS];
   struct descriptor *new[MAX_DIMS];

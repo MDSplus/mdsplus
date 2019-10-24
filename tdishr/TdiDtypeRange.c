@@ -83,7 +83,7 @@ int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct 
   struct descriptor_xd nelem = EMPTY_XD, limits = EMPTY_XD;
   struct descriptor dx0, dx1;
   array arr = *(array *) & arr0;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
 
   new[0] = list[0];

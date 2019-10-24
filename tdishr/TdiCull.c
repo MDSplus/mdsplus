@@ -195,7 +195,7 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
   struct descriptor_signal *psig = 0;
   struct descriptor_range fake_range;
   struct descriptor dx0, dx1;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
   STATIC_CONSTANT unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };

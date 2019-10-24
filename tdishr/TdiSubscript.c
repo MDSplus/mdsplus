@@ -112,7 +112,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
   array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAX_DIMS,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
   struct descriptor_xd ii[MAX_DIMS], xx[MAX_DIMS];
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   ddim.pointer = (char *)&dim;
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
@@ -352,7 +352,7 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descripto
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  struct descriptor_xd dwu = EMPTY_XD, sig[1], uni[1], dat[1];
+  struct descriptor_xd dwu = EMPTY_XD, sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct descriptor_with_units *pwu;
   int cmode = -1, n = 0, len;
