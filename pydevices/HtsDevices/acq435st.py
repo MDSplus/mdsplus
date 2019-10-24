@@ -155,7 +155,6 @@ class ACQ435ST(MDSplus.Device):
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
-
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -165,14 +164,14 @@ class ACQ435ST(MDSplus.Device):
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        
-                        begin = (segment * self.seg_length*dt)
-                        dim_limits=[begin, begin + (self.seg_length -1)*dt]
-                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + (self.seg_length-1)*dt, dt*self.decim[i]))
-                        c.makeSegment(begin, begin + (self.seg_length-1)*dt, cull_dim, b)
-
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)

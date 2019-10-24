@@ -142,13 +142,14 @@ class _ACQ2106_423ST(MDSplus.Device):
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        
-                        begin = (segment * self.seg_length*dt)
-                        dim_limits=[begin, begin + (self.seg_length-1)*dt]
-                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + (self.seg_length-1)*dt, dt*self.decim[i]))
-                        c.makeSegment(begin, begin + (self.seg_length-1)*dt, cull_dim, b)
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
