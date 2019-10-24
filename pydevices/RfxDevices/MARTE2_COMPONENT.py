@@ -36,19 +36,19 @@ class MARTE2_COMPONENT(Device):
       parts.append({'path':'.PARAMETERS', 'type': 'structure'})
       idx = 1
       for parameter in cls.parameters:
-	parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-	parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':parameter['name']})
+        parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
+        parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':parameter['name']})
         if(parameter['type'] == 'string'):
-	  if 'value' in parameter:
-	    parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value': parameter['value'] })
-	  else:
-	    parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text'})
-	else:
-	  if 'value' in parameter:
-	    parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':parameter['value']})
-	  else:
-	    parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric'})
-	idx = idx+1
+          if 'value' in parameter:
+            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value': parameter['value'] })
+          else:
+            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text'})
+        else:
+          if 'value' in parameter:
+            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':parameter['value']})
+          else:
+            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric'})
+        idx = idx+1
 
     @classmethod
     def buildOutputs(cls,parts):
@@ -56,40 +56,40 @@ class MARTE2_COMPONENT(Device):
       parts.append({'path':'.OUTPUTS:TRIGGER', 'type': 'numeric'})
       parts.append({'path':'.OUTPUTS:PRE_TRIGGER', 'type': 'numeric', 'value':0})
       parts.append({'path':'.OUTPUTS:POST_TRIGGER', 'type': 'numeric', 'value': 100})
-      parts.append({'path':'.OUTPUTS:OUT_TIME', 'type': 'signal'})  		#reference time for the device valid for all devices except SynchInput
+      parts.append({'path':'.OUTPUTS:OUT_TIME', 'type': 'signal'})                  #reference time for the device valid for all devices except SynchInput
       parts.append({'path':'.OUTPUTS:TIME_IDX', 'type': 'numeric', 'value':0})  #Used only by SynchInput devices to identify which output is the time
-      parts.append({'path':'.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value':15})  	#CPU Mask for MdsWriter thread
+      parts.append({'path':'.OUTPUTS:CPU_MASK', 'type': 'numeric', 'value':15})          #CPU Mask for MdsWriter thread
       idx = 1
       nameList = []
       for output in cls.outputs:
 #        sigName = output['name'][0:12]
         sigName = cls.convertName(output['name'], nameList)
         parts.append({'path':'.OUTPUTS.'+sigName, 'type':'structure'})
-	parts.append({'path':'.OUTPUTS.'+sigName+':NAME', 'type':'text', 'value':output['name']})
-	parts.append({'path':'.OUTPUTS.'+sigName+':TYPE', 'type':'text', 'value':output['type']})
-	parts.append({'path':'.OUTPUTS.'+sigName+':SAMPLES', 'type':'numeric', 'value': 1})
-	parts.append({'path':'.OUTPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(output['dimensions']))})
-	if 'seg_len' in output:
-	  parts.append({'path':'.OUTPUTS.'+sigName+':SEG_LEN', 'type':'numeric', 'value':output['seg_len']})
-	else:
-	  parts.append({'path':'.OUTPUTS.'+sigName+':SEG_LEN', 'type':'numeric', 'value':100})
+        parts.append({'path':'.OUTPUTS.'+sigName+':NAME', 'type':'text', 'value':output['name']})
+        parts.append({'path':'.OUTPUTS.'+sigName+':TYPE', 'type':'text', 'value':output['type']})
+        parts.append({'path':'.OUTPUTS.'+sigName+':SAMPLES', 'type':'numeric', 'value': 1})
+        parts.append({'path':'.OUTPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(output['dimensions']))})
+        if 'seg_len' in output:
+          parts.append({'path':'.OUTPUTS.'+sigName+':SEG_LEN', 'type':'numeric', 'value':output['seg_len']})
+        else:
+          parts.append({'path':'.OUTPUTS.'+sigName+':SEG_LEN', 'type':'numeric', 'value':100})
         if(output['type'] == 'string'):
-	  parts.append({'path':'.OUTPUTS.'+sigName+':VALUE', 'type':'text'})
-	else:
-	  parts.append({'path':'.OUTPUTS.'+sigName+':VALUE', 'type':'signal'})
-	pars = output['parameters']
-	idx = 1
-	parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
-	if len(pars) > 0:
-	  for par in pars:
-	    parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-	    parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
+          parts.append({'path':'.OUTPUTS.'+sigName+':VALUE', 'type':'text'})
+        else:
+          parts.append({'path':'.OUTPUTS.'+sigName+':VALUE', 'type':'signal'})
+        pars = output['parameters']
+        idx = 1
+        parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
+        if len(pars) > 0:
+          for par in pars:
+            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
             if(par['type'] == 'string'):
-	       parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
-	    else:
-	       parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
+               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
+            else:
+               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
 
-	    idx = idx + 1
+            idx = idx + 1
 
     @classmethod
     def buildInputs(cls, parts):
@@ -100,26 +100,26 @@ class MARTE2_COMPONENT(Device):
 #        sigName = input['name'][0:12]
         sigName = cls.convertName(input['name'], nameList)
         parts.append({'path':'.INPUTS.'+sigName, 'type':'structure'})
-	parts.append({'path':'.INPUTS.'+sigName+':TYPE', 'type':'text', 'value':input['type']})
-	parts.append({'path':'.INPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(input['dimensions']))})
+        parts.append({'path':'.INPUTS.'+sigName+':TYPE', 'type':'text', 'value':input['type']})
+        parts.append({'path':'.INPUTS.'+sigName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(input['dimensions']))})
         parts.append({'path':'.INPUTS.'+sigName+':COL_ORDER', 'type':'text', 'value':'NO'})
- 	parts.append({'path':'.INPUTS.'+sigName+':VALUE', 'type':'numeric'})
+        parts.append({'path':'.INPUTS.'+sigName+':VALUE', 'type':'signal'})
         if 'name' in input:
-	    parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text', 'value': input['name']})
+            parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text', 'value': input['name']})
         else:
- 	    parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text'})
+             parts.append({'path':'.INPUTS.'+sigName+':NAME', 'type':'text'})
 
- 	pars = input['parameters']
-	idx = 1
-	parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
-	if len(pars) > 0:
-	  for par in pars:
-	    parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-	    parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
+        pars = input['parameters']
+        idx = 1
+        parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
+        if len(pars) > 0:
+          for par in pars:
+            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
+            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
             if(par['type'] == 'string'):
-	       parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
-	    else:
-	       parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
+               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
+            else:
+               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
             idx = idx + 1
 
     @classmethod
@@ -129,7 +129,7 @@ class MARTE2_COMPONENT(Device):
       if timebaseExpr == None:
         parts.append({'path':':TIMEBASE', 'type': 'numeric'})
       else:
-	parts.append({'path':':TIMEBASE', 'type': 'numeric', 'value':Data.compile(timebaseExpr)})
+        parts.append({'path':':TIMEBASE', 'type': 'numeric', 'value':Data.compile(timebaseExpr)})
 
       cls.buildParameters(parts)
       if mode == MARTE2_COMPONENT.MODE_GAM or mode == MARTE2_COMPONENT.MODE_OUTPUT:
@@ -139,7 +139,7 @@ class MARTE2_COMPONENT(Device):
           cls.buildOutputs(parts)
 
 #      for part in parts:
-#	print(part)
+#        print(part)
 
     name = None
     inputs = []
@@ -159,23 +159,23 @@ class MARTE2_COMPONENT(Device):
         value = parNode.getNode(':VALUE').data()
         if parNode.getNode(':VALUE').getUsage() == 'TEXT':
           text += '        '+name+' = "'+str(value)+'"\n'
-	else:
+        else:
           text += '        '+name+' = '+str(value)+'\n'
       return text
 
     @classmethod
     def convertName(cls, name, nameList):
       if len(name) <= 12:
-	nameList.append(name)
-	return name
+        nameList.append(name)
+        return name
       name1 = name[:12]
       if not name1 in nameList:
-	nameList.append(name1)
+        nameList.append(name1)
         return name1
       i = 0
       while name1 in nameList:
-	name1 = name[:10]+str(i)
-	i = i+1
+        name1 = name[:10]+str(i)
+        i = i+1
       nameList.append(name1)
       return name1
 
@@ -242,24 +242,24 @@ class MARTE2_COMPONENT(Device):
           except:
             pass
       try:
-	outputTrigger = self.outputs_trigger.getData()
+        outputTrigger = self.outputs_trigger.getData()
       except:
-	outputTrigger = None
+        outputTrigger = None
 
       if mode != MARTE2_COMPONENT.MODE_OUTPUT:      
         outTimeNid = self.outputs_out_time;
         outTimeIdx = self.outputs_time_idx.data()
         preTrigger = self.outputs_pre_trigger.data()
         postTrigger = self.outputs_post_trigger.data()
-	cpuMask = self.outputs_cpu_mask.data()
+        cpuMask = self.outputs_cpu_mask.data()
 
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
-	  'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts, 
-	  'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger, 
-	  'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask}
+          'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts, 
+          'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger, 
+          'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask}
       else:
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
-	  'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts}
+          'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts}
   
 
 
@@ -328,16 +328,16 @@ class MARTE2_COMPONENT(Device):
                 return isSynch
               else:
                 return not isSynch
-	  # We need to check also Output Trigger
-	    try:
-	      outputTriggerNid = dev.getNode('.OUTPUTS:TRIGGER').getData().getNid()
-	      if outputTriggerNid == outValueNode.getNid():
+          # We need to check also Output Trigger
+            try:
+              outputTriggerNid = dev.getNode('.OUTPUTS:TRIGGER').getData().getNid()
+              if outputTriggerNid == outValueNode.getNid():
                 if self.sameSynchSource(dev):
                   return isSynch
                 else:
                   return not isSynch
-	    except: #No Output Trigger defined
-	      pass
+            except: #No Output Trigger defined
+              pass
 
       return False
 
@@ -493,12 +493,12 @@ class MARTE2_COMPONENT(Device):
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+ timerDDB+'\n'
         else:  #Normal reference
-	  isTreeRef = False
-	  try:
-	    sourceNode = inputDict['value'].getParent().getParent().getParent()
-	    if sourceNode.getUsage() != 'DEVICE':
-	      isTreeRef = True
-	    else:
+          isTreeRef = False
+          try:
+            sourceNode = inputDict['value'].getParent().getParent().getParent()
+            if sourceNode.getUsage() != 'DEVICE':
+              isTreeRef = True
+            else:
               sourceGamName = self.convertPath(sourceNode.getFullPath())
               if 'name' in inputDict:
                   signalGamName = inputDict['name']
@@ -506,32 +506,32 @@ class MARTE2_COMPONENT(Device):
               else:
                   signalGamName = inputDict['value'].getParent().getNode(':name').data() 
           except:
-	    isTreeRef = True
-	  if isTreeRef:
+            isTreeRef = True
+          if isTreeRef:
             if 'name' in inputDict:
               signalName = inputDict['name']
               aliasName = self.convertPath(inputDict['value_nid'].getPath())
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':aliasName, 'col_order':inputDict['col_order']})
             else:
-	      signalName = self.convertPath(inputDict['value_nid'].getPath())
+              signalName = self.convertPath(inputDict['value_nid'].getPath())
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
             gamText += '      '+signalName+' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeInput\n'
-	  else:
+          else:
             gamText += '      '+signalGamName+' = {\n'
             if self.onSameThread(threadMap, sourceNode):
-	      gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
             elif self.sameSynchSource(sourceNode):
-	      gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
             else:
- 	      gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
           if 'name' in inputDict:
               gamText += '        Alias = "'+aliasName+'"\n'
 
         if 'type' in inputDict:
           gamText += '        Type = '+inputDict['type']+'\n'
         if 'dimensions' in inputDict:
-	  dimensions = inputDict['dimensions']
+          dimensions = inputDict['dimensions']
           if dimensions == 0:
             numberOfElements = 1
             numberOfDimensions = 0
@@ -758,7 +758,7 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '      timebase = {\n'
         dataSourceText += '        NumberOfElements = 1\n'
         dataSourceText += '        Type = uint64\n'
-        dataSourceText += '	 }\n'
+        dataSourceText += '         }\n'
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
@@ -824,7 +824,7 @@ class MARTE2_COMPONENT(Device):
       outputTrigger = configDict['outputTrigger']
 
       if not isSynch:
-	# timebase must be considered only if not synchronizing
+        # timebase must be considered only if not synchronizing
         if isinstance(timebase, Range):
           period = timebase.getDescAt(2).data()
           dataSourceText = '  +'+dataSourceName+'_Timer'+ ' = {\n'
@@ -883,7 +883,7 @@ class MARTE2_COMPONENT(Device):
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
       for paramDict in paramDicts:
-	if paramDict['is_text']:
+        if paramDict['is_text']:
           dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
         else:
           dataSourceText += '    '+paramDict['name']+' = '+str(paramDict['value'])+'\n'
@@ -1159,7 +1159,7 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '      timebase = {\n'
         dataSourceText += '        NumberOfElements = 1\n'
         dataSourceText += '        Type = uint64\n'
-        dataSourceText += '	 }\n'
+        dataSourceText += '         }\n'
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
@@ -1246,7 +1246,7 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += ' }\n'
         dataSources.append(dataSourceText)
 
-	gamList.append(dataSourceName+'Timer_IOGAM')
+        gamList.append(dataSourceName+'Timer_IOGAM')
         gamText = '  +'+dataSourceName+'Timer_IOGAM = {\n'
         gamText += '    Class = IOGAM\n'
         gamText += '    InputSignals = {\n'
@@ -1311,38 +1311,38 @@ class MARTE2_COMPONENT(Device):
       signalNames = []
       for inputDict in inputDicts:
         if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent().getParent() == self: #This is a Time field referring to this timebase
-	  signalNames.append('Time')
+          signalNames.append('Time')
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+ timerDDB+'\n'
         else:  #Normal reference
           isTreeRef = False
           try:
- 	    sourceNode = inputDict['value'].getParent().getParent().getParent()
+            sourceNode = inputDict['value'].getParent().getParent().getParent()
             sourceGamName = self.convertPath(sourceNode.getFullPath())
             signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
             isTreeRef = True
-	  if isTreeRef:
-	      signalName = self.convertPath(inputDict['value_nid'].getPath())
-	      signalNames.append(signalName)
+          if isTreeRef:
+              signalName = self.convertPath(inputDict['value_nid'].getPath())
+              signalNames.append(signalName)
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
               gamText += '      '+signalName+' = {\n'
               gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
               if 'type' in inputDict:
                 gamText += '        Type = '+inputDict['type']+'\n'
-	  else: 
+          else: 
             signalNames.append(signalGamName)
             gamText += '      '+signalGamName+' = {\n'
             if self.onSameThread(threadMap, sourceNode):
-	      gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
             elif self.sameSynchSource(sourceNode):
-	      gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
             else:
- 	      gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
+              gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
             if 'type' in inputDict:
               gamText += '        Type = '+inputDict['type']+'\n'
             if 'dimensions' in inputDict:
-	      dimensions = inputDict['dimensions']
+              dimensions = inputDict['dimensions']
               if dimensions == 0:
                 numberOfElements = 1
                 numberOfDimensions = 0
@@ -1362,7 +1362,7 @@ class MARTE2_COMPONENT(Device):
       idx = 0
       for outputDict in inputDicts:
         gamText += '      '+signalNames[idx]+' = {\n'
-	idx = idx+1
+        idx = idx+1
         gamText += '        DataSource = '+dataSourceName+'\n'
         gamText += '        Type = '+outputDict['type']+'\n'
         if outputDict['dimensions'] == 0:
@@ -1405,24 +1405,24 @@ class MARTE2_COMPONENT(Device):
           dataSourceText += '      '+nodeDict['name']+' = {\n'
           valExpr = nodeDict['expr']
           if isinstance(valExpr, TreeNode):
-	    valExpr = valExpr.getFullPath()
+            valExpr = valExpr.getFullPath()
           dataSourceText += '        DataExpr = "'+valExpr+'"\n'
           dataSourceText += '        TimebaseExpr = "dim_of('+valExpr+')"\n'
           numberOfElements = 1
           if not (np.isscalar(nodeDict['dimensions'])):
-	    for currDim in nodeDict['dimensions']:
+            for currDim in nodeDict['dimensions']:
               numberOfElements *= currDim
           dataSourceText += '        NumberOfElements = '+str(numberOfElements)+'\n'
           dataSourceText += '        DataManagement = 1\n'
           if nodeDict['col_order']:
-	    dataSourceText += '        UseColumnOrder = 1\n'
-	  else:
-	    dataSourceText += '        UseColumnOrder = 0\n'
+            dataSourceText += '        UseColumnOrder = 1\n'
+          else:
+            dataSourceText += '        UseColumnOrder = 0\n'
           dataSourceText += '      }\n'
         dataSourceText += '      timebase = {\n'
         dataSourceText += '        NumberOfElements = 1\n'
         dataSourceText += '        Type = uint64\n'
-        dataSourceText += '	 }\n'
+        dataSourceText += '         }\n'
 
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
@@ -1444,11 +1444,11 @@ class MARTE2_COMPONENT(Device):
       idx = 0
       for inputDict in inputDicts:
         dataSourceText += '      '+signalNames[idx]+' = {\n'
-	idx = idx+1
+        idx = idx+1
         if 'type' in inputDict:
           dataSourceText += '        Type = '+inputDict['type']+'\n'
         if 'dimensions' in inputDict:
-	  dimensions = inputDict['dimensions']
+          dimensions = inputDict['dimensions']
           if dimensions == 0:
             numberOfElements = 1
             numberOfDimensions = 0
@@ -1473,11 +1473,11 @@ class MARTE2_COMPONENT(Device):
       if mode == MARTE2_COMPONENT.MODE_GAM:
         self.getMarteGamInfo(threadMap, gams, dataSources, gamList)
       elif mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
-	self.getMarteInputInfo(threadMap, gams, dataSources, gamList, True)
+        self.getMarteInputInfo(threadMap, gams, dataSources, gamList, True)
       elif mode == MARTE2_COMPONENT.MODE_INPUT:
-	self.getMarteInputInfo(threadMap, gams, dataSources, gamList, False)
+        self.getMarteInputInfo(threadMap, gams, dataSources, gamList, False)
       else:
-	self.getMarteOutputInfo(threadMap, gams, dataSources, gamList)
+        self.getMarteOutputInfo(threadMap, gams, dataSources, gamList)
 
 #Utility methods
 
@@ -1490,7 +1490,7 @@ class MARTE2_COMPONENT(Device):
         if isinstance(chanNid, TreePath):
             chanNid = TreeNode(chanNid, self.getTree())
         chanNid = chanNid.getParent()
-	retInfo = {}
+        retInfo = {}
         retInfo['gam_nid'] = chanNid.getParent().getParent()
         retInfo['gam_class'] = chanNid.getParent().getParent().getNode(':GAM_CLASS').data()  #Must not generate exception
         try:
@@ -1547,7 +1547,7 @@ class MARTE2_COMPONENT(Device):
             return 'Invalid timebase reference: '+ prevTimebase().getNodeName()
         except:
           return 'Invalid timebase reference'
-#Check Inputs	
+#Check Inputs        
             
       configDict = self.getGamInfo()
       inputDicts = configDict['inputDicts']
@@ -1561,9 +1561,9 @@ class MARTE2_COMPONENT(Device):
         isTreeRef = False
         try:
           sourceNode = inputDict['value'].getParent().getParent().getParent()
- 	  if sourceNode.getUsage() != 'DEVICE':
-	    isTreeRef = True
-	  else:
+          if sourceNode.getUsage() != 'DEVICE':
+            isTreeRef = True
+          else:
             gamClass = sourceNode.getNode('GAM_CLASS') #Make sure it is a MARTe2 device
             sourceGamName = self.convertPath(sourceNode.getFullPath())
             signalGamName = inputDict['value'].getParent().getNode(':name').data()

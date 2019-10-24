@@ -35,15 +35,33 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
     def buildPythonGam(cls, module):
       MARTE2_COMPONENT.inputs = []
       for i in range(0, module.getNumberOfInputs()):
-	MARTE2_COMPONENT.inputs.append({'name': module.getInputName(i), 'type': cls.convertType(module.getInputType(i)), 'dimensions': module.getInputDimensions(i), 'parameters':[]})
+        currDimension = module.getInputDimensions(i)
+        if currDimension[0] == 1 :
+          if currDimension[1] == 1:
+            inDimensions = 0
+          else:
+            inDimensions = [currDimension[1]]
+        else:
+          inDimensions = [currDimension[0],currDimension[1]]
+          
+        MARTE2_COMPONENT.inputs.append({'name': module.getInputName(i), 'type': cls.convertType(module.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
 
       MARTE2_COMPONENT.outputs = []
       for i in range(0, module.getNumberOfOutputs()):
-	MARTE2_COMPONENT.outputs.append({'name': module.getOutputName(i), 'type': cls.convertType(module.getOutputType(i)), 'dimensions': module.getOutputDimensions(i), 'parameters':[]})
+        currDimension = module.getOutputDimensions(i)
+        if currDimension[0] == 1 :
+          if currDimension[1] == 1:
+            outDimensions = 0
+          else:
+            outDimensions = [currDimension[1]]
+        else:
+          outDimensions = [currDimension[0],currDimension[1]]
+          
+        MARTE2_COMPONENT.outputs.append({'name': module.getOutputName(i), 'type': cls.convertType(module.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
 
-      MARTE2_COMPONENT.parameters = [{'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1]}]
+      MARTE2_COMPONENT.parameters = [{'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1].split('.')[0]}]
       for i in range(0, module.getNumberOfParameters()):
-	MARTE2_COMPONENT.parameters.append({'name': module.getParameterName(i), 'type': 'float64', 'value': module.getParameterDefaultValue(i)})
+        MARTE2_COMPONENT.parameters.append({'name': module.getParameterName(i), 'type': 'float64', 'value': module.getParameterDefaultValue(i)})
       parts = []
       MARTE2_COMPONENT.buildGam(parts, 'PyGAM', MARTE2_COMPONENT.MODE_GAM)
       return parts
