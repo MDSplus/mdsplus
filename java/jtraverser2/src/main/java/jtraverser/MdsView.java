@@ -115,6 +115,11 @@ public class MdsView extends JTabbedPane implements TransferEventListener{
 	public MdsView(final TreeManager treeman, final Mds mds){
 		this.treeman = treeman;
 		this.mds = mds;
+		try {
+			mds.getAPI().setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE","MinMax");
+		} catch (MdsException e) {
+			MdsException.stderr("MDSPLUS_DEFAULT_RESAMPLE_MODE not set!",e);
+		}
 		mds.addTransferEventListener(this);
 		this.setPreferredSize(new Dimension(300, 400));
 		this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
