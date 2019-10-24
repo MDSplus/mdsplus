@@ -45,8 +45,11 @@ public abstract class Editor extends JPanel{
 			@Override
 			public final void actionPerformed(final ActionEvent ae) {
 				try{
-					Descriptor<?> local = Editor.this.getMds().getAPI().tdiEvaluate(Editor.this.ctx, Editor.this.getData()).getData().getLocal();
-					if(!Descriptor.isMissing(Editor.this.value)) local = new Signal(local, Editor.this.value.getLocal(), null);
+					final Descriptor<?> local;
+					if(Descriptor.isMissing(Editor.this.value))
+						local = Editor.this.getData().getLocal();
+					else
+						local = new Signal(Editor.this.getData(), Editor.this.value.getLocal(), null).getLocal();
 					GraphPanel.newPlot(local.toFloatArray(), null, null, Editor.this.getName()).setVisible(true);
 				}catch(final Exception e){
 					e.printStackTrace();
@@ -271,8 +274,11 @@ public abstract class Editor extends JPanel{
 		this.reset(false);
 	}
 
-	public final void setValue(final Descriptor<?> _value) {
-		this.value = _value;
+	/* setValue(Descriptor<?> value)
+	 * sets $VALUE PTR for evaluation
+	 */
+	public final void setValue(final Descriptor<?> value) {
+		this.value = value;
 	}
 
 	protected Mds getMds() {
