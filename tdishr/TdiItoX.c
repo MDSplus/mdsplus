@@ -141,7 +141,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   struct descriptor tst1, del1, int1;
   struct descriptor_xd dimen = EMPTY_XD, window = EMPTY_XD, axis = EMPTY_XD, xat0 = EMPTY_XD;
   struct descriptor_xd cnt = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct descriptor_xd sig1 = EMPTY_XD, uni1 = EMPTY_XD;
   struct TdiCatStruct cats[4];
   FUNCTION(255 / 3) vec[3];

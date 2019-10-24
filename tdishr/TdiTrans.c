@@ -114,7 +114,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   struct descriptor_signal *psig;
   signal_maxdim tmpsig;
   array_bounds arr, *pa, *pd;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
   struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int cmode = -1, dim = -1, j, mul = 0, ncopies = 0, rank = 0, ndim;
