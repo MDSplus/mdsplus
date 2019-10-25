@@ -3119,7 +3119,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_moveNode
  * Signature: (III)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_doAction
-    (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2) {
+    (JNIEnv * env __attribute__ ((unused)), jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2) {
   void *ctx = getCtx(ctx1, ctx2);
   return doAction(ctx, nid);
 }
