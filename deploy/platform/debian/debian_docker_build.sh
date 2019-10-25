@@ -33,7 +33,7 @@ case "${ARCH}" in
     ;;
 esac
 
-if [ "${OS:0:7}" = "debian7" ]
+if [ "$OS" == "debian_wheezy" -o "${OS:0:7}" = "debian7" ]
 then
   export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
 fi
