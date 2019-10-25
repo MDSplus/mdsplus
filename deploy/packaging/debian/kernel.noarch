@@ -70,6 +70,7 @@
 ./usr/local/mdsplus/tdi/java/JavaResample.fun
 ./usr/local/mdsplus/tdi/java/JavaSetResampleLimits.fun
 ./usr/local/mdsplus/tdi/java/JavaShowWindow.fun
+./usr/local/mdsplus/tdi/java/checkMarte.py
 ./usr/local/mdsplus/tdi/lcase.fun
 ./usr/local/mdsplus/tdi/math/interpolate.fun
 ./usr/local/mdsplus/tdi/math/sign_of.fun
