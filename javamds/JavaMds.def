@@ -168,7 +168,6 @@ addSignalWithParam
 clearWindow
 createWindow
 deviceSetup
-doAction
 getDeviceFields
 removeAllSignals
 showWindow

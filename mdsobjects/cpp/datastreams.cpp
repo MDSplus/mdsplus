@@ -403,10 +403,13 @@ EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float s
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
-EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples)
+EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode)
 {
-    char msgBuf[strlen(name) + numSamples * 64 + 256];
-    sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
+    char *msgBuf = new char[strlen(name) + numSamples * 64 + 256];
+    if(oscilloscopeMode)
+        sprintf(msgBuf, "%d %s A %d", shot, name, numSamples);
+    else
+        sprintf(msgBuf, "%d %s F %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
 	sprintf(&msgBuf[strlen(msgBuf)], " %f", times[i]);
@@ -414,11 +417,12 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, float 
     for(int i = 0; i < numSamples; i++)
 	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64_t *times, float *samples)
 {
-    char msgBuf[strlen(name) + numSamples * 64 + 256];
+    char *msgBuf = new char[strlen(name) + numSamples * 64 + 256];
     sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {
@@ -427,6 +431,7 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
     for(int i = 0; i < numSamples; i++)
 	sprintf(&msgBuf[strlen(msgBuf)], " %f", samples[i]);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 

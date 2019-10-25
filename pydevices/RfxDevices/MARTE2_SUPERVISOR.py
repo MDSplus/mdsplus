@@ -98,11 +98,12 @@ class MARTE2_SUPERVISOR(Device):
       info['data_sources'] = retData
       info['name'] = self.getNode('name').data()
 
-      print('#######################')
-      print(info)
-      print('@@@@@@@@@@@@@@@@@@@@@@@')
-      print(threadMap)
+#      print('#######################')
+#      print(info)
+#      print('@@@@@@@@@@@@@@@@@@@@@@@')
+#      print(threadMap)
       return info, threadMap
+
 
 
 
@@ -271,4 +272,40 @@ class MARTE2_SUPERVISOR(Device):
       marteName = self.getNode('name').data()
       Event.seteventRaw(marteName, np.frombuffer(b'EXIT', dtype = np.uint8))
       return 1
+
+
+
+    def check(self):
+      t=self.getTree()
+      numStates = self.num_states.data()
+      gamInstances = []
+ 
+      for state in range(numStates):
+        numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
+        for thread in range(numThreads):
+          try:
+            gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
+            for gam in gams:
+              try:
+                currGamNid = t.getNode(gam);
+              except:
+                return 'Cannot get Device '+gam
+              nid = currGamNid.getNid()
+              if currGamNid.isOn():
+                gamClass = currGamNid.getData().getDevice()
+                gamInstance = gamClass(currGamNid)
+                gamInstances.append(gamInstance)
+          except:
+            return 'Cannot get Device list for tread '+str(thread)+' of state '+str(state)
+      for gamInstance in gamInstances:
+        try:
+          gamInstance.prepareMarteInfo()
+        except:
+          return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'   
+
+      for gamInstance in gamInstances:
+        status = gamInstance.check()
+        if status != '':
+          return gamInstance.getPath()+': '+ status
+      return 'Configuration OK'
 
