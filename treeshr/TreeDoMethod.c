@@ -157,16 +157,7 @@ int _TreeDoMethodA(void *dbid, mdsdsc_t *nid_dsc, mdsdsc_t *method_ptr, int narg
     status = LibFindImageSymbol(conglom_ptr->image, &method, &addr);
     if STATUS_OK {
       arglist[nargs] = out_ptr;
-      status = (int)(intptr_t)_LibCallg(&dbid,arglist, addr);
-      if (arglist[nargs]) {
-	struct descriptor *ans = (struct descriptor *)arglist[nargs];
-	if (ans->class == CLASS_XD) {
-	  DESCRIPTOR_LONG(status_d, 0);
-	  status_d.pointer = (char *)&status;
-	  MdsCopyDxXd(&status_d, (struct descriptor_xd *)ans);
-	} else if ((ans->dtype == DTYPE_L) && (ans->length == 4) && (ans->pointer))
-	  *(int*)ans->pointer = status;
-      }
+      status = (int)(intptr_t)_LibCallg(&dbid, arglist, addr);
       goto end;
     }
   }
