@@ -148,15 +148,16 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
+            
+            if self.seg_length % decimator:		
+                 self.seg_length = (self.seg_length // decimator + 1) * decimator		
              
             self.device_thread.start()
 
             segment = 0
-            begin   = 0.0
             first = True
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
-
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -166,16 +167,16 @@ class ACQ435ST(MDSplus.Device):
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        
-                        dim_limits=[begin, begin + self.seg_length*dt - 1]
-                        cull_dim  =MDSplus.CULL(dim_limits, None, MDSplus.Range(begin, begin + self.seg_length*dt -1, dt*self.decim[i]))
-                        c.makeSegment(begin, begin + self.seg_length*dt, cull_dim, b)
-
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
-                begin   += self.seg_length*dt
                 MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
@@ -218,7 +219,7 @@ class ACQ435ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Queue.Empty:
+                    except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
