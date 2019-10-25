@@ -148,6 +148,9 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
+            
+            if self.seg_length % decimator:		
+                 self.seg_length = (self.seg_length // decimator + 1) * decimator		
              
             self.device_thread.start()
 
