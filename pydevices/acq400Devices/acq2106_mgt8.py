@@ -36,7 +36,7 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
-class ACQ2106_MGT(MDSplus.Device):
+class ACQ2106_MGT8(MDSplus.Device):
     """
     D-Tacq ACQ2106_MGT support.
 
@@ -75,7 +75,7 @@ class ACQ2106_MGT(MDSplus.Device):
         NUM_BUFFERS = 20
 
         def __init__(self,dev,nchan):
-            super(ACQ2106_MGT.MDSWorker,self).__init__(name=dev.path)
+            super(ACQ2106_MGT8.MDSWorker,self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
             self.dev = dev.copy()
@@ -84,8 +84,8 @@ class ACQ2106_MGT(MDSplus.Device):
             self.nchans = nchan
             
             for ch in range(1,nchan+1):
-                self.chans.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(ch)))
-                self.decim.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(ch)+':DECIMATE').data())
+                self.chans.append(getattr(self.dev, ACQ2106_MGT8.INPFMT%(ch)))
+                self.decim.append(getattr(self.dev, ACQ2106_MGT8.INPFMT%(ch)+':DECIMATE').data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*nchan*np.int16(0).nbytes
@@ -208,7 +208,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
 
     def setChanScale(self,num):
-        chan=self.__getattr__(ACQ2106_MGT.INPFMT % num)
+        chan=self.__getattr__(ACQ2106_MGT8.INPFMT % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def lazy_init(self):
