@@ -153,7 +153,6 @@ class ACQ2106_MGT8(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -169,8 +168,6 @@ class ACQ2106_MGT8(MDSplus.Device):
                 self.nchans = mds.nchans
                 self.empty_buffers = mds.empty_buffers
                 self.full_buffers = mds.full_buffers
-                self.trig_time = 0
-                self.io_buffer_size = 4096
 
             def stop(self):
                 self.running = False
