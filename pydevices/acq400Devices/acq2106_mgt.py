@@ -58,18 +58,7 @@ class ACQ2106_MGT(MDSplus.Device):
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
 
-    uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
-    nchans = uut.nchan()
-    for i in range(nchans):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-    del i
-
     debug=None
-
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -219,6 +208,13 @@ class ACQ2106_MGT(MDSplus.Device):
         print('Running init')
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+
+        for ch in range(1, uut.nchan()+1):
+            parts.append({'path':':INPUT_%2.2d'%(ch,),'type':'signal','options':('no_write_model','write_once',),
+                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+            parts.append({'path':':INPUT_%2.2d:DECIMATE'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+            parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+            parts.append({'path':':INPUT_%2.2d:OFFSET'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
 
         trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
