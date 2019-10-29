@@ -501,12 +501,13 @@ static inline void OperateFmean(char dtype, args_t*a) {
 	    result+= val;count++;
 	  } else {
 	    CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
-	    break;
+	    goto loop_dim_done;
 	  }
 	}
       }
       result/=count;
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
+loop_dim_done: ;
     }
   }
 }
@@ -528,13 +529,14 @@ static inline void OperateCmean(char dtype, args_t*a) {
 	  } else {
 	    CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
 	    CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
-	    break;
+	    goto loop_dim_done;
 	  }
 	}
       }
       resultr/=count; resulti/=count;
       CvtConvertFloat(&resultr,DTYPE_NATIVE_DOUBLE,outp            ,dtype,0);
       CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp+a->length/2,dtype,0);
+loop_dim_done: ;
     }
   }
 }
@@ -600,11 +602,12 @@ static inline void OperateFfun(double init, char dtype, double fun(const double,
 	    result = fun(val,result);
 	  } else {
 	    CvtConvertFloat(&roprand,DTYPE_F,outp,dtype,0);
-	    break;
+	    goto loop_dim_done;
 	  }
 	}
       }
       CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,outp,dtype,0);
+loop_dim_done: ;
     }
   }
 }
@@ -625,12 +628,13 @@ static inline void OperateCfun(double init, char dtype, double fun(const double,
 	  } else {
 	    CvtConvertFloat(&roprand,DTYPE_F,outp            ,dtype,0);
 	    CvtConvertFloat(&roprand,DTYPE_F,outp+a->length/2,dtype,0);
-	    break;
+	    goto loop_dim_done;
 	  }
 	}
       }
       CvtConvertFloat(&resultr,DTYPE_NATIVE_DOUBLE,outp            ,dtype,0);
       CvtConvertFloat(&resulti,DTYPE_NATIVE_DOUBLE,outp+a->length/2,dtype,0);
+loop_dim_done: ;
     }
   }
 }
@@ -730,7 +734,9 @@ static inline void OperateFaccum(char dtype,args_t* a){
 	  if (CvtConvertFloat(pid,dtype,&val,DTYPE_NATIVE_DOUBLE,0)) {
 	    result += val;
 	    CvtConvertFloat(&result,DTYPE_NATIVE_DOUBLE,pod,dtype,0);
-	  } else CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+	  } else {
+	    CvtConvertFloat(&roprand,DTYPE_F,pod,dtype,0);
+	  }
 	}
       }
     }
