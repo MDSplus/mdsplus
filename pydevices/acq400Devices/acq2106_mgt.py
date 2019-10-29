@@ -42,9 +42,11 @@ class ACQ2106_MGT(MDSplus.Device):
 
     """
 
+    MAXCHAN = 192       # create maximum number of nodes. We don't have to use all of them..
+    INPFMT = ':INPUT_%3.3d'
     parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
-        {'path':':NODE','type':'text','value':'acq2106_054', 'options':('no_write_shot',)},
+        {'path':':NODE','type':'text','value':'acq2106_999', 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
@@ -58,20 +60,14 @@ class ACQ2106_MGT(MDSplus.Device):
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
 
-    uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
-    nchans = uut.nchan()
-    print ("on class init, nchan {}".format(nchans))
-    for i in range(nchans):
-        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-    del i
-
+    for ch in range(1,MAXCHAN+1):
+        parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
+                      'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        
     debug=None
-
-    print("pgm 3")
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -90,8 +86,8 @@ class ACQ2106_MGT(MDSplus.Device):
             self.nchans = self.uut.nchan()
 
             for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(i+1)))
-                self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(i+1)).data())
+                self.chans.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(i+1)))
+                self.decim.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(i+1)+':DECIMATE').data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
@@ -193,8 +189,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 rc = acq400_hapi.MgtDramPullClient(self.node_addr)
 
                 try:
-                    for buf in rc.get_blocks(16, ncols=(2**22)/16/2, data_size=2):
-                        print("DEBUG: ", len(buf))
+                    for buf in rc.get_blocks(16, ncols=(2**22)/16/2, data_size=2):                        
                         self.full_buffers.put(buf)
                 except socket.timeout as e:
                     print("Got a timeout.")
@@ -215,7 +210,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
 
     def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%2.2d' % num)
+        chan=self.__getattr__(ACQ2106_MGT.INPFMT % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def init(self):
