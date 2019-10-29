@@ -70,27 +70,25 @@ class ACQ2106_MGT(MDSplus.Device):
     debug=None
 
     trig_types=[ 'hard', 'soft', 'automatic']
-
+               
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
-        def __init__(self,dev):
+        def __init__(self,dev,nchan):
             super(ACQ2106_MGT.MDSWorker,self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
             self.dev = dev.copy()
-
             self.chans = []
             self.decim = []
-            self.uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
-            self.nchans = self.uut.nchan()
-
-            for i in range(self.nchans):
-                self.chans.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(i+1)))
-                self.decim.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(i+1)+':DECIMATE').data())
+            self.nchans = nchan
+            
+            for ch in range(1,nchan+1):
+                self.chans.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(ch)))
+                self.decim.append(getattr(self.dev, ACQ2106_MGT.INPFMT%(ch)+':DECIMATE').data())
 
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*nchan*np.int16(0).nbytes
 
             self.empty_buffers = Queue.Queue()
             self.full_buffers = Queue.Queue()
@@ -213,10 +211,16 @@ class ACQ2106_MGT(MDSplus.Device):
         chan=self.__getattr__(ACQ2106_MGT.INPFMT % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
+    def lazy_init(self):
+        try:
+            return self.uut
+        except AttributeError:
+            self.uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data(), monitor=False)
+            return self.uut        
+            
     def init(self):
         print('Running init')
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        self.lazy_init()
 
         trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
@@ -230,45 +234,46 @@ class ACQ2106_MGT(MDSplus.Device):
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+            self.uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+            self.uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
-            uut.s0.transient = 'SOFT_TRIGGER=0'
+            self.uut.s0.transient = 'SOFT_TRIGGER=0'
         if trg == 'automatic':
-            uut.s0.transient = 'SOFT_TRIGGER=1'
+            self.uut.s0.transient = 'SOFT_TRIGGER=1'
 
         print('Finished init')
 
     def capture(self):
         print("Capturing now.")
-        uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
-        uut.s14.mgt_taskset = '1'
-        uut.s14.mgt_run_shot = str(int(250 + 2))
-        uut.run_mgt()
+        self.lazy_init()
+        self.uut.s14.mgt_taskset = '1'
+        self.uut.s14.mgt_run_shot = str(int(250 + 2))
+        self.uut.run_mgt()
         print("Finished capture.")
     CAPTURE=capture
 
-    def soft_trigger(self):
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.soft_trigger = 1
+    def soft_trigger(self): 
+        self.lazy_init()
+        self.uut.s0.soft_trigger = 1
 
 
     def pull(self):
         print("Starting host pull now.")
+        self.lazy_init()
+        
         import os
         import sys
         from threading import Thread
         import tempfile
         import subprocess
 
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.set_knob('set_abort', '1')
-        self.running.on=True
-        thread = self.MDSWorker(self)
+        self.uut.s0.set_knob('set_abort', '1')
+        self.running.on=True        
+        thread = self.MDSWorker(self, self.uut.nchan())
         thread.start()
     PULL=pull
 
