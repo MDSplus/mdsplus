@@ -76,14 +76,9 @@ class ACQ2106_MGT(MDSplus.Device):
             self.uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
             self.nchans = uut.nchan()
 
-            for i in range(self.nchans):
-                parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
-                parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-                parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-                parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-                self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(i+1)))
-                self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(i+1)).data())
+            for ch in range(1,self.nchans+1):                
+                self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(ch)))
+                self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(ch)).data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
