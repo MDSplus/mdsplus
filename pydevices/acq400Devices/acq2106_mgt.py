@@ -72,15 +72,14 @@ class ACQ2106_MGT(MDSplus.Device):
             self.dev = dev.copy()
 
             self.chans = []
-            self.decim = []
-            self.nchans = dev.uut.nchan()            
+            self.decim = []                     
 
-            for ch in range(1,self.nchans+1):                
+            for ch in range(1,self.dev.nchan+1):                
                 self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(ch)))
                 self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(ch)).data())
 
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.dev.nchan*np.int16(0).nbytes
 
             self.empty_buffers = Queue.Queue()
             self.full_buffers = Queue.Queue()
@@ -117,7 +116,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 self.seg_length = (self.seg_length // decimator + 1) * decimator
 
             self.dims = []
-            for i in range(self.nchans):
+            for i in range(self.dev.nchan):
                 self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
 
             self.device_thread.start()
@@ -136,7 +135,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 cycle = 1
                 for c in self.chans:
                     if c.on:
-                        b = buf[i::self.nchans]
+                        b = buf[i::self.dev.nchan]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
                         self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
@@ -158,7 +157,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
                 self.freq = mds.dev.freq.data()
-                self.nchans = mds.nchans
+                self.nchan = mds.nchan
                 self.empty_buffers = mds.empty_buffers
                 self.full_buffers = mds.full_buffers
                 self.trig_time = 0
@@ -207,8 +206,8 @@ class ACQ2106_MGT(MDSplus.Device):
         print('Running init')
 
         self.uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
-
-        for ch in range(1, self.uut.nchan()+1):
+        self.nchan = self.uut.nchan()
+        for ch in range(1, self.nchan+1):
             parts.append({'path':':INPUT_%2.2d'%(ch,),'type':'signal','options':('no_write_model','write_once',),
                           'valueExpr':'head.setChanScale(%d)' %(ch,)})
             parts.append({'path':':INPUT_%2.2d:DECIMATE'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
