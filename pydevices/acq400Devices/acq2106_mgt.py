@@ -77,6 +77,11 @@ class ACQ2106_MGT(MDSplus.Device):
             self.nchans = uut.nchan()
 
             for i in range(self.nchans):
+                parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
+                parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+                parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+                parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
                 self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(i+1)))
                 self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(i+1)).data())
 
