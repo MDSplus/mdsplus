@@ -219,22 +219,14 @@ class ACQ2106_MGT8(MDSplus.Device):
         print('Running init')
         self.lazy_init()
 
-        trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
-
-        if trg == 'hard':
-            trg_dx = 0
-        elif trg == 'automatic':
-            trg_dx = 1
-        elif trg == 'soft':
-            trg_dx = 1
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
             self.uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            self.uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+            self.uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trig_types[trg])
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
