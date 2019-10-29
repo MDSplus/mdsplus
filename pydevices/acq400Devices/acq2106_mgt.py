@@ -44,7 +44,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
     parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
-        {'path':':NODE','type':'text','value':'acq2106_157', 'options':('no_write_shot',)},
+        {'path':':NODE','type':'text','value':'acq2106_054', 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
@@ -58,7 +58,20 @@ class ACQ2106_MGT(MDSplus.Device):
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
 
+    uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
+    nchans = uut.nchan()
+    print ("on class init, nchan {}".format(nchans))
+    for i in range(nchans):
+        parts.append({'path':':INPUT_%2.2d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
+        parts.append({'path':':INPUT_%2.2d:DECIMATE'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        parts.append({'path':':INPUT_%2.2d:OFFSET'%(i+1,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+    del i
+
     debug=None
+
+    print("pgm 3")
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -72,14 +85,16 @@ class ACQ2106_MGT(MDSplus.Device):
             self.dev = dev.copy()
 
             self.chans = []
-            self.decim = []                     
+            self.decim = []
+            self.uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
+            self.nchans = self.uut.nchan()
 
-            for ch in range(1,self.dev.nchan+1):                
-                self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(ch)))
-                self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(ch)).data())
+            for i in range(self.nchans):
+                self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(i+1)))
+                self.decim.append(getattr(self.dev, 'INPUT_%2.2d:DECIMATE' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.dev.nchan*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
             self.empty_buffers = Queue.Queue()
             self.full_buffers = Queue.Queue()
@@ -116,7 +131,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 self.seg_length = (self.seg_length // decimator + 1) * decimator
 
             self.dims = []
-            for i in range(self.dev.nchan):
+            for i in range(self.nchans):
                 self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
 
             self.device_thread.start()
@@ -135,7 +150,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 cycle = 1
                 for c in self.chans:
                     if c.on:
-                        b = buf[i::self.dev.nchan]
+                        b = buf[i::self.nchans]
                         c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
                         self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
                     i += 1
@@ -157,7 +172,7 @@ class ACQ2106_MGT(MDSplus.Device):
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
                 self.freq = mds.dev.freq.data()
-                self.nchan = mds.nchan
+                self.nchans = mds.nchans
                 self.empty_buffers = mds.empty_buffers
                 self.full_buffers = mds.full_buffers
                 self.trig_time = 0
@@ -179,6 +194,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
                 try:
                     for buf in rc.get_blocks(16, ncols=(2**22)/16/2, data_size=2):
+                        print("DEBUG: ", len(buf))
                         self.full_buffers.put(buf)
                 except socket.timeout as e:
                     print("Got a timeout.")
@@ -205,14 +221,7 @@ class ACQ2106_MGT(MDSplus.Device):
     def init(self):
         print('Running init')
 
-        self.uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
-        self.nchan = self.uut.nchan()
-        for ch in range(1, self.nchan+1):
-            parts.append({'path':':INPUT_%2.2d'%(ch,),'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
-            parts.append({'path':':INPUT_%2.2d:DECIMATE'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-            parts.append({'path':':INPUT_%2.2d:COEFFICIENT'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-            parts.append({'path':':INPUT_%2.2d:OFFSET'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
         trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
@@ -226,29 +235,31 @@ class ACQ2106_MGT(MDSplus.Device):
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
-            self.uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            self.uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
-            self.uut.s0.transient = 'SOFT_TRIGGER=0'
+            uut.s0.transient = 'SOFT_TRIGGER=0'
         if trg == 'automatic':
-            self.uut.s0.transient = 'SOFT_TRIGGER=1'
+            uut.s0.transient = 'SOFT_TRIGGER=1'
 
         print('Finished init')
 
     def capture(self):
         print("Capturing now.")
-        self.uut.s14.mgt_taskset = '1'
-        self.uut.s14.mgt_run_shot = str(int(250 + 2))
-        self.uut.run_mgt()
+        uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
+        uut.s14.mgt_taskset = '1'
+        uut.s14.mgt_run_shot = str(int(250 + 2))
+        uut.run_mgt()
         print("Finished capture.")
     CAPTURE=capture
 
-    def soft_trigger(self):        
-        self.uut.s0.soft_trigger = 1
+    def soft_trigger(self):
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut.s0.soft_trigger = 1
 
 
     def pull(self):
@@ -258,8 +269,9 @@ class ACQ2106_MGT(MDSplus.Device):
         from threading import Thread
         import tempfile
         import subprocess
-        
-        self.uut.s0.set_knob('set_abort', '1')
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut.s0.set_knob('set_abort', '1')
         self.running.on=True
         thread = self.MDSWorker(self)
         thread.start()
