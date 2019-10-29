@@ -212,9 +212,9 @@ class ACQ2106_MGT(MDSplus.Device):
     def init(self):
         print('Running init')
 
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        self.uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
 
-        for ch in range(1, uut.nchan()+1):
+        for ch in range(1, self.uut.nchan()+1):
             parts.append({'path':':INPUT_%2.2d'%(ch,),'type':'signal','options':('no_write_model','write_once',),
                           'valueExpr':'head.setChanScale(%d)' %(ch,)})
             parts.append({'path':':INPUT_%2.2d:DECIMATE'%(ch,),'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
@@ -233,31 +233,29 @@ class ACQ2106_MGT(MDSplus.Device):
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+            self.uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+            self.uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
-            uut.s0.transient = 'SOFT_TRIGGER=0'
+            self.uut.s0.transient = 'SOFT_TRIGGER=0'
         if trg == 'automatic':
-            uut.s0.transient = 'SOFT_TRIGGER=1'
+            self.uut.s0.transient = 'SOFT_TRIGGER=1'
 
         print('Finished init')
 
     def capture(self):
         print("Capturing now.")
-        uut = acq400_hapi.Acq2106_Mgtdram8(self.node.data())
-        uut.s14.mgt_taskset = '1'
-        uut.s14.mgt_run_shot = str(int(250 + 2))
-        uut.run_mgt()
+        self.uut.s14.mgt_taskset = '1'
+        self.uut.s14.mgt_run_shot = str(int(250 + 2))
+        self.uut.run_mgt()
         print("Finished capture.")
     CAPTURE=capture
 
-    def soft_trigger(self):
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.soft_trigger = 1
+    def soft_trigger(self):        
+        self.uut.s0.soft_trigger = 1
 
 
     def pull(self):
@@ -267,9 +265,8 @@ class ACQ2106_MGT(MDSplus.Device):
         from threading import Thread
         import tempfile
         import subprocess
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.set_knob('set_abort', '1')
+        
+        self.uut.s0.set_knob('set_abort', '1')
         self.running.on=True
         thread = self.MDSWorker(self)
         thread.start()
