@@ -73,8 +73,7 @@ class ACQ2106_MGT(MDSplus.Device):
 
             self.chans = []
             self.decim = []
-            self.uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-            self.nchans = uut.nchan()
+            self.nchans = dev.uut.nchan()            
 
             for ch in range(1,self.nchans+1):                
                 self.chans.append(getattr(self.dev, 'INPUT_%2.2d'%(ch)))
