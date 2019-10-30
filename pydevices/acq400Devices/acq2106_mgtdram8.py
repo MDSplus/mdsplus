@@ -36,7 +36,7 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
-class ACQ2106_MGT8(MDSplus.Device):
+class ACQ2106_MGTDRAM8(MDSplus.Device):
     """
     D-Tacq ACQ2106_MGT support.
 
