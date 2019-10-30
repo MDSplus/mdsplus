@@ -133,15 +133,13 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
                     buf = self.full_buffers.get(block=True, timeout=1)
                 except Queue.Empty:
                     continue
-
-                i = 0
-                cycle = 1
-                for c in self.chans:
-                    if c.on:
-                        b = buf[i::self.nchans]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
-                    i += 1
+                                
+                for ic, ch in enumerate(self.chans):
+                    if ch.on:
+                        b = buf[ic::self.nchans]
+                        ch.makeSegment(self.dims[ic].begin, self.dims[ic].ending, self.dims[ic], b)
+                        self.dims[ic] = MDSplus.Range(self.dims[ic].begin + self.seg_length*dt, 
+                                                      self.dims[ic].ending + self.seg_length*dt, dt*self.decim[ic])                    
                 segment += 1
                 MDSplus.Event.setevent(event_name)
 
@@ -149,9 +147,8 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
 
             self.device_thread.stop()
 
-        class DeviceWorker(threading.Thread):
-            running = False
-
+        class DeviceWorker(threading.Thread):            
+            
             def __init__(self,mds):
                 threading.Thread.__init__(self)
                 self.debug = mds.dev.debug
@@ -162,6 +159,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
                 self.nchans = mds.nchans
                 self.empty_buffers = mds.empty_buffers
                 self.full_buffers = mds.full_buffers
+                self.running = False
 
             def stop(self):
                 self.running = False
@@ -169,8 +167,12 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
             def run(self):
                 if self.debug:
                     print("DeviceWorker running")
+                BLOCK_MULTIPLE = acq400_hapi.Acq2106_Mgtdram8.MGT_BLOCK_MULTIPLE
+                MGT_BLOCK_BYTES = acq400_hapi.Acq2106_Mgtdram8.MGT_BLOCK_BYTES
 
                 self.running = True
+                ds = 2
+                nc = MGT_BLOCK_BYTES/ds
 
                 first = True
 
@@ -178,7 +180,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
                 rc = acq400_hapi.MgtDramPullClient(self.node_addr)
 
                 try:
-                    for buf in rc.get_blocks(16, ncols=(2**22)/16/2, data_size=2):                        
+                    for buf in rc.get_blocks(BLOCK_MULTIPLE, ncols=nc, data_size=ds):
                         self.full_buffers.put(buf)
                 except socket.timeout as e:
                     print("Got a timeout.")
