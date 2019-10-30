@@ -911,13 +911,6 @@ fi
       fi
       find /usr/local/mdsplus/python -name '*egg-info' -delete
 
-      # modern debian versions do not include libreadline6
-      libreadline6=$(find /usr/lib -name libreadline.so.6)
-      libreadline7=$(find /usr/lib -name libreadline.so.7)
-      if ( test -z $libreadline6 &amp;&amp; test ! -z $libreadline7 )
-      then ln -sfT ./libreadline.so.7 ${libreadline7/so.7/so.6}
-      fi
-
       for py in python python3
       do
         if ( ${py} -c exit\(\) &gt;/dev/null 2&gt;&amp;1 )
