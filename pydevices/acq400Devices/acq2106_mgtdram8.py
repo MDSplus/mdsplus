@@ -36,18 +36,18 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
+INPFMT = ':INPUT_%3.3d'
+
 class _ACQ2106_MGTDRAM8(MDSplus.Device):
     """
     D-Tacq ACQ2106_MGT support.
 
     """
 
-    MAXCHAN = 192       # create maximum number of nodes. We don't have to use all of them..
-    INPFMT = ':INPUT_%3.3d'
-    parts=[
+    base_parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
         {'path':':NODE', 'type':'text', 'value':'acq2106_999', 'options':('no_write_shot',)},
-        {'path':':CAP_4M_BLOCKS', 'type':'numeric', 'value':40, },
+        {'path':':CAP_BLOCKS', 'type':'numeric', 'value':40, 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
@@ -60,18 +60,16 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
         {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot',),'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
-
-
-        
+    
     debug=None
 
-    trig_types=[ 'hard', 'soft', 'automatic']
+    trig_types = [ 'hard', 'soft', 'automatic']
                
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
 
         def __init__(self,dev,nchan):
-            super(ACQ2106_MGT8.MDSWorker,self).__init__(name=dev.path)
+            super(type(self),self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
             self.dev = dev.copy()
@@ -80,8 +78,8 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
             self.nchans = nchan
             
             for ch in range(1,nchan+1):
-                self.chans.append(getattr(self.dev, ACQ2106_MGT8.INPFMT%(ch)))
-                self.decim.append(getattr(self.dev, ACQ2106_MGT8.INPFMT%(ch)+':DECIMATE').data())
+                self.chans.append(getattr(self.dev, INPFMT%(ch)))
+                self.decim.append(getattr(self.dev, INPFMT%(ch)+':DECIMATE').data())
 
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*nchan*np.int16(0).nbytes
@@ -201,7 +199,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
 
 
     def setChanScale(self,num):
-        chan=self.__getattr__(ACQ2106_MGT8.INPFMT % num)
+        chan=self.__getattr__(INPFMT % num)
         chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
     def lazy_init(self):
@@ -236,7 +234,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
         print("Capturing now.")
         self.lazy_init()
         self.uut.s14.mgt_taskset = '1'
-        self.uut.s14.mgt_run_shot = str(self.cap_4m_blocks + 2)
+        self.uut.s14.mgt_run_shot = str(self.cap_blocks + 2)
         self.uut.run_mgt()
         print("Finished capture.")
     CAPTURE=capture
@@ -267,15 +265,17 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
         self.running.on = False
     STOP=stop
 
-def assemble(cls):
-    cls.parts = list(_ACQ2106_MGTDRAM8.carrier_parts)
+
+    
+def assemble(cls):     
+    cls.parts = list(_ACQ2106_MGTDRAM8.base_parts)
     for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(ch,)})
-        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})        
-        
+        cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
+                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})            
+
 
 class ACQ2106_MGTDRAM8_8(_ACQ2106_MGTDRAM8):
     nchan=8
@@ -325,4 +325,4 @@ class ACQ2106_MGTDRAM8_192(_ACQ2106_MGTDRAM8):
     nchan=192
 assemble(ACQ2106_MGTDRAM8_192)
 
-del(assemble)
+
