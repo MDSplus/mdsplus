@@ -36,7 +36,7 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
-class ACQ2106_MGTDRAM8(MDSplus.Device):
+class _ACQ2106_MGTDRAM8(MDSplus.Device):
     """
     D-Tacq ACQ2106_MGT support.
 
@@ -60,12 +60,7 @@ class ACQ2106_MGTDRAM8(MDSplus.Device):
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         ]
 
-    for ch in range(1,MAXCHAN+1):
-        parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(ch,)})
-        parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+
         
     debug=None
 
@@ -271,3 +266,62 @@ class ACQ2106_MGTDRAM8(MDSplus.Device):
         self.running.on = False
     STOP=stop
 
+def assemble(cls):
+    cls.parts = list(_ACQ2106_MGTDRAM8.carrier_parts)
+    for ch in range(1, cls.nchan+1):
+        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
+                      'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':_ACQ2106_MGTDRAM8.INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})        
+        
+
+class ACQ2106_MGTDRAM8_8(_ACQ2106_MGTDRAM8):
+    nchan=8
+assemble(ACQ2106_MGTDRAM8_8)
+
+class ACQ2106_MGTDRAM8_16(_ACQ2106_MGTDRAM8):
+    nchan=16
+assemble(ACQ2106_MGTDRAM8_16)
+
+class ACQ2106_MGTDRAM8_24(_ACQ2106_MGTDRAM8):
+    nchan=24
+assemble(ACQ2106_MGTDRAM8_24)
+
+class ACQ2106_MGTDRAM8_32(_ACQ2106_MGTDRAM8):
+    nchan=32
+assemble(ACQ2106_MGTDRAM8_32)
+
+class ACQ2106_MGTDRAM8_40(_ACQ2106_MGTDRAM8):
+    nchan=40
+assemble(ACQ2106_MGTDRAM8_40)
+
+class ACQ2106_MGTDRAM8_48(_ACQ2106_MGTDRAM8):
+    nchan=48
+assemble(ACQ2106_MGTDRAM8_48)
+
+class ACQ2106_MGTDRAM8_64(_ACQ2106_MGTDRAM8):
+    nchan=64
+assemble(ACQ2106_MGTDRAM8_64)
+
+class ACQ2106_MGTDRAM8_80(_ACQ2106_MGTDRAM8):
+    nchan=80
+assemble(ACQ2106_MGTDRAM8_80)
+
+class ACQ2106_MGTDRAM8_96(_ACQ2106_MGTDRAM8):
+    nchan=96
+assemble(ACQ2106_MGTDRAM8_96)
+
+class ACQ2106_MGTDRAM8_128(_ACQ2106_MGTDRAM8):
+    nchan=128
+assemble(ACQ2106_MGTDRAM8_128)
+
+class ACQ2106_MGTDRAM8_160(_ACQ2106_MGTDRAM8):
+    nchan=160
+assemble(ACQ2106_MGTDRAM8_160)
+
+class ACQ2106_MGTDRAM8_192(_ACQ2106_MGTDRAM8):
+    nchan=192
+assemble(ACQ2106_MGTDRAM8_192)
+
+del(assemble)
