@@ -124,10 +124,10 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
 
             self.device_thread.start()
 
-            segment = 0
-            first = True
+            segment = 0            
             running = self.dev.running
             max_segments = self.dev.max_segments.data()
+            
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
@@ -135,9 +135,8 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
                     continue
                                 
                 for ic, ch in enumerate(self.chans):
-                    if ch.on:
-                        b = buf[ic::self.nchans]
-                        ch.makeSegment(self.dims[ic].begin, self.dims[ic].ending, self.dims[ic], b)
+                    if ch.on: 
+                        ch.makeSegment(self.dims[ic].begin, self.dims[ic].ending, self.dims[ic], buf[ic::self.nchans])
                         self.dims[ic] = MDSplus.Range(self.dims[ic].begin + self.seg_length*dt, 
                                                       self.dims[ic].ending + self.seg_length*dt, dt*self.decim[ic])                    
                 segment += 1
@@ -173,8 +172,6 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
                 self.running = True
                 ds = 2
                 nc = MGT_BLOCK_BYTES/ds
-
-                first = True
 
                 # trigger time out count initialization:
                 rc = acq400_hapi.MgtDramPullClient(self.node_addr)
