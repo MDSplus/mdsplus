@@ -47,7 +47,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
     parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
         {'path':':NODE', 'type':'text', 'value':'acq2106_999', 'options':('no_write_shot',)},
-        {'path':':CAP_4M_BLOCKS', 'type':'numeric', 'value':40, }
+        {'path':':CAP_4M_BLOCKS', 'type':'numeric', 'value':40, },
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
