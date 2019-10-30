@@ -1009,6 +1009,6 @@ AutoReqProv: yes
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
    <xinetd package="busybox"/>
-   <java package="default-jre"/>
+   <java package="java-runtime"/>
  </external_packages>
 </deploy>
