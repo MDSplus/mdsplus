@@ -46,7 +46,8 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
     INPFMT = ':INPUT_%3.3d'
     parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
-        {'path':':NODE','type':'text','value':'acq2106_999', 'options':('no_write_shot',)},
+        {'path':':NODE', 'type':'text', 'value':'acq2106_999', 'options':('no_write_shot',)},
+        {'path':':CAP_4M_BLOCKS', 'type':'numeric', 'value':40, }
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
@@ -235,7 +236,7 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
         print("Capturing now.")
         self.lazy_init()
         self.uut.s14.mgt_taskset = '1'
-        self.uut.s14.mgt_run_shot = str(int(250 + 2))
+        self.uut.s14.mgt_run_shot = str(self.cap_4m_blocks + 2)
         self.uut.run_mgt()
         print("Finished capture.")
     CAPTURE=capture
