@@ -905,9 +905,11 @@ fi
 
     <!-- deb scripts -->
     <postinst>
-      if test -z $(/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus y)
-      then read -t 10 -p "Do you wish to run setup.py install? (y/N) " setup_install
-      else setup_install=y
+      if test ! -z $(/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus y)
+      then setup_install=y
+      elif echo $PYTHONPATH|grep /usr/local/mdsplus/python>/dev/null
+      then setup_install=n
+      else read -t 10 -p "Do you wish to run setup.py install? (y/N) " setup_install
       fi
       find /usr/local/mdsplus/python -name '*egg-info' -delete
 
