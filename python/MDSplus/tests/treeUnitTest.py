@@ -70,7 +70,15 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(exattr['ATT3'],'this is plasma current')
 
     def openTrees(self):
-        with Tree('pytree',self.shot+1,'new'): pass
+        with Tree('pytree',self.shot+1,'new') as pytree:
+            a = pytree.addNode('A','TEXT')
+            pytree.write()
+        pytree.open()
+        a.record = 'a'*64
+        self.assertEqual(pytree.getDatafileSize(),84)
+        pytree.close()
+        with Tree('pytree',self.shot+1,'new') as pytree:
+            self.assertEqual(pytree.getDatafileSize(),0) # new should clear datafile (O_TRUNC)
         filepath = ('%s/pytree_%03d.tree'%(self.tmpdir,self.shot+1)).replace(os.sep,'/')
         self.assertEqual(Tree.getFileName('pytree',self.shot+1), filepath)
         pytree = Tree('pytree',self.shot+1)
