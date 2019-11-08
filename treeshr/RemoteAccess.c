@@ -1525,7 +1525,7 @@ inline static int io_open_one_request(int conid,size_t size,mdsio_t*mdsio,char*d
 
 static void getOptionsMode(int new,int edit,int*options,int*mode) {
   if (new){
-    *options = O_RDWR | O_CREAT;
+    *options = O_RDWR | O_CREAT | O_TRUNC;
     *mode = 0664;
   } else {
     *options = edit ? O_RDWR : O_RDONLY;
