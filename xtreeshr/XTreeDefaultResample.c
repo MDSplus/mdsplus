@@ -126,10 +126,11 @@ EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*star
 }
 
 static res_mode_t default_mode = AVERAGE;
-static void get_default() {
+static inline void get_default() {
   char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
-  if(!resampleMode) return;
-       if(!strcasecmp(resampleMode, "Average"))
+  if(!resampleMode)
+    default_mode = AVERAGE;
+  else if(!strcasecmp(resampleMode, "Average"))
     default_mode = AVERAGE;
   else if(!strcasecmp(resampleMode, "MinMax"))
     default_mode = MINMAX;
@@ -139,11 +140,14 @@ static void get_default() {
     default_mode = CLOSEST;
   else if(!strcasecmp(resampleMode, "Previous"))
     default_mode = PREVIOUS;
+  else {
+    fprintf(stderr,"Error: Resample mode must be one of 'Average', 'MinMax', 'Interp', 'Closest', or 'Previous' but was '%s'; using 'Average'.", resampleMode);
+    default_mode = AVERAGE;
+  }
   TranslateLogicalFree(resampleMode);
 }
 int XTreeDefaultResample(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){
-  static pthread_once_t once = PTHREAD_ONCE_INIT;
-  pthread_once(&once,get_default);
+  get_default(); // get_env is cheap compared to what comming next, we can affort to reload it
   return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, default_mode, outSignalXd);
 }
 
