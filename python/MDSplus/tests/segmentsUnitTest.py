@@ -31,8 +31,7 @@ def _mimport(name, level=1):
     except:
         return __import__(name, globals())
 _UnitTest=_mimport("_UnitTest")
-from MDSplus import setenv
-setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE","interp")
+from MDSplus import setenv, set_default_resample_mode
 class Tests(_UnitTest.TreeTests):
     shotinc = 12
     tree    =  'segments'
@@ -250,7 +249,13 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(Tree.getTimeContext(),(1,2,3))
         self.assertEqual(node.tree.getTimeContext(),(300,700,150))
 
-        sig = node.record # interp as set by env
+        set_default_resample_mode("m") # minmax
+        sig = node.record
+        self.assertEqual(sig.data().tolist(),[30,44,45,59,60,74])
+        self.assertEqual(sig.dim_of().data().tolist(),[375,375,525,525,675,675])
+
+        set_default_resample_mode("i") # interpolation
+        sig = node.record
         self.assertEqual(sig.data().tolist(),[30,45,60])
         self.assertEqual(sig.dim_of().data().tolist(),[300,450,600])
 

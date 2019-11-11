@@ -69,6 +69,12 @@ def setenv(name,value):
     pe=_mds.MdsPutEnv
     pe(_ver.tobytes("=".join([str(name),str(value)])))
 
+def set_default_resample_mode(mode):
+    """set MDSPLUS_DEFAULT_RESAMPLE_MODE environment variable
+    @param mode: name of resample mode: 'Average', 'MinMax', 'Interpolation', 'Closest', or 'Previous'
+    @type mode: str
+    """
+    setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE",mode)
 
 def DateToQuad(date):
     ans=_C.c_ulonglong(0)
@@ -76,4 +82,5 @@ def DateToQuad(date):
     if not (status & 1):
         raise MdsshrException("Cannot parse %s as date. Use dd-mon-yyyy hh:mm:ss.hh format or \"now\",\"today\",\"yesterday\"." % (date,))
     return _dat.Data(_N.uint64(ans.value))
+
 
