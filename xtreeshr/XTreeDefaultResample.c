@@ -125,12 +125,13 @@ EXPORT mdsdsc_xd_t *XTreeResamplePrevious(mds_signal_t *inSignalD, mdsdsc_t*star
   return &retXd;
 }
 
-static res_mode_t default_mode = AVERAGE;
-static inline void get_default() {
+static inline res_mode_t get_default() {
   char *resampleMode = TranslateLogical("MDSPLUS_DEFAULT_RESAMPLE_MODE");
-  int len;
-  if(!resampleMode || (len=strlen(resampleMode)) == 0)
-    default_mode = AVERAGE;
+  if (!resampleMode) return AVERAGE;
+  res_mode_t default_mode;
+  int len = strlen(resampleMode);
+  if(len == 0)
+    default_mode  = AVERAGE;
   else if(!strncasecmp(resampleMode, "Average", len))
     default_mode = AVERAGE;
   else if(!strncasecmp(resampleMode, "MinMax", len))
@@ -146,10 +147,11 @@ static inline void get_default() {
     default_mode = AVERAGE;
   }
   TranslateLogicalFree(resampleMode);
+  return default_mode;
 }
 int XTreeDefaultResample(mds_signal_t *inSignalD, mdsdsc_t*startD, mdsdsc_t*endD, mdsdsc_t*deltaD, mdsdsc_xd_t *outSignalXd){
-  get_default(); // get_env is cheap compared to what comming next, we can affort to reload it
-  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, default_mode, outSignalXd);
+  // get_env is cheap compared to what is comming next, we can affort to reload it
+  return XTreeDefaultResampleMode(inSignalD, startD, endD, deltaD, get_default(), outSignalXd);
 }
 
 #define RESAMPLE_FUN(name,mode) \
