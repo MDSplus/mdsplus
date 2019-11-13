@@ -309,7 +309,7 @@ Data *Data::data(Tree *tree)
 {
 	void *dscPtr = convertToDsc();
 	int retStatus;
-	void *evalPtr = evaluateData(dscPtr, tree->getCtx(), 0, &retStatus);
+	void *evalPtr = evaluateData(dscPtr, (tree)?tree->getCtx():NULL, 0, &retStatus);
 	if(!(retStatus & 1))
 		throw MdsException(retStatus);
 
@@ -336,7 +336,7 @@ Data *Data::evaluate(Tree *tree)
 {
 	void *dscPtr = convertToDsc();
 	int retStatus;
-	void *evalPtr = evaluateData(dscPtr, tree->getCtx(), 1, &retStatus);
+	void *evalPtr = evaluateData(dscPtr, (tree)?tree->getCtx():NULL, 1, &retStatus);
 	if( !(retStatus & 1) )
 		throw MdsException(retStatus);
 	Data *retData = (Data *)convertFromDsc(evalPtr);
@@ -761,7 +761,7 @@ Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		args[i] = currArg->convertToDsc();
 	}
 	int status;
-	Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, tree->getCtx(), &status);
+	Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, (tree)?tree->getCtx():NULL, &status);
 	for(i = 0; i < nArgs; i++)
 	    freeDsc(args[i]);
 	if(!(status & 1))
@@ -818,7 +818,7 @@ Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 			args[i] = currArg->convertToDsc();
 		}
 		int status;
-		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, tree->getCtx(), &status);
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, (tree)?tree->getCtx():NULL, &status);
 		if(!(status & 1))
 			throw MdsException(status);
 		if(!compData)
