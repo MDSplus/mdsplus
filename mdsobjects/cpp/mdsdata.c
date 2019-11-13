@@ -421,9 +421,6 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, vo
   EMPTYXD(xd);
   struct descriptor exprD = { 0, DTYPE_T, CLASS_S, 0 };
 
-  
-  printf("COMPILE WITH ARGS CTX: %x\n", ctx);
-  
   exprD.length = (uint16_t)strlen(expr);
   exprD.pointer = (char *)expr;
 
