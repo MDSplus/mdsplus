@@ -207,14 +207,14 @@ void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus)
   if (isEvaluate)
   {
     if(ctx)
-      status = _TdiEvaluate(ctx, dscPtr, xdPtr MDS_END_ARG);
+      status = _TdiEvaluate(&ctx, dscPtr, xdPtr MDS_END_ARG);
     else
       status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
   }
   else
   {
     if(ctx)
-      status = _TdiData(ctx, (struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
+      status = _TdiData(&ctx, (struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
     else
       status = TdiData((struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
   }
@@ -395,7 +395,7 @@ char *decompileDsc(void *ptr, void *ctx)
   char *buf;
   struct descriptor *dscPtr = (struct descriptor *)ptr;
   if(ctx)
-    status = _TdiDecompile(ctx, dscPtr, &xd MDS_END_ARG);
+    status = _TdiDecompile(&ctx, dscPtr, &xd MDS_END_ARG);
   else
     status = TdiDecompile(dscPtr, &xd MDS_END_ARG);
   if (!(status & 1)) {
@@ -421,12 +421,15 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, vo
   EMPTYXD(xd);
   struct descriptor exprD = { 0, DTYPE_T, CLASS_S, 0 };
 
+  
+  printf("COMPILE WITH ARGS CTX: %x\n", ctx);
+  
   exprD.length = (uint16_t)strlen(expr);
   exprD.pointer = (char *)expr;
 
   if(ctx)
   {
-    arglist[1] = ctx;
+    arglist[1] = &ctx;
     arglist[2] = &exprD;
     varIdx = 3;
   }
@@ -443,9 +446,6 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, vo
       arglist[varIdx] = arglistXd[i];
     varIdx++;
   }
-  arglist[varIdx++] = &xd;
-  arglist[varIdx++] = MdsEND_ARG;
-  *(int *)&arglist[0] = varIdx - 1;
   arglist[varIdx++] = &xd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;

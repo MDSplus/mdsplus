@@ -724,6 +724,7 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
 	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree, (actTree)?actTree->getCtx():NULL, &status);
     } catch(MdsException &exc)
     {
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], NULL, NULL, &status);
     }
 
     if(!(status & 1))
