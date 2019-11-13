@@ -170,11 +170,14 @@ public class Data {
 	/**
 	 * Return the result of TDI decompile(this)
 	 */
-	public native java.lang.String decompile();
+	public native java.lang.String decompile(int ctx1, int ctx2);
 
 	public java.lang.String toString()
 	{
-	    return decompile();
+	    if (ctxTree != null)
+	      return decompile(ctxTree.getCtx1(), ctxTree.getCtx2());
+	    else
+	      return decompile(0,0);
 	}
 
 	/**

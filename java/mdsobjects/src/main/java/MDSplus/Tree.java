@@ -170,7 +170,9 @@ static public final int  TreeUSAGE_ANY  = 0,
 	public static native void deleteTreeNode(int ctx1, int ctx2, java.lang.String name) throws MdsException;
 	public static native void removeTreeTag(int ctx1, int ctx2, java.lang.String tag) throws MdsException;
 	public static native long getDatafileSize(int ctx1, int ctx2);
-
+//Thread safe context dependent tdi operations
+	public static native Data execute(int ctx1, int ctx2, java.lang.String expr, Data[] args);
+	public static native Data compile(int ctx1, int ctx2, java.lang.String expr, Data[] args);
 
 	public int getCtx1(){return ctx1;}
 	public int getCtx2() {return ctx2;}
@@ -447,4 +449,31 @@ static public final int  TreeUSAGE_ANY  = 0,
 	    return size;
 	}
 
+	public Data tdiCompile(java.lang.String expr, Data args[])
+	{
+	    Data retData =  compile(ctx1, ctx2, expr, args);
+	    retData.setCtxTree(this);
+	    return retData;
+	}
+	
+	public Data tdiCompile(java.lang.String expr)
+	{
+	    Data retData =  compile(ctx1, ctx2, expr, new Data[0]);
+	    retData.setCtxTree(this);
+	    return retData;
+	}
+
+	public Data tdiExecute(java.lang.String expr, Data args[])
+	{
+	    Data retData = execute(ctx1, ctx2, expr, args);
+	    retData.setCtxTree(this);
+	    return retData;
+	}
+	
+	public Data tdiExecute(java.lang.String expr)
+	{
+	    Data retData =  execute(ctx1, ctx2, expr, new Data[0]);
+	    retData.setCtxTree(this);
+	    return retData;
+	}
 }
