@@ -220,9 +220,9 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
 /*
  * Class:     MDSplus_Tree
  * Method:    addTreeNode
- * Signature: (IILjava/lang/String;I)V
+ * Signature: (IILjava/lang/String;I)I
  */
-JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeNode
+JNIEXPORT jint JNICALL Java_MDSplus_Tree_addTreeNode
   (JNIEnv *, jclass, jint, jint, jstring, jint);
 
 /*

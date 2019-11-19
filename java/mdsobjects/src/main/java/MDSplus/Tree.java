@@ -34,7 +34,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	        TreeUSAGE_WINDOW = 9,
 	        TreeUSAGE_AXIS = 10,
 	        TreeUSAGE_SUBTREE = 11,
-	        TreeUSAGE_COMPOUND_DATA = 1;
+	        TreeUSAGE_COMPOUND_DATA = 12;
 
 	static {
 	    try {
@@ -165,7 +165,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	public static native void createPulseFile(int ctx1, int ctx2, int pulseSot) throws MdsException;
 	public static native void deletePulseFile(int ctx1, int ctx2, int pulseSot) throws MdsException;
 	public static native java.lang.String[] findTreeTags(int ctx1, int ctx2, java.lang.String wild) throws MdsException;
-	public static native void  addTreeNode(int ctx1, int ctx2, java.lang.String name, int usage) throws MdsException;
+	public static native int  addTreeNode(int ctx1, int ctx2, java.lang.String name, int usage) throws MdsException;
 	public static native void addTreeDevice(int ctx1, int ctx2, java.lang.String name, java.lang.String type) throws MdsException;
 	public static native void deleteTreeNode(int ctx1, int ctx2, java.lang.String name) throws MdsException;
 	public static native void removeTreeTag(int ctx1, int ctx2, java.lang.String tag) throws MdsException;
@@ -270,7 +270,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	public void setVersionsInPulse(boolean enabled) throws MdsException
 	{
-	    setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_MODEL);
+	    setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_PULSE);
 	}
 
 	public boolean isModified() throws MdsException
@@ -294,7 +294,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void setViewDate(java.util.Date date) throws MdsException
 	{
-	    setTreeViewDate(ctx1, ctx2, ""+date);
+	    setTreeViewDate(ctx1, ctx2, new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(date));
 	}
 
 	/**
@@ -411,9 +411,11 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 * @param name
 	 * @param usage
 	 */
-	public void addNode(java.lang.String name, java.lang.String usage) throws MdsException
+	public TreeNode addNode(java.lang.String name, java.lang.String usage) throws MdsException
 	{
-	    addTreeNode(ctx1, ctx2, name, convertUsage(usage));
+	    int newNid = addTreeNode(ctx1, ctx2, name, convertUsage(usage));
+	    return new TreeNode(newNid, this);
+
 	}
 
 	/**

@@ -365,7 +365,8 @@ static int doAction(void *dbid, int nid)
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
 
-static void printDecompiled (struct descriptor *dsc) 
+#ifdef DEBUG
+static void printDecompiled (struct descriptor *dsc)  
 {
   EMPTYXD(out_xd);
   static char decompiled[1024];
@@ -391,6 +392,7 @@ static void printDecompiled1(void *ctx, struct descriptor *dsc)
   printf("%s\n", decompiled);
   MdsFree1Dx(&out_xd, 0);
 }
+#endif
 
 static void FreeDescrip(struct descriptor *desc);
 
@@ -2065,6 +2067,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate
   int status;
 
   date = (*env)->GetStringUTFChars(env, jdate, 0);
+  qtime = 0;
   status = LibConvertDateString(date, &qtime);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -2197,13 +2200,12 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
 
   return jtags;
 }
-
 /*
  * Class:     MDSplus_Tree
  * Method:    addTreeNode
  * Signature: (IILjava/lang/String;I)V
  */
-JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeNode
+JNIEXPORT jint JNICALL Java_MDSplus_Tree_addTreeNode
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jstring jpath, jint usage) {
   const char *path;
   void *ctx = getCtx(ctx1, ctx2);
@@ -2215,6 +2217,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeNode
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   if STATUS_NOT_OK
     throwMdsException(env, status);
+  return nidOut;
 }
 
 /*
@@ -2410,7 +2413,6 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNci
   {NciEND_OF_LIST, 0, 0, 0}
   };
   void *ctx = getCtx(ctx1, ctx2);
-
   nciList[0].code = (short)nciType;
   status = _TreeGetNci(ctx, nid, nciList);
   if STATUS_NOT_OK
@@ -2475,20 +2477,18 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setNciFlag
   int status;
   int nciFlags;
   int nciFlagsLen = sizeof(int);
-  struct nci_itm nciList[] = { {sizeof(int), NciGET_FLAGS, &nciFlags, &nciFlagsLen},
-  {NciEND_OF_LIST, 0, 0, 0}
-  };
+  struct nci_itm setNciList[] =  {{4, NciSET_FLAGS, &nciFlags, &nciFlagsLen},
+	  {0, NciEND_OF_LIST, 0, 0}};
+  struct nci_itm clearNciList[] =  {{4, NciCLEAR_FLAGS, &nciFlags, &nciFlagsLen},
+	  {0, NciEND_OF_LIST, 0, 0}};
   void *ctx = getCtx(ctx1, ctx2);
-
-  status = _TreeGetNci(ctx, nid, nciList);
-  if STATUS_NOT_OK
-    throwMdsException(env, status);
-  if (flag)
-    nciFlags |= flagOfs;
+  
+  nciFlags = flagOfs;
+  if(flag)
+      status = _TreeSetNci(ctx, nid, setNciList);
   else
-    nciFlags &= ~flagOfs;
+      status = _TreeSetNci(ctx, nid, clearNciList);
 
-  status = _TreeSetNci(ctx, nid, nciList);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2759,7 +2759,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
   dimD = ObjectToDescrip(env, jdim);
   dataD = ObjectToDescrip(env, jdata);
 
-  status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+  status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2820,7 +2820,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
  * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
-    (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend,
+    (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint segmentOffset, jobject jstart, jobject jend,
      jobject jdim) {
   struct descriptor *startD, *endD, *dimD;
   int status;
@@ -2829,12 +2829,11 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
   startD = ObjectToDescrip(env, jstart);
   endD = ObjectToDescrip(env, jend);
   dimD = ObjectToDescrip(env, jdim);
-
-  status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD, -1);
+  status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD, segmentOffset);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
-  FreeDescrip(endD);
+  FreeDescrip(dimD);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -3283,7 +3282,6 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   LibConvertDateString("now", &time);
   args[1].j = time;
   (*env)->CallVoidMethodA(env, obj, mid, args);
-  (*env)->ReleaseByteArrayElements(env, jbuf, (jbyte *) buf, 0);
   releaseJNIEnv();
 }
 /*
