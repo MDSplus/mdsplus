@@ -198,7 +198,7 @@ public class MdsTreeTest{
 		}
 		catch(Exception exc){}
 
-      /*  VERSIONS  IN PULSE //
+ /*    //  VERSIONS  IN PULSE // --APPARENTLY NOT WORKING......
 		tree = new MDSplus.Tree("java_test0",-1,"EDIT");
 		tree.setVersionsInModel(false);
 		tree.write(); // tree open in edit mode so must call write to avoid memory leak //

@@ -2021,7 +2021,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDefaultNid
  */
 JNIEXPORT jboolean JNICALL Java_MDSplus_Tree_getDbiFlag
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jint code) {
-  int flag = 0, len, status;
+  int flag = 0, len = sizeof(jboolean), status;
   void *ctx = getCtx(ctx1, ctx2);
   struct dbi_itm dbiList[] = { {sizeof(int), 0, &flag, &len},
   {0, DbiEND_OF_LIST, 0, 0}
@@ -2041,7 +2041,7 @@ JNIEXPORT jboolean JNICALL Java_MDSplus_Tree_getDbiFlag
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jboolean jflag, jint code) {
-  int len, status, flag;
+  int len = sizeof(jboolean), status, flag;
   void *ctx = getCtx(ctx1, ctx2);
   struct dbi_itm dbiList[] = { {sizeof(int), 0, &flag, &len},
   {0, DbiEND_OF_LIST, 0, 0}
