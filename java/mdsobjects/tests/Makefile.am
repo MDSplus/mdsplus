@@ -22,17 +22,39 @@ tests.jar: $(main_JARS) $(JAVAROOT) classjava.stamp
 	$(JAR) cf $@ -C $(JAVAROOT) .
 endif
 
+mdsip.sh: $(java_srcdir)/MDSplus/mdsip.sh
+	cp $< $@
 
+#MDSplus.MdsConnectionTest.log: mdsip.sh
+MOSTLYCLEANFILES = *.tree *.datafile *.characteristics mdsip.sh
+
+tests: mdsip.sh
 
 MAIN_JARS = mdsobjects.jar
 
 SOURCE = \
     MDSplus/*.java
 
-TESTS = MDSplus.MdsDataTest
+TESTS = \
+    MDSplus.MdsDataTest  \
+    MDSplus.MdsConglomTest  \
+    MDSplus.MdsConnectionTest  \
+    MDSplus.MdsDimensionTest  \
+    MDSplus.MdsEventTest  \
+    MDSplus.MdsExpressionCompileTest  \
+    MDSplus.MdsFunctionTest  \
+    MDSplus.MdsRangeTest  \
+    MDSplus.MdsSignalTest  \
+    MDSplus.MdsStringTest  \
+    MDSplus.MdsTreeNodeTest  \
+    MDSplus.MdsTreeTest  \
+    MDSplus.MdsWindowTest 
 
-VALGRIND_TESTS = 
+VALGRIND_TESTS = MDSplus.MdsDataTest
 
 # test_path = $(abs_builddir)/trees
 # hostfile = $(abs_top_srcdir)/testing/multi.hosts
 # TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1
+
+
+export JUNITTEST = MDSplus.TestRunner

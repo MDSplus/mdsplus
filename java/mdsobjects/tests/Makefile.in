@@ -718,7 +718,12 @@ JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
-JUNIT = $(top_srcdir)/java/junit.jar
+JUNIT = $(top_srcdir)/java/junit.jar \
+		$(top_srcdir)/java/snakeyaml-1.17.jar \
+		$(top_srcdir)/java/commons-lang-2.6.jar \
+		$(top_srcdir)/java/commons-io-2.6.jar \
+		$(top_srcdir)/java/tap4j-3.3.jar
+
 VALGRIND_SUPPRESSIONS_FILES_PY = \
  $(top_srcdir)/conf/valgrind-java.supp \
  $(top_srcdir)/conf/valgrind-mdsplus.supp
@@ -732,12 +737,29 @@ null :=
 space := $(null) #
 column := :
 CLASSPATH_ENV = CLASSPATH=$(subst $(space),$(column),$(strip tests.jar $(main_JARS) $(JUNIT)))
+
+#MDSplus.MdsConnectionTest.log: mdsip.sh
+MOSTLYCLEANFILES = *.tree *.datafile *.characteristics mdsip.sh
 MAIN_JARS = mdsobjects.jar
 SOURCE = \
     MDSplus/*.java
 
-TESTS = Mdsplus.MdsDataTest
-VALGRIND_TESTS = 
+TESTS = \
+    MDSplus.MdsDataTest  \
+    MDSplus.MdsConglomTest  \
+    MDSplus.MdsConnectionTest  \
+    MDSplus.MdsDimensionTest  \
+    MDSplus.MdsEventTest  \
+    MDSplus.MdsExpressionCompileTest  \
+    MDSplus.MdsFunctionTest  \
+    MDSplus.MdsRangeTest  \
+    MDSplus.MdsSignalTest  \
+    MDSplus.MdsStringTest  \
+    MDSplus.MdsTreeNodeTest  \
+    MDSplus.MdsTreeTest  \
+    MDSplus.MdsWindowTest 
+
+VALGRIND_TESTS = MDSplus.MdsDataTest
 all: all-am
 
 .SUFFIXES:
@@ -990,9 +1012,93 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-Mdsplus.MdsDataTest.log: Mdsplus.MdsDataTest
-	@p='Mdsplus.MdsDataTest'; \
-	b='Mdsplus.MdsDataTest'; \
+MDSplus.MdsDataTest.log: MDSplus.MdsDataTest
+	@p='MDSplus.MdsDataTest'; \
+	b='MDSplus.MdsDataTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsConglomTest.log: MDSplus.MdsConglomTest
+	@p='MDSplus.MdsConglomTest'; \
+	b='MDSplus.MdsConglomTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsConnectionTest.log: MDSplus.MdsConnectionTest
+	@p='MDSplus.MdsConnectionTest'; \
+	b='MDSplus.MdsConnectionTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsDimensionTest.log: MDSplus.MdsDimensionTest
+	@p='MDSplus.MdsDimensionTest'; \
+	b='MDSplus.MdsDimensionTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsEventTest.log: MDSplus.MdsEventTest
+	@p='MDSplus.MdsEventTest'; \
+	b='MDSplus.MdsEventTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsExpressionCompileTest.log: MDSplus.MdsExpressionCompileTest
+	@p='MDSplus.MdsExpressionCompileTest'; \
+	b='MDSplus.MdsExpressionCompileTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsFunctionTest.log: MDSplus.MdsFunctionTest
+	@p='MDSplus.MdsFunctionTest'; \
+	b='MDSplus.MdsFunctionTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsRangeTest.log: MDSplus.MdsRangeTest
+	@p='MDSplus.MdsRangeTest'; \
+	b='MDSplus.MdsRangeTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsSignalTest.log: MDSplus.MdsSignalTest
+	@p='MDSplus.MdsSignalTest'; \
+	b='MDSplus.MdsSignalTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsStringTest.log: MDSplus.MdsStringTest
+	@p='MDSplus.MdsStringTest'; \
+	b='MDSplus.MdsStringTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsTreeNodeTest.log: MDSplus.MdsTreeNodeTest
+	@p='MDSplus.MdsTreeNodeTest'; \
+	b='MDSplus.MdsTreeNodeTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsTreeTest.log: MDSplus.MdsTreeTest
+	@p='MDSplus.MdsTreeTest'; \
+	b='MDSplus.MdsTreeTest'; \
+	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
+	--log-file $$b.log --trs-file $$b.trs \
+	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
+	"$$tst" $(AM_TESTS_FD_REDIRECT)
+MDSplus.MdsWindowTest.log: MDSplus.MdsWindowTest
+	@p='MDSplus.MdsWindowTest'; \
+	b='MDSplus.MdsWindowTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1070,6 +1176,7 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
+	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
@@ -1364,9 +1471,16 @@ $(main_JARS):
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
+mdsip.sh: $(java_srcdir)/MDSplus/mdsip.sh
+	cp $< $@
+
+tests: mdsip.sh
+
 # test_path = $(abs_builddir)/trees
 # hostfile = $(abs_top_srcdir)/testing/multi.hosts
 # TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1
+
+export JUNITTEST = MDSplus.TestRunner
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -2,9 +2,11 @@ include @top_builddir@/Makefile.inc
 include $(top_srcdir)/testing/testing.am
 include $(top_srcdir)/java/Makefile.inc.am
 
-
-
-JUNIT = $(top_srcdir)/java/junit.jar
+JUNIT = $(top_srcdir)/java/junit.jar \
+		$(top_srcdir)/java/snakeyaml-1.17.jar \
+		$(top_srcdir)/java/commons-lang-2.6.jar \
+		$(top_srcdir)/java/commons-io-2.6.jar \
+		$(top_srcdir)/java/tap4j-3.3.jar
 
 CLEANFILES += *.log *.tap *.trs *.xml
 TESTS_ENVIRONMENT += $(CLASSPATH_ENV)

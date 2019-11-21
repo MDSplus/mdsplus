@@ -3,4 +3,5 @@ if [ -z $VALGRIND_TOOL ]
 then JVM_OPTIONS="-XX:UseSSE=0 -Djava.compiler=NONE"
 else JVM_OPTIONS=
 fi
-exec java $JVM_OPTIONS org.junit.runner.JUnitCore ${2/"$1/"/}
+echo "JUNITTEST=${JUNITTEST}"
+exec java $JVM_OPTIONS ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}

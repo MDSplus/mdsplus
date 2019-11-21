@@ -43,7 +43,8 @@ clean-local:
 # //////////////////////////////////////////////////////////////////////////// #
 
 if ENABLE_JAVA
-JAVA_TEST_DIRS = java/mdsplus-api/tests
+JAVA_TEST_DIRS = java/mdsplus-api/tests \
+				 java/mdsobjects/tests
 else
 JAVA_TEST_DIRS = 
 endif

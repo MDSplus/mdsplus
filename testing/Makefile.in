@@ -569,7 +569,9 @@ MdsTestShr = @MAKESHLIBDIR@@LIBPRE@MdsTestShr@SHARETYPE@
 # //////////////////////////////////////////////////////////////////////////// #
 # //  COLLECT TESTS IN SUBDIRECTORIES  /////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
-@ENABLE_JAVA_TRUE@JAVA_TEST_DIRS = java/mdsplus-api/tests
+@ENABLE_JAVA_TRUE@JAVA_TEST_DIRS = java/mdsplus-api/tests \
+@ENABLE_JAVA_TRUE@				 java/mdsobjects/tests
+
 PYTHON_TEST_DIRS = \
 	python/MDSplus/tests
 

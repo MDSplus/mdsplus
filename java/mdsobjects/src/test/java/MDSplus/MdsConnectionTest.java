@@ -60,6 +60,8 @@ public class MdsConnectionTest{
             while(count < 100)
 	    {
 		try {
+			java.lang.String currDir = System.getProperty("user.dir");
+			MDSplus.Data.execute("setenv(\'java_test_path="+currDir+"\')", new MDSplus.Data[0]);	
 		    DatagramSocket serverSocket = new DatagramSocket(freePort);
 		    serverSocket.close();
 System.out.println("Free Port: "+freePort);
@@ -135,7 +137,12 @@ System.out.println("Free Port: "+freePort);
 
 
 
-	    }catch(Exception exc){Assert.fail(exc.toString());}
+	    }catch(Exception exc) {
+			exc.printStackTrace();
+			try { mdsip.disconnectFromMdsip(); }
+			catch ( Exception e ) {}
+			Assert.fail(exc.toString());
+		}
 	}
 }
 

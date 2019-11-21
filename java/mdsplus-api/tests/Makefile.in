@@ -719,7 +719,12 @@ JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
-JUNIT = $(top_srcdir)/java/junit.jar
+JUNIT = $(top_srcdir)/java/junit.jar \
+		$(top_srcdir)/java/snakeyaml-1.17.jar \
+		$(top_srcdir)/java/commons-lang-2.6.jar \
+		$(top_srcdir)/java/commons-io-2.6.jar \
+		$(top_srcdir)/java/tap4j-3.3.jar
+
 VALGRIND_SUPPRESSIONS_FILES_PY = \
  $(top_srcdir)/conf/valgrind-java.supp \
  $(top_srcdir)/conf/valgrind-mdsplus.supp

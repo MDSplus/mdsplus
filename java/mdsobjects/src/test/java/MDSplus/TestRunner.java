@@ -1,19 +1,54 @@
 package MDSplus;
 
 import org.junit.runner.JUnitCore;
-import org.junit.runner.Result;
-import org.junit.runner.notification.Failure;
+import org.junit.runner.Computer;
+import org.tap4j.ext.junit.JUnitTestTapReporter;
+import org.junit.runner.JUnitCommandLineParseResultWrapper;
 
-public class TestRunner {
-   public static void main(String[] args) {
-      Result result = JUnitCore.runClasses(new Class[]{MdsDataTest.class, MdsConglomTest.class, MdsConnectionTest.class, MdsDimensionTest.class, 
-	    MdsEventTest.class, MdsExpressionCompileTest.class, MdsFunctionTest.class,  MdsRangeTest.class,  MdsSignalTest.class, 
-	    MdsStringTest.class, MdsTreeTest.class, MdsTreeNodeTest.class, MdsWindowTest.class});
+
+
+public class TestRunner
+{
+   public static void main(java.lang.String[] args) 
+	{
+      // // Create a JUnit suite
+		// TestSuite suite = new TestSuite();		
+		// suite.addTestSuite(MyJUnitTestClass.class);
 		
-      for (Failure failure : result.getFailures()) {
-         System.out.println(failure.toString());
-      }
+		// Instantiate a JUniteCore object
+		JUnitCore core = new JUnitCore();
 		
-      System.out.println(result.wasSuccessful());
+		// Add TAP Reporter Listener to the core object executor
+		core.addListener(new JUnitTestTapReporter());
+		// Run the test suite
+      // core.run(suite);
+      
+      Computer defaultComputer = new Computer();
+
+      JUnitCommandLineParseResultWrapper jUnitCommandLineParseResult = JUnitCommandLineParseResultWrapper.parse(args);
+      core.run(jUnitCommandLineParseResult.createRequest(defaultComputer));
+      
    }
-} 
+}
+
+
+
+   // import org.junit.runner.JUnitCore;
+   // import org.junit.runner.Result;
+   // import org.junit.runner.notification.Failure;
+   
+   // public class TestRunner {
+   //    public static void main(String[] args) {
+   //       Result result = JUnitCore.runClasses(new Class[]{MdsDataTest.class, MdsConglomTest.class, MdsConnectionTest.class, MdsDimensionTest.class, 
+   // 	    MdsEventTest.class, MdsExpressionCompileTest.class, MdsFunctionTest.class,  MdsRangeTest.class,  MdsSignalTest.class, 
+   // 	    MdsStringTest.class, MdsTreeTest.class, MdsTreeNodeTest.class, MdsWindowTest.class});
+        
+   //       for (Failure failure : result.getFailures()) {
+   //          System.out.println(failure.toString());
+   //       }
+   
+   //       System.out.println(result.wasSuccessful());
+   //    }
+   // } 
+
+
