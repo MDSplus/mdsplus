@@ -496,6 +496,7 @@ RT6JAR = $(top_srcdir)/java/rt6.jar
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(top_builddir)/java/mdsobjects/mdsobjects.jar
 JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
@@ -512,7 +513,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(MDSOBJECTS_JAR) 
 SOURCE = *.java
 RESOURCES = *.gif
 all: all-am

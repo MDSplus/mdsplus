@@ -106,7 +106,7 @@ target_triplet = @target@
 @ENABLE_SANITIZE_TRUE@	echo --skip;) $(shell test \
 @ENABLE_SANITIZE_TRUE@	x"${ENABLE_SANITIZE}" != x"thread" || \
 @ENABLE_SANITIZE_TRUE@	echo --skip;)
-subdir = java/mdsplus-api/tests
+subdir = java/mdsobjects/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
@@ -591,8 +591,7 @@ TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ MDSPLUS_VERSION_CHECK=off \
-	$(am__append_1) $(CLASSPATH_ENV) hostfile="$(hostfile)" \
-	test_mdsip=1
+	$(am__append_1) $(CLASSPATH_ENV)
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -733,30 +732,12 @@ null :=
 space := $(null) #
 column := :
 CLASSPATH_ENV = CLASSPATH=$(subst $(space),$(column),$(strip tests.jar $(main_JARS) $(JUNIT)))
-MAIN_JARS = mdsplus-api.jar
+MAIN_JARS = mdsobjects.jar
 SOURCE = \
- mds/*.java \
- mds/data/*.java \
- mds/data/descriptor/*.java \
- mds/data/descriptor_r/*.java
+    MDSplus/*.java
 
-TESTS = \
- mds.Mds_Test\
- mds.MdsShr_Test\
- mds.TdiShr_Test\
- mds.TreeShr_Test\
- mds.data.CONST_Test\
- mds.data.TREE_Test\
- mds.data.descriptor.Descriptor_A_Test\
- mds.data.descriptor.Descriptor_CA_Test\
- mds.data.descriptor.Descriptor_S_Test\
- mds.data.descriptor_r.Function_Test
-
-VALGRIND_TESTS = \
- mds.MdsShr_Test
-
-test_path = $(abs_builddir)/trees
-hostfile = $(abs_top_srcdir)/testing/multi.hosts
+TESTS = Mdsplus.MdsDataTest
+VALGRIND_TESTS = 
 all: all-am
 
 .SUFFIXES:
@@ -770,9 +751,9 @@ $(srcdir)/Makefile.in: @MAINTAINER_MODE_TRUE@ $(srcdir)/Makefile.am $(srcdir)/..
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/mdsplus-api/tests/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --foreign java/mdsobjects/tests/Makefile'; \
 	$(am__cd) $(top_srcdir) && \
-	  $(AUTOMAKE) --foreign java/mdsplus-api/tests/Makefile
+	  $(AUTOMAKE) --foreign java/mdsobjects/tests/Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
 	  *config.status*) \
@@ -1009,72 +990,9 @@ recheck: all
 	        am__force_recheck=am--force-recheck \
 	        TEST_LOGS="$$log_list"; \
 	exit $$?
-mds.Mds_Test.log: mds.Mds_Test
-	@p='mds.Mds_Test'; \
-	b='mds.Mds_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.MdsShr_Test.log: mds.MdsShr_Test
-	@p='mds.MdsShr_Test'; \
-	b='mds.MdsShr_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.TdiShr_Test.log: mds.TdiShr_Test
-	@p='mds.TdiShr_Test'; \
-	b='mds.TdiShr_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.TreeShr_Test.log: mds.TreeShr_Test
-	@p='mds.TreeShr_Test'; \
-	b='mds.TreeShr_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.CONST_Test.log: mds.data.CONST_Test
-	@p='mds.data.CONST_Test'; \
-	b='mds.data.CONST_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.TREE_Test.log: mds.data.TREE_Test
-	@p='mds.data.TREE_Test'; \
-	b='mds.data.TREE_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.descriptor.Descriptor_A_Test.log: mds.data.descriptor.Descriptor_A_Test
-	@p='mds.data.descriptor.Descriptor_A_Test'; \
-	b='mds.data.descriptor.Descriptor_A_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.descriptor.Descriptor_CA_Test.log: mds.data.descriptor.Descriptor_CA_Test
-	@p='mds.data.descriptor.Descriptor_CA_Test'; \
-	b='mds.data.descriptor.Descriptor_CA_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.descriptor.Descriptor_S_Test.log: mds.data.descriptor.Descriptor_S_Test
-	@p='mds.data.descriptor.Descriptor_S_Test'; \
-	b='mds.data.descriptor.Descriptor_S_Test'; \
-	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
-	--log-file $$b.log --trs-file $$b.trs \
-	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
-	"$$tst" $(AM_TESTS_FD_REDIRECT)
-mds.data.descriptor_r.Function_Test.log: mds.data.descriptor_r.Function_Test
-	@p='mds.data.descriptor_r.Function_Test'; \
-	b='mds.data.descriptor_r.Function_Test'; \
+Mdsplus.MdsDataTest.log: Mdsplus.MdsDataTest
+	@p='Mdsplus.MdsDataTest'; \
+	b='Mdsplus.MdsDataTest'; \
 	$(am__check_pre) $(LOG_DRIVER) --test-name "$$f" \
 	--log-file $$b.log --trs-file $$b.trs \
 	$(am__common_driver_flags) $(AM_LOG_DRIVER_FLAGS) $(LOG_DRIVER_FLAGS) -- $(LOG_COMPILE) \
@@ -1440,11 +1358,15 @@ install-javaDATA: $(java_DATA)
 $(main_JARS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C ..
 
-@USE_JARS_DIR_TRUE@tests.jar : @JARS_DIR@/java/mdsplus-api/tests/tests.jar
+@USE_JARS_DIR_TRUE@tests.jar : @JARS_DIR@/java/mdsobjects/tests/tests.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 @USE_JARS_DIR_FALSE@tests.jar: $(main_JARS) $(JAVAROOT) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
+
+# test_path = $(abs_builddir)/trees
+# hostfile = $(abs_top_srcdir)/testing/multi.hosts
+# TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

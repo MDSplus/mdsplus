@@ -2,30 +2,7 @@ include @top_builddir@/Makefile.inc
 include $(top_srcdir)/testing/testing.am
 include $(top_srcdir)/java/Makefile.inc.am
 
-java_srcdir = ${srcdir}/../src/test/java
-java_DATA = tests.jar
-main_JARS = $(addprefix ../, $(MAIN_JARS))
 
-null  :=
-space := $(null) #
-column := :
-CLASSPATH_ENV = CLASSPATH=$(subst $(space),$(column),$(strip tests.jar $(main_JARS) $(JUNIT)))
-
-$(main_JARS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C ..
-
-if USE_JARS_DIR
-
-tests.jar : @JARS_DIR@/java/mdsplus-api/tests/tests.jar
-	cp $< $@
-
-else
-
-tests.jar: $(main_JARS) $(JAVAROOT) classjava.stamp
-	@ echo "Creating JAR: $@ ...";\
-	$(JAR) cf $@ -C $(JAVAROOT) .
-
-endif
 
 JUNIT = $(top_srcdir)/java/junit.jar
 
@@ -41,3 +18,4 @@ install-javaDATA: $(java_DATA)
 
 @SKIP_JUNIT_TRUE@$(TESTS):
 @SKIP_JUNIT_FALSE@$(TESTS): $(main_JARS) tests.jar
+

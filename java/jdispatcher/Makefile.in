@@ -493,9 +493,9 @@ JAVASOURCE = 6
 JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
 RT6JAR = $(top_srcdir)/java/rt6.jar
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-MDSOBJECTS_JAR = $(top_builddir)/java/mdsobjects/mdsobjects.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(top_builddir)/java/mdsobjects/mdsobjects.jar
 JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
@@ -510,7 +510,7 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR):$(MDSOBJECTS_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR):$(MDSOBJECTS_JAR) 
 @MINGW_FALSE@EXTRA_DIST = jDispatcherIp.template jDispatchMonitor.template jServer.template
 SOURCE = *.java
 all: all-am

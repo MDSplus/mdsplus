@@ -1339,6 +1339,7 @@ AC_OUTPUT(Makefile.inc
           java/mdsplus-api/tests/Makefile
           java/mdsobjects/Makefile
           java/mdsobjects/docs/Makefile
+          java/mdsobjects/tests/Makefile
           java/jdispatcher/Makefile
           java/jscope/Makefile
           java/jtraverser/Makefile

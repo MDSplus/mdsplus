@@ -9,7 +9,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(MDSOBJECTS_JAR) 
 
 if USE_JARS_DIR
 
