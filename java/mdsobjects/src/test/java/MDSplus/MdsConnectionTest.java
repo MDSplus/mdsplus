@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import java.io.*;
 import java.util.*;
+import java.net.*;
 
 class MdsIpRunner
 {
@@ -44,6 +45,7 @@ class MdsIpRunner
 @SuppressWarnings("static-method")
 public class MdsConnectionTest{
 	MdsIpRunner mdsip;
+	int freePort;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {}
 		
@@ -51,7 +53,25 @@ public class MdsConnectionTest{
 	public static void tearDownAfterClass() throws Exception {}
 		
 	@Before
-	public void setUp() throws Exception {}
+	public void setUp() throws Exception 
+	{
+	    freePort= 8888;
+	    int count = 0;
+            while(count < 100)
+	    {
+		try {
+		    DatagramSocket serverSocket = new DatagramSocket(freePort);
+		    serverSocket.close();
+System.out.println("Free Port: "+freePort);
+		    MDSplus.Data.execute("setenv(\'TEST_IP_PORT="+freePort+"\')", new MDSplus.Data[0]);
+		    return;
+		}catch(Exception exc)
+		{
+		    freePort++;
+		}
+	    }
+	    System.out.println("Cannot find free port!");
+	}
 
 	@After
 	public void tearDown() throws Exception 
@@ -77,7 +97,7 @@ public class MdsConnectionTest{
 	      while(true)
 	      {
 		  try {
-		    c = new MDSplus.Connection("localhost:8888");
+		    c = new MDSplus.Connection("localhost:"+freePort);
 		    System.out.println("connected!");
 		    break;
 		  } catch(Exception exc){}
