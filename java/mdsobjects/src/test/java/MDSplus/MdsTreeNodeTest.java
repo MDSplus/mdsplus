@@ -19,7 +19,7 @@ public class MdsTreeNodeTest{
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception 
 	{
-	    String currDir = System.getProperty("user.dir");
+	    java.lang.String currDir = System.getProperty("user.dir");
 	    MDSplus.Data.execute("setenv(\'java_test1_path="+currDir+"\')", new MDSplus.Data[0]);
 	    MDSplus.Data.execute("setenv(\'java_test2_path="+currDir+"\')", new MDSplus.Data[0]);
 	}

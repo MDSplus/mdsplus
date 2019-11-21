@@ -29,7 +29,7 @@ MAIN_JARS = mdsobjects.jar
 SOURCE = \
     MDSplus/*.java
 
-TESTS = Mdsplus.MdsDataTest
+TESTS = MDSplus.MdsDataTest
 
 VALGRIND_TESTS = 
 

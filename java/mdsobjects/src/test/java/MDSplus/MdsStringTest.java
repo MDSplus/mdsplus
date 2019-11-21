@@ -27,11 +27,11 @@ public class MdsStringTest{
 	@Test
 	public void testData(){
 	    try {
-		String strings[] = new String[]{"str1","str2","str3","str4","str5"}; 
+		java.lang.String strings[] = new java.lang.String[]{"str1","str2","str3","str4","str5"}; 
 		MDSplus.StringArray strarr = new MDSplus.StringArray(strings);
 		MDSplus.StringArray strarr1 = (MDSplus.StringArray)MDSplus.Data.compile("['STR1','STR2','STR3']");
 		Assert.assertArrayEquals(strings, strarr.getStringArray());
-		Assert.assertArrayEquals(new String[]{"STR1", "STR2","STR3"}, strarr1.getStringArray());
+		Assert.assertArrayEquals(new java.lang.String[]{"STR1", "STR2","STR3"}, strarr1.getStringArray());
 
 		Assert.assertEquals("str1", strarr.getElementAt(0).getString());
 		Assert.assertEquals("str2", strarr.getElementAt(1).getString());

@@ -14,7 +14,7 @@ public class MdsEventTest{
 	
 	class EventReceiver extends MDSplus.Event
 	{
-	    EventReceiver(String name) throws Exception
+	    EventReceiver(java.lang.String name) throws Exception
 	    {
 		  super(name);
 	    }
@@ -52,7 +52,7 @@ public class MdsEventTest{
 		MDSplus.Event.setEventRaw("TEST_EVENT", rawMsg);
 		Thread.currentThread().sleep(1000);
 		Assert.assertEquals("Raw Event not received", eventReceived, true);
-		String rawStr = new String(eventRec.getRaw());
+		java.lang.String rawStr = new java.lang.String(eventRec.getRaw());
 		Assert.assertEquals("raw message", rawStr);
 		MDSplus.Data dataMsg = new MDSplus.String("data message");
 		eventReceived = false;
