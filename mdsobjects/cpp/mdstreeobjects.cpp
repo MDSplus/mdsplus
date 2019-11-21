@@ -234,128 +234,88 @@ void Tree::write()
 
 Data *Tree::tdiEvaluate(Data *data)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return data->evaluate();
+    return data->evaluate(this);
 }
 
 Data *Tree::tdiData(Data *data)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return data->data();
+    return data->data(this);
 }
     
 Data *Tree::tdiCompile(const char *expr)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compile(expr);
+    return MDSplus::compile(expr, this);
 }
 
 Data *Tree::tdiCompile(const char *expr, Data *arg1)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 1, arg1);
+    return MDSplus::compileWithArgs(expr, this, 1, arg1);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 2, arg1, arg2);
+    return MDSplus::compileWithArgs(expr, this, 2, arg1, arg2);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 3, arg1, arg2, arg3);
+    return MDSplus::compileWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 4, arg1, arg2, arg3, arg4);
+    return MDSplus::compileWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 5, arg1, arg2, arg3, arg4, arg5);
+    return MDSplus::compileWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 6, arg1, arg2, arg3, arg4, arg5, arg6);
+    return MDSplus::compileWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5, arg6);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    return MDSplus::compileWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    return MDSplus::compileWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 }
 
 Data *Tree::tdiExecute(const char *expr)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return execute(expr);
+    return execute(expr, this);
 }
 
 Data *Tree::tdiExecute(const char *expr, Data *arg1)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 1, arg1);
+    return MDSplus::executeWithArgs(expr, this, 1, arg1);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 2, arg1, arg2);
+    return MDSplus::executeWithArgs(expr, this, 2, arg1, arg2);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 3, arg1, arg2, arg3);
+    return MDSplus::executeWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 4, arg1, arg2, arg3, arg4);
+    return MDSplus::executeWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 5, arg1, arg2, arg3, arg4, arg5);
+    return MDSplus::executeWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 6, arg1, arg2, arg3, arg4, arg5, arg6);
+    return MDSplus::executeWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5, arg6);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    return MDSplus::executeWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    return MDSplus::executeWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 }
 
 

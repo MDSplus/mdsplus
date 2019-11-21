@@ -259,10 +259,12 @@ public:
 
     /// \return Return the result of TDI evaluate
     Data *evaluate();
+    Data *evaluate(Tree *tree);
 
     /// eports TDI data functionality, i.e. returns a native type
     /// (scalar or array).
     virtual Data *data();
+    virtual Data *data(Tree *tree);
 
     /// Return the result of TDI decompile
     char *decompile();
