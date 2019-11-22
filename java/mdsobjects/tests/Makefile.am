@@ -50,11 +50,15 @@ TESTS = \
     MDSplus.MdsTreeTest  \
     MDSplus.MdsWindowTest 
 
-VALGRIND_TESTS = MDSplus.MdsDataTest
+VALGRIND_TESTS = 
 
 # test_path = $(abs_builddir)/trees
 # hostfile = $(abs_top_srcdir)/testing/multi.hosts
 # TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1
 
+# these are needed to tell ConnectionTest script how to find mdsip and mdsip.hosts
+export MAKEBINDIR
+export MAKEETCDIR
 
+# this is needed to run tests uning personalized runner with TAP output
 export JUNITTEST = MDSplus.TestRunner

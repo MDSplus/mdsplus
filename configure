@@ -13578,8 +13578,8 @@ VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.su
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
-
-valgrind__test_logs1      = $(if ${VALGRIND_TESTS},${VALGRIND_TESTS},${TESTS})
+VALGRIND_TESTS ?= ${TESTS}
+valgrind__test_logs1      = $(VALGRIND_TESTS)
 valgrind__test_logs2      = $(valgrind__test_logs1:=.log)
 VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_logs2:${ext}.log=.log))
 
@@ -13645,8 +13645,10 @@ _print_valgrind_hello = \
 
 $(VALGRIND_LOGS):
 
+tests-valgrind: ##@valgrind perform tests in valgrind with tools in $VALGRIND_TOOLS
 tests-valgrind:
 	@ \
+	$(if $(VALGRIND_LOGS),,exit 0;) \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
 	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
@@ -13667,6 +13669,7 @@ tests-valgrind-tool:
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 
+tests-valgrind-suppressions: ##@valgrind perform valgrind with suppression output redirected to file
 tests-valgrind-suppressions:
 	@ \
 	$(MAKE) VALGRIND_BUILD="yes"; \

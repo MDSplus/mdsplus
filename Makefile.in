@@ -19,7 +19,8 @@ JAVA_JAR = \
 	   java/jdispatcher \
 	   java/jdevices \
 	   java/mdsplus \
-	   java/mdsobjects
+	   java/mdsobjects \
+	   java/mdsobjects/tests
 
 JAVA_APS = \
 	   javamds \

@@ -2,6 +2,7 @@ package MDSplus;
 
 import org.junit.runner.JUnitCore;
 import org.junit.runner.Computer;
+import org.junit.runner.Result;
 import org.tap4j.ext.junit.JUnitTestTapReporter;
 import org.junit.runner.JUnitCommandLineParseResultWrapper;
 
@@ -26,8 +27,8 @@ public class TestRunner
       Computer defaultComputer = new Computer();
 
       JUnitCommandLineParseResultWrapper jUnitCommandLineParseResult = JUnitCommandLineParseResultWrapper.parse(args);
-      core.run(jUnitCommandLineParseResult.createRequest(defaultComputer));
-      
+      Result res = core.run(jUnitCommandLineParseResult.createRequest(defaultComputer));
+      System.exit(res.wasSuccessful() ? 0 : 1);
    }
 }
 
