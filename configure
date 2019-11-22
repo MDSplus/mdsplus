@@ -627,6 +627,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+JAVA_TARGET_ARCH
 JRE
 VS_DIR
 VS_ARCH
@@ -796,6 +797,9 @@ ENABLE_TESTS_TRUE
 ENABLE_TESTS
 HAVE_WINEPATH
 HAVE_WINEBOOT
+SKIP_JUNIT_FALSE
+SKIP_JUNIT_TRUE
+JAVA_PATH_NAME
 ENABLE_SANITIZE_LIBPATH
 ENABLE_SANITIZE_OPTIONS
 ENABLE_SANITIZE
@@ -859,8 +863,6 @@ LIBSOCKET
 MAKEETCDIR
 VS_FALSE
 VS_TRUE
-SKIP_JUNIT_FALSE
-SKIP_JUNIT_TRUE
 MINGW_FALSE
 MINGW_TRUE
 GLOBUSLICENSE_FALSE
@@ -8231,51 +8233,6 @@ fi
 esac
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for version 1.8 or higher of java" >&5
-$as_echo_n "checking for version 1.8 or higher of java... " >&6; }
-    version=`java -version 2>&1|head -n 1|grep -oe '[0-9]*\.[0-9]*\.[0-9]*'||echo 1.5`
-
-
-
-  # Used to indicate true or false condition
-  ax_compare_version=false
-
-  # Convert the two version strings to be compared into a format that
-  # allows a simple string comparison.  The end result is that a version
-  # string of the form 1.12.5-r617 will be converted to the form
-  # 0001001200050617.  In other words, each number is zero padded to four
-  # digits, and non digits are removed.
-
-  ax_compare_version_A=`echo "$version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-  ax_compare_version_B=`echo "1.8" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-    ax_compare_version=`echo "x$ax_compare_version_A
-x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
-
-
-
-    if test "$ax_compare_version" = "true" ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; };if test "x$enable_sanitize" = xaddress; then :
-  skip_junit=yes
-fi
-    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; };skip_junit=yes
-  fi
-
-
-
  if test -r $exec_prefix/GLOBUS_LICENSE; then
   GLOBUSLICENSE_TRUE=
   GLOBUSLICENSE_FALSE='#'
@@ -8460,13 +8417,6 @@ else
 $as_echo "no" >&6; }
 fi
 
- if ${skip_junit+:} false||${MINGW+:} false; then
-  SKIP_JUNIT_TRUE=
-  SKIP_JUNIT_FALSE='#'
-else
-  SKIP_JUNIT_TRUE='#'
-  SKIP_JUNIT_FALSE=
-fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for visual studio" >&5
@@ -8609,6 +8559,7 @@ case "$host" in
            D32=""
          fi
          TARGET_ARCH="-m32"
+         JAVA_TARGET_ARCH="-d32"
          if which uil32 >/dev/null
          then UILCMD=uil32
          else UILCMD=uil
@@ -12923,6 +12874,9 @@ $as_echo_n "checking libpython path... " >&6; }
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DEF_PYLIB" >&5
 $as_echo "$DEF_PYLIB" >&6; }
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -13089,7 +13043,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
-
 
 
 # Extract the first word of "wine", so it can be a program name with args.
@@ -15158,6 +15111,112 @@ fi
 
 
 
+
+
+
+
+## JAVA TESTS ##
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for version 1.8 or higher of java" >&5
+$as_echo_n "checking for version 1.8 or higher of java... " >&6; }
+    version=`java -version 2>&1|head -n 1|grep -oe '[0-9]*\.[0-9]*\.[0-9]*'||echo 1.5`
+
+
+
+  # Used to indicate true or false condition
+  ax_compare_version=false
+
+  # Convert the two version strings to be compared into a format that
+  # allows a simple string comparison.  The end result is that a version
+  # string of the form 1.12.5-r617 will be converted to the form
+  # 0001001200050617.  In other words, each number is zero padded to four
+  # digits, and non digits are removed.
+
+  ax_compare_version_A=`echo "$version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+  ax_compare_version_B=`echo "1.8" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+    ax_compare_version=`echo "x$ax_compare_version_A
+x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
+
+
+
+    if test "$ax_compare_version" = "true" ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; };if test "x$enable_sanitize" = xaddress; then :
+  skip_junit=yes
+fi
+    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; };skip_junit=yes
+  fi
+
+
+
+  # AS_VAR_SET([JDK_VERSION],["$(java -d64 -version 2>&1 )"])
+  # AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
+  # Extract the first word of "java", so it can be a program name with args.
+set dummy java; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_JAVA_PATH_NAME+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $JAVA_PATH_NAME in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_JAVA_PATH_NAME="$JAVA_PATH_NAME" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_JAVA_PATH_NAME="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+JAVA_PATH_NAME=$ac_cv_path_JAVA_PATH_NAME
+if test -n "$JAVA_PATH_NAME"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAVA_PATH_NAME" >&5
+$as_echo "$JAVA_PATH_NAME" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1> /dev/null; then :
+
+else
+  skip_junit=yes
+fi
+
+ if ${skip_junit+:} false||${MINGW+:} false; then
+  SKIP_JUNIT_TRUE=
+  SKIP_JUNIT_FALSE='#'
+else
+  SKIP_JUNIT_TRUE='#'
+  SKIP_JUNIT_FALSE=
+fi
 
 
 
@@ -17728,6 +17787,8 @@ fi
 
 
 
+
+
 ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
 
 
@@ -17895,10 +17956,6 @@ if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${SKIP_JUNIT_TRUE}" && test -z "${SKIP_JUNIT_FALSE}"; then
-  as_fn_error $? "conditional \"SKIP_JUNIT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
   as_fn_error $? "conditional \"VS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -17938,6 +17995,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_SANITIZE_TRUE}" && test -z "${ENABLE_SANITIZE_FALSE}"; then
   as_fn_error $? "conditional \"ENABLE_SANITIZE\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${SKIP_JUNIT_TRUE}" && test -z "${SKIP_JUNIT_FALSE}"; then
+  as_fn_error $? "conditional \"SKIP_JUNIT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_TESTS_TRUE}" && test -z "${ENABLE_TESTS_FALSE}"; then

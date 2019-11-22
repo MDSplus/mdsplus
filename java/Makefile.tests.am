@@ -21,3 +21,5 @@ install-javaDATA: $(java_DATA)
 @SKIP_JUNIT_TRUE@$(TESTS):
 @SKIP_JUNIT_FALSE@$(TESTS): $(main_JARS) tests.jar
 
+# needed
+export JAVA_TARGET_ARCH

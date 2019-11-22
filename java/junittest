@@ -4,4 +4,4 @@ then JVM_OPTIONS="-XX:UseSSE=0 -Djava.compiler=NONE"
 else JVM_OPTIONS=
 fi
 echo "JUNITTEST=${JUNITTEST}"
-exec java $JVM_OPTIONS ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}
+exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} $JVM_OPTIONS ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}

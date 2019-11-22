@@ -242,7 +242,6 @@ AS_CASE([$enable_java],
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
 
-AX_CHECK_JAVA_VERSION([1.8],[AS_VAR_IF([enable_sanitize], [address], [skip_junit=yes])],[skip_junit=yes])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 
@@ -337,7 +336,7 @@ AS_CASE([$host],
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
-AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
+
 
 AC_MSG_CHECKING([for visual studio])
 AC_ARG_WITH([visual_studio],
@@ -461,6 +460,7 @@ case "$host" in
            D32=""
          fi
          TARGET_ARCH="-m32"
+         JAVA_TARGET_ARCH="-d32"
          if which uil32 >/dev/null
          then UILCMD=uil32
          else UILCMD=uil
@@ -1010,6 +1010,9 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 AC_MSG_CHECKING(libpython path)
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 AC_MSG_RESULT($DEF_PYLIB)
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1044,7 +1047,6 @@ AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], []
 #endif /* HAVE_PTHREAD */
 ])
 
-
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 
@@ -1066,6 +1068,15 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                     [AS_VAR_SET([CPPFLAGS],["${sanitize_flags} $CPPFLAGS"])
                      AS_VAR_SET([LIBS],["${sanitize_libs} $LIBS"])],
                     [echo "sanitizer not available."; exit 111;])
+
+
+
+## JAVA TESTS ##
+AX_CHECK_JAVA_VERSION([1.8], 
+                      [AS_VAR_IF([enable_sanitize], [address], [skip_junit=yes])],
+                      [skip_junit=yes])
+TS_CHECK_JAVA([],,[skip_junit=yes])
+AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
 
 
  # selects particular envs for build:host
@@ -1316,6 +1327,8 @@ AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
 AC_SUBST(JRE)
 AC_SUBST(UIL)
+AC_SUBST(JAVA_TARGET_ARCH)
+
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
