@@ -1457,8 +1457,9 @@ install-javaDATA: $(java_DATA)
 @SKIP_JUNIT_TRUE@$(TESTS):
 @SKIP_JUNIT_FALSE@$(TESTS): $(main_JARS) tests.jar
 
-# needed
+# needed to set java for 32 (where available)
 export JAVA_TARGET_ARCH
+export JAVA_PATH_NAME
 
 $(main_JARS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C ..
