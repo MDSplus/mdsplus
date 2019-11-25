@@ -1805,3 +1805,33 @@ dir 1*
   ^ ^
 %TDI Error in EXECUTE("dir 1*")
 
+treeopennew('main',-1)
+265388041
+treeaddnode('B',_n,6)
+265388041
+treeWrite()
+265388041
+TreeShr->_TreeSetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MyAttr"),descr(123))
+265388041
+_dat=SIN(_dim=0:($2PI):.1);TreeShr->_TreeXNciMakeSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MySeg"),descr(0.),descr($2PI),descr(_dim),descr(_dat),val(-1),val(SHAPE(_dim)[0]))
+265388041
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(,265389633,1BU,1BU)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(,265389633,["MyAttr"])
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(,265388218,$Missing)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)
+List(,1,123)
+tcl('compress main')
+265388041
+treeopen('main',-1,1)
+265388041
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(,1,1BU,1BU)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(,265389633,["MyAttr"])
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(,265388218,$Missing)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)
+List(,1,123)
