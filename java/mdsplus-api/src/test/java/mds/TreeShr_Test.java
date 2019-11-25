@@ -376,7 +376,7 @@ public class TreeShr_Test{
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
-			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetXNci(ctx, 1, "myattr", CONST.$HBAR));
+			AllTests.testStatus(MdsException.TreeNORMAL, TreeShr_Test.treeshr.treeSetXNci(ctx, 1, "myattr", CONST.$HBAR));
 			Assert.assertEquals("[\"myattr\"]", TreeShr_Test.treeshr.treeGetXNci(ctx, 1).getData().decompile());
 		}finally{
 			TreeShr_Test.treeshr.treeFreeDbid(ctx);
