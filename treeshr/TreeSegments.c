@@ -2004,6 +2004,18 @@ static inline int copy_segment_index(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out
   return status;
 }
 
+static int copy_segmented_records(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset, int *length, int compress){
+  SEGMENT_HEADER header;
+  INIT_STATUS_AS get_segment_header_by_offset(tinfo_in, *offset, &header);
+  if STATUS_OK {
+    *length=0;
+    status = copy_segment_index(tinfo_in, tinfo_out, nid, &header, compress);
+    *offset = -1;
+    status = put_segment_header_by_offset(tinfo_out, &header, offset);
+  }
+  return status;
+}
+
 static int copy_named_attributes(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset, int *length, int compress){
   EMPTYXD(xd);
   NAMED_ATTRIBUTES_INDEX index;
@@ -2015,15 +2027,18 @@ static int copy_named_attributes(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, in
       copy_named_attributes(tinfo_in, tinfo_out, nid, &index.previous_offset, 0, compress);
     for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
       if (index.attribute[i].name[0] != '\0' && index.attribute[i].offset != -1) {
-	status = TreeGetDsc(tinfo_in, nid, index.attribute[i].offset, index.attribute[i].length, &xd);
-	if STATUS_OK {
-	  status = TreePutDsc(tinfo_out, nid, (mdsdsc_t *)&xd,
-	                      &index.attribute[i].offset, &index.attribute[i].length, compress);
-	  if STATUS_NOT_OK {
-	    memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
-	    index.attribute[i].offset = -1;
+	if (index.attribute[i].length == -1) {
+	  status = copy_segmented_records(tinfo_in, tinfo_out, nid, &index.attribute[i].offset, &length, compress);
+	} else {
+	  status = TreeGetDsc(tinfo_in, nid, index.attribute[i].offset, index.attribute[i].length, &xd);
+	  if STATUS_OK {
+	    status = TreePutDsc(tinfo_out, nid, (mdsdsc_t *)&xd, &index.attribute[i].offset, &index.attribute[i].length, compress);
+	    if STATUS_NOT_OK {
+	      memset(index.attribute[i].name, 0, sizeof(index.attribute[i].name));
+	      index.attribute[i].offset = -1;
+	    }
+	    MdsFree1Dx(&xd, 0);
 	  }
-	  MdsFree1Dx(&xd, 0);
 	}
       }
     }
@@ -2031,18 +2046,6 @@ static int copy_named_attributes(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, in
     status = put_named_attributes_index(tinfo_out, &index, offset);
   } else
     *offset = -1;
-  return status;
-}
-
-inline static int copy_segmented_records(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, int nid, int64_t * offset, int *length, int compress){
-  SEGMENT_HEADER header;
-  INIT_STATUS_AS get_segment_header_by_offset(tinfo_in, *offset, &header);
-  if STATUS_OK {
-    *length=0;
-    status = copy_segment_index(tinfo_in, tinfo_out, nid, &header, compress);
-    *offset = -1;
-    status = put_segment_header_by_offset(tinfo_out, &header, offset);
-  }
   return status;
 }
 
