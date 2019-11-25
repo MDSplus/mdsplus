@@ -970,14 +970,11 @@ static int get_compressed_segment_rows(TREE_INFO * tinfo, const int64_t offset, 
 
 #define CLEANUP_NCI_PUSH pthread_cleanup_push(unlock_nci,(void*)vars)
 #define CLEANUP_NCI_POP  pthread_cleanup_pop(vars->nci_locked)
-//#define CLEANUP_NCI_PUSH
-//#define CLEANUP_NCI_POP  unlock_nci(vars)
 
 static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset) {
-  int status;
+  int status = TreeSUCCESS;
   int value_length = 0;
   int64_t value_offset = -1;
-  NAMED_ATTRIBUTES_INDEX top_index, index;
   if (is_offset) {
     value_offset = vars->xnci_header_offset;
     value_length = -1;
@@ -987,8 +984,9 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset) {
       if STATUS_NOT_OK return status;
     }
   }
-  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
-       index. If not, make an empty index and flag that a new index needs to be written.***/
+  /* See if node is currently using the STANDARD_RECORD_FACILITY and if not, make an empty index and flag that a new index needs to be written.
+   * Otherwise get the current contents of the attr
+   */
   if (vars->attr_offset==-1) {
     if (value_length==0) return status; // has not xnci; nothing to delete
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {
@@ -1055,6 +1053,7 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset) {
   /* See if the node currently has an named attr header record.
    * If not, make an empty named attr header and flag that a new one needs to be written.
    */
+  NAMED_ATTRIBUTES_INDEX top_index, index;
   if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
    || IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY], &top_index))) {
     memset(&top_index, 0, sizeof(top_index));
