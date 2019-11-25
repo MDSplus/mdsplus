@@ -1188,6 +1188,7 @@ static inline int get_xnci_names(vars_t *vars, mdsdsc_xd_t *value) {
       }
       MdsCopyDxXd((mdsdsc_t *)&name_array, value);
       free(names);
+      status = TreeSUCCESS;
     } else
       status = TreeFAILURE;
   }
