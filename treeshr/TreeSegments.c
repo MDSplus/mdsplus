@@ -1016,7 +1016,7 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset) {
 	    break;
 	  }
 	}
-	TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, dptr, &vars->attr.facility_offset[STANDARD_RECORD_FACILITY], &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
+	status = TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, dptr, &vars->attr.facility_offset[STANDARD_RECORD_FACILITY], &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
 	vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
       } else {
 	EMPTYXD(xd);
@@ -1084,7 +1084,7 @@ static int set_xnci(vars_t *vars, mdsdsc_t *value, int is_offset) {
         break;
       } else if (index.previous_offset != -1) {
         int64_t new_offset = index.previous_offset;
-	if ((get_named_attributes_index(vars->tinfo, index.previous_offset, &index) & 1) == 0)
+	if IS_NOT_OK(get_named_attributes_index(vars->tinfo, index.previous_offset, &index))
 	  break;
 	vars->index_offset = new_offset;
       } else
