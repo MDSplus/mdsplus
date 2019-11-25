@@ -2029,7 +2029,7 @@ static int copy_named_attributes(TREE_INFO * tinfo_in, TREE_INFO * tinfo_out, in
     for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
       if (index.attribute[i].name[0] != '\0' && index.attribute[i].offset != -1) {
 	if (index.attribute[i].length == -1) {
-	  status = copy_segmented_records(tinfo_in, tinfo_out, nid, &index.attribute[i].offset, &length, compress);
+	  status = copy_segmented_records(tinfo_in, tinfo_out, nid, &index.attribute[i].offset, length, compress);
 	} else {
 	  status = TreeGetDsc(tinfo_in, nid, index.attribute[i].offset, index.attribute[i].length, &xd);
 	  if STATUS_OK {
