@@ -505,6 +505,7 @@ static int get_segment_index(TREE_INFO * tinfo, const int64_t offset, SEGMENT_IN
 }
 #define EXTENDED_ATTRIBUTES_SIZE 8 + FACILITIES_PER_EA * (8+4)
 int TreePutExtendedAttributes(TREE_INFO * tinfo, EXTENDED_ATTRIBUTES * ext_attr, int64_t * offset){
+  // private but used in TreeGet/PutRecord
   char buffer[EXTENDED_ATTRIBUTES_SIZE];
   swap_ext_attr(put,buffer,ext_attr);
   return write_property(tinfo, offset, buffer, sizeof(buffer));
@@ -1156,52 +1157,69 @@ int _TreeGetXNci(void *dbid, int nid, const char *xnci, mdsdsc_xd_t *value)
   RETURN_IF_NOT_OK(open_datafile_read(vars));
     NAMED_ATTRIBUTES_INDEX index;
     const char *attnames = XNCI_ATTRIBUTE_NAMES;
-    int getnames = 0;
-    struct _namelist {
-      char name[NAMED_ATTRIBUTE_NAME_SIZE + 1];
-      struct _namelist *next;
-    } *namelist = 0;
-    size_t longestattname = 0;
-    int numnames = 0;
     size_t i;
     size_t len = strlen(xnci);
+    int getnames;
     if (len == strlen(attnames)) {
       for (i = 0; i < len; i++) {
 	if (tolower(xnci[i]) != attnames[i])
 	  break;
       }
-      if (i == len)
-	getnames = 1;
-    }
+      getnames = (i == len);
+    } else getnames = FALSE;
     if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
 	((TreeGetExtendedAttributes(vars->tinfo, RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa), &vars->attr) & 1) == 0)) {
       status = TreeFAILURE;
     } else if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
 	   ||  IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
       status = TreeFAILURE;
+    } else if (getnames) {
+      struct _namelist {
+	char name[NAMED_ATTRIBUTE_NAME_SIZE + 1];
+	struct _namelist *next;
+      } *namelist = 0;
+      size_t longestattname = 0;
+      int numnames = 0;
+      for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+	if (index.attribute[i].name[0] != 0) {
+	  size_t len = strlen(index.attribute[i].name);
+	  struct _namelist *p = malloc(sizeof(struct _namelist));
+	  memcpy(p->name, index.attribute[i].name, sizeof(p->name));
+	  p->next = namelist;
+	  namelist = p;
+	  longestattname = (len > longestattname) ? len : longestattname;
+	  numnames++;
+	}
+      }
+      if (namelist) {
+	char *names = malloc(longestattname * numnames);
+	DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names, (unsigned int)(longestattname * numnames));
+	struct _namelist *p, *pnext;
+	char *np;
+	for (p = namelist, np = names; p; p = pnext, np += longestattname) {
+	  size_t i;
+	  pnext = p->next;
+	  memcpy(np, p->name, longestattname);
+	  for (i = 1; i < longestattname; i++)
+	    if (np[i] == '\0')
+	      np[i] = ' ';
+	  free(p);
+	}
+	MdsCopyDxXd((mdsdsc_t *)&name_array, value);
+	free(names);
+      } else
+	status = TreeFAILURE;
     } else {
       int found_index = -1;
       while (found_index == -1) {
 	unsigned int i, j;
 	for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-	  if (getnames == 1) {
-	    if (index.attribute[i].name[0] != 0) {
-	      size_t len = strlen(index.attribute[i].name);
-	      struct _namelist *p = malloc(sizeof(struct _namelist));
-	      memcpy(p->name, index.attribute[i].name, sizeof(p->name));
-	      p->next = namelist;
-	      namelist = p;
-	      longestattname = (len > longestattname) ? len : longestattname;
-	      numnames++;
-	    }
-	  } else {
-	    for (j = 0; j < len; j++) {
-	      if (tolower(xnci[j]) != tolower(index.attribute[i].name[j]))
-	        break;
-	    }
-	    if (j == len && index.attribute[i].name[j] == 0)
+	  for (j = 0; j < len; j++) {
+	    if (tolower(xnci[j]) != tolower(index.attribute[i].name[j]))
 	      break;
 	  }
+	  if (j == len && index.attribute[i].name[j] == 0)
+	    break;
 	}
 	if (i < NAMED_ATTRIBUTES_PER_INDEX)
 	  found_index = i;
@@ -1213,30 +1231,7 @@ int _TreeGetXNci(void *dbid, int nid, const char *xnci, mdsdsc_xd_t *value)
 	  break;
       }
       if (found_index != -1) {
-	status =
-	    TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, index.attribute[found_index].offset,
-	               index.attribute[found_index].length, value);
-      } else if (getnames == 1) {
-	if (namelist == 0) {
-	  status = TreeFAILURE;
-	} else {
-	  char *names = malloc(longestattname * numnames);
-	  DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names,
-	               (unsigned int)(longestattname * numnames));
-	  struct _namelist *p, *pnext;
-	  char *np;
-	  for (p = namelist, np = names; p; p = pnext, np += longestattname) {
-	    size_t i;
-	    pnext = p->next;
-	    memcpy(np, p->name, longestattname);
-	    for (i = 1; i < longestattname; i++)
-	      if (np[i] == '\0')
-	        np[i] = ' ';
-	    free(p);
-	  }
-	  MdsCopyDxXd((mdsdsc_t *)&name_array, value);
-	  free(names);
-	}
+	status = TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, index.attribute[found_index].offset, index.attribute[found_index].length, value);
       } else
 	status = TreeFAILURE;
     }
