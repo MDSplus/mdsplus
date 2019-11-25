@@ -431,12 +431,13 @@ static int get_segment_header_by_offset(TREE_INFO * tinfo, const int64_t offset,
   if (status == TreeSUCCESS) swap_header(get,buffer,hdr);
   return status;
 }
+static int set_xnci(vars_t *vars, mdsdsc_t *value);
 static int put_segment_header(vars_t *vars) {
   if (vars->xnci) {
     const int status = put_segment_header_by_offset(vars->tinfo, &vars->shead, &vars->xnci_header_offset);
     if STATUS_NOT_OK return status;
     DESCRIPTOR_QUADWORD(offset,&vars->xnci_header_offset);
-    return _TreeSetXNci(vars->dblist, *(int*)vars->nid_ptr, vars->xnci, &offset);
+    return set_xnci(vars, &offset);
   } else {
     return put_segment_header_by_offset(vars->tinfo, &vars->shead, &vars->attr.facility_offset[SEGMENTED_RECORD_FACILITY]);
   }
@@ -445,14 +446,16 @@ static int get_segment_header(vars_t *vars) {
   if (vars->xnci) {
     EMPTYXD(xd);
     int status = _TreeGetXNci(vars->dblist, *(int*)vars->nid_ptr, vars->xnci, &xd);
-    if STATUS_NOT_OK return status;
-    if (xd.pointer && xd.pointer->length == 8) {
-      /* TODO: use dedicated data to handle xnci exists but is invalid.
-       * For now we assume noone messes with it.
-       */
-      vars->xnci_header_offset = *(int64_t*)xd.pointer->pointer;
-      status = get_segment_header_by_offset(vars->tinfo, vars->xnci_header_offset, &vars->shead);
-    } else status = TreeFAILURE;
+    if STATUS_OK {
+      if (xd.pointer && xd.pointer->length == 8) {
+	/* TODO: use dedicated data to handle xnci exists but is invalid.
+	 * For now we assume noone messes with it.
+	 */
+	vars->xnci_header_offset = *(int64_t*)xd.pointer->pointer;
+	status = get_segment_header_by_offset(vars->tinfo, vars->xnci_header_offset, &vars->shead);
+      } else
+        status = TreeNOSEGMENTS;
+    }
     if STATUS_NOT_OK vars->xnci_header_offset = -1;
     return status;
   } else {
@@ -976,6 +979,272 @@ static int get_compressed_segment_rows(TREE_INFO * tinfo, const int64_t offset, 
 #define CLEANUP_NCI_POP  pthread_cleanup_pop(vars->nci_locked)
 //#define CLEANUP_NCI_PUSH
 //#define CLEANUP_NCI_POP  unlock_nci(vars)
+
+static int set_xnci(vars_t *vars, mdsdsc_t *value) {
+  int status;
+  int value_length = 0;
+  int64_t value_offset = -1;
+  NAMED_ATTRIBUTES_INDEX top_index, index;
+  if (value) {// NULL means delete
+    status = TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, value, &value_offset, &value_length, vars->compress);
+    if STATUS_NOT_OK return status;
+  }
+  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
+       index. If not, make an empty index and flag that a new index needs to be written.***/
+  if (vars->attr_offset==-1) {
+    if (!value) return status; // has not xnci; nothing to delete
+    if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {
+      if (vars->local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
+	EMPTYXD(dsc);
+	mdsdsc_t *dptr;
+	dtype_t dsc_dtype = DTYPE_DSC;
+	length_t dlen = vars->local_nci.length - 8;
+	l_length_t ddlen = dlen + sizeof(mdsdsc_t);
+	status = MdsGet1Dx(&ddlen, &dsc_dtype, &dsc, 0);
+	dptr = dsc.pointer;
+	dptr->length = dlen;
+	dptr->dtype = vars->local_nci.dtype;
+	dptr->class = CLASS_S;
+	dptr->pointer = (char *)dptr + sizeof(mdsdsc_t);
+	memcpy(dptr->pointer, vars->local_nci.DATA_INFO.DATA_IN_RECORD.data, dptr->length);
+	if (dptr->dtype != DTYPE_T) {
+	  switch (dptr->length) {
+	  case 2:
+	    *(int16_t*)dptr->pointer = swapint16(dptr->pointer);
+	    break;
+	  case 4:
+	    *(int32_t*)dptr->pointer = swapint32(dptr->pointer);
+	    break;
+	  case 8:
+	    *(int64_t*)dptr->pointer = swapint64(dptr->pointer);
+	    break;
+	  }
+	}
+	TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, dptr, &vars->attr.facility_offset[STANDARD_RECORD_FACILITY], &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
+	vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
+      } else {
+	EMPTYXD(xd);
+	int retsize;
+	int nodenum;
+	int length = vars->local_nci.DATA_INFO.DATA_LOCATION.record_length;
+	if (length > 0) {
+	  char *data = NULL;
+	  FREE_ON_EXIT(data);
+	  data = malloc(length);
+	  status = TreeGetDatafile(vars->tinfo, vars->local_nci.DATA_INFO.DATA_LOCATION.rfa, &length, data, &retsize, &nodenum, vars->local_nci.flags2);
+	  if STATUS_NOT_OK
+	    status = TreeBADRECORD;
+	  else if (!(vars->local_nci.flags2 & NciM_NON_VMS) && ((retsize != length) || (nodenum != vars->nidx)))
+	    status = TreeBADRECORD;
+	  else
+	    status = (MdsSerializeDscIn(data, &xd) & 1) ? TreeNORMAL : TreeBADRECORD;
+	  FREE_NOW(data);
+	  if STATUS_OK {
+	    status = TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, (mdsdsc_t *)&xd, &vars->attr.facility_offset[STANDARD_RECORD_FACILITY], &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
+	  }
+	  MdsFree1Dx(&xd, 0);
+	}
+	if (length <= 0 || STATUS_NOT_OK) {
+	  vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = 0;
+	  vars->attr.facility_length[STANDARD_RECORD_FACILITY] = 0;
+	  vars->local_nci.length = 0;
+	  vars->local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
+	}
+      }
+    }
+  } else
+    vars->attr_offset = RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
+  /* See if the node currently has an named attr header record.
+   * If not, make an empty named attr header and flag that a new one needs to be written.
+   */
+  if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+   || IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY], &top_index))) {
+    memset(&top_index, 0, sizeof(top_index));
+    vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] = vars->index_offset = -1;
+    top_index.previous_offset = -1;
+    vars->attr_update = 1;
+    strcpy(top_index.attribute[0].name, vars->xnci);
+    top_index.attribute[0].offset = value_offset;
+    top_index.attribute[0].length = value_length;
+    status = put_named_attributes_index(vars->tinfo, &top_index, &vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY]);
+  } else {
+    vars->index_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+    /*** See if the node currently has a value for this attribute. ***/
+    int found_index = -1;
+    index = top_index;
+    while (vars->index_offset != -1) {
+      int i;
+      size_t j, len = strlen(vars->xnci);
+      for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+	for (j = 0; j < len; j++)
+	  if (tolower(vars->xnci[j]) != tolower(index.attribute[i].name[j]))
+	    break;
+	if (j == len && index.attribute[i].name[j] == 0)
+	  break;
+      }
+      if (i < NAMED_ATTRIBUTES_PER_INDEX) {
+	found_index = i;
+        break;
+      } else if (index.previous_offset != -1) {
+        int64_t new_offset = index.previous_offset;
+	if ((get_named_attributes_index(vars->tinfo, index.previous_offset, &index) & 1) == 0)
+	  break;
+	vars->index_offset = new_offset;
+      } else
+	break;
+    }
+    /*** If name exists just replace the value else find an empty slot ***/
+    if (found_index != -1) {
+      index.attribute[found_index].offset = value_offset;
+      index.attribute[found_index].length = value_length;
+      status = put_named_attributes_index(vars->tinfo, &index, &vars->index_offset);
+    } else {
+      if (!value) return status; // nothing to delete
+      int i;
+      for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+	if (top_index.attribute[i].name[0] == 0)
+	  break;
+      }
+      if (i < NAMED_ATTRIBUTES_PER_INDEX) {
+        vars->index_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+      } else {
+        memset(&top_index, 0, sizeof(index));
+        top_index.previous_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
+        vars->index_offset = -1;
+	vars->attr_update = 1;
+        i = 0;
+      }
+      strcpy(top_index.attribute[i].name,vars->xnci);
+      top_index.attribute[i].offset = value_offset;
+      top_index.attribute[i].length = value_length;
+      status = put_named_attributes_index(vars->tinfo, &top_index, &vars->index_offset);
+      if STATUS_OK vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] = vars->index_offset;
+    }
+  }
+  return status;
+}
+int _TreeSetXNci(void *dbid, int nid, const char *xnci, mdsdsc_t *value){
+  if (!xnci) return TreeFAILURE;
+  INIT_VARS;
+  CLEANUP_NCI_PUSH;
+  GOTO_END_ON_ERROR(open_datafile_write0(vars));
+  GOTO_END_ON_ERROR(open_datafile_write1(vars));
+  set_compress(vars);
+  begin_extended_nci(vars);
+  vars->index_offset = -1;
+  int status = set_xnci(vars,value);
+  if (STATUS_OK && vars->attr_update) {
+    status = TreePutExtendedAttributes(vars->tinfo, &vars->attr, &vars->attr_offset);
+    if STATUS_OK {
+      SeekToRfa(vars->attr_offset, vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
+      vars->local_nci.flags2 |= NciM_EXTENDED_NCI;
+      status = TreePutNci(vars->tinfo, vars->nidx, &vars->local_nci, 0);
+    }
+  }
+end: ;
+  CLEANUP_NCI_POP;
+  return status;
+}
+int TreeSetXNci(int nid, const char *xnci, mdsdsc_t *value){
+  return _TreeSetXNci(*TreeCtx(), nid, xnci, value);
+}
+
+int _TreeGetXNci(void *dbid, int nid, const char *xnci, mdsdsc_xd_t *value)
+{
+  if (!xnci) return TreeFAILURE;
+  INIT_VARS;
+  RETURN_IF_NOT_OK(open_datafile_read(vars));
+    NAMED_ATTRIBUTES_INDEX index;
+    const char *attnames = XNCI_ATTRIBUTE_NAMES;
+    int getnames = 0;
+    struct _namelist {
+      char name[NAMED_ATTRIBUTE_NAME_SIZE + 1];
+      struct _namelist *next;
+    } *namelist = 0;
+    size_t longestattname = 0;
+    int numnames = 0;
+    size_t i;
+    size_t len = strlen(xnci);
+    if (len == strlen(attnames)) {
+      for (i = 0; i < len; i++) {
+	if (tolower(xnci[i]) != attnames[i])
+	  break;
+      }
+      if (i == len)
+	getnames = 1;
+    }
+    if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
+	((TreeGetExtendedAttributes(vars->tinfo, RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa), &vars->attr) & 1) == 0)) {
+      status = TreeFAILURE;
+    } else if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
+	   ||  IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
+      status = TreeFAILURE;
+    } else {
+      int found_index = -1;
+      while (found_index == -1) {
+	unsigned int i, j;
+	for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
+	  if (getnames == 1) {
+	    if (index.attribute[i].name[0] != 0) {
+	      size_t len = strlen(index.attribute[i].name);
+	      struct _namelist *p = malloc(sizeof(struct _namelist));
+	      memcpy(p->name, index.attribute[i].name, sizeof(p->name));
+	      p->next = namelist;
+	      namelist = p;
+	      longestattname = (len > longestattname) ? len : longestattname;
+	      numnames++;
+	    }
+	  } else {
+	    for (j = 0; j < len; j++) {
+	      if (tolower(xnci[j]) != tolower(index.attribute[i].name[j]))
+	        break;
+	    }
+	    if (j == len && index.attribute[i].name[j] == 0)
+	      break;
+	  }
+	}
+	if (i < NAMED_ATTRIBUTES_PER_INDEX)
+	  found_index = i;
+	else if (index.previous_offset != -1) {
+	  if ((get_named_attributes_index(vars->tinfo, index.previous_offset, &index) & 1) == 0) {
+	    break;
+	  }
+	} else
+	  break;
+      }
+      if (found_index != -1) {
+	status =
+	    TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, index.attribute[found_index].offset,
+	               index.attribute[found_index].length, value);
+      } else if (getnames == 1) {
+	if (namelist == 0) {
+	  status = TreeFAILURE;
+	} else {
+	  char *names = malloc(longestattname * numnames);
+	  DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names,
+	               (unsigned int)(longestattname * numnames));
+	  struct _namelist *p, *pnext;
+	  char *np;
+	  for (p = namelist, np = names; p; p = pnext, np += longestattname) {
+	    size_t i;
+	    pnext = p->next;
+	    memcpy(np, p->name, longestattname);
+	    for (i = 1; i < longestattname; i++)
+	      if (np[i] == '\0')
+	        np[i] = ' ';
+	    free(p);
+	  }
+	  MdsCopyDxXd((mdsdsc_t *)&name_array, value);
+	  free(names);
+	}
+      } else
+	status = TreeFAILURE;
+    }
+  return status;
+}
+int TreeGetXNci(int nid, const char *xnci, mdsdsc_xd_t *value){
+  return _TreeGetXNci(*TreeCtx(), nid, xnci, value);
+}
 
 int _TreeXNciMakeSegment(void *dbid, int nid, const char* xnci, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initValIn, int idx, int rows_filled){
   INIT_WRITE_VARS;
@@ -2034,270 +2303,6 @@ int _TreeXNciGetSegments(void *dbid, int nid, const char* xnci, mdsdsc_t *start,
   }
   free(dptr);
   return status;
-}
-
-int _TreeSetXNci(void *dbid, int nid, const char *xnci, mdsdsc_t *value){
-  if (!xnci) return TreeFAILURE;
-  INIT_VARS;
-  CLEANUP_NCI_PUSH;
-  GOTO_END_ON_ERROR(open_datafile_write0(vars));
-  GOTO_END_ON_ERROR(open_datafile_write1(vars));
-  set_compress(vars);
-  vars->index_offset = -1;
-  int value_length = 0;
-  int64_t value_offset = -1;
-  NAMED_ATTRIBUTES_INDEX index, current_index;
-  if (value) // NULL means delete
-    GOTO_END_ON_ERROR(TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, value, &value_offset, &value_length, vars->compress));
-  /*** See if node is currently using the Extended Nci feature and if so get the current contents of the attr
-       index. If not, make an empty index and flag that a new index needs to be written.***/
-  IF_NO_EXTENDED_NCI {
-    if (!value) goto end; // has not xnci; nothing to delete
-    vars->attr_offset=-1;
-    memset(&vars->attr, -1, sizeof(vars->attr));
-    vars->attr_update = 1;
-    if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) && vars->local_nci.length > 0) {
-      if (vars->local_nci.flags2 & NciM_DATA_IN_ATT_BLOCK) {
-	EMPTYXD(dsc);
-	mdsdsc_t *dptr;
-	dtype_t dsc_dtype = DTYPE_DSC;
-	length_t dlen = vars->local_nci.length - 8;
-	l_length_t ddlen = dlen + sizeof(mdsdsc_t);
-	status = MdsGet1Dx(&ddlen, &dsc_dtype, &dsc, 0);
-	dptr = dsc.pointer;
-	dptr->length = dlen;
-	dptr->dtype = vars->local_nci.dtype;
-	dptr->class = CLASS_S;
-	dptr->pointer = (char *)dptr + sizeof(mdsdsc_t);
-	memcpy(dptr->pointer, vars->local_nci.DATA_INFO.DATA_IN_RECORD.data, dptr->length);
-	if (dptr->dtype != DTYPE_T) {
-	  switch (dptr->length) {
-	  case 2:
-	    *(int16_t*)dptr->pointer = swapint16(dptr->pointer);
-	    break;
-	  case 4:
-	    *(int32_t*)dptr->pointer = swapint32(dptr->pointer);
-	    break;
-	  case 8:
-	    *(int64_t*)dptr->pointer = swapint64(dptr->pointer);
-	    break;
-	  }
-	}
-	TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, dptr, &vars->attr.facility_offset[STANDARD_RECORD_FACILITY],
-	           &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
-	vars->local_nci.flags2 &= ~NciM_DATA_IN_ATT_BLOCK;
-      } else {
-	EMPTYXD(xd);
-	int retsize;
-	int nodenum;
-	int length = vars->local_nci.DATA_INFO.DATA_LOCATION.record_length;
-	if (length > 0) {
-	  char *data = NULL;
-	  FREE_ON_EXIT(data);
-	  data = malloc(length);
-	  status =
-	      TreeGetDatafile(vars->tinfo, vars->local_nci.DATA_INFO.DATA_LOCATION.rfa, &length, data,
-	                      &retsize, &nodenum, vars->local_nci.flags2);
-	  if STATUS_NOT_OK
-	    status = TreeBADRECORD;
-	  else if (!(vars->local_nci.flags2 & NciM_NON_VMS)
-	           && ((retsize != length) || (nodenum != vars->nidx)))
-	    status = TreeBADRECORD;
-	  else
-	    status = (MdsSerializeDscIn(data, &xd) & 1) ? TreeNORMAL : TreeBADRECORD;
-	  FREE_NOW(data);
-	  if STATUS_OK {
-	    status =
-	        TreePutDsc(vars->tinfo, *(int*)vars->nid_ptr, (mdsdsc_t *)&xd,
-	                   &vars->attr.facility_offset[STANDARD_RECORD_FACILITY],
-	                   &vars->attr.facility_length[STANDARD_RECORD_FACILITY], vars->compress);
-	  }
-	  MdsFree1Dx(&xd, 0);
-	}
-	if (length <= 0 || STATUS_NOT_OK) {
-	  vars->attr.facility_offset[STANDARD_RECORD_FACILITY] = 0;
-	  vars->attr.facility_length[STANDARD_RECORD_FACILITY] = 0;
-	  vars->local_nci.length = 0;
-	  vars->local_nci.DATA_INFO.DATA_LOCATION.record_length = 0;
-	}
-      }
-    }
-  } else
-    vars->attr_offset = RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
-  /* See if the node currently has an named attr header record.
-   * If not, make an empty named attr header and flag that a new one needs to be written.
-   */
-  if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-   || IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY], &index))) {
-    memset(&index, 0, sizeof(index));
-    vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] = -1;
-    vars->index_offset = -1;
-    index.previous_offset = -1;
-    vars->attr_update = 1;
-  } else
-    vars->index_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
-  current_index = index;
-  /*** See if the node currently has a value for this attribute. ***/
-  int found_index = -1;
-  while (vars->index_offset != -1 && found_index == -1) {
-    int i;
-    size_t j;
-    for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-      size_t len = strlen(xnci);
-      for (j = 0; j < len; j++)
-	if (tolower(xnci[j]) != tolower(index.attribute[i].name[j]))
-	  break;
-      if (j == len && index.attribute[i].name[j] == 0)
-	break;
-    }
-    if (i < NAMED_ATTRIBUTES_PER_INDEX)
-      found_index = i;
-    else if (index.previous_offset != -1) {
-      int64_t new_offset = index.previous_offset;
-      if ((get_named_attributes_index(vars->tinfo, index.previous_offset, &index) & 1) == 0)
-	break;
-      vars->index_offset = new_offset;
-    } else
-      break;
-  }
-  /*** If name exists just replace the value else find an empty slot ***/
-  if (found_index != -1) {
-    index.attribute[found_index].offset = value_offset;
-    index.attribute[found_index].length = value_length;
-  } else {
-    if (!value) goto end; // nothing to delete
-    int i;
-    index = current_index;
-    for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-      if (index.attribute[i].name[0] == 0) {
-	strcpy(index.attribute[i].name, xnci);
-	index.attribute[i].offset = value_offset;
-	index.attribute[i].length = value_length;
-	vars->index_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
-	break;
-      }
-    }
-    if (i == NAMED_ATTRIBUTES_PER_INDEX) {
-      memset(&index, 0, sizeof(index));
-      index.previous_offset = vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY];
-      vars->attr_update = 1;
-      strcpy(index.attribute[0].name, xnci);
-      index.attribute[0].offset = value_offset;
-      index.attribute[0].length = value_length;
-      vars->index_offset = -1;
-    }
-  }
-  status = put_named_attributes_index(vars->tinfo, &index, &vars->index_offset);
-  if (STATUS_OK && vars->attr_update) {
-    vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] = vars->index_offset;
-    status = TreePutExtendedAttributes(vars->tinfo, &vars->attr, &vars->attr_offset);
-    SeekToRfa(vars->attr_offset, vars->local_nci.DATA_INFO.DATA_LOCATION.rfa);
-    vars->local_nci.flags2 |= NciM_EXTENDED_NCI;
-    TreePutNci(vars->tinfo, vars->nidx, &vars->local_nci, 0);
-  }
-end: ;
-  CLEANUP_NCI_POP;
-  return status;
-}
-int TreeSetXNci(int nid, const char *xnci, mdsdsc_t *value){
-  return _TreeSetXNci(*TreeCtx(), nid, xnci, value);
-}
-
-int _TreeGetXNci(void *dbid, int nid, const char *xnci, mdsdsc_xd_t *value)
-{
-  if (!xnci) return TreeFAILURE;
-  INIT_VARS;
-  RETURN_IF_NOT_OK(open_datafile_read(vars));
-    NAMED_ATTRIBUTES_INDEX index;
-    const char *attnames = XNCI_ATTRIBUTE_NAMES;
-    int getnames = 0;
-    struct _namelist {
-      char name[NAMED_ATTRIBUTE_NAME_SIZE + 1];
-      struct _namelist *next;
-    } *namelist = 0;
-    size_t longestattname = 0;
-    int numnames = 0;
-    size_t i;
-    size_t len = strlen(xnci);
-    if (len == strlen(attnames)) {
-      for (i = 0; i < len; i++) {
-	if (tolower(xnci[i]) != attnames[i])
-	  break;
-      }
-      if (i == len)
-	getnames = 1;
-    }
-    if (((vars->local_nci.flags2 & NciM_EXTENDED_NCI) == 0) ||
-	((TreeGetExtendedAttributes(vars->tinfo, RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa), &vars->attr) & 1) == 0)) {
-      status = TreeFAILURE;
-    } else if (vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY] == -1
-	   ||  IS_NOT_OK(get_named_attributes_index(vars->tinfo, vars->attr.facility_offset[NAMED_ATTRIBUTES_FACILITY],&index))) {
-      status = TreeFAILURE;
-    } else {
-      int found_index = -1;
-      while (found_index == -1) {
-	unsigned int i, j;
-	for (i = 0; i < NAMED_ATTRIBUTES_PER_INDEX; i++) {
-	  if (getnames == 1) {
-	    if (index.attribute[i].name[0] != 0) {
-	      size_t len = strlen(index.attribute[i].name);
-	      struct _namelist *p = malloc(sizeof(struct _namelist));
-	      memcpy(p->name, index.attribute[i].name, sizeof(p->name));
-	      p->next = namelist;
-	      namelist = p;
-	      longestattname = (len > longestattname) ? len : longestattname;
-	      numnames++;
-	    }
-	  } else {
-	    for (j = 0; j < len; j++) {
-	      if (tolower(xnci[j]) != tolower(index.attribute[i].name[j]))
-	        break;
-	    }
-	    if (j == len && index.attribute[i].name[j] == 0)
-	      break;
-	  }
-	}
-	if (i < NAMED_ATTRIBUTES_PER_INDEX)
-	  found_index = i;
-	else if (index.previous_offset != -1) {
-	  if ((get_named_attributes_index(vars->tinfo, index.previous_offset, &index) & 1) == 0) {
-	    break;
-	  }
-	} else
-	  break;
-      }
-      if (found_index != -1) {
-	status =
-	    TreeGetDsc(vars->tinfo, *(int*)vars->nid_ptr, index.attribute[found_index].offset,
-	               index.attribute[found_index].length, value);
-      } else if (getnames == 1) {
-	if (namelist == 0) {
-	  status = TreeFAILURE;
-	} else {
-	  char *names = malloc(longestattname * numnames);
-	  DESCRIPTOR_A(name_array, (short)longestattname, DTYPE_T, names,
-	               (unsigned int)(longestattname * numnames));
-	  struct _namelist *p, *pnext;
-	  char *np;
-	  for (p = namelist, np = names; p; p = pnext, np += longestattname) {
-	    size_t i;
-	    pnext = p->next;
-	    memcpy(np, p->name, longestattname);
-	    for (i = 1; i < longestattname; i++)
-	      if (np[i] == '\0')
-	        np[i] = ' ';
-	    free(p);
-	  }
-	  MdsCopyDxXd((mdsdsc_t *)&name_array, value);
-	  free(names);
-	}
-      } else
-	status = TreeFAILURE;
-    }
-  return status;
-}
-int TreeGetXNci(int nid, const char *xnci, mdsdsc_xd_t *value){
-  return _TreeGetXNci(*TreeCtx(), nid, xnci, value);
 }
 
 int _TreeXNciSetSegmentScale(void *dbid, int nid, const char* xnci __attribute__((unused)), mdsdsc_t *value) {
