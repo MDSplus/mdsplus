@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  and then do:
      python mdsshr/gen_messages.py
 *******************************************************/
+
 #pragma once
 #include <status.h>
 
