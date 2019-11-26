@@ -105,6 +105,12 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
+# if ln is provided by busybox it does not have -r option
+AX_IS_BUSYBOX([ln],
+ [AS_VAR_SET([LN_R],["ln"])],
+ [AS_VAR_SET([LN_R],["ln -r"])] )
+AC_SUBST([LN_R])
+
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 AC_MSG_RESULT([before VISIBILITY])
@@ -1073,7 +1079,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 
 ## JAVA TESTS ##
 AX_CHECK_JAVA_VERSION([1.8], 
-                      [AS_VAR_IF([enable_sanitize], [address], [skip_junit=yes])],
+                      [AS_VAR_TEST_SET([enable_sanitize], [skip_junit=yes])],
                       [skip_junit=yes])
 TS_CHECK_JAVA([],,[skip_junit=yes])
 AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
@@ -1145,6 +1151,34 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
+# 
+# CHECK ASSERT_LINE_TYPE to correctly override assert function in C
+# This is needed for testing functions in mdsplus/testing/testing.h
+#
+AC_DEFUN([AX_TEST_ASSERT_LINE_TYPE],[
+AC_LANG_PUSH([C])
+AC_LINK_IFELSE( [AC_LANG_SOURCE([[
+#include <assert.h>
+#define ASSERT_LINE_TYPE ]] [$1] [[
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+]])],
+[AS_VAR_SET([ASSERT_LINE_TYPE],["$1"])
+$2],
+[$3])
+AC_LANG_POP([C])
+])
+
+AC_MSG_CHECKING([assert line type])
+AX_TEST_ASSERT_LINE_TYPE([unsigned int],
+[AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+[AX_TEST_ASSERT_LINE_TYPE([int],
+   [AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+   [AC_MSG_WARN(["None of the tests succeded to set assert line type"])])
+ ])
+
+
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
@@ -1189,6 +1223,9 @@ dnl Here we define all custom autoheader adds to mdsconfig.h.in
 dnl add here what goes on tom of mdsconfig.h
 AH_TOP()
 
+AS_VAR_SET_IF([ASSERT_LINE_TYPE],
+[AC_DEFINE_UNQUOTED([ASSERT_LINE_TYPE],[$ASSERT_LINE_TYPE],["assert line type"])])
+
 AH_VERBATIM([_LL_CONSTANTS], [
 #ifdef HAVE_LL_CONSTANTS
 #define LONG_LONG_CONSTANT(value) value##ll
@@ -1197,6 +1234,13 @@ AH_VERBATIM([_LL_CONSTANTS], [
 #endif
 ])
 
+AH_VERBATIM([_LL_CONSTANTS], [
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+])
 
 AH_VERBATIM([_WIN32], [
 #ifdef _WIN32

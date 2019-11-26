@@ -95,6 +95,7 @@ bin_PROGRAMS = dwscope$(EXEEXT) dwscope_remote$(EXEEXT) dwpad$(EXEEXT)
 subdir = dwscope
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
+	$(top_srcdir)/m4/ax_check_busybox.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
@@ -244,6 +245,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUSYBOX = @BUSYBOX@
 CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -379,6 +381,7 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LN_R = @LN_R@
 LOG_COMPILER = @LOG_COMPILER@
 LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@

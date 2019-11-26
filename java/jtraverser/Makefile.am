@@ -28,8 +28,7 @@ jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
-	ln -rsfT ./jTraverser.jar $@
-
+	${LN_R} -sfT ./jTraverser.jar $@
 endif
 
 if MINGW

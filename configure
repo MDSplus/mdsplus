@@ -883,6 +883,8 @@ GREP
 CPP
 HAVE_VISIBILITY
 CFLAG_VISIBILITY
+LN_R
+BUSYBOX
 WINDRES
 SED
 RANLIB
@@ -7063,6 +7065,116 @@ esac
 else
   WINDRES="$ac_cv_prog_WINDRES"
 fi
+
+
+# if ln is provided by busybox it does not have -r option
+
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}busybox", so it can be a program name with args.
+set dummy ${ac_tool_prefix}busybox; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_BUSYBOX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$BUSYBOX"; then
+  ac_cv_prog_BUSYBOX="$BUSYBOX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_BUSYBOX="${ac_tool_prefix}busybox"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+BUSYBOX=$ac_cv_prog_BUSYBOX
+if test -n "$BUSYBOX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $BUSYBOX" >&5
+$as_echo "$BUSYBOX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_BUSYBOX"; then
+  ac_ct_BUSYBOX=$BUSYBOX
+  # Extract the first word of "busybox", so it can be a program name with args.
+set dummy busybox; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_BUSYBOX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_BUSYBOX"; then
+  ac_cv_prog_ac_ct_BUSYBOX="$ac_ct_BUSYBOX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_BUSYBOX="busybox"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_BUSYBOX=$ac_cv_prog_ac_ct_BUSYBOX
+if test -n "$ac_ct_BUSYBOX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_BUSYBOX" >&5
+$as_echo "$ac_ct_BUSYBOX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_ct_BUSYBOX" = x; then
+    BUSYBOX=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    BUSYBOX=$ac_ct_BUSYBOX
+  fi
+else
+  BUSYBOX="$ac_cv_prog_BUSYBOX"
+fi
+
+
+
+
+    echo which ${BUSYBOX}
+    if test -n "${BUSYBOX}"; then
+    if cmp $(which ln) $(which ${BUSYBOX}); then :
+  LN_R="ln"
+else
+  LN_R="ln -r"
+fi
+    else
+    LN_R="ln -r"
+    fi
+
 
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
@@ -15153,9 +15265,7 @@ x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version
 
     if test "$ax_compare_version" = "true" ; then
     { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; };if test "x$enable_sanitize" = xaddress; then :
-  skip_junit=yes
-fi
+$as_echo "yes" >&6; };${enable_sanitize+:} false
     else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; };skip_junit=yes
   fi
@@ -17546,6 +17656,83 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
+#
+# CHECK ASSERT_LINE_TYPE to correctly override assert function in C
+# This is needed for testing functions in mdsplus/testing/testing.h
+#
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking assert line type" >&5
+$as_echo_n "checking assert line type... " >&6; }
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <assert.h>
+#define ASSERT_LINE_TYPE  unsigned int
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ASSERT_LINE_TYPE="unsigned int"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"${ASSERT_LINE_TYPE}\"" >&5
+$as_echo "\"${ASSERT_LINE_TYPE}\"" >&6; }
+else
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <assert.h>
+#define ASSERT_LINE_TYPE  int
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ASSERT_LINE_TYPE="int"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"${ASSERT_LINE_TYPE}\"" >&5
+$as_echo "\"${ASSERT_LINE_TYPE}\"" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"None of tests succeded to set assert line type\"" >&5
+$as_echo "$as_me: WARNING: \"None of tests succeded to set assert line type\"" >&2;}
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
@@ -17605,6 +17792,15 @@ $as_echo "$enable_wconversion" >&6; }
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+
+
+if ${ASSERT_LINE_TYPE+:} false; then :
+
+cat >>confdefs.h <<_ACEOF
+#define ASSERT_LINE_TYPE $ASSERT_LINE_TYPE
+_ACEOF
+
+fi
 
 
 
