@@ -32,6 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="ABORT" value="4102" severity="Error" text="Server action was aborted"/>
     <status name="PATH_DOWN" value="4104" severity="Error" text="Path to server lost"/>
     <status name="SOCKET_ADDR_ERROR" value="4105" severity="Error" text="Cannot obtain ip address socket is bound to."/>
-    <status name="INVALID_ACTION_OPERATION" value="4106" severity="Error" test="Unknown action operation."/>
+    <status name="INVALID_ACTION_OPERATION" value="4106" severity="Error" text="Unknown action operation."/>
   </facility>
 </messages>

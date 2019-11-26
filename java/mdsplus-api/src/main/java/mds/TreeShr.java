@@ -367,7 +367,7 @@ public class TreeShr extends MdsShr{
 		final Request<Int32> request = new TreeCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeDeleteNodeExecute")//
 		        .fin();
 		this.mds.getDescriptor(ctx, request).getValue();
-		return MdsException.TreeNORMAL;// TODO: change once mdsplus returns status for treeDeleteNodeExecute
+		return MdsException.TreeSUCCESS;// TODO: change once mdsplus returns status for treeDeleteNodeExecute
 	}
 
 	/** @return IntegerStatus: nid-number of the next node in the list of nodes to be deleted **/

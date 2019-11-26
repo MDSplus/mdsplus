@@ -118,7 +118,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
 
 EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX *ctx;
@@ -175,7 +175,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 
 EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int *outnid)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX ctx = {0};
@@ -215,7 +215,7 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int
   }
  done:
   FreeSearchCtx(&ctx);
-  return (status & 1) ? TreeNORMAL : status;
+  return (status & 1) ? TreeSUCCESS : status;
 }
 
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
@@ -227,7 +227,7 @@ EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
       *ctx = NULL;
     }
   }
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx)
@@ -685,7 +685,7 @@ STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
 extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char **new_name, int *child)
 {
   NODE *start = dblist->default_node;
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   *node = NULL;
   char *parent_name = strdup(name);
   char *last_dot = strrchr(parent_name, '.');
@@ -710,7 +710,7 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
       *last_colon = '\0';
     }
     if (strlen(parent_name) == 0) {
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
       *node = dblist->default_node;
     }
     else {

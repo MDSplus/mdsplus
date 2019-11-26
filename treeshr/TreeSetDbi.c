@@ -78,7 +78,7 @@ int TreeSetDbi(DBI_ITM * dbi_itm_ptr)
 int _TreeSetDbi(void *dbid, DBI_ITM * dbi_itm_ptr)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   DBI_ITM *itm_ptr;
 /*------------------------------------------------------------------------------
 

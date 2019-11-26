@@ -37,7 +37,7 @@ public class AllTests{
 			System.err.println(e + ": " + e.getMessage());
 		}
 	}
-
+	private static Process process = null;
 	public static Mds setUpBeforeClass() throws Exception {
 		final String hostinfo = AllTests.local ? "localhost" : AllTests.host;
 		final boolean use_ssh = AllTests.local ? false :  AllTests.ssh;
@@ -53,7 +53,7 @@ public class AllTests{
 				final ProcessBuilder pb = new ProcessBuilder("mdsip", "-h", System.getenv("hostfile"), "-m", "-p", String.valueOf(AllTests.port)).inheritIO();// , "-P", "ssh"
 				// final Map<String, String> env = pb.environment();
 				// env.put(AllTests.tree + "_path", AllTests.treepath);
-				pb.start();
+				process = pb.start();
 				Thread.sleep(300);
 				tmds = MdsIp.sharedConnection(provider);
 				if(tmds.isConnected()) mds = tmds;
@@ -68,6 +68,8 @@ public class AllTests{
 
 	public static void tearDownAfterClass(final Mds mds) {
 		mds.close();
+		if (process != null)
+			process.destroy();
 	}
 
 	@SuppressWarnings("boxing")

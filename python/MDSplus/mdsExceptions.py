@@ -22,15 +22,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
-
 ########################################################
-# This module was generated using mdsshr/gen_device.py
-# To add new status messages modify one of the
-# "xxxx_messages.xml files (or add a new one)
-# and then in mdsshr do:
-#     python gen_devices.py
+# This module was generated using mdsshr/gen_messages.py
+# To add new status messages modify
+# one of the "*_messages.xml" files
+# and then do:
+#     python mdsshr/gen_messages.py
 ########################################################
+
 
 class MdsException(Exception):
   pass
@@ -1906,8 +1905,9 @@ MDSplusException.statusDict[265388416] = TreeNOOVERWRITE
 
 
 class TreeNORMAL(TreeException):
+  """ This Exception is deprecated: use TreeSUCCESS """
   status=265388041
-  message="Normal successful completion"
+  message="Normal successful completion (deprecated: use TreeSUCCESS)"
   msgnam="NORMAL"
 
 MDSplusException.statusDict[265388040] = TreeNORMAL
@@ -2793,7 +2793,7 @@ MDSplusException.statusDict[265519328] = TdiTOO_BIG
 
 class TdiUNBALANCE(TdiException):
   status=265519338
-  message="Unbalanced () [] {} '' " " or /**/"
+  message="Unbalanced () [] {} '' \" \" or /**/"
   msgnam="UNBALANCE"
 
 MDSplusException.statusDict[265519336] = TdiUNBALANCE
@@ -3035,7 +3035,7 @@ MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
 
 class ServerINVALID_ACTION_OPERATION(ServerException):
   status=266436690
-  message="None"
+  message="Unknown action operation."
   msgnam="INVALID_ACTION_OPERATION"
 
 MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION

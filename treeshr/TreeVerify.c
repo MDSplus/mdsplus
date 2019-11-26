@@ -90,7 +90,7 @@ int _TreeVerify(void *dbid)
 	printf("  Other     = %d/%d\n", other, maxnodes);
       }
     }
-    status = TreeNORMAL;
+    status = TreeSUCCESS;
   } else
     status = TreeNOT_OPEN;
   return status;

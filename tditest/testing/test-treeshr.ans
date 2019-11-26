@@ -1,7 +1,7 @@
 _shot=3
 3
 TreeOpen('main',-1,1)
-265388041
+265389633
 member
 [1,2,3,4,5,6,7,8,9,10]
 _nids=getnci('***','nid_number'),size(_nids)
@@ -44,13 +44,13 @@ kind(.subtree:a12:stop_trig)
 getnci(_nids,'fullpath')
 ["\\MAIN::TOP.SUBTREE    ","\\MAIN::TOP.SUBTREE.GUB"]
 TreeClose()
-265388041
+265389633
 TreeOpen('main,',-1,1)
-265388041
+265389633
 size(getnci('***','nid_number'))
 1829
 TreeOpen('main,subtree',-1,1)
-265388041
+265389633
 size(getnci('***','nid_number'))
 1829
 getnci(.subtree:a12,"class")
@@ -176,9 +176,9 @@ getnci(.subtree:a12,"rlength")
 TreeCreatePulseFile(_shot)
 265389633
 TreeClose('main',-1)
-265388041
+265389633
 TreeOpen('main',_shot)
-265388041
+265389633
 TreePutRecord(member,42)
 265389633
 member
@@ -188,63 +188,63 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 member
 Build_With_Units(1 : 1000, "volts")
 TreeOpen('main',-1,1)
-265388041
+265389633
 TreeOpenEdit('main',_shot)
-265388041
+265389633
 TreeClose('main',_shot)
-265388041
+265389633
 TreeDeletePulseFile(_shot)
 265389633
 TreeClose()
-265388041
+265389633
 TreeOpenNew('main',_shot)
-265388041
+265389633
 _nid=0
 0
 TreeAddNode('.child',_nid,1)
-265388041
+265389633
 getnci(_nid,'usage')
 1BU
 TreeAddNode('action',_nid,2)
-265388041
+265389633
 getnci(_nid,'usage')
 2BU
 TreeAddNode('device',_nid,3)
-265388041
+265389633
 getnci(_nid,'usage')
 3BU
 TreeAddNode('dispatch',_nid,4)
-265388041
+265389633
 getnci(_nid,'usage')
 4BU
 TreeAddNode('numeric',_nid,5)
-265388041
+265389633
 getnci(_nid,'usage')
 5BU
 TreeAddNode('segs',_nid,6)
-265388041
+265389633
 TreeAddNode('signal',_nid,6)
-265388041
+265389633
 getnci(_nid,'usage')
 6BU
 TreeAddNode('task',_nid,7)
-265388041
+265389633
 getnci(_nid,'usage')
 7BU
 TreeAddNode('text',_nid,8)
-265388041
+265389633
 getnci(_nid,'usage')
 8BU
 TreeAddNode('window',_nid,9)
-265388041
+265389633
 getnci(_nid,'usage')
 9BU
 TreeAddNode('axis',_nid,10)
-265388041
+265389633
 getnci(_nid,'usage')
 10BU
 TreeAddNode('.subtree',_nid,11)
-265388041
+265389633
 getnci(_nid,'usage')
 11BU
 _nid
@@ -254,45 +254,45 @@ getnci(0,"child")
 getnci(0,"children_nids")
 [.CHILD,.SUBTREE]
 TreeAddTag('.child','child')
-265388041
+265389633
 TreeAddTag('.child','child_tag2')
-265388041
+265389633
 TreeAddTag('.child','child_tag3')
-265388041
+265389633
 TreeAddTag('.child','child_tag4')
-265388041
+265389633
 TreeAddTag('.child','child_tag5')
-265388041
+265389633
 TreeAddTag('action','action')
-265388041
+265389633
 TreeAddTag('device','device')
-265388041
+265389633
 TreeAddTag('dispatch','dispatch')
-265388041
+265389633
 TreeAddTag('numeric','numeric')
-265388041
+265389633
 TreeAddTag('signal','signal')
-265388041
+265389633
 TreeAddTag('task','task')
-265388041
+265389633
 TreeAddTag('text','text')
-265388041
+265389633
 TreeAddTag('window','window')
-265388041
+265389633
 TreeAddTag('axis','axis')
-265388041
+265389633
 TreeAddNode('tobedeleted',_nid,0)
-265388041
+265389633
 _count=0
 0
 TreeShr->TreeDeleteNodeInitialize(val(getnci(tobedeleted,'nid_number')),ref(_count),val(0))
-265388041
+265389633
 _count
 1
 TreeShr->TreeDeleteNodeExecute(),1
 1
 TreeShr->TreeEditing()
-265388041
+265389633
 getnci(\child,'nid_number')
 1
 getnci(\child_tag2,'nid_number')
@@ -304,7 +304,7 @@ getnci(\child_tag4,'nid_number')
 getnci(\child_tag5,'nid_number')
 1
 TreeShr->TreeRemoveTag(ref('child_tag2\0'))
-265388041
+265389633
 getnci(\child,'nid_number')
 1
 getnci('\\child_tag2','nid_number')
@@ -323,33 +323,33 @@ Node summary:
   Allocated = 13/14
   Free      = 0/14
   Other     = 1/14
-265388041
+265389633
 TreePutRecord(action,Build_Action(Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *), Build_Method(*, "INIT", ACTION), *, *, *))
-265388041
+265389633
 action
 Build_Action(Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *), Build_Method(*, "INIT", ACTION), *, *, *)
 TreePutRecord(device,Build_Conglom("MIT$DEVICES", "A12", *, *))
-265388041
+265389633
 device
 Build_Conglom("MIT$DEVICES", "A12", *, *)
 TreePutRecord(dispatch,Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *))
-265388041
+265389633
 dispatch
 Build_Dispatch(2, "CAMAC_SERVER", "INIT", *, *)
 TreePutRecord(numeric,42)
-265388041
+265389633
 numeric
 42
 TreePutRecord(signal,build_signal($value*100,`data(1:40),build_dim(build_window(1,40,-4.),* : * : 1E-4)))
-265388041
+265389633
 signal
 Build_Signal($VALUE * 100, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40], Build_Dim(Build_Window(1, 40, -4.), * : * : .0001))
 TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_window(1,8140,-4.),* : * : 1E-4)))
-265388041
+265389633
 signal,1
 1
 TreePutRecord(signal,build_signal($value*100,`data(1:8140),build_dim(build_window(1,8140,-4.),* : * : 1E-4)))
-265388041
+265389633
 signal,1
 1
 _len=getnci(signal,'length');'different on 32 vs 64bit'
@@ -357,33 +357,33 @@ _len=getnci(signal,'length');'different on 32 vs 64bit'
 getnci(signal,'rlength')
 2345LU
 TreePutRecord(task,Build_Method(*, "INIT", ACTION))
-265388041
+265389633
 task
 Build_Method(*, "INIT", ACTION)
 TreePutRecord(text,"This is a test")
-265388041
+265389633
 text
 "This is a test"
 TreePutRecord(window,build_window(1,40,-4.))
-265388041
+265389633
 window
 Build_Window(1, 40, -4.)
 TreePutRecord(axis,1E-4 : 20E-4 : 1E-4)
-265388041
+265389633
 axis
 .0001 : .002 : .0001
 MakeSegment(segs, 1,10, 1:10,data(1:10),*,10)
-265388041
+265389633
 segs
 Build_Signal([1,2,3,4,5,6,7,8,9,10], *, 1 : 10)
 MakeSegment(segs,11,20,11:20,data(1:10),*, 9)
-265388041
+265389633
 segs
 Build_Signal([1,2,3,4,5,6,7,8,9,10,1,2,3,4,5,6,7,8,9], *, [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19])
 TreePutRecord(segs,)
 265389633
 BeginSegment(segs,0.,99.,0.:99.,data(0:99))
-265388041
+265389633
 putsegment(segs,-1,data(0:9))
 265389633
 data(getsegment(segs, 0))
@@ -391,13 +391,13 @@ data(getsegment(segs, 0))
 data(dim_of(getsegment(segs, 0)))
 [0.,1.,2.,3.,4.,5.,6.,7.,8.,9.]
 TreeWrite('main',_shot)
-265388041
+265389633
 TreeClose()
-265388041
+265389633
 TreeShr->TreeCompressDatafile(ref('main'),val(_shot))
-265388041
+265389633
 TreeOpen('main',_shot)
-265388041
+265389633
 _len==getnci(signal,'length')
 1BU
 getnci(signal,'rlength')
@@ -405,13 +405,13 @@ getnci(signal,'rlength')
 data(signal)[1:100]
 [200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000,3100,3200,3300,3400,3500,3600,3700,3800,3900,4000,4100,4200,4300,4400,4500,4600,4700,4800,4900,5000,5100,5200,5300,5400,5500,5600,5700,5800,5900,6000,6100,6200,6300,6400,6500,6600,6700,6800,6900,7000,7100,7200,7300,7400,7500,7600,7700,7800,7900,8000,8100,8200,8300,8400,8500,8600,8700,8800,8900,9000,9100,9200,9300,9400,9500,9600,9700,9800,9900,10000,10100]
 TreeClose()
-265388041
+265389633
 TreeOpen('main',-1,1)
-265388041
+265389633
 TreeDeletePulseFile(_shot)
 265389633
 TreeClose()
-265388041
+265389633
 TreeOpen('subtree', -1)
 265388067
 Tcl('dir *:***:startidx')
@@ -1805,3 +1805,33 @@ dir 1*
   ^ ^
 %TDI Error in EXECUTE("dir 1*")
 
+treeopennew('main',-1)
+265389633
+treeaddnode('B',_n,6)
+265389633
+treeWrite()
+265389633
+TreeShr->_TreeSetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MyAttr"),descr(123))
+265389633
+_dat=SIN(_dim=0:($2PI):.1);TreeShr->_TreeXNciMakeSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MySeg"),descr(0.),descr($2PI),descr(_dim),descr(_dat),val(-1),val(SHAPE(_dim)[0]))
+265389633
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(,265389633,1BU,1BU)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(,265389633,["MyAttr"])
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(,265388218,$Missing)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)
+List(,1,123)
+tcl('compress main')
+265389633
+treeopen('main',-1,1)
+265389633
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(,1,1BU,1BU)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(,265389633,["MyAttr"])
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(,265388218,$Missing)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)
+List(,1,123)

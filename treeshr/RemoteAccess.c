@@ -305,7 +305,7 @@ inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treea
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
   int conid;
   logname[strlen(logname) - 2] = '\0';
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   conid = remote_access_connect(logname, 1, (void *)dblist);
   if (conid != -1) {
     status = tree_open(dblist,conid,subtree_list ? subtree_list : tree);
@@ -329,7 +329,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->channel = conid;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
-	  status = TreeNORMAL;
+	  status = TreeSUCCESS;
 	} else
 	  status = TreeFILE_NOT_FOUND;
       }
@@ -456,7 +456,7 @@ int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ct
 }
 
 int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out, void **ctx_inout, int usage_mask){
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx) {
     struct descrip ans = {0};
@@ -605,7 +605,7 @@ void FindTagEndRemote(void **ctx_inout)
 
 int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   NCI_ITM *itm;
   struct descrip ans;
   for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++) {
@@ -1332,9 +1332,9 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
     flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
     UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped); //TODO: check return value
-    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
   } else {
-    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
   }
   if (deleted) *deleted = 0;
 #else

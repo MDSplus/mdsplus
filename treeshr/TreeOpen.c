@@ -219,13 +219,13 @@ EXPORT int _TreeOpen(void **dbid, char const *tree_in, int shot_in, int read_onl
     if (path) {
       PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
       int db_slot_status = CreateDbSlot(dblist, tree, shot, 0);
-      if (db_slot_status == TreeNORMAL || db_slot_status == TreeALREADY_OPEN) {
+      if (db_slot_status == TreeSUCCESS || db_slot_status == TreeALREADY_OPEN) {
 	status = ConnectTree(*dblist, tree, 0, subtree_list);
 	if (status==TreeUNSUPTHICKOP)
 	  if (strlen(path) > 2 && path[strlen(path) - 2] == ':' && path[strlen(path) - 1] == ':')
 	    status = ConnectTreeRemote(*dblist, tree, subtree_list, path);
-	if (status == TreeNORMAL || status == TreeNOTALLSUBS) {
-	  if (db_slot_status == TreeNORMAL)
+	if (status == TreeSUCCESS || status == TreeNOTALLSUBS) {
+	  if (db_slot_status == TreeSUCCESS)
 	    (*dblist)->default_node = (*dblist)->tree_info->root;
 	  (*dblist)->open = 1;
 	  (*dblist)->open_readonly = read_only_flag!=0;
@@ -280,12 +280,12 @@ int _TreeClose(void **dbid, char const *tree, int shot)
 	    db->next = *dblist;
 	    *dblist = db;
 	  }
-	  status = TreeNORMAL;
+	  status = TreeSUCCESS;
 	  break;
 	}
       }
     } else
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
     if STATUS_OK {
       if ((*dblist)->modified) {
 	status = TreeWRITEFIRST;
@@ -301,7 +301,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
 }
 
 static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   if (!dblist) return status;
   if (dblist->dispatch_table) {
     static int (*ServerFreeDispatchTable) () = NULL;
@@ -314,7 +314,7 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
   if (dblist->remote) {
     status = CloseTreeRemote(dblist, call_hook);
     if (status == TreeNOT_OPEN)   /**** Remote server might have already closed the tree ****/
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
     return status;
   }
   TREE_INFO *previous_info, *local_info = dblist->tree_info;
@@ -434,7 +434,7 @@ int _TreeIsOpen(void *dbid)
 int _TreeEditing(void *dbid)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  return IS_OPEN_FOR_EDIT(dblist) ? TreeNORMAL : TreeNOEDIT;
+  return IS_OPEN_FOR_EDIT(dblist) ? TreeSUCCESS : TreeNOEDIT;
 }
 
 static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *subtree_list)
@@ -444,7 +444,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
   just return success.
 ************************************************/
   if (parent && parent->usage != TreeUSAGE_SUBTREE)
-    return TreeNORMAL;
+    return TreeSUCCESS;
 /***********************************************
   If there is a treelist (canditates) then if
   this tree is not in it then just return
@@ -467,7 +467,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
       return TreeNOT_IN_LIST;
   }
 
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   int ext_status;
   int i;
   TREE_INFO *info;
@@ -500,7 +500,7 @@ static int ConnectTree(PINO_DATABASE * dblist, char *tree, NODE * parent, char *
 	if STATUS_OK
 	  status = MapTree(info, dblist->tree_info, 0);
       }
-      if (status == TreeNORMAL) {
+      if (status == TreeSUCCESS) {
 	TreeCallHookFun("TreeHook", "OpenTree", tree, info->shot, NULL);
 	TreeCallHook(OpenTree, info, 0);
 
@@ -576,7 +576,7 @@ EXPORT int _TreeNewDbid(void** dblist){
     db->stack_size = DEFAULT_STACK_LIMIT;
     db->next = *(PINO_DATABASE **)dblist;
     *dblist = (void*)db;
-    return TreeNORMAL;
+    return TreeSUCCESS;
   }
   return TreeFAILURE;
 }
@@ -634,7 +634,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   case CLOSE:
     move_to_top(prev_db, db);
     CloseTopTree(*dblist, 1);
-    status = TreeNORMAL;
+    status = TreeSUCCESS;
     break;
   case ERROR_DIRTY:
     status = TreeWRITEFIRST;
@@ -645,7 +645,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
     for (count = 0, prev_db = 0, db = *dblist; db; count++, prev_db = db, db = db->next) {
       if (!db->open) {
 	move_to_top(prev_db, db);
-	status = TreeNORMAL;
+	status = TreeSUCCESS;
 	break;
       } else if (!(db->open_for_edit && db->modified)) {
 	saved_prev_db = prev_db, useable_db = db;
@@ -656,7 +656,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	if (useable_db) {
 	  move_to_top(saved_prev_db, useable_db);
 	  CloseTopTree(*dblist, 1);
-	  status = TreeNORMAL;
+	  status = TreeSUCCESS;
 	} else {
 	  status = TreeMAXOPENEDIT;
 	  treeshr_errno = TreeMAXOPENEDIT;
@@ -665,7 +665,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
 	status = _TreeNewDbid((void**)dblist);
     }
   }
-  if (status == TreeNORMAL) {
+  if (status == TreeSUCCESS) {
     (*dblist)->shotid = shot;
     (*dblist)->setup_info = (shot == -1);
     free((*dblist)->experiment);
@@ -907,11 +907,11 @@ static int MapTree(TREE_INFO * info, TREE_INFO * root, int edit_flag){
       status = TreeFILE_NOT_FOUND;
     } else {
       MDS_IO_LSEEK(fd, 0, SEEK_SET);
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
       nomap = !info->mapped;
     }
   }
-  if (status == TreeNORMAL)
+  if (status == TreeSUCCESS)
     status = MapFile(fd, info,  nomap);
   return status;
 }
@@ -953,11 +953,11 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
   ********************************************/
 
   status = GetVmForTree(info, nomap);
-  if (status == TreeNORMAL) {
+  if (status == TreeSUCCESS) {
     if (nomap) {
       status =
 	  (MDS_IO_READ(fd, (void *)info->section_addr[0], (size_t)info->alq * 512) ==
-	   (512 * info->alq)) ? TreeNORMAL : TreeTREEFILEREADERR;
+	   (512 * info->alq)) ? TreeSUCCESS : TreeTREEFILEREADERR;
     }
 #ifndef _WIN32
     else {
@@ -967,7 +967,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
       info->section_addr[0] =
 	  mmap(0, (size_t)info->alq * 512, PROT_READ | PROT_WRITE, MAP_FILE | MAP_PRIVATE,
 	       MDS_IO_FD(info->channel), 0);
-      status = info->section_addr[0] != (void *)-1 ? TreeNORMAL : TreeTREEFILEREADERR;
+      status = info->section_addr[0] != (void *)-1 ? TreeSUCCESS : TreeTREEFILEREADERR;
       if STATUS_NOT_OK {
 	perror("Error mapping file");
 	info->mapped = 0;
@@ -997,7 +997,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
 	  (int *)(((char *)info->tag_info) +
 		  ((info->header->tags * (int)sizeof(TAG_INFO) + 511) / 512) * 512);
       TreeEstablishRundownEvent(info);
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
     } else free(info->vm_addr);
   }
   return status;
@@ -1005,7 +1005,7 @@ static int MapFile(int fd, TREE_INFO * info, int nomap)
 
 static int GetVmForTree(TREE_INFO * info, int nomap)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   info->vm_pages = info->alq;
   if (nomap) {
     info->vm_addr = calloc(512,(size_t)info->vm_pages);
@@ -1133,7 +1133,7 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
   else {
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
     status = CreateDbSlot(dblist, tree, shot, 1);
-    if (status == TreeNORMAL) {
+    if (status == TreeSUCCESS) {
       info = (TREE_INFO *) malloc(sizeof(TREE_INFO));
       if (info) {
 	memset(info, 0, sizeof(*info));
@@ -1197,7 +1197,7 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
   else {
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
     status = CreateDbSlot(dblist, tree, shot, 1);
-    if (status == TreeNORMAL) {
+    if (status == TreeSUCCESS) {
       info = (TREE_INFO *) malloc(sizeof(TREE_INFO));
       if (info) {
 	int fd;

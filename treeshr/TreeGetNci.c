@@ -89,7 +89,7 @@ int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
 
 int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
   void*dbid = *TreeCtx();
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID nid = *(NID *) & nid_in;
   int node_number;
@@ -659,7 +659,7 @@ int _TreeIsOn(void *dbid, int nid)
 
 int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
 /******************************************
 If the tree is not open for edit then
 if the characteristics file is not open
@@ -750,7 +750,7 @@ int _TreeOpenNciR(TREE_INFO * info)
       strcat(filename, "characteristics");
       info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
       free(filename);
-      status = (info->nci_file->get == -1) ? TreeFOPENR : TreeNORMAL;
+      status = (info->nci_file->get == -1) ? TreeFOPENR : TreeSUCCESS;
       if STATUS_NOT_OK {
 	free(info->nci_file);
 	info->nci_file = NULL;
