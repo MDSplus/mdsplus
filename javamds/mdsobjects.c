@@ -2407,7 +2407,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNci
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint nciType) {
   int status;
-  int retNci = 0, retNciLen;
+  int retNci = 0, retNciLen = sizeof(int);
 
   struct nci_itm nciList[] = { {sizeof(int), 0, &retNci, &retNciLen},
   {NciEND_OF_LIST, 0, 0, 0}
@@ -2429,7 +2429,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_TreeNode_getNciLong
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint nciType) {
   int status;
   int64_t retNci = 0;
-  int retNciLen;
+  int retNciLen = sizeof(int);
 
   struct nci_itm nciList[] = { {sizeof(int64_t), 0, &retNci, &retNciLen}
   ,
