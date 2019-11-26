@@ -61,7 +61,7 @@ EXPORT int TclClose(void *ctx, char **error, char **output __attribute__ ((unuse
     int doall = cli_present(ctx, "ALL") & 1;
     while ((sts = TreeClose(0, 0)) & 1 && doall) ;
     if (doall && sts == TreeNOT_OPEN)
-      sts = TreeNORMAL;
+      sts = TreeSUCCESS;
   }
   if (sts == TreeWRITEFIRST) {
     if (cli_present(ctx, "CONFIRM") & 1)

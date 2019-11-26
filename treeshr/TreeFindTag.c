@@ -173,7 +173,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
   if (taglen == 3 && strncmp(tagnam, "TOP", 3) == 0) {
     *nodeptr = tsearch.info->root;
     *tagidx = 0;
-    return TreeNORMAL;
+    return TreeSUCCESS;
   } else {
     /******************************************************
      To look up the tag in the tag table we will use a
@@ -192,7 +192,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
       if (BsearchCompare((void *)&tsearch, (void *)tsearch.info->tags) == 0) {
 	*nodeptr = tsearch.info->node + swapint32(&tsearch.info->tag_info->node_idx);
 	*tagidx = 1;
-	return TreeNORMAL;
+	return TreeSUCCESS;
       } else
 	status = TreeTNF;
       break;
@@ -203,7 +203,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
 	    tsearch.info->node +
 	    swapint32(&(tsearch.info->tag_info + swapint32(idx))->node_idx);
 	*tagidx = swapint32(idx) + 1;
-	return TreeNORMAL;
+	return TreeSUCCESS;
       } else
 	status = TreeTNF;
       break;
@@ -223,7 +223,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
       }
       tag = _TreeFindTagWild(db, tsearch.tag, &nid, &ctx);
       if (tag) {
-	status = TreeNORMAL;
+	status = TreeSUCCESS;
 	node = nid_to_node(db, nidptr);
 	*nodeptr = node;
       }

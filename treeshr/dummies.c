@@ -43,5 +43,5 @@ ret name args \
   return status;\
 }
 
-Dummy(TreeEstablishRundownEvent, TreeNORMAL)
-    Dummy(TreeWait, TreeNORMAL)
+Dummy(TreeEstablishRundownEvent, TreeSUCCESS)
+Dummy(TreeWait, TreeSUCCESS)

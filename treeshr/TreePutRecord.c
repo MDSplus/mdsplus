@@ -277,7 +277,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 	               (nci->dtype == DTYPE_IDENT) ||\
 	               (nci->dtype == DTYPE_CALL))
 
-#define check(boolean) (boolean) ? TreeNORMAL : TreeINVDTPUSG;
+#define check(boolean) (boolean) ? TreeSUCCESS : TreeINVDTPUSG;
 
 #define is_numeric ( ((nci->dtype >= DTYPE_BU) &&\
 	              (nci->dtype <= DTYPE_DC)) ||\
@@ -347,7 +347,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 		   (nci->dtype == DTYPE_DIMENSION) || is_expression);
     break;
   default:
-    status = TreeNORMAL;
+    status = TreeSUCCESS;
     break;
   }
   return status;
@@ -387,14 +387,14 @@ int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile){
 }
 int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   if (info->header->readonly)
     return TreeREADONLY_TREE;
   DATA_FILE *df_ptr = info->data_file;
   *stv_ptr = 0;
   if (df_ptr == 0) {
     df_ptr = TreeGetVmDatafile();
-    status = (df_ptr == NULL) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr == NULL) ? TreeFAILURE : TreeSUCCESS;
   }
   if (status & 1) {
     int old_get = df_ptr->get;
@@ -410,14 +410,14 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
-    status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr->get == -1) ? TreeFAILURE : TreeSUCCESS;
     if (df_ptr->get == -1)
       df_ptr->get = old_get;
     else if (df_ptr->get > 0)
       MDS_IO_CLOSE(old_get);
     if (status & 1) {
       df_ptr->put = MDS_IO_OPEN(filename, O_RDWR, 0);
-      status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
+      status = (df_ptr->put == -1) ? TreeFAILURE : TreeSUCCESS;
       if (df_ptr->put == -1)
 	df_ptr->put = 0;
       if (status & 1)
@@ -440,7 +440,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr, NCI * old_nci_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   unsigned int bytes_to_put =
       data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
   int blen =
@@ -500,7 +500,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     if (status & 1) {
       status =
 	  (MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       if (status & 1) {
 	bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	SeekToRfa(eof, rfa);
@@ -521,7 +521,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     if (seek_end != -1) {
       status =
 	  (MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	   sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+	   sizeof(nci_bytes)) ? TreeSUCCESS : TreeFAILURE;
     } else
       status = TreeFAILURE;
   }
@@ -537,7 +537,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
 
   loadint32(&info->data_file->record_header->node_number,&nodenum);
@@ -556,12 +556,12 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
 	    sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
 	    bytes_this_time) == bytes_this_time)
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       if (!bytes_to_put) {
 	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if STATUS_OK {
@@ -591,7 +591,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 			  struct descriptor_xd *data_dsc_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   unsigned int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
@@ -608,11 +608,11 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
 	    sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
-	    bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
+	    bytes_this_time) == bytes_this_time) ? TreeSUCCESS : TreeFAILURE;
       if (!bytes_to_put) {
 	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if (status & 1) {

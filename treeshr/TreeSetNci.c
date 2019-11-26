@@ -163,7 +163,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
 	    node_ptr->usage = *(unsigned char *)itm_ptr->pointer;
 	    dblist->modified = 1;
 	  }
-	  status = TreeNORMAL;
+	  status = TreeSUCCESS;
 	  break;
 	}
       default:
@@ -200,7 +200,7 @@ int _TreeFlushOff(void *dbid, int nid)
   if (!tree_info)
     return TreeNNF;
   tree_info->flush = 0;
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 int _TreeFlushReset(void *dbid, int nid)
@@ -219,7 +219,7 @@ int _TreeFlushReset(void *dbid, int nid)
     tree_info->flush = 1;
     TreeWait(tree_info);
   }
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 /*------------------------------------------------------------------------------
@@ -261,7 +261,7 @@ int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 
   /* status = TreeLockNci(info,0,node_num);
      if (!(status & 1)) return status; */
-  status = TreeNORMAL;
+  status = TreeSUCCESS;
 
 /******************************************
   If the tree is not open for edit then
@@ -289,8 +289,8 @@ int TreeGetNciLw(TREE_INFO * info, int node_num, NCI * nci)
 	  MDS_IO_LSEEK(info->nci_file->put, node_num * sizeof(nci_bytes), SEEK_SET);
 	  status =
 	      (MDS_IO_READ(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	       sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
-	  if (status == TreeNORMAL)
+	       sizeof(nci_bytes)) ? TreeSUCCESS : TreeFAILURE;
+	  if (status == TreeSUCCESS)
 	    TreeSerializeNciIn(nci_bytes, nci);
 	  if (!(status & 1))
 	    TreeUnLockNci(info, 0, node_num);
@@ -360,7 +360,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
   if (!info->nci_file) {
     status =
 	((info->nci_file =
-	  (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL) ? TreeNORMAL : TreeFAILURE;
+	  (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL) ? TreeSUCCESS : TreeFAILURE;
     if STATUS_OK {
       size_t len = strlen(info->filespec) - 4;
 #pragma GCC diagnostic push
@@ -374,12 +374,12 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
       memset(info->nci_file, 0, sizeof(NCI_FILE));
       info->nci_file->get =
 	  MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY, 0664);
-      status = (info->nci_file->get == -1) ? TreeFAILURE : TreeNORMAL;
+      status = (info->nci_file->get == -1) ? TreeFAILURE : TreeSUCCESS;
       if (info->nci_file->get == -1)
 	info->nci_file->get = 0;
       if (status & 1) {
 	info->nci_file->put = MDS_IO_OPEN(filename, O_RDWR, 0);
-	status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
+	status = (info->nci_file->put == -1) ? TreeFAILURE : TreeSUCCESS;
 	if (info->nci_file->put == -1)
 	  info->nci_file->put = 0;
       }
@@ -404,7 +404,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
       MDS_IO_CLOSE(info->nci_file->put);
     info->nci_file->put =
 	MDS_IO_OPEN(filename, (tmpfile ? O_RDWR | O_CREAT | O_TRUNC : O_RDWR), 0664);
-    status = (info->nci_file->put == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (info->nci_file->put == -1) ? TreeFAILURE : TreeSUCCESS;
     if (info->nci_file->put == -1)
       info->nci_file->put = 0;
     free(filename);
@@ -453,7 +453,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush __attribute__ ((unused)))
 {
   int status;
-  status = TreeNORMAL;
+  status = TreeSUCCESS;
 /***************************************
   If the tree is not open for edit
 ****************************************/
@@ -472,7 +472,7 @@ int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush __attribute_
       MDS_IO_LSEEK(info->nci_file->put, sizeof(nci_bytes) * node_num, SEEK_SET);
       status =
 	  (MDS_IO_WRITE(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	   sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+	   sizeof(nci_bytes)) ? TreeSUCCESS : TreeFAILURE;
       TreeUnLockNci(info, 0, node_num);
     }
   }
@@ -663,7 +663,7 @@ int SetParentState(PINO_DATABASE * db, NODE * node, unsigned int state)
   int status;
   NCI nci;
   NODE *lnode;
-  status = TreeNORMAL;
+  status = TreeSUCCESS;
   for (lnode = node; lnode && (status & 1); lnode = brother_of(db, lnode)) {
     status = SetNodeParentState(db, lnode, &nci, state);
     if ((status & 1) && (!(nci.flags & NciM_STATE)) && (lnode->child))

@@ -24,7 +24,7 @@
 #
 
 from MDSplus import Data, Tree, Device, Ident, Int32
-from MDSplus import DevPYDEVICE_NOT_FOUND,MDSplusException,MDSplusERROR,TreeNORMAL
+from MDSplus import DevPYDEVICE_NOT_FOUND,MDSplusException,MDSplusERROR,TreeSUCCESS
 import sys
 def DevAddPythonDevice(path, model, nidout=None):
     """Add a python device to the tree by:
@@ -43,7 +43,7 @@ def DevAddPythonDevice(path, model, nidout=None):
         node = Device.PyDevice(model).Add(Tree(),path)
         if isinstance(nidout,(Ident,)):
             Data.execute("$=$",nidout,Int32(node.nid))
-        return TreeNORMAL.status
+        return TreeSUCCESS.status
     except MDSplusException:
         return sys.exc_info()[1].status
     except:
