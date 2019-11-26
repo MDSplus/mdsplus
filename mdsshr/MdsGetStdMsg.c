@@ -2173,7 +2173,7 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
 
 /* TreeNORMAL */
       case 0xfd18008:
-        {static const char *text="Normal successful completion";
+        {static const char *text="Normal successful completion (deprecated: use TreeSUCCESS)";
         static const char *msgnam="NORMAL";
         *fac_out = FAC_TREE;
         *msgnam_out = msgnam;

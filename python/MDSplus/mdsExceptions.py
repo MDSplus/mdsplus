@@ -1906,8 +1906,9 @@ MDSplusException.statusDict[265388416] = TreeNOOVERWRITE
 
 
 class TreeNORMAL(TreeException):
+  """ This Exception is deprecated: use TreeSUCCESS """
   status=265388041
-  message="Normal successful completion"
+  message="Normal successful completion (deprecated: use TreeSUCCESS)"
   msgnam="NORMAL"
 
 MDSplusException.statusDict[265388040] = TreeNORMAL

@@ -38,7 +38,7 @@
 #define TreeNOLOG                0xfd181aa
 #define TreeNOMETHOD             0xfd180b0
 #define TreeNOOVERWRITE          0xfd18182
-#define TreeNORMAL               0xfd18009
+#define TreeNORMAL               0xfd18009 // deprecated: use TreeSUCCESS
 #define TreeNOTALLSUBS           0xfd18023
 #define TreeNOTCHILDLESS         0xfd180fa
 #define TreeNOT_IN_LIST          0xfd181c2

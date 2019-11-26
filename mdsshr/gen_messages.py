@@ -68,6 +68,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
             sev = sevs[status.get('severity').lower()]
             msgn = (facnum << 16)+(msgnum << 3)+sev
             text = status.get('text')
+            depr = status.get('deprecated',"0")
             sfacnam = status.get('facnam')
             facabb = status.get('facabb')
             if (sfacnam):
@@ -75,15 +76,31 @@ def gen_include(root,filename,faclist,msglistm,f_test):
             if f_test and facnam != 'Mdsdcl':
                 f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {'msg':facnam+msgnam})
             msgn_nosev = msgn & (-8)
-            f_inc.write("#define %-24s %s\n" % (facnam+msgnam,hex(msgn)))
+            inc_line = "#define %-24s %s" % (facnam+msgnam,hex(msgn))
+            try:
+                depr = bool(int(depr))
+                if depr:
+                    text = '%s (deprecated)'%(text,)
+                    inc_line = '%s // deprecated'%(inc_line,)
+                    depr = '''
+  """ This Exception is deprecated """'''
+                else:
+                    depr = ''
+            except:
+                depr = "use %s%s"%(facnam,depr.upper())
+                text = '%s (deprecated: %s)'%(text,depr)
+                inc_line = '%s // deprecated: %s'%(inc_line,depr)
+                depr = '''
+  """ This Exception is deprecated: %s """'''%(depr,)
+            f_inc.write("%s\n"%(inc_line,))
             if (facabb):
                 facnam=facabb
             facu = facnam.upper()
             if (sfacnam or facabb) and facu not in faclist:
-                    faclist.append(facu)
+                faclist.append(facu)
             msg = {'msgnum':hex(msgn_nosev),'text':text,
                    'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
-                   'status':msgn,'message':text,'msgn_nosev':msgn_nosev}
+                   'status':msgn,'message':text,'msgn_nosev':msgn_nosev,'depr':depr}
             if not facnam in pfaclist:
                 pfaclist.append(facnam)
                 f_py.write("""
@@ -94,7 +111,7 @@ class %(fac)sException(MDSplusException):
             msglist.append(msg)
             f_py.write("""
 
-class %(fac)s%(msgnam)s(%(fac)sException):
+class %(fac)s%(msgnam)s(%(fac)sException):%(depr)s
   status=%(status)d
   message="%(message)s"
   msgnam="%(msgnam)s"

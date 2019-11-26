@@ -55,7 +55,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="NOLOG" value="4149" severity="Error" text="Experiment pathname (xxx_path) not defined"/>
     <status name="NOMETHOD" value="4118" severity="Warning" text="Method not available for this object"/>
     <status name="NOOVERWRITE" value="4144" severity="Error" text="Write-once node: overwrite not permitted"/>
-    <status name="NORMAL" value="4097" severity="Success" text="Normal successful completion"/>
+    <status name="NORMAL" value="4097" severity="Success" text="Normal successful completion" deprecated="SUCCESS"/>
     <status name="NOTALLSUBS" value="4100" severity="Info" text="Main tree opened but not all subtrees found/or connected"/>
     <status name="NOTCHILDLESS" value="4127" severity="Error" text="Node must be childless to become subtree reference"/>
     <status name="NOT_IN_LIST" value="4152" severity="Error" text="Tree being opened was not in the list"/>
