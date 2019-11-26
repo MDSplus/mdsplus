@@ -97,10 +97,13 @@ static int checkResampledVersion(int nid, mdsdsc_t *deltaD)
   status = TreeGetSegmentInfo(nid, 0, &dtype, &dimct, dims, &nextRow);
   if STATUS_NOT_OK
     return nid;
-  numRows = dims[dimct-1];
+//  numRows = dims[dimct-1];
+  numRows = nextRow; 
   actDeltaNs = (endNs - startNs)/numRows;
+
   if(actDeltaNs <= 0)
-	        return nid;
+    return nid;
+  
   if((int)(deltaNs / actDeltaNs) < resampleFactor)
     return nid;
   status = TreeGetXNci(nid, "ResampleNid", &xd);
@@ -143,8 +146,6 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
   DESCRIPTOR_SIGNAL(currSignalD, MAX_DIMS, 0, 0);
   DESCRIPTOR_APD(signalsApd, DTYPE_SIGNAL, 0, 0);
   mds_signal_t **signals;
-
-//printf("GET TIMED RECORD\n");
 
   //Check for possible resampled versions
   nid = checkResampledVersion(inNid, minDeltaD);

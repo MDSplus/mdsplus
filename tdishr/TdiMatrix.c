@@ -88,7 +88,7 @@ int Tdi1Diagonal(opcode_t opcode, int narg, struct descriptor *list[], struct de
   struct descriptor *fillptr = NULL;
   struct descriptor_a *pv, *po;
   DESCRIPTOR_A_COEFF(proto, 1, DTYPE_BU, 0, 2, 0);
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);

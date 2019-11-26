@@ -19,6 +19,7 @@ class AsdexDataProvider extends MdsDataProvider
 	boolean _jscope_set = false;
 	int v_idx;
 
+       public boolean supportsStreaming() { return false;}
 	public SimpleWaveData(String in_y)
 	{
 	    this.in_y = in_y;
@@ -407,19 +408,19 @@ class AsdexDataProvider extends MdsDataProvider
 	    return out;
 	    //           return GetDefaultZLabel(in_y);
 	}
-	public XYData getData(long xmin, long xmax, int numPoints) throws Exception
+	public XYData getData(long xmin, long xmax, int numPoints) throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
 	     return new XYData(x, y, Double.MAX_VALUE);
 	 }
-	public XYData getData(double xmin, double xmax, int numPoints) throws Exception
+	public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
 	     return new XYData(x, y, Double.MAX_VALUE);
 	 }
-	 public XYData getData(int numPoints)throws Exception
+	 public XYData getData(int numPoints)throws IOException
 	 {
 	     double x[] = GetXDoubleData();
 	     float y[] = GetFloatData();
@@ -434,6 +435,7 @@ class AsdexDataProvider extends MdsDataProvider
 	public long []getXLong(){System.out.println("BADABUM!!"); return null;}
 	public boolean isXLong(){return false;}
 	public void addWaveDataListener(WaveDataListener listener){}
+	public void removeWaveDataListener(WaveDataListener listener){}
 	public void getDataAsync(double lowerBound, double upperBound, int numPoints){}
 
 

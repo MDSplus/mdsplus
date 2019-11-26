@@ -136,7 +136,8 @@ function handleEventReception(evMessage)
 	  samples.push(parseFloat(evItems[4+numSamples+i]));
       }
       if(debug) console.log('Received ' + name, numSamples);
-      addSamples(name, shot, times, samples, evItems[2] == 'L');
+      if(evItems[2] != 'A')
+          addSamples(name, shot, times, samples, evItems[2] == 'L');
       if(connections[name] != undefined)
       {
 	  for(var i = 0; i < connections[name].listeners.length; i++)

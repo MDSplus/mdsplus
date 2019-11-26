@@ -3,7 +3,7 @@
  static void socketerror(){
   int err;
   switch(err = WSAGetLastError()){
-    case 0:                 perror("");                          break;
+    case 0:                 perror("");                            break;
     case WSANOTINITIALISED: fprintf(stderr,"WSANOTINITIALISED\n"); break;
     case WSAENETDOWN:       fprintf(stderr,"WSAENETDOWN\n");       break;
     case WSAEADDRINUSE:     fprintf(stderr,"WSAEADDRINUSE\n");     break;
@@ -18,6 +18,7 @@
     case WSAEFAULT:         fprintf(stderr,"WSAEFAULT\n");         break;
     case WSAENOTSOCK:       fprintf(stderr,"WSAENOTSOCK\n");       break;
     case WSAESHUTDOWN:      fprintf(stderr,"WSAESHUTDOWN\n");      break;
+    case WSAEHOSTUNREACH:   fprintf(stderr,"WSAEHOSTUNREACH\n");   break;
     case WSAEACCES:         fprintf(stderr,"WSAEACCES\n");         break;
     default:                fprintf(stderr,"WSA %d\n",err);
   }
@@ -65,69 +66,116 @@ static void SetSocketOptions(SOCKET s, int reuse){
   setsockopt(s, SOL_SOCKET, SO_OOBINLINE, (void *)&one, sizeof(one));
 }
 
+/* io_connect()
+ * interruptable connect implementation with optional timeout
+ * _WIN32 requires hack to break out of select():
+ *   create a self connected DGRAM socket and close it on SIGINT
+ */
+#ifdef _WIN32
+static SOCKET int_sock = INVALID_SOCKET;
+static void *old_handler;
+static void int_select(int signo) {
+  signal(signo,old_handler);
+  raise(signo);
+  if (int_sock != INVALID_SOCKET)
+    close(int_sock);
+}
+#endif
 static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
-  if IS_OK(GetHostAndPort(host, &sin)) {
-    INITIALIZESOCKETS;
-    sock = socket(AF_T, SOCK_STREAM, 0);
-    if (sock == INVALID_SOCKET) {
-      PERROR("Error creating socket");
-      return C_ERROR;
-    }
-    struct timeval connectTimer = { 0, 0 };
-    connectTimer.tv_sec = GetMdsConnectTimeout();
-    int err;
-    if (connectTimer.tv_sec) {
-#ifndef _WIN32
-      err = fcntl(sock, F_SETFL, O_NONBLOCK);
-#endif
-      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-      if ((err == -1) && (errno == EINPROGRESS)) {
-	fd_set readfds;
-	fd_set exceptfds;
-	fd_set writefds;
-	FD_ZERO(&readfds);
-	FD_SET(sock, &readfds);
-	FD_ZERO(&exceptfds);
-	FD_SET(sock, &exceptfds);
-	FD_ZERO(&writefds);
-	FD_SET(sock, &writefds);
-	err = select(sock+1, &readfds, &writefds, &exceptfds, &connectTimer);
-	if (err == 0) {
-	  PERROR("Error in connect");
-	  shutdown(sock, 2);
-	  close(sock);
-	  fflush(stderr);
-	  return C_ERROR;
-	}
-      }
-#ifndef _WIN32
-      if (err != -1)
-	fcntl(sock, F_SETFL, 0);
-#endif
-    } else {
-      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
-    }
-    if (err == -1) {
-      shutdown(sock, 2);
-      sock = INVALID_SOCKET;
-      PERROR("Error in connect to service");
-      return C_ERROR;
-    }
-    if (sock == INVALID_SOCKET) {
-      fprintf(stderr,"Error in connect to service\n");
-      fflush(stderr);
-      return C_ERROR;
-    }
-    SetSocketOptions(sock, 0);
-    SetConnectionInfoC(c, PROT, sock, NULL, 0);
-    return C_OK;
-  } else {
+  if IS_NOT_OK(GetHostAndPort(host, &sin)) {
     fprintf(stderr, "Connect failed to host: %s\n",host);
-    fflush(stderr);
     return C_ERROR;
   }
+  INITIALIZESOCKETS;
+  sock = socket(AF_T, SOCK_STREAM, 0);
+  if (sock == INVALID_SOCKET) {
+    PERROR("Error creating socket");
+    return C_ERROR;
+  }
+  struct timeval connectTimer = { 0, 0 };
+  connectTimer.tv_sec = GetMdsConnectTimeout();
+  int err;
+#ifdef _WIN32
+  struct timeval *timeout = connectTimer.tv_sec>0 ? &connectTimer : NULL;
+  u_long ul = TRUE;
+  struct sockaddr_in addr;
+  addr.sin_family = AF_INET;
+  addr.sin_port = 0;
+  addr.sin_addr.s_addr = INADDR_LOOPBACK;
+  int len = sizeof(addr);
+  int_sock = socket(AF_INET, SOCK_DGRAM, 0);
+  bind(int_sock, (struct sockaddr *) &addr, len);
+  getsockname(int_sock, (struct sockaddr *) &addr, &len);
+  connect(int_sock,(struct sockaddr *) &addr, len);
+  SOCKET maxsock = sock>int_sock ? sock+1 : int_sock+1;
+  err = ioctlsocket(sock, FIONBIO, &ul);
+  if (err==0)
+    err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
+  if ((err == -1) && (WSAGetLastError() == WSAEWOULDBLOCK)) {
+    fd_set rdfds, wrfds;
+    FD_ZERO(&wrfds);
+    FD_ZERO(&rdfds);
+    FD_SET(sock, &wrfds);
+    FD_SET(int_sock, &rdfds);
+    old_handler = signal(SIGINT,int_select);
+    err = select(maxsock, &rdfds, &wrfds, NULL, timeout);
+    signal(SIGINT,old_handler);
+    if (err < 1) {
+      if (err < 0)  PERROR("Error in connect");
+      else fprintf(stderr, "Error in connect: timeout ?!\n");
+      close(int_sock);
+      goto error;
+    }
+    if (FD_ISSET(int_sock, &rdfds)) {
+      errno = EINTR;
+      perror("Error in connect");
+      goto error;
+    }
+    close(int_sock);
+    socklen_t len = sizeof(err);
+    getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&err, &len);
+  }
+  ul = FALSE;
+  ioctlsocket(sock, FIONBIO, &ul);
+#else // _WIN32
+  if (connectTimer.tv_sec) {
+    err = fcntl(sock, F_SETFL, O_NONBLOCK);
+    if (err==0)
+      err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
+    if ((err == -1) && (errno == EINPROGRESS)) {
+      fd_set writefds;
+      FD_ZERO(&writefds);
+      FD_SET(sock, &writefds);
+      sigset_t sigmask, origmask;
+      sigemptyset(&sigmask);
+      pthread_sigmask(SIG_SETMASK, &sigmask, &origmask);
+      err = select(sock+1, NULL, &writefds, NULL, &connectTimer);
+      pthread_sigmask(SIG_SETMASK, &origmask, NULL);
+      if (err < 1) {
+	if (err == 0) fprintf(stderr,"Error in connect: timeout\n");
+        else          perror("Error in connect");
+	goto error;
+      }
+      socklen_t len = sizeof(err);
+      getsockopt(sock, SOL_SOCKET, SO_ERROR, (char*)&err, &len);
+    }
+    if (err != -1)
+      fcntl(sock, F_SETFL, 0);
+  } else
+    err = connect(sock, (struct sockaddr *)&sin, sizeof(sin));
+#endif // !_WIN32
+  if (err == -1) {
+    PERROR("Error in connect to service");
+error: ;
+    shutdown(sock, SHUT_RDWR);
+    close(sock);
+    return C_ERROR;
+  }
+  SetSocketOptions(sock, 0);
+  SetConnectionInfoC(c, PROT, sock, NULL, 0);
+  return C_OK;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -201,7 +249,15 @@ static int io_listen(int argc, char **argv){
   {0, 0, 0, 0, 0}
   };
 #ifndef _WIN32
-  signal(SIGCHLD, ChildSignalHandler);
+  struct sigaction act;
+  act.sa_handler = ChildSignalHandler;
+  sigemptyset (&act.sa_mask);
+#ifdef SA_RESTART // attempt to resume interrupted io
+  act.sa_flags = SA_RESTART;
+#else
+  act.sa_flags = 0;
+#endif
+  sigaction (SIGCHLD, &act, NULL);
 #endif
   ParseCommand(argc, argv, options, 0, 0, 0);
   if (options[0].present && options[0].value)

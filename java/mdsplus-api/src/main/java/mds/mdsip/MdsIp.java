@@ -34,11 +34,11 @@ import com.jcraft.jsch.Session;
 import com.jcraft.jsch.UIKeyboardInteractive;
 import com.jcraft.jsch.UserInfo;
 import debug.DEBUG;
+import mds.ContextEventListener;
 import mds.Mds;
-import mds.MdsEvent;
 import mds.MdsException;
 import mds.MdsException.MdsAbortException;
-import mds.MdsListener;
+import mds.TransferEventListener;
 import mds.UpdateEventListener;
 import mds.data.CTX;
 import mds.data.DTYPE;
@@ -250,7 +250,7 @@ public class MdsIp extends Mds{
 		public final void run() {
 			try{
 				for(;;){
-					final Message new_message = Message.receive(MdsIp.this.dis, MdsIp.this.mdslisteners);
+					final Message new_message = Message.receive(MdsIp.this.dis, MdsIp.this.translisteners);
 					if(new_message.dtype == DTYPE.EVENT){
 						final PMET PmdsEvent = new PMET();
 						PmdsEvent.setEventid(new_message.body.get(12));
@@ -458,6 +458,20 @@ public class MdsIp extends Mds{
 		return size;
 	}
 
+	protected final void dispatchContextEvent(String msg, boolean ok) {
+		if(this.ctxlisteners != null) synchronized(this.ctxlisteners){
+			for(final ContextEventListener l : this.ctxlisteners)
+				l.handleContextEvent(this, msg, ok);
+		}
+	}
+
+	protected final void dispatchTransferEvent(final String info, int pos, int total) {
+		if(this.translisteners != null) synchronized(this.translisteners){
+			for(final TransferEventListener l : this.translisteners)
+				l.handleTransferEvent(this.dis, info, pos, total);
+		}
+	}
+
 	public static final boolean removeSharedConnection(final MdsIp con) {
 		synchronized(MdsIp.open_connections){
 			return MdsIp.open_connections.remove(con);
@@ -552,12 +566,13 @@ public class MdsIp extends Mds{
 	public String					last_error;
 
 	public MdsIp(final Provider provider){
-		this(provider, null);
+		this(provider, null, null);
 	}
 
 	/** main constructor of the Connection class **/
-	public MdsIp(final Provider provider, final MdsListener cl){
-		this.addMdsListener(cl);
+	public MdsIp(final Provider provider, final ContextEventListener cl, final TransferEventListener tl){
+		this.addContextEventListener(cl);
+		this.addTransferEventListener(tl);
 		this.provider = provider;
 	}
 
@@ -565,8 +580,12 @@ public class MdsIp extends Mds{
 		this(new Provider(provider));
 	}
 
-	public MdsIp(final String provider, final MdsListener cl){
-		this(new Provider(provider), cl);
+	public MdsIp(final String provider, final ContextEventListener cl){
+		this(new Provider(provider), cl, null);
+	}
+
+	public MdsIp(final String provider, final TransferEventListener tl){
+		this(new Provider(provider), null, tl);
 	}
 
 	/** disconnect from server and close **/
@@ -621,11 +640,11 @@ public class MdsIp extends Mds{
 					for(final Descriptor<?> d : args)
 						d.toMessage(idx++, totalarg, mid).send(this.dos);
 				}else new Message(cmd.toString(), mid).send(this.dos);
-				this.dispatchMdsEvent(new MdsEvent(this, MdsEvent.TRANSFER, "waiting for server"));
+				this.dispatchTransferEvent("waiting for server", 0, 0);
 				msg = this.getAnswer();
 				if(msg == null) throw new MdsException("Could not get IO for " + this.provider.host, 0);
 			}finally{
-				this.dispatchMdsEvent(new MdsEvent(this));
+				this.dispatchTransferEvent(null, 0, 0);
 			}
 		}
 		return msg;
@@ -660,7 +679,7 @@ public class MdsIp extends Mds{
 
 	public void lostConnection() {
 		this.disconnectFromServer();
-		MdsIp.this.dispatchMdsEvent(new MdsEvent(MdsIp.this, MdsEvent.LOST_CONTEXT, "Lost connection from " + MdsIp.this.provider.host));
+		this.dispatchContextEvent(this.provider.host, false);
 	}
 
 	synchronized public final void mdsRemoveEvent(final UpdateEventListener l, final String event) {
@@ -790,7 +809,7 @@ public class MdsIp extends Mds{
 		this.connected = true;
 		this.receiveThread.start();
 		this.setup();
-		MdsIp.this.dispatchMdsEvent(new MdsEvent(this, MdsEvent.HAVE_CONTEXT, "Connected to " + this.provider.toString()));
+		this.dispatchContextEvent("Connected to " + this.provider.toString(), false);
 	}
 
 	private final void disconnectFromServer() {

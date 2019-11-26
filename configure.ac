@@ -127,7 +127,7 @@ AS_CASE(["$host"],
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
 
-JAVACFLAGS="-encoding UTF-8"
+JAVACFLAGS="-encoding UTF-8 -source \$(JAVASOURCE)"
 FOR_LINKSHARED=""
 
 AC_MSG_CHECKING([whether to build shared libraries])
@@ -217,15 +217,14 @@ AC_ARG_WITH([jdk],
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
                             [specify version of compiled mdsobjects classes (i.e. 6)])],
-            [AS_VAR_SET([JAVAVERSION], ["-source $withval -target $withval"])],
-            [AS_VAR_SET([JAVAVERSION], [])])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
 
 AC_ARG_WITH([java_bootclasspath],
 	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
                             [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [AS_VAR_APPEND([JAVAVERSION], [" -bootclasspath $withval"])],
-            [AS_VAR_APPEND([JAVAVERSION], [])])
-AC_SUBST([JAVAVERSION])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
@@ -389,6 +388,7 @@ JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
+JRE="jre"
 UILCMD="uil"
 FOR_LDFLAGS=""
 SHARETYPE=".so"
@@ -397,8 +397,6 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        MAKEFLAG_J=""
        MAKEFLAG_O=""
        LIBPRE=""
@@ -436,8 +434,6 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
@@ -495,8 +491,6 @@ case "$host" in
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
        ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
        AR=arm-xilinx-linux-gnueabi-ar;
@@ -526,8 +520,6 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -547,8 +539,6 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
-       JRE = "";
-       UIL = "/usr/bin/uil";
        THREAD=""
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";

@@ -143,14 +143,13 @@ extern "C" {
 #define YYLEX                   TdiLex
 
 extern int TdiConvert();
-extern struct marker *TdiYylvalPtr;
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-STATIC_ROUTINE int TdiLexBinEq(int token);
+static int TdiLexBinEq(int token);
 
 extern int TdiHash();
 
-STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
+static void upcase(unsigned char *str, int str_len)
 {
   unsigned char *pc;
 
@@ -164,7 +163,7 @@ STATIC_ROUTINE void upcase(unsigned char *str, int str_len)
 	Nested comments allowed. Len is not used.
 	Limitation:     Not ANSI C standard use of delimiters.
 */
-STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
+static int TdiLexComment(int len __attribute__ ((unused)),
 	                         unsigned char *str __attribute__ ((unused)),
 	                         struct marker *mark_ptr __attribute__ ((unused)))
 {
@@ -183,7 +182,7 @@ STATIC_ROUTINE int TdiLexComment(int len __attribute__ ((unused)),
       else
 	unput(c1);
     } else if (c == '\0') {
-      TdiRefZone.l_status = TdiUNBALANCE;
+      TDI_REFZONE.l_status = TdiUNBALANCE;
       return 1;
     }
   }
@@ -201,10 +200,10 @@ ing
 	        exponent        [E|F|D|G|H|S|T] [+|-] 0-9...
 	NEED to size based on exponent range and number of digits.
 */
-STATIC_CONSTANT DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
-STATIC_CONSTANT DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
+static const DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
+static const DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
-STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
+static int ConvertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
 {
   char str_c[64];
   int len = str->length > 63 ? 63 : str->length;
@@ -225,12 +224,12 @@ STATIC_ROUTINE int ConvertFloating(struct descriptor_s *str, struct descriptor_r
   }
 }
 
-STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *mark_ptr)
+static int TdiLexFloat(int str_len, unsigned char *str, struct marker *mark_ptr)
 {
   struct descriptor_s str_dsc = { 0, DTYPE_T, CLASS_S, 0 };
   int bad, idx, status, tst, type;
   GET_TDITHREADSTATIC_P;
-  STATIC_CONSTANT struct {
+  static const struct {
     unsigned short length;
     unsigned char dtype;
   } table[] = {
@@ -298,7 +297,7 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
   mark_ptr->builtin = -1;
   if STATUS_OK
     return (LEX_VALUE);
-  TdiRefZone.l_status = status;
+  TDI_REFZONE.l_status = status;
   return (LEX_ERROR);
 }
 
@@ -307,7 +306,7 @@ STATIC_ROUTINE int TdiLexFloat(int str_len, unsigned char *str, struct marker *m
 	Clobbers string with upcase. IDENT token returns name.
 	Note, Lex strings are NUL terminated.
 */
-STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
+static int TdiLexIdent(int len, unsigned char *str, struct marker *mark_ptr)
 {
   int j, token;
   unsigned char *str_l;
@@ -398,7 +397,7 @@ STATIC_ROUTINE int TdiLexIdent(int len, unsigned char *str, struct marker *mark_
 #define len1 8			/*length of a word in bits */
 #define num1 16			/*number of words to accumulate, octaword */
 
-STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker *mark_ptr)
+static int TdiLexInteger(int str_len, unsigned char *str, struct marker *mark_ptr)
 {
   GET_TDITHREADSTATIC_P;
   const struct {
@@ -610,7 +609,7 @@ STATIC_ROUTINE int TdiLexInteger(int str_len, unsigned char *str, struct marker 
 #endif
     return (LEX_VALUE);
   }
-  TdiRefZone.l_status = status;
+  TDI_REFZONE.l_status = status;
   return (LEX_ERROR);
 }
 
@@ -626,7 +625,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
   str_l[len] = 0;
   upcase(str_l, len);
   mark_ptr->builtin = -1;
-  if (TdiRefZone.l_rel_path) {
+  if (TDI_REFZONE.l_rel_path) {
     MAKE_S(DTYPE_PATH, (unsigned short)len, mark_ptr->rptr);
     _MOVC3(len, str, (char *)mark_ptr->rptr->pointer);
   } else if (TreeFindNode((char *)str_l, &nid) & 1) {
@@ -643,7 +642,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
       _MOVC3(abs_dsc.length, abs_dsc.pointer, (char *)mark_ptr->rptr->pointer);
       StrFree1Dx(&abs_dsc);
     } else {
-      TdiRefZone.l_status = TreeNOT_OPEN;
+      TDI_REFZONE.l_status = TreeNOT_OPEN;
       token = LEX_ERROR;
     }
   }
@@ -654,7 +653,7 @@ int TdiLexPath(int len, unsigned char *str, struct marker *mark_ptr)
 /*--------------------------------------------------------
 	Remove arrow and trailing punctation.
 */
-STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_ptr)
+static int TdiLexPoint(int len, unsigned char *str, struct marker *mark_ptr)
 {
   GET_TDITHREADSTATIC_P;
   int lenx = len - 2;
@@ -671,7 +670,7 @@ STATIC_ROUTINE int TdiLexPoint(int len, unsigned char *str, struct marker *mark_
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
 	Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
 */
-STATIC_ROUTINE int TdiLexBinEq(int token)
+static int TdiLexBinEq(int token)
 {
   GET_TDITHREADSTATIC_P;
   char cx;
@@ -683,7 +682,7 @@ STATIC_ROUTINE int TdiLexBinEq(int token)
   return token;
 }
 
-STATIC_ROUTINE int TdiLexPunct(int len __attribute__ ((unused)),
+static int TdiLexPunct(int len __attribute__ ((unused)),
 			       unsigned char *str,
 			       struct marker *mark_ptr)
 {
@@ -848,14 +847,14 @@ int TdiLexQuote(int len __attribute__ ((unused)),
 		struct marker *mark_ptr)
 {
   GET_TDITHREADSTATIC_P;
-  char c, c1, *cptr = TdiRefZone.a_cur;
+  char c, c1, *cptr = TDI_REFZONE.a_cur;
   int cur = 0, limit;
 
   while ((c = input()) && c != str[0])
     if (c == '\\')
       input();
-  limit = TdiRefZone.a_cur - cptr - 1;
-  TdiRefZone.a_cur = cptr;
+  limit = TDI_REFZONE.a_cur - cptr - 1;
+  TDI_REFZONE.a_cur = cptr;
   MAKE_S(DTYPE_T, limit, mark_ptr->rptr);
   mark_ptr->builtin = -1;
   while (cur <= limit) {
@@ -934,12 +933,12 @@ int TdiLexQuote(int len __attribute__ ((unused)),
       break;
     mark_ptr->rptr->pointer[cur++] = c;
   }
-  TdiRefZone.l_status = TdiUNBALANCE;
+  TDI_REFZONE.l_status = TdiUNBALANCE;
   return (LEX_ERROR);
 }
 
 #define YYNEWLINE 10
-int TdiLex() // aka tdiyylex
+int TdiLex(struct marker *TdiYylvalPtr) // aka tdiyylex
 {
   GET_TDITHREADSTATIC_P;
   int nstr;

@@ -23,9 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-from MDSplus import Event,Range
 import threading
-import Queue
+from queue import Queue, Empty
 import time
 import socket
 import math
@@ -101,8 +100,8 @@ class _ACQ2106_423ST(MDSplus.Device):
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
-            self.empty_buffers = Queue.Queue()
-            self.full_buffers = Queue.Queue()
+            self.empty_buffers = Queue()
+            self.full_buffers  = Queue()
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
@@ -120,9 +119,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            def truncate(f, n):
-                return math.floor(f * 10 ** n) / 10 ** n
-
             if self.dev.debug:
                 print("MDSWorker running")
 
@@ -132,12 +128,8 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             decimator = lcma(self.decim)
 
-            if self.seg_length % decimator:
-                self.seg_length = (self.seg_length // decimator + 1) * decimator
-
-            self.dims = []
-            for i in range(self.nchans):
-                self.dims.append(Range(0., truncate((self.seg_length-1)*dt,3), dt*self.decim[i]))
+            if self.seg_length % decimator:		
+                 self.seg_length = (self.seg_length // decimator + 1) * decimator
 
             self.device_thread.start()
 
@@ -147,19 +139,23 @@ class _ACQ2106_423ST(MDSplus.Device):
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
-                except Queue.Empty:
+                except Empty:
                     continue
 
                 buffer = np.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = Range(self.dims[i].begin + truncate(self.seg_length*dt,3), self.dims[i].ending + truncate(self.seg_length*dt,3), dt*self.decim[i])
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
-                Event.setevent(event_name)
+                MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
@@ -200,7 +196,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Queue.Empty:
+                    except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
                         

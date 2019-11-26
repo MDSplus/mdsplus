@@ -100,6 +100,7 @@ public class Database implements RemoteTree{
     public native void clearFlags(NidData nid, int flags) throws DatabaseException;
     public native void setFlags(NidData nid, int flags) throws DatabaseException;
     public native int getFlags(NidData nid) throws DatabaseException;
+    public native int getNumSegments(NidData nid) throws DatabaseException;
     public native void setEvent(String event)throws DatabaseException;
     public native String getMdsMessage(int status);
   }

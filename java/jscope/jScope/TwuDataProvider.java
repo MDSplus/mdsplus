@@ -155,7 +155,7 @@ class TwuDataProvider
     //     parsing of / extraction from input signal string
     //  -------------------------------------------------------
 
-    public long[] GetShots(String in)
+    public long[] GetShots(String in, String experiment)
     {
 	resetErrorstring(null);
 	long [] result;

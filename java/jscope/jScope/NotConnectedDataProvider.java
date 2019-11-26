@@ -69,7 +69,7 @@ class NotConnectedDataProvider implements DataProvider
 	return null;
     }
 
-    public long[] GetShots(String in)
+    public long[] GetShots(String in, String experiment)
     {
 	long d[] = new long[1];
 	d[0] = 0;

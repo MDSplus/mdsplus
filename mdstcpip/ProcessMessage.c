@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <mdsshr.h>
 #include <treeshr.h>
+#include "../tdishr/tdithreadstatic.h"
 #include <tdishr.h>
 #include <libroutines.h>
 #include <strroutines.h>
@@ -484,26 +485,14 @@ static Message *BuildResponse(int client_type, unsigned char message_id, int sta
   return m;
 }
 
-static void ResetErrors() {
-  static int four = 4;
-  static DESCRIPTOR_LONG(clear_messages, &four);
-  static DESCRIPTOR(messages, "");
-  TdiDebug(&clear_messages, &messages MDS_END_ARG);
-}
-
-static void GetErrorText(int status, struct descriptor_xd *xd){
-  static int one = 1;
-  static DESCRIPTOR_LONG(get_messages, &one);
-  TdiDebug(&get_messages, xd MDS_END_ARG);
-  if (!xd->length) {
-    static DESCRIPTOR(unknown, "unknown error occured");
-    struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
-    if ((message.pointer = MdsGetMsg(status)) != NULL) {
-      message.length = strlen(message.pointer);
-      MdsCopyDxXd(&message, xd);
-    } else
-      MdsCopyDxXd((struct descriptor *)&unknown, xd);
-  }
+static void GetErrorText(int status, mdsdsc_xd_t *xd){
+  static DESCRIPTOR(unknown, "unknown error occured");
+  struct descriptor message = { 0, DTYPE_T, CLASS_S, 0 };
+  if ((message.pointer = MdsGetMsg(status)) != NULL) {
+    message.length = strlen(message.pointer);
+    MdsCopyDxXd(&message, xd);
+  } else
+    MdsCopyDxXd((struct descriptor *)&unknown, xd);
 }
 
 static void ClientEventAst(MdsEventList * e, int data_len, char *data)
@@ -511,10 +500,17 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
   int conid = e->conid;
   Connection *c = FindConnection(e->conid, 0);
   int i;
-  char client_type = c->client_type;
+  char client_type;
   Message *m;
   JMdsEventInfo *info;
   int len;
+  //Check Connection: if down, cancel the event and return
+  if(!c)
+  {
+      MDSEventCan(e->eventid);
+      return;
+  }
+  client_type = c->client_type;
   LockAsts();
   if (CType(client_type) == JAVA_CLIENT) {
     len = sizeof(MsgHdr) + sizeof(JMdsEventInfo);
@@ -552,20 +548,21 @@ static void ClientEventAst(MdsEventList * e, int data_len, char *data)
  * Problems with the implementation are likely to be fixed in all locations.
  */
 typedef struct {
-  void      **ctx;
-  int       status;
+  void		**ctx;
+  int		status;
 #ifndef _WIN32
-  Condition *const condition;
+  Condition	*const condition;
 #endif
-  Connection           *const connection;
-  struct descriptor_xd *const xd_out;
-  void                 *tdicontext[6];
+  ThreadStatic	*TdiThreadStatic_p;
+  Connection	*const connection;
+  mdsdsc_xd_t	*const xd_out;
+  void		*tdicontext[6];
 } worker_args_t;
 
 typedef struct {
-  worker_args_t        *const wa;
-  struct descriptor_xd *const xdp;
-  void                 *pc;
+  worker_args_t	*const wa;
+  mdsdsc_xd_t	*const xdp;
+  void		*pc;
 } worker_cleanup_t;
 
 static void WorkerCleanup(void *args) {
@@ -583,17 +580,20 @@ static void WorkerCleanup(void *args) {
 static int WorkerThread(void *args) {
   EMPTYXD(xd);
   worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
+  TdiThreadStatic(wc.wa->TdiThreadStatic_p);
   pthread_cleanup_push(WorkerCleanup,(void*)&wc);
   wc.pc = TreeCtxPush(wc.wa->ctx);
   TdiRestoreContext(wc.wa->tdicontext);
+  --wc.wa->TDI_INTRINSIC_REC;
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
+  ++wc.wa->TDI_INTRINSIC_REC;
   if IS_OK(wc.wa->status)
     wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
   return wc.wa->status;
 }
 
-static inline int executeCommand(Connection* connection, struct descriptor_xd* ans_xd) {
+static inline int executeCommand(Connection* connection, mdsdsc_xd_t* ans_xd) {
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
 #ifdef _WIN32
   worker_args_t wa = {
@@ -601,6 +601,7 @@ static inline int executeCommand(Connection* connection, struct descriptor_xd* a
   Condition WorkerRunning = CONDITION_INITIALIZER;
   worker_args_t wa = {.condition = &WorkerRunning,
 #endif
+  .TdiThreadStatic_p=TdiThreadStatic(NULL),
   .status = -1, .connection = connection, .xd_out = ans_xd};
   if (GetContextSwitching()) {
     wa.ctx = &connection->DBID;
@@ -773,11 +774,10 @@ static Message *ExecuteMessage(Connection * connection) {
   // NORMAL TDI COMMAND //
   else {
     INIT_AND_FREEXD_ON_EXIT(ans_xd);
-    ResetErrors();
     status = executeCommand(connection,&ans_xd);
     if STATUS_NOT_OK
       GetErrorText(status, &ans_xd);
-    else if (GetCompressionLevel() != connection->compression_level) {
+    if (GetCompressionLevel() != connection->compression_level) {
       connection->compression_level = GetCompressionLevel();
       if (connection->compression_level > GetMaxCompressionLevel())
 	connection->compression_level = GetMaxCompressionLevel();

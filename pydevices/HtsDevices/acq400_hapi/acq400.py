@@ -22,11 +22,12 @@ import os
 import errno
 import signal
 import sys
-import netclient
 import numpy
 import socket
 import timeit
 import time
+
+from . import netclient
 
 class AcqPorts:
     """server port constants"""

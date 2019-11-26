@@ -1645,12 +1645,17 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @rtype: None
         """
         arglist=[self.ctx]
-        xd=_dsc.descriptor_xd()
+        xd=_dsc.Descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
-        argsobj+= list(map(_dat.Data,args))
-        arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.ref,_ver.MdsEND_ARG]
-        _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
+        arglist+=list(map(_dat.Data.byref,argsobj))
+        arglist.append(len(args))
+        if len(args)>0:
+            argsobj= list(map(_dat.Data,args))
+            arglist.append(_N.array(map(_dat.Data.byref,argsobj)))
+        else:
+            arglist.append(_C.c_void_p(0))
+        arglist+=[xd.ref]
+        _exc.checkStatus(_TreeShr._TreeDoMethodA(*arglist))
         return xd._setTree(self.tree).value
 
     @classmethod
@@ -2668,6 +2673,19 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                                             self._nid,
                                             _C.c_int32(int(rows_filled))))
 
+
+    def tcl(self,cmd):
+        """Issue a tcl command with this node being the default node
+        @param cmd: tcl command string
+        @type cmd: str
+        @rtype: int
+        """
+        olddef=self.tree.default
+        self.tree.default=self
+        try:
+            return self.tree.tcl(cmd)
+        finally:
+            self.tree.default=olddef
 
     def updateSegment(self,start,end,dim,idx):
         """Update a segment

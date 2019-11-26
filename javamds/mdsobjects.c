@@ -62,6 +62,273 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+
+static int doAction(void *dbid, int nid)
+//EXPORT int doAction(int nid)
+{
+  int status;
+  int retStatus = 0;
+  EMPTYXD(xd);
+  EMPTYXD(xd1);
+  struct descriptor_program *program_d_ptr;
+  struct descriptor_method *method_d_ptr;
+    struct descriptor_routine *routine_d_ptr;
+  struct descriptor_procedure *procedure_d_ptr;
+  struct descriptor *language_d_ptr, *command_proc_d_ptr;
+  struct descriptor_r *curr_rec_ptr;
+  char *command, *expression, *path;
+  struct descriptor expr_d = { 0, DTYPE_T, CLASS_S, 0 };
+  int method_nid, i;
+  struct descriptor nid_d = { sizeof(int), DTYPE_NID, CLASS_S, 0 };
+  struct descriptor retStatus_d = { sizeof(int), DTYPE_L, CLASS_S, (char *)&retStatus };
+  dtype_t type = DTYPE_L;
+  DESCRIPTOR_CALL(call_d, 0, 253, 0, 0);
+  struct descriptor_d *decArgs;
+  char *currPtr;
+  int argLen, numArgs;
+
+  nid_d.pointer = (char *)&method_nid;
+  call_d.pointer = &type;
+  status = _TreeGetRecord(dbid, nid, &xd);
+  if (!(status & 1))
+    return status;
+  if (!xd.pointer)
+    return 0;
+
+  curr_rec_ptr = (struct descriptor_r *)xd.pointer;
+  if (curr_rec_ptr->dtype == DTYPE_ACTION)
+
+    curr_rec_ptr = (struct descriptor_r *)((struct descriptor_action *)curr_rec_ptr)->task;
+  if (!curr_rec_ptr)
+    return 0;
+
+  switch (curr_rec_ptr->dtype) {
+  case DTYPE_PROGRAM:
+    program_d_ptr = (struct descriptor_program *)curr_rec_ptr;
+    if (!program_d_ptr->program) {
+      status = 0;
+      break;
+    }
+    status = TdiEvaluate(program_d_ptr->program, &xd1 MDS_END_ARG);
+    if (!(status & 1))
+      break;
+    if (!xd1.pointer || xd1.pointer->dtype != DTYPE_T) {
+      status = 0;
+      break;
+    }
+    command = malloc(xd1.pointer->length + 1);
+    memcpy(command, xd1.pointer->pointer, xd1.pointer->length);
+    command[xd1.pointer->length] = 0;
+    MdsFree1Dx(&xd1, 0);
+    size_t expr_len = strlen(command) + 20;
+    expression = malloc(expr_len);
+    snprintf(expression, expr_len, "spawn(\"%s\",,)", command);
+    expr_d.length = strlen(expression);
+    expr_d.pointer = expression;
+    status = TdiCompile(&expr_d, &xd1 MDS_END_ARG);
+    free(command);
+    free(expression);
+    if (status & 1)
+      status = TdiEvaluate((struct  descriptor *)&xd1, &xd1 MDS_END_ARG);
+
+    if (status & 1) {
+      //struct descriptor *out = xd1.pointer;
+//      printf("type   = %d\n", out->dtype);
+//      printf("value = %d error %d \n", *(int *)out->pointer, errno);
+
+      if (!xd1.pointer || xd1.pointer->dtype != DTYPE_L) {
+	status = 0;
+	break;
+      }
+      // Try to distingush between system error success execution  return  0 code
+      // and error execution should be return a code < 255
+      // and MDSplus essror code which has this convention odd number success
+      // even number error with a value larger than 255
+      status = *(int *)(xd1.pointer->pointer);
+      if (status != 0 && status < 255) {
+	status = 0;
+      } else {
+	if (status == 0)
+	  status = 1;
+      }
+    }
+
+    MdsFree1Dx(&xd1, 0);
+
+    break;
+
+  case DTYPE_METHOD:
+    method_d_ptr = (struct descriptor_method *)curr_rec_ptr;
+    if (!method_d_ptr->object || !method_d_ptr->method) {
+      status = 0;
+      break;
+    }
+    if (method_d_ptr->object->dtype == DTYPE_NID) {
+      if (method_d_ptr->ndesc == 3)
+	status = _TreeDoMethod(dbid, method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+      else if (method_d_ptr->ndesc == 4)
+	status =
+	    _TreeDoMethod(dbid, method_d_ptr->object, method_d_ptr->method, method_d_ptr->arguments[0],
+			 &retStatus_d MDS_END_ARG);
+      else {
+	if (!method_d_ptr->arguments[0])
+	  status =
+	      _TreeDoMethod(dbid, method_d_ptr->object, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+	else if (!method_d_ptr->arguments[1])
+	  status =
+	      _TreeDoMethod(dbid, method_d_ptr->object, method_d_ptr->method, method_d_ptr->arguments[0],
+			   &retStatus_d MDS_END_ARG);
+	else
+	  status =
+	      _TreeDoMethod(dbid, method_d_ptr->object, method_d_ptr->method, method_d_ptr->arguments[0],
+			   method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
+      }
+      if (status & 1)
+	status = retStatus;
+    } else if (method_d_ptr->object->dtype == DTYPE_PATH) {
+      path = malloc(method_d_ptr->object->length + 1);
+      memcpy(path, method_d_ptr->object->pointer, method_d_ptr->object->length);
+      path[method_d_ptr->object->length] = 0;
+      status = _TreeFindNode(dbid, path, &method_nid);
+      free(path);
+      if (method_d_ptr->ndesc == 3) {
+	if (status & 1)
+	  status = _TreeDoMethod(dbid, &nid_d, method_d_ptr->method, &retStatus_d MDS_END_ARG);
+      } else if (method_d_ptr->ndesc == 4) {
+	if (status & 1)
+	  status =
+	      _TreeDoMethod(dbid, &nid_d, method_d_ptr->method, method_d_ptr->arguments[0],
+			   &retStatus_d MDS_END_ARG);
+      } else			//no more than 2 arguments....
+      {
+	if (status & 1)
+	  status = _TreeDoMethod(dbid, &nid_d, method_d_ptr->method, method_d_ptr->arguments[0],
+				method_d_ptr->arguments[1], &retStatus_d MDS_END_ARG);
+      }
+      if (status & 1)
+	status = retStatus;
+    } else
+      status = 0;
+    break;
+
+  case DTYPE_ROUTINE:
+    routine_d_ptr = (struct descriptor_routine *)curr_rec_ptr;
+    call_d.image = routine_d_ptr->image;
+    call_d.routine = routine_d_ptr->routine;
+    call_d.ndesc = routine_d_ptr->ndesc - 1;
+
+    for (i = 0; i < routine_d_ptr->ndesc - 3; i++)
+      call_d.arguments[i] = routine_d_ptr->arguments[i];
+    status = TdiEvaluate((struct descriptor *)&call_d, &xd1 MDS_END_ARG);
+
+    if (status & 1) {
+
+      //struct descriptor *out = xd1.pointer;
+//      printf("type   = %d\n", out->dtype);
+//      printf("value = %d\n", *(int *)out->pointer);
+
+      if (!xd1.pointer || xd1.pointer->dtype != DTYPE_L) {
+	status = 0;
+	break;
+      }
+      // Try to distingush between system error success execution  return  0 code
+      // and error execution should be return a code < 255
+      // and MDSplus essror code which has this convention odd number success
+      // even number error with a value larger than 255
+      status = *(int *)(xd1.pointer->pointer);
+      if (status != 0 && status < 255) {
+	status = 0;
+      } else {
+	if (status == 0)
+	  status = 1;
+      }
+    }
+
+    MdsFree1Dx(&xd1, 0);
+
+    break;
+
+  case DTYPE_FUNCTION:
+    status = TdiData((struct descriptor *)curr_rec_ptr, &xd MDS_END_ARG);
+    break;
+
+  case DTYPE_PROCEDURE:
+    procedure_d_ptr = (struct descriptor_procedure *)curr_rec_ptr;
+    language_d_ptr = procedure_d_ptr->language;
+    command_proc_d_ptr = procedure_d_ptr->procedure;
+    if (!language_d_ptr || !command_proc_d_ptr) {
+      status = 0;
+      break;
+    }
+    decArgs = malloc(sizeof(struct descriptor) * (procedure_d_ptr->ndesc - 3));
+    argLen = numArgs = 0;
+
+    for (i = 0; i < procedure_d_ptr->ndesc - 3; i++) {
+      if (!procedure_d_ptr->arguments[i])
+	break;
+      decArgs[i].dtype = DTYPE_T;
+      decArgs[i].class = CLASS_D;
+      decArgs[i].length = 0;
+      decArgs[i].pointer = 0;
+      status = TdiDecompile(procedure_d_ptr->arguments[i], &decArgs[i] MDS_END_ARG);
+      if (!(status & 1))
+	break;
+      numArgs++;
+      argLen += 2 + decArgs[i].length;
+    }
+    command = malloc(32 + argLen + language_d_ptr->length + command_proc_d_ptr->length);
+
+    currPtr = MdsDescrToCstring(command_proc_d_ptr);
+    if (numArgs > 0)
+      sprintf(command, "echo \'%s,", currPtr);
+    else
+      sprintf(command, "echo \'%s", currPtr);
+
+    for (i = 0; i < numArgs; i++) {
+      if (!procedure_d_ptr->arguments[i])
+	break;
+
+      currPtr = MdsDescrToCstring((struct descriptor *)&decArgs[i]);
+      if (i < numArgs - 1)
+	sprintf(&command[strlen(command)], "%s,", currPtr);
+      else
+	sprintf(&command[strlen(command)], "%s", currPtr);
+      StrFree1Dx(&decArgs[i]);
+    }
+
+    currPtr = MdsDescrToCstring(language_d_ptr);
+    sprintf(&command[strlen(command)], "\' | %s", currPtr);
+
+//    printf("Command : %s\n", command);
+    status = system(command);
+    //
+    if (status != 0)
+      status = 0;
+    else
+      status = 1;
+//    printf("Return status : %d \n", status, errno);
+
+    free(command);
+    free(decArgs);
+    break;
+
+  default:
+    status = 0;
+  }
+  MdsFree1Dx(&xd, 0);
+  return status;
+}
+
+
+
+
+
+
+
+
+
+
+
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
 
@@ -2846,6 +3113,18 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_moveNode
     throwMdsException(env, status);
 }
 
+
+/* Class:     MDSplus_TreeNode
+ * Method:    doAction
+ * Signature: (III)I
+ */
+JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_doAction
+    (JNIEnv * env __attribute__ ((unused)), jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2) {
+  void *ctx = getCtx(ctx1, ctx2);
+  return doAction(ctx, nid);
+}
+
+
 static JavaVM *jvm;
 
 static JNIEnv *getJNIEnv()
@@ -3403,3 +3682,10 @@ JNIEXPORT void JNICALL Java_MDSplus_Connection_put
     (*env)->ThrowNew(env, exc, MdsGetMsg(status));
   }
 }
+
+
+
+
+
+
+

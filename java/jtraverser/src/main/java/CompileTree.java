@@ -356,6 +356,8 @@ public class CompileTree extends Thread
 	                    flags |= NodeInfo.NO_WRITE_MODEL;
 	                if(flag.equals("NO_WRITE_SHOT"))
 	                    flags |= NodeInfo.NO_WRITE_SHOT;
+	                if(flag.equals("COMPRESS_SEGMENTS"))
+	                    flags |= NodeInfo.COMPRESS_SEGMENTS;
 	            }
 	            try {
 	               tree.setFlags(nid, flags);

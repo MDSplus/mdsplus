@@ -34,7 +34,7 @@ public class jServer
     public static int doingNid;
 
     Vector<Socket> retSocketsV = new Vector<Socket>();
-    Database mdsTree = null;
+    MDSplus.Tree mdsTree = null;
     ActionQueue actionQueue = new ActionQueue();
     Worker worker = new Worker();
     boolean watchdogStarted = false;
@@ -359,7 +359,7 @@ public class jServer
 	                String answer = "" + id + " " + SrvJobFINISHED + " 1 0";
 	                if (mdsTree != null) {
 	                    try {
-	                        mdsTree.close(0);
+	                        mdsTree.close();
 	                        mdsTree = null;
 	                    }
 	                    catch (Exception exc) {
@@ -551,89 +551,52 @@ public class jServer
 	try {
 	    if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot) {
 	        if (mdsTree != null)
-	            mdsTree.close(0);
-	        mdsTree = new Database(tree, shot);
-	        mdsTree.open();
+	            mdsTree.close();
+	        mdsTree = new MDSplus.Tree(tree, shot);
+	        //mdsTree.open();
 	        lastTree = tree;
 	        lastShot = shot;
 	    }
-	    NidData nid;
+	    MDSplus.TreeNode node;
 	    try {
-	        nid = mdsTree.resolve(new PathData(name), 0);
+	        node = mdsTree.getNode(name);
 	    }
 	    catch (Exception exc) {
 	        System.err.println("Cannot Find Node " + name + ": "+exc);
 	        return 0;
 	    }
 
-	    doingNid = nid.getInt();
+	    doingNid = node.getNid();
 	    try {
-	        Data.evaluate("DevSetDoingNid(" + doingNid + ")");
+	        MDSplus.Data.execute("DevSetDoingNid(" + doingNid + ")", new MDSplus.Data[0]);
 	    }
 	    catch (Exception exc) {}
 	    try {
-	        name = mdsTree.getInfo(nid, 0).getFullPath();
+	        name = node.getFullPath();
 	    }
 	    catch (Exception exc) {
-	        System.err.println("Cannot resolve action name " + nid.getInt());
+	        System.err.println("Cannot resolve action name " + node);
 	        name = "";
 	    }
 
 	    System.out.println("" + new Date() + ", Doing " + name + " in " +
 	                       tree + " shot " + shot);
 
-	    //Gabriele jan 2014: let doAction return the true status and get error message
-	    //via  JNI method GetMdsMessage(status)
-
-	    status = mdsTree.doAction(nid, 0);
-	    if((status & 1) == 0)
-			{
-			   Data d = mdsTree.dataFromExpr("getLastError()");
-			   String errMsg = mdsTree.evaluateSimpleData(d, 0).getString();
-
-	       //System.err.println("Action Execution failed: " + mdsTree.getMdsMessage(status));
-			   if( status != 0 )
-			   {
-	       		System.out.println("" + new Date() + ", Failed " + name + " in " +
-	                       	tree + " shot " + shot + ": " + mdsTree.getMdsMessage(status) + " " + (errMsg == null ? "" : errMsg) );
-	       }
-			   else
-			   {
-	       		System.out.println("" + new Date() + ", Failed " + name + " in " +
-	                       	tree + " shot " + shot + ": " + (errMsg == null ? "Uknown error reason" : errMsg) );
-			   }
-
-			}
-			else
-			{
-	       System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
-			}
-/*
-	    try {
-	        mdsTree.doAction(nid, 0);
-	    }catch(Exception exc) {
-	        System.err.println("Exception generated in Action execution: " + exc);
-	        try {
-	            String msg = exc.toString();
-	            StringTokenizer st = new StringTokenizer(msg, ":");
-	            status = Integer.parseInt(st.nextToken());
-	        }catch(Exception exc1)
-	        {
-	            status = 0;
-	        }
+	    status = node.doAction();
+	    System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
+	    if((status & 1) != 0)
+	    {
+		String errDevMsg = MDSplus.Data.execute("getLastError()", new MDSplus.Data[0]).getString();
+		String errMsg = MDSplus.Data.execute("getmsg()", new MDSplus.Data[]{new MDSplus.Int32(status)}).getString();
+		System.out.println("" + new Date() + ", Failed " + name + " in " +
+	                       	tree + " shot " + shot + ": " + errMsg + " " + (errDevMsg == null ? "" : errDevMsg) );
 	    }
-*/
-
-	    //status = 1;
+	    return status;
 	}
 	catch (Exception exc) {
-
 	    System.out.println("" + new Date() + ", Failed " + name + " in " +
 	                       tree + " shot " + shot + ": " +  exc);
 
-	    if (exc instanceof DatabaseException)
-	        status = ( (DatabaseException) exc).getStatus();
-	    else
 	        status = 0;
 	}
 	return status;

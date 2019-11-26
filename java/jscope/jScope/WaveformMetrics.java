@@ -174,6 +174,12 @@ public class WaveformMetrics
 
     final public int YPixel(double y)
     {
+	if (y_log)
+	{
+	    if (y < MIN_LOG)
+	        y = MIN_LOG;
+	    y = Math.log(y) / LOG10;
+	}
 	double ypix = y * FACT_Y + OFS_Y;
 	if (ypix >= MAX_VALUE)
 	    return INT_MAX_VALUE;
@@ -371,225 +377,145 @@ public class WaveformMetrics
 	i = j = 0;
 	int end_point = sig.getNumPoints();
 
-	if (x_log || y_log)
-	{
-	    double xmin_nolog = Math.pow(10, xmin);
+        ComputeFactors(d);
+        try {
+            double x[] = sig.getX();
+            float y[] = sig.getY();
+            for (i = 0; i < x.length &&x[i] < xmin; i++)
+                ;
+            if (i > 0)
+                i--;
+            min_y = max_y = y[i];
+            j = i + 1;
 
-	    double first_y, last_y;
-	    for (i = 0; i < sig.getNumPoints() && sig.getX(i) < xmin_nolog; i++)
-	        ;
-	    if (i > 0)
-	        i--;
-	    min_y = max_y = sig.getY(i);
-	    j = i + 1;
-	    start_x = XPixel(sig.getX(i), d);
-
-	    first_y = last_y = sig.getY(i);
-	    while (j < end_point) //sig.getNumPoints()  && sig.x_double[j] < xmax_nolog)
-	    {
-	        for (j = i + 1; j < sig.getNumPoints() &&
-	             (pol_idx >= sig.getNumNaNs() || j != sig.getNaNs()[pol_idx]) &&
-	             XPixel(sig.getX(j), d) == start_x; j++)
-	        {
-	            last_y = curr_y = sig.getY(j);
-	            if (curr_y < min_y)
-	                min_y = curr_y;
-	            if (curr_y > max_y)
-	                max_y = curr_y;
-	        }
-	        if (max_y > min_y)
-	        {
-	            if (first_y != min_y)
-	            {
-	                xpoints[curr_num_points] = start_x;
-	                ypoints[curr_num_points] = YPixel(first_y, d);
-	                curr_num_points++;
-	            }
-	            xpoints[curr_num_points] = xpoints[curr_num_points +
-	                1] = start_x;
-	            ypoints[curr_num_points] = YPixel(min_y, d);
-	            ypoints[curr_num_points + 1] = YPixel(max_y, d);
-	            curr_num_points += 2;
-	            if (last_y != max_y)
-	            {
-	                xpoints[curr_num_points] = start_x;
-	                ypoints[curr_num_points] = YPixel(last_y, d);
-	                curr_num_points++;
-	            }
-	        }
-	        else
-	        {
-	            xpoints[curr_num_points] = start_x;
-	            ypoints[curr_num_points] = YPixel(max_y, d);
-	            curr_num_points++;
-	        }
-                if (j == sig.getNumPoints() || j >= end_point || Double.isNaN(sig.getY(j))) // || sig.x_double[j] >= xmax_nolog)
-	        {
-	            curr_polygon = new Polygon(xpoints, ypoints,
-	                                       curr_num_points);
-	            curr_vect.addElement(curr_polygon);
-	            pol_idx++;
-	            curr_num_points = 0;
-	            if (j < sig.getNumPoints()) //need to raise pen
-	            {
-	                while (j < sig.getNumPoints() && Double.isNaN(sig.getY(j)))
-	                    j++;
-	            }
-	        }
-	        if (j < end_point) //sig.getNumPoints())
-	        {
-	            start_x = XPixel(sig.getX(j), d);
-	            max_y = min_y = sig.getY(j);
-	            i = j;
-	            if (sig.getX(j) > xmax)
-	                end_point = j + 1;
-	        }
-	    }
-	}
-	else // Not using logaritmic scales
-	{
-	    ComputeFactors(d);
-	    try {
-	        double x[] = sig.getX();
-	        float y[] = sig.getY();
-	        for (i = 0; i < x.length &&x[i] < xmin; i++)
-	            ;
-	        if (i > 0)
-	            i--;
-	        min_y = max_y = y[i];
-	        j = i + 1;
-
-	        //GAB testare da qua il problema
-
-	        start_x = XPixel(x[i]);
-	        double first_y, last_y;
-	        while (j < end_point) //sig.getNumPoints() && sig.x_double[j] < xmax + dt)
-	        {
-	            first_y = last_y = y[i];
-	            for (j = i + 1; j < x.length && //!Float.isNaN(sig.y[j]) &&
-	                 (pol_idx >= sig.getNumNaNs() || j != sig.getNaNs()[pol_idx]) &&
-	                 XPixel(x[j]) == start_x; j++)
-	            {
-	                last_y = curr_y = y[j];
-	                if (curr_y < min_y)
-	                    min_y = curr_y;
-	                if (curr_y > max_y)
-	                    max_y = curr_y;
-	            }
-	            if (max_y > min_y)
-	            {
-	                if (first_y == min_y)
-	                {
-	                    xpoints[curr_num_points] = start_x;
-	                    ypoints[curr_num_points] = YPixel(first_y);
-	                    curr_num_points++;
-	                    if (last_y == max_y)
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                    else
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(max_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                }
-	                else if (first_y == max_y)
-	                {
-	                    xpoints[curr_num_points] = start_x;
-	                    ypoints[curr_num_points] = YPixel(first_y);
-	                    curr_num_points++;
-	                    if (last_y == min_y)
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                    else
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(min_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                }
-	                else //first_y != min_y && first_y != max_y
-	                {
-	                    xpoints[curr_num_points] = start_x;
-	                    ypoints[curr_num_points] = YPixel(first_y);
-	                    curr_num_points++;
-	                    if (last_y == min_y)
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(max_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                    else if (last_y == max_y)
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(min_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                    else
-	                    {
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(min_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(max_y);
-	                        curr_num_points++;
-	                        xpoints[curr_num_points] = start_x;
-	                        ypoints[curr_num_points] = YPixel(last_y);
-	                        curr_num_points++;
-	                    }
-	                }
-	            }
-	            else
-	            {
-	                xpoints[curr_num_points] = start_x;
-	                ypoints[curr_num_points] = YPixel(max_y);
-	                curr_num_points++;
-	            }
-	            if (j == x.length || j >= end_point || Double.isNaN(y[j])) // || sig.x_double[j] >= xmax)
-	            {
-	                curr_polygon = new Polygon(xpoints, ypoints,
-	                                           curr_num_points);
-	                curr_vect.addElement(curr_polygon);
-	                pol_idx++;
-	                curr_num_points = 0;
-	                if (j < x.length) //need to raise pen
-	                {
-	                    while (j < x.length && Double.isNaN(y[j]))
-	                        j++;
-	                }
-	            }
-	            if (j < end_point) //sig.getNumPoints())
-	            {
-	                start_x = XPixel(x[j]);
-	                max_y = min_y = y[j];
-	                i = j;
-	                if (sig.isIncreasingX() && x[j] > xmax)
-	                    end_point = j + 1;
-	            }
-	        }
-	    }catch(Exception exc){
-	        //Exception is generated when signal is emty
-	        //System.out.println("Waveform Metrics exception: " + exc);
-	    }
-	}
+            start_x = XPixel(x[i]);
+            double first_y, last_y;
+            while (j < end_point) //sig.getNumPoints() && sig.x_double[j] < xmax + dt)
+            {
+                first_y = last_y = y[i];
+                for (j = i + 1; j < x.length && //!Float.isNaN(sig.y[j]) &&
+                     (pol_idx >= sig.getNumNaNs() || j != sig.getNaNs()[pol_idx]) &&
+                     XPixel(x[j]) == start_x; j++)
+                {
+                    last_y = curr_y = y[j];
+                    if (curr_y < min_y)
+                        min_y = curr_y;
+                    if (curr_y > max_y)
+                        max_y = curr_y;
+                }
+                if (max_y > min_y)
+                {
+                    if (first_y == min_y)
+                    {
+                        xpoints[curr_num_points] = start_x;
+                        ypoints[curr_num_points] = YPixel(first_y);
+                        curr_num_points++;
+                        if (last_y == max_y)
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                        else
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(max_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                    }
+                    else if (first_y == max_y)
+                    {
+                        xpoints[curr_num_points] = start_x;
+                        ypoints[curr_num_points] = YPixel(first_y);
+                        curr_num_points++;
+                        if (last_y == min_y)
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                        else
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(min_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                    }
+                    else //first_y != min_y && first_y != max_y
+                    {
+                        xpoints[curr_num_points] = start_x;
+                        ypoints[curr_num_points] = YPixel(first_y);
+                        curr_num_points++;
+                        if (last_y == min_y)
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(max_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                        else if (last_y == max_y)
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(min_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                        else
+                        {
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(min_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(max_y);
+                            curr_num_points++;
+                            xpoints[curr_num_points] = start_x;
+                            ypoints[curr_num_points] = YPixel(last_y);
+                            curr_num_points++;
+                        }
+                    }
+                }
+                else
+                {
+                    xpoints[curr_num_points] = start_x;
+                    ypoints[curr_num_points] = YPixel(max_y);
+                    curr_num_points++;
+                }
+                if (j == x.length || j >= end_point || Double.isNaN(y[j])) // || sig.x_double[j] >= xmax)
+                {
+                    curr_polygon = new Polygon(xpoints, ypoints,
+                                               curr_num_points);
+                    curr_vect.addElement(curr_polygon);
+                    pol_idx++;
+                    curr_num_points = 0;
+                    if (j < x.length) //need to raise pen
+                    {
+                        while (j < x.length && Double.isNaN(y[j]))
+                            j++;
+                    }
+                }
+                if (j < end_point) //sig.getNumPoints())
+                {
+                    start_x = XPixel(x[j]);
+                    max_y = min_y = y[j];
+                    i = j;
+                    if (sig.isIncreasingX() && x[j] > xmax)
+                        end_point = j + 1;
+                }
+            }
+        }catch(Exception exc){
+            //Exception is generated when signal is emty
+            //System.out.println("Waveform Metrics exception: " + exc);
+        }
 
 	if (sig.getMode1D() == Signal.MODE_STEP)
 	{

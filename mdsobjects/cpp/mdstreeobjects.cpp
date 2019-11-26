@@ -234,128 +234,88 @@ void Tree::write()
 
 Data *Tree::tdiEvaluate(Data *data)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return data->evaluate();
+    return data->evaluate(this);
 }
 
 Data *Tree::tdiData(Data *data)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return data->data();
+    return data->data(this);
 }
     
 Data *Tree::tdiCompile(const char *expr)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compile(expr);
+    return MDSplus::compile(expr, this);
 }
 
 Data *Tree::tdiCompile(const char *expr, Data *arg1)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 1, arg1);
+    return MDSplus::compileWithArgs(expr, this, 1, arg1);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 2, arg1, arg2);
+    return MDSplus::compileWithArgs(expr, this, 2, arg1, arg2);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 3, arg1, arg2, arg3);
+    return MDSplus::compileWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 4, arg1, arg2, arg3, arg4);
+    return MDSplus::compileWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 5, arg1, arg2, arg3, arg4, arg5);
+    return MDSplus::compileWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 6, arg1, arg2, arg3, arg4, arg5, arg6);
+    return MDSplus::compileWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5, arg6);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    return MDSplus::compileWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 Data *Tree::tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::compileWithArgs(expr, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    return MDSplus::compileWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 }
 
 Data *Tree::tdiExecute(const char *expr)
 {
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return execute(expr);
+    return execute(expr, this);
 }
 
 Data *Tree::tdiExecute(const char *expr, Data *arg1)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 1, arg1);
+    return MDSplus::executeWithArgs(expr, this, 1, arg1);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 2, arg1, arg2);
+    return MDSplus::executeWithArgs(expr, this, 2, arg1, arg2);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 3, arg1, arg2, arg3);
+    return MDSplus::executeWithArgs(expr, this, 3, arg1, arg2, arg3);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 4, arg1, arg2, arg3, arg4);
+    return MDSplus::executeWithArgs(expr, this, 4, arg1, arg2, arg3, arg4);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 5, arg1, arg2, arg3, arg4, arg5);
+    return MDSplus::executeWithArgs(expr, this, 5, arg1, arg2, arg3, arg4, arg5);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 6, arg1, arg2, arg3, arg4, arg5, arg6);
+    return MDSplus::executeWithArgs(expr, this, 6, arg1, arg2, arg3, arg4, arg5, arg6);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
+    return MDSplus::executeWithArgs(expr, this, 7, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 }
 Data *Tree::tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8)
 {    
-    AutoLock lock(treeMutex);
-    setActiveTree(this);
-    return MDSplus::executeWithArgs(expr, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+    return MDSplus::executeWithArgs(expr, this, 8, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 }
 
 
@@ -1226,13 +1186,13 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 	makeSegment(start, end, time, initialData);
 }
 
-void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode)
+void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
 {
-	const int RES_FACTOR = 100;
-	//Resampled aray always converted to float, Assumed 1D array
+	const int RES_FACTOR = resFactor;
+	//Resampled array always converted to float, Assumed 1D array
 	int numRows;
 	float *arrSamples = initialData->getFloatArray(&numRows);
-	float *resSamples = new float[numRows/RES_FACTOR];
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
 	for(int i = 0; i < numRows; i+= RES_FACTOR)
 	{
 		float avgVal = arrSamples[i];
@@ -1273,6 +1233,81 @@ void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialDa
 	if(!(status & 1))
 		throw MdsException(status);
 }
+void TreeNode::beginSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
+{
+	const int RES_FACTOR = resFactor;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float avgVal = arrSamples[i];
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			avgVal += arrSamples[i+j];
+		}
+		avgVal /= RES_FACTOR;
+		resSamples[i/RES_FACTOR] = avgVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", RES_FACTOR,numRows);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
+	resampledNode->beginSegment(start, end, resDim, resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		AutoData<Data> resModeD(new String("Resample"));
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		AutoData<Data> resSamplesD(new Int32(RES_FACTOR));
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+	}
+	beginSegment(start, end, time, initialData);
+}
+void TreeNode::beginSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
+{
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = initialData->getFloatArray(&numRows);
+	float *resSamples = new float[2* numRows/resFactor + 1]; //It has top keep minimum and maximum. Ensure enough room even if numRows is not a multiplier of resFactor
+	for(int i = 0; i < numRows; i+= resFactor)
+	{
+		float minVal = arrSamples[i];
+		float maxVal = minVal;
+		for(int j = 0; j < resFactor && i+j < numRows; j++)
+		{
+			if(arrSamples[i+j] < minVal)
+				minVal = arrSamples[i+j];
+			if(arrSamples[i+j] > maxVal)
+				maxVal = arrSamples[i+j];
+		}
+		resSamples[2*i/resFactor] = minVal;
+		resSamples[2*i/resFactor+1] = maxVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
+	char dimExpr[64];
+	sprintf(dimExpr,"BUILD_RANGE($1,$2,%d*($3-$4)/%d)", resFactor/2,numRows);
+	AutoData<Data> resDim(compileWithArgs(dimExpr, getTree(), 4, start, end, end, start));
+	resampledNode->beginSegment(start, end, resDim, resData);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	int numSegments = getNumSegments();
+	if(numSegments == 0)  //Set XNCI only when writing the first segment
+	{
+		AutoData<Data> resModeD(new String("MinMax"));
+		setTreeXNci(tree->getCtx(), nid, "ResampleMode", resModeD->convertToDsc());
+		AutoData<Data> resSamplesD(new Int32(resFactor/2));
+		setTreeXNci(tree->getCtx(), nid, "ResampleFactor", resSamplesD->convertToDsc());
+		setTreeXNci(tree->getCtx(), nid, "ResampleNid", resampledNode->convertToDsc());
+	}
+	beginSegment(start, end, time, initialData);
+}
 
 void TreeNode::putSegment(Array *data, int ofs)
 {
@@ -1282,6 +1317,62 @@ void TreeNode::putSegment(Array *data, int ofs)
 	//if(tree) tree->unlock();
 	if(!(status & 1))
 		throw MdsException(status);
+}
+
+void TreeNode::putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode, int resFactor)
+{
+	const int RES_FACTOR = resFactor;
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = data->getFloatArray(&numRows);
+	float *resSamples = new float[numRows/RES_FACTOR + 1];
+	for(int i = 0; i < numRows; i+= RES_FACTOR)
+	{
+		float avgVal = arrSamples[i];
+		for(int j = 0; j < RES_FACTOR; j++)
+		{
+			avgVal += arrSamples[i+j];
+		}
+		avgVal /= RES_FACTOR;
+		resSamples[i/RES_FACTOR] = avgVal;
+	}
+	AutoData<Array> resData(new Float32Array(resSamples, numRows/RES_FACTOR));
+	if(numRows > RES_FACTOR)  //Avoid writing null sized arrays
+	    resampledNode->putSegment(resData, ofs);
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	putSegment(data, ofs);
+}
+void TreeNode::putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode, int resFactor)
+{
+	//Resampled aray always converted to float, Assumed 1D array
+	int numRows;
+	float *arrSamples = data->getFloatArray(&numRows);
+	float *resSamples = new float[2* numRows/resFactor + 1]; //It has top keep minimum and maximum. Ensure enough room even if numRows is not a multiplier of resFactor
+	for(int i = 0; i < numRows; i+= resFactor)
+	{
+		float minVal = arrSamples[i];
+		float maxVal = minVal;
+		for(int j = 0; j < resFactor && i+j < numRows; j++)
+		{
+			if(arrSamples[i+j] < minVal)
+				minVal = arrSamples[i+j];
+			if(arrSamples[i+j] > maxVal)
+				maxVal = arrSamples[i+j];
+		}
+		resSamples[2*i/resFactor] = minVal;
+		resSamples[2*i/resFactor+1] = maxVal;
+	}
+	if(numRows > resFactor) //Avoid writing null sized arrays
+	{
+	    AutoData<Array> resData(new Float32Array(resSamples, 2* numRows/resFactor));
+	    resampledNode->putSegment(resData, ofs);
+	}
+	delete[] arrSamples;
+	delete[] resSamples;
+
+	putSegment(data, ofs);
 }
 
 void TreeNode::updateSegment(Data *start, Data *end, Data *time)
