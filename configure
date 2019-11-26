@@ -17708,8 +17708,8 @@ if ac_fn_c_try_link "$LINENO"; then :
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: \"${ASSERT_LINE_TYPE}\"" >&5
 $as_echo "\"${ASSERT_LINE_TYPE}\"" >&6; }
 else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"None of tests succeded to set assert line type\"" >&5
-$as_echo "$as_me: WARNING: \"None of tests succeded to set assert line type\"" >&2;}
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"None of the tests succeded to set assert line type\"" >&5
+$as_echo "$as_me: WARNING: \"None of the tests succeded to set assert line type\"" >&2;}
 fi
 rm -f core conftest.err conftest.$ac_objext \
     conftest$ac_exeext conftest.$ac_ext
@@ -17792,6 +17792,12 @@ $as_echo "$enable_wconversion" >&6; }
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define EVENT_THREAD_STACK_SIZE_MIN 1048576
+_ACEOF
 
 
 if ${ASSERT_LINE_TYPE+:} false; then :

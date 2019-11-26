@@ -8,6 +8,9 @@
 /* "assert line type" */
 #undef ASSERT_LINE_TYPE
 
+/* "event handler thread min stack size [1MB]" */
+#undef EVENT_THREAD_STACK_SIZE_MIN
+
 /* "define FILE_PTR_HL" */
 #undef FILE_PTR_HL
 

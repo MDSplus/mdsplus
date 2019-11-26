@@ -56,6 +56,10 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
 
+#ifndef EVENT_THREAD_STACK_SIZE_MIN
+#define EVENT_THREAD_STACK_SIZE_MIN 102400
+#endif
+
 
 #ifdef _WIN32
 #define socklen_t int
@@ -269,7 +273,30 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->socket = udpSocket;
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
-  pthread_create(&thread, 0, handleMessage, (void *)currInfo);
+
+  {
+    int s;
+    size_t ssize;
+    pthread_attr_t attr;
+    s = pthread_attr_init(&attr);
+    if (s != 0) {
+      perror("pthread_attr_init");
+      return 0;
+    }  
+    pthread_attr_getstacksize(&attr,&ssize);
+    if(ssize < EVENT_THREAD_STACK_SIZE_MIN) {
+      s = pthread_attr_setstacksize(&attr, EVENT_THREAD_STACK_SIZE_MIN);
+      if (s != 0) {
+        perror("pthread_attr_setstacksize");
+        return 0;
+      }
+    }
+    s = pthread_create(&thread, &attr, handleMessage, (void *)currInfo);
+    if (s != 0) {
+      perror("pthread_create");
+      return 0;
+    }  
+  }
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }

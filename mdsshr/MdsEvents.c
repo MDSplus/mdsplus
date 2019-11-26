@@ -49,6 +49,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>
 #define MAX_ACTIVE_EVENTS 2000	/* Maximum number events concurrently dealt with by processes */
 
+#ifndef EVENT_THREAD_STACK_SIZE_MIN
+#define EVENT_THREAD_STACK_SIZE_MIN 102400
+#endif
+
 STATIC_THREADSAFE int receive_ids[256];	/* Connection to receive external events  */
 STATIC_THREADSAFE int send_ids[256];	/* Connection to send external events  */
 STATIC_THREADSAFE int receive_sockets[256];	/* Socket to receive external events  */
@@ -248,9 +252,24 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
 STATIC_ROUTINE void *handleRemoteAst(void *);
 
 STATIC_ROUTINE int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
-{
-  int status = 1;
-  if (pthread_create(thread, NULL, (void *(*)(void *))rtn, par) != 0) {
+{  
+  int s,status = 1;
+  size_t ssize;
+  pthread_attr_t attr;
+  s = pthread_attr_init(&attr);
+  if (s != 0) {
+    perror("pthread_attr_init");
+    return 0;
+  }  
+  pthread_attr_getstacksize(&attr,&ssize);
+  if(ssize < EVENT_THREAD_STACK_SIZE_MIN) {
+    s = pthread_attr_setstacksize(&attr, EVENT_THREAD_STACK_SIZE_MIN);
+    if (s != 0) {
+      perror("pthread_attr_setstacksize");
+      return 0;
+    }
+  }
+  if (pthread_create(thread, &attr, (void *(*)(void *))rtn, par) != 0) {
     status = 0;
     perror("createThread:pthread_create");
   }

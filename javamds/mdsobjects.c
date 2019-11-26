@@ -3248,8 +3248,10 @@ static JNIEnv *getJNIEnv()
   JNIEnv *jEnv;
   int retVal;
   retVal = (*jvm)->AttachCurrentThread(jvm, (void **)&jEnv, NULL);
-  if (retVal)
-    printf("AttachCurrentThread error %d\n", retVal);
+  if (retVal) {
+      printf("AttachCurrentThread error %d\n", retVal);
+      return NULL; 
+    }
   return jEnv;
 }
 
@@ -3269,6 +3271,8 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   jobject obj = (jobject) objPtr;
 
   env = getJNIEnv();
+  if (!env)
+    return;
   cls = (*env)->GetObjectClass(env, obj);
   if (!cls)
     printf("Error getting class for MDSplus.Event\n");

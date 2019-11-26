@@ -1223,6 +1223,8 @@ dnl Here we define all custom autoheader adds to mdsconfig.h.in
 dnl add here what goes on tom of mdsconfig.h
 AH_TOP()
 
+AC_DEFINE_UNQUOTED([EVENT_THREAD_STACK_SIZE_MIN],[1048576],["event handler thread min stack size [1MB]"])
+
 AS_VAR_SET_IF([ASSERT_LINE_TYPE],
 [AC_DEFINE_UNQUOTED([ASSERT_LINE_TYPE],[$ASSERT_LINE_TYPE],["assert line type"])])
 
