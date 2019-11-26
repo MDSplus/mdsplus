@@ -15,8 +15,6 @@ extern "C" {
   extern EXPORT int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char* xnci, int64_t * timestamp, mdsdsc_a_t *rowdata);
   extern EXPORT int _TreeXNciMakeTimestampedSegment(void *dbid, int nid, const char* xnci, int64_t * timestamp, mdsdsc_a_t *rowdata, int idx, int filled);
   extern EXPORT int _TreeXNciPutRow(void *dbid, int nid, const char* xnci, int bufsize, int64_t * timestamp, mdsdsc_a_t *rowdata);
-  extern EXPORT int _TreeXNciSetTimeContext(void *dbid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *delta);
-  extern EXPORT int _TreeXNciGetTimeContext(void *dbid, mdsdsc_xd_t *start, mdsdsc_xd_t *end, mdsdsc_xd_t *delta);
   extern EXPORT int _TreeXNciGetNumSegments(void *dbid, int nid, const char* xnci, int *num);
   extern EXPORT int _TreeXNciGetSegmentLimits(void *dbid, int nid, const char* xnci, int segidx, mdsdsc_xd_t *start, mdsdsc_xd_t *end);
   extern EXPORT int _TreeXNciGetSegment(void *dbid, int nid, const char* xnci, int segidx, mdsdsc_xd_t *data, mdsdsc_xd_t *dim);
