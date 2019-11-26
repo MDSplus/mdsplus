@@ -168,6 +168,7 @@ public class TreeNode extends Data
 	static native int addDevice(int nid, int ctx1, int ctx2,  java.lang.String name,  java.lang.String usage)throws MdsException;
 	static native void setSubtree(int nid, int ctx1, int ctx2, boolean isSubtree);
 	static native void moveNode(int nid, int ctx1, int ctx2, int parentNid, java.lang.String newName);
+	static native int doAction(int nid, int ctx1, int ctx2);
 
 	/**
 	 * Return true if data has to be comressed when written.
@@ -955,6 +956,12 @@ public class TreeNode extends Data
 	{
 	    resolveNid();
 	    setSubtree(nid, tree.getCtx1(), tree.getCtx2(), isSubtree);
+	}
+	
+	public int doAction() throws MdsException
+	{
+	    resolveNid();
+	    return doAction(nid, tree.getCtx1(), tree.getCtx2());
 	}
 
 	public void putData(byte d) throws MdsException {putData(new Int8(d));}

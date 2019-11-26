@@ -6,7 +6,7 @@
 
 	Ken Klare, LANL CTR-7	(c)1989,1990
 */
-struct TdiZoneStruct {
+typedef struct {
   char *a_begin;		/*beginning of text     */
   char *a_cur;			/*current character     */
   char *a_end;			/*end of buffer + 1     */
@@ -18,11 +18,10 @@ struct TdiZoneStruct {
   int l_iarg;			/*current arguments     */
   struct descriptor **a_list;	/*first argument        */
   int l_rel_path;		/*keep relative paths   */
-};
+} TdiRefZone_t;
 
 #include <libroutines.h>
-#include "tdithreadsafe.h"
-#define TdiRefZone (TdiThreadStatic_p->TdiRefZone)
+#include "tdithreadstatic.h"
 
 struct marker {
   struct descriptor_r *rptr;
@@ -41,12 +40,12 @@ struct marker {
 	/*--------------------------------------------------
 	Definitions needed by Lex and Yacc.
 	--------------------------------------------------*/
-#define tdiyyerror(s)	do{TdiRefZone.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR;}while(0)
+#define tdiyyerror(s)	do{TDI_REFZONE.l_ok = tdiyyval.mark.w_ok; return MDSplusERROR;}while(0)
 
 #define MAKE_S(dtype_in,bytes,out)					\
 	{unsigned int dsc_size = sizeof(struct descriptor_s);			\
 	unsigned int vm_size = (dsc_size + (bytes));			\
-	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TDI_REFZONE.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;			\
 	((struct descriptor *)(out))->dtype = dtype_in;			\
 	((struct descriptor *)(out))->class = CLASS_S;			\
@@ -55,7 +54,7 @@ struct marker {
 #define MAKE_XD(dtype_in,bytes,out)					\
 	{unsigned int dsc_size = sizeof(struct descriptor_xd);			\
 	unsigned int vm_size = dsc_size + (bytes);			\
-	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TDI_REFZONE.l_zone);	\
 	((struct descriptor_xd *)(out))->l_length = bytes;		\
 	((struct descriptor_xd *)(out))->length = 0;			\
 	((struct descriptor_xd *)(out))->dtype = dtype_in;		\
@@ -65,7 +64,7 @@ struct marker {
 #define MAKE_R(ndesc,dtype_in,bytes,out)				\
 	{unsigned int dsc_size = sizeof($RECORD(ndesc));				\
 	unsigned int vm_size = dsc_size + (bytes);			\
-	LibGetVm(&vm_size,(void *)&(out),(void *)&TdiRefZone.l_zone);	\
+	LibGetVm(&vm_size,(void *)&(out),(void *)&TDI_REFZONE.l_zone);	\
 	((struct descriptor *)(out))->length = bytes;			\
 	((struct descriptor *)(out))->dtype = dtype_in;			\
 	((struct descriptor *)(out))->class = CLASS_R;			\

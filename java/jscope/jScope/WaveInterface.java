@@ -949,8 +949,14 @@ public class WaveInterface
 	         markers[curr_wave] != Signal.NONE)) )
 	    {
 	        w_error[curr_wave] = null;
-	        signals[curr_wave] = GetSignal(curr_wave, -Double.MAX_VALUE, Double.MAX_VALUE);
-	        evaluated[curr_wave] = true;
+                try {
+                    signals[curr_wave] = GetSignal(curr_wave, -Double.MAX_VALUE, Double.MAX_VALUE);
+                    evaluated[curr_wave] = true;
+                }catch(Exception exc)
+                {
+                    signals[curr_wave] = null;
+                    w_error[curr_wave] = exc.getMessage();
+                }
 	        if (signals[curr_wave] == null)
 	        {
 	            w_error[curr_wave] = curr_error;
@@ -999,7 +1005,7 @@ public class WaveInterface
 	return true;
     }
 
-    public synchronized void EvaluateOthers() throws Exception
+    public synchronized boolean EvaluateOthers() 
     {
 	int curr_wave;
 
@@ -1013,15 +1019,16 @@ public class WaveInterface
 	                           (int) ymax);
 	        error = curr_error;
 	    }
-	    return;
+	    return false;
 	}
 
 	if (evaluated == null)
 	{
 	    signals = null;
-	    return;
+	    return true;
 	}
-
+        
+        boolean retStatus = true;
 	for (curr_wave = 0; curr_wave < num_waves; curr_wave++)
 	{
 	    if (!evaluated[curr_wave] &&
@@ -1029,18 +1036,34 @@ public class WaveInterface
 	           this.markers[curr_wave] == Signal.NONE))
 	    {
 	        w_error[curr_wave] = null;
-	        signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
-	        evaluated[curr_wave] = true;
+                try {
+                    signals[curr_wave] = GetSignal(curr_wave, xmin, xmax);
+                    evaluated[curr_wave] = true;
+                }catch(Exception exc)
+                {
+                    signals[curr_wave] = null;
+                    curr_error = exc.getMessage();
+                    retStatus = false;
+                }
 	        if (signals[curr_wave] == null) {
 	            w_error[curr_wave] = curr_error;
 	            evaluated[curr_wave] = false;
 	        } else {
 	            sig_box.AddSignal(in_x[curr_wave], in_y[curr_wave]);
-	            setLimits(signals[curr_wave]);
+                    try {
+                        setLimits(signals[curr_wave]);
+                    }
+                    catch(Exception exc)
+                    {
+                        signals[curr_wave] = null;
+                        w_error[curr_wave] = exc.getMessage();
+                        retStatus = false;
+                    }
 	        }
 	    }
 	}
 	modified = false;
+        return retStatus;
     }
 
     private void CreateNewFramesClass(int image_type) throws IOException
@@ -1164,7 +1187,7 @@ public class WaveInterface
 	return outStr;
     }
 
-    static public long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
+    public static long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws
 	IOException
     {
 	long shot_list[] = null;
@@ -1176,7 +1199,7 @@ public class WaveInterface
 	String shotExpr = in_shots;
 	if( exp != null )
 	    shotExpr = processShotExpression(in_shots, exp);
-	shot_list = dp.GetShots( shotExpr );
+	shot_list = dp.GetShots( shotExpr, exp );
 	if (shot_list == null || shot_list.length == 0 ||
 	    shot_list.length > MAX_NUM_SHOT)
 	{
@@ -1201,7 +1224,7 @@ public class WaveInterface
     }
 
     private Signal GetSignal(int curr_wave, double xmin, double xmax) throws
-	Exception
+	IOException
     {
 	Signal out_signal = null;
 	int mode = this.wave.GetMode();
@@ -1248,7 +1271,7 @@ public class WaveInterface
 	catch(IOException exc)
 	{
 	    this.wave.SetMode(mode);
-	    // 10-2-2009 throw(exc);
+	    throw(exc);
 	}
 	return out_signal;
     }

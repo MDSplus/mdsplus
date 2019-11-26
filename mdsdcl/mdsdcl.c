@@ -22,16 +22,19 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <dcl.h>
-#include <mdsdcl_messages.h>
-#include "dcl_p.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 #include <signal.h>
+#include <dcl.h>
+#include <mdsdcl_messages.h>
+#include "dcl_p.h"
 #include "mdsdclthreadsafe.h"
+#if defined(__APPLE__) || defined(__MACH__)
+#define _MACOSX
+#endif
 
 extern int mdsdcl_do_command(char const *command);
 
@@ -59,10 +62,50 @@ static void flushError(char *error)
   error[0] = 0;
 }
 
-void handle_signals(int signo){
- (void)signo;
- fprintf(stderr,"received signal %d",signo);
+static char *prompt = NULL;
+static void keyboard_interrupt(int signo __attribute__((__unused__))) {
+  fprintf(stderr,"KeyboardInterrupt\n");
 }
+#ifdef _WIN32
+static inline void set_readline_handlers() {
+  signal(SIGINT, SIG_IGN);
+}
+static inline void set_execute_handlers() {
+  signal(SIGINT, keyboard_interrupt);
+}
+#else // _WIN32
+static struct sigaction act;
+# ifdef HAVE_RL_SET_SIGNALS
+static inline void set_readline_handlers() {
+  rl_catch_signals = 1;
+  rl_set_signals();
+}
+static inline void set_execute_handlers() {
+  rl_clear_signals();
+}
+# else // HAVE_RL_SET_SIGNALS
+#  ifdef _MACOSX
+#   define _rl_sigint SIG_IGN
+#  else // _MACOSX
+static void _rl_sigint(int signo __attribute__((__unused__))) {
+  // reset readline line buffer and state before printing new prompt
+  rl_free_line_state ();
+  rl_cleanup_after_signal ();
+  RL_UNSETSTATE(RL_STATE_ISEARCH|RL_STATE_NSEARCH|RL_STATE_VIMOTION|RL_STATE_NUMERICARG|RL_STATE_MULTIKEY);
+  rl_line_buffer[rl_point = rl_end = rl_mark = 0] = 0;
+  printf("\n%s",prompt);
+}
+#  endif // !_MACOSX
+static inline void set_readline_handlers() {
+  act.sa_handler = _rl_sigint;
+  sigaction(SIGINT, &act, NULL);
+}
+static inline void set_execute_handlers() {
+  act.sa_handler = keyboard_interrupt;
+  sigaction(SIGINT, &act, NULL);
+}
+# endif // !HAVE_RL_SET_SIGNALS
+#endif // !_WIN32
 
 int main(int argc, char const *argv[])
 {
@@ -73,7 +116,6 @@ int main(int argc, char const *argv[])
   int i;
   char *output = NULL;
   char *error = NULL;
-  char *prompt = NULL;
 
   /* See if a -prep option is provided as the first command option. */
 
@@ -86,7 +128,15 @@ int main(int argc, char const *argv[])
     fflush(stderr), free(error);
     exit(1);
   }
-
+  // initialize SIGINT handler
+#ifdef _WIN32
+  signal(SIGINT, keyboard_interrupt);
+#else
+  sigemptyset(&act.sa_mask);
+  act.sa_flags = 0;
+  act.sa_handler = keyboard_interrupt;
+  sigaction (SIGINT, &act, NULL);
+#endif
   if ((argc > 2) && (strcmp("-prep", argv[1]) == 0)) {
     char *prep_cmd = strdup(argv[2]);
     int inquote = 0;
@@ -146,7 +196,6 @@ int main(int argc, char const *argv[])
     }
 
     /* Attempt to execute the command */
-
     status = mdsdcl_do_command(cmd);
     add_history(cmd);
     free(cmd);
@@ -158,8 +207,6 @@ int main(int argc, char const *argv[])
 
   prompt = mdsdclGetPrompt();
 
-  //signal(SIGINT, handle_signals);
-
   /* While more commands to be entered */
 
   while (notDone) {
@@ -170,17 +217,12 @@ int main(int argc, char const *argv[])
     if (prompt == NULL)
       prompt = mdsdclGetPrompt();
 
-#ifdef HAVE_RL_SET_SIGNALS
-    rl_catch_signals = 1;
-    rl_set_signals();
-#endif
     /* Read in a command */
+    set_readline_handlers();
     cmd = readline(prompt);
-
     /* If not EOF */
 
     if (cmd) {
-
       /* If command continued from previous line or command need more input,
 	 append line to previous command portion */
       if (command) {
@@ -216,6 +258,7 @@ int main(int argc, char const *argv[])
 	  free(output);
 	  output = 0;
 	}
+	set_execute_handlers();
 	status = mdsdcl_do_command_extra_args(command, &prompt_more, &error, &output, 0, 0);
 	if (prompt_more != NULL) {
 	  HIST_ENTRY *hist;

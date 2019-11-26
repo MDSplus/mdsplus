@@ -57,7 +57,7 @@ extern int TdiFaultHandler();
 int Tdi1Same(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int cmode = -1, j, (*routine) () = fun_ptr->f3;

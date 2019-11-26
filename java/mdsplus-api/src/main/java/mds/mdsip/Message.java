@@ -8,9 +8,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Set;
 import java.util.zip.InflaterInputStream;
-import mds.MdsEvent;
 import mds.MdsException;
-import mds.MdsListener;
+import mds.TransferEventListener;
 import mds.data.DTYPE;
 import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
@@ -36,15 +35,15 @@ public final class Message extends Object{
 	// private static final byte SENDCAPABILITIES = (byte)0xF;
 	private static final int		SUPPORTS_COMPRESSION	= 0x8000;
 
-	public final static Message receive(final InputStream dis, final Set<MdsListener> mdslisteners) throws IOException {
+	public final static Message receive(final InputStream dis, final Set<TransferEventListener> listeners) throws IOException {
 		final ByteBuffer header = ByteBuffer.wrap(Message.readBuf(Message.HEADER_SIZE, dis, null));
 		final byte c_type = header.get(Message._clntB);
 		if((c_type & Message.BIG_ENDIAN_MASK) == 0) header.order(ByteOrder.LITTLE_ENDIAN);
 		final int msglen = header.getInt(Message._mlenI);
 		final ByteBuffer body;
 		if(msglen > Message.HEADER_SIZE){
-			if((c_type & Message.COMPRESSED) != 0) body = ByteBuffer.wrap(Message.readCompressedBuf(dis, header.order(), mdslisteners));
-			else body = ByteBuffer.wrap(Message.readBuf(msglen - Message.HEADER_SIZE, dis, mdslisteners));
+			if((c_type & Message.COMPRESSED) != 0) body = ByteBuffer.wrap(Message.readCompressedBuf(dis, header.order(), listeners));
+			else body = ByteBuffer.wrap(Message.readBuf(msglen - Message.HEADER_SIZE, dis, listeners));
 		}else body = ByteBuffer.allocate(0);
 		body.order(Descriptor.BYTEORDER);
 		final Message msg = new Message(header, body);
@@ -55,7 +54,7 @@ public final class Message extends Object{
 		return(arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128 && arr[idx + 3] == 0);
 	}
 
-	protected static final byte[] readCompressedBuf(final InputStream dis, final ByteOrder byteOrder, final Set<MdsListener> listeners) throws IOException {
+	protected static final byte[] readCompressedBuf(final InputStream dis, final ByteOrder byteOrder, final Set<TransferEventListener> listeners) throws IOException {
 		final byte[] unflattened_length = new byte[4];
 		dis.read(unflattened_length);
 		final int bytes_to_read = ByteBuffer.wrap(unflattened_length).order(byteOrder).getInt() - Message.HEADER_SIZE;
@@ -65,13 +64,12 @@ public final class Message extends Object{
 		return buf;
 	}
 
-	// private static final byte SWAP_ENDIAN_ON_SERVER_MASK = (byte)0x40;
-	private static final synchronized void dispatchMdsEvent(final Set<MdsListener> mdslisteners, final MdsEvent e) {
-		if(mdslisteners != null) for(final MdsListener listener : mdslisteners)
-			listener.processMdsEvent(e);
+	private static final synchronized void dispatchTransferEvent(final Set<TransferEventListener> mdslisteners, final InputStream source, String info, int read, int to_read) {
+		if(mdslisteners != null) for(final TransferEventListener listener : mdslisteners)
+			listener.handleTransferEvent(source, info, read, to_read);
 	}
 
-	private static final byte[] readBuf(int bytes_to_read, final InputStream dis, final Set<MdsListener> mdslisteners) throws IOException {
+	private static final byte[] readBuf(int bytes_to_read, final InputStream dis, final Set<TransferEventListener> mdslisteners) throws IOException {
 		final byte[] buf = new byte[bytes_to_read];
 		int read_bytes = 0, curr_offset = 0;
 		final boolean event = (bytes_to_read > 2000);
@@ -81,10 +79,10 @@ public final class Message extends Object{
 				if(read_bytes == -1) throw new SocketException("connection lost");
 				curr_offset += read_bytes;
 				bytes_to_read -= read_bytes;
-				if(event) Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, buf.length, curr_offset));
+				if(event) Message.dispatchTransferEvent(mdslisteners, dis, null, buf.length, curr_offset);
 			}
 		}catch(final IOException e){
-			Message.dispatchMdsEvent(mdslisteners, new MdsEvent(dis, MdsEvent.TRANSFER, e.getMessage()));
+			Message.dispatchTransferEvent(mdslisteners, dis, e.getMessage(), 0, 0);
 			throw e;
 		}
 		return buf;

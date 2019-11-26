@@ -49,41 +49,21 @@ public class jScopeMultiWave
 
     public void RefreshOnEvent()
     {
-	/*
-	setCursor(new Cursor(Cursor.WAIT_CURSOR));
-	try
-	{
-	    AddEvent();
-	}
-	catch (IOException e)
-	{}
-	*/
-
-       /*
-	Thread p = new Thread()
-	{
-	    public void run()
-	    {
-       */
-	        MdsWaveInterface mwi = (MdsWaveInterface) wi;
-	         try {
-	            mwi.refresh();
-	        }catch(Exception exc)
-	        {
-	            System.out.println(exc);
-	        }
-	        SwingUtilities.invokeLater(new Runnable()
-	        {
-	            public void run()
-	            {
-	                jScopeWaveUpdate();
-	            }
-	        });
-	/*
-	    }
-	};
-	p.start();
-	*/
+        MdsWaveInterface mwi = (MdsWaveInterface) wi;
+        try {
+            if(!mwi.refreshOnEvent())
+                mwi.refresh();
+        }catch(Exception exc)
+        {
+            System.out.println(exc);
+        }
+        SwingUtilities.invokeLater(new Runnable()
+        {
+            public void run()
+            {
+                jScopeWaveUpdate();
+            }
+        });
     }
 
     public void Refresh()

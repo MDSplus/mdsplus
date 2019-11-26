@@ -60,7 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #include <tdishr_messages.h>
 #include <mdsshr_messages.h>
 #include <stdlib.h>
@@ -107,12 +107,12 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
   int stride[MAX_DIMS + 1], *px[MAX_DIMS], count[MAX_DIMS];
   struct descriptor_signal *psig;
   struct descriptor_dimension *pdim;
-  struct descriptor_xd *keeps = TdiThreadStatic_p->TdiSELF_PTR;
+  struct descriptor_xd *keeps = TDI_SELF_PTR;
   array_coeff *pdat, *pdi = 0;
   array_coeff arr = {1,DTYPE_B,CLASS_A,0,0,0,{0,1,1,1,0},MAX_DIMS,1,0,{0}};
   struct descriptor ddim = { sizeof(dim), DTYPE_L, CLASS_S, 0 };
   struct descriptor_xd ii[MAX_DIMS], xx[MAX_DIMS];
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   ddim.pointer = (char *)&dim;
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
@@ -188,7 +188,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
       pdim = (struct descriptor_dimension *)psig;
       if (psig && dim < psig->ndesc - 2 &&
 	  (pdim = (struct descriptor_dimension *)psig->dimensions[dim]) != 0) {
-	TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)psig;
+	TDI_SELF_PTR = (struct descriptor_xd *)psig;
 	status = TdiCull(psig, &ddim, dim + 1 < narg ? list[dim + 1] : 0, &xx[dim] MDS_END_ARG);
 	if STATUS_OK
 	  status = TdiXtoI(pdim, xx[dim].pointer, &ii[dim] MDS_END_ARG);
@@ -214,7 +214,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
 	  }
 	  MdsFree1Dx(&xd, NULL);
 	}
-	TdiThreadStatic_p->TdiSELF_PTR = keeps;
+	TDI_SELF_PTR = keeps;
 	if (STATUS_OK && bounded)
 	  pin += *(int *)&pdat->m[dim * 2 + dimct] * stride[dim];
 	highdim = dim + 1;
@@ -233,17 +233,17 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
 	  status = TdiUbound(pdat, &ddim, &dright MDS_END_ARG);
 	if (dim + 1 < narg && list[dim + 1]) {
 	  struct descriptor *keep[3];
-	  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
-	  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
-	  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
-	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = (struct descriptor *)&dleft;
-	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = (struct descriptor *)&dright;
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
+	  keep[0] = TDI_RANGE_PTRS[0];
+	  keep[1] = TDI_RANGE_PTRS[1];
+	  keep[2] = TDI_RANGE_PTRS[2];
+	  TDI_RANGE_PTRS[0] = (struct descriptor *)&dleft;
+	  TDI_RANGE_PTRS[1] = (struct descriptor *)&dright;
+	  TDI_RANGE_PTRS[2] = 0;
 	  if STATUS_OK
 	    status = TdiData(list[dim + 1], &ii[dim] MDS_END_ARG);
-	  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
-	  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
+	  TDI_RANGE_PTRS[0] = keep[0];
+	  TDI_RANGE_PTRS[1] = keep[1];
+	  TDI_RANGE_PTRS[2] = keep[2];
 	  if STATUS_OK
 	    status = TdiLong(&ii[dim], &ii[dim] MDS_END_ARG);
 	  if STATUS_OK
@@ -352,7 +352,7 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descripto
 {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
-  struct descriptor_xd dwu = EMPTY_XD, sig[1], uni[1], dat[1];
+  struct descriptor_xd dwu = EMPTY_XD, sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct descriptor_with_units *pwu;
   int cmode = -1, n = 0, len;
@@ -365,9 +365,9 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descripto
   array_coeff *pa;
   char *abase, *po = 0;
   int *pindex = 0;
-  keep[0] = TdiThreadStatic_p->TdiRANGE_PTRS[0];
-  keep[1] = TdiThreadStatic_p->TdiRANGE_PTRS[1];
-  keep[2] = TdiThreadStatic_p->TdiRANGE_PTRS[2];
+  keep[0] = TDI_RANGE_PTRS[0];
+  keep[1] = TDI_RANGE_PTRS[1];
+  keep[2] = TDI_RANGE_PTRS[2];
   range[0].pointer = (char *)&left;
   range[1].pointer = (char *)&right;
 	/*************************
@@ -392,14 +392,14 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descripto
 	Get subscript expression B and its signality.
 	Must have default ranges defined before get.
 	********************************************/
-  TdiThreadStatic_p->TdiRANGE_PTRS[0] = &range[0];
-  TdiThreadStatic_p->TdiRANGE_PTRS[1] = &range[1];
-  TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
+  TDI_RANGE_PTRS[0] = &range[0];
+  TDI_RANGE_PTRS[1] = &range[1];
+  TDI_RANGE_PTRS[2] = 0;
   if STATUS_OK
     status = TdiGetArgs(opcode, 1, &list[1], sig, uni, dat, cats);
-  TdiThreadStatic_p->TdiRANGE_PTRS[0] = keep[0];
-  TdiThreadStatic_p->TdiRANGE_PTRS[1] = keep[1];
-  TdiThreadStatic_p->TdiRANGE_PTRS[2] = keep[2];
+  TDI_RANGE_PTRS[0] = keep[0];
+  TDI_RANGE_PTRS[1] = keep[1];
+  TDI_RANGE_PTRS[2] = keep[2];
   if (uni[0].pointer)
     MdsFree1Dx(&uni[0], NULL);
   uni[0].pointer = (struct descriptor *)pwu->units;

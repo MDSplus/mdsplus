@@ -267,7 +267,12 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 
 #define COPY_PART_NAME(name)\
 {   DESCRIPTOR(return_d, STRING_LITERAL(name));\
-    status = StrCopyDx((struct descriptor *)out_d, (struct descriptor *)&return_d); }
+ if (out_d->class == CLASS_XD) {\
+   status = MdsCopyDxXd(&return_d, (mdsdsc_xd_t * const)out_d);	\
+ } else { \
+    status = StrCopyDx((struct descriptor *)out_d, (struct descriptor *)&return_d);\
+ }\
+}
 
 #define DevNODATA        2
 #define DevMODSTR        1

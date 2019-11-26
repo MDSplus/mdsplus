@@ -65,6 +65,8 @@ getnci(.subtree:a12,"minpath")
 ".SUBTREE:A12"
 getnci(.subtree:a12,"node_name")
 "A12         "
+getnci(.subtree:a12:name,"original_part_name")
+":NAME"
 getnci(.subtree:a12,"path")
 "\\SUBTREE::TOP:A12"
 getnci(.subtree:a12,"compressible")

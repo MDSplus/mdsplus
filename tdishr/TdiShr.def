@@ -902,6 +902,7 @@ TdiTanh
 TdiTaskOf
 TdiText
 TdiThis
+TdiThreadStatic
 TdiTimeoutOf
 TdiTiny
 TdiTorr

@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.InputStream;
 import java.util.Stack;
 import java.util.Vector;
 import javax.swing.JButton;
@@ -22,13 +23,12 @@ import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicButtonUI;
 import jtraverser.TreeManager.Job;
 import mds.Mds;
-import mds.MdsEvent;
 import mds.MdsException;
-import mds.MdsListener;
+import mds.TransferEventListener;
 import mds.data.TREE;
 import mds.mdsip.MdsIp;
 
-public class MdsView extends JTabbedPane implements MdsListener{
+public class MdsView extends JTabbedPane implements TransferEventListener{
 	private static final long serialVersionUID = 1L;
 	class ClosableTab extends JPanel{
 		private static final long serialVersionUID = 1L;
@@ -115,7 +115,12 @@ public class MdsView extends JTabbedPane implements MdsListener{
 	public MdsView(final TreeManager treeman, final Mds mds){
 		this.treeman = treeman;
 		this.mds = mds;
-		mds.addMdsListener(this);
+		try {
+			mds.getAPI().setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE","MinMax");
+		} catch (MdsException e) {
+			MdsException.stderr("MDSPLUS_DEFAULT_RESAMPLE_MODE not set!",e);
+		}
+		mds.addTransferEventListener(this);
 		this.setPreferredSize(new Dimension(300, 400));
 		this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
 		this.addChangeListener(new ChangeListener(){
@@ -210,21 +215,13 @@ public class MdsView extends JTabbedPane implements MdsListener{
 	}
 
 	@Override
-	public void processMdsEvent(final MdsEvent e) {
-		switch(e.getID()){
-			case MdsEvent.IDLE:
-				this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				this.treeman.setProgress(this, 0, 1);
-				break;
-			case MdsEvent.TRANSFER:
-				this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-				this.treeman.setProgress(this, e.current_size, e.total_size);
-				break;
-			case MdsEvent.HAVE_CONTEXT:
-			case MdsEvent.LOST_CONTEXT:
-				break;
-			default:
-				System.err.println(String.format("Unknown MdsEventId: %d - %s", Integer.valueOf(e.getID()), e.getInfo()));
+	public void handleTransferEvent(final InputStream is, String info, int read, int to_read) {
+		if (to_read==0) {
+			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			this.treeman.setProgress(this, 0, 1);
+		} else {
+			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			this.treeman.setProgress(this, read, to_read);
 		}
 	}
 

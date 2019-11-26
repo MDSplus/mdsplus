@@ -197,7 +197,7 @@ void *convertToApdDsc(int type, int ndescs, void **descs)
   return xdPtr;
 }
 
-void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
+void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus)
 {
   EMPTYXD(emptyXd);
   int status;
@@ -205,9 +205,19 @@ void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus)
   struct descriptor_xd *xdPtr = (struct descriptor_xd *)malloc(sizeof(struct descriptor_xd));
   *xdPtr = emptyXd;
   if (isEvaluate)
-    status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
+  {
+    if(ctx)
+      status = _TdiEvaluate(&ctx, dscPtr, xdPtr MDS_END_ARG);
+    else
+      status = TdiEvaluate(dscPtr, xdPtr MDS_END_ARG);
+  }
   else
-    status = TdiData((struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
+  {
+    if(ctx)
+      status = _TdiData(&ctx, (struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
+    else
+      status = TdiData((struct descriptor*)dscPtr, xdPtr MDS_END_ARG);
+  }
   *retStatus = status;
   if (!(status & 1))
     return 0;
@@ -378,14 +388,16 @@ void freeDsc(void *dscPtr)
   free(xdPtr);
 }
 
-char *decompileDsc(void *ptr)
+char *decompileDsc(void *ptr, void *ctx)
 {
   int status;
   EMPTYXD(xd);
   char *buf;
   struct descriptor *dscPtr = (struct descriptor *)ptr;
-
-  status = TdiDecompile(dscPtr, &xd MDS_END_ARG);
+  if(ctx)
+    status = _TdiDecompile(&ctx, dscPtr, &xd MDS_END_ARG);
+  else
+    status = TdiDecompile(dscPtr, &xd MDS_END_ARG);
   if (!(status & 1)) {
     printf("Error decompiling expression: %s\n", MdsGetMsg(status));
     return NULL;
@@ -399,7 +411,7 @@ char *decompileDsc(void *ptr)
   return buf;
 }
 
-void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, int *retStatus)
+void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, void *ctx, int *retStatus)
 {
   int varIdx;
   int i, status;
@@ -412,10 +424,18 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, in
   exprD.length = (uint16_t)strlen(expr);
   exprD.pointer = (char *)expr;
 
-  arglist[1] = &exprD;
-  varIdx = 2;
+  if(ctx)
+  {
+    arglist[1] = &ctx;
+    arglist[2] = &exprD;
+    varIdx = 3;
+  }
+  else
+  {
+    arglist[1] = &exprD;
+    varIdx =2;
+  } 
   for (i = 0; i < nArgs; i++) {
-//              arglistXd[i] = convertDataToDsc(args[i]);
     arglistXd[i] = (struct descriptor_xd *)args[i];
     if (arglistXd[i]->l_length > 0)
       arglist[varIdx] = arglistXd[i]->pointer;
@@ -426,8 +446,15 @@ void *compileFromExprWithArgs(char *expr, int nArgs, void **args, void *tree, in
   arglist[varIdx++] = &xd;
   arglist[varIdx++] = MdsEND_ARG;
   *(int *)&arglist[0] = varIdx - 1;
-
-  status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+   
+  if(ctx)
+  {
+    status = *retStatus = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
+  }
+  else
+  {
+    status = *retStatus = (int)(intptr_t)LibCallg(arglist, TdiCompile);
+  }
   if (!(status & 1))
     return NULL;
 

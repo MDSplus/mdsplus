@@ -49,7 +49,7 @@ testarch(){
 config() {
     if [ -z "$JARS_DIR" ]
     then
-	JAVA_OPTS="--with-java_target=6 --with-java_bootclasspath=${srcdir}/rt.jar"
+	JAVA_OPTS=
     else
 	JAVA_OPTS="--with-jars=${JARS_DIR}"
     fi
@@ -160,7 +160,7 @@ make_jars() {
   rm -Rf /workspace/jars
   mkdir -p /workspace/jars
   pushd /workspace/jars
-  ${srcdir}/configure --enable-java_only --with-java_target=6 --with-java_bootclasspath=${srcdir}/rt.jar
+  ${srcdir}/configure --enable-java_only
   if [ -z "$NOMAKE" ]; then
     $MAKE
   fi

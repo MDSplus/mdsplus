@@ -108,7 +108,7 @@ int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT){
     // TODO: adds more tests .. //
     END_TESTING;
 
-    BEGIN_TESTING(GetIdentPutIdent);
+    BEGIN_TESTING(MultiThreadPub);
     MultiThreadTest(PubNCmd,PubCmds);
     END_TESTING;
 

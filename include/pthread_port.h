@@ -157,6 +157,7 @@ _CONDITION_UNLOCK(input);\
  #ifndef _WIN32
   #define INITIALIZESOCKETS
  #else
+  #define SHUT_RDWR 2
   static pthread_once_t InitializeSockets_once = PTHREAD_ONCE_INIT;
   static void InitializeSockets() {
     WSADATA wsaData;

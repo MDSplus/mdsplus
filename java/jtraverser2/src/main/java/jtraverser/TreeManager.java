@@ -47,6 +47,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
+
 import jtraverser.dialogs.ActionList;
 import jtraverser.dialogs.DataDialog;
 import jtraverser.dialogs.Dialogs;
@@ -58,6 +59,7 @@ import jtraverser.tools.DecompileTree;
 import mds.Mds;
 import mds.MdsException;
 import mds.TCL;
+import mds.data.DTYPE;
 import mds.data.TREE;
 import mds.data.descriptor_s.NODE;
 import mds.mdsip.MdsIp;
@@ -289,6 +291,31 @@ public class TreeManager extends JPanel{
 				JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), currnode.getTagTextBox(), "Display Node Tags", JOptionPane.PLAIN_MESSAGE);
 			}
 		}
+		public final class FollowRef implements ActionListener{
+			@Override
+			public final void actionPerformed(final ActionEvent e) {
+				final Thread thread = new Thread("FollowRef"){
+					{
+						this.setDaemon(true);
+					}
+					@Override
+					public final void run() {
+						final Node currnode = DisplayMenu.this.treeman.getCurrentNode();
+						int row = 0;
+						try {
+							NODE<?> link = (NODE<?>)currnode.getRecord();
+							row = currnode.treeview.expandPath(link);
+						} catch (MdsException exc){
+							return;
+						} catch (Exception exc) {
+						currnode.treeview.scrollRowToVisible(row);
+						currnode.treeview.setSelectionRow(row);
+						}
+					}
+				};
+				thread.start();
+			}
+		}
 		public final class ModifyFlags implements ActionListener{
 			@Override
 			public final void actionPerformed(final ActionEvent e) {
@@ -307,7 +334,6 @@ public class TreeManager extends JPanel{
 				}
 			}
 		}
-
 		static String escapeHTML(final String s) {
 			final StringBuilder out = new StringBuilder(Math.max(16, s.length()));
 			for(int i = 0; i < s.length(); i++){
@@ -324,6 +350,7 @@ public class TreeManager extends JPanel{
 
 		public DisplayMenu(final TreeManager treeman, final JComponent menu, final int column){
 			super(treeman, menu, column);
+			this.addMenuItem("Follow Ref", new FollowRef());
 			this.addMenuItem("Display Data", new Menu.DataPanelAL(false));
 			this.addMenuItem((this.displaydatamenu = new DisplayDataMenu(treeman)).getMenu(), null);
 			this.addMenuItem("Device Setup", new DeviceSetup());
@@ -339,13 +366,13 @@ public class TreeManager extends JPanel{
 		public final void checkSupport() {
 			this.displaydatamenu.checkSupport();
 			final Node node = this.treeman.getCurrentNode();
-			boolean[] mask = new boolean[this.items.size()];
-			if(node != null){
-				final int usage = node.getUsage();
-				final boolean enable = !(usage == NODE.USAGE_STRUCTURE || usage == NODE.USAGE_SUBTREE);
-				final boolean device = usage == NODE.USAGE_DEVICE;
-				mask = new boolean[]{enable, enable, device, true, true, true, true};
-			}
+			if(node == null) return;
+			final DTYPE dtype = node.getDType();
+			this.items.get(0).setVisible(DTYPE.NID.equals(dtype) || DTYPE.PATH.equals(dtype));
+			final int usage = node.getUsage();
+			final boolean enable = !(usage == NODE.USAGE_STRUCTURE || usage == NODE.USAGE_SUBTREE);
+			final boolean device = usage == NODE.USAGE_DEVICE;
+			boolean[] mask = new boolean[]{enable, enable, enable, device, true, true, true, true};
 			for(int i = 0; i < mask.length; i++)
 				this.items.get(i).setEnabled(mask[i]);
 		}
@@ -673,7 +700,7 @@ public class TreeManager extends JPanel{
 				});
 			}
 		}
-		protected final ArrayList<JMenuItem>	items	= new ArrayList<>();
+		protected final ArrayList<JMenuItem>	items	= new ArrayList<JMenuItem>();
 		final protected TreeManager				treeman;
 		protected final GridBagConstraints		gbc;
 		protected final JComponent				menu;
@@ -804,9 +831,9 @@ public class TreeManager extends JPanel{
 	public final Dialogs			dialogs;
 	private final jTraverserFacade	frame;
 	private final OpenTreeDialog	opentree_dialog;
-	private final Stack<MdsView>	mdsviews	= new Stack<>();
+	private final Stack<MdsView>	mdsviews	= new Stack<MdsView>();
 	private final JTabbedPane		tabs		= new JTabbedPane();
-	private final Vector<Thread>	jobs		= new Vector<>();
+	private final Vector<Thread>	jobs		= new Vector<Thread>();
 	private final JButton			abort;
 
 	public TreeManager(final jTraverserFacade frame){
@@ -859,8 +886,8 @@ public class TreeManager extends JPanel{
 		this.status.setText(new StringBuilder(64).append("jTaverser started (Version: ").append(version).append(")").toString());
 		this.progress.setLayout(new BorderLayout(0, 0));
 		this.progress.add(this.status, BorderLayout.CENTER);
-		MdsException.setStatusLabel(this.status);
 		if(MdsLib.lib_loaded == null) this.addMds(new MdsLib().setActive());
+		MdsException.setStatusLabel(this.status);
 	}
 
 	public void abortJobs() {

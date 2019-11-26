@@ -25,7 +25,7 @@
 import numpy as np
 import MDSplus
 import threading
-import Queue
+from queue import Queue, Empty
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -117,8 +117,8 @@ class ACQ435ST(MDSplus.Device):
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
 
-            self.empty_buffers = Queue.Queue()
-            self.full_buffers = Queue.Queue()
+            self.empty_buffers = Queue()
+            self.full_buffers = Queue()
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
@@ -148,14 +148,10 @@ class ACQ435ST(MDSplus.Device):
                 dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
-
-            if self.seg_length % decimator:
-                self.seg_length = (self.seg_length // decimator + 1) * decimator
-
-            self.dims = []
-            for i in range(self.nchans):
-                self.dims.append(MDSplus.Range(0., (self.seg_length-1)*dt, dt*self.decim[i]))
-
+            
+            if self.seg_length % decimator:		
+                 self.seg_length = (self.seg_length // decimator + 1) * decimator		
+             
             self.device_thread.start()
 
             segment = 0
@@ -165,16 +161,20 @@ class ACQ435ST(MDSplus.Device):
             while running.on and segment < max_segments:
                 try:
                     buf = self.full_buffers.get(block=True, timeout=1)
-                except Queue.Empty:
+                except Empty:
                     continue
 
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
+                    slength = self.seg_length/self.decim[i]
+                    deltat  = dt * self.decim[i]
                     if c.on:
                         b = buffer[i::self.nchans*self.decim[i]]
-                        c.makeSegment(self.dims[i].begin, self.dims[i].ending, self.dims[i], b)
-                        self.dims[i] = MDSplus.Range(self.dims[i].begin + self.seg_length*dt, self.dims[i].ending + self.seg_length*dt, dt*self.decim[i])
+                        begin = segment * slength * deltat
+                        end   = begin + (slength - 1) * deltat
+                        dim   = MDSplus.Range(begin, end, deltat)
+                        c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
                 MDSplus.Event.setevent(event_name)
@@ -219,7 +219,7 @@ class ACQ435ST(MDSplus.Device):
                 while self.running:
                     try:
                         buf = self.empty_buffers.get(block=False)
-                    except Queue.Empty:
+                    except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
@@ -235,14 +235,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        print("We have Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            print (' received timed out, retry later')
                             continue
                         else:
                             print (e)

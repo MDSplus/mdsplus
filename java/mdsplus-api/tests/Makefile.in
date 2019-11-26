@@ -484,7 +484,6 @@ JARS_DIR = @JARS_DIR@
 JAVAC = @JAVAC@
 JAVACFLAGS = @JAVACFLAGS@
 JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
-JAVAVERSION = @JAVAVERSION@
 JAVA_APS = @JAVA_APS@
 JAVA_JAR = @JAVA_JAR@
 JAVA_ONLY = @JAVA_ONLY@
@@ -682,6 +681,7 @@ top_build_prefix = @top_build_prefix@
 top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
+JAVASOURCE = 8
 TEST_CFLAGS = -I${top_srcdir}/testing
 TEST_LIBS = -lMdsTestShr @LIBM@ @THREAD@ @LIBRT@
 
@@ -703,6 +703,7 @@ SUFFIXES = .log .tap .xml
 # .PHONY: $(TEST_SUITE_TAP)
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
+RT6JAR = $(top_srcdir)/java/rt6.jar
 MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
 JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar

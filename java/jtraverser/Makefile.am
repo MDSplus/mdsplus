@@ -1,3 +1,5 @@
+JAVASOURCE = 6
+JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
 include ../Makefile.inc.am
 
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip

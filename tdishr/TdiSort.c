@@ -273,7 +273,7 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
   int upcase = 0, cmode = -1, len, mode = 0, ni = 0, nt = 0;
   char *pinput, *ptable;
   int (*neq) () = 0, (*gtr) () = 0;
-  struct descriptor_xd sig[2], uni[2], dat[2];
+  struct descriptor_xd sig[2] = {EMPTY_XD}, uni[2] = {EMPTY_XD}, dat[2] = {EMPTY_XD};
   struct TdiCatStruct cats[3];
 
   status = TdiGetArgs(opcode, 2, list, sig, uni, dat, cats);
@@ -496,7 +496,7 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   int upcase = 0, cmode = -1, len, n = 0;
   int (*gtr) () = 0;
   char *pinput, *pkeep;
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   int stack[64];
 
