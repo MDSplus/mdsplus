@@ -22,6 +22,13 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+/*******************************************************
+ This module was generated using mdsshr/gen_messages.py
+ To add new status messages modify
+ one of the "*_messages.xml" files
+ and then do:
+     python mdsshr/gen_messages.py
+*******************************************************/
 #include <mdsplus/mdsconfig.h>
 
 static const char *FAC_DEV = "DEV";

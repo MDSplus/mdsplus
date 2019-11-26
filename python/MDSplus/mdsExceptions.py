@@ -22,15 +22,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
-
 ########################################################
-# This module was generated using mdsshr/gen_device.py
-# To add new status messages modify one of the
-# "xxxx_messages.xml files (or add a new one)
-# and then in mdsshr do:
-#     python gen_devices.py
+# This module was generated using mdsshr/gen_messages.py
+# To add new status messages modify
+# one of the "*_messages.xml" files
+# and then do:
+#     python mdsshr/gen_messages.py
 ########################################################
+
 
 class MdsException(Exception):
   pass
