@@ -148,7 +148,6 @@ AC_DEFUN([TS_CHECK_JAVA],[
 ])
 
 
-
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
  AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
@@ -182,6 +181,7 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->mingw")
+   AS_VAR_SET([skip_junit],[yes]) # skipping java tests (JUNIT) in windows
    AS_VAR_SET_IF([HAVE_WINE],,[AC_CHECK_PROG(HAVE_WINE,wine,yes,no)])
    AS_VAR_IF([HAVE_WINE],[yes],
      [

@@ -1076,16 +1076,16 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                     [echo "sanitizer not available."; exit 111;])
 
 
+# selects particular envs for build:host
+TS_SELECT
+
 ## SKIP JAVA TESTS ##
-AS_VAR_TEST_SET([MINGW],[AS_ECHO(["skipping junit: in mingw"]); skip_junit=yes])
 AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
 AX_CHECK_JAVA_VERSION([1.8],[],[AS_ECHO(["skipping junit: not JDK 1.8"]); skip_junit=yes])
 TS_CHECK_JAVA([],[],[AS_ECHO(["skipping junit: java not found"]); skip_junit=yes])
 AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
 
 
- # selects particular envs for build:host
- TS_SELECT
 
  ## test chain substitution ##
  AC_SUBST(TESTS_ENVIRONMENT)
