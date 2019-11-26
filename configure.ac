@@ -1076,13 +1076,12 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                     [echo "sanitizer not available."; exit 111;])
 
 
-
-## JAVA TESTS ##
-AX_CHECK_JAVA_VERSION([1.8], 
-                      [AS_VAR_TEST_SET([enable_sanitize], [skip_junit=yes])],
-                      [skip_junit=yes])
-TS_CHECK_JAVA([],,[skip_junit=yes])
-AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
+## SKIP JAVA TESTS ##
+AS_VAR_TEST_SET([MINGW],[skip_junit=yes])
+AS_VAR_IF([ENABLE_SANITIZE],[no],[],[skip_junit=yes])
+AX_CHECK_JAVA_VERSION([1.8],[],[skip_junit=yes])
+TS_CHECK_JAVA([],[],[skip_junit=yes])
+AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
 
 
  # selects particular envs for build:host
