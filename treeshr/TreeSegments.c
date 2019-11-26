@@ -265,7 +265,7 @@ int TreeGetExtendedAttributes(TREE_INFO *tinfo, const int64_t offset, EXTENDED_A
  */
 inline static int load_extended_nci(vars_t *vars) {
   if (!(vars->local_nci.flags2 & NciM_EXTENDED_NCI)) return TreeFAILURE;
-  return TreeGetExtendedAttributes(vars->tinfo, RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa),&vars->attr);   
+  return TreeGetExtendedAttributes(vars->tinfo, RfaToSeek(vars->local_nci.DATA_INFO.DATA_LOCATION.rfa),&vars->attr);
 }
 inline static void begin_extended_nci(vars_t *vars) {
   if IS_OK(load_extended_nci(vars)) {
@@ -819,9 +819,7 @@ inline static int begin_segment_header(vars_t *vars, mdsdsc_a_t *initialValue) {
   if IS_OK(load_segment_header(vars)) {
     if (initialValue->dtype != vars->shead.dtype)
       return TreeFAILURE; // inconsistent dtype
-    if (initialValue->class != CLASS_A)
-      fprintf(stderr,"unexpected initData class %d\n",(int)initialValue->class);//return TreeFAILURE; // inconsistent class
-    else {
+    if (initialValue->class == CLASS_A) {
       if (initialValue->dimct != vars->shead.dimct)
         return TreeFAILURE; // inconsistent dims
       if (initialValue->dimct > 1) {
@@ -834,7 +832,7 @@ inline static int begin_segment_header(vars_t *vars, mdsdsc_a_t *initialValue) {
     vars->shead.index_offset = -1;
     vars->shead.idx = -1;
     vars->attr_update = 1;
-  } 
+  }
   return TreeSUCCESS;
 }
 
@@ -874,8 +872,7 @@ inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,  int check
   if (vars->idx == -1) {
     vars->shead.idx++;
     vars->idx = vars->shead.idx;
-    vars->add_length =
-        (initialValue->class == CLASS_A) ? initialValue->arsize : 0;
+    vars->add_length = (initialValue->class == CLASS_A) ? initialValue->arsize : 0;
   } else if (vars->idx < -1 || vars->idx > vars->shead.idx)
     return TreeBUFFEROVF;
   else {
@@ -888,10 +885,8 @@ inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,  int check
   vars->shead.data_offset = -1;
   vars->shead.dim_offset = -1;
   vars->shead.dtype = initialValue->dtype;
-  vars->shead.dimct =
-      (initialValue->class == CLASS_A) ? initialValue->dimct : 0;
-  vars->shead.length =
-      (initialValue->class == CLASS_A) ? initialValue->length : 0;
+  vars->shead.dimct = (initialValue->class == CLASS_A) ? initialValue->dimct : 0;
+  vars->shead.length = (initialValue->class == CLASS_A) ? initialValue->length : 0;
   int previous_length = -1;
   if (vars->shead.idx > 0 && vars->shead.length != 0) {
     int d;
@@ -959,8 +954,7 @@ inline static int putdata_initialvalue(vars_t *vars, mdsdsc_a_t *initialValue) {
     vars->add_length = length;
     vars->sinfo->rows = length | 0x80000000;
   } else
-    status = put_initialvalue(vars->tinfo, vars->shead.dims, initialValue,
-                              &vars->shead.data_offset);
+    status = put_initialvalue(vars->tinfo, vars->shead.dims, initialValue, &vars->shead.data_offset);
   if (initialValue->dtype != DTYPE_OPAQUE) {
     vars->sinfo->data_offset = vars->shead.data_offset;
     vars->sinfo->rows = vars->shead.dims[vars->shead.dimct - 1];
@@ -1138,7 +1132,7 @@ static int get_compressed_segment_rows(TREE_INFO *tinfo, const int64_t offset, i
   int status;
   char buffer[60];
   RETURN_IF_NOT_OK(read_property_safe(tinfo, offset, buffer, sizeof(buffer)));
-  if ((class_t)buffer[3] != CLASS_CA && (class_t)buffer[3] != CLASS_A) 
+  if ((class_t)buffer[3] != CLASS_CA && (class_t)buffer[3] != CLASS_A)
     return TreeFAILURE;
   char dimct = buffer[11];
   if (dimct == 1) {
