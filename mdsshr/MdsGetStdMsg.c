@@ -3261,7 +3261,7 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
 
 /* TdiUNBALANCE */
       case 01764700350:
-        {static const char *text="Unbalanced () [] {} '' " " or /**/";
+        {static const char *text="Unbalanced () [] {} '' \" \" or /**/";
         static const char *msgnam="UNBALANCE";
         *fac_out = FAC_TDI;
         *msgnam_out = msgnam;
@@ -3541,7 +3541,7 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
 
 /* ServerINVALID_ACTION_OPERATION */
       case 01770300120:
-        {static const char *text="None";
+        {static const char *text="Unknown action operation.";
         static const char *msgnam="INVALID_ACTION_OPERATION";
         *fac_out = FAC_SERVER;
         *msgnam_out = msgnam;

@@ -1040,7 +1040,7 @@ public class MdsException extends IOException{
 			case TdiTOO_BIG:
 				return "%TDI-E-TOO_BIG, Conversion of number lost significant digits";
 			case TdiUNBALANCE:
-				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' " " or /**/";
+				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' \" \" or /**/";
 			case TdiUNKNOWN_VAR:
 				return "%TDI-E-UNKNOWN_VAR, Unknown/undefined variable name";
 			case TdiSTRTOOLON:
@@ -1096,7 +1096,7 @@ public class MdsException extends IOException{
 			case ServerSOCKET_ADDR_ERROR:
 				return "%SERVER-E-SOCKET_ADDR_ERROR, Cannot obtain ip address socket is bound to.";
 			case ServerINVALID_ACTION_OPERATION:
-				return "%SERVER-E-INVALID_ACTION_OPERATION, None";
+				return "%SERVER-E-INVALID_ACTION_OPERATION, Unknown action operation.";
 			case CamDONE_Q:
 				return "%CAM-S-DONE_Q, I/O completed with X=1, Q=1";
 			case CamDONE_NOQ:
@@ -1153,8 +1153,7 @@ public class MdsException extends IOException{
 			String msg = exc.getMessage();
 			if(msg == null) msg = exc.toString();
 			if(MdsException.statusLabel != null) MdsException.statusLabel.setText(String.format("E:%s (%s)", line, msg));
-			System.err.println(String.format("%s
-%s", line, msg));
+			System.err.println(String.format("%s\n%s", line, msg));
 		}
 	}
 

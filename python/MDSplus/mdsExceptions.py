@@ -2793,7 +2793,7 @@ MDSplusException.statusDict[265519328] = TdiTOO_BIG
 
 class TdiUNBALANCE(TdiException):
   status=265519338
-  message="Unbalanced () [] {} '' " " or /**/"
+  message="Unbalanced () [] {} '' \" \" or /**/"
   msgnam="UNBALANCE"
 
 MDSplusException.statusDict[265519336] = TdiUNBALANCE
@@ -3035,7 +3035,7 @@ MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
 
 class ServerINVALID_ACTION_OPERATION(ServerException):
   status=266436690
-  message="None"
+  message="Unknown action operation."
   msgnam="INVALID_ACTION_OPERATION"
 
 MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION

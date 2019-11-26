@@ -225,7 +225,7 @@ jma_tail = """\t\t\tdefault:
 \t\t\tString msg = exc.getMessage();
 \t\t\tif(msg == null) msg = exc.toString();
 \t\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setText(String.format("E:%s (%s)", line, msg));
-\t\t\tSystem.err.println(String.format("%s\n%s", line, msg));
+\t\t\tSystem.err.println(String.format("%s\\n%s", line, msg));
 \t\t}
 \t}
 
@@ -302,7 +302,8 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 msgnum = int(status.get('value'))
                 sev = sevs[status.get('severity').lower()]
                 msgn = (facnum << 16)+(msgnum << 3)+sev
-                text = status.get('text')
+                text = status.get('text',"")
+                if len(text)==0: raise Exception("missing or empty text: %s in %s."%(facnam,filename))
                 depr = status.get('deprecated',"0")
                 sfacnam = status.get('facnam')
                 facabb = status.get('facabb')
@@ -331,7 +332,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                 facu = facnam.upper()
                 if (sfacnam or facabb) and facu not in faclist:
                     faclist.append(facu)
-                msg = {'msgnum':msgnum,'text':text,
+                msg = {'msgnum':msgnum,'text':text.replace('"','\\"'),
                        'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
                        'status':msgn,'message':text,'depr':depr,  'sev':severities[msgn&7]}
                 if not facnam in pfaclist:
