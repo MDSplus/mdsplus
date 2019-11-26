@@ -148,7 +148,7 @@ public class TreeNode extends Data
 	static native void beginSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData)throws MdsException;
 	static native void makeSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim, Data initData, int filledRows)throws MdsException;
 	static native void putSegment(int nid, int ctx1, int ctx2, Data data, int  offset)throws MdsException;
-	static native void updateSegment(int nid, int ctx1, int ctx2, Data start, Data end, Data dim)throws MdsException;
+	static native void updateSegment(int nid, int ctx1, int ctx2, int segmentOffset, Data start, Data end, Data dim)throws MdsException;
 	static native void beginTimestampedSegment(int nid, int ctx1, int ctx2,Data initData)throws MdsException;
 	static native void putTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[])throws MdsException;
 	static native void makeTimestampedSegment(int nid, int ctx1, int ctx2,Data data, long times[])throws MdsException;
@@ -289,7 +289,7 @@ public class TreeNode extends Data
 	public java.lang.String getNodeName() throws MdsException
 	{
 	    resolveNid();
-	    return getNciString(nid, tree.getCtx1(), tree.getCtx2(), NciNODE_NAME);
+	    return getNciString(nid, tree.getCtx1(), tree.getCtx2(), NciNODE_NAME).trim();
 	}
 
 	/**
@@ -715,7 +715,8 @@ public class TreeNode extends Data
 	public void makeSegment(Data start, Data end, Data dim, Array initData) throws MdsException
 	{
 	    resolveNid();
-	    makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, dim.getShape()[0]);
+	    int []shape = initData.getShape();
+	    makeSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim, initData, shape[shape.length - 1]);
 	}
 
 	/**
@@ -730,17 +731,19 @@ public class TreeNode extends Data
 	    putSegment(nid, tree.getCtx1(), tree.getCtx2(), data, offset);
 	}
 
+
 	/**
 	 * Update start, end time and dimension for the specified segment
 	 *
+	 * @param segmentOffset (-1 fpr last segment)
 	 * @param start
 	 * @param end
 	 * @param dim
 	 */
-	public void updateSegment(Data start, Data end, Data dim) throws MdsException
+	public void updateSegment(int segmentOffset, Data start, Data end, Data dim) throws MdsException
 	{
 	    resolveNid();
-	    updateSegment(nid, tree.getCtx1(), tree.getCtx2(), start, end, dim);
+	    updateSegment(nid, tree.getCtx1(), tree.getCtx2(), segmentOffset, start, end, dim);
 	}
 
 	/**
@@ -883,7 +886,10 @@ public class TreeNode extends Data
 	public void remove(java.lang.String name) throws MdsException
 	{
 	    resolveNid();
+	    TreeNode defNode = tree.getDefault();
+	    tree.setDefault(this); 
 	    deleteNode(nid, tree.getCtx1(), tree.getCtx2(), name);
+	    tree.setDefault(defNode);
 	}
 
 	/**
@@ -901,12 +907,18 @@ public class TreeNode extends Data
 	public void move(TreeNode parent, java.lang.String newName) throws MdsException
 	{
 	    resolveNid();
+	    TreeNode defNode = tree.getDefault();
+	    tree.setDefault(parent); 
 	    moveNode(nid, tree.getCtx1(), tree.getCtx2(), parent.nid, newName);
+	    tree.setDefault(defNode);
 	}
 	public void move(TreeNode parent) throws MdsException
 	{
 	    resolveNid();
-	    moveNode(nid, tree.getCtx1(), tree.getCtx2(), parent.nid, getFullPath());
+	    TreeNode defNode = tree.getDefault();
+	    tree.setDefault(parent); 
+	    moveNode(nid, tree.getCtx1(), tree.getCtx2(), parent.nid, getNodeName());
+	    tree.setDefault(defNode);
 	}
 
 	/**

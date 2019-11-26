@@ -106,6 +106,7 @@ check_PROGRAMS =
 subdir = python/MDSplus/tests
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
+	$(top_srcdir)/m4/ax_check_busybox.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
@@ -368,6 +369,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUSYBOX = @BUSYBOX@
 CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -474,6 +476,8 @@ JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVA_APS = @JAVA_APS@
 JAVA_JAR = @JAVA_JAR@
 JAVA_ONLY = @JAVA_ONLY@
+JAVA_PATH_NAME = @JAVA_PATH_NAME@
+JAVA_TARGET_ARCH = @JAVA_TARGET_ARCH@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -501,6 +505,7 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LN_R = @LN_R@
 LOG_COMPILER = @LOG_COMPILER@
 LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
@@ -1093,9 +1098,24 @@ TEST_FORMAT     ?= log,tap
 AM_MAKEFLAGS    ?= V=0
 
 .PHONY: tap xml log
+tap: ##@@tests-targets perform all TAP test targets
 tap: $(TEST_SUITE_TAP)
+xml: ##@@tests-targets perform all XML test targets
 xml: $(TEST_SUITE_XML)
+log: ##@@tests-targets perform all LOG test targets
 log: $(TEST_SUITE_LOG)
+
+tests: ##@tests perform tests in this directory
+rebuild-tests: ##@tests rebuild tests in this directory
+
+.PHONY: tests
+tests: rebuild-tests
+	@ \
+	echo "//// Performing tests /////"; \
+	export TEST_FORMAT=${TEST_FORMAT}; \
+	status=0; \
+	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
+	exit $$status
 
 .PHONY: rebuild-tests
 rebuild-tests:
@@ -1110,15 +1130,6 @@ rebuild-tests:
            CFLAGS="${CFLAGS} -D_TESTING" CPPFLAGS="${CPPFLAGS} -D_TESTING" && touch testing; \
 	 fi;\
 	fi
-
-.PHONY: tests
-tests: rebuild-tests
-	@ \
-	echo "//// Performing tests /////"; \
-	export TEST_FORMAT=${TEST_FORMAT}; \
-	status=0; \
-	$(MAKE) -k $(TEST_FLAGS) $(AM_MAKEFLAGS) $${TEST_FORMAT//,/ } || status=$$?; \
-	exit $$status
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  VALGRIND RULES  /////////////////////////////////////////////////////// #
@@ -1237,7 +1248,8 @@ clean-local-tests:
 # //////////////////////////////////////////////////////////////////////////// #
 
 .PHONY: tests-envdump
-tests-envdump:
+tests-envdump: ##@tests enter a new shell with all tests enviroment set
+tests-envdump: 
 	@echo; \
 	echo ----------------------------------------------------------------; \
 	echo TESTS_ENVIRONMENT = ;\
@@ -1245,15 +1257,21 @@ tests-envdump:
 	 echo "     $${_i}"; \
 	done;
 
-test-env:
-	@for _i in ${TESTS_ENVIRONMENT}; do \
+tests-env: ##@tests enter a new shell with all tests enviroment set
+tests-env: 
+	@ echo; echo "    [ RUNNING A TESTS ENV BASH ]"; \
+	echo ----------------------------------------------------------------; \
+	for _i in ${TESTS_ENVIRONMENT}; do \
 	  echo $${_i}; \
 	  export $${_i}; \
 	done; \
 	echo srcdir=$(srcdir); \
 	export srcdir=$(srcdir); \
-	bash -i
+	echo ----------------------------------------------------------------; \
+	echo ""; \
+	bash --rcfile $(top_srcdir)/testing/bashrc -i 
 
+@HAVE_WINE_TRUE@wineconsole: ##@tests enter a new WINE console with tests environment set
 @HAVE_WINE_TRUE@wineconsole:
 @HAVE_WINE_TRUE@	@ \
 @HAVE_WINE_TRUE@	echo "--------------------------------------------------------------"; \

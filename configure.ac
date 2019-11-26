@@ -105,6 +105,12 @@ AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
 
+# if ln is provided by busybox it does not have -r option
+AX_IS_BUSYBOX([ln],
+ [AS_VAR_SET([LN_R],["ln"])],
+ [AS_VAR_SET([LN_R],["ln -r"])] )
+AC_SUBST([LN_R])
+
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 AC_MSG_RESULT([before VISIBILITY])
@@ -242,7 +248,6 @@ AS_CASE([$enable_java],
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
 
-AX_CHECK_JAVA_VERSION([1.8],[AS_VAR_IF([enable_sanitize], [address], [skip_junit=yes])],[skip_junit=yes])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 
@@ -337,7 +342,7 @@ AS_CASE([$host],
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
-AM_CONDITIONAL([SKIP_JUNIT],[AS_VAR_TEST_SET([skip_junit])||AS_VAR_TEST_SET([MINGW])])
+
 
 AC_MSG_CHECKING([for visual studio])
 AC_ARG_WITH([visual_studio],
@@ -461,6 +466,7 @@ case "$host" in
            D32=""
          fi
          TARGET_ARCH="-m32"
+         JAVA_TARGET_ARCH="-d32"
          if which uil32 >/dev/null
          then UILCMD=uil32
          else UILCMD=uil
@@ -1010,6 +1016,9 @@ AC_SUBST(PYTHON_ARCHITECTURE)
 AC_MSG_CHECKING(libpython path)
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 AC_MSG_RESULT($DEF_PYLIB)
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1044,7 +1053,6 @@ AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], []
 #endif /* HAVE_PTHREAD */
 ])
 
-
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 
@@ -1068,8 +1076,16 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                     [echo "sanitizer not available."; exit 111;])
 
 
- # selects particular envs for build:host
- TS_SELECT
+# selects particular envs for build:host
+TS_SELECT
+
+## SKIP JAVA TESTS ##
+AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
+AX_CHECK_JAVA_VERSION([1.8],[],[AS_ECHO(["skipping junit: not JDK 1.8"]); skip_junit=yes])
+TS_CHECK_JAVA([],[],[AS_ECHO(["skipping junit: java not found"]); skip_junit=yes])
+AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
+
+
 
  ## test chain substitution ##
  AC_SUBST(TESTS_ENVIRONMENT)
@@ -1134,6 +1150,34 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
+# 
+# CHECK ASSERT_LINE_TYPE to correctly override assert function in C
+# This is needed for testing functions in mdsplus/testing/testing.h
+#
+AC_DEFUN([AX_TEST_ASSERT_LINE_TYPE],[
+AC_LANG_PUSH([C])
+AC_LINK_IFELSE( [AC_LANG_SOURCE([[
+#include <assert.h>
+#define ASSERT_LINE_TYPE ]] [$1] [[
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+]])],
+[AS_VAR_SET([ASSERT_LINE_TYPE],["$1"])
+$2],
+[$3])
+AC_LANG_POP([C])
+])
+
+AC_MSG_CHECKING([assert line type])
+AX_TEST_ASSERT_LINE_TYPE([unsigned int],
+[AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+[AX_TEST_ASSERT_LINE_TYPE([int],
+   [AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+   [AC_MSG_WARN(["None of the tests succeded to set assert line type"])])
+ ])
+
+
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
@@ -1178,6 +1222,11 @@ dnl Here we define all custom autoheader adds to mdsconfig.h.in
 dnl add here what goes on tom of mdsconfig.h
 AH_TOP()
 
+AC_DEFINE_UNQUOTED([EVENT_THREAD_STACK_SIZE_MIN],[1048576],["event handler thread min stack size [1MB]"])
+
+AS_VAR_SET_IF([ASSERT_LINE_TYPE],
+[AC_DEFINE_UNQUOTED([ASSERT_LINE_TYPE],[$ASSERT_LINE_TYPE],["assert line type"])])
+
 AH_VERBATIM([_LL_CONSTANTS], [
 #ifdef HAVE_LL_CONSTANTS
 #define LONG_LONG_CONSTANT(value) value##ll
@@ -1186,6 +1235,13 @@ AH_VERBATIM([_LL_CONSTANTS], [
 #endif
 ])
 
+AH_VERBATIM([_LL_CONSTANTS], [
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+])
 
 AH_VERBATIM([_WIN32], [
 #ifdef _WIN32
@@ -1316,6 +1372,8 @@ AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
 AC_SUBST(JRE)
 AC_SUBST(UIL)
+AC_SUBST(JAVA_TARGET_ARCH)
+
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
@@ -1339,6 +1397,7 @@ AC_OUTPUT(Makefile.inc
           java/mdsplus-api/tests/Makefile
           java/mdsobjects/Makefile
           java/mdsobjects/docs/Makefile
+          java/mdsobjects/tests/Makefile
           java/jdispatcher/Makefile
           java/jscope/Makefile
           java/jtraverser/Makefile

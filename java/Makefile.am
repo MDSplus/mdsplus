@@ -33,7 +33,8 @@ $(clean_DIRS):
 clean: $(clean_DIRS)
 
 
-TEST_DIRS = mdsplus-api/tests
+TEST_DIRS = mdsplus-api/tests \
+		 	mdsobjects/tests
 
 .PHONY: $(tests_DIRS) $(clean_tests_DIRS)
 

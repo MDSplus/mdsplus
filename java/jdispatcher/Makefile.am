@@ -5,7 +5,7 @@ include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR) 
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR):$(MDSOBJECTS_JAR) 
 
 if USE_JARS_DIR
 

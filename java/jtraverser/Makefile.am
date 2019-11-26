@@ -9,7 +9,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(MDSOBJECTS_JAR) 
 
 if USE_JARS_DIR
 
@@ -28,8 +28,7 @@ jTraverser.jar: classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 
 DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 	@ echo "Creating JAR: $@ ...";\
-	ln -rsfT ./jTraverser.jar $@
-
+	${LN_R} -sfT ./jTraverser.jar $@
 endif
 
 if MINGW

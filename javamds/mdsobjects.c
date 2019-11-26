@@ -62,6 +62,39 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #endif
 
+static unsigned int getCtx1(void *ctx)
+{
+  return (unsigned int)(((char *)ctx) - (char *)NULL);
+  /*
+  if (sizeof(void *) == 8)
+    return (unsigned int)((unsigned long)ctx & 0x00000000ffffffffLL);
+  else
+    return (unsigned int)ctx;
+  */
+}
+static unsigned int getCtx2(void *ctx)
+{
+  if (sizeof(void *) == 8)
+    return (unsigned int)((*(unsigned long*)&ctx & 0xffffffff00000000LL) >> 32);
+  else
+    return 0;
+}
+
+#ifdef ENV_64
+static void *getCtx(unsigned int ctx1, unsigned int ctx2)
+#else
+static void *getCtx(unsigned int ctx1, unsigned int ctx2 __attribute__ ((unused)))
+#endif
+{
+//      if(sizeof(void *) == 8)
+#ifdef ENV_64
+  uint64_t ctx;
+  ctx = (uint64_t) ctx1 | ((uint64_t) ctx2 << 32);
+  return (void *)ctx;
+#else
+  return (void *)ctx1;
+#endif
+}
 
 static int doAction(void *dbid, int nid)
 //EXPORT int doAction(int nid)
@@ -332,7 +365,8 @@ static int doAction(void *dbid, int nid)
 extern int GetAnswerInfoTS(int sock, char *dtype, short *length, char *ndims, int *dims,
 			   int *numbytes, void * *dptr, void **m);
 
-static void printDecompiled(struct descriptor *dsc)
+#ifdef DEBUG
+static void printDecompiled (struct descriptor *dsc)  
 {
   EMPTYXD(out_xd);
   static char decompiled[1024];
@@ -345,6 +379,20 @@ static void printDecompiled(struct descriptor *dsc)
   printf("%s\n", decompiled);
   MdsFree1Dx(&out_xd, 0);
 }
+static void printDecompiled1(void *ctx, struct descriptor *dsc)
+{
+  EMPTYXD(out_xd);
+  static char decompiled[1024];
+
+  _TdiDecompile(&ctx, dsc, &out_xd MDS_END_ARG);
+  if (!out_xd.pointer)
+    printf("NULL\n");
+  memcpy(decompiled, out_xd.pointer->pointer, out_xd.pointer->length);
+  decompiled[out_xd.pointer->length] = 0;
+  printf("%s\n", decompiled);
+  MdsFree1Dx(&out_xd, 0);
+}
+#endif
 
 static void FreeDescrip(struct descriptor *desc);
 
@@ -1526,7 +1574,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_compile
  * Method:    decompile
  * Signature: ()LMDSplus/String;
  */
-JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject obj) {
+JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject obj, jint ctx1, jint ctx2) {
 
   EMPTYXD(outXd);
   jstring ris;
@@ -1536,9 +1584,14 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject obj)
   char *error_msg;
   int status;
   struct descriptor *dataD;
+  void *ctx = getCtx(ctx1, ctx2);
 
   dataD = ObjectToDescrip(env, obj);
-  status = TdiDecompile(dataD, &outXd MDS_END_ARG);
+  if(ctx1 == 0 && ctx2 == 0)
+    status = TdiDecompile(dataD, &outXd MDS_END_ARG);
+  else
+    status = _TdiDecompile(&ctx, dataD, &outXd MDS_END_ARG);
+    
   if STATUS_NOT_OK {
     error_msg = (char *)MdsGetMsg(status);
     exc = (*env)->FindClass(env, "MDSplus/MdsException");
@@ -1693,40 +1746,7 @@ static void throwMdsException(JNIEnv * env, int status)
   (*env)->ThrowNew(env, exc, (char *)MdsGetMsg(status));
 }
 
-static unsigned int getCtx1(void *ctx)
-{
-  return (unsigned int)(((char *)ctx) - (char *)NULL);
-  /*
-  if (sizeof(void *) == 8)
-    return (unsigned int)((unsigned long)ctx & 0x00000000ffffffffLL);
-  else
-    return (unsigned int)ctx;
-  */
-}
 
-static unsigned int getCtx2(void *ctx)
-{
-  if (sizeof(void *) == 8)
-    return (unsigned int)((*(unsigned long*)&ctx & 0xffffffff00000000LL) >> 32);
-  else
-    return 0;
-}
-
-#ifdef ENV_64
-static void *getCtx(unsigned int ctx1, unsigned int ctx2)
-#else
-static void *getCtx(unsigned int ctx1, unsigned int ctx2 __attribute__ ((unused)))
-#endif
-{
-//      if(sizeof(void *) == 8)
-#ifdef ENV_64
-  uint64_t ctx;
-  ctx = (uint64_t) ctx1 | ((uint64_t) ctx2 << 32);
-  return (void *)ctx;
-#else
-  return (void *)ctx1;
-#endif
-}
 
 /*
  * Class:     MDSplus_Tree
@@ -2001,7 +2021,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDefaultNid
  */
 JNIEXPORT jboolean JNICALL Java_MDSplus_Tree_getDbiFlag
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jint code) {
-  int flag = 0, len, status;
+  int flag = 0, len = sizeof(jboolean), status;
   void *ctx = getCtx(ctx1, ctx2);
   struct dbi_itm dbiList[] = { {sizeof(int), 0, &flag, &len},
   {0, DbiEND_OF_LIST, 0, 0}
@@ -2021,7 +2041,7 @@ JNIEXPORT jboolean JNICALL Java_MDSplus_Tree_getDbiFlag
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jboolean jflag, jint code) {
-  int len, status, flag;
+  int len = sizeof(jboolean), status, flag;
   void *ctx = getCtx(ctx1, ctx2);
   struct dbi_itm dbiList[] = { {sizeof(int), 0, &flag, &len},
   {0, DbiEND_OF_LIST, 0, 0}
@@ -2047,6 +2067,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate
   int status;
 
   date = (*env)->GetStringUTFChars(env, jdate, 0);
+  qtime = 0;
   status = LibConvertDateString(date, &qtime);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -2179,13 +2200,12 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
 
   return jtags;
 }
-
 /*
  * Class:     MDSplus_Tree
  * Method:    addTreeNode
  * Signature: (IILjava/lang/String;I)V
  */
-JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeNode
+JNIEXPORT jint JNICALL Java_MDSplus_Tree_addTreeNode
 (JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jstring jpath, jint usage) {
   const char *path;
   void *ctx = getCtx(ctx1, ctx2);
@@ -2197,6 +2217,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeNode
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   if STATUS_NOT_OK
     throwMdsException(env, status);
+  return nidOut;
 }
 
 /*
@@ -2277,6 +2298,105 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
   return size;
 }
 
+/*
+ * Class:     MDSplus_Tree
+ * Method:    compile
+ * Signature: (IILjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
+ */
+JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jstring jexpr, jobjectArray jargs) {
+  EMPTYXD(outXd);
+  void *arglist[MAX_ARGS];
+  int status, i, varIdx;
+  const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
+  char *error_msg;
+  jclass exc;
+  struct descriptor exprD = { 0, DTYPE_T, CLASS_S, 0 };
+  jobject ris;
+  jint numArgs;
+
+  void *ctx = getCtx(ctx1, ctx2);
+  numArgs = (*env)->GetArrayLength(env, jargs);
+  if (numArgs > MAX_ARGS)
+    numArgs = MAX_ARGS;
+
+  exprD.length = strlen(expr);
+  exprD.pointer = (char *)expr;
+  arglist[1] = &ctx;
+  arglist[2] = &exprD;
+  varIdx = 3;
+
+  for (i = 0; i < numArgs; i++)
+    arglist[varIdx++] = ObjectToDescrip(env, (*env)->GetObjectArrayElement(env, jargs, i));
+  arglist[varIdx++] = &outXd;
+  arglist[varIdx++] = MdsEND_ARG;
+  *(int *)&arglist[0] = varIdx - 1;
+  status = (int)(intptr_t)LibCallg(arglist, _TdiCompile);
+  (*env)->ReleaseStringUTFChars(env, jexpr, expr);
+  for (i = 0; i < numArgs; i++)
+    FreeDescrip(arglist[3 + i]);
+  if STATUS_NOT_OK {
+    error_msg = (char *)MdsGetMsg(status);
+    exc = (*env)->FindClass(env, "MDSplus/MdsException");
+    (*env)->ThrowNew(env, exc, error_msg);
+    return NULL;
+  }
+  ris = DescripToObject(env, outXd.pointer, 0, 0, 0, 0);
+  //printDecompiled1(ctx, outXd.pointer);
+  MdsFree1Dx(&outXd, NULL);
+  return ris;
+}
+ 
+/*
+ * Class:     MDSplus_Tree
+ * Method:    execute
+ * Signature: (IILjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
+ */
+JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute
+(JNIEnv * env, jclass cls __attribute__ ((unused)), jint ctx1, jint ctx2, jstring jexpr, jobjectArray jargs) {
+  EMPTYXD(outXd);
+  void *arglist[MAX_ARGS];
+  int status, i, varIdx;
+  const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
+  char *error_msg;
+  jclass exc;
+  struct descriptor exprD = { 0, DTYPE_T, CLASS_S, 0 };
+  jobject ris;
+  jint numArgs;
+
+  void *ctx = getCtx(ctx1, ctx2);
+  numArgs = (*env)->GetArrayLength(env, jargs);
+
+  if (numArgs > MAX_ARGS)
+    numArgs = MAX_ARGS;
+
+  exprD.length = strlen(expr);
+  exprD.pointer = (char *)expr;
+  arglist[1] = &ctx;
+  arglist[2] = &exprD;
+  varIdx = 3;
+
+  for (i = 0; i < numArgs; i++)
+    arglist[varIdx++] = ObjectToDescrip(env, (*env)->GetObjectArrayElement(env, jargs, i));
+  arglist[varIdx++] = &outXd;
+  arglist[varIdx++] = MdsEND_ARG;
+  *(int *)&arglist[0] = varIdx - 1;
+  status = (int)(intptr_t)LibCallg(arglist, _TdiExecute);
+  (*env)->ReleaseStringUTFChars(env, jexpr, expr);
+  for (i = 0; i < numArgs; i++)
+    FreeDescrip(arglist[3 + i]);
+  if STATUS_NOT_OK {
+    error_msg = (char *)MdsGetMsg(status);
+    exc = (*env)->FindClass(env, "MDSplus/MdsException");
+    (*env)->ThrowNew(env, exc, error_msg);
+    return NULL;
+  }
+  ris = DescripToObject(env, outXd.pointer, 0, 0, 0, 0);
+  MdsFree1Dx(&outXd, NULL);
+  return ris;
+}
+
+
 ////////////////////////////////TreeNode Stuff////////////////////////
 
 /*
@@ -2287,13 +2407,12 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNci
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint nciType) {
   int status;
-  int retNci = 0, retNciLen;
+  int retNci = 0, retNciLen = sizeof(int);
 
   struct nci_itm nciList[] = { {sizeof(int), 0, &retNci, &retNciLen},
   {NciEND_OF_LIST, 0, 0, 0}
   };
   void *ctx = getCtx(ctx1, ctx2);
-
   nciList[0].code = (short)nciType;
   status = _TreeGetNci(ctx, nid, nciList);
   if STATUS_NOT_OK
@@ -2310,7 +2429,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_TreeNode_getNciLong
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint nciType) {
   int status;
   int64_t retNci = 0;
-  int retNciLen;
+  int retNciLen = sizeof(int);
 
   struct nci_itm nciList[] = { {sizeof(int64_t), 0, &retNci, &retNciLen}
   ,
@@ -2358,20 +2477,18 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setNciFlag
   int status;
   int nciFlags;
   int nciFlagsLen = sizeof(int);
-  struct nci_itm nciList[] = { {sizeof(int), NciGET_FLAGS, &nciFlags, &nciFlagsLen},
-  {NciEND_OF_LIST, 0, 0, 0}
-  };
+  struct nci_itm setNciList[] =  {{4, NciSET_FLAGS, &nciFlags, &nciFlagsLen},
+	  {0, NciEND_OF_LIST, 0, 0}};
+  struct nci_itm clearNciList[] =  {{4, NciCLEAR_FLAGS, &nciFlags, &nciFlagsLen},
+	  {0, NciEND_OF_LIST, 0, 0}};
   void *ctx = getCtx(ctx1, ctx2);
-
-  status = _TreeGetNci(ctx, nid, nciList);
-  if STATUS_NOT_OK
-    throwMdsException(env, status);
-  if (flag)
-    nciFlags |= flagOfs;
+  
+  nciFlags = flagOfs;
+  if(flag)
+      status = _TreeSetNci(ctx, nid, setNciList);
   else
-    nciFlags &= ~flagOfs;
+      status = _TreeSetNci(ctx, nid, clearNciList);
 
-  status = _TreeSetNci(ctx, nid, nciList);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2642,7 +2759,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
   dimD = ObjectToDescrip(env, jdim);
   dataD = ObjectToDescrip(env, jdata);
 
-  status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+  status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2703,7 +2820,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
  * Signature: (IIILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;ZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
-    (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jobject jstart, jobject jend,
+    (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jint ctx1, jint ctx2, jint segmentOffset, jobject jstart, jobject jend,
      jobject jdim) {
   struct descriptor *startD, *endD, *dimD;
   int status;
@@ -2712,12 +2829,11 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
   startD = ObjectToDescrip(env, jstart);
   endD = ObjectToDescrip(env, jend);
   dimD = ObjectToDescrip(env, jdim);
-
-  status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD, -1);
+  status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD, segmentOffset);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
-  FreeDescrip(endD);
+  FreeDescrip(dimD);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2735,7 +2851,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
 
   dataD = ObjectToDescrip(env, jdata);
 
-  printDecompiled(dataD);
+//  printDecompiled(dataD);
   status = _TreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1);
   FreeDescrip(dataD);
   if STATUS_NOT_OK
@@ -2785,7 +2901,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
   times = (int64_t *) (*env)->GetLongArrayElements(env, jtimes, NULL);
   dataD = ObjectToDescrip(env, jdata);
 
-  printDecompiled(dataD);
+//  printDecompiled(dataD);
 
   status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
 
@@ -3132,8 +3248,10 @@ static JNIEnv *getJNIEnv()
   JNIEnv *jEnv;
   int retVal;
   retVal = (*jvm)->AttachCurrentThread(jvm, (void **)&jEnv, NULL);
-  if (retVal)
-    printf("AttachCurrentThread error %d\n", retVal);
+  if (retVal) {
+      printf("AttachCurrentThread error %d\n", retVal);
+      return NULL; 
+    }
   return jEnv;
 }
 
@@ -3153,6 +3271,8 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   jobject obj = (jobject) objPtr;
 
   env = getJNIEnv();
+  if (!env)
+    return;
   cls = (*env)->GetObjectClass(env, obj);
   if (!cls)
     printf("Error getting class for MDSplus.Event\n");
@@ -3166,7 +3286,6 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   LibConvertDateString("now", &time);
   args[1].j = time;
   (*env)->CallVoidMethodA(env, obj, mid, args);
-  (*env)->ReleaseByteArrayElements(env, jbuf, (jbyte *) buf, 0);
   releaseJNIEnv();
 }
 /*
