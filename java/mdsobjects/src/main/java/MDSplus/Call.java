@@ -99,6 +99,7 @@ public class Call extends Compound
 	    newDescs[1] = descs[1];
 	    for(int i = 0; i < args.length; i++)
 	         newDescs[2+i] = args[i];
+	    descs = newDescs;
 	}
 
 	/**
