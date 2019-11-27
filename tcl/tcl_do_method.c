@@ -70,10 +70,11 @@ EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((un
     do_it = (TreeIsOn(nid) | cli_present(ctx, "OVERRIDE")) & 1;
     if (IS_OK(cli_present(ctx, "IF"))) {
       struct descriptor if_clause_dsc = { 0, DTYPE_T, CLASS_S, 0 };
+      struct descriptor *args[] = {&if_clause_dsc};
       cli_get_value(ctx, "IF", &if_clause);
       if_clause_dsc.length = strlen(if_clause);
       if_clause_dsc.pointer = if_clause;
-      status = TdiIntrinsic(OPC_EXECUTE,1,&if_clause_dsc,&bool_dsc);
+      status = TdiIntrinsic(OPC_EXECUTE,1,&args,&bool_dsc);
       free(if_clause);
       if STATUS_OK
 	do_it = do_it && boolVal;

@@ -752,11 +752,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       you are executing the command as the method is executed in your
       current process context.
 
-      The /ARG qualifier lets you supply an argument to the method. It must be
-      in the form of an tdi expression. If you need to pass a string argument
-      you would do a command such as:
+      The /ARG qualifier lets you supply one or more arguments to the method.
+      The arguments must be in the form of an tdi expression.
+      If you need to pass a string argument you would do a command such as:
 
       TCL> DO/METHOD mydevice init /ARG="""mystring"""
+
+      Multiple arguments can be passed using the syntax:
+
+      TCL> DO/METHOD mydevice init /ARG=(1,"""mystring""",42)
 
       The /OVERRIDE qualifier is use to override the current on/off status
       of the device in the tree. If the device nodes are turned off and the
