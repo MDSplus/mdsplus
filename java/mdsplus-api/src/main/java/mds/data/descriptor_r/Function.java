@@ -128,7 +128,7 @@ public class Function extends Descriptor_R<Short>{
 	}
 
 	protected Function(final OPC mode, final Descriptor<?>... args){
-		super(DTYPE.FUNCTION, ByteBuffer.allocate(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, mode.toShort()), args);
+		super(DTYPE.FUNCTION, ByteBuffer.allocateDirect(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, mode.toShort()), args);
 	}
 
 	@Override

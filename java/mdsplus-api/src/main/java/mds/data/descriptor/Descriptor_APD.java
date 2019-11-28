@@ -68,7 +68,7 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 			dscptrs[i] = offset;
 			offset += descs[i].getSize();
 		}
-		final ByteBuffer b = ByteBuffer.allocate(offset).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(offset).order(Descriptor.BYTEORDER);
 		b.putShort(Descriptor._lenS, (short)4);
 		b.put(Descriptor._typB, dtype.toByte());
 		b.put(Descriptor._clsB, Descriptor_APD.CLASS);

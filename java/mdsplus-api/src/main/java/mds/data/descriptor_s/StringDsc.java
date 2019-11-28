@@ -1,6 +1,7 @@
 package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -20,21 +21,23 @@ public final class StringDsc extends Descriptor_S<String> implements DATA<String
 		return StringDsc.addQuotes(str).replaceAll("\\\\", "\\\\\\\\");
 	}
 
-	public static byte[] pad(final int len, final byte[] value, final byte c) {
-		final ByteBuffer bb = ByteBuffer.allocate(len).order(Descriptor.BYTEORDER);
-		for(int i = len; i-- > value.length;)
+	private static ByteBuffer pad(final int len, final ByteBuffer value, final byte c) {
+		final ByteBuffer bb = ByteBuffer.allocateDirect(len).order(Descriptor.BYTEORDER);
+		final int rem = value.remaining();
+		for(int i = len; i-- > rem;)
 			bb.put(c);
-		return bb.put(value).array();
+		bb.put(value.slice()).rewind();
+		return bb;
 	}
 
 	public static void putString(final ByteBuffer b, final String value) {
 		b.put(//
 		        (b.remaining() < value.length() ? value.substring(0, b.remaining()) : value)//
-		                .getBytes());
+		                .getBytes(StandardCharsets.UTF_8));
 	}
 
-	public StringDsc(final byte[] array){
-		super(DTYPE.T, ByteBuffer.wrap(array).order(Descriptor.BYTEORDER));
+	public StringDsc(final String value){
+		super(DTYPE.T, StandardCharsets.UTF_8.encode(value));
 	}
 
 	public StringDsc(final ByteBuffer b){
@@ -42,12 +45,9 @@ public final class StringDsc extends Descriptor_S<String> implements DATA<String
 	}
 
 	public StringDsc(final int len, final String value){
-		this(StringDsc.pad(len, value.getBytes(), (byte)' '));
+		super(DTYPE.T, StringDsc.pad(len, StandardCharsets.UTF_8.encode(value), (byte)' '));
 	}
 
-	public StringDsc(final String value){
-		this(value.getBytes());
-	}
 
 	@Override
 	public final Missing abs() throws MdsException {
@@ -117,8 +117,8 @@ public final class StringDsc extends Descriptor_S<String> implements DATA<String
 
 	public final void setString(final String value) {
 		final ByteBuffer tbuf = (ByteBuffer)((ByteBuffer)this.b.duplicate().position(this.pointer())).slice().limit(this.length());
-		if(value.length() > this.length()) tbuf.put(value.substring(0, this.length()).getBytes());
-		else tbuf.put(value.getBytes());
+		if(value.length() > this.length()) tbuf.put(value.substring(0, this.length()).getBytes(StandardCharsets.UTF_8));
+		else tbuf.put(value.getBytes(StandardCharsets.UTF_8));
 		while(tbuf.hasRemaining())
 			tbuf.put((byte)32);// fill with spaces
 	}

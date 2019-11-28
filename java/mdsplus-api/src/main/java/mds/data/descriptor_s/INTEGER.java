@@ -7,27 +7,28 @@ import mds.data.descriptor.Descriptor;
 
 public abstract class INTEGER<T extends Number>extends NUMBER<T>{
 	static final ByteBuffer toByteBuffer(final int value) {
-		return ByteBuffer.allocate(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(0, value);
+		return ByteBuffer.allocateDirect(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(0, value);
 	}
 
 	static final ByteBuffer toByteBuffer(final short value) {
-		return ByteBuffer.allocate(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, value);
+		return ByteBuffer.allocateDirect(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, value);
 	}
 
 	private static ByteBuffer toByteBuffer(final BigInteger value) {
 		final byte[] ba = value.or(NUMBER.max128).toByteArray();
-		final ByteBuffer buf = ByteBuffer.allocate(16).order(Descriptor.BYTEORDER);
+		final ByteBuffer buf = ByteBuffer.allocateDirect(16).order(Descriptor.BYTEORDER);
 		for(int i = 17; i-- > 1;)
 			buf.put(ba[i]);
+		buf.rewind();
 		return buf;
 	}
 
 	private static final ByteBuffer toByteBuffer(final byte value) {
-		return ByteBuffer.allocate(Byte.BYTES).order(Descriptor.BYTEORDER).put(0, value);
+		return ByteBuffer.allocateDirect(Byte.BYTES).order(Descriptor.BYTEORDER).put(0, value);
 	}
 
 	private static final ByteBuffer toByteBuffer(final long value) {
-		return ByteBuffer.allocate(Long.BYTES).order(Descriptor.BYTEORDER).putLong(0, value);
+		return ByteBuffer.allocateDirect(Long.BYTES).order(Descriptor.BYTEORDER).putLong(0, value);
 	}
 
 	protected INTEGER(final ByteBuffer b){

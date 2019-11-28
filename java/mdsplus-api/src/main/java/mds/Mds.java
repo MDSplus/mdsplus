@@ -164,7 +164,8 @@ public abstract class Mds{
 	public final <T extends Descriptor> T getDescriptor(final CTX ctx, final Request<T> req) throws MdsException {
 		final Mds mds = Mds.getActiveMds();
 		try{
-			final T dsc = this.setActive()._getDescriptor(ctx, req);
+			final Mds _mds = this.setActive();
+			final T dsc = _mds._getDescriptor(ctx, req);
 			if(ctx instanceof TREE) dsc.setTree((TREE)ctx);
 			return dsc;
 		}catch(final MdsException exc){

@@ -21,26 +21,26 @@ public abstract class INTEGERArray<T extends Number>extends NUMBERArray<T>{
 	}
 
 	private static final ByteBuffer toByteBuffer(final BigInteger[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * 16).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * 16).order(Descriptor.BYTEORDER);
 		for(final BigInteger value : values)
 			b.put(value.or(NUMBER.max128).toByteArray(), 0, 16);
 		return b;
 	}
 
 	private static final ByteBuffer toByteBuffer(final int[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Integer.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Integer.BYTES).order(Descriptor.BYTEORDER);
 		b.asIntBuffer().put(values);
 		return b;
 	}
 
 	private static final ByteBuffer toByteBuffer(final long[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Long.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Long.BYTES).order(Descriptor.BYTEORDER);
 		b.asLongBuffer().put(values);
 		return b;
 	}
 
 	private static final ByteBuffer toByteBuffer(final short[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Short.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Short.BYTES).order(Descriptor.BYTEORDER);
 		b.asShortBuffer().put(values);
 		return b;
 	}

@@ -7,13 +7,13 @@ import mds.data.descriptor_s.FLOAT;
 
 public abstract class FLOATArray<T extends Number>extends NUMBERArray<T>{
 	static final ByteBuffer toByteBuffer(final double[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Double.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Double.BYTES).order(Descriptor.BYTEORDER);
 		b.asDoubleBuffer().put(values);
 		return b;
 	}
 
 	static final ByteBuffer toByteBuffer(final float[] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Float.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Float.BYTES).order(Descriptor.BYTEORDER);
 		b.asFloatBuffer().put(values);
 		return b;
 	}

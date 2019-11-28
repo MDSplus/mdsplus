@@ -16,7 +16,10 @@ public final class Pointer extends Descriptor_S<Number> implements DATA<Number>,
 	}
 
 	public static final Pointer NULL() {
-		return new Pointer(ByteBuffer.wrap(new byte[]{8, 0, DTYPE.POINTER.toByte(), Descriptor_S.CLASS, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}).order(Descriptor.BYTEORDER));
+		ByteBuffer b = ByteBuffer.allocateDirect(16).order(Descriptor.BYTEORDER);
+		b.putShort((short)8).put(DTYPE.POINTER.toByte()).put(Descriptor_S.CLASS);
+		b.putInt(8).putLong(0).rewind();
+		return new Pointer(b);
 	}
 
 	public Pointer(final ByteBuffer b){
@@ -24,11 +27,11 @@ public final class Pointer extends Descriptor_S<Number> implements DATA<Number>,
 	}
 
 	public Pointer(final int value){
-		super(DTYPE.POINTER, ByteBuffer.allocate(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(value));
+		super(DTYPE.POINTER, ByteBuffer.allocateDirect(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(value));
 	}
 
 	public Pointer(final long value){
-		super(DTYPE.POINTER, ByteBuffer.allocate(Long.BYTES).order(Descriptor.BYTEORDER).putLong(value));
+		super(DTYPE.POINTER, ByteBuffer.allocateDirect(Long.BYTES).order(Descriptor.BYTEORDER).putLong(value));
 	}
 
 	@Override

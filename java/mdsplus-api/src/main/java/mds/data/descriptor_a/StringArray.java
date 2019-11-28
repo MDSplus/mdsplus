@@ -2,6 +2,7 @@ package mds.data.descriptor_a;
 
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -12,14 +13,14 @@ import mds.data.descriptor_s.StringDsc;
 
 public final class StringArray extends Descriptor_A<String> implements DATA<String[]>{
 	private static final ByteBuffer toBytes(final int length, final Object[] lines, final boolean prepend) {
-		final ByteBuffer b = ByteBuffer.allocate(length * lines.length).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(length * lines.length).order(Descriptor.BYTEORDER);
 		for(final Object line : lines){
 			final String str = line.toString();
 			final int maxline = Math.max(str.length(), length);
-			if(!prepend) b.put(str.getBytes(), 0, maxline);
+			if(!prepend) b.put(str.getBytes(StandardCharsets.UTF_8), 0, maxline);
 			for(int i = maxline; i < length; i++)
 				b.put((byte)32);
-			if(prepend) b.put(str.getBytes(), 0, maxline);
+			if(prepend) b.put(str.getBytes(StandardCharsets.UTF_8), 0, maxline);
 		}
 		return b;
 	}
@@ -211,7 +212,7 @@ public final class StringArray extends Descriptor_A<String> implements DATA<Stri
 	@Override
 	protected final void setElement(final ByteBuffer b, final String value) {
 		final int maxlength = this.length() < b.remaining() ? this.length() : b.remaining();
-		b.put((maxlength < value.length() ? value.substring(0, maxlength) : value).getBytes());
+		b.put((maxlength < value.length() ? value.substring(0, maxlength) : value).getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Override
