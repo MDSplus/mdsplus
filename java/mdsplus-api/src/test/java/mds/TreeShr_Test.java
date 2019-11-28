@@ -27,13 +27,13 @@ import mds.data.descriptor_s.NODE.Flags;
 import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.Pointer;
 
-@SuppressWarnings("static-method")
 public class TreeShr_Test{
 	private static TreeShr		treeshr;
 	private static final String	expt	= AllTests.tree;
 	private static final String	EXPT	= AllTests.tree.toUpperCase();
 	private static final int	model	= -1, shot = 7357;
 	private static Mds			mds;
+	private Pointer 			ctx		= Pointer.NULL();
 
 	@BeforeClass
 	public static final void setUpBeforeClass() throws Exception {
@@ -47,14 +47,18 @@ public class TreeShr_Test{
 	}
 
 	@Before
-	public void setUp() throws Exception { /*stub*/}
+	public void setUp() throws Exception {
+		ctx = Pointer.NULL();
+	}
 
 	@After
-	public void tearDown() throws Exception {/*stub*/}
+	public void tearDown() throws Exception {
+		while ((TreeShr_Test.treeshr.treeClose(ctx, null, 0)&1) > 0);
+		TreeShr_Test.treeshr.treeFreeDbid(ctx);
+	}
 
 	@Test
 	public final void testTreeAddNode() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 		try{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).status);
@@ -88,13 +92,11 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeQuitTree(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 			throw e;
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeAddTag() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			AllTests.testStatus(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -105,20 +107,17 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeRemoveNodesTags(ctx, 2));
 			Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::TOP:B", TreeShr_Test.treeshr.treeGetPath(ctx, 2));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeBeginTimestampedSegment() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_SIGNAL).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeBeginTimestampedSegment(ctx, 1, new Float32Array(new float[3]), -1));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutTimestampedSegment(ctx, 1, System.nanoTime(), new Float32Array(.1f, .2f, .3f)));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
@@ -130,7 +129,6 @@ public class TreeShr_Test{
 
 	@Test
 	public final void testTreeContext() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		final String deco = TreeShr_Test.treeshr.treeCtx(null).decompile();
 		Assert.assertTrue(deco, deco.matches("Pointer\\(0x[a-f0-9]+\\)"));
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model));
@@ -154,7 +152,6 @@ public class TreeShr_Test{
 		}finally{
 			TreeShr_Test.treeshr.treeRestoreContext(ctx, save);
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeClose(ctx, TreeShr_Test.expt, TreeShr_Test.model));
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
@@ -171,7 +168,6 @@ public class TreeShr_Test{
 
 	@Test
 	public final void testTreeDeleteNode() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 		try{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).status);
@@ -181,13 +177,11 @@ public class TreeShr_Test{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeDeleteNodeGetNid(ctx, 0).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeDeleteNodeExecute(ctx));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeFindTagWildDsc() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			AllTests.testStatus(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -203,13 +197,11 @@ public class TreeShr_Test{
 				TreeShr_Test.treeshr.treeFindTagEnd(null, tag);
 			}
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeGetDatafileSize() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -232,13 +224,11 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpen(ctx, TreeShr_Test.expt, TreeShr_Test.model, false));
 			Assert.assertEquals(110, TreeShr_Test.treeshr.treeGetDatafileSize(ctx));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeMakeSegment() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, AllTests.tree, TreeShr_Test.model));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_SIGNAL).getData());
@@ -276,15 +266,11 @@ public class TreeShr_Test{
 			Assert.assertArrayEquals(sig.getValue().toFloatArray(), TreeShr_Test.treeshr.treeGetSegmentData(ctx, 1, 0).toFloatArray(), 1e-5f);
 			Assert.assertEquals(DTYPE.FLOAT, TreeShr_Test.treeshr.treeGetSegmentInfo(ctx, 1, 0).dtype);
 		}finally{
-			try{
-				TreeShr_Test.treeshr.treeFreeDbid(ctx);
-			}catch(MdsException e){}
 		}
 	}
 
 	@Test
 	public final void testTreePutRecord() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -292,7 +278,6 @@ public class TreeShr_Test{
 			Assert.assertEquals(3, TreeShr_Test.treeshr.treeAddNode(ctx, "T", NODE.USAGE_TASK).getData());
 			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 1, new Action(new Nid(2), new Nid(3), null, null, null)));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
@@ -316,7 +301,6 @@ public class TreeShr_Test{
 									for(int i0 = 0; i0 < dims[0]; i0++)
 										data[i++] = i7 * 10000000 + i6 * 1000000 + i5 * 100000 + i4 * 10000 + i3 * 1000 + i2 * 100 + i1 * 10 + i0;
 		final Signal signal = new Signal(new Uint32Array(dims, data), null, new Uint64Array(dim));
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, AllTests.tree, TreeShr_Test.shot));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_SIGNAL).getData());
@@ -325,26 +309,22 @@ public class TreeShr_Test{
 			final String dec = "Build_Signal(Long_Unsigned(Set_Range(4,5,4,5,4,3,2,1,0LU /*** etc. ***/)), *, [1000000000000QU])";
 			Assert.assertEquals(dec, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).decompile());
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeRenameNode() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeRenameNode(ctx, 1, "newA"));
 			Assert.assertEquals("NEWA", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, 1));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeSetNciItm() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, AllTests.tree, TreeShr_Test.shot));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -353,39 +333,33 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetNciItm(ctx, 1, false, -0x10400 - 1));
 			Assert.assertEquals(66560, TreeShr_Test.mds.getInteger(ctx, "GetNci(1,'GET_FLAGS')"));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeSetSubtree() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_STRUCTURE).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetSubtree(ctx, 1));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetNoSubtree(ctx, 1));
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeSetXNci() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetXNci(ctx, 1, "myattr", CONST.$HBAR));
 			Assert.assertEquals("[\"myattr\"]", TreeShr_Test.treeshr.treeGetXNci(ctx, 1).getData().decompile());
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 
 	@Test
 	public final void testTreeTurnOffOn() throws MdsException {
-		final Pointer ctx = Pointer.NULL();
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, AllTests.tree, TreeShr_Test.shot));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
@@ -395,7 +369,6 @@ public class TreeShr_Test{
 			status = TreeShr_Test.treeshr.treeTurnOn(ctx, 1);
 			Assert.assertTrue(status == MdsException.TreeSUCCESS || status == MdsException.TreeLOCK_FAILURE);
 		}finally{
-			TreeShr_Test.treeshr.treeFreeDbid(ctx);
 		}
 	}
 }

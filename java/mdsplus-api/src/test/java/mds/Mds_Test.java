@@ -10,7 +10,6 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Int16Array;
 import mds.data.descriptor_s.StringDsc;
 
-@SuppressWarnings("static-method")
 public class Mds_Test{
 	private static Mds mds;
 
@@ -40,14 +39,4 @@ public class Mds_Test{
 		Assert.assertEquals("Word([1,2,3,4,5])", Mds_Test.mds.getDescriptor("$", array).decompile());
 		Assert.assertEquals("\"123456789\"", Mds_Test.mds.getDescriptor("concat", new StringDsc("123"), new StringDsc("456"), new StringDsc("789")).decompile());
 	}
-	/*
-	@Test
-	public void test_Messages() throws MdsException {
-	    final Call call = new Call(DTYPE.POINTER, "TreeShr", "TreeCtx");
-	    Assert.assertArrayEquals(Mds_Test.mds.getDescriptor("SerializeOut(TreeShr->TreeCtx:P())").toByteArray(), call.serializeArray());
-	    Assert.assertArrayEquals(call.serializeArray(), Mds_Test.mds.getDescriptor("SerializeOut($)", call).toByteArray());
-	    Assert.assertEquals("TreeShr->TreeCtx:P()", Mds_Test.mds.getDescriptor("AS_IS(TreeShr->TreeCtx:P())").decompile());
-	    Assert.assertEquals("[TreeShr->TreeCtx:P(),TreeShr->TreeCtx:P()]", Mds_Test.mds.getDescriptor("List(*,As_Is(TreeShr->TreeCtx:P()),AS_IS($))", new Call(DTYPE.POINTER, "TreeShr", "TreeCtx")).decompile());
-	}
-	*/
 }
