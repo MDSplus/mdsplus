@@ -108,7 +108,7 @@ public class MdsIp extends Mds{
 				}
 		}
 	} // End MRT class
-	final class PMET extends Thread // Process mds Event Thread
+	private final class PMET extends Thread // Process mds Event Thread
 	{
 		int		eventId	= -1;
 		String	eventName;
@@ -129,22 +129,22 @@ public class MdsIp extends Mds{
 			this.eventId = id;
 			this.eventName = null;
 		}
-
+		/*
 		public void setEventName(final String name) {
 			if(DEBUG.M) System.out.println("Received Event Name " + name);
 			this.eventId = -1;
 			this.eventName = name;
-		}
+		}*/
 	}// end PMET class
 	public final static class Provider{
 		public static final String	DEFAULT_HOST	= "localhost";
 		public static final int		DEFAULT_PORT	= 8000;
 		public static final String	DEFAULT_USER	= System.getProperty("user.name");
-		public final String			host;
+		private final String		host;
 		private final int			port;
 		private boolean				use_local;
 		private boolean				use_ssh;
-		public final String			user;
+		private final String		user;
 
 		public Provider(final String provider){
 			this(provider, false);
@@ -302,7 +302,7 @@ public class MdsIp extends Mds{
 		synchronized(MdsIp.open_connections){
 			for(final MdsIp con : MdsIp.open_connections)
 				if(con.provider.equals(provider)){
-					con.useSSH(provider.useSSH());
+					con.provider.use_ssh = provider.use_ssh;
 					con.connect();
 					return con;
 				}
@@ -312,18 +312,10 @@ public class MdsIp extends Mds{
 			return con;
 		}
 	}
-
-	public static MdsIp sharedConnection(final String provider) {
-		return MdsIp.sharedConnection(new Provider(provider));
-	}
-
-	public static MdsIp sharedConnection(final String provider, final boolean usessh) {
-		return MdsIp.sharedConnection(new Provider(provider, usessh));
-	}
 	private boolean			connected		= false;
 	private Connection		connection		= null;
 	private boolean			isLowLatency	= false;
-	public String			last_error;
+	private String			last_error;
 	private byte			msg_id			= 0;
 	private final Object	mutex			= new Object();
 	private final Provider	provider;
@@ -400,7 +392,7 @@ public class MdsIp extends Mds{
 	}
 
 	/** re-/connects to the servers mdsip service **/
-	public final boolean connect() {
+	private final boolean connect() {
 		if(this.connected) return true;
 		try{
 			this.connectToServer();
@@ -409,12 +401,6 @@ public class MdsIp extends Mds{
 			return false;
 		}
 		return this.connected;
-	}
-
-	/** re-/connects to the servers mdsip service **/
-	public final boolean connect(final boolean use_compression_in) {
-		this.use_compression = use_compression_in;
-		return this.connect();
 	}
 
 	synchronized private final void connectToServer() throws IOException {
@@ -495,11 +481,13 @@ public class MdsIp extends Mds{
 		return message;
 	}
 
-	public final String getHost() {
-		return this.provider.host;
+	public final String getLastError() {
+		final String out = this.last_error;
+		this.last_error = null;
+		return out;
 	}
 
-	public final Message getMessage(final Request<?> req, final boolean serialize) throws MdsException {
+	private final Message getMessage(final Request<?> req, final boolean serialize) throws MdsException {
 		if(DEBUG.M) System.out.println("MdsIp.getMessage(\"" + req.expr + "\", " + req.args + ", " + serialize + ")");
 		if(!this.connected) throw new MdsException(MdsIp.NOT_CONNECTED);
 		final Message msg;
@@ -536,16 +524,8 @@ public class MdsIp extends Mds{
 		return new StringBuilder(128).append(classname).append('(').append(this.provider.toString()).append(')').toString();
 	}
 
-	public final int getPort() {
-		return this.provider.getPort();
-	}
-
 	public final Provider getProvider() {
 		return this.provider;
-	}
-
-	public final String getUser() {
-		return this.provider.user;
 	}
 
 	public final boolean isConnected() {
@@ -563,7 +543,7 @@ public class MdsIp extends Mds{
 		return MdsIp.NOT_CONNECTED;
 	}
 
-	public void lostConnection() {
+	private void lostConnection() {
 		this.disconnectFromServer();
 		this.dispatchContextEvent(this.provider.host, false);
 	}
@@ -592,9 +572,6 @@ public class MdsIp extends Mds{
 		}
 	}
 
-	/*synchronized private void notifyTried() {
-	    this.notifyAll();
-	}*/
 	public final void removeFromShare() {
 		if(MdsIp.open_connections.contains(this)) MdsIp.open_connections.remove(this);
 	}
@@ -631,9 +608,5 @@ public class MdsIp extends Mds{
 	public final String toString() {
 		final String provider_str = this.provider.toString();
 		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")").toString();
-	}
-
-	public final void useSSH(final boolean usessh) {
-		this.provider.useSSH(usessh);
 	}
 }
