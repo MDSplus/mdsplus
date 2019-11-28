@@ -2,10 +2,12 @@ package mds.mdsip;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.SocketException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 import java.util.zip.InflaterInputStream;
 import mds.MdsException;
@@ -15,158 +17,159 @@ import mds.data.descriptor.ARRAY;
 import mds.data.descriptor.Descriptor;
 
 public final class Message extends Object{
-	public static final int			_mlenI					= 0;
-	public static final int			_statI					= 4;
-	public static final int			_lenS					= 8;
-	public static final int			_nargsB					= 10;
-	public static final int			_idxB					= 11;
-	public static final int			_midB					= 12;
-	public static final int			_typB					= 13;
+	private static class CompressedChannel implements ReadableByteChannel{
+		final byte					buf[]	= new byte[1024];
+		final ReadableByteChannel	rbc;
+		final InflaterInputStream	zis;
+
+		public CompressedChannel(ReadableByteChannel rbc){
+			this.rbc = rbc;
+			InputStream is = new InputStream(){
+				ByteBuffer bb = ByteBuffer.allocate(1);
+
+				@Override
+				public int read() throws IOException {
+					CompressedChannel.this.rbc.read(bb);
+					return bb.get();
+				}
+			};
+			zis = new InflaterInputStream(is);
+		}
+
+		@Override
+		public void close() throws IOException {
+			zis.skip(1);
+		}
+
+		@Override
+		public boolean isOpen() {
+			return rbc.isOpen();
+		}
+
+		@Override
+		public int read(ByteBuffer dst) throws IOException {
+			final int read = zis.read(buf, 0, dst.remaining());
+			dst.put(buf, 0, read);
+			return read;
+		}
+	}
 	public static final int			_clntB					= 14;
 	public static final int			_dmctB					= 15;
 	public static final int			_dmsI					= 16;
+	public static final int			_idxB					= 11;
+	public static final int			_lenS					= 8;
+	public static final int			_midB					= 12;
+	public static final int			_mlenI					= 0;
+	public static final int			_nargsB					= 10;
+	public static final int			_statI					= 4;
+	public static final int			_typB					= 13;
 	public static final byte		BIG_ENDIAN_MASK			= (byte)0x80;
 	private static final byte		COMPRESSED				= (byte)0x20;
 	protected static final String	EVENTASTREQUEST			= "---EVENTAST---REQUEST---";
 	protected static final String	EVENTCANREQUEST			= "---EVENTCAN---REQUEST---";
+	static final private int		HEADER_CTYPE_B			= 14;
+	static final private int		HEADER_DIM0_I			= 16;
+	static final private int		HEADER_DSCIDX_B			= 11;
+	static final private int		HEADER_DTYPE_B			= 13;
+	static final private int		HEADER_LENGTH_S			= 8;
+	static final private int		HEADER_MSGIDX_B			= 12;
+	static final private int		HEADER_MSGLEN_I			= 0;
+	static final private int		HEADER_NARGS_B			= 10;
+	static final private int		HEADER_NDIMS_B			= 15;
 	public static final int			HEADER_SIZE				= 48;
+	static final private int		HEADER_STATUS_I			= 4;
 	public static final byte		JAVA_CLIENT				= (byte)(Message.JAVA_CLIENT_LITTLE | Message.BIG_ENDIAN_MASK);	// | Message.SWAP_ENDIAN_ON_SERVER_MASK);
 	private static final byte		JAVA_CLIENT_LITTLE		= (byte)0x3;
 	// private static final byte SENDCAPABILITIES = (byte)0xF;
 	private static final int		SUPPORTS_COMPRESSION	= 0x8000;
 
-	public final static Message receive(final InputStream dis, final Set<TransferEventListener> listeners) throws IOException {
-		final ByteBuffer header = ByteBuffer.wrap(Message.readBuf(Message.HEADER_SIZE, dis, null));
-		final byte c_type = header.get(Message._clntB);
-		if((c_type & Message.BIG_ENDIAN_MASK) == 0) header.order(ByteOrder.LITTLE_ENDIAN);
-		final int msglen = header.getInt(Message._mlenI);
-		final ByteBuffer body;
-		if(msglen > Message.HEADER_SIZE){
-			if((c_type & Message.COMPRESSED) != 0) body = ByteBuffer.wrap(Message.readCompressedBuf(dis, header.order(), listeners));
-			else body = ByteBuffer.wrap(Message.readBuf(msglen - Message.HEADER_SIZE, dis, listeners));
-		}else body = ByteBuffer.allocate(0);
-		body.order(Descriptor.BYTEORDER);
-		final Message msg = new Message(header, body);
-		return msg;
+	private static final synchronized void dispatchTransferEvent(final Set<TransferEventListener> mdslisteners, final ReadableByteChannel dis, String info, int read, int to_read) {
+		if(mdslisteners != null) for(final TransferEventListener listener : mdslisteners)
+			listener.handleTransferEvent(dis, info, read, to_read);
 	}
 
 	protected static boolean isRoprand(final byte arr[], final int idx) {
 		return(arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128 && arr[idx + 3] == 0);
 	}
 
-	protected static final byte[] readCompressedBuf(final InputStream dis, final ByteOrder byteOrder, final Set<TransferEventListener> listeners) throws IOException {
-		final byte[] unflattened_length = new byte[4];
-		dis.read(unflattened_length);
-		final int bytes_to_read = ByteBuffer.wrap(unflattened_length).order(byteOrder).getInt() - Message.HEADER_SIZE;
-		final InflaterInputStream zis = new InflaterInputStream(dis);
-		final byte[] buf = Message.readBuf(bytes_to_read, zis, listeners);
-		zis.skip(1); // EOF
-		return buf;
-	}
-
-	private static final synchronized void dispatchTransferEvent(final Set<TransferEventListener> mdslisteners, final InputStream source, String info, int read, int to_read) {
-		if(mdslisteners != null) for(final TransferEventListener listener : mdslisteners)
-			listener.handleTransferEvent(source, info, read, to_read);
-	}
-
-	private static final byte[] readBuf(int bytes_to_read, final InputStream dis, final Set<TransferEventListener> mdslisteners) throws IOException {
-		final byte[] buf = new byte[bytes_to_read];
-		int read_bytes = 0, curr_offset = 0;
+	private static final ByteBuffer readBuf(int bytes_to_read, final ReadableByteChannel dis, final Set<TransferEventListener> mdslisteners) throws IOException {
+		final ByteBuffer buf = ByteBuffer.allocateDirect(bytes_to_read);
 		final boolean event = (bytes_to_read > 2000);
 		try{
-			while(bytes_to_read > 0){
-				read_bytes = dis.read(buf, curr_offset, bytes_to_read);
-				if(read_bytes == -1) throw new SocketException("connection lost");
-				curr_offset += read_bytes;
-				bytes_to_read -= read_bytes;
-				if(event) Message.dispatchTransferEvent(mdslisteners, dis, null, buf.length, curr_offset);
+			while(buf.hasRemaining()){
+				if(dis.read(buf) == -1) throw new SocketException("connection lost");
+				if(event) Message.dispatchTransferEvent(mdslisteners, dis, null, bytes_to_read, buf.position());
 			}
 		}catch(final IOException e){
 			Message.dispatchTransferEvent(mdslisteners, dis, e.getMessage(), 0, 0);
 			throw e;
 		}
+		buf.rewind();
 		return buf;
 	}
-	public final ByteBuffer	body;
-	private final byte		client_type;
-	private final byte		descr_idx;
-	private final int		dims[];
-	protected final DTYPE	dtype;
-	public final ByteBuffer	header;
-	protected final short	length;
-	protected final byte	message_id;
-	protected final int		msglen;
-	private final byte		nargs;
-	private final byte		ndims;
-	protected int			status;
+
+	protected static final ByteBuffer readCompressedBuf(final ReadableByteChannel rbc, final ByteOrder byteOrder, final Set<TransferEventListener> listeners) throws IOException {
+		final ByteBuffer unflattened_length = ByteBuffer.allocate(Integer.BYTES).order(byteOrder);
+		rbc.read(unflattened_length);
+		final int bytes_to_read = unflattened_length.getInt(0) - Message.HEADER_SIZE;
+		try(CompressedChannel cc = new Message.CompressedChannel(rbc);){
+			return Message.readBuf(bytes_to_read, cc, listeners);
+		}
+	}
+
+	public final static Message receive(final ReadableByteChannel rbc, final Set<TransferEventListener> listeners) throws IOException {
+		final ByteBuffer header = Message.readBuf(Message.HEADER_SIZE, rbc, null);
+		final byte c_type = header.get(Message._clntB);
+		if((c_type & Message.BIG_ENDIAN_MASK) == 0) header.order(ByteOrder.LITTLE_ENDIAN);
+		final int msglen = header.getInt(Message._mlenI);
+		final ByteBuffer body;
+		if(msglen > Message.HEADER_SIZE){
+			if((c_type & Message.COMPRESSED) != 0) body = Message.readCompressedBuf(rbc, header.order(), listeners);
+			else body = Message.readBuf(msglen - Message.HEADER_SIZE, rbc, listeners);
+		}else body = ByteBuffer.allocateDirect(0);
+		body.order(header.order());
+		final Message msg = new Message(header, body);
+		return msg;
+	}
+	private final ByteBuffer	body;
+	private final ByteBuffer	header;
 
 	public Message(final byte mid){
 		this('\0', mid);
 		this.verify();
 	}
 
-	public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte body[], final byte mid){
-		this(descr_idx, bu, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, Message.JAVA_CLIENT, 0, mid);
+	public Message(final byte descr_idx, final DTYPE dtype, final byte nargs, final int dims[], final byte ndims_in, final ByteBuffer body, final byte client_type, final int status, final byte mid){
+		this.header = ByteBuffer.allocateDirect(HEADER_SIZE);
+		this.body = body.slice();
+		if((client_type & Message.BIG_ENDIAN_MASK) == 0){
+			this.header.order(ByteOrder.LITTLE_ENDIAN);
+			this.body.order(ByteOrder.LITTLE_ENDIAN);
+		}
+		final int body_size = body == null ? 0 : body.remaining();
+		ByteBuffer h = this.getHeader();// 4
+		final byte ndims = (ndims_in > ARRAY.MAX_DIMS) ? ARRAY.MAX_DIMS : ndims_in;
+		h.putInt(Message.HEADER_SIZE + body_size).putInt(status);// 8
+		h.putShort(Descriptor.getDataSize(dtype, body_size)).put(nargs).put(descr_idx);// 12
+		h.put(mid).put(dtype.toByte()).put(client_type).put(ndims);// 16
+		if(ndims > 0) h.asIntBuffer().put(dims, 0, ndims);
 	}
 
-	public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte ndims, final byte body[], final byte client_type, final int status, final byte mid){
-		final int body_size = body == null ? 0 : body.length;
-		this.msglen = Message.HEADER_SIZE + body_size;
-		this.status = status;
-		this.message_id = mid;
-		this.length = Descriptor.getDataSize(bu, body_size);
-		this.client_type = client_type;
-		this.nargs = nargs;
-		this.descr_idx = descr_idx;
-		this.ndims = (ndims > ARRAY.MAX_DIMS) ? ARRAY.MAX_DIMS : ndims;
-		if(dims == null || dims.length != ARRAY.MAX_DIMS){
-			this.dims = new int[ARRAY.MAX_DIMS];
-			if(dims != null) System.arraycopy(dims, 0, this.dims, 0, this.ndims < dims.length ? this.ndims : dims.length);
-		}else this.dims = dims;
-		this.dtype = bu;
-		this.body = ByteBuffer.wrap(body);
-		if(this.isLittleEndian()) this.body.order(ByteOrder.LITTLE_ENDIAN);
-		this.header = this.getHeader();
+	public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final byte ndims, final ByteBuffer body, final int status, final byte mid){
+		this(descr_idx, bu, nargs, dims, ndims, body, (body == null || body.order() == ByteOrder.BIG_ENDIAN) ? Message.JAVA_CLIENT : Message.JAVA_CLIENT_LITTLE, status, mid);
 	}
 
-	public Message(final byte descr_idx, final DTYPE dtype, final byte nargs, final int dims[], final byte ndims, final ByteBuffer body, final int status, final byte mid){
-		final int body_size = body == null ? 0 : body.limit();
-		this.msglen = Message.HEADER_SIZE + body_size;
-		this.status = status;
-		this.message_id = mid;
-		this.length = Descriptor.getDataSize(dtype, body_size);
-		this.nargs = nargs;
-		this.descr_idx = descr_idx;
-		this.ndims = (ndims > ARRAY.MAX_DIMS) ? ARRAY.MAX_DIMS : ndims;
-		if(dims == null || dims.length != ARRAY.MAX_DIMS){
-			this.dims = new int[ARRAY.MAX_DIMS];
-			if(dims != null) System.arraycopy(dims, 0, this.dims, 0, this.ndims < dims.length ? this.ndims : dims.length);
-		}else this.dims = dims;
-		this.dtype = dtype;
-		this.body = body;
-		this.client_type = (body == null || body.order() == ByteOrder.BIG_ENDIAN) ? Message.JAVA_CLIENT : Message.JAVA_CLIENT_LITTLE;
-		this.header = this.getHeader();
+	public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final ByteBuffer body, final byte mid){
+		this(descr_idx, bu, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, 0, mid);
 	}
 
-	public Message(final byte descr_idx, final DTYPE dtype, final byte nargs, final int dims[], final ByteBuffer body, final byte mid){
-		this(descr_idx, dtype, nargs, dims, (dims == null) ? (byte)0 : (byte)dims.length, body, 0, mid);
+	public Message(final byte descr_idx, final DTYPE bu, final byte nargs, final int dims[], final String body, final byte mid){
+		this(descr_idx, bu, nargs, dims, StandardCharsets.UTF_8.encode(body).order(Descriptor.BYTEORDER), mid);
 	}
 
 	public Message(final ByteBuffer header, final ByteBuffer body){
-		this.msglen = header.getInt();
-		this.status = header.getInt();
-		this.length = header.getShort();
-		this.nargs = header.get();
-		this.descr_idx = header.get();
-		this.message_id = header.get();
-		this.dtype = DTYPE.get(header.get());
-		this.client_type = (byte)(header.get() & 0x1F);
-		this.ndims = header.get();
-		this.dims = new int[ARRAY.MAX_DIMS];
-		for(int i = 0; i < ARRAY.MAX_DIMS; i++)
-			this.dims[i] = header.getInt();
-		this.header = header;
-		this.body = body;
+		this.header = header.slice().order(header.order());
+		this.body = body.slice().order(header.order());
 	}
 
 	protected Message(final char c, final byte mid){
@@ -174,45 +177,55 @@ public final class Message extends Object{
 	}
 
 	protected Message(final String s, final byte mid){
-		this((byte)0, DTYPE.T, (byte)1, null, s.getBytes(), mid);
+		this((byte)0, DTYPE.T, (byte)1, null, s, mid);
 	}
 
 	public final byte[] asByteArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		return b.array();
 	}
 
+	protected final double[] asDoubleArray() {
+		final ByteBuffer b = this.getBody();
+		final double[] out = new double[b.position(0).remaining() / Double.BYTES];
+		b.asDoubleBuffer().get(out);
+		return out;
+	}
+
+	protected final float[] asFloatArray() {
+		final ByteBuffer b = this.getBody();
+		final float out[] = new float[b.position(0).remaining() / Float.BYTES];
+		b.asFloatBuffer().get(out);
+		return out;
+	}
+
 	public final int[] asIntArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		final int out[] = new int[b.position(0).remaining() / Integer.BYTES];
 		b.asIntBuffer().get(out);
 		return out;
 	}
 
 	public final long[] asLongArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		final long out[] = new long[b.position(0).remaining() / Long.BYTES];
 		b.asLongBuffer().get(out);
 		return out;
 	}
 
-	public final short asShort(final byte bytes[]) {
-		return ByteBuffer.wrap(bytes).order(this.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getShort();
-	}
-
 	public final short[] asShortArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		final short out[] = new short[b.position(0).remaining() / Short.BYTES];
 		b.asShortBuffer().get(out);
 		return out;
 	}
 
 	public final String asString() {
-		return new String(this.body.array());
+		return StandardCharsets.UTF_8.decode(this.getBody()).toString();
 	}
 
 	public final long[] asUIntArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		final long out[] = new long[b.position(0).remaining() / Integer.BYTES];
 		for(int i = 0; i < out.length; i++)
 			out[i] = b.getInt() & 0xFFFFFFFFl;
@@ -220,33 +233,80 @@ public final class Message extends Object{
 	}
 
 	public final int[] asUShortArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
+		final ByteBuffer b = this.getBody();
 		final int out[] = new int[b.position(0).remaining() / Short.BYTES];
 		for(int i = 0; i < out.length; i++)
 			out[i] = b.getShort() & 0xFFFF;
 		return out;
 	}
 
-	public DTYPE dtype() {
-		return DTYPE.get(this.header.get(Message._typB));
+	public final ByteBuffer getBody() {
+		return this.body.duplicate().order(this.body.order());
 	}
 
-	public final byte getNargs() {
-		return this.nargs;
+	public final byte getCType() {
+		return (byte)(header.get(HEADER_CTYPE_B) & 0x1F);
+	}
+
+	public final int getDescIdx() {
+		return header.get(HEADER_DSCIDX_B) & 0xFF;
+	}
+
+	public final int[] getDims() {
+		final int dims[] = new int[ARRAY.MAX_DIMS];
+		ByteBuffer h = this.getHeader();
+		h.position(HEADER_DIM0_I);
+		h.asIntBuffer().get(dims, 0, getNDims());
+		return dims;
+	}
+
+	public final DTYPE getDType() {
+		return DTYPE.get(header.get(HEADER_DTYPE_B));
+	}
+
+	public final ByteBuffer getHeader() {
+		return this.header.duplicate().order(this.header.order());
+	}
+
+	public final int getLength() {
+		return header.getShort(HEADER_LENGTH_S) & 0xFFFF;
+	}
+
+	public final int getMsgIdx() {
+		return header.get(HEADER_MSGIDX_B) & 0xFF;
+	}
+
+	public final int getMsgLen() {
+		return header.getInt(HEADER_MSGLEN_I);
+	}
+
+	public final int getNArgs() {
+		return header.get(HEADER_NARGS_B) & 0xFF;
+	}
+
+	public final int getNDims() {
+		return header.get(HEADER_NDIMS_B);
+	}
+
+	public final int getStatus() {
+		return header.getInt(HEADER_STATUS_I);
 	}
 
 	public final boolean isLittleEndian() {
-		return((this.client_type & Message.BIG_ENDIAN_MASK) == 0);
+		return((this.getCType() & Message.BIG_ENDIAN_MASK) == 0);
 	}
 
-	public final void send(final OutputStream dos) throws MdsException {
+	public final void send(final WritableByteChannel wbc) throws MdsException {
 		try{
-			synchronized(dos){
-				dos.write(this.header.array());
-				final ByteBuffer buf = this.body.slice();
-				while(buf.hasRemaining())
-					dos.write(buf.get());
-				dos.flush();
+			synchronized(wbc){
+				final ByteBuffer h = this.getHeader();
+				while(h.hasRemaining())
+					if(wbc.write(h) < 0) throw new IOException("failed to write");
+				final ByteBuffer b = this.getBody();
+				while(b.hasRemaining()){
+					if(wbc.write(b) < 0) throw new IOException("failed to write");
+				}
+				// wbc.flush(); TODO: interface?
 			}
 		}catch(final IOException e){
 			throw new MdsException(e.getMessage());
@@ -258,54 +318,15 @@ public final class Message extends Object{
 		try{
 			return Descriptor.readMessage(this).toString();
 		}catch(final Exception e){
-			return this.dtype.label + "(" + this.msglen + "Bytes)";
+			return this.getDType().label + "(" + this.getMsgLen() + "Bytes)";
 		}
 	}
 
-	public final void verify() {
-		this.status |= 1;
-	}
-
-	protected final double[] asDoubleArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
-		final double[] out = new double[b.position(0).remaining() / Double.BYTES];
-		b.asDoubleBuffer().get(out);
-		return out;
-	}
-
-	protected final float asFloat(final byte bytes[]) {
-		return ByteBuffer.wrap(bytes).order(this.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getFloat();
-	}
-
-	protected final float[] asFloatArray() {
-		final ByteBuffer b = this.body.duplicate().order(this.body.order());
-		final float out[] = new float[b.position(0).remaining() / Float.BYTES];
-		b.asFloatBuffer().get(out);
-		return out;
-	}
-
-	protected final int asInt(final byte bytes[]) {
-		return ByteBuffer.wrap(bytes).order(this.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN).getInt();
-	}
-
 	protected final void useCompression(final boolean use_cmp) {
-		this.status = (use_cmp ? Message.SUPPORTS_COMPRESSION | 5 : 0);
-		this.header.putInt(4, this.status);
+		this.header.putInt(HEADER_STATUS_I, (use_cmp ? Message.SUPPORTS_COMPRESSION | 5 : 0));
 	}
 
-	private final ByteBuffer getHeader() {
-		final ByteBuffer new_header = ByteBuffer.allocate(Message.HEADER_SIZE).order(this.body.order());
-		new_header.putInt(this.msglen);
-		new_header.putInt(this.status);
-		new_header.putShort(this.length);
-		new_header.put(this.getNargs());
-		new_header.put(this.descr_idx);
-		new_header.put(this.message_id);
-		new_header.put(this.dtype.toByte());
-		new_header.put(this.client_type);
-		new_header.put(this.ndims);
-		for(final int dm : this.dims)
-			new_header.putInt(dm);
-		return new_header;
+	public final void verify() {
+		this.header.putInt(HEADER_STATUS_I, this.header.getInt(HEADER_STATUS_I) | 1);
 	}
 }
