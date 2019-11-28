@@ -29,7 +29,6 @@ import mds.data.descriptor_s.Uint32;
 import mds.data.descriptor_s.Uint64;
 import mds.data.descriptor_s.Uint8;
 import mds.mdsip.Message;
-import mds.mdslib.MdsLib;
 
 /** DSC (24) **/
 public abstract class Descriptor<T>{
@@ -68,7 +67,7 @@ public abstract class Descriptor<T>{
 	protected static final int		DECO_STR	= 1;
 	protected static final int		DECO_STRX	= Descriptor.DECO_X | Descriptor.DECO_STR;
 	protected static final int		DECO_X		= 2;
-	protected static MdsLib			mdslib		= new MdsLib();
+	protected static Mds			mds_local	= Mds.getLocal();
 	protected static final byte		P_ARG		= 88;
 	protected static final byte		P_STMT		= 96;
 	protected static final byte		P_SUBS		= 0;
@@ -205,7 +204,7 @@ public abstract class Descriptor<T>{
 	public static final Descriptor<?> NEW(final Object obj) throws MdsException {
 		if(obj == null) return Missing.NEW;
 		if(obj instanceof String) return new StringDsc((String)obj);
-		if(obj instanceof Number) return NUMBER.NEW((Number)obj);
+		if(obj instanceof Number) return NUMBER.NEW(obj);
 		throw new MdsException("Conversion form " + obj.getClass().getName() + " not yet implemented.");
 	}
 
@@ -367,7 +366,7 @@ public abstract class Descriptor<T>{
 
 	public Descriptor<?> evaluate_lib() throws MdsException {
 		if(this instanceof DATA) return this;
-		if(this.use_mdslib()) return Descriptor.mdslib.getAPI().tdiEvaluate(null, this.getLocal()).getData();
+		if(this.use_mds_local()) return Descriptor.mds_local.getAPI().tdiEvaluate(null, this.getLocal()).getData();
 		return this.mds.getAPI().tdiEvaluate(this.tree, this).getData();
 	}
 
@@ -387,7 +386,7 @@ public abstract class Descriptor<T>{
 	public Descriptor<?> getData(final DTYPE... omits) {
 		try{
 			if(this instanceof DATA) return this;
-			if(this.use_mdslib()) return Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
+			if(this.use_mds_local()) return Descriptor.mds_local.getDescriptor(this.tree, "DATA($)", this.getLocal());
 			return this.getData_(omits);
 		}catch(final MdsException e){
 			return Missing.NEW;
@@ -664,7 +663,7 @@ public abstract class Descriptor<T>{
 		return this.getTree().getMds();
 	}
 
-	protected final boolean use_mdslib() {
-		return MdsLib.lib_loaded == null;
+	protected final boolean use_mds_local() {
+		return (Descriptor.mds_local != null && Descriptor.mds_local.isReady() == null);
 	}
 }

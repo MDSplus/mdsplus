@@ -41,7 +41,6 @@ public final class Int64Array extends INTEGERArray<Long>{
 		return this.buildBuffer(buf, (long)value);
 	}
 
-	@SuppressWarnings("static-method")
 	public ByteBuffer buildBuffer(final ByteBuffer buf, final long value) {
 		return buf.putLong(value);
 	}

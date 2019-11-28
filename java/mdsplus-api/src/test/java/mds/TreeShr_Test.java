@@ -82,7 +82,10 @@ public class TreeShr_Test{
 			Assert.assertEquals(nid + 10, TreeShr_Test.treeshr.treeAddNode(ctx, "TEXT", NODE.USAGE_TEXT).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeEndConglomerate(ctx));
 			final int status = TreeShr_Test.treeshr.treeAddConglom(ctx, "C", "E1429").status;
-			if(status != MdsException.TdiUNKNOWN_VAR) AllTests.testStatus(MdsException.TreeSUCCESS, status);
+			if(status == MdsException.DevPYDEVICE_NOT_FOUND)
+				System.err.println("TreeShr_Test:testTreeAddNode failed to test treeAddConglom: E1429 not found.");
+			else
+				AllTests.testStatus(MdsException.TreeSUCCESS, status);
 			Assert.assertEquals("ANY", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, nid + 2));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetDefaultNid(ctx, 0));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeWriteTree(ctx, TreeShr_Test.expt, TreeShr_Test.model));

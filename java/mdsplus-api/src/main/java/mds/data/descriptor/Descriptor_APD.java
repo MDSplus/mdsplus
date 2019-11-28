@@ -41,7 +41,6 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 			return this.pout.toString();
 		}
 	}
-	@SuppressWarnings("hiding")
 	public static final byte	CLASS	= -60;
 	public static final String	name	= "APD";
 
@@ -262,8 +261,8 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>{
 	}
 
 	@Override
-	protected final void setElement(final ByteBuffer b, final Descriptor<?> value) {/*TODO:stub*/}
+	protected final void setElement(final ByteBuffer b, final Descriptor<?> value) {assert(false);}
 
 	@Override
-	protected void setElement(final int i, final Descriptor<?> value) {/*TODO:stub*/}
+	protected void setElement(final int i, final Descriptor<?> value) {assert(false);}
 }

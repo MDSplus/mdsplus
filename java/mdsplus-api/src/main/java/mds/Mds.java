@@ -16,6 +16,7 @@ import mds.data.descriptor.Descriptor_S;
 import mds.data.descriptor_a.Uint8Array;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.StringDsc;
+import mds.mdsip.MdsIp;
 
 public abstract class Mds{
 	public static class EventItem{
@@ -74,7 +75,12 @@ public abstract class Mds{
 	}
 	protected static final int	MAX_NUM_EVENTS	= 256;
 	private static Mds			active;
-
+	private static MdsIp shared_tunnel = null;
+	public final static MdsIp getLocal() {
+		if (shared_tunnel == null) shared_tunnel = new MdsIp();
+		if (shared_tunnel.isReady()==null) return shared_tunnel;
+		return null;
+	}
 	public final static Mds getActiveMds() {
 		return Mds.active;
 	}
@@ -113,7 +119,6 @@ public abstract class Mds{
 		}
 	}
 
-	@SuppressWarnings("static-method")
 	public boolean close() {
 		return true;
 	}
@@ -429,7 +434,7 @@ public abstract class Mds{
 	protected final int MdsEND_ARG() {
 		if(this.mds_end_arg == 0) try{
 			if(this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
-			    this.mds_end_arg = 1;
+				this.mds_end_arg = 1;
 			else this.mds_end_arg = -1;
 		}catch(final MdsException e){
 			this.mds_end_arg = -1;
@@ -487,5 +492,9 @@ public abstract class Mds{
 		if(i == Mds.MAX_NUM_EVENTS) return -1;
 		this.event_flags[i] = true;
 		return i;
+	}
+
+	public final boolean isLocal() {
+		return this == Mds.shared_tunnel;
 	}
 }

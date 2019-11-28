@@ -137,9 +137,11 @@ public class MdsIp extends Mds{
 		}*/
 	}// end PMET class
 	public final static class Provider{
-		public static final String	DEFAULT_HOST	= "localhost";
-		public static final int		DEFAULT_PORT	= 8000;
-		public static final String	DEFAULT_USER	= System.getProperty("user.name");
+		private static final String DEFAULT_LOCAL   = "local";
+		private static final int	DEFAULT_PORT	= 8000;
+		private static final String	DEFAULT_USER	= System.getProperty("user.name");
+		private static final String PREFIX_LOCAL	= "local://";
+		private static final String PREFIX_SSH		= "ssh://";
 		private final String		host;
 		private final int			port;
 		private boolean				use_local;
@@ -151,23 +153,28 @@ public class MdsIp extends Mds{
 		}
 
 		public Provider(String provider, final boolean use_ssh){
-			final boolean sshstr = provider.toLowerCase().startsWith("ssh://");
-			final boolean locstr = provider.toLowerCase().startsWith("local://");
-			if(sshstr) provider = provider.substring(6);
-			else if(locstr) provider = provider.substring(8);
 			if(provider == null || provider.length() == 0){
 				this.user = Provider.DEFAULT_USER;
-				this.host = Provider.DEFAULT_HOST;
+				this.host = Provider.DEFAULT_LOCAL;
 				this.port = 0;
+				this.use_ssh = false;
+				this.use_local = true;
 			}else{
+				this.use_local = provider.toLowerCase().startsWith(PREFIX_LOCAL);
+				if (this.use_local) {
+					provider = provider.substring(8);
+					this.use_ssh = false;
+				} else {
+					final boolean sshstr = provider.toLowerCase().startsWith(PREFIX_SSH);
+					if(sshstr) provider = provider.substring(6);
+					this.use_ssh = sshstr || use_ssh;
+				}
 				final int at = provider.indexOf("@");
 				final int cn = provider.indexOf(":");
 				this.user = at < 0 ? Provider.DEFAULT_USER : provider.substring(0, at);
 				this.host = cn < 0 ? provider.substring(at + 1) : provider.substring(at + 1, cn);
 				this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
 			}
-			this.use_ssh = sshstr || use_ssh;
-			this.use_local = locstr;
 		}
 
 		public Provider(final String host, final int port){
@@ -184,7 +191,7 @@ public class MdsIp extends Mds{
 				this.use_ssh = false;
 				this.use_local = true;
 			}else{
-				this.use_local = host.toLowerCase().startsWith("local://");
+				this.use_local = host.toLowerCase().startsWith(PREFIX_LOCAL);
 				if(this.use_local){
 					this.use_ssh = false;
 					host = host.substring(8);
@@ -198,6 +205,11 @@ public class MdsIp extends Mds{
 			}
 			this.host = host;
 			this.port = port;
+		}
+
+		public Provider(){
+			// local
+			this(null);
 		}
 
 		@Override
@@ -223,6 +235,7 @@ public class MdsIp extends Mds{
 
 		@Override
 		public final String toString() {
+			if (this.use_local) return this.host;
 			final StringBuilder sb = new StringBuilder(this.user.length() + this.host.length() + 16);
 			if(this.use_ssh) sb.append("ssh://");
 			sb.append(this.user).append('@').append(this.host);
@@ -321,6 +334,11 @@ public class MdsIp extends Mds{
 	private final Provider	provider;
 	private MRT				receiveThread	= null;
 	private boolean			use_compression	= false;
+
+	public MdsIp(){
+		this(new Provider(), null, null);
+		this.connect();
+	}
 
 	public MdsIp(final Provider provider){
 		this(provider, null, null);
@@ -424,9 +442,9 @@ public class MdsIp extends Mds{
 		tictoc += System.nanoTime();
 		if(DEBUG.N) System.out.println(tictoc);
 		this.isLowLatency = tictoc < 50000000;// if response is faster than 50ms
-		if(msg.getHeader().get(4) == 0){
+		if(msg.getStatus() == 0){
 			this.close();
-			return;
+			throw new IOException("Server responded status == 0");
 		}
 		this.receiveThread = new MRT();
 		this.connected = true;
@@ -521,6 +539,7 @@ public class MdsIp extends Mds{
 	}
 
 	private final String getName(final String classname) {
+		if (this.isLocal()) return Provider.DEFAULT_LOCAL;
 		return new StringBuilder(128).append(classname).append('(').append(this.provider.toString()).append(')').toString();
 	}
 
@@ -606,6 +625,9 @@ public class MdsIp extends Mds{
 
 	@Override
 	public final String toString() {
+		if (this.provider.use_local) {
+			return provider.host;
+		}
 		final String provider_str = this.provider.toString();
 		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")").toString();
 	}

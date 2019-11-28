@@ -68,9 +68,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 			this.pout.append(']');
 		}
 	}
-	@SuppressWarnings("hiding")
 	private static final boolean	atomic	= true;
-	@SuppressWarnings("hiding")
 	public static final byte		CLASS	= 4;
 
 	public static Descriptor_A<?> deserialize(final ByteBuffer b) throws MdsException {
@@ -272,7 +270,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 		final byte[] ba = this.toByteArray();
 		for(int i = 0; i < ba.length; i++)
 			ba[i] = ba[i] == 0 ? (byte)1 : (byte)0;
-		return new Uint8Array(ba);
+			return new Uint8Array(ba);
 	}
 
 	public final void setAtomic(final T[] values) {
@@ -399,7 +397,6 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 		return this.decompile(new StringBuilder(32), t).toString();
 	}
 
-	@SuppressWarnings("static-method")
 	protected boolean format() {
 		return false;
 	}
