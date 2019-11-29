@@ -20,7 +20,6 @@ public class AllTests{
 	private static boolean			mdsip		= true;
 	private static boolean			use_local	= false;
 	private static final int		port		= 8000;
-	private static Process			process		= null;
 	private static final boolean	remote_win	= false;
 	private static final boolean	ssh			= false;
 	public static final String		tree		= "test";
@@ -34,14 +33,13 @@ public class AllTests{
 		final String hostinfo = AllTests.local ? "local://" : host;
 		final boolean use_ssh = AllTests.local ? false : AllTests.ssh;
 		final int use_port = use_ssh ? 22 : AllTests.port;
-		final Provider provider = new Provider(hostinfo, use_port, user, use_ssh);
 		Mds mdslocal = Mds.getLocal();
 		if (!use_local && mdslocal!=null) mdslocal.close();
 		Mds mds = null;
 		if(!AllTests.mdsip){
 			mds = new MdsIp();
 		}else{
-			MdsIp tmds = MdsIp.sharedConnection(provider);
+			MdsIp tmds = MdsIp.sharedConnection(new Provider(hostinfo, use_port, user, use_ssh));
 			if(tmds.isConnected()) mds = tmds;
 		}
 		if(mds == null) throw new Exception("Could not connect to mdsip.");
@@ -52,7 +50,6 @@ public class AllTests{
 
 	public static void tearDownAfterClass(final Mds mds) {
 		mds.close();
-		if(process != null) process.destroy();
 	}
 
 	public static void testStatus(final int expected, final int actual) {

@@ -1,6 +1,8 @@
 package mds.mdsip;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import mds.mdsip.MdsIp.Connection;
 
@@ -12,10 +14,8 @@ public class MdsIpTunnel implements Connection{
 		if(this.isOpen()) this.process.destroy();
 	}
 
-	private boolean ensure_open() throws IOException {
-		if (this.isOpen()) return true;
+	public MdsIpTunnel() throws IOException {
 		process = new ProcessBuilder("mdsip", "-P", "tunnel").start();
-		return process.isAlive();
 	}
 
 	@Override
@@ -23,26 +23,34 @@ public class MdsIpTunnel implements Connection{
 		return process != null && this.process.isAlive();
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public int read(final ByteBuffer b) throws IOException {
-		if(!this.ensure_open()) return -1;
+		if(!this.isOpen()) return -1;
 		final int rem = b.remaining();
-		final int tord = rem < 1024 ? rem : 1024;
-		byte a[] = new byte[tord];
-		final int read = this.process.getInputStream().read(a);
-		if(read > 0) b.put(a, 0, read);
-		return read;
+		int read;
+		InputStream is = this.process.getInputStream();
+		while (b.hasRemaining()) {
+			read = is.read();
+			if (read<0) return read;
+			b.put((byte)read);
+		}
+		return rem-b.remaining();
 	}
 
+	@SuppressWarnings("resource")
 	@Override
 	public int write(final ByteBuffer b) throws IOException {
-		if(!this.ensure_open()) return -1;
+		if(!this.isOpen()) return -1;
 		final int rem = b.remaining();
-		final int send = rem < 1024 ? rem : 1024;
-		byte a[] = new byte[send];
-		b.get(a);
-		this.process.getOutputStream().write(a);
-		if(rem == send) this.process.getOutputStream().flush();
-		return send;
+		OutputStream os = this.process.getOutputStream();
+		while (b.hasRemaining())
+			os.write(b.get());
+		final int left = b.remaining();
+		if (left == 0) {
+			os.flush();
+			return rem;
+		}
+		return rem-left;
 	}
 }

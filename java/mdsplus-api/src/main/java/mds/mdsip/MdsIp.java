@@ -102,7 +102,7 @@ public class MdsIp extends Mds{
 			this.interrupt();
 			while(!this.killed)
 				try{
-					this.wait(3000);
+					this.wait(300);
 				}catch(final InterruptedException exc){
 					System.err.println(this.getName() + ": isInterrupted");
 				}
@@ -196,7 +196,7 @@ public class MdsIp extends Mds{
 					this.use_ssh = false;
 					host = host.substring(8);
 				}else{
-					final boolean sshstr = host.toLowerCase().startsWith("ssh://");
+					final boolean sshstr = host.toLowerCase().startsWith(PREFIX_SSH);
 					if(sshstr){
 						host = host.substring(6);
 						this.use_ssh = true;
@@ -237,7 +237,7 @@ public class MdsIp extends Mds{
 		public final String toString() {
 			if (this.use_local) return this.host;
 			final StringBuilder sb = new StringBuilder(this.user.length() + this.host.length() + 16);
-			if(this.use_ssh) sb.append("ssh://");
+			if(this.use_ssh) sb.append(PREFIX_SSH);
 			sb.append(this.user).append('@').append(this.host);
 			if(this.port != 0) sb.append(':').append(this.port);
 			return sb.toString();
