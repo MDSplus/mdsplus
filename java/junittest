@@ -1,6 +1,8 @@
 #!/bin/bash
 if [ -z $VALGRIND_TOOL ]
 then JVM_OPTIONS="-XX:UseSSE=0 -Djava.compiler=NONE"
+elif [ "$VALGRIND_TOOL" = "helgrind" ]
+then exit 77
 else JVM_OPTIONS=
 fi
 echo "JUNITTEST=${JUNITTEST}"
