@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define _GNU_SOURCE
 #include "treeshrp.h"		/* must be first or off_t wrong */
 #include <ctype.h>
 #include <stdlib.h>
@@ -42,6 +43,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
+inline static char *strndup(char *src, size_t n) {
+  size_t len = strnlen(src, n);
+  char *dst = memcpy(malloc(len + 1), src, len);
+  dst[len] = '\0';
+  return dst;
+}
 #else
 #include <unistd.h>
 #include <sys/mman.h>
@@ -154,10 +161,9 @@ EXPORT char *TreePath(char const *tree, char *tree_lower_out){
 
 static char *ReplaceAliasTrees(char *tree_in){
   size_t buflen = strlen(tree_in) + 1;
-  char *ans = malloc(buflen);
+  char *ans = calloc(1,buflen);
   char *tree = strtok(tree_in, ",");
   size_t i;
-  memset(ans, 0, buflen);
   while (tree) {
     char *treepath = TreePath(tree, 0);
     if (treepath && (strlen(treepath) > 5) && (strncmp(treepath, "ALIAS", 5) == 0))
@@ -669,9 +675,9 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
     (*dblist)->shotid = shot;
     (*dblist)->setup_info = (shot == -1);
     free((*dblist)->experiment);
-    (*dblist)->experiment = strcpy(malloc(strlen(tree) + 1), tree);
+    (*dblist)->experiment = strdup(tree);
     free((*dblist)->main_treenam);
-    (*dblist)->main_treenam = strcpy(malloc(strlen(tree) + 1), tree);
+    (*dblist)->main_treenam = strdup(tree);
     (*dblist)->stack_size = stack_size;
   }
   return status;
@@ -715,12 +721,12 @@ static char *GetFname(char *tree, int shot)
   status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
   if STATUS_OK
     status = (*TdiExecute)(&expression_d,&fname MDS_END_ARG);
-  if (status & 1) {
+  if STATUS_OK {
     ans = strncpy(malloc((size_t)fname.length + 2), fname.pointer, fname.length);
     ans[fname.length] = '+';
     ans[fname.length + 1] = 0;
   } else {
-    ans = strcpy(malloc(6), "ErRoR");
+    ans = strdup("ErRoR");
   }
   StrFree1Dx(&fname);
   return (ans);
@@ -736,7 +742,7 @@ static void str_shift(char *in, int num)
 
 EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
 {
-  char *path = strcpy(malloc(strlen(path_in) + 1), path_in);
+  char *path = strdup(path_in);
   char ShotMask[13];
   char *tilde;
   char *fname;
@@ -860,8 +866,7 @@ int OpenOne(TREE_INFO * info, TREE_INFO * root, tree_type_t type, int new, int e
   INIT_AND_FREE_ON_EXIT(char*,treepath);
   fd = -1;
   if (root && root->filespec && root->speclen>2 && root->filespec[root->speclen-1]==':' && root->filespec[root->speclen-2]==':' ) {
-    treepath = memcpy(malloc(root->speclen+1),root->filespec,root->speclen);
-    treepath[root->speclen] = '\0';
+    treepath = strndup(root->filespec,root->speclen);
   }
   status = MDS_IO_OPEN_ONE(treepath,info->treenam,info->shot,type,new,edit_flag,filespec,&info->speclen,&fd);
   FREE_NOW(treepath);
@@ -1134,11 +1139,10 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
     status = CreateDbSlot(dblist, tree, shot, 1);
     if (status == TreeSUCCESS) {
-      info = (TREE_INFO *) malloc(sizeof(TREE_INFO));
+      info = (TREE_INFO *) calloc(1,sizeof(TREE_INFO));
       if (info) {
-	memset(info, 0, sizeof(*info));
 	info->flush = ((*dblist)->shotid == -1);
-	info->treenam = strcpy(malloc(strlen(tree) + 1), tree);
+	info->treenam = strdup(tree);
 	info->shot = (*dblist)->shotid;
 	status = MapTree(info, (*dblist)->tree_info, 1);
 	if (STATUS_NOT_OK && (status == TreeFILE_NOT_FOUND || treeshr_errno == TreeFILE_NOT_FOUND)) {
@@ -1153,9 +1157,8 @@ int _TreeOpenEdit(void **dbid, char const *tree_in, int shot_in)
 	if STATUS_OK {
 	  TreeCallHookFun("TreeHook","OpenTreeEdit", tree, info->shot, NULL);
 	  TreeCallHook(OpenTreeEdit, info, 0);
-	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
+	  info->edit = (TREE_EDIT *) calloc(1,sizeof(TREE_EDIT));
 	  if (info->edit) {
-	    memset(info->edit, 0, sizeof(TREE_EDIT));
 	    info->root = info->node;
 	    status = TreeOpenNciW(info, 0);
 	    if STATUS_OK {
@@ -1198,10 +1201,9 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
     PINO_DATABASE **dblist = (PINO_DATABASE **) dbid;
     status = CreateDbSlot(dblist, tree, shot, 1);
     if (status == TreeSUCCESS) {
-      info = (TREE_INFO *) malloc(sizeof(TREE_INFO));
+      info = (TREE_INFO *) calloc(1,sizeof(TREE_INFO));
       if (info) {
 	int fd;
-	memset(info, 0, sizeof(*info));
 	info->flush = ((*dblist)->shotid == -1);
 	info->treenam = strdup(tree);
 	info->shot = (*dblist)->shotid;
@@ -1220,12 +1222,10 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	if STATUS_OK {
 	  TreeCallHookFun("TreeHook","OpenTreeEdit",info->treenam, info->shot,NULL);
 	  TreeCallHook(OpenTreeEdit, info, 0);
-	  info->edit = (TREE_EDIT *) malloc(sizeof(TREE_EDIT));
+	  info->edit = (TREE_EDIT *) calloc(1,sizeof(TREE_EDIT));
 	  if (info->edit) {
-	    memset(info->edit, 0, sizeof(TREE_EDIT));
 	    info->blockid = TreeBLOCKID;
-	    info->header = malloc(512);
-	    memset(info->header, 0, sizeof(TREE_HEADER));
+	    info->header = calloc(1,512);
 	    info->header->free = -1;
 	    info->edit->header_pages = 1;
 	    (*dblist)->tree_info = info;
@@ -1246,17 +1246,11 @@ int _TreeOpenNew(void **dbid, char const *tree_in, int shot_in)
 	    info->node->usage = TreeUSAGE_SUBTREE;
 	    (info->node + 1)->child = 0;
 	    bitassign(1, info->edit->nci->flags, NciM_INCLUDE_IN_PULSE);
-	    info->tags = malloc(512);
-	    if (info->tags)
-	      memset(info->tags, 0, 512);
+	    info->tags = calloc(1,512);
 	    info->edit->tags_pages = 1;
-	    info->tag_info = malloc(sizeof(TAG_INFO) * 512);
-	    if (info->tag_info)
-	      memset(info->tag_info, 0, sizeof(TAG_INFO) * 512);
+	    info->tag_info = calloc(sizeof(TAG_INFO), 512);
 	    info->edit->tag_info_pages = sizeof(TAG_INFO);
-	    info->external = malloc(512);
-	    if (info->external)
-	      memset(info->external, 0, 512);
+	    info->external = calloc(1,512);
 	    info->edit->external_pages = 1;
 	    info->edit->first_in_mem = 0;
 	    info->header->version = 1;
