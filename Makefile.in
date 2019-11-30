@@ -204,12 +204,12 @@ install: $(install_DIRS)
 .PHONY: tests-envdump
 tests-envdump:
 	cd python/MDSobjects/tests&&(\
-	make test-envdump;\
+	make tests-envdump;\
 	cd ../../..;)
 
-test-env:
+tests-env:
 	cd python/MDSplus/tests&&(\
-	make test-env;\
+	make tests-env;\
 	cd ../../..;)
 
 @HAVE_WINE_TRUE@wineconsole:
