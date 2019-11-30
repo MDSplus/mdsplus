@@ -64,19 +64,95 @@ static const char *nonode = "<no-node>   ";
 
 extern void **TreeCtx();
 
-char *TreeGetMinimumPath(int *def_nid_in, int nid_in)
-{
-  return _TreeGetMinimumPath(*TreeCtx(), def_nid_in, nid_in);
+static char *Treename(PINO_DATABASE * dblist, int nid_in) {
+  TREE_INFO *info;
+  NID nid = *(NID *) & nid_in;
+  unsigned int treenum;
+  for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree; info = info->next_info) ;
+  return info ? info->treenam : "";
 }
-
-char *TreeGetPath(int nid_in)
-{
-  return _TreeGetPath(*TreeCtx(), nid_in);
+static char *AbsPath(void *dbid, char const *inpath, int nid_in) {
+  char *answer = NULL, *pathptr = NULL;
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  _TreeSetDefaultNid(dbid, nid_in);
+  size_t len = strlen(inpath);
+  if (len) {
+    int nid;
+    if (_TreeFindNode(dbid, inpath, &nid) & 1) {
+      pathptr = _TreeGetPath(dbid, nid);
+      len = strlen(pathptr);
+    } else pathptr = strdup(inpath);
+  } else {
+    pathptr = _TreeGetPath(dbid, nid_in);
+    len = strlen(pathptr);
+  }
+  if (pathptr[0] == '\\') {
+    if (strstr(pathptr, "::")) {
+      answer = strdup(pathptr);
+    } else {
+      char *treename = Treename(dblist, nid_in);
+      answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
+      strcpy(answer, "\\");
+      strcat(answer, treename);
+      strcat(answer, "::");
+      strcat(answer, pathptr+1);
+    }
+  } else if ((strstr(pathptr, "-") == pathptr) || (strstr(pathptr, ".-") == pathptr)) {
+      int nid;
+      NODE node;
+      NODE *nodeptr = &node;
+      NID *nidptr = (NID *) & nid;
+      NID *nidinptr = (NID *) & nid_in;
+      if (nid_in) {
+        nodeptr = nid_to_node(dblist, nidinptr);
+        node_to_nid(dblist, parent_of(dblist, nodeptr), nidptr);
+        answer = AbsPath(dbid, &pathptr[2], nid);
+      } else
+        answer = NULL;
+  } else {
+    char *tmp = _TreeGetPath(dbid, nid_in);
+    answer = strcpy(malloc(strlen(tmp) + strlen(pathptr) + 2), tmp);
+    free(tmp);
+    switch (pathptr[0]) {
+    case '.':
+    case ':':
+      strcat(answer, pathptr);
+      break;
+    default:
+      strcat(answer, ":");
+      strcat(answer, pathptr);
+      break;
+    }
+  }
+  free(pathptr);
+  return answer;
 }
-
-int TreeIsOn(int nid)
-{
-  return _TreeIsOn(*TreeCtx(), nid);
+char *_TreeAbsPath(void *dbid, char const *inpath) {
+  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
+  int nid;
+  char *answer;
+  if (!IS_OPEN(dblist))
+    return NULL;
+  if (dblist->remote)
+    return AbsPathRemote(dblist, inpath);
+  _TreeGetDefaultNid(dbid, &nid);
+  answer = AbsPath(dbid, inpath, nid);
+  _TreeSetDefaultNid(dbid, nid);
+  return answer;
+}
+char *TreeAbsPath(char const *inpath) {
+  return _TreeAbsPath(*TreeCtx(), inpath);
+}
+int _TreeAbsPathDsc(void *dbid, char const *inpath, mdsdsc_t *out_ptr) {
+  char* ans_c = _TreeAbsPath(dbid, inpath);
+  if (!ans_c) return TreeFAILURE;
+  DESCRIPTOR_FROM_CSTRING(ans_d,ans_c);
+  StrCopyDx(out_ptr,&ans_d);
+  free(ans_c);
+  return TreeSUCCESS;
+}
+int TreeAbsPathDsc(char const *inpath, mdsdsc_t *out_ptr) {
+  return _TreeAbsPathDsc(*TreeCtx(), inpath, out_ptr);
 }
 
 int _TreeGetNci(void *dbid, int nid_in, struct nci_itm *nci_itm) {
@@ -602,8 +678,7 @@ int TreeIsChild(PINO_DATABASE * dblist, NODE * node)
   return n == node;
 }
 
-char *_TreeGetPath(void *dbid, int nid_in)
-{
+char *_TreeGetPath(void *dbid, int nid_in) {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NCI_ITM itm_lst[] = { {0, NciPATH, 0, 0}, {0, NciEND_OF_LIST, 0, 0} };
   if (!(IS_OPEN(dblist)))
@@ -611,9 +686,22 @@ char *_TreeGetPath(void *dbid, int nid_in)
   _TreeGetNci(dbid, nid_in, itm_lst);
   return (char *)itm_lst[0].pointer;
 }
+char *TreeGetPath(int nid_in) {
+  return _TreeGetPath(*TreeCtx(), nid_in);
+}
+int _TreeGetPathDsc(void *dbid, int nid_in, mdsdsc_xd_t *out_ptr) {
+  char* ans_c = _TreeGetPath(dbid, nid_in);
+  if (!ans_c) return TreeFAILURE;
+  DESCRIPTOR_FROM_CSTRING(ans_d,ans_c);
+  MdsCopyDxXd(&ans_d,out_ptr);
+  free(ans_c);
+  return TreeSUCCESS;
+}
+int TreeGetPathDsc(int nid_in, mdsdsc_xd_t *out_ptr) {
+  return _TreeGetPathDsc(*TreeCtx(), nid_in, out_ptr);
+}
 
-char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in)
-{
+char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in) {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *def_nid = (NID *) def_nid_in;
   int status;
@@ -631,6 +719,20 @@ char *_TreeGetMinimumPath(void *dbid, int *def_nid_in, int nid_in)
   } else
     status = _TreeGetNci(dbid, nid_in, itm_lst);
   return STATUS_OK ? (char *)itm_lst[0].pointer : NULL;
+}
+char *TreeGetMinimumPath(int *def_nid_in, int nid_in) {
+  return _TreeGetMinimumPath(*TreeCtx(), def_nid_in, nid_in);
+}
+int _TreeGetMinimumPathDsc(void *dbid, int *def_nid_in, int nid_in, mdsdsc_xd_t *out_ptr) {
+  char* ans_c = _TreeGetMinimumPath(dbid, def_nid_in, nid_in);
+  if (!ans_c) return TreeFAILURE;
+  DESCRIPTOR_FROM_CSTRING(ans_d,ans_c);
+  MdsCopyDxXd(&ans_d,out_ptr);
+  free(ans_c);
+  return TreeSUCCESS;
+}
+int TreeGetMinimumPathDsc(int *def_nid_in, int nid_in, mdsdsc_xd_t *out_ptr) {
+  return _TreeGetMinimumPathDsc(*TreeCtx(), def_nid_in, nid_in, out_ptr);
 }
 
 int _TreeIsOn(void *dbid, int nid)
@@ -659,6 +761,9 @@ int _TreeIsOn(void *dbid, int nid)
       status = TreeON;
   }
   return status;
+}
+int TreeIsOn(int nid) {
+  return _TreeIsOn(*TreeCtx(), nid);
 }
 
 int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)

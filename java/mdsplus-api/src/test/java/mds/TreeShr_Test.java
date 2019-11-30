@@ -86,7 +86,7 @@ public class TreeShr_Test{
 				System.err.println("TreeShr_Test:testTreeAddNode failed to test treeAddConglom: E1429 not found.");
 			else
 				AllTests.testStatus(MdsException.TreeSUCCESS, status);
-			Assert.assertEquals("ANY", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, nid + 2));
+			Assert.assertEquals("ANY", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, nid + 2).data);
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetDefaultNid(ctx, 0));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeWriteTree(ctx, TreeShr_Test.expt, TreeShr_Test.model));
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeVerify(ctx));
@@ -106,9 +106,9 @@ public class TreeShr_Test{
 			AllTests.testStatus(2, TreeShr_Test.treeshr.treeAddNode(ctx, "B", NODE.USAGE_ANY).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeAddTag(ctx, 2, "MYTAG"));
 			Assert.assertEquals("B", TreeShr_Test.mds.getString(ctx, "Trim(GetNci(\\MYTAG,'NODE_NAME'))"));
-			Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::MYTAG", TreeShr_Test.treeshr.treeGetPath(ctx, 2));
+			Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::MYTAG", TreeShr_Test.treeshr.treeGetPath(ctx, 2).data);
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeRemoveNodesTags(ctx, 2));
-			Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::TOP:B", TreeShr_Test.treeshr.treeGetPath(ctx, 2));
+			Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::TOP:B", TreeShr_Test.treeshr.treeGetPath(ctx, 2).data);
 		}finally{
 		}
 	}
@@ -325,7 +325,7 @@ public class TreeShr_Test{
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeRenameNode(ctx, 1, "newA"));
-			Assert.assertEquals("NEWA", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, 1));
+			Assert.assertEquals("NEWA", TreeShr_Test.treeshr.treeGetMinimumPath(ctx, 1).data);
 		}finally{
 		}
 	}
