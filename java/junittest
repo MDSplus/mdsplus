@@ -1,9 +1,8 @@
 #!/bin/bash
-if [ -z $VALGRIND_TOOL ]
+if [ -z $VALGRIND_TOOL ] # sanitizer
 then JVM_OPTIONS="-XX:UseSSE=0 -Djava.compiler=NONE"
 elif [ "$VALGRIND_TOOL" = "helgrind" ]
-then exit 77
+then JVM_OPTIONS="-Xint"
 else JVM_OPTIONS=
 fi
-echo "JUNITTEST=${JUNITTEST}"
-exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} $JVM_OPTIONS ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}
+exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} ${JVM_OPTIONS} ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}
