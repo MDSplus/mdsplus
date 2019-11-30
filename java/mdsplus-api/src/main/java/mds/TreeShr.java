@@ -426,7 +426,7 @@ public class TreeShr extends MdsShr{
 	 **/
 	public final TagRef treeFindNodeTags(final CTX ctx, final int nid, final TagRef ref) throws MdsException {
 		final Request<List> request = new TreeCall<List>(List.class, "TreeFindNodeTagsDsc")//
-				.val(nid).ref("a", ref.ref).descr("t", "REPEAT(' ',255)").fin("List(*,TRIM(__t),__a,__s)");
+				.val(nid).ref("a", ref.ref).descr("t", "REPEAT(' ',64)").fin("List(*,TRIM(__t),__a,__s)");
 		return new TagRef(this.mds.getDescriptor(ctx, request));
 	}
 
