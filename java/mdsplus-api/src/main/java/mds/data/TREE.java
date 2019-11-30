@@ -410,11 +410,13 @@ public final class TREE implements ContextEventListener, CTX{
 		final TagList taglist = new TagList(max, this.expt);
 		synchronized(this.mds){
 			this.holdDbid();
+			TagRefStatus tag = TagRefStatus.init;
 			try{
-				TagRefStatus tag = TagRefStatus.init;
 				while(taglist.size() < max && (tag = this.api.treeFindTagWild(null, searchstr, tag)).ok())
 					taglist.put(tag.data, new Nid(tag.nid, this));
 			}finally{
+				if (taglist.size() >= max)
+					this.api.treeFindTagEnd(null, tag);
 				this.releaseDbid();
 			}
 		}
