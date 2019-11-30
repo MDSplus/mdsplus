@@ -54,17 +54,12 @@ EXPORT int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 
 EXPORT int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 {
-  int status;
   char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
-  if (tagname) {
-    struct descriptor tagd = { 0, DTYPE_T, CLASS_S, 0 };
-    tagd.length = (unsigned short)strlen(tagname);
-    tagd.pointer = tagname;
-    StrCopyDx(tag, &tagd);
-    status = 1;
-  } else
-    status = 0;
-  return status;
+  if (!tagname) return TreeTNF;
+  DESCRIPTOR_FROM_CSTRING(tagd,tagname);
+  StrCopyDx(tag, &tagd);
+  free(tagname);
+  return TreeSUCCESS;
 }
 
 EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
@@ -252,14 +247,13 @@ STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 EXPORT int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
 {
   char *ans_c = TreeAbsPath(inpath);
-  if (ans_c == 0)
-    return 0;
-  else {
+  if (ans_c) {
     struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
     ans_d.length = (unsigned short)strlen(ans_c);
     ans_d.pointer = ans_c;
     StrCopyDx(outpath, &ans_d);
     free(ans_c);
-  }
-  return 1;
+    return TreeSUCCESS;
+  } else
+    return TreeFAILURE;
 }
