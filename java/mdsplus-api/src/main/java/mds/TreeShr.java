@@ -238,17 +238,6 @@ public class TreeShr extends MdsShr{
 	}
 
 	/**
-	 * returns the absolute (full) path of the node
-	 *
-	 * @return int: string
-	 **/
-	public final String treeAbsPath(final CTX ctx, final String relpath) throws MdsException {
-		final Request<StringDsc> request = new TreeCall<StringDsc>(StringDsc.class, "TreeAbsPath:T")//
-		        .ref(Descriptor.valueOf(relpath)).fin();
-		return this.mds.getDescriptor(ctx, request).getValue();
-	}
-
-	/**
 	 * adds a device node of specific model to a tree (EDIT)
 	 *
 	 * @return IntegerStatus
@@ -501,34 +490,12 @@ public class TreeShr extends MdsShr{
 	}
 
 	/**
-	 * returns the shortest path to node (from default node)
-	 *
-	 * @return String: minimal path to node
-	 **/
-	public final String treeGetMinimumPath(final CTX ctx, final int nid) throws MdsException {
-		final Request<StringDsc> request = new TreeCall<StringDsc>(StringDsc.class, "TreeGetMinimumPath:T")//
-		        .val(0).val(nid).fin();
-		return this.mds.getDescriptor(ctx, request).getValue();
-	}
-
-	/**
 	 * @return IntegerStatus: number of segments
 	 **/
 	public final IntegerStatus treeGetNumSegments(final CTX ctx, final int nid) throws MdsException {
 		final Request<Int32Array> request = new TreeCall<Int32Array>(Int32Array.class, "TreeGetNumSegments")//
 		        .val(nid).ref("a", 0).finA("a", "s");
 		return new IntegerStatus(this.mds.getDescriptor(ctx, request));
-	}
-
-	/**
-	 * returns the natural path of a node (form its parent tree root)
-	 *
-	 * @return String: path to node
-	 **/
-	public final String treeGetPath(final CTX ctx, final int nid) throws MdsException {
-		final Request<StringDsc> request = new TreeCall<StringDsc>(StringDsc.class, "TreeGetPath:T")//
-		        .val(nid).fin();
-		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
 	/**
