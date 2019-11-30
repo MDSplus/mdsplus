@@ -356,7 +356,11 @@ static int CloseTopTree(PINO_DATABASE * dblist, int call_hook) {
 	    free(local_info->tag_info);
 	  if (local_info->edit->external_pages)
 	    free(local_info->external);
-	  free(local_info->edit->deleted_nid_list);
+          DELETED_NID *next, *dnid;
+	  for (dnid=local_info->edit->deleted_nid_list; dnid ; dnid=next) {
+	    next = dnid->next;
+	    free(dnid);
+	  }
 	  free(local_info->edit);
 	}
 
