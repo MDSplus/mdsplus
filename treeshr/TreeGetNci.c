@@ -509,7 +509,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	free(string);
       } else {
 	retlen = (int)strlen(string);
-	itm->pointer = (unsigned char *)string;
+        // trunc to actual length to reduce memory leak if caller forgot to free
+	itm->pointer = (unsigned char*)realloc(string,strlen(string)+1);
       }
     }
     if (itm->return_length_address)
@@ -587,7 +588,10 @@ static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs)
     strcat(string, part);
   }
   free(part);
-  return string;
+  if (string)
+    return realloc(string,strlen(string)+1);
+  else
+    return NULL;
 }
 
 int TreeIsChild(PINO_DATABASE * dblist, NODE * node)
