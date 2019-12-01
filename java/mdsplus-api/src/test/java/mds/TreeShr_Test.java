@@ -113,10 +113,14 @@ public class TreeShr_Test{
 	@Test
 	public final void testTreeBeginTimestampedSegment() throws MdsException {
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
+		TreeShr_Test.treeshr.treeWriteTree(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_SIGNAL).getData());
-			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeBeginTimestampedSegment(ctx, 1, new Float32Array(new float[3]), -1));
-			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutTimestampedSegment(ctx, 1, System.nanoTime(), new Float32Array(.1f, .2f, .3f)));
+			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeBeginTimestampedSegment(ctx, 1, new Float32Array(new int[]{3,1},0.f, 0.f, 0.f), -1));
+			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutTimestampedSegment(ctx, 1, 123456789012345l, new Float32Array(new int[]{3,1}, .1f, .2f, .3f)));
+			Signal sig = TreeShr_Test.treeshr.treeGetSegment(ctx, 1, 0);
+			Assert.assertEquals("[123456789012345Q]", sig.getDimension().decompile());
+			Assert.assertEquals("[[.1,.2,.3]]", sig.getDataA().decompile());
 		}finally{
 		}
 	}
@@ -192,7 +196,7 @@ public class TreeShr_Test{
 				Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::MYTAG", (tag = TreeShr_Test.treeshr.treeFindTagWild(ctx, "MYTAG", tag)).data);
 				Assert.assertEquals(2, tag.nid);
 				Assert.assertNull(null, (tag = TreeShr_Test.treeshr.treeFindTagWild(ctx, "MYTAG", tag)).data);
-				Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::TOP", TreeShr_Test.treeshr.treeFindTagWild(ctx, "***", tag).data);
+				Assert.assertEquals("\\" + TreeShr_Test.EXPT + "::TOP", (tag = TreeShr_Test.treeshr.treeFindTagWild(ctx, "***", tag)).data);
 			}finally{
 				TreeShr_Test.treeshr.treeFindTagEnd(null, tag);
 			}
