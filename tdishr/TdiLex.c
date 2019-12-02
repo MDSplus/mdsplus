@@ -1376,7 +1376,7 @@ int TdiLex(struct marker *lvalPtr) {
   GET_TDITHREADSTATIC_P;
   int nstr, leng;
   char previous = NEWLINE;
-  char text[MAX_TOKEN_LEN];
+  char text[MAX_TOKEN_LEN];text[0] = NEWLINE;
   while ((nstr = look(&leng, &previous, text, TdiThreadStatic_p)) >= 0) {
     switch (nstr) {
       case 0:
