@@ -32,36 +32,40 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Near 500 2 (3 string compares on the average)
 	        index = TdiHash(string) to find the index.
 */
-#include <STATICdef.h>
-#include "tdithreadstatic.h"
-#define TdiHASH_MAX 991
-
-STATIC_THREADSAFE short TdiREF_HASH[TdiHASH_MAX];
 #include "tdirefcat.h"
 #include "tdireffunction.h"
+#include <pthread_port.h>
 #include <string.h>
 #include <stdio.h>
 
+//#define MAIN
+#ifdef MAIN
+  #define MAIN_MAX 32767
+  int TdiHASH_MAX;
+  static short TdiREF_HASH[MAIN_MAX] = {0};
+#else
+  #define TdiHASH_MAX 10354
+  static short TdiREF_HASH[TdiHASH_MAX] = {0};
+#endif
 
+#define upcase(c) ((c >= 'a' && c <= 'z') ? (c & 0xdf) : c)
 
-#define upcase(ptr) ((*(char *)(ptr) >= 'a' && *(char *)(ptr) <= 'z') ? *(char *)(ptr) & 0xdf : *(char *)(ptr))
-
-STATIC_ROUTINE int TdiHashOne(int len, char *pstring)
-{
-  int hash = 0, n = len;
-  char *ps = pstring;
-  while (--n >= 0 && *ps) {
-    hash = (int)(((uint64_t)hash) * 11 + (upcase(ps) - ' '));
-    ps++;
+int hash(int len, char *str) {
+  // djb2 by dan bernstein (http://www.cse.yorku.ca/~oz/hash.html)
+  unsigned int hash = 5381;
+  if (len<0) {// len unknown
+    char *c;
+    for (c = str; *c ; c++)
+      hash = ((hash << 5) + hash) + (unsigned)upcase(*c);     /* hash * 33 + c */
+  } else {
+    int i;
+    for (i = 0 ; i<len ; i++)
+      hash = ((hash << 5) + hash) + (unsigned)upcase(str[i]); /* hash * 33 + c */
   }
-  hash %= TdiHASH_MAX;
-  if (hash < 0)
-    hash += TdiHASH_MAX;
-  return hash;
+  return (signed)(hash%TdiHASH_MAX);
 }
 
-STATIC_ROUTINE int TdiHashAll()
-{
+static int hash_all() {
   int jf, jh;
   struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;
   int count = 0;
@@ -69,14 +73,7 @@ STATIC_ROUTINE int TdiHashAll()
     TdiREF_HASH[jh] = -1;
   for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
     if (pf->name) {
-      int i;
-      int len = strlen(pf->name);
-      char temp[128];
-      strcpy(temp, pf->name);
-      for (i = 0; i < len; i++)
-	if (temp[i] >= 'a' && temp[i] <= 'z')
-	  temp[i] = (char)(temp[i] & 0xDF);
-      jh = TdiHashOne(63, temp);
+      jh = hash(-1, pf->name);
       while (TdiREF_HASH[jh] >= 0) {
 	count++;
 	if (++jh >= TdiHASH_MAX)
@@ -89,21 +86,22 @@ STATIC_ROUTINE int TdiHashAll()
   return count;
 }
 
-int TdiHash(int len, char *pstring)
-{
-  int jh, jf;
+int TdiHash(int len, char *pstring) {
+  int i, jh, jf;
   static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  jh = TdiHashOne(len, pstring);
   if (TdiREF_HASH[0] == 0)
-    TdiHashAll();
+    hash_all();
+  jh = hash(len, pstring);
   while ((jf = TdiREF_HASH[jh]) >= 0) {
-    int i;
-    char *name = TdiRefFunction[jf].name;
-    for (i = 0; (i < len) && (name[i] != '\0') && (upcase(pstring + i) == name[i]); i++) ;
-    if (i == len && name[i] == '\0')
+    for (i = 0 ; i<len && TdiRefFunction[jf].name[i] ; i++) {
+      if (TdiRefFunction[jf].name[i] != upcase(pstring[i]))
+        goto next;
+    }
+    if (i==len && !TdiRefFunction[jf].name[len])
       break;
+next: ;
     if (++jh >= TdiHASH_MAX)
       jh = 0;
   }
@@ -111,19 +109,29 @@ int TdiHash(int len, char *pstring)
   return jf;
 }
 
+#ifdef MAIN
 /*      test program for hashing
 	Also change the TdiHASH_MAX to a variable.
-int     main() {
-int     count, jf, k;
-	printf(" size  depth\n");
-	for (TdiHASH_MAX = 1025; TdiHASH_MAX-- > TdiFUNCTION_MAX;) {
-	        count = TdiHashAll();
-	        printf("%5d  %g\n", TdiHASH_MAX, (float)count / (float)TdiHASH_MAX);
-	        TdiREF_HASH[0] = 0;
-	}
-	TdiHASH_MAX = 991;
-	for (jf = 0; jf < TdiFUNCTION_MAX; ++jf)
-	        if (jf != (k = TdiHash(99, TdiRefFunction[jf].name)))
-	                printf("%d  %s  %d\n", jf, TdiRefFunction[jf], k);
-}
 */
+int main() {
+  int count, jf, k;
+  int max = 0x7fffffff, max_val = max;
+  printf(" size  depth\n");
+  for (TdiHASH_MAX = TdiFUNCTION_MAX; TdiHASH_MAX < MAIN_MAX; TdiHASH_MAX++) {
+    count = hash_all();
+    if (count<max) {
+      printf("%5d  %d\n", max_val = TdiHASH_MAX, max = count);
+      if (count==0) break;
+    }
+    TdiREF_HASH[0] = 0;
+  }
+  TdiREF_HASH[0] = 0;
+  TdiHASH_MAX = max_val;
+  count = hash_all();
+  for (jf = 0; jf < TdiFUNCTION_MAX; ++jf)
+    if (jf != (k = TdiHash(strlen(TdiRefFunction[jf].name), TdiRefFunction[jf].name)))
+      printf("%d  %s  %d\n", jf, TdiRefFunction[jf].name, k);
+  printf("%5d  %g\n", TdiHASH_MAX, (float)max / (float)TdiHASH_MAX);
+  return 0;
+}
+#endif
