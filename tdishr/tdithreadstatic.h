@@ -5,7 +5,7 @@
 #define TDITHREADSAFE_H
 #include <pthread_port.h>
 
-#define GET_TDITHREADSTATIC_P ThreadStatic *TdiThreadStatic_p = TdiThreadStatic(NULL)
+#define GET_TDITHREADSTATIC_P ThreadStatic *const TdiThreadStatic_p = TdiThreadStatic(NULL)
 
 #define TDI_STACK_SIZE	3
 #define TDI_STACK_IDX	TdiThreadStatic_p->stack_idx

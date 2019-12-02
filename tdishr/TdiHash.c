@@ -94,7 +94,8 @@ int hash(int len, char *str) {
 #endif
 }
 
-int TdiHash(int len, char *pstring) {
+// used in TdiLex and TdiChar
+int tdiHash(int len, char *pstring) {
   int i, jh, jf;
 #ifndef MAIN
   static pthread_once_t once = PTHREAD_ONCE_INIT;

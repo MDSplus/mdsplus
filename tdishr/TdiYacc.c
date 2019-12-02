@@ -1271,7 +1271,7 @@ int TdiYacc(){
 	}
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
-      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == LEX_ERROR) {
+      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark, TdiThreadStatic_p) == LEX_ERROR) {
 	TDI_REFZONE.l_ok = tdiyypvt[-1].mark.w_ok;
 	TDI_REFZONE.a_cur = TDI_REFZONE.a_begin + TDI_REFZONE.l_ok + tdiyypvt[-0].mark.rptr->length;
 	return MDSplusERROR;
