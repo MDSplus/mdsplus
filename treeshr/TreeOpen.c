@@ -135,7 +135,7 @@ EXPORT char *TreePath(char const *tree, char *tree_lower_out){
   size_t i;
   char pathname[32];
   char *path;
-  char tree_lower[13];
+  char tree_lower[sizeof(TREE_NAME)+1];
   for (i = 0; i < 12 && tree[i] ; ++i)
     tree_lower[i] = tolower(tree[i]);
   tree_lower[i] = '\0';
@@ -272,7 +272,7 @@ int _TreeClose(void **dbid, char const *tree, int shot)
   if (dblist && *dblist) {
     if (tree) {
       size_t i;
-      char uptree[13] = { 0 };
+      char uptree[sizeof(TREE_NAME)+1] = { 0 };
       size_t len = strlen(tree);
       for (i = 0; i < 12 && i < len; ++i)
 	uptree[i] = (char)toupper(tree[i]);
