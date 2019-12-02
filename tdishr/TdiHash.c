@@ -65,17 +65,23 @@ int hash(int len, char *str) {
   return (signed)(hash%TdiHASH_MAX);
 }
 
-static int hash_all() {
+#ifdef MAIN
+ static int hash_all() {
+  int count = 0;
+#else
+ static void hash_all() {
+#endif
   int jf, jh;
   struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;
-  int count = 0;
   for (jh = TdiHASH_MAX; --jh >= 0;)
     TdiREF_HASH[jh] = -1;
   for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
     if (pf->name) {
       jh = hash(-1, pf->name);
       while (TdiREF_HASH[jh] >= 0) {
+#ifdef MAIN
 	count++;
+#endif
 	if (++jh >= TdiHASH_MAX)
 	  jh = 0;
       }
@@ -83,16 +89,17 @@ static int hash_all() {
     } else
       printf("Error in function table, function index = %d\n", jf);
   }
+#ifdef MAIN
   return count;
+#endif
 }
 
 int TdiHash(int len, char *pstring) {
   int i, jh, jf;
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&lock);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  if (TdiREF_HASH[0] == 0)
-    hash_all();
+#ifndef MAIN
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,hash_all);
+#endif
   jh = hash(len, pstring);
   while ((jf = TdiREF_HASH[jh]) >= 0) {
     for (i = 0 ; i<len && TdiRefFunction[jf].name[i] ; i++) {
@@ -105,7 +112,6 @@ next: ;
     if (++jh >= TdiHASH_MAX)
       jh = 0;
   }
-  pthread_cleanup_pop(1);
   return jf;
 }
 
@@ -123,9 +129,7 @@ int main() {
       printf("%5d  %d\n", max_val = TdiHASH_MAX, max = count);
       if (count==0) break;
     }
-    TdiREF_HASH[0] = 0;
   }
-  TdiREF_HASH[0] = 0;
   TdiHASH_MAX = max_val;
   count = hash_all();
   for (jf = 0; jf < TdiFUNCTION_MAX; ++jf)
