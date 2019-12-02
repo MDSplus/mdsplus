@@ -61,7 +61,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NEED subscripted assignment.
 */
 #include <mdsplus/mdsconfig.h>
-#include "STATICdef.h"
 #include "tdithreadstatic.h"
 #include "tdirefstandard.h"
 #include <libroutines.h>
@@ -95,7 +94,6 @@ extern int TdiEquals();
 extern int TdiSubtract();
 extern int TdiAdd();
 extern int TdiResetGetRecord();
-
 	/*******************************************
 	This uses the balanced binary tree routines.
 	LOOKUP_TREE INSERT_TREE TRAVERSE_TREE
@@ -120,12 +118,12 @@ typedef struct {
   int count;
 } user_type;
 
-STATIC_CONSTANT mdsdsc_d_t EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
-STATIC_CONSTANT mdsdsc_t EMPTDY_S = { 0, DTYPE_T, CLASS_S, 0 };
-STATIC_CONSTANT mdsdsc_xd_t NULL_XD = { 0, 0, 0, 0, 0 };
+const mdsdsc_d_t  EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+const mdsdsc_t    EMPTDY_S = { 0, DTYPE_T, CLASS_S, 0 };
+const mdsdsc_xd_t NULL_XD = { 0, 0, 0, 0, 0 };
 
-STATIC_CONSTANT unsigned char true = 1;
-STATIC_CONSTANT mdsdsc_t true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
+const unsigned char true = 1;
+const mdsdsc_t true_dsc = { sizeof(true), DTYPE_BU, CLASS_S, (char *)&true };
 
 static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
 #define LOCK_PUBLIC pthread_mutex_lock(&public_lock)
@@ -137,10 +135,10 @@ static pthread_mutex_t public_lock = PTHREAD_MUTEX_INITIALIZER;
 #define UNLOCK_PUBLIC_IF(cond) pthread_cleanup_pop(cond)
 //;if (cond) fprintf(stderr,"public unlocked by %ld\n",*(long int*)pthread_self())
 #define UNLOCK_IF_PUBLIC(ptr) UNLOCK_PUBLIC_IF(ptr==&_public)
-STATIC_THREADSAFE block_type _public = { 0, 0, 0, 1 };
+static block_type _public = { 0, 0, 0, 1 };
 
-STATIC_CONSTANT DESCRIPTOR(star, "*");
-STATIC_CONSTANT DESCRIPTOR(percent, "%");
+const DESCRIPTOR(star, "*");
+const DESCRIPTOR(percent, "%");
 mdsdsc_t *Tdi3Narg(){
   GET_TDITHREADSTATIC_P;
   return &TDI_VAR_NEW_NARG_D;
@@ -164,7 +162,7 @@ int TdiPutLogical(unsigned char data, mdsdsc_xd_t *out_ptr){
 /*--------------------------------------------------------------
 	Comparison routine.
 */
-STATIC_ROUTINE int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused))){
+static int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused))){
   return StrCaseBlindCompare(key_ptr, &node_ptr->name_dsc);
 }
 
@@ -172,8 +170,7 @@ STATIC_ROUTINE int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type *
 	Allocation routine, does not set data field.
 	ASSUMED called only once per node.
 */
-STATIC_ROUTINE int allocate(mdsdsc_t *key_ptr,
-			    node_type ** node_ptr_ptr, block_type * block_ptr){
+static int allocate(mdsdsc_t *key_ptr, node_type ** node_ptr_ptr, block_type * block_ptr){
   INIT_STATUS;
   unsigned int len = sizeof(struct link) - 1 + key_ptr->length;
 
@@ -202,7 +199,7 @@ STATIC_ROUTINE int allocate(mdsdsc_t *key_ptr,
 	if block_ptr is returned and public public_lock is acquired
 */
 #define _private (*(block_type*)&TDI_VAR_PRIVATE)
-STATIC_ROUTINE int TdiFindIdent(int search,
+static int TdiFindIdent(int search,
 	                        mdsdsc_r_t *ident_ptr,
 	                        mdsdsc_t *key_ptr,
 	                        node_type ** node_ptr_ptr, block_type ** block_ptr_ptr)
@@ -370,7 +367,6 @@ int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
   block_type *block_ptr = NULL;
   mdsdsc_d_t upstr = { 0, DTYPE_T, CLASS_D, 0 };
   INIT_STATUS;
-  STATIC_CONSTANT int zero = 0;
   if (ident_ptr->dtype == DTYPE_DSC)
     return TdiPutIdent((mdsdsc_r_t *)ident_ptr->pointer, data_ptr);
 	/************************************
@@ -384,9 +380,10 @@ int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
   memcpy(string,key_dsc.pointer,key_dsc.length);string[key_dsc.length] = '\0';
   fprintf(stderr,"PUT: %s %s     block=%p\n",block_ptr==&_public ? "public" : STATUS_OK ? "private" : "new", string, block_ptr);
 #endif
-  if STATUS_OK
-    status =
-      LibInsertTree((void **)&block_ptr->head, &upstr, &zero, compare, allocate, (void *)&node_ptr, block_ptr);
+  if STATUS_OK {
+    int zero = 0;
+    status = LibInsertTree((void **)&block_ptr->head, &upstr, &zero, compare, allocate, (void *)&node_ptr, block_ptr);
+  }
   StrFree1Dx(&upstr);
   if STATUS_OK {
     if (node_ptr->xd.class == 0)
@@ -409,7 +406,7 @@ int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
 	IDENT names are not evaluated.
 	PUBLIC or PRIVATE(ident or text) overrides block_ptr.
 */
-STATIC_ROUTINE int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
+static int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
   int status;
   UNLOCK_PUBLIC_PUSH;
   status = TdiFindIdent(3, (mdsdsc_r_t *)arg, &user_p->match, 0, &user_p->block_ptr);
@@ -431,7 +428,7 @@ STATIC_ROUTINE int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
   UNLOCK_IF_PUBLIC(user_p->block_ptr);
   return status;
 }
-STATIC_ROUTINE int wild(int (*doit) (),
+static int wild(int (*doit) (),
 			int narg,
 			mdsdsc_t *list[],
 			block_type * block_ptr, mdsdsc_xd_t *out_ptr)
@@ -456,7 +453,7 @@ STATIC_ROUTINE int wild(int (*doit) (),
 /*--------------------------------------------------------------
 	Release variables.
 */
-STATIC_ROUTINE int free_one(node_type * node_ptr, user_type * user_ptr)
+static int free_one(node_type * node_ptr, user_type * user_ptr)
 {
   block_type *block_ptr = user_ptr->block_ptr;
   INIT_STATUS;
@@ -484,7 +481,7 @@ STATIC_ROUTINE int free_one(node_type * node_ptr, user_type * user_ptr)
 	Release all variables under a header and the headers too.
 	Used to release the FUN variables.
 */
-STATIC_ROUTINE int free_all(node_type ** pnode)
+static int free_all(node_type ** pnode)
 {
   INIT_STATUS, stat2;
   GET_TDITHREADSTATIC_P;
@@ -684,17 +681,8 @@ int compile_fun(mdsdsc_t *entry,char *file) {
 
 extern int loadPyFunction(const char*filepath,char**funname);
 extern int callPyFunction(const char*filename,int nargs,mdsdsc_r_t **args,mdsdsc_xd_t *out_ptr);
-int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mdsdsc_xd_t *out_ptr) {
-  node_type *node_ptr;
-	/******************************************
-	Get name of function to do. Check its type.
-	******************************************/
-  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
-  int status;
-  // look up method: check cached, check python, or load
-  pthread_mutex_lock(&lock);
-  pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, 0);
+static int findFun(mdsdsc_t *ident_ptr, node_type **node_ptr) {
+  int status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0);
   if (status==TdiUNKNOWN_VAR) {
     INIT_AND_FREE_ON_EXIT(char*,pyfile);
     INIT_AND_FREE_ON_EXIT(char*,funfile);
@@ -719,9 +707,34 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
       status = compile_fun(ident_ptr,funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
-    if STATUS_OK status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, 0);
+    if STATUS_OK status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0);
   }
-  pthread_cleanup_pop(1);
+  return status;
+}
+
+static pthread_mutex_t lock;
+static void unlock(void *p) {
+  ThreadStatic *const TdiThreadStatic_p = (ThreadStatic *)p;
+  TDI_VAR_REC = FALSE;
+  pthread_mutex_unlock(&lock);
+}
+int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mdsdsc_xd_t *out_ptr) {
+  GET_TDITHREADSTATIC_P;
+  node_type *node_ptr;
+/******************************************
+Get name of function to do. Check its type.
+******************************************/
+  int status;
+  // look up method: check cached, check python, or load
+  if (TDI_VAR_REC)
+    status = findFun(ident_ptr,&node_ptr);
+  else {
+    pthread_mutex_lock(&lock);
+    TDI_VAR_REC = TRUE;
+    pthread_cleanup_push(unlock,(void*)TdiThreadStatic_p);
+    status = findFun(ident_ptr,&node_ptr);
+    pthread_cleanup_pop(1);
+  }
   if STATUS_NOT_OK return status;
   mdsdsc_r_t *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
   if ((formal_ptr = (mdsdsc_r_t *)node_ptr->xd.pointer) == 0) return TdiUNKNOWN_VAR;
@@ -737,7 +750,6 @@ int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mds
   int code, opt, j, nformal = 0;
   if ((nformal = formal_ptr->ndesc - 2) < nactual)
     return TdiEXTRA_ARG;
-  GET_TDITHREADSTATIC_P;
   mdsdsc_xd_t tmp = EMPTY_XD;
   node_type *old_head, *new_head = 0;
   int old_narg = TDI_VAR_NEW_NARG;
@@ -1070,7 +1082,7 @@ int Tdi1ResetPublic()
 /***************************************************************
 	Display a variable.
 */
-STATIC_ROUTINE int show_one(node_type * node_ptr, user_type * user_ptr)
+static int show_one(node_type * node_ptr, user_type * user_ptr)
 {
   INIT_STATUS;
   mdsdsc_d_t tmp = EMPTY_D;

@@ -18,6 +18,7 @@
 #define TDI_SELF_PTR		TdiThreadStatic_p->self_ptr
 #define TDI_VAR_NEW_NARG	TdiThreadStatic_p->var_new_narg
 #define TDI_VAR_NEW_NARG_D	TdiThreadStatic_p->var_new_narg_d
+#define TDI_VAR_REC		TdiThreadStatic_p->var_rec
 
 #define TDI_DECOMPILE_MAX	TDI_STACK.decompile_max
 #define TDI_COMPILE_REC		TDI_STACK.compile_rec
@@ -42,6 +43,7 @@ typedef struct {
   } var_private;		// TdiVar
   mdsdsc_t	 var_new_narg_d;// TdiVar
   int var_new_narg;		// TdiVar
+  int var_rec;			// TdiVar
   mdsdsc_t	*range_ptrs[3];	// TdiCull, TdiDtypeRange, TdiItoX, TdiSubscript
   mdsdsc_xd_t	*self_ptr;	// TdiGetArgs, TdiGetData, TdiSubscript
   mdsdsc_d_t	 intrinsic_msg;	// TdiIntrinsic
