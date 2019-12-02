@@ -1225,8 +1225,7 @@ static inline int back(const int *p, const int m) {
   return 0;
 }
 
-int look(int *leng, char *previous, char* text, ThreadStatic *const TdiThreadStatic_p) {
-  const svf_t *lstate[MAX_TOKEN_LEN];
+int look(int *leng, char *previous, char*const text, const svf_t **lstate, ThreadStatic *const TdiThreadStatic_p) {
   const svf_t *state, **lsp;
   const work_t *t;
   const svf_t *z;
@@ -1325,7 +1324,8 @@ int look(int *leng, char *previous, char* text, ThreadStatic *const TdiThreadSta
 #endif
     }
 #ifdef LEXDEBUG
-    { int pos = *(lsp - 1) - svec - 1;
+    {
+     int pos = *(lsp - 1) - svec - 1;
      if (pos<0)
        fprintf(stdout, "stopped EOF\n");
      else
@@ -1333,9 +1333,7 @@ int look(int *leng, char *previous, char* text, ThreadStatic *const TdiThreadSta
     }
 #endif
     while (lsp-- > lstate) {
-      // abc..xyz removes 'c' so we need to add the one char that is missing
-      // TODO: fix original error before
-      if (lastch[0]=='.' && lastch[-1]=='.') lastch++;
+      if ((*lsp-svec == 21)) lastch++;
       *lastch-- = 0;
       const int *fnd;
       if (*lsp != 0 && (fnd = (*lsp)->stops) && *fnd > 0) {
@@ -1376,8 +1374,10 @@ int TdiLex(struct marker *lvalPtr) {
   GET_TDITHREADSTATIC_P;
   int nstr, leng;
   char previous = NEWLINE;
-  char text[MAX_TOKEN_LEN];text[0] = NEWLINE;
-  while ((nstr = look(&leng, &previous, text, TdiThreadStatic_p)) >= 0) {
+  char text[MAX_TOKEN_LEN];
+  memset(text,127,MAX_TOKEN_LEN);
+  const svf_t *lstate[MAX_TOKEN_LEN];
+  while ((nstr = look(&leng, &previous, text, lstate, TdiThreadStatic_p)) >= 0) {
     switch (nstr) {
       case 0:
 	return 0;
