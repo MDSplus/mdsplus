@@ -60,7 +60,6 @@ extern int TdiYacc();
 	supports (`) on COMPILE
 */
 
-static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
 static void cleanup_compile(ThreadStatic * TdiThreadStatic_p){
   LibResetVmZone(&TDI_REFZONE.l_zone);
   if (TDI_REFZONE.a_begin) {
@@ -68,8 +67,6 @@ static void cleanup_compile(ThreadStatic * TdiThreadStatic_p){
     TDI_REFZONE.a_begin=NULL;
   }
   TDI_COMPILE_REC = FALSE;
-  if (TDI_STACK_IDX==0) // makes it reentrant
-    pthread_mutex_unlock(&lock);
 }
 
 static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p) {
@@ -112,8 +109,6 @@ static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p)
 
 static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status;
-  if (TDI_STACK_IDX==0) // makes it reentrant
-    pthread_mutex_lock(&lock);
   TDI_COMPILE_REC = TRUE;
   pthread_cleanup_push((void*)cleanup_compile,(void*)TdiThreadStatic_p);
   if (!TDI_REFZONE.l_zone)
