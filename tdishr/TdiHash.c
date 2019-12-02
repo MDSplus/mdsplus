@@ -37,18 +37,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <pthread_port.h>
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 
 //#define MAIN
 #ifdef MAIN
   #define MAIN_MAX 32767
   int TdiHASH_MAX;
-  static short TdiREF_HASH[MAIN_MAX] = {0};
+  static short TdiREF_HASH[MAIN_MAX];
 #else
   #define TdiHASH_MAX 10354
-  static short TdiREF_HASH[TdiHASH_MAX] = {0};
+  static short TdiREF_HASH[TdiHASH_MAX];
 #endif
-
-#define upcase(c) ((c >= 'a' && c <= 'z') ? (c & 0xdf) : c)
 
 int hash(int len, char *str) {
   // djb2 by dan bernstein (http://www.cse.yorku.ca/~oz/hash.html)
@@ -56,21 +55,26 @@ int hash(int len, char *str) {
   if (len<0) {// len unknown
     char *c;
     for (c = str; *c ; c++)
-      hash = ((hash << 5) + hash) + (unsigned)upcase(*c);     /* hash * 33 + c */
+      hash = ((hash << 5) + hash) + (unsigned)toupper(*c);     /* hash * 33 + c */
   } else {
     int i;
     for (i = 0 ; i<len ; i++)
-      hash = ((hash << 5) + hash) + (unsigned)upcase(str[i]); /* hash * 33 + c */
+      hash = ((hash << 5) + hash) + (unsigned)toupper(str[i]); /* hash * 33 + c */
   }
   return (signed)(hash%TdiHASH_MAX);
 }
 
-#ifdef MAIN
- static int hash_all() {
-  int count = 0;
+#ifndef MAIN // optimized _ only if TdiHASH_MAX such that hash has no collisions
+static void hash_all() {
+ short i;
+  for (i = 0 ; i < TdiHASH_MAX ; i++)
+    TdiREF_HASH[i] = -1;
+ for (i = 0; i < TdiFUNCTION_MAX; i++)
+   TdiREF_HASH[hash(-1, TdiRefFunction[i].name)] = i;
+}
 #else
- static void hash_all() {
-#endif
+static int hash_all() {
+  int count = 0;
   int jf, jh;
   struct TdiFunctionStruct *pf = (struct TdiFunctionStruct *)TdiRefFunction;
   for (jh = TdiHASH_MAX; --jh >= 0;)
@@ -78,10 +82,9 @@ int hash(int len, char *str) {
   for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
     if (pf->name) {
       jh = hash(-1, pf->name);
+      TdiREF_HASH[jh] = (short)jf;
       while (TdiREF_HASH[jh] >= 0) {
-#ifdef MAIN
 	count++;
-#endif
 	if (++jh >= TdiHASH_MAX)
 	  jh = 0;
       }
@@ -89,22 +92,21 @@ int hash(int len, char *str) {
     } else
       printf("Error in function table, function index = %d\n", jf);
   }
-#ifdef MAIN
   return count;
-#endif
 }
+#endif
 
-// used in TdiLex and TdiChar
 int tdiHash(int len, char *pstring) {
-  int i, jh, jf;
 #ifndef MAIN
   static pthread_once_t once = PTHREAD_ONCE_INIT;
   pthread_once(&once,hash_all);
 #endif
+  // used in TdiLex and TdiChar
+  int i, jh, jf;
   jh = hash(len, pstring);
   while ((jf = TdiREF_HASH[jh]) >= 0) {
     for (i = 0 ; i<len && TdiRefFunction[jf].name[i] ; i++) {
-      if (TdiRefFunction[jf].name[i] != upcase(pstring[i]))
+      if (TdiRefFunction[jf].name[i] != toupper(pstring[i]))
         goto next;
     }
     if (i==len && !TdiRefFunction[jf].name[len])
