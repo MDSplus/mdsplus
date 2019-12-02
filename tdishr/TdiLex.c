@@ -1003,10 +1003,7 @@ static inline int tdiLexPunct(
       mark_ptr->builtin = OPC_PRE_DEC;
       return (LEX_INC);
     }
-/***
-    if (c1 == '>')
-      return (LEX_POINT);
-***/
+    //if (c1 == '>') return (LEX_POINT); never gets here
     break;
   case '.':
     if (c1 == '.') {
@@ -1020,10 +1017,6 @@ static inline int tdiLexPunct(
       return tdiLexBinEq(LEX_CONCAT, TdiThreadStatic_p);
     }
     break;
-/***                     else if (c1 == '*') return (tdiLexComment(len, str, mark_ptr) == 0) ? INPUT() : 0; break; ***/
-/***                    if (c1 == '=') {mark_ptr->builtin = OPC_NE;             return tdiLexBinEq      (LEX_LEQS);}*/
-/***                    if (c1 == ')') {                                        return                  ']';} break;***/
-/***    case '(' :      if (c1 == '/') {                                        return                  '[';} break;***/
   case '<':
     if (c1 == '<') {
       mark_ptr->builtin = OPC_SHIFT_LEFT;
@@ -1070,7 +1063,9 @@ static inline int tdiLexPunct(
   case '!':
     mark_ptr->builtin = OPC_NOT;
     return (LEX_UNARYS);
-/****   case '%' :      mark_ptr->builtin = OPC_MOD;             return tdiLexBinEq      (LEX_MULS);****/
+  case '%':
+    mark_ptr->builtin = OPC_MOD;
+    return tdiLexBinEq(LEX_MULS, TdiThreadStatic_p);
   case '&':
     mark_ptr->builtin = OPC_IAND;
     return tdiLexBinEq(LEX_IAND, TdiThreadStatic_p);
