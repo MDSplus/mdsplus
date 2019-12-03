@@ -32,7 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *2    25-OCT-1994 08:21:07 TWF "Add TdiMAX_FUNCTION" */
 /*  *1    25-OCT-1994 08:18:33 TWF "Make TdiRefFunction table" */
 /*  CMS REPLACEMENT HISTORY, Element TDI$$MAKE_FUNCTION_TABLE.C */
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #define COM
 

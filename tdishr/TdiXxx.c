@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <strroutines.h>
@@ -41,17 +40,17 @@ extern int TdiConcat();
 extern int TdiTranslate();
 extern int TdiGetLong();
 
-STATIC_CONSTANT DESCRIPTOR(asterisk, "*");
-STATIC_CONSTANT DESCRIPTOR(slash, "/");
-STATIC_CONSTANT DESCRIPTOR(slash_star, "/*");
-STATIC_CONSTANT DESCRIPTOR(star_slash, "*/");
-STATIC_CONSTANT DESCRIPTOR(bad, "?");
-STATIC_CONSTANT struct descriptor_xd BAD = { 0, DTYPE_DSC, CLASS_XS, (struct descriptor *)&bad, 0 };
+static const DESCRIPTOR(asterisk, "*");
+static const DESCRIPTOR(slash, "/");
+static const DESCRIPTOR(slash_star, "/*");
+static const DESCRIPTOR(star_slash, "*/");
+static const DESCRIPTOR(bad, "?");
+static const struct descriptor_xd BAD = { 0, DTYPE_DSC, CLASS_XS, (struct descriptor *)&bad, 0 };
 
 /********************************
 Units must match or one be empty.
 ********************************/
-STATIC_ROUTINE int either(struct descriptor_xd uni[2])
+static int either(struct descriptor_xd uni[2])
 {
 
   if (uni[0].pointer == 0) {
@@ -69,7 +68,7 @@ STATIC_ROUTINE int either(struct descriptor_xd uni[2])
 /*******************************
 Discard units unless mismatched.
 *******************************/
-STATIC_ROUTINE int only_mismatch(struct descriptor_xd uni[2])
+static int only_mismatch(struct descriptor_xd uni[2])
 {
 
   either(uni);
@@ -81,7 +80,7 @@ STATIC_ROUTINE int only_mismatch(struct descriptor_xd uni[2])
 /*****************
 Concatenate units.
 *****************/
-STATIC_ROUTINE void multiply(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
+static void multiply(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
 {
   INIT_STATUS;
 
@@ -99,7 +98,7 @@ STATIC_ROUTINE void multiply(struct descriptor_xd *left_ptr, struct descriptor_x
 /*****************
 Reciprocate units.
 *****************/
-STATIC_ROUTINE void divide(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
+static void divide(struct descriptor_xd *left_ptr, struct descriptor_xd *right_ptr)
 {
   INIT_STATUS;
 

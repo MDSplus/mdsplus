@@ -41,7 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NEED way to specify character string subscript range
 */
 
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
@@ -60,7 +59,7 @@ extern int TdiMasterData();
 int Tdi1SetRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_BU, 0, 1);
+  static const DESCRIPTOR_A(arr0, 1, DTYPE_BU, 0, 1);
   struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD}, tmp = EMPTY_XD;
   struct descriptor_range *prange;
   struct TdiCatStruct cats[2];

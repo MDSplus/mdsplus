@@ -43,7 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 
 extern struct descriptor *TdiItoXSpecial;
@@ -62,8 +61,8 @@ extern int TdiGetLong();
 extern int Tdi2Range();
 
 extern unsigned short OpcValue;
-STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
-STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGE, 0, 0, (struct descriptor *)&value);
+static const DESCRIPTOR_FUNCTION_0(value, &OpcValue);
+static const DESCRIPTOR_RANGE(EMPTY_RANGE, 0, 0, (struct descriptor *)&value);
 
 /**********************************************
 	Redo culled array or scalar.
@@ -137,7 +136,7 @@ int TdiIextend(int left, int right, struct descriptor_a *px)
 /*---------------------------------------------
 	Remove elements not satisfying mask.
 */
-STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
+static int rcull(struct descriptor *pnew __attribute__ ((unused)),
 	struct descriptor_a *pmask, struct descriptor_a *px){
   INIT_STATUS;
   char *pm = pmask->pointer, *pi = px->pointer, *po = pi;
@@ -168,7 +167,7 @@ STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
 /*---------------------------------------------
 	Replace elements not in mask.
 */
-STATIC_ROUTINE int rextend(struct descriptor *pnew,
+static int rextend(struct descriptor *pnew,
 			   struct descriptor_a *pmask, struct descriptor_a *px) {
   INIT_STATUS;
   char *pn = pnew->pointer, *pm = pmask->pointer, *pi = px->pointer;
@@ -184,7 +183,7 @@ STATIC_ROUTINE int rextend(struct descriptor *pnew,
 /**********************************************
 	Going to find out who is naughty and nice.
 */
-STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
+static int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
 		opcode_t opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
@@ -197,8 +196,8 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
   struct descriptor dx0, dx1;
   struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
-  STATIC_CONSTANT unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
+  static const unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
+  static const unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   status = tdi_get_data(omits, list[0], &in);
   if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
     status = TdiUnits(in.pointer, &units MDS_END_ARG);

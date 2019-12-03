@@ -52,7 +52,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 extern int TdiConcat();
 extern int TdiData();
@@ -66,7 +65,7 @@ extern int tdi_put_ident();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
+static int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {

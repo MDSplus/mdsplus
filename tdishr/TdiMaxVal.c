@@ -72,7 +72,6 @@ int Tdi3xxxxx(struct descriptor *in, struct descriptor *mask,
 extern int Tdi3Lt();
 extern int Tdi3Gt();
 extern int Tdi3Divide();
-#include <STATICdef.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>

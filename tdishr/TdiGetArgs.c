@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -59,9 +58,9 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
 			  struct descriptor_xd *signal_ptr,
 			  struct descriptor_xd *units_ptr, struct descriptor_xd *data_ptr)
 {
-  STATIC_CONSTANT unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_SIGNAL, 0 };
-  STATIC_CONSTANT unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omits[] = { DTYPE_SIGNAL, 0 };
+  static const unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
   struct descriptor_xd tmp, *keep;
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;

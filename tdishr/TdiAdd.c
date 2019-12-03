@@ -57,7 +57,6 @@ int Tdi3Add(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include "roprand.h"
-#include <STATICdef.h>
 #include <int128.h>
 
 
@@ -105,7 +104,7 @@ extern int CvtConvertFloat();
   break;\
 }
 
-STATIC_CONSTANT const int roprand = 0x8000;
+static const int roprand = 0x8000;
 
 #define OperateFloatOne(type,dtype,native,operator,p1,p2) \
 { type a,b,ans;\

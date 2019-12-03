@@ -73,7 +73,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <math.h>
-#include <STATICdef.h>
 #include <int128.h>
 
 extern int TdiConvert();
@@ -84,7 +83,7 @@ extern int CvtConvertFloat();
 #define min(a,b) ((a)<(b)) ? (a) : (b)
 #define max(a,b) ((a)<(b)) ? (b) : (a)
 
-STATIC_CONSTANT const int roprand = 0x8000;
+static const int roprand = 0x8000;
 
 #define start_operate(type) {\
   type *in=(type *)(in_ptr->pointer); \

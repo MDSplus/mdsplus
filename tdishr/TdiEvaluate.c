@@ -38,7 +38,6 @@ RULES OF THE GAME:
 	"out" must be an XD. It will be an XD-DSC, usually.
 */
 
-#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include "tdishrp.h"
 #include <tdishr_messages.h>
@@ -50,7 +49,7 @@ RULES OF THE GAME:
 
 
 
-STATIC_CONSTANT struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
+static const struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
 extern int tdi_get_ident();
 extern int TdiEvaluate();

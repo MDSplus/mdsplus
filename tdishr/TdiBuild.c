@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 
 

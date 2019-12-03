@@ -46,7 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NEED parameter for sizeof(NODE_NAME).
 	NEED to be careful about any new names. They could take away uniqueness from existing code.
 */
-#include <STATICdef.h>
 #undef MAX
 #define EOL {0,NciEND_OF_LIST,0,0}
 #define NID_NUMBER -1
@@ -71,7 +70,7 @@ extern int TdiUpcase();
 extern int Tdi1Vector();
 int TdiGetRecord(int nid, struct descriptor_xd *out);
 
-STATIC_CONSTANT struct item {
+static const struct item {
   char *item_name;
   unsigned int item_mask;
   unsigned int item_test;
@@ -158,7 +157,7 @@ STATIC_CONSTANT struct item {
 #define siztab sizeof(struct item)
 #define numtab (sizeof(table)/siztab)
 
-STATIC_CONSTANT struct usage_item {
+static const struct usage_item {
   char *usage_name;
   usage_t usage_code;
 } usage_table[] = {
@@ -178,7 +177,7 @@ STATIC_CONSTANT struct usage_item {
   "TEXT", TreeUSAGE_TEXT,}, {
 "WINDOW", TreeUSAGE_WINDOW,},};
 
-STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
+static int compare(struct descriptor *s1, struct item s2[1])
 {
   int cmp, len1 = s1->length, len2 = strlen(s2[0].item_name);
   char c0;
@@ -232,8 +231,8 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
 	       struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
-  STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 960);
+  static const struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+  static const DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 960);
   struct descriptor_a *holda_ptr = 0;
   struct descriptor_d string = EMPTY_D;
   struct descriptor_xd nids = EMPTY_XD, tmp = EMPTY_XD, holdxd = EMPTY_XD;
@@ -309,7 +308,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
       length = allow.length;
       allow.class = CLASS_S;
       for (; --nallow >= 0; allow.pointer += length) {
-	struct usage_item *puse = &usage_table[sizeof(usage_table) / sizeof(usage_table[0])];
+	const struct usage_item *puse = &usage_table[sizeof(usage_table) / sizeof(usage_table[0])];
 	allow.length = length;
 	while (((char *)allow.pointer)[allow.length - 1] == ' ')
 	  allow.length--;

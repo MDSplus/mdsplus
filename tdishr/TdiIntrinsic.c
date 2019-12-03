@@ -50,7 +50,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
 #define OPC_ENUM
 
-#include <STATICdef.h>
 #include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"

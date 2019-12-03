@@ -103,14 +103,14 @@ static const struct marker _EMPTY_MARKER = { 0 };
 
 /* __YYSCLASS defines the scoping/storage class for global objects
  * that are NOT renamed by the -p option.  By default these names
- * are going to be 'STATIC_THREADSAFE' so that multi-definition errors
+ * are going to be 'static' so that multi-definition errors
  * will not occur with multiple parsers.
  * If you want (unsupported) access to internal names you need
  * to define this to be null so it implies 'extern' scope.
  * This should not be used in conjunction with -p.
  */
 #ifndef __YYSCLASS
-#define __YYSCLASS STATIC_THREADSAFE
+#define __YYSCLASS static
 #endif
 typedef int tdiyytabelem;
 #define YYERRCODE 256
@@ -1442,7 +1442,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
 
 #ifdef __RUNTIME_YYMAXDEPTH
 
-STATIC_ROUTINE int allocate_stacks(const long size)
+static int allocate_stacks(const long size)
 {
   /* allocate the tdiyys and tdiyyv stacks */
   tdiyys = (int *)malloc(size * sizeof(int));
@@ -1456,7 +1456,7 @@ STATIC_ROUTINE int allocate_stacks(const long size)
 
 }
 
-STATIC_ROUTINE void free_stacks()
+static void free_stacks()
 {
   if (tdiyys != 0)
     free(tdiyys);

@@ -44,7 +44,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	KK      21-Oct-1992     Text requires exact match.
  */
 #include <mdsplus/mdsplus.h>
-#include <STATICdef.h>
 #define beg     0
 #define end     1
 #define delta   2
@@ -63,12 +62,8 @@ extern int IsRoprand();
 #include <mdsshr.h>
 #include <string.h>
 
-
-
-#define _MOVC3(a,b,c) memcpy(c,b,a)
-
-STATIC_CONSTANT struct descriptor tdiItoXSpecial;
-struct descriptor *TdiItoXSpecial = &tdiItoXSpecial;
+static const mdsdsc_t tdiItoXSpecial;
+const mdsdsc_t *TdiItoXSpecial = &tdiItoXSpecial;
 
 extern int tdi_get_data();
 extern int TdiGetLong();
@@ -99,53 +94,51 @@ extern int TdiFloor();
 extern int TdiMax();
 extern int TdiMultiply();
 
-extern unsigned short OpcValue;
-STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
-STATIC_CONSTANT float big = (float)1.e37;
-STATIC_CONSTANT float mbig = (float)-1.e37;
-STATIC_CONSTANT int mhuge = -HUGE;
-STATIC_CONSTANT int lhuge = HUGE;
-STATIC_CONSTANT int mone = -1;
-STATIC_CONSTANT int one = 1;
-STATIC_CONSTANT struct descriptor dmbig = { sizeof(mbig), DTYPE_F, CLASS_S, (char *)&mbig };
-STATIC_CONSTANT struct descriptor dbig = { sizeof(big), DTYPE_F, CLASS_S, (char *)&big };
-STATIC_CONSTANT struct descriptor dmhuge = { sizeof(mhuge), DTYPE_L, CLASS_S, (char *)&mhuge };
-STATIC_CONSTANT struct descriptor dhuge = { sizeof(lhuge), DTYPE_L, CLASS_S, (char *)&lhuge };
-STATIC_CONSTANT struct descriptor dmone = { sizeof(mone), DTYPE_L, CLASS_S, (char *)&mone };
-STATIC_CONSTANT struct descriptor done = { sizeof(one), DTYPE_L, CLASS_S, (char *)&one };
+static const float big = (float)1.e37;
+static const float mbig= (float)-1.e37;
+static const int mhuge = -HUGE;
+static const int lhuge = HUGE;
+static const int mone  = -1;
+static const int one   = 1;
+static mdsdsc_t dmbig  = { sizeof(mbig), DTYPE_FS, CLASS_S, (char *)&mbig };
+static mdsdsc_t dbig   = { sizeof(big), DTYPE_FS, CLASS_S, (char *)&big };
+static mdsdsc_t dmhuge = { sizeof(mhuge), DTYPE_L, CLASS_S, (char *)&mhuge };
+static mdsdsc_t dhuge  = { sizeof(lhuge), DTYPE_L, CLASS_S, (char *)&lhuge };
+static mdsdsc_t dmone  = { sizeof(mone), DTYPE_L, CLASS_S, (char *)&mone };
+static mdsdsc_t done   = { sizeof(one), DTYPE_L, CLASS_S, (char *)&one };
 
-STATIC_CONSTANT DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2 * sizeof(int));
-STATIC_CONSTANT DESCRIPTOR_RANGE(fake0, 0, 0, 0);
-extern unsigned short OpcVector;
-STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(vector0, &OpcVector);
-int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
-{
+extern unsigned short OpcValue, OpcVector;
+static DESCRIPTOR_FUNCTION_0(value,   &OpcValue);
+static DESCRIPTOR_FUNCTION_0(vector0, &OpcVector);
+static DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2 * sizeof(int));
+static DESCRIPTOR_RANGE(fake0, 0, 0, 0);
+int Tdi1ItoX(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
   GET_TDITHREADSTATIC_P;
+  static const dtype_t omits[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   int j1, left, right, *pcnt = 0, *ptest;
   int k0, k1;
   int special = narg > 1 && list[1] == TdiItoXSpecial;
   int arg1 = narg > 1 && list[1] && list[1] != TdiItoXSpecial;
   int big_beg, big_end, nran, tslo;
   int nseg, jseg, kseg;
-  struct descriptor *pmode;
+  const mdsdsc_t *pmode;
   int cmode = -1, flag = (opcode == OPC_I_TO_X);
   char *plogical;
-  struct descriptor_dimension *pdim;
-  struct descriptor_window *pwin = 0;
-  struct descriptor_range *paxis = 0, fake;
-  struct descriptor_slope *pslope;
-  struct descriptor dk0 = { sizeof(int), DTYPE_L, CLASS_S, 0 };
-  struct descriptor dk1 = { sizeof(int), DTYPE_L, CLASS_S, 0 };
-  struct descriptor *keep[3];
-  struct descriptor tst1, del1, int1;
-  struct descriptor_xd dimen = EMPTY_XD, window = EMPTY_XD, axis = EMPTY_XD, xat0 = EMPTY_XD;
-  struct descriptor_xd cnt = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
-  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
-  struct descriptor_xd sig1 = EMPTY_XD, uni1 = EMPTY_XD;
+  mds_dimension_t *pdim;
+  mds_window_t *pwin = 0;
+  mds_range_t *paxis = 0, fake;
+  mds_slope_t *pslope;
+  mdsdsc_t dk0 = { sizeof(int), DTYPE_L, CLASS_S, 0 };
+  mdsdsc_t dk1 = { sizeof(int), DTYPE_L, CLASS_S, 0 };
+  mdsdsc_t *keep[3];
+  mdsdsc_t tst1, del1, int1;
+  mdsdsc_xd_t dimen = EMPTY_XD, window = EMPTY_XD, axis = EMPTY_XD, xat0 = EMPTY_XD;
+  mdsdsc_xd_t cnt = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
+  mdsdsc_xd_t sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
+  mdsdsc_xd_t sig1 = EMPTY_XD, uni1 = EMPTY_XD;
   struct TdiCatStruct cats[4];
   FUNCTION(255 / 3) vec[3];
-  unsigned char omits[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   dk0.pointer = (char *)&k0;
   dk1.pointer = (char *)&k1;
   keep[0] = TDI_RANGE_PTRS[0];
@@ -181,24 +174,24 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       status = TdiData(0, &xat0 MDS_END_ARG);
       goto plain;
     case DTYPE_DIMENSION:
-      pdim = (struct descriptor_dimension *)dimen.pointer;
+      pdim = (mds_dimension_t *)dimen.pointer;
       status = TdiEvaluate(pdim->window, &window MDS_END_ARG);
-      pwin = (struct descriptor_window *)window.pointer;
+      pwin = (mds_window_t *)window.pointer;
       if (STATUS_OK && pwin && pwin->dtype == DTYPE_WITH_UNITS) {
-	status = TdiEvaluate(((struct descriptor_with_units *)pwin)->data, &tmp MDS_END_ARG);
+	status = TdiEvaluate(((mds_with_units_t *)pwin)->data, &tmp MDS_END_ARG);
 	if STATUS_OK
-	  status = MdsCopyDxXd((struct descriptor *)&tmp, &window);
+	  status = MdsCopyDxXd((mdsdsc_t *)&tmp, &window);
       }
       if STATUS_OK
 	status = TdiEvaluate(pdim->axis, &axis MDS_END_ARG);
-      paxis = (struct descriptor_range *)axis.pointer;
+      paxis = (mds_range_t *)axis.pointer;
       if (STATUS_OK && paxis && paxis->dtype == DTYPE_WITH_UNITS) {
-	status = TdiEvaluate(((struct descriptor_with_units *)paxis)->data, &tmp MDS_END_ARG);
+	status = TdiEvaluate(((mds_with_units_t *)paxis)->data, &tmp MDS_END_ARG);
 	if STATUS_OK
-	  status = MdsCopyDxXd((struct descriptor *)&tmp, &axis);
+	  status = MdsCopyDxXd((mdsdsc_t *)&tmp, &axis);
       }
-      paxis = (struct descriptor_range *)axis.pointer;
-      pwin = (struct descriptor_window *)window.pointer;
+      paxis = (mds_range_t *)axis.pointer;
+      pwin = (mds_window_t *)window.pointer;
       break;
     }
   if (STATUS_OK && pwin && pwin->dtype == DTYPE_WINDOW) ;
@@ -222,7 +215,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   if STATUS_OK {
     switch (paxis->dtype) {
     case DTYPE_SLOPE:
-      pslope = (struct descriptor_slope *)paxis;
+      pslope = (mds_slope_t *)paxis;
       paxis = &fake;
       fake = fake0;
       switch (pslope->ndesc) {
@@ -239,23 +232,22 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	status = TdiINVDTYDSC;
 	break;
       default:
-	*(struct descriptor_function *)(fake.begin = (struct descriptor *)&vec[0]) = vector0;
-	*(struct descriptor_function *)(fake.ending = (struct descriptor *)&vec[1]) = vector0;
-	*(struct descriptor_function *)(fake.deltaval = (struct descriptor *)&vec[2]) = vector0;
+	*(mds_function_t *)(fake.begin = (mdsdsc_t *)&vec[0]) = vector0;
+	*(mds_function_t *)(fake.ending = (mdsdsc_t *)&vec[1]) = vector0;
+	*(mds_function_t *)(fake.deltaval = (mdsdsc_t *)&vec[2]) = vector0;
 	nseg = ((pslope->ndesc + 1) / 3);
 	vec[0].ndesc = (unsigned char)nseg;
 	vec[1].ndesc = (unsigned char)nseg;
 	vec[2].ndesc = (unsigned char)nseg;
 	for (jseg = nseg; --jseg >= 0;)
-	  if ((vec[0].arguments[jseg] = pslope->segment[jseg].begin) == 0) {
-	    vec[0].arguments[jseg] = &dmbig;
-	  }
+	  if ((vec[0].arguments[jseg] = pslope->segment[jseg].begin) == 0)
+	    vec[0].arguments[jseg] = (mdsdsc_t*)&dmbig;
 	for (jseg = nseg; --jseg >= 0;)
 	  if ((vec[1].arguments[jseg] = pslope->segment[jseg].ending) == 0)
-	    vec[1].arguments[jseg] = &dbig;
+	    vec[1].arguments[jseg] = (mdsdsc_t*)&dbig;
 	for (jseg = nseg; --jseg >= 0;)
 	  if ((vec[2].arguments[jseg] = pslope->segment[jseg].slope) == 0)
-	    vec[1].arguments[jseg] = &done;
+	    vec[1].arguments[jseg] = (mdsdsc_t*)&done;
 	break;
       }
       if (STATUS_NOT_OK)
@@ -270,7 +262,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       if STATUS_OK {		/*bug 2/26/91 include status set in bracket */
 	for (j1 = nran; --j1 >= 0;)
 	  if (dat[j1].pointer->class == CLASS_A) {
-	    jseg = ((struct descriptor_a *)dat[j1].pointer)->arsize / (int)dat[j1].pointer->length;
+	    jseg = ((mdsdsc_a_t *)dat[j1].pointer)->arsize / (int)dat[j1].pointer->length;
 	    if (nseg > jseg)
 	      nseg = jseg;
 	  }
@@ -287,7 +279,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
       if STATUS_OK
 	status = Tdi2Range(nran, uni, dat, cats, 0);
       if (flag && units.pointer == 0 && uni[0].pointer && STATUS_OK)
-	status = MdsCopyDxXd((struct descriptor *)&uni[0], &units);
+	status = MdsCopyDxXd((mdsdsc_t *)&uni[0], &units);
       if (STATUS_NOT_OK)
 	goto firstbad;
       tslo = nran > 2 && cats[2].in_dtype != DTYPE_MISSING;
@@ -428,7 +420,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	  big_beg = 1;
 	  right = left + HUGE;
 	  *pcnt = 1;
-	  _MOVC3(dat[end].pointer->length, dat[end].pointer->pointer, dat[beg].pointer->pointer);
+	  memcpy(dat[beg].pointer->pointer, dat[end].pointer->pointer,dat[end].pointer->length);
 	} else
 	  right = left + *pcnt;
       }
@@ -501,9 +493,9 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	  limits[0] = k0;
 	  limits[1] = k1;
 	  dlimits.pointer = limits;
-	  status = MdsCopyDxXd((struct descriptor *)&dlimits, out_ptr);
+	  status = MdsCopyDxXd((mdsdsc_t *)&dlimits, out_ptr);
 	} else if (arg1) {
-	  struct descriptor_range *rptr = (struct descriptor_range *)list[1];
+	  mds_range_t *rptr = (mds_range_t *)list[1];
 	  MdsFree1Dx(out_ptr, NULL);
 	  TDI_RANGE_PTRS[0] = &dk0;
 	  TDI_RANGE_PTRS[1] = &dk1;
@@ -517,7 +509,7 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	    DESCRIPTOR_RANGE(fake_range, 0, 0, 0);
 	    fake_range.begin = rptr->begin;
 	    fake_range.ending = rptr->ending;
-	    fake_range.deltaval = (struct descriptor *)&value;
+	    fake_range.deltaval = (mdsdsc_t *)&value;
 	    rptr = &fake_range;
 	    status = TdiGetArgs(opcode, 1, &rptr, &sig1, &uni1, out_ptr, cats);
 	  } else
@@ -622,8 +614,8 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 				 **************************************/
     default:
  plain:status = TdiData(&axis, &axis MDS_END_ARG);
-      paxis = (struct descriptor_range *)axis.pointer;
-      pmode = paxis->dtype == DTYPE_T ? 0 : &dmone;
+      paxis = (mds_range_t *)axis.pointer;
+      pmode = paxis->dtype == DTYPE_T ? NULL : &dmone;
       j1 = paxis->length;
       if STATUS_OK
 	status = TdiSort(paxis, &tmp MDS_END_ARG);
@@ -654,12 +646,10 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	if (special) {
 	  if (flag) {
 	    unsigned short num = (unsigned short)j1;
-	    status = MdsGet1DxA((struct descriptor_a *)&duo, &num, &paxis->dtype, out_ptr);
+	    status = MdsGet1DxA((mdsdsc_a_t *)&duo, &num, &paxis->dtype, out_ptr);
 	    if STATUS_OK {
-	      _MOVC3(j1, (char *)window.pointer->pointer, out_ptr->pointer->pointer);
-	      _MOVC3(j1,
-		     (char *)window.pointer->pointer + j1 * (k1 -
-							     k0), out_ptr->pointer->pointer + j1);
+	      memcpy(out_ptr->pointer->pointer   ,(char *)window.pointer->pointer           ,j1);
+	      memcpy(out_ptr->pointer->pointer+j1,(char *)window.pointer->pointer+j1*(k1-k0),j1);
 	    }
 	  } else {
 	    int limits[2];
@@ -667,11 +657,11 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	    limits[0] = k0;
 	    limits[1] = k1;
 	    dlimits.pointer = limits;
-	    status = MdsCopyDxXd((struct descriptor *)&dlimits, out_ptr);
+	    status = MdsCopyDxXd((mdsdsc_t *)&dlimits, out_ptr);
 	  }
 	} else if (!arg1) {
 	  if (flag)
-	    status = MdsCopyDxXd((struct descriptor *)&axis, out_ptr);	/*unsorted values */
+	    status = MdsCopyDxXd((mdsdsc_t *)&axis, out_ptr);	/*unsorted values */
 	  else
 	    status = TdiDtypeRange(&dk0, &dk1, out_ptr MDS_END_ARG);	/*plain indexes */
 	} else {

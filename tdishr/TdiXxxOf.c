@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
-#include "STATICdef.h"
 #include <tdishr_messages.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
@@ -570,7 +569,7 @@ int Tdi1EndOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 int Tdi1ErrorOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT DESCRIPTOR(none, "");
+  static const DESCRIPTOR(none, "");
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {
     DTYPE_WITH_ERROR,
@@ -1134,7 +1133,7 @@ int Tdi1SlopeOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 {
   INIT_STATUS;
   static const dtype_t one_val = 1;
-  STATIC_CONSTANT struct descriptor one =
+  static const struct descriptor one =
       { sizeof(unsigned char), DTYPE_BU, CLASS_S, (char *)&one_val };
 
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1271,7 +1270,7 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 int Tdi1UnitsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT DESCRIPTOR(none, " ");
+  static const DESCRIPTOR(none, " ");
   struct descriptor_xd tmp = EMPTY_XD;
   static const dtype_t omits[] = {
     DTYPE_WITH_UNITS,
