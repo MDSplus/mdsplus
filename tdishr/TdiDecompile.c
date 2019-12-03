@@ -56,7 +56,7 @@ extern int TdiDecompileDeindent();
 extern int Tdi0Decompile_R();
 extern int TdiConvert();
 extern int Tdi1Evaluate();
-extern int TdiTrace();
+extern int tdi_trace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
@@ -770,6 +770,6 @@ complex: ;
     break;
   }	/*switch class */
   if STATUS_NOT_OK
-    TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
+    tdi_trace(out_ptr);
   return status;
 }
