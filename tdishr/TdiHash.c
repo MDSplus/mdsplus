@@ -49,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   static short TdiREF_HASH[TdiHASH_MAX];
 #endif
 
-int hash(const int len, const char *str) {
+int hash_one(const int len, const char *str) {
   // djb2 by dan bernstein (http://www.cse.yorku.ca/~oz/hash.html)
   unsigned int hash = 5381;
   if (len<0) {// len unknown
@@ -70,12 +70,12 @@ static void hash_all() {
   for (i = 0 ; i < TdiHASH_MAX ; i++)
     TdiREF_HASH[i] = -1;
  for (i = 0; i < TdiFUNCTION_MAX; i++)
-   TdiREF_HASH[hash(-1, TdiRefFunction[i].name)] = i;
+   TdiREF_HASH[hash_one(-1, TdiRefFunction[i].name)] = i;
 }
-int tdiHash(const int len, const char *const pstring) {
+int tdi_hash(const int len, const char *const pstring) {
   static pthread_once_t once = PTHREAD_ONCE_INIT;
   pthread_once(&once,hash_all);
-  const int jf = TdiREF_HASH[hash(len, pstring)];
+  const int jf = TdiREF_HASH[hash_one(len, pstring)];
   if (jf<0)			return -1; // pstring's hash did not match a buildin's
   const char *rf = TdiRefFunction[jf].name;
   const char *ps=pstring, *pe=pstring+len;
@@ -95,7 +95,7 @@ static int hash_all() {
     TdiREF_HASH[jh] = -1;
   for (jf = 0; jf < TdiFUNCTION_MAX; ++jf, pf++) {
     if (pf->name) {
-      jh = hash(-1, pf->name);
+      jh = hash_one(-1, pf->name);
       TdiREF_HASH[jh] = (short)jf;
       while (TdiREF_HASH[jh] >= 0) {
 	count++;
@@ -108,10 +108,10 @@ static int hash_all() {
   }
   return count;
 }
-int tdiHash(const int len, const char *const pstring) {
+int tdi_hash(const int len, const char *const pstring) {
   // used in TdiLex and TdiChar
   int i, jh, jf;
-  jh = hash(len, pstring);
+  jh = hash_one(len, pstring);
   while ((jf = TdiREF_HASH[jh]) >= 0) {
     for (i = 0 ; i<len && TdiRefFunction[jf].name[i] ; i++) {
       if (TdiRefFunction[jf].name[i] != toupper(pstring[i]))

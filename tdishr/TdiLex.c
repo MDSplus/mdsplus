@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefzone.h"
 #include "tdireffunction.h"
 #include "tdithreadstatic.h"
-extern int tdiHash();
+extern int tdi_hash();
 extern int TdiConvert();
 
 #define NEWLINE 10
@@ -378,7 +378,7 @@ static void upcase(char *const str, int len){
     *pc = (char)toupper(*pc);
 }
 
-/*      TdiLex
+/*      tdiLex
    Lexical analysis to parse tokens for TdiYacc.y.
    Definition section precedes rule section.
    Lex regular expression operators:
@@ -419,26 +419,24 @@ static void upcase(char *const str, int len){
 
 #define UNPUT()		--TDI_REFZONE.a_cur
 #define SET_POS()	(lvalPtr->w_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin)
-static inline char input_fun(ThreadStatic *const TdiThreadStatic_p) {
+static inline char lex_input(ThreadStatic *const TdiThreadStatic_p) {
   int tchar;
   if (TDI_REFZONE.a_cur < TDI_REFZONE.a_end)
     tchar = *TDI_REFZONE.a_cur++;
   else
     return TDI_REFZONE.a_cur++ == TDI_REFZONE.a_end ? ';' : 0;
-  if      (tchar==NEWLINE)
-    ;//lineno++;
-  else if (tchar==EOF)
+  if (tchar==EOF)
     return '\0';
   return (char)tchar;
 }
-#define INPUT()	input_fun(TdiThreadStatic_p)
+#define INPUT()	lex_input(TdiThreadStatic_p)
 
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
 	Nested comments allowed. Len is not used.
 	Limitation:     Not ANSI C standard use of delimiters.
 */
-static int tdiLexComment(
+static int lex_comment(
 	int len __attribute__ ((unused)),
 	char *str __attribute__ ((unused)),
 	struct marker *mark_ptr __attribute__ ((unused)),
@@ -479,8 +477,7 @@ ing
 static const DESCRIPTOR(dfghst_dsc, "DFGHSTVdfghstv");
 static const DESCRIPTOR(valid_dsc, "+-.0123456789DEFGHSTV \t");
 
-static int convertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
-{
+static int lex_convert_floating(struct descriptor_s *str, struct descriptor_r *out_d) {
   char str_c[64];
   int len = str->length > 63 ? 63 : str->length;
   strncpy(str_c, str->pointer, len);
@@ -500,7 +497,7 @@ static int convertFloating(struct descriptor_s *str, struct descriptor_r *out_d)
   }
 }
 
-static int tdiLexFloat(
+static int lex_float(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
@@ -566,7 +563,7 @@ static int tdiLexFloat(
 
   MAKE_S(table[type].dtype, table[type].length, mark_ptr->rptr);
 
-  status = convertFloating(&str_dsc, mark_ptr->rptr);
+  status = lex_convert_floating(&str_dsc, mark_ptr->rptr);
   if (STATUS_OK && bad > 0 && str[bad - 1] != '\0')
     status = TdiEXTRANEOUS;
 
@@ -582,7 +579,7 @@ static int tdiLexFloat(
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
 	Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
 */
-static int tdiLexBinEq(int token, ThreadStatic *const TdiThreadStatic_p) {
+static int lex_bin_eq(int token, ThreadStatic *const TdiThreadStatic_p) {
   char cx;
   while ((cx = INPUT()) == ' ' || cx == '\t') ;
   if (cx == '=')
@@ -596,7 +593,7 @@ static int tdiLexBinEq(int token, ThreadStatic *const TdiThreadStatic_p) {
 	Clobbers string with upcase. IDENT token returns name.
 	Note, Lex strings are NUL terminated.
 */
-static inline int tdiLexIdent(
+static inline int lex_ident(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
@@ -627,7 +624,7 @@ static inline int tdiLexIdent(
 	**********************/
   str_l = (char *)strncpy((char *)malloc(len + 1), (char *)str, len);
   str_l[len] = 0;
-  j = tdiHash(len, str_l);
+  j = tdi_hash(len, str_l);
   free(str_l);
   if (j < 0) {
     if (str[0] == '$')
@@ -647,7 +644,7 @@ static inline int tdiLexIdent(
 	|| token == LEX_LAND
 	|| token == LEX_LEQ
 	|| token == LEX_LEQV || token == LEX_LGE || token == LEX_LOR || token == LEX_MUL)
-      return tdiLexBinEq(token, TdiThreadStatic_p);
+      return lex_bin_eq(token, TdiThreadStatic_p);
     return token;
   }
   return (LEX_IDENT);
@@ -686,7 +683,7 @@ static inline int tdiLexIdent(
 #define len1 8			/*length of a word in bits */
 #define num1 16			/*number of words to accumulate, octaword */
 
-static int tdiLexInteger(
+static int lex_integer(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
@@ -908,7 +905,7 @@ static int tdiLexInteger(
 /*--------------------------------------------------------
 	Convert Lex input to NID or absolute PATH.
 */ // used in TdiYacc.c
-int TdiLexPath(
+int tdi_lex_path(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
@@ -947,7 +944,7 @@ int TdiLexPath(
 /*--------------------------------------------------------
 	Remove arrow and trailing punctation.
 */
-static inline int tdiLexPoint(
+static inline int lex_point(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
@@ -961,7 +958,7 @@ static inline int tdiLexPoint(
   return LEX_POINT;
 }
 
-static inline int tdiLexPunct(
+static inline int lex_punct(
 	int len __attribute__ ((unused)),
 	char *str,
 	struct marker *mark_ptr,
@@ -977,19 +974,19 @@ static inline int tdiLexPunct(
   case '!':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_NE;
-      return tdiLexBinEq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
     }
     break;
   case '&':
     if (c1 == '&') {
       mark_ptr->builtin = OPC_AND;
-      return tdiLexBinEq(LEX_LANDS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LANDS, TdiThreadStatic_p);
     }
     break;
   case '*':
     if (c1 == '*') {
       mark_ptr->builtin = OPC_POWER;
-      return tdiLexBinEq(LEX_POWER, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_POWER, TdiThreadStatic_p);
     }
     break;
   case '+':
@@ -1014,43 +1011,43 @@ static inline int tdiLexPunct(
   case '/':
     if (c1 == '/') {
       mark_ptr->builtin = OPC_CONCAT;
-      return tdiLexBinEq(LEX_CONCAT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_CONCAT, TdiThreadStatic_p);
     }
     break;
   case '<':
     if (c1 == '<') {
       mark_ptr->builtin = OPC_SHIFT_LEFT;
-      return tdiLexBinEq(LEX_SHIFT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_SHIFT, TdiThreadStatic_p);
     }
     if (c1 == '=') {
       mark_ptr->builtin = OPC_LE;
-      return tdiLexBinEq(LEX_LGES, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_NE;
-      return tdiLexBinEq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
     }
     break;
   case '=':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_EQ;
-      return tdiLexBinEq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
     }
     break;
   case '>':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_GE;
-      return tdiLexBinEq(LEX_LGES, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_SHIFT_RIGHT;
-      return tdiLexBinEq(LEX_SHIFT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_SHIFT, TdiThreadStatic_p);
     }
     break;
   case '|':
     if (c1 == '|') {
       mark_ptr->builtin = OPC_OR;
-      return tdiLexBinEq(LEX_LORS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LORS, TdiThreadStatic_p);
     }
     break;
   }
@@ -1065,40 +1062,40 @@ static inline int tdiLexPunct(
     return (LEX_UNARYS);
   case '%':
     mark_ptr->builtin = OPC_MOD;
-    return tdiLexBinEq(LEX_MULS, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_MULS, TdiThreadStatic_p);
   case '&':
     mark_ptr->builtin = OPC_IAND;
-    return tdiLexBinEq(LEX_IAND, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_IAND, TdiThreadStatic_p);
   case '*':
     mark_ptr->builtin = OPC_MULTIPLY;
-    return tdiLexBinEq('*', TdiThreadStatic_p);
+    return lex_bin_eq('*', TdiThreadStatic_p);
   case '+':
     mark_ptr->builtin = OPC_ADD;
-    return tdiLexBinEq(LEX_ADD, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_ADD, TdiThreadStatic_p);
   case '-':
     mark_ptr->builtin = OPC_SUBTRACT;
-    return tdiLexBinEq(LEX_ADD, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_ADD, TdiThreadStatic_p);
   case '/':
     mark_ptr->builtin = OPC_DIVIDE;
-    return tdiLexBinEq(LEX_MULS, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_MULS, TdiThreadStatic_p);
   case ':':
     mark_ptr->builtin = OPC_DTYPE_RANGE;
     return (LEX_RANGE);
   case '<':
     mark_ptr->builtin = OPC_LT;
-    return tdiLexBinEq(LEX_LGES, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
   case '>':
     mark_ptr->builtin = OPC_GT;
-    return tdiLexBinEq(LEX_LGES, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
   case '@':
     mark_ptr->builtin = OPC_PROMOTE;
     return (LEX_PROMO);
   case '^':
     mark_ptr->builtin = OPC_POWER;
-    return tdiLexBinEq(LEX_POWER, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_POWER, TdiThreadStatic_p);
   case '|':
     mark_ptr->builtin = OPC_IOR;
-    return tdiLexBinEq(LEX_IOR, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_IOR, TdiThreadStatic_p);
   case '~':
     mark_ptr->builtin = OPC_INOT;
     return (LEX_UNARYS);
@@ -1116,7 +1113,7 @@ static inline int tdiLexPunct(
 	NEED overflow check on octal and hex. Watch sign extend of char.
 */
 
-static inline int tdiLexQuote(
+static inline int lex_quote(
 	int len __attribute__ ((unused)),
 	char *str,
 	struct marker *mark_ptr,
@@ -1211,7 +1208,7 @@ static inline int tdiLexQuote(
   return (LEX_ERROR);
 }
 
-static inline int back(const int *p, const int m) {
+static inline int lex_back(const int *p, const int m) {
   if (p == 0) return 0;
   while (*p) {
     if (*p++ == m)
@@ -1220,7 +1217,7 @@ static inline int back(const int *p, const int m) {
   return 0;
 }
 
-int look(int *leng, char *previous, char*const text, const svf_t **lstate, ThreadStatic *const TdiThreadStatic_p) {
+static int lex_look(int *leng, char *previous, char*const text, const svf_t **lstate, ThreadStatic *const TdiThreadStatic_p) {
   const svf_t *state, **lsp;
   const work_t *t;
   const svf_t *z;
@@ -1333,7 +1330,7 @@ int look(int *leng, char *previous, char*const text, const svf_t **lstate, Threa
       const int *fnd;
       if (*lsp != 0 && (fnd = (*lsp)->stops) && *fnd > 0) {
 	if (extra[*fnd]) {	/* must backup */
-	  while (back((*lsp)->stops, -*fnd) != 1 && lsp > lstate) {
+	  while (lex_back((*lsp)->stops, -*fnd) != 1 && lsp > lstate) {
 	    lsp--;
 	    --lastch;
 	    UNPUT();
@@ -1365,14 +1362,14 @@ int look(int *leng, char *previous, char*const text, const svf_t **lstate, Threa
   }
 }
 
-int TdiLex(struct marker *lvalPtr) {
+int tdi_lex(struct marker *lvalPtr) {
   GET_TDITHREADSTATIC_P;
   int nstr, leng;
   char previous = NEWLINE;
   char text[MAX_TOKEN_LEN];
   memset(text,127,MAX_TOKEN_LEN);
   const svf_t *lstate[MAX_TOKEN_LEN];
-  while ((nstr = look(&leng, &previous, text, lstate, TdiThreadStatic_p)) >= 0) {
+  while ((nstr = lex_look(&leng, &previous, text, lstate, TdiThreadStatic_p)) >= 0) {
     switch (nstr) {
       case 0:
 	return 0;
@@ -1382,34 +1379,34 @@ int TdiLex(struct marker *lvalPtr) {
 	break;
       case 3:
 	SET_POS();
-	return (tdiLexFloat(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_float(leng, text, lvalPtr, TdiThreadStatic_p));
       case 4:
 	SET_POS();
-	return (tdiLexFloat(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_float(leng, text, lvalPtr, TdiThreadStatic_p));
       case 5:
 	SET_POS();
-	return (tdiLexInteger(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_integer(leng, text, lvalPtr, TdiThreadStatic_p));
       case 6:
 	SET_POS();
-	return (tdiLexIdent(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_ident(leng, text, lvalPtr, TdiThreadStatic_p));
       case 7:
 	SET_POS();
-	return (TdiLexPath(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (tdi_lex_path(leng, text, lvalPtr, TdiThreadStatic_p));
       case 8:
 	SET_POS();
-	return (tdiLexQuote(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_quote(leng, text, lvalPtr, TdiThreadStatic_p));
       case 9:
 	SET_POS();
-	return (tdiLexPoint(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_point(leng, text, lvalPtr, TdiThreadStatic_p));
       case 10:
 	SET_POS();
-	if (tdiLexComment(leng, text, lvalPtr, TdiThreadStatic_p))
+	if (lex_comment(leng, text, lvalPtr, TdiThreadStatic_p))
 	  return (LEX_ERROR);
 	else
 	  break;
       case 11:
 	SET_POS();
-	return (tdiLexPunct(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_punct(leng, text, lvalPtr, TdiThreadStatic_p));
       case -1:
 	break;
       default:

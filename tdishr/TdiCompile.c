@@ -50,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 extern int Tdi1Evaluate();
-extern int TdiYacc();
+extern int tdi_yacc();
 /*-------------------------------------------------------
 	Interface to compiler/parser.
 	        expression = COMPILE(string, [arg1,...])
@@ -107,7 +107,7 @@ static inline void add_compile_info(int status,ThreadStatic * TdiThreadStatic_p)
   free(marker.pointer);
 }
 
-static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+static inline int compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status;
   TDI_COMPILE_REC = TRUE;
   pthread_cleanup_push((void*)cleanup_compile,(void*)TdiThreadStatic_p);
@@ -120,7 +120,7 @@ static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_p
   TDI_REFZONE.l_narg   = narg - 1;
   TDI_REFZONE.l_iarg   = 0;
   TDI_REFZONE.a_list   = list;
-  if (IS_NOT_OK(TdiYacc()) && IS_OK(TDI_REFZONE.l_status))
+  if (IS_NOT_OK(tdi_yacc()) && IS_OK(TDI_REFZONE.l_status))
     status = TdiSYNTAX;
   else
     status = TDI_REFZONE.l_status;
@@ -138,7 +138,7 @@ static inline int tdi_compile(ThreadStatic * TdiThreadStatic_p,mdsdsc_t * text_p
   return status;
 }
 
-EXPORT int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
+int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   GET_TDITHREADSTATIC_P;
   if (TDI_COMPILE_REC) {
@@ -151,7 +151,7 @@ EXPORT int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t 
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
   else if (STATUS_OK && text_ptr->length > 0)
-    status = tdi_compile(TdiThreadStatic_p,text_ptr,narg,list,out_ptr);
+    status = compile(TdiThreadStatic_p,text_ptr,narg,list,out_ptr);
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   return status;
