@@ -183,15 +183,15 @@ static inline void trace(
   ADD(")\n");
 }
 
-struct _fixed {
+typedef struct {
   int n;
   char f[256];
   mdsdsc_t *a[256];
   int* rec;
-};
+} fixed_t;
 static void cleanup_list(void* fixed_in) {
-  struct _fixed* fixed = (struct _fixed*)fixed_in;
-  for (; --fixed->n >= 0 ;)
+  fixed_t *const fixed = (fixed_t*)fixed_in;
+  while ( --fixed->n >= 0 )
     if (fixed->f[fixed->n])
       free(fixed->a[fixed->n]);
   (*fixed->rec)--;
@@ -213,7 +213,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t
   else if (TDI_INTRINSIC_REC > 1800)
     status = TdiRECURSIVE;
   else {
-    struct _fixed fixed = {0};
+    fixed_t fixed;
     TDI_INTRINSIC_REC++;
     pthread_cleanup_push(cleanup_list,&fixed);
     fixed.rec = &TDI_INTRINSIC_REC;
