@@ -70,8 +70,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int stat;
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
-extern int TdiGetIdent();
-extern int TdiPutIdent();
+extern int tdi_get_ident();
+extern int tdi_put_ident();
 extern int TdiData();
 extern int TdiVector();
 extern int TdiText();
@@ -310,9 +310,9 @@ STATIC_ROUTINE void StoreAnswer(int idx, struct descriptor *dst, int type)
     status = MDSplusERROR;
   }
   if STATUS_OK
-    status = TdiPutIdent(dst, &xs);
+    status = tdi_put_ident(dst, &xs);
   else
-    status = TdiPutIdent(dst, &xd);
+    status = tdi_put_ident(dst, &xd);
   free(bufs[idx].vptr);
   bufs[idx].vptr = 0;
   bufs[idx].size = 0;
@@ -382,7 +382,7 @@ ARGLIST *arg;
 	  bufs[j].len = SYB_dbdatlen(dbproc, j + 1);
 	}
 	/*
-	   if (rows == -1) status = TdiPutIdent(dst, &tmp);
+	   if (rows == -1) status = tdi_put_ident(dst, &tmp);
 	 */
 /*
 	                        len = SYB_dbdatlen(dbproc, j+1);

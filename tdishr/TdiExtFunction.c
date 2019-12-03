@@ -65,7 +65,7 @@ extern int TdiData();
 extern int TdiDoFun();
 extern int TdiGetLong();
 extern int TdiAllocated();
-extern int TdiPutIdent();
+extern int tdi_put_ident();
 extern int TdiCompile();
 extern int TdiEvaluate();
 
@@ -159,8 +159,9 @@ ident: ;
 	  struct descriptor dtest = { sizeof(test), DTYPE_BU, CLASS_S, 0 };
 	  dtest.pointer = (char *)&test;
 	  status = TdiAllocated(pfun, &dtest MDS_END_ARG);
-	  if (status && !test)
-	    status = TdiPutIdent(pfun, 0);
+	  if (status && !test) {
+	    status = tdi_put_ident(pfun, 0);
+	  }
 	}
       }
     }

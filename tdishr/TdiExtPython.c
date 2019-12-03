@@ -87,10 +87,10 @@ static PyObject* _Py_NoneStruct = NULL;
 static int64_t   (*PyLong_AsLong) () = NULL;
 static PyObject* (*PyObject_CallObject) () = NULL;
 static int       (*PyObject_IsSubclass) () = NULL;
-//getAnswer
+//get_answer
 static void*     (*PyLong_AsVoidPtr) () = NULL;
 static PyObject* (*PyObject_GetAttrString) () = NULL;
-//argsToTuple
+//args_to_tuple
 static PyObject* (*PyObject_CallFunction) () = NULL;
 static PyObject* (*PyTuple_New) () = NULL;
 static void      (*PyTuple_SetItem) () = NULL;
@@ -182,10 +182,10 @@ inline static void initialize(){
   loadrtn(PyLong_AsLong, 1);
   loadrtn(PyObject_CallObject, 1);
   loadrtn(PyObject_IsSubclass,1);
-  //getAnswer
+  //get_answer
   loadrtn(PyLong_AsVoidPtr, 1);
   loadrtn(PyObject_GetAttrString, 1);
-  //argsToTuple
+  //args_to_tuple
   loadrtn(PyObject_CallFunction, 1);
   loadrtn(PyTuple_New, 1);
   loadrtn(PyTuple_SetItem, 1);
@@ -256,7 +256,7 @@ static inline void importMDSplus_once() {
   pthread_once(&once,&importMDSplus);
 }
 
-static inline PyObject *argsToTuple(int nargs, struct descriptor **args){
+static inline PyObject *args_to_tuple(const int nargs, const mdsdsc_t *const *const args){
   /* Convert descriptor argument list to a tuple of python objects. */
   if (!pointerToObject) return PyTuple_New(0); // no arguments
   PyObject *ans = PyTuple_New(nargs);
@@ -274,7 +274,7 @@ static inline PyObject *argsToTuple(int nargs, struct descriptor **args){
   return ans;
 }
 
-static inline void getAnswer(PyObject * value, struct descriptor_xd *outptr){
+static inline void get_answer(const PyObject *const value, mdsdsc_xd_t *const outptr){
   if (!makeData) return; // no return value
   PyObject *dataObj = PyObject_CallFunctionObjArgs(makeData, value, NULL);
   if (!dataObj) {
@@ -298,11 +298,11 @@ static inline void getAnswer(PyObject * value, struct descriptor_xd *outptr){
     if (PyErr_Occurred()) PyErr_Print();
     return;
   }
-  MdsCopyDxXd((struct descriptor *)PyLong_AsVoidPtr(descrPtr), outptr);
+  MdsCopyDxXd((mdsdsc_t *)PyLong_AsVoidPtr(descrPtr), outptr);
   Py_DecRef(descrPtr);
 }
 
-static inline int is_callable(PyObject *fun, const char* funname, const char* fullpath) {
+static inline int is_callable(const PyObject *const fun, const char *const funname, const char *const fullpath) {
   if (!fun) {
     printf("Error finding function called '%s' in module %s\n", funname, funname);
     if (PyErr_Occurred()) PyErr_Print();
@@ -323,7 +323,7 @@ static inline int is_callable(PyObject *fun, const char* funname, const char* fu
 }
 
 #ifdef USE_EXECFILE
-static inline PyObject* getExecFile(PyObject *__main__) {
+static inline PyObject* get_exec_file(const PyObject *const __main__) {
   PyObject *execfile = PyObject_GetAttrString(__main__,"execfile");
   if (!execfile) { // not defined yet, so we define it
     PyErr_Clear();
@@ -340,7 +340,7 @@ static inline PyObject* getExecFile(PyObject *__main__) {
 }
 #endif
 
-static inline void add__file__FUN(PyObject *tdi_functions, const char* filename, PyObject *__file__) {
+static inline void add__file__fun(const PyObject *const tdi_functions, const char *const filename, const PyObject *const __file__) {
   char *__file__fun = malloc(strlen(filename)+9);
   strcpy(__file__fun, "__file__");
   strcat(__file__fun, filename);
@@ -351,7 +351,7 @@ static inline void add__file__FUN(PyObject *tdi_functions, const char* filename,
   free(__file__fun);
 }
 
-static inline int loadPyFunction_(const char *fullpath, char** funname) {
+static inline int load_python_fun(const char *const fullpath, char **const funname) {
   // get __main__
   PyObject *__main__ = PyImport_AddModule("__main__");
   if (!__main__) {
@@ -360,7 +360,7 @@ static inline int loadPyFunction_(const char *fullpath, char** funname) {
     return MDSplusERROR;
   }
 #ifdef USE_EXECFILE
-  PyObject *execfile = getExecFile(__main__);
+  PyObject *execfile = get_exec_file(__main__);
   if (!execfile) return MDSplusERROR;
 #endif
   // add __file__=<fullpath> to globals
@@ -412,7 +412,7 @@ static inline int loadPyFunction_(const char *fullpath, char** funname) {
   }
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions"); // from sys.modules or new
   // add __file__<filename> to module
-  add__file__FUN(tdi_functions, *funname, __file__);
+  add__file__fun(tdi_functions, *funname, __file__);
   // add function to module
   //PyModule_AddObject: This steals a reference to value - no Py_DecRef(pyFunction)
   if (PyModule_AddObject(tdi_functions, *funname, pyFunction))
@@ -420,7 +420,7 @@ static inline int loadPyFunction_(const char *fullpath, char** funname) {
   return MDSplusSUCCESS;
 }
 
-static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,mdsdsc_xd_t *out_ptr) {
+static inline int call_python_fun(const char *const filename,const int nargs,const mdsdsc_t *const *const args, mdsdsc_xd_t *const out_ptr) {
   PyObject *tdi_functions = PyImport_AddModule("tdi_functions");
   if (tdi_functions) {
     PyObject *__main__ = PyImport_AddModule("__main__");
@@ -443,12 +443,12 @@ static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,
     if (PyErr_Occurred()) PyErr_Print();
     return MDSplusERROR;
   }
-  PyObject *pyArgs = argsToTuple(nargs, args);
+  PyObject *pyArgs = args_to_tuple(nargs, args);
   PyObject *ans = PyObject_CallObject(pyFunction, pyArgs);
   Py_DecRef(pyFunction);
   Py_DecRef(pyArgs);
   if (ans) {
-    getAnswer(ans, out_ptr);
+    get_answer(ans, out_ptr);
     Py_DecRef(ans);
     return MDSplusSUCCESS;
   }
@@ -473,21 +473,20 @@ static inline int callPyFunction_(const char*filename,int nargs,mdsdsc_t **args,
   }
   return MDSplusSUCCESS;
 }
-
-int loadPyFunction(const char *filepath, char** funname) {
+int tdi_load_python_fun(const char *const filepath,char **const funname) {
   int status;
   importMDSplus_once();
   PYTHON_OPEN;
-    status = loadPyFunction_(filepath,funname);
+    status = load_python_fun(filepath,funname);
   PYTHON_CLOSE else status = LibNOTFOU;
   return status;
 }
 
-int callPyFunction(const char*filename,int nargs,mdsdsc_t **args,mdsdsc_xd_t *out_ptr) {
+int tdi_call_python_fun(const char *const filename,const int nargs,const mdsdsc_t *const *const args,mdsdsc_xd_t *const out_ptr) {
   int status;
   importMDSplus_once();
   PYTHON_OPEN;
-    status = callPyFunction_(filename,nargs,args,out_ptr);
+    status = call_python_fun(filename,nargs,args,out_ptr);
   PYTHON_CLOSE else status = LibNOTFOU;
   return status;
 }

@@ -61,7 +61,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int TdiGetRecord(int nid, mdsdsc_xd_t *out);
 
 extern int TdiEvaluate();
-extern int TdiGetIdent();
+extern int tdi_get_ident();
 extern int TdiItoX();
 extern int TdiIntrinsic();
 extern int TdiCall();
@@ -236,7 +236,7 @@ int TdiGetData(const unsigned char omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *ou
 	        Evaluate on these types.
 	        ***********************/
 	case DTYPE_IDENT:
-	  status = TdiGetIdent(pin, &hold);
+	  status = tdi_get_ident(pin, &hold);
  redo:	  if STATUS_OK
 	    status = TdiGetData(omits, (mdsdsc_t *)&hold, &hold);
 	  break;
@@ -766,7 +766,7 @@ EXPORT int TdiGetRecord(int nid, mdsdsc_xd_t *out)
     else if STATUS_OK {
       status = stat;
       if IS_OK(stat)
-	status = TdiGetIdent(&var_d, out);
+	status = tdi_get_ident(&var_d, out);
     }
   }
   if (!use_get_record_fun)

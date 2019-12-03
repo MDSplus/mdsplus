@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int TdiGetData();
 extern int TdiGetLong();
-extern int TdiPutLogical();
+extern int tdi_put_logical();
 extern int TdiEvaluate();
 extern int TdiDispatchOf();
 extern int TdiBuildRange();
@@ -208,7 +208,7 @@ int Tdi1ClassOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
     class = px->class;
   else
     class = DTYPE_MISSING;
-  status = TdiPutLogical(class, out_ptr);
+  status = tdi_put_logical(class, out_ptr);
   return status;
 }
 
@@ -496,7 +496,7 @@ int Tdi1KindOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
     dtype = px->dtype;
   else
     dtype = DTYPE_MISSING;
-  status = TdiPutLogical(dtype, out_ptr);
+  status = tdi_put_logical(dtype, out_ptr);
   return status;
 }
 
@@ -859,7 +859,7 @@ int Tdi1NdescOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
     switch (pr->class) {
     case CLASS_R:
       ndesc = pr->ndesc;
-      status = TdiPutLogical(ndesc, out_ptr);
+      status = tdi_put_logical(ndesc, out_ptr);
       break;
     default:
       status = TdiINVCLADSC;
