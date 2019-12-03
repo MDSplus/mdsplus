@@ -65,7 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiData();
 extern int TdiUpcase();
 extern int Tdi1Vector();
@@ -249,7 +249,7 @@ int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
   unsigned short maxlen = 0;
 
   if (list[0]) {
-    status = TdiGetData(omits, list[0], &nids);
+    status = tdi_get_data(omits, list[0], &nids);
     if STATUS_OK {
       len = nids.pointer->length;
       class = nids.pointer->class;

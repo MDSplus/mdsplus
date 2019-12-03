@@ -1056,17 +1056,15 @@ int Tdi1ResetPrivate() {
 /*--------------------------------------------------------------
 	Release the public variables.
 */
-int Tdi1ResetPublic()
-{
+int Tdi1ResetPublic() {
   int status;
   LOCK_PUBLIC_PUSH;
+  status = MDSplusSUCCESS;
   _public.head = 0;
-  TdiResetGetRecord();
   if (_public.data_zone)
     status = LibResetVmZone(&_public.data_zone);
-  else if (_public.head_zone)
+  if (_public.head_zone)
     status = LibResetVmZone(&_public.head_zone);
-  else status = MDSplusSUCCESS;
   UNLOCK_PUBLIC;
   return status;
 }

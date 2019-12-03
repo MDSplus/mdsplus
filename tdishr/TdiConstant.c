@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*      Tdi1Constant.C
 	Get descriptor of a constant value.
 	Note $NARG (number of arguments) is in Tdi1Var.
-	Note $VALUE (raw of signal, data of param) is in TdiGetData.
+	Note $VALUE (raw of signal, data of param) is in tdi_get_data.
 	They are not constants, but context values.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1992

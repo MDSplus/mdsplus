@@ -48,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern struct descriptor *TdiItoXSpecial;
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiUnits();
 extern int TdiData();
 extern int TdiCvtArgs();
@@ -199,11 +199,11 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
   struct TdiCatStruct cats[4];
   STATIC_CONSTANT unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
   STATIC_CONSTANT unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
-  status = TdiGetData(omits, list[0], &in);
+  status = tdi_get_data(omits, list[0], &in);
   if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
     status = TdiUnits(in.pointer, &units MDS_END_ARG);
     if STATUS_OK
-      status = TdiGetData(&omits[1], &in, &in);
+      status = tdi_get_data(&omits[1], &in, &in);
   }
   if (STATUS_OK && narg > 1 && list[1])
     status = TdiGetLong(list[1], &dim);
@@ -220,11 +220,11 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
     if (dim >= psig->ndesc - 2)
       status = TdiBAD_INDEX;
     else
-      status = TdiGetData(omitd, psig->dimensions[dim], &in);
+      status = tdi_get_data(omitd, psig->dimensions[dim], &in);
     if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
       status = TdiUnits(in.pointer, &units MDS_END_ARG);
       if STATUS_OK
-	status = TdiGetData(&omitd[1], &in, &in);
+	status = tdi_get_data(&omitd[1], &in, &in);
     } else
       MdsFree1Dx(&units, NULL);
     dim = 0;

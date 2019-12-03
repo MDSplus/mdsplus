@@ -65,7 +65,7 @@ STATIC_CONSTANT struct item {
 
 extern int TdiData();
 extern int TdiUpcase();
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiGetLong();
 extern int _TdiEvaluate();
 
@@ -214,7 +214,7 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
   if (narg > 1 && STATUS_OK) {
     if (list[1]) {
       struct descriptor_xd xd = EMPTY_XD;
-      status = TdiGetData(omits, list[1], &xd);
+      status = tdi_get_data(omits, list[1], &xd);
       if (STATUS_OK && xd.pointer)
 	switch (xd.pointer->dtype) {
 	case DTYPE_T:

@@ -70,7 +70,7 @@ extern int IsRoprand();
 STATIC_CONSTANT struct descriptor tdiItoXSpecial;
 struct descriptor *TdiItoXSpecial = &tdiItoXSpecial;
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiGetLong();
 extern int TdiUnits();
 extern int TdiData();
@@ -157,14 +157,14 @@ int Tdi1ItoX(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	Previously allowed BUILD_DIM(,BUILD_WITH_UNITS(range,units)).
 	 ************************************************************/
   if (!flag)
-    status = TdiGetData(&omits[1], list[0], &dimen);
+    status = tdi_get_data(&omits[1], list[0], &dimen);
   else {
-    status = TdiGetData(omits, list[0], &dimen);
+    status = tdi_get_data(omits, list[0], &dimen);
 
     if (STATUS_OK && dimen.pointer->dtype == DTYPE_WITH_UNITS) {
       status = TdiUnits(dimen.pointer, &units MDS_END_ARG);
       if STATUS_OK
-	status = TdiGetData(&omits[1], &dimen, &dimen);
+	status = tdi_get_data(&omits[1], &dimen, &dimen);
     }
   }
   if STATUS_OK
