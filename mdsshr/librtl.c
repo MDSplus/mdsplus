@@ -768,8 +768,7 @@ EXPORT int LibCreateVmZone(ZoneList **const zone)
   return (*zone != NULL);
 }
 
-EXPORT int LibDeleteVmZone(ZoneList **const zone)
-{
+EXPORT int LibDeleteVmZone(ZoneList **const zone) {
   int found;
   ZoneList *list, *prev;
   LibResetVmZone(zone);
@@ -793,22 +792,27 @@ EXPORT int LibDeleteVmZone(ZoneList **const zone)
   return found;
 }
 
-EXPORT int LibResetVmZone(ZoneList **const zone)
-{
-  VmList *list;
-  const uint32_t len = 1;
-  LOCK_ZONES;
-  while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
-    LibFreeVm(&len, &list->ptr, zone);
-  UNLOCK_ZONES;
+EXPORT int LibResetVmZone(ZoneList **const zone) {
+  if (zone && *zone) {
+    VmList *vm, *_vm;
+    LOCK_ZONE(*zone);
+    vm = (*zone)->vm;
+    (*zone)->vm = NULL;
+    UNLOCK_ZONE(*zone);
+    while (vm) {
+      free(vm->ptr);
+      _vm = vm;
+      vm = _vm->next;
+      free(_vm);
+    }
+  }
   return MDSplusSUCCESS;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"
 
-EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
-{
+EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   VmList *list = NULL;
   if (zone) {
     LOCK_ZONE(*zone);
@@ -830,15 +834,14 @@ EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **cons
 }
 #pragma GCC diagnostic pop
 
-EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   return LibFreeVm(len, vm, zone);
 }
-EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
-{
+EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   *vm = malloc(*len);
   if (*vm == NULL) {
     printf("Insufficient virtual memory\n");
