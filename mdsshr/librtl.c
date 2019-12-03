@@ -845,21 +845,17 @@ EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const
   *vm = malloc(*len);
   if (*vm == NULL) {
     printf("Insufficient virtual memory\n");
+    return LibINSVIRMEM;
   }
   if (zone) {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
-    list->next = NULL;
     LOCK_ZONE(*zone);
-    if ((*zone)->vm) {
-      VmList *ptr;
-      for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next) ;
-      ptr->next = list;
-    } else
-      (*zone)->vm = list;
+    list->next = (*zone)->vm;
+    (*zone)->vm = list;
     UNLOCK_ZONE(*zone);
   }
-  return (*vm != NULL);
+  return MDSplusSUCCESS;
 }
 EXPORT int libgetvm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
   return LibGetVm(len, vm, zone);
