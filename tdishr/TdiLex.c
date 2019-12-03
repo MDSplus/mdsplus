@@ -419,7 +419,7 @@ static void upcase(char *const str, int len){
 
 #define UNPUT()		--TDI_REFZONE.a_cur
 #define SET_POS()	(lvalPtr->w_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin)
-static inline char lex_input(ThreadStatic *const TdiThreadStatic_p) {
+static inline char lex_input(TDITHREADSTATIC_ARG) {
   int tchar;
   if (TDI_REFZONE.a_cur < TDI_REFZONE.a_end)
     tchar = *TDI_REFZONE.a_cur++;
@@ -429,7 +429,7 @@ static inline char lex_input(ThreadStatic *const TdiThreadStatic_p) {
     return '\0';
   return (char)tchar;
 }
-#define INPUT()	lex_input(TdiThreadStatic_p)
+#define INPUT()	lex_input(TDITHREADSTATIC_PASS)
 
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
@@ -440,8 +440,7 @@ static int lex_comment(
 	int len __attribute__ ((unused)),
 	char *str __attribute__ ((unused)),
 	struct marker *mark_ptr __attribute__ ((unused)),
-	ThreadStatic *const TdiThreadStatic_p)
-{
+	TDITHREADSTATIC_ARG) {
   char c, c1;
   int count = 1;
   while (count) {
@@ -501,7 +500,7 @@ static int lex_float(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   struct descriptor_s str_dsc = { len, DTYPE_T, CLASS_S, str };
   int bad, idx, status, tst, type;
   static const struct {
@@ -579,7 +578,7 @@ static int lex_float(
 	Note must be acceptable in written form also: a<=b, a LE b, LE(a,b).
 	Binary a<=(b,c) is OK, but unary <=(b,c) should not be.
 */
-static int lex_bin_eq(int token, ThreadStatic *const TdiThreadStatic_p) {
+static int lex_bin_eq(int token, TDITHREADSTATIC_ARG) {
   char cx;
   while ((cx = INPUT()) == ' ' || cx == '\t') ;
   if (cx == '=')
@@ -597,7 +596,7 @@ static inline int lex_ident(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   int j, token;
   mark_ptr->builtin = -1;
   MAKE_S(DTYPE_T, len, mark_ptr->rptr);
@@ -640,7 +639,7 @@ static inline int lex_ident(
 	|| token == LEX_LAND
 	|| token == LEX_LEQ
 	|| token == LEX_LEQV || token == LEX_LGE || token == LEX_LOR || token == LEX_MUL)
-      return lex_bin_eq(token, TdiThreadStatic_p);
+      return lex_bin_eq(token, TDITHREADSTATIC_PASS);
     return token;
   }
   return (LEX_IDENT);
@@ -683,7 +682,7 @@ static int lex_integer(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   const struct {
    length_t length;
    dtype_t  udtype, sdtype;
@@ -905,7 +904,7 @@ int tdi_lex_path(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   int nid, token = LEX_VALUE;
   char *str_l;
   str_l = strncpy((char *)malloc(len + 1), str, len);
@@ -944,7 +943,7 @@ static inline int lex_point(
 	int len,
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   int lenx = len - 2;
   while (str[lenx + 1] == '.' || str[lenx + 1] == ':')
     --lenx;
@@ -958,7 +957,7 @@ static inline int lex_punct(
 	int len __attribute__ ((unused)),
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   char c0 = str[0], c1 = INPUT();
 
   mark_ptr->rptr = 0;
@@ -970,19 +969,19 @@ static inline int lex_punct(
   case '!':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_NE;
-      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
     }
     break;
   case '&':
     if (c1 == '&') {
       mark_ptr->builtin = OPC_AND;
-      return lex_bin_eq(LEX_LANDS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LANDS, TDITHREADSTATIC_PASS);
     }
     break;
   case '*':
     if (c1 == '*') {
       mark_ptr->builtin = OPC_POWER;
-      return lex_bin_eq(LEX_POWER, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_PASS);
     }
     break;
   case '+':
@@ -1007,43 +1006,43 @@ static inline int lex_punct(
   case '/':
     if (c1 == '/') {
       mark_ptr->builtin = OPC_CONCAT;
-      return lex_bin_eq(LEX_CONCAT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_CONCAT, TDITHREADSTATIC_PASS);
     }
     break;
   case '<':
     if (c1 == '<') {
       mark_ptr->builtin = OPC_SHIFT_LEFT;
-      return lex_bin_eq(LEX_SHIFT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_PASS);
     }
     if (c1 == '=') {
       mark_ptr->builtin = OPC_LE;
-      return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_NE;
-      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
     }
     break;
   case '=':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_EQ;
-      return lex_bin_eq(LEX_LEQS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
     }
     break;
   case '>':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_GE;
-      return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_SHIFT_RIGHT;
-      return lex_bin_eq(LEX_SHIFT, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_PASS);
     }
     break;
   case '|':
     if (c1 == '|') {
       mark_ptr->builtin = OPC_OR;
-      return lex_bin_eq(LEX_LORS, TdiThreadStatic_p);
+      return lex_bin_eq(LEX_LORS, TDITHREADSTATIC_PASS);
     }
     break;
   }
@@ -1058,40 +1057,40 @@ static inline int lex_punct(
     return (LEX_UNARYS);
   case '%':
     mark_ptr->builtin = OPC_MOD;
-    return lex_bin_eq(LEX_MULS, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_PASS);
   case '&':
     mark_ptr->builtin = OPC_IAND;
-    return lex_bin_eq(LEX_IAND, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_IAND, TDITHREADSTATIC_PASS);
   case '*':
     mark_ptr->builtin = OPC_MULTIPLY;
-    return lex_bin_eq('*', TdiThreadStatic_p);
+    return lex_bin_eq('*', TDITHREADSTATIC_PASS);
   case '+':
     mark_ptr->builtin = OPC_ADD;
-    return lex_bin_eq(LEX_ADD, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_PASS);
   case '-':
     mark_ptr->builtin = OPC_SUBTRACT;
-    return lex_bin_eq(LEX_ADD, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_PASS);
   case '/':
     mark_ptr->builtin = OPC_DIVIDE;
-    return lex_bin_eq(LEX_MULS, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_PASS);
   case ':':
     mark_ptr->builtin = OPC_DTYPE_RANGE;
     return (LEX_RANGE);
   case '<':
     mark_ptr->builtin = OPC_LT;
-    return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
   case '>':
     mark_ptr->builtin = OPC_GT;
-    return lex_bin_eq(LEX_LGES, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
   case '@':
     mark_ptr->builtin = OPC_PROMOTE;
     return (LEX_PROMO);
   case '^':
     mark_ptr->builtin = OPC_POWER;
-    return lex_bin_eq(LEX_POWER, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_PASS);
   case '|':
     mark_ptr->builtin = OPC_IOR;
-    return lex_bin_eq(LEX_IOR, TdiThreadStatic_p);
+    return lex_bin_eq(LEX_IOR, TDITHREADSTATIC_PASS);
   case '~':
     mark_ptr->builtin = OPC_INOT;
     return (LEX_UNARYS);
@@ -1113,7 +1112,7 @@ static inline int lex_quote(
 	int len __attribute__ ((unused)),
 	char *str,
 	struct marker *mark_ptr,
-	ThreadStatic *const TdiThreadStatic_p) {
+	TDITHREADSTATIC_ARG) {
   char c, c1, *cptr = TDI_REFZONE.a_cur;
   int cur = 0, limit;
 
@@ -1213,7 +1212,7 @@ static inline int lex_back(const int *p, const int m) {
   return 0;
 }
 
-static int lex_look(int *leng, char *previous, char*const text, const svf_t **lstate, ThreadStatic *const TdiThreadStatic_p) {
+static int lex_look(int *leng, char *previous, char*const text, const svf_t **lstate, TDITHREADSTATIC_ARG) {
   const svf_t *state, **lsp;
   const work_t *t;
   const svf_t *z;
@@ -1358,14 +1357,13 @@ static int lex_look(int *leng, char *previous, char*const text, const svf_t **ls
   }
 }
 
-int tdi_lex(struct marker *lvalPtr) {
-  GET_TDITHREADSTATIC_P;
+int tdi_lex(struct marker *lvalPtr, TDITHREADSTATIC_ARG) {
   int nstr, leng;
   char previous = NEWLINE;
   char text[MAX_TOKEN_LEN];
   memset(text,127,MAX_TOKEN_LEN);
   const svf_t *lstate[MAX_TOKEN_LEN];
-  while ((nstr = lex_look(&leng, &previous, text, lstate, TdiThreadStatic_p)) >= 0) {
+  while ((nstr = lex_look(&leng, &previous, text, lstate, TDITHREADSTATIC_PASS)) >= 0) {
     switch (nstr) {
       case 0:
 	return 0;
@@ -1375,34 +1373,34 @@ int tdi_lex(struct marker *lvalPtr) {
 	break;
       case 3:
 	SET_POS();
-	return (lex_float(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 4:
 	SET_POS();
-	return (lex_float(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 5:
 	SET_POS();
-	return (lex_integer(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_integer(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 6:
 	SET_POS();
-	return (lex_ident(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_ident(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 7:
 	SET_POS();
-	return (tdi_lex_path(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (tdi_lex_path(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 8:
 	SET_POS();
-	return (lex_quote(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_quote(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 9:
 	SET_POS();
-	return (lex_point(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_point(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case 10:
 	SET_POS();
-	if (lex_comment(leng, text, lvalPtr, TdiThreadStatic_p))
+	if (lex_comment(leng, text, lvalPtr, TDITHREADSTATIC_PASS))
 	  return (LEX_ERROR);
 	else
 	  break;
       case 11:
 	SET_POS();
-	return (lex_punct(leng, text, lvalPtr, TdiThreadStatic_p));
+	return (lex_punct(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
       case -1:
 	break;
       default:
