@@ -49,17 +49,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   static short TdiREF_HASH[TdiHASH_MAX];
 #endif
 
-int hash(int len, char *str) {
+int hash(const int len, const char *str) {
   // djb2 by dan bernstein (http://www.cse.yorku.ca/~oz/hash.html)
   unsigned int hash = 5381;
   if (len<0) {// len unknown
-    char *c;
+    const char *c;
     for (c = str; *c ; c++)
-      hash = ((hash << 5) + hash) + (unsigned)toupper(*c);     /* hash * 33 + c */
+      hash = ((hash << 5) + hash) + (unsigned)toupper(*c); /* hash * 33 + c */
   } else {
-    int i;
-    for (i = 0 ; i<len ; i++)
-      hash = ((hash << 5) + hash) + (unsigned)toupper(str[i]); /* hash * 33 + c */
+    const char *c = str, *e = str+len;
+    for (; c<e ; c++)
+      hash = ((hash << 5) + hash) + (unsigned)toupper(*c); /* hash * 33 + c */
   }
   return (signed)(hash%TdiHASH_MAX);
 }
@@ -71,6 +71,20 @@ static void hash_all() {
     TdiREF_HASH[i] = -1;
  for (i = 0; i < TdiFUNCTION_MAX; i++)
    TdiREF_HASH[hash(-1, TdiRefFunction[i].name)] = i;
+}
+int tdiHash(const int len, const char *const pstring) {
+  static pthread_once_t once = PTHREAD_ONCE_INIT;
+  pthread_once(&once,hash_all);
+  const int jf = TdiREF_HASH[hash(len, pstring)];
+  if (jf<0)			return -1; // pstring's hash did not match a buildin's
+  const char *rf = TdiRefFunction[jf].name;
+  const char *ps=pstring, *pe=pstring+len;
+  for (; ps<pe ; ps++, rf++) {
+    if (!*rf)			return -1; // pstring is too long
+    if (*rf != toupper(*ps))	return -1; // pstirng is different
+  }
+  if (*rf)			return -1; // pstring is too short
+  return jf;
 }
 #else
 static int hash_all() {
@@ -94,13 +108,7 @@ static int hash_all() {
   }
   return count;
 }
-#endif
-
-int tdiHash(int len, char *pstring) {
-#ifndef MAIN
-  static pthread_once_t once = PTHREAD_ONCE_INIT;
-  pthread_once(&once,hash_all);
-#endif
+int tdiHash(const int len, const char *const pstring) {
   // used in TdiLex and TdiChar
   int i, jh, jf;
   jh = hash(len, pstring);
@@ -117,8 +125,6 @@ next: ;
   }
   return jf;
 }
-
-#ifdef MAIN
 /*      test program for hashing
 	Also change the TdiHASH_MAX to a variable.
 */
