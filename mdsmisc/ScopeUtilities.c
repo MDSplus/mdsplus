@@ -705,11 +705,6 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
 
-
-  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
-
-
-
   int nSamples;
   if STATUS_OK status = getNSamples(&yXd,&xXd,&nSamples);
   if STATUS_NOT_OK goto return_err;
@@ -720,7 +715,6 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   float retResolution;
 
   trimData(y, xArrD, nSamples, reqNSamples, xmin, xmax, &retSamples, &retResolution, deltaP != NULL);
-
 
   DESCRIPTOR_A(yData, sizeof(float), DTYPE_FLOAT,  (char *)y,     sizeof(float ) * retSamples);
   DESCRIPTOR_WITH_UNITS(yDataU,&yData,yLabel.pointer);
@@ -742,6 +736,7 @@ return_err: ;
   MdsFree1Dx(&yLabel, NULL);
   MdsFree1Dx(&xXd, NULL);
   MdsFree1Dx(&yXd, NULL);
+  TreeSetTimeContext(NULL,NULL,NULL); // reset timecontext
   return status;
 }
 EXPORT int _GetXYSignalXd(void**const ctx, mdsdsc_t *const y,  mdsdsc_t *const x, mdsdsc_t *const xmin, mdsdsc_t *const xmax, const int num, mdsdsc_xd_t *const retXd) {
