@@ -133,41 +133,15 @@ typedef struct named_attributes_index {
 
 // #define WORDS_BIGENDIAN // use for testing
 #ifdef WORDS_BIGENDIAN
-static inline void SWP(void* out, const void* in, const int a, const int b) {
- char t=((char*)out)[O];	// in and out could be the same
-	((char*)in )[O]=((char*)out)[I];
-	                ((char*)in )[I]=t;
-}
-static inline void loadint16(void* out, const void* in) {
- SWP(out,in,0,1);
-}
-static inline void loadint32(void* out, const void* in) {
- SWP(out,in,0,3);
- SWP(out,in,2,1);
-}
-static inline void loadint64(void* out, const void* in) {
- SWP(out,in,0,7);
- SWP(out,in,2,5);
- SWP(out,in,4,3);
- SWP(out,in,6,1);
-}
+#define SWP(out, in, a, b) ((char*)(out))[a]=((char*)(in ))[b];((char*)(out))[b]=((char*)(in ))[a];
+#define loadint16(out,in) do{SWP(out,in,0,1);}while(0)
+#define loadint32(out,in) do{SWP(out,in,0,3);SWP(out,in,2,1);}while(0)
+#define loadint64(out,in) do{SWP(out,in,0,7);SWP(out,in,2,5);SWP(out,in,4,3);SWP(out,in,6,1);}while(0)
+#undef SWP
 #else
-static inline void CPY(void* out, const void* in, const int idx) {
-  ((char*)out)[idx] = ((char*)in)[idx];
-}
-static inline void loadint16(void* out, const void* in) {
- CPY(out,in,0);CPY(out,in,1);
-}
-static inline void loadint32(void* out, const void* in) {
- CPY(out,in,0);CPY(out,in,1);
- CPY(out,in,2);CPY(out,in,3);
-}
-static inline void loadint64(void* out, const void* in) {
- CPY(out,in,0);CPY(out,in,1);
- CPY(out,in,2);CPY(out,in,3);
- CPY(out,in,4);CPY(out,in,5);
- CPY(out,in,6);CPY(out,in,7);
-}
+#define loadint16(out,in) memcpy((char*)(out),(char*)(in ),2)
+#define loadint32(out,in) memcpy((char*)(out),(char*)(in ),4)
+#define loadint64(out,in) memcpy((char*)(out),(char*)(in ),8)
 #endif
 static inline int16_t swapint16(const void *buf) {
   int16_t ans;
@@ -214,7 +188,6 @@ static inline void putint32(char **buf, const void *ans) {
 static inline void putint64(char **buf, const void *ans) {
   loadint64(*buf,ans);*buf+=sizeof(int64_t);
 }
-
 
 #define bitassign(bool,value,mask)   value = (bool) ? (value) | (unsigned)(mask) : (value) & ~(unsigned)(mask)
 #define bitassign_c(bool,value,mask) value = (unsigned char)(( (bool) ? (value) |  (unsigned)(mask) : (value) & ~(unsigned)(mask) )&0xFF)
