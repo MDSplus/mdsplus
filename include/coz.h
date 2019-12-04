@@ -5,8 +5,9 @@
  * directory of this distribution and at http://github.com/plasma-umass/coz.
  */
 
-#if !defined(COZ_H)
+#ifndef COZ_H
 #define COZ_H
+#ifdef COZ_PROFILER
 
 #ifndef __USE_GNU
 #  define __USE_GNU
@@ -25,8 +26,8 @@ extern "C" {
 #endif
 
 #define COZ_COUNTER_TYPE_THROUGHPUT 1
-#define COZ_COUNTER_TYPE_BEGIN 2
-#define COZ_COUNTER_TYPE_END 3
+#define COZ_COUNTER_TYPE_BEGIN      2
+#define COZ_COUNTER_TYPE_END        3
 
 // Declare dlsym as a weak reference so libdl isn't required
 void* dlsym(void* handle, const char* symbol) __attribute__((weak));
@@ -61,13 +62,13 @@ static coz_counter_t* _call_coz_get_counter(int type, const char* name) {
   if(fn) return fn(type, name);
   else return 0;
 }
-
+#include <pthread.h>
+static pthread_mutex_t coz_lock = PTHREAD_MUTEX_INITIALIZER;
 // Macro to initialize and increment a counter
-#define COZ_INCREMENT_COUNTER(type, name) \
-  if(1) { \
+#define COZ_INCREMENT_COUNTER(type, name) do{ \
+    pthread_mutex_lock(&coz_lock);\
     static unsigned char _initialized = 0; \
     static coz_counter_t* _counter = 0; \
-    \
     if(!_initialized) { \
       _counter = _call_coz_get_counter(type, name); \
       _initialized = 1; \
@@ -75,7 +76,8 @@ static coz_counter_t* _call_coz_get_counter(int type, const char* name) {
     if(_counter) { \
       __atomic_add_fetch(&_counter->count, 1, __ATOMIC_RELAXED); \
     } \
-  }
+    pthread_mutex_unlock(&coz_lock); \
+  }while(0)
 
 #define STR2(x) #x
 #define STR(x) STR2(x)
@@ -89,5 +91,10 @@ static coz_counter_t* _call_coz_get_counter(int type, const char* name) {
 #if defined(__cplusplus)
 }
 #endif
-
+#else
+#define COZ_PROGRESS_NAMED(name)
+#define COZ_PROGRESS
+#define COZ_BEGIN(name)
+#define COZ_END(name)
+#endif
 #endif
