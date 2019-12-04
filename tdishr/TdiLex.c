@@ -599,7 +599,6 @@ static inline int lex_ident(
 	struct marker *mark_ptr,
 	ThreadStatic *const TdiThreadStatic_p) {
   int j, token;
-  char *str_l;
   mark_ptr->builtin = -1;
   MAKE_S(DTYPE_T, len, mark_ptr->rptr);
   memcpy(mark_ptr->rptr->pointer, str, mark_ptr->rptr->length);
@@ -622,10 +621,7 @@ static inline int lex_ident(
 	/**********************
 	Search of initial list.
 	**********************/
-  str_l = (char *)strncpy((char *)malloc(len + 1), (char *)str, len);
-  str_l[len] = 0;
-  j = tdi_hash(len, str_l);
-  free(str_l);
+  j = tdi_hash(len, str);
   if (j < 0) {
     if (str[0] == '$')
       return (LEX_VBL);
