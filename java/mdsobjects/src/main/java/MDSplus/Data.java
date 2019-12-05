@@ -167,8 +167,8 @@ public class Data {
 	public native byte[] serialize();
 	private native java.lang.String decompile(long ctx);
 	private native Data cloneData();
-	private native Data dataData();
-	private native String evaluateData();
+	private native Data dataData(long ctx);
+	private native String evaluateData(long ctx);
 
 	@Override
 	public java.lang.String toString()
@@ -186,20 +186,14 @@ public class Data {
 	 */
 	public Data data()
 	{
-		if(hasChanged())
-		{
+		if(hasChanged()) {
 			//Set the right context is any assiotated with this Data instance
-			if(ctxTree != null && ctxTree.isOpen())
-			{
+			if(ctxTree != null && ctxTree.isOpen()) {
 				try {
-					Tree currTree = Tree.getActiveTree();
-					Tree.setActiveTree(ctxTree);
-					dataCache = dataData();
-					Tree.setActiveTree(currTree);
+					dataCache = dataData(ctxTree.getCtx());
 				}catch(Exception exc){}
-			}
-			else
-				dataCache = dataData();
+			} else
+				dataCache = dataData(0l);
 			changed = false;
 		}
 		return dataCache.cloneData();
@@ -209,7 +203,10 @@ public class Data {
 	 * Return the result of TDI evaluate(this).
 	 */
 	public String evaluate(){
-		return evaluateData();
+		if(ctxTree != null && ctxTree.isOpen()) {
+			return evaluateData(ctxTree.getCtx());
+		} else
+			return evaluateData(0l);
 	}
 
 	/**

@@ -81,14 +81,12 @@ public class MdsConnectionTest{
 	      MDSplus.Tree tree = new MDSplus.Tree("java_test",-1,"NEW");
 	      tree.addNode("test_cnx","NUMERIC");
 	      tree.write();
-	      tree.close();
-	      tree = new MDSplus.Tree("java_test",-1);
+	      tree.normal();
 	      tree.createPulse(1);
 
 	      System.out.println("connecting...");
 	      MDSplus.Connection c;
-		  int count = 0;
-
+              int count = 0;
 	      while(true)
 	      {
 		  try {
@@ -96,7 +94,7 @@ public class MdsConnectionTest{
 		    System.out.println("connected!");
 		    break;
 		  } catch(Exception exc){}
-		  if(count++ >= 10)
+		  if(count++ >= 3)
 		  {
 		      System.out.println("Cannot connect to mdsip server");
 		      Assert.fail("Cannot connect to mdsip server");

@@ -59,19 +59,11 @@ extern "C" {
 #define MDSplus_Tree_TreeUSAGE_COMPOUND_DATA 1L
 /*
  * Class:     MDSplus_Tree
- * Method:    getActiveTree
- * Signature: ()LMDSplus/Tree;
- */
-JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
-  (JNIEnv *, jclass);
-
-/*
- * Class:     MDSplus_Tree
  * Method:    openTree
- * Signature: (Ljava/lang/String;IZ)V
+ * Signature: (JLjava/lang/String;IZ)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
-  (JNIEnv *, jobject, jstring, jint, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jint, jboolean);
 
 /*
  * Class:     MDSplus_Tree
@@ -84,10 +76,10 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_closeTree
 /*
  * Class:     MDSplus_Tree
  * Method:    editTree
- * Signature: (Ljava/lang/String;IZ)V
+ * Signature: (JLjava/lang/String;IZ)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree
-  (JNIEnv *, jobject, jstring, jint, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jint, jboolean);
 
 /*
  * Class:     MDSplus_Tree
@@ -112,14 +104,6 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_quitTree
  */
 JNIEXPORT jint JNICALL Java_MDSplus_Tree_findNode
   (JNIEnv *, jclass, jlong, jstring);
-
-/*
- * Class:     MDSplus_Tree
- * Method:    switchDbid
- * Signature: (J)V
- */
-JNIEXPORT void JNICALL Java_MDSplus_Tree_switchDbid
-  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     MDSplus_Tree

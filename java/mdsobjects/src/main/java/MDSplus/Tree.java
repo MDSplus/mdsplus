@@ -36,6 +36,8 @@ public class Tree {
 			TreeUSAGE_SUBTREE = 11,
 			TreeUSAGE_COMPOUND_DATA = 12;
 
+	private static Tree active;
+
 	static {
 		try {
 			int loaded = 0;
@@ -64,53 +66,51 @@ public class Tree {
 	private int shot;
 	private java.lang.String name;
 	private java.lang.String mode;
-	private long ctx;
+	private long ctx = 0l;
 	private boolean open = false;
+	private boolean edit = false;
 
+	private static final java.lang.String OPEN_CLOSED = "CLOSED";
+	public static final java.lang.String OPEN_NORMAL = "NORMAL";
+	public static final java.lang.String OPEN_READONLY = "READONLY";
+	public static final java.lang.String OPEN_NEW = "NEW";
+	public static final java.lang.String OPEN_EDIT = "EDIT";
 	public Tree(java.lang.String name, int shot) throws MdsException
 	{
-		this.shot = shot;
-		this.name = name;
-		mode = "NORMAL";
-		openTree(name, shot, false);
-		open = true;
-
+		this(name,shot,OPEN_NORMAL);
 	}
 
 	public Tree(java.lang.String name, int shot, java.lang.String mode) throws MdsException
 	{
 		this.shot = shot;
 		this.name = name;
-		java.lang.String upMode = mode.toUpperCase();
-		this.mode = upMode;
-		if(upMode.equals("NORMAL"))
-			openTree(name, shot, false);
-		if(upMode.equals("READONLY"))
-			openTree(name, shot, true);
-		if(upMode.equals("NEW"))
-			editTree(name, shot, true);
-		if(upMode.equals("EDIT"))
-			editTree(name, shot, false);
-		open = true;
-
+		if(OPEN_READONLY.equalsIgnoreCase(mode))
+			readonly();
+		else if (OPEN_NORMAL.equalsIgnoreCase(mode))
+			this.normal();
+		else if(OPEN_EDIT.equalsIgnoreCase(mode))
+			edit();
+		else if(OPEN_NEW.equalsIgnoreCase(mode))
+			_new();
+		else
+			this.mode = OPEN_CLOSED;
 	}
 
 	public void close() throws MdsException
 	{
 		if (open)
 			closeTree(ctx, name, shot);
-		open = false;
+		edit = open = false;
+		this.mode = OPEN_CLOSED;
 	}
 
 	@Override
 	protected void finalize() throws Throwable {
-		System.err.println("finalize "+ctx+" open=" + open);
 		try{
-			if (open) try {
-				this.close();
-			} catch (MdsException e) {
+			if (edit)
 				this.quit();
-			}
+			else
+				this.close();
 		}finally{
 			super.finalize();
 		}
@@ -130,7 +130,7 @@ public class Tree {
 	 */
 	public static void setActiveTree(Tree tree) throws MdsException
 	{
-		switchDbid(tree.ctx);
+		Tree.active = tree;
 	}
 
 
@@ -152,14 +152,12 @@ public class Tree {
 			}catch(Exception exc){return 0;}
 	}
 	public java.lang.String getMode() { return mode;}
-	static native Tree getActiveTree() throws MdsException;
 	static native int findNode(long ctx, java.lang.String path) throws MdsException;
-	private native void openTree(java.lang.String name, int shot, boolean readonly) throws MdsException;
+	private native void openTree(long ctx, java.lang.String name, int shot, boolean readonly) throws MdsException;
 	private native void closeTree(long ctx, java.lang.String name, int shot) throws MdsException;
-	private native void editTree(java.lang.String name, int shot, boolean isNew) throws MdsException;
-	private static native void writeTree(long ctx, java.lang.String name, int shot) throws MdsException;
-	private static native void quitTree(long ctx, java.lang.String name, int shot) throws MdsException;
-	private static native void switchDbid(long ctx) throws MdsException;
+	private native void editTree(long ctx, java.lang.String name, int shot, boolean isNew) throws MdsException;
+	private native void writeTree(long ctx, java.lang.String name, int shot) throws MdsException;
+	private native void quitTree(long ctx, java.lang.String name, int shot) throws MdsException;
 	private static native int [] getWild(long ctx, java.lang.String path, int usage) throws MdsException;
 	private static native int getDefaultNid(long ctx) throws MdsException;
 	private static native void setDefaultNid(long ctx, int nid) throws MdsException;
@@ -371,11 +369,30 @@ public class Tree {
 	/**
 	 * Open the tree for editing.
 	 */
-	public void edit() throws MdsException
-	{
-		editTree(name, shot, false);
+	public void normal() throws MdsException	{
+		openTree(ctx, name, shot, false);
+		edit = false;
+		open = true;
+		mode = OPEN_NORMAL;
 	}
-
+	public void readonly() throws MdsException	{
+		openTree(ctx, name, shot, true);
+		edit = false;
+		open = true;
+		mode = OPEN_READONLY;
+	}
+	public void edit() throws MdsException	{
+		editTree(ctx, name, shot, false);
+		edit = true;
+		open = true;
+		mode = OPEN_EDIT;
+	}
+	private void _new() throws MdsException	{
+		editTree(ctx, name, shot, true);
+		edit = true;
+		open = true;
+		mode = OPEN_EDIT;
+	}
 	/**
 	 * Write the tree under edit.
 	 */
@@ -391,7 +408,8 @@ public class Tree {
 	{
 		if (open)
 			quitTree(ctx, name, shot);
-		open = false;
+		edit = open = false;
+		this.mode = OPEN_CLOSED;
 	}
 
 
@@ -485,5 +503,9 @@ public class Tree {
 		Data retData =  execute(ctx, expr, new Data[0]);
 		retData.setCtxTree(this);
 		return retData;
+	}
+
+	public static Tree getActiveTree() {
+		return Tree.active;
 	}
 }
