@@ -511,7 +511,7 @@ java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_TRUE@java_JAVA = 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsobjects.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(JSCOPE_JAR)
 SOURCE = MDSplus/*.java
 all: all-am
 

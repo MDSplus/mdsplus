@@ -126,10 +126,10 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Data_execute
 /*
  * Class:     MDSplus_Data
  * Method:    decompile
- * Signature: (II)Ljava/lang/String;
+ * Signature: (J)Ljava/lang/String;
  */
 JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile
-  (JNIEnv *, jobject, jint, jint);
+  (JNIEnv *, jobject, jlong);
 
 /*
  * Class:     MDSplus_Data

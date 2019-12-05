@@ -45,38 +45,30 @@ class MdsIpRunner
 @SuppressWarnings("static-method")
 public class MdsConnectionTest{
 	MdsIpRunner mdsip;
-	int freePort;
+	int port = 8700;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {}
-		
+
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {}
-		
+
 	@Before
-	public void setUp() throws Exception 
-	{
-	    freePort= 8888;
-	    int count = 0;
-            while(count < 100)
-	    {
-		try {
-			java.lang.String currDir = System.getProperty("user.dir");
-			MDSplus.Data.execute("setenv(\'java_test_path="+currDir+"\')", new MDSplus.Data[0]);	
-		    DatagramSocket serverSocket = new DatagramSocket(freePort);
-		    serverSocket.close();
-System.out.println("Free Port: "+freePort);
-		    MDSplus.Data.execute("setenv(\'TEST_IP_PORT="+freePort+"\')", new MDSplus.Data[0]);
-		    return;
-		}catch(Exception exc)
-		{
-		    freePort++;
-		}
+	public void setUp() throws Exception {
+	    java.lang.String currDir = System.getProperty("user.dir");
+	    MDSplus.Data.execute("setenv(\'java_test_path="+currDir+"\')", new MDSplus.Data[0]);
+            for (;port < 8800;port++) try {
+		DatagramSocket serverSocket = new DatagramSocket(port);
+		serverSocket.close();
+		System.out.println("Free Port: "+port);
+		MDSplus.Data.execute("setenv(\'TEST_IP_PORT="+port+"\')", new MDSplus.Data[0]);
+		return;
+	    }catch(Exception exc) {
 	    }
 	    System.out.println("Cannot find free port!");
 	}
 
 	@After
-	public void tearDown() throws Exception 
+	public void tearDown() throws Exception
 	{
 	    mdsip.disconnectFromMdsip();
 	}
@@ -96,11 +88,11 @@ System.out.println("Free Port: "+freePort);
 	      System.out.println("connecting...");
 	      MDSplus.Connection c;
 		  int count = 0;
-		  
+
 	      while(true)
 	      {
 		  try {
-		    c = new MDSplus.Connection("localhost:"+freePort);
+		    c = new MDSplus.Connection("localhost:"+port);
 		    System.out.println("connected!");
 		    break;
 		  } catch(Exception exc){}

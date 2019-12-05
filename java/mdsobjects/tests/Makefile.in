@@ -764,19 +764,6 @@ TESTS = \
  MDSplus.MdsTreeTest\
  MDSplus.MdsWindowTest
 
-VALGRIND_TESTS = \
- MDSplus.MdsDataTest\
- MDSplus.MdsConglomTest\
- MDSplus.MdsConnectionTest\
- MDSplus.MdsDimensionTest\
- MDSplus.MdsEventTest\
- MDSplus.MdsExpressionCompileTest\
- MDSplus.MdsFunctionTest\
- MDSplus.MdsRangeTest\
- MDSplus.MdsSignalTest\
- MDSplus.MdsStringTest\
- MDSplus.MdsWindowTest
-
 all: all-am
 
 .SUFFIXES:

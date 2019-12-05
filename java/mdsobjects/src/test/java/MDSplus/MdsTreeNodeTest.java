@@ -17,16 +17,16 @@ public class MdsTreeNodeTest{
 
 
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception 
+	public static void setUpBeforeClass() throws Exception
 	{
 	    java.lang.String currDir = System.getProperty("user.dir");
 	    MDSplus.Data.execute("setenv(\'java_test1_path="+currDir+"\')", new MDSplus.Data[0]);
 	    MDSplus.Data.execute("setenv(\'java_test2_path="+currDir+"\')", new MDSplus.Data[0]);
 	}
-		
+
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {}
-		
+	public static void tearDownAfterClass() throws Exception {System.gc();}
+
 	@Before
 	public void setUp() throws Exception {}
 
@@ -224,7 +224,7 @@ public class MdsTreeNodeTest{
 		Assert.assertEquals(1, tree.getNode("\\TOP").getDepth());
 		Assert.assertEquals(2, test_structure.getDepth());
 		Assert.assertEquals(3, parent.getDepth());
- 
+
 
 		tree.edit();
 		node = tree.addNode("test_flags","ANY");
@@ -361,12 +361,12 @@ public class MdsTreeNodeTest{
 			      new MDSplus.Range(new MDSplus.Int32(-19), new MDSplus.Int32(0), new MDSplus.Int32(1)));
 
 	  // getSegmentLimits
-		MDSplus.Data start = node.getSegmentStart(0); 
-		MDSplus.Data end = node.getSegmentEnd(0); 
+		MDSplus.Data start = node.getSegmentStart(0);
+		MDSplus.Data end = node.getSegmentEnd(0);
 		Assert.assertEquals(-19, start.getInt());
 		Assert.assertEquals(0, end.getInt());
-		start = node.getSegmentStart(1); 
-		end = node.getSegmentEnd(1); 
+		start = node.getSegmentStart(1);
+		end = node.getSegmentEnd(1);
 		Assert.assertEquals(10, start.getInt());
 		Assert.assertEquals(19, end.getInt());
 
@@ -390,7 +390,7 @@ public class MdsTreeNodeTest{
 		tree.close();
 		tree = new MDSplus.Tree("java_test1",-1);
 		ts_node = tree.getNode("test_seg:ts");
-		
+
 		array_data = new MDSplus.Int32Array(array);
 		ts_node.beginTimestampedSegment( array_data );
 		Assert.assertEquals(1, ts_node.getNumSegments());
@@ -410,7 +410,7 @@ public class MdsTreeNodeTest{
 
 	    // putTimestampedSegment of size 1
 		subarray = new int[]{array[7]};
-		subtimes = new long[]{times[7]}; 
+		subtimes = new long[]{times[7]};
 		ts_node.putTimestampedSegment(new MDSplus.Int32Array(subarray), subtimes);
 
 	    // putrow puts single element into segment
@@ -420,7 +420,7 @@ public class MdsTreeNodeTest{
 		ts_node.putRow(new MDSplus.Int32(array[9]), times[9] );
 		Assert.assertArrayEquals(array, ts_node.getIntArray());
  		Assert.assertArrayEquals(times, ts_node.getDimensionAt(0).getLongArray());
-   
+
 	    // makeTimestampedSegment
 		ts_node.makeTimestampedSegment( array_data, times );
 		Assert.assertEquals(2, ts_node.getNumSegments());
@@ -435,7 +435,7 @@ public class MdsTreeNodeTest{
 		tree.close();
 		tree = new MDSplus.Tree("java_test1",-1);
 		MDSplus.TreeNode n2 = tree.getNode("test_seg:image");
-		
+
 		byte image[] = new byte[]{
 		    0,0,0,0,9,9,0,0,0,
 		    0,0,0,9,9,9,0,0,0,
@@ -472,7 +472,7 @@ public class MdsTreeNodeTest{
 	    // we will cover 10 frames with the following time data //
 		float time1[] = new float[]{ 0, (float)0.1, (float)0.2, (float)0.3, (float)0.4};
 		float time2[] = new float[]{(float)0.4, (float)0.5, (float)0.6};
-		float time3[] = new float[]{(float)0.7, (float)0.8, (float)0.9}; 
+		float time3[] = new float[]{(float)0.7, (float)0.8, (float)0.9};
 	    // four frames in one segment
 //		int dims[] = new int[]{4,7,9};   // { FRAMES, HEIGHT, WIDTH } //
 		int dims[] = new int[]{9,7,4};   // { FRAMES, HEIGHT, WIDTH } //
@@ -558,7 +558,7 @@ public class MdsTreeNodeTest{
 	// remove switching to parent node //
 		n1.getParent().remove("n3");
 		n1.rename("\\top:test_rename");
-		Assert.assertEquals("TOP", n1.getParent().getNodeName());  
+		Assert.assertEquals("TOP", n1.getParent().getNodeName());
 
 		n1.rename("\\top.test_edit:parent");
 		Assert.assertEquals("PARENT", n1.getNodeName());

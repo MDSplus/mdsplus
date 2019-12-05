@@ -4,7 +4,7 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsobjects.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(JSCOPE_JAR)
 
 if USE_JARS_DIR
 

@@ -27,61 +27,61 @@ package MDSplus;
  * @updated 03-ott-2008 12.23.34
  */
 public class Data {
-    //Common definitions
-    public static final int DTYPE_BU = 2;
-    public static final int DTYPE_WU = 3;
-    public static final int DTYPE_LU = 4;
-    public static final int  DTYPE_QU = 5;
-    public static final int DTYPE_OU = 25;
-    public static final int DTYPE_B = 6;
-    public static final int DTYPE_W = 7;
-    public static final int DTYPE_L = 8;
-    public static final int DTYPE_Q = 9;
-    public static final int DTYPE_O = 26;
-    public static final int DTYPE_FLOAT = 52;
-    public static final int DTYPE_DOUBLE = 53;
-    public static final int DTYPE_T = 14;
-    public static final int DTYPE_IDENT = 191;
-    public static final int DTYPE_NID = 192;
-    public static final int DTYPE_PATH = 193;
-    public static final int DTYPE_PARAM = 194;
-    public static final int DTYPE_SIGNAL = 195;
-    public static final int DTYPE_DIMENSION = 196;
-    public static final int DTYPE_WINDOW = 197;
-    public static final int DTYPE_SLOPE = 198;
-    public static final int DTYPE_FUNCTION = 199;
-    public static final int DTYPE_CONGLOM = 200;
-    public static final int DTYPE_RANGE = 201;
-    public static final int DTYPE_ACTION = 202;
-    public static final int DTYPE_DISPATCH = 203;
-    public static final int DTYPE_PROGRAM = 204;
-    public static final int DTYPE_ROUTINE = 205;
-    public static final int DTYPE_PROCEDURE = 206;
-    public static final int DTYPE_METHOD = 207;
-    public static final int DTYPE_DEPENDENCY = 208;
-    public static final int DTYPE_CONDITION = 209;
-    public static final int DTYPE_EVENT = 210;
-    public static final int DTYPE_WITH_UNITS = 211;
-    public static final int DTYPE_CALL = 212;
-    public static final int DTYPE_WITH_ERROR = 213;
-    public static final int DTYPE_LIST = 214;
-    public static final int DTYPE_TUPLE = 215;
-    public static final int DTYPE_DICTIONARY = 216;
+	//Common definitions
+	public static final int DTYPE_BU = 2;
+	public static final int DTYPE_WU = 3;
+	public static final int DTYPE_LU = 4;
+	public static final int  DTYPE_QU = 5;
+	public static final int DTYPE_OU = 25;
+	public static final int DTYPE_B = 6;
+	public static final int DTYPE_W = 7;
+	public static final int DTYPE_L = 8;
+	public static final int DTYPE_Q = 9;
+	public static final int DTYPE_O = 26;
+	public static final int DTYPE_FLOAT = 52;
+	public static final int DTYPE_DOUBLE = 53;
+	public static final int DTYPE_T = 14;
+	public static final int DTYPE_IDENT = 191;
+	public static final int DTYPE_NID = 192;
+	public static final int DTYPE_PATH = 193;
+	public static final int DTYPE_PARAM = 194;
+	public static final int DTYPE_SIGNAL = 195;
+	public static final int DTYPE_DIMENSION = 196;
+	public static final int DTYPE_WINDOW = 197;
+	public static final int DTYPE_SLOPE = 198;
+	public static final int DTYPE_FUNCTION = 199;
+	public static final int DTYPE_CONGLOM = 200;
+	public static final int DTYPE_RANGE = 201;
+	public static final int DTYPE_ACTION = 202;
+	public static final int DTYPE_DISPATCH = 203;
+	public static final int DTYPE_PROGRAM = 204;
+	public static final int DTYPE_ROUTINE = 205;
+	public static final int DTYPE_PROCEDURE = 206;
+	public static final int DTYPE_METHOD = 207;
+	public static final int DTYPE_DEPENDENCY = 208;
+	public static final int DTYPE_CONDITION = 209;
+	public static final int DTYPE_EVENT = 210;
+	public static final int DTYPE_WITH_UNITS = 211;
+	public static final int DTYPE_CALL = 212;
+	public static final int DTYPE_WITH_ERROR = 213;
+	public static final int DTYPE_LIST = 214;
+	public static final int DTYPE_TUPLE = 215;
+	public static final int DTYPE_DICTIONARY = 216;
 
-    public static final int DTYPE_DSC = 24;
+	public static final int DTYPE_DSC = 24;
 
-    public static final int TreeNEGATE_CONDITION = 7;
-    public static final int TreeIGNORE_UNDEFINED = 8;
-    public static final int TreeIGNORE_STATUS = 9;
-    public static final int TreeDEPENDENCY_AND	= 10;
-    public static final int TreeDEPENDENCY_OR = 11;
+	public static final int TreeNEGATE_CONDITION = 7;
+	public static final int TreeIGNORE_UNDEFINED = 8;
+	public static final int TreeIGNORE_STATUS = 9;
+	public static final int TreeDEPENDENCY_AND	= 10;
+	public static final int TreeDEPENDENCY_OR = 11;
 
 
-    public static final int CLASS_S = 1;
-    public static final int CLASS_D = 2;
-    public static final int CLASS_A = 4;
-    public static final int CLASS_R = 194;
-    public static final int CLASS_APD = 196;
+	public static final int CLASS_S = 1;
+	public static final int CLASS_D = 2;
+	public static final int CLASS_A = 4;
+	public static final int CLASS_R = 194;
+	public static final int CLASS_APD = 196;
 
 
 
@@ -100,40 +100,40 @@ public class Data {
 	public Data(){}
 	public Data(Data help, Data units, Data error, Data validation)
 	{
-	    this.help = help;
-	    this.units = units;
-	    this.error = error;
-	    this.validation = validation;
+		this.help = help;
+		this.units = units;
+		this.error = error;
+		this.validation = validation;
 	}
 
 	public double[]toDouble()throws Exception {return getDoubleArray();}
 	public void setCtxTree(Tree ctxTree)
 	{
-	    this.ctxTree = ctxTree;
+		this.ctxTree = ctxTree;
 	}
 
 	static {
-	    try {
-	      int loaded = 0;
-	      try {
-	        java.lang.String value = System.getenv("JavaMdsLib");
-	        if (value == null) {
-	          value = System.getProperty("JavaMdsLib");
-	        }
-	        if (value != null) {
-	          System.load(value);
-	          loaded = 1;
-	        }
-	      } catch (Throwable e) {
-	      }
-	      if (loaded == 0) {
-	        System.loadLibrary("JavaMds");
-	      }
-	    }catch(Throwable e)
-	    {
-	          System.out.println("Error loading library javamds: "+e);
-	          e.printStackTrace();
-	    }
+		try {
+			int loaded = 0;
+			try {
+				java.lang.String value = System.getenv("JavaMdsLib");
+				if (value == null) {
+					value = System.getProperty("JavaMdsLib");
+				}
+				if (value != null) {
+					System.load(value);
+					loaded = 1;
+				}
+			} catch (Throwable e) {
+			}
+			if (loaded == 0) {
+				System.loadLibrary("JavaMds");
+			}
+		}catch(Throwable e)
+		{
+			System.out.println("Error loading library javamds: "+e);
+			e.printStackTrace();
+		}
 	}
 
 
@@ -146,31 +146,37 @@ public class Data {
 	 */
 	public static Data compile(java.lang.String expr)
 	{
-	    return compile(expr, new Data[0]);
+		return compile(expr, new Data[0]);
 	}
-	public static native Data compile(java.lang.String expr, Data[] args);
+	//MDSplus time support
 	public Data executeWithContext(java.lang.String expr, Data[] args)
 	{
-	    if(ctxTree != null && ctxTree.isOpen())
-	    {
-		return ctxTree.tdiExecute(expr, args);
-	    }
-	    else
-		return  execute(expr, args);
+		if(ctxTree != null && ctxTree.isOpen())
+		{
+			return ctxTree.tdiExecute(expr, args);
+		}
+		else
+			return  execute(expr, args);
 	}
+
+	protected static native java.lang.String convertToDate(long time);
+	public static native long getTime();
+	public static native Data compile(java.lang.String expr, Data[] args);
 	public static native Data execute(java.lang.String expr, Data[] args);
+	public static native Data deserialize(byte[] serialized);
+	public native byte[] serialize();
+	private native java.lang.String decompile(long ctx);
+	private native Data cloneData();
+	private native Data dataData();
+	private native String evaluateData();
 
-	/**
-	 * Return the result of TDI decompile(this)
-	 */
-	public native java.lang.String decompile(int ctx1, int ctx2);
-
+	@Override
 	public java.lang.String toString()
 	{
-	    if (ctxTree != null)
-	      return decompile(ctxTree.getCtx1(), ctxTree.getCtx2());
-	    else
-	      return decompile(0,0);
+		if (ctxTree != null)
+			return decompile(ctxTree.getCtx());
+		else
+			return decompile(0);
 	}
 
 	/**
@@ -180,27 +186,24 @@ public class Data {
 	 */
 	public Data data()
 	{
-	    if(hasChanged())
-	    {
-	        //Set the right context is any assiotated with this Data instance
-	        if(ctxTree != null && ctxTree.isOpen())
-	        {
-	            try {
-	                Tree currTree = Tree.getActiveTree();
-	                Tree.setActiveTree(ctxTree);
-	                dataCache = dataData();
-	                Tree.setActiveTree(currTree);
-	            }catch(Exception exc){}
-	        }
-	        else
-	            dataCache = dataData();
-	        changed = false;
-	    }
-	    return dataCache.cloneData();
+		if(hasChanged())
+		{
+			//Set the right context is any assiotated with this Data instance
+			if(ctxTree != null && ctxTree.isOpen())
+			{
+				try {
+					Tree currTree = Tree.getActiveTree();
+					Tree.setActiveTree(ctxTree);
+					dataCache = dataData();
+					Tree.setActiveTree(currTree);
+				}catch(Exception exc){}
+			}
+			else
+				dataCache = dataData();
+			changed = false;
+		}
+		return dataCache.cloneData();
 	}
-
-	native Data cloneData();
-	native Data dataData();
 
 	/**
 	 * Return the result of TDI evaluate(this).
@@ -209,11 +212,6 @@ public class Data {
 		return evaluateData();
 	}
 
-	native String evaluateData();
-
-	native byte[] serialize();
-	static native Data deserialize(byte[] serialized);
-
 	/**
 	 * Convert this data into a byte. Implemented at this class level by returning TDI
 	 * data(BYTE(this)). If data() fails or the returned class is not scalar,
@@ -221,10 +219,10 @@ public class Data {
 	 */
 	public  byte getByte() throws MdsException
 	{
-	    Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to byte");
-	    return data.getByte();
+		Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to byte");
+		return data.getByte();
 	}
 
 	/**
@@ -234,10 +232,10 @@ public class Data {
 	 */
 	public  short getShort() throws MdsException
 	{
-	    Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to byte");
-	    return data.getShort();
+		Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to byte");
+		return data.getShort();
 	}
 
 	/**
@@ -247,10 +245,10 @@ public class Data {
 	 */
 	public  int getInt() throws MdsException
 	{
-	    Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to int");
-	    return data.getInt();
+		Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to int");
+		return data.getInt();
 	}
 
 
@@ -261,10 +259,10 @@ public class Data {
 	 */
 	public  long getLong() throws MdsException
 	{
-	    Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to long");
-	    return data.getLong();
+		Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to long");
+		return data.getLong();
 	}
 
 	/**
@@ -274,10 +272,10 @@ public class Data {
 	 */
 	public  float getFloat()throws MdsException
 	{
-	    Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to float");
-	    return data.getFloat();
+		Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to float");
+		return data.getFloat();
 	}
 
 	/**
@@ -287,10 +285,10 @@ public class Data {
 	 */
 	public  double getDouble()throws MdsException
 	{
-	    Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar))
-	        throw new MdsException("Cannot convert Data to double");
-	    return data.getDouble();
+		Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar))
+			throw new MdsException("Cannot convert Data to double");
+		return data.getDouble();
 	}
 
 	/**
@@ -300,10 +298,10 @@ public class Data {
 	 */
 	public  int[] getShape() throws MdsException
 	{
-	    Data data = executeWithContext("SHAPE($1)", new Data[]{this});
-	    if(!(data instanceof Array))
-	        throw new MdsException("Cannot get data shape");
-	    return data.getIntArray();
+		Data data = executeWithContext("SHAPE($1)", new Data[]{this});
+		if(!(data instanceof Array))
+			throw new MdsException("Cannot get data shape");
+		return data.getIntArray();
 
 	}
 
@@ -315,10 +313,10 @@ public class Data {
 	 */
 	public  byte[] getByteArray() throws MdsException
 	{
-	    Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to byte array");
-	    return data.getByteArray();
+		Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to byte array");
+		return data.getByteArray();
 	}
 
 
@@ -330,10 +328,10 @@ public class Data {
 	 */
 	public  short[] getShortArray()throws MdsException
 	{
-	    Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to short array");
-	    return data.getShortArray();
+		Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to short array");
+		return data.getShortArray();
 	}
 
 
@@ -345,10 +343,10 @@ public class Data {
 	 */
 	public  int[] getIntArray()throws MdsException
 	{
-	    Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to int array");
-	    return data.getIntArray();
+		Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to int array");
+		return data.getIntArray();
 	}
 
 	/**
@@ -359,10 +357,10 @@ public class Data {
 	 */
 	public  long[] getLongArray()throws MdsException
 	{
-	    Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to long array");
-	    return data.getLongArray();
+		Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to long array");
+		return data.getLongArray();
 	}
 
 	/**
@@ -373,10 +371,10 @@ public class Data {
 	 */
 	public  float[] getFloatArray()throws MdsException
 	{
-	    Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to float array");
-	    return data.getFloatArray();
+		Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to float array");
+		return data.getFloatArray();
 	}
 
 	/**
@@ -387,10 +385,10 @@ public class Data {
 	 */
 	public  double[] getDoubleArray()throws MdsException
 	{
-	    Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
-	    if(!(data instanceof Scalar) && !(data instanceof Array))
-	        throw new MdsException("Cannot convert Data to double array");
-	    return data.getDoubleArray();
+		Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
+		if(!(data instanceof Scalar) && !(data instanceof Array))
+			throw new MdsException("Cannot convert Data to double array");
+		return data.getDoubleArray();
 	}
 
 	/**
@@ -400,31 +398,31 @@ public class Data {
 	 */
 	public  java.lang.String getString() throws MdsException
 	{
-	    Data data = data();
-	    if(!(data instanceof String))
-	        throw new MdsException("Cannot convert Data to string");
-	    return data.getString();
+		Data data = data();
+		if(!(data instanceof String))
+			throw new MdsException("Cannot convert Data to string");
+		return data.getString();
 
 	}
 	public  java.lang.String[] getStringArray()throws MdsException
 	{
-	    Data data = data();
-	    if(!(data instanceof StringArray))
-	        throw new MdsException("Cannot convert Data to string array");
-	    return data.getStringArray();
+		Data data = data();
+		if(!(data instanceof StringArray))
+			throw new MdsException("Cannot convert Data to string array");
+		return data.getStringArray();
 	}
 
 
 	public int getSize()
 	{
-	    Data data = data();
-	    return data.getSize();
+		Data data = data();
+		return data.getSize();
 	}
 
 	public int getSizeInBytes()
 	{
-	    Data data = data();
-	    return data.getSizeInBytes();
+		Data data = data();
+		return data.getSizeInBytes();
 	}
 
 
@@ -434,7 +432,7 @@ public class Data {
 	 */
 	public Data getUnits()
 	{
-	    return units;
+		return units;
 	}
 
 	/**
@@ -443,7 +441,7 @@ public class Data {
 	 */
 	public Data getHelp()
 	{
-	    return help;
+		return help;
 	}
 
 	/**
@@ -451,14 +449,14 @@ public class Data {
 	 */
 	public Data getError()
 	{
-	    return error;
+		return error;
 	}
 	/**
 	 * Get the error field. Returns EmptyData if no error defined.
 	 */
 	public Data getValidation()
 	{
-	    return validation;
+		return validation;
 	}
 
 	/**
@@ -467,7 +465,7 @@ public class Data {
 	 */
 	public void setUnits(Data units)
 	{
-	    this.units = units;
+		this.units = units;
 	}
 
 	/**
@@ -477,7 +475,7 @@ public class Data {
 	 */
 	public void setHelp(Data help)
 	{
-	    this.help = help;
+		this.help = help;
 	}
 
 	/**
@@ -487,24 +485,24 @@ public class Data {
 	 */
 	public void setError(Data error)
 	{
-	    this.error = error;
+		this.error = error;
 	}
 
 	public void setValidation(Data validation)
 	{
-	    this.validation = validation;
+		this.validation = validation;
 	}
 
 	public Data getDimensionAt(int idx)
 	{
-	    return executeWithContext("DIM_OF($)", new Data[]{this});
+		return executeWithContext("DIM_OF($)", new Data[]{this});
 	}
 	public void plot()
 	{
-	    Scope scope = new Scope("", 100, 100, 200, 200);
-	    try {
-	        scope.plot(getDimensionAt(0), this, 1, 1, "black");
-	    }catch(Exception exc){System.err.println("Cannot plot data: " + exc);}
+		Scope scope = new Scope("", 100, 100, 200, 200);
+		try {
+			scope.plot(getDimensionAt(0), this, 1, 1, "black");
+		}catch(Exception exc){System.err.println("Cannot plot data: " + exc);}
 	}
 
 	public static Data toData(byte d) {return new Int8(d);}
@@ -522,7 +520,5 @@ public class Data {
 	public static Data toData(float d[]) {return new Float32Array(d);}
 	public static Data toData(double d[]) {return new Float64Array(d);}
 	public static Data toData(java.lang.String d[]) {return new StringArray(d);}
-	//MDSplus time support
-	static native java.lang.String convertToDate(long time);
-	static native long getTime();
+
 }
