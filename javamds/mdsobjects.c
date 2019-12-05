@@ -83,7 +83,7 @@ static int doAction(void *ctx, int nid) {
 
   nid_d.pointer = (char *)&method_nid;
   call_d.pointer = &type;
-  status = _TreeGetRecord(ctx, nid, &xd);
+  status = CTXCALL(TreeGetRecord,ctx,nid, &xd);
   if (!(status & 1))
     return status;
   if (!xd.pointer)
@@ -328,7 +328,7 @@ static void printDecompiled1(void *ctx, struct descriptor *dsc)
   EMPTYXD(out_xd);
   static char decompiled[1024];
 
-  _TdiDecompile(&ctx, dsc, &out_xd MDS_END_ARG);
+  CTXCALL(TdiDecompile,&ctx, dsc, &out_xd MDS_END_ARG);
   if (!out_xd.pointer)
     printf("NULL\n");
   memcpy(decompiled, out_xd.pointer->pointer, out_xd.pointer->length);
@@ -1801,6 +1801,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree(JNIEnv * env, jobject jobj,
 JNIEXPORT void JNICALL Java_MDSplus_Tree_writeTree(JNIEnv * env, jclass cls __attribute__ ((unused)),
 	jlong jctx, jstring jname, jint shot) {
   const char *name;
+
   void *ctx = JLONG2PTR(jctx);
   int status;
   name = (*env)->GetStringUTFChars(env, jname, 0);
@@ -1882,7 +1883,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild(JNIEnv * env, jclass cls _
   wildCtx = 0;
   for (i = 0; i < numNids; i++) {
     CTXCALL(TreeFindNodeWild,ctx, (char *)path, &nids[i], &wildCtx, usage);
-    //_TreeFindNodeWild(ctx, (char *)path, &nids[i], &wildCtx, (1 << usage));
+    //_TreeFindNodeWild,ctx, (char *)path, &nids[i], &wildCtx, (1 << usage));
   }
   CTXCALL(TreeFindNodeEnd,ctx, &wildCtx);
 
@@ -2087,7 +2088,7 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags(JNIEnv * env, jcla
 
   wild = (*env)->GetStringUTFChars(env, jwild, 0);
   while (nTags < MAX_TAGS
-	 && (tagNames[nTags] = _TreeFindTagWild(ctx, (char *)wild, &nidOut, &wildCtx)))
+	 && (tagNames[nTags] = CTXCALL(TreeFindTagWild,ctx, (char *)wild, &nidOut, &wildCtx)))
     nTags++;
   TreeFindTagEnd(&wildCtx);
 
@@ -2199,7 +2200,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
   int64_t size;
   void *ctx = JLONG2PTR(jctx);
 
-  size = _TreeGetDatafileSize(ctx);
+  size = CTXCALL0(TreeGetDatafileSize,ctx);
   return size;
 }
 
@@ -2247,7 +2248,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile
     return NULL;
   }
   ris = DescripToObject(env, outXd.pointer, 0, 0, 0, 0);
-  //printDecompiled1(ctx, outXd.pointer);
+  //printDecompiled1,ctx, outXd.pointer);
   MdsFree1Dx(&outXd, NULL);
   return ris;
 }
@@ -2436,7 +2437,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
   void *ctx = JLONG2PTR(jctx);
 
   nciList[0].code = (short)nciNumCode;
-  status = _TreeGetNci(ctx, nid, nciList);
+  status = CTXCALL(TreeGetNci,ctx, nid, nciList);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2444,7 +2445,7 @@ JNIEXPORT jintArray JNICALL Java_MDSplus_TreeNode_getNciNids
   nciList1[0].code = (short)nciCode;
   nciList1[0].buffer_length = sizeof(int) * nNids;
   nciList1[0].pointer = nids;
-  status = _TreeGetNci(ctx, nid, nciList1);
+  status = CTXCALL(TreeGetNci,ctx, nid, nciList1);
   if STATUS_NOT_OK
     throwMdsException(env, status);
   jnids = (*env)->NewIntArray(env, nNids);
@@ -2466,9 +2467,9 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_turnOn
   void *ctx = JLONG2PTR(jctx);
 
   if (on)
-    status = _TreeTurnOn(ctx, nid);
+    status = CTXCALL(TreeTurnOn,ctx, nid);
   else
-    status = _TreeTurnOff(ctx, nid);
+    status = CTXCALL(TreeTurnOff,ctx, nid);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2481,7 +2482,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_turnOn
 JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isOn
     (JNIEnv * env __attribute__ ((unused)), jclass cls __attribute__ ((unused)), jint nid, jlong jctx) {
   void *ctx = JLONG2PTR(jctx);
-  return _TreeIsOn(ctx, nid) == TreeON;
+  return CTXCALL(TreeIsOn,ctx, nid) == TreeON;
 }
 
 /*
@@ -2497,7 +2498,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getData
 
   void *ctx = JLONG2PTR(jctx);
 
-  status = _TreeGetRecord(ctx, nid, &xd);
+  status = CTXCALL(TreeGetRecord,ctx, nid, &xd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2518,7 +2519,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putData
   void *ctx = JLONG2PTR(jctx);
 
   dataD = ObjectToDescrip(env, jdata);
-  status = _TreePutRecord(ctx, nid, dataD, 0);
+  status = CTXCALL(TreePutRecord,ctx, nid, dataD, 0);
   if STATUS_NOT_OK
     throwMdsException(env, status);
   FreeDescrip(dataD);
@@ -2537,7 +2538,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getExtendedAttribute
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
   void *ctx = JLONG2PTR(jctx);
 
-  status = _TreeGetXNci(ctx, nid, name, &xd);
+  status = CTXCALL(TreeGetXNci,ctx, nid, name, &xd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2562,7 +2563,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setExtendedAttribute
   const char *name = (*env)->GetStringUTFChars(env, jname, 0);
 
   dataD = ObjectToDescrip(env, jdata);
-  status = _TreeSetXNci(ctx, nid, name, dataD);
+  status = CTXCALL(TreeSetXNci,ctx, nid, name, dataD);
   if STATUS_NOT_OK
     throwMdsException(env, status);
   FreeDescrip(dataD);
@@ -2578,7 +2579,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_deleteData
   EMPTYXD(emptyXd);
   int status;
   void *ctx = JLONG2PTR(jctx);
-  status = _TreePutRecord(ctx, nid, (struct descriptor *)&emptyXd, 0);
+  status = CTXCALL(TreePutRecord,ctx, nid, (struct descriptor *)&emptyXd, 0);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -2602,7 +2603,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_doMethod
   methodD.pointer = (char *)method;
   nidD.pointer = (char *)&nid;
 
-  status = _TreeDoMethod(ctx, &nidD, &methodD, &xd MDS_END_ARG);
+  status = CTXCALL(TreeDoMethod,ctx, &nidD, &methodD, &xd MDS_END_ARG);
   MdsFree1Dx(&xd, 0);
   (*env)->ReleaseStringUTFChars(env, jmethod, method);
   if STATUS_NOT_OK
@@ -2625,7 +2626,7 @@ JNIEXPORT jobjectArray JNICALL Java_MDSplus_TreeNode_getTags
   void *ctx = JLONG2PTR(jctx);
   char *tagNames[MAX_TAGS];
 
-  while (nTags < MAX_TAGS && (tagNames[nTags] = _TreeFindNodeTags(ctx, nid, &wildCtx)))
+  while (nTags < MAX_TAGS && (tagNames[nTags] = CTXCALL(TreeFindNodeTags,ctx, nid, &wildCtx)))
     nTags++;
 
   stringCls = (*env)->FindClass(env, "java/lang/String");
@@ -2657,7 +2658,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeSegment
   dimD = ObjectToDescrip(env, jdim);
   dataD = ObjectToDescrip(env, jdata);
 
-  status = _TreeMakeSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
+  status = CTXCALL(TreeMakeSegment,ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1, filledRows);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2684,7 +2685,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginSegment
   dimD = ObjectToDescrip(env, jdim);
   dataD = ObjectToDescrip(env, jdata);
 
-  status = _TreeBeginSegment(ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
+  status = CTXCALL(TreeBeginSegment,ctx, nid, startD, endD, dimD, (struct descriptor_a *)dataD, -1);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2706,7 +2707,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putSegment
   void *ctx = JLONG2PTR(jctx);
 
   dataD = ObjectToDescrip(env, jdata);
-  status = _TreePutSegment(ctx, nid, offset, (struct descriptor_a *)dataD);
+  status = CTXCALL(TreePutSegment,ctx, nid, offset, (struct descriptor_a *)dataD);
   FreeDescrip(dataD);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -2727,7 +2728,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_updateSegment
   startD = ObjectToDescrip(env, jstart);
   endD = ObjectToDescrip(env, jend);
   dimD = ObjectToDescrip(env, jdim);
-  status = _TreeUpdateSegment(ctx, nid, startD, endD, dimD, segmentOffset);
+  status = CTXCALL(TreeUpdateSegment,ctx, nid, startD, endD, dimD, segmentOffset);
 
   FreeDescrip(startD);
   FreeDescrip(endD);
@@ -2750,7 +2751,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_beginTimestampedSegment
   dataD = ObjectToDescrip(env, jdata);
 
 //  printDecompiled(dataD);
-  status = _TreeBeginTimestampedSegment(ctx, nid, (struct descriptor_a *)dataD, -1);
+  status = CTXCALL(TreeBeginTimestampedSegment,ctx, nid, (struct descriptor_a *)dataD, -1);
   FreeDescrip(dataD);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -2775,7 +2776,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_makeTimestampedSegment
 
   //printDecompiled(dataD);
 
-  status = _TreeMakeTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD, -1, numTimes);
+  status = CTXCALL(TreeMakeTimestampedSegment,ctx, nid, times, (struct descriptor_a *)dataD, -1, numTimes);
   FreeDescrip(dataD);
   (*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
   if STATUS_NOT_OK
@@ -2801,7 +2802,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putTimestampedSegment
 
 //  printDecompiled(dataD);
 
-  status = _TreePutTimestampedSegment(ctx, nid, times, (struct descriptor_a *)dataD);
+  status = CTXCALL(TreePutTimestampedSegment,ctx, nid, times, (struct descriptor_a *)dataD);
 
   FreeDescrip(dataD);
   (*env)->ReleaseLongArrayElements(env, jtimes, times, JNI_ABORT);
@@ -2824,7 +2825,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_putRow
   void *ctx = JLONG2PTR(jctx);
 
   rowD = ObjectToDescrip(env, jrow);
-  status = _TreePutRow(ctx, nid, size, (int64_t *) & jtime, (struct descriptor_a *)rowD);
+  status = CTXCALL(TreePutRow,ctx, nid, size, (int64_t *) & jtime, (struct descriptor_a *)rowD);
 
   FreeDescrip(rowD);
   if STATUS_NOT_OK
@@ -2841,7 +2842,7 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNumSegments
   int status, numSegments;
   void *ctx = JLONG2PTR(jctx);
 
-  status = _TreeGetNumSegments(ctx, nid, &numSegments);
+  status = CTXCALL(TreeGetNumSegments,ctx, nid, &numSegments);
   if STATUS_NOT_OK
     throwMdsException(env, status);
   return numSegments;
@@ -2860,7 +2861,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentStart
   EMPTYXD(endXd);
   jobject retObj;
 
-  status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+  status = CTXCALL(TreeGetSegmentLimits,ctx, nid, idx, &startXd, &endXd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2883,7 +2884,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentEnd
   EMPTYXD(endXd);
   jobject retObj;
 
-  status = _TreeGetSegmentLimits(ctx, nid, idx, &startXd, &endXd);
+  status = CTXCALL(TreeGetSegmentLimits,ctx, nid, idx, &startXd, &endXd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2906,7 +2907,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegmentDim
   EMPTYXD(timeXd);
   jobject retObj;
 
-  status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+  status = CTXCALL(TreeGetSegment,ctx, nid, idx, &dataXd, &timeXd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2929,7 +2930,7 @@ JNIEXPORT jobject JNICALL Java_MDSplus_TreeNode_getSegment
   EMPTYXD(timeXd);
   jobject retObj;
 
-  status = _TreeGetSegment(ctx, nid, idx, &dataXd, &timeXd);
+  status = CTXCALL(TreeGetSegment,ctx, nid, idx, &dataXd, &timeXd);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 
@@ -2951,13 +2952,13 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_addNode
   const char *name;
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
-  status = _TreeGetDefaultNid(ctx, &defNid);
+  status = CTXCALL(TreeGetDefaultNid,ctx, &defNid);
   if STATUS_OK
-    status = _TreeSetDefaultNid(ctx, nid);
+    status = CTXCALL(TreeSetDefaultNid,ctx, nid);
   if STATUS_OK
-    status = _TreeAddNode(ctx, (char *)name, &newNid, (char)usage);
+    status = CTXCALL(TreeAddNode,ctx, (char *)name, &newNid, (char)usage);
   if STATUS_OK
-    status = _TreeSetDefaultNid(ctx, defNid);
+    status = CTXCALL(TreeSetDefaultNid,ctx, defNid);
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -2976,15 +2977,15 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_deleteNode(JNIEnv * env, jclass cls
   void *ctx = JLONG2PTR(jctx);
 
   path = (*env)->GetStringUTFChars(env, jpath, 0);
-  status = _TreeGetDefaultNid(ctx, &defNid);
+  status = CTXCALL(TreeGetDefaultNid,ctx, &defNid);
   if STATUS_OK
-    status = _TreeFindNode(ctx, (char *)path, &delNid);
+    status = CTXCALL(TreeFindNode,ctx, (char *)path, &delNid);
   if STATUS_OK
-    status = _TreeDeleteNodeInitialize(ctx, delNid, &count, 1);
+    status = CTXCALL(TreeDeleteNodeInitialize,ctx, delNid, &count, 1);
   if STATUS_OK
-    _TreeDeleteNodeExecute(ctx);
+    CTXCALL0(TreeDeleteNodeExecute,ctx);
   if STATUS_OK
-    status = _TreeSetDefaultNid(ctx, defNid);
+    status = CTXCALL(TreeSetDefaultNid,ctx, defNid);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -3002,7 +3003,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_renameNode
   const char *name;
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
-  status = _TreeRenameNode(ctx, nid, (char *)name);
+  status = CTXCALL(TreeRenameNode,ctx, nid, (char *)name);
   (*env)->ReleaseStringUTFChars(env, jname, name);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -3020,7 +3021,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_addTag
   const char *tag;
 
   tag = (*env)->GetStringUTFChars(env, jtag, 0);
-  status = _TreeAddTag(ctx, nid, (char *)tag);
+  status = CTXCALL(TreeAddTag,ctx, nid, (char *)tag);
   (*env)->ReleaseStringUTFChars(env, jtag, tag);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -3042,7 +3043,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_removeTag
   bTag = malloc(strlen(tag) + 2);
   sprintf(bTag, "\\%s", tag);
 
-  status = _TreeFindNode(ctx, bTag, &currNid);
+  status = CTXCALL(TreeFindNode,ctx, bTag, &currNid);
   free(bTag);
   if STATUS_NOT_OK {
     (*env)->ReleaseStringUTFChars(env, jtag, tag);
@@ -3052,7 +3053,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_removeTag
     (*env)->ReleaseStringUTFChars(env, jtag, tag);
     throwMdsExceptionStr(env, "No such tag for this tree node");
   }
-  status = _TreeRemoveTag(ctx, (char *)tag);
+  status = CTXCALL(TreeRemoveTag,ctx, (char *)tag);
   (*env)->ReleaseStringUTFChars(env, jtag, tag);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -3072,12 +3073,12 @@ JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_addDevice
 
   name = (*env)->GetStringUTFChars(env, jname, 0);
   type = (*env)->GetStringUTFChars(env, jtype, 0);
-  status = _TreeGetDefaultNid(ctx, &defNid);
+  status = CTXCALL(TreeGetDefaultNid,ctx, &defNid);
   if STATUS_OK
-    status = _TreeSetDefaultNid(ctx, nid);
+    status = CTXCALL(TreeSetDefaultNid,ctx, nid);
   if STATUS_OK
-    status = _TreeAddConglom(ctx, (char *)name, (char *)type, &newNid);
-  _TreeSetDefaultNid(ctx, defNid);
+    status = CTXCALL(TreeAddConglom,ctx, (char *)name, (char *)type, &newNid);
+  CTXCALL(TreeSetDefaultNid,ctx, defNid);
   (*env)->ReleaseStringUTFChars(env, jname, name);
   (*env)->ReleaseStringUTFChars(env, jtype, type);
   if STATUS_NOT_OK
@@ -3096,9 +3097,9 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setSubtree
   void *ctx = JLONG2PTR(jctx);
 
   if (isSubtree)
-    status = _TreeSetSubtree(ctx, nid);
+    status = CTXCALL(TreeSetSubtree,ctx, nid);
   else
-    status = _TreeSetNoSubtree(ctx, nid);
+    status = CTXCALL(TreeSetNoSubtree,ctx, nid);
   if STATUS_NOT_OK
     throwMdsException(env, status);
 }
@@ -3115,12 +3116,12 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_moveNode
   const char *path;
 
   path = (*env)->GetStringUTFChars(env, jpath, 0);
-  status = _TreeGetDefaultNid(ctx, &defNid);
+  status = CTXCALL(TreeGetDefaultNid,ctx, &defNid);
   if STATUS_OK
-    status = _TreeSetDefaultNid(ctx, parentNid);
+    status = CTXCALL(TreeSetDefaultNid,ctx, parentNid);
   if STATUS_OK
-    status = _TreeRenameNode(ctx, nid, (char *)path);
-  _TreeSetDefaultNid(ctx, defNid);
+    status = CTXCALL(TreeRenameNode,ctx, nid, (char *)path);
+  CTXCALL(TreeSetDefaultNid,ctx, defNid);
   (*env)->ReleaseStringUTFChars(env, jpath, path);
   if STATUS_NOT_OK
     throwMdsException(env, status);
@@ -3133,8 +3134,7 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_moveNode
  */
 JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_doAction
     (JNIEnv * env __attribute__ ((unused)), jclass cls __attribute__ ((unused)), jint nid, jlong jctx) {
-  void *ctx = JLONG2PTR(jctx);
-  return doAction(ctx, nid);
+  return doAction(JLONG2PTR(jctx), nid);
 }
 
 
