@@ -1391,6 +1391,7 @@ AC_OUTPUT(Makefile.inc
           idlmdswidgets/Makefile
           javamds/Makefile
           java/Makefile
+          java/tests/Makefile
           java/mdsplus/Makefile
           java/mdsplus-api/Makefile
           java/mdsplus-api/tests/Makefile

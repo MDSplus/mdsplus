@@ -494,17 +494,22 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVASOURCE = 8
 RT6JAR = $(top_srcdir)/java/rt6.jar
-MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
-MDSOBJECTS_JAR = $(top_builddir)/java/mdsobjects/mdsobjects.jar
-JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
+MDSPLUS_API_JAR = $(abs_top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
+JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+n := 
+s := $(n) #
+c := :
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
 MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) MANIFEST.MF
 JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
@@ -513,7 +518,7 @@ JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = mdsplus-api.jar
 java_DATA = mdsplus-api.jar
-CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(JSCH)
+DEPENDENCIES = $(JSCH)
 SOURCE = \
  mds/*.java\
  mds/data/*.java\
@@ -834,6 +839,10 @@ $(MANIFEST):
 	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+$(DEPENDENCIES):
+	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
 $(JSCH):
 	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download

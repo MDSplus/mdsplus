@@ -595,8 +595,14 @@ SYBASE_LIB = @SYBASE_LIB@
 TARGET_ARCH = @TARGET_ARCH@
 TAR_EXCLUDE = @TAR_EXCLUDE@
 TDIC = @TDIC@
+
+# needed to set java for 32 (where available)
 TESTS_ENVIRONMENT = @TESTS_ENVIRONMENT@ MDSPLUS_VERSION_CHECK=off \
-	$(am__append_1) $(CLASSPATH_ENV)
+	$(am__append_1) $(CLASSPATH_ENV) \
+	JUNITTEST=org.junit.runner.TapTestRunner \
+	JAVA_TARGET_ARCH=$(JAVA_TARGET_ARCH) \
+	JAVA_PATH_NAME=$(JAVA_PATH_NAME) \
+	java_test_path=$(abs_builddir)
 THREAD = @THREAD@
 UIL = @UIL@
 USE_PIPED_MESSAGING = @USE_PIPED_MESSAGING@
@@ -708,44 +714,39 @@ SUFFIXES = .log .tap .xml
 TEST_BUILD_TAP = test-build.tap
 TEST_SUITE_TAP = test-suite.tap
 RT6JAR = $(top_srcdir)/java/rt6.jar
-MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
-MDSOBJECTS_JAR = $(top_builddir)/java/mdsobjects/mdsobjects.jar
-JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
+MDSPLUS_API_JAR = $(abs_top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
+JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+n := 
+s := $(n) #
+c := :
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
 MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) *.log *.tap *.trs *.xml
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) MANIFEST.MF *.tree \
+	*.datafile *.characteristics *.log *.tap *.trs *.xml
 JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
 @USE_JARS_DIR_TRUE@java_JAVA = 
-JUNIT = $(top_srcdir)/java/junit.jar \
-		$(top_srcdir)/java/snakeyaml-1.17.jar \
-		$(top_srcdir)/java/commons-lang-2.6.jar \
-		$(top_srcdir)/java/commons-io-2.6.jar \
-		$(top_srcdir)/java/tap4j-3.3.jar
-
+TAPTEST_JAR = $(top_builddir)/java/tests/taptest.jar
+java_DATA = tests.jar
+JUNIT_JARS = $(wildcard $(top_srcdir)/java/tests/*.jar)
+DEPENDENCIES = $(TAPTEST_JAR) $(JUNIT_JARS) $(JSCOPE_JAR) \
+	$(MDSOBJECTS_JAR)
 VALGRIND_SUPPRESSIONS_FILES_PY = \
  $(top_srcdir)/conf/valgrind-java.supp \
  $(top_srcdir)/conf/valgrind-mdsplus.supp
 
 @SKIP_JUNIT_TRUE@LOG_COMPILER = /bin/sh -c "exit 77";:
 @SKIP_JUNIT_FALSE@LOG_COMPILER = $(abs_top_srcdir)/java/junittest $(srcdir)
-java_srcdir = ${srcdir}/../src/test/java
-java_DATA = tests.jar
-main_JARS = $(addprefix ../, $(MAIN_JARS))
-null := 
-space := $(null) #
-column := :
-CLASSPATH_ENV = CLASSPATH=$(subst $(space),$(column),$(strip tests.jar $(main_JARS) $(JUNIT)))
-
-#MDSplus.MdsConnectionTest.log: mdsip.sh
-MOSTLYCLEANFILES = *.tree *.datafile *.characteristics mdsip.sh
-MAIN_JARS = mdsobjects.jar
+java_srcdir = $(srcdir)/../src/test/java
 SOURCE = \
     MDSplus/*.java
 
@@ -1180,7 +1181,6 @@ install-strip:
 	    "INSTALL_PROGRAM_ENV=STRIPPROG='$(STRIP)'" install; \
 	fi
 mostlyclean-generic:
-	-test -z "$(MOSTLYCLEANFILES)" || rm -f $(MOSTLYCLEANFILES)
 	-test -z "$(TEST_LOGS)" || rm -f $(TEST_LOGS)
 	-test -z "$(TEST_LOGS:.log=.trs)" || rm -f $(TEST_LOGS:.log=.trs)
 	-test -z "$(TEST_SUITE_LOG)" || rm -f $(TEST_SUITE_LOG)
@@ -1474,39 +1474,21 @@ $(MANIFEST):
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
 
-install-javaDATA: $(java_DATA)
+$(DEPENDENCIES):
+	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
-@SKIP_JUNIT_TRUE@$(TESTS):
-@SKIP_JUNIT_FALSE@$(TESTS): $(main_JARS) tests.jar
-
-# needed to set java for 32 (where available)
-export JAVA_TARGET_ARCH
-export JAVA_PATH_NAME
-
-$(main_JARS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C ..
-
-@USE_JARS_DIR_TRUE@tests.jar : @JARS_DIR@/java/mdsobjects/tests/tests.jar
+@USE_JARS_DIR_TRUE@tests.jar: @JARS_DIR@$(subst $(abs_top_srcdir),,$(abs_srcdir))/tests.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
-@USE_JARS_DIR_FALSE@tests.jar: $(main_JARS) $(JAVAROOT) classjava.stamp
+@USE_JARS_DIR_FALSE@tests.jar: $(TAPTEST_JAR) $(DEPENDENCIES) $(JAVAROOT) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
-mdsip.sh: $(java_srcdir)/MDSplus/mdsip.sh
-	cp $< $@
+# override so it will not be installed
+install-javaDATA: $(java_DATA)
 
-tests: mdsip.sh
-
-# test_path = $(abs_builddir)/trees
-# hostfile = $(abs_top_srcdir)/testing/multi.hosts
-# TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1
-
-# these are needed to tell ConnectionTest script how to find mdsip and mdsip.hosts
-export MAKEBINDIR
-export MAKEETCDIR
-
-# this is needed to run tests uning personalized runner with TAP output
-export JUNITTEST = MDSplus.TestRunner
+@SKIP_JUNIT_TRUE@$(TESTS):
+@SKIP_JUNIT_FALSE@$(TESTS): $(MAIN_JARS) $(TAPTEST_JAR) tests.jar
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

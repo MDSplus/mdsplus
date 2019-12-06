@@ -5,7 +5,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(MDSPLUS_API_JAR)
+DEPENDENCIES = $(MDSPLUS_API_JAR)
 
 if USE_JARS_DIR
 
@@ -14,7 +14,7 @@ jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 
 else
 
-jTraverser2.jar: classjava.stamp
+jTraverser2.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
