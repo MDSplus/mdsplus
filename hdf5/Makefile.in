@@ -15,7 +15,6 @@ SOURCES = \
 	MDSplus2HDF5.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = hdf5tdi.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ @MAKELIBDIR@libhdf5tdi.a \
 	@MAKEBINDIR@ @MAKEBINDIR@hdf5ToMds  @MAKEBINDIR@MDSplus2HDF5
@@ -39,7 +38,7 @@ install: $(libdir) $(bindir)
 	$(INSTALL) -m 755  @MAKEBINDIR@hdf5ToMds @bindir@
 	$(INSTALL) -m 755  @MAKEBINDIR@MDSplus2HDF5 @bindir@
 
-@MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o @EXPORTS_FILE@
+@MAKESHLIBDIR@libhdf5tdi@SHARETYPE@ : hdf5tdi.o
 	$(LD) -o $@ @LINKSHARED@ hdf5tdi.o $(LIBS) $(LD_FLAGS)
 
 @MAKELIBDIR@libhdf5tdi.a: hdf5tdi.o 

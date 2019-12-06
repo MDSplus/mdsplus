@@ -11,7 +11,6 @@ SOURCES = \
         mdsvme.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsVme.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@libMdsVme@SHARETYPE@ @MAKELIBDIR@libMdsVme.a
 
@@ -30,7 +29,7 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@libMdsVme.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@libMdsVme@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@libMdsVme@SHARETYPE@ : $(OBJECTS)
 	$(LD) -o $@ @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@libMdsVme.a : $(OBJECTS)

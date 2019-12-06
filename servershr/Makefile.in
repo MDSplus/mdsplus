@@ -6,7 +6,6 @@ VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsServerShr.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/MdsServerShr.def
 
 SOURCES = \
       ServerDispatchAction.c\
@@ -29,7 +28,6 @@ SOURCES = \
       ServerQAction.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsServerShr.exports
 
 all: @MAKELIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsServerShr.a
 
@@ -49,7 +47,7 @@ install: $(libdir)
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@: $(OBJECTS) $(DEF)
+@MAKESHLIBDIR@@LIBPRE@MdsServerShr@SHARETYPE@: $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsdcl -lTdiShr -lTreeShr -lMdsShr -lMdsIpShr $(LIBS) $(LIBSOCKET) $(THREAD) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@MdsServerShr.a: $(OBJECTS)

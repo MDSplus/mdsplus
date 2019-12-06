@@ -18,7 +18,6 @@ CXXSOURCES = \
 SOURCES = mdsdata.c mdstree.c
 
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
-EXPORTS = MdsObjectsCppShr.exports
 
 @VS_TRUE@ VSDLL=@MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
 
@@ -40,20 +39,22 @@ install: $(libdir)
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) @EXPORTS_FILE@ 
+@MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB): $(OBJECTS)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr $(MAKE_IMPLIB) $(CXXFLAGS)
 
 @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-ObjectsCppShr.exports: MdsObjectsCppShr.def
-	$(SED) -e /LIBRARY/\;/\;/d MdsObjectsCppShr.def > $@
-
 ifneq "$(VSDLL)" ""
   
 $(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
-	for i in $$(find $(top_srcdir) -follow -name '*.def'); do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$$i"; done 
+	mkdir -p $(top_builddir)/defs
+	for i in $$(find @MAKESHLIBDIR@ -follow -name '*.dll'); do \
+	  deffile=$(top_builddir)/defs/$$(basename $${i/.dll/.def}) ;\
+	  gendef -a - $$i > $$deffile ;\
+	  wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}" ;\
+	done
 	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
 
 endif

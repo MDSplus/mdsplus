@@ -10,7 +10,6 @@ MKDIR_P=@MKDIR_P@
 @MINGW_TRUE@ IMPLIB_MdsIpShr=@MAKELIBDIR@MdsIpShr.dll.a
 @MINGW_TRUE@ IMPLIB_MdsIpSrvShr=@MAKELIBDIR@MdsIpSrvShr.dll.a
 @MINGW_TRUE@ WIN=.win
-@MINGW_TRUE@ DEF=${srcdir}/MdsIpShr.def
 
 COMPRESSION_SOURCES = zlib/adler32.c \
                       zlib/compress.c \
@@ -114,8 +113,6 @@ endif #GLOBUS_FLAVOR
 
 PROGRAMS = $(bin_SCRIPTS) $(MDSIPSD) @MAKEBINDIR@mdsip$(EXE) @MAKEBINDIR@mdsiptest$(EXE) $(MDSIP_SERVICE)
 
-EXPORTS = MdsIpShr.exports
-
 all : primary
 	$(MAKE) secundary @MAKEFLAG_J@  @MAKEFLAG_O@
 
@@ -210,7 +207,7 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 	$(RANLIB) $@
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
-$(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS) $(DEF)
+$(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) -lTreeShr -lMdsShr $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
 
 LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr

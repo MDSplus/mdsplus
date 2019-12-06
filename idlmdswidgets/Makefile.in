@@ -20,8 +20,6 @@ cw_wveditv5.c \
 
 OBJECTS = $(SOURCES:.c=.o)
 
-EXPORTS = IdlMdsWidgets.export
-
 all : @MAKELIBDIR@ @MAKELIBDIR@libIdlMdsWidgets@SHARETYPEMOD@ @MAKELIBDIR@libIdlMdsWidgets.a @MAKEUIDDIR@cw_wvedit.uid
 
 clean:

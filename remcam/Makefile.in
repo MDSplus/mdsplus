@@ -4,17 +4,15 @@ srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-@MINGW_TRUE@ DEF=${srcdir}/remcam.def
 
 LIBS=@LIBS@
 
 SOURCES = CamIosb.c CamMulti.c CamSingle.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = remcam.export
 
 all : @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@@REMCAMLIB@@SHARETYPE@
 
-@MAKESHLIBDIR@@LIBPRE@@REMCAMLIB@@SHARETYPE@ : $(OBJECTS) $(DEF)
+@MAKESHLIBDIR@@LIBPRE@@REMCAMLIB@@SHARETYPE@ : $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsIpShr $(LIBS)
 
 clean:
