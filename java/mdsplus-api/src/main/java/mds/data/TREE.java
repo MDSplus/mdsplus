@@ -410,11 +410,13 @@ public final class TREE implements ContextEventListener, CTX{
 		final TagList taglist = new TagList(max, this.expt);
 		synchronized(this.mds){
 			this.holdDbid();
+			TagRefStatus tag = TagRefStatus.init;
 			try{
-				TagRefStatus tag = TagRefStatus.init;
 				while(taglist.size() < max && (tag = this.api.treeFindTagWild(null, searchstr, tag)).ok())
 					taglist.put(tag.data, new Nid(tag.nid, this));
 			}finally{
+				if (taglist.size() >= max)
+					this.api.treeFindTagEnd(null, tag);
 				this.releaseDbid();
 			}
 		}
@@ -728,8 +730,8 @@ public final class TREE implements ContextEventListener, CTX{
 
 	public final String[] getTags(final int nid) throws MdsException {
 		final StringBuilder cmd = new StringBuilder(170).append("_a=0Q;_i=0;_l=LIST();");
-		cmd.append("WHILE((_i<1024)&&KIND(_t=TreeShr->TreeFindNodeTags:T(val(");
-		cmd.append(nid).append("),ref(_a)))>0)(_i++;_l=List(_l,_t);MdsShr->StrFree1Dx(ref(_t)););_l");
+		cmd.append("_x=REPEAT(' ',64);WHILE((_i<1024)&&(TreeShr->TreeFindNodeTagsDsc(val(");
+		cmd.append(nid).append("),ref(_a),descr(_x))&1))(_i++;_l=List(_l,TRIM(_x)););_l");
 		final List list = this.mds.getDescriptor(this.ctx, cmd.toString(), List.class);
 		return list.toStringArray();
 	}

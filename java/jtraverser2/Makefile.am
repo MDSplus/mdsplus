@@ -5,7 +5,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUS_API_JAR)
+CLASSPATH_ENV = CLASSPATH=$(JAVAROOT):$(MDSPLUS_API_JAR)
 
 if USE_JARS_DIR
 

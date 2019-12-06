@@ -66,9 +66,11 @@ TreeGetDatafileSize
 TreeGetDbi
 TreeGetDefaultNid
 TreeGetMinimumPath
+TreeGetMinimumPathDsc
 TreeGetNci
 TreeGetNumSegments
 TreeGetPath
+TreeGetPathDsc
 TreeGetPerf
 TreeGetRecord
 TreeGetSegment
@@ -162,9 +164,11 @@ _TreeGetDatafileSize
 _TreeGetDbi
 _TreeGetDefaultNid
 _TreeGetMinimumPath
+_TreeGetMinimumPathDsc
 _TreeGetNci
 _TreeGetNumSegments
 _TreeGetPath
+_TreeGetPathDsc
 _TreeGetRecord
 _TreeGetSegment
 _TreeGetSegmentInfo

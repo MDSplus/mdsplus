@@ -52,11 +52,11 @@ public abstract class COMPLEX<T extends Number>extends NUMBER<Complex<T>>{
 	}
 
 	private static final ByteBuffer toByteBuffer(final double real, final double imag) {
-		return ByteBuffer.allocate(Double.BYTES * 2).order(Descriptor.BYTEORDER).putDouble(0, real).putDouble(Double.BYTES, imag);
+		return ByteBuffer.allocateDirect(Double.BYTES * 2).order(Descriptor.BYTEORDER).putDouble(0, real).putDouble(Double.BYTES, imag);
 	}
 
 	private static final ByteBuffer toByteBuffer(final float real, final float imag) {
-		return ByteBuffer.allocate(Float.BYTES * 2).order(Descriptor.BYTEORDER).putFloat(0, real).putFloat(Float.BYTES, imag);
+		return ByteBuffer.allocateDirect(Float.BYTES * 2).order(Descriptor.BYTEORDER).putFloat(0, real).putFloat(Float.BYTES, imag);
 	}
 
 	@SuppressWarnings({"unchecked", "rawtypes"})

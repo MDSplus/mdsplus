@@ -68,7 +68,7 @@ public abstract class COMPRESSION extends Function{
 		if(pack instanceof Descriptor_CA) pack = COMPRESSION.decompress((Descriptor_CA)pack);
 		if(preview == -1) preview = items.getLength();
 		else{
-			final ByteBuffer buf = ByteBuffer.allocate(items.pointer()).order(Descriptor.BYTEORDER);
+			final ByteBuffer buf = ByteBuffer.allocateDirect(items.pointer()).order(Descriptor.BYTEORDER);
 			buf.put(items.serializeArray(), 0, items.pointer()).rewind();
 			buf.putInt(ARRAY._aszI, preview * items.length());
 			items = Descriptor_A.deserialize(buf);
@@ -170,10 +170,10 @@ public abstract class COMPRESSION extends Function{
 	private final static ByteBuffer mdsXpand(int nitems, final ARRAY<?> pack_dsc, final ARRAY<?> items_dsc) {
 		if(DEBUG.D) System.out.println("mdsXpand: " + pack_dsc.getDTypeName() + pack_dsc.arsize());
 		final int[] bit = new int[]{0};
-		final ByteBuffer bpack = ByteBuffer.allocate(pack_dsc.arsize() + 4).order(Descriptor.BYTEORDER); // zero-fill the last integer
+		final ByteBuffer bpack = ByteBuffer.allocateDirect(pack_dsc.arsize() + 4).order(Descriptor.BYTEORDER); // zero-fill the last integer
 		// bpack.asIntBuffer().put(pack_dsc.getBuffer().asIntBuffer()).rewind(); // would swap ints
 		bpack.put(pack_dsc.getBuffer()).rewind(); // take buffer as is
-		final ByteBuffer bout = ByteBuffer.allocate(items_dsc.arsize() + items_dsc.pointer()).order(Descriptor.BYTEORDER);
+		final ByteBuffer bout = ByteBuffer.allocateDirect(items_dsc.arsize() + items_dsc.pointer()).order(Descriptor.BYTEORDER);
 		bout.put((ByteBuffer)items_dsc.serialize().limit(items_dsc.pointer())); // fill header up to body
 		bout.put(Descriptor._clsB, Descriptor_A.CLASS); // override class
 		final int limit = pack_dsc.arsize() * 8;
@@ -192,7 +192,7 @@ public abstract class COMPRESSION extends Function{
 		/********************************
 		 * Note the sign-extended unpacking.
 		 ********************************/
-		final ByteBuffer fb = ByteBuffer.allocate(Integer.BYTES);
+		final ByteBuffer fb = ByteBuffer.allocateDirect(Integer.BYTES);
 		final boolean isfloat = dtype == DTYPE.F || dtype == DTYPE.FC || dtype == DTYPE.D || dtype == DTYPE.DC || dtype == DTYPE.G || dtype == DTYPE.GC || dtype == DTYPE.H || dtype == DTYPE.HC;
 		while(nitems > 0){
 			if((bit[0] + 2 * COMPRESSION.FIELDSY) > limit) break;

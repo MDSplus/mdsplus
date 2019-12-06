@@ -52,8 +52,12 @@ TreeGetDefaultNid
 _TreeGetDefaultNid
 TreeGetMinimumPath
 _TreeGetMinimumPath
+TreeGetMinimumPathDsc
+_TreeGetMinimumPathDsc
 TreeGetPath
 _TreeGetPath
+TreeGetPathDsc
+_TreeGetPathDsc
 TreeGetRecord
 _TreeGetRecord
 TreeGetStackSize

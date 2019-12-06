@@ -22,7 +22,6 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <STATICdef.h>
 #include <mdsplus/mdsconfig.h>
 #include <stdlib.h>
 #include <string.h>
@@ -36,15 +35,15 @@ extern void **TreeCtx();
 
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
-STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one);
+static int BsearchCompare(const void *this_one, const void *compare_one);
 
-EXPORT char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
+char *TreeFindNodeTags(int nid_in, void **ctx_ptr)
 {
   return _TreeFindNodeTags(*TreeCtx(), nid_in, ctx_ptr);
 }
 
 
-EXPORT int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
+int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) * TreeCtx();
   NODE *nodeptr;
@@ -52,22 +51,17 @@ EXPORT int TreeFindTag(const char *tagnam, const char *treename, int *tagidx)
 		      (short)strlen(tagnam), tagnam, &nodeptr, tagidx);
 }
 
-EXPORT int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
+int TreeFindNodeTagsDsc(int nid_in, void **ctx_ptr, struct descriptor *tag)
 {
-  int status;
   char *tagname = TreeFindNodeTags(nid_in, ctx_ptr);
-  if (tagname) {
-    struct descriptor tagd = { 0, DTYPE_T, CLASS_S, 0 };
-    tagd.length = (unsigned short)strlen(tagname);
-    tagd.pointer = tagname;
-    StrCopyDx(tag, &tagd);
-    status = 1;
-  } else
-    status = 0;
-  return status;
+  if (!tagname) return TreeTNF;
+  DESCRIPTOR_FROM_CSTRING(tagd,tagname);
+  StrCopyDx(tag, &tagd);
+  free(tagname);
+  return TreeSUCCESS;
 }
 
-EXPORT char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
+char *_TreeFindNodeTags(void *dbid, int nid_in, void **ctx_ptr)
 {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) & nid_in;
@@ -132,7 +126,7 @@ struct tag_search {
   TREE_INFO *info;
 };
 
-EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
+int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx)
 {
   int len = min(taglen, (short)sizeof(TAG_NAME));
@@ -233,7 +227,7 @@ EXPORT int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, 
   return status;
 }
 
-STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
+static int BsearchCompare(const void *this_one, const void *compare_one)
 {
   struct tag_search *tsearch = (struct tag_search *)this_one;
   char *tag = (tsearch->info->tag_info + swapint32(compare_one))->name;
@@ -247,19 +241,4 @@ STATIC_ROUTINE int BsearchCompare(const void *this_one, const void *compare_one)
 *******************************************/
 
   return strncmp((char *)tsearch->tag, (char *)tag, sizeof(TAG_NAME));
-}
-
-EXPORT int TreeAbsPathDsc(char *inpath, struct descriptor *outpath)
-{
-  char *ans_c = TreeAbsPath(inpath);
-  if (ans_c == 0)
-    return 0;
-  else {
-    struct descriptor ans_d = { 0, DTYPE_T, CLASS_S, 0 };
-    ans_d.length = (unsigned short)strlen(ans_c);
-    ans_d.pointer = ans_c;
-    StrCopyDx(outpath, &ans_d);
-    free(ans_c);
-  }
-  return 1;
 }

@@ -1,3 +1,0 @@
-LIBRARY	JavaMdsLib
-EXPORTS
-Java_mds_mdslib_MdsLib_evaluate

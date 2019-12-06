@@ -548,11 +548,10 @@ typedef struct tag_search {
   struct descriptor_d search_tree;
   unsigned char top_match;
   unsigned char remote;
-  char    *remote_tag;
+  char    answer[1+sizeof(TREE_NAME)+2+sizeof(TAG_NAME)+1];
   int     conid;
   int64_t ctx;
 } TAG_SEARCH;
-
 
 char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout, void **ctx_inout){
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
@@ -562,34 +561,31 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
     (*ctx)->remote = 1;
     (*ctx)->conid = dblist->tree_info->channel;
     (*ctx)->ctx = 0;
-  } else free((*ctx)->remote_tag);
-  struct descriptor wild = {strlen(wildarg),DTYPE_T,CLASS_S,(char*)wildarg};
+  }
+  DESCRIPTOR_FROM_CSTRING(wild,wildarg);
   EMPTYXD(ans);
   sprintf(exp,"__a=-1;__b=0x%"PRIx64"QU;__c=*;___=TreeShr->TreeFindTagWildDsc(ref($),ref(__a),ref(__b),xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",(*ctx)->ctx);
   int status = MdsValueDsc(dblist->tree_info->channel, exp, &wild, &ans, NULL);
-  if STATUS_NOT_OK {
-    (*ctx)->remote_tag = NULL;
-    goto end;
+  if STATUS_OK {
+    struct descriptor** list = (struct descriptor**)ans.pointer->pointer;
+    status = *(int*)list[0]->pointer;
+    if (nidout) *nidout = *(int*)list[1]->pointer;
+    (*ctx)->ctx = *(uint64_t*)list[2]->pointer;
+    if ((*ctx)->ctx) {
+      size_t len = list[3]->length < sizeof((*ctx)->answer) ? list[3]->length : sizeof((*ctx)->answer)-1;
+      memcpy((*ctx)->answer, list[3]->pointer, len);
+      (*ctx)->answer[len] = '\0';
+    } else
+      status = TreeFAILURE;
   }
-  struct descriptor** list = (struct descriptor**)ans.pointer->pointer;
-  status = *(int*)list[0]->pointer;
-  if (nidout) *nidout = *(int*)list[1]->pointer;
-  (*ctx)->ctx = *(uint64_t*)list[2]->pointer;
-  if ((*ctx)->ctx) {
-    (*ctx)->remote_tag = memcpy(malloc(list[3]->length + 1), list[3]->pointer, list[3]->length);
-    (*ctx)->remote_tag[list[3]->length] = '\0';
-  } else
-   (*ctx)->remote_tag = NULL;
-end: ;
   MdsIpFreeDsc(&ans);
-  return (*ctx)->remote_tag;
+  return STATUS_OK ? (*ctx)->answer : NULL;
 }
 
 void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   if (*ctx) {
-    free((*ctx)->remote_tag);
     if ((*ctx)->ctx) {
       char exp[128];
       sprintf(exp,"TreeShr->TreeFindTagEnd(val(0x%"PRIx64"QU))",(*ctx)->ctx);

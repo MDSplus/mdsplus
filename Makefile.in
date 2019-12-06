@@ -23,8 +23,7 @@ JAVA_JAR = \
 	   java/mdsobjects/tests
 
 JAVA_APS = \
-	   javamds \
-	   java/mdsplus-api/src/main/jni/mds/mdslib
+	   javamds
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
@@ -204,12 +203,12 @@ install: $(install_DIRS)
 .PHONY: tests-envdump
 tests-envdump:
 	cd python/MDSobjects/tests&&(\
-	make test-envdump;\
+	make tests-envdump;\
 	cd ../../..;)
 
-test-env:
+tests-env:
 	cd python/MDSplus/tests&&(\
-	make test-env;\
+	make tests-env;\
 	cd ../../..;)
 
 @HAVE_WINE_TRUE@wineconsole:

@@ -40,7 +40,6 @@ import mds.data.descriptor_r.function.CONST.dT0;
 import mds.data.descriptor_r.function.CONST.dTorr;
 import mds.data.descriptor_r.function.CONST.dTrue;
 
-@SuppressWarnings("static-method")
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class CONST_Test{
 	private static Mds mds;

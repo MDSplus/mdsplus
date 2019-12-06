@@ -35,8 +35,6 @@ extern void **TreeCtx();
 /*
  * Exported routines
  */
-EXPORT char *TreeAbsPath(char const *inpath);
-
 EXPORT int TreeFindNode(char const *path, int *outnid);
 EXPORT int TreeFindNodeRelative(char const *path, int startnid, int *outnid);
 EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid);
@@ -53,7 +51,6 @@ EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
  * Static internal routines
  */
 STATIC_ROUTINE inline int IsWild(char *str);
-STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
 STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail);
 STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
 STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODELIST **tail, NODE *node);
@@ -67,7 +64,6 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
 STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
 STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, NODELIST **tail);
 STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int mask);
-STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in);
 /*
  * External routines (not exported) defined here
  */
@@ -101,10 +97,6 @@ EXPORT int TreeFindNodeWildRelative(char const *path, int start, int *nid_out, v
 EXPORT int TreeFindNodeEnd(void **ctx_in)
 {
   return _TreeFindNodeEnd(*TreeCtx(), ctx_in);
-}
-EXPORT char *TreeAbsPath(char const *inpath)
-{
-  return _TreeAbsPath(*TreeCtx(), inpath);
 }
 
 EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
@@ -725,86 +717,4 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
   }
   free(parent_name);
   return status;
-}
-EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
-{
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int nid;
-  char *answer;
-  if (!IS_OPEN(dblist))
-    return NULL;
-  if (dblist->remote)
-    return AbsPathRemote(dblist, inpath);
-  _TreeGetDefaultNid(dbid, &nid);
-  answer = AbsPath(dbid, inpath, nid);
-  _TreeSetDefaultNid(dbid, nid);
-  return answer;
-}
-
-STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
-{
-  char *answer = NULL, *pathptr = NULL;
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  _TreeSetDefaultNid(dbid, nid_in);
-  size_t len = strlen(inpath);
-  if (len) {
-    int nid;
-    if (_TreeFindNode(dbid, inpath, &nid) & 1) {
-      pathptr = _TreeGetPath(dbid, nid);
-      len = strlen(pathptr);
-    } else pathptr = strdup(inpath);
-  } else {
-    pathptr = _TreeGetPath(dbid, nid_in);
-    len = strlen(pathptr);
-  }
-  if (pathptr[0] == '\\') {
-    if (strstr(pathptr, "::")) {
-      answer = strdup(pathptr);
-    }
-    else {
-      char *treename = Treename(dblist, nid_in);
-      answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
-      strcpy(answer, "\\");
-      strcat(answer, treename);
-      strcat(answer, "::");
-      strcat(answer, pathptr+1);
-    }
-  }
-  else if ((strstr(pathptr, "-") == pathptr) || (strstr(pathptr, ".-") == pathptr)) {
-      int nid;
-      NODE node;
-      NODE *nodeptr = &node;
-      NID *nidptr = (NID *) & nid;
-      NID *nidinptr = (NID *) & nid_in;
-      if (nid_in) {
-        nodeptr = nid_to_node(dblist, nidinptr);
-        node_to_nid(dblist, parent_of(dblist, nodeptr), nidptr);
-        answer = AbsPath(dbid, &pathptr[2], nid);
-      } else
-        answer = NULL;
-  } else {
-    char *tmp = _TreeGetPath(dbid, nid_in);
-    answer = strcpy(malloc(strlen(tmp) + strlen(pathptr) + 2), tmp);
-    free(tmp);
-    switch (pathptr[0]) {
-    case '.':
-    case ':':
-      strcat(answer, pathptr);
-      break;
-    default:
-      strcat(answer, ":");
-      strcat(answer, pathptr);
-      break;
-    }
-  }
-  free(pathptr);
-  return answer;
-}
-STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in)
-{
-  TREE_INFO *info;
-  NID nid = *(NID *) & nid_in;
-  unsigned int treenum;
-  for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree; info = info->next_info) ;
-  return info ? info->treenam : "";
 }

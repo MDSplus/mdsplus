@@ -1,5 +1,5 @@
 #!/bin/bash
-javadir=java/
+cd $(realpath $(dirname $0)/../../../)
 
 get_latest() {
  URL="https://oss.sonatype.org/content/groups/public/org/mdsplus/mdsplus-parent/maven-metadata.xml"
@@ -14,17 +14,17 @@ get_latest() {
 
 get_release_diff() {
  export LATEST=$(get_latest)
- git diff alpha_release-${LATEST//./-} --name-only $javadir
+ git diff alpha_release-${LATEST//./-} --name-only java/
 }
 
 get_modules() {
- echo $(grep -oP '(?<=\<module\>).*(?=\</module\>)' ${javadir}pom.xml)
+ echo $(grep -oP '(?<=\<module\>).*(?=\</module\>)' java/pom.xml)
 }
 
 project_changed() {
  export LATEST=$(get_latest)
  MODULES=$(get_modules)
- if get_release_diff|grep -P "^$javadir(${MODULES// /\|})/.*.java\$" >/dev/null
+ if get_release_diff|grep -P "^java/(${MODULES// /\|})/.*.java\$" >/dev/null
  then
   echo yes
   return 0

@@ -11,7 +11,6 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_a.Int8Array;
 import mds.data.descriptor_r.Range;
 
-@SuppressWarnings("static-method")
 public class MdsShr_Test{
 	private static MdsShr	mdsshr;
 	private static Mds		mds;

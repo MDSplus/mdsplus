@@ -36,21 +36,31 @@ SOURCE = \
     MDSplus/*.java
 
 TESTS = \
-    MDSplus.MdsDataTest  \
-    MDSplus.MdsConglomTest  \
-    MDSplus.MdsConnectionTest  \
-    MDSplus.MdsDimensionTest  \
-    MDSplus.MdsEventTest  \
-    MDSplus.MdsExpressionCompileTest  \
-    MDSplus.MdsFunctionTest  \
-    MDSplus.MdsRangeTest  \
-    MDSplus.MdsSignalTest  \
-    MDSplus.MdsStringTest  \
-    MDSplus.MdsTreeNodeTest  \
-    MDSplus.MdsTreeTest  \
-    MDSplus.MdsWindowTest 
-
-VALGRIND_TESTS = 
+ MDSplus.MdsDataTest\
+ MDSplus.MdsConglomTest\
+ MDSplus.MdsConnectionTest\
+ MDSplus.MdsDimensionTest\
+ MDSplus.MdsEventTest\
+ MDSplus.MdsExpressionCompileTest\
+ MDSplus.MdsFunctionTest\
+ MDSplus.MdsRangeTest\
+ MDSplus.MdsSignalTest\
+ MDSplus.MdsStringTest\
+ MDSplus.MdsTreeNodeTest\
+ MDSplus.MdsTreeTest\
+ MDSplus.MdsWindowTest
+VALGRIND_TESTS = \
+ MDSplus.MdsDataTest\
+ MDSplus.MdsConglomTest\
+ MDSplus.MdsConnectionTest\
+ MDSplus.MdsDimensionTest\
+ MDSplus.MdsEventTest\
+ MDSplus.MdsExpressionCompileTest\
+ MDSplus.MdsFunctionTest\
+ MDSplus.MdsRangeTest\
+ MDSplus.MdsSignalTest\
+ MDSplus.MdsStringTest\
+ MDSplus.MdsWindowTest
 
 # test_path = $(abs_builddir)/trees
 # hostfile = $(abs_top_srcdir)/testing/multi.hosts

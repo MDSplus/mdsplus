@@ -47,7 +47,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 			shape = ((NUMBERArray<?>)X).getShape();
 			final int elements = ((NUMBERArray<?>)X).getLength();
 			final ByteBuffer xbuf = X.getBuffer();
-			buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
+			buf = ByteBuffer.allocateDirect(elements * this.length()).order(Descriptor.BYTEORDER);
 			if(Y instanceof NUMBERArray){
 				final ByteBuffer ybuf = Y.getBuffer();
 				for(int i = 0; i < elements; i++)
@@ -62,7 +62,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 			final int elements = ((NUMBERArray<?>)Y).getLength();
 			final double xs = X.toDouble();
 			final ByteBuffer ybuf = Y.getBuffer();
-			buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
+			buf = ByteBuffer.allocateDirect(elements * this.length()).order(Descriptor.BYTEORDER);
 			for(int i = 0; i < elements; i++)
 				this.buildBuffer(buf, method.method(xs, ((NUMBERArray<Number>)Y).getElement(ybuf).doubleValue()));
 		}
@@ -89,7 +89,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 		if(X instanceof Descriptor_A){
 			shape = ((Descriptor_A<?>)X).getShape();
 			final int elements = ((Descriptor_A<?>)X).arsize() / ((Descriptor_A<?>)X).length();
-			buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
+			buf = ByteBuffer.allocateDirect(elements * this.length()).order(Descriptor.BYTEORDER);
 			if(Y instanceof Descriptor_A) for(int i = 0; i < elements; i++)
 				this.buildBuffer(buf, method.method(((Descriptor_A<?>)X).toLong(i), ((Descriptor_A<?>)Y).toLong(i)));
 			else{
@@ -101,7 +101,7 @@ public abstract class NUMBERArray<T extends Number>extends Descriptor_A<T> imple
 			shape = ((Descriptor_A<?>)Y).getShape();
 			final int elements = ((Descriptor_A<?>)Y).arsize() / ((Descriptor_A<?>)Y).length();
 			final long xs = X.toLong();
-			buf = ByteBuffer.allocate(elements * this.length()).order(Descriptor.BYTEORDER);
+			buf = ByteBuffer.allocateDirect(elements * this.length()).order(Descriptor.BYTEORDER);
 			for(int i = 0; i < elements; i++)
 				this.buildBuffer(buf, method.method(xs, ((Descriptor_A<?>)Y).toLong(i)));
 		}

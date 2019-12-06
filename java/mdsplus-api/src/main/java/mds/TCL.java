@@ -19,8 +19,8 @@ import javax.swing.WindowConstants;
 import javax.swing.text.DefaultEditorKit;
 import javax.swing.text.JTextComponent;
 import javax.swing.text.TextAction;
-import mds.data.descriptor_s.Pointer;
-import mds.mdslib.MdsLib;
+import mds.data.CTX;
+import mds.mdsip.MdsIp;
 
 public final class TCL{
 	private static class SelectAll extends TextAction{
@@ -125,7 +125,7 @@ public final class TCL{
 	}
 
 	public static void main(final String... args) {
-		TCL.getPrompt(new MdsLib()).setVisible(true);
+		TCL.getPrompt(new MdsIp()).setVisible(true);
 	}
 	private final Mds	mds;
 	boolean				setcommandtcl	= false;
@@ -134,7 +134,7 @@ public final class TCL{
 		this.mds = mds;
 	}
 
-	public final int doAction(final Pointer ctx, final int nid) throws MdsException {
+	public final int doAction(final CTX ctx, final int nid) throws MdsException {
 		return this.mds.getInteger(ctx, new StringBuilder(37).append("TCL('do '//GetNci(").append(nid).append(",'PATH'))").toString());
 	}
 

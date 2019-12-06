@@ -252,6 +252,7 @@ typedef struct nid {
 *********************************************/
 
 typedef char NODE_NAME[12];
+typedef char TREE_NAME[12];
 
 /*********************************************
  Linkages to other nodes via parent, brother,

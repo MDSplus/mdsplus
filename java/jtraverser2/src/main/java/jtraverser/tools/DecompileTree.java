@@ -123,14 +123,10 @@ public class DecompileTree{
 			final Transformer transformer = transFactory.newTransformer();
 			final DOMSource source = new DOMSource(etree);
 			final File newXML = new File(filename);
-			@SuppressWarnings("resource")
-			final FileOutputStream os = new FileOutputStream(newXML);
-			try{
+			try(final FileOutputStream os = new FileOutputStream(newXML)){
 				final StreamResult result = new StreamResult(os);
 				transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 				transformer.transform(source, result);
-			}finally{
-				os.close();
 			}
 		}catch(final Exception e){
 			System.err.println(this.error = e.toString());
@@ -171,7 +167,7 @@ public class DecompileTree{
 					for(final Nid son : sons)
 						try{
 							if(son.getNciConglomerateElt() == 1) // Descendant NOT belonging to the device
-							    subtreeNodes.addElement(son);
+								subtreeNodes.addElement(son);
 						}catch(final MdsException exc){/**/}
 				}catch(final MdsException exc){/**/}
 				final Vector<Nid> subtreeMembers = new Vector<Nid>();
@@ -180,12 +176,12 @@ public class DecompileTree{
 					for(final Nid member : members)
 						try{
 							if(member.getNciConglomerateElt() == 1) // Descendant NOT belonging to the device
-							    subtreeMembers.addElement(member);
+								subtreeMembers.addElement(member);
 						}catch(final MdsException exc){/**/}
 				}catch(final MdsException exc){/**/}
 				if((!flags.isOn() && flags.isParentOn()) || (flags.isOn() && !flags.isParentOn()) || (flags.isSetup() && data != null) || tags.length > 0 || subtreeNodes.size() > 0 || subtreeMembers.size() > 0 || isFull
-				// TACON
-				        || name.endsWith("_GAIN")) // show it only at these conditions
+						// TACON
+						|| name.endsWith("_GAIN")) // show it only at these conditions
 				{
 					final Element fieldNode = this.document.createElement("field");
 					node.appendChild(fieldNode);
@@ -202,7 +198,7 @@ public class DecompileTree{
 							String tagList = "";
 							for(int i = 0; i < tags.length; i++)
 								tagList += (i == tags.length - 1) ? tags[i] : (tags[i] + ",");
-							fieldNode.setAttribute("TAGS", tagList);
+								fieldNode.setAttribute("TAGS", tagList);
 						}
 						if(data != null){
 							final Element dataNode = this.document.createElement("data");
@@ -257,7 +253,7 @@ public class DecompileTree{
 					String tagList = "";
 					for(int i = 0; i < tags.length; i++)
 						tagList += (i == tags.length - 1) ? tags[i] : (tags[i] + ",");
-					node.setAttribute("TAGS", tagList);
+						node.setAttribute("TAGS", tagList);
 				}
 				// state
 				if(!flags.isOn() && flags.isParentOn()) node.setAttribute("STATE", "OFF");

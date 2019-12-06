@@ -31,7 +31,6 @@ import mds.data.descriptor_s.Missing;
 public abstract class Descriptor_R<T extends Number>extends Descriptor<T>{
 	public static final byte	_ndesc		= 8;
 	public static final byte	_dscoffIa	= 12;
-	@SuppressWarnings("hiding")
 	public static final int		BYTES		= Descriptor.BYTES + 4;
 	public static final byte	CLASS		= -62;					// 194
 

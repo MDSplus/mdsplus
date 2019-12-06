@@ -10,14 +10,14 @@ import mds.data.descriptor_s.COMPLEX.Complex;
 
 public abstract class COMPLEXArray<T extends Number>extends NUMBERArray<Complex<T>>{
 	private static final ByteBuffer toByteBuffer(final Complex<Number>[] values) {
-		if(values.length == 0) return ByteBuffer.allocate(0);
+		if(values.length == 0) return ByteBuffer.allocateDirect(0);
 		final ByteBuffer b;
 		if(values[0].real instanceof Double){
-			b = ByteBuffer.allocate(values.length * Double.BYTES * 2).order(Descriptor.BYTEORDER);
+			b = ByteBuffer.allocateDirect(values.length * Double.BYTES * 2).order(Descriptor.BYTEORDER);
 			for(final Complex<Number> value : values)
 				b.putDouble(value.real.doubleValue()).putDouble(value.imag.doubleValue());
 		}else{
-			b = ByteBuffer.allocate(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
+			b = ByteBuffer.allocateDirect(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
 			for(final Complex<Number> value : values)
 				b.putFloat(value.real.floatValue()).putDouble(value.imag.doubleValue());
 		}
@@ -25,7 +25,7 @@ public abstract class COMPLEXArray<T extends Number>extends NUMBERArray<Complex<
 	}
 
 	private static final ByteBuffer toByteBuffer(final double[][] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
 		final DoubleBuffer db = b.asDoubleBuffer();
 		for(final double[] value : values)
 			db.put(value[0]).put(value[1]);
@@ -33,7 +33,7 @@ public abstract class COMPLEXArray<T extends Number>extends NUMBERArray<Complex<
 	}
 
 	private static final ByteBuffer toByteBuffer(final float[][] values) {
-		final ByteBuffer b = ByteBuffer.allocate(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
+		final ByteBuffer b = ByteBuffer.allocateDirect(values.length * Float.BYTES * 2).order(Descriptor.BYTEORDER);
 		final FloatBuffer fb = b.asFloatBuffer();
 		for(final float[] value : values)
 			fb.put(value[0]).put(value[1]);

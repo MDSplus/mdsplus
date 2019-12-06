@@ -929,15 +929,13 @@ inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,  int check
   return status;
 }
 
-inline static int put_initialvalue(TREE_INFO *tinfo, int *dims,
-                                   mdsdsc_a_t *array, int64_t *offset) {
+inline static int put_initialvalue(TREE_INFO *tinfo, int *dims, mdsdsc_a_t *array, int64_t *offset) {
   int status;
   int length = array->length;
   int i;
   for (i = 0; i < array->dimct; i++) length = length * dims[i];
   ALLOCATE_BUFFER(length, buffer);
-  CHECK_ENDIAN_TRANSFER(array->pointer, length, array->length, array->dtype,
-                        buffer);
+  CHECK_ENDIAN_TRANSFER(array->pointer, length, array->length, array->dtype, buffer);
   status = write_property(tinfo, offset, buffer, length);
   FREE_BUFFER(buffer);
   return status;
@@ -1335,25 +1333,22 @@ int _TreeXNciPutSegment(void *dbid, int nid, const char *xnci,
     rows_to_insert = data->arsize / data->length;
   else
     rows_to_insert = a_coeff->m[a_coeff->dimct - 1];
-  int remaining_rows_in_segment =
-      vars->shead.dims[vars->shead.dimct - 1] - start_idx;
+  int remaining_rows_in_segment = vars->shead.dims[vars->shead.dimct - 1] - start_idx;
   // trunk to fit in current segment; TODO: dynamically increase number of
   // segments
   rows_to_insert = rows_to_insert > remaining_rows_in_segment
-                       ? remaining_rows_in_segment
-                       : rows_to_insert;
+                 ? remaining_rows_in_segment
+                 : rows_to_insert;
   uint32_t bytes_to_insert = rows_to_insert * bytes_per_row;
-  if (bytes_to_insert <
-      data->arsize)  // segment does not fit array size (shape?)
-  {
+  if (bytes_to_insert <  data->arsize)
+  { // segment does not fit array size (shape?)
     status = TreeBUFFEROVF;
     goto end;
   }
   int64_t offset = vars->shead.data_offset + start_idx * bytes_per_row;
   /*PUTSEG_PUTDATA*/ {
     ALLOCATE_BUFFER(bytes_to_insert, buffer);
-    CHECK_ENDIAN_TRANSFER(data->pointer, bytes_to_insert, vars->shead.length,
-                          data->dtype, buffer);
+    CHECK_ENDIAN_TRANSFER(data->pointer, bytes_to_insert, vars->shead.length, data->dtype, buffer);
     status = write_property(vars->tinfo, &offset, buffer, bytes_to_insert);
     FREE_BUFFER(buffer);
   }
@@ -1377,8 +1372,8 @@ int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char *xnci,
   CLEANUP_NCI_PUSH;
   mdsdsc_a_t *data = data_in;
   GOTO_IF_NOT_OK(end,open_datafile_write0(vars));
-  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   while (data && data->dtype == DTYPE_DSC) data = (mdsdsc_a_t *)data->pointer;
+  DESCRIPTOR_A(data_a, 0, 0, 0, 0);
   if (data && data->class == CLASS_S) {
     data_a.pointer = data->pointer;
     data_a.length = data->length;
@@ -1389,8 +1384,8 @@ int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char *xnci,
     data = (mdsdsc_a_t *)&data_a;
   }
   A_COEFF_TYPE *a_coeff = (A_COEFF_TYPE *)data;
-  if (data == NULL || data->class != CLASS_A || data->dimct < 1 ||
-      data->dimct > 8) {
+  if (data == NULL || data->class != CLASS_A ||
+      data->dimct < 1 || data->dimct > 8) {
     status = TreeINVDTYPE;
     goto end;
   }
@@ -1419,9 +1414,9 @@ int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char *xnci,
   }
   int start_idx = vars->shead.next_row;
   int bytes_per_row, i;
-  for (bytes_per_row = vars->shead.length, i = 0; i < vars->shead.dimct - 1;
-       bytes_per_row *= vars->shead.dims[i], i++)
-    ;
+  for (bytes_per_row = vars->shead.length, i = 0;
+       i < vars->shead.dimct - 1;
+       bytes_per_row *= vars->shead.dims[i], i++);
   int rows_to_insert;
   if (data->dimct < vars->shead.dimct)
     rows_to_insert = 1;
@@ -1429,13 +1424,10 @@ int _TreeXNciPutTimestampedSegment(void *dbid, int nid, const char *xnci,
     rows_to_insert = data->arsize / data->length;
   else
     rows_to_insert = a_coeff->m[a_coeff->dimct - 1];
-  int remaining_rows_in_segment =
-      vars->shead.dims[vars->shead.dimct - 1] - start_idx;
+  int remaining_rows_in_segment = vars->shead.dims[vars->shead.dimct - 1] - start_idx;
   // trunk to fit in current segment; TODO: dynamically increase number of
   // segments
-  rows_to_insert = rows_to_insert > remaining_rows_in_segment
-                       ? remaining_rows_in_segment
-                       : rows_to_insert;
+  rows_to_insert = rows_to_insert > remaining_rows_in_segment ? remaining_rows_in_segment : rows_to_insert;
   /*if STATUS_OK*/ {
     int64_t offset = vars->shead.data_offset + start_idx * bytes_per_row;
     uint32_t bytes_to_insert = rows_to_insert * bytes_per_row;
