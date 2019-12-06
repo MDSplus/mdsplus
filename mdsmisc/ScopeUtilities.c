@@ -229,7 +229,7 @@ inline static int64_t estimateNumSamples(const mdsdsc_t *const dsc, mdsdsc_t *co
   *sMax = to_doublex(xd.pointer->pointer,xd.pointer->dtype, INFINITY,TRUE);
   MdsFree1Dx(&xd, NULL);
   *dMin = xMin ? to_doublex(xMin->pointer,xMin->dtype,-INFINITY,TRUE) : *sMin;
-  *dMax = xMax ? to_doublex(xMax->pointer,xMax->dtype,-INFINITY,TRUE) : *sMax;
+  *dMax = xMax ? to_doublex(xMax->pointer,xMax->dtype, INFINITY,TRUE) : *sMax;
   *estimatedSegmentSamples = segmentSamples;
   return segmentSamples * (int64_t)numActSegments;
 return_neg1: ;
