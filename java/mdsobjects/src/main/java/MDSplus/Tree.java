@@ -163,7 +163,7 @@ public class Tree {
 	private static native void setDefaultNid(long ctx, int nid) throws MdsException;
 	private static native boolean getDbiFlag(long ctx, int dbiType) throws MdsException;
 	private static native void setDbiFlag(long ctx, boolean flag, int dbiType) throws MdsException;
-	private static native void setTreeViewDate(long ctx, java.lang.String date) throws MdsException;
+	private static native void setTreeViewDate(java.lang.String date) throws MdsException;
 	private static native void setTreeTimeContext(long ctx, Data start, Data end, Data delta);
 	private static native void setCurrent(java.lang.String name, int shot) throws MdsException;
 	private static native int getCurrent(java.lang.String treename) throws MdsException;
@@ -298,7 +298,7 @@ public class Tree {
 	 */
 	public void setViewDate(java.util.Date date) throws MdsException
 	{
-		setTreeViewDate(ctx, new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(date));
+		setTreeViewDate(new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(date));
 	}
 
 	/**

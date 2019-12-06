@@ -148,10 +148,10 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag
 /*
  * Class:     MDSplus_Tree
  * Method:    setTreeViewDate
- * Signature: (JLjava/lang/String;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate
-  (JNIEnv *, jclass, jlong, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     MDSplus_Tree

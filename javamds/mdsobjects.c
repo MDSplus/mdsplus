@@ -1929,14 +1929,13 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag(JNIEnv * env, jclass cls __a
 /*
  * Class:     MDSplus_Tree
  * Method:    setTreeViewDate
- * Signature: (JLjava/lang/String;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate(JNIEnv * env, jclass cls __attribute__ ((unused)),
-	jlong jctx, jstring jdate) {
+	jstring jdate) {
   int64_t qtime;
   const char *date;
   int status;
-  void *ctx = JLONG2PTR(jctx);
   date = (*env)->GetStringUTFChars(env, jdate, 0);
   qtime = 0;
   status = LibConvertDateString(date, &qtime);
