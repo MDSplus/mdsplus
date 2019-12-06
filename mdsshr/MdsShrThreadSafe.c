@@ -24,18 +24,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _GNU_SOURCE
 #include <mdsplus/mdsconfig.h>
-#include <STATICdef.h>
 #include <mdsshr.h>
 #include "mdsshrthreadsafe.h"
 #include <stdlib.h>
 
 /* Key for the thread-specific buffer */
-STATIC_THREADSAFE pthread_key_t buffer_key;
+static pthread_key_t buffer_key;
 /* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void *buf){
+static void buffer_destroy(void *buf){
   free(buf);
 }
-STATIC_ROUTINE void buffer_key_alloc(){
+static void buffer_key_alloc(){
   pthread_key_create(&buffer_key, buffer_destroy);
 }
 /* Return the thread-specific buffer */
@@ -71,7 +70,7 @@ void UnlockMdsShrMutex(pthread_mutex_t * mutex){
   pthread_mutex_unlock(mutex);
 }
 
-STATIC_THREADSAFE pthread_mutex_t global_mutex = PTHREAD_MUTEX_INITIALIZER;
+static pthread_mutex_t global_mutex = PTHREAD_MUTEX_INITIALIZER;
 EXPORT void MdsGlobalUnlock(){
   pthread_mutex_unlock(&global_mutex);
 
