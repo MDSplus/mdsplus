@@ -1942,7 +1942,7 @@ JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate(JNIEnv * env, jclass cl
   status = LibConvertDateString(date, &qtime);
   if STATUS_NOT_OK
     throwMdsException(env, status);
-  status = CTXCALLN(TreeSetViewDate, &qtime);
+  status = TreeSetViewDate(&qtime);
   (*env)->ReleaseStringUTFChars(env, jdate, date);
   if STATUS_NOT_OK
     throwMdsException(env, status);

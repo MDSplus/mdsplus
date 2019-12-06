@@ -393,8 +393,7 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 }
 
 static pthread_rwlock_t viewdate_lock = PTHREAD_RWLOCK_INITIALIZER;
-int TreeSetViewDate(int64_t * date)
-{
+int TreeSetViewDate(int64_t * date) {
   if (TreeGetThreadStatic()->privateCtx)
     TreeGetThreadStatic()->ViewDate = *date;
   else{
