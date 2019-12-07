@@ -2,7 +2,7 @@ package org.junit.runner;
 import org.junit.internal.JUnitSystem;
 import org.junit.internal.RealSystem;
 import org.junit.runner.notification.Failure;
-import org.tap4j.ext.junit.listener.TapListenerMethodYaml;
+import org.tap4j.ext.junit.listener.TapListenerClass;
 import junit.runner.Version;
 
 public class TapTestRunner extends JUnitCore{
@@ -18,10 +18,10 @@ public class TapTestRunner extends JUnitCore{
 	}
 	@Override
 	Result runMain(JUnitSystem system, String... args) {
-		system.out().println("JUnit version " + Version.id() + " with TapListenerMethodYaml");
-		JUnitCommandLineParseResult jUnitCommandLineParseResult = JUnitCommandLineParseResult.parse(args);
-		TapListenerMethodYaml l = new TapListenerMethodYaml();
+		TapListenerClass l = new TapListenerClass();
+		system.out().println("JUnit version " + Version.id() + " with " + l.getClass().getName());
 		addListener(l);
+		JUnitCommandLineParseResult jUnitCommandLineParseResult = JUnitCommandLineParseResult.parse(args);
 		Result result = run(jUnitCommandLineParseResult.createRequest(defaultComputer()));
 		try{
 			l.testRunFinished(result);
