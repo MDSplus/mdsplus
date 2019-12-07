@@ -1,6 +1,7 @@
 #ifndef _TREESHRP_H
 #define _TREESHRP_H
 
+#include <pthread_port.h>
 #include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <string.h>
@@ -13,7 +14,6 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-#include <pthread_port.h>
 #include "../mdstcpip/mdsIo.h"
 
 /*******************************************
