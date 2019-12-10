@@ -3245,6 +3245,10 @@ public class Signal implements WaveDataListener
 	            xLong[xLong.length - samplesAfter - 1] > regX[regX.length - 1]; samplesAfter++);
 	    if(samplesAfter > 0 && xLong.length - samplesAfter - 1 >= 0 && xLong[xLong.length - samplesAfter - 1] < regX[regX.length - 1])
 	        samplesAfter--;
+
+            if(samplesBefore > x.length) samplesBefore = x.length;
+            if(samplesBefore > y.length) samplesBefore = y.length;
+
 	    double []newX = new double[samplesBefore + regX.length+samplesAfter];
 	    long []newXLong = new long[samplesBefore + regX.length+samplesAfter];
 	    float []newY = new float[samplesBefore + regX.length+samplesAfter];
