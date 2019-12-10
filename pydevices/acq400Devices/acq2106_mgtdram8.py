@@ -175,9 +175,9 @@ class _ACQ2106_MGTDRAM8(MDSplus.Device):
 
                 # trigger time out count initialization:
                 rc = acq400_hapi.MgtDramPullClient(self.node_addr)
-
+                nchan = int(self.nchans)
                 try:
-                    for buf in rc.get_blocks(BLOCK_MULTIPLE, ncols=nc, data_size=ds):
+                    for buf in rc.get_blocks(nchan, ncols=(2**22) / nchan / 4, data_size=ds):
                         self.full_buffers.put(buf)
                 except socket.timeout as e:
                     print("Got a timeout.")
