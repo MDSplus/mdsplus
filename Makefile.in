@@ -10,7 +10,7 @@ VPATH=@srcdir@
 
 
 
-JAVA_JAR = \
+JAVA_JAR = java/tests \
 	   java/mdsplus-api \
 	   java/mdsplus-api/tests \
 	   java/jscope \
@@ -227,14 +227,14 @@ java/jdispatcher: java/jscope java/jtraverser java/mdsobjects
 javamds: mdstcpip
 java/jtraverser: java/jscope
 java/jtraverser2: java/mdsplus-api
-java/mdsplus-api/tests: java/mdsplus-api
+java/mdsplus-api/tests: java/mdsplus-api java/tests
 math: mdsshr
 mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr
 mdsobjects/cpp: mdstcpip
-java/mdsobjects: java/jscope
+java/mdsobjects: java/jscope java/tests
 mdstcpip: tdishr
 mitdevices: mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip

@@ -264,7 +264,6 @@ extern int TREE_BLOCKID;
   extern EXPORT int TreeSetXNci(int nid, const char *xnciname, mdsdsc_t *value);
   extern EXPORT int _TreeSetXNci(void *dbid, int nid, const char *xnciname, mdsdsc_t *value);
   extern EXPORT int TreeSetViewDate(int64_t * date);
-  extern EXPORT int _TreeSetViewDate(void *dbid, int64_t * date);
   extern EXPORT int TreeSetCurrentShotId(char const *experiment, int shot);
   extern EXPORT int TreeGetCurrentShotId(char const *experiment);
   extern EXPORT int TreeSetDbiItm(int code, int value);

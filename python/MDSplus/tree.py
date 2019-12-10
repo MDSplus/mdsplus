@@ -873,9 +873,7 @@ class Tree(object):
         @rtype: str
         """
         dt=_C.c_ulonglong(0)
-        status = _TreeShr._TreeGetViewDate(dt)
-        if not status & 1:
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
         return _scr.Uint64(dt.value).date
 
     @classmethodX

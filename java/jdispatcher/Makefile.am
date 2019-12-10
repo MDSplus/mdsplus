@@ -5,7 +5,7 @@ include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR):$(JTRAVERSER_JAR):$(MDSOBJECTS_JAR) 
+DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) $(JTRAVERSER_JAR)
 
 if USE_JARS_DIR
 
@@ -14,7 +14,7 @@ jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 
 else
 
-jDispatcher.jar: classjava.stamp
+jDispatcher.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	$(JAR) cf $@ -C $(JAVAROOT) .
 

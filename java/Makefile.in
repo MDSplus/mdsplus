@@ -456,14 +456,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
-JAVA_DIRS = mdsplus mdsplus-api jscope jtraverser jtraverser2 mdsobjects jdevices jdispatcher
-all_DIRS = $(addprefix all__, $(JAVA_DIRS))
-clean_DIRS = $(addprefix clean__, $(JAVA_DIRS))
-TEST_DIRS = mdsplus-api/tests \
-		 	mdsobjects/tests
+JAVA_DIRS = mdsplus mdsplus-api jtraverser2 jscope mdsobjects jtraverser jtraverser2 jdevices jdispatcher
+all_DIRS = $(addprefix all_, $(JAVA_DIRS) $(TEST_DIRS) tests)
+clean_DIRS = $(addprefix clean_, $(JAVA_DIRS) $(TEST_DIRS) tests)
+TEST_DIRS = \
+	mdsplus-api/tests \
+	mdsobjects/tests
 
-tests_DIRS = $(addprefix tests__, $(TEST_DIRS))
-clean_tests_DIRS = $(addprefix clean__, $(TEST_DIRS))
+tests_DIRS = $(addprefix tests_, $(TEST_DIRS))
+clean_tests_DIRS = $(addprefix clean_, $(TEST_DIRS))
 all: all-am
 
 .SUFFIXES:
@@ -658,25 +659,25 @@ maven-deploy:
 	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
 
 maven-tests:
-	$(TEST_ENVIRONMENT) $(MVN) test
+	$(TESTS_ENVIRONMENT) $(MVN) test
 
 maven-clean:
 	$(MVN) clean
 
 .PHONY: $(all_DIRS) $(clean_DIRS)
 $(all_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all__%=%) all
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all_%=%) all
 all: $(all_DIRS)
 $(clean_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean_%=%) clean
 clean: $(clean_DIRS)
 
 .PHONY: $(tests_DIRS) $(clean_tests_DIRS)
 $(tests_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_%=%) tests
 tests: $(tests_DIRS)
 $(clean_tests_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) clean
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean_%=%) clean
 clean_TESTS: $(clean_tests_DIRS)
 clean_tests: $(clean_tests_DIRS)
 

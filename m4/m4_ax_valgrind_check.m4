@@ -236,7 +236,7 @@ VALGRIND_TESTS_ENVIRONMENT += \
 
 VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
-	$(VALGRIND) --error-exitcode=1 \
+	$(VALGRIND) --error-exitcode=7 \
 	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
 	$(valgrind_$(VALGRIND_TOOL)_flags) \
 	$(VALGRIND_FLAGS)

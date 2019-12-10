@@ -59,123 +59,107 @@ extern "C" {
 #define MDSplus_Tree_TreeUSAGE_COMPOUND_DATA 1L
 /*
  * Class:     MDSplus_Tree
- * Method:    getActiveTree
- * Signature: ()LMDSplus/Tree;
- */
-JNIEXPORT jobject JNICALL Java_MDSplus_Tree_getActiveTree
-  (JNIEnv *, jclass);
-
-/*
- * Class:     MDSplus_Tree
  * Method:    openTree
- * Signature: (Ljava/lang/String;IZ)V
+ * Signature: (JLjava/lang/String;IZ)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_openTree
-  (JNIEnv *, jobject, jstring, jint, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jint, jboolean);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    closeTree
- * Signature: (IILjava/lang/String;I)V
+ * Signature: (JLjava/lang/String;I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_closeTree
-  (JNIEnv *, jobject, jint, jint, jstring, jint);
+  (JNIEnv *, jobject, jlong, jstring, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    editTree
- * Signature: (Ljava/lang/String;IZ)V
+ * Signature: (JLjava/lang/String;IZ)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_editTree
-  (JNIEnv *, jobject, jstring, jint, jboolean);
+  (JNIEnv *, jobject, jlong, jstring, jint, jboolean);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    writeTree
- * Signature: (IILjava/lang/String;I)V
+ * Signature: (JLjava/lang/String;I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_writeTree
-  (JNIEnv *, jclass, jint, jint, jstring, jint);
+  (JNIEnv *, jclass, jlong, jstring, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    quitTree
- * Signature: (IILjava/lang/String;I)V
+ * Signature: (JLjava/lang/String;I)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_quitTree
-  (JNIEnv *, jclass, jint, jint, jstring, jint);
+  (JNIEnv *, jclass, jlong, jstring, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    findNode
- * Signature: (IILjava/lang/String;)I
+ * Signature: (JLjava/lang/String;)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_Tree_findNode
-  (JNIEnv *, jclass, jint, jint, jstring);
-
-/*
- * Class:     MDSplus_Tree
- * Method:    switchDbid
- * Signature: (II)V
- */
-JNIEXPORT void JNICALL Java_MDSplus_Tree_switchDbid
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    getWild
- * Signature: (IILjava/lang/String;I)[I
+ * Signature: (JLjava/lang/String;I)[I
  */
 JNIEXPORT jintArray JNICALL Java_MDSplus_Tree_getWild
-  (JNIEnv *, jclass, jint, jint, jstring, jint);
+  (JNIEnv *, jclass, jlong, jstring, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    getDefaultNid
- * Signature: (II)I
+ * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_Tree_getDefaultNid
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    setDefaultNid
- * Signature: (III)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setDefaultNid
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    getDbiFlag
- * Signature: (III)Z
+ * Signature: (JI)Z
  */
 JNIEXPORT jboolean JNICALL Java_MDSplus_Tree_getDbiFlag
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    setDbiFlag
- * Signature: (IIZI)V
+ * Signature: (JZI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setDbiFlag
-  (JNIEnv *, jclass, jint, jint, jboolean, jint);
+  (JNIEnv *, jclass, jlong, jboolean, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    setTreeViewDate
- * Signature: (IILjava/lang/String;)V
+ * Signature: (Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeViewDate
-  (JNIEnv *, jclass, jint, jint, jstring);
+  (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    setTreeTimeContext
- * Signature: (IILMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)V
+ * Signature: (JLMDSplus/Data;LMDSplus/Data;LMDSplus/Data;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_setTreeTimeContext
-  (JNIEnv *, jclass, jint, jint, jobject, jobject, jobject);
+  (JNIEnv *, jclass, jlong, jobject, jobject, jobject);
 
 /*
  * Class:     MDSplus_Tree
@@ -196,82 +180,82 @@ JNIEXPORT jint JNICALL Java_MDSplus_Tree_getCurrent
 /*
  * Class:     MDSplus_Tree
  * Method:    createPulseFile
- * Signature: (III)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_createPulseFile
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    deletePulseFile
- * Signature: (III)V
+ * Signature: (JI)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_deletePulseFile
-  (JNIEnv *, jclass, jint, jint, jint);
+  (JNIEnv *, jclass, jlong, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    findTreeTags
- * Signature: (IILjava/lang/String;)[Ljava/lang/String;
+ * Signature: (JLjava/lang/String;)[Ljava/lang/String;
  */
 JNIEXPORT jobjectArray JNICALL Java_MDSplus_Tree_findTreeTags
-  (JNIEnv *, jclass, jint, jint, jstring);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    addTreeNode
- * Signature: (IILjava/lang/String;I)I
+ * Signature: (JLjava/lang/String;I)I
  */
 JNIEXPORT jint JNICALL Java_MDSplus_Tree_addTreeNode
-  (JNIEnv *, jclass, jint, jint, jstring, jint);
+  (JNIEnv *, jclass, jlong, jstring, jint);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    addTreeDevice
- * Signature: (IILjava/lang/String;Ljava/lang/String;)V
+ * Signature: (JLjava/lang/String;Ljava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_addTreeDevice
-  (JNIEnv *, jclass, jint, jint, jstring, jstring);
+  (JNIEnv *, jclass, jlong, jstring, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    deleteTreeNode
- * Signature: (IILjava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_deleteTreeNode
-  (JNIEnv *, jclass, jint, jint, jstring);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    removeTreeTag
- * Signature: (IILjava/lang/String;)V
+ * Signature: (JLjava/lang/String;)V
  */
 JNIEXPORT void JNICALL Java_MDSplus_Tree_removeTreeTag
-  (JNIEnv *, jclass, jint, jint, jstring);
+  (JNIEnv *, jclass, jlong, jstring);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    getDatafileSize
- * Signature: (II)J
+ * Signature: (J)J
  */
 JNIEXPORT jlong JNICALL Java_MDSplus_Tree_getDatafileSize
-  (JNIEnv *, jclass, jint, jint);
+  (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    execute
- * Signature: (IILjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
+ * Signature: (JLjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_Tree_execute
-  (JNIEnv *, jclass, jint, jint, jstring, jobjectArray);
+  (JNIEnv *, jclass, jlong, jstring, jobjectArray);
 
 /*
  * Class:     MDSplus_Tree
  * Method:    compile
- * Signature: (IILjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
+ * Signature: (JLjava/lang/String;[LMDSplus/Data;)LMDSplus/Data;
  */
 JNIEXPORT jobject JNICALL Java_MDSplus_Tree_compile
-  (JNIEnv *, jclass, jint, jint, jstring, jobjectArray);
+  (JNIEnv *, jclass, jlong, jstring, jobjectArray);
 
 #ifdef __cplusplus
 }
