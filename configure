@@ -4992,16 +4992,16 @@ $as_echo "profile" >&6; }
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 			if test "x${CFLAGS+set}" != "xset"; then :
-  CFLAGS="-g -O3"
+  CFLAGS="-O3"
 fi
 	if test "x${CXXFLAGS+set}" != "xset"; then :
-  CXXFLAGS="-g -O3"
+  CXXFLAGS="-O3"
 fi
 	if test "x${FCFLAGS+set}" != "xset"; then :
-  FCFLAGS="-g -O3"
+  FCFLAGS="-O3"
 fi
 	if test "x${OBJCFLAGS+set}" != "xset"; then :
-  OBJCFLAGS="-g -O3"
+  OBJCFLAGS="-O3"
 fi
        ;;
 esac
