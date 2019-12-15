@@ -1,4 +1,5 @@
 #define _TCP
+DEFINE_INITIALIZESOCKETS;
 #ifdef _WIN32
  static void socketerror(){
   int err;

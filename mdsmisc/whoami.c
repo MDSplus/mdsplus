@@ -23,20 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsconfig.h>
+
 #include <string.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _WIN32
-#include <io.h>
-#include <windows.h>
-#else
-#include <pwd.h>
-#endif
-#define LOAD_GETUSERNAME
-#include <pthread_port.h>
+
+#include <mdsdescrip.h>
+#include <getusername.h>
 
 EXPORT struct descriptor *whoami()
 {

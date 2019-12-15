@@ -22,16 +22,22 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsplus/mdsconfig.h>
+
 #if defined(linux) && !defined(_LARGEFILE_SOURCE)
 # define _LARGEFILE_SOURCE
 # define _FILE_OFFSET_BITS 64
 # define __USE_FILE_OFFSET64
 #endif
-#include "mdsip_connections.h"
-#include <pthread_port.h>
-#include <mdstypes.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #ifdef _WIN32
 # include <io.h>
 #else
@@ -39,22 +45,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <unistd.h>
 # endif
 #endif
-#include <fcntl.h>
-#include "mdsIo.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+
+#include <condition.h>
+#include <condition.h>
+#include <mdstypes.h>
 #include <mdsshr.h>
-#include <treeshr.h>
 #include "../tdishr/tdithreadstatic.h"
 #include <tdishr.h>
+#include "../treeshr/treeshrp.h"
+#include <treeshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <errno.h>
+
+#include "mdsIo.h"
+#include "mdsip_connections.h"
 #include "cvtdef.h"
-#include "../treeshr/treeshrp.h"
 
 extern int TdiRestoreContext();
 extern void** TreeCtx();

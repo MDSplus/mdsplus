@@ -22,14 +22,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#define LOAD_INITIALIZESOCKETS
-#include <pthread_port.h>
-#include <stdlib.h>
 #include <mdsplus/mdsconfig.h>
+#include <stdlib.h>
 #include <process.h>
 #include <stdio.h>
 #include <io.h>
 #include <fcntl.h>
+
+#include <socket_port.h>
 #include "mdsip_connections.h"
 
 static int shut = 0;
@@ -306,6 +306,7 @@ static int ServiceMain(int argc, char **argv)
   }
 }
 
+DEFINE_INITIALIZESOCKETS;
 int main(int argc, char **argv)
 {
   int x_argc;

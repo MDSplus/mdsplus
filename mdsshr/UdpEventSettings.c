@@ -28,17 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
 #include <strings.h>
-#define LOAD_INITIALIZESOCKETS
+#include <socket_port.h>
 #include "mdsshrthreadsafe.h"
-#ifdef _WIN32
-#include <ws2tcpip.h>
-#else
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <ifaddrs.h>
-#endif
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>
@@ -244,11 +235,11 @@ inline static void xmlInitParser_supp() {
   // so it can targeted for valgrind suppression
   xmlInitParser();
 }
-EXPORT void InitializeEventSettings()
-{
+DEFINE_INITIALIZESOCKETS;
+EXPORT void InitializeEventSettings() {
+  INITIALIZESOCKETS;
   pthread_mutex_lock(&init_lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&init_lock);
-  INITIALIZESOCKETS;
   int i, missing=0;
   xmlInitParser_supp();
   for (i=0;i<NUM_SETTINGS;i++) {
