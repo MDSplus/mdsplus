@@ -46,15 +46,19 @@ install: $(libdir)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-ifneq "$(VSDLL)" ""
-  
-$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB)
-	mkdir -p $(top_builddir)/defs
-	for i in $$(find @MAKESHLIBDIR@ -follow -name '*.dll'); do \
+defs:
+	@mkdir -p $(top_builddir)/defs
+	@for i in $$(find @MAKESHLIBDIR@ -follow -name '*.dll'); do \
 	  deffile=$(top_builddir)/defs/$$(basename $${i/.dll/.def}) ;\
 	  gendef -a - $$i > $$deffile ;\
-	  wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}" ;\
 	done
+
+.PHONY: defs
+
+ifneq "$(VSDLL)" ""
+
+$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
+	@for i in $(top_builddir)/defs/*.def; do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}"; done
 	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
 
 endif
