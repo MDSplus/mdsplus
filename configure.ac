@@ -75,7 +75,7 @@ dnl
 dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no],
 dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...],
 dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
-AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-O3])
 
 
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
