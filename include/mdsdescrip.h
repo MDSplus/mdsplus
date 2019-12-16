@@ -650,7 +650,6 @@ typedef struct descriptor_opaque {
  * array typedefs
  */
 
-#define MAX_DIMS 8
 /* ARRAY_COEFF(a,b*x) acts like ARRAY_BOUNDS(a,b)
  * but bounds and m are merged into m
  */
