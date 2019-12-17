@@ -85,11 +85,6 @@ static int MapTree(TREE_INFO * info, TREE_INFO * root, int edit_flag);
 static void SubtreeNodeConnect(PINO_DATABASE * dblist, NODE * parent, NODE * subtreetop);
 
 extern void **TreeCtx();
-static inline char *replaceBackslashes(char *filename) {
-  char *ptr;
-  while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
-  return filename;
-}
 
 int TreeClose(char const *tree, int shot){
   return _TreeClose(TreeCtx(), tree, shot);
