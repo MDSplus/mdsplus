@@ -75,7 +75,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
-#include <STATICdef.h>
 #ifdef WORDS_BIGENDIAN
 #define MaskTrue (pi0[leni-1] & 1)
 #else
@@ -102,19 +101,19 @@ extern int TdiGetLong();
 extern int TdiConvert();
 extern int TdiMasterData();
 
-STATIC_CONSTANT unsigned char zero_val = 0;
-STATIC_CONSTANT unsigned char one_val = 1;
-STATIC_CONSTANT struct descriptor zero = { sizeof(zero_val), DTYPE_BU, CLASS_S, (char *)&zero_val };
-STATIC_CONSTANT struct descriptor one = { sizeof(one_val), DTYPE_BU, CLASS_S, (char *)&one_val };
+static const unsigned char zero_val = 0;
+static const unsigned char one_val = 1;
+static const mdsdsc_t zero = { sizeof(zero_val), DTYPE_BU, CLASS_S, (char *)&zero_val };
+static const mdsdsc_t one = { sizeof(one_val), DTYPE_BU, CLASS_S, (char *)&one_val };
 
-int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor *pmask = &one;
-  struct descriptor_signal *psig;
+  const mdsdsc_t *pmask = &one;
+  mds_signal_t *psig;
   signal_maxdim tmpsig;
   array_bounds arr, *pa, *pd;
-  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
+  mdsdsc_xd_t sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
   struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int cmode = -1, dim = -1, j, mul = 0, ncopies = 0, rank = 0, ndim;
@@ -238,7 +237,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	******************/
   if (STATUS_NOT_OK)
     goto err;
-  head = (unsigned short)(sizeof(struct descriptor_a) +
+  head = (unsigned short)(sizeof(mdsdsc_a_t) +
 			  (pa->aflags.coeff ? sizeof(char *) + rank * sizeof(int) : 0) +
 			  (pa->aflags.bounds ? 2 * rank * sizeof(int) : 0));
   digits = cats[narg].digits;
@@ -247,13 +246,13 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	/****************************
 	Same shape as input, cleared.
 	****************************/
-  psig = (struct descriptor_signal *)sig[0].pointer;
+  psig = (mds_signal_t *)sig[0].pointer;
   if (psig)
     ndim = psig->ndesc - 2;
   else
     ndim = -1;
   if (opcode == OPC_FIRSTLOC || opcode == OPC_LASTLOC) {
-    status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
+    status = MdsGet1DxA((mdsdsc_a_t *)pa, &digits, &out_dtype, out_ptr);
     if STATUS_OK
       status = TdiConvert(&zero, out_ptr->pointer MDS_END_ARG);
   }
@@ -263,7 +262,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   else if (opcode == OPC_REPLICATE) {
     if (dim < ndim)
       psig->dimensions[dim] = 0;
-    pmask = (struct descriptor *)&ncopies;
+    pmask = (mdsdsc_t *)&ncopies;
 		/** scalar to simple vector **/
     if (rank == 0)
       _MOVC3(head, (char *)pa, (char *)&arr);
@@ -273,7 +272,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       arr.m[dim] *= ncopies;
     }
     arr.arsize *= ncopies;
-    status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
+    status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*************************************
 	Shape gets new dimension after DIM-th.
@@ -281,7 +280,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
   else if (opcode == OPC_SPREAD) {
     if (ndim > dim) {
       EMPTYXD(tmpxd);
-      *(struct descriptor_signal *)&tmpsig = *psig;
+      *(mds_signal_t *)&tmpsig = *psig;
       ++tmpsig.ndesc;
       for (j = ndim; --j >= dim;)
 	tmpsig.dimensions[j + 1] = psig->dimensions[j];
@@ -290,13 +289,13 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	tmpsig.dimensions[j] = psig->dimensions[j];
       tmpsig.raw = 0;
       tmpsig.data = 0;
-      status = MdsCopyDxXd((struct descriptor *)&tmpsig, &tmpxd);
-      status = MdsCopyDxXd((struct descriptor *)&tmpxd, &sig[0]);
+      status = MdsCopyDxXd((mdsdsc_t *)&tmpsig, &tmpxd);
+      status = MdsCopyDxXd((mdsdsc_t *)&tmpxd, &sig[0]);
       MdsFree1Dx(&tmpxd, NULL);
       if (STATUS_NOT_OK)
 	goto err;
     }
-    pmask = (struct descriptor *)&ncopies;
+    pmask = (mdsdsc_t *)&ncopies;
 		/** scalar to simple vector **/
     if (rank == 0)
       _MOVC3(head, (char *)pa, (char *)&arr);
@@ -324,7 +323,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     }
     arr.arsize *= ncopies;
     if STATUS_OK
-      status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
+      status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/***************
 	Overwrite input.
@@ -341,7 +340,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
       pmask = psig->dimensions[dim];
     else
       pmask = 0;
-    status = MdsGet1DxA((struct descriptor_a *)pa, &digits, &out_dtype, out_ptr);
+    status = MdsGet1DxA((mdsdsc_a_t *)pa, &digits, &out_dtype, out_ptr);
   }
 	/****************
 	Subscript vector.
@@ -350,7 +349,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     psig = 0;
     _MOVC3(head, (char *)pa, (char *)&arr);
     arr.arsize = pa->length * rank;
-    status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
+    status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*******************
 	Rank reduced by one.
@@ -366,7 +365,7 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
     _MOVC3((short)(sizeof(int) * (rank - dim - 1) * 2),
 	   (char *)&arr.m[rank + 2 * dim + 2], (char *)&arr.m[rank + 2 * dim - 1]);
     --arr.dimct;
-    status = MdsGet1DxA((struct descriptor_a *)&arr, &digits, &out_dtype, out_ptr);
+    status = MdsGet1DxA((mdsdsc_a_t *)&arr, &digits, &out_dtype, out_ptr);
   }
 	/*************
 	Scalar result.
@@ -444,9 +443,9 @@ int Tdi1Trans(int opcode, int narg, struct descriptor *list[], struct descriptor
 	F90 transformation of logical test of all true.
 	        logical = ALL(mask, [dim])
 */
-int Tdi3All(struct descriptor *in_ptr,
-	    struct descriptor *pmask __attribute__ ((unused)),
-	    struct descriptor *out_ptr,
+int Tdi3All(mdsdsc_t *in_ptr,
+	    mdsdsc_t *pmask __attribute__ ((unused)),
+	    mdsdsc_t *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
   char *pi0, *pi1, *pi2, *pout = out_ptr->pointer;
@@ -468,9 +467,9 @@ int Tdi3All(struct descriptor *in_ptr,
 	F90 transformation of logical test of ANY true.
 	        logical = ANY(mask, [dim])
 */
-int Tdi3Any(struct descriptor *in_ptr,
-	    struct descriptor *pmask __attribute__ ((unused)),
-	    struct descriptor *out_ptr,
+int Tdi3Any(mdsdsc_t *in_ptr,
+	    mdsdsc_t *pmask __attribute__ ((unused)),
+	    mdsdsc_t *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
   char *pi0, *pi1, *pi2, *pout = out_ptr->pointer;
@@ -493,9 +492,9 @@ int Tdi3Any(struct descriptor *in_ptr,
 	        scalar-long = COUNT(mask)
 	        vector-long = COUNT(mask, dim)
 */
-int Tdi3Count(struct descriptor *in_ptr,
-	      struct descriptor *pmask __attribute__ ((unused)),
-	      struct descriptor *out_ptr,
+int Tdi3Count(mdsdsc_t *in_ptr,
+	      mdsdsc_t *pmask __attribute__ ((unused)),
+	      mdsdsc_t *out_ptr,
 	      int count0, int count1, int count2, int step0, int step1, int step2)
 {
   int result, *pout = (int *)out_ptr->pointer;
@@ -519,9 +518,9 @@ int Tdi3Count(struct descriptor *in_ptr,
 	F8X-extension transformation to set first true of array or DIM reduced.
 	        array-logical = FIRSTLOC(mask, [dim])
 */
-int Tdi3FirstLoc(struct descriptor *in_ptr,
-		 struct descriptor *pmask __attribute__ ((unused)),
-		 struct descriptor *out_ptr,
+int Tdi3FirstLoc(mdsdsc_t *in_ptr,
+		 mdsdsc_t *pmask __attribute__ ((unused)),
+		 mdsdsc_t *out_ptr,
 		 int count0, int count1, int count2, int step0, int step1, int step2)
 {
   char *pi0, *pi1, *pi2, *pin = in_ptr->pointer, *pout = out_ptr->pointer;
@@ -544,9 +543,9 @@ int Tdi3FirstLoc(struct descriptor *in_ptr,
 	F8X-extension transformation to set last true of array or DIM reduced.
 	        array-logical = LASTLOC(mask, [dim])
 */
-int Tdi3LastLoc(struct descriptor *in_ptr,
-		struct descriptor *pmask __attribute__ ((unused)),
-		struct descriptor *out_ptr,
+int Tdi3LastLoc(mdsdsc_t *in_ptr,
+		mdsdsc_t *pmask __attribute__ ((unused)),
+		mdsdsc_t *out_ptr,
 		int count0, int count1, int count2, int step0, int step1, int step2)
 {
   char *pi0, *pi1, *pi2, *pin = in_ptr->pointer, *pout = out_ptr->pointer;
@@ -570,9 +569,9 @@ int Tdi3LastLoc(struct descriptor *in_ptr,
 	F8X-extension transformation to extend a dimension of array or scalar.
 	        array-rank-n = REPLICATE(array, dim, ncopies)
 */
-int Tdi3Replicate(struct descriptor *in_ptr,
-		  struct descriptor *pmask,
-		  struct descriptor *out_ptr,
+int Tdi3Replicate(mdsdsc_t *in_ptr,
+		  mdsdsc_t *pmask,
+		  mdsdsc_t *out_ptr,
 		  int count0 __attribute__ ((unused)),
 		  int count1 __attribute__ ((unused)),
 		  int count2,
@@ -594,9 +593,9 @@ int Tdi3Replicate(struct descriptor *in_ptr,
 	F90 transformation to add a dimension before one of array or scalar.
 	        array-rank-(n+1) = SPREAD(array, dim, ncopies)
 */
-int Tdi3Spread(struct descriptor *in_ptr,
-	       struct descriptor *pmask,
-	       struct descriptor *out_ptr,
+int Tdi3Spread(mdsdsc_t *in_ptr,
+	       mdsdsc_t *pmask,
+	       mdsdsc_t *out_ptr,
 	       int count0, int count1 __attribute__ ((unused)),
 	       int count2, int step0,
 	       int step1 __attribute__ ((unused)),

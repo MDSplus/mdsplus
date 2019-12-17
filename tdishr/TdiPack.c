@@ -41,7 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare, LANL CTR-7   (c)1990
 */
 
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>

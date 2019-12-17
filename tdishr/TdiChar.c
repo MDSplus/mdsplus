@@ -34,14 +34,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <strroutines.h>
 #include <tdishr_messages.h>
-#include <STATICdef.h>
 
 
 
-extern int tdiHash();
+extern int tdi_hash();
 
-STATIC_CONSTANT char false = 0;
-STATIC_CONSTANT struct descriptor false_dsc = { 1, DTYPE_T, CLASS_S, (char *)&false };
+static const char false = 0;
+static const struct descriptor false_dsc = { 1, DTYPE_T, CLASS_S, (char *)&false };
 
 /*------------------------------------------------------------------------------
 	F8X elemental, adjust string left, if there are blanks at left, and add blanks at right.
@@ -165,7 +164,7 @@ int Tdi3Element(struct descriptor *number_ptr,
   delim_dsc.class = CLASS_S;
   out_dsc.class = CLASS_S;
   for (; STATUS_OK && --n >= 0;) {
-    STATIC_CONSTANT unsigned short zero = 0;
+    static const unsigned short zero = 0;
     number = *(int *)pnumber, pnumber += number_step;
     status = StrElement(&out_dsc, &number, &delim_dsc, &source_dsc);
     if STATUS_NOT_OK
@@ -376,7 +375,7 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
       str_ptr += 4;
       len -= 4;
     }
-    *code_ptr++ = (short)tdiHash(len, str_ptr);
+    *code_ptr++ = (short)tdi_hash(len, str_ptr);
   }
   StrFree1Dx(&one_dsc);
   return status;

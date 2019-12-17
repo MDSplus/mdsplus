@@ -47,7 +47,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include <STATICdef.h>
 
 
 extern struct descriptor *TdiItoXSpecial;
@@ -59,9 +58,9 @@ extern int TdiProduct();
 extern int TdiItoX();
 extern int Tdi3Subtract();
 
-STATIC_CONSTANT DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
-STATIC_CONSTANT dtype_t dtype_l = DTYPE_L;
-STATIC_CONSTANT length_t size_l = (length_t)sizeof(int);
+static const DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
+static const dtype_t dtype_l = DTYPE_L;
+static const length_t size_l = (length_t)sizeof(int);
 
 int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {

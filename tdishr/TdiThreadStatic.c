@@ -25,7 +25,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define _GNU_SOURCE
 #include <mdsplus/mdsconfig.h>
 #include <libroutines.h>
-#include <STATICdef.h>
 #include "tdithreadstatic.h"
 #include <stdlib.h>
 #include <mdsshr.h>

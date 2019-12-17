@@ -52,7 +52,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 extern int TdiConcat();
 extern int TdiData();
@@ -60,13 +59,13 @@ extern int TdiEvaluate();
 extern int TdiFaultHandler();
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
-extern int TdiPutIdent();
+extern int tdi_put_ident();
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
+static int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
 				int (*routine) (), unsigned int *(*called) (),
 				void **result, int *max)
 {
@@ -247,7 +246,7 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
 	pfun = (mds_function_t *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
-	TdiPutIdent(pfun, &tmp[j]);
+	tdi_put_ident(pfun, &tmp[j]);
     }
     if (tmp[j].pointer)
       MdsFree1Dx(&tmp[j], NULL);

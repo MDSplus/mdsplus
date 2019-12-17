@@ -36,7 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1992
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -65,7 +64,7 @@ extern int TdiCall();
 	acmode  access mode
 ****/
 
-STATIC_ROUTINE int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr){
+static int Doit(struct descriptor_routine *ptask, struct descriptor_xd *out_ptr){
   INIT_STATUS;
   int dtype, ndesc, j;
   void **arglist[256];
@@ -159,7 +158,7 @@ static int WorkerThread(void *args){
   return wc.wa->status;
 }
 
-STATIC_ROUTINE int StartWorker(struct descriptor_xd *task_xd, struct descriptor_xd *out_ptr, const float timeout){
+static int StartWorker(struct descriptor_xd *task_xd, struct descriptor_xd *out_ptr, const float timeout){
   INIT_STATUS;
 #ifdef _WIN32
   worker_args_t wa = {

@@ -1134,10 +1134,9 @@ static int get_compressed_segment_rows(TREE_INFO *tinfo, const int64_t offset, i
     return TreeFAILURE;
   char dimct = buffer[11];
   if (dimct == 1) {
-    loadint32(rows, &buffer[12]);       // arsize
-    *rows = *rows / swapint16(buffer);  // length
+    *rows = swapint32(&buffer[12]) / swapint16(buffer);  // arsize / length
   } else
-    loadint32(rows, &buffer[16 + dimct * 4]);  // last dim
+    loadint32(rows,&buffer[16 + dimct * 4]);  // last dim
   return TreeSUCCESS;
 }
 
@@ -1819,8 +1818,7 @@ static int get_segment_limits(vars_t *vars, mdsdsc_xd_t *retStart, mdsdsc_xd_t *
           const int filled_rows = get_filled_rows_ts(
               &vars->shead, vars->sinfo, vars->idx, (int64_t *)buffer);
           if (filled_rows > 0) {
-            loadint64(&timestamp,
-                      buffer + (filled_rows - 1) * sizeof(int64_t));
+            loadint64(&timestamp, buffer + (filled_rows - 1) * sizeof(int64_t));
             MdsCopyDxXd(&q_d, retEnd);
           } else
             MdsFree1Dx(retEnd, 0);

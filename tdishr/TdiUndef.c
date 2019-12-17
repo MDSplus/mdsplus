@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <tdishr_messages.h>
-#include <STATICdef.h>
 
 
 #define UNDEF(x) int x() {return TdiNO_OPC;}

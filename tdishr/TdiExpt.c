@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include <STATICdef.h>
 
 
 
@@ -44,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
   char value[4096];
-  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  static const dtype_t dtype = DTYPE_T;
   int retlen, status;
   struct dbi_itm lst[] = { {sizeof(value), DbiDEFAULT, 0, 0} , {0, DbiEND_OF_LIST, 0, 0}
   };
@@ -68,7 +67,7 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 {
   char value[39 - 7];
   int retlen, status;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  static const dtype_t dtype = DTYPE_T;
   struct dbi_itm lst[] = { {sizeof(value), DbiNAME, 0, 0}
 			   , {0, DbiEND_OF_LIST, 0, 0}
   };
@@ -92,7 +91,7 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 {
   int value;
   int retlen, status;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_L;
+  static const dtype_t dtype = DTYPE_L;
   struct dbi_itm lst[] = { {sizeof(value), DbiSHOTID, 0, 0}
 			   , {0, DbiEND_OF_LIST, 0,  0}
   };

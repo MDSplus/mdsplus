@@ -35,7 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NEED to watch for rounding/precision problems.
 */
 
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <tdishr_messages.h>
 #include "tdirefstandard.h"

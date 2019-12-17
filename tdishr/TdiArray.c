@@ -51,7 +51,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include <STATICdef.h>
 #ifdef _WIN32
 #include <process.h>
 #endif
@@ -161,9 +160,9 @@ int Tdi3Array(/*int *out_ptr*/)
 int Tdi3Ramp(struct descriptor *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT int i0 = 0, i1 = 1;
-  STATIC_CONSTANT struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
-  STATIC_CONSTANT struct descriptor con1 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i1 };
+  static const int i0 = 0, i1 = 1;
+  static const struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
+  static const struct descriptor con1 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i1 };
   int i,n;
 
 #define LoadRamp(type) { type *ptr = (type *)out_ptr->pointer; for (i=0;i<n;i++) ptr[i] = (type)i; break;}
@@ -325,7 +324,7 @@ int Tdi3Random(struct descriptor_a *out_ptr){
 	Create an array of zeroes.
 */
 int Tdi3Zero(struct descriptor_a *out_ptr){
-  STATIC_CONSTANT int i0 = 0;
-  STATIC_CONSTANT struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
+  static const int i0 = 0;
+  static const struct descriptor con0 = { sizeof(int), DTYPE_L, CLASS_S, (char *)&i0 };
   return TdiConvert(&con0, out_ptr);
 }

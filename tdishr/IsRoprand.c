@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  CMS REPLACEMENT HISTORY, Element ISROPRAND.C */
 #include <mdstypes.h>
 #include <mdsdescrip.h>
-#include <STATICdef.h>
 
 #define f_float_exp(val) ((*(int *)val >> 7) & 0xff)
 #define f_float_sign(val) ((*(int *)val >> 15) &0x1)

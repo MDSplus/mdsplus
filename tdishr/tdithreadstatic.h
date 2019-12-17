@@ -6,6 +6,8 @@
 #include <pthread_port.h>
 
 #define GET_TDITHREADSTATIC_P ThreadStatic *const TdiThreadStatic_p = TdiThreadStatic(NULL)
+#define TDITHREADSTATIC_ARG   ThreadStatic *const TdiThreadStatic_p
+#define TDITHREADSTATIC_PASS  TdiThreadStatic_p
 
 #define TDI_STACK_SIZE	3
 #define TDI_STACK_IDX	TdiThreadStatic_p->stack_idx
@@ -19,6 +21,7 @@
 #define TDI_VAR_NEW_NARG	TdiThreadStatic_p->var_new_narg
 #define TDI_VAR_NEW_NARG_D	TdiThreadStatic_p->var_new_narg_d
 #define TDI_VAR_REC		TdiThreadStatic_p->var_rec
+#define TDI_USE_GET_RECORD_FUN  TdiThreadStatic_p->use_get_record_fun
 
 #define TDI_DECOMPILE_MAX	TDI_STACK.decompile_max
 #define TDI_COMPILE_REC		TDI_STACK.compile_rec
@@ -49,6 +52,7 @@ typedef struct {
   mdsdsc_d_t	 intrinsic_msg;	// TdiIntrinsic
   int intrinsic_rec;		// TdiIntrinsic
   int intrinsic_stat;		// TdiIntrinsic
+  int use_get_record_fun;	// TdiGetData, TdiVar
 } ThreadStatic;
 
 typedef struct {
