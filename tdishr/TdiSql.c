@@ -700,8 +700,7 @@ int Tdi1IsqlSet()
   return 0;
 }
 #else				/* no sybase support */
-static const DESCRIPTOR(const msg,
-			   "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
+static const DESCRIPTOR(msg, "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
 int Tdi1Dsql(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
 {
