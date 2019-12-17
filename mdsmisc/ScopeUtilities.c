@@ -628,7 +628,7 @@ static inline int getXArray(const mdsdsc_a_t *const xArrD, const int retSamples,
     case DTYPE_L:
     case DTYPE_LU:
       for(i = 0; i < retSamples; i++, idx += 4) {
-	const float tmp = *((int16_t*)(&xArrD->pointer[i*xArrD->length]));
+	const float tmp = *((int32_t*)(&xArrD->pointer[i*xArrD->length]));
 	SWAP32(&retArr[idx],&tmp);
       }
       break;
