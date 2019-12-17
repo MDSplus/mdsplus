@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 NI 6250 DAC"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_NI6259_DAC"/>
     <Property name="height" type="int" value="300"/>
-    <Property name="width" type="int" value="600"/>
+    <Property name="width" type="int" value="700"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -59,6 +59,14 @@
                 <Property name="labelString" type="java.lang.String" value="Timebase: "/>
                 <Property name="numCols" type="int" value="25"/>
                 <Property name="offsetNid" type="int" value="3"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField8">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Timebase div:"/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="76"/>
               </Properties>
             </Component>
           </SubComponents>

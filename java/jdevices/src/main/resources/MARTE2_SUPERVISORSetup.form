@@ -2,7 +2,7 @@
 
 <Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
   <Properties>
-    <Property name="deviceProvider" type="java.lang.String" value="scdev6vl.nbtf:8100"/>
+    <Property name="deviceProvider" type="java.lang.String" value="scdevail.rfx.local:8200"/>
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Supervisor"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_SUPERVISOR"/>
     <Property name="height" type="int" value="350"/>
@@ -24,7 +24,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,45,0,0,2,64"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,45,0,0,3,46"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
@@ -196,6 +196,22 @@
                                 <Property name="offsetNid" type="int" value="9"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField108">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="437"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField109">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="438"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel9">
@@ -246,6 +262,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="13"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField110">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="449"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField111">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="450"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -300,6 +332,22 @@
                                 <Property name="offsetNid" type="int" value="17"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField112">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="461"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField113">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="462"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel15">
@@ -350,6 +398,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="21"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField114">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="473"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField115">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="474"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -404,6 +468,22 @@
                                 <Property name="offsetNid" type="int" value="25"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField116">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="485"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField117">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="486"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel21">
@@ -454,6 +534,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="29"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField118">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="497"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField119">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="498"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -508,6 +604,22 @@
                                 <Property name="offsetNid" type="int" value="33"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField120">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="509"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField121">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="510"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel27">
@@ -558,6 +670,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="37"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField122">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="521"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField123">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="522"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -663,6 +791,22 @@
                                 <Property name="offsetNid" type="int" value="52"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField124">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="558"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField125">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="559"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel35">
@@ -713,6 +857,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="56"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField126">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="570"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField127">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="571"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -767,6 +927,22 @@
                                 <Property name="offsetNid" type="int" value="60"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField128">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="582"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField129">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="583"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel41">
@@ -817,6 +993,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="64"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField130">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="594"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField131">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="595"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -871,6 +1063,22 @@
                                 <Property name="offsetNid" type="int" value="68"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField132">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="606"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField133">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="607"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel47">
@@ -921,6 +1129,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="72"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField134">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="618"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField135">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="619"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -975,6 +1199,22 @@
                                 <Property name="offsetNid" type="int" value="76"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField136">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="630"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField137">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="631"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel53">
@@ -1025,6 +1265,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="80"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField138">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="642"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField139">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="643"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1130,6 +1386,22 @@
                                 <Property name="offsetNid" type="int" value="95"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField140">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="679"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField141">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="680"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel61">
@@ -1180,6 +1452,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="99"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField142">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="691"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField143">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="692"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1234,6 +1522,22 @@
                                 <Property name="offsetNid" type="int" value="103"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField144">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="703"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField145">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="704"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel67">
@@ -1284,6 +1588,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="107"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField146">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="715"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField147">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="716"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1338,6 +1658,22 @@
                                 <Property name="offsetNid" type="int" value="111"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField148">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="727"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField149">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="728"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel73">
@@ -1388,6 +1724,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="115"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField150">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="739"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField151">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="740"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1442,6 +1794,22 @@
                                 <Property name="offsetNid" type="int" value="119"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField152">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="751"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField153">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="752"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel79">
@@ -1492,6 +1860,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="123"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField154">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="763"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField155">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="764"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1597,6 +1981,22 @@
                                 <Property name="offsetNid" type="int" value="138"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField156">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="800"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField157">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="801"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel87">
@@ -1647,6 +2047,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="142"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField158">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="812"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField159">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="813"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1701,6 +2117,22 @@
                                 <Property name="offsetNid" type="int" value="146"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField160">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="824"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField161">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="825"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel93">
@@ -1751,6 +2183,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="150"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField162">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="836"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField163">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="837"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1805,6 +2253,22 @@
                                 <Property name="offsetNid" type="int" value="154"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField164">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="848"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField165">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="849"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel99">
@@ -1855,6 +2319,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="158"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField166">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="860"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField167">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="861"/>
                               </Properties>
                             </Component>
                           </SubComponents>
@@ -1909,6 +2389,22 @@
                                 <Property name="offsetNid" type="int" value="162"/>
                               </Properties>
                             </Component>
+                            <Component class="DeviceField" name="deviceField168">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="872"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField169">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="873"/>
+                              </Properties>
+                            </Component>
                           </SubComponents>
                         </Container>
                         <Container class="javax.swing.JPanel" name="jPanel105">
@@ -1959,6 +2455,22 @@
                                 <Property name="identifier" type="java.lang.String" value=""/>
                                 <Property name="labelString" type="java.lang.String" value="CPU Mask: "/>
                                 <Property name="offsetNid" type="int" value="166"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField170">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Seg. Len (0 to disable):"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="884"/>
+                              </Properties>
+                            </Component>
+                            <Component class="DeviceField" name="deviceField171">
+                              <Properties>
+                                <Property name="identifier" type="java.lang.String" value=""/>
+                                <Property name="labelString" type="java.lang.String" value="Write CPU mask:"/>
+                                <Property name="numCols" type="int" value="4"/>
+                                <Property name="offsetNid" type="int" value="885"/>
                               </Properties>
                             </Component>
                           </SubComponents>
