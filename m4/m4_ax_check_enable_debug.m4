@@ -76,32 +76,32 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
     AS_CASE([$enable_debug],
       [yes],[
 	AC_MSG_RESULT(yes)
-	CFLAGS="${CFLAGS} -g -O0"
-	CXXFLAGS="${CXXFLAGS} -g -O0"
-	FCFLAGS="${FCFLAGS} -g -O0"
-	OBJCFLAGS="${OBJCFLAGS} -g -O0"
+	CFLAGS="${CFLAGS} -g -Og"
+	CXXFLAGS="${CXXFLAGS} -g -Og"
+	FCFLAGS="${FCFLAGS} -g -Og"
+	OBJCFLAGS="${OBJCFLAGS} -g -Og"
       ],
       [define],[
 	AC_MSG_RESULT(yes)
-	CFLAGS="${CFLAGS} -g -O0 -DDEBUG"
-	CXXFLAGS="${CXXFLAGS} -g -O0 -DDEBUG"
-	FCFLAGS="${FCFLAGS} -g -O0"
-	OBJCFLAGS="${OBJCFLAGS} -g -O0"
+	CFLAGS="${CFLAGS} -g -Og -DDEBUG"
+	CXXFLAGS="${CXXFLAGS} -g -Og -DDEBUG"
+	FCFLAGS="${FCFLAGS} -g -Og"
+	OBJCFLAGS="${OBJCFLAGS} -g -Og"
       ],
       [info],[
 	AC_MSG_RESULT(info)
-	CFLAGS="${CFLAGS} -g"
-	CXXFLAGS="${CXXFLAGS} -g"
-	FCFLAGS="${FCFLAGS} -g"
-	OBJCFLAGS="${OBJCFLAGS} -g"
+	CFLAGS="${CFLAGS} -g $5"
+	CXXFLAGS="${CXXFLAGS} -g $5"
+	FCFLAGS="${FCFLAGS} -g $5"
+	OBJCFLAGS="${OBJCFLAGS} -g $5"
       ],
       [profile],[
 	AC_MSG_RESULT(profile)
-	CFLAGS="${CFLAGS} -g -pg"
-	CXXFLAGS="${CXXFLAGS} -g -pg"
-	FCFLAGS="${FCFLAGS} -g -pg"
-	OBJCFLAGS="${OBJCFLAGS} -g -pg"
-	LDFLAGS="${LDFLAGS} -pg"
+	CFLAGS="${CFLAGS} -g -pg $5"
+	CXXFLAGS="${CXXFLAGS} -g -pg $5"
+	FCFLAGS="${FCFLAGS} -g -pg $5"
+	OBJCFLAGS="${OBJCFLAGS} -g -pg $5"
+	LDFLAGS="${LDFLAGS} -pg $5"
       ],
       [
 	AC_MSG_RESULT(no)
