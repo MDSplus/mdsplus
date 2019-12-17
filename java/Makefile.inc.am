@@ -2,10 +2,17 @@
 
 RT6JAR = $(top_srcdir)/java/rt6.jar
 
-MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
-JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
+MDSPLUS_API_JAR = $(abs_top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
+JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+
+n :=
+s := $(n) #
+c := :
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
@@ -13,7 +20,7 @@ MANIFEST = $(builddir)/MANIFEST.MF
 
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) MANIFEST.MF
 
 JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
@@ -35,3 +42,7 @@ $(MANIFEST):
 	echo "Specification-Version: $(RELEASE_VERSION)"	 >$@
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
+
+$(DEPENDENCIES):
+	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)

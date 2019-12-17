@@ -48,7 +48,7 @@ public class Window extends Compound
 	    return descs[1];
 	}
 
-	public Data getTimeAt0()
+	public Data getValueAt0()
 	{
 	    return descs[2];
 	}
@@ -75,7 +75,7 @@ public class Window extends Compound
 	 *
 	 * @param data
 	 */
-	public void setTimeAt0(Data data)
+	public void setValueAt0(Data data)
 	{
 	    descs[2] = data;
 	}

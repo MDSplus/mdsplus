@@ -1,6 +1,5 @@
 import MDSplus.*;
 
-
 public class TestMdsObjects
 {
    static void testRows()

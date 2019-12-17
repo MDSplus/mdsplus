@@ -4,7 +4,7 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsobjects.jar
-CLASSPATH_ENV = CLASSPATH=$(JSCOPE_JAR)
+DEPENDENCIES = $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
@@ -13,7 +13,7 @@ mdsobjects.jar : @JARS_DIR@/java/mdsobjects/mdsobjects.jar
 
 else
 
-mdsobjects.jar: classjava.stamp
+mdsobjects.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	$(JAR) cf $@ -C $(JAVAROOT) .
 

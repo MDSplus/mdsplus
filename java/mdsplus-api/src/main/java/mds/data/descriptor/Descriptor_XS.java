@@ -11,7 +11,6 @@ import mds.mdsip.Message;
 /** XS (-63 : 193) **/
 public class Descriptor_XS extends Descriptor<Descriptor<?>>{
 	public static final short	_l_lenI	= 8;
-	@SuppressWarnings("hiding")
 	public static final int		BYTES	= 12;
 	public static final byte	CLASS	= -63;
 

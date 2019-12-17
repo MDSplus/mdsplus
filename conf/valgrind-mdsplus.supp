@@ -166,3 +166,14 @@
    fun:dlopen*
    fun:loadLib
 }
+
+{
+   fc26 in getservbyname
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__nss_database_lookup
+   fun:__nss_services_lookup2
+   fun:getservbyname_r@@GLIBC_2.2.5
+   fun:getservbyname
+}

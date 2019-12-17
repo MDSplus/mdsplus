@@ -627,6 +627,7 @@ ac_subst_vars='am__EXEEXT_FALSE
 am__EXEEXT_TRUE
 LTLIBOBJS
 LIBOBJS
+JAVA_TARGET_ARCH
 JRE
 VS_DIR
 VS_ARCH
@@ -791,6 +792,9 @@ PY_LOG_COMPILER
 LOG_DRIVER
 LOG_COMPILER
 TESTS_ENVIRONMENT
+SKIP_JUNIT_FALSE
+SKIP_JUNIT_TRUE
+JAVA_PATH_NAME
 ENABLE_TESTS_FALSE
 ENABLE_TESTS_TRUE
 ENABLE_TESTS
@@ -859,8 +863,6 @@ LIBSOCKET
 MAKEETCDIR
 VS_FALSE
 VS_TRUE
-SKIP_JUNIT_FALSE
-SKIP_JUNIT_TRUE
 MINGW_FALSE
 MINGW_TRUE
 GLOBUSLICENSE_FALSE
@@ -881,6 +883,8 @@ GREP
 CPP
 HAVE_VISIBILITY
 CFLAG_VISIBILITY
+LN_R
+BUSYBOX
 WINDRES
 SED
 RANLIB
@@ -4988,16 +4992,16 @@ $as_echo "profile" >&6; }
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
 $as_echo "no" >&6; }
 			if test "x${CFLAGS+set}" != "xset"; then :
-  CFLAGS="-g -O3"
+  CFLAGS="-O3"
 fi
 	if test "x${CXXFLAGS+set}" != "xset"; then :
-  CXXFLAGS="-g -O3"
+  CXXFLAGS="-O3"
 fi
 	if test "x${FCFLAGS+set}" != "xset"; then :
-  FCFLAGS="-g -O3"
+  FCFLAGS="-O3"
 fi
 	if test "x${OBJCFLAGS+set}" != "xset"; then :
-  OBJCFLAGS="-g -O3"
+  OBJCFLAGS="-O3"
 fi
        ;;
 esac
@@ -7063,6 +7067,116 @@ else
 fi
 
 
+# if ln is provided by busybox it does not have -r option
+
+    if test -n "$ac_tool_prefix"; then
+  # Extract the first word of "${ac_tool_prefix}busybox", so it can be a program name with args.
+set dummy ${ac_tool_prefix}busybox; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_BUSYBOX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$BUSYBOX"; then
+  ac_cv_prog_BUSYBOX="$BUSYBOX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_BUSYBOX="${ac_tool_prefix}busybox"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+BUSYBOX=$ac_cv_prog_BUSYBOX
+if test -n "$BUSYBOX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $BUSYBOX" >&5
+$as_echo "$BUSYBOX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+fi
+if test -z "$ac_cv_prog_BUSYBOX"; then
+  ac_ct_BUSYBOX=$BUSYBOX
+  # Extract the first word of "busybox", so it can be a program name with args.
+set dummy busybox; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_prog_ac_ct_BUSYBOX+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  if test -n "$ac_ct_BUSYBOX"; then
+  ac_cv_prog_ac_ct_BUSYBOX="$ac_ct_BUSYBOX" # Let the user override the test.
+else
+as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_prog_ac_ct_BUSYBOX="busybox"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+fi
+fi
+ac_ct_BUSYBOX=$ac_cv_prog_ac_ct_BUSYBOX
+if test -n "$ac_ct_BUSYBOX"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_ct_BUSYBOX" >&5
+$as_echo "$ac_ct_BUSYBOX" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+  if test "x$ac_ct_BUSYBOX" = x; then
+    BUSYBOX=""
+  else
+    case $cross_compiling:$ac_tool_warned in
+yes:)
+{ $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: using cross tools not prefixed with host triplet" >&5
+$as_echo "$as_me: WARNING: using cross tools not prefixed with host triplet" >&2;}
+ac_tool_warned=yes ;;
+esac
+    BUSYBOX=$ac_ct_BUSYBOX
+  fi
+else
+  BUSYBOX="$ac_cv_prog_BUSYBOX"
+fi
+
+
+
+
+    echo which ${BUSYBOX}
+    if test -n "${BUSYBOX}"; then
+    if cmp $(which ln) $(which ${BUSYBOX}); then :
+  LN_R="ln"
+else
+  LN_R="ln -r"
+fi
+    else
+    LN_R="ln -r"
+    fi
+
+
+
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: before VISIBILITY" >&5
@@ -8231,51 +8345,6 @@ fi
 esac
 
 
-    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for version 1.8 or higher of java" >&5
-$as_echo_n "checking for version 1.8 or higher of java... " >&6; }
-    version=`java -version 2>&1|head -n 1|grep -oe '[0-9]*\.[0-9]*\.[0-9]*'||echo 1.5`
-
-
-
-  # Used to indicate true or false condition
-  ax_compare_version=false
-
-  # Convert the two version strings to be compared into a format that
-  # allows a simple string comparison.  The end result is that a version
-  # string of the form 1.12.5-r617 will be converted to the form
-  # 0001001200050617.  In other words, each number is zero padded to four
-  # digits, and non digits are removed.
-
-  ax_compare_version_A=`echo "$version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-  ax_compare_version_B=`echo "1.8" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
-                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
-                     -e 's/[^0-9]//g'`
-
-
-    ax_compare_version=`echo "x$ax_compare_version_A
-x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
-
-
-
-    if test "$ax_compare_version" = "true" ; then
-    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
-$as_echo "yes" >&6; };if test "x$enable_sanitize" = xaddress; then :
-  skip_junit=yes
-fi
-    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; };skip_junit=yes
-  fi
-
-
-
  if test -r $exec_prefix/GLOBUS_LICENSE; then
   GLOBUSLICENSE_TRUE=
   GLOBUSLICENSE_FALSE='#'
@@ -8460,13 +8529,6 @@ else
 $as_echo "no" >&6; }
 fi
 
- if ${skip_junit+:} false||${MINGW+:} false; then
-  SKIP_JUNIT_TRUE=
-  SKIP_JUNIT_FALSE='#'
-else
-  SKIP_JUNIT_TRUE='#'
-  SKIP_JUNIT_FALSE=
-fi
 
 
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for visual studio" >&5
@@ -8609,6 +8671,7 @@ case "$host" in
            D32=""
          fi
          TARGET_ARCH="-m32"
+         JAVA_TARGET_ARCH="-d32"
          if which uil32 >/dev/null
          then UILCMD=uil32
          else UILCMD=uil
@@ -12923,6 +12986,9 @@ $as_echo_n "checking libpython path... " >&6; }
 DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DEF_PYLIB" >&5
 $as_echo "$DEF_PYLIB" >&6; }
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -13089,7 +13155,6 @@ cat >>confdefs.h <<_ACEOF
 _ACEOF
 
 fi
-
 
 
 # Extract the first word of "wine", so it can be a program name with args.
@@ -13578,8 +13643,8 @@ VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.su
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
-
-valgrind__test_logs1      = $(if ${VALGRIND_TESTS},${VALGRIND_TESTS},${TESTS})
+VALGRIND_TESTS ?= ${TESTS}
+valgrind__test_logs1      = $(VALGRIND_TESTS)
 valgrind__test_logs2      = $(valgrind__test_logs1:=.log)
 VALGRIND_LOGS            ?= $(foreach ext,$(TEST_EXTENSIONS),$(valgrind__test_logs2:${ext}.log=.log))
 
@@ -13621,7 +13686,7 @@ VALGRIND_TESTS_ENVIRONMENT += \
 
 VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
-	$(VALGRIND) --error-exitcode=1 \
+	$(VALGRIND) --error-exitcode=7 \
 	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
 	$(valgrind_$(VALGRIND_TOOL)_flags) \
 	$(VALGRIND_FLAGS)
@@ -13645,8 +13710,10 @@ _print_valgrind_hello = \
 
 $(VALGRIND_LOGS):
 
+tests-valgrind: ##@valgrind perform tests in valgrind with tools in $VALGRIND_TOOLS
 tests-valgrind:
 	@ \
+	$(if $(VALGRIND_LOGS),,exit 0;) \
 	echo "--- VALGRIND TESTS --- enabled tools: $(foreach tool,$(VALGRIND_TOOLS), $(tool))"; \
 	$(MAKE) -k $(BUILD_FLAGS) $(AM_MAKEFLAGS) all VALGRIND_BUILD="yes"; \
 	$(foreach tool,$(VALGRIND_TOOLS), \
@@ -13662,11 +13729,12 @@ tests-valgrind-tool:
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
-	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(LOG_COMPILER)" \
-	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(PY_LOG_COMPILER)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(subst ",\",$(LOG_COMPILER))" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) -q --log-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.log --xml=yes --xml-file=\$$\$$b-valgrind-$(VALGRIND_TOOL)-%p.xml $(subst ",\",$(PY_LOG_COMPILER))" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 
+tests-valgrind-suppressions: ##@valgrind perform valgrind with suppression output redirected to file
 tests-valgrind-suppressions:
 	@ \
 	$(MAKE) VALGRIND_BUILD="yes"; \
@@ -13683,8 +13751,8 @@ tests-valgrind-suppressions-tool:
 	@ \
 	$(MAKE) -k $(AM_MAKEFLAGS) $(VALGRIND_LOGS) \
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
-	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(LOG_COMPILER)" \
-	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(PY_LOG_COMPILER)" \
+	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(subst ",\",$(LOG_COMPILER))" \
+	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(subst ",\",$(PY_LOG_COMPILER))" \
 	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk > \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
@@ -15158,7 +15226,7 @@ fi
 
 
 
- # selects particular envs for build:host
+# selects particular envs for build:host
 
   # Extract the first word of "winepath", so it can be a program name with args.
 set dummy winepath; ac_word=$2
@@ -15219,6 +15287,7 @@ fi
 
    ENABLE_TESTS=yes
    $as_echo "Set tests environment for linux->mingw"
+   skip_junit=yes # skipping java tests (JUNIT) in windows
    if ${HAVE_WINE+:} false; then :
 
 else
@@ -15479,6 +15548,115 @@ else
   ENABLE_TESTS_FALSE=
 fi
 
+
+
+
+
+## SKIP JAVA TESTS ##
+if test "x$ENABLE_SANITIZE" = xno; then :
+
+else
+  $as_echo "skipping junit: in sanitize"; skip_junit=yes
+fi
+
+    { $as_echo "$as_me:${as_lineno-$LINENO}: checking for version 1.8 or higher of java" >&5
+$as_echo_n "checking for version 1.8 or higher of java... " >&6; }
+    version=`java -version 2>&1|head -n 1|grep -oe '[0-9]*\.[0-9]*\.[0-9]*'||echo 1.5`
+
+
+
+  # Used to indicate true or false condition
+  ax_compare_version=false
+
+  # Convert the two version strings to be compared into a format that
+  # allows a simple string comparison.  The end result is that a version
+  # string of the form 1.12.5-r617 will be converted to the form
+  # 0001001200050617.  In other words, each number is zero padded to four
+  # digits, and non digits are removed.
+
+  ax_compare_version_A=`echo "$version" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+  ax_compare_version_B=`echo "1.8" | sed -e 's/\([0-9]*\)/Z\1Z/g' \
+                     -e 's/Z\([0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/Z\([0-9][0-9][0-9]\)Z/Z0\1Z/g' \
+                     -e 's/[^0-9]//g'`
+
+
+    ax_compare_version=`echo "x$ax_compare_version_A
+x$ax_compare_version_B" | sed 's/^ *//' | sort -r | sed "s/x${ax_compare_version_A}/true/;s/x${ax_compare_version_B}/false/;1q"`
+
+
+
+    if test "$ax_compare_version" = "true" ; then
+    { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; };
+    else { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; };$as_echo "skipping junit: not JDK 1.8"; skip_junit=yes
+  fi
+
+
+
+  # AS_VAR_SET([JDK_VERSION],["$(java -d64 -version 2>&1 )"])
+  # AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
+  # Extract the first word of "java", so it can be a program name with args.
+set dummy java; ac_word=$2
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+$as_echo_n "checking for $ac_word... " >&6; }
+if ${ac_cv_path_JAVA_PATH_NAME+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  case $JAVA_PATH_NAME in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_JAVA_PATH_NAME="$JAVA_PATH_NAME" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  test -z "$as_dir" && as_dir=.
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
+    ac_cv_path_JAVA_PATH_NAME="$as_dir/$ac_word$ac_exec_ext"
+    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+JAVA_PATH_NAME=$ac_cv_path_JAVA_PATH_NAME
+if test -n "$JAVA_PATH_NAME"; then
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $JAVA_PATH_NAME" >&5
+$as_echo "$JAVA_PATH_NAME" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+
+
+  if ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1> /dev/null; then :
+
+else
+  $as_echo "skipping junit: java not found"; skip_junit=yes
+fi
+
+ if test x${skip_junit} = xyes; then
+  SKIP_JUNIT_TRUE=
+  SKIP_JUNIT_FALSE='#'
+else
+  SKIP_JUNIT_TRUE='#'
+  SKIP_JUNIT_FALSE=
+fi
 
 
 
@@ -17484,6 +17662,83 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
+#
+# CHECK ASSERT_LINE_TYPE to correctly override assert function in C
+# This is needed for testing functions in mdsplus/testing/testing.h
+#
+
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking assert line type" >&5
+$as_echo_n "checking assert line type... " >&6; }
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <assert.h>
+#define ASSERT_LINE_TYPE  unsigned int
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ASSERT_LINE_TYPE="unsigned int"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"${ASSERT_LINE_TYPE}\"" >&5
+$as_echo "\"${ASSERT_LINE_TYPE}\"" >&6; }
+else
+
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+#include <assert.h>
+#define ASSERT_LINE_TYPE  int
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+
+_ACEOF
+if ac_fn_c_try_link "$LINENO"; then :
+  ASSERT_LINE_TYPE="int"
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: \"${ASSERT_LINE_TYPE}\"" >&5
+$as_echo "\"${ASSERT_LINE_TYPE}\"" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: WARNING: \"None of the tests succeded to set assert line type\"" >&5
+$as_echo "$as_me: WARNING: \"None of the tests succeded to set assert line type\"" >&2;}
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+
+
+
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 WARNFLAGS="-Wall -Wextra"
@@ -17543,6 +17798,21 @@ $as_echo "$enable_wconversion" >&6; }
 # //////////////////////////////////////////////////////////////////////////// #
 
 
+
+
+
+cat >>confdefs.h <<_ACEOF
+#define EVENT_THREAD_STACK_SIZE_MIN 1048576
+_ACEOF
+
+
+if ${ASSERT_LINE_TYPE+:} false; then :
+
+cat >>confdefs.h <<_ACEOF
+#define ASSERT_LINE_TYPE $ASSERT_LINE_TYPE
+_ACEOF
+
+fi
 
 
 
@@ -17725,11 +17995,13 @@ fi
 
 
 
+
+
 ac_config_headers="$ac_config_headers include/mdsplus/mdsconfig.h"
 
 
 
-ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javamds/Makefile java/Makefile java/mdsplus/Makefile java/mdsplus-api/Makefile java/mdsplus-api/src/main/jni/mds/mdslib/Makefile java/mdsplus-api/tests/Makefile java/mdsobjects/Makefile java/mdsobjects/docs/Makefile java/jdispatcher/Makefile java/jscope/Makefile java/jtraverser/Makefile java/jtraverser2/Makefile java/jdevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile python/MDSplus/_version.py python/MDSplus/docs/Makefile python/MDSplus/tests/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/MdsVersionInfo.c mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
+ac_config_files="$ac_config_files Makefile.inc Makefile docs/Makefile envsyms actions/Makefile camshr/Makefile ccl/Makefile d3dshr/Makefile dwscope/Makefile hdf5/Makefile idlmdsevent/Makefile idlmdswidgets/Makefile javamds/Makefile java/Makefile java/tests/Makefile java/mdsplus/Makefile java/mdsplus-api/Makefile java/mdsplus-api/tests/Makefile java/mdsobjects/Makefile java/mdsobjects/docs/Makefile java/mdsobjects/tests/Makefile java/jdispatcher/Makefile java/jscope/Makefile java/jtraverser/Makefile java/jtraverser2/Makefile java/jdevices/Makefile LabView/Makefile manpages/Makefile macosx/Makefile math/Makefile mdsdcl/Makefile mdslib/Makefile mdslib/docs/Makefile mdslib/testing/Makefile mdslibidl/Makefile mdsobjects/cpp/Makefile mdsobjects/cpp/docs/Makefile mdsobjects/cpp/testing/Makefile mdsobjects/cpp/testing/testutils/Makefile python/MDSplus/_version.py python/MDSplus/docs/Makefile python/MDSplus/tests/Makefile mdsobjects/labview/Makefile mdsmisc/Makefile mdsshr/Makefile mdsshr/MdsVersionInfo.c mdsshr/testing/Makefile mdsshr/docs/Makefile mdssql/Makefile mdstcpip/Makefile mdstcpip/zlib/Makefile mdstcpip/docs/Makefile mdstcpip/docs/img/Makefile mdsvme/Makefile mitdevices/Makefile pydevices/MitDevices/_version.py pydevices/RfxDevices/_version.py pydevices/W7xDevices/_version.py remcam/Makefile roam/Makefile rpm/Makefile rpm/envsyms rpm/post_install_script scripts/Makefile servershr/Makefile setevent/Makefile tcl/Makefile tdishr/Makefile tdishr/testing/Makefile tdic/Makefile tditest/Makefile tditest/testing/Makefile testing/Makefile testing/backends/check/Makefile testing/selftest/Makefile traverser/Makefile treeshr/Makefile treeshr/testing/Makefile wfevent/Makefile xmdsshr/Makefile xtreeshr/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -17892,10 +18164,6 @@ if test -z "${MINGW_TRUE}" && test -z "${MINGW_FALSE}"; then
   as_fn_error $? "conditional \"MINGW\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
-if test -z "${SKIP_JUNIT_TRUE}" && test -z "${SKIP_JUNIT_FALSE}"; then
-  as_fn_error $? "conditional \"SKIP_JUNIT\" was never defined.
-Usually this means the macro was only invoked conditionally." "$LINENO" 5
-fi
 if test -z "${VS_TRUE}" && test -z "${VS_FALSE}"; then
   as_fn_error $? "conditional \"VS\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
@@ -17939,6 +18207,10 @@ Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${ENABLE_TESTS_TRUE}" && test -z "${ENABLE_TESTS_FALSE}"; then
   as_fn_error $? "conditional \"ENABLE_TESTS\" was never defined.
+Usually this means the macro was only invoked conditionally." "$LINENO" 5
+fi
+if test -z "${SKIP_JUNIT_TRUE}" && test -z "${SKIP_JUNIT_FALSE}"; then
+  as_fn_error $? "conditional \"SKIP_JUNIT\" was never defined.
 Usually this means the macro was only invoked conditionally." "$LINENO" 5
 fi
 if test -z "${HAVE_CUTE_DOXYGEN_TRUE}" && test -z "${HAVE_CUTE_DOXYGEN_FALSE}"; then
@@ -18601,12 +18873,13 @@ do
     "idlmdswidgets/Makefile") CONFIG_FILES="$CONFIG_FILES idlmdswidgets/Makefile" ;;
     "javamds/Makefile") CONFIG_FILES="$CONFIG_FILES javamds/Makefile" ;;
     "java/Makefile") CONFIG_FILES="$CONFIG_FILES java/Makefile" ;;
+    "java/tests/Makefile") CONFIG_FILES="$CONFIG_FILES java/tests/Makefile" ;;
     "java/mdsplus/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsplus/Makefile" ;;
     "java/mdsplus-api/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsplus-api/Makefile" ;;
-    "java/mdsplus-api/src/main/jni/mds/mdslib/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsplus-api/src/main/jni/mds/mdslib/Makefile" ;;
     "java/mdsplus-api/tests/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsplus-api/tests/Makefile" ;;
     "java/mdsobjects/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsobjects/Makefile" ;;
     "java/mdsobjects/docs/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsobjects/docs/Makefile" ;;
+    "java/mdsobjects/tests/Makefile") CONFIG_FILES="$CONFIG_FILES java/mdsobjects/tests/Makefile" ;;
     "java/jdispatcher/Makefile") CONFIG_FILES="$CONFIG_FILES java/jdispatcher/Makefile" ;;
     "java/jscope/Makefile") CONFIG_FILES="$CONFIG_FILES java/jscope/Makefile" ;;
     "java/jtraverser/Makefile") CONFIG_FILES="$CONFIG_FILES java/jtraverser/Makefile" ;;

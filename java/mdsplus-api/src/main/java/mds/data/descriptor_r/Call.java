@@ -100,7 +100,7 @@ public final class Call extends Descriptor_R<Byte>{
 	}
 
 	public Call(final DTYPE type, final Descriptor<?> image, final Descriptor<?> routine, final Descriptor<?>... args){
-		super(DTYPE.CALL, ByteBuffer.allocate(Byte.BYTES).order(Descriptor.BYTEORDER).put(type.toByte()), args, image, routine);
+		super(DTYPE.CALL, ByteBuffer.allocateDirect(Byte.BYTES).order(Descriptor.BYTEORDER).put(type.toByte()), args, image, routine);
 	}
 
 	public Call(final DTYPE type, final String image, final String routine, final Descriptor<?>... args){

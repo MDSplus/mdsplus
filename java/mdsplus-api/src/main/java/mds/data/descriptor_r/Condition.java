@@ -15,7 +15,7 @@ public final class Condition extends Descriptor_R<Byte>{
 	public static final byte	NEGATE_CONDITION	= 7;
 
 	public Condition(final byte mode, final Descriptor<?> cond){
-		super(DTYPE.CONDITION, ByteBuffer.allocate(Byte.BYTES).order(Descriptor.BYTEORDER).put(mode), cond);
+		super(DTYPE.CONDITION, ByteBuffer.allocateDirect(Byte.BYTES).order(Descriptor.BYTEORDER).put(mode), cond);
 	}
 
 	public Condition(final ByteBuffer b){

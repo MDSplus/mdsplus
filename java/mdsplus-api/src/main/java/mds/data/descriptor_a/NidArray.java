@@ -12,14 +12,14 @@ import mds.mdsip.Message;
 
 public final class NidArray extends Descriptor_A<Nid>{
 	private static final ByteBuffer getByteBuffer(final Nid... nids) {
-		final ByteBuffer bb = ByteBuffer.allocate(nids.length * Integer.BYTES).order(Descriptor.BYTEORDER);
+		final ByteBuffer bb = ByteBuffer.allocateDirect(nids.length * Integer.BYTES).order(Descriptor.BYTEORDER);
 		for(final Nid nid : nids)
 			bb.putInt(nid.getNidNumber());
 		return (ByteBuffer)bb.rewind();
 	}
 
 	public NidArray(){
-		super(DTYPE.NID, ByteBuffer.allocate(0));
+		super(DTYPE.NID, ByteBuffer.allocateDirect(0));
 	}
 
 	public NidArray(final ByteBuffer b){

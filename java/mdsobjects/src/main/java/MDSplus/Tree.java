@@ -9,111 +9,118 @@ package MDSplus;
 public class Tree {
 
 
-static final int  DbiNAME = 1,
-	        DbiSHOTID = 2,
-	        DbiMODIFIED = 3,
-	        DbiOPEN_FOR_EDIT = 4,
-	        DbiINDEX = 5,
-	        DbiNUMBER_OPENED = 6,
-	        DbiMAX_OPEN = 7,
-	        DbiDEFAULT = 8,
-	        DbiOPEN_READONLY =  9,
-	        DbiVERSIONS_IN_MODEL = 10,
-	        DbiVERSIONS_IN_PULSE = 11;
+	static final int  DbiNAME = 1,
+			DbiSHOTID = 2,
+			DbiMODIFIED = 3,
+			DbiOPEN_FOR_EDIT = 4,
+			DbiINDEX = 5,
+			DbiNUMBER_OPENED = 6,
+			DbiMAX_OPEN = 7,
+			DbiDEFAULT = 8,
+			DbiOPEN_READONLY =  9,
+			DbiVERSIONS_IN_MODEL = 10,
+			DbiVERSIONS_IN_PULSE = 11;
 
-static public final int  TreeUSAGE_ANY  = 0,
-	        TreeUSAGE_NONE = 1 ,
-	        TreeUSAGE_STRUCTURE = 1,
-	        TreeUSAGE_ACTION = 2,
-	        TreeUSAGE_DEVICE = 3,
-	        TreeUSAGE_DISPATCH = 4,
-	        TreeUSAGE_NUMERIC = 5,
-	        TreeUSAGE_SIGNAL = 6,
-	        TreeUSAGE_TASK = 7,
-	        TreeUSAGE_TEXT = 8,
-	        TreeUSAGE_WINDOW = 9,
-	        TreeUSAGE_AXIS = 10,
-	        TreeUSAGE_SUBTREE = 11,
-	        TreeUSAGE_COMPOUND_DATA = 1;
+	static public final int  TreeUSAGE_ANY  = 0,
+			TreeUSAGE_NONE = 1 ,
+			TreeUSAGE_STRUCTURE = 1,
+			TreeUSAGE_ACTION = 2,
+			TreeUSAGE_DEVICE = 3,
+			TreeUSAGE_DISPATCH = 4,
+			TreeUSAGE_NUMERIC = 5,
+			TreeUSAGE_SIGNAL = 6,
+			TreeUSAGE_TASK = 7,
+			TreeUSAGE_TEXT = 8,
+			TreeUSAGE_WINDOW = 9,
+			TreeUSAGE_AXIS = 10,
+			TreeUSAGE_SUBTREE = 11,
+			TreeUSAGE_COMPOUND_DATA = 12;
+
+	private static Tree active;
 
 	static {
-	    try {
-	      int loaded = 0;
-	      try {
-	        java.lang.String value = System.getenv("JavaMdsLib");
-	        if (value == null) {
-	          value = System.getProperty("JavaMdsLib");
-	        }
-	        if (value != null) {
-	          System.load(value);
-	          loaded = 1;
-	        }
-	      } catch (Throwable e) {
-	      }
-	      if (loaded == 0) {
-	        System.loadLibrary("JavaMds");
-	      }
-	    }catch(Throwable e)
-	    {
-	          System.out.println("Error loading library javamds: "+e);
-	          e.printStackTrace();
-	    }
+		try {
+			int loaded = 0;
+			try {
+				java.lang.String value = System.getenv("JavaMdsLib");
+				if (value == null) {
+					value = System.getProperty("JavaMdsLib");
+				}
+				if (value != null) {
+					System.load(value);
+					loaded = 1;
+				}
+			} catch (Throwable e) {
+			}
+			if (loaded == 0) {
+				System.loadLibrary("JavaMds");
+			}
+		}catch(Throwable e)
+		{
+			System.out.println("Error loading library javamds: "+e);
+			e.printStackTrace();
+		}
 	}
 
 
 	private int shot;
 	private java.lang.String name;
 	private java.lang.String mode;
-	private int ctx1, ctx2;
+	private long ctx = 0l;
 	private boolean open = false;
+	private boolean edit = false;
 
+	private static final java.lang.String OPEN_CLOSED = "CLOSED";
+	public static final java.lang.String OPEN_NORMAL = "NORMAL";
+	public static final java.lang.String OPEN_READONLY = "READONLY";
+	public static final java.lang.String OPEN_NEW = "NEW";
+	public static final java.lang.String OPEN_EDIT = "EDIT";
 	public Tree(java.lang.String name, int shot) throws MdsException
 	{
-	    this.shot = shot;
-	    this.name = name;
-	    mode = "NORMAL";
-	    openTree(name, shot, false);
-	    open = true;
-
+		this(name,shot,OPEN_NORMAL);
 	}
 
 	public Tree(java.lang.String name, int shot, java.lang.String mode) throws MdsException
 	{
-	    this.shot = shot;
-	    this.name = name;
-	    java.lang.String upMode = mode.toUpperCase();
-	    this.mode = upMode;
-	    if(upMode.equals("NORMAL"))
-	        openTree(name, shot, false);
-	    if(upMode.equals("READONLY"))
-	        openTree(name, shot, true);
-	    if(upMode.equals("NEW"))
-	        editTree(name, shot, true);
-	    if(upMode.equals("EDIT"))
-	        editTree(name, shot, false);
-	    open = true;
-
+		this.shot = shot;
+		this.name = name;
+		if(OPEN_READONLY.equalsIgnoreCase(mode))
+			readonly();
+		else if (OPEN_NORMAL.equalsIgnoreCase(mode))
+			this.normal();
+		else if(OPEN_EDIT.equalsIgnoreCase(mode))
+			edit();
+		else if(OPEN_NEW.equalsIgnoreCase(mode))
+			_new();
+		else
+			this.mode = OPEN_CLOSED;
 	}
 
 	public void close() throws MdsException
 	{
-	    closeTree(ctx1, ctx2, name, shot);
-	    open = false;
+		if (open)
+			closeTree(ctx, name, shot);
+		edit = open = false;
+		this.mode = OPEN_CLOSED;
 	}
 
+	@Override
 	protected void finalize() throws Throwable {
-	    try{
-	        if (this.isOpen())
-	            this.close();
-	    }finally{
-	        super.finalize();
-	    }
+		try{
+			if (edit)
+				this.quit();
+			else
+				this.close();
+		}finally{
+			super.finalize();
+		}
 	}
 
 	public boolean isOpen() { return open;}
+	@Override
 	public java.lang.String toString()
 	{
-	    return("Tree("+ name + ", " +getShot() + ", " + mode + ")");
+		return("Tree("+ name + ", " +getShot() + ", " + mode + ")");
 	}
 
 	/**
@@ -123,13 +130,13 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public static void setActiveTree(Tree tree) throws MdsException
 	{
-	    switchDbid(tree.ctx1, tree.ctx2);
+		Tree.active = tree;
 	}
 
 
 	static Tree getTree(java.lang.String name, int shot) throws MdsException
 	{
-	    return new Tree(name, shot);
+		return new Tree(name, shot);
 	}
 	/**
 	 * Returns the currently opened and active tree
@@ -137,43 +144,42 @@ static public final int  TreeUSAGE_ANY  = 0,
 	public java.lang.String getName(){return name;}
 	public int getShot()
 	{
-	    if(shot != 0)
-	        return shot;
-	    else
-	        try {
-	            return getCurrent();
-	        }catch(Exception exc){return 0;}
+		if(shot != 0)
+			return shot;
+		else
+			try {
+				return getCurrent();
+			}catch(Exception exc){return 0;}
 	}
 	public java.lang.String getMode() { return mode;}
-	public native static Tree getActiveTree() throws MdsException;
-	native void openTree(java.lang.String name, int shot, boolean readonly) throws MdsException;
-	native void closeTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
-	native void editTree(java.lang.String name, int shot, boolean isNew) throws MdsException;
-	native static void writeTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
-	native static void quitTree(int ctx1, int ctx2, java.lang.String name, int shot) throws MdsException;
-	static native int findNode(int ctx1, int ctx2, java.lang.String path) throws MdsException;
-	static native void switchDbid(int ctx1, int ctx2) throws MdsException;
-	static native int [] getWild(int ctx1, int ctx2, java.lang.String path, int usage) throws MdsException;
-	static native int getDefaultNid(int ctx1, int ctx2) throws MdsException;
-	static native void setDefaultNid(int ctx1, int ctx2, int nid) throws MdsException;
-	static native boolean getDbiFlag(int ctx1, int ctx2, int dbiType) throws MdsException;
-	static native void setDbiFlag(int ctx1, int ctx2, boolean flag, int dbiType) throws MdsException;
-	static native void setTreeViewDate(int ctx1, int ctx2, java.lang.String date) throws MdsException;
-	static native void setTreeTimeContext(int ctx1, int ctx2, Data start, Data end, Data delta);
-	public static native void setCurrent(java.lang.String name, int shot) throws MdsException;
-	public static native int getCurrent(java.lang.String treename) throws MdsException;
-	public static native void createPulseFile(int ctx1, int ctx2, int pulseSot) throws MdsException;
-	public static native void deletePulseFile(int ctx1, int ctx2, int pulseSot) throws MdsException;
-	public static native java.lang.String[] findTreeTags(int ctx1, int ctx2, java.lang.String wild) throws MdsException;
-	public static native void  addTreeNode(int ctx1, int ctx2, java.lang.String name, int usage) throws MdsException;
-	public static native void addTreeDevice(int ctx1, int ctx2, java.lang.String name, java.lang.String type) throws MdsException;
-	public static native void deleteTreeNode(int ctx1, int ctx2, java.lang.String name) throws MdsException;
-	public static native void removeTreeTag(int ctx1, int ctx2, java.lang.String tag) throws MdsException;
-	public static native long getDatafileSize(int ctx1, int ctx2);
+	static native int findNode(long ctx, java.lang.String path) throws MdsException;
+	private native void openTree(long ctx, java.lang.String name, int shot, boolean readonly) throws MdsException;
+	private native void closeTree(long ctx, java.lang.String name, int shot) throws MdsException;
+	private native void editTree(long ctx, java.lang.String name, int shot, boolean isNew) throws MdsException;
+	private native void writeTree(long ctx, java.lang.String name, int shot) throws MdsException;
+	private native void quitTree(long ctx, java.lang.String name, int shot) throws MdsException;
+	private static native int [] getWild(long ctx, java.lang.String path, int usage) throws MdsException;
+	private static native int getDefaultNid(long ctx) throws MdsException;
+	private static native void setDefaultNid(long ctx, int nid) throws MdsException;
+	private static native boolean getDbiFlag(long ctx, int dbiType) throws MdsException;
+	private static native void setDbiFlag(long ctx, boolean flag, int dbiType) throws MdsException;
+	private static native void setTreeViewDate(java.lang.String date) throws MdsException;
+	private static native void setTreeTimeContext(long ctx, Data start, Data end, Data delta);
+	private static native void setCurrent(java.lang.String name, int shot) throws MdsException;
+	private static native int getCurrent(java.lang.String treename) throws MdsException;
+	private static native void createPulseFile(long ctx, int pulseSot) throws MdsException;
+	private static native void deletePulseFile(long ctx, int pulseSot) throws MdsException;
+	private static native java.lang.String[] findTreeTags(long ctx, java.lang.String wild) throws MdsException;
+	private static native int  addTreeNode(long ctx, java.lang.String name, int usage) throws MdsException;
+	private static native void addTreeDevice(long ctx, java.lang.String name, java.lang.String type) throws MdsException;
+	private static native void deleteTreeNode(long ctx, java.lang.String name) throws MdsException;
+	private static native void removeTreeTag(long ctx, java.lang.String tag) throws MdsException;
+	private static native long getDatafileSize(long ctx);
+	//Thread safe context dependent tdi operations
+	private static native Data execute(long ctx, java.lang.String expr, Data[] args);
+	private static native Data compile(long ctx, java.lang.String expr, Data[] args);
 
-
-	public int getCtx1(){return ctx1;}
-	public int getCtx2() {return ctx2;}
+	protected long getCtx(){return ctx;}
 
 	/**
 	 * Return TreeNode for the data item corresponding to the passed pathname
@@ -182,9 +188,9 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNode getNode(java.lang.String path) throws MdsException
 	{
-	    TreeNode t = new TreeNode(findNode(ctx1, ctx2, path), this);
-	    t.setCtxTree(this);
-	    return t;
+		TreeNode t = new TreeNode(findNode(ctx, path), this);
+		t.setCtxTree(this);
+		return t;
 	}
 
 	/**
@@ -195,7 +201,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNode getNode(int nid) throws MdsException
 	{
-	    return new TreeNode(nid, this);
+		return new TreeNode(nid, this);
 	}
 
 	/**
@@ -205,7 +211,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNode getNode(TreePath path) throws MdsException
 	{
-	    return new TreeNode(findNode(ctx1, ctx2, path.getString()), this);
+		return new TreeNode(findNode(ctx, path.getString()), this);
 	}
 
 	/**
@@ -217,22 +223,22 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public TreeNodeArray getNodeWild(java.lang.String path) throws MdsException
 	{
-	    return getNodeWild(path, -1);
+		return getNodeWild(path, -1);
 	}
 	public TreeNodeArray getNodeWild(java.lang.String path, int usage) throws MdsException
 	{
-	    return new TreeNodeArray(getWild(ctx1, ctx2, path, usage), this);
+		return new TreeNodeArray(getWild(ctx, path, usage), this);
 	}
 	public TreeNodeArray getNodeWild(java.lang.String path, java.lang.String usage) throws MdsException
 	{
-	    return getNodeWild(path, convertUsage(usage));
+		return getNodeWild(path, convertUsage(usage));
 	}
 	/**
 	 * Get the TreeNode for the default node.
 	 */
 	public TreeNode getDefault() throws MdsException
 	{
-	    return new TreeNode(getDefaultNid(ctx1, ctx2), this);
+		return new TreeNode(getDefaultNid(ctx), this);
 	}
 
 	/**
@@ -242,7 +248,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void setDefault(TreeNode node) throws MdsException
 	{
-	    setDefaultNid(ctx1, ctx2, node.getNid());
+		setDefaultNid(ctx, node.getNid());
 	}
 
 	/**
@@ -250,38 +256,38 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public boolean versionsInModelEnabled() throws MdsException
 	{
-	    return getDbiFlag(ctx1, ctx2, DbiVERSIONS_IN_MODEL);
+		return getDbiFlag(ctx, DbiVERSIONS_IN_MODEL);
 	}
 	/**
 	 * Returns true if the tree supports versioning in pulse.
 	 */
 	public boolean versionsInPulseEnabled() throws MdsException
 	{
-	    return getDbiFlag(ctx1, ctx2, DbiVERSIONS_IN_PULSE);
+		return getDbiFlag(ctx, DbiVERSIONS_IN_PULSE);
 	}
 
 
 	public void setVersionsInModel(boolean enabled) throws MdsException
 	{
-	    setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_MODEL);
+		setDbiFlag(ctx, enabled, DbiVERSIONS_IN_MODEL);
 	}
 
 	public void setVersionsInPulse(boolean enabled) throws MdsException
 	{
-	    setDbiFlag(ctx1, ctx2, enabled, DbiVERSIONS_IN_MODEL);
+		setDbiFlag(ctx, enabled, DbiVERSIONS_IN_PULSE);
 	}
 
 	public boolean isModified() throws MdsException
 	{
-	    return getDbiFlag(ctx1, ctx2, DbiMODIFIED);
+		return getDbiFlag(ctx, DbiMODIFIED);
 	}
 	public boolean isOpenForEdit() throws MdsException
 	{
-	    return getDbiFlag(ctx1, ctx2, DbiOPEN_FOR_EDIT);
+		return getDbiFlag(ctx, DbiOPEN_FOR_EDIT);
 	}
 	public boolean isReadOnly() throws MdsException
 	{
-	    return getDbiFlag(ctx1, ctx2, DbiOPEN_READONLY);
+		return getDbiFlag(ctx, DbiOPEN_READONLY);
 	}
 
 	/**
@@ -292,7 +298,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void setViewDate(java.util.Date date) throws MdsException
 	{
-	    setTreeViewDate(ctx1, ctx2, ""+date);
+		setTreeViewDate(new java.text.SimpleDateFormat("dd-MMM-yyyy HH:mm:ss").format(date));
 	}
 
 	/**
@@ -305,7 +311,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void setTimeContext(Data start, Data end, Data delta) throws MdsException
 	{
-	    setTreeTimeContext(ctx1, ctx2, start, end, delta);
+		setTreeTimeContext(ctx, start, end, delta);
 	}
 
 	/**
@@ -316,7 +322,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void setCurrent() throws MdsException
 	{
-	    setCurrent(name, shot);
+		setCurrent(name, shot);
 	}
 
 	/**
@@ -327,7 +333,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 
 	public int getCurrent() throws MdsException
 	{
-	    return getCurrent(name);
+		return getCurrent(name);
 	}
 
 	/**
@@ -337,7 +343,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void createPulse(int pulseShot) throws MdsException
 	{
-	    createPulseFile(ctx1, ctx2, pulseShot);
+		createPulseFile(ctx, pulseShot);
 	}
 
 	/**
@@ -347,7 +353,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void deletePulse(int pulseShot) throws MdsException
 	{
-	    deletePulseFile(ctx1, ctx2, pulseShot);
+		deletePulseFile(ctx, pulseShot);
 	}
 
 	/**
@@ -357,23 +363,42 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public java.lang.String[] findTags(java.lang.String wild) throws MdsException
 	{
-	    return findTreeTags(ctx1, ctx2, wild);
+		return findTreeTags(ctx, wild);
 	}
 
 	/**
 	 * Open the tree for editing.
 	 */
-	public void edit() throws MdsException
-	{
-	    editTree(name, shot, false);
+	public void normal() throws MdsException	{
+		openTree(ctx, name, shot, false);
+		edit = false;
+		open = true;
+		mode = OPEN_NORMAL;
 	}
-
+	public void readonly() throws MdsException	{
+		openTree(ctx, name, shot, true);
+		edit = false;
+		open = true;
+		mode = OPEN_READONLY;
+	}
+	public void edit() throws MdsException	{
+		editTree(ctx, name, shot, false);
+		edit = true;
+		open = true;
+		mode = OPEN_EDIT;
+	}
+	private void _new() throws MdsException	{
+		editTree(ctx, name, shot, true);
+		edit = true;
+		open = true;
+		mode = OPEN_EDIT;
+	}
 	/**
 	 * Write the tree under edit.
 	 */
 	public void write() throws MdsException
 	{
-	    writeTree(ctx1, ctx2, name, shot);
+		writeTree(ctx, name, shot);
 	}
 
 	/**
@@ -381,27 +406,30 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void quit() throws MdsException
 	{
-	    quitTree(ctx1, ctx2, name, shot);
+		if (open)
+			quitTree(ctx, name, shot);
+		edit = open = false;
+		this.mode = OPEN_CLOSED;
 	}
 
 
 	static int convertUsage(java.lang.String usageStr)
 	{
-	    java.lang.String upUsageStr = usageStr.toUpperCase();
-	    if(upUsageStr.equals("ANY")) return TreeUSAGE_ANY;
-	    if(upUsageStr.equals("STRUCTURE")) return TreeUSAGE_STRUCTURE;
-	    if(upUsageStr.equals("ACTION")) return TreeUSAGE_ACTION;
-	    if(upUsageStr.equals("DEVICE")) return TreeUSAGE_DEVICE;
-	    if(upUsageStr.equals("DISPATCH")) return TreeUSAGE_DISPATCH;
-	    if(upUsageStr.equals("NUMERIC")) return TreeUSAGE_NUMERIC;
-	    if(upUsageStr.equals("SIGNAL")) return TreeUSAGE_SIGNAL;
-	    if(upUsageStr.equals("TASK")) return TreeUSAGE_TASK;
-	    if(upUsageStr.equals("TEXT")) return TreeUSAGE_TEXT;
-	    if(upUsageStr.equals("WINDOW")) return TreeUSAGE_WINDOW;
-	    if(upUsageStr.equals("AXIS")) return TreeUSAGE_AXIS;
-	    if(upUsageStr.equals("SUBTREE")) return TreeUSAGE_SUBTREE;
-	    if(upUsageStr.equals("COMPOUND_DATA")) return TreeUSAGE_COMPOUND_DATA;
-	    return 0;
+		java.lang.String upUsageStr = usageStr.toUpperCase();
+		if(upUsageStr.equals("ANY")) return TreeUSAGE_ANY;
+		if(upUsageStr.equals("STRUCTURE")) return TreeUSAGE_STRUCTURE;
+		if(upUsageStr.equals("ACTION")) return TreeUSAGE_ACTION;
+		if(upUsageStr.equals("DEVICE")) return TreeUSAGE_DEVICE;
+		if(upUsageStr.equals("DISPATCH")) return TreeUSAGE_DISPATCH;
+		if(upUsageStr.equals("NUMERIC")) return TreeUSAGE_NUMERIC;
+		if(upUsageStr.equals("SIGNAL")) return TreeUSAGE_SIGNAL;
+		if(upUsageStr.equals("TASK")) return TreeUSAGE_TASK;
+		if(upUsageStr.equals("TEXT")) return TreeUSAGE_TEXT;
+		if(upUsageStr.equals("WINDOW")) return TreeUSAGE_WINDOW;
+		if(upUsageStr.equals("AXIS")) return TreeUSAGE_AXIS;
+		if(upUsageStr.equals("SUBTREE")) return TreeUSAGE_SUBTREE;
+		if(upUsageStr.equals("COMPOUND_DATA")) return TreeUSAGE_COMPOUND_DATA;
+		return 0;
 	}
 	/**
 	 * Add a new node to the tree open for edit.
@@ -409,9 +437,11 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 * @param name
 	 * @param usage
 	 */
-	public void addNode(java.lang.String name, java.lang.String usage) throws MdsException
+	public TreeNode addNode(java.lang.String name, java.lang.String usage) throws MdsException
 	{
-	    addTreeNode(ctx1, ctx2, name, convertUsage(usage));
+		int newNid = addTreeNode(ctx, name, convertUsage(usage));
+		return new TreeNode(newNid, this);
+
 	}
 
 	/**
@@ -422,7 +452,7 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void addDevice(java.lang.String name, java.lang.String type) throws MdsException
 	{
-	    addTreeDevice(ctx1, ctx2, name, type);
+		addTreeDevice(ctx, name, type);
 	}
 
 	/**
@@ -432,19 +462,50 @@ static public final int  TreeUSAGE_ANY  = 0,
 	 */
 	public void deleteNode(java.lang.String name) throws MdsException
 	{
-	    deleteTreeNode(ctx1, ctx2, name);
+		deleteTreeNode(ctx, name);
 	}
 
 	public void removeTag(java.lang.String tag) throws MdsException
 	{
-	    removeTreeTag(ctx1, ctx2, tag);
+		removeTreeTag(ctx, tag);
 	}
 	public long getDatafileSize() throws MdsException
 	{
-	    long size = getDatafileSize(ctx1, ctx2);
-	    if(size == -1)
-	        throw new MdsException("Cannot get Datafile Size");
-	    return size;
+		long size = getDatafileSize(ctx);
+		if(size == -1)
+			throw new MdsException("Cannot get Datafile Size");
+		return size;
 	}
 
+	public Data tdiCompile(java.lang.String expr, Data args[])
+	{
+		Data retData =  compile(ctx, expr, args);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public Data tdiCompile(java.lang.String expr)
+	{
+		Data retData =  compile(ctx, expr, new Data[0]);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public Data tdiExecute(java.lang.String expr, Data args[])
+	{
+		Data retData = execute(ctx, expr, args);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public Data tdiExecute(java.lang.String expr)
+	{
+		Data retData =  execute(ctx, expr, new Data[0]);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public static Tree getActiveTree() {
+		return Tree.active;
+	}
 }

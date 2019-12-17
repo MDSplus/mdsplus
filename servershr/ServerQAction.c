@@ -496,7 +496,7 @@ static int DoSrvClose(SrvJob * job_in){
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
   current_job_text = job_text;
   while IS_OK(status = TreeClose(0, 0));
-  status = (status == TreeNOT_OPEN) ? TreeNORMAL : status;
+  status = (status == TreeNOT_OPEN) ? TreeSUCCESS : status;
   if (job_in->h.addr)
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;

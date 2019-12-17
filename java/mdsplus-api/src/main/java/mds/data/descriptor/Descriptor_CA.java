@@ -11,7 +11,6 @@ import mds.mdsip.Message;
 
 /** Compressed Array Descriptor (-61 : 195) **/
 public class Descriptor_CA extends ARRAY<ByteBuffer>{
-	@SuppressWarnings("hiding")
 	public static final byte CLASS = -61;// 195
 
 	public static final Descriptor_CA deserialize(final ByteBuffer b) {
@@ -151,7 +150,7 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>{
 	public final Descriptor_A<?> unpack() {
 		if(this.decmprs != null) return this.decmprs;
 		try{
-			if(this.isLocal() && this.use_mdslib()) return (Descriptor_A<?>)Descriptor.mdslib.getDescriptor("DATA($)", this);
+			if(this.isLocal() && this.use_mds_local()) return (Descriptor_A<?>)Descriptor.mds_local.getDescriptor("DATA($)", this);
 			return(this.decmprs = COMPRESSION.decompress(this));
 		}catch(final MdsException e){
 			e.printStackTrace();

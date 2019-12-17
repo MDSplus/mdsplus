@@ -608,3 +608,44 @@
    fun:long_dealloc.lto_priv.328
    fun:frame_dealloc
 }
+
+{
+   fc30 python 3.7m
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   ...
+   fun:PyUFunc_FromFuncAndDataAndSignatureAndIdentity
+   fun:InitOperators
+   fun:PyInit__multiarray_umath
+   fun:_PyImport_LoadDynamicModuleWithSpec
+   obj:*/libpython3.7m.so*
+}
+
+{
+   fc30 python 3.7m
+   Memcheck:Cond
+   fun:PyUnicode_Decode
+   fun:PyUnicode_FromEncodedObject
+   obj:*/libpython3.7m.so*
+}
+
+{
+   fc30 python 3.7m
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_dl_map_object_deps
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+   fun:dlopen@@GLIBC_2.2.5
+   obj:*/_ctypes.cpython-37m-*.so
+   fun:_PyMethodDef_RawFastCallKeywords
+   fun:_PyCFunction_FastCallKeywords
+   obj:*/libpython3.7m.so*
+}

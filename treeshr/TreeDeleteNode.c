@@ -111,7 +111,7 @@ int _TreeDeleteNodeInitialize(void *dbid, int nidin, int *count, int reset)
   }
   if (nidin)
     check_nid(dblist, nid, count);
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 static inline int getbit(PINO_DATABASE *dblist, int bitnum){
@@ -353,7 +353,7 @@ int _TreeDeleteNodeGetNid(void *dbid, int *innid)
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid = (NID *) innid;
   int i;
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   int found = 0;
   if (dblist->delete_list)
     for (i = nid->node + 1; i < dblist->tree_info->header->nodes && ((found = getbit(dblist,i)) == 0);

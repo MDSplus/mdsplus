@@ -68,9 +68,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 			this.pout.append(']');
 		}
 	}
-	@SuppressWarnings("hiding")
 	private static final boolean	atomic	= true;
-	@SuppressWarnings("hiding")
 	public static final byte		CLASS	= 4;
 
 	public static Descriptor_A<?> deserialize(final ByteBuffer b) throws MdsException {
@@ -121,12 +119,12 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 	}
 
 	public static final Descriptor_A<?> readMessage(final Message msg) throws MdsException {
-		final ByteBuffer msgh = msg.header.duplicate().order(msg.header.order());
+		final ByteBuffer msgh = msg.getHeader();
 		final byte dmct = msgh.get(Message._dmctB);
 		final int shape = (dmct > 1) ? (1 + dmct) * Integer.BYTES : 0;
 		final short header_size = (short)(Descriptor.BYTES + Descriptor.BYTES + shape);
 		final int arsize = msgh.getInt(Message._mlenI) - Message.HEADER_SIZE;
-		final ByteBuffer b = ByteBuffer.allocate(header_size + arsize).order(msgh.order());
+		final ByteBuffer b = ByteBuffer.allocateDirect(header_size + arsize).order(msgh.order());
 		b.putShort(msgh.getShort(Message._lenS));
 		b.put(msgh.get(Message._typB));
 		b.put(Descriptor_A.CLASS);
@@ -143,7 +141,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 			for(int i = 0; i < dmct; i++)
 				b.putInt(msgh.getInt());
 		}
-		b.put(msg.body.duplicate()).rewind();
+		b.put(msg.getBody()).rewind();
 		return Descriptor_A.deserialize(b);
 	}
 
@@ -272,7 +270,7 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 		final byte[] ba = this.toByteArray();
 		for(int i = 0; i < ba.length; i++)
 			ba[i] = ba[i] == 0 ? (byte)1 : (byte)0;
-		return new Uint8Array(ba);
+			return new Uint8Array(ba);
 	}
 
 	public final void setAtomic(final T[] values) {
@@ -399,7 +397,6 @@ public abstract class Descriptor_A<T>extends ARRAY<T[]> implements Iterable<T>{
 		return this.decompile(new StringBuilder(32), t).toString();
 	}
 
-	@SuppressWarnings("static-method")
 	protected boolean format() {
 		return false;
 	}

@@ -1,6 +1,7 @@
 package mds.data.descriptor_s;
 
 import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
 import mds.MdsException;
 import mds.data.DTYPE;
 import mds.data.TREE;
@@ -20,11 +21,11 @@ public final class Path extends NODE<String>{
 	}
 
 	public Path(final String path){
-		super(DTYPE.PATH, ByteBuffer.wrap(path.getBytes()).order(Descriptor.BYTEORDER));
+		super(DTYPE.PATH, StandardCharsets.UTF_8.encode(path).order(Descriptor.BYTEORDER));
 	}
 
 	public Path(final String path, final TREE tree){
-		super(DTYPE.PATH, ByteBuffer.wrap(path.getBytes()).order(Descriptor.BYTEORDER));
+		super(DTYPE.PATH, StandardCharsets.UTF_8.encode(path).order(Descriptor.BYTEORDER));
 		this.tree = tree;
 	}
 

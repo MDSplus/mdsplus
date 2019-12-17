@@ -148,7 +148,7 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
 			     && ((retsize != length) || (nodenum != nidx)))
 		      status = TreeBADRECORD;
 		    else
-		      status = (MdsSerializeDscIn(data, dsc) & 1) ? TreeNORMAL : TreeBADRECORD;
+		      status = (MdsSerializeDscIn(data, dsc) & 1) ? TreeSUCCESS : TreeBADRECORD;
 		    free(data);
 		  } else
 		    status = TreeBADRECORD;
@@ -199,7 +199,7 @@ int _TreeOpenDatafileR(TREE_INFO * info)
       strcat(filename, "datafile");
       lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
       free(filename);
-      status = (lun == -1) ? TreeFOPENR : TreeNORMAL;
+      status = (lun == -1) ? TreeFOPENR : TreeSUCCESS;
       info->data_file->get = (lun != -1) ? lun : 0;
     }
   }
@@ -393,8 +393,7 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
 }
 
 static pthread_rwlock_t viewdate_lock = PTHREAD_RWLOCK_INITIALIZER;
-int TreeSetViewDate(int64_t * date)
-{
+int TreeSetViewDate(int64_t * date) {
   if (TreeGetThreadStatic()->privateCtx)
     TreeGetThreadStatic()->ViewDate = *date;
   else{

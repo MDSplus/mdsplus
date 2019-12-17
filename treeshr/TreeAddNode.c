@@ -104,7 +104,7 @@ int64_t TreeGetDatafileSize()
 
 int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NODE *parent;
   NODE *new_ptr = NULL;
@@ -145,7 +145,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
       it has not grown to big and increment the
       conglomerate node number.
     ************************************************/
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
       conglom_size = &dblist->tree_info->edit->conglomerate_size;
       conglom_index = &dblist->tree_info->edit->conglomerate_index;
       if (*conglom_size) {
@@ -214,7 +214,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 
 int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   NODE *pre_ptr;
   NODE *tmp_ptr;
   child_ptr->parent = node_offset(parent_ptr, child_ptr);	/* fill in the parent pointer */
@@ -283,12 +283,12 @@ int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort)
       tmp_ptr->brother = node_offset(member_ptr, tmp_ptr);	/*   make this child its brother */
     }
   }
-  return TreeNORMAL;		/* return the status */
+  return TreeSUCCESS;		/* return the status */
 }
 
 STATIC_ROUTINE int TreeNewNode(PINO_DATABASE * db_ptr, NODE ** node_ptrptr, NODE ** trn_node_ptrptr)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   NODE *node_ptr;
   TREE_INFO *info_ptr = db_ptr->tree_info;
   TREE_HEADER *header_ptr = info_ptr->header;
@@ -338,7 +338,7 @@ int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes)
   static NCI *empty_nci_array = NULL;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,&lock);
-  status = TreeNORMAL;
+  status = TreeSUCCESS;
   int *saved_node_numbers;
   NODE *node_ptr;
   NODE *ptr;
@@ -533,7 +533,7 @@ int _TreeAddConglom(void *dbid, char const *path, char const *congtype, int *nid
   struct descriptor pathdsc = { strlen(path),     DTYPE_T, CLASS_S, (char*)path     };
   struct descriptor typedsc = { strlen(congtype), DTYPE_T, CLASS_S, (char*)congtype };
   /*try tdi device*/{
-    int addstatus = TreeNORMAL;
+    int addstatus = TreeSUCCESS;
     DESCRIPTOR_LONG(statdsc, (char *)&addstatus);
     INIT_AS_AND_FREE_ON_EXIT(char*,exp,malloc(strlen(congtype)+11));
     sprintf(exp,"%s__add($,$)",congtype);
@@ -582,7 +582,7 @@ end: ;
 int _TreeStartConglomerate(void *dbid, int size)
 {
   if (size>0x7fff) return TreeBUFFEROVF;
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int i;
   TREE_INFO *info_ptr;
@@ -675,7 +675,7 @@ int _TreeEndConglomerate(void *dbid)
   else if (conglom_size > conglom_index)
     return TreeCONGLOM_NOT_FULL;
   else
-    return TreeNORMAL;
+    return TreeSUCCESS;
 }
 
 STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr);
@@ -741,12 +741,12 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	                db->next = (*dblist);
 	                *dblist = db;
 	            }
-	            status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
+	            status = IS_OPEN_FOR_EDIT(*dblist) ? TreeSUCCESS : TreeNOT_OPEN;
 	            break;
 	        }
 	    }
 	} else
-	    status = IS_OPEN_FOR_EDIT(*dblist) ? TreeNORMAL : TreeNOT_OPEN;
+	    status = IS_OPEN_FOR_EDIT(*dblist) ? TreeSUCCESS : TreeNOT_OPEN;
 	if STATUS_OK {
 	    /**************************************
 	    Compute number of pages to allocate for
@@ -795,7 +795,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	        status = TreeWriteNci(info_ptr);
 	        if STATUS_NOT_OK
 	            goto error_exit;
-	        status = TreeNORMAL;
+	        status = TreeSUCCESS;
 	        if (info_ptr->channel > -1)
 	            status = MDS_IO_CLOSE(info_ptr->channel);
 	        info_ptr->channel = -2;
@@ -814,7 +814,7 @@ int _TreeWriteTree(void **dbid, char const *exp_ptr, int shotid)
 	            goto error_exit;
 	        }
 	        MDS_IO_LOCK(info_ptr->channel, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0);
-	        status = TreeNORMAL;
+	        status = TreeSUCCESS;
 	        (*dblist)->modified = 0;
 		TreeCallHookFun("TreeHook","WriteTree",info_ptr->treenam, (*dblist)->shotid, NULL);
 	        TreeCallHook(WriteTree, info_ptr, 0);
@@ -869,7 +869,7 @@ STATIC_ROUTINE void trim_excess_nodes(TREE_INFO * info_ptr)
 
 STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   if (info->header->nodes > info->edit->first_in_mem) {
     int numnodes = info->header->nodes - info->edit->first_in_mem;
     int i;
@@ -884,7 +884,7 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
       TreeSerializeNciOut(&nci, nci_bytes);
       status =
 	  (MDS_IO_WRITE(info->nci_file->put, nci_bytes, (size_t)nbytes) ==
-	   nbytes) ? TreeNORMAL : TreeNCIWRITE;
+	   nbytes) ? TreeSUCCESS : TreeNCIWRITE;
       if STATUS_OK
 	info->edit->first_in_mem++;
     }
@@ -894,7 +894,7 @@ STATIC_ROUTINE int TreeWriteNci(TREE_INFO * info)
 
 int _TreeSetSubtree(void *dbid, int nid)
 {
-  INIT_STATUS_AS TreeNORMAL;
+  INIT_STATUS_AS TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   NID *nid_ptr = (NID *) & nid;
   NODE *node_ptr;
@@ -935,7 +935,7 @@ int _TreeSetSubtree(void *dbid, int nid)
 	node_ptr->usage = TreeUSAGE_SUBTREE;
 	dblist->modified = 1;
       }
-      return TreeNORMAL;
+      return TreeSUCCESS;
     }
   }
 /*****************************************************
@@ -950,7 +950,7 @@ int _TreeSetSubtree(void *dbid, int nid)
   pages_allocated = max((numext * 4 + 507) / 512, dblist->tree_info->edit->external_pages);
   if (pages_needed > pages_allocated) {
     new_external_ptr = malloc((size_t)pages_needed * 512u);
-    status = new_external_ptr == 0 ? TreeMEMERR : TreeNORMAL;
+    status = new_external_ptr == 0 ? TreeMEMERR : TreeSUCCESS;
     if STATUS_NOT_OK {
       return status;
     }
@@ -975,7 +975,7 @@ int _TreeSetSubtree(void *dbid, int nid)
 *******************************************/
   node_ptr->usage = TreeUSAGE_SUBTREE;
 
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 int _TreeSetNoSubtree(void *dbid, int nid)
@@ -1002,7 +1002,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
     if (swapint32(&dblist->tree_info->external[ext_idx]) == node_idx)
       break;
   if (ext_idx >= dblist->tree_info->header->externals)
-    return TreeNORMAL;
+    return TreeSUCCESS;
 
 /**************************************
  Decrement the number of externals and
@@ -1019,7 +1019,7 @@ int _TreeSetNoSubtree(void *dbid, int nid)
 ********************************/
   node_ptr->usage = TreeUSAGE_STRUCTURE;
 
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
@@ -1046,12 +1046,12 @@ int _TreeQuitTree(void **dbid, char const *exp_ptr, int shotid)
 	    db->next = (*dblist);
 	    *dblist = db;
 	  }
-	  status = (*dblist)->open_for_edit ? TreeNORMAL : TreeNOT_OPEN;
+	  status = (*dblist)->open_for_edit ? TreeSUCCESS : TreeNOT_OPEN;
 	  break;
 	}
       }
     } else
-      status = (*dblist)->open_for_edit ? TreeNORMAL : TreeNOT_OPEN;
+      status = (*dblist)->open_for_edit ? TreeSUCCESS : TreeNOT_OPEN;
     if (STATUS_OK && ((*dblist)->open)) {
       _TreeDeleteNodesDiscard(*dbid);
       (*dblist)->modified = 0;

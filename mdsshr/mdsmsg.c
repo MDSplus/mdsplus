@@ -150,7 +150,7 @@ void main()
   MDSprintf("\n");
   MdsMsg(TCL_STS_SUCCESS, 0);
   MDSprintf("\n");
-  MdsMsg(TreeNORMAL, 0);
+  MdsMsg(TreeSUCCESS, 0);
   MDSprintf("\n");
   MdsMsg(LibNOTFOU, 0);
   MDSprintf("\n");

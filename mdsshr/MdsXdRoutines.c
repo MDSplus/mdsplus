@@ -152,13 +152,15 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	if (po) {
 	  *po = in;
 	  po->class = CLASS_S;
-	  po->pointer = in.length ? _align((char *)po, sizeof(struct descriptor), align_size) : 0;
-	  if (in.length)
-	    _MOVC3(in.length, (char *)in.pointer, (char *)po->pointer);
+	  if (in.length) {
+	    po->pointer = _align((char *)po, sizeof(mdsdsc_t), align_size);
+	    memcpy(po->pointer, in.pointer, in.length);
+	  } else
+	    po->pointer = NULL;
 	}
 	if (path.pointer)
 	  StrFree1Dx(&path);
-	bytes = (uint32_t)sizeof(struct descriptor_s) + in.length + align_size;
+	bytes = (uint32_t)sizeof(mdsdsc_s_t) + in.length + align_size;
       }
       break;
 

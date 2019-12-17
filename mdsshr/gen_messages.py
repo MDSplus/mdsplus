@@ -1,142 +1,50 @@
-#
-# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# Redistributions of source code must retain the above copyright notice, this
-# list of conditions and the following disclaimer.
-#
-# Redistributions in binary form must reproduce the above copyright notice, this
-# list of conditions and the following disclaimer in the documentation and/or
-# other materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
+cpy_header = """
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
-import xml.etree.ElementTree as ET
-import sys,os
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
 
-sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
-sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
-faclist = []
-facnums = {}
-msglist = []
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
 
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
 
-def gen_include(root,filename,faclist,msglistm,f_test):
-    pfaclist = ["MDSplus"]
-    print filename
-    f_inc=open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w')
-    f_inc.write(
-"""/*
- This header was generated using mdsshr/gen_messages.py
- To add new status messages modify:
-     %s
- and then in mdsshr do:
-     python gen_messages.py
-*/
-#pragma once
-#include <status.h>
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
 
-""" % filename)
-    f_py.write("""
-########################### generated from %s ########################
-
-""" % filename)
-    for f in root.iter('facility'):
-        facnam = f.get('name')
-        facnum = int(f.get('value'))
-        if facnum in facnums:
-            raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, filename, facnums[facnum]))
-        facnums[facnum]=filename
-        ffacnam = facnam
-        faclist.append(facnam.upper())
-        for status in f.iter('status'):
-            facnam = ffacnam
-            msgnam = status.get('name')
-            msgnum = int(status.get('value'))
-            sev = sevs[status.get('severity').lower()]
-            msgn = (facnum << 16)+(msgnum << 3)+sev
-            text = status.get('text')
-            sfacnam = status.get('facnam')
-            facabb = status.get('facabb')
-            if (sfacnam):
-                facnam=sfacnam
-            if f_test and facnam != 'Mdsdcl':
-                f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {'msg':facnam+msgnam})
-            msgn_nosev = msgn & (-8)
-            f_inc.write("#define %-24s %s\n" % (facnam+msgnam,hex(msgn)))
-            if (facabb):
-                facnam=facabb
-            facu = facnam.upper()
-            if (sfacnam or facabb) and facu not in faclist:
-                    faclist.append(facu)
-            msg = {'msgnum':hex(msgn_nosev),'text':text,
-                   'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
-                   'status':msgn,'message':text,'msgn_nosev':msgn_nosev}
-            if not facnam in pfaclist:
-                pfaclist.append(facnam)
-                f_py.write("""
-
-class %(fac)sException(MDSplusException):
-  fac="%(fac)s"
-""" % {'fac':facnam})
-            msglist.append(msg)
-            f_py.write("""
-
-class %(fac)s%(msgnam)s(%(fac)sException):
-  status=%(status)d
-  message="%(message)s"
-  msgnam="%(msgnam)s"
-
-MDSplusException.statusDict[%(msgn_nosev)d] = %(fac)s%(msgnam)s
-""" % msg)
-    f_inc.close()
-
-f_py=open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w')
-f_py.write("""#
-# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
-#
-# Redistribution and use in source and binary forms, with or without
-# modification, are permitted provided that the following conditions are met:
-#
-# Redistributions of source code must retain the above copyright notice, this
-# list of conditions and the following disclaimer.
-#
-# Redistributions in binary form must reproduce the above copyright notice, this
-# list of conditions and the following disclaimer in the documentation and/or
-# other materials provided with the distribution.
-#
-# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-
-
-########################################################
-# This module was generated using mdsshr/gen_device.py
-# To add new status messages modify one of the
-# "xxxx_messages.xml files (or add a new one)
-# and then in mdsshr do:
-#     python gen_devices.py
-########################################################
+gen_header = """ This module was generated using mdsshr/gen_messages.py
+ To add new status messages modify
+ %s
+ and then do:
+     python mdsshr/gen_messages.py"""
+anyfile = 'one of the "*_messages.xml" files'
+def add_c_header(f,filename=anyfile):
+    f.write("/*")
+    f.write(cpy_header)
+    f.write("*/\n")
+    f.write("/*%s\n"%("*"*54))
+    f.write(gen_header%filename)
+    f.write("\n%s*/\n"%("*"*54))
+def add_py_header(f):
+    for line in cpy_header.split('\n'):
+        line = ('# %s'%line).strip()
+        f.write('%s\n'%line)
+    f.write('%s\n'%("#"*56))
+    for line in (gen_header%anyfile).split('\n'):
+        f.write('#%s\n'%line)
+    f.write('%s\n'%("#"*56))
+py_head = """
 
 class MdsException(Exception):
   pass
@@ -199,67 +107,45 @@ def checkStatus(status,ignore=tuple(),message=None):
             print(exception.message)
         else:
             raise exception
-""")
+"""
+py_new_file = """
+########################### generated from %s ########################
 
-xmllist = {}
-for root,dirs,files in os.walk(sourcedir):
-    for filename in files:
-        if filename.endswith('messages.xml'):
-            xmllist[filename.lower()] = "%s/%s"%(root,filename)
+"""
+py_super_class = """
 
-f_test=None
-if len(sys.argv) > 1:
-    f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
-for filename,filepath in xmllist.items():
-    try:
-        tree=ET.parse(filepath)
-        root=tree.getroot()
-        gen_include(root,filename,faclist,msglist,f_test)
-    except Exception,e:
-        print e
+class %(fac)sException(MDSplusException):
+  fac="%(fac)s"
+"""
+py_exc_class = """
 
-f_getmsg=open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w')
-exceptionDict=[]
-f_getmsg.write("""/*
-Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+class %(fac)s%(msgnam)s(%(fac)sException):%(depr)s
+  status=%(status)d
+  message="%(text)s"
+  msgnam="%(msgnam)s"
 
-Redistribution and use in source and binary forms, with or without
-modification, are permitted provided that the following conditions are met:
+MDSplusException.statusDict[%(msgnum)d] = %(fac)s%(msgnam)s
+"""
 
-Redistributions of source code must retain the above copyright notice, this
-list of conditions and the following disclaimer.
+inc_head = """
+#pragma once
+#include <status.h>
 
-Redistributions in binary form must reproduce the above copyright notice, this
-list of conditions and the following disclaimer in the documentation and/or
-other materials provided with the distribution.
+"""
 
-THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
-FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*/
+msg_head = """
 #include <mdsplus/mdsconfig.h>
 
-""");
-for facu in faclist:
-    f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
-f_getmsg.write("""
+"""
+msg_fun = """
 
 EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_out, const char **text_out) {
     int sts;
     switch (status & (-8)) {
-""")
-
-for msg in msglist:
-    f_getmsg.write("""
+"""
+msg_case = """
 /* %(fac)s%(msgnam)s */
-      case %(msgnum)s:
+      case 0%(msgnum)o:
         {static const char *text="%(text)s";
         static const char *msgnam="%(msgnam)s";
         *fac_out = FAC_%(facu)s;
@@ -267,9 +153,8 @@ for msg in msglist:
         *text_out = text;
         sts = 1;}
         break;
-""" % msg)
-    exceptionDict.append("%(msgnum)s:\"%(fac)s%(msgnam)s\"," % msg)
-f_getmsg.write("""
+"""
+msg_tail = """
     default: sts = 0;
   }
   if (sts == 0) {
@@ -278,9 +163,221 @@ f_getmsg.write("""
     *text_out=0;
   }
   return sts;
-}""")
+}"""
 
-f_getmsg.close()
-f_py.close()
-if f_test:
-    f_test.close()
+jma_head = """package mds;
+
+import java.awt.Color;
+import java.io.IOException;
+import javax.swing.JLabel;
+
+public class MdsException extends IOException{
+\tprivate static final long serialVersionUID = 1L;
+\tpublic static final class MdsAbortException extends MdsException{
+\t\tprivate static final long serialVersionUID = 1L;
+\t\tpublic MdsAbortException(){
+\t\t\tsuper("Transaction aborted", 0);
+\t\t}
+\t}
+\tprivate static JLabel statusLabel = null;
+"""
+jma_type = "\tpublic static final int %(fac)10s%(msgnam)-30s= 0%(status)o;\n"
+jma_fun = """
+\tpublic static final String getMdsMessage(final int status) {
+\t\tswitch(status){
+"""
+jma_case = '\t\t\tcase %(fac)s%(msgnam)s:\n\t\t\t\treturn "%%%(facu)s-%(sev)s-%(msgnam)s, %(text)s";\n'
+jma_tail = """\t\t\tdefault:
+\t\t\t\treturn "%MDSPLUS-?-UNKNOWN, Unknown exception " + status;
+\t\t}
+\t}
+
+\tpublic final static void handleStatus(final int status) throws MdsException {
+\t\tfinal String msg = MdsException.getMdsMessage(status);
+\t\tfinal boolean success = (status & 1) == 1;
+\t\tif(!success){
+\t\t\tfinal MdsException exc = new MdsException(msg, status);
+\t\t\tMdsException.stderr(null, exc);
+\t\t\tthrow exc;
+\t\t}
+\t\tMdsException.stdout(msg);
+\t}
+
+\tpublic static final void setStatusLabel(final JLabel status) {
+\t\tMdsException.statusLabel = status;
+\t}
+
+\tpublic static void stderr(final String line, final Exception exc) {
+\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setForeground(Color.RED);
+\t\tif(line == null){
+\t\t\tif(exc == null){
+\t\t\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setText("");
+\t\t\t\treturn;
+\t\t\t}
+\t\t\tString msg = exc.getMessage();
+\t\t\tif(msg == null) msg = exc.toString();
+\t\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setText(msg);
+\t\t\tSystem.err.println(msg);
+\t\t}else if(exc == null){
+\t\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setText(String.format("E:%s", line));
+\t\t\tSystem.err.println(String.format("%s", line));
+\t\t}else{
+\t\t\tString msg = exc.getMessage();
+\t\t\tif(msg == null) msg = exc.toString();
+\t\t\tif(MdsException.statusLabel != null) MdsException.statusLabel.setText(String.format("E:%s (%s)", line, msg));
+\t\t\tSystem.err.println(String.format("%s\\n%s", line, msg));
+\t\t}
+\t}
+
+\tpublic static void stdout(final String line) {
+\t\tif(MdsException.statusLabel == null) return;
+\t\tMdsException.statusLabel.setForeground(Color.BLACK);
+\t\tMdsException.statusLabel.setText(line);
+\t}
+
+\tprivate static final String parseMessage(final String message) {
+\t\tfinal String[] parts = message.split(":", 2);
+\t\treturn parts[parts.length - 1];
+\t}
+\tprivate final int status;
+
+\tpublic MdsException(final int status){
+\t\tthis(MdsException.getMdsMessage(status), status);
+\t}
+
+\tpublic MdsException(final String message){
+\t\tsuper(MdsException.parseMessage(message));
+\t\tint new_status = 0;
+\t\ttry{
+\t\t\tfinal String[] parts = message.split(":", 2);
+\t\t\tif(parts.length > 1) new_status = Integer.parseInt(parts[0]);
+\t\t}catch(final Exception exc){/**/}
+\t\tthis.status = new_status;
+\t}
+
+\tpublic MdsException(final String header, final Exception e){
+\t\tsuper(String.format("%s: %s", header, e.getMessage()));
+\t\tthis.status = 0;
+\t}
+
+\tpublic MdsException(final String message, final int status){
+\t\tsuper(message);
+\t\tthis.status = status;
+\t}
+
+\tpublic final int getStatus() {
+\t\treturn this.status;
+\t}
+}"""
+
+
+import xml.etree.ElementTree as ET
+import sys,os
+
+sourcedir = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+sevs = {'warning':0,'success':1,'error':2,'info':3,'fatal':4,'internal':7}
+faclist = []
+facnums = {}
+msglist = []
+severities=["W", "S", "E", "I", "F", "?", "?", "?"]
+
+def gen_include(root,filename,faclist,msglistm,f_test):
+    pfaclist = ["MDSplus"]
+    print filename
+    f_py.write(py_new_file % filename)
+    with open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w') as f_inc:
+        add_c_header(f_inc,filename)
+        f_inc.write(inc_head)
+        for f in root.iter('facility'):
+            facnam = f.get('name')
+            facnum = int(f.get('value'))
+            if facnum in facnums:
+                raise Exception("Reused facility value %d, in %s. Previously used in %s" % (facnum, filename, facnums[facnum]))
+            facnums[facnum]=filename
+            ffacnam = facnam
+            faclist.append(facnam.upper())
+            for status in f.iter('status'):
+                facnam = ffacnam
+                msgnam = status.get('name')
+                msgnum = int(status.get('value'))
+                sev = sevs[status.get('severity').lower()]
+                msgn = (facnum << 16)+(msgnum << 3)+sev
+                text = status.get('text',"")
+                if len(text)==0: raise Exception("missing or empty text: %s in %s."%(facnam,filename))
+                depr = status.get('deprecated',"0")
+                sfacnam = status.get('facnam')
+                facabb = status.get('facabb')
+                if (sfacnam):
+                    facnam=sfacnam
+                if f_test and facnam != 'Mdsdcl':
+                    f_test.write("printf(\"%(msg)s = %%0x, msgnum=%%d,\\n msg=%%s\\n\",%(msg)s,(%(msg)s&0xffff)>>3,MdsGetMsg(%(msg)s));\n" % {'msg':facnam+msgnam})
+                msgnum = msgn & (-8)
+                inc_line = "#define %-24s %s" % (facnam+msgnam,hex(msgn))
+                try:
+                    depr = bool(int(depr))
+                    if depr:
+                        text = '%s (deprecated)'%(text,)
+                        inc_line = '%s // deprecated'%(inc_line,)
+                        depr = '\n  """ This Exception is deprecated """'
+                    else:
+                        depr = ''
+                except:
+                    depr = "use %s%s"%(facnam,depr.upper())
+                    text = '%s (deprecated: %s)'%(text,depr)
+                    inc_line = '%s // deprecated: %s'%(inc_line,depr)
+                    depr = '\n  """ This Exception is deprecated: %s """'%(depr,)
+                f_inc.write("%s\n"%(inc_line,))
+                if (facabb):
+                    facnam=facabb
+                facu = facnam.upper()
+                if (sfacnam or facabb) and facu not in faclist:
+                    faclist.append(facu)
+                msg = {'msgnum':msgnum,'text':text.replace('"','\\"'),
+                       'fac':facnam,'facu':facu,'facabb':facabb,'msgnam':msgnam,
+                       'status':msgn,'message':text,'depr':depr,  'sev':severities[msgn&7]}
+                if not facnam in pfaclist:
+                    pfaclist.append(facnam)
+                    f_py.write(py_super_class % {'fac':facnam})
+                msglist.append(msg)
+                f_py.write(py_exc_class % msg)
+
+with open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w') as f_py:
+    add_py_header(f_py)
+    f_py.write(py_head)
+    xmllist = {}
+    for root,dirs,files in os.walk(sourcedir):
+        for filename in files:
+            if filename.endswith('messages.xml'):
+                xmllist[filename.lower()] = "%s/%s"%(root,filename)
+    f_test=None
+    if len(sys.argv) > 1:
+        f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
+    for filename,filepath in xmllist.items():
+        try:
+            tree=ET.parse(filepath)
+            root=tree.getroot()
+            gen_include(root,filename,faclist,msglist,f_test)
+        except Exception,e:
+            print e
+    if f_test:
+        f_test.close()
+
+with open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w') as f_getmsg:
+    add_c_header(f_getmsg)
+    f_getmsg.write(msg_head);
+    for facu in faclist:
+        f_getmsg.write("static const char *FAC_%s = \"%s\";\n" % (facu,facu))
+    f_getmsg.write(msg_fun)
+    for msg in msglist:
+        f_getmsg.write(msg_case % msg)
+    f_getmsg.write(msg_tail)
+
+with open("%s/java/mdsplus-api/src/main/java/mds/MdsException.java"%sourcedir,'w') as f_jma:
+    add_c_header(f_jma)
+    f_jma.write(jma_head)
+    for msg in msglist:
+        f_jma.write(jma_type % msg)
+    f_jma.write(jma_fun)
+    for msg in msglist:
+        f_jma.write(jma_case % msg)
+    f_jma.write(jma_tail)

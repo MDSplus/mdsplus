@@ -96,7 +96,6 @@ public class Editors_GUITest{
 		e.setData(new StringDsc("teststring"));
 	}
 
-	@SuppressWarnings("static-method")
 	@Test
 	public void testGraphPanel() {
 		GraphPanel.newPlot(new Signal(new Float32Array(0, 3, 4, 3, 0, -3, -4, -3, 0, 3), null, new Float32Array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10)), null, "my title");

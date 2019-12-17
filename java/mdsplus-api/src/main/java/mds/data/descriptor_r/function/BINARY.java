@@ -231,7 +231,7 @@ public class BINARY extends Function{
 		@Override
 		protected final Descriptor<?> method(final DATA<?>[] args) throws MdsException {
 			if(args[1] instanceof Descriptor_A<?> & !(args[0] instanceof Descriptor_A<?>)) //
-			    return ((DATA<?>)Descriptor_A.deserialize(args[0].serialize()).getData()).power(args[0].toDescriptor(), args[1].toDescriptor());
+				return ((DATA<?>)Descriptor_A.deserialize(args[0].serialize()).getData()).power(args[0].toDescriptor(), args[1].toDescriptor());
 			return args[0].power(args[0].toDescriptor(), args[1].toDescriptor());
 		}
 	}
@@ -305,37 +305,37 @@ public class BINARY extends Function{
 		}
 	}
 	private static final op_rec[] binary = new op_rec[]{ //
-	        new op_rec(", ", OPC.OpcComma, (byte)92, (byte)-1), // 0
-	        new op_rec(" = ", OPC.OpcEquals, (byte)84, (byte)1), // 1
-	        new op_rec(null, OPC.OpcEqualsFirst, (byte)84, (byte)1), // 2
-	        new op_rec(" : ", OPC.OpcDtypeRange, (byte)80, (byte)0), // 3
-	        new op_rec(" ? ", OPC.OpcConditional, (byte)72, (byte)1), // 4
-	        new op_rec(" @ ", OPC.OpcPromote, (byte)68, (byte)1), // 5
-	        new op_rec(" Eqv ", OPC.OpcEqv, (byte)64, (byte)-1), // 6
-	        new op_rec(" Neqv ", OPC.OpcNeqv, (byte)64, (byte)-1), // 7
-	        new op_rec(" || ", OPC.OpcOr, (byte)60, (byte)-1), // 8
-	        new op_rec(" Or_Not ", OPC.OpcOrNot, (byte)60, (byte)-1), // 9
-	        new op_rec(" Nor ", OPC.OpcNor, (byte)60, (byte)-1), // 10
-	        new op_rec(" Nor_Not ", OPC.OpcNorNot, (byte)60, (byte)-1), // 11
-	        new op_rec(" && ", OPC.OpcAnd, (byte)52, (byte)-1), // 12
-	        new op_rec(" And_Not ", OPC.OpcAndNot, (byte)52, (byte)-1), // 13
-	        new op_rec(" Nand ", OPC.OpcNand, (byte)52, (byte)-1), // 14
-	        new op_rec(" Nand_Not ", OPC.OpcNandNot, (byte)52, (byte)-1), // 15
-	        new op_rec(" == ", OPC.OpcEq, (byte)48, (byte)-1), // 16
-	        new op_rec(" <> ", OPC.OpcNe, (byte)48, (byte)-1), // 17
-	        new op_rec(" >= ", OPC.OpcGe, (byte)44, (byte)-1), // 18
-	        new op_rec(" > ", OPC.OpcGt, (byte)44, (byte)-1), // 19
-	        new op_rec(" <= ", OPC.OpcLe, (byte)44, (byte)-1), // 20
-	        new op_rec(" < ", OPC.OpcLt, (byte)44, (byte)-1), // 21
-	        new op_rec(" Is_In ", OPC.OpcIsIn, (byte)40, (byte)-1), // 22
-	        new op_rec(" // ", OPC.OpcConcat, (byte)32, (byte)-1), // 23
-	        new op_rec(" << ", OPC.OpcShiftLeft, (byte)28, (byte)-1), // 24
-	        new op_rec(" >> ", OPC.OpcShiftRight, (byte)28, (byte)-1), // 25
-	        new op_rec(" + ", OPC.OpcAdd, (byte)24, (byte)-1), // 26
-	        new op_rec(" - ", OPC.OpcSubtract, (byte)24, (byte)-1), // 27
-	        new op_rec(" * ", OPC.OpcMultiply, (byte)20, (byte)-1), // 28
-	        new op_rec(" / ", OPC.OpcDivide, (byte)20, (byte)-1), // 29
-	        new op_rec(" ^ ", OPC.OpcPower, (byte)16, (byte)1), // 30 : a ** b == a ^ b
+			new op_rec(", ", OPC.OpcComma, (byte)92, (byte)-1), // 0
+			new op_rec(" = ", OPC.OpcEquals, (byte)84, (byte)1), // 1
+			new op_rec(null, OPC.OpcEqualsFirst, (byte)84, (byte)1), // 2
+			new op_rec(" : ", OPC.OpcDtypeRange, (byte)80, (byte)0), // 3
+			new op_rec(" ? ", OPC.OpcConditional, (byte)72, (byte)1), // 4
+			new op_rec(" @ ", OPC.OpcPromote, (byte)68, (byte)1), // 5
+			new op_rec(" Eqv ", OPC.OpcEqv, (byte)64, (byte)-1), // 6
+			new op_rec(" Neqv ", OPC.OpcNeqv, (byte)64, (byte)-1), // 7
+			new op_rec(" || ", OPC.OpcOr, (byte)60, (byte)-1), // 8
+			new op_rec(" Or_Not ", OPC.OpcOrNot, (byte)60, (byte)-1), // 9
+			new op_rec(" Nor ", OPC.OpcNor, (byte)60, (byte)-1), // 10
+			new op_rec(" Nor_Not ", OPC.OpcNorNot, (byte)60, (byte)-1), // 11
+			new op_rec(" && ", OPC.OpcAnd, (byte)52, (byte)-1), // 12
+			new op_rec(" And_Not ", OPC.OpcAndNot, (byte)52, (byte)-1), // 13
+			new op_rec(" Nand ", OPC.OpcNand, (byte)52, (byte)-1), // 14
+			new op_rec(" Nand_Not ", OPC.OpcNandNot, (byte)52, (byte)-1), // 15
+			new op_rec(" == ", OPC.OpcEq, (byte)48, (byte)-1), // 16
+			new op_rec(" <> ", OPC.OpcNe, (byte)48, (byte)-1), // 17
+			new op_rec(" >= ", OPC.OpcGe, (byte)44, (byte)-1), // 18
+			new op_rec(" > ", OPC.OpcGt, (byte)44, (byte)-1), // 19
+			new op_rec(" <= ", OPC.OpcLe, (byte)44, (byte)-1), // 20
+			new op_rec(" < ", OPC.OpcLt, (byte)44, (byte)-1), // 21
+			new op_rec(" Is_In ", OPC.OpcIsIn, (byte)40, (byte)-1), // 22
+			new op_rec(" // ", OPC.OpcConcat, (byte)32, (byte)-1), // 23
+			new op_rec(" << ", OPC.OpcShiftLeft, (byte)28, (byte)-1), // 24
+			new op_rec(" >> ", OPC.OpcShiftRight, (byte)28, (byte)-1), // 25
+			new op_rec(" + ", OPC.OpcAdd, (byte)24, (byte)-1), // 26
+			new op_rec(" - ", OPC.OpcSubtract, (byte)24, (byte)-1), // 27
+			new op_rec(" * ", OPC.OpcMultiply, (byte)20, (byte)-1), // 28
+			new op_rec(" / ", OPC.OpcDivide, (byte)20, (byte)-1), // 29
+			new op_rec(" ^ ", OPC.OpcPower, (byte)16, (byte)1), // 30 : a ** b == a ^ b
 	};
 
 	public static final boolean coversOpCode(final OPC opcode) {
@@ -552,7 +552,9 @@ public class BINARY extends Function{
 	@Override
 	public Descriptor<?> evaluate() {
 		try{
-			if(this.use_mdslib()) return Descriptor.mdslib.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
+			if(this.use_mds_local()) return Descriptor.mds_local.getDescriptor(this.tree, "EVALUATE($)", this.getLocal());
+			if (this.getClass().equals(BINARY.class))
+				return this.getMds().getDescriptor("$", this);
 			final DATA<?>[] args = Descriptor.getDATAs(this.getArguments());
 			return this.method(args);
 		}catch(final MdsException e){
@@ -573,8 +575,7 @@ public class BINARY extends Function{
 		}
 	}
 
-	@SuppressWarnings("static-method")
 	protected Descriptor<?> method(final DATA<?>[] args) throws MdsException {
-		return Missing.NEW;
+		return null;
 	}
 }

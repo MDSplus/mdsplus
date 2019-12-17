@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "mdsconfig.h"
+
 #ifdef _WIN32
 #define __THROW
 #define __STRING(x)	#x
@@ -25,9 +27,11 @@
 #   define EXPORT
 #  endif
 # endif
+
 #ifndef ASSERT_LINE_TYPE
 #define ASSERT_LINE_TYPE unsigned int
 #endif
+
 ////////////////////////////////////////////////////////////////////////////////
 //  ASSERT  ////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,16 +63,18 @@
 #  endif
 # endif
 
+
+
 #if defined __cplusplus
 // Assertion fail declaration as found in assert.h //
-EXPORT void __assert_fail (const char *__assertion, const char *__file,
-	                   int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
 extern "C" {
 #endif
 
-#ifdef _TESTING
+EXPORT void __assert_fail (const char *__assertion, const char *__file,
+	                   ASSERT_LINE_TYPE __line, const char *__function)
+__THROW __attribute__ ((__noreturn__));
 
+#ifdef _TESTING
 
 EXPORT void __mark_point(const char *__assertion, const char *__file,
 	                 ASSERT_LINE_TYPE  __line, const char *__function);
@@ -114,11 +120,6 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
     fflush(stdout);
     abort();
 }
-
-void __assert_fail (const char *__assertion, const char *__file,
-	            unsigned int __line, const char *__function)
-__THROW __attribute__ ((__noreturn__));
-
 
 void __mark_point(const char *__assertion, const char *__file,
 	          unsigned int __line, const char *__function)

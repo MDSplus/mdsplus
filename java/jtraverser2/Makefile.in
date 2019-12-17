@@ -97,6 +97,7 @@ target_triplet = @target@
 subdir = java/jtraverser2
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
+	$(top_srcdir)/m4/ax_check_busybox.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
@@ -191,6 +192,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUSYBOX = @BUSYBOX@
 CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -297,6 +299,8 @@ JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVA_APS = @JAVA_APS@
 JAVA_JAR = @JAVA_JAR@
 JAVA_ONLY = @JAVA_ONLY@
+JAVA_PATH_NAME = @JAVA_PATH_NAME@
+JAVA_TARGET_ARCH = @JAVA_TARGET_ARCH@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -324,6 +328,7 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LN_R = @LN_R@
 LOG_COMPILER = @LOG_COMPILER@
 LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
@@ -491,16 +496,22 @@ top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 JAVASOURCE = 8
 RT6JAR = $(top_srcdir)/java/rt6.jar
-MDSPLUS_API_JAR = $(top_builddir)/java/mdsplus-api/mdsplus-api.jar
-JTRAVERSER_JAR = $(top_builddir)/java/jtraverser/jTraverser.jar
-JTRAVERSER2_JAR = $(top_builddir)/java/jtraverser2/jTraverser2.jar
-JSCOPE_JAR = $(top_builddir)/java/jscope/jScope.jar
+MDSPLUS_API_JAR = $(abs_top_builddir)/java/mdsplus-api/mdsplus-api.jar
+JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
+JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
+MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
+JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+n := 
+s := $(n) #
+c := :
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
 MANIFEST = $(builddir)/MANIFEST.MF
 javadir = $(exec_prefix)/java/classes
 docsdir = $(exec_prefix)/java/classes/docs
-CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA)
+CLEANFILES = -r $(bin_SCRIPTS) $(java_DATA) MANIFEST.MF
 JAVA_RES = $(wildcard $(addprefix $(java_resdir)/,$(RESOURCES)))
 java_SRC = $(subst $(java_srcdir)/,,$(java_JAVA))
 @USE_JARS_DIR_FALSE@java_JAVA = $(wildcard $(addprefix $(java_srcdir)/,$(SOURCE) debug/DEBUG.java))
@@ -509,7 +520,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
-CLASSPATH_ENV = CLASSPATH=$(MDSPLUS_API_JAR)
+DEPENDENCIES = $(MDSPLUS_API_JAR)
 @MINGW_FALSE@EXTRA_DIST = jTraverser2.template
 SOURCE = \
  jtraverser/*.java\
@@ -830,10 +841,14 @@ $(MANIFEST):
 	echo "Implementation-Version: $(RELEASE_VERSION)"	>>$@
 	echo "Implementation-Vendor-Id: org.mdsplus"		>>$@
 
+$(DEPENDENCIES):
+	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
+
 @USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_FALSE@jTraverser2.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@jTraverser2.jar: $(DEPENDENCIES) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\

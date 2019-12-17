@@ -50,6 +50,7 @@ static inline ThreadStatic *ThreadStatic_create() {
     TDI_DECOMPILE_MAX = 0xffff;
   }
   TDI_STACK_IDX = 0;
+  TDI_VAR_REC = 0;
   return TdiThreadStatic_p;
 }
 static void ThreadStatic_destroy(ThreadStatic *TdiThreadStatic_p) {

@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-extern int TdiHash();
+extern int tdiHash();
 
 STATIC_CONSTANT char false = 0;
 STATIC_CONSTANT struct descriptor false_dsc = { 1, DTYPE_T, CLASS_S, (char *)&false };
@@ -376,7 +376,7 @@ int Tdi3StringOpcode(struct descriptor *in_ptr, struct descriptor *out_ptr)
       str_ptr += 4;
       len -= 4;
     }
-    *code_ptr++ = (short)TdiHash(len, str_ptr);
+    *code_ptr++ = (short)tdiHash(len, str_ptr);
   }
   StrFree1Dx(&one_dsc);
   return status;

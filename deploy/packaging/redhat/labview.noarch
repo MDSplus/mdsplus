@@ -1956,6 +1956,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/New TreePath DVR.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/TreePath_Class/TreePath.lvclass
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/Update Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/TreeNode_Class/dir.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Data_Class/dir.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Classes/Event_Class
@@ -2310,6 +2311,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Put Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Put Timestamped Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Types.ctl
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreeNode Update Segment.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreePath
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/TreePath/TreePath Destroy.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Data/TreeNode/dir.mnu
@@ -2331,6 +2333,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Add Device.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Add Node.vi
+./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Create (Mode).vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Create Pulse.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Create.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Library/Tree/Tree Delete Pulse.vi
@@ -2370,6 +2373,7 @@
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.aliases
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.lvlps
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.lvproj
+./usr/local/mdsplus/LabView/MDSplus_LV2015/MDSplus.mnu
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/CompileDecompile.vi
 ./usr/local/mdsplus/LabView/MDSplus_LV2015/Sample VIs/MakeSegmentExample.vi

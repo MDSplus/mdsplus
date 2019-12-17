@@ -16,6 +16,13 @@
 #include <pthread_port.h>
 #include "../mdstcpip/mdsIo.h"
 
+/*******************************************
+ XNCI reserver names
+ *******************************************/
+#define XNCI_ATTRIBUTE_NAMES    "attributenames"
+#define XNCI_SEGMENT_SCALE_NAME "SegmentScale"
+
+
 /********************************************
   NCI
 
@@ -23,7 +30,7 @@
   length characteristics record.  This will
   eventually be the 6th section of the tree file.
   for now they will live in their own file.
-*********************************************/
+ ********************************************/
 #define   NciM_DATA_IN_ATT_BLOCK   0x01
 #define   NciV_DATA_IN_ATT_BLOCK      0
 #define   NciM_ERROR_ON_PUT        0x02
@@ -245,6 +252,7 @@ typedef struct nid {
 *********************************************/
 
 typedef char NODE_NAME[12];
+typedef char TREE_NAME[12];
 
 /*********************************************
  Linkages to other nodes via parent, brother,

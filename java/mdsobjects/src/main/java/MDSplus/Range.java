@@ -74,7 +74,7 @@ public class Range extends Compound
 	 *
 	 * @param data
 	 */
-	public void setdeltaVal(Data data)
+	public void setDeltaVal(Data data)
 	{
 	    descs[2] = data;
 	}

@@ -1,7 +1,9 @@
 JAVASOURCE = 8
 include ../../Makefile.tests.am
 
-MAIN_JARS = mdsplus-api.jar
+java_srcdir = $(srcdir)/../src/test/java
+
+DEPENDENCIES += $(MDSPLUS_API_JAR)
 
 SOURCE = \
  mds/*.java \
@@ -20,10 +22,3 @@ TESTS = \
  mds.data.descriptor.Descriptor_CA_Test\
  mds.data.descriptor.Descriptor_S_Test\
  mds.data.descriptor_r.Function_Test
-
-VALGRIND_TESTS = \
- mds.MdsShr_Test
-
-test_path = $(abs_builddir)/trees
-hostfile = $(abs_top_srcdir)/testing/multi.hosts
-TESTS_ENVIRONMENT += hostfile="$(hostfile)" test_mdsip=1

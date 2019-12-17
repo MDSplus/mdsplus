@@ -4,8 +4,7 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = MdsPlus.jar
-CLASSPATH_ENV =
-
+DEPENDENCIES = 
 if USE_JARS_DIR
 
 MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
@@ -13,7 +12,7 @@ MdsPlus.jar : @JARS_DIR@/java/mdsplus/MdsPlus.jar
 
 else
 
-MdsPlus.jar: classjava.stamp
+MdsPlus.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	$(JAR) cf $@ -C $(JAVAROOT) .
 

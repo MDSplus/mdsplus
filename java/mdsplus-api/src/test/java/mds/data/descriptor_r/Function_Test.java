@@ -20,9 +20,7 @@ import mds.data.descriptor_r.function.CAST;
 import mds.data.descriptor_r.function.CONST;
 import mds.data.descriptor_s.StringDsc;
 import mds.data.descriptor_s.Uint16;
-import mds.mdslib.MdsLib;
 
-@SuppressWarnings("static-method")
 public final class Function_Test{
 	private static Mds		mds;
 	private static TdiShr	tdi;
@@ -78,7 +76,7 @@ public final class Function_Test{
 		this.testdecoeval("16QU*16Q*15O");
 		this.testdecoeval("16WU<<4");
 		this.testdecoeval("16WU>>2");
-		if(MdsLib.lib_loaded == null) this.testdecoeval("1 Is_In [1,2,3]");
+		this.testdecoeval("1 Is_In [1,2,3]");
 		this.test_binary_compare("Eqv");
 		this.test_binary_compare("Neqv");
 		this.test_binary_compare("==");

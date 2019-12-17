@@ -905,18 +905,13 @@ fi
 
     <!-- deb scripts -->
     <postinst>
-      if test -z $(/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus y)
-      then read -p "Do you wish to run setup.py install? (y/N) " setup_install
-      else setup_install=y
+      if test ! -z $(/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus y)
+      then setup_install=y
+      elif echo $PYTHONPATH|grep /usr/local/mdsplus/python>/dev/null
+      then setup_install=n
+      else read -t 10 -p "Do you wish to run setup.py install? (y/N) " setup_install
       fi
       find /usr/local/mdsplus/python -name '*egg-info' -delete
-
-      # modern debian versions do not include libreadline6
-      libreadline6=$(find /usr/lib -name libreadline.so.6)
-      libreadline7=$(find /usr/lib -name libreadline.so.7)
-      if ( test -z $libreadline6 &amp;&amp; test ! -z $libreadline7 )
-      then ln -sfT ./libreadline.so.7 ${libreadline7/so.7/so.6}
-      fi
 
       for py in python python3
       do
@@ -1016,6 +1011,6 @@ AutoReqProv: yes
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
    <xinetd package="busybox"/>
-   <java package="default-jre"/>
+   <java package="java-runtime"/>
  </external_packages>
 </deploy>
