@@ -596,7 +596,7 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
   int status;
   PINO_DATABASE *db;
   PINO_DATABASE *prev_db;
-  PINO_DATABASE *saved_prev_db;
+  PINO_DATABASE *saved_prev_db = NULL;
   PINO_DATABASE *useable_db = 0;
   int count;
   int stack_size = DEFAULT_STACK_LIMIT;
@@ -651,7 +651,6 @@ static int CreateDbSlot(PINO_DATABASE ** dblist, char *tree, int shot, int editt
     treeshr_errno = TreeWRITEFIRST;
     break;
   default:
-
     for (count = 0, prev_db = 0, db = *dblist; db; count++, prev_db = db, db = db->next) {
       if (!db->open) {
 	move_to_top(prev_db, db);
