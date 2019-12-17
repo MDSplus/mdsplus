@@ -28,7 +28,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config ${test64}
+    config ${test64} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -36,7 +36,7 @@ buildrelease() {
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config ${test32}
+    config ${test32} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
