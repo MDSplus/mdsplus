@@ -709,7 +709,7 @@ EXPORT int GetXYSignalXd(mdsdsc_t *const inY, mdsdsc_t *const inX, mdsdsc_t *con
   if STATUS_OK status = TdiData((mdsdsc_t *)&xXd, &xXd MDS_END_ARG);
   if STATUS_OK status = TdiData((mdsdsc_t *)&yXd, &yXd MDS_END_ARG);
 
-  int nSamples;
+  int nSamples = 0;
   if STATUS_OK status = getNSamples(&yXd,&xXd,&nSamples);
   if STATUS_NOT_OK goto return_err;
   mdsdsc_a_t *xArrD = (mdsdsc_a_t *)xXd.pointer;
