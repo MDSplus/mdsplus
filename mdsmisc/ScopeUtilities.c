@@ -517,29 +517,33 @@ EXPORT int TestGetUnits(char *const expr) {
 static inline int pack_meta(const mdsdsc_t *const title, const mdsdsc_t *const xLabel,const mdsdsc_t *const yLabel, const float res, char *const retArr, int idx) {
 //idx is the current index in retArr
 //Write title, xLabel, yLabel as length followed by chars
+  int len;
   if(title) {
-    SWAP32(&retArr[idx],&title->length);
+    len = title->length & 0xffff;
+    SWAP32(&retArr[idx],&len);
     idx += sizeof(int);
-    memcpy(&retArr[idx], title->pointer, title->length);
-    idx += title->length;
+    memcpy(&retArr[idx], title->pointer, len);
+    idx += len;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
   }
   if(xLabel) {
-    SWAP32(&retArr[idx],&xLabel->length);
+    len = xLabel->length & 0xffff;
+    SWAP32(&retArr[idx],&len);
     idx += sizeof(int);
-    memcpy(&retArr[idx], xLabel->pointer, xLabel->length);
-    idx += xLabel->length;
+    memcpy(&retArr[idx], xLabel->pointer, len);
+    idx += len;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
   }
   if(yLabel) {
-    SWAP32(&retArr[idx],&yLabel->length);
+    len = yLabel->length & 0xffff;
+    SWAP32(&retArr[idx],&len);
     idx += sizeof(int);
-    memcpy(&retArr[idx], yLabel->pointer, yLabel->length);
-    idx += yLabel->length;
+    memcpy(&retArr[idx], yLabel->pointer, len);
+    idx += len;
   } else {
     *(int *)&retArr[idx] = 0; //no swap required
     idx += 4;
