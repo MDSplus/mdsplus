@@ -4,7 +4,6 @@ srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-@MINGW_TRUE@ DEF=${srcdir}/MdsMisc.def
 
 CFLAGS+=@GLOBUS_CFLAGS@
 LIBS=@LIBS@ @LIBDL@ 
@@ -27,7 +26,6 @@ SOURCES = boxsmooth.c \
 	  ScopeUtilities.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = MdsMisc.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ @MAKELIBDIR@@LIBPRE@MdsMisc.a
 
@@ -45,8 +43,8 @@ install: $(libdir)
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsMisc.a @libdir@; \
 	fi;
 
-@MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXTreeShr
+@MAKESHLIBDIR@@LIBPRE@MdsMisc@SHARETYPE@ : $(OBJECTS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBM) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr -lXTreeShr
 
 @MAKELIBDIR@@LIBPRE@MdsMisc.a : $(OBJECTS)
 	$(AR) -cr $@ $^

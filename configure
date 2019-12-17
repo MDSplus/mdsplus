@@ -727,7 +727,6 @@ FOR_LINKSHARED
 FOR_LDFLAGS
 FORLD
 FEXECLIBDIR
-EXPORTS_FILE
 DNET_STUB
 D3D_FFLAGS
 D3DLIB
@@ -8593,7 +8592,6 @@ MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
 MAKELIBDIR="\$(top_builddir)/lib/"
-EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
@@ -17879,7 +17877,6 @@ fi
 if test "x$mandir" = x"\${datarootdir}/man"; then :
   mandir="${datarootdir}/man"
 fi
-
 
 
 
