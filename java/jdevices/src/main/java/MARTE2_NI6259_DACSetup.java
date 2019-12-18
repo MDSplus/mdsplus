@@ -30,6 +30,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
         jPanel14 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField7 = new DeviceField();
+        deviceField8 = new DeviceField();
         jPanel15 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
         deviceChoice2 = new DeviceChoice();
@@ -61,7 +62,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
         setDeviceTitle("MARTe2 NI 6250 DAC");
         setDeviceType("MARTE2_NI6259_DAC");
         setHeight(300);
-        setWidth(600);
+        setWidth(700);
 
         jPanel2.setLayout(new java.awt.GridLayout(2, 1));
 
@@ -76,6 +77,12 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
         deviceField7.setNumCols(25);
         deviceField7.setOffsetNid(3);
         jPanel14.add(deviceField7);
+
+        deviceField8.setIdentifier("");
+        deviceField8.setLabelString("Timebase div:");
+        deviceField8.setNumCols(4);
+        deviceField8.setOffsetNid(76);
+        jPanel14.add(deviceField8);
 
         jPanel2.add(jPanel14);
 
@@ -209,6 +216,7 @@ public class MARTE2_NI6259_DACSetup extends DeviceSetup {
     private DeviceField deviceField5;
     private DeviceField deviceField6;
     private DeviceField deviceField7;
+    private DeviceField deviceField8;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;

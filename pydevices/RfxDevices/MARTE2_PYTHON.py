@@ -25,17 +25,21 @@
 
 from MDSplus import *
 from MARTE2_COMPONENT import *
+import numpy as np
+
 class MARTE2_PYTHON(MARTE2_COMPONENT):
     @classmethod
     def convertType(cls, type,):
-      typeConv = {int:'int32', float: 'float64'}
+      typeConv = {int:'int32', float: 'float64', np.int16: 'int16', np.int32: 'int32', np.float32: 'float32', np.float64: 'float64'}
       return typeConv[type]
-  
+
+ 
     @classmethod
-    def buildPythonGam(cls, module):
+    def buildPythonGam(cls, pygam, module):
+      pygam.initialize()
       MARTE2_COMPONENT.inputs = []
-      for i in range(0, module.getNumberOfInputs()):
-        currDimension = module.getInputDimensions(i)
+      for i in range(0, pygam.getNumberOfInputs()):
+        currDimension = pygam.getInputDimensions(i)
         if currDimension[0] == 1 :
           if currDimension[1] == 1:
             inDimensions = 0
@@ -44,11 +48,11 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
         else:
           inDimensions = [currDimension[0],currDimension[1]]
           
-        MARTE2_COMPONENT.inputs.append({'name': module.getInputName(i), 'type': cls.convertType(module.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
+        MARTE2_COMPONENT.inputs.append({'name': pygam.getInputName(i), 'type': cls.convertType(pygam.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
 
       MARTE2_COMPONENT.outputs = []
-      for i in range(0, module.getNumberOfOutputs()):
-        currDimension = module.getOutputDimensions(i)
+      for i in range(0, pygam.getNumberOfOutputs()):
+        currDimension = pygam.getOutputDimensions(i)
         if currDimension[0] == 1 :
           if currDimension[1] == 1:
             outDimensions = 0
@@ -57,11 +61,22 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
         else:
           outDimensions = [currDimension[0],currDimension[1]]
           
-        MARTE2_COMPONENT.outputs.append({'name': module.getOutputName(i), 'type': cls.convertType(module.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
+        MARTE2_COMPONENT.outputs.append({'name': pygam.getOutputName(i), 'type': cls.convertType(pygam.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
 
       MARTE2_COMPONENT.parameters = [{'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1].split('.')[0]}]
-      for i in range(0, module.getNumberOfParameters()):
-        MARTE2_COMPONENT.parameters.append({'name': module.getParameterName(i), 'type': 'float64', 'value': module.getParameterDefaultValue(i)})
+      for i in range(0, pygam.getNumberOfParameters()):
+        currVal = pygam.getParameterDefaultValue(i)
+        currDims = pygam.getParameterDimensions(i)
+        if currDims == 0:
+          mdsValue = currVal
+        else:
+          if pygam.getParameterType(i) == np.float32 or pygam.getParameterType(i) == np.float64:
+            mdsValue = Float64Array(currVal)
+          else:
+            mdsValue = Int32Array(currVal)
+        
+        MARTE2_COMPONENT.parameters.append({'name': pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
+
       parts = []
       MARTE2_COMPONENT.buildGam(parts, 'PyGAM', MARTE2_COMPONENT.MODE_GAM)
       return parts
