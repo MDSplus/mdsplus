@@ -73,7 +73,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/${bits};
     pushd /workspace/releasebld/${bits};
-    config ${config_param}
+    config ${config_param} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install

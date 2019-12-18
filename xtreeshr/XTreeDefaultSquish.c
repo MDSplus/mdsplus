@@ -257,7 +257,7 @@ EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
   int status = checkShapes(signalsApd,&totShapes,outShape);
   if STATUS_NOT_OK return status;
   //Check that the number of dimensions in signals is the same
-  int numDimensions;
+  int numDimensions = 0;
   status = checkNumDimensions(signalsApd,&numDimensions);
   if STATUS_NOT_OK return status;
   DESCRIPTOR_SIGNAL(outSignalD, MAX_DIMS, 0, 0);

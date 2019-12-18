@@ -105,6 +105,7 @@ int QueryHighwayType(char *serial_hwy_driver)
       printf(" new, unknown highway type\n");
 
     foundHost = FALSE;
+    foundVendor = FALSE;
     while (!foundHost && (fgets(line, sizeof(line), fp)) != NULL) {
       if (strstr(line, "Host:")) {
 	sscanf(line, "Host: scsi%1d Channel: %*2d Id: %2d", &tmpHost, &tmpId);
@@ -113,7 +114,6 @@ int QueryHighwayType(char *serial_hwy_driver)
 	  foundHost = TRUE;
 	  if (MSGLVL(DETAILS))
 	    printf("%s", line);
-	  foundVendor = FALSE;
 	  while (!foundVendor && fgets(line, sizeof(line), fp) != NULL) {
 	    if (strstr(line, "Vendor:")) {
 	      sscanf(line, "  Vendor: %8s Model: %16s Rev: %5s", tmpVendor, tmpModel, tmpRev);

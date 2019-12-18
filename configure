@@ -4971,20 +4971,20 @@ $as_echo "yes" >&6; }
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: info" >&5
 $as_echo "info" >&6; }
-	CFLAGS="${CFLAGS} -g"
-	CXXFLAGS="${CXXFLAGS} -g"
-	FCFLAGS="${FCFLAGS} -g"
-	OBJCFLAGS="${OBJCFLAGS} -g"
+	CFLAGS="${CFLAGS} -g -O3"
+	CXXFLAGS="${CXXFLAGS} -g -O3"
+	FCFLAGS="${FCFLAGS} -g -O3"
+	OBJCFLAGS="${OBJCFLAGS} -g -O3"
        ;; #(
   profile) :
 
 	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: profile" >&5
 $as_echo "profile" >&6; }
-	CFLAGS="${CFLAGS} -g -pg"
-	CXXFLAGS="${CXXFLAGS} -g -pg"
-	FCFLAGS="${FCFLAGS} -g -pg"
-	OBJCFLAGS="${OBJCFLAGS} -g -pg"
-	LDFLAGS="${LDFLAGS} -pg"
+	CFLAGS="${CFLAGS} -g -pg -O3"
+	CXXFLAGS="${CXXFLAGS} -g -pg -O3"
+	FCFLAGS="${FCFLAGS} -g -pg -O3"
+	OBJCFLAGS="${OBJCFLAGS} -g -pg -O3"
+	LDFLAGS="${LDFLAGS} -pg -O3"
        ;; #(
   *) :
 

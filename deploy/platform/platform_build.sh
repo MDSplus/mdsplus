@@ -111,6 +111,7 @@ rundocker(){
 		   -e "HOME=/workspace" \
 		   -e "JARS_DIR=$jars_dir" \
 		   -e "TEST_TIMEUNIT" \
+		   -e "ALPHA_DEBUG_INFO" \
 		   -v ${SRCDIR}:${DOCKER_SRCDIR} \
 		   -v ${WORKSPACE}:/workspace \
 		   $port_forwarding \
@@ -157,6 +158,11 @@ default_build(){
         mkdir -p ${PUBLISHDIR}/${BRANCH}
     fi
 }
+
+if [ "$BRANCH" = "alpha" ]
+then ALPHA_DEBUG_INFO=--enable-debug=info
+else ALPHA_DEBUG_INFO=
+fi
 set +e
 platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
 if [ -f "${platform_build}" ]

@@ -113,7 +113,7 @@ static void findEntity(xmlNodePtr node, const char *category, const char *name, 
 static char *formatHelp(char *content)
 {
   int indentation = -1;
-  int offset;
+  int offset = 0;
   char *ans = strdup("");
   char *help = strdup(content);
   char *hlp = help;
