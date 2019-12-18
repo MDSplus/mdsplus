@@ -128,8 +128,10 @@ inline static void initialize(){
   handle = dlopen(0, RTLD_NOLOAD);
   loadrtn(Py_InitializeEx, 0);
   /*** If not, load the python library ***/
-#endif
   if (!Py_InitializeEx) {
+#else
+  {
+#endif
 #ifdef _WIN32
     if (strlen(envsym)>6 && (envsym[1] == ':' || strncmp(envsym+strlen(envsym)-4, ".dll", 4) == 0)) {
       lib = strcpy((char *)malloc(strlen(envsym) + 1), envsym);
@@ -152,17 +154,21 @@ inline static void initialize(){
        free(lib);
        return;
     }
+    DBG("TdiExtPython: loaded %s\n",lib);
     free(lib);
     loadrtn(Py_InitializeEx, 1);
+  }
+  int (*Py_IsInitialized)();loadrtn(Py_IsInitialized, 1);
+  if (!Py_IsInitialized()) { // eg when called from python itself
     Py_InitializeEx(0); // 1: register signals; 0: don't
     int (*PyEval_ThreadsInitialized)() = NULL;
     loadrtn(PyEval_ThreadsInitialized, 1);
     if (!PyEval_ThreadsInitialized()) {
       void (*PyEval_InitThreads)();loadrtn(PyEval_InitThreads, 1);
-      void *(*PyEval_SaveThread)();loadrtn(PyEval_SaveThread,  1);
-      PyEval_InitThreads();
-      PyEval_SaveThread();
+      PyEval_InitThreads(); // pyhton3.7 calls PyEval_InitThreads during Py_InitializeEx
     }
+    void *(*PyEval_SaveThread)();loadrtn(PyEval_SaveThread,  1);
+    PyEval_SaveThread();
   }
   loadrtn(Py_DecRef, 1);
   loadrtn(PyErr_Occurred, 1);
