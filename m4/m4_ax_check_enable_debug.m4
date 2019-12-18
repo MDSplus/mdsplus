@@ -76,17 +76,17 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
     AS_CASE([$enable_debug],
       [yes],[
 	AC_MSG_RESULT(yes)
-	CFLAGS="${CFLAGS} -g -Og"
-	CXXFLAGS="${CXXFLAGS} -g -Og"
-	FCFLAGS="${FCFLAGS} -g -Og"
-	OBJCFLAGS="${OBJCFLAGS} -g -Og"
+	CFLAGS="${CFLAGS} -g -O0"
+	CXXFLAGS="${CXXFLAGS} -g -O0"
+	FCFLAGS="${FCFLAGS} -g -O0"
+	OBJCFLAGS="${OBJCFLAGS} -g -O0"
       ],
       [define],[
 	AC_MSG_RESULT(yes)
-	CFLAGS="${CFLAGS} -g -Og -DDEBUG"
-	CXXFLAGS="${CXXFLAGS} -g -Og -DDEBUG"
-	FCFLAGS="${FCFLAGS} -g -Og"
-	OBJCFLAGS="${OBJCFLAGS} -g -Og"
+	CFLAGS="${CFLAGS} -g -O0 -DDEBUG"
+	CXXFLAGS="${CXXFLAGS} -g -O0 -DDEBUG"
+	FCFLAGS="${FCFLAGS} -g -O0"
+	OBJCFLAGS="${OBJCFLAGS} -g -O0"
       ],
       [info],[
 	AC_MSG_RESULT(info)
