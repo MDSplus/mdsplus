@@ -16,11 +16,29 @@
 
 #define DEFAULT_STACKSIZE 0x800000
 
-#if defined(PTHREAD_RECURSIVE_MUTEX_NP) && !defined(PTHREAD_RECURSIVE_MUTEX)
-#define PTHREAD_RECURSIVE_MUTEX PTHREAD_RECURSIVE_MUTEX_NP
+// helper for reentrant mutex
+#ifndef PTHREAD_MUTEX_RECURSIVE
+# ifdef PTHREAD_MUTEX_RECURSIVE_NP
+#  define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+# endif
 #endif
-#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP) && !defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
-#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+# ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#  define PTHREAD_RECURSIVE_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+# endif
+#endif
+#ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_DEF(name) static pthread_mutex_t name = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_INIT(name)
+#else
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_DEF(name)\
+static pthread_mutex_t name;\
+static pthread_once_t __##name##__once = PTHREAD_ONCE_INIT;\
+static void init__##name##__once() {\
+pthread_mutexattr_t attr;if(pthread_mutexattr_init(&attr)) abort();\
+if(pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)) abort();\
+pthread_mutex_init(&name, &attr);pthread_mutexattr_destroy(&attr);}
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_INIT(name) pthread_once(&__##name##__once,init__##name##__once);
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)

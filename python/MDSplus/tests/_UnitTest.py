@@ -288,3 +288,6 @@ class TreeTests(Tests):
                  t.quit()
              except TreeNOT_OPEN:
                  pass
+             except:
+                 import traceback
+                 traceback.print_exc()

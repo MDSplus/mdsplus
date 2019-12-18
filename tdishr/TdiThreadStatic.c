@@ -85,22 +85,3 @@ EXPORT ThreadStatic *TdiThreadStatic(ThreadStatic *in){
   pthread_setspecific(buffer_key, (void *)ref);
   return ref->p;
 }
-
-void LockTdiMutex(pthread_mutex_t * mutex, int *initialized)
-{
-  static pthread_mutex_t initMutex = PTHREAD_MUTEX_INITIALIZER;
-  pthread_mutex_lock(&initMutex);
-  if (!*initialized) {
-    pthread_mutexattr_t m_attr;
-    pthread_mutexattr_init(&m_attr);
-    pthread_mutexattr_settype(&m_attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(mutex, &m_attr);
-    *initialized = TRUE;
-  }
-  pthread_mutex_unlock(&initMutex);
-  pthread_mutex_lock(mutex);
-}
-
-void UnlockTdiMutex(pthread_mutex_t * mutex){
-  pthread_mutex_unlock(mutex);
-}
