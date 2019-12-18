@@ -53,25 +53,28 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 
 ------------------------------------------------------------------------------*/
 
+#include <mdsplus/mdsconfig.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/time.h>
+#include <time.h>
+
 #include <STATICdef.h>
+#include <condition.h>
 #include <mdsdescrip.h>
 #include <ipdesc.h>
 #include <servershr.h>
-#include "servershrp.h"
 #include <ncidef.h>
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <time.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <tdishr_messages.h>
-#include <errno.h>
-#include <sys/time.h>
+#include "servershrp.h"
 
 extern int TdiCompletionOf();
 extern int TdiExecute();

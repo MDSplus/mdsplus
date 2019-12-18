@@ -1,16 +1,15 @@
 #ifndef SERVERSHRP_H
- #define SERVERSHRP_H
- #include <mdsplus/mdsconfig.h>
- #include <mdsdescrip.h>
- #include <pthread_port.h>
- #ifdef _WIN32
-  #include <time.h>
- #else
-  #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
-   extern void pthread_lock_global_np();
-   extern void pthread_unlock_global_np();
-  #endif
+#define SERVERSHRP_H
+#include <mdsplus/mdsconfig.h>
+#include <mdsdescrip.h>
+#ifdef _WIN32
+ #include <time.h>
+#else
+ #ifndef HAVE_PTHREAD_LOCK_GLOBAL_NP
+  extern void pthread_lock_global_np();
+  extern void pthread_unlock_global_np();
  #endif
+#endif
 
 #ifdef MDSOBJECTSCPPSHRVS_EXPORTS
 // visual studio uses int types for typedef

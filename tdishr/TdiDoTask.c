@@ -37,16 +37,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare, LANL P-4     (c)1992
 */
 #include <stdlib.h>
+#include <errno.h>
+#include <signal.h>
+
 #include <mdsdescrip.h>
-#include "tdirefstandard.h"
 #include <libroutines.h>
 #include <strroutines.h>
-#include <tdishr.h>
-#include <pthread_port.h>
-#include <errno.h>
+#include <condition.h>
 #include <mdsshr.h>
+#include <tdishr.h>
 #include <treeshr.h>
-#include <signal.h>
+#include "tdirefstandard.h"
 
 extern int TdiGetFloat();
 extern int TdiGetLong();
