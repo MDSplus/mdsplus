@@ -526,7 +526,7 @@ static void mdsdclSubstitute(char **cmd, char *p1, char *p2, char *p3, char *p4,
   char *ps[7] = { p1, p2, p3, p4, p5, p6, p7 };
   int p;
   for (p = 0; p < 7; p++) {
-    char param[10];
+    char param[15];
     size_t i;
     sprintf(param, "'p%d'", p + 1);
     for (i = 0; (i + 3) < strlen(*cmd); i++) {
