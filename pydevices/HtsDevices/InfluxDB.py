@@ -6,16 +6,18 @@ from influxdb import InfluxDBClient
 
 class INFLUXDB(MDSplus.Device):
 
+    DATA_COUNT = 10
+
     parts = [
         { 'path': 'ADDRESS',    'type': 'text',                                         'options':('no_write_shot') },
         { 'path': 'DATABASE',   'type': 'text',                                         'options':('no_write_shot') },
         { 'path': 'SERIES',     'type': 'text',     'value': 'scada-ignition.default',  'options':('no_write_shot') },
         { 'path': 'DATA_EVENT', 'type': 'text',     'value': 'INFLUXDB_TREND',          'options':('no_write_shot')})
-        { 'path': 'LAST_READ',  'type': 'numeric',                                      'options':('write_shot') },
+        { 'path': 'last_read',  'type': 'numeric',                                      'options':('write_shot') },
         { 'path': 'DATA',       'type': 'text'},
     ]
 
-    for i in range(10):
+    for i in range(DATA_COUNT):
         name = "DATA:D{:02d}".format(i + 1)
         parts.append({ 'path': name,                'type': 'signal',                       'options':('write_shot') })
         parts.append({ 'path': name + ":TAG_PATH",  'type': 'text',                         'options':('no_write_shot') })
@@ -28,12 +30,18 @@ class INFLUXDB(MDSplus.Device):
         return(self.debug)
 
     def trend(self):
-        self.store(self.LAST_READ.data())
-        self.LAST_READ.record = int(round(time.time() * 1000))
+        if not self.on:
+            return
+
+        self.store(self.last_read.data())
+        self.last_read.record = int(round(time.time() * 1000))
     TREND=trend
 
     def store(self, start = 0, end = 0):
-        address = self.ADDRESS.data()
+        if not self.on:
+            return
+
+        address = self.address.data()
         parts = address.split(":", 2)
 
         address = parts[0]
@@ -41,14 +49,16 @@ class INFLUXDB(MDSplus.Device):
         if len(parts) > 1:
             port = int(parts[1])
 
-        client = InfluxDBClient(address, port, 'root', 'root', self.DATABASE.data())
+        client = InfluxDBClient(address, port, 'root', 'root', self.database.data())
 
-        for i in range(10):
+        for i in range(DATA_COUNT):
             try:
-                node = self.getNode("DATA:D{:02d}".format(i + 1))
+                node    = self.__getattr__("data_d{:02d}".format(i + 1))
+                tagPath = self.__getattr__("data_d{:02d}_tag_path".format(i + 1))
+                if not node.on:
+                    continue
 
                 whereList = []
-                tagPath = node.TAG_PATH.data()
                 if tagPath != '':
                     whereList.append('tagPath == \'{}\''.format(tagPath))
 
@@ -65,7 +75,7 @@ class INFLUXDB(MDSplus.Device):
                 
                 query = 'SELECT {} AS value FROM \'{}\' {}'.format(
                     node.FUNCTION.data(), 
-                    self.SERIES.data(), 
+                    self.series.data(), 
                     where
                 )
 
@@ -89,5 +99,5 @@ class INFLUXDB(MDSplus.Device):
             except Exception as e:
                 print(e)
 
-        MDSplus.Event.setevent(self.DATA_EVENT.data())
+        MDSplus.Event.setevent(self.data_event.data())
     STORE=store
