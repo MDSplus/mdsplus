@@ -10,6 +10,7 @@ class INFLUXDB(MDSplus.Device):
         { 'path': 'ADDRESS',    'type': 'text',                                         'options':('no_write_shot') },
         { 'path': 'DATABASE',   'type': 'text',                                         'options':('no_write_shot') },
         { 'path': 'SERIES',     'type': 'text',     'value': 'scada-ignition.default',  'options':('no_write_shot') },
+        { 'path': 'DATA_EVENT', 'type': 'text',     'value': 'INFLUXDB_TREND',          'options':('no_write_shot')})
         { 'path': 'LAST_READ',  'type': 'numeric',                                      'options':('write_shot') },
         { 'path': 'DATA',       'type': 'text'},
     ]
@@ -25,6 +26,11 @@ class INFLUXDB(MDSplus.Device):
         if self.debug == None:
             self.debug=os.getenv("DEBUG_DEVICES")
         return(self.debug)
+
+    def trend(self):
+        self.store(self.LAST_READ.data())
+        self.LAST_READ.record = int(round(time.time() * 1000))
+    TREND=trend
 
     def store(self, start = 0, end = 0):
         address = self.ADDRESS.data()
@@ -82,5 +88,6 @@ class INFLUXDB(MDSplus.Device):
                 pass
             except Exception as e:
                 print(e)
-                
+
+        MDSplus.Event.setevent(self.DATA_EVENT.data())
     STORE=store
