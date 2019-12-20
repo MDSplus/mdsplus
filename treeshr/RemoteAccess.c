@@ -94,26 +94,30 @@ static void host_list_cleanup(const int conid){
     perror("Error loading MdsIpShr->DisconnectFromMds in host_list_cleanup");
   host_list_t *host, *prev = NULL;
   for (host = host_list; host ;) {
-    if (conid>=0 && host->h.conid!=conid)
-      continue;
-    if (host->h.connections <= 0) {
-      DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
-      if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
-        fprintf(stderr,"Failed to disconnect Connection %d\n",host->h.conid);
-      if (prev) {
-	prev->next = host->next;
-	free(host->h.unique);
-	free(host);
-	host = prev->next;
-      } else {
-	host_list  = host->next;
-	free(host->h.unique);
-	free(host);
-	host = host_list;
-      }
-    } else {
+    if (conid>=0 && host->h.conid!=conid) {
       prev = host;
-      host = host->next;
+      host = host -> next;
+    }
+    else {
+      if (host->h.connections <= 0) {
+        DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
+        if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
+          fprintf(stderr,"Failed to disconnect Connection %d\n",host->h.conid);
+        if (prev) {
+	  prev->next = host->next;
+	  free(host->h.unique);
+	  free(host);
+	  host = prev->next;
+        } else {
+	  host_list  = host->next;
+	  free(host->h.unique);
+	  free(host);
+	  host = host_list;
+        }
+      } else {
+        prev = host;
+        host = host->next;
+      }
     }
   }
 }
