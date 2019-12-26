@@ -231,6 +231,8 @@ class Array(_dat.Data):
                 dim=d.coeff_and_bounds[d.dimct-i-1]
                 d.arsize=d.arsize*dim
                 shape.append(dim)
+        elif d.length == 0:
+            shape=[0]
         else:
             shape=[d.arsize//d.length]
         if d.dtype == StringArray.dtype_id:
