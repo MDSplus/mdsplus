@@ -172,7 +172,7 @@ public class MdsIp extends Mds{
 				final int at = provider.indexOf("@");
 				final int cn = provider.indexOf(":");
 				this.user = at < 0 ? Provider.DEFAULT_USER : provider.substring(0, at);
-				this.host = cn < 0 ? provider.substring(at + 1) : provider.substring(at + 1, cn);
+				this.host = cn < 0 ? provider.substring(at + 1).toLowerCase() : provider.substring(at + 1, cn).toLowerCase();
 				this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
 			}
 		}
@@ -191,12 +191,13 @@ public class MdsIp extends Mds{
 				this.use_ssh = false;
 				this.use_local = true;
 			}else{
-				this.use_local = host.toLowerCase().startsWith(PREFIX_LOCAL);
+				host = host.toLowerCase();
+				this.use_local = host.startsWith(PREFIX_LOCAL);
 				if(this.use_local){
 					this.use_ssh = false;
 					host = host.substring(8);
 				}else{
-					final boolean sshstr = host.toLowerCase().startsWith(PREFIX_SSH);
+					final boolean sshstr = host.startsWith(PREFIX_SSH);
 					if(sshstr){
 						host = host.substring(6);
 						this.use_ssh = true;
@@ -208,8 +209,7 @@ public class MdsIp extends Mds{
 		}
 
 		public Provider(){
-			// local
-			this(null);
+			this(null);// local
 		}
 
 		@Override
@@ -217,7 +217,7 @@ public class MdsIp extends Mds{
 			if(this == obj) return true;
 			if(obj == null || !(obj instanceof Provider)) return false;
 			final Provider provider = (Provider)obj;
-			return this.host.equalsIgnoreCase(provider.host) && this.port == provider.port && this.user.equals(provider.user) && this.use_ssh == provider.use_ssh;
+			return this.host.equals(provider.host) && this.port == provider.port && this.user.equals(provider.user) && this.use_ssh == provider.use_ssh;
 		}
 
 		public final MdsIp getConnection() {
@@ -226,11 +226,6 @@ public class MdsIp extends Mds{
 
 		public int getPort() {
 			return this.port != 0 ? this.port : (this.use_ssh ? 22 : Provider.DEFAULT_PORT);
-		}
-
-		@Override
-		public final int hashCode() {
-			return this.host.toLowerCase().hashCode() + this.port;
 		}
 
 		@Override
@@ -428,7 +423,7 @@ public class MdsIp extends Mds{
 		if(this.provider.useLocal()){
 			this.connection = new MdsIpTunnel();
 		}else if(this.provider.useSSH()){
-			this.connection = new MdsIpJsch(this.provider.user, this.provider.host, provider.port);
+			this.connection = new MdsIpJsch(this.provider.user, this.provider.host, provider.getPort());
 		}else{
 			this.connection = new MdsIpTcp(this.provider.host, this.provider.getPort());
 		}
