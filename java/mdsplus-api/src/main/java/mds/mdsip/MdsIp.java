@@ -75,7 +75,7 @@ public class MdsIp extends Mds{
 		public final void run() {
 			try{
 				for(;;){
-					final Message new_message = Message.receive(MdsIp.this.connection, MdsIp.this.translisteners);
+					final Message new_message = Message.receive(MdsIp.this.connection, MdsIp.this.translisteners, -1);
 					if(new_message.getDType() == DTYPE.EVENT){
 						final PMET PmdsEvent = new PMET();
 						PmdsEvent.setEventid(new_message.getBody().get(12));
@@ -433,7 +433,7 @@ public class MdsIp extends Mds{
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
-		final Message msg = Message.receive(this.connection, null);
+		final Message msg = Message.receive(this.connection, null, 3000);
 		tictoc += System.nanoTime();
 		if(DEBUG.N) System.out.println(tictoc);
 		this.isLowLatency = tictoc < 50000000;// if response is faster than 50ms
