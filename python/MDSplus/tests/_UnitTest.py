@@ -42,6 +42,7 @@ class logger(object):
 
 class Tests(TestCase):
     debug = False
+    is_win = sys.platform.startswith('win')
     in_valgrind = 'VALGRIND' in os.environ
     inThread = False
     index = 0
@@ -274,7 +275,7 @@ class TreeTests(Tests):
                 shutil.rmtree(cls.tmpdir)
     def tearDown(self):
         gc.collect()
-        if self.inThread: return
+        if not self.is_win or self.inThread: return
         def isTree(o):
             try:    return isinstance(o,Tree)
             except Exception as e:
