@@ -38,7 +38,7 @@ TreeSerializeNci.c \
 TreeSetDbi.c \
 TreeSetDefault.c \
 TreeSetNci.c \
-TreeThreadSafe.c \
+TreeThreadStatic.c \
 TreeVerify.c \
 RemoteAccess.c \
 lex.yytreepath.c 
