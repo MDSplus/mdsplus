@@ -23,29 +23,30 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <pthread_port.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <libroutines.h>
-
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+#include <libroutines.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <dcl.h>
 #include <mdsdcl_messages.h>
+
 #include "dcl_p.h"
-#include "mdsdclthreadsafe.h"
-#include <treeshr.h>
+#include "mdsdclthreadstatic.h"
 
 
 dclDocListPtr mdsdcl_getdocs(){
-  GET_THREADSTATIC_P;
-  return DCLDOCS;
+  DCLTHREADSTATIC_INIT;
+  return DCL_DOCS;
 }
 
 /*! Free the memory associated with a parameter definition structure.
@@ -1011,12 +1012,6 @@ static void mdsdclSetupCommands(xmlDocPtr doc)
 
 
 
-/* Static shared list of parsed docs */
-static dclDocListPtr SdclDocs = NULL;
-STATIC_THREADSAFE pthread_mutex_t SdclDocs_lock   = PTHREAD_MUTEX_INITIALIZER;
-#define   LOCK_SDCLDOCS pthread_mutex_lock  (&SdclDocs_lock);
-#define UNLOCK_SDCLDOCS pthread_mutex_unlock(&SdclDocs_lock);
-
 /*! Add a command table by parsing an xml command definition file.
     The file is located in a directory specified by an environment
     variable "MDSXML" or the current directory if that environment
@@ -1061,28 +1056,31 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 
   /* See if that command table has already been loaded in the private list. If it has, pop that table
      to the top of the stack and return */
-  GET_THREADSTATIC_P;
-  for (doc_l = DCLDOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
+  DCLTHREADSTATIC_INIT;
+  for (doc_l = DCL_DOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
     if (strcmp(doc_l->name, commands) == 0) {
       if (doc_p) {
 	doc_p->next = doc_l->next;
-	doc_l->next = DCLDOCS;
-	DCLDOCS = doc_l;
+	doc_l->next = DCL_DOCS;
+	DCL_DOCS = doc_l;
       }
       free(commands);
-      mdsdclSetupCommands(DCLDOCS->doc);
+      mdsdclSetupCommands(DCL_DOCS->doc);
       return 0;
     }
   }
   /* See if that command table has already been loaded in the static list. If it has, add that table
      to the top of the private stack and return */
-  LOCK_SDCLDOCS;
-  for (doc_l = SdclDocs; doc_l ; doc_l = doc_l->next) {
+  /* Static shared list of parsed docs */
+  static dclDocListPtr dcl_docs_cache = NULL;
+  static pthread_mutex_t lock   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  for (doc_l = dcl_docs_cache; doc_l ; doc_l = doc_l->next) {
     if (strcmp(doc_l->name, commands) == 0) {
-      UNLOCK_SDCLDOCS; // no need to hold it as tail is immutable
+      pthread_mutex_unlock(&lock);
       mdsdclAllocDocDef(doc_l);
       free(commands);
-      mdsdclSetupCommands(DCLDOCS->doc);
+      mdsdclSetupCommands(DCL_DOCS->doc);
       return 0;
     }
   }
@@ -1112,7 +1110,7 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
   /* If cannot find the file or parse it, set the error string */
 
   if (doc == 0) {
-    UNLOCK_SDCLDOCS;
+    pthread_mutex_unlock(&lock);
     char *errstr = malloc(strlen(filename) + 50);
     sprintf(errstr, " Error: unable to parse %s\n", filename);
     *error = errstr;
@@ -1123,12 +1121,12 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
     doc_l = malloc(sizeof(dclDocList));
     doc_l->name = commands;
     doc_l->doc = doc;
-    doc_l->next = SdclDocs;
-    SdclDocs = doc_l;
-    UNLOCK_SDCLDOCS;
+    doc_l->next = dcl_docs_cache;
+    dcl_docs_cache = doc_l;
+    pthread_mutex_unlock(&lock);
     mdsdclAllocDocDef(doc_l);
     status = 0;
-    mdsdclSetupCommands(DCLDOCS->doc);
+    mdsdclSetupCommands(DCL_DOCS->doc);
   }
   free(filename);
   return status;
@@ -1190,8 +1188,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   char *output = 0;
   dclDocListPtr doc_l;
   cmd->image=0;
-  GET_THREADSTATIC_P;
-  if (!DCLDOCS)
+  DCLTHREADSTATIC_INIT;
+  if (!DCL_DOCS)
     mdsdclAddCommands("mdsdcl_commands", &error);
   if (mdsdclVerify() && strlen(cmd->command_line) > 0) {
     char *prompt = mdsdclGetPrompt();
@@ -1207,7 +1205,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     }
     free(prompt);
   }
-  for (doc_l = DCLDOCS; doc_l != NULL &&
+  for (doc_l = DCL_DOCS; doc_l != NULL &&
        invalid_command(status) && (status != MdsdclPROMPT_MORE); doc_l = doc_l->next) {
     dclCommandPtr cmdDef = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
     cmdDef->verb = strdup(cmd->verb);

@@ -10,7 +10,7 @@ VPATH=@srcdir@
 @MINGW_FALSE@ XML_LIBS=@XML_LIBS@ @LIBDL@
 
 SOURCES = 		\
-mdsdclThreadSafe.c     	\
+mdsdclThreadStatic.c     	\
 cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
