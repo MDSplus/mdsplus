@@ -607,12 +607,12 @@ public class TreeManager extends JPanel{
 				});
 				final Object[] ob = {"[ssh://][<user>@]<hostname>[:<port>]", provider};
 				final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, "Open new connection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-				if(result == JOptionPane.OK_OPTION) new Thread(new Runnable(){
+				if(result == JOptionPane.OK_OPTION) new Thread(null,new Runnable(){
 					@Override
 					public void run() {
 						FileMenu.this.treeman.openMds(new Provider(provider.getText()));
 					}
-				}).start();
+				},provider.getText()).start();
 			}
 		}
 		private final class OpenTree implements ActionListener{
