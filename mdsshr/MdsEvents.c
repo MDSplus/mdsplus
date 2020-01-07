@@ -68,14 +68,6 @@ static int fds[2];	/* file descriptors used by the pipe */
 static int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
 static void initializeRemote(int receive_events);
 
-static int TIMEOUT = 0;
-EXPORT int MDSSetEventTimeout(const int seconds)
-{
-  int old_timeout = TIMEOUT;
-  TIMEOUT = seconds;
-  return old_timeout;
-}
-
 static int ConnectToMds_(const char *const host)
 {
   static int (*rtn)(const char *const host) = 0;
@@ -432,11 +424,11 @@ static int searchOpenServer(char *server __attribute__ ((unused)))
   return 0;
 }
 
+static pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
 static void initializeRemote(int receive_events)
 {
   static int receive_initialized;
   static int send_initialized;
-  static pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&init_lock);
   if (receive_events ? receive_initialized : send_initialized) {
     pthread_mutex_unlock(&init_lock);
@@ -553,9 +545,25 @@ static void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_unlock(&t->mutex);
 }
 
+static int TIMEOUT = 0;
+
+EXPORT int MDSSetEventTimeout(const int seconds)
+{
+  int old_timeout;
+  pthread_mutex_lock(&init_lock);
+  old_timeout = TIMEOUT;
+  TIMEOUT = seconds;
+  pthread_mutex_unlock(&init_lock);
+  return old_timeout;
+}
+
 EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
-  return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
+  int timeout;
+  pthread_mutex_lock(&init_lock);
+  timeout = TIMEOUT;
+  pthread_mutex_unlock(&init_lock);
+  return MDSWfeventTimed(evname, buflen, data, datlen, timeout);
 }
 
 EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
