@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <STATICdef.h>
 #include <mdsshr.h>
 #include <status.h>
 #include <libroutines.h>
@@ -52,24 +51,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
 #endif
 
-STATIC_THREADSAFE int receive_ids[256];	/* Connection to receive external events  */
-STATIC_THREADSAFE int send_ids[256];	/* Connection to send external events  */
-STATIC_THREADSAFE int receive_sockets[256];	/* Socket to receive external events  */
-STATIC_THREADSAFE int send_sockets[256];	/* Socket to send external events  */
-STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
-STATIC_THREADSAFE char *send_servers[256];	/* Send server names */
-STATIC_THREADSAFE int external_shutdown = 0;	/* flag to request remote events thread termination */
-STATIC_THREADSAFE int external_count = 0;	/* remote event pendings count */
-STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
-STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
+static int receive_ids[256];	/* Connection to receive external events  */
+static int send_ids[256];	/* Connection to send external events  */
+static int receive_sockets[256];	/* Socket to receive external events  */
+static int send_sockets[256];	/* Socket to send external events  */
+static char *receive_servers[256];	/* Receive server names */
+static char *send_servers[256];	/* Send server names */
+static int external_shutdown = 0;	/* flag to request remote events thread termination */
+static int external_count = 0;	/* remote event pendings count */
+static int num_receive_servers = 0;	/* numer of external event sources */
+static int num_send_servers = 0;	/* numer of external event destination */
 
-STATIC_THREADSAFE int external_thread_created = 0;	/* Thread for remot event handling flag */
-STATIC_THREADSAFE int fds[2];	/* file descriptors used by the pipe */
+static int external_thread_created = 0;	/* Thread for remot event handling flag */
+static int fds[2];	/* file descriptors used by the pipe */
 
-STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
-STATIC_ROUTINE void initializeRemote(int receive_events);
-STATIC_CONSTANT int TIMEOUT = 0;
+static int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
+static void initializeRemote(int receive_events);
 
+static int TIMEOUT = 0;
 EXPORT int MDSSetEventTimeout(const int seconds)
 {
   int old_timeout = TIMEOUT;
@@ -79,7 +78,7 @@ EXPORT int MDSSetEventTimeout(const int seconds)
 
 static int ConnectToMds_(const char *const host)
 {
-  STATIC_THREADSAFE int (*rtn)(const char *const host) = 0;
+  static int (*rtn)(const char *const host) = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(host);
@@ -89,7 +88,7 @@ static int ConnectToMds_(const char *const host)
 
 static int DisconnectFromMds_(const int id)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(id);
@@ -99,7 +98,7 @@ static int DisconnectFromMds_(const int id)
 
 static void *GetConnectionInfo_(const int id, char **const name, int *const readfd, size_t *const len)
 {
-  STATIC_THREADSAFE void *(*rtn) () = 0;
+  static void *(*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(id, name, readfd, len);
@@ -109,7 +108,7 @@ static void *GetConnectionInfo_(const int id, char **const name, int *const read
 
 static int MdsEventAst_(const int conid, char const *const eventnam, void (*const astadr) (), void *const astprm, int *const eventid)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(conid, eventnam, astadr, astprm, eventid);
@@ -119,7 +118,7 @@ static int MdsEventAst_(const int conid, char const *const eventnam, void (*cons
 
 static Message *GetMdsMsg_(const int id, const int *const stat)
 {
-  STATIC_THREADSAFE Message *(*rtn) () = 0;
+  static Message *(*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(id, stat);
@@ -129,7 +128,7 @@ static Message *GetMdsMsg_(const int id, const int *const stat)
 
 static int MdsEventCan_(const int id, const int eid)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(id, eid);
@@ -139,7 +138,7 @@ static int MdsEventCan_(const int id, const int eid)
 
 static int MdsValue_(const int id, const char *const exp, struct descrip *const d1, struct descrip *const d2, struct descrip *const d3)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(id, exp, d1, d2, d3);
@@ -151,7 +150,7 @@ static int MdsValue_(const int id, const char *const exp, struct descrip *const 
 static int RegisterRead_(const int conid)
 {
   int status = 1;
-  STATIC_THREADSAFE int (*rtn) (int) = 0;
+  static int (*rtn) (int) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", (void **)&rtn);
   if STATUS_NOT_OK {
@@ -200,10 +199,10 @@ static char *eventName(const char *const eventnam_in) {
 #endif //_WIN32
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
-STATIC_THREADSAFE pthread_t external_thread;	/* Thread for remote event handling */
+static pthread_t external_thread;	/* Thread for remote event handling */
 
 
-STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
+static void ReconnectToServer(int idx, int recv)
 {
   char **servers;
   int *sockets;
@@ -234,7 +233,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
 
 /************* OS dependent part ******************/
 
-STATIC_ROUTINE char *getEnvironmentVar(char const *name)
+static char *getEnvironmentVar(char const *name)
 {
   char *trans = getenv(name);
   if (!trans || !*trans)
@@ -242,9 +241,9 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
   return trans;
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *);
+static void *handleRemoteAst(void *);
 
-STATIC_ROUTINE int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
+static int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
 {
   int s,status = 1;
   size_t ssize;
@@ -269,7 +268,7 @@ STATIC_ROUTINE int createThread(pthread_t * thread, void *(*rtn) (void *), void 
   return status;
 }
 
-STATIC_ROUTINE void startRemoteAstHandler()
+static void startRemoteAstHandler()
 {
   if (pipe(fds) != 0) {
     fprintf(stderr, "Error creating pipes for AstHandler\n");
@@ -283,13 +282,13 @@ STATIC_ROUTINE void startRemoteAstHandler()
 static pthread_mutex_t event_info_lock = PTHREAD_MUTEX_INITIALIZER;
 #define EVENT_INFO_LOCK   pthread_mutex_lock(&event_info_lock)
 #define EVENT_INFO_UNLOCK pthread_mutex_unlock(&event_info_lock)
-STATIC_THREADSAFE struct {
+static struct {
   int used;
   int local_id;
   int *external_ids;
 } event_info[MAX_ACTIVE_EVENTS];
 
-STATIC_ROUTINE void newRemoteId(int *id)
+static void newRemoteId(int *id)
 {
   int i;
   EVENT_INFO_LOCK;
@@ -300,14 +299,14 @@ STATIC_ROUTINE void newRemoteId(int *id)
   EVENT_INFO_UNLOCK;
 }
 
-STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
+static void setRemoteId(int id, int ofs, int evid)
 {
   EVENT_INFO_LOCK;
   event_info[id].external_ids[ofs] = evid;
   EVENT_INFO_UNLOCK;
 }
 
-STATIC_ROUTINE int getRemoteId(int id, int ofs)
+static int getRemoteId(int id, int ofs)
 {
   int retId;
   EVENT_INFO_LOCK;
@@ -316,7 +315,7 @@ STATIC_ROUTINE int getRemoteId(int id, int ofs)
   return retId;
 }
 
-STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
+static void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
   unsigned int i, j;
   char *envname = getEnvironmentVar(env_var);
@@ -339,22 +338,22 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
 }
 
 #ifdef GLOBUS
-STATIC_ROUTINE void handleRemoteEvent(int conid);
+static void handleRemoteEvent(int conid);
 
-STATIC_ROUTINE void KillHandler()
+static void KillHandler()
 {
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   Poll(handleRemoteEvent);
   return NULL;
 }
 
-STATIC_ROUTINE void handleRemoteEvent(int conid)
+static void handleRemoteEvent(int conid)
 {
   char buf[16];
-  STATIC_CONSTANT struct descriptor
+  static struct descriptor
   int status = 1, i;
   Message *m;
   m = GetMdsMsg_(sock, &status);
@@ -369,7 +368,7 @@ STATIC_ROUTINE void handleRemoteEvent(int conid)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 
-STATIC_CONSTANT void KillHandler()
+static void KillHandler()
 {
   void *dummy;
   external_shutdown = 1;
@@ -381,7 +380,7 @@ STATIC_CONSTANT void KillHandler()
   external_thread_created = 0;
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   INIT_STATUS;
   char buf[16];
@@ -426,27 +425,17 @@ STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
 
 #endif//GLOBUS
 
-/*
-    for(i = 0; i < num_receive_servers; i++)
-	if(receive_servers[i] && !strcmp(server, receive_servers[i]))
-	    return receive_sockets[i];
-    for(i = 0; i < num_send_servers; i++)
-	if(send_servers[i] && !strcmp(server, send_servers[i]))
-   return 0;
-}
-*/
-
-STATIC_ROUTINE int searchOpenServer(char *server __attribute__ ((unused)))
+static int searchOpenServer(char *server __attribute__ ((unused)))
 /* Avoid doing MdsConnect on a server already connected before
  * for now, allow socket duplications
  */{
   return 0;
 }
 
-STATIC_ROUTINE void initializeRemote(int receive_events)
+static void initializeRemote(int receive_events)
 {
-  STATIC_THREADSAFE int receive_initialized;
-  STATIC_THREADSAFE int send_initialized;
+  static int receive_initialized;
+  static int send_initialized;
   static pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&init_lock);
   if (receive_events ? receive_initialized : send_initialized) {
@@ -509,7 +498,7 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
   pthread_cleanup_pop(1);
 }
 
-STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
+static int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 1, i;
   int curr_eventid;
@@ -550,7 +539,7 @@ struct wfevent_thread_cond {
   int *datlen;
 };
 
-STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
+static void EventHappened(void *astprm, int len, char *data)
 {
   struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
   pthread_mutex_lock(&t->mutex);
@@ -767,7 +756,7 @@ int RemoteMDSEventAst(const char *const eventnam_in, void (*const astadr) (), vo
   return status;
 }
 
-STATIC_ROUTINE int canEventRemote(const int eventid)
+static int canEventRemote(const int eventid)
 {
   int status = 1, i;
   /* kill external thread before sending messages over the socket */
@@ -791,7 +780,7 @@ int RemoteMDSEventCan(const int eventid)
   return canEventRemote(eventid);
 }
 
-STATIC_ROUTINE int sendRemoteEvent(const char *const evname, const int data_len, char *const data)
+static int sendRemoteEvent(const char *const evname, const int data_len, char *const data)
 {
   int status = 1, i, tmp_status;
   char expression[256];
