@@ -66,7 +66,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <release.h>
 
-#include "mdsshrthreadsafe.h"
 #define LIBRTL_SRC
 
 typedef struct {

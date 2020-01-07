@@ -36,7 +36,7 @@ SOURCES = \
         MdsPk.c \
         MdsSandbox.c \
         MdsSerialize.c \
-        MdsShrThreadSafe.c \
+        MdsThreadStatic.c \
         MdsXdRoutines.c \
         MdsVersionInfo.c \
         mds_dsc_string.c \
