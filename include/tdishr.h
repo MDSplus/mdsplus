@@ -26,7 +26,3 @@ extern int TdiConvert();
 extern int  TdiIntrinsic(            opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
 extern int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr);
 extern int CvtConvertFloat(void *invalue, uint32_t indtype, void *outvalue, uint32_t outdtype, uint32_t options);
-
-#ifndef TDITHREADSAFE_H
-extern void *TdiThreadStatic(void*in);
-#endif

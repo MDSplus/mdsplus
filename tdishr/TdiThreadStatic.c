@@ -24,17 +24,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _GNU_SOURCE
 #include <mdsplus/mdsconfig.h>
-#include <libroutines.h>
-#include "tdithreadstatic.h"
+
 #include <stdlib.h>
+#include <string.h>
+
+#include <libroutines.h>
 #include <mdsshr.h>
 #include <strroutines.h>
-#include <string.h>
-/* Key for the thread-specific buffer */
-static pthread_key_t buffer_key;
 
-static inline ThreadStatic *ThreadStatic_create() {
-  ThreadStatic *TdiThreadStatic_p = (ThreadStatic *) calloc(1,sizeof(ThreadStatic)); // zeros everything
+#include "tdithreadstatic.h"
+
+static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
+  TDITHREADSTATIC_ARG = (TDITHREADSTATIC_TYPE *) calloc(1,sizeof(TDITHREADSTATIC_TYPE));
   LibCreateVmZone(&TDI_VAR_PRIVATE.head_zone);
   LibCreateVmZone(&TDI_VAR_PRIVATE.data_zone);
   TDI_INTRINSIC_STAT = SsSUCCESS;
@@ -50,38 +51,13 @@ static inline ThreadStatic *ThreadStatic_create() {
   }
   TDI_STACK_IDX = 0;
   TDI_VAR_REC = 0;
-  return TdiThreadStatic_p;
+  return TDITHREADSTATIC_VAR;
 }
-static void ThreadStatic_destroy(ThreadStatic *TdiThreadStatic_p) {
-  if (!TdiThreadStatic_p) return;
+static void buffer_free(TDITHREADSTATIC_ARG) {
   LibResetVmZone(&TDI_VAR_PRIVATE.head_zone);
   LibResetVmZone(&TDI_VAR_PRIVATE.data_zone);
   StrFree1Dx(&TDI_INTRINSIC_MSG);
-  free(TdiThreadStatic_p);
+  free(TDITHREADSTATIC_VAR);
 }
-static void buffer_destroy(void *buf){
-  ThreadStatic_ref *ref = (ThreadStatic_ref *) buf;
-  if (ref->free_me)
-    ThreadStatic_destroy(ref->p);
-  free(buf);
-}
-static void buffer_key_alloc(){
-  pthread_key_create(&buffer_key, buffer_destroy);
-}
-/* Return the thread-specific buffer */
-EXPORT ThreadStatic *TdiThreadStatic(ThreadStatic *in){
-  RUN_FUNCTION_ONCE(buffer_key_alloc);
-  ThreadStatic_ref *ref = (ThreadStatic_ref *) pthread_getspecific(buffer_key);
-  if (ref && !in) return ref->p;
-  if (!ref) ref = calloc(1,sizeof(ThreadStatic_ref));
-  if (in) {
-    ThreadStatic_destroy(ref->p);
-    ref->p = in;
-    ref->free_me = FALSE;
-  } else if (!ref->p) {
-    ref->p = ThreadStatic_create();
-    ref->free_me = TRUE;
-  }
-  pthread_setspecific(buffer_key, (void *)ref);
-  return ref->p;
-}
+
+EXPORT IMPLEMENT_GETTHREADSTATIC(TDITHREADSTATIC_TYPE,TdiGetThreadStatic,THREADSTATIC_TDISHR,buffer_alloc,buffer_free)

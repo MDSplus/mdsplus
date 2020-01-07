@@ -39,9 +39,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libroutines.h>
 #include <treeshr_messages.h>
 #include <tdishr_messages.h>
-#include "tdithreadstatic.h"
 #include <mdsshr.h>
 #include <strroutines.h>
+
+#include "tdithreadstatic.h"
 #define DEBUG
 #ifdef DEBUG
  #define DBG(...) fprintf(stderr,__VA_ARGS__)
@@ -110,7 +111,7 @@ static inline void add_compile_info(int status,TDITHREADSTATIC_ARG) {
 static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, TDITHREADSTATIC_ARG) {
   int status;
   TDI_COMPILE_REC = TRUE;
-  pthread_cleanup_push((void*)cleanup_compile,(void*)TDITHREADSTATIC_PASS);
+  pthread_cleanup_push((void*)cleanup_compile,(void*)TDITHREADSTATIC_VAR);
   if (!TDI_REFZONE.l_zone)
     status = LibCreateVmZone(&TDI_REFZONE.l_zone);
   TDI_REFZONE.l_status = TdiBOMB;  // In case we bomb out
@@ -120,7 +121,7 @@ static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsds
   TDI_REFZONE.l_narg   = narg - 1;
   TDI_REFZONE.l_iarg   = 0;
   TDI_REFZONE.a_list   = list;
-  if (IS_NOT_OK(tdi_yacc(TDITHREADSTATIC_PASS)) && IS_OK(TDI_REFZONE.l_status))
+  if (IS_NOT_OK(tdi_yacc(TDITHREADSTATIC_VAR)) && IS_OK(TDI_REFZONE.l_status))
     status = TdiSYNTAX;
   else
     status = TDI_REFZONE.l_status;
@@ -133,14 +134,14 @@ static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsds
     else
       status = MdsCopyDxXd((mdsdsc_t *)TDI_REFZONE.a_result, out_ptr);
   }
-  add_compile_info(status,TDITHREADSTATIC_PASS);
+  add_compile_info(status,TDITHREADSTATIC_VAR);
   pthread_cleanup_pop(1);
   return status;
 }
 
 int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   if (TDI_COMPILE_REC) {
     fprintf(stderr, "Error: Recursive calls to TDI Compile\n");
     return TdiRECURSIVE;
@@ -151,7 +152,7 @@ int Tdi1Compile(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_pt
   if (STATUS_OK && text_ptr->dtype != DTYPE_T)
     status = TdiINVDTYDSC;
   else if (STATUS_OK && text_ptr->length > 0)
-    status = compile(text_ptr,narg,list,out_ptr,TDITHREADSTATIC_PASS);
+    status = compile(text_ptr,narg,list,out_ptr,TDITHREADSTATIC_VAR);
   FREEXD_NOW(&tmp);
   if STATUS_NOT_OK MdsFree1Dx(out_ptr, NULL);
   return status;

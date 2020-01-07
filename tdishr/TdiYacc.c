@@ -80,18 +80,18 @@ extern int tdi_yacc_ARG();
 #define YYMAXDEPTH      250
 #define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
-#define _RESOLVE(arg)   			__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_PASS))
+#define _RESOLVE(arg)   			__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_VAR))
 
-#define _FULL1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_PASS))
-#define _FULL2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_PASS))
+#define _FULL1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_VAR))
 	/*****************************
 	Two args for image->routine.
 	*****************************/
-#define _JUST0(opcode,out)                      __RUN(tdi_yacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL , TDITHREADSTATIC_PASS))
-#define _JUST1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_PASS))
-#define _JUST2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_PASS))
-#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(tdi_yacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL , TDITHREADSTATIC_PASS))
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(tdi_yacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4, TDITHREADSTATIC_PASS))
+#define _JUST0(opcode,out)                      __RUN(tdi_yacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(tdi_yacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL , TDITHREADSTATIC_VAR))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(tdi_yacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4, TDITHREADSTATIC_VAR))
 
 static const struct marker _EMPTY_MARKER = { 0 };
 
@@ -736,7 +736,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
       goto tdiyy_default;		/* simple state */
-    if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_PASS)) < 0))
+    if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_VAR)) < 0))
       tdiyychar = 0;		/* reached EOF */
     YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
@@ -752,7 +752,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
 
  tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
-      if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_PASS)) < 0))
+      if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_VAR)) < 0))
 	tdiyychar = 0;		/* reached EOF */
       YYDEBUG_("received token ")
       /*
@@ -883,7 +883,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_PASS);
+      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_VAR);
       if IS_NOT_OK(TDI_REFZONE.l_status)
 	tdiyyerror(0);
     }
@@ -1261,7 +1261,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
 	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
 	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_ARG) {
-	    TDI_REFZONE.l_status = tdi_yacc_ARG(&tdiyyval.mark, TDITHREADSTATIC_PASS);
+	    TDI_REFZONE.l_status = tdi_yacc_ARG(&tdiyyval.mark, TDITHREADSTATIC_VAR);
 	    if IS_NOT_OK(TDI_REFZONE.l_status)
 	      tdiyyerror(0);
 	  } else {
@@ -1271,7 +1271,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
 	}
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
-      else if (tdi_lex_path(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark, TDITHREADSTATIC_PASS) == LEX_ERROR) {
+      else if (tdi_lex_path(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark, TDITHREADSTATIC_VAR) == LEX_ERROR) {
 	TDI_REFZONE.l_ok = tdiyypvt[-1].mark.w_ok;
 	TDI_REFZONE.a_cur = TDI_REFZONE.a_begin + TDI_REFZONE.l_ok + tdiyypvt[-0].mark.rptr->length;
 	return MDSplusERROR;
@@ -1385,7 +1385,7 @@ int tdi_yacc(TDITHREADSTATIC_ARG){
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_PASS);
+      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_VAR);
       if IS_NOT_OK(TDI_REFZONE.l_status)
 	tdiyyerror(0);
     }

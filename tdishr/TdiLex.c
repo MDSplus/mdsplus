@@ -429,7 +429,7 @@ static inline char lex_input(TDITHREADSTATIC_ARG) {
     return '\0';
   return (char)tchar;
 }
-#define INPUT()	lex_input(TDITHREADSTATIC_PASS)
+#define INPUT()	lex_input(TDITHREADSTATIC_VAR)
 
 /*--------------------------------------------------------
 	Remove comment from the Lex input stream.
@@ -639,7 +639,7 @@ static inline int lex_ident(
 	|| token == LEX_LAND
 	|| token == LEX_LEQ
 	|| token == LEX_LEQV || token == LEX_LGE || token == LEX_LOR || token == LEX_MUL)
-      return lex_bin_eq(token, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(token, TDITHREADSTATIC_VAR);
     return token;
   }
   return (LEX_IDENT);
@@ -969,19 +969,19 @@ static inline int lex_punct(
   case '!':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_NE;
-      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_VAR);
     }
     break;
   case '&':
     if (c1 == '&') {
       mark_ptr->builtin = OPC_AND;
-      return lex_bin_eq(LEX_LANDS, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LANDS, TDITHREADSTATIC_VAR);
     }
     break;
   case '*':
     if (c1 == '*') {
       mark_ptr->builtin = OPC_POWER;
-      return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_VAR);
     }
     break;
   case '+':
@@ -1006,43 +1006,43 @@ static inline int lex_punct(
   case '/':
     if (c1 == '/') {
       mark_ptr->builtin = OPC_CONCAT;
-      return lex_bin_eq(LEX_CONCAT, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_CONCAT, TDITHREADSTATIC_VAR);
     }
     break;
   case '<':
     if (c1 == '<') {
       mark_ptr->builtin = OPC_SHIFT_LEFT;
-      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_VAR);
     }
     if (c1 == '=') {
       mark_ptr->builtin = OPC_LE;
-      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_VAR);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_NE;
-      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_VAR);
     }
     break;
   case '=':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_EQ;
-      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LEQS, TDITHREADSTATIC_VAR);
     }
     break;
   case '>':
     if (c1 == '=') {
       mark_ptr->builtin = OPC_GE;
-      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_VAR);
     }
     if (c1 == '>') {
       mark_ptr->builtin = OPC_SHIFT_RIGHT;
-      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_SHIFT, TDITHREADSTATIC_VAR);
     }
     break;
   case '|':
     if (c1 == '|') {
       mark_ptr->builtin = OPC_OR;
-      return lex_bin_eq(LEX_LORS, TDITHREADSTATIC_PASS);
+      return lex_bin_eq(LEX_LORS, TDITHREADSTATIC_VAR);
     }
     break;
   }
@@ -1057,40 +1057,40 @@ static inline int lex_punct(
     return (LEX_UNARYS);
   case '%':
     mark_ptr->builtin = OPC_MOD;
-    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_VAR);
   case '&':
     mark_ptr->builtin = OPC_IAND;
-    return lex_bin_eq(LEX_IAND, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_IAND, TDITHREADSTATIC_VAR);
   case '*':
     mark_ptr->builtin = OPC_MULTIPLY;
-    return lex_bin_eq('*', TDITHREADSTATIC_PASS);
+    return lex_bin_eq('*', TDITHREADSTATIC_VAR);
   case '+':
     mark_ptr->builtin = OPC_ADD;
-    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_VAR);
   case '-':
     mark_ptr->builtin = OPC_SUBTRACT;
-    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_ADD, TDITHREADSTATIC_VAR);
   case '/':
     mark_ptr->builtin = OPC_DIVIDE;
-    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_MULS, TDITHREADSTATIC_VAR);
   case ':':
     mark_ptr->builtin = OPC_DTYPE_RANGE;
     return (LEX_RANGE);
   case '<':
     mark_ptr->builtin = OPC_LT;
-    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_VAR);
   case '>':
     mark_ptr->builtin = OPC_GT;
-    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_LGES, TDITHREADSTATIC_VAR);
   case '@':
     mark_ptr->builtin = OPC_PROMOTE;
     return (LEX_PROMO);
   case '^':
     mark_ptr->builtin = OPC_POWER;
-    return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_POWER, TDITHREADSTATIC_VAR);
   case '|':
     mark_ptr->builtin = OPC_IOR;
-    return lex_bin_eq(LEX_IOR, TDITHREADSTATIC_PASS);
+    return lex_bin_eq(LEX_IOR, TDITHREADSTATIC_VAR);
   case '~':
     mark_ptr->builtin = OPC_INOT;
     return (LEX_UNARYS);
@@ -1363,7 +1363,7 @@ int tdi_lex(struct marker *lvalPtr, TDITHREADSTATIC_ARG) {
   char text[MAX_TOKEN_LEN];
   memset(text,127,MAX_TOKEN_LEN);
   const svf_t *lstate[MAX_TOKEN_LEN];
-  while ((nstr = lex_look(&leng, &previous, text, lstate, TDITHREADSTATIC_PASS)) >= 0) {
+  while ((nstr = lex_look(&leng, &previous, text, lstate, TDITHREADSTATIC_VAR)) >= 0) {
     switch (nstr) {
       case 0:
 	return 0;
@@ -1373,34 +1373,34 @@ int tdi_lex(struct marker *lvalPtr, TDITHREADSTATIC_ARG) {
 	break;
       case 3:
 	SET_POS();
-	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 4:
 	SET_POS();
-	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_float(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 5:
 	SET_POS();
-	return (lex_integer(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_integer(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 6:
 	SET_POS();
-	return (lex_ident(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_ident(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 7:
 	SET_POS();
-	return (tdi_lex_path(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (tdi_lex_path(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 8:
 	SET_POS();
-	return (lex_quote(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_quote(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 9:
 	SET_POS();
-	return (lex_point(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_point(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case 10:
 	SET_POS();
-	if (lex_comment(leng, text, lvalPtr, TDITHREADSTATIC_PASS))
+	if (lex_comment(leng, text, lvalPtr, TDITHREADSTATIC_VAR))
 	  return (LEX_ERROR);
 	else
 	  break;
       case 11:
 	SET_POS();
-	return (lex_punct(leng, text, lvalPtr, TDITHREADSTATIC_PASS));
+	return (lex_punct(leng, text, lvalPtr, TDITHREADSTATIC_VAR));
       case -1:
 	break;
       default:

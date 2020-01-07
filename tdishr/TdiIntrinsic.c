@@ -98,7 +98,7 @@ static const mdsdsc_t miss_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
 Explain in 300 words or less.
 ****************************/
 #define MAXMESS 1800
-#define ADD(text) add(text, TDITHREADSTATIC_PASS)
+#define ADD(text) add(text, TDITHREADSTATIC_VAR)
 static void add(char *const text, TDITHREADSTATIC_ARG) {
   mdsdsc_d_t new = { 0, DTYPE_T, CLASS_D, 0 };
   new.length = (length_t)strlen(text);
@@ -106,7 +106,7 @@ static void add(char *const text, TDITHREADSTATIC_ARG) {
   if (TDI_INTRINSIC_MSG.length + new.length < MAXMESS)
     StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&new);
 }
-#define NUMB(count) numb(count, TDITHREADSTATIC_PASS)
+#define NUMB(count) numb(count, TDITHREADSTATIC_VAR)
 static void numb(int count, TDITHREADSTATIC_ARG) {
   char val[16];
   sprintf(val,"%-12d",count);
@@ -117,7 +117,7 @@ static void numb(int count, TDITHREADSTATIC_ARG) {
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
 int tdi_trace(mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   if (TDI_INTRINSIC_MSG.length > MAXMESS)
     return MDSplusERROR;
   ADD("%TDI Decompile text_length");
@@ -132,7 +132,7 @@ int tdi_trace(mdsdsc_xd_t *out_ptr) {
   return MDSplusSUCCESS;
 }
 
-#define TRACE(opcode,narg,list) trace(opcode,narg,list,TDITHREADSTATIC_PASS)
+#define TRACE(opcode,narg,list) trace(opcode,narg,list,TDITHREADSTATIC_VAR)
 static inline void trace(
 	opcode_t opcode,
 	int narg, mdsdsc_t *list[],
@@ -200,7 +200,7 @@ static void cleanup_list(void* fixed_in) {
 EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(out_ptr);
@@ -250,7 +250,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t
 	MdsFree1Dx(out_ptr, NULL);
       else if (out_ptr->l_length) {
 	ADD("%TDI DANGER, part of old output descriptor was input to below.\n");
-	trace(opcode, narg, list,TDITHREADSTATIC_PASS);
+	trace(opcode, narg, list,TDITHREADSTATIC_VAR);
       }
       if (tmp.class == CLASS_XD)
 	*out_ptr = tmp;
@@ -324,7 +324,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t
     status = stat1;
   }
   if (TDI_INTRINSIC_REC>=0)
-    trace(opcode, narg, list, TDITHREADSTATIC_PASS);
+    trace(opcode, narg, list, TDITHREADSTATIC_VAR);
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
@@ -357,7 +357,7 @@ int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
 	      mdsdsc_t *list[],
 	      mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   int option = -1;
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &option);
