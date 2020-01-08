@@ -23,18 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#ifdef _WIN32
-#include <ws2tcpip.h>
-#define SHUT_RDWR SD_BOTH
-#else
-#define SOCKET int
-#define INVALID_SOCKET -1
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,9 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <unistd.h>
 
+#include <socket_port.h>
 #include <mdsshr.h>
 #include <libroutines.h>
-#include "mdsshrthreadsafe.h"
 
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);

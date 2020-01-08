@@ -29,7 +29,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/xpathInternals.h>
 #include <strings.h>
 #include <socket_port.h>
-#include "mdsshrthreadsafe.h"
 #include <stdlib.h>
 #include <string.h>
 #include <sys/types.h>

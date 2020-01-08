@@ -19,11 +19,13 @@
  #define getpid _getpid
  #define SHUT_RDWR 2
 #else
+ typedef int SOCKET;
  #define INVALID_SOCKET -1
  #define FIONREAD_TYPE int
  #include <sys/socket.h>
  #include <netdb.h>
  #include <netinet/in.h>
+ #include <netinet/tcp.h>
  #include <arpa/inet.h>
  #include <sys/ioctl.h>
  #include <sys/wait.h>
