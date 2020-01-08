@@ -1007,8 +1007,14 @@ AX_PATH_PYTHON([2.6],[$host],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
-AC_MSG_CHECKING(libpython path)
-DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
+
+AC_MSG_CHECKING(PyLib)
+DEF_PYLIB=${PyLib:-$($PYTHON -c '
+import sys,ctypes.util
+name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[[0:2]]
+name = ctypes.util.find_library(name)
+if not name is None: print(name)
+')}
 AC_MSG_RESULT($DEF_PYLIB)
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
