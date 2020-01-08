@@ -12979,9 +12979,15 @@ $as_echo "${_python_arch}" >&6; }
     PYTHON_ARCHITECTURE=${_python_arch}
 
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking libpython path" >&5
-$as_echo_n "checking libpython path... " >&6; }
-DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking PyLib" >&5
+$as_echo_n "checking PyLib... " >&6; }
+DEF_PYLIB=${PyLib:-$($PYTHON -c '
+import sys,ctypes.util
+name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[0:2]
+name = ctypes.util.find_library(name)
+if not name is None: print(name)
+')}
 { $as_echo "$as_me:${as_lineno-$LINENO}: result: $DEF_PYLIB" >&5
 $as_echo "$DEF_PYLIB" >&6; }
 
