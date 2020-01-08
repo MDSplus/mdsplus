@@ -110,7 +110,7 @@ inline static void initialize(){
   void *handle;
   char *lib;
   char *envsym = getenv("PyLib");
-  if (!envsym) {
+  if ( !envsym || (envsym[0] == '\0') ) { // NULL or empty
 #ifdef _WIN32
     envsym = "python27";
     const char * aspath = "C:\\Python27\\python27.dll";
