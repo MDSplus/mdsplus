@@ -11,7 +11,7 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
-set -v
+
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
