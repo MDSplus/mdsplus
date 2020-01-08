@@ -48,8 +48,8 @@ main_path="${tmpdir};${MDSPLUS_DIR}/trees"
 if [[ $test == *"py"* ]]
 then
   LD_PRELOAD="$TMP_LD_PRELOAD"
-  if ! $TDITEST <<< 'py("1")' > /dev/null
-  then echo no python;exit 77
+  if  [ -z $PyLib ]
+  then echo no python lib;exit 77
   fi
 fi
 if [[ $test == *"dev"* ]]
