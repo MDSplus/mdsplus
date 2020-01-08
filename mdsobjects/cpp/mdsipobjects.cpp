@@ -256,14 +256,14 @@ Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP 
 {
 	mdsipAddrStr.assign((const char *)mdsipAddr);
 	this->clevel = clevel;
-    lockGlobal();
-    SetCompressionLevel(clevel);
-    sockId = ConnectToMds(mdsipAddr);
-    unlockGlobal();
+	lockGlobal();
+	SetCompressionLevel(clevel);
+	sockId = ConnectToMds(mdsipAddr);
+	unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
 		msg += mdsipAddr;
-		throw MdsException(msg.c_str());
+		throw MdsException(msg);
 	}
 }
 
