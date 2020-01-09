@@ -17,10 +17,3 @@ typedef struct {
 #define DCL_DOCS	DCLTHREADSTATIC_VAR->docs
 
 extern DEFINE_GETTHREADSTATIC(DCLTHREADSTATIC_TYPE, DclGetThreadStatic);
-
-extern void mdsdclSetPrompt(const char *prompt);
-extern char *mdsdclGetPrompt();
-extern void mdsdclSetDefFile(const char *deffile);
-extern void mdsdclAllocDocDef(dclDocListPtr doc_l);
-extern void dclLock();
-extern void dclUnlock();
