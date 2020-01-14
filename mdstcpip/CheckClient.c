@@ -22,141 +22,136 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <mdsshr.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <treeshr.h>
-#include <strroutines.h>
-#include <libroutines.h>
+#include <mdsplus/mdsconfig.h>
+
 #include <ctype.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
-#include <mdsplus/mdsconfig.h>
-#include <signal.h>
 #include <unistd.h>
 #include <ctype.h>
 #ifndef _WIN32
-#include <sys/types.h>
-#include <pwd.h>
-#include <grp.h>
-#include <sys/wait.h>
+ #include <sysexits.h>
+ #include <sys/types.h>
+ #include <pwd.h>
+ #include <grp.h>
+ #include <sys/wait.h>
+ #define EXIT_FILE_OPEN_ERROR	EX_IOERR
+ #define EXIT_LIB_NOT_FOUND	EX_SOFTWARE
+#else
+ // #include <WinError.h>
+ #define ERROR_OPEN_FAILED	110
+ #define ERROR_PROC_NOT_FOUND	127
+ #define EXIT_FILE_OPEN_ERROR	ERROR_OPEN_FAILED
+ #define EXIT_LIB_NOT_FOUND	ERROR_PROC_NOT_FOUND
 #endif
+
+#include <mdsdescrip.h>
+#include <strroutines.h>
+#include <libroutines.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <tdishr_messages.h>
 
 #include "mdsip_connections.h"
 
-static void CompressString(struct descriptor *in, int upcase)
-{
-  unsigned short len;
-  static unsigned short two = 2;
-  StrTrim(in, in, &len);
-  if (upcase)
-    StrUpcase(in, in);
-  while (in->length && (in->pointer[0] == ' ' || in->pointer[0] == '	'))
-    StrRight(in, in, &two);
+static inline int filter_string(char **const str_ptr, const int upcase) {
+  #define str (*str_ptr)
+  while (*str && isspace(*str)) str++;
+  char *c = str + strlen(str) -1;
+  while (isspace(*c)) c--;
+  *++c = '\0'; // terminate
+  if (upcase) {
+    for (c = str ; *c ; c++)
+      *c = toupper(*c);
+  }
+  return c - str; // is strlen
 }
 
 #ifdef _WIN32
-static int BecomeUser(char *remuser __attribute__ ((unused)), struct descriptor *local_user __attribute__ ((unused))){
-  return 1;
-}
+#define become_user(remote_user,local_user) 1
 #else
-static int BecomeUser(char *remuser, struct descriptor *local_user)
-{
-  int ok = 1;
-  CompressString(local_user, 0);
-  if (local_user->length == 4 && strncmp(local_user->pointer, "SELF", 4) == 0)
-    ok = 1;
-  else if (local_user->length) {
-    char *luser = MdsDescrToCstring(local_user);
-    const int map_to_local = strcmp(luser, "MAP_TO_LOCAL") == 0;
-    if (map_to_local && remuser == 0) {
-      MdsFree(luser);
-      return 0;
-    }
-    if (strcmp(luser,"SANDBOX") == 0) {
-      MdsEnableSandbox();
-      free(luser);
-      luser=strdup("nobody");
-    }
-    int status = -1;
-    const int is_root = remuser && strcmp(remuser, "root") == 0; // if map_to_local map root to nobody
-    char *user = map_to_local ? (is_root ? "nobody" : remuser) : luser;
-    struct passwd *pwd = user ? getpwnam(user) : 0;
-    if (!pwd && remuser == user) {
-      size_t i;
-      for (i = 0; i < strlen(user); i++)
-	user[i] = tolower(user[i]);
-      pwd = getpwnam(user);
-    }
-    if (pwd) {
-      int homelen = strlen(pwd->pw_dir);
-      char *cmd = strcpy(malloc(homelen + 10), "HOME=");
-      initgroups(pwd->pw_name, pwd->pw_gid);
-      status = setgid(pwd->pw_gid);
-      status = setuid(pwd->pw_uid);
-      if (status)
-	printf("Cannot setuid - run server as root!");
-      strcat(cmd, pwd->pw_dir);
-      putenv(cmd);
-      /* DO NOT FREE CMD --- putenv requires it to stay allocated */
-    } else
-      printf("Invalid mapping, cannot find user %s\n", user);
-    MdsFree(luser);
-    ok = (status == 0) ? 1 : 0;
+static int become_user(const char *remote_user, const char *local_user)
+{ // both args may be NULL
+  if (!local_user || !*local_user)
+    return 0;// NULL or empty
+  if (strcmp(local_user, "SELF") == 0)
+    return 1;// NOP
+  const int map_to_local = strcmp(local_user, "MAP_TO_LOCAL") == 0;
+  if (map_to_local && !(remote_user || *remote_user))
+    return 0;// cannot map to invalid remote user
+  int ok = 0;
+  const int is_root = remote_user && strcmp(remote_user, "root") == 0; // if map_to_local map root to nobody
+  const char *user;
+  if (map_to_local) {
+    user = is_root ? "nobody" : remote_user;
+  } else if (strcmp(local_user,"SANDBOX") == 0) {
+    MdsEnableSandbox();
+    user = "nobody";
+  } else
+    user = local_user;
+  struct passwd *pwd = user ? getpwnam(user) : 0;
+  if (!pwd && user == remote_user) {
+    int i;
+    char *lowuser = malloc(i = strlen(remote_user)+1);
+    while (i-->0) lowuser[i] = tolower(remote_user[i]);
+    pwd = getpwnam(lowuser);
+    free(lowuser);
   }
+  if (pwd) {
+    initgroups(pwd->pw_name, pwd->pw_gid);
+    if (setgid(pwd->pw_gid) || setuid(pwd->pw_uid)) {
+      fprintf(stderr,"Cannot set gid/uid - run server as root!\n");
+      exit(EX_NOPERM);
+    } else {
+      ok = setenv("HOME",pwd->pw_dir,TRUE) ? 0 : 1;
+      if (!ok)
+        fprintf(stderr,"Failed to set HOME for user \"%s\"\n", user);
+    }
+  } else
+    fprintf(stderr,"Invalid mapping, cannot find user \"%s\"\n", user);
   return ok;
 }
 #endif
 
-int CheckClient(char *username, int num, char **matchString)
+int CheckClient(const char *const username, int num, char *const *const matchString)
 {
   int ok = 0;
   char *hostfile = GetHostfile();
   if (strncmp(hostfile, "TDI", 3)) {
     FILE *f = fopen(hostfile, "r");
-    static int zero = 0, one = 1;
     if (f) {
-      static char line_c[1024];
-      static struct descriptor line_d = { 0, DTYPE_T, CLASS_S, line_c };
-      static struct descriptor local_user = { 0, DTYPE_T, CLASS_D, 0 };
-      static struct descriptor access_id = { 0, DTYPE_T, CLASS_D, 0 };
-      static DESCRIPTOR(delimiter, "|");
+      char line_c[1024], *access_id, *local_user;
       while (ok == 0 && fgets(line_c, 1023, f)) {
 	if (line_c[0] != '#') {
 	  int i;
-	  line_d.length = (unsigned short)(strlen(line_c) - 1);
-	  StrElement(&access_id, &zero, (struct descriptor *)&delimiter, (struct descriptor *)&line_d);
-	  StrElement(&local_user, &one, (struct descriptor *)&delimiter, (struct descriptor *)&line_d);
-	  CompressString(&access_id, 1);
-	  CompressString(&local_user, 0);
-	  if (access_id.length) {
+          access_id = line_c;
+	  local_user = strchr(line_c,'|');
+          if (local_user) {
+	    *local_user++ = '\0';
+	    filter_string(&local_user, FALSE);
+	  }
+	  if (filter_string(&access_id,  TRUE )) { // not empty
 	    for (i = 0; i < num; i++) {
-	      struct descriptor match_d =
-		  { (unsigned short)strlen(matchString[i]), DTYPE_T, CLASS_S, matchString[i] };
-	      struct descriptor_d match = { 0, DTYPE_T, CLASS_D, 0 };
-	      StrUpcase((struct descriptor *)&match, &match_d);
-	      if (access_id.pointer[0] != '!') {
-		if (match.length == strlen("multi") &&
-		    strncmp(match.pointer, "MULTI", strlen("multi")) == 0 &&
-		    access_id.length == strlen("multi") &&
-		    strncmp(access_id.pointer, "MULTI", strlen("multi")) == 0)
-		  BecomeUser(NULL, &local_user);
+	      char *const buf = strdup(matchString[i]);
+	      mdsdsc_t match_d = { 0, DTYPE_T, CLASS_S, buf };
+              match_d.length = (length_t)filter_string(&match_d.pointer,  TRUE );
+	      if (access_id[0] != '!') {
+		if (strcmp(match_d.pointer, "MULTI") == 0 && strcmp(access_id, "MULTI") == 0)
+		  ok = become_user(NULL, local_user);
 		else {
-		  if (StrMatchWild((struct descriptor *)&match, &access_id) & 1)
-		    ok = GetMulti()? 1 : BecomeUser(username, &local_user);
+		  DESCRIPTOR_FROM_CSTRING(access_d,access_id);
+		  if IS_OK(StrMatchWild(&match_d, &access_d))
+		    ok = GetMulti() ? 1 : become_user(username, local_user);
 		}
 	      } else {
-		access_id.length-=1;
-		access_id.pointer+=1;
-		if (StrMatchWild((struct descriptor *)&match, &access_id) & 1) {
+		access_id++; // drop '!'
+		DESCRIPTOR_FROM_CSTRING(access_d,access_id);
+		if IS_OK(StrMatchWild(&match_d, &access_d))
 		  ok = 2;
-		}
-		access_id.length+=1;
-		access_id.pointer-=1;
 	      }
-	      StrFree1Dx(&match);
+	      free(buf);
 	    }
 	  }
 	}
@@ -164,42 +159,59 @@ int CheckClient(char *username, int num, char **matchString)
       fclose(f);
     } else {
       perror("CheckClient");
-      printf("Unable to open hostfile one: %s\n", GetHostfile());
-      exit(1);
+      fprintf(stderr,"Unable to open hostfile: %s\n", GetHostfile());
+      exit(EXIT_FILE_OPEN_ERROR);
     }
   } else {
-    int i;
-    int status;
-    struct descriptor cmd_d = { 0, DTYPE_T, CLASS_S, 0 };
-    struct descriptor_d ans_d = { 0, DTYPE_T, CLASS_D, 0 };
-    size_t cmdlen = strlen(hostfile) + 10 + strlen(username);
-    char *cmd;
-    static int (*TdiExecute) (struct descriptor * cmd, struct descriptor_d * ans, void *endarg) = NULL;
-    status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &TdiExecute);
+    // hostfile starts with TDI
+    static int (*tdiExecute)();
+    int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &tdiExecute);
     if STATUS_NOT_OK {
-      fprintf(stderr, "Error activating TdiShr");
-      return 0;
+      fprintf(stderr,"CheckClient: Failed to load TdiShr->TdiExecute: terminate.\n");
+      exit(EXIT_LIB_NOT_FOUND);
     }
+    size_t cmdlen = strlen(hostfile) + 5;
+    if (username) {
+      if (strchr(username,'"')) {
+	/* " in username would cause a syntax error
+	 * or could lead to unsafe code execution
+	 */
+        fprintf(stderr,"CheckClient: invalid username '%s'.",username);
+        return 0;
+      }
+      cmdlen += strlen(username) + 1;
+    }
+    int i;
     for (i = 0; i < num; i++)
-      cmdlen += (strlen(matchString[i]) + 3);
-    cmd = (char *)malloc(cmdlen);
-    sprintf(cmd, "%s(\"%s\",", hostfile + 3, username);
+      cmdlen += strlen(matchString[i]) + 3;
+
+    char *cmd_end, *const cmd = (char *)malloc(cmdlen);
+    cmd_end = cmd + sprintf(cmd, "%s(", hostfile + 3);
+    if (username)
+      cmd_end += sprintf(cmd_end, "\"%s\",", username);
+    else
+      cmd_end += sprintf(cmd_end, "*,");
     for (i = 0; i < num; i++)
-      sprintf(cmd + strlen(cmd), "\"%s\",", matchString[i]);
-    cmd[strlen(cmd) - 1] = ')';
-    cmd_d.pointer = cmd;
-    cmd_d.length = (unsigned short)strlen(cmd);
-    status = (*TdiExecute) (&cmd_d, &ans_d MDS_END_ARG);
-    if (status & 1) {
+      cmd_end += sprintf(cmd_end, "\"%s\",", matchString[i]);
+    cmd_end[-1] = ')'; // replace trailing , with closing )
+    mdsdsc_t cmd_d = { (length_t)(cmd_end-cmd), DTYPE_T, CLASS_S, cmd };
+    mdsdsc_t ans_d = { 0, DTYPE_T, CLASS_D, 0 };
+    status = tdiExecute(&cmd_d, &ans_d MDS_END_ARG);
+    free(cmd);
+    if STATUS_OK {
       ok = 1;
       if (ans_d.pointer && ans_d.length > 0) {
-	if (GetMulti())
-	  ok = BecomeUser(username, (struct descriptor *)&ans_d);
-	StrFree1Dx(&ans_d);
+	if (GetMulti()) {
+	  ans_d.pointer = realloc(ans_d.pointer,ans_d.length+1);
+	  ans_d.pointer[ans_d.length] = '\0';
+	  ok = become_user(username, ans_d.pointer);
+        }
+	StrFree1Dx((mdsdsc_d_t *)&ans_d);
       }
-    } else
-      ok = 0;
-    free(cmd);
+    } else if (status == TdiUNKNOWN_VAR) {
+      fprintf(stderr, "CheckClient: Failed to load tdi function \"%s\": terminate\n", hostfile + 3);
+      exit(EXIT_FILE_OPEN_ERROR);
+    }
   }
   return ok;
 }
