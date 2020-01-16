@@ -24,7 +24,7 @@ import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
-import mds.data.descriptor_s.Nid;
+import mds.data.descriptor_s.Path;
 import mds.data.descriptor_s.Pointer;
 
 public class TreeShr_Test{
@@ -131,7 +131,7 @@ public class TreeShr_Test{
 	@Test
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	public final void testTreeCall() {
-		Assert.assertEquals("__a=*;__b=0Q;__s=TreeShr->TreeMethod(ref($),ref(0Q),ref(__b),val(1),xd(as_is($)),xd(__a),descr($));execute(\"deallocate('__*');as_is(`(__a;))\")", new TreeShr.TreeCall(null, "TreeMethod").ref(new Int32(1)).ref(0l).ref("b", "0Q").val(1).xd(new Int32(1)).xd("a").descr(new Int32(1)).expr("__a"));
+		Assert.assertEquals("__a=*;__b=0Q;__s=TreeShr->TreeMethod(ref(($;)),ref(0Q),ref(__b),val(1),xd(as_is(($;))),xd(__a),descr(($;)));execute(\"deallocate('__*');as_is(`(__a;))\")", new TreeShr.TreeCall(null, "TreeMethod").ref(new Int32(1)).ref(0l).ref("b", "0Q").val(1).xd(new Int32(1)).xd("a").descr(new Int32(1)).expr("__a"));
 	}
 
 	@Test
@@ -280,10 +280,12 @@ public class TreeShr_Test{
 	public final void testTreePutRecord() throws MdsException {
 		TreeShr_Test.treeshr.treeOpenNew(ctx, TreeShr_Test.expt, TreeShr_Test.model);
 		try{
-			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
-			Assert.assertEquals(2, TreeShr_Test.treeshr.treeAddNode(ctx, "D", NODE.USAGE_DISPATCH).getData());
-			Assert.assertEquals(3, TreeShr_Test.treeshr.treeAddNode(ctx, "T", NODE.USAGE_TASK).getData());
-			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 1, new Action(new Nid(2), new Nid(3), null, null, null)));
+			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "ACT", NODE.USAGE_ACTION).getData());
+			Assert.assertEquals(2, TreeShr_Test.treeshr.treeAddNode(ctx, "TSK", NODE.USAGE_TASK).getData());
+			Assert.assertEquals(3, TreeShr_Test.treeshr.treeAddNode(ctx, "ANY", NODE.USAGE_ANY).getData());
+			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 1, new Action(new Path("TSK"), new Path("ANY"), null, null, null)));
+			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 3, TreeShr_Test.mds.getAPI().tdiCompile(ctx, "_=1,_").getData()));
+			Assert.assertEquals("_ = 1, _", TreeShr_Test.treeshr.treeGetRecord(ctx, 3).decompile());
 		}finally{
 		}
 	}
