@@ -43,13 +43,13 @@ public abstract class Shr{
 		}
 
 		public final LibCall<T> ctx(final Pointer ctx) {
-			this.descr.insert(0, "__c=$;");
+			this.descr.insert(0, "__c=($;);");
 			this.args.add(0, ctx);
 			return this.arg("val(__c)");
 		}
 
 		public final LibCall<T> ctxp(final Pointer ctxp) {
-			this.descr.insert(0, "__c=$;");
+			this.descr.insert(0, "__c=($;);");
 			this.args.add(0, ctxp);
 			return this.arg("ref(__c)");
 		}
@@ -57,7 +57,7 @@ public abstract class Shr{
 		public final LibCall<T> descr(final Descriptor<?> d) {
 			if(Descriptor.isMissing(d)) return this.miss();
 			this.args.add(d);
-			return this.arg("descr($)");
+			return this.arg("descr(($;))");
 		}
 
 		public final LibCall<T> descr(final int val) {
@@ -135,7 +135,7 @@ public abstract class Shr{
 		public final LibCall<T> ref(final Descriptor<?> d) {
 			if(Descriptor.isMissing(d)) return this.miss();
 			this.args.add(d);
-			return this.arg("ref($)");
+			return this.arg("ref(($;))");
 		}
 
 		public final LibCall<T> ref(final long val) {
@@ -163,7 +163,7 @@ public abstract class Shr{
 		public final LibCall<T> val(final Descriptor<?> d) {
 			if(Descriptor.isMissing(d)) return this.miss();
 			this.args.add(d);
-			return this.arg("val($)");
+			return this.arg("val(($;))");
 		}
 
 		public final LibCall<T> val(final int val) {
@@ -185,7 +185,7 @@ public abstract class Shr{
 		public final LibCall<T> xd(final Descriptor<?> d) {
 			if(Descriptor.isMissing(d)) return this.miss();
 			this.args.add(d);
-			return this.arg("xd(as_is($))");
+			return this.arg("xd(as_is(($;)))");
 		}
 
 		public final LibCall<T> xd(final String var) {
@@ -195,7 +195,7 @@ public abstract class Shr{
 
 		final LibCall<T> obj(final String mod, final String... ex) {
 			this.sep().append(mod).append('(');
-			if(ex.length == 0) this.sb.append('$');
+			if(ex.length == 0) this.sb.append("($;)");
 			else for(final String e : ex)
 				this.sb.append(e);
 			this.sb.append(')');

@@ -14,7 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import debug.DEBUG;
 import mds.ContextEventListener;
 import mds.Mds;
@@ -250,7 +249,6 @@ public class MdsIp extends Mds{
 			this.use_ssh = usessh;
 		}
 	}
-	private static final Pattern	dollar				= Pattern.compile("\\$");
 	public static final int			LOGIN_OK			= 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
 	private static final byte		MAX_MSGS			= 8;
 	private static final String		NOT_CONNECTED		= "Not Connected.";
@@ -281,10 +279,10 @@ public class MdsIp extends Mds{
 					if(notatomic[i]) args[i] = req.args[i].serializeDsc();
 					else args[i] = req.args[i];
 				}
-			final Matcher m = MdsIp.dollar.matcher(req.expr);
+			final Matcher m = Mds.dollar.matcher(req.expr);
 			int pos = 0;
 			for(int i = 0; i < args.length && m.find(); i++){
-				cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__$si($)" : "$");
+				cmd.append(req.expr.substring(pos, m.start())).append(notatomic[i] ? "`__$si(($;))" : "($;)");
 				pos = m.end();
 			}
 			cmd.append(req.expr.substring(pos));
@@ -370,10 +368,10 @@ public class MdsIp extends Mds{
 			}
 			return (T)new Int32(msg.asIntArray()[0]);
 		}
-		final StringBuilder sb = new StringBuilder().append("List(*,EXECUTE($");
+		final StringBuilder sb = new StringBuilder().append("List(*,EXECUTE(($;)");
 		for(int i = 0; i < req.args.length; i++)
-			sb.append(",$");
-		sb.append("),__$sw(`_$c_=__$sw($)))");
+			sb.append(",($;)");
+		sb.append("),__$sw(`_$c_=__$sw(($;))))");
 		final Vector<Descriptor<?>> vec = new Vector<Descriptor<?>>();
 		vec.add(Descriptor.valueOf(req.expr));
 		vec.addAll(Arrays.asList(req.args));
