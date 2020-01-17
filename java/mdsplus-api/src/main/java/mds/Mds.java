@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Vector;
+import java.util.regex.Pattern;
 import mds.Mdsdcl.DclStatus;
 import mds.data.CTX;
 import mds.data.TREE;
@@ -49,11 +50,11 @@ public abstract class Mds{
 			this.cls = cls;
 			this.props = props;
 			this.args = args;
-			if(args.length > 0 && expr.indexOf("$") == -1){
+			if(args.length > 0 && !Mds.dollar.matcher(expr).find()){
 				/** If no $ args specified, build argument list cmd($,$,...) **/
 				final StringBuilder newexpr = new StringBuilder(expr.length() + args.length * 2 + 1).append(expr);
 				for(int i = 0; i < args.length; i++)
-					newexpr.append(i == 0 ? '(' : ',').append('$');
+					newexpr.append(i == 0 ? '(' : ',').append("($;)");
 				this.expr = newexpr.append(')').toString();
 			}else this.expr = expr;
 		}
@@ -73,6 +74,7 @@ public abstract class Mds{
 			return sb.toString();
 		}
 	}
+	public static final Pattern	dollar = Pattern.compile("\\$[0-9]*(?=[^a-zA-Z]|$)");
 	protected static final int	MAX_NUM_EVENTS	= 256;
 	private static Mds			active;
 	private static MdsIp shared_tunnel = null;
