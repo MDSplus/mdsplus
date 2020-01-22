@@ -56,6 +56,16 @@ extern int yydebug;
     COMMENT = 266
   };
 #endif
+/* Tokens.  */
+#define CMDFILE 258
+#define VERB 259
+#define QUALIFIER 260
+#define EQUALS 261
+#define VALUE 262
+#define PVALUE_ 263
+#define COMMA 264
+#define END 265
+#define COMMENT 266
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
