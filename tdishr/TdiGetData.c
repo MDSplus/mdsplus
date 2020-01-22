@@ -211,7 +211,7 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out
       switch (pin->class) {
       case CLASS_CA:
 	if (pin->pointer) {
-	  status = get_data(omits, (mdsdsc_t *)pin->pointer, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits, (mdsdsc_t *)pin->pointer, &hold, TDITHREADSTATIC_VAR);
 /********************* Why is this needed????????????? *************************************/
 	  if STATUS_OK
 	    status = TdiImpose((mdsdsc_a_t *)pin, &hold);
@@ -232,7 +232,7 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out
 	case DTYPE_IDENT:
 	  status = tdi_get_ident(pin, &hold);
  redo:	  if STATUS_OK
-	    status = get_data(omits, (mdsdsc_t *)&hold, &hold, TDITHREADSTATIC_PASS);
+	    status = get_data(omits, (mdsdsc_t *)&hold, &hold, TDITHREADSTATIC_VAR);
 	  break;
 	case DTYPE_NID:
 	  pnid = (int *)pin->pointer;
@@ -270,7 +270,7 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out
 	case DTYPE_PARAM:
 	  keep = (mds_signal_t *)TDI_SELF_PTR;
 	  TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
-	  status = get_data(omits,(mdsdsc_t *)((mds_param_t *)pin)->value, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits,(mdsdsc_t *)((mds_param_t *)pin)->value, &hold, TDITHREADSTATIC_VAR);
 	  TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
 	  break;
 	case DTYPE_SIGNAL:
@@ -279,7 +279,7 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out
 	 ******************************************/
 	  keep = (mds_signal_t *)TDI_SELF_PTR;
 	  TDI_SELF_PTR = (mdsdsc_xd_t *)pin;
-	  status = get_data(omits, (mdsdsc_t *)((mds_signal_t *)pin)->data, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits, (mdsdsc_t *)((mds_signal_t *)pin)->data, &hold, TDITHREADSTATIC_VAR);
 	  TDI_SELF_PTR = (mdsdsc_xd_t *)keep;
 	  break;
 	/***************
@@ -309,13 +309,13 @@ static int get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out
 	  status = TdiIntrinsic(OPC_DTYPE_RANGE, pin->ndesc, &pin->dscptrs[0], &hold);
 	  goto redo;
 	case DTYPE_WITH_UNITS:
-	  status = get_data(omits, (mdsdsc_t *)((mds_with_units_t *)pin)->data, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits, (mdsdsc_t *)((mds_with_units_t *)pin)->data, &hold, TDITHREADSTATIC_VAR);
 	  break;
 	case DTYPE_WITH_ERROR:
-	  status = get_data(omits, (mdsdsc_t *)((mds_with_error_t *)pin)->data, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits, (mdsdsc_t *)((mds_with_error_t *)pin)->data, &hold, TDITHREADSTATIC_VAR);
 	  break;
 	case DTYPE_OPAQUE:
-	  status = get_data(omits, (mdsdsc_t *)((mds_opaque_t *)pin)->data, &hold, TDITHREADSTATIC_PASS);
+	  status = get_data(omits, (mdsdsc_t *)((mds_opaque_t *)pin)->data, &hold, TDITHREADSTATIC_VAR);
 	  break;
 	default:
 	  status = TdiINVCLADTY;
@@ -340,8 +340,8 @@ end: ;
   return status;
 }
 int tdi_get_data(const dtype_t omits[], mdsdsc_t *their_ptr, mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
-  return get_data(omits, their_ptr, out_ptr, TDITHREADSTATIC_PASS);
+  TDITHREADSTATIC_INIT;
+  return get_data(omits, their_ptr, out_ptr, TDITHREADSTATIC_VAR);
 }
 
 /*----------------------------------------------------------------------------
@@ -529,7 +529,7 @@ extern EXPORT int TdiGetNid(mdsdsc_t *in_ptr, int *nid_ptr) {
 */
 int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 	     mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   if (TDI_SELF_PTR)
     return MdsCopyDxXd((mdsdsc_t *)(TDI_SELF_PTR), out_ptr);
   return TdiNO_SELF_PTR;
@@ -543,7 +543,7 @@ int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 */
 int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
 	      mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   if (TDI_SELF_PTR)
     switch (TDI_SELF_PTR->dtype) {
     case DTYPE_SIGNAL:
@@ -675,12 +675,12 @@ int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attri
 */
 int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
 		   mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   mdsdsc_r_t *rptr;
   mdsdsc_xd_t *keep;
   static const dtype_t omits[] = { DTYPE_PARAM, 0 };
 
-  int status = get_data(omits, list[0], out_ptr, TDITHREADSTATIC_PASS);
+  int status = get_data(omits, list[0], out_ptr, TDITHREADSTATIC_VAR);
   rptr = (mdsdsc_r_t *)out_ptr->pointer;
   if STATUS_OK
     switch (rptr->dtype) {
@@ -690,7 +690,7 @@ int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribut
 	 ******************************************/
       keep = TDI_SELF_PTR;
       TDI_SELF_PTR = (mdsdsc_xd_t *)rptr;
-      status = get_data(no_omits, ((mds_param_t *)rptr)->validation, out_ptr, TDITHREADSTATIC_PASS);
+      status = get_data(no_omits, ((mds_param_t *)rptr)->validation, out_ptr, TDITHREADSTATIC_VAR);
       TDI_SELF_PTR = keep;
       break;
     default:

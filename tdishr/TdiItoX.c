@@ -114,7 +114,7 @@ static DESCRIPTOR_A(duo, sizeof(int), DTYPE_L, 0, 2 * sizeof(int));
 static DESCRIPTOR_RANGE(fake0, 0, 0, 0);
 int Tdi1ItoX(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   static const dtype_t omits[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
   int j1, left, right, *pcnt = 0, *ptest;
   int k0, k1;

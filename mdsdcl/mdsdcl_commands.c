@@ -23,26 +23,27 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <mdsdcl_messages.h>
 #include <sys/time.h>
+#include <unistd.h>
 #ifdef HAVE_SYS_RESOURCE_H
 #include <sys/resource.h>
 #else
 #include <time.h>
 #endif
-#include <mdsdescrip.h>
-#include <unistd.h>
-#include <mdsshr.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <pthread_port.h>
+
+#include <mdsdcl_messages.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
 #include <dcl.h>
-#include "dcl_p.h"
-#include "mdsdclthreadsafe.h"
+
+#include "mdsdclthreadstatic.h"
 
 #ifdef _WIN32
 #define setenv(name,value,overwrite) _putenv_s(name,value)
@@ -167,9 +168,10 @@ EXPORT int mdsdcl_set_prompt(void *ctx, char **error, char **output __attribute_
   int status;
   cli_get_value(ctx, "PROMPT", &prompt);
   if (prompt) {
-    mdsdclSetPrompt(prompt);
+    DCLTHREADSTATIC_INIT;
+    free(DCL_PROMPT);
+    DCL_PROMPT = prompt;
     status = MdsdclSUCCESS;
-    free(prompt);
   } else {
     status = MdsdclERROR;
     *error = strdup("No prompt specified\n");
@@ -333,7 +335,6 @@ EXPORT char *mdsdclGetHistoryFile()
 	/****************************************************************
 	 * mdsdcl_set_command:
 	 ****************************************************************/
-
 EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
   int status;
@@ -353,10 +354,11 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
   /*------------------------------------------------------
    * Check for other qualifiers ...
    *-----------------------------------------------------*/
+    DCLTHREADSTATIC_INIT;
     cli_get_value(ctx, "PROMPT", &prompt);
     if (prompt) {
-      mdsdclSetPrompt(prompt);
-      free(prompt);
+      free(DCL_PROMPT);
+      DCL_PROMPT = prompt;
     }
     cli_get_value(ctx, "DEF_FILE", &def_file);
     if (def_file) {
@@ -365,8 +367,13 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
 	free(def_file);
 	def_file = tmp;
       }
-      mdsdclSetDefFile(def_file);
-      free(def_file);
+      free(DCL_DEFFILE);
+      if (def_file[0] == '*') {
+        char *c;
+	for ( c = def_file ; *c ; c++ )
+          c[0] = c[1];
+      }
+      DCL_DEFFILE = def_file;
     }
     cli_get_value(ctx, "HISTORY", &history);
     if (history) {
@@ -584,13 +591,13 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
   if (indirect) {
     FILE *f = NULL;
     char line[4096];
-    GET_THREADSTATIC_P;
-    if (DEF_FILE
-     &&	(strlen(DEF_FILE) > 0)
-     &&!( (strlen(name) > strlen(DEF_FILE))
-       && (strcmp(name + strlen(name) - strlen(DEF_FILE), DEF_FILE) == 0))) {
+    DCLTHREADSTATIC_INIT;
+    if (DCL_DEFFILE
+     &&	(strlen(DCL_DEFFILE) > 0)
+     &&!( (strlen(name) > strlen(DCL_DEFFILE))
+       && (strcmp(name + strlen(name) - strlen(DCL_DEFFILE), DCL_DEFFILE) == 0))) {
       defname = strdup(name);
-      defname = strcat(realloc(defname, strlen(defname) + strlen(DEF_FILE) + 1), DEF_FILE);
+      defname = strcat(realloc(defname, strlen(defname) + strlen(DCL_DEFFILE) + 1), DCL_DEFFILE);
       f = fopen(defname, "r");
     }
     if (f == NULL)

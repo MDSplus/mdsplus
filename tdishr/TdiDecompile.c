@@ -61,7 +61,7 @@ int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_
 
 EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
   TDI_INDENT = 1;
   if (narg > 1 && list[1])
@@ -375,7 +375,7 @@ static int closeup(char repl, struct descriptor *pfloat, struct descriptor *pdc)
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr)
 {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };

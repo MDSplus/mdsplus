@@ -50,29 +50,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#include "treeshrp.h"		/* must be first or off_t wrong */
 #include <mdsplus/mdsconfig.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <mdstypes.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <ncidef.h>
-#include "treethreadsafe.h"
-#include <treeshr.h>
-#include <usagedef.h>
-#include <ncidef.h>
 #include <string.h>
 #include <time.h>
-#include <mdsshr_messages.h>
-#include <strroutines.h>
-#include <libroutines.h>
 #include <fcntl.h>
-
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -80,6 +67,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <sys/time.h>
 #endif
+
+#include <mdstypes.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <usagedef.h>
+#include <ncidef.h>
+#include <mdsshr_messages.h>
+#include <strroutines.h>
+#include <libroutines.h>
+
+#include "treeshrp.h"
+#include "treethreadstatic.h"
 
 #ifdef min
 #undef min
@@ -169,11 +169,11 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     }
     if STATUS_OK {
       if (utility_update) {
-	NCI *nci = &TreeGetThreadStatic()->TemplateNci;
-	local_nci.flags = nci->flags;
+        TREETHREADSTATIC_INIT;
+	local_nci.flags = TREE_TEMPNCI.flags;
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
-	local_nci.owner_identifier = nci->owner_identifier;
-	local_nci.time_inserted = nci->time_inserted;
+	local_nci.owner_identifier = TREE_TEMPNCI.owner_identifier;
+	local_nci.time_inserted = TREE_TEMPNCI.time_inserted;
       } else {
 	bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
@@ -209,8 +209,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  unsigned char tree = (unsigned char)nid_ptr->tree;
 	  int compressible;
 	  int data_in_altbuf;
-	  TreeGetThreadStatic()->nid_reference = 0;
-	  TreeGetThreadStatic()->path_reference = 0;
+          TREETHREADSTATIC_INIT;
+	  TREE_NIDREF = TREE_PATHREF = FALSE;
 	  status =
 	      MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data, TreeFixupNid, &tree,
 				  FixupPath, 0, (compress_utility
@@ -221,8 +221,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 							     || extended) ? 0 :
 				  sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),
 				  nci->DATA_INFO.DATA_IN_RECORD.data, &data_in_altbuf);
-	  bitassign(TreeGetThreadStatic()->path_reference, nci->flags, NciM_PATH_REFERENCE);
-	  bitassign(TreeGetThreadStatic()->nid_reference, nci->flags, NciM_NID_REFERENCE);
+	  bitassign(TREE_PATHREF, nci->flags, NciM_PATH_REFERENCE);
+	  bitassign(TREE_NIDREF,  nci->flags, NciM_NID_REFERENCE);
 	  bitassign(compressible, nci->flags, NciM_COMPRESSIBLE);
 	  bitassign_c(data_in_altbuf, nci->flags2, NciM_DATA_IN_ATT_BLOCK);
 	}
@@ -355,7 +355,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
 int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
 {
-  int status = 0;
+  TREETHREADSTATIC_INIT;
   if (nid->tree != *tree) {
     char *path_c = TreeGetPath(*(int *)nid);
     if (path_c) {
@@ -365,17 +365,18 @@ int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
       StrCopyDx(path, &path_d);
       TreeFree(path_c);
     }
-
-    TreeGetThreadStatic()->path_reference = 1;
-    status = 1;
-  } else
-    TreeGetThreadStatic()->nid_reference = 1;
-  return status;
+    TREE_PATHREF = TRUE;
+    return TRUE;
+  } else {
+    TREE_NIDREF = TRUE;
+    return FALSE;
+  }
 }
 
 static int FixupPath()
 {
-  TreeGetThreadStatic()->path_reference = 1;
+  TREETHREADSTATIC_INIT;
+  TREE_PATHREF = 1;
   return 0;
 }
 
@@ -637,7 +638,8 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
 int TreeSetTemplateNci(NCI * nci){
-  TreeGetThreadStatic()->TemplateNci = *nci;
+  TREETHREADSTATIC_INIT;
+  TREE_TEMPNCI = *nci;
   return TreeSUCCESS;
 }
 

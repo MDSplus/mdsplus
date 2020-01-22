@@ -186,7 +186,7 @@ static int rextend(struct descriptor *pnew,
 static int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
 		opcode_t opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
   int cmode = -1, dim, s1 = 1;
   struct descriptor_range *new[3];

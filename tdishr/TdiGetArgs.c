@@ -63,7 +63,7 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
   static const unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
   struct descriptor_xd tmp, *keep;
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   MdsFree1Dx(signal_ptr, NULL);
   status = tdi_get_data(omitsu, in_ptr, data_ptr);
   if STATUS_OK

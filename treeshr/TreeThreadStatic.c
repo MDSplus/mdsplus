@@ -23,34 +23,32 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
+
+#include <stdlib.h>
+#include <string.h>
+
 #include <status.h>
 #include <libroutines.h>
-#include <STATICdef.h>
-#include "treethreadsafe.h"
-#include <stdlib.h>
+#include <strroutines.h>
 #include <mdsshr.h>
 #include <treeshr.h>
-#include <strroutines.h>
-#include <string.h>
+
+#include "treethreadstatic.h"
 
 extern int _TreeNewDbid(void** dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;
 static void *DBID = NULL, *G_DBID = NULL;
 
-/* Key for the thread-specific buffer */
-STATIC_THREADSAFE pthread_key_t buffer_key;
-/* Free the thread-specific buffer */
-STATIC_ROUTINE void buffer_destroy(void *buf){
-  PINO_DATABASE* P_DBID = ((TreeThreadStatic*)buf)->DBID;
-  if (P_DBID) {
+static void buffer_free(TREETHREADSTATIC_ARG){
+  if (TREE_DBID) {
     PINO_DATABASE *g_dbid, *p_dbid;
     pthread_rwlock_rdlock(&treectx_lock);
-    for (g_dbid=G_DBID ; g_dbid && g_dbid!=P_DBID ; g_dbid=g_dbid->next);
+    for (g_dbid=G_DBID ; g_dbid && g_dbid!=TREE_DBID ; g_dbid=g_dbid->next);
     if (g_dbid) {
       pthread_rwlock_unlock(&treectx_lock);
       perror("privateCtx share globalCtx on Threadexit! -> memory leak");
     } else {
-      for (p_dbid=P_DBID ; p_dbid->next ; p_dbid=p_dbid->next) {
+      for (p_dbid=TREE_DBID ; p_dbid->next ; p_dbid=p_dbid->next) {
 	if (p_dbid->next==G_DBID) {
 	  //clip private context if extension of global
 	  p_dbid->next = NULL;
@@ -58,35 +56,32 @@ STATIC_ROUTINE void buffer_destroy(void *buf){
 	}
       }
       pthread_rwlock_unlock(&treectx_lock);
-      TreeFreeDbid(P_DBID);
+      TreeFreeDbid(TREE_DBID);
     }
   }
-  free(buf);
+  free(TREETHREADSTATIC_VAR);
 }
-STATIC_ROUTINE void buffer_key_alloc(){
-  pthread_key_create(&buffer_key, buffer_destroy);
-  if (!G_DBID) _TreeNewDbid(&G_DBID);
-}
-/* Return the thread-specific buffer */
-TreeThreadStatic *TreeGetThreadStatic(){
-  RUN_FUNCTION_ONCE(buffer_key_alloc);
-  TreeThreadStatic* p = (TreeThreadStatic*)pthread_getspecific(buffer_key);
-  if (!p) {
-    p = (TreeThreadStatic*)calloc(1,sizeof(TreeThreadStatic));
-    _TreeNewDbid(&p->DBID);
-    pthread_setspecific(buffer_key, (void*)p);
-  }
-  return p;
+static inline TREETHREADSTATIC_TYPE *buffer_alloc() {
+  TREETHREADSTATIC_ARG = (TREETHREADSTATIC_TYPE *)calloc(1,sizeof(TREETHREADSTATIC_TYPE));
+  return TREETHREADSTATIC_VAR;
 }
 
+IMPLEMENT_GETTHREADSTATIC(TREETHREADSTATIC_TYPE,TreeGetThreadStatic,THREADSTATIC_TREESHR,buffer_alloc,buffer_free)
+
 EXPORT void **TreeCtx(){
-  TreeThreadStatic *p = TreeGetThreadStatic();
+  TREETHREADSTATIC_INIT;
   void **ctx;
-  if (p->privateCtx)
-    ctx = &p->DBID;
-  else {
+  if (TREE_PRIVATECTX) {
+    if (!TREE_DBID)
+      _TreeNewDbid(&TREE_DBID);
+    ctx = &TREE_DBID;
+  } else {
     pthread_rwlock_wrlock(&treectx_lock);
-    if (!DBID) DBID = G_DBID;
+    if (!DBID) {
+      if (!G_DBID)
+        _TreeNewDbid(&G_DBID);
+      DBID = G_DBID;
+    }
     ctx = &DBID;
     pthread_rwlock_unlock(&treectx_lock);
   }
@@ -102,11 +97,11 @@ EXPORT void *_TreeDbid(void **dbid){
 }
 
 EXPORT void *TreeSwitchDbid(void *dbid){
-  TreeThreadStatic *p = TreeGetThreadStatic();
+  TREETHREADSTATIC_INIT;
   void *old_dbid;
-  if (p->privateCtx) {
-    old_dbid = p->DBID;
-    p->DBID = dbid;
+  if (TREE_PRIVATECTX) {
+    old_dbid = TREE_DBID;
+    TREE_DBID = dbid;
   } else {
     pthread_rwlock_wrlock(&treectx_lock);
     old_dbid = DBID;
@@ -117,15 +112,15 @@ EXPORT void *TreeSwitchDbid(void *dbid){
 }
 
 EXPORT int TreeUsePrivateCtx(int onoff){
-  TreeThreadStatic *p = TreeGetThreadStatic();
-  int old = p->privateCtx;
-  p->privateCtx = onoff!=0;
+  TREETHREADSTATIC_INIT;
+  int old = TREE_PRIVATECTX;
+  TREE_PRIVATECTX = onoff!=0;
   return old;
 }
 
 EXPORT int TreeUsingPrivateCtx(){
-  TreeThreadStatic *p = TreeGetThreadStatic();
-  return p->privateCtx;
+  TREETHREADSTATIC_INIT;
+  return TREE_PRIVATECTX;
 }
 
 typedef struct {
@@ -138,23 +133,23 @@ EXPORT void* TreeCtxPush(void** ctx){
  * SHOULD be used with pthread_cleanup or similar constucts
  * DONT USE this from tdi; will cause memory violation
  */
-  TreeThreadStatic *p = TreeGetThreadStatic();
+  TREETHREADSTATIC_INIT;
   void* ps = malloc(sizeof(push_ctx_t));
-  ((push_ctx_t*)ps)->priv = p->privateCtx;
-  ((push_ctx_t*)ps)->dbid = p->DBID;
+  ((push_ctx_t*)ps)->priv = TREE_PRIVATECTX;
+  ((push_ctx_t*)ps)->dbid = TREE_DBID;
   ((push_ctx_t*)ps)->ctx  = ctx;
-  p->privateCtx = 1;
-  p->DBID       = *ctx;
+  TREE_PRIVATECTX = TRUE;
+  TREE_DBID = *ctx;
   return ps;
 }
 
 EXPORT void  TreeCtxPop(void *ps){
 /* done using dbid in private context, restore state
  */
-  TreeThreadStatic *p = TreeGetThreadStatic();
-  *((push_ctx_t*)ps)->ctx = p->DBID;
-  p->privateCtx = ((push_ctx_t*)ps)->priv;
-  p->DBID       = ((push_ctx_t*)ps)->dbid;
+  TREETHREADSTATIC_INIT;
+  *((push_ctx_t*)ps)->ctx = TREE_DBID;
+  TREE_PRIVATECTX = ((push_ctx_t*)ps)->priv;
+  TREE_DBID = ((push_ctx_t*)ps)->dbid;
   free(ps);
 }
 
@@ -167,22 +162,22 @@ EXPORT void* TreeDbidPush(void* dbid){
  * DONT USE with pthread_cleanup
  * Useful when called from tdi
  */
-  TreeThreadStatic *p = TreeGetThreadStatic();
+  TREETHREADSTATIC_INIT;
   void* ps = malloc(sizeof(push_dbid_t));
-  ((push_dbid_t*)ps)->priv = p->privateCtx;
-  ((push_dbid_t*)ps)->dbid = p->DBID;
-  p->privateCtx = 1;
-  p->DBID       = dbid;
+  ((push_dbid_t*)ps)->priv = TREE_PRIVATECTX;
+  ((push_dbid_t*)ps)->dbid = TREE_DBID;
+  TREE_PRIVATECTX = TRUE;
+  TREE_DBID = dbid;
   return ps;
 }
 
 EXPORT void* TreeDbidPop(void *ps){
 /* done using dbid in private context, restore state
  */
-  TreeThreadStatic *p = TreeGetThreadStatic();
-  void *dbid    = p->DBID;
-  p->privateCtx = ((push_dbid_t*)ps)->priv;
-  p->DBID       = ((push_dbid_t*)ps)->dbid;
+  TREETHREADSTATIC_INIT;
+  void *dbid = TREE_DBID;
+  TREE_PRIVATECTX = ((push_dbid_t*)ps)->priv;
+  TREE_DBID = ((push_dbid_t*)ps)->dbid;
   free(ps);
   return dbid;
 }

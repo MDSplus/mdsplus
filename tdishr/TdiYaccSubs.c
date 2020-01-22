@@ -147,16 +147,16 @@ int tdi_yacc_BUILD(
 	If resolved, can change record pointer.
 	*******************************************/
   if (nused > this_ptr->m2) {
-    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_PASS);
+    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
     return MDSplusERROR;
   }				/*Force an error */
   if (ndesc >= 254)
     return MDSplusSUCCESS;
   if (nused < this_ptr->m1) {
-    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_PASS);
+    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
     return MDSplusERROR;
   }				/*Force an error */
-  return tdi_yacc_RESOLVE(&out->rptr, TDITHREADSTATIC_PASS);
+  return tdi_yacc_RESOLVE(&out->rptr, TDITHREADSTATIC_VAR);
 }
 
 /*--------------------------------------------------------------
@@ -256,7 +256,7 @@ int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG) {
 	return MDSplusSUCCESS;
     }
  doit:
-  TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE((mdsdsc_xd_t **)out_ptr_ptr, TDITHREADSTATIC_PASS);
+  TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE((mdsdsc_xd_t **)out_ptr_ptr, TDITHREADSTATIC_VAR);
   if IS_OK(TDI_REFZONE.l_status)
     return MDSplusSUCCESS;
   return MDSplusERROR;

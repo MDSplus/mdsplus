@@ -98,7 +98,7 @@ typedef struct {
 int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   register char *pin, *pout;
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
@@ -350,7 +350,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
 int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_xd dwu = EMPTY_XD, sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct descriptor_with_units *pwu;

@@ -23,6 +23,7 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -32,9 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
 #include <dcl.h>
 #include <mdsdcl_messages.h>
-#include "dcl_p.h"
+
+#include "mdsdclthreadstatic.h"
 
 /*| Find all nodes in the xml hierarchy with an xml "name" matching the category argument with it's content matching
    the name argument stopping if there is an exact match. The matching is case insensitive and only checks the number
@@ -155,13 +158,13 @@ int mdsdcl_do_help(const char *command, char **error, char **output)
   int status = MdsdclIVVERB;
   dclDocListPtr doc_l;
   int helpFound = 0;
-  dclDocListPtr dclDocs = mdsdcl_getdocs();
+  DCLTHREADSTATIC_INIT;
   int docIdx;
   xmlDocPtr *docs;
   int numDocs = 0;
-  for (doc_l = dclDocs; doc_l != NULL; doc_l = doc_l->next, numDocs++) ;
+  for (doc_l = DCL_DOCS; doc_l != NULL; doc_l = doc_l->next, numDocs++) ;
   docs = malloc(sizeof(void *) * numDocs);
-  for (doc_l = dclDocs, docIdx = numDocs - 1; doc_l != NULL; doc_l = doc_l->next, docIdx--)
+  for (doc_l = DCL_DOCS, docIdx = numDocs - 1; doc_l != NULL; doc_l = doc_l->next, docIdx--)
     docs[docIdx] = doc_l->doc;
   *output = strdup("\n");
   for (docIdx = 0; (status == MdsdclIVVERB) && (docIdx < numDocs); docIdx++) {

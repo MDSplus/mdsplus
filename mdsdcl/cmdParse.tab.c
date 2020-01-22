@@ -63,19 +63,21 @@
 
 /* Copy the first part of user declarations.  */
 #line 1 "cmdParse.y" /* yacc.c:339  */
-
+  #include <mdsplus/mdsconfig.h>
   #include <stdio.h>
   #include <stdlib.h>
+
+  #include <mdsdcl_messages.h>
+  #include <pthread_port.h>
+
+  #include "dcl_p.h"
+
   int yydebug=0;
   #define YYLTYPE void *
   #define yylex dcl_lex
-  #include "dcl_p.h"
-  #include <mdsdcl_messages.h>
-  #include <mdsplus/mdsconfig.h>
   #include "dcllex.h"
-  #include "mdsdclthreadsafe.h"
-  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 
+  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 #line 80 "cmdParse.tab.c" /* yacc.c:339  */
 
 # ifndef YY_NULLPTR
@@ -1649,13 +1651,17 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
     free(*output);
     *output = NULL;
   }
-  dclLock();
+
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&lock);
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
   dcl__delete_buffer (cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);
-  dclUnlock();
+  pthread_cleanup_pop(1);
+
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);

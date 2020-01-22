@@ -179,21 +179,19 @@ install: $(bindir) $(libdir) $(sysconfdir)
 docs:
 	doxygen docs/doxy.conf
 
+EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTdiShr -lTreeShr
 
 @MAKEBINDIR@mdsiptest$(EXE): testing/mdsiptest.c $(MdsIpShr)
-	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) $(EXTRALIBS) -lMdsIpShr $(LIBS)
 
 @MAKEBINDIR@mdsip_service.exe: mdsip_service.c $(MdsIpShr)
-	$(LINK.c) $< $(OUTPUT_OPTION) -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr -lTreeShr $(LIBS)
+	$(LINK.c) $< $(OUTPUT_OPTION) $(EXTRALIBS) -lMdsIpShr $(LIBS)
 
-MDSIP_EXTRALIB = -lMdsIpSrvShr
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpSrvShr)
 
 @MAKEBINDIR@mdsip$(EXE): $(MdsIpShr)
 @MAKEBINDIR@mdsip$(EXE): $(SERVER_OBJECTS)
-	$(LINK.c) $(OUTPUT_OPTION) $(SERVER_OBJECTS) -L@MAKESHLIBDIR@ $(MDSIP_EXTRALIB) -lMdsIpShr -lMdsShr -lTreeShr -lTdiShr $(LIBS)
-
-MDSIPSHR_EXTRALIBS = -L@MAKESHLIBDIR@ -lMdsShr -lTreeShr
+	$(LINK.c) $(OUTPUT_OPTION) $(SERVER_OBJECTS) $(EXTRALIBS) -lMdsIpShr -lMdsIpSrvShr $(LIBS)
 
 @MAKELIBDIR@@LIBPRE@MdsIpShr.a : $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
 	$(AR) -cr $@ $^
@@ -208,7 +206,7 @@ $(MDSIP_UTIL) : mdsiputil.o mdsip_socket_io.o mdsip_parallel.o $(COMPRESSION_OBJ
 
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpShr=-Wl,--out-implib,$(IMPLIB_MdsIpShr)
 $(MdsIpShr): $(LIB_OBJECTS) $(COMPRESSION_OBJECTS)
-	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(MDSIPSHR_EXTRALIBS) -lTreeShr -lMdsShr $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
+	$(LINK.c) $(OUTPUT_OPTION) $^ @LINKSHARED@ $(EXTRALIBS) $(LIBS) $(MAKE_IMPLIB_MdsIpShr)
 
 LINK_MDSIPSHR = -L@MAKESHLIBDIR@ -lMdsIpShr -lMdsShr
 @MINGW_TRUE@ MAKE_IMPLIB_MdsIpSrvShr=-Wl,--out-implib,$(IMPLIB_MdsIpSrvShr)

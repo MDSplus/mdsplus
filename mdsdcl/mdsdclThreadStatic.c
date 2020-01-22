@@ -28,36 +28,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include <libroutines.h>
 #include <mdsshr.h>
-#include <strroutines.h>
 
-#include "tdithreadstatic.h"
+#include "mdsdclthreadstatic.h"
 
-static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
-  TDITHREADSTATIC_ARG = (TDITHREADSTATIC_TYPE *) calloc(1,sizeof(TDITHREADSTATIC_TYPE));
-  LibCreateVmZone(&TDI_VAR_PRIVATE.head_zone);
-  LibCreateVmZone(&TDI_VAR_PRIVATE.data_zone);
-  TDI_INTRINSIC_STAT = SsSUCCESS;
-  TDI_INTRINSIC_MSG.dtype = DTYPE_T;
-  TDI_INTRINSIC_MSG.class = CLASS_D;
-  TDI_VAR_NEW_NARG_D.length = sizeof(int);
-  TDI_VAR_NEW_NARG_D.dtype = DTYPE_L;
-  TDI_VAR_NEW_NARG_D.class = CLASS_S;
-  TDI_VAR_NEW_NARG_D.pointer = (char *)&TDI_VAR_NEW_NARG;
-  for (; TDI_STACK_IDX<TDI_STACK_SIZE ; TDI_STACK_IDX++ ) {
-    TDI_INDENT = 1;
-    TDI_DECOMPILE_MAX = 0xffff;
+static inline DCLTHREADSTATIC_TYPE *buffer_alloc() {
+  return (DCLTHREADSTATIC_TYPE *)calloc(1, sizeof(DCLTHREADSTATIC_TYPE));
+}
+static void buffer_free(DCLTHREADSTATIC_ARG) {
+  free(DCL_PROMPT);
+  free(DCL_DEFFILE);
+  dclDocListPtr next,dcl;
+  for (dcl = DCL_DOCS ; dcl ; dcl = next) {
+    next = dcl->next;
+    free(dcl);
   }
-  TDI_STACK_IDX = 0;
-  TDI_VAR_REC = 0;
-  return TDITHREADSTATIC_VAR;
-}
-static void buffer_free(TDITHREADSTATIC_ARG) {
-  LibResetVmZone(&TDI_VAR_PRIVATE.head_zone);
-  LibResetVmZone(&TDI_VAR_PRIVATE.data_zone);
-  StrFree1Dx(&TDI_INTRINSIC_MSG);
-  free(TDITHREADSTATIC_VAR);
+  free(DCLTHREADSTATIC_VAR);
 }
 
-EXPORT IMPLEMENT_GETTHREADSTATIC(TDITHREADSTATIC_TYPE,TdiGetThreadStatic,THREADSTATIC_TDISHR,buffer_alloc,buffer_free)
+IMPLEMENT_GETTHREADSTATIC(DCLTHREADSTATIC_TYPE,DclGetThreadStatic,THREADSTATIC_DCLSHR,buffer_alloc,buffer_free)

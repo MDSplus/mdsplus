@@ -31,12 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <string.h>
-#include "tdirefcat.h"
-#include "tdireffunction.h"
-#include "tdirefzone.h"
-#include "tdithreadstatic.h"
+
 #include <strroutines.h>
 #include <mds_stdarg.h>
+#include "tdirefcat.h"
+#include "tdireffunction.h"
+#include "tdithreadstatic.h"
 
 #define P_STMT          96
 #define P_ARG           88
@@ -146,7 +146,7 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
 }
 
 static int Indent(int step, struct descriptor_d *pout){
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
 #ifdef _WIN32
   const char* newline= "\r\n\t\t\t\t\t\t\t";
   int identlen = ((TDI_INDENT += step) < 8 ? TDI_INDENT : 8)+1;
