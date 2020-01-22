@@ -1652,7 +1652,7 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
     *output = NULL;
   }
 
-  pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
   pthread_mutex_lock(&lock);
   pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&lock);
   dcl_lex_init(&yyscanner);
