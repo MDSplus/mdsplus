@@ -56,7 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define DTYPE_YY                DTYPE_HC
 
 #include "tdirefzone.h"
-#include "tdiyacc.h"
 //YYSTYPE YYLVAL = { {0} };
 
 #define LEX_OK 0
@@ -68,10 +67,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define U LEX_K_UNUSUAL
 
 #include "tdireffunction.h"
+#include "tdiyacc.h"
 
 const struct TdiFunctionStruct TdiRefFunction[] = {
 #define OPC(name,builtin,f1,f2,f3,i1,i2,o1,o2,m1,m2,token) {#builtin,&Tdi1##f1,&Tdi2##f2,&Tdi3##f3, \
-	   DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,LEX_##token},
+	   DTYPE_##i1,DTYPE_##i2,DTYPE_##o1,DTYPE_##o2,m1,m2,token},
 #include "opcbuiltins.h"
 #undef OPC
   {0}

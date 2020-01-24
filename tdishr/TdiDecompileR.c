@@ -44,6 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int Tdi0Decompile();
 extern int TdiSingle();
+extern int LEX_CONST;
 
 static const struct op_rec {
   char *symbol;

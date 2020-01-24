@@ -4,14 +4,16 @@
 
 #define TDI_STACK_SIZE	3
 
-#define TDITHREADSTATIC_VAR  TdiThreadStatic_p
-#define TDITHREADSTATIC_TYPE TdiThreadStatic
+//#define TDITHREADSTATIC_VAR  TDITHREADSTATIC_VAR
+//#define TDITHREADSTATIC_TYPE TdiThreadStatic
 #define TDITHREADSTATIC_ARG  TDITHREADSTATIC_TYPE *const TDITHREADSTATIC_VAR
 #define TDITHREADSTATIC(MTS) TDITHREADSTATIC_ARG = TdiGetThreadStatic(MTS)
 #define TDITHREADSTATIC_INIT TDITHREADSTATIC(NULL)
 typedef struct {
+  void *scanner;
   int stack_idx;
   struct stack {
+    void *buffer;
     TdiRefZone_t refzone;	// TdiCompile
     int compile_rec;		// TdiCompile
     int getdata_rec;		// TdiGetData
@@ -34,6 +36,8 @@ typedef struct {
   int intrinsic_stat;		// TdiIntrinsic
   int use_get_record_fun;	// TdiGetData, TdiVar
 } TDITHREADSTATIC_TYPE;
+
+#define TDI_SCANNER		TDITHREADSTATIC_VAR->scanner
 #define TDI_STACK_IDX		TDITHREADSTATIC_VAR->stack_idx
 #define TDI_STACK		TDITHREADSTATIC_VAR->stack[TDI_STACK_IDX]
 #define TDI_VAR_PRIVATE		TDITHREADSTATIC_VAR->var_private
@@ -52,5 +56,8 @@ typedef struct {
 #define TDI_GETDATA_REC		TDI_STACK.getdata_rec
 #define TDI_INDENT		TDI_STACK.indent
 #define TDI_REFZONE		TDI_STACK.refzone
+#define TDI_BUFFER		TDI_STACK.buffer
+
+
 
 extern DEFINE_GETTHREADSTATIC(TDITHREADSTATIC_TYPE, TdiGetThreadStatic);
