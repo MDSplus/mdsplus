@@ -95,13 +95,20 @@ extern int tdi_yacc_ARG();
 #define yylex(VAL,TDITHREADSTATIC_VAR)	tdilex(VAL, TDITHREADSTATIC_VAR, TDI_SCANNER)
 
 
-#define YYDEBUG 0
+#define YYDEBUG 1
 int yydebug = YYDEBUG;
 
-#define yyerror(...)	do{TDI_REFZONE.l_ok = yyval.mark.w_ok; return 1;}while(0)
+#define YY_ERR	1
+#define YY_OK	0
+#define yyerror(TDITHREADSTATIC_ARG,msg) {\
+  fprintf(stderr,"yyerror '%s': %d\n", msg, TDI_REFZONE.l_status);\
+  TDI_REFZONE.l_ok = yyval.mark.w_ok;\
+}
+//"
+static inline void breakpoint(){}
 
 #define YYMAXDEPTH	250
-#define __RUN(method)	do{if IS_NOT_OK(method) yyerror(0); else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
+#define __RUN(method)	do{if IS_NOT_OK(method) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ERR;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
 #define _RESOLVE(arg)				__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_VAR))
 
@@ -217,7 +224,7 @@ label	: CONST	| IDENT	| CAST	| DEFAULT	| GOTO	| SIZEOF	| UNARY
 	*********************************************************/
 ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 					TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
-					if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(0);}
+					if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
 					}
 	| unaryX '=' ass		{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
 	| unaryX BINEQ ass		{struct marker tmp;		/*binary operation and assign*/
@@ -231,7 +238,7 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 							$$.rptr->dscptrs[1]=$$.rptr->dscptrs[0];
 							$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
 							++$$.rptr->ndesc;}
-						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; return(1);}
+						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ERR;}
 					else	{static unsigned int vmlen = sizeof(struct descriptor_range);
 						LibGetVm(&vmlen, (void **)&$$.rptr, &TDI_REFZONE.l_zone);
 						$$.rptr->length = 0;
@@ -271,7 +278,7 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 	| ass MULS	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*MULS*/
 	| ass '*'	ass		{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
 	| ass POWER	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
-	| unaryX			{}
+	| unaryX %prec NOMORE		{}
 	| '*'				{$$=_EMPTY_MARKER;}
 	;
 unaryX	: ADD		unaryX	{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
@@ -285,16 +292,16 @@ unaryX	: ADD		unaryX	{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : O
 		Use * for single missing argument. (*) is 1 missing, (,) is two.
 		USING must have first argument with relative paths.
 		********************************************************************/
-bracket	: '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
-	| '['			{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
-	| bracket ',' ass	{if ($$.rptr->ndesc >= 250) {
+bracket	: '[' ass  %prec NOMORE	{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
+	| '['  %prec NOMORE	{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
+	| bracket ',' ass %prec NOMORE	{if ($$.rptr->ndesc >= 250) {
 					_RESOLVE($1);
 					_FULL1(OPC_VECTOR,$1,$$);
 				}
 				$$.rptr->dscptrs[$$.rptr->ndesc++] = (struct descriptor *)$3.rptr;
 				}
 	;
-exp	: opt ',' opt			{if ($$.rptr			/*comma is left-to-right weakest*/
+exp	: opt ',' opt %prec NOMORE	{if ($$.rptr			/*comma is left-to-right weakest*/
 					&&	$$.builtin != -2
 					&&	$$.rptr->dtype == DTYPE_FUNCTION
 					&&	*(unsigned short *)$$.rptr->pointer == OPC_COMMA
@@ -302,14 +309,14 @@ exp	: opt ',' opt			{if ($$.rptr			/*comma is left-to-right weakest*/
 						$$.rptr->dscptrs[$$.rptr->ndesc++]=(struct descriptor *)$3.rptr;
 					else _FULL2(OPC_COMMA,$1,$3,$$);/*first comma*/
 					}
-	| ass
+	| ass %prec NOMORE
 	;
-sub	: exp			{if ($$.rptr
-				&&	$$.builtin != -2
+sub	: exp %prec NOMORE	{if ($$.rptr
+				&& $$.builtin != -2
 				&& $$.rptr->dtype == DTYPE_FUNCTION
 				&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
 				else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
-	|			{_JUST0(OPC_ABORT,$$);}			/*empty argument list*/
+	| %prec NOMORE		{_JUST0(OPC_ABORT,$$);}			/*empty argument list*/
         ;
 paren	: '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
 	| '(' stmt_lst ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
@@ -319,7 +326,7 @@ using0	: USING '('		{++TDI_REFZONE.l_rel_path;}
 using	: using0 ass ',' ass ',' {_FULL2(OPC_ABORT,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
 	| using0 ass ',' ','	{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$); --TDI_REFZONE.l_rel_path;}
 	;
-opt	: exp
+opt	: exp %prec NOMORE
 	|			{$$=_EMPTY_MARKER;}			/*null argument*/
 	;
 		/*******************************************
@@ -367,7 +374,7 @@ postX	: primaX
 				for (j=TdiCAT_MAX; --j>=0;)
 					if (strncmp(TdiREF_CAT[j].name, (char *)$3.rptr->pointer, $3.rptr->length) == 0
 					&& strlen(TdiREF_CAT[j].name) == $3.rptr->length) break;
-				if (j<0) {TDI_REFZONE.l_status=TdiINVDTYDSC; return(1);}
+				if (j<0) {TDI_REFZONE.l_status=TdiINVDTYDSC; yyerror(TDITHREADSTATIC_VAR, "invalid dtype desc"); return YY_ERR;}
 				$$.rptr->dtype=DTYPE_CALL;
 				$$.rptr->length=1;
 				*(unsigned char *)$$.rptr->pointer=(unsigned char)j;
@@ -401,16 +408,16 @@ primaX	: MODIF VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 	| MODIF MODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
 					_JUST1($2.builtin,$3,tmp);
 					_JUST1($1.builtin,tmp,$$);}
-	| label			{if (*$$.rptr->pointer == '$') {
+	| label	%prec NOMORE	{if (*$$.rptr->pointer == '$') {
 					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == ARG)
-					{if IS_NOT_OK(TDI_REFZONE.l_status=tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR)) {yyerror(0);}}
+					{if IS_NOT_OK(TDI_REFZONE.l_status=tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR)) {yyerror(TDITHREADSTATIC_VAR, "yacc_ARG failed"); return YY_ERR;}}
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == CONST)
 						_JUST0($1.builtin,$$);
 				} else	if (*$$.rptr->pointer == '_')
 					$$.rptr->dtype=DTYPE_IDENT;
 				else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == ERROR)
-					{yyerror(0);}
+					{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
 				}
 	| VALUE
 	| textX
@@ -434,6 +441,7 @@ fun	: funvbl '(' sub ')'			{int j;	$$=$3;
 							$$.rptr->ndesc += 2;
 							++TDI_REFZONE.l_rel_path;
 						}
+	| funvbl '(' sub ERROR			{return YY_ERR;}
 	;
 stmt	: BREAK ';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
@@ -449,12 +457,12 @@ stmt	: BREAK ';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| SWITCH paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
 	| WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
 	| WHERE paren stmt %prec NOMORE		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
-	| WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
-	| fun stmt				{TDI_REFZONE.l_rel_path--;
+	| WHILE paren stmt %prec NOMORE		{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
+	| fun stmt  %prec NOMORE		{TDI_REFZONE.l_rel_path--;
 						$$.rptr->dscptrs[1]=(struct descriptor *)$2.rptr;}
 	| '`' stmt				{$$.rptr=$2.rptr; $$.builtin= -2;
 						TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
-						if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(0);}
+						if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
 						}
 	| '{' stmt_lst '}'			{$$=$2; _RESOLVE($$);}		/* {statement list}	*/
 	| opt ';'				{}
@@ -475,10 +483,11 @@ stmt_lst : stmt
 	;
 program : stmt_lst	{_RESOLVE($$);		/*statements*/
 			TDI_REFZONE.a_result=(struct descriptor_d *)$$.rptr;
-			TDI_REFZONE.l_status=1;}/* success */
-	|		{$$=_EMPTY_MARKER;}				/* nothing	*/
-	| ERROR		{}						/* LEX_ERROR	*/
-	| error		{TDI_REFZONE.l_status=TdiSYNTAX;}		/* YACC error	*/
+			breakpoint();
+			TDI_REFZONE.l_status=SsSUCCESS;}/* success */
+	| %prec NOMORE	{$$=_EMPTY_MARKER;}				/* nothing	*/
+	| ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
+	| error		{fprintf(stderr, "\nsyntax\n\n" ); return YY_ERR;}/* YACC error	*/
 	;
 %%
 

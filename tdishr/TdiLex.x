@@ -98,17 +98,23 @@ extern int TdiConvert();
 #define LEX_VARS yylval_param, TDITHREADSTATIC_VAR, yyscanner
 #define LEX_INIT struct yyguts_t * yyg = (struct yyguts_t*)yyscanner;(void)(yyg);(void)TDITHREADSTATIC_VAR;
 
-#define SET_REFZONE()	do{\
+#define LEX_OK()	{\
+ yylval_param->mark.w_ok = (TDI_REFZONE.a_cur = yy_cp) - TDI_REFZONE.a_begin;\
+ if (yy_flex_debug) fprintf(stderr,"LEX: %s\n",TDI_REFZONE.a_begin);\
+}
+#define LEX_UNBALANCE(token) { \
  TDI_REFZONE.a_cur = yy_cp;\
- yylval_param->mark.w_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;\
-if (yy_flex_debug) fprintf(stderr,"LEX: %s\n",TDI_REFZONE.a_begin);\
-}while(0)
+ yylval_param->mark.w_ok = TDI_REFZONE.l_ok = yy_bp - TDI_REFZONE.a_begin;\
+ TDI_REFZONE.l_status = TdiUNBALANCE;\
+ fprintf(stderr,"UNBALANCED %s\n",token);\
+ return ERROR;\
+}
+
 static void upcase(char *const str, int len){
   char *pc, *const ec = str + len;
   for (pc = str; *pc && pc < ec; ++pc)
     *pc = (char)toupper(*pc);
 }
-
 static inline int lex_float(LEX_ARGS);
 static inline int lex_integer(LEX_ARGS);
 static inline int lex_ident(LEX_ARGS);
@@ -116,18 +122,24 @@ static inline int lex_path(LEX_ARGS);
 static inline int lex_text(LEX_ARGS);
 static inline int lex_point(LEX_ARGS);
 
-#define LEX_FLOAT()		{SET_REFZONE(); return lex_float(LEX_VARS);}
-#define LEX_INTEGER()		{SET_REFZONE(); return lex_integer(LEX_VARS);}
-#define LEX_IDENT()		{SET_REFZONE(); return lex_ident(LEX_VARS);}
-#define LEX_PATH()		{SET_REFZONE(); return lex_path(LEX_VARS);}
-#define LEX_TEXT()		{SET_REFZONE(); return lex_text(LEX_VARS);}
-#define LEX_POINT()		{SET_REFZONE(); return lex_point(LEX_VARS);}
-#define	LEX_OP(token,opc)	{SET_REFZONE(); yylval_param->mark.builtin = opc; return token;}
+#define LEX_FLOAT()		{LEX_OK(); return lex_float(LEX_VARS);}
+#define LEX_INTEGER()		{LEX_OK(); return lex_integer(LEX_VARS);}
+#define LEX_IDENT()		{LEX_OK(); return lex_ident(LEX_VARS);}
+#define LEX_PATH()		{LEX_OK(); return lex_path(LEX_VARS);}
+#define LEX_TEXT()		{LEX_OK(); return lex_text(LEX_VARS);}
+#define LEX_POINT()		{LEX_OK(); return lex_point(LEX_VARS);}
+#define	LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return token;}
 #define	LEX_CHAR(token)		LEX_OP(token,-1)
-#define yyterminate()		if (TDI_REFZONE.a_cur == TDI_REFZONE.a_end && TDI_REFZONE.a_cur[-1] != ';'){TDI_REFZONE.a_cur++;LEX_CHAR(';')} else return YY_NULL;
-
+#define LEX_BALANCE(token,cnt)	{fprintf(stderr,"BALANCE %c %d\n",token,cnt); LEX_CHAR(token)}
+#define yyterminate()		{\
+ if (TDI_REFZONE.a_cur == TDI_REFZONE.a_end) {\
+  TDI_REFZONE.a_cur++;\
+  if (TDI_BALANCE) LEX_UNBALANCE("([{")\
+  if (TDI_REFZONE.a_cur[-2] != ';') LEX_CHAR(';')\
+ } else return YY_NULL;\
+}
+//"
 %}
-%x C_COMMENT
 
 white	[ \t\r\l]
 anum	[A-Za-z$_0-9]
@@ -146,25 +158,24 @@ ext	("."{anum}+)
 image	({node}*{device}?{dir}?{anum}+{ext}?)
 path	(((("\\"({name}"::")?|[.:])?{name})|(".-"("."?"-")*))([.:]{name})*)
 point	("->"{anum}+(":"|"..")?)
-squot	(\'(\\.|[^\'\\])*\')
-dquot	(\"(\\.|[^"\\])*\")
-quote	({squot}|{dquot})
 
 %%
 
-"/*"		{ BEGIN(C_COMMENT); }
-<C_COMMENT>"*/"	{ BEGIN(INITIAL);SET_REFZONE();}
-<C_COMMENT>\n	{ }
-<C_COMMENT>.	{ }
+"/*"(\n|[^\*]|\*[^/])*"*/"	LEX_OK();
+"/*"		 		LEX_UNBALANCE("/*")
+"\'"(\n|\\.|[^'\\])*"\'"	LEX_TEXT()
+"\'"		 		LEX_UNBALANCE("\'")
+"\""(\n|\\.|[^"\\])*"\""	LEX_TEXT()
+"\""				LEX_UNBALANCE("\"")
 
-{white}+	{SET_REFZONE();}
-\n		{SET_REFZONE();}
+
+{white}+	LEX_OK()
+\n		LEX_OK()
 {float}		LEX_FLOAT()
 {int}		LEX_INTEGER()
 {name}		LEX_IDENT()
 {path}		LEX_PATH()
 {point}		LEX_POINT()
-{quote}		LEX_TEXT()
 
 "<="{white}*"="	LEX_OP(BINEQ,	OPC_LE		)
 ">="{white}*"="	LEX_OP(BINEQ,	OPC_GE		)
@@ -220,6 +231,12 @@ quote	({squot}|{dquot})
 "^"{white}*	LEX_OP(POWER,	OPC_POWER	)
 "|"{white}*	LEX_OP(IOR,	OPC_IOR		)
 "*"{white}*	LEX_CHAR('*')
+"("		LEX_BALANCE('(',++TDI_BALANCE_P)
+")"		LEX_BALANCE(')',--TDI_BALANCE_P)
+"{"		LEX_BALANCE('{',++TDI_BALANCE_B)
+"}"		LEX_BALANCE('}',--TDI_BALANCE_B)
+"["		LEX_BALANCE('[',++TDI_BALANCE_S)
+"]"		LEX_BALANCE(']',--TDI_BALANCE_S)
 .		LEX_CHAR(yytext[0])
 %%
 
@@ -766,19 +783,20 @@ static inline int lex_point(LEX_ARGS) {
   return POINT;
 }
 
-YY_BUFFER_STATE tdi_push_new_buffer  (char * base, yy_size_t  size, yyscan_t yyscanner) {
-	// like tdi_scan_buffer but uses push instead of switch buffer
-        YY_BUFFER_STATE b;
-        if ( size < 2 ||
-             base[size-2] != YY_END_OF_BUFFER_CHAR ||
-             base[size-1] != YY_END_OF_BUFFER_CHAR )
-                return NULL;
-        b = (YY_BUFFER_STATE) tdialloc(sizeof( struct yy_buffer_state ) ,yyscanner );
-        if ( ! b )
-		YY_FATAL_ERROR( "out of dynamic memory in tdi_scan_buffer()" );
-        b->yy_buf_size = size - 2;      /* "- 2" to take care of EOB's */
+void tdi_push_new_buffer  (mdsdsc_t * text_ptr, TDITHREADSTATIC_ARG) {
+	const yyscan_t yyscanner = TDI_SCANNER;
+	TDI_BALANCE = 0;
+	TDI_REFZONE.l_status = TdiBOMB;
+	TDI_REFZONE.l_ok = 0;
+        YY_BUFFER_STATE b = TDI_BUFFER = (YY_BUFFER_STATE) tdialloc(sizeof( struct yy_buffer_state ), yyscanner);
+        if ( ! b )	YY_FATAL_ERROR( "out of dynamic memory in tdi_push_new_buffer(): buffer" );
+        char *base = memcpy(tdialloc(text_ptr->length + 2, yyscanner), text_ptr->pointer, text_ptr->length);
+        if ( ! base )	YY_FATAL_ERROR( "out of dynamic memory in tdi_push_new_buffer(): base" );
+	TDI_REFZONE.a_end = (TDI_REFZONE.a_begin = TDI_REFZONE.a_cur = base) + text_ptr->length;
+        TDI_REFZONE.a_end[0] = TDI_REFZONE.a_end[1] = YY_END_OF_BUFFER_CHAR;
+        b->yy_buf_size = text_ptr->length;
         b->yy_buf_pos = b->yy_ch_buf = base;
-        b->yy_is_our_buffer = 1;
+        b->yy_is_our_buffer = 1; // makes tdipop_buffer_state free base
         b->yy_input_file = NULL;
         b->yy_n_chars = b->yy_buf_size;
         b->yy_is_interactive = 0;
@@ -786,5 +804,4 @@ YY_BUFFER_STATE tdi_push_new_buffer  (char * base, yy_size_t  size, yyscan_t yys
         b->yy_fill_buffer = 0;
         b->yy_buffer_status = YY_BUFFER_NEW;
 	tdipush_buffer_state(b, yyscanner);
-        return b;
 }

@@ -69,12 +69,11 @@ extern int tdi_yacc();
 static void cleanup_compile(TDITHREADSTATIC_ARG){
   LibResetVmZone(&TDI_REFZONE.l_zone);
   tdipop_buffer_state(TDI_SCANNER);
-  //free(TDI_REFZONE.a_begin);
-  TDI_REFZONE.a_begin=NULL;
+  TDI_BUFFER = TDI_REFZONE.a_begin = NULL;
   TDI_COMPILE_REC = FALSE;
 }
 
-extern void *tdi_push_new_buffer(char *base, size_t size, void *yyscanner);
+extern void tdi_push_new_buffer(mdsdsc_t *text_ptr, TDITHREADSTATIC_ARG);
 
 static inline void add_compile_info(int status,TDITHREADSTATIC_ARG) {
   if(!(status==TdiSYNTAX
@@ -116,18 +115,15 @@ static inline void add_compile_info(int status,TDITHREADSTATIC_ARG) {
 
 static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, TDITHREADSTATIC_ARG) {
   int status;
-  TDI_COMPILE_REC = TRUE;
+  if (!TDI_REFZONE.l_zone && IS_NOT_OK(status = LibCreateVmZone(&TDI_REFZONE.l_zone)))
+    return status;
   pthread_cleanup_push((void*)cleanup_compile,(void*)TDITHREADSTATIC_VAR);
+  tdi_push_new_buffer(text_ptr, TDITHREADSTATIC_VAR);
+  TDI_COMPILE_REC = TRUE;
   TDI_REFZONE.l_status = TdiBOMB;  // In case we bomb out
-  TDI_REFZONE.a_begin  = TDI_REFZONE.a_cur = memcpy(malloc(text_ptr->length + 2), text_ptr->pointer, text_ptr->length);
-  TDI_REFZONE.a_end    = TDI_REFZONE.a_cur + text_ptr->length;
-  TDI_REFZONE.l_ok     = 0;
   TDI_REFZONE.l_narg   = narg - 1;
   TDI_REFZONE.l_iarg   = 0;
   TDI_REFZONE.a_list   = list;
-  TDI_REFZONE.a_end[0] = TDI_REFZONE.a_end[1] = YY_END_OF_BUFFER_CHAR;
-  TDI_BUFFER = tdi_push_new_buffer(TDI_REFZONE.a_begin, text_ptr->length + 2, TDI_SCANNER);
-  if (!TDI_REFZONE.l_zone) status = LibCreateVmZone(&TDI_REFZONE.l_zone);
   if (tdi_yacc(TDITHREADSTATIC_VAR) && IS_OK(TDI_REFZONE.l_status))
     status = TdiSYNTAX;
   else
