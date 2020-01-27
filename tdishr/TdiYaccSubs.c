@@ -85,7 +85,7 @@ int tdi_yacc_ARG(struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
 	Size it and copy it to our zone.
 	*******************************/
   status = MdsCopyDxXdZ(ptr, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL);
-  if (status & 1)
+  if STATUS_OK
     mark_ptr->rptr = (mdsdsc_r_t *)junk.pointer;
   return status;
 }
@@ -110,10 +110,8 @@ int tdi_yacc_BUILD(
   int dsc_size = sizeof(mds_function_t) + sizeof(mdsdsc_t *) * (ndesc - 1);
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-
-  TDI_REFZONE.l_status = LibGetVm(&vm_size, (void **)&tmp, &TDI_REFZONE.l_zone);
-  if IS_NOT_OK(TDI_REFZONE.l_status)
-    return MDSplusERROR;
+  int status;
+  RETURN_IF_NOT_OK(LibGetVm(&vm_size, (void **)&tmp, &TDI_REFZONE.l_zone));
   out->builtin = -1;
   out->rptr = (mdsdsc_r_t *)tmp;
 
@@ -123,8 +121,7 @@ int tdi_yacc_BUILD(
   tmp->ndesc = (unsigned char)nused;
   switch (nused) {
   default:
-    TDI_REFZONE.l_status = TdiEXTRA_ARG;
-    return MDSplusERROR;
+    return TdiEXTRA_ARG;
   case 4:
     tmp->arguments[3] = (mdsdsc_t *)arg4->rptr;
     MDS_ATTR_FALLTHROUGH
@@ -146,16 +143,14 @@ int tdi_yacc_BUILD(
 	Cannot check external functions.
 	If resolved, can change record pointer.
 	*******************************************/
-  if (nused > this_ptr->m2) {
-    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
-    return MDSplusERROR;
-  }				/*Force an error */
+  if (nused > this_ptr->m2)
+    return tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
+  /*Force an error */
   if (ndesc >= 254)
     return MDSplusSUCCESS;
-  if (nused < this_ptr->m1) {
-    TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
-    return MDSplusERROR;
-  }				/*Force an error */
+  if (nused < this_ptr->m1)
+    return tdi_yacc_IMMEDIATE(&out->rptr, TDITHREADSTATIC_VAR);
+  /*Force an error */
   return tdi_yacc_RESOLVE(&out->rptr, TDITHREADSTATIC_VAR);
 }
 
@@ -256,8 +251,5 @@ int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG) {
 	return MDSplusSUCCESS;
     }
  doit:
-  TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE((mdsdsc_xd_t **)out_ptr_ptr, TDITHREADSTATIC_VAR);
-  if IS_OK(TDI_REFZONE.l_status)
-    return MDSplusSUCCESS;
-  return MDSplusERROR;
+  return tdi_yacc_IMMEDIATE((mdsdsc_xd_t **)out_ptr_ptr, TDITHREADSTATIC_VAR);
 }

@@ -84,6 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 
 #define YYDEBUG 0
+#define YYERROR_VERBOSE 1
 #include "tdiyacc.h"
 #include "tdilex.h"
 
@@ -101,16 +102,16 @@ extern int tdi_yacc_ARG();
 
 int yydebug = YYDEBUG;
 
-#define YY_ERR	1
-#define YY_OK	0
+#define YY_ERR	1 // ensure error state : default to SYNTAX if l_status ok
+#define YY_ASIS	0 // use l_status
 #define yyerror(TDITHREADSTATIC_ARG,msg) {\
-  fprintf(stderr,"yyerror '%s': %d\n", msg, TDI_REFZONE.l_status);\
+  if (YYDEBUG) fprintf(stderr,"yyerror '%s': %d\n", msg, TDI_REFZONE.l_status);\
   TDI_REFZONE.l_ok = yyval.mark.w_ok;\
 }
 //"
 
 #define YYMAXDEPTH	250
-#define __RUN(method)	do{if IS_NOT_OK(method) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ERR;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
+#define __RUN(method)	do{if IS_NOT_OK(TDI_REFZONE.l_status = method) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ASIS;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
 #define _RESOLVE(arg)				__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_VAR))
 
@@ -229,9 +230,7 @@ unaryX	: ADD unaryX 		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : 
 	| postX
 	;
 ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
-					TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
-					if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
-					}
+					__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
 	| unaryX 			{}
 	| unaryX '=' ass		{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
 	| unaryX BINEQ ass		{struct marker tmp;		/*binary operation and assign*/
@@ -245,7 +244,7 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 							$$.rptr->dscptrs[1]=$$.rptr->dscptrs[0];
 							$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 							++$$.rptr->ndesc;}
-						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ERR;}
+						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ASIS;}
 					else	{static unsigned int vmlen = sizeof(struct descriptor_range);
 						LibGetVm(&vmlen, (void **)&$$.rptr, &TDI_REFZONE.l_zone);
 						$$.rptr->length = 0;
@@ -413,7 +412,7 @@ primaX	: MODIF VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 	| label			{if (*$$.rptr->pointer == '$') {
 					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == ARG)
-					{if IS_NOT_OK(TDI_REFZONE.l_status=tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR)) {yyerror(TDITHREADSTATIC_VAR, "yacc_ARG failed"); return YY_ERR;}}
+					{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == CONST)
 						_JUST0($1.builtin,$$);
 				} else	if (*$$.rptr->pointer == '_')
@@ -462,9 +461,7 @@ stmt	: BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| fun stmt				{TDI_REFZONE.l_rel_path--;
 						$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
 	| '`' stmt				{$$.rptr=$2.rptr; $$.builtin= -2;
-						TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
-						if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
-						}
+						__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
 	| opt ';'				{$$=$1;}
 	| '{' stmt_lst '}'                      {$$=$2; _RESOLVE($$);}          /* {statement list}     */
 	;
@@ -487,7 +484,7 @@ program : stmt_lst	{_RESOLVE($$);		/*statements*/
 			TDI_REFZONE.l_status=SsSUCCESS;}/* success */
 	| %empty	{$$=_EMPTY_MARKER;}				/* nothing	*/
 	| ERROR		{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
-	| error		{fprintf(stderr, "\nsyntax\n\n" ); return YY_ERR;}/* YACC error	*/
+	| error		{TDI_REFZONE.l_status=TdiSYNTAX; yyerror(TDITHREADSTATIC_VAR, "syntax error"); return YY_ASIS;} /* YACC error	*/
 	;
 %%
 
