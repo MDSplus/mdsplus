@@ -100,6 +100,7 @@ extern int TdiConvert();
 
 #define LEX_OK()	{\
  yylval_param->mark.w_ok = (TDI_REFZONE.a_cur = yy_cp) - TDI_REFZONE.a_begin;\
+ *yy_cp = yyg->yy_hold_char;\
  if (yy_flex_debug) fprintf(stderr,"LEX: %s\n",TDI_REFZONE.a_begin);\
 }
 //"
