@@ -102,13 +102,16 @@ extern int TdiConvert();
  yylval_param->mark.w_ok = (TDI_REFZONE.a_cur = yy_cp) - TDI_REFZONE.a_begin;\
  if (yy_flex_debug) fprintf(stderr,"LEX: %s\n",TDI_REFZONE.a_begin);\
 }
-#define LEX_UNBALANCE(token) { \
+//"
+
+#define LEX_UNBALANCE(token) {\
  TDI_REFZONE.a_cur = yy_cp;\
  yylval_param->mark.w_ok = TDI_REFZONE.l_ok = yy_bp - TDI_REFZONE.a_begin;\
  TDI_REFZONE.l_status = TdiUNBALANCE;\
- fprintf(stderr,"UNBALANCED %s\n",token);\
+ if (yy_flex_debug) fprintf(stderr,"UNBALANCED %s\n",token);\
  return ERROR;\
 }
+//"
 
 static void upcase(char *const str, int len){
   char *pc, *const ec = str + len;
@@ -130,12 +133,12 @@ static inline int lex_point(LEX_ARGS);
 #define LEX_POINT()		{LEX_OK(); return lex_point(LEX_VARS);}
 #define	LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return token;}
 #define	LEX_CHAR(token)		LEX_OP(token,-1)
-#define LEX_BALANCE(token,cnt)	{fprintf(stderr,"BALANCE %c %d\n",token,cnt); LEX_CHAR(token)}
+#define LEX_BALANCE(token,cnt)	{if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt); LEX_CHAR(token)}
 #define yyterminate()		{\
  if (TDI_REFZONE.a_cur == TDI_REFZONE.a_end) {\
   TDI_REFZONE.a_cur++;\
   if (TDI_BALANCE) LEX_UNBALANCE("([{")\
-  if (TDI_REFZONE.a_cur[-2] != ';') LEX_CHAR(';')\
+  if (TDI_REFZONE.a_cur[-1] != ';') {if (yy_flex_debug) fprintf(stderr, "FIXUP ';'\n"); LEX_CHAR(';')}\
  } else return YY_NULL;\
 }
 //"
@@ -171,11 +174,6 @@ point	("->"{anum}+(":"|"..")?)
 
 {white}+	LEX_OK()
 \n		LEX_OK()
-{float}		LEX_FLOAT()
-{int}		LEX_INTEGER()
-{name}		LEX_IDENT()
-{path}		LEX_PATH()
-{point}		LEX_POINT()
 
 "<="{white}*"="	LEX_OP(BINEQ,	OPC_LE		)
 ">="{white}*"="	LEX_OP(BINEQ,	OPC_GE		)
@@ -205,7 +203,8 @@ point	("->"{anum}+(":"|"..")?)
 
 "++"		LEX_OP(INC,	OPC_PRE_INC	)
 "--"		LEX_OP(INC,	OPC_PRE_DEC	)
-".."|":"	LEX_OP(RANGE,	OPC_DTYPE_RANGE	)
+".."		LEX_OP(RANGE,   OPC_DTYPE_RANGE )
+":"		LEX_OP(RANGE,	OPC_DTYPE_RANGE	)
 "!"		LEX_OP(UNARYS,	OPC_NOT		)
 "~"		LEX_OP(UNARYS,	OPC_INOT	)
 "@"		LEX_OP(PROMO,	OPC_PROMOTE	)
@@ -237,6 +236,12 @@ point	("->"{anum}+(":"|"..")?)
 "}"		LEX_BALANCE('}',--TDI_BALANCE_B)
 "["		LEX_BALANCE('[',++TDI_BALANCE_S)
 "]"		LEX_BALANCE(']',--TDI_BALANCE_S)
+
+{float}		LEX_FLOAT()
+{int}		LEX_INTEGER()
+{name}		LEX_IDENT()
+{path}		LEX_PATH()
+{point}		LEX_POINT()
 .		LEX_CHAR(yytext[0])
 %%
 
@@ -770,7 +775,9 @@ static inline int lex_text(LEX_ARGS) {
 }
 
 /*--------------------------------------------------------
-       Remove arrow and trailing punctation.
+ Remove arrow and trailing punctation.
+ We cannot match just "->" and token for label POINT label RANGE label
+ because RANGE will be consumed by {path}
 */
 static inline int lex_point(LEX_ARGS) {
   LEX_INIT;

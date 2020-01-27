@@ -343,7 +343,7 @@ extern int tdilex \
 #undef YY_DECL
 #endif
 
-#line 241 "TdiLex.x"
+#line 246 "TdiLex.x"
 
 
 #line 350 "tdilex.h"

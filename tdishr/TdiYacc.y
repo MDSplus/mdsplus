@@ -83,6 +83,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefzone.h"
 #include "tdirefstandard.h"
 
+#define YYDEBUG 0
+#include "tdiyacc.h"
+#include "tdilex.h"
+
 extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
 extern int tdilex();
@@ -92,10 +96,9 @@ extern int tdi_yacc_IMMEDIATE();
 extern int tdi_yacc_BUILD();
 extern int tdi_yacc_ARG();
 #define yyparse(...)			tdi_yacc(__VA_ARGS__)
-#define yylex(VAL,TDITHREADSTATIC_VAR)	tdilex(VAL, TDITHREADSTATIC_VAR, TDI_SCANNER)
+#define yylex(VAL,TDITHREADSTATIC_VAR)	(tdiset_debug(YYDEBUG,TDI_SCANNER),tdilex(VAL, TDITHREADSTATIC_VAR, TDI_SCANNER))
 
 
-#define YYDEBUG 1
 int yydebug = YYDEBUG;
 
 #define YY_ERR	1
@@ -105,7 +108,6 @@ int yydebug = YYDEBUG;
   TDI_REFZONE.l_ok = yyval.mark.w_ok;\
 }
 //"
-static inline void breakpoint(){}
 
 #define YYMAXDEPTH	250
 #define __RUN(method)	do{if IS_NOT_OK(method) {yyerror(TDITHREADSTATIC_VAR,"method failed"); return YY_ERR;} else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
@@ -136,13 +138,12 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	/***********************************************************
 	Tokens are the result of Lex.
 	***********************************************************/
-%nonassoc NOMORE
-%nonassoc ELSE
-%nonassoc ELSEW
+%nonassoc END
+%nonassoc ELSE    ELSEW
 
 %token	<mark>	ERROR	IDENT	POINT	TEXT	VALUE
 
-%token	<mark>	BREAK	CASE	COND	DEFAULT	DO	ELSE	ELSEW	FOR
+%token  <mark>	BREAK	CASE	COND	DEFAULT	DO	ELSE    ELSEW	FOR
 %token	<mark>	GOTO	IF	LABEL	RETURN	SIZEOF	SWITCH	USING	WHERE	WHILE
 
 %token	<mark>	ARG	CAST	CONST	INC
@@ -152,46 +153,45 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS
 %token	<mark>	FUN	MODIF	VBL
 
-%type	<mark>	program	stmt_lst	stmt	slabel	label	using	using0	fun	funvbl
+%type	<mark>	program stmt_lst stmt slabel label using using0 fun funvbl
 %type	<mark>	exp	ass	opt
 %type	<mark>	unaryX	postX	primaX
 %type	<mark>	bracket	paren	sub	textX
 
-	/*****************************************************************
+/*****************************************************************
 	Precedence: lowest to highest. -=not available, ?=not explicit
 		CC	F90	Vax F77	IDL
-%left	STATE	/*?	?	?	?	; {} IF etc.
+%left	STATE	//?	?	?	?	; {} IF etc.
 ***/
-%left ','	/*15	-	-	-	, name(a,b op c...) decompiles as name(a,(b,c)...) but name(a,b=c)*/
-%right '`'	/*-	-	-	-	`*/
-%right '=' BINEQ/*14	?	?	?	= *= >>= etc.*/
-%right RANGE	/*-	?	?	?	: ..	should bind more than // or IN maybe, less than +*/
-%right '?'	/*13	-	-	-	?:*/
-%right PROMO	/*-	-	-	-	@*/
-		/*-	12.bop.	-	-	defined binary	.UNION.*/
-%left LEQV	/*-	11.EQV.	8.EQV.	3 XOR	EQV NEQV*/
-%left LOR LORS	/*12	10.OR.	7.OR.	3 OR	|| OR*/
-%left LAND LANDS/*11	9.AND.	6.AND.	2 AND	&& AND*/
-%left IOR	/*10	-	(7)	3 OR	|*/
-%left IXOR	/*9 ^	-	(8)	3 XOR*/
-%left IAND	/*8	-	(6)	2 AND	& AND*/
-%left LEQ LEQS	/*7	7	4	3 EQ	== != <> EQ NE*/
-%left LGE LGES	/*6	7	4	3 LT	< > <= >= LT GT LE GE*/
-%left IN	/*-	-	-	-	IN	(subset)*/
-%left CONCAT	/*-	6	3	3 +	//*/
-		/*-	-	-	3	< >	(min max)*/
-%left SHIFT	/*5	-	-	-	<< >>*/
-%left ADD	/*4	5	3	3	+ - .binary.*/
-%left MUL MULS '*'/*3 %	3	2	2 # MOD	* / */
-%right POWER	/*-	2	1	1	** ^*/
-/***
-%right UNARY UNARYS/*2 * &	4 + -	3	?	+ - .unary.*/
-		/*2	8.NOT.	5	?	~ ! NOT INOT SIZEOF
-		/*2	-	-	-	++ --
-%right CAST	/*2	-	-	-	(cast)
-		/*-	1.uop.	-	-	defined unary .INVERSE.
-%left POST	/*1. ->	?	?	?	(e) p(e) p[args] p++ p--
-	*****************************************************************/
+%left ','	//15	-	-	-	, name(a,b op c...) decompiles as name(a,(b,c)...) but name(a,b=c)
+%right '`'	//-	-	-	-	`
+%right '=' BINEQ//14	?	?	?	= *= >>= etc.
+%right RANGE	//-	?	?	?	: ..	should bind more than // or IN maybe, less than +
+%right '?'	//13	-	-	-	?:
+%right PROMO	//-	-	-	-	@
+		//-	12.bop.	-	-	defined binary	.UNION.
+%left LEQV	//-	11.EQV.	8.EQV.	3 XOR	EQV NEQV
+%left LOR LORS	//12	10.OR.	7.OR.	3 OR	|| OR
+%left LAND LANDS//11	9.AND.	6.AND.	2 AND	&& AND
+%left IOR	//10	-	(7)	3 OR	|
+%left IXOR	//9 ^	-	(8)	3 XOR
+%left IAND	//8	-	(6)	2 AND	& AND
+%left LEQ LEQS	//7	7	4	3 EQ	== != <> EQ NE
+%left LGE LGES	//6	7	4	3 LT	< > <= >= LT GT LE GE
+%left IN	//-	-	-	-	IN	(subset)
+%left CONCAT	//-	6	3	3 +	//
+		//-	-	-	3	< >	(min max)
+%left SHIFT	//5	-	-	-	<< >>
+%left ADD	//4	5	3	3	+ - .binary.
+%left MUL MULS '*'//3 %	3	2	2 # MOD	* /
+%right POWER	//-	2	1	1	** ^
+
+%right UNARY UNARYS//2 * &	4 + -	3	?	+ - .unary.
+		//2	8.NOT.	5	?	~ ! NOT INOT SIZEOF
+		//2	-	-	-	++ --
+//%right CAST	//2	-	-	-	(cast)
+		//-	1.uop.	-	-	defined unary .INVERSE.
+//%left POST	//1. ->	?	?	?	(e) p(e) p[args] p++ p--
 
 %%
 	/***********
@@ -210,7 +210,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 slabel	: LABEL	VBL			{$$=$2;}
 	;
 label	: CONST	| IDENT	| CAST	| DEFAULT	| GOTO	| SIZEOF	| UNARY
-	| BREAK	| ELSE	| ELSEW	| CASE	| DO	| RETURN
+	| RETURN | DO
 	| FOR	| IF	| LABEL	| SWITCH	| USING	| WHERE	| WHILE
 	| IN	| LAND	| LEQ	| LEQV	| LGE	| LOR	| MUL
 	| MODIF	| FUN	| VBL
@@ -222,21 +222,28 @@ label	: CONST	| IDENT	| CAST	| DEFAULT	| GOTO	| SIZEOF	| UNARY
 	We separate comma in expression from comma in subscript
 	because subscripts permit null/full value.
 	*********************************************************/
+unaryX	: ADD unaryX 		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
+	| UNARY	unaryX 		{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
+	| UNARYS unaryX 		{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
+	| INC unaryX 		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
+	| postX
+	;
 ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 					TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
 					if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
 					}
+	| unaryX 			{}
 	| unaryX '=' ass		{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
 	| unaryX BINEQ ass		{struct marker tmp;		/*binary operation and assign*/
 						_JUST2($2.builtin,$1,$3,tmp);
 						_JUST1(OPC_EQUALS_FIRST,tmp,$$);}
 	| ass '?' ass RANGE ass		{_JUST3(OPC_CONDITIONAL,$3,$5,$1,$$);}/*COND right-to-left*/
-	| ass RANGE	ass		{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
+	| ass RANGE ass			{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
 						if ($3.rptr->ndesc == 2)
 							{$$=$3;
 							$$.rptr->dscptrs[2]=$$.rptr->dscptrs[1];
 							$$.rptr->dscptrs[1]=$$.rptr->dscptrs[0];
-							$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
+							$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 							++$$.rptr->ndesc;}
 						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ERR;}
 					else	{static unsigned int vmlen = sizeof(struct descriptor_range);
@@ -246,8 +253,8 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 						$$.rptr->class = CLASS_R;
 						$$.rptr->pointer = 0;
 						$$.rptr->ndesc = 2;
-						$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
-						$$.rptr->dscptrs[1]=(struct descriptor *)$3.rptr;
+						$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+						$$.rptr->dscptrs[1]=(mdsdsc_t *)$3.rptr;
 						_RESOLVE($$);}
 					}
 	| ass PROMO	ass		{_JUST2($2.builtin,$1,$3,$$);}/*PROMO right-to-left*/
@@ -266,9 +273,9 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 	| ass IN	ass		{_JUST2($2.builtin,$1,$3,$$);}/*IS_IN*/
 	| ass CONCAT	ass		{if ($$.rptr == 0) $$=$3;
 					else if ($$.rptr->dtype == DTYPE_FUNCTION
-					&&	*(unsigned short *)$$.rptr->pointer == OPC_CONCAT
+					&&	*(opcode_t *)$$.rptr->pointer == OPC_CONCAT
 					&&	$$.rptr->ndesc < 250)
-						{$$.rptr->dscptrs[$$.rptr->ndesc++]=(struct descriptor *)$3.rptr;
+						{$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
 						_RESOLVE($$);}
 					else {_FULL2($2.builtin,$1,$3,$$);}
 					}
@@ -278,45 +285,41 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 	| ass MULS	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*MULS*/
 	| ass '*'	ass		{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
 	| ass POWER	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
-	| unaryX %prec NOMORE		{}
 	| '*'				{$$=_EMPTY_MARKER;}
-	;
-unaryX	: ADD		unaryX	{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
-	| UNARY		unaryX	{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
-	| UNARYS	unaryX	{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
-	| INC		unaryX	{_JUST1($1.builtin,$2,$$);}	/*preINC*/
-	| postX
 	;
 		/********************************************************************
 		Argument lists, optional or required. No arguments for empty list ().
 		Use * for single missing argument. (*) is 1 missing, (,) is two.
 		USING must have first argument with relative paths.
 		********************************************************************/
-bracket	: '[' ass  %prec NOMORE	{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
-	| '['  %prec NOMORE	{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
-	| bracket ',' ass %prec NOMORE	{if ($$.rptr->ndesc >= 250) {
+bracket	: '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
+	| '['			{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
+	| bracket ',' ass 		{if ($$.rptr->ndesc >= 250) {
 					_RESOLVE($1);
 					_FULL1(OPC_VECTOR,$1,$$);
 				}
-				$$.rptr->dscptrs[$$.rptr->ndesc++] = (struct descriptor *)$3.rptr;
+				$$.rptr->dscptrs[$$.rptr->ndesc++] = (mdsdsc_t *)$3.rptr;
 				}
 	;
-exp	: opt ',' opt %prec NOMORE	{if ($$.rptr			/*comma is left-to-right weakest*/
-					&&	$$.builtin != -2
-					&&	$$.rptr->dtype == DTYPE_FUNCTION
-					&&	*(unsigned short *)$$.rptr->pointer == OPC_COMMA
-					&&	$$.rptr->ndesc < 250)
-						$$.rptr->dscptrs[$$.rptr->ndesc++]=(struct descriptor *)$3.rptr;
-					else _FULL2(OPC_COMMA,$1,$3,$$);/*first comma*/
-					}
-	| ass %prec NOMORE
+opt	: exp
+	| %empty		{$$=_EMPTY_MARKER;}			/*null argument*/
 	;
-sub	: exp %prec NOMORE	{if ($$.rptr
+exp	: opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
+			&&	$$.builtin != -2
+			&&	$$.rptr->dtype == DTYPE_FUNCTION
+			&&	*(opcode_t *)$$.rptr->pointer == OPC_COMMA
+			&&	$$.rptr->ndesc < 250)
+				$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
+			else _FULL2(OPC_COMMA,$1,$3,$$);/*first comma*/
+					}
+	| ass
+	;
+sub	: exp 		{if ($$.rptr
 				&& $$.builtin != -2
 				&& $$.rptr->dtype == DTYPE_FUNCTION
 				&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
 				else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
-	| %prec NOMORE		{_JUST0(OPC_ABORT,$$);}			/*empty argument list*/
+	| %empty		{_JUST0(OPC_ABORT,$$);}			/*empty argument list*/
         ;
 paren	: '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
 	| '(' stmt_lst ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
@@ -326,35 +329,33 @@ using0	: USING '('		{++TDI_REFZONE.l_rel_path;}
 using	: using0 ass ',' ass ',' {_FULL2(OPC_ABORT,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
 	| using0 ass ',' ','	{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$); --TDI_REFZONE.l_rel_path;}
 	;
-opt	: exp %prec NOMORE
-	|			{$$=_EMPTY_MARKER;}			/*null argument*/
-	;
-		/*******************************************
-		Postfix expression. NEED to understand effect of primary lvalue.
-		*******************************************/
+	/*******************************************
+	Postfix expression. NEED to understand effect of primary lvalue.
+	*******************************************/
 postX	: primaX
 	| postX '[' sub ']'	{int j;
 					$$=$3;
 					$$.rptr->pointer= (uint8_t *)&OpcSubscript;
 					for (j=$$.rptr->ndesc; --j>=0; )
 						$$.rptr->dscptrs[j+1]=$$.rptr->dscptrs[j];
-					$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
+					$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 					$$.rptr->ndesc++;
 					_RESOLVE($$);
 				}
-	| postX INC		{int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
+	| postX INC 	 {int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
 					_JUST1(j,$1,$$);}		/*postINC*/
+	| label '(' sub ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 	| label '(' sub ')'	{$$=$3;
 				if ($1.builtin < 0) {int j;		/*unknown today*/
 					$$.rptr->pointer= (uint8_t *)&OpcExtFunction;
 					for (j=$$.rptr->ndesc; --j>=0;)
 						$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
 					$$.rptr->dscptrs[0]=0;
-					$$.rptr->dscptrs[1]=(struct descriptor *)$1.rptr;
+					$$.rptr->dscptrs[1]=(mdsdsc_t *)$1.rptr;
 					$$.rptr->ndesc += 2;
 				}
 				else	{				/*intrinsic*/
-					*(unsigned short *)$$.rptr->pointer=$1.builtin;
+					*(opcode_t *)$$.rptr->pointer=$1.builtin;
 					_RESOLVE($$);}
 				}
 	| label POINT '(' sub ')' {int j;
@@ -364,24 +365,25 @@ postX	: primaX
 				$$.rptr->pointer=0;
 				for (j=$$.rptr->ndesc; --j>=0;)
 					$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
-				$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
-				$$.rptr->dscptrs[1]=(struct descriptor *)$2.rptr;
+				$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+				$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;
 				$$.rptr->ndesc += 2;
 				}
 	| label POINT label '(' sub ')' {int j;
 				$$=$5;			/*typed external*/
 				StrUpcase((mdsdsc_t *)$3.rptr, (mdsdsc_t *)$3.rptr);
-				for (j=TdiCAT_MAX; --j>=0;)
+				for (j=TdiCAT_MAX; j-->0;)
 					if (strncmp(TdiREF_CAT[j].name, (char *)$3.rptr->pointer, $3.rptr->length) == 0
-					&& strlen(TdiREF_CAT[j].name) == $3.rptr->length) break;
+					&& TdiREF_CAT[j].name[$3.rptr->length] == '\0') // exact match
+						break;
 				if (j<0) {TDI_REFZONE.l_status=TdiINVDTYDSC; yyerror(TDITHREADSTATIC_VAR, "invalid dtype desc"); return YY_ERR;}
 				$$.rptr->dtype=DTYPE_CALL;
 				$$.rptr->length=1;
 				*(unsigned char *)$$.rptr->pointer=(unsigned char)j;
 				for (j=$$.rptr->ndesc; --j>=0;)
 					$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
-				$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
-				$$.rptr->dscptrs[1]=(struct descriptor *)$2.rptr;
+				$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+				$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;
 				$$.rptr->ndesc += 2;
 				}
 	| using sub ')'		{int j;	/*USING(expr,[default],[shotid],[expt])*/
@@ -408,7 +410,7 @@ primaX	: MODIF VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 	| MODIF MODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
 					_JUST1($2.builtin,$3,tmp);
 					_JUST1($1.builtin,tmp,$$);}
-	| label	%prec NOMORE	{if (*$$.rptr->pointer == '$') {
+	| label			{if (*$$.rptr->pointer == '$') {
 					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == ARG)
 					{if IS_NOT_OK(TDI_REFZONE.l_status=tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR)) {yyerror(TDITHREADSTATIC_VAR, "yacc_ARG failed"); return YY_ERR;}}
@@ -437,56 +439,54 @@ fun	: funvbl '(' sub ')'			{int j;	$$=$3;
 							$$.rptr->pointer= (uint8_t *)&OpcFun;
 							for (j=$$.rptr->ndesc; --j>=0;)
 								$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
-							$$.rptr->dscptrs[0]=(struct descriptor *)$1.rptr;
+							$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 							$$.rptr->ndesc += 2;
 							++TDI_REFZONE.l_rel_path;
 						}
-	| funvbl '(' sub ERROR			{return YY_ERR;}
 	;
-stmt	: BREAK ';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
+stmt	: BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
 	| CASE DEFAULT stmt			{_FULL1($2.builtin,$3,$$);}		/* CASE DEFAULT stmt	*/
 	| DO '{' stmt_lst '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
 	| FOR '(' opt ';' opt ';' opt ')' stmt	{_JUST4($1.builtin,$3,$5,$7,$9,$$);}	/* FOR(opt;opt;opt)stmt */
 	| GOTO VBL ';'				{_JUST1($1.builtin,$2,$$);}		/* GOTO label;		*/
 	| IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
-	| IF paren stmt	%prec NOMORE		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
+	| IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
 	| slabel RANGE stmt			{_FULL2(OPC_LABEL,$1,$3,$$);}		/* LABEL label:stmt	*/
-/***	| RETURN opt ';'			{if ($2.rptr == 0) {_JUST0($1.builtin,$$);}/* RETURN;		*/
+/***	| RETURN opt				{if ($2.rptr == 0) {_JUST0($1.builtin,$$);}/* RETURN;		*/
 /***						else {_JUST1($1.builtin,$2,$$);}	}/* RETURN exp;		*/
 	| SWITCH paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
 	| WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
-	| WHERE paren stmt %prec NOMORE		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
-	| WHILE paren stmt %prec NOMORE		{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
-	| fun stmt  %prec NOMORE		{TDI_REFZONE.l_rel_path--;
-						$$.rptr->dscptrs[1]=(struct descriptor *)$2.rptr;}
+	| WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
+	| WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
+	| fun stmt				{TDI_REFZONE.l_rel_path--;
+						$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
 	| '`' stmt				{$$.rptr=$2.rptr; $$.builtin= -2;
 						TDI_REFZONE.l_status=tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR);
 						if IS_NOT_OK(TDI_REFZONE.l_status) {yyerror(TDITHREADSTATIC_VAR, "yacc_IMMEDIATE failed"); return YY_ERR;}
 						}
-	| '{' stmt_lst '}'			{$$=$2; _RESOLVE($$);}		/* {statement list}	*/
-	| opt ';'				{}
+	| opt ';'				{$$=$1;}
+	| '{' stmt_lst '}'                      {$$=$2; _RESOLVE($$);}          /* {statement list}     */
 	;
 stmt_lst : stmt
 	| stmt_lst stmt	{short opcode;
-				if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/
-				else if ($2.rptr == 0) {}		/* trailing null statement	*/
-				else if ($$.rptr->dtype == DTYPE_FUNCTION
-				&& $$.rptr->ndesc < 250
-				&& ((opcode = *(opcode_t *)$$.rptr->pointer) == OPC_STATEMENT
-					|| opcode == OPC_CASE
-					|| opcode == OPC_DEFAULT
-					|| opcode == OPC_LABEL
-				)) {$$.rptr->dscptrs[$$.rptr->ndesc++]=(struct descriptor *)$2.rptr;}
-				else	{_FULL2(OPC_STATEMENT,$1,$2,$$);}
+			if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/
+			else if ($2.rptr == 0) {}		/* trailing null statement	*/
+			else if ($$.rptr->dtype == DTYPE_FUNCTION
+			&& $$.rptr->ndesc < 250
+			&& ((opcode = *(opcode_t *)$$.rptr->pointer) == OPC_STATEMENT
+				|| opcode == OPC_CASE
+				|| opcode == OPC_DEFAULT
+				|| opcode == OPC_LABEL
+			)) {$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$2.rptr;}
+			else	{_FULL2(OPC_STATEMENT,$1,$2,$$);}
 			}
 	;
 program : stmt_lst	{_RESOLVE($$);		/*statements*/
 			TDI_REFZONE.a_result=(struct descriptor_d *)$$.rptr;
-			breakpoint();
 			TDI_REFZONE.l_status=SsSUCCESS;}/* success */
-	| %prec NOMORE	{$$=_EMPTY_MARKER;}				/* nothing	*/
-	| ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
+	| %empty	{$$=_EMPTY_MARKER;}				/* nothing	*/
+	| ERROR		{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
 	| error		{fprintf(stderr, "\nsyntax\n\n" ); return YY_ERR;}/* YACC error	*/
 	;
 %%

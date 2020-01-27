@@ -3,7 +3,7 @@
 # flex -V	# flex 2.5.39
 
 cd $(dirname $0)
-ycmd='bison -d -y TdiYacc.y -bTdiYacc'
+ycmd='bison -d --verbose TdiYacc.y -bTdiYacc'
 xcmd='flex -p TdiLex.x'
 scmd='sed -i "s/int num_to_read/size_t num_to_read/g" TdiLex.c'
 eval "$ycmd"

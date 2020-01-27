@@ -55,7 +55,7 @@ typedef void* yyscan_t;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    NOMORE = 258,
+    END = 258,
     ELSE = 259,
     ELSEW = 260,
     ERROR = 261,
@@ -111,71 +111,16 @@ typedef void* yyscan_t;
     VBL = 311
   };
 #endif
-/* Tokens.  */
-#define NOMORE 258
-#define ELSE 259
-#define ELSEW 260
-#define ERROR 261
-#define IDENT 262
-#define POINT 263
-#define TEXT 264
-#define VALUE 265
-#define BREAK 266
-#define CASE 267
-#define COND 268
-#define DEFAULT 269
-#define DO 270
-#define FOR 271
-#define GOTO 272
-#define IF 273
-#define LABEL 274
-#define RETURN 275
-#define SIZEOF 276
-#define SWITCH 277
-#define USING 278
-#define WHERE 279
-#define WHILE 280
-#define ARG 281
-#define CAST 282
-#define CONST 283
-#define INC 284
-#define ADD 285
-#define CONCAT 286
-#define IAND 287
-#define IN 288
-#define IOR 289
-#define IXOR 290
-#define LEQV 291
-#define POWER 292
-#define PROMO 293
-#define RANGE 294
-#define SHIFT 295
-#define BINEQ 296
-#define LAND 297
-#define LEQ 298
-#define LGE 299
-#define LOR 300
-#define MUL 301
-#define UNARY 302
-#define LANDS 303
-#define LEQS 304
-#define LGES 305
-#define LORS 306
-#define MULS 307
-#define UNARYS 308
-#define FUN 309
-#define MODIF 310
-#define VBL 311
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 
 union YYSTYPE
 {
-#line 132 "TdiYacc.y" /* yacc.c:1909  */
+#line 134 "TdiYacc.y" /* yacc.c:1909  */
 struct marker mark;
 
-#line 179 "tdiyacc.h" /* yacc.c:1909  */
+#line 124 "tdiyacc.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
