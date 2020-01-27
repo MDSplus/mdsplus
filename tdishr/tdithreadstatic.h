@@ -9,9 +9,10 @@
 #define TDITHREADSTATIC_ARG  TDITHREADSTATIC_TYPE *const TDITHREADSTATIC_VAR
 #define TDITHREADSTATIC(MTS) TDITHREADSTATIC_ARG = TdiGetThreadStatic(MTS)
 #define TDITHREADSTATIC_INIT TDITHREADSTATIC(NULL)
+
 typedef union {
-uint32_t all;
-uint8_t	 c[3];
+int16_t cnt[4];
+int64_t all;
 } balance_t;
 typedef struct {
   void *scanner;
@@ -62,9 +63,9 @@ typedef struct {
 #define TDI_INDENT		(TDI_STACK.indent)
 #define TDI_REFZONE		(TDI_STACK.refzone)
 #define TDI_BUFFER		(TDI_STACK.buffer)
-#define TDI_BALANCE_P		(TDI_STACK.balance.c[0])
-#define TDI_BALANCE_S		(TDI_STACK.balance.c[1])
-#define TDI_BALANCE_B		(TDI_STACK.balance.c[2])
+#define TDI_BALANCE_R		(TDI_STACK.balance.cnt[0])
+#define TDI_BALANCE_S		(TDI_STACK.balance.cnt[1])
+#define TDI_BALANCE_C		(TDI_STACK.balance.cnt[2])
 #define TDI_BALANCE		(TDI_STACK.balance.all)
 
 extern DEFINE_GETTHREADSTATIC(TDITHREADSTATIC_TYPE, TdiGetThreadStatic);

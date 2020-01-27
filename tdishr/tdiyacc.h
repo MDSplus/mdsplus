@@ -78,10 +78,10 @@ typedef void* yyscan_t;
     USING = 278,
     WHERE = 279,
     WHILE = 280,
-    ARG = 281,
-    CAST = 282,
-    CONST = 283,
-    INC = 284,
+    CAST = 281,
+    CONST = 282,
+    INC = 283,
+    ARG = 284,
     ADD = 285,
     CONCAT = 286,
     IAND = 287,
@@ -108,7 +108,8 @@ typedef void* yyscan_t;
     UNARYS = 308,
     FUN = 309,
     MODIF = 310,
-    VBL = 311
+    VBL = 311,
+    AMODIF = 312
   };
 #endif
 
@@ -120,7 +121,7 @@ union YYSTYPE
 #line 135 "TdiYacc.y" /* yacc.c:1909  */
 struct marker mark;
 
-#line 124 "tdiyacc.h" /* yacc.c:1909  */
+#line 125 "tdiyacc.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

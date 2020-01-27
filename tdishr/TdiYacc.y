@@ -139,22 +139,24 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	/***********************************************************
 	Tokens are the result of Lex.
 	***********************************************************/
-%nonassoc END
-%nonassoc ELSE    ELSEW
+%nonassoc	END
+%nonassoc	ELSE    ELSEW
 
 %token	<mark>	ERROR	IDENT	POINT	TEXT	VALUE
 
 %token  <mark>	BREAK	CASE	COND	DEFAULT	DO	ELSE    ELSEW	FOR
 %token	<mark>	GOTO	IF	LABEL	RETURN	SIZEOF	SWITCH	USING	WHERE	WHILE
 
-%token	<mark>	ARG	CAST	CONST	INC
+%token	<mark>	CAST	CONST	INC	ARG
 %token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR	LEQV
 %token	<mark>	POWER	PROMO	RANGE	SHIFT	BINEQ
 %token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS
-%token	<mark>	FUN	MODIF	VBL
+%token	<mark>	FUN	MODIF	VBL	AMODIF
 
-%type	<mark>	program stmt_lst stmt slabel label using using0 fun funvbl
+%type	<mark>	program	stmt0	stmt	stmt_lst
+%type	<mark>	slabel	ulabel	flabel	label	using	using0
+%type	<mark>	fun	funvbl	modif
 %type	<mark>	exp	ass	opt
 %type	<mark>	unaryX	postX	primaX
 %type	<mark>	bracket	paren	sub	textX
@@ -210,13 +212,21 @@ static const struct marker _EMPTY_MARKER = { 0 };
 
 slabel	: LABEL	VBL			{$$=$2;}
 	;
-label	: CONST	| IDENT	| CAST	| DEFAULT	| GOTO	| SIZEOF	| UNARY
-	| RETURN | DO
-	| FOR	| IF	| LABEL	| SWITCH	| USING	| WHERE	| WHILE
-	| IN	| LAND	| LEQ	| LEQV	| LGE	| LOR	| MUL
-	| MODIF	| FUN	| VBL
+	/*********************************
+	generated shift/reduce conflicts
+	but allows reuse of keywords for
+	image or routine names
+	*********************************/
+ulabel	: IDENT	| CONST	| CAST	| GOTO	| SIZEOF
+	| ELSE	| ELSEW	| LABEL	| RETURN
+	| DO	| AMODIF
+	| FUN	| VBL	| COND	| ARG	| DEFAULT
 	;
-
+flabel	: ulabel | BREAK;
+label	: flabel
+	| WHERE	| WHILE	| CASE	| MODIF	| USING
+	| FOR	| IF	| UNARY	| SWITCH
+	;
 	/*********************************************************
 	CONCAT/COMMA require function with same/correct token.
 	With match we can append, otherwise create a big one.
@@ -224,14 +234,15 @@ label	: CONST	| IDENT	| CAST	| DEFAULT	| GOTO	| SIZEOF	| UNARY
 	because subscripts permit null/full value.
 	*********************************************************/
 unaryX	: ADD unaryX 		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
-	| UNARY	unaryX 		{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
-	| UNARYS unaryX 		{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
+	| UNARY unaryX	 	{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
+	| UNARYS unaryX 	{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
 	| INC unaryX 		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
 	| postX
 	;
 ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 					__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
-	| unaryX 			{}
+	| ERROR				{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
+	| unaryX
 	| unaryX '=' ass		{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
 	| unaryX BINEQ ass		{struct marker tmp;		/*binary operation and assign*/
 						_JUST2($2.builtin,$1,$3,tmp);
@@ -309,17 +320,17 @@ exp	: opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
 			&&	*(opcode_t *)$$.rptr->pointer == OPC_COMMA
 			&&	$$.rptr->ndesc < 250)
 				$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
-			else _FULL2(OPC_COMMA,$1,$3,$$);/*first comma*/
-					}
+			else _FULL2(OPC_COMMA,$1,$3,$$);}	/*first comma*/
 	| ass
+	| ass ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 	;
 sub	: exp 		{if ($$.rptr
 				&& $$.builtin != -2
 				&& $$.rptr->dtype == DTYPE_FUNCTION
 				&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
 				else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
-	| %empty		{_JUST0(OPC_ABORT,$$);}			/*empty argument list*/
-        ;
+       	| %empty		{_JUST0(OPC_ABORT,$$);}
+	;
 paren	: '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
 	| '(' stmt_lst ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
 	;
@@ -343,8 +354,7 @@ postX	: primaX
 				}
 	| postX INC 	 {int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
 					_JUST1(j,$1,$$);}		/*postINC*/
-	| label '(' sub ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
-	| label '(' sub ')'	{$$=$3;
+	| flabel '(' sub ')'	{$$=$3;
 				if ($1.builtin < 0) {int j;		/*unknown today*/
 					$$.rptr->pointer= (uint8_t *)&OpcExtFunction;
 					for (j=$$.rptr->ndesc; --j>=0;)
@@ -405,11 +415,12 @@ textX	: TEXT
 		Wait to make path/arg/const for simple; they may be text for -> or (.
 		Simple name are members of current node in tree.
 		********************************************************************/
-primaX	: MODIF VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/PRIVATE variable*/
-	| MODIF MODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
+modif	: MODIF	| AMODIF ;
+primaX	: modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/PRIVATE variable*/
+	| AMODIF AMODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
 					_JUST1($2.builtin,$3,tmp);
 					_JUST1($1.builtin,tmp,$$);}
-	| label			{if (*$$.rptr->pointer == '$') {
+	| ulabel		{if (*$$.rptr->pointer == '$') {
 					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
 					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == ARG)
 					{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
@@ -430,9 +441,9 @@ primaX	: MODIF VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 	Do not build a statement list unless and until needed.
 	These constructs cost little and add a lot.
 	******************************************************/
-funvbl	: FUN label				{$$=$2;}				/* FUN vbl(list)stmt	*/
-	| FUN MODIF label			{_JUST1($2.builtin,$3,$$);}		/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
-	| MODIF FUN label			{_JUST1($1.builtin,$3,$$);}		/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
+funvbl	: FUN ulabel				{$$=$2;}				/* FUN vbl(list)stmt	*/
+	| FUN MODIF ulabel			{_JUST1($2.builtin,$3,$$);}		/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
+	| MODIF FUN ulabel			{_JUST1($1.builtin,$3,$$);}		/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
 	;
 fun	: funvbl '(' sub ')'			{int j;	$$=$3;
 							$$.rptr->pointer= (uint8_t *)&OpcFun;
@@ -443,7 +454,9 @@ fun	: funvbl '(' sub ')'			{int j;	$$=$3;
 							++TDI_REFZONE.l_rel_path;
 						}
 	;
-stmt	: BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
+stmt0	: '`' stmt0				{$$.rptr=$2.rptr; $$.builtin= -2;
+						__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
+	| BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
 	| CASE DEFAULT stmt			{_FULL1($2.builtin,$3,$$);}		/* CASE DEFAULT stmt	*/
 	| DO '{' stmt_lst '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
@@ -452,19 +465,16 @@ stmt	: BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 	| IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
 	| IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
 	| slabel RANGE stmt			{_FULL2(OPC_LABEL,$1,$3,$$);}		/* LABEL label:stmt	*/
-/***	| RETURN opt				{if ($2.rptr == 0) {_JUST0($1.builtin,$$);}/* RETURN;		*/
-/***						else {_JUST1($1.builtin,$2,$$);}	}/* RETURN exp;		*/
-	| SWITCH paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
+	| SWITCH paren stmt0			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
 	| WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
 	| WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
 	| WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
 	| fun stmt				{TDI_REFZONE.l_rel_path--;
 						$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
-	| '`' stmt				{$$.rptr=$2.rptr; $$.builtin= -2;
-						__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
-	| opt ';'				{$$=$1;}
 	| '{' stmt_lst '}'                      {$$=$2; _RESOLVE($$);}          /* {statement list}     */
 	;
+stmt	: stmt0
+	| opt ';'				{$$=$1;}
 stmt_lst : stmt
 	| stmt_lst stmt	{short opcode;
 			if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/

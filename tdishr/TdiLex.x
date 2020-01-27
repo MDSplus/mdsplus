@@ -100,8 +100,8 @@ extern int TdiConvert();
 
 #define LEX_OK()	{\
  yylval_param->mark.w_ok = (TDI_REFZONE.a_cur = yy_cp) - TDI_REFZONE.a_begin;\
- *yy_cp = yyg->yy_hold_char;\
  if (yy_flex_debug) fprintf(stderr,"LEX: %s\n",TDI_REFZONE.a_begin);\
+ *yy_cp = yyg->yy_hold_char;\
 }
 //"
 
@@ -134,7 +134,9 @@ static inline int lex_point(LEX_ARGS);
 #define LEX_POINT()		{LEX_OK(); return lex_point(LEX_VARS);}
 #define	LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return token;}
 #define	LEX_CHAR(token)		LEX_OP(token,-1)
-#define LEX_BALANCE(token,cnt)	{if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt); LEX_CHAR(token)}
+#define LEX_BALANCE(token,cnt,mod)	{cnt mod;\
+ if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt);\
+ if (cnt<0) LEX_UNBALANCE("([{") else LEX_CHAR(token)}
 #define yyterminate()		{\
  if (TDI_REFZONE.a_cur == TDI_REFZONE.a_end) {\
   TDI_REFZONE.a_cur++;\
@@ -231,12 +233,12 @@ point	("->"{anum}+(":"|"..")?)
 "^"{white}*	LEX_OP(POWER,	OPC_POWER	)
 "|"{white}*	LEX_OP(IOR,	OPC_IOR		)
 "*"{white}*	LEX_CHAR('*')
-"("		LEX_BALANCE('(',++TDI_BALANCE_P)
-")"		LEX_BALANCE(')',--TDI_BALANCE_P)
-"{"		LEX_BALANCE('{',++TDI_BALANCE_B)
-"}"		LEX_BALANCE('}',--TDI_BALANCE_B)
-"["		LEX_BALANCE('[',++TDI_BALANCE_S)
-"]"		LEX_BALANCE(']',--TDI_BALANCE_S)
+"("		LEX_BALANCE('(',TDI_BALANCE_R,++)
+")"		LEX_BALANCE(')',TDI_BALANCE_R,--)
+"["		LEX_BALANCE('[',TDI_BALANCE_S,++)
+"]"		LEX_BALANCE(']',TDI_BALANCE_S,--)
+"{"		LEX_BALANCE('{',TDI_BALANCE_C,++)
+"}"		LEX_BALANCE('}',TDI_BALANCE_C,--)
 
 {float}		LEX_FLOAT()
 {int}		LEX_INTEGER()
