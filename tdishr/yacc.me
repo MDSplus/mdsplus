@@ -4,8 +4,8 @@
 
 cd $(dirname $0)
 ycmd='bison -d --verbose TdiYacc.y -bTdiYacc'
-xcmd='flex -p TdiLex.x'
+lcmd='flex -p TdiLex.l'
 scmd='sed -i "s/int num_to_read/size_t num_to_read/g" TdiLex.c'
 eval "$ycmd"
-eval "$xcmd"
+eval "$lcmd"
 eval "$scmd"

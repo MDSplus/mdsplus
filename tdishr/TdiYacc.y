@@ -89,6 +89,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdiyacc.h"
 #include "tdilex.h"
 
+#ifndef _MACOSX
+extern char *stpcpy(char *dest, const char *src);
+#endif
+
 extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
 extern int tdilex();
