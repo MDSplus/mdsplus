@@ -14,7 +14,7 @@ mdsdclThreadStatic.c     	\
 cmdExecute.c         	\
 cmdHelp.c               \
 cmdParseLex.c           \
-cmdParse.tab.c          \
+cmdParse.c          \
 mdsdclDeltatimeToSeconds.c \
 mdsdcl_commands.c \
 mdsdcl_show_version.c
@@ -61,17 +61,17 @@ cmdParseLex.o: cmdParseLex.c
 #cmdParse.tab.c: cmdParse.y
 #        bison cmdParse.y
 
-#cmdParseLex.c: cmdParse.x
-#	lex -P cmdParse_ cmdParse.x
+#cmdParseLex.c: cmdParse.l
+#	lex -P cmdParse_ cmdParse.l
 
 #ocldToXml: ocldToXml.c
 #	$(LINK.c) $(OUTPUT_OPTION) $<
 
-#ocldToXml.c: ocldToXml.x
-#       lex -P ocldToXml_ ocldToXml.x
+#ocldToXml.c: ocldToXml.l
+#       lex -P ocldToXml_ ocldToXml.l
 
 #mdsdcl_commands.xml: mdsdcl_tables.ocld
 #	./ocldToXml mdsdcl_tables.ocld mdsdcl_commands
 
-#mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.x
-#	lex -P mdsdclDelta_ mdsdclDeltatimeToSeconds.x
+#mdsdclDeltatimeToSeconds.c: mdsdclDeltatimeToSeconds.l
+#	lex -P mdsdclDelta_ mdsdclDeltatimeToSeconds.l
