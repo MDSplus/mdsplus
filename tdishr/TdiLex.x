@@ -142,7 +142,7 @@ static inline int lex_point(LEX_ARGS);
   TDI_REFZONE.a_cur++;\
   if (TDI_BALANCE) LEX_UNBALANCE("([{")\
   if (TDI_REFZONE.a_cur[-1] != ';') {if (yy_flex_debug) fprintf(stderr, "FIXUP ';'\n"); LEX_CHAR(';')}\
- } else return YY_NULL;\
+ } return YY_NULL;\
 }
 //"
 %}
