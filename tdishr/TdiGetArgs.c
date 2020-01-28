@@ -117,16 +117,20 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
   return status;
 }
 
-void UseNativeFloat(struct TdiCatStruct *cat)
-{
-  unsigned char k;
-  for (k = 0; k < TdiCAT_MAX; k++)
-    if (((TdiREF_CAT[k].cat & ~(0x800)) == (cat->out_cat & ~(0x800))) &&
-	(k == DTYPE_NATIVE_FLOAT ||
-	 k == DTYPE_NATIVE_DOUBLE || k == DTYPE_FLOAT_COMPLEX || k == DTYPE_DOUBLE_COMPLEX)) {
-      cat->out_dtype = k;
-      cat->out_cat = TdiREF_CAT[k].cat;
-    }
+void UseNativeFloat(struct TdiCatStruct *cat) {
+  dtype_t type;
+  tdicat_t tcat;
+#define CHECK(TYPE) tcat = TdiREF_CAT[type = TYPE].cat;\
+  if ((tcat & ~(TdiCAT_WIDE_EXP)) == (cat->out_cat & ~(TdiCAT_WIDE_EXP)))\
+    goto found;
+  CHECK(DTYPE_NATIVE_FLOAT  );
+  CHECK(DTYPE_NATIVE_DOUBLE );
+  CHECK(DTYPE_FLOAT_COMPLEX );
+  CHECK(DTYPE_DOUBLE_COMPLEX);
+  return;
+found: ;
+  cat->out_dtype = type;
+  cat->out_cat   = tcat;
 }
 
 /*-------------------------------------------------------------------*/
@@ -141,9 +145,11 @@ int TdiGetArgs(opcode_t opcode,
   struct TdiCatStruct *cptr;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int nc = 0, j;
-  unsigned short i1 = TdiREF_CAT[fun_ptr->i1].cat,
-      i2 = TdiREF_CAT[fun_ptr->i2].cat,
-      o1 = TdiREF_CAT[fun_ptr->o1].cat, o2 = TdiREF_CAT[fun_ptr->o2].cat;
+  tdicat_t
+	i1 = TDIREF_CAT(fun_ptr->i1).cat,
+	i2 = TDIREF_CAT(fun_ptr->i2).cat,
+	o1 = TDIREF_CAT(fun_ptr->o1).cat,
+	o2 = TDIREF_CAT(fun_ptr->o2).cat;
   unsigned char nd = 0, jd;
   int use_native = (fun_ptr->f2 != Tdi2Keep && fun_ptr->f2 != Tdi2Long2
 		    && fun_ptr->f2 != Tdi2Any && fun_ptr->f2 != Tdi2Cmplx);
