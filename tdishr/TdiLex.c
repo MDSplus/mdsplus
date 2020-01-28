@@ -663,7 +663,7 @@ extern int TdiConvert();
  yylval_param->mark.w_ok = TDI_REFZONE.l_ok = yy_bp - TDI_REFZONE.a_begin;\
  TDI_REFZONE.l_status = TdiUNBALANCE;\
  if (yy_flex_debug) fprintf(stderr,"UNBALANCED %s\n",token);\
- return ERROR;\
+ return LEX_ERROR;\
 }
 //"
 
@@ -673,20 +673,20 @@ static void upcase(char *const str, int len){
     *pc = (char)toupper(*pc);
 }
 static inline int lex_float(LEX_ARGS);
-static inline int lex_integer(LEX_ARGS);
+static inline int lex_int(LEX_ARGS);
 static inline int lex_ident(LEX_ARGS);
 static inline int lex_path(LEX_ARGS);
 static inline int lex_text(LEX_ARGS);
-static inline int lex_point(LEX_ARGS);
+static inline int lex_libcall(LEX_ARGS);
 
 #define LEX_FLOAT()		{LEX_OK(); return lex_float(LEX_VARS);}
-#define LEX_INTEGER()		{LEX_OK(); return lex_integer(LEX_VARS);}
+#define LEX_INT()		{LEX_OK(); return lex_int(LEX_VARS);}
 #define LEX_IDENT()		{LEX_OK(); return lex_ident(LEX_VARS);}
 #define LEX_PATH()		{LEX_OK(); return lex_path(LEX_VARS);}
 #define LEX_TEXT()		{LEX_OK(); return lex_text(LEX_VARS);}
-#define LEX_POINT()		{LEX_OK(); return lex_point(LEX_VARS);}
-#define	LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return token;}
-#define	LEX_CHAR(token)		LEX_OP(token,-1)
+#define LEX_LIBCALL()		{LEX_OK(); return lex_libcall(LEX_VARS);}
+#define LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return LEX_##token;}
+#define LEX_CHAR(c)		{LEX_OK(); yylval_param->mark.builtin = -1; return c;}
 #define LEX_BALANCE(token,cnt,mod)	{cnt mod;\
  if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt);\
  if (cnt<0) LEX_UNBALANCE("([{") else LEX_CHAR(token)}
@@ -981,7 +981,7 @@ YY_DECL
 		}
 
 	{
-#line 168 "TdiLex.x"
+#line 166 "TdiLex.x"
 
 
 #line 988 "TdiLex.c"
@@ -1040,355 +1040,355 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 170 "TdiLex.x"
+#line 168 "TdiLex.x"
 LEX_OK();
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 171 "TdiLex.x"
-LEX_UNBALANCE("/*")
+#line 169 "TdiLex.x"
+LEX_UNBALANCE("/*")	// */
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 172 "TdiLex.x"
+#line 170 "TdiLex.x"
 LEX_TEXT()
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 173 "TdiLex.x"
+#line 171 "TdiLex.x"
 LEX_UNBALANCE("\'")
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 174 "TdiLex.x"
+#line 172 "TdiLex.x"
 LEX_TEXT()
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 175 "TdiLex.x"
+#line 173 "TdiLex.x"
 LEX_UNBALANCE("\"")
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 178 "TdiLex.x"
+#line 176 "TdiLex.x"
 LEX_OK()
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 179 "TdiLex.x"
+#line 177 "TdiLex.x"
 LEX_OK()
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 181 "TdiLex.x"
+#line 179 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_LE		)
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 182 "TdiLex.x"
+#line 180 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_GE		)
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 183 "TdiLex.x"
+#line 181 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_EQ		)
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 184 "TdiLex.x"
+#line 182 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_NE		)
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 185 "TdiLex.x"
+#line 183 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_NE		)
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 187 "TdiLex.x"
+#line 185 "TdiLex.x"
 LEX_OP(LGES,	OPC_LE		)
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 188 "TdiLex.x"
+#line 186 "TdiLex.x"
 LEX_OP(LGES,	OPC_GE		)
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 189 "TdiLex.x"
+#line 187 "TdiLex.x"
 LEX_OP(LGES,	OPC_EQ		)
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 190 "TdiLex.x"
+#line 188 "TdiLex.x"
 LEX_OP(LEQS,	OPC_NE		)
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 191 "TdiLex.x"
+#line 189 "TdiLex.x"
 LEX_OP(LEQS,	OPC_NE		)
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 193 "TdiLex.x"
+#line 191 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_LE		)
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 194 "TdiLex.x"
+#line 192 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_GE		)
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 195 "TdiLex.x"
+#line 193 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_OR		)
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 196 "TdiLex.x"
+#line 194 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_AND		)
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 197 "TdiLex.x"
+#line 195 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_POWER	)
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 198 "TdiLex.x"
+#line 196 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_CONCAT	)
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 200 "TdiLex.x"
+#line 198 "TdiLex.x"
 LEX_OP(SHIFT,	OPC_SHIFT_LEFT	)
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 201 "TdiLex.x"
+#line 199 "TdiLex.x"
 LEX_OP(SHIFT,	OPC_SHIFT_RIGHT	)
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 202 "TdiLex.x"
+#line 200 "TdiLex.x"
 LEX_OP(LORS,	OPC_OR		)
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 203 "TdiLex.x"
+#line 201 "TdiLex.x"
 LEX_OP(LANDS,	OPC_AND		)
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 204 "TdiLex.x"
+#line 202 "TdiLex.x"
 LEX_OP(POWER,	OPC_POWER	)
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 205 "TdiLex.x"
+#line 203 "TdiLex.x"
 LEX_OP(CONCAT,	OPC_CONCAT	)
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 207 "TdiLex.x"
+#line 205 "TdiLex.x"
 LEX_OP(INC,	OPC_PRE_INC	)
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 208 "TdiLex.x"
+#line 206 "TdiLex.x"
 LEX_OP(INC,	OPC_PRE_DEC	)
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 209 "TdiLex.x"
+#line 207 "TdiLex.x"
 LEX_OP(RANGE,   OPC_DTYPE_RANGE )
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 210 "TdiLex.x"
+#line 208 "TdiLex.x"
 LEX_OP(RANGE,	OPC_DTYPE_RANGE	)
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 211 "TdiLex.x"
+#line 209 "TdiLex.x"
 LEX_OP(UNARYS,	OPC_NOT		)
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 212 "TdiLex.x"
+#line 210 "TdiLex.x"
 LEX_OP(UNARYS,	OPC_INOT	)
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 213 "TdiLex.x"
+#line 211 "TdiLex.x"
 LEX_OP(PROMO,	OPC_PROMOTE	)
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 215 "TdiLex.x"
+#line 213 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_MOD		)
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 216 "TdiLex.x"
+#line 214 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_IAND	)
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 217 "TdiLex.x"
+#line 215 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_MULTIPLY	)
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 218 "TdiLex.x"
+#line 216 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_ADD		)
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 219 "TdiLex.x"
+#line 217 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_SUBTRACT	)
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 220 "TdiLex.x"
+#line 218 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_DIVIDE	)
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 221 "TdiLex.x"
+#line 219 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_LT		)
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 222 "TdiLex.x"
+#line 220 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_GT		)
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 223 "TdiLex.x"
+#line 221 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_POWER	)
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 224 "TdiLex.x"
+#line 222 "TdiLex.x"
 LEX_OP(BINEQ,	OPC_IOR		)
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 226 "TdiLex.x"
+#line 224 "TdiLex.x"
 LEX_OP(MULS,	OPC_MOD		)
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 227 "TdiLex.x"
+#line 225 "TdiLex.x"
 LEX_OP(IAND,	OPC_IAND	)
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 228 "TdiLex.x"
+#line 226 "TdiLex.x"
 LEX_OP(ADD,	OPC_ADD		)
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 229 "TdiLex.x"
+#line 227 "TdiLex.x"
 LEX_OP(ADD,	OPC_SUBTRACT	)
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 230 "TdiLex.x"
+#line 228 "TdiLex.x"
 LEX_OP(MULS,	OPC_DIVIDE	)
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 231 "TdiLex.x"
+#line 229 "TdiLex.x"
 LEX_OP(LGES,	OPC_LT		)
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 232 "TdiLex.x"
+#line 230 "TdiLex.x"
 LEX_OP(LGES,	OPC_GT		)
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 233 "TdiLex.x"
+#line 231 "TdiLex.x"
 LEX_OP(POWER,	OPC_POWER	)
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 234 "TdiLex.x"
+#line 232 "TdiLex.x"
 LEX_OP(IOR,	OPC_IOR		)
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 235 "TdiLex.x"
+#line 233 "TdiLex.x"
 LEX_CHAR('*')
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 236 "TdiLex.x"
+#line 234 "TdiLex.x"
 LEX_BALANCE('(',TDI_BALANCE_R,++)
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 237 "TdiLex.x"
+#line 235 "TdiLex.x"
 LEX_BALANCE(')',TDI_BALANCE_R,--)
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 238 "TdiLex.x"
+#line 236 "TdiLex.x"
 LEX_BALANCE('[',TDI_BALANCE_S,++)
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 239 "TdiLex.x"
+#line 237 "TdiLex.x"
 LEX_BALANCE(']',TDI_BALANCE_S,--)
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 240 "TdiLex.x"
+#line 238 "TdiLex.x"
 LEX_BALANCE('{',TDI_BALANCE_C,++)
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 241 "TdiLex.x"
+#line 239 "TdiLex.x"
 LEX_BALANCE('}',TDI_BALANCE_C,--)
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 243 "TdiLex.x"
+#line 241 "TdiLex.x"
 LEX_FLOAT()
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 244 "TdiLex.x"
-LEX_INTEGER()
+#line 242 "TdiLex.x"
+LEX_INT()
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 245 "TdiLex.x"
+#line 243 "TdiLex.x"
 LEX_IDENT()
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 246 "TdiLex.x"
+#line 244 "TdiLex.x"
 LEX_PATH()
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 247 "TdiLex.x"
-LEX_POINT()
+#line 245 "TdiLex.x"
+LEX_LIBCALL()
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 248 "TdiLex.x"
+#line 246 "TdiLex.x"
 LEX_CHAR(yytext[0])
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 249 "TdiLex.x"
+#line 247 "TdiLex.x"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 1395 "TdiLex.c"
@@ -2461,7 +2461,7 @@ void tdifree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 249 "TdiLex.x"
+#line 247 "TdiLex.x"
 
 
 
@@ -2568,9 +2568,9 @@ static int lex_float(LEX_ARGS) {
 
   yylval_param->mark.builtin = -1;
   if STATUS_OK
-    return (VALUE);
+    return LEX_VALUE;
   TDI_REFZONE.l_status = status;
-  return (ERROR);
+  return LEX_ERROR;
 }
 
 /*--------------------------------------------------------
@@ -2595,10 +2595,10 @@ static inline int lex_ident(LEX_ARGS) {
 	break;
     if (j == 0) {
       yylval_param->mark.builtin = OPC_$;
-      return (IDENT);
+      return LEX_IDENT;
     }
   } else if (yytext[0] == '_')
-    return (VBL);
+    return LEX_VBL;
 
 	/**********************
 	Search of initial list.
@@ -2606,8 +2606,8 @@ static inline int lex_ident(LEX_ARGS) {
   j = tdi_hash(yyleng, yytext);
   if (j < 0) {
     if (yytext[0] == '$')
-      return (VBL);
-    return (IDENT);
+      return LEX_VBL;
+    return LEX_IDENT;
   }
 
 	/**********************************************
@@ -2627,7 +2627,7 @@ static inline int lex_ident(LEX_ARGS) {
     */
     return token;
   }
-  return (IDENT);
+  return LEX_IDENT;
 }
 
 /*--------------------------------------------------------
@@ -2663,7 +2663,7 @@ static inline int lex_ident(LEX_ARGS) {
 #define len1 8			/*length of a word in bits */
 #define num1 16			/*number of words to accumulate, octaword */
 
-static int lex_integer(LEX_ARGS) {
+static int lex_int(LEX_ARGS) {
   LEX_INIT;
   const struct {
    length_t length;
@@ -2873,17 +2873,17 @@ static int lex_integer(LEX_ARGS) {
       ptr[length - i - 1] = sav;
     }
 #endif
-    return (VALUE);
+    return LEX_VALUE;
   }
   TDI_REFZONE.l_status = status;
-  return (ERROR);
+  return LEX_ERROR;
 }
 
 /*--------------------------------------------------------
 	Convert Lex input to NID or absolute PATH.
 */ // used in TdiYacc.c
 int tdi_lex_path(int len, char* str, struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
-  int nid, token = VALUE;
+  int nid, token = LEX_VALUE;
   char *str_l;
   str_l = strncpy((char *)malloc(len + 1), str, len);
   str_l[len] = 0;
@@ -2907,7 +2907,7 @@ int tdi_lex_path(int len, char* str, struct marker *mark_ptr, TDITHREADSTATIC_AR
       StrFree1Dx(&abs_dsc);
     } else {
       TDI_REFZONE.l_status = TreeNOT_OPEN;
-      token = ERROR;
+      token = LEX_ERROR;
     }
   }
   free(str_l);
@@ -2931,7 +2931,7 @@ static inline int lex_text(LEX_ARGS) {
   LEX_INIT;
   if (yytext[yyleng-1] != yytext[0]) {
     TDI_REFZONE.l_status = TdiUNBALANCE;
-    return ERROR;
+    return LEX_ERROR;
   }
   MAKE_S(DTYPE_T, yyleng-2, yylval_param->mark.rptr);
   int x;
@@ -2991,7 +2991,7 @@ static inline int lex_text(LEX_ARGS) {
       *dp++ = *sp++;
   }
   yylval_param->mark.rptr->length = dp - (char*)yylval_param->mark.rptr->pointer;
-  return TEXT;
+  return LEX_TEXT;
 }
 
 /*--------------------------------------------------------
@@ -2999,7 +2999,7 @@ static inline int lex_text(LEX_ARGS) {
  We cannot match just "->" and token for label POINT label RANGE label
  because RANGE will be consumed by {path}
 */
-static inline int lex_point(LEX_ARGS) {
+static inline int lex_libcall(LEX_ARGS) {
   LEX_INIT;
   int lenx = yyleng - 2;
   while (yytext[lenx + 1] == '.' || yytext[lenx + 1] == ':')
@@ -3007,7 +3007,7 @@ static inline int lex_point(LEX_ARGS) {
   yylval_param->mark.builtin = -1;
   MAKE_S(DTYPE_T, lenx, yylval_param->mark.rptr);
   memcpy((char *)yylval_param->mark.rptr->pointer, &yytext[2], lenx);
-  return POINT;
+  return LEX_POINT;
 }
 
 void tdi_push_new_buffer  (mdsdsc_t * text_ptr, TDITHREADSTATIC_ARG) {

@@ -1,6 +1,7 @@
 %output  "TdiYacc.c"
 %defines "tdiyacc.h"
 %define api.pure full
+%define api.token.prefix {LEX_}
 %lex-param   { TDITHREADSTATIC_TYPE *TDITHREADSTATIC_VAR }
 %parse-param { TDITHREADSTATIC_TYPE *TDITHREADSTATIC_VAR }
 %code requires {
@@ -145,9 +146,9 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	ERROR	IDENT	POINT	TEXT	VALUE
 
 %token  <mark>	BREAK	CASE	COND	DEFAULT	DO	ELSE    ELSEW	FOR
-%token	<mark>	GOTO	IF	LABEL	RETURN	SIZEOF	SWITCH	USING	WHERE	WHILE
+%token	<mark>	GOTO	IF	LABEL	RETURN	SWITCH	USING	WHERE	WHILE
 
-%token	<mark>	CAST	CONST	INC	ARG
+%token	<mark>	CAST	CONST	INC	ARG	SIZEOF
 %token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR
 %token	<mark>	POWER	PROMO	RANGE	SHIFT	BINEQ
 %token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY	LEQV
@@ -190,7 +191,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %right POWER	//-	2	1	1	** ^
 
 %right UNARY UNARYS//2 * &	4 + -	3	?	+ - .unary.
-		//2	8.NOT.	5	?	~ ! NOT INOT SIZEOF
+		//2	8.NOT.	5	?	~ ! NOT INOT
 		//2	-	-	-	++ --
 //%right CAST	//2	-	-	-	(cast)
 		//-	1.uop.	-	-	defined unary .INVERSE.
@@ -217,7 +218,7 @@ slabel	: LABEL	VBL			{$$=$2;}
 	but allows reuse of keywords for
 	image or routine names
 	*********************************/
-ulabel	: IDENT	| CONST	| CAST	| GOTO	| SIZEOF
+ulabel	: IDENT	| CAST	| CONST	| GOTO	| SIZEOF
 	| DO	| ELSE	| ELSEW	| LABEL	| RETURN
 	| FUN	| VBL	| COND	| ARG	| DEFAULT
 	| AMODIF
@@ -427,13 +428,13 @@ primaX	: modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 					_JUST1($1.builtin,tmp,$$);}
 	| ulabel		{if (*$$.rptr->pointer == '$') {
 					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
-					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == ARG)
+					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_ARG)
 					{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
-					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == CONST)
+					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_CONST)
 						_JUST0($1.builtin,$$);
 				} else	if (*$$.rptr->pointer == '_')
 					$$.rptr->dtype=DTYPE_IDENT;
-				else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == ERROR)
+				else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == LEX_ERROR)
 					{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
 				}
 	| VALUE
@@ -502,7 +503,3 @@ program : stmt_lst	{_RESOLVE($$);		/*statements*/
 	| error		{TDI_REFZONE.l_status=TdiSYNTAX; yyerror(TDITHREADSTATIC_VAR, "syntax error"); return YY_ASIS;} /* YACC error	*/
 	;
 %%
-
-#define DEFINE(NAME) const int LEX_##NAME=NAME;
-#include "lexdef.h"
-#undef DEFINE

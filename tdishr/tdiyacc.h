@@ -40,7 +40,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 6 "TdiYacc.y" /* yacc.c:1909  */
+#line 7 "TdiYacc.y" /* yacc.c:1909  */
 
 #define YYLTYPE TDITHREADSTATIC_TYPE
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -55,62 +55,62 @@ typedef void* yyscan_t;
 # define YYTOKENTYPE
   enum yytokentype
   {
-    END = 258,
-    ELSE = 259,
-    ELSEW = 260,
-    ERROR = 261,
-    IDENT = 262,
-    POINT = 263,
-    TEXT = 264,
-    VALUE = 265,
-    BREAK = 266,
-    CASE = 267,
-    COND = 268,
-    DEFAULT = 269,
-    DO = 270,
-    FOR = 271,
-    GOTO = 272,
-    IF = 273,
-    LABEL = 274,
-    RETURN = 275,
-    SIZEOF = 276,
-    SWITCH = 277,
-    USING = 278,
-    WHERE = 279,
-    WHILE = 280,
-    CAST = 281,
-    CONST = 282,
-    INC = 283,
-    ARG = 284,
-    ADD = 285,
-    CONCAT = 286,
-    IAND = 287,
-    IN = 288,
-    IOR = 289,
-    IXOR = 290,
-    POWER = 291,
-    PROMO = 292,
-    RANGE = 293,
-    SHIFT = 294,
-    BINEQ = 295,
-    LAND = 296,
-    LEQ = 297,
-    LGE = 298,
-    LOR = 299,
-    MUL = 300,
-    UNARY = 301,
-    LEQV = 302,
-    LANDS = 303,
-    LEQS = 304,
-    LGES = 305,
-    LORS = 306,
-    MULS = 307,
-    UNARYS = 308,
-    LEQVS = 309,
-    FUN = 310,
-    MODIF = 311,
-    VBL = 312,
-    AMODIF = 313
+    LEX_END = 258,
+    LEX_ELSE = 259,
+    LEX_ELSEW = 260,
+    LEX_ERROR = 261,
+    LEX_IDENT = 262,
+    LEX_POINT = 263,
+    LEX_TEXT = 264,
+    LEX_VALUE = 265,
+    LEX_BREAK = 266,
+    LEX_CASE = 267,
+    LEX_COND = 268,
+    LEX_DEFAULT = 269,
+    LEX_DO = 270,
+    LEX_FOR = 271,
+    LEX_GOTO = 272,
+    LEX_IF = 273,
+    LEX_LABEL = 274,
+    LEX_RETURN = 275,
+    LEX_SWITCH = 276,
+    LEX_USING = 277,
+    LEX_WHERE = 278,
+    LEX_WHILE = 279,
+    LEX_CAST = 280,
+    LEX_CONST = 281,
+    LEX_INC = 282,
+    LEX_ARG = 283,
+    LEX_SIZEOF = 284,
+    LEX_ADD = 285,
+    LEX_CONCAT = 286,
+    LEX_IAND = 287,
+    LEX_IN = 288,
+    LEX_IOR = 289,
+    LEX_IXOR = 290,
+    LEX_POWER = 291,
+    LEX_PROMO = 292,
+    LEX_RANGE = 293,
+    LEX_SHIFT = 294,
+    LEX_BINEQ = 295,
+    LEX_LAND = 296,
+    LEX_LEQ = 297,
+    LEX_LGE = 298,
+    LEX_LOR = 299,
+    LEX_MUL = 300,
+    LEX_UNARY = 301,
+    LEX_LEQV = 302,
+    LEX_LANDS = 303,
+    LEX_LEQS = 304,
+    LEX_LGES = 305,
+    LEX_LORS = 306,
+    LEX_MULS = 307,
+    LEX_UNARYS = 308,
+    LEX_LEQVS = 309,
+    LEX_FUN = 310,
+    LEX_MODIF = 311,
+    LEX_VBL = 312,
+    LEX_AMODIF = 313
   };
 #endif
 
@@ -119,7 +119,7 @@ typedef void* yyscan_t;
 
 union YYSTYPE
 {
-#line 135 "TdiYacc.y" /* yacc.c:1909  */
+#line 136 "TdiYacc.y" /* yacc.c:1909  */
 struct marker mark;
 
 #line 126 "tdiyacc.h" /* yacc.c:1909  */

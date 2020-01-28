@@ -34,9 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <strroutines.h>
 #include <mds_stdarg.h>
+
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdithreadstatic.h"
+#include "tdiyacc.h"
 
 #define P_STMT          96
 #define P_ARG           88
@@ -44,7 +46,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern int Tdi0Decompile();
 extern int TdiSingle();
-extern int LEX_CONST;
 
 static const struct op_rec {
   char *symbol;

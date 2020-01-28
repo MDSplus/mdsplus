@@ -110,7 +110,7 @@ extern int TdiConvert();
  yylval_param->mark.w_ok = TDI_REFZONE.l_ok = yy_bp - TDI_REFZONE.a_begin;\
  TDI_REFZONE.l_status = TdiUNBALANCE;\
  if (yy_flex_debug) fprintf(stderr,"UNBALANCED %s\n",token);\
- return ERROR;\
+ return LEX_ERROR;\
 }
 //"
 
@@ -120,20 +120,20 @@ static void upcase(char *const str, int len){
     *pc = (char)toupper(*pc);
 }
 static inline int lex_float(LEX_ARGS);
-static inline int lex_integer(LEX_ARGS);
+static inline int lex_int(LEX_ARGS);
 static inline int lex_ident(LEX_ARGS);
 static inline int lex_path(LEX_ARGS);
 static inline int lex_text(LEX_ARGS);
-static inline int lex_point(LEX_ARGS);
+static inline int lex_libcall(LEX_ARGS);
 
 #define LEX_FLOAT()		{LEX_OK(); return lex_float(LEX_VARS);}
-#define LEX_INTEGER()		{LEX_OK(); return lex_integer(LEX_VARS);}
+#define LEX_INT()		{LEX_OK(); return lex_int(LEX_VARS);}
 #define LEX_IDENT()		{LEX_OK(); return lex_ident(LEX_VARS);}
 #define LEX_PATH()		{LEX_OK(); return lex_path(LEX_VARS);}
 #define LEX_TEXT()		{LEX_OK(); return lex_text(LEX_VARS);}
-#define LEX_POINT()		{LEX_OK(); return lex_point(LEX_VARS);}
-#define	LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return token;}
-#define	LEX_CHAR(token)		LEX_OP(token,-1)
+#define LEX_LIBCALL()		{LEX_OK(); return lex_libcall(LEX_VARS);}
+#define LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return LEX_##token;}
+#define LEX_CHAR(c)		{LEX_OK(); yylval_param->mark.builtin = -1; return c;}
 #define LEX_BALANCE(token,cnt,mod)	{cnt mod;\
  if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt);\
  if (cnt<0) LEX_UNBALANCE("([{") else LEX_CHAR(token)}
@@ -149,30 +149,28 @@ static inline int lex_point(LEX_ARGS);
 
 white	[ \t\r\l]
 anum	[A-Za-z$_0-9]
-name	([A-Za-z$_]{anum}*)
 exp	([DdEeFfGgHhSsTtVv][\-+]?[0-9]+)
-int	([0-9][0-9A-Za-z]*)
 f3	("."?[0-9]+{exp})
 f2	([0-9]+"."[0-9]*{exp})
 f1	([0-9]*"."[0-9]+)
 f0	([0-9]+".")
-float	({f0}|{f1}|{f2}|{f3})
-node	({anum}+"::")
-device	([A-Za-z$_]{anum}*":")
-dir	("["("-"*|{anum}*)("."{anum}+)*"]")
-ext	("."{anum}+)
-image	({node}*{device}?{dir}?{anum}+{ext}?)
-path	(((("\\"({name}"::")?|[.:])?{name})|(".-"("."?"-")*))([.:]{name})*)
-point	("->"{anum}+(":"|"..")?)
 
+int	([0-9][0-9A-Za-z]*)
+float	({f0}|{f1}|{f2}|{f3})
+ident	([A-Za-z$_]{anum}*)
+path	(((("\\"({ident}"::")?|[.:])?{ident})|(".-"("."?"-")*))([.:]{ident})*)
+libcall	("->"{anum}+(":"|"..")?)
+comment ("/*"(\n|[^\*]|\*[^/])*"*/")
+sqtext  ("\'"(\n|\\.|[^'\\])*"\'")
+dqtext	("\""(\n|\\.|[^"\\])*"\"")
 %%
 
-"/*"(\n|[^\*]|\*[^/])*"*/"	LEX_OK();
-"/*"		 		LEX_UNBALANCE("/*")
-"\'"(\n|\\.|[^'\\])*"\'"	LEX_TEXT()
-"\'"		 		LEX_UNBALANCE("\'")
-"\""(\n|\\.|[^"\\])*"\""	LEX_TEXT()
-"\""				LEX_UNBALANCE("\"")
+{comment}	LEX_OK();
+"/*"		LEX_UNBALANCE("/*")	// */
+{sqtext}	LEX_TEXT()
+"\'"		LEX_UNBALANCE("\'")
+{dqtext}	LEX_TEXT()
+"\""		LEX_UNBALANCE("\"")
 
 
 {white}+	LEX_OK()
@@ -241,10 +239,10 @@ point	("->"{anum}+(":"|"..")?)
 "}"		LEX_BALANCE('}',TDI_BALANCE_C,--)
 
 {float}		LEX_FLOAT()
-{int}		LEX_INTEGER()
-{name}		LEX_IDENT()
+{int}		LEX_INT()
+{ident}		LEX_IDENT()
 {path}		LEX_PATH()
-{point}		LEX_POINT()
+{libcall}	LEX_LIBCALL()
 .		LEX_CHAR(yytext[0])
 %%
 
@@ -351,9 +349,9 @@ static int lex_float(LEX_ARGS) {
 
   yylval_param->mark.builtin = -1;
   if STATUS_OK
-    return (VALUE);
+    return LEX_VALUE;
   TDI_REFZONE.l_status = status;
-  return (ERROR);
+  return LEX_ERROR;
 }
 
 /*--------------------------------------------------------
@@ -378,10 +376,10 @@ static inline int lex_ident(LEX_ARGS) {
 	break;
     if (j == 0) {
       yylval_param->mark.builtin = OPC_$;
-      return (IDENT);
+      return LEX_IDENT;
     }
   } else if (yytext[0] == '_')
-    return (VBL);
+    return LEX_VBL;
 
 	/**********************
 	Search of initial list.
@@ -389,8 +387,8 @@ static inline int lex_ident(LEX_ARGS) {
   j = tdi_hash(yyleng, yytext);
   if (j < 0) {
     if (yytext[0] == '$')
-      return (VBL);
-    return (IDENT);
+      return LEX_VBL;
+    return LEX_IDENT;
   }
 
 	/**********************************************
@@ -410,7 +408,7 @@ static inline int lex_ident(LEX_ARGS) {
     */
     return token;
   }
-  return (IDENT);
+  return LEX_IDENT;
 }
 
 /*--------------------------------------------------------
@@ -446,7 +444,7 @@ static inline int lex_ident(LEX_ARGS) {
 #define len1 8			/*length of a word in bits */
 #define num1 16			/*number of words to accumulate, octaword */
 
-static int lex_integer(LEX_ARGS) {
+static int lex_int(LEX_ARGS) {
   LEX_INIT;
   const struct {
    length_t length;
@@ -656,17 +654,17 @@ static int lex_integer(LEX_ARGS) {
       ptr[length - i - 1] = sav;
     }
 #endif
-    return (VALUE);
+    return LEX_VALUE;
   }
   TDI_REFZONE.l_status = status;
-  return (ERROR);
+  return LEX_ERROR;
 }
 
 /*--------------------------------------------------------
 	Convert Lex input to NID or absolute PATH.
 */ // used in TdiYacc.c
 int tdi_lex_path(int len, char* str, struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
-  int nid, token = VALUE;
+  int nid, token = LEX_VALUE;
   char *str_l;
   str_l = strncpy((char *)malloc(len + 1), str, len);
   str_l[len] = 0;
@@ -690,7 +688,7 @@ int tdi_lex_path(int len, char* str, struct marker *mark_ptr, TDITHREADSTATIC_AR
       StrFree1Dx(&abs_dsc);
     } else {
       TDI_REFZONE.l_status = TreeNOT_OPEN;
-      token = ERROR;
+      token = LEX_ERROR;
     }
   }
   free(str_l);
@@ -714,7 +712,7 @@ static inline int lex_text(LEX_ARGS) {
   LEX_INIT;
   if (yytext[yyleng-1] != yytext[0]) {
     TDI_REFZONE.l_status = TdiUNBALANCE;
-    return ERROR;
+    return LEX_ERROR;
   }
   MAKE_S(DTYPE_T, yyleng-2, yylval_param->mark.rptr);
   int x;
@@ -774,7 +772,7 @@ static inline int lex_text(LEX_ARGS) {
       *dp++ = *sp++;
   }
   yylval_param->mark.rptr->length = dp - (char*)yylval_param->mark.rptr->pointer;
-  return TEXT;
+  return LEX_TEXT;
 }
 
 /*--------------------------------------------------------
@@ -782,7 +780,7 @@ static inline int lex_text(LEX_ARGS) {
  We cannot match just "->" and token for label POINT label RANGE label
  because RANGE will be consumed by {path}
 */
-static inline int lex_point(LEX_ARGS) {
+static inline int lex_libcall(LEX_ARGS) {
   LEX_INIT;
   int lenx = yyleng - 2;
   while (yytext[lenx + 1] == '.' || yytext[lenx + 1] == ':')
@@ -790,7 +788,7 @@ static inline int lex_point(LEX_ARGS) {
   yylval_param->mark.builtin = -1;
   MAKE_S(DTYPE_T, lenx, yylval_param->mark.rptr);
   memcpy((char *)yylval_param->mark.rptr->pointer, &yytext[2], lenx);
-  return POINT;
+  return LEX_POINT;
 }
 
 void tdi_push_new_buffer  (mdsdsc_t * text_ptr, TDITHREADSTATIC_ARG) {
