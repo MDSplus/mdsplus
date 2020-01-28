@@ -88,28 +88,29 @@ typedef void* yyscan_t;
     IN = 288,
     IOR = 289,
     IXOR = 290,
-    LEQV = 291,
-    POWER = 292,
-    PROMO = 293,
-    RANGE = 294,
-    SHIFT = 295,
-    BINEQ = 296,
-    LAND = 297,
-    LEQ = 298,
-    LGE = 299,
-    LOR = 300,
-    MUL = 301,
-    UNARY = 302,
+    POWER = 291,
+    PROMO = 292,
+    RANGE = 293,
+    SHIFT = 294,
+    BINEQ = 295,
+    LAND = 296,
+    LEQ = 297,
+    LGE = 298,
+    LOR = 299,
+    MUL = 300,
+    UNARY = 301,
+    LEQV = 302,
     LANDS = 303,
     LEQS = 304,
     LGES = 305,
     LORS = 306,
     MULS = 307,
     UNARYS = 308,
-    FUN = 309,
-    MODIF = 310,
-    VBL = 311,
-    AMODIF = 312
+    LEQVS = 309,
+    FUN = 310,
+    MODIF = 311,
+    VBL = 312,
+    AMODIF = 313
   };
 #endif
 
@@ -121,7 +122,7 @@ union YYSTYPE
 #line 135 "TdiYacc.y" /* yacc.c:1909  */
 struct marker mark;
 
-#line 125 "tdiyacc.h" /* yacc.c:1909  */
+#line 126 "tdiyacc.h" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

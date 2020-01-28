@@ -148,10 +148,10 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	GOTO	IF	LABEL	RETURN	SIZEOF	SWITCH	USING	WHERE	WHILE
 
 %token	<mark>	CAST	CONST	INC	ARG
-%token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR	LEQV
+%token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR
 %token	<mark>	POWER	PROMO	RANGE	SHIFT	BINEQ
-%token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY
-%token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS
+%token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY	LEQV
+%token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
 %token	<mark>	FUN	MODIF	VBL	AMODIF
 
 %type	<mark>	program	stmt0	stmt	stmt_lst
@@ -218,13 +218,18 @@ slabel	: LABEL	VBL			{$$=$2;}
 	image or routine names
 	*********************************/
 ulabel	: IDENT	| CONST	| CAST	| GOTO	| SIZEOF
-	| ELSE	| ELSEW	| LABEL	| RETURN
-	| DO	| AMODIF
+	| DO	| ELSE	| ELSEW	| LABEL	| RETURN
 	| FUN	| VBL	| COND	| ARG	| DEFAULT
+	| AMODIF
 	;
-flabel	: ulabel | BREAK;
+flabel	: ulabel
+	| BREAK | MODIF
+	| MUL	| MULS
+	| LAND	| LEQ	| LGE	| LOR	| LEQV
+	| LANDS | LEQS	| LGES	| LORS	| LEQVS
+	;
 label	: flabel
-	| WHERE	| WHILE	| CASE	| MODIF	| USING
+	| WHERE	| WHILE	| CASE	| USING
 	| FOR	| IF	| UNARY	| SWITCH
 	;
 	/*********************************************************
