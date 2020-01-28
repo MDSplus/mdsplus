@@ -310,7 +310,7 @@ int main(int argc, char **argv)
   while ((command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
-    int comment = command[0] == '!';
+    int comment = command[0] == '#';
     if (!comment) {
       if (f_in) {
 	fprintf(f_out,"%s\n",command);

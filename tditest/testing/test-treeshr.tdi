@@ -1,5 +1,5 @@
 _shot=3
-!current_shot('subtree')
+#current_shot('subtree')
 TreeOpen('main',-1,1)
 member
 _nids=getnci('***','nid_number'),size(_nids)
@@ -91,9 +91,9 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 member
 TreeOpen('main',-1,1)
 TreeOpenEdit('main',_shot)
-!should reopen _shot in edit mode
+#should reopen _shot in edit mode
 TreeClose('main',_shot)
-!should leave model open and top tree
+#should leave model open and top tree
 TreeDeletePulseFile(_shot)
 TreeClose()
 TreeOpenNew('main',_shot)
