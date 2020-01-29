@@ -1010,8 +1010,9 @@ int yy_flex_debug = 0;
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "ocldToXml.x"
-#line 2 "ocldToXml.x"
+#line 1 "yylex/ocldToXml.l"
+#define YY_NO_INPUT 1
+#line 6 "yylex/ocldToXml.l"
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -1048,7 +1049,7 @@ static void endSection();
 
 
 
-#line 1052 "ocldToXml.c"
+#line 1053 "ocldToXml.c"
 
 #define INITIAL 0
 #define module 1
@@ -1130,8 +1131,6 @@ extern int yywrap (void );
 #endif
 
 #ifndef YY_NO_UNPUT
-    
-    static void yyunput (int c,char *buf_ptr  );
     
 #endif
 
@@ -1291,9 +1290,9 @@ YY_DECL
 		}
 
 	{
-#line 51 "ocldToXml.x"
+#line 53 "yylex/ocldToXml.l"
 
-#line 1297 "ocldToXml.c"
+#line 1296 "ocldToXml.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1354,321 +1353,321 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 52 "ocldToXml.x"
+#line 54 "yylex/ocldToXml.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 53 "ocldToXml.x"
+#line 55 "yylex/ocldToXml.l"
 BEGIN module;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 54 "ocldToXml.x"
+#line 56 "yylex/ocldToXml.l"
 printf("<module name=\"%s\">\n",yytext); BEGIN INITIAL;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 55 "ocldToXml.x"
+#line 57 "yylex/ocldToXml.l"
 endSection(); BEGIN verb;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 56 "ocldToXml.x"
+#line 58 "yylex/ocldToXml.l"
 printf("  <verb name=\"%s\">\n",yytext); inverb=1; BEGIN INITIAL;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 57 "ocldToXml.x"
+#line 59 "yylex/ocldToXml.l"
 BEGIN routine;
 	YY_BREAK
 case 7:
 /* rule 7 can match eol */
 YY_RULE_SETUP
-#line 58 "ocldToXml.x"
+#line 60 "yylex/ocldToXml.l"
 
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 59 "ocldToXml.x"
+#line 61 "yylex/ocldToXml.l"
 printf("    <routine name=\"%s\"/>\n",yytext); BEGIN INITIAL;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 60 "ocldToXml.x"
+#line 62 "yylex/ocldToXml.l"
 BEGIN parameter;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 61 "ocldToXml.x"
+#line 63 "yylex/ocldToXml.l"
 printf("    <parameter name=\"%s\"",yytext);
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 62 "ocldToXml.x"
+#line 64 "yylex/ocldToXml.l"
 BEGIN parameter_prompt;
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 63 "ocldToXml.x"
+#line 65 "yylex/ocldToXml.l"
 printf(" prompt=\"%.*s\"",strlen(yytext)-2,yytext+1); BEGIN parameter;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 64 "ocldToXml.x"
+#line 66 "yylex/ocldToXml.l"
 BEGIN parameter_label;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 65 "ocldToXml.x"
+#line 67 "yylex/ocldToXml.l"
 printf(" label=\"%s\"",yytext); BEGIN parameter;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 66 "ocldToXml.x"
+#line 68 "yylex/ocldToXml.l"
 BEGIN parameter_value;
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 67 "ocldToXml.x"
+#line 69 "yylex/ocldToXml.l"
 
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 68 "ocldToXml.x"
+#line 70 "yylex/ocldToXml.l"
 printf(" required=\"True\"");
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 69 "ocldToXml.x"
+#line 71 "yylex/ocldToXml.l"
 printf(" list=\"True\"");
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 70 "ocldToXml.x"
+#line 72 "yylex/ocldToXml.l"
 BEGIN parameter_value_type;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 71 "ocldToXml.x"
+#line 73 "yylex/ocldToXml.l"
 BEGIN parameter_value_default;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 72 "ocldToXml.x"
+#line 74 "yylex/ocldToXml.l"
 printf(" type=\"%s\"",yytext); BEGIN parameter_value;
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 73 "ocldToXml.x"
+#line 75 "yylex/ocldToXml.l"
 printf(" default=\"%.*s\"",strlen(yytext)-2,yytext+1); BEGIN parameter_value;
 	YY_BREAK
 case 23:
 /* rule 23 can match eol */
 YY_RULE_SETUP
-#line 74 "ocldToXml.x"
+#line 76 "yylex/ocldToXml.l"
 printf(" default=\"%s\"",yytext); BEGIN parameter_value;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 75 "ocldToXml.x"
+#line 77 "yylex/ocldToXml.l"
 BEGIN parameter;
 	YY_BREAK
 case 25:
 /* rule 25 can match eol */
 YY_RULE_SETUP
-#line 76 "ocldToXml.x"
+#line 78 "yylex/ocldToXml.l"
 printf("/>\n"); BEGIN INITIAL;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 77 "ocldToXml.x"
+#line 79 "yylex/ocldToXml.l"
 endSection(); BEGIN type;
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 78 "ocldToXml.x"
+#line 80 "yylex/ocldToXml.l"
 printf("  <type name=\"%s\">\n",yytext); intype=1; BEGIN INITIAL;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 79 "ocldToXml.x"
+#line 81 "yylex/ocldToXml.l"
 BEGIN keyword;
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 80 "ocldToXml.x"
+#line 82 "yylex/ocldToXml.l"
 printf("\"    <keyword name=\"%s\"",yytext); BEGIN keyword_params;
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 81 "ocldToXml.x"
+#line 83 "yylex/ocldToXml.l"
 printf(" defaulted=\"True\"");
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 82 "ocldToXml.x"
+#line 84 "yylex/ocldToXml.l"
 BEGIN keyword_value;
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 83 "ocldToXml.x"
+#line 85 "yylex/ocldToXml.l"
 BEGIN keyword_value_type;
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 84 "ocldToXml.x"
+#line 86 "yylex/ocldToXml.l"
 BEGIN parameter_value_default;
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 85 "ocldToXml.x"
+#line 87 "yylex/ocldToXml.l"
 printf(" type=\"%s\"",yytext); BEGIN keyword_value;
 	YY_BREAK
 case 35:
 /* rule 35 can match eol */
 YY_RULE_SETUP
-#line 86 "ocldToXml.x"
+#line 88 "yylex/ocldToXml.l"
 printf(" default=\"%.*s\"",strlen(yytext)-2,yytext+1); BEGIN keyword_value;
 	YY_BREAK
 case 36:
 /* rule 36 can match eol */
 YY_RULE_SETUP
-#line 87 "ocldToXml.x"
+#line 89 "yylex/ocldToXml.l"
 printf(" default=\"%s\"",yytext); BEGIN keyword_value;
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 88 "ocldToXml.x"
+#line 90 "yylex/ocldToXml.l"
 BEGIN keyword_syntax;
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 89 "ocldToXml.x"
+#line 91 "yylex/ocldToXml.l"
 printf(" syntax=\"%s\"",yytext); BEGIN keyword_params;
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 90 "ocldToXml.x"
+#line 92 "yylex/ocldToXml.l"
 BEGIN keyword_params;
 	YY_BREAK
 case 40:
 /* rule 40 can match eol */
 YY_RULE_SETUP
-#line 91 "ocldToXml.x"
+#line 93 "yylex/ocldToXml.l"
 printf("/>\"\n"); BEGIN INITIAL;
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 92 "ocldToXml.x"
+#line 94 "yylex/ocldToXml.l"
 endSection(); BEGIN syntax;
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 93 "ocldToXml.x"
+#line 95 "yylex/ocldToXml.l"
 printf("  <syntax name=\"%s\">\n",yytext); insyntax=1; BEGIN INITIAL;
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 94 "ocldToXml.x"
+#line 96 "yylex/ocldToXml.l"
 BEGIN qualifier;
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 95 "ocldToXml.x"
+#line 97 "yylex/ocldToXml.l"
 printf("    <qualifier name=\"%s\"",yytext);
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 96 "ocldToXml.x"
+#line 98 "yylex/ocldToXml.l"
 printf(" defaulted=\"True\"");
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 97 "ocldToXml.x"
+#line 99 "yylex/ocldToXml.l"
 printf(" nonnegatable=\"True\"");
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 98 "ocldToXml.x"
+#line 100 "yylex/ocldToXml.l"
 BEGIN qualifier_value;
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 99 "ocldToXml.x"
+#line 101 "yylex/ocldToXml.l"
 ;
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 100 "ocldToXml.x"
+#line 102 "yylex/ocldToXml.l"
 BEGIN qualifier_syntax;
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 101 "ocldToXml.x"
+#line 103 "yylex/ocldToXml.l"
 printf(" syntax=\"%s\"",yytext); BEGIN qualifier;
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 102 "ocldToXml.x"
+#line 104 "yylex/ocldToXml.l"
 printf(" required=\"True\"");
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 103 "ocldToXml.x"
+#line 105 "yylex/ocldToXml.l"
 printf(" list=\"True\"");
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 104 "ocldToXml.x"
+#line 106 "yylex/ocldToXml.l"
 BEGIN qualifier_value_type;
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 105 "ocldToXml.x"
+#line 107 "yylex/ocldToXml.l"
 BEGIN qualifier_value_default;
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 106 "ocldToXml.x"
+#line 108 "yylex/ocldToXml.l"
 printf(" type=\"%s\"",yytext); BEGIN qualifier_value;
 	YY_BREAK
 case 56:
 /* rule 56 can match eol */
 YY_RULE_SETUP
-#line 107 "ocldToXml.x"
+#line 109 "yylex/ocldToXml.l"
 printf(" default=\"%.*s\"",strlen(yytext)-2,yytext+1); BEGIN qualifier_value;
 	YY_BREAK
 case 57:
 /* rule 57 can match eol */
 YY_RULE_SETUP
-#line 108 "ocldToXml.x"
+#line 110 "yylex/ocldToXml.l"
 printf(" default=\"%s\"",yytext); BEGIN qualifier_value;
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 109 "ocldToXml.x"
+#line 111 "yylex/ocldToXml.l"
 BEGIN qualifier;
 	YY_BREAK
 case 59:
 /* rule 59 can match eol */
 YY_RULE_SETUP
-#line 110 "ocldToXml.x"
+#line 112 "yylex/ocldToXml.l"
 printf("/>\n"); BEGIN INITIAL;
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 111 "ocldToXml.x"
+#line 113 "yylex/ocldToXml.l"
 ;
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 112 "ocldToXml.x"
+#line 114 "yylex/ocldToXml.l"
 ECHO;
 	YY_BREAK
-#line 1672 "ocldToXml.c"
+#line 1671 "ocldToXml.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(module):
 case YY_STATE_EOF(verb):
@@ -2022,43 +2021,6 @@ static int yy_get_next_buffer (void)
 }
 
 #ifndef YY_NO_UNPUT
-
-    static void yyunput (int c, char * yy_bp )
-{
-	char *yy_cp;
-    
-    yy_cp = (yy_c_buf_p);
-
-	/* undo effects of setting up yytext */
-	*yy_cp = (yy_hold_char);
-
-	if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-		{ /* need to shift things up to make room */
-		/* +2 for EOB chars. */
-		int number_to_move = (yy_n_chars) + 2;
-		char *dest = &YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[
-					YY_CURRENT_BUFFER_LVALUE->yy_buf_size + 2];
-		char *source =
-				&YY_CURRENT_BUFFER_LVALUE->yy_ch_buf[number_to_move];
-
-		while ( source > YY_CURRENT_BUFFER_LVALUE->yy_ch_buf )
-			*--dest = *--source;
-
-		yy_cp += (int) (dest - source);
-		yy_bp += (int) (dest - source);
-		YY_CURRENT_BUFFER_LVALUE->yy_n_chars =
-			(yy_n_chars) = (int) YY_CURRENT_BUFFER_LVALUE->yy_buf_size;
-
-		if ( yy_cp < YY_CURRENT_BUFFER_LVALUE->yy_ch_buf + 2 )
-			YY_FATAL_ERROR( "flex scanner push-back overflow" );
-		}
-
-	*--yy_cp = (char) c;
-
-	(yytext_ptr) = yy_bp;
-	(yy_hold_char) = *yy_cp;
-	(yy_c_buf_p) = yy_cp;
-}
 
 #endif
 
@@ -2694,7 +2656,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 112 "ocldToXml.x"
+#line 114 "yylex/ocldToXml.l"
 
 
 

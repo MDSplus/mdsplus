@@ -554,9 +554,9 @@ static yyconst flex_int16_t yy_chk[391] =
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "TdiLex.l"
+#line 1 "tdilex/TdiLex.l"
 #define YY_NO_INPUT 1
-#line 7 "TdiLex.l"
+#line 7 "tdilex/TdiLex.l"
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -981,7 +981,7 @@ YY_DECL
 		}
 
 	{
-#line 166 "TdiLex.l"
+#line 166 "tdilex/TdiLex.l"
 
 
 #line 988 "TdiLex.c"
@@ -1040,355 +1040,355 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 168 "TdiLex.l"
+#line 168 "tdilex/TdiLex.l"
 LEX_OK();
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 169 "TdiLex.l"
+#line 169 "tdilex/TdiLex.l"
 LEX_UNBALANCE("/*")	// */
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 170 "TdiLex.l"
+#line 170 "tdilex/TdiLex.l"
 LEX_TEXT()
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 171 "TdiLex.l"
+#line 171 "tdilex/TdiLex.l"
 LEX_UNBALANCE("\'")
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 172 "TdiLex.l"
+#line 172 "tdilex/TdiLex.l"
 LEX_TEXT()
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 173 "TdiLex.l"
+#line 173 "tdilex/TdiLex.l"
 LEX_UNBALANCE("\"")
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 176 "TdiLex.l"
+#line 176 "tdilex/TdiLex.l"
 LEX_OK()
 	YY_BREAK
 case 8:
 /* rule 8 can match eol */
 YY_RULE_SETUP
-#line 177 "TdiLex.l"
+#line 177 "tdilex/TdiLex.l"
 LEX_OK()
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 179 "TdiLex.l"
+#line 179 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_LE		)
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 180 "TdiLex.l"
+#line 180 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_GE		)
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 181 "TdiLex.l"
+#line 181 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_EQ		)
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 182 "TdiLex.l"
+#line 182 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_NE		)
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 183 "TdiLex.l"
+#line 183 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_NE		)
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 185 "TdiLex.l"
+#line 185 "tdilex/TdiLex.l"
 LEX_OP(LGES,	OPC_LE		)
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 186 "TdiLex.l"
+#line 186 "tdilex/TdiLex.l"
 LEX_OP(LGES,	OPC_GE		)
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 187 "TdiLex.l"
+#line 187 "tdilex/TdiLex.l"
 LEX_OP(LGES,	OPC_EQ		)
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 188 "TdiLex.l"
+#line 188 "tdilex/TdiLex.l"
 LEX_OP(LEQS,	OPC_NE		)
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 189 "TdiLex.l"
+#line 189 "tdilex/TdiLex.l"
 LEX_OP(LEQS,	OPC_NE		)
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 191 "TdiLex.l"
+#line 191 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_LE		)
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 192 "TdiLex.l"
+#line 192 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_GE		)
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 193 "TdiLex.l"
+#line 193 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_OR		)
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 194 "TdiLex.l"
+#line 194 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_AND		)
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 195 "TdiLex.l"
+#line 195 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_POWER	)
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 196 "TdiLex.l"
+#line 196 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_CONCAT	)
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 198 "TdiLex.l"
+#line 198 "tdilex/TdiLex.l"
 LEX_OP(SHIFT,	OPC_SHIFT_LEFT	)
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 199 "TdiLex.l"
+#line 199 "tdilex/TdiLex.l"
 LEX_OP(SHIFT,	OPC_SHIFT_RIGHT	)
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 200 "TdiLex.l"
+#line 200 "tdilex/TdiLex.l"
 LEX_OP(LORS,	OPC_OR		)
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 201 "TdiLex.l"
+#line 201 "tdilex/TdiLex.l"
 LEX_OP(LANDS,	OPC_AND		)
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 202 "TdiLex.l"
+#line 202 "tdilex/TdiLex.l"
 LEX_OP(POWER,	OPC_POWER	)
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 203 "TdiLex.l"
+#line 203 "tdilex/TdiLex.l"
 LEX_OP(CONCAT,	OPC_CONCAT	)
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 205 "TdiLex.l"
+#line 205 "tdilex/TdiLex.l"
 LEX_OP(INC,	OPC_PRE_INC	)
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 206 "TdiLex.l"
+#line 206 "tdilex/TdiLex.l"
 LEX_OP(INC,	OPC_PRE_DEC	)
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 207 "TdiLex.l"
+#line 207 "tdilex/TdiLex.l"
 LEX_OP(RANGE,   OPC_DTYPE_RANGE )
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 208 "TdiLex.l"
+#line 208 "tdilex/TdiLex.l"
 LEX_OP(RANGE,	OPC_DTYPE_RANGE	)
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 209 "TdiLex.l"
+#line 209 "tdilex/TdiLex.l"
 LEX_OP(UNARYS,	OPC_NOT		)
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 210 "TdiLex.l"
+#line 210 "tdilex/TdiLex.l"
 LEX_OP(UNARYS,	OPC_INOT	)
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 211 "TdiLex.l"
+#line 211 "tdilex/TdiLex.l"
 LEX_OP(PROMO,	OPC_PROMOTE	)
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 213 "TdiLex.l"
+#line 213 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_MOD		)
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 214 "TdiLex.l"
+#line 214 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_IAND	)
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 215 "TdiLex.l"
+#line 215 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_MULTIPLY	)
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 216 "TdiLex.l"
+#line 216 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_ADD		)
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 217 "TdiLex.l"
+#line 217 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_SUBTRACT	)
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 218 "TdiLex.l"
+#line 218 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_DIVIDE	)
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 219 "TdiLex.l"
+#line 219 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_LT		)
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 220 "TdiLex.l"
+#line 220 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_GT		)
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 221 "TdiLex.l"
+#line 221 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_POWER	)
 	YY_BREAK
 case 47:
 YY_RULE_SETUP
-#line 222 "TdiLex.l"
+#line 222 "tdilex/TdiLex.l"
 LEX_OP(BINEQ,	OPC_IOR		)
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 224 "TdiLex.l"
+#line 224 "tdilex/TdiLex.l"
 LEX_OP(MULS,	OPC_MOD		)
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 225 "TdiLex.l"
+#line 225 "tdilex/TdiLex.l"
 LEX_OP(IAND,	OPC_IAND	)
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 226 "TdiLex.l"
+#line 226 "tdilex/TdiLex.l"
 LEX_OP(ADD,	OPC_ADD		)
 	YY_BREAK
 case 51:
 YY_RULE_SETUP
-#line 227 "TdiLex.l"
+#line 227 "tdilex/TdiLex.l"
 LEX_OP(ADD,	OPC_SUBTRACT	)
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 228 "TdiLex.l"
+#line 228 "tdilex/TdiLex.l"
 LEX_OP(MULS,	OPC_DIVIDE	)
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 229 "TdiLex.l"
+#line 229 "tdilex/TdiLex.l"
 LEX_OP(LGES,	OPC_LT		)
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 230 "TdiLex.l"
+#line 230 "tdilex/TdiLex.l"
 LEX_OP(LGES,	OPC_GT		)
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 231 "TdiLex.l"
+#line 231 "tdilex/TdiLex.l"
 LEX_OP(POWER,	OPC_POWER	)
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 232 "TdiLex.l"
+#line 232 "tdilex/TdiLex.l"
 LEX_OP(IOR,	OPC_IOR		)
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 233 "TdiLex.l"
+#line 233 "tdilex/TdiLex.l"
 LEX_CHAR('*')
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 234 "TdiLex.l"
+#line 234 "tdilex/TdiLex.l"
 LEX_BALANCE('(',TDI_BALANCE_R,++)
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 235 "TdiLex.l"
+#line 235 "tdilex/TdiLex.l"
 LEX_BALANCE(')',TDI_BALANCE_R,--)
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 236 "TdiLex.l"
+#line 236 "tdilex/TdiLex.l"
 LEX_BALANCE('[',TDI_BALANCE_S,++)
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 237 "TdiLex.l"
+#line 237 "tdilex/TdiLex.l"
 LEX_BALANCE(']',TDI_BALANCE_S,--)
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 238 "TdiLex.l"
+#line 238 "tdilex/TdiLex.l"
 LEX_BALANCE('{',TDI_BALANCE_C,++)
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 239 "TdiLex.l"
+#line 239 "tdilex/TdiLex.l"
 LEX_BALANCE('}',TDI_BALANCE_C,--)
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 241 "TdiLex.l"
+#line 241 "tdilex/TdiLex.l"
 LEX_FLOAT()
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 242 "TdiLex.l"
+#line 242 "tdilex/TdiLex.l"
 LEX_INT()
 	YY_BREAK
 case 66:
 YY_RULE_SETUP
-#line 243 "TdiLex.l"
+#line 243 "tdilex/TdiLex.l"
 LEX_IDENT()
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 244 "TdiLex.l"
+#line 244 "tdilex/TdiLex.l"
 LEX_PATH()
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 245 "TdiLex.l"
+#line 245 "tdilex/TdiLex.l"
 LEX_LIBCALL()
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 246 "TdiLex.l"
+#line 246 "tdilex/TdiLex.l"
 LEX_CHAR(yytext[0])
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 247 "TdiLex.l"
+#line 247 "tdilex/TdiLex.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 1395 "TdiLex.c"
@@ -2461,7 +2461,7 @@ void tdifree (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 247 "TdiLex.l"
+#line 247 "tdilex/TdiLex.l"
 
 
 

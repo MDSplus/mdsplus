@@ -1,19 +1,21 @@
+%output  "cmdParse.c"
+%defines "dclyacc.h"
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 
-  #include <mdsdcl_messages.h>
-  #include <mdsplus/mdsconfig.h>
+#include <mdsdcl_messages.h>
+#include <mdsplus/mdsconfig.h>
 
-  #include "mdsdclthreadstatic.h"
+#include "mdsdclthreadstatic.h"
 
-  #define YYLTYPE void *
-  #define yylex dcl_lex
-  #include "dcl_p.h"
-  #include "dcllex.h"
+#define YYLTYPE void *
+#define yylex dcl_lex
+#include "dcl_p.h"
+#include "dcllex.h"
 
-  int yydebug=0;
-  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
+int yydebug=0;
+static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 %}
 %define api.pure full
 %define api.value.type {union YYSTYPE}

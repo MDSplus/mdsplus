@@ -22,3 +22,6 @@ autoheader
 automake --add-missing
 
 autoconf
+
+tdishr/yylex/gen
+mdsdcl/yylex/gen

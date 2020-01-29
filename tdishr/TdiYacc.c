@@ -62,7 +62,7 @@
 
 
 /* Copy the first part of user declarations.  */
-#line 14 "TdiYacc.y" /* yacc.c:339  */
+#line 14 "yylex/TdiYacc.y" /* yacc.c:339  */
 
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
@@ -215,7 +215,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 7 "TdiYacc.y" /* yacc.c:355  */
+#line 7 "yylex/TdiYacc.y" /* yacc.c:355  */
 
 #define YYLTYPE TDITHREADSTATIC_TYPE
 #ifndef YY_TYPEDEF_YY_SCANNER_T
@@ -294,7 +294,7 @@ typedef void* yyscan_t;
 
 union YYSTYPE
 {
-#line 140 "TdiYacc.y" /* yacc.c:355  */
+#line 140 "yylex/TdiYacc.y" /* yacc.c:355  */
 struct marker mark;
 
 #line 301 "TdiYacc.c" /* yacc.c:355  */
@@ -1801,56 +1801,56 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 218 "TdiYacc.y" /* yacc.c:1646  */
+#line 218 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[0].mark);}
 #line 1807 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 246 "TdiYacc.y" /* yacc.c:1646  */
+#line 246 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((((yyvsp[-1].mark).builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),(yyvsp[0].mark),(yyval.mark));}
 #line 1813 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 247 "TdiYacc.y" /* yacc.c:1646  */
+#line 247 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 1819 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 45:
-#line 248 "TdiYacc.y" /* yacc.c:1646  */
+#line 248 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 1825 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 46:
-#line 249 "TdiYacc.y" /* yacc.c:1646  */
+#line 249 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 1831 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 252 "TdiYacc.y" /* yacc.c:1646  */
+#line 252 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark).rptr=(yyvsp[0].mark).rptr; (yyval.mark).builtin= -2;
 					__RUN(tdi_yacc_IMMEDIATE(&(yyval.mark).rptr, TDITHREADSTATIC_VAR));}
 #line 1838 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 254 "TdiYacc.y" /* yacc.c:1646  */
+#line 254 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 #line 1844 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 256 "TdiYacc.y" /* yacc.c:1646  */
+#line 256 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2(OPC_EQUALS,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1850 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 257 "TdiYacc.y" /* yacc.c:1646  */
+#line 257 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {struct marker tmp;		/*binary operation and assign*/
 						_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),tmp);
 						_JUST1(OPC_EQUALS_FIRST,tmp,(yyval.mark));}
@@ -1858,13 +1858,13 @@ yyreduce:
     break;
 
   case 53:
-#line 260 "TdiYacc.y" /* yacc.c:1646  */
+#line 260 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST3(OPC_CONDITIONAL,(yyvsp[-2].mark),(yyvsp[0].mark),(yyvsp[-4].mark),(yyval.mark));}
 #line 1864 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 261 "TdiYacc.y" /* yacc.c:1646  */
+#line 261 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if ((yyvsp[0].mark).rptr && (yyvsp[0].mark).rptr->dtype == DTYPE_RANGE)
 						if ((yyvsp[0].mark).rptr->ndesc == 2)
 							{(yyval.mark)=(yyvsp[0].mark);
@@ -1888,91 +1888,91 @@ yyreduce:
     break;
 
   case 55:
-#line 280 "TdiYacc.y" /* yacc.c:1646  */
+#line 280 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1894 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 56:
-#line 281 "TdiYacc.y" /* yacc.c:1646  */
+#line 281 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1900 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 57:
-#line 282 "TdiYacc.y" /* yacc.c:1646  */
+#line 282 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1906 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 58:
-#line 283 "TdiYacc.y" /* yacc.c:1646  */
+#line 283 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1912 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 284 "TdiYacc.y" /* yacc.c:1646  */
+#line 284 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1918 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 285 "TdiYacc.y" /* yacc.c:1646  */
+#line 285 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1924 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 286 "TdiYacc.y" /* yacc.c:1646  */
+#line 286 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1930 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 62:
-#line 287 "TdiYacc.y" /* yacc.c:1646  */
+#line 287 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1936 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 288 "TdiYacc.y" /* yacc.c:1646  */
+#line 288 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1942 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 289 "TdiYacc.y" /* yacc.c:1646  */
+#line 289 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1948 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 290 "TdiYacc.y" /* yacc.c:1646  */
+#line 290 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1954 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 291 "TdiYacc.y" /* yacc.c:1646  */
+#line 291 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1960 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 292 "TdiYacc.y" /* yacc.c:1646  */
+#line 292 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1966 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 293 "TdiYacc.y" /* yacc.c:1646  */
+#line 293 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1972 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 294 "TdiYacc.y" /* yacc.c:1646  */
+#line 294 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if ((yyval.mark).rptr == 0) (yyval.mark)=(yyvsp[0].mark);
 					else if ((yyval.mark).rptr->dtype == DTYPE_FUNCTION
 					&&	*(opcode_t *)(yyval.mark).rptr->pointer == OPC_CONCAT
@@ -1985,61 +1985,61 @@ yyreduce:
     break;
 
   case 70:
-#line 302 "TdiYacc.y" /* yacc.c:1646  */
+#line 302 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1991 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 303 "TdiYacc.y" /* yacc.c:1646  */
+#line 303 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 1997 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 304 "TdiYacc.y" /* yacc.c:1646  */
+#line 304 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2003 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 305 "TdiYacc.y" /* yacc.c:1646  */
+#line 305 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2009 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 306 "TdiYacc.y" /* yacc.c:1646  */
+#line 306 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2(OPC_MULTIPLY,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2015 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 307 "TdiYacc.y" /* yacc.c:1646  */
+#line 307 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-1].mark).builtin,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2021 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 308 "TdiYacc.y" /* yacc.c:1646  */
+#line 308 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=_EMPTY_MARKER;}
 #line 2027 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 315 "TdiYacc.y" /* yacc.c:1646  */
+#line 315 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL1(OPC_VECTOR,(yyvsp[0].mark),(yyval.mark));}
 #line 2033 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 316 "TdiYacc.y" /* yacc.c:1646  */
+#line 316 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST0(OPC_VECTOR,(yyval.mark));}
 #line 2039 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 317 "TdiYacc.y" /* yacc.c:1646  */
+#line 317 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if ((yyval.mark).rptr->ndesc >= 250) {
 					_RESOLVE((yyvsp[-2].mark));
 					_FULL1(OPC_VECTOR,(yyvsp[-2].mark),(yyval.mark));
@@ -2050,13 +2050,13 @@ yyreduce:
     break;
 
   case 81:
-#line 325 "TdiYacc.y" /* yacc.c:1646  */
+#line 325 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=_EMPTY_MARKER;}
 #line 2056 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 327 "TdiYacc.y" /* yacc.c:1646  */
+#line 327 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if (	(yyval.mark).rptr			/*comma is left-to-right weakest*/
 			&&	(yyval.mark).builtin != -2
 			&&	(yyval.mark).rptr->dtype == DTYPE_FUNCTION
@@ -2068,13 +2068,13 @@ yyreduce:
     break;
 
   case 84:
-#line 335 "TdiYacc.y" /* yacc.c:1646  */
+#line 335 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 #line 2074 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 337 "TdiYacc.y" /* yacc.c:1646  */
+#line 337 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if ((yyval.mark).rptr
 				&& (yyval.mark).builtin != -2
 				&& (yyval.mark).rptr->dtype == DTYPE_FUNCTION
@@ -2084,43 +2084,43 @@ yyreduce:
     break;
 
   case 86:
-#line 342 "TdiYacc.y" /* yacc.c:1646  */
+#line 342 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST0(OPC_ABORT,(yyval.mark));}
 #line 2090 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 344 "TdiYacc.y" /* yacc.c:1646  */
+#line 344 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[-1].mark); (yyval.mark).builtin= -2;}
 #line 2096 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 345 "TdiYacc.y" /* yacc.c:1646  */
+#line 345 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[-1].mark); (yyval.mark).builtin= -2;}
 #line 2102 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 347 "TdiYacc.y" /* yacc.c:1646  */
+#line 347 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {++TDI_REFZONE.l_rel_path;}
 #line 2108 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 349 "TdiYacc.y" /* yacc.c:1646  */
+#line 349 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL2(OPC_ABORT,(yyvsp[-3].mark),(yyvsp[-1].mark),(yyval.mark)); --TDI_REFZONE.l_rel_path;}
 #line 2114 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 350 "TdiYacc.y" /* yacc.c:1646  */
+#line 350 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL2(OPC_ABORT,(yyvsp[-2].mark),_EMPTY_MARKER,(yyval.mark)); --TDI_REFZONE.l_rel_path;}
 #line 2120 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 356 "TdiYacc.y" /* yacc.c:1646  */
+#line 356 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j;
 					(yyval.mark)=(yyvsp[-1].mark);
 					(yyval.mark).rptr->pointer= (uint8_t *)&OpcSubscript;
@@ -2134,14 +2134,14 @@ yyreduce:
     break;
 
   case 94:
-#line 365 "TdiYacc.y" /* yacc.c:1646  */
+#line 365 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j=(yyvsp[0].mark).builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
 					_JUST1(j,(yyvsp[-1].mark),(yyval.mark));}
 #line 2141 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 367 "TdiYacc.y" /* yacc.c:1646  */
+#line 367 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[-1].mark);
 				if ((yyvsp[-3].mark).builtin < 0) {int j;		/*unknown today*/
 					(yyval.mark).rptr->pointer= (uint8_t *)&OpcExtFunction;
@@ -2159,7 +2159,7 @@ yyreduce:
     break;
 
   case 96:
-#line 380 "TdiYacc.y" /* yacc.c:1646  */
+#line 380 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j;
 				(yyval.mark)=(yyvsp[-1].mark);			/*external*/
 				(yyval.mark).rptr->dtype=DTYPE_CALL;
@@ -2175,7 +2175,7 @@ yyreduce:
     break;
 
   case 97:
-#line 391 "TdiYacc.y" /* yacc.c:1646  */
+#line 391 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j;
 				(yyval.mark)=(yyvsp[-1].mark);			/*typed external*/
 				StrUpcase((mdsdsc_t *)(yyvsp[-3].mark).rptr, (mdsdsc_t *)(yyvsp[-3].mark).rptr);
@@ -2197,7 +2197,7 @@ yyreduce:
     break;
 
   case 98:
-#line 408 "TdiYacc.y" /* yacc.c:1646  */
+#line 408 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j;	/*USING(expr,[default],[shotid],[expt])*/
 					(yyval.mark).rptr->pointer= (uint8_t *)&OpcUsing;
 					for (j=0; j < (yyvsp[-1].mark).rptr->ndesc; ++j)
@@ -2207,13 +2207,13 @@ yyreduce:
     break;
 
   case 99:
-#line 413 "TdiYacc.y" /* yacc.c:1646  */
+#line 413 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2(OPC_USING,(yyvsp[-3].mark),(yyvsp[-1].mark),(yyval.mark)); --TDI_REFZONE.l_rel_path;}
 #line 2213 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 101:
-#line 419 "TdiYacc.y" /* yacc.c:1646  */
+#line 419 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {MAKE_S(DTYPE_T, (yyvsp[-1].mark).rptr->length + (yyvsp[0].mark).rptr->length, (yyval.mark).rptr);
 					StrConcat((mdsdsc_t *)(yyval.mark).rptr, (mdsdsc_t *)(yyvsp[-1].mark).rptr, (yyvsp[0].mark).rptr MDS_END_ARG);
 				}
@@ -2221,13 +2221,13 @@ yyreduce:
     break;
 
   case 104:
-#line 429 "TdiYacc.y" /* yacc.c:1646  */
+#line 429 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 2227 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 105:
-#line 430 "TdiYacc.y" /* yacc.c:1646  */
+#line 430 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
 					_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),tmp);
 					_JUST1((yyvsp[-2].mark).builtin,tmp,(yyval.mark));}
@@ -2235,7 +2235,7 @@ yyreduce:
     break;
 
   case 106:
-#line 433 "TdiYacc.y" /* yacc.c:1646  */
+#line 433 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {if (*(yyval.mark).rptr->pointer == '$') {
 					if((yyval.mark).builtin < 0) (yyval.mark).rptr->dtype=DTYPE_IDENT;
 					else if ((TdiRefFunction[(yyval.mark).builtin].token & LEX_M_TOKEN) == LEX_ARG)
@@ -2251,31 +2251,31 @@ yyreduce:
     break;
 
   case 110:
-#line 447 "TdiYacc.y" /* yacc.c:1646  */
+#line 447 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_RESOLVE((yyval.mark));}
 #line 2257 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 111:
-#line 454 "TdiYacc.y" /* yacc.c:1646  */
+#line 454 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[0].mark);}
 #line 2263 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 112:
-#line 455 "TdiYacc.y" /* yacc.c:1646  */
+#line 455 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 2269 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 113:
-#line 456 "TdiYacc.y" /* yacc.c:1646  */
+#line 456 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-2].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 2275 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 114:
-#line 458 "TdiYacc.y" /* yacc.c:1646  */
+#line 458 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {int j;	(yyval.mark)=(yyvsp[-1].mark);
 							(yyval.mark).rptr->pointer= (uint8_t *)&OpcFun;
 							for (j=(yyval.mark).rptr->ndesc; --j>=0;)
@@ -2288,111 +2288,111 @@ yyreduce:
     break;
 
   case 115:
-#line 467 "TdiYacc.y" /* yacc.c:1646  */
+#line 467 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark).rptr=(yyvsp[0].mark).rptr; (yyval.mark).builtin= -2;
 						__RUN(tdi_yacc_IMMEDIATE(&(yyval.mark).rptr, TDITHREADSTATIC_VAR));}
 #line 2295 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 116:
-#line 469 "TdiYacc.y" /* yacc.c:1646  */
+#line 469 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST0((yyvsp[-1].mark).builtin,(yyval.mark));}
 #line 2301 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 117:
-#line 470 "TdiYacc.y" /* yacc.c:1646  */
+#line 470 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL2((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2307 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 118:
-#line 471 "TdiYacc.y" /* yacc.c:1646  */
+#line 471 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL1((yyvsp[-1].mark).builtin,(yyvsp[0].mark),(yyval.mark));}
 #line 2313 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 119:
-#line 472 "TdiYacc.y" /* yacc.c:1646  */
+#line 472 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-6].mark).builtin,(yyvsp[-1].mark),(yyvsp[-4].mark),(yyval.mark));}
 #line 2319 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 120:
-#line 473 "TdiYacc.y" /* yacc.c:1646  */
+#line 473 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST4((yyvsp[-8].mark).builtin,(yyvsp[-6].mark),(yyvsp[-4].mark),(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2325 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 121:
-#line 474 "TdiYacc.y" /* yacc.c:1646  */
+#line 474 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST1((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyval.mark));}
 #line 2331 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 122:
-#line 475 "TdiYacc.y" /* yacc.c:1646  */
+#line 475 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST3((yyvsp[-4].mark).builtin,(yyvsp[-3].mark),(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2337 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 123:
-#line 476 "TdiYacc.y" /* yacc.c:1646  */
+#line 476 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2343 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 124:
-#line 477 "TdiYacc.y" /* yacc.c:1646  */
+#line 477 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_FULL2(OPC_LABEL,(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2349 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 125:
-#line 478 "TdiYacc.y" /* yacc.c:1646  */
+#line 478 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2355 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 126:
-#line 479 "TdiYacc.y" /* yacc.c:1646  */
+#line 479 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST3((yyvsp[-4].mark).builtin,(yyvsp[-3].mark),(yyvsp[-2].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2361 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 127:
-#line 480 "TdiYacc.y" /* yacc.c:1646  */
+#line 480 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2367 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 128:
-#line 481 "TdiYacc.y" /* yacc.c:1646  */
+#line 481 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_JUST2((yyvsp[-2].mark).builtin,(yyvsp[-1].mark),(yyvsp[0].mark),(yyval.mark));}
 #line 2373 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 129:
-#line 482 "TdiYacc.y" /* yacc.c:1646  */
+#line 482 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {TDI_REFZONE.l_rel_path--;
 						(yyval.mark).rptr->dscptrs[1]=(mdsdsc_t *)(yyvsp[0].mark).rptr;}
 #line 2380 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 130:
-#line 484 "TdiYacc.y" /* yacc.c:1646  */
+#line 484 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[-1].mark); _RESOLVE((yyval.mark));}
 #line 2386 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 132:
-#line 487 "TdiYacc.y" /* yacc.c:1646  */
+#line 487 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=(yyvsp[-1].mark);}
 #line 2392 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 134:
-#line 489 "TdiYacc.y" /* yacc.c:1646  */
+#line 489 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {short opcode;
 			if ((yyval.mark).rptr == 0) {(yyval.mark)=(yyvsp[0].mark);}		/* initial null statement	*/
 			else if ((yyvsp[0].mark).rptr == 0) {}		/* trailing null statement	*/
@@ -2409,7 +2409,7 @@ yyreduce:
     break;
 
   case 135:
-#line 502 "TdiYacc.y" /* yacc.c:1646  */
+#line 502 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {_RESOLVE((yyval.mark));		/*statements*/
 			TDI_REFZONE.a_result=(struct descriptor_d *)(yyval.mark).rptr;
 			TDI_REFZONE.l_status=SsSUCCESS;}
@@ -2417,19 +2417,19 @@ yyreduce:
     break;
 
   case 136:
-#line 505 "TdiYacc.y" /* yacc.c:1646  */
+#line 505 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {(yyval.mark)=_EMPTY_MARKER;}
 #line 2423 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 137:
-#line 506 "TdiYacc.y" /* yacc.c:1646  */
+#line 506 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 #line 2429 "TdiYacc.c" /* yacc.c:1646  */
     break;
 
   case 138:
-#line 507 "TdiYacc.y" /* yacc.c:1646  */
+#line 507 "yylex/TdiYacc.y" /* yacc.c:1646  */
     {TDI_REFZONE.l_status=TdiSYNTAX; yyerror(TDITHREADSTATIC_VAR, "syntax error"); return YY_ASIS;}
 #line 2435 "TdiYacc.c" /* yacc.c:1646  */
     break;
@@ -2663,5 +2663,5 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 509 "TdiYacc.y" /* yacc.c:1906  */
+#line 509 "yylex/TdiYacc.y" /* yacc.c:1906  */
 

@@ -1,0 +1,1 @@
+$(realpath $(dirname $0))/../../yylex.gen $0 TdiLex.c

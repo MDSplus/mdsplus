@@ -481,8 +481,9 @@ goto find_rule; \
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
-#line 1 "mdsdclDeltatimeToSeconds.x"
-#line 2 "mdsdclDeltatimeToSeconds.x"
+#line 1 "yylex/mdsdclDeltatimeToSeconds.l"
+#define YY_NO_INPUT 1
+#line 5 "yylex/mdsdclDeltatimeToSeconds.l"
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -517,7 +518,6 @@ static int times[3];
 static int day, hour, min, sec;
 static int error;
 
-#define YY_NO_INPUT 1
 
 #line 523 "mdsdclDeltatimeToSeconds.c"
 
@@ -745,7 +745,7 @@ YY_DECL
 		}
 
 	{
-#line 42 "mdsdclDeltatimeToSeconds.x"
+#line 44 "yylex/mdsdclDeltatimeToSeconds.l"
 
 #line 751 "mdsdclDeltatimeToSeconds.c"
 
@@ -830,38 +830,38 @@ do_action:	/* This label is used only to access EOF actions. */
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 43 "mdsdclDeltatimeToSeconds.x"
+#line 45 "yylex/mdsdclDeltatimeToSeconds.l"
 ;
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 44 "mdsdclDeltatimeToSeconds.x"
+#line 46 "yylex/mdsdclDeltatimeToSeconds.l"
 BEGIN has_day;
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 45 "mdsdclDeltatimeToSeconds.x"
+#line 47 "yylex/mdsdclDeltatimeToSeconds.l"
 day=atoi(yytext); BEGIN INITIAL;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 46 "mdsdclDeltatimeToSeconds.x"
+#line 48 "yylex/mdsdclDeltatimeToSeconds.l"
 times[idx]=atoi(yytext);
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 47 "mdsdclDeltatimeToSeconds.x"
+#line 49 "yylex/mdsdclDeltatimeToSeconds.l"
 if (idx>2) yyterminate(); idx++;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 48 "mdsdclDeltatimeToSeconds.x"
+#line 50 "yylex/mdsdclDeltatimeToSeconds.l"
 error=1; yyterminate();
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 50 "mdsdclDeltatimeToSeconds.x"
-ECHO;
+#line 52 "yylex/mdsdclDeltatimeToSeconds.l"
+YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
 #line 867 "mdsdclDeltatimeToSeconds.c"
 			case YY_STATE_EOF(INITIAL):
@@ -1805,7 +1805,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 50 "mdsdclDeltatimeToSeconds.x"
+#line 52 "yylex/mdsdclDeltatimeToSeconds.l"
 
 
 

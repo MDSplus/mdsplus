@@ -1,3 +1,7 @@
+%option prefix="dcl_" outfile="cmdParseLex.c" header-file="dcllex.h"
+%option nostack noyymore noyywrap noyylineno nodefault
+%option unput noinput noyy_push_state noyy_pop_state noyy_top_state
+%option interactive reentrant bison-bridge bison-locations case-insensitive
 %{
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
@@ -30,13 +34,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define YYLTYPE void
 #include "dcl_p.h"
 #include <dcl.h>
-#include "cmdParse.tab.h"
+#include "dclyacc.h"
 int debug=0;
 char *restOfLine=0;
 %}
-
-%option noinput reentrant bison-bridge bison-locations nodefault noyywrap yylineno outfile="cmdParseLex.c" header-file="dcllex.h"
-%option case-insensitive interactive prefix="dcl_"
 
 %x command verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
 

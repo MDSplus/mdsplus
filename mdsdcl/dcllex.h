@@ -352,7 +352,7 @@ extern int dcl_lex \
 #undef YY_DECL
 #endif
 
-#line 159 "cmdParse.x"
+#line 160 "dcl_lex/cmdParse.l"
 
 
 #line 359 "dcllex.h"

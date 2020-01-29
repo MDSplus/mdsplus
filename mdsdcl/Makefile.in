@@ -58,7 +58,7 @@ cmdParseLex.o: cmdParseLex.c
 @MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) 
 	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lTreeShr $(LIBS) @LIBREADLINE@
 
-#cmdParse.tab.c: cmdParse.y
+#cmdParse.c: cmdParse.y
 #        bison cmdParse.y
 
 #cmdParseLex.c: cmdParse.l

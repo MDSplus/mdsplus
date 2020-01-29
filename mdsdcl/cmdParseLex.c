@@ -176,27 +176,8 @@ typedef size_t yy_size_t;
 #define EOB_ACT_END_OF_FILE 1
 #define EOB_ACT_LAST_MATCH 2
 
-    /* Note: We specifically omit the test for yy_rule_can_match_eol because it requires
-     *       access to the local variable yy_act. Since yyless() is a macro, it would break
-     *       existing scanners that call yyless() from OUTSIDE dcl_lex.
-     *       One obvious solution it to make yy_act a global. I tried that, and saw
-     *       a 5% performance hit in a non-yylineno scanner, because yy_act is
-     *       normally declared as a register variable-- so it is not worth it.
-     */
-    #define  YY_LESS_LINENO(n) \
-            do { \
-                int yyl;\
-                for ( yyl = n; yyl < yyleng; ++yyl )\
-                    if ( yytext[yyl] == '\n' )\
-                        --yylineno;\
-            }while(0)
-    #define YY_LINENO_REWIND_TO(dst) \
-            do {\
-                const char *p;\
-                for ( p = yy_cp-1; p >= (dst); --p)\
-                    if ( *p == '\n' )\
-                        --yylineno;\
-            }while(0)
+    #define YY_LESS_LINENO(n)
+    #define YY_LINENO_REWIND_TO(ptr)
     
 /* Return all but the first "n" matched characters back to the input stream. */
 #define yyless(n) \
@@ -567,12 +548,6 @@ static yyconst flex_int16_t yy_chk[360] =
       105,  105,  105,  105,  105,  105,  105,  105,  105
     } ;
 
-/* Table of booleans, true if rule could match eol. */
-static yyconst flex_int32_t yy_rule_can_match_eol[22] =
-    {   0,
-0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 
-    0, 0,     };
-
 #define YY_TRAILING_MASK 0x2000
 #define YY_TRAILING_HEAD_MASK 0x4000
 #define REJECT \
@@ -589,8 +564,9 @@ goto find_rule; \
 #define yymore() yymore_used_but_not_detected
 #define YY_MORE_ADJ 0
 #define YY_RESTORE_YY_MORE_OFFSET
-#line 1 "cmdParse.x"
-#line 2 "cmdParse.x"
+#line 1 "dcl_lex/cmdParse.l"
+#define YY_NO_INPUT 1
+#line 6 "dcl_lex/cmdParse.l"
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -622,12 +598,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define YYLTYPE void
 #include "dcl_p.h"
 #include <dcl.h>
-#include "cmdParse.tab.h"
+#include "dclyacc.h"
 int debug=0;
 char *restOfLine=0;
-#define YY_NO_INPUT 1
 
-#line 631 "cmdParseLex.c"
+#line 606 "cmdParseLex.c"
 
 #define INITIAL 0
 #define command 1
@@ -941,10 +916,10 @@ YY_DECL
 		}
 
 	{
-#line 53 "cmdParse.x"
+#line 54 "dcl_lex/cmdParse.l"
 
 
-#line 948 "cmdParseLex.c"
+#line 923 "cmdParseLex.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -1021,32 +996,20 @@ find_rule: /* we branch to this label when backing up */
 
 		YY_DO_BEFORE_ACTION;
 
-		if ( yy_act != YY_END_OF_BUFFER && yy_rule_can_match_eol[yy_act] )
-			{
-			int yyl;
-			for ( yyl = 0; yyl < yyleng; ++yyl )
-				if ( yytext[yyl] == '\n' )
-					
-    do{ yylineno++;
-        yycolumn=0;
-    }while(0)
-;
-			}
-
 do_action:	/* This label is used only to access EOF actions. */
 
 		switch ( yy_act )
 	{ /* beginning of action switch */
 case 1:
 YY_RULE_SETUP
-#line 55 "cmdParse.x"
+#line 56 "dcl_lex/cmdParse.l"
 {
   return(COMMENT);
   }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 59 "cmdParse.x"
+#line 60 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("Begin command\n");
  BEGIN command;
@@ -1055,7 +1018,7 @@ YY_RULE_SETUP
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 64 "cmdParse.x"
+#line 65 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got DO/INDIRECT %s\n",yytext);
  yylval->str=strdup(yytext);
@@ -1066,7 +1029,7 @@ YY_RULE_SETUP
 /* <command>{name}/[[:blank:]/] {*/
 case 4:
 YY_RULE_SETUP
-#line 72 "cmdParse.x"
+#line 73 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got verb %s\n",yytext);
  yylval->str=strdup(yytext);
@@ -1076,7 +1039,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 79 "cmdParse.x"
+#line 80 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got qualifier with value %s\n",yytext);
  yylval->str=strdup(yytext+1);
@@ -1086,7 +1049,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 86 "cmdParse.x"
+#line 87 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got qualifier %s\n",yytext);
  yylval->str=strdup(yytext+1);
@@ -1095,7 +1058,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 92 "cmdParse.x"
+#line 93 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got a qualval_list\n");
  BEGIN qualval_list;
@@ -1104,7 +1067,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 98 "cmdParse.x"
+#line 99 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got a qualval nolist\n");
  BEGIN qualval;
@@ -1114,7 +1077,7 @@ YY_RULE_SETUP
 case 9:
 /* rule 9 can match eol */
 YY_RULE_SETUP
-#line 104 "cmdParse.x"
+#line 105 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got last qualval |%s|\n",yytext);
  yylval->str=strdup(yytext);
@@ -1123,7 +1086,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 110 "cmdParse.x"
+#line 111 "dcl_lex/cmdParse.l"
 {
  BEGIN verb;
  }
@@ -1131,7 +1094,7 @@ YY_RULE_SETUP
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 114 "cmdParse.x"
+#line 115 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got a qualval=%s\n",yytext);
  yylval->str=strdup(yytext);
@@ -1141,7 +1104,7 @@ YY_RULE_SETUP
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 120 "cmdParse.x"
+#line 121 "dcl_lex/cmdParse.l"
 {
  if (debug) printf("got qualval |%s|\n",yytext);
  yylval->str=strdup(yytext);
@@ -1151,7 +1114,7 @@ YY_RULE_SETUP
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 127 "cmdParse.x"
+#line 128 "dcl_lex/cmdParse.l"
 {
   yyterminate();
   }
@@ -1159,14 +1122,14 @@ YY_RULE_SETUP
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-#line 131 "cmdParse.x"
+#line 132 "dcl_lex/cmdParse.l"
 {BEGIN rest_of_line;
    unput(yytext[0]);
  }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 135 "cmdParse.x"
+#line 136 "dcl_lex/cmdParse.l"
 {int i;
 		 restOfLine = strdup(yytext);
 		 for(i=strlen(restOfLine)-1;i>=0;i--)
@@ -1176,13 +1139,13 @@ YY_RULE_SETUP
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 142 "cmdParse.x"
+#line 143 "dcl_lex/cmdParse.l"
 BEGIN parameter;
 	YY_BREAK
 case 17:
 /* rule 17 can match eol */
 YY_RULE_SETUP
-#line 144 "cmdParse.x"
+#line 145 "dcl_lex/cmdParse.l"
 {
  dclValuePtr value=malloc(sizeof(dclValue));
  value->value=strdup(yytext);
@@ -1194,25 +1157,25 @@ YY_RULE_SETUP
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 153 "cmdParse.x"
+#line 154 "dcl_lex/cmdParse.l"
 return(COMMA);
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 155 "cmdParse.x"
+#line 156 "dcl_lex/cmdParse.l"
 ;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 157 "cmdParse.x"
+#line 158 "dcl_lex/cmdParse.l"
 
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 159 "cmdParse.x"
+#line 160 "dcl_lex/cmdParse.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1216 "cmdParseLex.c"
+#line 1179 "cmdParseLex.c"
 			case YY_STATE_EOF(INITIAL):
 			case YY_STATE_EOF(command):
 			case YY_STATE_EOF(verb):
@@ -1557,10 +1520,6 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 
 	*--yy_cp = (char) c;
 
-    if ( c == '\n' ){
-        --yylineno;
-    }
-
 	yyg->yytext_ptr = yy_bp;
 	yyg->yy_hold_char = *yy_cp;
 	yyg->yy_c_buf_p = yy_cp;
@@ -1640,12 +1599,6 @@ static int yy_get_next_buffer (yyscan_t yyscanner)
 	yyg->yy_hold_char = *++yyg->yy_c_buf_p;
 
 	YY_CURRENT_BUFFER_LVALUE->yy_at_bol = (c == '\n');
-	if ( YY_CURRENT_BUFFER_LVALUE->yy_at_bol )
-		
-    do{ yylineno++;
-        yycolumn=0;
-    }while(0)
-;
 
 	return c;
 }
@@ -2401,7 +2354,7 @@ void dcl_free (void * ptr , yyscan_t yyscanner)
 
 #define YYTABLES_NAME "yytables"
 
-#line 159 "cmdParse.x"
+#line 160 "dcl_lex/cmdParse.l"
 
 
 

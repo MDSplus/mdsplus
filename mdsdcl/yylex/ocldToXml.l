@@ -1,3 +1,7 @@
+%option outfile="ocldToXml.c"
+%option nostack noyymore noyywrap noyylineno
+%option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
+%option case-insensitive
 %{
 /*
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
@@ -33,8 +37,6 @@ static intype=0;
 static insyntax=0;
 static void endSection();
 %}
-
-%option case-insensitive noyywrap outfile="ocldToXml.c"
 
 %x module verb parameter parameter_prompt parameter_label parameter_value parameter_value_type parameter_value_default type
 %x routine keyword keyword_params keyword_value keyword_value_type keyword_value_default keyword_syntax syntax
