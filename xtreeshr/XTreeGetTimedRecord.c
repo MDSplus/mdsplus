@@ -121,7 +121,7 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
 				mdsdsc_t *endD, mdsdsc_t *minDeltaD,
 				mdsdsc_xd_t  *outSignal){
   int status, nid;
-  int actNumSegments, currSegIdx, numSegments, currIdx, numDimensions;
+  int actNumSegments, currSegIdx, nonEmptySegIdx, numSegments, currIdx, numDimensions;
   int i, nameLen, startIdx, endIdx;
   char resampleFunName[MAX_FUN_NAMELEN], squishFunName[MAX_FUN_NAMELEN];
   char resampleMode[MAX_FUN_NAMELEN];
@@ -260,7 +260,7 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
     dimensionXds[i] = emptyXd;
   }
 
-  for(currIdx = startIdx, currSegIdx = 0; currIdx <= endIdx; currIdx++, currSegIdx++){
+  for(currIdx = startIdx, currSegIdx = 0, nonEmptySegIdx = 0; currIdx <= endIdx; currIdx++, currSegIdx++){
     status = TreeGetSegment(nid, currIdx, &dataXds[currSegIdx], &dimensionXds[currSegIdx]);
     // decompress if compressed
     if (STATUS_OK && dataXds[currSegIdx].pointer->class == CLASS_CA) {
@@ -341,7 +341,11 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
 
     MdsFree1Dx(&dataXds[currSegIdx], 0);
     MdsFree1Dx(&dimensionXds[currSegIdx], 0);
-    signals[currSegIdx] = (mds_signal_t *)resampledXds[currSegIdx].pointer;
+//After resampling some segments may be empty: consider only nonempty segments
+    if(resampledXds[currSegIdx].l_length > 0)
+      signals[nonEmptySegIdx++] = (mds_signal_t *)resampledXds[currSegIdx].pointer;
+    else //Keep track that the segment is not considered
+      signalsApd.arsize -= sizeof(mds_signal_t *);
   }
 
 /****************************/
