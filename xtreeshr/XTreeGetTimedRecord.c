@@ -344,9 +344,9 @@ EXPORT int XTreeGetTimedRecord(int inNid, mdsdsc_t *startD,
 //After resampling some segments may be empty: consider only nonempty segments
     if(resampledXds[currSegIdx].l_length > 0)
       signals[nonEmptySegIdx++] = (mds_signal_t *)resampledXds[currSegIdx].pointer;
-    else //Keep track that the segment is not considered
-      signalsApd.arsize -= sizeof(mds_signal_t *);
   }
+//Update arsize to keep trask of empty segments
+  signalsApd.arsize = nonEmptySegIdx * sizeof(mds_signal_t *);
 
 /****************************/
 //Now signalsApd contains the list of selected resampled signals. If User squish fun defined, call it
