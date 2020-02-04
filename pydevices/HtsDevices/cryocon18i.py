@@ -65,9 +65,10 @@ class CRYOCON18I(MDSplus.Device):
         ]
 
     for c in inputs.__func__():
-        parts.append({'path':':INPUT_%c'%(string.upper(chr(c)),),'type':'signal','options':('no_write_model','write_once',)})
-        parts.append({'path':':INPUT_%c:RESISTENCE'%(string.upper(chr(c)),),'type':'SIGNAL','options':('no_write_model', 'write_once',)})
-        parts.append({'path':':INPUT_%c:CALIBRATION'%(string.upper(chr(c)),),'type':'TEXT','options':('no_write_model', 'write_once',)})
+        C = str(chr(c)).upper()
+        parts.append({'path':':INPUT_{}'.format(C),'type':'signal','options':('no_write_model','write_once',)})
+        parts.append({'path':':INPUT_{}:RESISTENCE'.format(C),'type':'SIGNAL','options':('no_write_model', 'write_once',)})
+        parts.append({'path':':INPUT_{}:CALIBRATION'.format(C),'type':'TEXT','options':('no_write_model', 'write_once',)})
  
     del c
     debug=None
@@ -238,16 +239,16 @@ class CRYOCON18I_SHOT(CRYOCON18I):
         # Getting T1 from TREND:
         t1 = MDSplus.Int64(self.t1.data()*1000.)
 
-        #Saving TREND shot number information into the tree:
+        # Saving TREND shot number information into the tree:
         self.trend_shot.record = trend_tree.getCurrent(self.trend_tree.data())
         
-        #Set Time Context
-        trend_tree.setTimeContext(t1, MDSplus.Int64(now*1000.))
+        # Set Time Context
+        trend_tree.setTimeContext(t1, MDSplus.Int64(self.t2.data()*1000.))
 
         print('Writing data into shot node')
-        for i in self.inputs():
-            trend_temp     = trend_dev.__getattr__('input_%c'% (chr(i)))
-            trend_resis    = trend_dev.__getattr__('input_%c_resistence'%  (chr(i)))
+        for c in self.inputs():
+            trend_temp     = trend_dev.__getattr__('input_{}'.format(c))
+            trend_resis    = trend_dev.__getattr__('input_{}_resistence'.format(c))
                         
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
@@ -258,8 +259,8 @@ class CRYOCON18I_SHOT(CRYOCON18I):
                 times[j] -= start_time
                 times[j] = float(times[j]) / 1000.    
 
-            shot_temp     = self.__getattr__('input_%c' % (chr(i)))
-            shot_resis    = self.__getattr__('input_%c_resistence' % (chr(i)))
+            shot_temp     = self.__getattr__('input_{}'.format(c))
+            shot_resis    = self.__getattr__('input_{}_resistence'.format(c))
             
             shot_temp.record     = MDSplus.Signal(temps, None, times)
             shot_resis.record    = MDSplus.Signal(resists, None, times)        
