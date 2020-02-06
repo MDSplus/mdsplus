@@ -148,6 +148,9 @@ OPTIONS
     --color
        Output failure and success messages in color using ansi color
        escape sequences.
+    --promoted=branch
+       update current to promoted branch and force RELEASETAG
+       e.g. for stable use --promoted=alpha to promote alpha to stable
 EOF
 }
 
@@ -225,8 +228,8 @@ parsecmd() {
 		opts="${opts} ${i}"
 		COLOR=yes
 		;;
-	    --promote_to=*)
-		PROMOTE_TO=${i#*=}
+	    --promoted=*)
+		PROMOTED=${i#*=}
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
@@ -248,42 +251,6 @@ cmdopts="$@"
 # Parse the options provided in the command
 #
 parsecmd "$cmdopts"
-
-if [ ! -z "${MAKE_JARS}" ]
-then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
-    then
-	RED
-	cat <<EOF >&2
-===============================================
-
-Error creating java jar files. Trigger failed.
-Look at make_jars.log artifact for more info .
-
-===============================================
-EOF
-	NORMAL
-	exit 1
-    fi
-fi
-
-if [ ! -z "${MAKE_EPYDOCS}" ]
-then
-    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
-    then
-	RED
-	cat <<EOF >&2
-===============================================
-
-Error creating python documentation. Trigger failed.
-Look at make_epydocs.log artifact for more info .
-
-===============================================
-EOF
-	NORMAL
-	exit 1
-    fi
-fi
 
 if [ "$RELEASE" = "yes" -a "$PUBLISH" = "yes" ]
 then
@@ -328,20 +295,20 @@ EOF
   fi
 fi
 
-if [ ! -z "${PROMOTE_TO}" ]
+if [ ! -z "${PROMOTED}" ]
 then
-    if ( ${SRCDIR}/deploy/promote.sh ${BRANCH} ${PROMOTE_TO} )
+    PROMOTED_RELEASE_TAG=$(git describe --tags --abbrev=0 --match ${PROMOTED}_release* origin/${PROMOTED})
+    if ( ${SRCDIR}/deploy/promote.sh ${BRANCH} ${PROMOTED_RELEASE_TAG} )
     then
-	PROMOTE_RELEASE_TAG=$(git tag | grep ${PROMOTE_TO}_release | sort -V | awk '{line=$0} END{print line}')
-	MAJOR=$(echo $PROMOTE_RELEASE_TAG | cut -f2 -d-)
-	MINOR=$(echo $PROMOTE_RELEASE_TAG | cut -f3 -d-)
-	RELEASEV=$(echo $PROMOTE_RELEASE_TAG | cut -f4 -d-)
+	MAJOR=$(echo $PROMOTED_RELEASE_TAG | cut -f2 -d-)
+	MINOR=$(echo $PROMOTED_RELEASE_TAG | cut -f3 -d-)
+	RELEASEV=$(echo $PROMOTED_RELEASE_TAG | cut -f4 -d-)
     else
       RED
       cat <<EOF >&2
 =========================================================
 
-ERROR: Problem promoting ${BRANCH} to ${PROMOTE_TO}
+ERROR: Problem promoting ${PROMOTED} to ${BRANCH}
 
 =========================================================
 EOF
@@ -358,6 +325,43 @@ then
     ${SRCDIR}/conf/update_submodules
 fi
 
+if [ ! -z "${MAKE_JARS}" ]
+then
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
+    then
+	RED
+	cat <<EOF >&2
+===============================================
+
+Error creating java jar files. Trigger failed.
+Look at make_jars.log artifact for more info .
+
+===============================================
+EOF
+	NORMAL
+	exit 1
+    fi
+fi
+
+if [ ! -z "${MAKE_EPYDOCS}" ]
+then
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
+    then
+	RED
+	cat <<EOF >&2
+===============================================
+
+Error creating python documentation. Trigger failed.
+Look at make_epydocs.log artifact for more info .
+
+===============================================
+EOF
+	NORMAL
+	exit 1
+    fi
+fi
+
+
 if [ "$RELEASE" = "yes" ]
 then
     NEW_RELEASE=no
@@ -369,7 +373,7 @@ then
     then
 	RELEASE_TAG="${BRANCH}_release-1-0-0"
     fi
-    if [ -z "${PROMOTE_TO}" ]
+    if [ -z "${PROMOTED}" ]
     then
 	MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
 	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
@@ -379,7 +383,7 @@ then
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
-	if [ -z "${PROMOTE_TO}" ]
+	if [ -z "${PROMOTED}" ]
 	then
 	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg nomail)
 	else
@@ -486,7 +490,7 @@ fi
 if [ "$TAG_RELEASE" = "yes" ]
 then
     if ( git tag | grep last_release >/dev/null )
-    then 
+    then
       	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
       	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
@@ -510,7 +514,7 @@ EOF
 	 fi
 	 git tag -d last_release
          if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-         then 
+         then
      	     RED
 	     cat <<EOF >&2
 =========================================================
