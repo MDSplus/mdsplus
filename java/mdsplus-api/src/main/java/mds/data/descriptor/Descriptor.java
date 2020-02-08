@@ -29,7 +29,6 @@ import mds.data.descriptor_s.Uint32;
 import mds.data.descriptor_s.Uint64;
 import mds.data.descriptor_s.Uint8;
 import mds.mdsip.Message;
-import mds.mdslib.MdsLib;
 
 /** DSC (24) **/
 public abstract class Descriptor<T>{
@@ -58,7 +57,7 @@ public abstract class Descriptor<T>{
 		public FLAG(){}
 	}
 	public static final boolean		atomic		= false;
-	public static final ByteOrder	BYTEORDER	= Descriptor.BYTEORDER;
+	public static final ByteOrder	BYTEORDER	= ByteOrder.nativeOrder();
 	public static final short		BYTES		= 8;
 	protected static final int		_clsB		= 3;
 	protected static final int		_lenS		= 0;
@@ -68,7 +67,7 @@ public abstract class Descriptor<T>{
 	protected static final int		DECO_STR	= 1;
 	protected static final int		DECO_STRX	= Descriptor.DECO_X | Descriptor.DECO_STR;
 	protected static final int		DECO_X		= 2;
-	protected static MdsLib			mdslib		= new MdsLib();
+	protected static Mds			mds_local	= Mds.getLocal();
 	protected static final byte		P_ARG		= 88;
 	protected static final byte		P_STMT		= 96;
 	protected static final byte		P_SUBS		= 0;
@@ -205,13 +204,13 @@ public abstract class Descriptor<T>{
 	public static final Descriptor<?> NEW(final Object obj) throws MdsException {
 		if(obj == null) return Missing.NEW;
 		if(obj instanceof String) return new StringDsc((String)obj);
-		if(obj instanceof Number) return NUMBER.NEW((Number)obj);
+		if(obj instanceof Number) return NUMBER.NEW(obj);
 		throw new MdsException("Conversion form " + obj.getClass().getName() + " not yet implemented.");
 	}
 
 	/** Returns Descriptor contained in Message **/
 	public static Descriptor<?> readMessage(final Message msg) throws MdsException {
-		if(msg.dtype() == DTYPE.T) return new StringDsc(msg.body.array());
+		if(msg.getDType() == DTYPE.T) return new StringDsc(msg.getBody());
 		return Descriptor_A.readMessage(msg);
 	}
 
@@ -296,15 +295,15 @@ public abstract class Descriptor<T>{
 		this.tree = TREE.getActiveTree();
 		this.mds = this.tree == null ? Mds.getActiveMds() : this.getMds();
 		size += pointer;
-		if(data != null) size += data.limit();
-		this.b = ByteBuffer.allocate(size).order(Descriptor.BYTEORDER);
+		if(data != null) size += data.remaining();
+		this.b = ByteBuffer.allocateDirect(size).order(Descriptor.BYTEORDER);
 		this.b.putShort(Descriptor._lenS, length);
 		this.b.put(Descriptor._typB, (byte)dtype.ordinal());
 		this.b.put(Descriptor._clsB, dclass);
 		if(data == null) this.b.putInt(Descriptor._ptrI, 0);
 		else{
 			this.b.putInt(Descriptor._ptrI, pointer);
-			((ByteBuffer)this.b.position(pointer)).put((ByteBuffer)data.duplicate().rewind()).rewind();
+			((ByteBuffer)this.b.position(pointer)).put(data.slice()).rewind();
 		}
 		this.p = ((ByteBuffer)this.b.duplicate().position(this.pointer() == 0 ? this.b.limit() : this.pointer())).slice().order(this.b.order());
 	}
@@ -367,7 +366,7 @@ public abstract class Descriptor<T>{
 
 	public Descriptor<?> evaluate_lib() throws MdsException {
 		if(this instanceof DATA) return this;
-		if(this.use_mdslib()) return Descriptor.mdslib.getAPI().tdiEvaluate(null, this.getLocal()).getData();
+		if(this.use_mds_local()) return Descriptor.mds_local.getAPI().tdiEvaluate(null, this.getLocal()).getData();
 		return this.mds.getAPI().tdiEvaluate(this.tree, this).getData();
 	}
 
@@ -387,7 +386,7 @@ public abstract class Descriptor<T>{
 	public Descriptor<?> getData(final DTYPE... omits) {
 		try{
 			if(this instanceof DATA) return this;
-			if(this.use_mdslib()) return Descriptor.mdslib.getDescriptor(this.tree, "DATA($)", this.getLocal());
+			if(this.use_mds_local()) return Descriptor.mds_local.getDescriptor(this.tree, "DATA(($;))", this.getLocal());
 			return this.getData_(omits);
 		}catch(final MdsException e){
 			return Missing.NEW;
@@ -496,7 +495,6 @@ public abstract class Descriptor<T>{
 		return super.hashCode();
 	}
 
-	@SuppressWarnings("static-method")
 	public boolean isAtomic() {
 		return Descriptor.atomic;
 	}
@@ -522,7 +520,7 @@ public abstract class Descriptor<T>{
 
 	/** Returns serialized byte stream as byte[] **/
 	public final byte[] serializeArray() {
-		if(!this.b.isReadOnly() && this.b.arrayOffset() == 0) return this.b.array();
+		if(!this.b.isDirect() && !this.b.isReadOnly() && this.b.arrayOffset() == 0) return this.b.array();
 		return this.serializeArray_copy();
 	}
 
@@ -657,7 +655,6 @@ public abstract class Descriptor<T>{
 		return this;
 	}
 
-	@SuppressWarnings("static-method")
 	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException {
 		throw DATA.dataerror;
 	}
@@ -666,8 +663,7 @@ public abstract class Descriptor<T>{
 		return this.getTree().getMds();
 	}
 
-	@SuppressWarnings("static-method")
-	protected final boolean use_mdslib() {
-		return MdsLib.lib_loaded == null;
+	protected final boolean use_mds_local() {
+		return (Descriptor.mds_local != null && Descriptor.mds_local.isReady() == null);
 	}
 }

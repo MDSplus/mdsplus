@@ -133,6 +133,21 @@ AC_DEFUN([TS_CHECK_PYTHON_TAP],[
 ])
 
 
+
+dnl ////////////////////////////////////////////////////////////////////////////
+dnl /// TS JAVA    /////////////////////////////////////////////////////////////
+dnl ////////////////////////////////////////////////////////////////////////////
+
+AC_DEFUN([TS_CHECK_JAVA],[
+  # AS_VAR_SET([JDK_VERSION],["$(java -d64 -version 2>&1 )"])
+  # AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
+  AC_PATH_PROG([JAVA_PATH_NAME], [java])
+  AS_IF([${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1> /dev/null],
+    [$2],
+    [$3])
+])
+
+
 dnl generate SKIP log_compiler
 AC_DEFUN([TS_LOG_SKIP],[
  AS_VAR_SET([$1],["sh -c \"exit 77\"; :"])
@@ -166,6 +181,7 @@ AC_DEFUN([TS_SELECT],[
  [
    AS_VAR_SET([ENABLE_TESTS],[yes])
    AS_ECHO("Set tests environment for linux->mingw")
+   AS_VAR_SET([skip_junit],[yes]) # skipping java tests (JUNIT) in windows
    AS_VAR_SET_IF([HAVE_WINE],,[AC_CHECK_PROG(HAVE_WINE,wine,yes,no)])
    AS_VAR_IF([HAVE_WINE],[yes],
      [

@@ -33,33 +33,33 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     from nodes, examine or change node properties, or clean or compress the
     datafile associated with a tree. These commands are listed
     when you type:
-
+    
       HELP TREE COMMANDS
-
+    
     TCL can also be used for dispatching commands or actions to action servers
     or to directly execute actions or methods provided by devices described in
     the tree. For help on dispatching related commands type:
-
+    
       HELP DISPATCH COMMANDS
-
+    
     With TCL using edit commands you can create a new tree structure or modify
     an existing one by adding, deleting or renaming nodes and adding tagnames
     to give direct addressing of nodes in the tree. For edit commands type:
-
+    
       HELP EDIT COMMANDS
-
+    
     TCL can also issue and wait for MDSplus events. See:
-
+    
       HELP WFEVENT and HELP SETEVENT
-
+    
     TCL can display device information. See:
-
+    
       HELP DEVICES
   </helpall>
 
   <help name="EDIT COMMANDS">
     The following commands are available for editing the structure of an MDSplus tree:
-
+    
     ADD NODE      - Add a node to an MDSplus tree.
     ADD TAG       - Assign a tagname to a node in the tree.
     DELETE NODE   - Delete a node in an MDSplus tree.
@@ -69,7 +69,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     SET READONLY  - Mark tree as readonly. No changes to data or nci permitted.
     SET VERSIONS  - Enable data version support in a tree.
     WRITE         - Write out a modified tree committing edit changes.
-
+    
     Type HELP command-name for more information on the command or
     HELP TREE COMMANDS or HELP DISPATCH COMMANDS for info on additional
     commands.
@@ -77,7 +77,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <help name="TREE COMMANDS">
     The following commands are available for viewing or manipulating data and
     attributes of nodes in a tree:
-
+    
     CLEAN          - Clean the datafile of a tree reclaiming unused space.
     CLOSE          - Close one or more trees currently open by this process.
     COMPRESS       - Compress a datafile by compressing data records.
@@ -100,7 +100,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     SHOW DEFAULT   - Show the current location in a tree.
     SHOW VERSIONS  - Show whether or not versioning is enabled in the tree.
     VERIFY         - Verify the tree structure of an MDSplus tree.
-
+    
     Type HELP command-name for more information on the command or
     HELP EDIT COMMANDS or HELP DISPATCH COMMANDS for info on additional
     commands.
@@ -109,7 +109,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <help name="DISPATCH COMMANDS">
     The following commands are available for dispatching
     or executing actions in an MDSplus tree.
-
+    
     ABORT SERVER     - Abort the action currently executing in an action server.
     DISPATCH         - Dispatch an action node to an action server.
     DISPATCH/BUILD   - Build a dispatch table in preparation for dispatch action phases.
@@ -121,7 +121,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     DO/METHOD        - Execute a method provided by a device in a tree.
     SHOW SERVER      - Show the current status of an action server.
     STOP SERVER      - Stop an action server.
-    
+        
     Type HELP command-name for more information on the command or
     HELP EDIT COMMANDS or HELP TREE COMMANDS for info on additional
     commands.
@@ -133,7 +133,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Optain information about python device support modules.
       Format: DEVICES [device_type] [/FULL]
       Description:
-
+    
       Get a description of a python device support module. If the device type
       parameter is omitted a list of all the available python devices will be displayed.
       If the device type contains a wildcard character such as an asterisk the devices
@@ -187,7 +187,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Add a new node to a tree opened for edit.
       Format: ADD NODE node-path [/USAGE=usage]|[/MODEL=device-type]
       Description:
-
+      
       The ADD NODE command is used to add a new node to an MDSplus tree which has been
       opened using the EDIT command. The node-path parameter specified the name of the
       new node to be added. It can be an absolute node path or a relative node path. If
@@ -195,15 +195,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       command will fail. Node names must begin with an alphabetic character followed by
       zero or more alphanumeric or underscore characters. The node name must be 12
       characters or less in length.
-
+      
       The /USAGE qualifier specifies a usage type of the node. This must be one of:
       ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
       STRUCTURE, SUBTREE, TEXT or WINDOW. If not specified, a member node (:name) will
       default to usage ANY and a child node (.name) will default to usage STRUCTURE.
-
+      
       If adding a device (i.e. data acquisition device) use the /MODEL qualifier to
       specify the type of supported device you are adding.
-
+      
       NOTE: The ADD NODE command can only be used when a tree is opened for edit.
     </help>
     <parameter name="p1" prompt="What" required="True" type="ADD_TYPE"/>
@@ -222,7 +222,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Add a tag to a node.
       Format: ADD TAG node-path tagname
       Description:
-
+      
       The ADD TAG command is used to add a tagname to a node. A tagname is
       kind of a shortcut for referencing a node in the tree. You don't need
       to known the full path location of the node if you reference it by its
@@ -231,7 +231,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       for a given tree. Tagnames can be up to 23 characters in length and must
       consist of an alphabetic character followed by up to 22 alphanumeric or
       underscore characters.
-
+      
       NOTE: The ADD TAG command can only be used when you have opened the tree
       using the EDIT command.
     </help>
@@ -247,7 +247,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Clean unused space in the trees datafile.
       Format: CLEAN treename [/SHOT=shot-number]
       Description:
-
+      
       As data is written to a tree if the record is greater than 16 bytes
       in length it is appended to the end of the tree's datafile. When the
       data in a node is modified, unless the size of the data is exactly the
@@ -258,16 +258,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       datafile is recreated by reading in the current data for each node and
       writing it to the new datafile thus discarding the orphaned data in
       the file.
-
+      
       The CLEAN command is similar to the COMPRESS command except the COMPRESS
       command will also employ data compression on the data records often
       drastically reducing the file size if the nodes were not set to be
       compressed on put.
-
+      
       Since both the CLEAN and COMPRESS command create new datafiles, it is
       recommended that they only be used when there is unlikely to be any other
       write activity on the tree.
-
+      
       Note: The shot number may be expressed as a TDI expression. For example,
       CLEAN cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
@@ -283,21 +283,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Close the current tree or all open trees.
       Format: CLOSE [treename [/SHOT=shot-number]]|[/ALL][/CONFIRM]
       Description:
-
+      
       Using the CLOSE command without any parameters or qualifiers will close the last
       tree opened with either a SET TREE command or an EDIT command. Since TCL will keep
       a stack of previously opened trees you can selectively close a particular tree by
       specifying the treename anr shot number information or to close all the tree, use
       CLOSE/ALL. To determine which trees you currently have open you can use the SHOW DB
       command.
-
+      
       Note: You must use the WRITE command on a tree opened using the EDIT command if you
       want to save and edits you might have done to that tree before using the CLOSE
       command to close it. If you attempt to close a tree with edit modifications you
       will get an error unless you force the close using the /CONFIRM qualifier. If you
       close and modified tree with the /CONFIRM qualifier the tree will be closed and any
       edit modification will be discarded.
-
+      
       Note: The shot number may be expressed as a TDI expression. For example,
       CLOSE cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
@@ -314,7 +314,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Compress the tree's datafile.
       Format: COMPRESS treename [/SHOT=shot-number]
       Description:
-
+      
       As data is written to a tree if the record is greater than 16 bytes
       in length it is appended to the end of the tree's datafile. When the
       data in a node is modified, unless the size of the data is exactly the
@@ -325,16 +325,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       datafile is recreated by reading in the current data for each node and
       writing it to the new datafile thus discarding the orphaned data in
       the file.
-
+      
       The COMPRESS command is similar to the CLEAN command except the COMPRESS
       command will also employ data compression on the data records often
       drastically reducing the file size if the nodes were not set to be
       compressed on put.
-
+      
       Since both the CLEAN and COMPRESS command create new datafiles, it is
       recommended that they only be used when there is unlikely to be any other
       write activity on the tree.
-
+      
       Note: The shot number may be expressed as a TDI expression. For example,
       COMPRESS cmod/shot="CURRENT_SHOT(""CMOD"")-1"
     </help>
@@ -359,13 +359,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                file.
       Format: CREATE PULSE shot-number [/INCLUDE=(subtree1,subtree2,...)]
               [/EXCLUDE=(subtree1,subtree2,...)] [/CONDITIONAL] [/NOMAIN]
-
+      
       Description:
-
+      
       The CREATE PULSE command will copy the currently opened tree and all it's subtrees
       (unless the optional qualifiers are specified) to pulses with the specified shot
       number.
-
+      
       The /INCLUDE, /EXCLUDE, /CONDITIONAL and /NOMAIN qualifiers can be used to
       customize which trees will be included in the new pulse files. Specifying the
       /CONDITIONAL qualifier will cause the command to examine the "include in pulse"
@@ -376,7 +376,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       specified will be included. If the /EXCLUDE qualifier is specified, all but the
       subtrees specified will be include. If the /NOMAIN qualifier is included the top
       most tree will not be included in the new pulse files.
-
+      
       NOTE: The shot number may be specified as a TDI expression such as
       "CURRENT_SHOT(""CMOD"")+1".
     </help>
@@ -395,9 +395,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: DECOMPILE
       Purpose: Display the contents of a node in the tree.
       Format: DECOMPILE node-path
-
+      
       Description:
-
+      
       The DECOMPILE command will display the contents of a node in the tree. If the data
       converted to a string exceeds approximately 30,000 characters the string representation
       of large arrays will be truncated.
@@ -453,9 +453,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: DELETE NODE
       Purpose: Delete one or more nodes in a tree opened for edit.
       Format: DELETE NODE node-path[,node-path...] /LOG /CONFIRM /DRYRUN
-
+      
       Description:
-
+      
       The DELETE NODE command is used to delete node(s) from an MDSplus tree. The tree
       must be opened for edit using the EDIT command. If you attempt to delete a node
       which has descendants or is part of a device (conglomerate) representation in the
@@ -474,13 +474,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <syntax name="delete_pulse">
     <help name="DELETE PULSE">
-
+      
       Command: DELETE PULSE
       Purpose: Delete an MDSplus pulse file instance of the currently opened tree.
       Format: DELETE PULSE shot-number
-
+      
       Description:
-
+      
       The DELETE PULSE command will delete the three files making up an MDSplus tree for
       the specified shot number.
       
@@ -511,12 +511,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                         [/USAGE=(usage1[,usage2,...]) | /USAGE=usage]
       
       Description:
-
+      
       The DIRECTORY command is used to list one or more nodes in the currently opened tree.
       You can specify one or more node paths which may include wildcard characters. If no
       node paths are specified it defaults to listing the member and child nodes in the current
       location of the tree (See: SET DEFAULT command).
-
+      
       If the /FULL qualifier is included then detailed information about each node is included.
       Use the /USAGE qualifier if you want to list only nodes of a certain usage. Usage names
       include ACTION, ANY, AXIS, COMPOUND_DATA, DEVICE, DISPATCH, NUMERIC, SIGNAL,
@@ -537,13 +537,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: DIRECTORY/TAG [tagname-wild] [/PATH]
       
       Description:
-
+      
       The DIRECTORY/TAG command is used to list tagnames in the current tree. A wildcard string
       parameter can be included to list only the tags matching the wildcard string.
-
+      
       If the /PATH qualifier is included the full paths of the nodes pointed to by the tagname
       will be displayed.
-
+      
       Example: DIRECTORY/TAG MYT*G
     </help>
     <parameter name="p1" label="TAG" default="*::*" list="True"/>
@@ -557,7 +557,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: DISPATCH action-node-path [/WAIT]
       
       Description:
-
+      
       The DISPATCH command is used to dispatch an action node to a
       action server. If the /WAIT qualifier is included the command
       will wait for the action execution to complete.
@@ -586,7 +586,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       identified. The DISPATCH/PHASE command utilizes this table when deciding
       which actions and in which order they should be dispatched to action
       servers.
-
+      
       The /MONITOR qualifier is used to send messages to an action monitor
       server which are in turn transmitted to actmon processes which display
       the current status of data acquisition actions being performed.
@@ -634,7 +634,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       actions sequence number or if the sequence is an expression containing
       other nodes, the action will be dispatched if all the actions in the
       expression have completed and the expression evaluates to a true value.
-
+      
       The /SYNCH qualifier can be used to synchronize all action servers based
       on the sequence numbers of the actions. Without the /SYNCH qualifier,
       all actions matching the phase specified are dispatched immediately to
@@ -654,12 +654,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       phase where certain types of modules such as triggering devices must
       be initialized before data acquisition devices that they trigger are
       armed.
-
+      
       The /LOG qualifier will output log messages of actions being dispatched,
       started and completed. The /NOACTION can be used with the /LOG qualifier
       to log what would be dispatched but no actions would actually be
       dispatched.
-
+      
       The /MONITOR qualifier is used to specify an action monitor action
       server which is used to relay action activity to actmon processes
       which display the status of action execution.
@@ -681,7 +681,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: DISPATCH/CLOSE[/SERVER=(server1,server2...)]
       
       Description:
-
+      
       The DISPATCH/CLOSE can be used to instruct an MDSplus action server to close all MDSplus
       trees the server currently has open. If the /SERVER qualifier is not included to specify
       any action servers then the current dispatch table (See: DISPATCH/BUILD and
@@ -702,7 +702,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: DISPATCH/COMMAND/SERVER=servername[/WAIT][/TABLE=command-table] command-to-execute
       
       Description:
-
+      
       The DISPATCH/COMMAND command is used to send an mdsdcl command to an MDSplus action server
       for execution by that server. The command will be executed asynchronously unless the /WAIT
       qualifier is included in the command. The /TABLE qualifier can be used to specify a
@@ -751,17 +751,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       the device you are trying to operate is accessible on the host where
       you are executing the command as the method is executed in your
       current process context.
-
-      The /ARG qualifier lets you supply an argument to the method. It must be
-      in the form of an tdi expression. If you need to pass a string argument
-      you would do a command such as:
-
+      
+      The /ARG qualifier lets you supply one or more arguments to the method.
+      The arguments must be in the form of an tdi expression.
+      If you need to pass a string argument you would do a command such as:
+      
       TCL> DO/METHOD mydevice init /ARG="""mystring"""
-
+      
+      Multiple arguments can be passed using the syntax:
+      
+      TCL> DO/METHOD mydevice init /ARG=(1,"""mystring""",42)
+      
       The /OVERRIDE qualifier is use to override the current on/off status
       of the device in the tree. If the device nodes are turned off and the
       /OVERRIDE qualifier is not present, then no action will be performed.
-
+      
       The /IF qualifier can be used to provide an expression. The method will
       then only be executed if the evaluation of the expression generates
       an integer value with the lowest significant bit set.
@@ -781,17 +785,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Create a new MDSplus tree or open an existing tree to add nodes or tags.
       Format: EDIT treename [/SHOT=shot-number] [/NEW]
       Description:
-
+      
       The EDIT command is used to edit or create an MDSplus tree file. Before you can edit or
       create a tree file you must have treename_path environment variable set to define the
       location of the tree files (i.e. mytree_path=/home/me/mytreedir).
-
+      
       The /SHOT qualifier is used to specify a shot number to edit or create. If the /SHOT qualifier
       is not specified, the EDIT command will default to shot number -1, the "model" tree.
-
+      
       If the /NEW qualifier is specified then a new empty tree will be created overriding any
       existing tree if one exists.
-
+      
       Note: Once you are done editing a tree you must use the WRITE command to save any
       structural changes you might have made to the tree.
     </help>
@@ -830,9 +834,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       line feeds. The /EOF qualifier can be used to specify an EOF string
       which would terminate the expression input. If the expression has
       zero length the node will be emptied of its data.
-
+      
       Examples:
-
+      
       TCL> PUT mynode 42    ! Store a integer 42 in a node
       TCL> PUT mynode ""    ! Empty a node
       TCL> PUT mynode ""this is a string"" ! Store a text string
@@ -875,7 +879,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: REMOVE TAG tagname
       
       Description:
-
+      
       The REMOVE TAG command is used to remove a tagname from a node.
       The tree must be opened by the EDIT command to be able to remove
       a tagname from a node. The changes must be preserved by issuing a
@@ -893,14 +897,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: RENAME old-node-path new-node-path [/LOG]
       
       Description:
-
+      
       The RENAME command can be used to rename a node in an MDSplus tree.
       Before the RENAME command can be used the tree must be opened with
       the EDIT command. If the new-node-path specified contains parent
       nodes those parent nodes must already exist or the rename will fail.
       The changes must be preserved by issuing a WRITE command before
       closing the tree with the CLOSE command.
-
+      
       The /LOG qualifier can be used to display log messages indicating
       the rename operation.
     </help>
@@ -952,7 +956,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: SET ATTRIBUTE node-path/NAME=attribute-name (value | /EXTENDED)
       
       Description:
-
+      
       The SET ATTRIBUTE command will add an attribute to a node as named with
       the /NAME qualifier. The value argument is used to specify the value of
       the named attribute and is compiled as a TDI expression. The /EXTENDED
@@ -960,18 +964,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       in following lines ended by a blank line. This provides an easy way to
       add quoted strings that would otherwise require special handling in the
       main command line.
-
+      
       Examples:
-
+      
       TCL> SET ATTRIBUTE mynode/NAME=special 42
       TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
       build_with_units(42,"volts")
-
       TCL> SHOW ATTRIBUTE mynode/NAME=special
       42
       TCL> SHOW ATTRIBUTE mynode/name=myattr
       BUILD_WITH_UNITS(42,"volts")
-
       TCL> SHOW ATTRIBUTE mynode
       Defined attributes for this node:
       myattr
@@ -1003,7 +1005,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: SET CURRENT treename (shot-number-expression | /INCREMENT)
       
       Description:
-
+      
       The SET CURRENT command is used to designate a "current" shot for a given
       tree. When opening a tree the user can specify the reserved shot number 0 to
       designate opening the "current" shot for that tree. Typically during experiment
@@ -1012,19 +1014,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       shot. The shot number can either be expression by a shot number expression, the
       simplest being just an integer value, or you can use the /INCREMENT qualifier
       to make the current shot the previous current shot number plus one.
-
+      
       Examples:
 
         TCL> SET CURRENT CMOD 1000
         TCL> SET CURRENT CMOD "current_shot('cmod')+2"
         TCL> SHOW CURRENT CMOD
         Current shot is 1002
-
+      
       Note: The shot number is a signed 32-bit integer so the largest
       value for a shot number is 2147483647. Also except for the model,
       shot number -1 and the "current" shot, shot number 0, all shot
       numbers must be between 1 and 2147483647.
-
+      
     </help>
     <routine name="TclSetCurrent"/>
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -1040,7 +1042,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: SET VIEW date-time-specifier
       
       Description:
-
+      
       The SET VIEW command is used to set the time context for examining
       the contents of a MDSplus tree. If data versioning is enabled on
       a tree then a history of data entries for each node is kept each
@@ -1048,7 +1050,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       such as DIRECTORY, DECOMPILE and SHOW DATA will present a description
       of the data the same as if you issued those commands at that particular
       time.
-
+      
       The date-time-specifier must be in the format:
          dd-mon-yyyy hh:mm:ss where:
 	    dd    - the day of the month, integer such as 29.
@@ -1071,7 +1073,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: SET DEFAULT node-path
       
       Description:
-
+      
       The SET DEFAULT is similar to a cd command in a file system.
       The default location in the tree hierarchy affects things like
       the DIRECTORY command as well as all commands that take a node-path
@@ -1089,12 +1091,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: SET NODE
       Purpose: Modify node characteristics in an MDSplus tree.
       Format: SET NODE node-path-wild /option[/option...]
+      
       Description:
-
+      
       The SET NODE command is used to change the characteristics of one
       or more nodes in an MDSplus tree. The 'option' in the Format above
       is one of the following:
-
+      
       ON                    - turn node "on"
       OFF                   - turn node "off"
       [NO]SUBTREE           - make node a subtree reference (or not)
@@ -1109,7 +1112,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       [NO]ESSENTIAL         - make this node 'essential' for DISPATCH/CHECK
       LOG                   - log node changes
       STATUS=n              - Write a status value to a node (usually action nodes).
-
+      
       All nodes in an MDSplus tree have a set of attributes, some are set automatically
       when data is stored, some are set when the nodes are first added to a tree and
       some are modifiable by this command. The options indicated with a '[NO]' prefix
@@ -1118,7 +1121,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       indicates that data can only be written once after which the data cannot be
       overwritten. Using the command SET NODE gub/NOWRITE_ONCE clears that "write once"
       flag thus enabling the node to be overwritten with new data.
-
+      
     </help>
     <routine name="TclSetNode"/>
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -1145,7 +1148,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Change the logging mode for an action server.
       Format: SET SERVER/LOG=(LOG | STATISTICS | NONE)
       Description:
-
+      
       Action servers by default will write log messages to stdout when
       they are dispatched and action, when they begin an action and
       when the complete an action. This is the type of logging produced
@@ -1172,13 +1175,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Make tree readonly.
       Format: SET READONLY [/OFF]
       Description:
-
+      
       The SET READONLY command is used to make a tree readonly. No store of
       data or change of node characteristics is permitted. This is an edit
       operation and a WRITE command must be performed to save the readonly
       property of a tree. Use the /OFF qualifier to disable the readonly
       setting to make the tree writable again.
-
+      
     </help>
     <routine name="TclSetReadonly"/>
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -1191,7 +1194,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Open an MDSplus tree.
       Format: SET TREE tree-name[,subtree1[,subtree2,]] [/SHOT=shot-number] [/READONLY]
       Description:
-
+      
       The SET TREE command is used to open an MDSplus tree. If subtree names are
       included in the tree-name parameter then only those trees will be opened if they
       are available. The /SHOT qualifier can be used to specify a particular shot
@@ -1213,7 +1216,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Enable or disable data versioning in a tree.
       Format: SET VERSIONS [/[NO]MODEL] [/[NO]SHOT]
       Description:
-
+      
       The SET VERSIONS command is used to enable or disable data versioning in an
       MDSplus tree. When versioning is enabled, new data records stored to a node
       do not overwrite the existing data but instead are added to a list of data
@@ -1222,8 +1225,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       view would be equivalent to having examined the tree at that particular
       date and time. You can enable versioning for either the model or pulse files
       or both.
-
+      
       NOTE: Data versioning is not supported for segmented data records.
+      
     </help>
     <routine name="TclSetVersions"/>
     <qualifier name="MODEL"/>
@@ -1236,12 +1240,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Issue an MDSplus event.
       Format: SETEVENT eventname
       Description:
-
+      
       The SETEVENT command can be used to issue an MDSplus event. MDSplus events
       are named happenings that other processes can wait for by name. See the
       WFEVENT command. The TCL command does not currently support sending a data
       message with the event.
-
+      
     </help>
     <routine name="TclSetEvent"/>
     <parameter name="p1" label="EVENT" prompt="Event" required="True"/>
@@ -1269,24 +1273,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Show the contents of a nodes "named" attribute.
       Format: SHOW ATTRIBUTE/NAME=attribute-name
       Description:
-
+      
       The SHOW ATTRIBUTE command is used to display the contents of a node's
       named attribute.
-
+      
       TCL> SET ATTRIBUTE mynode/NAME=special 42
       TCL> SET ATTRIBUTE mynode/NAME=myattr/EXTENDED
       build_with_units(42,"volts")
-
+      
       TCL> SHOW ATTRIBUTE mynode/NAME=special
       42
       TCL> SHOW ATTRIBUTE mynode/name=myattr
       BUILD_WITH_UNITS(42,"volts")
-
+      
       TCL> SHOW ATTRIBUTE mynode
       Defined attributes for this node:
       myattr
       special
-
+      
     </help>
     <routine name="TclShowAttribute"/>
     <parameter name="p1" prompt="What" required="True" type="SET_TYPE"/>
@@ -1299,8 +1303,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: SHOW CURRENT
       Purpose: Show the current shot for a given tree.
       Format: SHOW CURRENT treename
+      
       Description:
-
+      
       The SHOW CURRENT command is useful to display the current shot for
       a particular tree. See HELP SET CURRENT for more information on the
       meaning of "current" shot.
@@ -1316,12 +1321,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Display the data contents of a node in an mdsplus tree.
       Format: SHOW DATA node-path[,node-path,...]
       Description:
-
+      
       The SHOW DATA command will display the data stored in a node in a tree.
       Unlike the DECOMPILE command, the SHOW DATA shows the data structure
       stored in the node as well as following node references recursively
       if an expression store in a node references other nodes in the tree.
-
+      
     </help>
     <routine name="TclShowData"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
@@ -1335,16 +1340,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
                process.
       Format: SHOW DB
       Description:
-
+      
       The SHOW DB can be used to display what the current tree context is. It
       displays the tree and shot, open mode and the current default node in the
       tree.
-
+      
       Example:
-
+      
       TCL> SHOW DB
       000  MAIN                              shot: -1 [\MAIN::TOP]
-
+      
      </help>
    <routine name="TclShowDB"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
@@ -1359,12 +1364,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
       The SHOW DEFAULT can be used to display what the current default node
       location in the opened tree.
-
+      
       Example:
-
+      
       TCL> SHOW DEFAULT
       \MAIN::TOP
-
+      
      </help>
     <routine name="TclShowDefault"/>
     <parameter name="p1" prompt="What" required="True" type="show_TYPE"/>
@@ -1376,7 +1381,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Display the current status of one or more action servers.
       Format: SHOW SERVER server-spec[,server-spec] [/NOOUTPUT]
       Description:
-
+      
       The SHOW SERVER command can be used to query action servers to see what,
       if anything, they are currently working on. The /NOOUTPUT command can
       be useful to just detect if there is a problem accessing an action server.
@@ -1389,16 +1394,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       3) there is an environment variable called "MDSIP_SERVER_LOGDIR" defined
          pointing to that directory.
       4) Your process has access to that directory.
-
+      
       When wildcards are used in the server name the log directory is searched for
       logfiles matching the wildcard specification and then the log file name is used
       for the server specication when connecting to that server.
       Example:
-
+      
       TCL> show server localhost:9000
       Checking server: localhost:9000
       Tue Feb 10 15:51:27 2015, fc21-vm:9000, logging disabled, Inactive
-
+      
     </help>
    <routine name="TclDispatch_show_server"/>
     <parameter name="p1" prompt="What" required="True" type="stop_type"/>
@@ -1419,7 +1424,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: SHOW GIT
       Purpose: Show the version information of this MDSplus git repository.
       Format: SHOW GIT [/TAG] [/BRANCH] [/COMMIT] [/REMOTE] [/REMOTE_URL] [/SRCDIR]
-
+      
     </help>
     <routine name="mdsdcl_show_git_info"/>
     <parameter name="P1" required="True"/>    
@@ -1438,14 +1443,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Command: SHOW VERSIONS
       Purpose: Show whether or not data versioning is enabled for the current tree.
       Format: SHOW VERSIONS
-
+      
       Description:
-
+      
       The SHOW VERSIONS command is used to display the current data versioning
       settings for the current tree.
-
+      
       Example:
-
+      
       TCL> SET TREE main
       TCL> SHOW VERSIONS
         Versions are disabled in the model file and disabled in the shot file.
@@ -1480,12 +1485,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <syntax name="stop_server">
     <help name="STOP SERVER">
-
+      
       Command: STOP SERVER
       Purpose: Stop/restart one or more MDSplus action servers.
       Format: STOP SERVER server-spec[,server-spec]
       Description:
-
+      
       The STOP SERVER command can be used to stop one or more action servers.
       Normally MDSplus action servers are configured to restart automatically so
       this command effectively will restart an action server. It is not uncommon
@@ -1498,7 +1503,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       
       Unlike the SHOW SERVER command, Wildcard characters cannot be used in the
       server-spec string.
- 
+      
     </help>
     <routine name="TclDispatch_stop_server"/>
     <parameter name="p1" prompt="What" required="True" type="stop_type"/>
@@ -1512,7 +1517,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Examine a tree structure to ensure it is valid and intact.
       Format: VERIFY
       Description:
-
+      
       The VERIFY command can be used to check the integrety of the currently opened
       tree to ensure that the tree structure representation is valid and complete.
       The VERIFY command is a useful diagnostic tool if file system or disk corruption
@@ -1521,13 +1526,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       it is usually safe to copy the tree file from an adjacent shot since the tree
       file contains only the tree structure and not the data or characteristics of
       the nodes in the tree.
-
+      
       The VERIFY command will display a count of the nodes in the tree. If there are
       subtree nodes included in the tree those nodes will be listed as "other" in the
       node counts.
-
+      
       Example:
-
+      
       TCL> SET TREE mytree
       TCL> VERIFY
       Node summary:
@@ -1546,7 +1551,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Purpose: Wait for an MDSplus event to be issued.
       Format: WFEVENT event-name /TIMEOUT=seconds
       Description:
-
+      
       The WFEVENT command can be used to wait for an MDSplus event to be issued. MDSplus events
       are named occurrences that can be issued by other processes on the same or different host
       computers. The WFEVENT command will not complete until the MDSplus event is generated.
@@ -1566,11 +1571,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
       Format: WRITE [treename] [/SHOT=shot-number]
       
       Description:
-
+      
       The WRITE command is used to write out a new tree to preserve any
       changes using editing commands such as those listed in:
       HELP EDIT COMMANDS.
-
+      
       If the treename parameter or /SHOT qualifier is omitted the tree
       and shot specified with the EDIT command is assumed. If a tree
       is modified by edit commands and a WRITE command is not issued,

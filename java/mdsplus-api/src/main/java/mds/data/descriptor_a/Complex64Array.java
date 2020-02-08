@@ -47,7 +47,6 @@ public final class Complex64Array extends COMPLEXArray<Double>{
 		return buf.putDouble(value);
 	}
 
-	@SuppressWarnings("static-method")
 	public final ByteBuffer buildBuffer(final ByteBuffer buf, final double real, final double imag) {
 		return buf.putDouble(real).putDouble(imag);
 	}

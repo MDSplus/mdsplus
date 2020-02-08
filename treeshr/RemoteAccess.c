@@ -94,26 +94,30 @@ static void host_list_cleanup(const int conid){
     perror("Error loading MdsIpShr->DisconnectFromMds in host_list_cleanup");
   host_list_t *host, *prev = NULL;
   for (host = host_list; host ;) {
-    if (conid>=0 && host->h.conid!=conid)
-      continue;
-    if (host->h.connections <= 0) {
-      DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
-      if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
-        fprintf(stderr,"Failed to disconnect Connection %d\n",host->h.conid);
-      if (prev) {
-	prev->next = host->next;
-	free(host->h.unique);
-	free(host);
-	host = prev->next;
-      } else {
-	host_list  = host->next;
-	free(host->h.unique);
-	free(host);
-	host = host_list;
-      }
-    } else {
+    if (conid>=0 && host->h.conid!=conid) {
       prev = host;
-      host = host->next;
+      host = host -> next;
+    }
+    else {
+      if (host->h.connections <= 0) {
+        DBG("Disconnecting %d: %d\n",host->h.conid,host->h.connections);
+        if (disconnectFromMds && IS_NOT_OK(disconnectFromMds(host->h.conid)))
+          fprintf(stderr,"Failed to disconnect Connection %d\n",host->h.conid);
+        if (prev) {
+	  prev->next = host->next;
+	  free(host->h.unique);
+	  free(host);
+	  host = prev->next;
+        } else {
+	  host_list  = host->next;
+	  free(host->h.unique);
+	  free(host);
+	  host = host_list;
+        }
+      } else {
+        prev = host;
+        host = host->next;
+      }
     }
   }
 }
@@ -305,7 +309,7 @@ inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treea
 int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
   int conid;
   logname[strlen(logname) - 2] = '\0';
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   conid = remote_access_connect(logname, 1, (void *)dblist);
   if (conid != -1) {
     status = tree_open(dblist,conid,subtree_list ? subtree_list : tree);
@@ -329,7 +333,7 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
 	  info->channel = conid;
 	  dblist->tree_info = info;
 	  dblist->remote = 1;
-	  status = TreeNORMAL;
+	  status = TreeSUCCESS;
 	} else
 	  status = TreeFILE_NOT_FOUND;
       }
@@ -456,7 +460,7 @@ int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ct
 }
 
 int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out, void **ctx_inout, int usage_mask){
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (!ctx) {
     struct descrip ans = {0};
@@ -548,11 +552,10 @@ typedef struct tag_search {
   struct descriptor_d search_tree;
   unsigned char top_match;
   unsigned char remote;
-  char    *remote_tag;
+  char    answer[1+sizeof(TREE_NAME)+2+sizeof(TAG_NAME)+1];
   int     conid;
   int64_t ctx;
 } TAG_SEARCH;
-
 
 char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout, void **ctx_inout){
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
@@ -562,34 +565,31 @@ char *FindTagWildRemote(PINO_DATABASE * dblist, const char *wildarg, int *nidout
     (*ctx)->remote = 1;
     (*ctx)->conid = dblist->tree_info->channel;
     (*ctx)->ctx = 0;
-  } else free((*ctx)->remote_tag);
-  struct descriptor wild = {strlen(wildarg),DTYPE_T,CLASS_S,(char*)wildarg};
+  }
+  DESCRIPTOR_FROM_CSTRING(wild,wildarg);
   EMPTYXD(ans);
   sprintf(exp,"__a=-1;__b=0x%"PRIx64"QU;__c=*;___=TreeShr->TreeFindTagWildDsc(ref($),ref(__a),ref(__b),xd(__c));execute('deallocate(\"__*\");`list(*,___,__a,__b,__c)')",(*ctx)->ctx);
   int status = MdsValueDsc(dblist->tree_info->channel, exp, &wild, &ans, NULL);
-  if STATUS_NOT_OK {
-    (*ctx)->remote_tag = NULL;
-    goto end;
+  if STATUS_OK {
+    struct descriptor** list = (struct descriptor**)ans.pointer->pointer;
+    status = *(int*)list[0]->pointer;
+    if (nidout) *nidout = *(int*)list[1]->pointer;
+    (*ctx)->ctx = *(uint64_t*)list[2]->pointer;
+    if ((*ctx)->ctx) {
+      size_t len = list[3]->length < sizeof((*ctx)->answer) ? list[3]->length : sizeof((*ctx)->answer)-1;
+      memcpy((*ctx)->answer, list[3]->pointer, len);
+      (*ctx)->answer[len] = '\0';
+    } else
+      status = TreeFAILURE;
   }
-  struct descriptor** list = (struct descriptor**)ans.pointer->pointer;
-  status = *(int*)list[0]->pointer;
-  if (nidout) *nidout = *(int*)list[1]->pointer;
-  (*ctx)->ctx = *(uint64_t*)list[2]->pointer;
-  if ((*ctx)->ctx) {
-    (*ctx)->remote_tag = memcpy(malloc(list[3]->length + 1), list[3]->pointer, list[3]->length);
-    (*ctx)->remote_tag[list[3]->length] = '\0';
-  } else
-   (*ctx)->remote_tag = NULL;
-end: ;
   MdsIpFreeDsc(&ans);
-  return (*ctx)->remote_tag;
+  return STATUS_OK ? (*ctx)->answer : NULL;
 }
 
 void FindTagEndRemote(void **ctx_inout)
 {
   TAG_SEARCH **ctx = (TAG_SEARCH **) ctx_inout;
   if (*ctx) {
-    free((*ctx)->remote_tag);
     if ((*ctx)->ctx) {
       char exp[128];
       sprintf(exp,"TreeShr->TreeFindTagEnd(val(0x%"PRIx64"QU))",(*ctx)->ctx);
@@ -605,7 +605,7 @@ void FindTagEndRemote(void **ctx_inout)
 
 int GetNciRemote(PINO_DATABASE * dblist, int nid_in, struct nci_itm *nci_itm)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   NCI_ITM *itm;
   struct descrip ans;
   for (itm = nci_itm; itm->code != NciEND_OF_LIST && status & 1; itm++) {
@@ -1332,9 +1332,9 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
     flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
     UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped); //TODO: check return value
-    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
   } else {
-    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeNORMAL;
+    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
   }
   if (deleted) *deleted = 0;
 #else

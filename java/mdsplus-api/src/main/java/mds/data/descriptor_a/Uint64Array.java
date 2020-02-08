@@ -38,7 +38,6 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>{
 		return this.buildBuffer(buf, (long)value);
 	}
 
-	@SuppressWarnings("static-method")
 	public ByteBuffer buildBuffer(final ByteBuffer buf, final long value) {
 		return buf.putLong(value);
 	}

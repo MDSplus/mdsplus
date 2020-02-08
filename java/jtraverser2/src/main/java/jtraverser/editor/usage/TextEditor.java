@@ -120,7 +120,6 @@ public class TextEditor extends Editor implements ActionListener{
 		this.editor.add(this.data_edit = Editor.addLabel("Expression", new ExprEditor(this.data, this.editable, this.ctx)), BorderLayout.CENTER);
 	}
 
-	@SuppressWarnings("static-method")
 	protected boolean addExtraEditor() {
 		return false;
 	}
@@ -132,7 +131,6 @@ public class TextEditor extends Editor implements ActionListener{
 		else this.mode_idx = 1;
 	}
 
-	@SuppressWarnings("static-method")
 	protected boolean checkUsrData() {
 		return false;
 	}

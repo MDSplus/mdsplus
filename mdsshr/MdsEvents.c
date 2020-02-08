@@ -23,7 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <STATICdef.h>
 #include <mdsshr.h>
 #include <status.h>
 #include <libroutines.h>
@@ -34,7 +33,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <fcntl.h>
 #include "../mdstcpip/mdsip_connections.h"
-#include "mdsshrthreadsafe.h"
 #ifdef HAVE_ALLOCA_H
  #include <alloca.h>
 #endif
@@ -49,34 +47,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ctype.h>
 #define MAX_ACTIVE_EVENTS 2000	/* Maximum number events concurrently dealt with by processes */
 
-STATIC_THREADSAFE int receive_ids[256];	/* Connection to receive external events  */
-STATIC_THREADSAFE int send_ids[256];	/* Connection to send external events  */
-STATIC_THREADSAFE int receive_sockets[256];	/* Socket to receive external events  */
-STATIC_THREADSAFE int send_sockets[256];	/* Socket to send external events  */
-STATIC_THREADSAFE char *receive_servers[256];	/* Receive server names */
-STATIC_THREADSAFE char *send_servers[256];	/* Send server names */
-STATIC_THREADSAFE int external_shutdown = 0;	/* flag to request remote events thread termination */
-STATIC_THREADSAFE int external_count = 0;	/* remote event pendings count */
-STATIC_THREADSAFE int num_receive_servers = 0;	/* numer of external event sources */
-STATIC_THREADSAFE int num_send_servers = 0;	/* numer of external event destination */
+#ifndef EVENT_THREAD_STACK_SIZE_MIN
+#define EVENT_THREAD_STACK_SIZE_MIN 102400
+#endif
 
-STATIC_THREADSAFE int external_thread_created = 0;	/* Thread for remot event handling flag */
-STATIC_THREADSAFE int fds[2];	/* file descriptors used by the pipe */
+static int receive_ids[256];	/* Connection to receive external events  */
+static int send_ids[256];	/* Connection to send external events  */
+static int receive_sockets[256];	/* Socket to receive external events  */
+static int send_sockets[256];	/* Socket to send external events  */
+static char *receive_servers[256];	/* Receive server names */
+static char *send_servers[256];	/* Send server names */
+static int external_shutdown = 0;	/* flag to request remote events thread termination */
+static int external_count = 0;	/* remote event pendings count */
+static int num_receive_servers = 0;	/* numer of external event sources */
+static int num_send_servers = 0;	/* numer of external event destination */
 
-STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
-STATIC_ROUTINE void initializeRemote(int receive_events);
-STATIC_CONSTANT int TIMEOUT = 0;
+static int external_thread_created = 0;	/* Thread for remot event handling flag */
+static int fds[2];	/* file descriptors used by the pipe */
 
-EXPORT int MDSSetEventTimeout(const int seconds)
-{
-  int old_timeout = TIMEOUT;
-  TIMEOUT = seconds;
-  return old_timeout;
-}
+static int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid);
+static void initializeRemote(int receive_events);
 
 static int ConnectToMds_(const char *const host)
 {
-  STATIC_THREADSAFE int (*rtn)(const char *const host) = 0;
+  static int (*rtn)(const char *const host) = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "ConnectToMds", (void **)&rtn) : 1;
   if STATUS_OK {
     return rtn(host);
@@ -86,9 +80,9 @@ static int ConnectToMds_(const char *const host)
 
 static int DisconnectFromMds_(const int id)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "DisconnectFromMds", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(id);
   }
   return -1;
@@ -96,9 +90,9 @@ static int DisconnectFromMds_(const int id)
 
 static void *GetConnectionInfo_(const int id, char **const name, int *const readfd, size_t *const len)
 {
-  STATIC_THREADSAFE void *(*rtn) () = 0;
+  static void *(*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetConnectionInfo", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(id, name, readfd, len);
   }
   return 0;
@@ -106,9 +100,9 @@ static void *GetConnectionInfo_(const int id, char **const name, int *const read
 
 static int MdsEventAst_(const int conid, char const *const eventnam, void (*const astadr) (), void *const astprm, int *const eventid)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventAst", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(conid, eventnam, astadr, astprm, eventid);
   }
   return 0;
@@ -116,9 +110,9 @@ static int MdsEventAst_(const int conid, char const *const eventnam, void (*cons
 
 static Message *GetMdsMsg_(const int id, const int *const stat)
 {
-  STATIC_THREADSAFE Message *(*rtn) () = 0;
+  static Message *(*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "GetMdsMsg", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(id, stat);
   }
   return 0;
@@ -126,9 +120,9 @@ static Message *GetMdsMsg_(const int id, const int *const stat)
 
 static int MdsEventCan_(const int id, const int eid)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsEventCan", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(id, eid);
   }
   return 0;
@@ -136,9 +130,9 @@ static int MdsEventCan_(const int id, const int eid)
 
 static int MdsValue_(const int id, const char *const exp, struct descrip *const d1, struct descrip *const d2, struct descrip *const d3)
 {
-  STATIC_THREADSAFE int (*rtn) () = 0;
+  static int (*rtn) () = 0;
   int status = (rtn == 0) ? LibFindImageSymbol_C("MdsIpShr", "MdsValue", (void **)&rtn) : 1;
-  if (status & 1) {
+  if STATUS_OK {
     return rtn(id, exp, d1, d2, d3);
   }
   return 0;
@@ -148,10 +142,10 @@ static int MdsValue_(const int id, const char *const exp, struct descrip *const 
 static int RegisterRead_(const int conid)
 {
   int status = 1;
-  STATIC_THREADSAFE int (*rtn) (int) = 0;
+  static int (*rtn) (int) = 0;
   if (rtn == 0)
     status = LibFindImageSymbol_C("MdsIpShr", "RegisterRead", (void **)&rtn);
-  if (!(status & 1)) {
+  if STATUS_NOT_OK {
     printf("%s\n", MdsGetMsg(status));
     return status;
   }
@@ -183,12 +177,6 @@ static char *eventName(const char *const eventnam_in) {
  #include "../servershr/servershrp.h"
 #else
  #include <sys/types.h>
- #if USE_SEMAPHORE_H
-  #include <semaphore.h>
- #else
-  #include <sys/sem.h>
- #endif
- //#include <sys/msg.h>
  #include <sys/time.h>
  #include <sys/socket.h>
  #include <unistd.h>
@@ -203,10 +191,10 @@ static char *eventName(const char *const eventnam_in) {
 #endif //_WIN32
 
 /* MDsEvent: UNIX and Win32 implementation of MDS Events */
-STATIC_THREADSAFE pthread_t external_thread;	/* Thread for remote event handling */
+static pthread_t external_thread;	/* Thread for remote event handling */
 
 
-STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
+static void ReconnectToServer(int idx, int recv)
 {
   char **servers;
   int *sockets;
@@ -237,7 +225,7 @@ STATIC_ROUTINE void ReconnectToServer(int idx, int recv)
 
 /************* OS dependent part ******************/
 
-STATIC_ROUTINE char *getEnvironmentVar(char const *name)
+static char *getEnvironmentVar(char const *name)
 {
   char *trans = getenv(name);
   if (!trans || !*trans)
@@ -245,19 +233,34 @@ STATIC_ROUTINE char *getEnvironmentVar(char const *name)
   return trans;
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *);
+static void *handleRemoteAst(void *);
 
-STATIC_ROUTINE int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
+static int createThread(pthread_t * thread, void *(*rtn) (void *), void *par)
 {
-  int status = 1;
-  if (pthread_create(thread, NULL, (void *(*)(void *))rtn, par) != 0) {
+  int s,status = 1;
+  size_t ssize;
+  pthread_attr_t attr;
+  s = pthread_attr_init(&attr);
+  if (s != 0) {
+    perror("pthread_attr_init");
+    return 0;
+  }
+  pthread_attr_getstacksize(&attr,&ssize);
+  if(ssize < EVENT_THREAD_STACK_SIZE_MIN) {
+    s = pthread_attr_setstacksize(&attr, EVENT_THREAD_STACK_SIZE_MIN);
+    if (s != 0) {
+      perror("pthread_attr_setstacksize");
+      return 0;
+    }
+  }
+  if (pthread_create(thread, &attr, (void *(*)(void *))rtn, par) != 0) {
     status = 0;
     perror("createThread:pthread_create");
   }
   return status;
 }
 
-STATIC_ROUTINE void startRemoteAstHandler()
+static void startRemoteAstHandler()
 {
   if (pipe(fds) != 0) {
     fprintf(stderr, "Error creating pipes for AstHandler\n");
@@ -267,45 +270,44 @@ STATIC_ROUTINE void startRemoteAstHandler()
 }
 
 
-
-STATIC_THREADSAFE pthread_mutex_t event_infoMutex;
-STATIC_THREADSAFE int event_infoMutex_initialized = 0;
-
 /* eventid stuff: when using multiple event servers, the code has to deal with multiple eventids */
-STATIC_THREADSAFE struct {
+static pthread_mutex_t event_info_lock = PTHREAD_MUTEX_INITIALIZER;
+#define EVENT_INFO_LOCK   pthread_mutex_lock(&event_info_lock)
+#define EVENT_INFO_UNLOCK pthread_mutex_unlock(&event_info_lock)
+static struct {
   int used;
   int local_id;
   int *external_ids;
 } event_info[MAX_ACTIVE_EVENTS];
 
-STATIC_ROUTINE void newRemoteId(int *id)
+static void newRemoteId(int *id)
 {
   int i;
-  LockMdsShrMutex(&event_infoMutex, &event_infoMutex_initialized);
+  EVENT_INFO_LOCK;
   for (i = 0; i < MAX_ACTIVE_EVENTS - 1 && event_info[i].used; i++) ;
   event_info[i].used = 1;
   event_info[i].external_ids = (int *)malloc(sizeof(int) * 256);
   *id = i;
-  UnlockMdsShrMutex(&event_infoMutex);
+  EVENT_INFO_UNLOCK;
 }
 
-STATIC_ROUTINE void setRemoteId(int id, int ofs, int evid)
+static void setRemoteId(int id, int ofs, int evid)
 {
-  LockMdsShrMutex(&event_infoMutex, &event_infoMutex_initialized);
+  EVENT_INFO_LOCK;
   event_info[id].external_ids[ofs] = evid;
-  UnlockMdsShrMutex(&event_infoMutex);
+  EVENT_INFO_UNLOCK;
 }
 
-STATIC_ROUTINE int getRemoteId(int id, int ofs)
+static int getRemoteId(int id, int ofs)
 {
   int retId;
-  LockMdsShrMutex(&event_infoMutex, &event_infoMutex_initialized);
+  EVENT_INFO_LOCK;
   retId = event_info[id].external_ids[ofs];
-  UnlockMdsShrMutex(&event_infoMutex);
+  EVENT_INFO_UNLOCK;
   return retId;
 }
 
-STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int *num_servers)
+static void getServerDefinition(char const *env_var, char **servers, int *num_servers)
 {
   unsigned int i, j;
   char *envname = getEnvironmentVar(env_var);
@@ -328,22 +330,22 @@ STATIC_ROUTINE void getServerDefinition(char const *env_var, char **servers, int
 }
 
 #ifdef GLOBUS
-STATIC_ROUTINE void handleRemoteEvent(int conid);
+static void handleRemoteEvent(int conid);
 
-STATIC_ROUTINE void KillHandler()
+static void KillHandler()
 {
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   Poll(handleRemoteEvent);
   return NULL;
 }
 
-STATIC_ROUTINE void handleRemoteEvent(int conid)
+static void handleRemoteEvent(int conid)
 {
   char buf[16];
-  STATIC_CONSTANT struct descriptor
+  static struct descriptor
   int status = 1, i;
   Message *m;
   m = GetMdsMsg_(sock, &status);
@@ -358,7 +360,7 @@ STATIC_ROUTINE void handleRemoteEvent(int conid)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-result"
 
-STATIC_CONSTANT void KillHandler()
+static void KillHandler()
 {
   void *dummy;
   external_shutdown = 1;
@@ -370,7 +372,7 @@ STATIC_CONSTANT void KillHandler()
   external_thread_created = 0;
 }
 
-STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg __attribute__ ((unused)))
 {
   INIT_STATUS;
   char buf[16];
@@ -415,45 +417,28 @@ STATIC_ROUTINE void *handleRemoteAst(void *arg __attribute__ ((unused)))
 
 #endif//GLOBUS
 
-/*
-    for(i = 0; i < num_receive_servers; i++)
-	if(receive_servers[i] && !strcmp(server, receive_servers[i]))
-	    return receive_sockets[i];
-    for(i = 0; i < num_send_servers; i++)
-	if(send_servers[i] && !strcmp(server, send_servers[i]))
-   return 0;
-}
-*/
-
-STATIC_ROUTINE int searchOpenServer(char *server __attribute__ ((unused)))
+static int searchOpenServer(char *server __attribute__ ((unused)))
 /* Avoid doing MdsConnect on a server already connected before
  * for now, allow socket duplications
  */{
   return 0;
 }
 
-STATIC_THREADSAFE pthread_mutex_t initMutex;
-STATIC_THREADSAFE int initMutex_initialized = 0;
-
-STATIC_ROUTINE void initializeRemote(int receive_events)
+static pthread_mutex_t init_lock = PTHREAD_MUTEX_INITIALIZER;
+static void initializeRemote(int receive_events)
 {
-  STATIC_THREADSAFE int receive_initialized;
-  STATIC_THREADSAFE int send_initialized;
+  static int receive_initialized;
+  static int send_initialized;
+  pthread_mutex_lock(&init_lock);
+  if (receive_events ? receive_initialized : send_initialized) {
+    pthread_mutex_unlock(&init_lock);
+    return;
+  }
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&init_lock);
 
   char *servers[256];
   int num_servers;
   int status = 1, i;
-
-  LockMdsShrMutex(&initMutex, &initMutex_initialized);
-
-  if (receive_initialized && receive_events) {
-    UnlockMdsShrMutex(&initMutex);
-    return;
-  }
-  if (send_initialized && !receive_events) {
-    UnlockMdsShrMutex(&initMutex);
-    return;
-  }
 
   if (receive_events) {
     receive_initialized = 1;
@@ -465,7 +450,7 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
     num_send_servers = num_servers;
   }
   if (num_servers > 0) {
-    if (status & 1) {
+    if STATUS_OK {
       if (external_thread_created)
 	KillHandler();
       for (i = 0; i < num_servers; i++) {
@@ -502,14 +487,14 @@ STATIC_ROUTINE void initializeRemote(int receive_events)
     } else
       printf("%s\n", MdsGetMsg(status));
   }
-  UnlockMdsShrMutex(&initMutex);
+  pthread_cleanup_pop(1);
 }
 
-STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
+static int eventAstRemote(char const *eventnam, void (*astadr) (), void *astprm, int *eventid)
 {
   int status = 1, i;
   int curr_eventid;
-  if (status & 1) {
+  if STATUS_OK {
 /* if external_thread running, it must be killed before sending messages over socket */
     if (external_thread_created)
       KillHandler();
@@ -520,19 +505,19 @@ STATIC_ROUTINE int eventAstRemote(char const *eventnam, void (*astadr) (), void 
       if (receive_ids[i] > 0) {
 	status = MdsEventAst_(receive_ids[i], eventnam, astadr, astprm, &curr_eventid);
 #ifdef GLOBUS
-	if (status & 1)
+	if STATUS_OK
 	  RegisterRead_(receive_ids[i]);
 #endif
 	setRemoteId(*eventid, i, curr_eventid);
       }
     }
 /* now external thread must be created in any case */
-    if (status & 1) {
+    if STATUS_OK {
       startRemoteAstHandler();
       external_count++;
     }
   }
-  if (!(status & 1))
+  if STATUS_NOT_OK
     printf("%s\n", MdsGetMsg(status));
   return status;
 }
@@ -546,7 +531,7 @@ struct wfevent_thread_cond {
   int *datlen;
 };
 
-STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
+static void EventHappened(void *astprm, int len, char *data)
 {
   struct wfevent_thread_cond *t = (struct wfevent_thread_cond *)astprm;
   pthread_mutex_lock(&t->mutex);
@@ -560,9 +545,25 @@ STATIC_ROUTINE void EventHappened(void *astprm, int len, char *data)
   pthread_mutex_unlock(&t->mutex);
 }
 
+static int TIMEOUT = 0;
+
+EXPORT int MDSSetEventTimeout(const int seconds)
+{
+  int old_timeout;
+  pthread_mutex_lock(&init_lock);
+  old_timeout = TIMEOUT;
+  TIMEOUT = seconds;
+  pthread_mutex_unlock(&init_lock);
+  return old_timeout;
+}
+
 EXPORT int MDSWfevent(char const *evname, int buflen, char *data, int *datlen)
 {
-  return MDSWfeventTimed(evname, buflen, data, datlen, TIMEOUT);
+  int timeout;
+  pthread_mutex_lock(&init_lock);
+  timeout = TIMEOUT;
+  pthread_mutex_unlock(&init_lock);
+  return MDSWfeventTimed(evname, buflen, data, datlen, timeout);
 }
 
 EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datlen, int timeout)
@@ -601,12 +602,14 @@ EXPORT int MDSWfeventTimed(char const *evname, int buflen, char *data, int *datl
   return (status == 0);
 }
 
+static pthread_mutex_t event_queue_lock = PTHREAD_MUTEX_INITIALIZER;
+#define EVENT_QUEUE_LOCK   pthread_mutex_lock(&event_queue_lock);pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&event_queue_lock)
+#define EVENT_QUEUE_UNLOCK pthread_cleanup_pop(1)
 struct eventQueue {
   int data_len;
   char *data;
   struct eventQueue *next;
 };
-
 struct eventQueueHeader {
   int eventid;
   pthread_mutex_t mutex;
@@ -615,14 +618,11 @@ struct eventQueueHeader {
   struct eventQueueHeader *next;
 } *QueuedEvents = 0;
 
-STATIC_THREADSAFE pthread_mutex_t eqMutex;
-STATIC_THREADSAFE int eqMutex_initialized = 0;
-
 static void CancelEventQueue(int eventid)
 {
   struct eventQueueHeader *qh, *qh_p;
   struct eventQueue *q;
-  LockMdsShrMutex(&eqMutex, &eqMutex_initialized);
+  EVENT_QUEUE_LOCK;
   for (qh = QueuedEvents, qh_p = 0; qh && qh->eventid != eventid; qh_p = qh, qh = qh->next) ;
   if (qh) {
     if (qh_p) {
@@ -645,18 +645,18 @@ static void CancelEventQueue(int eventid)
     pthread_mutex_destroy(&qh->mutex);
     free(qh);
   }
-  UnlockMdsShrMutex(&eqMutex);
+  EVENT_QUEUE_UNLOCK;
 }
 
 static void MDSEventQueue_ast(void *const qh_in, const int data_len, char *const data)
 {
+  EVENT_QUEUE_LOCK;
   struct eventQueueHeader *qh = (struct eventQueueHeader *)qh_in;
   struct eventQueue *q;
   struct eventQueue *thisEvent = malloc(sizeof(struct eventQueue));
   thisEvent->data_len = data_len;
   thisEvent->next = 0;
   thisEvent->data = (data_len > 0) ? memcpy(malloc((size_t)data_len), data, (size_t)data_len) : NULL;
-  LockMdsShrMutex(&eqMutex, &eqMutex_initialized);
   for (q = qh->event; q && q->next; q = q->next) ;
   if (q)
     q->next = thisEvent;
@@ -665,16 +665,16 @@ static void MDSEventQueue_ast(void *const qh_in, const int data_len, char *const
   pthread_mutex_lock(&qh->mutex);
   pthread_cond_signal(&qh->cond);
   pthread_mutex_unlock(&qh->mutex);
-  UnlockMdsShrMutex(&eqMutex);
+  EVENT_QUEUE_UNLOCK;
 }
 
 EXPORT int MDSQueueEvent(const char *const evname, int *const eventid)
 {
   int status;
+  EVENT_QUEUE_LOCK;
   struct eventQueueHeader *thisEventH = malloc(sizeof(struct eventQueueHeader));
-  LockMdsShrMutex(&eqMutex, &eqMutex_initialized);
   status = MDSEventAst(evname, MDSEventQueue_ast, (void *)thisEventH, eventid);
-  if (status & 1) {
+  if STATUS_OK {
     struct eventQueueHeader *qh;
     thisEventH->eventid = *eventid;
     thisEventH->event = 0;
@@ -690,17 +690,21 @@ EXPORT int MDSQueueEvent(const char *const evname, int *const eventid)
   } else {
     free(thisEventH);
   }
-  UnlockMdsShrMutex(&eqMutex);
+  EVENT_QUEUE_UNLOCK;
   return status;
 }
 
 EXPORT int MDSGetEventQueue(const int eventid, const int timeout, int *const data_len, char **const data)
 {
+  int state, unlock;
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&event_queue_lock);
+  unlock = FALSE;
+  state = 1;
   struct eventQueueHeader *qh;
-  int waited = 0;
-  int status = 1;
+  int waited = FALSE;
  retry:
-  LockMdsShrMutex(&eqMutex, &eqMutex_initialized);
+  pthread_mutex_lock(&event_queue_lock);
+  unlock = TRUE;
   for (qh = QueuedEvents; qh && qh->eventid != eventid; qh = qh->next) ;
   if (qh) {
     if (qh->event) {
@@ -709,11 +713,11 @@ EXPORT int MDSGetEventQueue(const int eventid, const int timeout, int *const dat
       *data_len = this->data_len;
       qh->event = this->next;
       free(this);
-      UnlockMdsShrMutex(&eqMutex);
     } else {
-      UnlockMdsShrMutex(&eqMutex);
-      if (waited == 0 && timeout >= 0) {
+      if (!waited && timeout >= 0) {
 	pthread_mutex_lock(&qh->mutex);
+        pthread_mutex_unlock(&event_queue_lock);
+        unlock = FALSE;
 	if (timeout > 0) {
 	  static struct timespec abstime;
 #ifdef HAVE_CLOCK_GETTIME
@@ -723,31 +727,28 @@ EXPORT int MDSGetEventQueue(const int eventid, const int timeout, int *const dat
 	  abstime.tv_nsec = 0;
 #endif
 	  abstime.tv_sec += timeout;
-	  status = pthread_cond_timedwait(&qh->cond, &qh->mutex, &abstime);
+	  state = pthread_cond_timedwait(&qh->cond, &qh->mutex, &abstime) == 0;
 	} else {
-	  status = pthread_cond_wait(&qh->cond, &qh->mutex);
+	  state = pthread_cond_wait(&qh->cond, &qh->mutex) == 0;
 	}
 	pthread_mutex_unlock(&qh->mutex);
-	if (status != 0) {
-	  *data_len = 0;
-	  *data = 0;
-	  status = 0;
-	} else {
-	  status = 1;
-	  waited = 1;
+	if (state) {
+	  waited = TRUE;
 	  goto retry;
+	} else {
+	  *data_len = 0;
+	  *data = NULL;
 	}
       } else {
 	*data_len = 0;
-	*data = 0;
-	status = 0;
+	*data = NULL;
+	state = 0;
       }
     }
-  } else {
-    UnlockMdsShrMutex(&eqMutex);
-    status = 2;
-  }
-  return status;
+  } else
+    state = 2;
+  pthread_cleanup_pop(unlock);
+  return state;
 }
 
 int RemoteMDSEventAst(const char *const eventnam_in, void (*const astadr) (), void *const astprm, int *const eventid)
@@ -763,11 +764,11 @@ int RemoteMDSEventAst(const char *const eventnam_in, void (*const astadr) (), vo
   return status;
 }
 
-STATIC_ROUTINE int canEventRemote(const int eventid)
+static int canEventRemote(const int eventid)
 {
   int status = 1, i;
   /* kill external thread before sending messages over the socket */
-  if (status & 1) {
+  if STATUS_OK {
     KillHandler();
     for (i = 0; i < num_receive_servers; i++) {
       if (receive_ids[i] > 0)
@@ -787,7 +788,7 @@ int RemoteMDSEventCan(const int eventid)
   return canEventRemote(eventid);
 }
 
-STATIC_ROUTINE int sendRemoteEvent(const char *const evname, const int data_len, char *const data)
+static int sendRemoteEvent(const char *const evname, const int data_len, char *const data)
 {
   int status = 1, i, tmp_status;
   char expression[256];
@@ -808,7 +809,7 @@ STATIC_ROUTINE int sendRemoteEvent(const char *const evname, const int data_len,
   desc.dims[0] = data_len;
   ansarg.ptr = 0;
   sprintf(expression, "setevent(\"%s\"%s)", evname, data_len > 0 ? ",$" : "");
-  if (status & 1) {
+  if STATUS_OK {
     int reconnects = 0;
     tmp_status = 0;
     for (i = 0; i < num_send_servers; i++) {

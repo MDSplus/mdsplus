@@ -37,7 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare LANL P-4      (c)1989,1990,1991
 */
-#include <STATICdef.h>
 #include <status.h>
 #include "tdirefstandard.h"
 #include <mdsshr.h>
@@ -45,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-STATIC_CONSTANT EMPTYXD(emptyxd);
+static const EMPTYXD(emptyxd);
 
 int TdiMasterData(int nsig,
 		  struct descriptor_xd sig[1],

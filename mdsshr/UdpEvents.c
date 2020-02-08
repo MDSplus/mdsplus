@@ -23,18 +23,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#ifdef _WIN32
-#include <ws2tcpip.h>
-#define SHUT_RDWR SD_BOTH
-#else
-#define SOCKET int
-#define INVALID_SOCKET -1
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#endif
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -43,9 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <errno.h>
 #include <unistd.h>
 
+#include <socket_port.h>
 #include <mdsshr.h>
 #include <libroutines.h>
-#include "mdsshrthreadsafe.h"
 
 extern int UdpEventGetPort(unsigned short *port);
 extern int UdpEventGetAddress(char **addr_format, unsigned char *arange);
@@ -55,6 +43,10 @@ extern int UdpEventGetInterface(struct in_addr **interface_addr);
 
 #define MAX_MSG_LEN 4096
 #define MAX_EVENTS 1000000	/*Maximum number of events handled by a single process */
+
+#ifndef EVENT_THREAD_STACK_SIZE_MIN
+#define EVENT_THREAD_STACK_SIZE_MIN 102400
+#endif
 
 
 #ifdef _WIN32
@@ -269,7 +261,30 @@ int MDSUdpEventAst(char const *eventName, void (*astadr) (void *, int, char *), 
   currInfo->socket = udpSocket;
   currInfo->arg = astprm;
   currInfo->astadr = astadr;
-  pthread_create(&thread, 0, handleMessage, (void *)currInfo);
+
+  {
+    int s;
+    size_t ssize;
+    pthread_attr_t attr;
+    s = pthread_attr_init(&attr);
+    if (s != 0) {
+      perror("pthread_attr_init");
+      return 0;
+    }  
+    pthread_attr_getstacksize(&attr,&ssize);
+    if(ssize < EVENT_THREAD_STACK_SIZE_MIN) {
+      s = pthread_attr_setstacksize(&attr, EVENT_THREAD_STACK_SIZE_MIN);
+      if (s != 0) {
+        perror("pthread_attr_setstacksize");
+        return 0;
+      }
+    }
+    s = pthread_create(&thread, &attr, handleMessage, (void *)currInfo);
+    if (s != 0) {
+      perror("pthread_create");
+      return 0;
+    }  
+  }
   *eventid = pushEvent(thread, udpSocket);
   return 1;
 }

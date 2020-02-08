@@ -12,7 +12,6 @@ import mds.data.descriptor_r.function.BINARY.Add;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.StringDsc;
 
-@SuppressWarnings("static-method")
 public class TdiShr_Test{
 	private static TdiShr	tdishr;
 	private static Mds		mds;

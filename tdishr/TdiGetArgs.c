@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -47,7 +46,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include "tdithreadstatic.h"
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiData();
 extern int TdiUnits();
 extern int Tdi2Keep();
@@ -59,14 +58,14 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
 			  struct descriptor_xd *signal_ptr,
 			  struct descriptor_xd *units_ptr, struct descriptor_xd *data_ptr)
 {
-  STATIC_CONSTANT unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_SIGNAL, 0 };
-  STATIC_CONSTANT unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omits[] = { DTYPE_SIGNAL, 0 };
+  static const unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
   struct descriptor_xd tmp, *keep;
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   MdsFree1Dx(signal_ptr, NULL);
-  status = TdiGetData(omitsu, in_ptr, data_ptr);
+  status = tdi_get_data(omitsu, in_ptr, data_ptr);
   if STATUS_OK
     switch (data_ptr->pointer->dtype) {
     case DTYPE_SIGNAL:
@@ -74,7 +73,7 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
       *data_ptr = EMPTY_XD;
       keep = TDI_SELF_PTR;
       TDI_SELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
-      status = TdiGetData(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
+      status = tdi_get_data(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
       if STATUS_OK
 	switch (data_ptr->pointer->dtype) {
 	case DTYPE_WITH_UNITS:
@@ -98,7 +97,7 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
       *data_ptr = EMPTY_XD;
       status = TdiUnits(tmp.pointer, units_ptr MDS_END_ARG);
       if STATUS_OK
-	status = TdiGetData(omits, tmp.pointer, data_ptr);
+	status = tdi_get_data(omits, tmp.pointer, data_ptr);
       if STATUS_OK
 	switch (data_ptr->pointer->dtype) {
 	case DTYPE_SIGNAL:

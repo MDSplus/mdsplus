@@ -43,7 +43,7 @@ buildrelease() {
     mkdir -p /workspace/releasebld/${ARCH}
     rm -Rf /workspace/releasebld/${ARCH}/*
     pushd /workspace/releasebld/${ARCH}
-    config ${ARCH} ${host} bin lib
+    config ${ARCH} ${host} bin lib ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install

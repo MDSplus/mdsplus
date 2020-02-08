@@ -259,7 +259,6 @@ public abstract class Editor extends JPanel{
 
 	public void interrupt() {/*stub*/}
 
-	@SuppressWarnings("static-method")
 	public boolean isNull() {
 		return false;
 	}

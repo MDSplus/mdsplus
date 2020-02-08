@@ -36,7 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1992
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include "tdirefstandard.h"
 #include "tdirefcat.h"

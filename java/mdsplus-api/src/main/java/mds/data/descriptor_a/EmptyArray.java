@@ -10,7 +10,7 @@ public final class EmptyArray extends Descriptor_A<Object>{
 	public static final EmptyArray NEW = new EmptyArray();
 
 	public EmptyArray(){
-		super(DTYPE.Z, ByteBuffer.allocate(0).order(Descriptor.BYTEORDER));
+		super(DTYPE.Z, ByteBuffer.allocateDirect(0).order(Descriptor.BYTEORDER));
 	}
 
 	public EmptyArray(final ByteBuffer b){

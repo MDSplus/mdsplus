@@ -123,8 +123,7 @@ class EXPORT MdsException : public std::exception {
 public:
 
     MdsException(const char *msg): msg(msg) { }
-    //MdsException(int status): msg(MdsGetMsg(status)) { }
-
+    MdsException(std::string msg): msg(msg) { }
     MdsException(int status);
 
     virtual ~MdsException() NOEXCEPT { }
@@ -134,12 +133,12 @@ public:
     /// \return error message
     virtual const char* what() const NOEXCEPT
     {
-	return msg;
+	return msg.c_str();
     }
 
 protected:
 
-    const char *msg;
+    const std::string msg;
 };
 
 

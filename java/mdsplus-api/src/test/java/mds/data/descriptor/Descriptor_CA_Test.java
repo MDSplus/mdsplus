@@ -17,7 +17,6 @@ import mds.data.descriptor_a.Uint64Array;
 import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.Signal;
 
-@SuppressWarnings("static-method")
 public final class Descriptor_CA_Test{
 	private static Mds mds;
 

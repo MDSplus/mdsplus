@@ -471,9 +471,8 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
-        if tree is None:
-            self.public = True
-        else:
+        self.public = tree is None
+        if not self.public:
             if path is not None: self.path = path
             self._ctx = _C.c_void_p(0)
             self.tree = tree
@@ -489,7 +488,7 @@ class Tree(object):
     def __del__(self):
         if not self.public:
             self.__exit__()
-            _TreeShr.TreeFreeDbid(self.ctx)
+            _TreeShr.TreeFreeDbid(self._ctx)
 
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -873,9 +872,7 @@ class Tree(object):
         @rtype: str
         """
         dt=_C.c_ulonglong(0)
-        status = _TreeShr._TreeGetViewDate(dt)
-        if not status & 1:
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
         return _scr.Uint64(dt.value).date
 
     @classmethodX

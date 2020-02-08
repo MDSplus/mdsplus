@@ -629,8 +629,11 @@ typedef struct descriptor_opaque {
 #define DESCRIPTOR_FLOAT(name, _float) mdsdsc_t\
   name = {(length_t)sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char*)_float}
 
-#define DESCRIPTOR_LONG(name, _long) mdsdsc_t\
-  name = {(length_t)sizeof(int), DTYPE_L, CLASS_S, (char*)_long}
+#define DESCRIPTOR_LONG(name, _int32) mdsdsc_t\
+  name = {(length_t)sizeof(int32_t), DTYPE_L, CLASS_S, (char*)_int32}
+
+#define DESCRIPTOR_QUADWORD(name, _int64) mdsdsc_t\
+  name = {(length_t)sizeof(int64_t), DTYPE_Q, CLASS_S, (char*)_int64}
 
 #define DESCRIPTOR_NID(name, _nid) mdsdsc_t\
   name = {(length_t)sizeof(int), DTYPE_NID, CLASS_S, (char*)_nid}
@@ -647,7 +650,6 @@ typedef struct descriptor_opaque {
  * array typedefs
  */
 
-#define MAX_DIMS 8
 /* ARRAY_COEFF(a,b*x) acts like ARRAY_BOUNDS(a,b)
  * but bounds and m are merged into m
  */

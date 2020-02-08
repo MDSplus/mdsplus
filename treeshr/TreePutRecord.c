@@ -50,29 +50,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Description:
 
 +-----------------------------------------------------------------------------*/
-#include "treeshrp.h"		/* must be first or off_t wrong */
 #include <mdsplus/mdsconfig.h>
+
 #include <stdio.h>
 #include <stdlib.h>
-#include <mdstypes.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <ncidef.h>
-#include "treethreadsafe.h"
-#include <treeshr.h>
-#include <usagedef.h>
-#include <ncidef.h>
 #include <string.h>
 #include <time.h>
-#include <mdsshr_messages.h>
-#include <strroutines.h>
-#include <libroutines.h>
 #include <fcntl.h>
-
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>
 #endif
-
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -80,6 +67,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <sys/time.h>
 #endif
+
+#include <mdstypes.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <usagedef.h>
+#include <ncidef.h>
+#include <mdsshr_messages.h>
+#include <strroutines.h>
+#include <libroutines.h>
+
+#include "treeshrp.h"
+#include "treethreadstatic.h"
 
 #ifdef min
 #undef min
@@ -169,11 +169,11 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     }
     if STATUS_OK {
       if (utility_update) {
-	NCI *nci = &TreeGetThreadStatic()->TemplateNci;
-	local_nci.flags = nci->flags;
+        TREETHREADSTATIC_INIT;
+	local_nci.flags = TREE_TEMPNCI.flags;
 	bitassign(0, local_nci.flags, NciM_VERSIONS);
-	local_nci.owner_identifier = nci->owner_identifier;
-	local_nci.time_inserted = nci->time_inserted;
+	local_nci.owner_identifier = TREE_TEMPNCI.owner_identifier;
+	local_nci.time_inserted = TREE_TEMPNCI.time_inserted;
       } else {
 	bitassign(dblist->setup_info, local_nci.flags, NciM_SETUP_INFORMATION);
 	local_nci.owner_identifier = saved_uic;
@@ -209,8 +209,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  unsigned char tree = (unsigned char)nid_ptr->tree;
 	  int compressible;
 	  int data_in_altbuf;
-	  TreeGetThreadStatic()->nid_reference = 0;
-	  TreeGetThreadStatic()->path_reference = 0;
+          TREETHREADSTATIC_INIT;
+	  TREE_NIDREF = TREE_PATHREF = FALSE;
 	  status =
 	      MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data, TreeFixupNid, &tree,
 				  FixupPath, 0, (compress_utility
@@ -221,8 +221,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 							     || extended) ? 0 :
 				  sizeof(nci->DATA_INFO.DATA_IN_RECORD.data),
 				  nci->DATA_INFO.DATA_IN_RECORD.data, &data_in_altbuf);
-	  bitassign(TreeGetThreadStatic()->path_reference, nci->flags, NciM_PATH_REFERENCE);
-	  bitassign(TreeGetThreadStatic()->nid_reference, nci->flags, NciM_NID_REFERENCE);
+	  bitassign(TREE_PATHREF, nci->flags, NciM_PATH_REFERENCE);
+	  bitassign(TREE_NIDREF,  nci->flags, NciM_NID_REFERENCE);
 	  bitassign(compressible, nci->flags, NciM_COMPRESSIBLE);
 	  bitassign_c(data_in_altbuf, nci->flags2, NciM_DATA_IN_ATT_BLOCK);
 	}
@@ -277,7 +277,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 	               (nci->dtype == DTYPE_IDENT) ||\
 	               (nci->dtype == DTYPE_CALL))
 
-#define check(boolean) (boolean) ? TreeNORMAL : TreeINVDTPUSG;
+#define check(boolean) (boolean) ? TreeSUCCESS : TreeINVDTPUSG;
 
 #define is_numeric ( ((nci->dtype >= DTYPE_BU) &&\
 	              (nci->dtype <= DTYPE_DC)) ||\
@@ -347,7 +347,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 		   (nci->dtype == DTYPE_DIMENSION) || is_expression);
     break;
   default:
-    status = TreeNORMAL;
+    status = TreeSUCCESS;
     break;
   }
   return status;
@@ -355,7 +355,7 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
 
 int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
 {
-  int status = 0;
+  TREETHREADSTATIC_INIT;
   if (nid->tree != *tree) {
     char *path_c = TreeGetPath(*(int *)nid);
     if (path_c) {
@@ -365,17 +365,18 @@ int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
       StrCopyDx(path, &path_d);
       TreeFree(path_c);
     }
-
-    TreeGetThreadStatic()->path_reference = 1;
-    status = 1;
-  } else
-    TreeGetThreadStatic()->nid_reference = 1;
-  return status;
+    TREE_PATHREF = TRUE;
+    return TRUE;
+  } else {
+    TREE_NIDREF = TRUE;
+    return FALSE;
+  }
 }
 
 static int FixupPath()
 {
-  TreeGetThreadStatic()->path_reference = 1;
+  TREETHREADSTATIC_INIT;
+  TREE_PATHREF = 1;
   return 0;
 }
 
@@ -387,14 +388,14 @@ int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile){
 }
 int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   if (info->header->readonly)
     return TreeREADONLY_TREE;
   DATA_FILE *df_ptr = info->data_file;
   *stv_ptr = 0;
   if (df_ptr == 0) {
     df_ptr = TreeGetVmDatafile();
-    status = (df_ptr == NULL) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr == NULL) ? TreeFAILURE : TreeSUCCESS;
   }
   if (status & 1) {
     int old_get = df_ptr->get;
@@ -410,14 +411,14 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     filename[len] = '\0';
     strcat(filename, tmpfile ? "datafile#" : "datafile");
     df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
-    status = (df_ptr->get == -1) ? TreeFAILURE : TreeNORMAL;
+    status = (df_ptr->get == -1) ? TreeFAILURE : TreeSUCCESS;
     if (df_ptr->get == -1)
       df_ptr->get = old_get;
     else if (df_ptr->get > 0)
       MDS_IO_CLOSE(old_get);
     if (status & 1) {
       df_ptr->put = MDS_IO_OPEN(filename, O_RDWR, 0);
-      status = (df_ptr->put == -1) ? TreeFAILURE : TreeNORMAL;
+      status = (df_ptr->put == -1) ? TreeFAILURE : TreeSUCCESS;
       if (df_ptr->put == -1)
 	df_ptr->put = 0;
       if (status & 1)
@@ -440,7 +441,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr, NCI * old_nci_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   unsigned int bytes_to_put =
       data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
   int blen =
@@ -500,7 +501,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     if (status & 1) {
       status =
 	  (MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       if (status & 1) {
 	bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
 	SeekToRfa(eof, rfa);
@@ -521,7 +522,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
     if (seek_end != -1) {
       status =
 	  (MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	   sizeof(nci_bytes)) ? TreeNORMAL : TreeFAILURE;
+	   sizeof(nci_bytes)) ? TreeSUCCESS : TreeFAILURE;
     } else
       status = TreeFAILURE;
   }
@@ -537,7 +538,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
 
   loadint32(&info->data_file->record_header->node_number,&nodenum);
@@ -556,12 +557,12 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
 	    sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
 	    bytes_this_time) == bytes_this_time)
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       if (!bytes_to_put) {
 	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if STATUS_OK {
@@ -591,7 +592,7 @@ static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 			  struct descriptor_xd *data_dsc_ptr)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   unsigned int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
@@ -608,11 +609,11 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)info->data_file->record_header,
 	    sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
-	  ? TreeNORMAL : TreeFAILURE;
+	  ? TreeSUCCESS : TreeFAILURE;
       status =
 	  (MDS_IO_WRITE
 	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
-	    bytes_this_time) == bytes_this_time) ? TreeNORMAL : TreeFAILURE;
+	    bytes_this_time) == bytes_this_time) ? TreeSUCCESS : TreeFAILURE;
       if (!bytes_to_put) {
 	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
 	if (status & 1) {
@@ -637,7 +638,8 @@ static int UpdateDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 	Eliminates DSC descriptors. Need DSC for classes A and APD?
 -----------------------------------------------------------------*/
 int TreeSetTemplateNci(NCI * nci){
-  TreeGetThreadStatic()->TemplateNci = *nci;
+  TREETHREADSTATIC_INIT;
+  TREE_TEMPNCI = *nci;
   return TreeSUCCESS;
 }
 

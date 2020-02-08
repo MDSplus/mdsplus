@@ -50,7 +50,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MINMAX(min, test, max) ((min) >= (test) ? (min) : (test) < (max) ? (test) : (max))
 #define OPC_ENUM
 
-#include <STATICdef.h>
 #include "tdithreadstatic.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -77,52 +76,48 @@ extern int Tdi0Decompile();
 extern int TdiConvert();
 extern int TdiGetLong();
 extern int SysGetMsg();
-STATIC_ROUTINE mdsdsc_t *FixedArray();
 
-STATIC_CONSTANT mdsdsc_t miss_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
+static mdsdsc_t *fixed_array(mdsdsc_t *in){
+  array_coeff *a = (array_coeff *) in;
+  int dsize = sizeof(mdsdsc_a_t) + sizeof(int) + 3 * sizeof(int) * a->dimct;
+  int i;
+  BOUNDS *bounds = (BOUNDS *) & a->m[a->dimct];
+  array_coeff *answer = (array_coeff *) memcpy(malloc(dsize), a, dsize);
+  answer->class = CLASS_A;
+  answer->aflags.column = 1;
+  answer->aflags.coeff = 1;
+  answer->aflags.bounds = 1;
+  for (i = 0; i < a->dimct; i++)
+    answer->m[i] = bounds[i].u - bounds[i].l + 1;
+  return (mdsdsc_t *)answer;
+}
+
+static const mdsdsc_t miss_dsc = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
 /****************************
 Explain in 300 words or less.
 ****************************/
 #define MAXMESS 1800
-#define ADD(text) add(text, TdiThreadStatic_p)
-STATIC_ROUTINE void add(char *const text, ThreadStatic *const TdiThreadStatic_p)
-{
-  struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
+#define ADD(text) add(text, TDITHREADSTATIC_VAR)
+static void add(char *const text, TDITHREADSTATIC_ARG) {
+  mdsdsc_d_t new = { 0, DTYPE_T, CLASS_D, 0 };
   new.length = (length_t)strlen(text);
   new.pointer = text;
   if (TDI_INTRINSIC_MSG.length + new.length < MAXMESS)
     StrAppend(&TDI_INTRINSIC_MSG, (mdsdsc_t *)&new);
 }
-
-#define NUMB(count) numb(count, TdiThreadStatic_p)
-STATIC_ROUTINE void numb(int count, ThreadStatic *const TdiThreadStatic_p)
-{
-  STATIC_CONSTANT char blanks[] = "            ";
-  char val[sizeof(blanks)], *pval;
-  strcpy(val, blanks);
-  pval = &val[sizeof(val) - 1];
-  if (count < 0)
-    *--pval = '-';
-  else if (count == 0)
-    *--pval = '0';
-  else
-    for (; count > 0 && pval > val; count /= 10)
-      *--pval = (char)(count % 10 + '0');
-  if (pval > val)
-    *--pval = ' ';
-  ADD(pval);
+#define NUMB(count) numb(count, TDITHREADSTATIC_VAR)
+static void numb(int count, TDITHREADSTATIC_ARG) {
+  char val[16];
+  sprintf(val,"%-12d",count);
+  ADD(val);
 }
 
 /***************************************************
 Danger: this routine is used by DECOMPILE to report.
 ***************************************************/
-int TdiTrace(opcode_t opcode __attribute__ ((unused)),
-	     int narg __attribute__ ((unused)),
-	     mdsdsc_t *list[] __attribute__ ((unused)),
-	     struct descriptor_xd *out_ptr)
-{
-  GET_TDITHREADSTATIC_P;
+int tdi_trace(mdsdsc_xd_t *out_ptr) {
+  TDITHREADSTATIC_INIT;
   if (TDI_INTRINSIC_MSG.length > MAXMESS)
     return MDSplusERROR;
   ADD("%TDI Decompile text_length");
@@ -137,16 +132,16 @@ int TdiTrace(opcode_t opcode __attribute__ ((unused)),
   return MDSplusSUCCESS;
 }
 
-static inline void TRACE(opcode_t opcode, int narg,
-	  mdsdsc_t *list[],
-	  struct descriptor_xd *out_ptr __attribute__ ((unused)))
-{
-  GET_TDITHREADSTATIC_P;
+#define TRACE(opcode,narg,list) trace(opcode,narg,list,TDITHREADSTATIC_VAR)
+static inline void trace(
+	opcode_t opcode,
+	int narg, mdsdsc_t *list[],
+	TDITHREADSTATIC_ARG){
   if (TDI_INTRINSIC_MSG.length >= MAXMESS)
     return;
   unsigned short now = TDI_INTRINSIC_MSG.length;
   int j;
-  struct descriptor_d text = { 0, DTYPE_T, CLASS_D, 0 };
+  mdsdsc_d_t text = { 0, DTYPE_T, CLASS_D, 0 };
   if (opcode < TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
@@ -188,25 +183,24 @@ static inline void TRACE(opcode_t opcode, int narg,
   ADD(")\n");
 }
 
-struct _fixed {
+typedef struct {
   int n;
   char f[256];
   mdsdsc_t *a[256];
-};
-void cleanup_list(void* fixed_in) {
-  GET_TDITHREADSTATIC_P;
-  struct _fixed* fixed = (struct _fixed*)fixed_in;
-  for (; --fixed->n >= 0 ;)
+  int* rec;
+} fixed_t;
+static void cleanup_list(void* fixed_in) {
+  fixed_t *const fixed = (fixed_t*)fixed_in;
+  while ( --fixed->n >= 0 )
     if (fixed->f[fixed->n])
       free(fixed->a[fixed->n]);
-  TDI_INTRINSIC_REC--;
+  (*fixed->rec)--;
 }
 
-EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct descriptor_xd *out_ptr)
-{
+EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
   FREEXD_ON_EXIT(&tmp);
   FREEXD_ON_EXIT(out_ptr);
@@ -219,13 +213,14 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
   else if (TDI_INTRINSIC_REC > 1800)
     status = TdiRECURSIVE;
   else {
-    struct _fixed fixed = {0};
+    fixed_t fixed;
     TDI_INTRINSIC_REC++;
     pthread_cleanup_push(cleanup_list,&fixed);
+    fixed.rec = &TDI_INTRINSIC_REC;
     for (fixed.n = 0; fixed.n < narg; fixed.n++)
       if (list[fixed.n] != NULL && list[fixed.n]->class == CLASS_NCA) {
 	fixed.f[fixed.n] = 1;
-	fixed.a[fixed.n] = FixedArray(list[fixed.n]);
+	fixed.a[fixed.n] = fixed_array(list[fixed.n]);
       } else {
 	fixed.f[fixed.n] = 0;
 	fixed.a[fixed.n] = list[fixed.n];
@@ -255,7 +250,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
 	MdsFree1Dx(out_ptr, NULL);
       else if (out_ptr->l_length) {
 	ADD("%TDI DANGER, part of old output descriptor was input to below.\n");
-	TRACE(opcode, narg, list, out_ptr);
+	trace(opcode, narg, list,TDITHREADSTATIC_VAR);
       }
       if (tmp.class == CLASS_XD)
 	*out_ptr = tmp;
@@ -273,13 +268,13 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
       else
 	dsc_ptr = (mdsdsc_t *)&tmp;
       if (dsc_ptr == 0)
-	stat1 = StrFree1Dx((struct descriptor_d *)out_ptr);
+	stat1 = StrFree1Dx((mdsdsc_d_t *)out_ptr);
       else
 	switch (dsc_ptr->class) {
 	case CLASS_S:
 	case CLASS_D:
 	  if (out_ptr->length != dsc_ptr->length) {
-	    stat1 = StrGet1Dx(&dsc_ptr->length, (struct descriptor_d *)out_ptr);
+	    stat1 = StrGet1Dx(&dsc_ptr->length, (mdsdsc_d_t *)out_ptr);
 	  }
 	  if IS_OK(stat1) {
 	    out_ptr->dtype = dsc_ptr->dtype;
@@ -310,7 +305,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
       break;
     case CLASS_NCA:
       {
-	mdsdsc_t *fixed_out_ptr = FixedArray(out_ptr);
+	mdsdsc_t *fixed_out_ptr = fixed_array((mdsdsc_t *)out_ptr);
 	if (tmp.class == CLASS_XD)
 	  dsc_ptr = tmp.pointer;
 	else
@@ -329,7 +324,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
     status = stat1;
   }
   if (TDI_INTRINSIC_REC>=0)
-    TRACE(opcode, narg, list, out_ptr);
+    trace(opcode, narg, list, TDITHREADSTATIC_VAR);
   if (out_ptr)
     MdsFree1Dx(out_ptr, NULL);
  notmp:MdsFree1Dx(&tmp, NULL);
@@ -340,7 +335,7 @@ EXPORT int TdiIntrinsic(opcode_t opcode, int narg, mdsdsc_t *list[], struct desc
   FREE_CANCEL(out_ptr);
   return status;
 }
-EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, mdsdsc_t *list[], struct descriptor_xd *out_ptr){
+EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   CTX_PUSH(ctx);
   status = TdiIntrinsic(opcode, narg, list, out_ptr);
@@ -360,10 +355,9 @@ EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, mdsdsc_t *list[]
 int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
 	      int narg,
 	      mdsdsc_t *list[],
-	      struct descriptor_xd *out_ptr)
-{
+	      mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   int option = -1;
   if (narg > 0 && list[0])
     status = TdiGetLong(list[0], &option);
@@ -389,20 +383,4 @@ int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
     }
   }
   return MdsCopyDxXd((mdsdsc_t *)&TDI_INTRINSIC_MSG, out_ptr);
-}
-
-STATIC_ROUTINE mdsdsc_t *FixedArray(mdsdsc_t *in)
-{
-  array_coeff *a = (array_coeff *) in;
-  int dsize = sizeof(mdsdsc_a_t) + sizeof(int) + 3 * sizeof(int) * a->dimct;
-  int i;
-  BOUNDS *bounds = (BOUNDS *) & a->m[a->dimct];
-  array_coeff *answer = (array_coeff *) memcpy(malloc(dsize), a, dsize);
-  answer->class = CLASS_A;
-  answer->aflags.column = 1;
-  answer->aflags.coeff = 1;
-  answer->aflags.bounds = 1;
-  for (i = 0; i < a->dimct; i++)
-    answer->m[i] = bounds[i].u - bounds[i].l + 1;
-  return (mdsdsc_t *)answer;
 }

@@ -47,7 +47,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
 import jtraverser.dialogs.ActionList;
 import jtraverser.dialogs.DataDialog;
 import jtraverser.dialogs.Dialogs;
@@ -64,7 +63,6 @@ import mds.data.TREE;
 import mds.data.descriptor_s.NODE;
 import mds.mdsip.MdsIp;
 import mds.mdsip.MdsIp.Provider;
-import mds.mdslib.MdsLib;
 
 public class TreeManager extends JPanel{
 	private static final long serialVersionUID = 1L;
@@ -98,30 +96,30 @@ public class TreeManager extends JPanel{
 			}
 		}
 		private final String[]	name	= new String[]{		//
-		        "Structure",								//
-		        "Subtree",									//
-		        "Action",									//
-		        "Any",										//
-		        "Axis",										//
-		        "Dispatch",									//
-		        "Numeric",									//
-		        "Signal",									//
-		        "Task",										//
-		        "Text",										//
-		        "Window"									//
+				"Structure",								//
+				"Subtree",									//
+				"Action",									//
+				"Any",										//
+				"Axis",										//
+				"Dispatch",									//
+				"Numeric",									//
+				"Signal",									//
+				"Task",										//
+				"Text",										//
+				"Window"									//
 		};
 		private final byte[]	usage	= new byte[]{		//
-		        NODE.USAGE_STRUCTURE,						//
-		        NODE.USAGE_SUBTREE,							//
-		        NODE.USAGE_ACTION,							//
-		        NODE.USAGE_ANY,								//
-		        NODE.USAGE_AXIS,							//
-		        NODE.USAGE_DISPATCH,						//
-		        NODE.USAGE_NUMERIC,							//
-		        NODE.USAGE_SIGNAL,							//
-		        NODE.USAGE_TASK,							//
-		        NODE.USAGE_TEXT,							//
-		        NODE.USAGE_WINDOW							//
+				NODE.USAGE_STRUCTURE,						//
+				NODE.USAGE_SUBTREE,							//
+				NODE.USAGE_ACTION,							//
+				NODE.USAGE_ANY,								//
+				NODE.USAGE_AXIS,							//
+				NODE.USAGE_DISPATCH,						//
+				NODE.USAGE_NUMERIC,							//
+				NODE.USAGE_SIGNAL,							//
+				NODE.USAGE_TASK,							//
+				NODE.USAGE_TEXT,							//
+				NODE.USAGE_WINDOW							//
 		};
 
 		public AddNodeMenu(final TreeManager treeman, final JComponent menu){
@@ -308,8 +306,8 @@ public class TreeManager extends JPanel{
 						} catch (MdsException exc){
 							return;
 						} catch (Exception exc) {
-						currnode.treeview.scrollRowToVisible(row);
-						currnode.treeview.setSelectionRow(row);
+							currnode.treeview.scrollRowToVisible(row);
+							currnode.treeview.setSelectionRow(row);
 						}
 					}
 				};
@@ -609,12 +607,12 @@ public class TreeManager extends JPanel{
 				});
 				final Object[] ob = {"[ssh://][<user>@]<hostname>[:<port>]", provider};
 				final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, "Open new connection", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-				if(result == JOptionPane.OK_OPTION) new Thread(new Runnable(){
+				if(result == JOptionPane.OK_OPTION) new Thread(null,new Runnable(){
 					@Override
 					public void run() {
 						FileMenu.this.treeman.openMds(new Provider(provider.getText()));
 					}
-				}).start();
+				},provider.getText()).start();
 			}
 		}
 		private final class OpenTree implements ActionListener{
@@ -661,7 +659,7 @@ public class TreeManager extends JPanel{
 		@Override
 		public final void checkSupport() {
 			final boolean noconnected = this.treeman.getCurrentMdsView() == null;
-			final boolean nodisconnect = noconnected || this.treeman.getMds() instanceof MdsLib;
+			final boolean nodisconnect = noconnected || this.treeman.getMds().isLocal();
 			final boolean noopen = noconnected || this.treeman.getCurrentTree() == null;
 			int i = 1;
 			this.items.get(i++).setEnabled(!noconnected);
@@ -886,7 +884,8 @@ public class TreeManager extends JPanel{
 		this.status.setText(new StringBuilder(64).append("jTaverser started (Version: ").append(version).append(")").toString());
 		this.progress.setLayout(new BorderLayout(0, 0));
 		this.progress.add(this.status, BorderLayout.CENTER);
-		if(MdsLib.lib_loaded == null) this.addMds(new MdsLib().setActive());
+		final Mds mdslocal = MdsIp.getLocal();
+		if (mdslocal != null) this.addMds(mdslocal.setActive());
 		MdsException.setStatusLabel(this.status);
 	}
 

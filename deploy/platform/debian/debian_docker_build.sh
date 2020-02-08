@@ -11,7 +11,7 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
-set -v
+
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
@@ -73,7 +73,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/${bits};
     pushd /workspace/releasebld/${bits};
-    config ${config_param}
+    config ${config_param} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install

@@ -24,19 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
-#define LOAD_INITIALIZESOCKETS
-#include <pthread_port.h>
-
-#ifdef _WIN32
-#include <ws2tcpip.h>
-#else
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#endif
-
 #include <mdsplus/mdsconfig.h>
+#include <ctype.h>
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
@@ -49,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h>
+#include <socket_port.h>
 
 // #define DEBUG
 #ifdef DEBUG
@@ -58,26 +48,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <process.h>
-#define setenv(name,value,overwrite) _putenv_s(name,value)
-#define unsetenv(name)               _putenv_s(name,"")
-#define localtime_r(time,tm)         localtime_s(tm,time)
-#define ctime_r(tm,buf)              ctime_s(buf,32,tm)
+ #include <process.h>
+ #define setenv(name,value,overwrite) _putenv_s(name,value)
+ #define unsetenv(name)               _putenv_s(name,"")
+ #define localtime_r(time,tm)         localtime_s(tm,time)
+ #define ctime_r(tm,buf)              ctime_s(buf,32,tm)
 #else
-#include <sys/wait.h>
+ #include <sys/wait.h>
 #endif
 
+#include <STATICdef.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
-#include <ctype.h>
-#include "mdsshrthreadsafe.h"
 #include <release.h>
+
 #define LIBRTL_SRC
 
 typedef struct {
@@ -107,8 +95,8 @@ typedef struct node {
   void *right;
   short bal;
 } LibTreeNode;
-
 #include <libroutines.h>
+
 
 #ifndef USE_TM_GMTOFF
 /* tzset() sets the global statics daylight and timezone.
@@ -257,6 +245,7 @@ EXPORT void *LibCallg(void **const a, void* (*const routine)()) {
   return 0;
 }
 
+DEFINE_INITIALIZESOCKETS;
 EXPORT uint32_t LibGetHostAddr(const char *const name){
   INITIALIZESOCKETS;
   uint32_t addr = 0;
@@ -768,8 +757,7 @@ EXPORT int LibCreateVmZone(ZoneList **const zone)
   return (*zone != NULL);
 }
 
-EXPORT int LibDeleteVmZone(ZoneList **const zone)
-{
+EXPORT int LibDeleteVmZone(ZoneList **const zone) {
   int found;
   ZoneList *list, *prev;
   LibResetVmZone(zone);
@@ -793,22 +781,27 @@ EXPORT int LibDeleteVmZone(ZoneList **const zone)
   return found;
 }
 
-EXPORT int LibResetVmZone(ZoneList **const zone)
-{
-  VmList *list;
-  const uint32_t len = 1;
-  LOCK_ZONES;
-  while ((list = zone ? (*zone ? (*zone)->vm : NULL) : NULL) != NULL)
-    LibFreeVm(&len, &list->ptr, zone);
-  UNLOCK_ZONES;
+EXPORT int LibResetVmZone(ZoneList **const zone) {
+  if (zone && *zone) {
+    VmList *vm, *_vm;
+    LOCK_ZONE(*zone);
+    vm = (*zone)->vm;
+    (*zone)->vm = NULL;
+    UNLOCK_ZONE(*zone);
+    while (vm) {
+      free(vm->ptr);
+      _vm = vm;
+      vm = _vm->next;
+      free(_vm);
+    }
+  }
   return MDSplusSUCCESS;
 }
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclobbered"
 
-EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
-{
+EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   VmList *list = NULL;
   if (zone) {
     LOCK_ZONE(*zone);
@@ -830,33 +823,28 @@ EXPORT int LibFreeVm(const uint32_t *const len, void **const vm, ZoneList **cons
 }
 #pragma GCC diagnostic pop
 
-EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
+EXPORT int libfreevm_(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   return LibFreeVm(len, vm, zone);
 }
-EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone){
+EXPORT int libfreevm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   return LibFreeVm(len, vm, zone);
 }
 
-EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone)
-{
+EXPORT int LibGetVm(const uint32_t *const len, void **const vm, ZoneList **const zone) {
   *vm = malloc(*len);
   if (*vm == NULL) {
     printf("Insufficient virtual memory\n");
+    return LibINSVIRMEM;
   }
   if (zone) {
     VmList *list = malloc(sizeof(VmList));
     list->ptr = *vm;
-    list->next = NULL;
     LOCK_ZONE(*zone);
-    if ((*zone)->vm) {
-      VmList *ptr;
-      for (ptr = (*zone)->vm; ptr->next; ptr = ptr->next) ;
-      ptr->next = list;
-    } else
-      (*zone)->vm = list;
+    list->next = (*zone)->vm;
+    (*zone)->vm = list;
     UNLOCK_ZONE(*zone);
   }
-  return (*vm != NULL);
+  return MDSplusSUCCESS;
 }
 EXPORT int libgetvm_(const uint32_t *const len, void **const vm, ZoneList **const zone){
   return LibGetVm(len, vm, zone);

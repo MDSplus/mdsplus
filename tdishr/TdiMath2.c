@@ -59,7 +59,6 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 
 ------------------------------------------------------------------------------*/
 
-#include <STATICdef.h>
 #include <math.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
@@ -115,9 +114,9 @@ extern void DoubleToWideInt();
   break;\
 }
 
-STATIC_CONSTANT const int roprand = 0x8000;
+static const int roprand = 0x8000;
 
-STATIC_ROUTINE double mod_d(double in1, double in2)
+static double mod_d(double in1, double in2)
 {
   double intpart;
   modf((in2 != 0.0) ? in1 / in2 : 0., &intpart);
@@ -145,7 +144,7 @@ STATIC_ROUTINE double mod_d(double in1, double in2)
   break;\
 }
 
-STATIC_ROUTINE void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
+static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 {
   double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
   double in2_d = WideIntToDouble(in2, size/sizeof(int), is_signed);

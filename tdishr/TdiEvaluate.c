@@ -38,7 +38,6 @@ RULES OF THE GAME:
 	"out" must be an XD. It will be an XD-DSC, usually.
 */
 
-#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include "tdishrp.h"
 #include <tdishr_messages.h>
@@ -50,9 +49,9 @@ RULES OF THE GAME:
 
 
 
-STATIC_CONSTANT struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
+static const struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
-extern int TdiGetIdent();
+extern int tdi_get_ident();
 extern int TdiEvaluate();
 extern int TdiIntrinsic();
 extern int TdiCall();
@@ -118,7 +117,7 @@ EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__ ((unused)),
       status = TdiEvaluate(list[0]->pointer, out_ptr MDS_END_ARG);
       break;
     case DTYPE_IDENT:
-      status = TdiGetIdent(list[0], out_ptr);
+      status = tdi_get_ident(list[0], out_ptr);
       break;
     case DTYPE_NID:
       pnid = (int *)list[0]->pointer;

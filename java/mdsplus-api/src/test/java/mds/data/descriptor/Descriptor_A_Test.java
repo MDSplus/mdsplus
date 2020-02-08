@@ -25,9 +25,7 @@ import mds.data.descriptor_s.Float32;
 import mds.data.descriptor_s.Int32;
 import mds.data.descriptor_s.Int64;
 import mds.data.descriptor_s.Uint8;
-import mds.mdslib.MdsLib;
 
-@SuppressWarnings("static-method")
 public final class Descriptor_A_Test{
 	private static Mds mds;
 
@@ -80,7 +78,7 @@ public final class Descriptor_A_Test{
 	@Test
 	public final void testEvaluate() throws MdsException {
 		final Multiply dsc = new Multiply(new Signal(new Int16Array(new short[]{0, 1, 2, 3}), null, new Float32Array(new float[]{0f, 1f, 2f, 3f})), new Float32(.5f));
-		if(MdsLib.lib_loaded == null) Assert.assertEquals("[0.,.5,1.,1.5]", Descriptor.mdslib.getDescriptor("DATA($)", dsc).toString());
+		if (Mds.getLocal() != null) Assert.assertEquals("[0.,.5,1.,1.5]", Mds.getLocal().getDescriptor("DATA($)", dsc).toString());
 		Assert.assertTrue(dsc == dsc.getLocal());
 	}
 

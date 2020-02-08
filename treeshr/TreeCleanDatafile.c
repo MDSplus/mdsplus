@@ -140,12 +140,12 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
     }
     pthread_cleanup_pop(1);//treeclose(&dbid1)
     if STATUS_OK {
-      status = MDS_IO_REMOVE(move.to_c) == 0 ? TreeNORMAL : TreeDELFAIL;
+      status = MDS_IO_REMOVE(move.to_c) == 0 ? TreeSUCCESS : TreeDELFAIL;
       if STATUS_OK
-	status = MDS_IO_REMOVE(move.to_d) == 0 ? TreeNORMAL : TreeDELFAIL;
+	status = MDS_IO_REMOVE(move.to_d) == 0 ? TreeSUCCESS : TreeDELFAIL;
       if STATUS_OK
 	status = ((MDS_IO_RENAME(move.from_c, move.to_c) == 0)
-		  && (MDS_IO_RENAME(move.from_d, move.to_d) == 0)) ? TreeNORMAL : TreeRENFAIL;
+		  && (MDS_IO_RENAME(move.from_d, move.to_d) == 0)) ? TreeSUCCESS : TreeRENFAIL;
     }
     pthread_cleanup_pop(1);//freemove(&move)
   }
@@ -153,14 +153,14 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 }
 
 int _TreeCleanDatafile(void **dbid, char *tree, int shot){
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   if (dbid) status = _TreeClose(dbid, tree, shot);
   if (STATUS_NOT_OK && status != TreeNOT_OPEN) return status;
   return RewriteDatafile(tree, shot, 0);
 }
 
 int _TreeCompressDatafile(void **dbid, char *tree, int shot){
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   if (dbid) status = _TreeClose(dbid, tree, shot);
   if (STATUS_NOT_OK && status != TreeNOT_OPEN)
     return status;

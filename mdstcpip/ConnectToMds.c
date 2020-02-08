@@ -27,18 +27,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #include <status.h>
-#ifdef HAVE_UNISTD_H
-#include <unistd.h>
-#endif
-#ifdef _WIN32
- #include <winsock2.h>
-#else
- #include <pwd.h>
- #define INVALID_SOCKET -1
-#endif
 
-#define LOAD_GETUSERNAME
-#include <pthread_port.h>
+#include <socket_port.h>
+#include <getusername.h>
 #include "mdsip_connections.h"
 #include "mdsIo.h"
 

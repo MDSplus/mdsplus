@@ -7,7 +7,6 @@ VPATH=@srcdir@
 
 SOURCES = ccl_verbs.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = ccl_commands.exports
 
 @MINGW_TRUE@ MDSCCL=mdsccl.bat
 @MINGW_FALSE@ MDSCCL=mdsccl

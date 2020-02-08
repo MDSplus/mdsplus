@@ -44,7 +44,7 @@ public final class Dim extends Descriptor_R<Number>{
 		}
 		if(begin == Float.NEGATIVE_INFINITY || ending == Float.POSITIVE_INFINITY) return new Uint8(1);
 		final int elements = (int)((ending - begin) / delta);
-		final ByteBuffer buf = ByteBuffer.allocate(elements * Float.SIZE).order(Descriptor.BYTEORDER);
+		final ByteBuffer buf = ByteBuffer.allocateDirect(elements * Float.SIZE).order(Descriptor.BYTEORDER);
 		for(int i = 0; i < elements; i++)
 			buf.putFloat(begin + i * delta);
 		return new Float32Array(DTYPE.FLOAT, buf, new int[]{elements});

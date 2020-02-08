@@ -23,11 +23,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*      TdiYacc.Y
-	YACC converts this to TdiYacc.C to compile TDI statements.
+/*      tdiYacc.Y
+	YACC converts this to tdiYacc.C to compile TDI statements.
 	Each YACC-LEX symbol has a returned token and a tdiyylval value.
 	Precedence is associated with a token and is set left and right below.
-	TdiLex_... routines and TdiRefFunction depend on tokens from TdiYacc.
+	tdi_lex_... routines and TdiRefFunction depend on tokens from tdiYacc.
 	Tdi0Decompile depends on TdiRefFunction and precedence.
 
 	Josh Stillerman and Thomas W. Fredian, MIT PFC, TDI$PARSE.Y.
@@ -70,28 +70,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
-extern int TdiYacc_RESOLVE();
-extern int TdiLex();
-extern int TdiYacc_IMMEDIATE();
-extern int TdiYacc_BUILD();
-extern int TdiYacc_ARG();
-extern int TdiLexPath();
+extern int tdi_lex();
+extern int tdi_lex_path();
+extern int tdi_yacc_RESOLVE();
+extern int tdi_yacc_IMMEDIATE();
+extern int tdi_yacc_BUILD();
+extern int tdi_yacc_ARG();
 
 #define YYMAXDEPTH      250
 #define __RUN(method) do{if IS_NOT_OK(method) tdiyyerror(0); else TDI_REFZONE.l_ok = TDI_REFZONE.a_cur - TDI_REFZONE.a_begin;}while(0)
 
-#define _RESOLVE(arg)   			__RUN(TdiYacc_RESOLVE(&arg.rptr))
+#define _RESOLVE(arg)   			__RUN(tdi_yacc_RESOLVE(&arg.rptr, TDITHREADSTATIC_VAR))
 
-#define _FULL1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
-#define _FULL2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
+#define _FULL1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(255, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _FULL2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(255, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_VAR))
 	/*****************************
 	Two args for image->routine.
 	*****************************/
-#define _JUST0(opcode,out)                      __RUN(TdiYacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL ))
-#define _JUST1(opcode,arg1,out)                 __RUN(TdiYacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL ))
-#define _JUST2(opcode,arg1,arg2,out)            __RUN(TdiYacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL ))
-#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(TdiYacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL ))
-#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(TdiYacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4))
+#define _JUST0(opcode,out)                      __RUN(tdi_yacc_BUILD(  2, 0, opcode, &out, NULL , NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST1(opcode,arg1,out)                 __RUN(tdi_yacc_BUILD(  3, 1, opcode, &out, &arg1, NULL , NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST2(opcode,arg1,arg2,out)            __RUN(tdi_yacc_BUILD(  2, 2, opcode, &out, &arg1, &arg2, NULL , NULL , TDITHREADSTATIC_VAR))
+#define _JUST3(opcode,arg1,arg2,arg3,out)       __RUN(tdi_yacc_BUILD(  3, 3, opcode, &out, &arg1, &arg2, &arg3, NULL , TDITHREADSTATIC_VAR))
+#define _JUST4(opcode,arg1,arg2,arg3,arg4,out)  __RUN(tdi_yacc_BUILD(  4, 4, opcode, &out, &arg1, &arg2, &arg3, &arg4, TDITHREADSTATIC_VAR))
 
 static const struct marker _EMPTY_MARKER = { 0 };
 
@@ -103,14 +103,14 @@ static const struct marker _EMPTY_MARKER = { 0 };
 
 /* __YYSCLASS defines the scoping/storage class for global objects
  * that are NOT renamed by the -p option.  By default these names
- * are going to be 'STATIC_THREADSAFE' so that multi-definition errors
+ * are going to be 'static' so that multi-definition errors
  * will not occur with multiple parsers.
  * If you want (unsupported) access to internal names you need
  * to define this to be null so it implies 'extern' scope.
  * This should not be used in conjunction with -p.
  */
 #ifndef __YYSCLASS
-#define __YYSCLASS STATIC_THREADSAFE
+#define __YYSCLASS static
 #endif
 typedef int tdiyytabelem;
 #define YYERRCODE 256
@@ -651,12 +651,11 @@ static void free_stacks();
 /*
 ** tdiyyparse - return 0 if worked, 1 if syntax error not recovered from
 */
-// TdiYacc aka tdiyyparse         TdiYacc
+// tdi_yacc aka tdiyyparse         tdi_yacc
 
-int TdiYacc(){
+int tdi_yacc(TDITHREADSTATIC_ARG){
   YYSTYPE tdiyylval;
   YYSTYPE tdiyyval;
-  GET_TDITHREADSTATIC_P;
   long tdiyymaxdepth = YYMAXDEPTH;
   YYSTYPE *tdiyypvt;	/* top of value stack for $vars */
   /*
@@ -737,7 +736,7 @@ int TdiYacc(){
  tdiyy_newstate:
     if ((tdiyy_n = tdiyypact[tdiyy_state]) <= YYFLAG)
       goto tdiyy_default;		/* simple state */
-    if ((tdiyychar < 0) && ((tdiyychar = TdiLex(&tdiyylval)) < 0))
+    if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_VAR)) < 0))
       tdiyychar = 0;		/* reached EOF */
     YYDEBUG_("Received token ")
     if (((tdiyy_n += tdiyychar) < 0) || (tdiyy_n >= YYLAST))
@@ -753,7 +752,7 @@ int TdiYacc(){
 
  tdiyy_default:
     if ((tdiyy_n = tdiyydef[tdiyy_state]) == -2) {
-      if ((tdiyychar < 0) && ((tdiyychar = TdiLex(&tdiyylval)) < 0))
+      if ((tdiyychar < 0) && ((tdiyychar = tdi_lex(&tdiyylval, TDITHREADSTATIC_VAR)) < 0))
 	tdiyychar = 0;		/* reached EOF */
       YYDEBUG_("received token ")
       /*
@@ -884,8 +883,8 @@ int TdiYacc(){
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TDI_REFZONE.l_status & 1))
+      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_VAR);
+      if IS_NOT_OK(TDI_REFZONE.l_status)
 	tdiyyerror(0);
     }
     break;
@@ -1262,7 +1261,8 @@ int TdiYacc(){
 	  tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
 	} else {
 	  if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_ARG) {
-	    if (!((TDI_REFZONE.l_status = TdiYacc_ARG(&tdiyyval.mark)) & 1))
+	    TDI_REFZONE.l_status = tdi_yacc_ARG(&tdiyyval.mark, TDITHREADSTATIC_VAR);
+	    if IS_NOT_OK(TDI_REFZONE.l_status)
 	      tdiyyerror(0);
 	  } else {
 	    if ((TdiRefFunction[tdiyyval.mark.builtin].token & LEX_M_TOKEN) == LEX_CONST)
@@ -1271,7 +1271,7 @@ int TdiYacc(){
 	}
       } else if (*tdiyyval.mark.rptr->pointer == '_')
 	tdiyyval.mark.rptr->dtype = DTYPE_IDENT;
-      else if (TdiLexPath(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark) == LEX_ERROR) {
+      else if (tdi_lex_path(tdiyypvt[-0].mark.rptr->length, tdiyypvt[-0].mark.rptr->pointer, &tdiyyval.mark, TDITHREADSTATIC_VAR) == LEX_ERROR) {
 	TDI_REFZONE.l_ok = tdiyypvt[-1].mark.w_ok;
 	TDI_REFZONE.a_cur = TDI_REFZONE.a_begin + TDI_REFZONE.l_ok + tdiyypvt[-0].mark.rptr->length;
 	return MDSplusERROR;
@@ -1385,8 +1385,8 @@ int TdiYacc(){
     {
       tdiyyval.mark.rptr = tdiyypvt[-0].mark.rptr;
       tdiyyval.mark.builtin = -2;
-      TDI_REFZONE.l_status = TdiYacc_IMMEDIATE(&tdiyyval.mark.rptr);
-      if (!(TDI_REFZONE.l_status & 1))
+      TDI_REFZONE.l_status = tdi_yacc_IMMEDIATE(&tdiyyval.mark.rptr, TDITHREADSTATIC_VAR);
+      if IS_NOT_OK(TDI_REFZONE.l_status)
 	tdiyyerror(0);
     }
     break;
@@ -1442,7 +1442,7 @@ int TdiYacc(){
 
 #ifdef __RUNTIME_YYMAXDEPTH
 
-STATIC_ROUTINE int allocate_stacks(const long size)
+static int allocate_stacks(const long size)
 {
   /* allocate the tdiyys and tdiyyv stacks */
   tdiyys = (int *)malloc(size * sizeof(int));
@@ -1456,7 +1456,7 @@ STATIC_ROUTINE int allocate_stacks(const long size)
 
 }
 
-STATIC_ROUTINE void free_stacks()
+static void free_stacks()
 {
   if (tdiyys != 0)
     free(tdiyys);

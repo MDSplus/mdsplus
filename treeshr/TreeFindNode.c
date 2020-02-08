@@ -35,8 +35,6 @@ extern void **TreeCtx();
 /*
  * Exported routines
  */
-EXPORT char *TreeAbsPath(char const *inpath);
-
 EXPORT int TreeFindNode(char const *path, int *outnid);
 EXPORT int TreeFindNodeRelative(char const *path, int startnid, int *outnid);
 EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid);
@@ -52,22 +50,18 @@ EXPORT int _TreeFindNodeEnd(void *dbid, void **ctx);
 /*
  * Static internal routines
  */
-STATIC_ROUTINE inline int IsWild(char *str);
-STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in);
-STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail);
-STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
-STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *list, NODELIST **tail, NODE *node);
-STATIC_ROUTINE void FreeNodeList(NODELIST *list);
-STATIC_ROUTINE int match(char *first, char *second);
-STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx);
-STATIC_ROUTINE NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST **tail, NODELIST *end_list, NODELIST *end_tail);
-STATIC_ROUTINE char *Trim(char *str, size_t len);
-STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
-STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
-STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
-STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, NODELIST **tail);
-STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int mask);
-STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in);
+static NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail);
+static NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
+static NODELIST *AddNodeList(NODELIST *list, NODELIST **tail, NODE *node);
+static void FreeNodeList(NODELIST *list);
+static int match(char *first, char *second);
+static void FreeSearchCtx(SEARCH_CTX *ctx);
+static NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST **tail, NODELIST *end_list, NODELIST *end_tail);
+static NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
+static NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
+static NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail);
+static NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, NODELIST **tail);
+static NODELIST *Filter(NODELIST *list, int mask);
 /*
  * External routines (not exported) defined here
  */
@@ -77,6 +71,30 @@ STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in);
 extern int WildParse(char const *path, SEARCH_CTX *ctx, int *wild);
 extern void FreeSearchTerms(SEARCH_TERM *terms);
 extern char *_TreeGetPath(void *dbid, int nid_in);
+
+/* trim trailing space form str into buf
+ */
+static size_t trim_cpy(char *buf, char *str, size_t len) {
+  size_t i;
+  for (i=0; i<len; i++) {
+    if (str[i] == ' ')
+      break;
+    else
+      buf[i] = str[i];
+  }
+  buf[i] = '\0';
+  return i;
+}
+static inline int is_wild2(const char *const str) {
+  const char *p = str;
+  while (*p!='\0' && *p!='*' && *p!='%') p++;
+  return *p;
+}
+static inline int is_wild3(const char *const str) {
+  const char *p = str;
+  while (*p!='\0' && *p!='*' && *p!='?' && *p!='%') p++;
+  return *p;
+}
 
 EXPORT int TreeFindNode(char const *path, int *outnid)
 {
@@ -102,10 +120,6 @@ EXPORT int TreeFindNodeEnd(void **ctx_in)
 {
   return _TreeFindNodeEnd(*TreeCtx(), ctx_in);
 }
-EXPORT char *TreeAbsPath(char const *inpath)
-{
-  return _TreeAbsPath(*TreeCtx(), inpath);
-}
 
 EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **ctx_inout, int usage_mask)
 {
@@ -118,7 +132,7 @@ EXPORT int _TreeFindNodeWild(void *dbid, char const *path, int *nid_out, void **
 
 EXPORT int _TreeFindNodeWildRelative(void *dbid, char const *path, int startnid, int *nid_out, void **ctx_inout, int usage_mask)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX *ctx;
@@ -175,7 +189,7 @@ EXPORT int _TreeFindNode(void *dbid, char const *path, int *outnid)
 
 EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int *outnid)
 {
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
   int wild = 0;
   SEARCH_CTX ctx = {0};
@@ -215,7 +229,7 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int
   }
  done:
   FreeSearchCtx(&ctx);
-  return (status & 1) ? TreeNORMAL : status;
+  return (status & 1) ? TreeSUCCESS : status;
 }
 
 EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
@@ -227,15 +241,15 @@ EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
       *ctx = NULL;
     }
   }
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
-STATIC_ROUTINE void FreeSearchCtx(SEARCH_CTX *ctx)
+static void FreeSearchCtx(SEARCH_CTX *ctx)
 {
   free(ctx->wildcard);
   FreeSearchTerms(ctx->terms);
 }
-STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail)
+static NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
   NODELIST *nodes = term ? Find(dblist, term, start, tail) : NULL;
   if (nodes) {
@@ -264,56 +278,44 @@ STATIC_ROUTINE NODELIST *Search(PINO_DATABASE *dblist, SEARCH_CTX *ctx, SEARCH_T
   }
 }
 
-STATIC_ROUTINE inline int Wild(char *term)
-{
-  return (strchr(term, '*') || strchr(term, '?') || strchr(term, '%'));
-}
-
-STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
+static NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
   NODELIST *answer = NULL;
-  if (((term->search_type==CHILD) || (term->search_type==MEMBER)) && (! Wild(term->term))) {
+  if (((term->search_type==CHILD) || (term->search_type==MEMBER)) && (! is_wild3(term->term))) {
     term->search_type = CHILD_OR_MEMBER;
   }
+  char trimmed[sizeof(NODE_NAME)+1];
   switch (term->search_type) {
     case (CHILD) : {
       NODE *n=child_of(dblist, start);
       for (; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name,sizeof(NODE_NAME));
-        if (match(term->term, trimmed)) {
+        trim_cpy(trimmed,n->name,sizeof(NODE_NAME));
+        if (match(term->term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
       break;
     }
     case (MEMBER) : {
       NODE *n;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
-        if (match(term->term, trimmed)) {
+        trim_cpy(trimmed,n->name,sizeof(NODE_NAME));
+        if (match(term->term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
       break;
     }
     case (CHILD_OR_MEMBER) : {
       NODE *n;
       for (n=member_of(start); n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
-        if (match(term->term, trimmed)) {
+        trim_cpy(trimmed,n->name,sizeof(NODE_NAME));
+        if (match(term->term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
       n=child_of(dblist, start);
       for (; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
-        if (match(term->term, trimmed)) {
+        trim_cpy(trimmed,n->name,sizeof(NODE_NAME));
+        if (match(term->term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
       break;
     }
@@ -342,22 +344,20 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
     case (ANCESTOR): {
       NODE *parent = parent_of(dblist, start);
       if (parent) {
-        char *trimmed = Trim(parent->name, sizeof(NODE_NAME));
+	trim_cpy(trimmed,parent->name,sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         if (match(search_term, trimmed))
           answer = AddNodeList(answer, tail, parent);
-        free(trimmed);
       }
       break;
     }
     case (ANCESTOR_SEARCH): {
       NODE *parent = parent_of(dblist, start);
       while (parent) {
-        char *trimmed = Trim(parent->name, sizeof(NODE_NAME));
+	trim_cpy(trimmed,parent->name,sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         if (match(search_term, trimmed))
           answer = AddNodeList(answer, tail, parent);
-        free(trimmed);
         parent = parent_of(dblist, parent);
       }
       break;
@@ -372,52 +372,41 @@ STATIC_ROUTINE NODELIST *Find(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *st
   return(answer);
 }
 
-STATIC_ROUTINE NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int treenum, char *tagname, NODELIST **tail)
+static NODELIST *FindTags(PINO_DATABASE *dblist, TREE_INFO *info, int treenum, char *tagname, NODELIST **tail)
 {
   NODELIST *answer = NULL;
   TAG_INFO *tptr = info->tag_info;
   int i;
   NID nid;
-  int tag_wild = IsWild(tagname);
+  int tag_wild = is_wild2(tagname);
   *tail = NULL;
-
+  NODE *n;
   nid.tree = treenum;
   if(match(tagname, "TOP")) {
     nid.node = 0;
-    NODE *n = nid_to_node(dblist, &nid);
-    if (n->usage == TreeUSAGE_SUBTREE_REF) {
+    n = nid_to_node(dblist, &nid);
+    if (n->usage == TreeUSAGE_SUBTREE_REF)
       n = child_of(dblist, n);
-    }
     answer = AddNodeList(answer, tail, n);
-  }
-  else {
+  } else {
+    char trimmed[sizeof(TAG_NAME)+1];
     for (i=0; i<info->header->tags; i++) {
-      char *trimmed = Trim(tptr[i].name, sizeof(TAG_NAME));
+      trim_cpy(trimmed,tptr[i].name, sizeof(TAG_NAME));
       if(match(tagname, trimmed)) {
-        NODE *n;
         nid.node = tptr[i].node_idx;
         n = nid_to_node(dblist, &nid);
-        if (n->usage == TreeUSAGE_SUBTREE_REF) {
+        if (n->usage == TreeUSAGE_SUBTREE_REF)
           n = child_of(dblist, n);
-        }
         answer = AddNodeList(answer, tail, n);
-        if (! tag_wild) {
-          free(trimmed);
+        if (! tag_wild)
           break;
-        }
       }
-      free(trimmed);
     }
   }
   return(answer);
 }
 
-STATIC_ROUTINE inline int IsWild(char *str)
-{
-  return (strchr(str, '*') || strchr(str, '%'));
-}
-
-STATIC_ROUTINE TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum)
+static TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum)
 {
   TREE_INFO *info;
   int  i = 0;
@@ -429,7 +418,7 @@ STATIC_ROUTINE TREE_INFO *GetDefaultTreeInfo(PINO_DATABASE *dblist, int *treenum
 
 }
 
-STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, NODELIST **tail)
+static NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, NODELIST **tail)
 {
   NODELIST *answer = NULL;
   TREE_INFO *tinfo;
@@ -440,7 +429,7 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, N
     char *treename=tag_term;
     char *tagname = strstr(tag_term, "::")+2;
     *(strstr(tag_term, "::")) = '\0';
-    tree_wild = IsWild(treename);
+    tree_wild = is_wild2(treename);
     if (treename[0] == '\\') treename++;
     for (treenum = 0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info, treenum++) {
       if(match(treename, tinfo->treenam)) {
@@ -456,7 +445,7 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, N
     char *tagname = tag_term;
     int tag_wild;
     if (tagname[0] == '\\') tagname++;
-    tag_wild = IsWild(tagname);
+    tag_wild = is_wild2(tagname);
     answer = FindTags(dblist, default_tinfo, treenum, tagname, tail);
     if ((!answer) || tag_wild) {
       for (treenum=0, tinfo=dblist->tree_info; tinfo; tinfo = tinfo->next_info) {
@@ -474,29 +463,28 @@ STATIC_ROUTINE NODELIST *FindTagWild(PINO_DATABASE *dblist, SEARCH_TERM *term, N
   return answer;
 }
 
-STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
+static NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
   NODELIST *answer = NULL;
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
-
+  char trimmed[sizeof(NODE_NAME)+1];
   *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
+  NODE *n;
+  NODELIST *this;
   while (queue) {
-    NODE *n;
-    NODELIST *this = queue;
+    this = queue;
     queue = queue->next;
     if (! queue)
       que_tail=NULL;
     if ((n = member_of(this->node))) {
       for(; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
+        trim_cpy(trimmed, n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, &que_tail, n);
-        if (match(search_term, trimmed)) {
+        if (match(search_term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
     }
     free(this);
@@ -504,29 +492,28 @@ STATIC_ROUTINE NODELIST *FindMembers(PINO_DATABASE *dblist, SEARCH_TERM *term, N
   return answer;
 }
 
-STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
+static NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
   NODELIST *answer = NULL;
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
-
+  char trimmed[sizeof(NODE_NAME)+1];
   *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
+  NODE *n;
+  NODELIST *this;
   while (queue) {
-    NODE *n;
-    NODELIST *this = queue;
+    this = queue;
     queue = queue->next;
     if (! queue)
       que_tail=NULL;
     if ((n = child_of(dblist, this->node))) {
       for(; n; n = brother_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
+	trim_cpy(trimmed, n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, &que_tail, n);
-        if (match(search_term, trimmed)) {
+        if (match(search_term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
     }
     free(this);
@@ -534,30 +521,29 @@ STATIC_ROUTINE NODELIST *FindChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, 
   return answer;
 }
 
-STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
+static NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TERM *term, NODE *start, NODELIST **tail)
 {
   NODELIST *answer = NULL;
   NODELIST *queue = NULL;
   NODELIST *que_tail = NULL;
-
+  char trimmed[sizeof(NODE_NAME)+1];
   *tail = NULL;
   queue = AddNodeList(queue, &que_tail, start);
   answer = AddNodeList(answer, tail, start);
+  NODE *n;
+  NODELIST *this;
   while (queue) {
-    NODE *n;
-    NODELIST *this = queue;
+    this = queue;
     queue = queue->next;
     if (! queue)
       que_tail=NULL;
     if ((n = descendant_of(dblist, this->node))) {
       for(; n; n = sibling_of(dblist, n)) {
-        char *trimmed = Trim(n->name, sizeof(NODE_NAME));
+        trim_cpy(trimmed, n->name, sizeof(NODE_NAME));
         char *search_term = (strlen(term->term)) ? term->term : "*";
         queue = AddNodeList(queue, &que_tail, n);
-        if (match(search_term, trimmed)) {
+        if (match(search_term, trimmed))
           answer = AddNodeList(answer, tail, n);
-        }
-        free(trimmed);
       }
     }
     free(this);
@@ -565,7 +551,7 @@ STATIC_ROUTINE NODELIST *FindMembersOrChildren(PINO_DATABASE *dblist, SEARCH_TER
   return answer;
 }
 
-STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *head, NODELIST **tail,  NODE *node)
+static NODELIST *AddNodeList(NODELIST *head, NODELIST **tail,  NODE *node)
 {
   NODELIST *this_one = malloc(sizeof(NODELIST));
   this_one->node = node;
@@ -580,7 +566,7 @@ STATIC_ROUTINE NODELIST *AddNodeList(NODELIST *head, NODELIST **tail,  NODE *nod
   return (head);
 }
 
-STATIC_ROUTINE void FreeNodeList(NODELIST *list)
+static void FreeNodeList(NODELIST *list)
 {
   NODELIST *ptr;
   for (ptr=list; ptr;)
@@ -590,27 +576,8 @@ STATIC_ROUTINE void FreeNodeList(NODELIST *list)
     ptr=nxt;
   }
 }
-/*
- * Trim trailing spaces from input nodename
- *
- * Note there will not be a \0
- * so allocate 12+1 and copy it in first
- */
-STATIC_ROUTINE char *Trim(char *str, size_t len)
-{
-  char *ans = calloc(len+1, 1);
-  char *p;
-  strncpy(ans, str, len);
-  for (p=ans; *p; p++) {
-    if (isspace(*p)) {
-      *p='\0';
-      break;
-    }
-  }
-  return ans;
-}
 
-STATIC_ROUTINE int match(char *first, char *second)
+static int match(char *first, char *second)
 {
     // If we reach at the end of both strings, we are done
     if (*first == '\0' && *second == '\0')
@@ -635,7 +602,7 @@ STATIC_ROUTINE int match(char *first, char *second)
     return 0;
 }
 
-STATIC_ROUTINE NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST **tail, NODELIST *end_list, NODELIST *end_tail)
+static NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST **tail, NODELIST *end_list, NODELIST *end_tail)
 {
   NODELIST *answer;
 
@@ -654,7 +621,7 @@ STATIC_ROUTINE NODELIST  *ConcatenateNodeLists(NODELIST *start_list, NODELIST **
   return answer;
 }
 
-STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
+static NODELIST *Filter(NODELIST *list, int usage_mask) {
   NODELIST *ptr;
   NODELIST *previous=list;
   NODELIST *answer=list;
@@ -685,7 +652,7 @@ STATIC_ROUTINE NODELIST *Filter(NODELIST *list, int usage_mask) {
 extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char **new_name, int *child)
 {
   NODE *start = dblist->default_node;
-  int status = TreeNORMAL;
+  int status = TreeSUCCESS;
   *node = NULL;
   char *parent_name = strdup(name);
   char *last_dot = strrchr(parent_name, '.');
@@ -710,7 +677,7 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
       *last_colon = '\0';
     }
     if (strlen(parent_name) == 0) {
-      status = TreeNORMAL;
+      status = TreeSUCCESS;
       *node = dblist->default_node;
     }
     else {
@@ -725,86 +692,4 @@ extern int TreeFindParent(PINO_DATABASE *dblist, char *name, NODE **node, char *
   }
   free(parent_name);
   return status;
-}
-EXPORT char *_TreeAbsPath(void *dbid, char const *inpath)
-{
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  int nid;
-  char *answer;
-  if (!IS_OPEN(dblist))
-    return NULL;
-  if (dblist->remote)
-    return AbsPathRemote(dblist, inpath);
-  _TreeGetDefaultNid(dbid, &nid);
-  answer = AbsPath(dbid, inpath, nid);
-  _TreeSetDefaultNid(dbid, nid);
-  return answer;
-}
-
-STATIC_ROUTINE char *AbsPath(void *dbid, char const *inpath, int nid_in)
-{
-  char *answer = NULL, *pathptr = NULL;
-  PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
-  _TreeSetDefaultNid(dbid, nid_in);
-  size_t len = strlen(inpath);
-  if (len) {
-    int nid;
-    if (_TreeFindNode(dbid, inpath, &nid) & 1) {
-      pathptr = _TreeGetPath(dbid, nid);
-      len = strlen(pathptr);
-    } else pathptr = strdup(inpath);
-  } else {
-    pathptr = _TreeGetPath(dbid, nid_in);
-    len = strlen(pathptr);
-  }
-  if (pathptr[0] == '\\') {
-    if (strstr(pathptr, "::")) {
-      answer = strdup(pathptr);
-    }
-    else {
-      char *treename = Treename(dblist, nid_in);
-      answer = (char *)malloc(strlen(treename) + strlen(pathptr) + 2 + 1);
-      strcpy(answer, "\\");
-      strcat(answer, treename);
-      strcat(answer, "::");
-      strcat(answer, pathptr+1);
-    }
-  }
-  else if ((strstr(pathptr, "-") == pathptr) || (strstr(pathptr, ".-") == pathptr)) {
-      int nid;
-      NODE node;
-      NODE *nodeptr = &node;
-      NID *nidptr = (NID *) & nid;
-      NID *nidinptr = (NID *) & nid_in;
-      if (nid_in) {
-        nodeptr = nid_to_node(dblist, nidinptr);
-        node_to_nid(dblist, parent_of(dblist, nodeptr), nidptr);
-        answer = AbsPath(dbid, &pathptr[2], nid);
-      } else
-        answer = NULL;
-  } else {
-    char *tmp = _TreeGetPath(dbid, nid_in);
-    answer = strcpy(malloc(strlen(tmp) + strlen(pathptr) + 2), tmp);
-    free(tmp);
-    switch (pathptr[0]) {
-    case '.':
-    case ':':
-      strcat(answer, pathptr);
-      break;
-    default:
-      strcat(answer, ":");
-      strcat(answer, pathptr);
-      break;
-    }
-  }
-  free(pathptr);
-  return answer;
-}
-STATIC_ROUTINE char *Treename(PINO_DATABASE * dblist, int nid_in)
-{
-  TREE_INFO *info;
-  NID nid = *(NID *) & nid_in;
-  unsigned int treenum;
-  for (info = dblist->tree_info, treenum = 0; info && treenum < nid.tree; info = info->next_info) ;
-  return info ? info->treenam : "";
 }

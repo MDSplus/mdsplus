@@ -30,7 +30,6 @@ import mds.data.descriptor_s.Uint8;
 @SuppressWarnings("deprecation")
 public abstract class Descriptor_S<T>extends Descriptor<T>{
 	public static final byte		CLASS	= 1;
-	@SuppressWarnings("hiding")
 	private static final boolean	atomic	= true;
 
 	public static final Descriptor_S<?> deserialize(final ByteBuffer b) throws MdsException {

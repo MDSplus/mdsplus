@@ -8,7 +8,7 @@
   #include <mdsdcl_messages.h>
   #include <mdsplus/mdsconfig.h>
   #include "dcllex.h"
-  #include "mdsdclthreadsafe.h"
+  #include "mdsdclthreadstatic.h"
   static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 %}
 %define api.pure full

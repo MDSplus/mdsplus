@@ -23,19 +23,19 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <servershr.h>
-#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 #include <time.h>
 #include <errno.h>
+#include <servershr.h>
+#include "servershrp.h"
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <strroutines.h>
 #include <treeshr.h>
-#include <pthread_port.h>
+#include <condition.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -496,7 +496,7 @@ static int DoSrvClose(SrvJob * job_in){
   char *job_text = strcpy((char *)malloc(32), "Closing trees");
   current_job_text = job_text;
   while IS_OK(status = TreeClose(0, 0));
-  status = (status == TreeNOT_OPEN) ? TreeNORMAL : status;
+  status = (status == TreeNOT_OPEN) ? TreeSUCCESS : status;
   if (job_in->h.addr)
     SendReply(job_in, SrvJobFINISHED, status, 0, 0);
   return status;

@@ -63,7 +63,7 @@ EXPORT int TreeGetPerf(TREE_IO_PERF * perf)
     sem_wait(semaphore);
     *perf = *p;
     sem_post(semaphore);
-    return TreeNORMAL;
+    return TreeSUCCESS;
   } else
     return TreeFAILURE;
 }
@@ -107,7 +107,7 @@ EXPORT int TreePerfZero()
     sem_wait(SEMAPHORE);
     memset(PERF, 0, sizeof(*PERF));
     sem_post(SEMAPHORE);
-    return TreeNORMAL;
+    return TreeSUCCESS;
   }
   return TreeFAILURE;
 }
@@ -138,7 +138,7 @@ EXPORT int TreePerfWrite(int bytes)
       PERF->write_bytes_10_7_to_inf += bytes;
     }
     sem_post(SEMAPHORE);
-    return TreeNORMAL;
+    return TreeSUCCESS;
   }
   return TreeFAILURE;
 }
@@ -169,7 +169,7 @@ EXPORT int TreePerfRead(int bytes)
       PERF->read_bytes_10_7_to_inf += bytes;
     }
     sem_post(SEMAPHORE);
-    return TreeNORMAL;
+    return TreeSUCCESS;
   }
   return TreeFAILURE;
 }

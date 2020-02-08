@@ -1,6 +1,0 @@
-LIBRARY	IdlMdsEvent
-EXPORTS
-;
-IDLMdsEvent
-IDLMdsEventCan
-IDLMdsGetevi

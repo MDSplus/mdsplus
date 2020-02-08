@@ -42,7 +42,19 @@ public class Event
     }
     public java.lang.String getName() {return name;}
     public Uint64 getTime() {return new Uint64(time);}
-    public Data getData() { return data;}
+    public Data getData() 
+    {
+	if(data != null) return data;
+	if(dataBuf.length == 0)
+	    data = null;
+	else
+	{
+	    try {
+	        data = Data.deserialize(dataBuf);
+	    }catch(Exception exc){data = null;} //may be raw data
+	}
+	return data;
+    }
     public byte []  getRaw() { return dataBuf;}
     public synchronized void run()
     {
@@ -93,14 +105,7 @@ public class Event
     {
 	this.time = time;
 	dataBuf = buf;
-	if(buf.length == 0)
-	    data = null;
-	else
-	{
-	    try {
-	        data = Data.deserialize(buf);
-	    }catch(Exception exc){} //No handling required, may be raw data
-	}
+	data = null; //Data will be serialized only upon getData method call
 	run();
     }
     static public void seteventRaw(java.lang.String evName, byte[] buf){setEventRaw(evName, buf);}

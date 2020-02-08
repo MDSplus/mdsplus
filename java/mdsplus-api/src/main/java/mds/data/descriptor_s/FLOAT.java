@@ -26,11 +26,11 @@ public abstract class FLOAT<T extends Number>extends NUMBER<T>{
 	}
 
 	private static final ByteBuffer toByteBuffer(final double value) {
-		return ByteBuffer.allocate(Double.BYTES).order(Descriptor.BYTEORDER).putDouble(0, value);
+		return ByteBuffer.allocateDirect(Double.BYTES).order(Descriptor.BYTEORDER).putDouble(0, value);
 	}
 
 	private static final ByteBuffer toByteBuffer(final float value) {
-		return ByteBuffer.allocate(Float.BYTES).order(Descriptor.BYTEORDER).putFloat(0, value);
+		return ByteBuffer.allocateDirect(Float.BYTES).order(Descriptor.BYTEORDER).putFloat(0, value);
 	}
 
 	protected FLOAT(final ByteBuffer b){

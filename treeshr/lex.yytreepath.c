@@ -2189,7 +2189,7 @@ EXPORT int WildParse(char const *path, SEARCH_CTX *ctx, int *wild)
     free(wild_path);
   }
 
-  return(status ==0) ? TreeNORMAL : TreeINVPATH;
+  return(status ==0) ? TreeSUCCESS : TreeINVPATH;
 }
 
 STATIC_ROUTINE void addSearchTerm(yyscan_t scanner, int type, char *str)

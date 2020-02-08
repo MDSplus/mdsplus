@@ -36,7 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	NEED faster code for longs and maybe floats.
 */
 
-#include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -47,9 +46,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-STATIC_CONSTANT DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
-STATIC_CONSTANT int minus_one_value = -1;
-STATIC_CONSTANT struct descriptor minus_one =
+static const DESCRIPTOR_A(arr0, 1, DTYPE_B, 0, 0);
+static const int minus_one_value = -1;
+static const struct descriptor minus_one =
     { sizeof(int), DTYPE_L, CLASS_S, (char *)&minus_one_value };
 
 extern struct descriptor *TdiItoXSpecial;
@@ -74,7 +73,7 @@ extern struct descriptor *TdiItoXSpecial;
 int Tdi1DtypeRange(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   length_t len;
   dtype_t dtype;
   int cmode = -1, j, nseg = 0, nnew = narg;

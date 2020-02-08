@@ -91,6 +91,7 @@ target_triplet = @target@
 subdir = java
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/m4/ac_defun_local.m4 \
+	$(top_srcdir)/m4/ax_check_busybox.m4 \
 	$(top_srcdir)/m4/ax_check_java_home.m4 \
 	$(top_srcdir)/m4/ax_compare_version.m4 \
 	$(top_srcdir)/m4/ax_compiler_vendor.m4 \
@@ -152,6 +153,7 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
+BUSYBOX = @BUSYBOX@
 CAMSHR = @CAMSHR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
@@ -207,7 +209,6 @@ ENABLE_SANITIZE_LIBPATH = @ENABLE_SANITIZE_LIBPATH@
 ENABLE_SANITIZE_OPTIONS = @ENABLE_SANITIZE_OPTIONS@
 ENABLE_VALGRIND = @ENABLE_VALGRIND@
 EXEEXT = @EXEEXT@
-EXPORTS_FILE = @EXPORTS_FILE@
 FC = @FC@
 FCFLAGS = @FCFLAGS@
 FEXECLIBDIR = @FEXECLIBDIR@
@@ -258,6 +259,8 @@ JAVAC_PATH_NAME = @JAVAC_PATH_NAME@
 JAVA_APS = @JAVA_APS@
 JAVA_JAR = @JAVA_JAR@
 JAVA_ONLY = @JAVA_ONLY@
+JAVA_PATH_NAME = @JAVA_PATH_NAME@
+JAVA_TARGET_ARCH = @JAVA_TARGET_ARCH@
 JDK_CFLAGS = @JDK_CFLAGS@
 JDK_DIR = @JDK_DIR@
 JDK_LIVECONNECT = @JDK_LIVECONNECT@
@@ -285,6 +288,7 @@ LINKJNI = @LINKJNI@
 LINKMODULE = @LINKMODULE@
 LINKSHARED = @LINKSHARED@
 LINKWHOLE = @LINKWHOLE@
+LN_R = @LN_R@
 LOG_COMPILER = @LOG_COMPILER@
 LOG_DRIVER = @LOG_DRIVER@
 LTLIBOBJS = @LTLIBOBJS@
@@ -451,12 +455,15 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 uiddir = @uiddir@
 MVN = mvn -Dmaven.repo.local=/workspace/.m2/repository -DsourceDirectory=$(top_srcdir)/java
-JAVA_DIRS = mdsplus mdsplus-api jscope jtraverser jtraverser2 mdsobjects jdevices jdispatcher
-all_DIRS = $(addprefix all__, $(JAVA_DIRS))
-clean_DIRS = $(addprefix clean__, $(JAVA_DIRS))
-TEST_DIRS = mdsplus-api/tests
-tests_DIRS = $(addprefix tests__, $(TEST_DIRS))
-clean_tests_DIRS = $(addprefix clean__, $(TEST_DIRS))
+JAVA_DIRS = mdsplus mdsplus-api jtraverser2 jscope mdsobjects jtraverser jtraverser2 jdevices jdispatcher
+all_DIRS = $(addprefix all_, $(JAVA_DIRS) $(TEST_DIRS) tests)
+clean_DIRS = $(addprefix clean_, $(JAVA_DIRS) $(TEST_DIRS) tests)
+TEST_DIRS = \
+	mdsplus-api/tests \
+	mdsobjects/tests
+
+tests_DIRS = $(addprefix tests_, $(TEST_DIRS))
+clean_tests_DIRS = $(addprefix clean_, $(TEST_DIRS))
 all: all-am
 
 .SUFFIXES:
@@ -651,25 +658,25 @@ maven-deploy:
 	$(MVN) -s /sign_keys/.m2/settings.xml -Dsettings.security=/sign_keys/.m2/settings-security.xml -DskipTests deploy
 
 maven-tests:
-	$(TEST_ENVIRONMENT) $(MVN) test
+	$(TESTS_ENVIRONMENT) $(MVN) test
 
 maven-clean:
 	$(MVN) clean
 
 .PHONY: $(all_DIRS) $(clean_DIRS)
 $(all_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all__%=%) all
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:all_%=%) all
 all: $(all_DIRS)
 $(clean_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean_%=%) clean
 clean: $(clean_DIRS)
 
 .PHONY: $(tests_DIRS) $(clean_tests_DIRS)
 $(tests_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) tests
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_%=%) tests
 tests: $(tests_DIRS)
 $(clean_tests_DIRS):
-	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests__%=%) clean
+	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:clean_%=%) clean
 clean_TESTS: $(clean_tests_DIRS)
 clean_tests: $(clean_tests_DIRS)
 

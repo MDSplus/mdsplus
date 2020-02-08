@@ -47,7 +47,6 @@ public final class Complex32Array extends COMPLEXArray<Float>{
 		return buf.putFloat((float)value);
 	}
 
-	@SuppressWarnings("static-method")
 	public final ByteBuffer buildBuffer(final ByteBuffer buf, final double real, final double imag) {
 		return buf.putFloat((float)real).putFloat((float)imag);
 	}

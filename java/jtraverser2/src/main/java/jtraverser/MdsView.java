@@ -9,7 +9,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.io.InputStream;
+import java.nio.channels.ReadableByteChannel;
 import java.util.Stack;
 import java.util.Vector;
 import javax.swing.JButton;
@@ -215,7 +215,7 @@ public class MdsView extends JTabbedPane implements TransferEventListener{
 	}
 
 	@Override
-	public void handleTransferEvent(final InputStream is, String info, int read, int to_read) {
+	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read) {
 		if (to_read==0) {
 			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			this.treeman.setProgress(this, 0, 1);
