@@ -1,4 +1,8 @@
+#include <string.h>
+
+#include <pthread_port.h>
 #include <mdsversion.h>
+
 EXPORT const mds_version_t MDSVERSION = {
 @RELEASE_MAJOR@,
 @RELEASE_MINOR@,
@@ -6,12 +10,28 @@ EXPORT const mds_version_t MDSVERSION = {
 "@RELEASE_BRANCH@",
 };
 
-EXPORT char* GetReleaseTag() {
-  static char tag[sizeof("@RELEASE_BRANCH@")+48];
-  sprintf(tag, "%s_release_%d.%d.%d",
+
+static pthread_once_t once = PTHREAD_ONCE_INIT;
+static char tag[sizeof("@RELEASE_BRANCH@")+48];
+static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, tag };
+
+static void buildtag()
+{
+	RELEASE_D.length = sprintf(tag, "%s_release_%d.%d.%d",
 	MDSVERSION.BRANCH,
 	MDSVERSION.MAJOR,
 	MDSVERSION.MINOR,
 	MDSVERSION.MICRO);
+}
+
+EXPORT const char *MdsRelease()
+{
+  pthread_once(&once, buildtag);
   return tag;
+}
+
+EXPORT const mdsdsc_t *MdsReleaseDsc()
+{
+  pthread_once(&once, buildtag);
+  return &RELEASE_D;
 }

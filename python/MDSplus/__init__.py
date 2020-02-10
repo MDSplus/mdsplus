@@ -84,8 +84,8 @@ except:
 if version_check:
     def version_check():
         try:
-            libs.MdsShr.GetReleaseTag.restype = ctypes.c_char_p
-            verchk = _ver.tostr(libs.MdsShr.GetReleaseTag())
+            libs.MdsShr.MdsRelease.restype = ctypes.c_char_p
+            verchk = _ver.tostr(libs.MdsShr.MdsRelease())
         except:
             verchk = "unknown"
         if verchk != __version__ or verchk == "unknown":

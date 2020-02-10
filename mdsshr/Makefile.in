@@ -38,7 +38,6 @@ SOURCES = \
         MdsSerialize.c \
         MdsThreadStatic.c \
         MdsXdRoutines.c \
-        MdsVersionInfo.c \
         mds_dsc_string.c \
         UdpEvents.c \
         UdpEventSettings.c

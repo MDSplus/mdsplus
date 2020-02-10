@@ -4,10 +4,11 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <mdsshr.h>
 #include <dcl.h>
 #include <mdsdcl_messages.h>
 #include <mdsversion.h>
+
+#include "dcl_p.h"
 
 extern MDSplusGitVersionInfo MDSplusGitVersion;
 
@@ -17,7 +18,7 @@ EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error 
   info += sprintf(info,"\n\n");
   info += sprintf(info,"MDSplus version: %d.%d.%d\n",MDSVERSION.MAJOR,MDSVERSION.MINOR,MDSVERSION.MICRO);
   info += sprintf(info,"----------------------\n");
-  const char *tag = GetReleaseTag();
+  const char *tag = MdsRelease();
   info += sprintf(info,"  Release:  %s\n",tag);
   info += sprintf(info,"  Browse:   https://github.com/MDSplus/mdsplus/tree/%s\n", tag);
   info += sprintf(info,"  Download: https://github.com/MDSplus/mdsplus/archive/%s.tar.gz\n", tag);
@@ -49,15 +50,15 @@ EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output)
 	strlen(MDSplusGitVersion.GIT_REMOTE_URL)+
 	strlen(MDSplusGitVersion.GIT_COMMIT)+
 	strlen(MDSplusGitVersion.GIT_SRCDIR)+
-	+1000);
+	1000);
 
   if (s) {
-    if(qfr[0] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_TAG);
-    if(qfr[1] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_BRANCH);
-    if(qfr[2] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_REMOTE);
-    if(qfr[3] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_REMOTE_URL);
-    if(qfr[4] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_COMMIT);
-    if(qfr[5] == MdsdclPRESENT)  sprintf(info,"%s ",MDSplusGitVersion.GIT_SRCDIR);
+    if(qfr[0] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_TAG);
+    if(qfr[1] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_BRANCH);
+    if(qfr[2] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_REMOTE);
+    if(qfr[3] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_REMOTE_URL);
+    if(qfr[4] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_COMMIT);
+    if(qfr[5] == MdsdclPRESENT)  info += sprintf(info,"%s ",MDSplusGitVersion.GIT_SRCDIR);
     info += sprintf(info,"\n");
   } else {
     info += sprintf(info,"\n MDSplus code info:\n");
@@ -72,6 +73,5 @@ EXPORT int mdsdcl_show_git_info(void *ctx, char **error, char **output)
   }
   status = MdsdclSUCCESS;
   *error = strdup("");
-  free(info);
   return status;
 }

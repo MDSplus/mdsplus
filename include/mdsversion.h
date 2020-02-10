@@ -1,3 +1,5 @@
+#include <mdsdescrip.h>
+
 #pragma pack(push)
 typedef struct {
   const int  MAJOR;
@@ -8,4 +10,5 @@ typedef struct {
 #pragma pack(pop)
 
 extern const mds_version_t MDSVERSION;
-extern char* GetReleaseTag();
+extern const char *MdsRelease();
+extern const mdsdsc_t *MdsReleaseDsc();

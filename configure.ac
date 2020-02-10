@@ -1422,6 +1422,7 @@ AC_OUTPUT(Makefile.inc
           macosx/Makefile
           math/Makefile
           mdsdcl/Makefile
+	  mdsdcl/mdsdclVersionInfo.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile
@@ -1440,7 +1441,6 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
-	  mdsshr/MdsVersionInfo.c
 	  mdsshr/version.h
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
