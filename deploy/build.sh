@@ -445,7 +445,8 @@ BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
+    LAST_RELEASE_INFO=$PUBLISHDIR/${DISTNAME}/${BRANCH}_${OS}
+    if [ -r ${LAST_RELEASE_INFO} -a "$(cat ${LAST_RELEASE_INFO})" == "${RELEASE_VERSION}" ]
     then
 	GREEN
 	cat <<EOF
@@ -668,6 +669,10 @@ EOF
     NORMAL
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
+	# /publish/$OS/ will contain one file per branch and arch containing the latest release
+	# The previous version is captured in *_old
+	# This is supposed to make it easier to fixup repos while keeping the number of files low
+	[ -r ${LAST_RELEASE_INFO} ]&&cp ${LAST_RELEASE_INFO} ${LAST_RELEASE_INFO}_old
+	echo "${RELEASE_VERSION}" > ${LAST_RELEASE_INFO}
     fi
 fi
