@@ -33,3 +33,5 @@ struct TdiCatStruct_table {
 #include <inttypes.h>
 extern const tdicat_t TdiCAT_MAX;
 extern const struct TdiCatStruct_table TdiREF_CAT[];
+
+#define TDIREF_CAT(dtype) TdiREF_CAT[dtype<TdiCAT_MAX ? dtype : 42]

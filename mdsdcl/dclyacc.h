@@ -30,8 +30,8 @@
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
-#ifndef YY_YY_CMDPARSE_TAB_H_INCLUDED
-# define YY_YY_CMDPARSE_TAB_H_INCLUDED
+#ifndef YY_YY_DCLYACC_H_INCLUDED
+# define YY_YY_DCLYACC_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -68,4 +68,4 @@ typedef union YYSTYPE YYSTYPE;
 
 int yyparse (YYLTYPE * yylloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error);
 
-#endif /* !YY_YY_CMDPARSE_TAB_H_INCLUDED  */
+#endif /* !YY_YY_DCLYACC_H_INCLUDED  */

@@ -124,5 +124,5 @@ OBJECTS = $(SOURCES:.c=.o)
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
 
-TdiYacc.o : TdiYacc.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $< -Wno-array-bounds
+TdiYacc.o :
+	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiYacc.c -Wno-array-bounds

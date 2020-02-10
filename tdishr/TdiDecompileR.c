@@ -34,9 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <strroutines.h>
 #include <mds_stdarg.h>
+
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdithreadstatic.h"
+#include "tdiyacc.h"
 
 #define P_STMT          96
 #define P_ARG           88

@@ -2793,7 +2793,7 @@ MDSplusException.statusDict[265519328] = TdiTOO_BIG
 
 class TdiUNBALANCE(TdiException):
   status=265519338
-  message="Unbalanced () [] {} '' \" \" or /**/"
+  message="Unbalanced () [] {} '' \"\" or /**/"
   msgnam="UNBALANCE"
 
 MDSplusException.statusDict[265519336] = TdiUNBALANCE
