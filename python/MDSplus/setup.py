@@ -29,25 +29,12 @@ if 'pip-egg-info' in sys.argv:
     print("When using pip to install MDSplus use 'pip install -e <dir>'")
     sys.exit(1)
 
-def parseTag(tag):
-    release=tag.split('-')[0]
-    if release=='alpha_release':
-       name='mdsplus-alpha'
-    elif release=='stable_release':
-       name='mdsplus'
-    else:
-       name='-'.join(['mdsplus',release])
-    return name
-
-
 try:
     mod_dir=os.path.dirname(os.path.abspath(__file__))
     exec(open(mod_dir+os.sep+'_version.py').read())
-    release=version
-    pname=parseTag(release_tag)
+    release="%d.%d.%d"%version
 except:
-    release='1.0'
-    pname='mdsplus'
+    release='1.0.0'
     release_tag='Unknown'
 pth_dir=os.path.abspath(__file__)
 pth_dir=os.path.abspath(os.path.dirname(pth_dir)+'/..')

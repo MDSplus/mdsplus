@@ -1,0 +1,17 @@
+#include <mdsversion.h>
+EXPORT const mds_version_t MDSVERSION = {
+@RELEASE_MAJOR@,
+@RELEASE_MINOR@,
+@RELEASE_RELEASE@,
+"@RELEASE_BRANCH@",
+};
+
+EXPORT char* GetReleaseTag() {
+  static char tag[sizeof("@RELEASE_BRANCH@")+48];
+  sprintf(tag, "%s_release_%d.%d.%d",
+	MDSVERSION.BRANCH,
+	MDSVERSION.MAJOR,
+	MDSVERSION.MINOR,
+	MDSVERSION.MICRO);
+  return tag;
+}

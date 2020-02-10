@@ -42,7 +42,14 @@ def _mimport(name, level=1):
         return __import__(name, globals(), level=level)
     except:
         return __import__(name, globals())
-import os,sys,numpy,ctypes,ctypes.util,hashlib # importing required packages
+
+# importing required packages
+import os
+import sys
+import ctypes, ctypes.util
+import hashlib
+import numpy
+
 if sys.version_info < (2,6):
     raise Exception("Python version 2.6 or higher is now required to use the MDSplus python package.")
 # importing libs for convenience and to early check if we have what we need in place
@@ -64,32 +71,24 @@ else:
     version_check = False
 try:
     _version = _mimport('_version')
-    __version__ = _version.version
-    release_tag = _version.release_tag
+    __version__ = _version.release_tag
     __doc__ = """%s
-Version: %s\nRelease tag: %s
+Version: %s
 Release Date: %s
-""" % (__doc__,__version__,release_tag,_version.release_date)
+""" % (__doc__,__version__,_version.release_date)
 except:
     if version_check and 'PYTHONPATH' in os.environ:
         sys.stderr.write("PYTHONPATH was set to: %s and unable to import version information\n" % os.environ['PYTHONPATH'])
-    __version__='Unknown'
+    __version__ = "unknown"
 
 if version_check:
     def version_check():
-        class MDSplusVersionInfo(ctypes.Structure):
-            _fields_= [("MAJOR",ctypes.c_char_p),
-                       ("MINOR",ctypes.c_char_p),
-                       ("RELEASE",ctypes.c_char_p),
-                       ("RELEASE_TAG",ctypes.c_char_p),
-                       ("DATE",ctypes.c_char_p),
-                       ("MDSVERSION",ctypes.c_char_p)]
         try:
-            info = ctypes.cast(libs.MdsShr.MDSplusVersion,ctypes.POINTER(MDSplusVersionInfo)).contents
-            verchk = _ver.tostr(info.MDSVERSION.decode())
+            libs.MdsShr.GetReleaseTag.restype = ctypes.c_char_p
+            verchk = _ver.tostr(libs.MdsShr.GetReleaseTag())
         except:
-            verchk = "Unknown"
-        if verchk != __version__ or verchk == "Unknown":
+            verchk = "unknown"
+        if verchk != __version__ or verchk == "unknown":
             sys.stderr.write('''Warning:
   The MDSplus python module version (%s) does not match
   the version of the installed MDSplus libraries (%s).
