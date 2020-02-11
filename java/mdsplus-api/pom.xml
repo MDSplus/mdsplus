@@ -8,7 +8,6 @@
 		<relativePath>../pom.xml</relativePath>
 	</parent>
 	<artifactId>mdsplus-api</artifactId>
-	<version>0.0.0-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>MDSplus API</name>
 	<description>

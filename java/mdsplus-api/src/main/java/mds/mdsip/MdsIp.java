@@ -403,7 +403,7 @@ public class MdsIp extends Mds{
 	}
 
 	/** re-/connects to the servers mdsip service **/
-	private final boolean connect() {
+	public final boolean connect() {
 		if(this.connected) return true;
 		try{
 			this.connectToServer();
@@ -623,5 +623,9 @@ public class MdsIp extends Mds{
 		}
 		final String provider_str = this.provider.toString();
 		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")").toString();
+	}
+
+	public final void useCompression(final boolean use_compression) {
+		this.use_compression = use_compression;
 	}
 }
