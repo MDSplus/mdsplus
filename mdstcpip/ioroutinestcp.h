@@ -272,7 +272,8 @@ static int io_listen(int argc, char **argv){
   // MULTIPLE CONNECTION MODE              /////////////////////////////////
   // multiple connections with own context /////////////////////////////////
   char *matchString[] = { "multi" };
-  CheckClient(0, 1, matchString);
+  if (CheckClient(0, 1, matchString) == ACCESS_DENIED)
+    exit(EX_NOPERM);
   // SOCKET //
   /* Create the socket and set it up to accept connections. */
   SOCKET ssock = socket(AF_T, SOCK_STREAM, 0);
