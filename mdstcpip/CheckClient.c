@@ -114,10 +114,8 @@ static int become_user(const char *remote_user, const char *local_user)
       } else
 	access = ACCESS_GRANTED;
     }
-  } else {
-    fprintf(stderr,"Invalid mapping, cannot find user \"%s\"\n", user);
-    access = ACCESS_DENIED;
-  }
+  } else
+    access = ACCESS_NOMATCH;
   return access;
 }
 #endif
