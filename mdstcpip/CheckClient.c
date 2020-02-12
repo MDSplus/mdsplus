@@ -122,6 +122,8 @@ static int become_user(const char *remote_user, const char *local_user)
 }
 #endif
 
+
+
 int CheckClient(const char *const username, int num, char *const *const matchString)
 {
   int access = ACCESS_NOMATCH;
@@ -129,10 +131,14 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
   if (strncmp(hostfile, "TDI", 3)) {
     FILE *f = fopen(hostfile, "r");
     if (f) {
+      struct match {
+	char *	 c;
+	mdsdsc_t d;
+      } *matchS = calloc(num, sizeof(struct match));
       char line_c[1024], *access_id, *local_user;
+      int i, deny;
       while (access == ACCESS_NOMATCH && fgets(line_c, 1023, f)) {
 	if (line_c[0] != '#') {
-	  int i, deny;
           access_id = line_c;
 	  local_user = strchr(line_c,'|');
           if (local_user) {
@@ -150,24 +156,31 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
 	      }
 	    }
 	    DESCRIPTOR_FROM_CSTRING(access_d,access_id);
-	    for (i = 0; i < num && access == ACCESS_NOMATCH; i++) {
-	      char *const buf = strdup(matchString[i]);
-	      mdsdsc_t match_d = { 0, DTYPE_T, CLASS_S, buf };
-              match_d.length = (length_t)filter_string(&match_d.pointer,  TRUE );
+	    for (i = 0 ; i < num && access == ACCESS_NOMATCH; i++) {
+	      struct match *const match = &matchS[i];
+	      if (!match->c) {
+		match->c = strdup(matchString[i]);
+		match->d.dtype   = DTYPE_T;
+		match->d.class   = CLASS_S;
+		match->d.pointer = match->c;
+		match->d.length  = (length_t)filter_string(&match->d.pointer,  TRUE );
+              }
 	      if (deny) {
-		if IS_OK(StrMatchWild(&match_d, &access_d))
+		if IS_OK(StrMatchWild(&match->d, &access_d))
 		  access = ACCESS_DENIED;
 	      }	else {
-		if (strcmp(match_d.pointer, "MULTI") == 0 && strcmp(access_id, "MULTI") == 0)
+		if (strcmp(match->d.pointer, "MULTI") == 0 && strcmp(access_id, "MULTI") == 0)
 		  access = become_user(NULL, local_user);
-		else if IS_OK(StrMatchWild(&match_d, &access_d))
+		else if IS_OK(StrMatchWild(&match->d, &access_d))
 		  access = GetMulti() ? ACCESS_GRANTED : become_user(username, local_user);
 	      }
-	      free(buf);
 	    }
 	  }
 	}
       }
+      for (i = 0 ; i < num && matchS[i].c ; i++)
+	free(matchS[i].c);
+      free(matchS);
       fclose(f);
     } else {
       perror("CheckClient");
