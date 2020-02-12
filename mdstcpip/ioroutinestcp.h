@@ -273,7 +273,12 @@ static int io_listen(int argc, char **argv){
   // multiple connections with own context /////////////////////////////////
   char *matchString[] = { "multi" };
   if (CheckClient(0, 1, matchString) == ACCESS_DENIED)
-    exit(EX_NOPERM);
+#ifdef _WIN32
+  // cannot change user on Windows
+  fprintf(stderr,"WARNING: 'multi' user found hostfile but Windows cannot change user.\n");
+#else
+  exit(EX_NOPERM);
+#endif
   // SOCKET //
   /* Create the socket and set it up to accept connections. */
   SOCKET ssock = socket(AF_T, SOCK_STREAM, 0);
