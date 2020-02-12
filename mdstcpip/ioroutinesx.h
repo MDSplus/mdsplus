@@ -284,7 +284,7 @@ static int io_authorize(Connection* c, char *username){
   char *iphost = NULL,*hoststr = NULL;
   FREE_ON_EXIT(iphost);
   FREE_ON_EXIT(hoststr);
-  ans = C_OK;
+  ans = ACCESS_NOMATCH;
   SOCKET sock = getSocket(c);
   char now[32];Now32(now);
   if ((iphost = getHostInfo(sock, &hoststr))) {

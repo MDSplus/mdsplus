@@ -69,19 +69,21 @@ static inline int filter_string(char **const str_ptr, const int upcase) {
   return c - str; // is strlen
 }
 
+#define ACCESS_NOMATCH	0
+#define ACCESS_GRANTED	1
+#define ACCESS_DENIED	2
 #ifdef _WIN32
 #define become_user(remote_user,local_user) 1
 #else
 static int become_user(const char *remote_user, const char *local_user)
 { // both args may be NULL
   if (!local_user || !*local_user)
-    return 0;// NULL or empty
+    return ACCESS_NOMATCH;// NULL or empty
   if (strcmp(local_user, "SELF") == 0)
-    return 1;// NOP
+    return ACCESS_GRANTED;// NOP
   const int map_to_local = strcmp(local_user, "MAP_TO_LOCAL") == 0;
   if (map_to_local && !(remote_user || *remote_user))
-    return 0;// cannot map to invalid remote user
-  int ok = 0;
+    return ACCESS_DENIED;// cannot map to invalid remote user
   const int is_root = remote_user && strcmp(remote_user, "root") == 0; // if map_to_local map root to nobody
   const char *user;
   if (map_to_local) {
@@ -99,33 +101,44 @@ static int become_user(const char *remote_user, const char *local_user)
     pwd = getpwnam(lowuser);
     free(lowuser);
   }
+  int access;
   if (pwd) {
     initgroups(pwd->pw_name, pwd->pw_gid);
     if (setgid(pwd->pw_gid) || setuid(pwd->pw_uid)) {
       fprintf(stderr,"Cannot set gid/uid - run server as root!\n");
-      exit(EX_NOPERM);
+      access = ACCESS_DENIED;
     } else {
-      ok = setenv("HOME",pwd->pw_dir,TRUE) ? 0 : 1;
-      if (!ok)
+      if (setenv("HOME",pwd->pw_dir,TRUE)) {
         fprintf(stderr,"Failed to set HOME for user \"%s\"\n", user);
+	access = ACCESS_DENIED;
+      } else
+	access = ACCESS_GRANTED;
     }
-  } else
+  } else {
     fprintf(stderr,"Invalid mapping, cannot find user \"%s\"\n", user);
-  return ok;
+    access = ACCESS_DENIED;
+  }
+  return access;
 }
 #endif
 
+
+
 int CheckClient(const char *const username, int num, char *const *const matchString)
 {
-  int ok = 0;
+  int access = ACCESS_NOMATCH;
   char *hostfile = GetHostfile();
   if (strncmp(hostfile, "TDI", 3)) {
     FILE *f = fopen(hostfile, "r");
     if (f) {
+      struct match {
+	char *	 c;
+	mdsdsc_t d;
+      } *matchS = calloc(num, sizeof(struct match));
       char line_c[1024], *access_id, *local_user;
-      while (ok == 0 && fgets(line_c, 1023, f)) {
+      int i, deny;
+      while (access == ACCESS_NOMATCH && fgets(line_c, 1023, f)) {
 	if (line_c[0] != '#') {
-	  int i;
           access_id = line_c;
 	  local_user = strchr(line_c,'|');
           if (local_user) {
@@ -133,29 +146,41 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
 	    filter_string(&local_user, FALSE);
 	  }
 	  if (filter_string(&access_id,  TRUE )) { // not empty
-	    for (i = 0; i < num; i++) {
-	      char *const buf = strdup(matchString[i]);
-	      mdsdsc_t match_d = { 0, DTYPE_T, CLASS_S, buf };
-              match_d.length = (length_t)filter_string(&match_d.pointer,  TRUE );
-	      if (access_id[0] != '!') {
-		if (strcmp(match_d.pointer, "MULTI") == 0 && strcmp(access_id, "MULTI") == 0)
-		  ok = become_user(NULL, local_user);
-		else {
-		  DESCRIPTOR_FROM_CSTRING(access_d,access_id);
-		  if IS_OK(StrMatchWild(&match_d, &access_d))
-		    ok = GetMulti() ? 1 : become_user(username, local_user);
-		}
-	      } else {
-		access_id++; // drop '!'
-		DESCRIPTOR_FROM_CSTRING(access_d,access_id);
-		if IS_OK(StrMatchWild(&match_d, &access_d))
-		  ok = 2;
+	    if ((deny = access_id[0] == '!')) {
+	      access_id++; // drop '!'
+	      if (!filter_string(&access_id, FALSE)) {
+		if (username)
+                  access = ACCESS_DENIED; // deny
+		else
+		  continue; // looking for multi
 	      }
-	      free(buf);
+	    }
+	    DESCRIPTOR_FROM_CSTRING(access_d,access_id);
+	    for (i = 0 ; i < num && access == ACCESS_NOMATCH; i++) {
+	      struct match *const match = &matchS[i];
+	      if (!match->c) {
+		match->c = strdup(matchString[i]);
+		match->d.dtype   = DTYPE_T;
+		match->d.class   = CLASS_S;
+		match->d.pointer = match->c;
+		match->d.length  = (length_t)filter_string(&match->d.pointer,  TRUE );
+              }
+	      if (deny) {
+		if IS_OK(StrMatchWild(&match->d, &access_d))
+		  access = ACCESS_DENIED;
+	      }	else {
+		if (strcmp(match->d.pointer, "MULTI") == 0 && strcmp(access_id, "MULTI") == 0)
+		  access = become_user(NULL, local_user);
+		else if IS_OK(StrMatchWild(&match->d, &access_d))
+		  access = GetMulti() ? ACCESS_GRANTED : become_user(username, local_user);
+	      }
 	    }
 	  }
 	}
       }
+      for (i = 0 ; i < num && matchS[i].c ; i++)
+	free(matchS[i].c);
+      free(matchS);
       fclose(f);
     } else {
       perror("CheckClient");
@@ -177,14 +202,13 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
 	 * or could lead to unsafe code execution
 	 */
         fprintf(stderr,"CheckClient: invalid username '%s'.",username);
-        return 0;
+        return ACCESS_DENIED;
       }
       cmdlen += strlen(username) + 1;
     }
     int i;
     for (i = 0; i < num; i++)
       cmdlen += strlen(matchString[i]) + 3;
-
     char *cmd_end, *const cmd = (char *)malloc(cmdlen);
     cmd_end = cmd + sprintf(cmd, "%s(", hostfile + 3);
     if (username)
@@ -199,19 +223,20 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
     status = tdiExecute(&cmd_d, &ans_d MDS_END_ARG);
     free(cmd);
     if STATUS_OK {
-      ok = 1;
+      access = ACCESS_GRANTED;
       if (ans_d.pointer && ans_d.length > 0) {
-	if (GetMulti()) {
+	if (!GetMulti()) {
 	  ans_d.pointer = realloc(ans_d.pointer,ans_d.length+1);
 	  ans_d.pointer[ans_d.length] = '\0';
-	  ok = become_user(username, ans_d.pointer);
+	  access = become_user(username, ans_d.pointer);
         }
 	StrFree1Dx((mdsdsc_d_t *)&ans_d);
       }
     } else if (status == TdiUNKNOWN_VAR) {
       fprintf(stderr, "CheckClient: Failed to load tdi function \"%s\": terminate\n", hostfile + 3);
       exit(EXIT_FILE_OPEN_ERROR);
-    }
+    } else
+      access = ACCESS_DENIED;
   }
-  return ok;
+  return access;
 }

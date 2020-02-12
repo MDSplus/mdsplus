@@ -3,6 +3,9 @@
 #define MdsLib_H
 #define _GNU_SOURCE /* glibc2 needs this */
 
+#ifndef _WIN32
+ #include <sysexits.h>
+#endif
 #include <mdsdescrip.h>
 #include <status.h>
 #include <ipdesc.h>
@@ -155,6 +158,9 @@ typedef struct _io_routines {
   ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
   int     (*check)(Connection* c);
 } IoRoutines;
+#define ACCESS_NOMATCH 0
+#define ACCESS_GRANTED 1
+#define ACCESS_DENIED  2
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
