@@ -6279,3 +6279,5 @@ Fun nid () {
 }
 `compile("1")
 1
+/* **/
+$Missing
