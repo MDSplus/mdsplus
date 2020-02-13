@@ -223,7 +223,7 @@ int main(int argc, char **argv)
   rl_completer_word_break_characters = " ,;[{(+-*\\/^<>=:&|!?~";
   mdsdsc_t expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(ans);
-  char *command=NULL;
+  char * buf, *command;
   char error_out_c[64], clear_errors_c[64];
   DESCRIPTOR(mdsconnect, "MDSCONNECT($)");
   DESCRIPTOR(mdsvalue,   "MDSVALUE('DECOMPILE(`EXECUTE($))',$)");
@@ -307,17 +307,19 @@ int main(int argc, char **argv)
   sigaction(SIGINT, &act, NULL);
 #endif
   set_readline_handlers();
-  while ((command=getExpression(f_in))
+  while ((buf=command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
     int comment = command[0] == '#';
     if (!comment) {
       if (f_in) {
-	fprintf(f_out,"%s\n",command);
-	fflush(f_out);
+	if (command[0] == '@') {
+	  command++;
+	} else {
+	  fprintf(f_out,"%s\n",command);
+	  fflush(f_out);
+	}
       }
-    }
-    if (!comment) {
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
       set_execute_handlers();
@@ -335,7 +337,7 @@ int main(int argc, char **argv)
       set_readline_handlers();
       add_history(command);
     }
-    free(command);
+    free(buf);
   }
   MdsFree1Dx(&ans,NULL);
   if (history_file) {
