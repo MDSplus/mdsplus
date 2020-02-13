@@ -32,19 +32,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <unistd.h>
 #include <ctype.h>
 #ifndef _WIN32
- #include <sysexits.h>
  #include <sys/types.h>
  #include <pwd.h>
  #include <grp.h>
  #include <sys/wait.h>
- #define EXIT_FILE_OPEN_ERROR	EX_IOERR
- #define EXIT_LIB_NOT_FOUND	EX_SOFTWARE
-#else
- // #include <WinError.h>
- #define ERROR_OPEN_FAILED	110
- #define ERROR_PROC_NOT_FOUND	127
- #define EXIT_FILE_OPEN_ERROR	ERROR_OPEN_FAILED
- #define EXIT_LIB_NOT_FOUND	ERROR_PROC_NOT_FOUND
 #endif
 
 #include <mdsdescrip.h>
@@ -55,6 +46,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 
 #include "mdsip_connections.h"
+
+extern int TdiExecute();
 
 static inline int filter_string(char **const str_ptr, const int upcase) {
   #define str (*str_ptr)
@@ -183,16 +176,10 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
     } else {
       perror("CheckClient");
       fprintf(stderr,"Unable to open hostfile: %s\n", GetHostfile());
-      exit(EXIT_FILE_OPEN_ERROR);
+      access = ACCESS_DENIED;
     }
   } else {
     // hostfile starts with TDI
-    static int (*tdiExecute)();
-    int status = LibFindImageSymbol_C("TdiShr", "TdiExecute", &tdiExecute);
-    if STATUS_NOT_OK {
-      fprintf(stderr,"CheckClient: Failed to load TdiShr->TdiExecute: terminate.\n");
-      exit(EXIT_LIB_NOT_FOUND);
-    }
     size_t cmdlen = strlen(hostfile) + 5;
     if (username) {
       if (strchr(username,'"')) {
@@ -218,7 +205,7 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
     cmd_end[-1] = ')'; // replace trailing , with closing )
     mdsdsc_t cmd_d = { (length_t)(cmd_end-cmd), DTYPE_T, CLASS_S, cmd };
     mdsdsc_t ans_d = { 0, DTYPE_T, CLASS_D, 0 };
-    status = tdiExecute(&cmd_d, &ans_d MDS_END_ARG);
+    int status = TdiExecute(&cmd_d, &ans_d MDS_END_ARG);
     free(cmd);
     if STATUS_OK {
       access = ACCESS_GRANTED;
@@ -231,8 +218,8 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
 	StrFree1Dx((mdsdsc_d_t *)&ans_d);
       }
     } else if (status == TdiUNKNOWN_VAR) {
-      fprintf(stderr, "CheckClient: Failed to load tdi function \"%s\": terminate\n", hostfile + 3);
-      exit(EXIT_FILE_OPEN_ERROR);
+      fprintf(stderr, "CheckClient: Failed to load tdi function \"%s\"\n", hostfile + 3);
+      access = ACCESS_DENIED;
     } else
       access = ACCESS_DENIED;
   }
