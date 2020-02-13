@@ -122,17 +122,18 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
       DESCRIPTOR_LONG(ans, &check);
       ARRAY(struct descriptor *) * apd = (void *)dat[0].pointer;
       for (idx = 0; idx < ((apd->arsize / apd->length) - 1); idx += 2) {
-	if ((TdiEq(apd->pointer[idx], list[1], &ans MDS_END_ARG) & 1) == 1 && check == 1) {
+	if (IS_OK(TdiEq(apd->pointer[idx], list[1], &ans MDS_END_ARG)) && check == 1) {
 	  status = MdsCopyDxXd(apd->pointer[idx + 1], out_ptr);
-	  break;
+	  goto baddat;
 	}
       }
+      status = MdsCopyDxXd(NULL, out_ptr);
     } else if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_LIST) {
       unsigned int idx;
-      int stat;
       ARRAY(struct descriptor *) * apd = (void *)dat[0].pointer;
-      stat = TdiGetLong(list[1], &idx);
-      if (stat & 1 && idx < apd->arsize / apd->length) {
+      status = TdiGetLong(list[1], &idx);
+      if STATUS_NOT_OK goto baddat;
+      if (idx < apd->arsize / apd->length) {
 	status = MdsCopyDxXd(apd->pointer[idx], out_ptr);
       }
     }
