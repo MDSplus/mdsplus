@@ -50,11 +50,31 @@ buildrelease() {
     fi
     popd;
   if [ -z "$NOMAKE" ]
-  then ${srcdir}/deploy/packaging/alpine/build_apks.sh
+  then
+    rm -Rf /release/${BRANCH}/${ARCH}
+    mkdir -p /release/${BRANCH}/${ARCH}
+    ${srcdir}/deploy/packaging/alpine/build_apks.sh
   fi
 }
 
 publish() {
-    mkdir -p /publish/${BRANCH}
-    rsync -a /release/${BRANCH}/${ARCH} /publish/${BRANCH}/
+    ### DO NOT CLEAN /publish as it may contain valid older release apks
+    SIGNKEYS=/sign_keys/mdsplus@mdsplus.org-589e05b6.rsa
+    REPO_DIR=/release/${BRANCH}/${ARCH}
+    :&& rsync -a /release/${BRANCH}/${REPO_DIR}/*.apk ${REPO_DIR}/
+    checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
+    [ -r /sign_keys/mdsplus@mdsplus.org-589e05b6.rsa ]
+    checkstatus abort "Failure: Problem finding signkeys for apk repository!" $?
+    if [ -r ${REPO_DIR}/APKINDEX.tar.gz ]
+    then mv ${REPO_DIR}/APKINDEX.tar.gz ${REPO_DIR}/APKINDEX.tar.gz.old
+    fi
+    abuild_failure=0
+    (
+      apk index -o ${REPO_DIR}/APKINDEX.tar.gz /publish/${BRANCH}/${ARCH}/*.apk
+      abuild-sign -k ${SIGNKEYS} ${REPO_DIR}/APKINDEX.tar.gz
+    ) || (
+      abuild_failure=1
+      mv ${REPO_DIR}/APKINDEX.tar.gz.old ${REPO_DIR}/APKINDEX.tar.gz
+    )
+    checkstatus abort "Failure: Problem updating apk repository in publish!" $abuild_failure
 }
