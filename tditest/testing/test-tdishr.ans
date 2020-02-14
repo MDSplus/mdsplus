@@ -5564,7 +5564,7 @@ Fun PUBLIC myfun (IN _in, INOUT _inout, OUT _out) {
 		_inout = "Ok";
 	}
 	Return (_J);
-	Label _do_abor : ABORT();
+	Label _do_abort : ABORT();
 }
 (_a=42,myfun(1,_a,_b),_a)
 "Ok"
@@ -6279,3 +6279,5 @@ Fun nid () {
 }
 `compile("1")
 1
+/* **/
+$Missing

@@ -23,11 +23,15 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "mdsip_connections.h"
+#include <errno.h>
+
 #include <pthread_port.h>
+
+#include "mdsip_connections.h"
 
 void PrintHelp(char *option)
 {
@@ -35,28 +39,39 @@ void PrintHelp(char *option)
     printf("Invalid options specified: %s\n\n", option);
   printf("mdsip - MDSplus data server\n\n"
 	 "  Format:\n\n"
-	 "    mdsip [-P protocol] [-m|-s] [-i|-r] [-h hostfile] [-c|+c] [-p port] [protocol-specific-options]\n\n"
-	 "      -?                 This help message\n"
+	 "    mdsip [-P protocol] [-m|-s] "
+#ifdef _WIN32
+	 "[-i|-r] "
+#endif
+	 "[-h hostfile] [-c[level]] [-p port] [protocol-specific-options]\n\n"
+	 "      -?, --help         This help message\n"
 	 "      -P protocol        Specifies server protocol, defaults to tcp\n"
+	 "        --protocol=protocal-name\n"
 	 "      -p port|service    Specifies port number or tcp service name\n"
-	 "      -m                 Use multi mode (accepts multiple connections each with own context)\n"
-	 "      -s                 Use server mode (accepts multiple connections with shared context. Used for action servers.)\n"
-	 "      -i                 Install service (Windows only)\n"
-	 "      -r                 Remove service (Windows only)\n"
-	 "      -h hostfile        Specify alternate mdsip.hosts file. Defaults to /etc/mdsip.hosts (linux) or C:\\mdsip.hosts(windows).\n"
-	 "      -c [level]         Specify maximum zlip compression level, 0=nocompression,1-9 fastest/least to slowest/most, default=9\n\n"
-	 "    longform switches are also permitted:\n\n"
-	 "      --help             This help message\n"
-	 "      --protocol=protocal-name\n"
-	 "      --port=port|service\n"
-	 "      --protocol=io-protocol-name\n"
-	 "      --multi\n"
-	 "      --server\n"
-	 "      --install\n"
-	 "      --remove\n"
-	 "      --hostfile=hostfile\n"
-	 "      --compression [level,default=9]\n\n");
-  exit(1);
+	 "        --port=port|service\n"
+	 "      -m, --multi        Use multi mode\n"
+	 "                         Accepts multiple connections each with own context.\n"
+	 "      -s, --server       Use server mode\n"
+	 "                         Accepts multiple connections with shared context.\n"
+         "                         Used for action servers.\n"
+#ifdef _WIN32
+	 "      -i, --install      Install service\n"
+	 "      -r, --remove       Remove service\n"
+#endif
+	 "      -h <hostfile>      Specify alternate mdsip.hosts file.\n"
+	 "                         Defaults to "
+#ifdef _WIN32
+"C:\\mdsip.hosts"
+#else
+"/etc/mdsip.hosts"
+#endif
+	 ".\n"
+	 "        --hostfile=hostfile\n"
+	 "      -c[<level>]        Specify maximum zlip compression level\n"
+	 "                         0: none or 1-9: fastest/least to slowest/most\n"
+	 "                         defaults to 9 if present and 0 if absent\n"
+	 "        --compression[=<level>]\n\n");
+  exit(option ? 1 : 0);
 }
 
 ///
@@ -72,39 +87,54 @@ void ParseCommand(int argc, char **argv, Options options[], int more, int *rem_a
     char *arg = argv[i];
     size_t arglen = strlen(arg);
     if (arg[0] == '-') {
-      int option_found = 0;
-      int opt;
+      int option_found = FALSE;
+      int opt, islong;
       arg++;
       arglen--;
+      if ((islong = *arg == '-')) {
+	arg++;
+	arglen--;
+      }
       if (strcmp("help", arg) == 0)
 	PrintHelp(0);
       for (opt = 0; options[opt].short_name || options[opt].long_name; opt++) {
-	if (*arg == '-' && options[opt].long_name) {
-	  char *lonarg = arg + 1;
-	  size_t lonarglen = arglen - 1;
+	if (islong) {
+	  if (!options[opt].long_name)
+	    continue;
 	  char *long_name = options[opt].long_name;
 	  size_t optlen = strlen(long_name);
-	  if (lonarglen >= optlen && strncmp(lonarg, long_name, optlen) == 0) {
-	    option_found = options[opt].present = 1;
-	    if (options[opt].expects_value) {
-	      if (lonarglen > optlen && lonarg[optlen] == '=')
-		options[opt].value = &lonarg[optlen + 1];
-	      else {
-		options[opt].value = argv[i + 1];
-		i++;
+	  if ((arglen == optlen || (arglen > optlen && arg[optlen] == '='))
+		&& strncmp(arg, long_name, optlen) == 0) {
+	    option_found = options[opt].present = TRUE;
+	    if (arglen > optlen)
+	      options[opt].value = &arg[optlen + 1];
+	    else if (options[opt].expects_value == 1) {
+	      if (++i<argc) {
+		options[opt].value = argv[i];
+	      } else {
+		fprintf(stderr,"Invalid option: --%s expects value but non given.\n",options[opt].long_name);
+		exit(1); //ERROR_INVALID_PARAMETER
 	      }
+	    } else if (options[opt].expects_value == 2) {
+	      if (i+1 < argc && argv[i+1][0] != '-')
+		options[opt].value = argv[++i];
 	    }
 	    break;
 	  }
-	} else if (options[opt].short_name && arglen > 0 && arg[0] == options[opt].short_name[0]) {
-	  option_found = options[opt].present = 1;
-	  if (options[opt].expects_value) {
-	    if (arglen > 2 && arg[1] == '=')
-	      options[opt].value = &arg[2];
+	} else if (options[opt].short_name && arg[0] == options[opt].short_name[0]) {
+	  option_found = options[opt].present = TRUE;
+	  if (arglen > 1) {
+	    options[opt].value = &arg[arg[1] == '=' ? 2 : 1];
+	  } else if (options[opt].expects_value == 1) {
+	    if (++i<argc)
+	      options[opt].value = argv[i];
 	    else {
-	      options[opt].value = argv[i + 1];
-	      i++;
+	      fprintf(stderr,"Invalid option: -%s expects value but non given.\n",options[opt].short_name);
+	      exit(1); //ERROR_INVALID_PARAMETER
 	    }
+	  } else if (options[opt].expects_value == 2) {
+	    if (i+1 < argc && argv[i+1][0] != '-')
+	      options[opt].value = argv[++i];
 	  }
 	  break;
 	}
@@ -140,8 +170,8 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
       {"h", "hostfile", 1, 0, 0},
       {"s", "server", 0, 0, 0},
       {"m", "multi", 0, 0, 0},
-      {"c", "compression", 1, 0, 0},
-      {"?", "help", 1, 0, 0},
+      {"c", "compression", 2, 0, 0},
+      {"?", 0, 0, 0, 0},
       {0, 0, 0, 0,0}
   };
   ParseCommand(argc, argv, options, 1, extra_argc, extra_argv);
@@ -151,7 +181,7 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetHostfile(options[1].value);
   if (options[2].present) {
     if (options[3].present) {
-      fprintf(stderr, "Cannot select both server mode and multi mode\n\n");
+      fprintf(stderr, "Invalid option: Cannot select both server mode and multi mode\n\n");
       PrintHelp(0);
     } else {
       SetMulti(1);
@@ -162,8 +192,18 @@ void ParseStdArgs(int argc, char **argv, int *extra_argc, char ***extra_argv)
     SetMulti(1);
     SetContextSwitching(1);
   }
-  if (options[4].present && options[4].value)
-    SetCompressionLevel(strtol(options[4].value,NULL,0));
+  if (options[4].present) {
+    int cmpr = 9;
+    if (options[4].value) {
+      char *invalid;
+      cmpr = strtol(options[4].value,&invalid,0);
+      if (cmpr == 0 && (errno == EINVAL || options[4].value == invalid)) {
+	fprintf(stderr, "Invalid compression value: %s\n", options[4].value);
+	exit(1);
+      }
+    }
+    SetCompressionLevel(cmpr);
+  }
   if (options[5].present)
     PrintHelp(0);
 }

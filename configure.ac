@@ -104,6 +104,8 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
+AC_PROG_YACC
+AM_PROG_LEX
 
 # if ln is provided by busybox it does not have -r option
 AX_IS_BUSYBOX([ln],

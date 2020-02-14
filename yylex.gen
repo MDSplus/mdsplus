@@ -1,0 +1,19 @@
+#!/bin/sh
+# bison -V	# bison (GNU Bison) 3.0.4
+# flex -V	# flex 2.6.1
+YACC=bison
+YFLAGS=--verbose
+
+LEX=flex
+LFLAGS=-p
+
+yylex=$(dirname $1)
+cd $(dirname $yylex)
+yylex=$(basename $yylex)
+shift
+OUTFILES="$@"
+
+ycmd="for y in $yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
+lcmd="for l in $yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
+scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
+eval "$ycmd ; $lcmd && $scmd"

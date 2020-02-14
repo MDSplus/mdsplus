@@ -32,6 +32,9 @@
 #endif
 #endif
 #else
+# if defined(__APPLE__) || defined(__MACH__)
+# define _MACOSX
+# endif
 #if __GNUC__ >= 4
 #define MDS_API_IMPORT __attribute__ ((visibility ("default")))
 #define MDS_API_EXPORT __attribute__ ((visibility ("default")))

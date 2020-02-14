@@ -77,7 +77,7 @@ OPC (	ArgOf,		ARG_OF ,	ArgOf,	undef,		undef, FUNCTION,CONDITION,XX,YY,1,2,	OK+I	
 OPC (	Array,		ARRAY ,		Array,	undef,		Zero,		XX,YY,	FLOAT,F,	0,2,	OK+U	)/*;	([size],[kind])		*/
 OPC (	Asin,		ASIN ,		Same,	None,		Asin,		F,HC,	F,HC,	1,1,	OK	)/*;f9	(x)			*/
 OPC (	Asind,		ASIND ,		Same,	None,		Asind,		F,HC,	F,HC,	1,1,	OK	)/*;vax	(x)			*/
-OPC (	AsIs,		AS_IS ,		AsIs,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;mds	(any) unevaluated	*/
+OPC (	AsIs,		AS_IS ,		AsIs,	undef,		undef,		XX,YY,	XX,YY,	1,1,	AMODIF+N	)/*;mds	(any) unevaluated	*/
 OPC (	Atan,		ATAN ,		Same,	None,		Atan,		F,HC,	F,HC,	1,1,	OK	)/*;f9	(x)			*/
 OPC (	Atan2,		ATAN2 ,		Same,	Atan2,		Atan2,		F,HC,	F,HC,	2,2,	OK	)/*;f9	(y,x)			*/
 OPC (	Atan2d,		ATAN2D ,	Same,	Atan2,		Atan2d,		F,HC,	F,HC,	2,2,	OK	)/*;vax	(y,x)			*/
@@ -214,14 +214,14 @@ OPC (	IdentOf,	IDENT_OF ,	IdentOf, undef,	undef, ACTION,DISPATCH,	T,T,	1,1,	OK+I
 OPC (	If,		IF ,		If,	undef,		undef,		XX,YY,	XX,YY,	2,3,	IF+N	)/*;%cc	IF(expr)stmt		*/
 OPC (	IfError,	IF_ERROR ,	IfError, undef,		undef,		XX,YY,	XX,YY,	1,254,	OK	)/*;	(a..) a, if (error) b..	*/
 OPC (	ImageOf,	IMAGE_OF ,	ImageOf, undef,		undef, FUNCTION,ROUTINE,T,T,	1,1,	OK+I	)/*;mds	(ext_f conglom routine)	*/
-OPC (	In,		IN ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;	IN a	read only	*/
+OPC (	In,		IN ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	AMODIF+N	)/*;	IN a	read only	*/
 OPC (	Inand,		INAND ,		Same,	Iand,		Inand,		BU,O,	BU,OU,	2,2,	IAND	)/*;	(i,j)			*/
 OPC (	InandNot,	INAND_NOT ,	Same,	Iand,		InandNot,	BU,O,	BU,OU,	2,2,	IAND	)/*;	(i,j)			*/
 OPC (	Index,		INDEX ,		Same,	Ttb,		Index,	T,T,SUBSCRIPT,SUBSCRIPT,2,3,	OK	)/*;f9	(string,substr,[back])	*/
 OPC (	Inor,		INOR ,		Same,	Iand,		Inor,		BU,O,	BU,OU,	2,2,	IOR	)/*;	(i,j)			*/
 OPC (	InorNot,	INOR_NOT ,	Same,	Iand,		InorNot,	BU,O,	BU,OU,	2,2,	IOR	)/*;	(i,j)			*/
 OPC (	Inot,		INOT ,		Same,	Keep,		Inot,		BU,O,	BU,OU,	1,1,	UNARY+S	)/*;%cc	~a	\\not(a)\\	*/
-OPC (	InOut,		INOUT ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;	INOUT a	read/write	*/
+OPC (	InOut,		INOUT ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	AMODIF+N	)/*;	INOUT a	read/write	*/
 OPC (	Inquire,	INQUIRE ,	Inquire, undef,		undef,		XX,YY,	XX,YY,	2,2,	OK+U	)/*;%f9	(unit|file,select)	*/
 OPC (	Int,		INT ,		Same,	Real,		undef,		B,O,	B,O,	1,2,	CAST+N+I )/*;f9	(a,[kind])		*/
 OPC (	Integral,	INTEGRAL ,	Trans,	Sign,		Integral,	BU,HC,	BU,HC,	2,3,	OK	)/*;	(a,dim,[dt]) axis sum	*/
@@ -288,10 +288,10 @@ OPC (	OnError,	ON_ERROR ,	OnError, undef,		undef,		XX,YY,	XX,YY,	1,1,	OK	)/*;	(a
 OPC (	OpcodeBuiltin,	OPCODE_BUILTIN ,	Trim,	undef,		OpcodeBuiltin,	WU,L,	T,T,	1,1,	OK	)/*;	(opcode)		*/
 OPC (	OpcodeString,	OPCODE_STRING ,	Trim,	undef,		OpcodeString,	WU,L,	T,T,	1,1,	OK	)/*;	(opcode)		*/
 OPC (	Fopen,		FOPEN ,		Fopen,	undef,		undef,		T,T,	L,L,	2,254,	OK+U	)/*;%cc	unit=(file,mode,[arg..])*/
-OPC (	Optional,	OPTIONAL ,	Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;	OPTIONAL a		*/
+OPC (	Optional,	OPTIONAL ,	Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	AMODIF+N	)/*;	OPTIONAL a		*/
 OPC (	Or,		OR ,		Same,	Land,		Or,		BU,O,	VV,VV,	2,2,	LOR+N	)/*;%	(v,w)	v||w	v.OR.w	*/
 OPC (	OrNot,		OR_NOT ,		Same,	Land,		OrNot,		BU,O,	VV,VV,	2,2,	LOR+N	)/*;%	(v,w)	v.OR..NOT.w	*/
-OPC (	Out,		OUT ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	MODIF+N	)/*;	OUT a	write only	*/
+OPC (	Out,		OUT ,		Else,	undef,		undef,		XX,YY,	XX,YY,	1,1,	AMODIF+N	)/*;	OUT a	write only	*/
 OPC (	Pack,		PACK ,		Pack,	undef,		undef,		XX,YY,	XX,YY,	2,3,	OK	)/*;f9	(a,mask,[vector])	*/
 OPC (	PhaseOf,	PHASE_OF ,	PhaseOf, undef,		undef, ACTION,DISPATCH,	T,T,	1,1,	OK+I	)/*;mds	(dispatch)		*/
 OPC (	PostDec,	POST_DEC ,	PostDec, undef,		undef,		BU,HC,	BU,HC,	1,1,	INC+S+U	)/*;%cc	a--			*/

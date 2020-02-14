@@ -1040,7 +1040,7 @@ public class MdsException extends IOException{
 			case TdiTOO_BIG:
 				return "%TDI-E-TOO_BIG, Conversion of number lost significant digits";
 			case TdiUNBALANCE:
-				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' \" \" or /**/";
+				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' \"\" or /**/";
 			case TdiUNKNOWN_VAR:
 				return "%TDI-E-UNKNOWN_VAR, Unknown/undefined variable name";
 			case TdiSTRTOOLON:

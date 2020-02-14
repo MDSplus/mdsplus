@@ -1,10 +1,10 @@
-#ifndef dcl_HEADER_H
-#define dcl_HEADER_H 1
-#define dcl_IN_HEADER 1
+#ifndef tdiHEADER_H
+#define tdiHEADER_H 1
+#define tdiIN_HEADER 1
 
-#line 6 "dcllex.h"
+#line 6 "tdilex.h"
 
-#line 8 "dcllex.h"
+#line 8 "tdilex.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -192,40 +192,31 @@ struct yy_buffer_state
 	};
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
-void dcl_restart (FILE *input_file ,yyscan_t yyscanner );
-void dcl__switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__create_buffer (FILE *file,int size ,yyscan_t yyscanner );
-void dcl__delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void dcl__flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void dcl_push_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-void dcl_pop_buffer_state (yyscan_t yyscanner );
+void tdirestart (FILE *input_file ,yyscan_t yyscanner );
+void tdi_switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
+YY_BUFFER_STATE tdi_create_buffer (FILE *file,int size ,yyscan_t yyscanner );
+void tdi_delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
+void tdi_flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
+void tdipush_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
+void tdipop_buffer_state (yyscan_t yyscanner );
 
-YY_BUFFER_STATE dcl__scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
+YY_BUFFER_STATE tdi_scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
+YY_BUFFER_STATE tdi_scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
+YY_BUFFER_STATE tdi_scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
 
-void *dcl_alloc (yy_size_t ,yyscan_t yyscanner );
-void *dcl_realloc (void *,yy_size_t ,yyscan_t yyscanner );
-void dcl_free (void * ,yyscan_t yyscanner );
+void *tdialloc (yy_size_t ,yyscan_t yyscanner );
+void *tdirealloc (void *,yy_size_t ,yyscan_t yyscanner );
+void tdifree (void * ,yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
-#define dcl_wrap(yyscanner) (/*CONSTCOND*/1)
+#define tdiwrap(yyscanner) (/*CONSTCOND*/1)
 #define YY_SKIP_YYWRAP
 
 #define yytext_ptr yytext_r
 
 #ifdef YY_HEADER_EXPORT_START_CONDITIONS
 #define INITIAL 0
-#define command 1
-#define verb 2
-#define qualifier 3
-#define qualifier_with_value 4
-#define qualifier_with_value_list 5
-#define qualval 6
-#define qualval_list 7
-#define rest_of_line 8
-#define parameter 9
 
 #endif
 
@@ -241,50 +232,50 @@ void dcl_free (void * ,yyscan_t yyscanner );
 #define YY_EXTRA_TYPE void *
 #endif
 
-int dcl_lex_init (yyscan_t* scanner);
+int tdilex_init (yyscan_t* scanner);
 
-int dcl_lex_init_extra (YY_EXTRA_TYPE user_defined,yyscan_t* scanner);
+int tdilex_init_extra (YY_EXTRA_TYPE user_defined,yyscan_t* scanner);
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int dcl_lex_destroy (yyscan_t yyscanner );
+int tdilex_destroy (yyscan_t yyscanner );
 
-int dcl_get_debug (yyscan_t yyscanner );
+int tdiget_debug (yyscan_t yyscanner );
 
-void dcl_set_debug (int debug_flag ,yyscan_t yyscanner );
+void tdiset_debug (int debug_flag ,yyscan_t yyscanner );
 
-YY_EXTRA_TYPE dcl_get_extra (yyscan_t yyscanner );
+YY_EXTRA_TYPE tdiget_extra (yyscan_t yyscanner );
 
-void dcl_set_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
+void tdiset_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
 
-FILE *dcl_get_in (yyscan_t yyscanner );
+FILE *tdiget_in (yyscan_t yyscanner );
 
-void dcl_set_in  (FILE * _in_str ,yyscan_t yyscanner );
+void tdiset_in  (FILE * _in_str ,yyscan_t yyscanner );
 
-FILE *dcl_get_out (yyscan_t yyscanner );
+FILE *tdiget_out (yyscan_t yyscanner );
 
-void dcl_set_out  (FILE * _out_str ,yyscan_t yyscanner );
+void tdiset_out  (FILE * _out_str ,yyscan_t yyscanner );
 
-			int dcl_get_leng (yyscan_t yyscanner );
+			int tdiget_leng (yyscan_t yyscanner );
 
-char *dcl_get_text (yyscan_t yyscanner );
+char *tdiget_text (yyscan_t yyscanner );
 
-int dcl_get_lineno (yyscan_t yyscanner );
+int tdiget_lineno (yyscan_t yyscanner );
 
-void dcl_set_lineno (int _line_number ,yyscan_t yyscanner );
+void tdiset_lineno (int _line_number ,yyscan_t yyscanner );
 
-int dcl_get_column  (yyscan_t yyscanner );
+int tdiget_column  (yyscan_t yyscanner );
 
-void dcl_set_column (int _column_no ,yyscan_t yyscanner );
+void tdiset_column (int _column_no ,yyscan_t yyscanner );
 
-YYSTYPE * dcl_get_lval (yyscan_t yyscanner );
+YYSTYPE * tdiget_lval (yyscan_t yyscanner );
 
-void dcl_set_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
+void tdiset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
-       YYLTYPE *dcl_get_lloc (yyscan_t yyscanner );
+       YYLTYPE *tdiget_lloc (yyscan_t yyscanner );
     
-        void dcl_set_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+        void tdiset_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
     
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -292,9 +283,9 @@ void dcl_set_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int dcl_wrap (yyscan_t yyscanner );
+extern "C" int tdiwrap (yyscan_t yyscanner );
 #else
-extern int dcl_wrap (yyscan_t yyscanner );
+extern int tdiwrap (yyscan_t yyscanner );
 #endif
 #endif
 
@@ -331,10 +322,10 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int dcl_lex \
+extern int tdilex \
                (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
 
-#define YY_DECL int dcl_lex \
+#define YY_DECL int tdilex \
                (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
@@ -352,9 +343,9 @@ extern int dcl_lex \
 #undef YY_DECL
 #endif
 
-#line 160 "dcl_lex/cmdParse.l"
+#line 247 "tdilex/TdiLex.l"
 
 
-#line 359 "dcllex.h"
-#undef dcl_IN_HEADER
-#endif /* dcl_HEADER_H */
+#line 350 "tdilex.h"
+#undef tdiIN_HEADER
+#endif /* tdiHEADER_H */

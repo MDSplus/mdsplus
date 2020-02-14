@@ -1,17 +1,43 @@
+%option prefix="dcl_" outfile="cmdParseLex.c" header-file="dcllex.h"
+%option nostack noyymore noyywrap noyylineno nodefault
+%option unput noinput noyy_push_state noyy_pop_state noyy_top_state
+%option interactive reentrant bison-bridge bison-locations case-insensitive
 %{
+/*
+Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+Redistributions of source code must retain the above copyright notice, this
+list of conditions and the following disclaimer.
+
+Redistributions in binary form must reproduce the above copyright notice, this
+list of conditions and the following disclaimer in the documentation and/or
+other materials provided with the distribution.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+*/
+
 #define yyterminate() return(END)
 #include <string.h>
 #include <stdio.h>
 #define YYLTYPE void
 #include "dcl_p.h"
 #include <dcl.h>
-#include "cmdParse.tab.h"
+#include "dclyacc.h"
 int debug=0;
 char *restOfLine=0;
 %}
-
-%option noinput reentrant bison-bridge bison-locations nodefault noyywrap yylineno outfile="cmdParseLex.c" header-file="dcllex.h"
-%option case-insensitive interactive prefix="dcl_"
 
 %x command verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
 

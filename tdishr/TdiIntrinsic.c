@@ -109,7 +109,7 @@ static void add(char *const text, TDITHREADSTATIC_ARG) {
 #define NUMB(count) numb(count, TDITHREADSTATIC_VAR)
 static void numb(int count, TDITHREADSTATIC_ARG) {
   char val[16];
-  sprintf(val,"%-12d",count);
+  sprintf(val,"%d",count);
   ADD(val);
 }
 
@@ -145,10 +145,11 @@ static inline void trace(
   if (opcode < TdiFUNCTION_MAX) {
     struct TdiFunctionStruct *pfun = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
     if (narg < pfun->m1 || narg > pfun->m2) {
-      ADD("%TDI Requires");
+      if (pfun->m1 != pfun->m2)
+      ADD("%TDI Requires ");
       NUMB(pfun->m1);
       if (pfun->m1 != pfun->m2) {
-	ADD(" to");
+	ADD(" to ");
 	NUMB(pfun->m2);
       }
       ADD(" input arguments for ");
