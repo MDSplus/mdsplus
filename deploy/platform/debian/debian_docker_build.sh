@@ -181,33 +181,24 @@ EOF
 
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
-    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     mkdir -p /publish/${BRANCH}/DEBS
     rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
     if [ ! -r /publish/repo ]
     then
-        :&& rsync -a /release/repo /publish/
+	:&& rsync -a /release/repo /publish/
 	checkstatus abort "Failure: Problem copying repo into publish area." $?
     else
 	pushd /publish/repo
 	rsync -a /release/repo/conf/distributions /publish/repo/conf/
 	reprepro clearvanished
-	if [ "${BRANCH}" = "stable" ]
-	then
-	    MAIN_PACKAGE="mdsplus"
-	else
-	    MAIN_PACKAGE="mdsplus-${BRANCH}"
-	fi
-	PREVIOUS_VERSION="$(reprepro -C ${BRANCH} -A ${ARCH} list MDSplus ${MAIN_PACKAGE} | awk '{print $3}' )"
+	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${RELEASE_VERSION}_*
+	checkstatus abort "Failure: Problem installing ${BRANCH} into debian repository." $?
+	PREVIOUS_VERSION="$(cat ${LAST_RELEASE_INFO})"
 	echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}"
-	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
-       	checkstatus abort "Failure: Problem installing debian into publish repository." $?
-	if [ ! -z "$PREVIOUS_VERSION" ]
+	if [ ! -z $PREVIOUS_VERSION ]
 	then
 	    :&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*
-       	    checkstatus abort "Failure: Problem installing debian into publish repository." $?
+	    checkstatus abort "Failure: Problem installing previous ${BRANCH} into debian repository." $?
 	fi
 	popd
     fi
