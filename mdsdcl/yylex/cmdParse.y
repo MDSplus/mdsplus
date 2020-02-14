@@ -1,15 +1,21 @@
+%output  "cmdParse.c"
+%defines "dclyacc.h"
 %{
-  #include <stdio.h>
-  #include <stdlib.h>
-  int yydebug=0;
-  #define YYLTYPE void *
-  #define yylex dcl_lex
-  #include "dcl_p.h"
-  #include <mdsdcl_messages.h>
-  #include <mdsplus/mdsconfig.h>
-  #include "dcllex.h"
-  #include "mdsdclthreadstatic.h"
-  static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
+#include <stdio.h>
+#include <stdlib.h>
+
+#include <mdsdcl_messages.h>
+#include <mdsplus/mdsconfig.h>
+
+#include "mdsdclthreadstatic.h"
+
+#define YYLTYPE void *
+#define yylex dcl_lex
+#include "dcl_p.h"
+#include "dcllex.h"
+
+int yydebug=0;
+static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
 %}
 %define api.pure full
 %define api.value.type {union YYSTYPE}
@@ -181,19 +187,21 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   int result,status=MdsdclIVVERB;
   if (error && *error) {
     free(*error);
-    *error = 0;
+    *error = NULL;
   }
   if (output && *output) {
     free(*output);
-    *error = 0;
+    *output = NULL;
   }
-  dclLock();
+  static pthread_mutex_t lock = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  pthread_cleanup_push((void*)pthread_mutex_unlock,(void*)&lock);
   dcl_lex_init(&yyscanner);
   cmd_state = dcl__scan_string (command, yyscanner);
   result=yyparse (yyloc_param, yyscanner, &dclcmd, error);
   dcl__delete_buffer (cmd_state, yyscanner);
   dcl_lex_destroy(yyscanner);
-  dclUnlock();
+  pthread_cleanup_pop(1);
   if (result==0) {
     if (dclcmd) {
       dclcmd->command_line=strdup(command);
@@ -203,4 +211,3 @@ EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char
   }
   return status;
 }
-  

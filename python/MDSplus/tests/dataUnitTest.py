@@ -276,7 +276,6 @@ class Tests(_UnitTest.Tests):
         """Test Exceptions"""
         self._doExceptionTest('abort()',Exc.TdiABORT)
         self._doExceptionTest('{,}',Exc.TdiSYNTAX)
-        self._doExceptionTest('\033[[A',Exc.TdiBOMB)
         self._doExceptionTest('abs()',Exc.TdiMISS_ARG)
         self._doExceptionTest('abs("")',Exc.TdiINVDTYDSC)
         self._doExceptionTest('abs(1,2)',Exc.TdiEXTRA_ARG)

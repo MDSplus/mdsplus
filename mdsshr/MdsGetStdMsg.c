@@ -3261,7 +3261,7 @@ EXPORT int MdsGetStdMsg(int status, const char **fac_out, const char **msgnam_ou
 
 /* TdiUNBALANCE */
       case 01764700350:
-        {static const char *text="Unbalanced () [] {} '' \" \" or /**/";
+        {static const char *text="Unbalanced () [] {} '' \"\" or /**/";
         static const char *msgnam="UNBALANCE";
         *fac_out = FAC_TDI;
         *msgnam_out = msgnam;

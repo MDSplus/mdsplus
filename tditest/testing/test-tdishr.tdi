@@ -1,6 +1,6 @@
-!
-! Functions implemented in TdiAbs.c
-!
+#
+# Functions implemented in TdiAbs.c
+#
 abs(255bu)
 abs([255bu,1bu,254bu])
 abs(65535wu)
@@ -321,9 +321,9 @@ unary_minus(g_complex(-42.,-43))
 unary_minus([g_complex(-42.,-43),g_complex(-100.,100),g_complex(0.,0.)])
 unary_minus(d_complex(-42.,-43))
 unary_minus([d_complex(-42.,-43),d_complex(-100.,100),d_complex(0.,0.)])
-!
-! Functions implemented in TdiAdd.c
-!
+#
+# Functions implemented in TdiAdd.c
+#
 add(42bu,43bu)
 add([42bu,1bu,43bu],42bu)
 add(42bu,[42bu,1bu,43bu])
@@ -516,9 +516,9 @@ multiply(d_complex(42,43),d_complex(43,44))
 multiply([d_complex(42,43),d_complex(1,2),d_complex(43,44)],d_complex(42,43))
 multiply(d_complex(42,43),[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
 multiply([d_complex(42,43),d_complex(1,2),d_complex(43,44)],[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
-!
-! Functions implemented TdiAnd.c
-!
+#
+# Functions implemented TdiAnd.c
+#
 and(42bu,43bu)
 and([42bu,1bu,43bu],42bu)
 and(42bu,[42bu,1bu,43bu])
@@ -1159,21 +1159,21 @@ eqv(d_complex(42,43),d_complex(43,44))
 eqv([d_complex(42,43),d_complex(1,2),d_complex(43,44)],d_complex(42,43))
 eqv(d_complex(42,43),[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
 eqv([d_complex(42,43),d_complex(1,2),d_complex(43,44)],[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
-!
-! Functions implemented in TdiArray.c
-!
+#
+# Functions implemented in TdiArray.c
+#
 array([5,2],0)*0
 ramp([5,2])
-!random([5,2])
-!random([5,2],0.0G1)
-!random([5,2],0.0D1)
-!random([5,2],f_complex(0.0,0.0))
-!random([5,2],g_complex(0.0,0.0))
-!random([5,2],d_complex(0.0,0.0))
+#random([5,2])
+#random([5,2],0.0G1)
+#random([5,2],0.0D1)
+#random([5,2],f_complex(0.0,0.0))
+#random([5,2],g_complex(0.0,0.0))
+#random([5,2],d_complex(0.0,0.0))
 zero([5,2],0.0)
-!
-! Functions implemented in TdiBound.c
-!
+#
+# Functions implemented in TdiBound.c
+#
 _array=set_range(-5:4,5,zero(50))
 _signal=build_signal(_array,*,-9:0,1:5)
 lbound(_array)
@@ -1192,22 +1192,22 @@ eshape(_array)
 eshape(_signal)
 esize(_array)
 esize(_signal)
-!
-! Function implemented in TdiBuild.c
-!
+#
+# Function implemented in TdiBuild.c
+#
 Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF")
-!Build_condition(
+#Build_condition(
 Build_conglom("MIT$DEVICES","A12",*,*)
-!Build_dependency(
+#Build_dependency(
 Build_dim(build_window(-1,3,10.),build_slope(3.))
 Build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT")
-!Build_Event(
+#Build_Event(
 Build_Function(Builtin_opcode('SIN'),30)
 Build_Method(10.,"INIT",*,42.)
-!Build_Param(
-!Build_Path(
+#Build_Param(
+#Build_Path(
 Build_Procedure(10.,"TCL","TYPE FOO")
-!Build_Program(
+#Build_Program(
 Build_Range(1,10,1)
 Build_Routine(8,"TdiShr","TdiGetLong",xd(42),ref(_a))
 Build_Signal(1:10*$VALUE,1:10,0:9)
@@ -1219,18 +1219,18 @@ if_error(Build_Call(8,"TdiShr","TdiGetLong",xd(42),ref(_a)),\
 _A
 Build_with_error(42.,43.)
 Make_action(make_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),make_method("TIMEOUT","METHOD","OBJECT"),"TWF")
-!Make_condition(
+#Make_condition(
 Make_conglom("MIT$DEVICES","A12",*,*)
-!Make_dependency(
+#Make_dependency(
 Make_dim(make_window(-1,3,10.),make_slope(3.))
 Make_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT")
-!Make_Event(
+#Make_Event(
 Make_Function(Builtin_opcode('SIN'),30)
 Make_Method(10.,"INIT",*,42.)
-!Make_Param(
-!Make_Path(
+#Make_Param(
+#Make_Path(
 Make_Procedure(10.,"TCL","TYPE FOO")
-!Make_Program(
+#Make_Program(
 Make_Range(1,10,1)
 decompile(Make_Routine(8,"TdiShr","TdiGetLong",xd(42),ref(_a)))
 Make_Signal(1:10*$VALUE,1:10,0:9)
@@ -1238,9 +1238,9 @@ Make_Slope(3.,1,30)
 Make_With_units(42.,"Units")
 decompile(Make_Call(8,"TdiShr","TdiGetLong",xd(42),ref(_a)))
 Make_with_error(42.,43.)
-!
-! Functions implemented in TdiChar.c
-!
+#
+# Functions implemented in TdiChar.c
+#
 ADJUSTL("    THIS IS A TEST    ")
 ADJUSTR("    THIS IS A TEST    ")
 BUILTIN_OPCODE("SIN")
@@ -1261,9 +1261,9 @@ UPCASE("This is a test")
 VERIFY("ABBA","AB")
 VERIFY("ABBA","A")
 VERIFY("ABBA","A",$TRUE)
-!
-! Constants implemented in TdiConstant.c
-!
+#
+# Constants implemented in TdiConstant.c
+#
 $2PI
 $A0
 $Alpha
@@ -1298,9 +1298,9 @@ $Rydberg
 $T0
 $Torr
 $True
-!
-!Functions implemented in TdiConvert.c
-!
+#
+#Functions implemented in TdiConvert.c
+#
 byte_unsigned(42ub)
 byte_unsigned(42uw)
 byte_unsigned(42ul)
@@ -1561,16 +1561,16 @@ g_complex(42V0)
 g_complex(42G0)
 g_complex(42S0)
 g_complex(42T0)
-!
-! Functions implemented in TdiCull.c
-!
+#
+# Functions implemented in TdiCull.c
+#
 CULL(1:5,,0:7)
 CULL(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
 EXTEND(1:5,,0:7)
 EXTEND(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)),0,5:8)
-!
-! Functions implemented in TdiDim.c
-!
+#
+# Functions implemented in TdiDim.c
+#
 IBSET(0ub,2)
 IBSET(0uw,2)
 IBSET(0ul,2)
@@ -1684,55 +1684,55 @@ DIM(1t0,2t0)
 ISHFT(1ub,2ub)
 ISHFT(1uw,2uw)
 ISHFT(1ul,2ul)
-!ISHFT(1uq,2uq)
-!ISHFT(1uo,2uo)
+#ISHFT(1uq,2uq)
+#ISHFT(1uo,2uo)
 ISHFT(1b,2b)
 ISHFT(1w,2w)
 ISHFT(1l,2l)
-!ISHFT(1q,2q)
-!ISHFT(1o,2o)
-!ISHFT(1E0,2E0)
-!ISHFT(1D0,2D0)
-!ISHFT(1G0,2G0)
+#ISHFT(1q,2q)
+#ISHFT(1o,2o)
+#ISHFT(1E0,2E0)
+#ISHFT(1D0,2D0)
+#ISHFT(1G0,2G0)
 SHIFT_RIGHT(1ub,2ub)
 SHIFT_RIGHT(1uw,2uw)
 SHIFT_RIGHT(1ul,2ul)
-!SHIFT_RIGHT(1uq,2uq)
-!SHIFT_RIGHT(1uo,2uo)
+#SHIFT_RIGHT(1uq,2uq)
+#SHIFT_RIGHT(1uo,2uo)
 SHIFT_RIGHT(1b,2b)
 SHIFT_RIGHT(1w,2w)
 SHIFT_RIGHT(1l,2l)
-!SHIFT_RIGHT(1q,2q)
-!SHIFT_RIGHT(1o,2o)
-!SHIFT_RIGHT(1E0,2E0)
-!SHIFT_RIGHT(1D0,2D0)
-!SHIFT_RIGHT(1G0,2G0)
+#SHIFT_RIGHT(1q,2q)
+#SHIFT_RIGHT(1o,2o)
+#SHIFT_RIGHT(1E0,2E0)
+#SHIFT_RIGHT(1D0,2D0)
+#SHIFT_RIGHT(1G0,2G0)
 SHIFT_LEFT(1ub,2ub)
 SHIFT_LEFT(1uw,2uw)
 SHIFT_LEFT(1ul,2ul)
-!SHIFT_LEFT(1uq,2uq)
-!SHIFT_LEFT(1uo,2uo)
+#SHIFT_LEFT(1uq,2uq)
+#SHIFT_LEFT(1uo,2uo)
 SHIFT_LEFT(1b,2b)
 SHIFT_LEFT(1w,2w)
 SHIFT_LEFT(1l,2l)
-!SHIFT_LEFT(1q,2q)
-!SHIFT_LEFT(1o,2o)
-!SHIFT_LEFT(1E0,2E0)
-!SHIFT_LEFT(1D0,2D0)
-!SHIFT_LEFT(1G0,2G0)
-!
-! Functions implemented in TdiDivide.c
-!
+#SHIFT_LEFT(1q,2q)
+#SHIFT_LEFT(1o,2o)
+#SHIFT_LEFT(1E0,2E0)
+#SHIFT_LEFT(1D0,2D0)
+#SHIFT_LEFT(1G0,2G0)
+#
+# Functions implemented in TdiDivide.c
+#
 DIVIDE(2ub,1ub)
 DIVIDE(2uw,1uw)
 DIVIDE(2ul,1ul)
 DIVIDE(2uq,1uq)
-!DIVIDE(2uo,1uo)
+#DIVIDE(2uo,1uo)
 DIVIDE(2b,1b)
 DIVIDE(2w,1w)
 DIVIDE(2l,1l)
 DIVIDE(2q,1q)
-!DIVIDE(2o,1o)
+#DIVIDE(2o,1o)
 DIVIDE(2f0,1f0)
 DIVIDE(2v0,1v0)
 DIVIDE(2G0,1G0)
@@ -1741,13 +1741,13 @@ DIVIDE(2t0,1t0)
 DIVIDE(F_COMPLEX(2.0,1.0),F_COMPLEX(1.0,1.0))
 DIVIDE(D_COMPLEX(2.0,1.0),D_COMPLEX(1.0,1.0))
 DIVIDE(G_COMPLEX(2.0,1.0),G_COMPLEX(1.0,1.0))
-!
-! Functions implemented in TdiDtypeRange.c
-!
+#
+# Functions implemented in TdiDtypeRange.c
+#
 dtype_range([1,10],[5,15],[1,.5])
-!
-! Functions implemented in TdiEq.c
-!
+#
+# Functions implemented in TdiEq.c
+#
 eq(2ub,1ub)
 eq(2ub,2ub)
 eq(2uw,1uw)
@@ -1888,9 +1888,9 @@ ne(2t0,1t0)
 ne(2t0,2t0)
 ne("OK","OK")
 ne("OK","OKNOT")
-!
-! Functions implemented in TdiExponent.c
-!
+#
+# Functions implemented in TdiExponent.c
+#
 exponent(100F0)
 exponent(100V0)
 exponent(100G0)
@@ -1923,9 +1923,9 @@ spacing(100V0)
 spacing(100G0)
 spacing(100S0)
 spacing(100T0)
-!
-! Functions implemented in TdiIand.c
-!
+#
+# Functions implemented in TdiIand.c
+#
 iand(42bu,43bu)
 iand([42bu,1bu,43bu],42bu)
 iand(42bu,[42bu,1bu,43bu])
@@ -2566,9 +2566,9 @@ ieor_not(d_complex(42,43),d_complex(43,44))
 ieor_not([d_complex(42,43),d_complex(1,2),d_complex(43,44)],d_complex(42,43))
 ieor_not(d_complex(42,43),[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
 ieor_not([d_complex(42,43),d_complex(1,2),d_complex(43,44)],[d_complex(42,43),d_complex(1,2),d_complex(43,44)])
-!
-! Functions implemented in TdiMath1.c
-!
+#
+# Functions implemented in TdiMath1.c
+#
 atanh(.5)
 cosh(1.)
 log2(1.)
@@ -2595,19 +2595,19 @@ sin(1.0)
 sqrt(4.0)
 arg(f_complex(1.0,4.0))
 argd(f_complex(1.0,2.0))
-!
-! Functions implemented in TdiMath2.c
-!
+#
+# Functions implemented in TdiMath2.c
+#
 atan2(1.0,2.0)
 atan2d(1.0,2.0)
 mod(10.5,3.)
-!
-! Functions implemented in TdiMatrix.c
-!
+#
+# Functions implemented in TdiMatrix.c
+#
 diagonal([1,2,3])
-!
-! Functions implemented in TdiMaxVal.c
-!
+#
+# Functions implemented in TdiMaxVal.c
+#
 maxloc([2,4,6.])
 minloc([2,4,6])
 maxval([2,4,6])
@@ -2616,19 +2616,19 @@ mean([2,4,6])
 product([2,4,6])
 sum([2,4,6])
 accumulate([2,4,6])
-!
-! Functions implemented in TdiMinMax.c
-!
+#
+# Functions implemented in TdiMinMax.c
+#
 [1,0,1,0,1,0] ? 1 : 42
-!
-! Functions implemented in TdiPack.c
-!
+#
+# Functions implemented in TdiPack.c
+#
 _M=[[0,0,0],[9,0,0],[007]]
 pack(_m,_m ne 0)
 pack(_m,_m ne 0,[2,4,6,8,10,12])
-!
-! Functions implemented in TdiPower.c
-!
+#
+# Functions implemented in TdiPower.c
+#
 merge([1,2,3],[4,5,6],[$TRUE,$FALSE,$TRUE])
 _TSOURCE=[[1,6,5],[2,4,6]]
 _FSOURCE=[[0,3,2],[7,4,8]]
@@ -2636,9 +2636,9 @@ _MASK=[[1,0,1],[0,0,1]]
 merge(_TSOURCE,_FSOURCE,_MASK)
 power(2.,4.)
 [1,0,1,0,1,0] ? 1 : 42
-!
-! Functions implemented in TdiScalar.c
-!
+#
+# Functions implemented in TdiScalar.c
+#
 bit_size(42ub)
 bit_size(42uw)
 bit_size(42ul)
@@ -2781,9 +2781,9 @@ tiny(cmplx(42G0))
 tiny(cmplx(42S0))
 tiny(cmplx(42T0))
 dot_product([42,33],[1,0])
-!
-! Functions implemented in TdiSort.c
-!
+#
+# Functions implemented in TdiSort.c
+#
 bsearch(3,1:10)
 bsearch(1:8,3:5)
 sort([3,5,4,6])
@@ -2793,9 +2793,9 @@ sortval(['abs','ab','b'])
 union([4,5],[2,3,5])
 6 is_in [1:5,7]
 6 is_in 1:6
-!
-! Functions implemented in TdiXxxOf.c
-!
+#
+# Functions implemented in TdiXxxOf.c
+#
 ARG_OF(SIN(5.0))
 ARG_OF(1+2,1)
 AXIS_OF(BUILD_DIM(1:10,20:30))
@@ -2811,7 +2811,7 @@ CLASS(1)
 CLASS(BUILD_SIGNAL(1,2,3))
 COMPLETION_OF(Build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"))
 completion_message_of(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF","MESSGE"))
-!condition_of()
+#condition_of()
 dim_of(build_signal(*,*,1:10,20:25),1)
 dim_of(1:10)
 dispatch_of(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF"))
@@ -2826,21 +2826,21 @@ END_OF(BUILD_SLOPE(3,1,10))
 END_OF(BUILD_WINDOW(1,10,0.0))
 ERROR_OF(BUILD_WITH_ERROR(42.,43.))
 ERRORLOGS_OF(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF"))
-!HELP_OF()
+#HELP_OF()
 ident_of(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF"))
 image_of(TdiShr->TdiGetLong())
-!interrupt_of()
-!language_of()
+#interrupt_of()
+#language_of()
 method_of(build_method("TIMEOUT","INIT","OBJECT"))
 model_of(Build_conglom("MIT$DEVICES","A12",*,*))
 name_of(Build_conglom("MIT$DEVICES","A12","MYDIG",*))
 ndesc_of(Build_conglom("MIT$DEVICES","A12","MYDIG",*))
 ndesc(Build_conglom("MIT$DEVICES","A12","MYDIG",*))
 object_of(build_method(0,"INIT","OBJECT"))
-!performance_of()
+#performance_of()
 PHASE_OF(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method("TIMEOUT","METHOD","OBJECT"),"TWF"))
-!procedure_of()
-!program_of()
+#procedure_of()
+#program_of()
 qualifiers_of(Build_conglom("MIT$DEVICES","A12","MYDIG","QUALIFIERS"))
 raw_of(build_signal("VALUE","RAW","DIM"))
 routine_of(TdiShr->TdiGetLong())
@@ -2849,15 +2849,15 @@ task_of(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),bui
 time_out_of(build_method("TIMEOUT","INIT","OBJECT"))
 units_of(build_with_units("DATA","UNITS"))
 units(build_with_units("DATA","UNITS"))
-!validation_of()
+#validation_of()
 value_of(build_signal("VALUE","RAW","DIM"))
 value_of(build_window("START","END","VALUE_AT_IDX0"))
 value_of(build_with_units("VALUE","UNITS"))
 when_of(Build_action(build_dispatch(2,"CAMAC_SERVER","INIT",50,"DONE_EVENT"),build_method(0,"INIT","OBJECT"),"TWF"))
 window_of(build_dim("WINDOW","TASK"))
-!
-! Functions implemented in TdiXxx.c
-!
+#
+# Functions implemented in TdiXxx.c
+#
 all([$TRUE,$FALSE,$TRUE])
 _B=[[1,3,5],[2,4,6]]
 _C=[[0,3,5],[7,4,8]]
@@ -2892,18 +2892,18 @@ unsigned(42l)
 unsigned(42q)
 unsigned(42o)
 text(42,5)
-!
-! Functions implemented in TdiSubscript
-!
+#
+# Functions implemented in TdiSubscript
+#
 (1:100)[42]
 build_signal(1:10,*,["1","2","3","4","5","6","7","8","9","10"])["5"]
 build_signal(1:10,*,1:10)[-1:5]
 Build_signal(1:100,*,build_dim(*,.01:1:.01))[.2:.25]
 MAP(1:10,[20,-1,5])
 (_A=5:1:-1, MAP(_A,SORT(_A)))
-!
-! Functions implemented in TdiStatement
-!
+#
+# Functions implemented in TdiStatement
+#
 (public fun myfun(in _in, inout _inout, out _out) {\
     switch(_in) {\
         case(1)  _out = "case 1"; break;\
@@ -2927,18 +2927,18 @@ label _do_abort: abort();\
 })
 (_a=42,myfun(1,_a,_b),_a)
 (_a=42,myfun(2,_a,_b),_b)
-!
-! Functions implemented in TdiSquare
-!
+#
+# Functions implemented in TdiSquare
+#
 square(4)
 cmplx(1,1,kind(1.))
 cmplx(1:10,*,kind(0g0))
 cmplx(1:10)
 ceiling(1.:3:.1)
 ceiling(-1.:-3:-.1)
-!
-! Functions implemented in TdiVar
-!
+#
+# Functions implemented in TdiVar
+#
 _a=1
 allocated(_a)
 show_private(_a)
@@ -2969,9 +2969,9 @@ private(_a)
 public(_a)
 reset_private()
 reset_public()
-!
-! Functions implemented in TdiTrans.c
-!
+#
+# Functions implemented in TdiTrans.c
+#
 _M=[[0,0,1,0],[0,1,1,0],[0,1,0,1],[0,0,0,0]]
 count([$TRUE,$FALSE,$TRUE])
 _b=[[1,3,5],[2,4,6]]
@@ -2984,9 +2984,9 @@ lastloc(_M)
 lastloc(_M,0)
 replicate([[2,4],[3,5]],1,3)
 spread([2,3,4],0,3)
-!
-! Functions implemented in TdiTrim.c
-!
+#
+# Functions implemented in TdiTrim.c
+#
 trim(' A B  ')
 (public fun showopcodes(){\
   for (_i=0;1;_i++) {\
@@ -2996,9 +2996,9 @@ trim(' A B  ')
   };\
 })
 showopcodes()
-!
-! Functions implemented in TdiIo.c
-!
+#
+# Functions implemented in TdiIo.c
+#
 kind(_u=fopen('tditst.tmp','w'))
 write(_u,"This is a test")
 fclose(_u)
@@ -3006,93 +3006,93 @@ kind(_u=fopen('tditst.tmp','r'))
 fseek(_u,5,0)
 ftell(_u)
 wait(.01)
-!
-! Functions implemented in TdiData.c
-!
+#
+# Functions implemented in TdiData.c
+#
 data(build_signal(1:10,*,*))
 data_with_units(build_signal(10*$VALUE,build_with_units(1:10,"counts"),*))
 data(*)
 data(*)[0]
-!
-! Functions implemented in TdiItoX.c
-!
+#
+# Functions implemented in TdiItoX.c
+#
 I_TO_X(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)))
 I_TO_X(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),1:4)
-!
-! Functions implemented in TdiXtoI.c
-!
+#
+# Functions implemented in TdiXtoI.c
+#
 X_TO_I(BUILD_DIM(BUILD_WINDOW(2,5,1.1),BUILD_RANGE(,,3)))
 X_TO_I(BUILD_DIM(BUILD_WINDOW(2,7,1.1),BUILD_RANGE(,,3)),[4.1,7.1,10.1,13.1])
-!
-! Functions implemented in TdiGetData.c
-!
+#
+# Functions implemented in TdiGetData.c
+#
 data(BUILD_SLOPE(.1,0.,1.,.2,1.2,2.))
-!
-! Miscellaneous
-!
+#
+# Miscellaneous
+#
 _x=build_signal(10*$VALUE,1:10,*)
 long(_x)
 float(1:10)
 dble(1)
-!
-! unused
-!
-! compile_dependency()
-! decompile_dependency()
-!
-! Unimplemented functions in opc table
-!
-!backspace()
-!convolve()
-!cshift()
-!date_and_time()
-!decode()
-!derivative()
-!elsewhere()
-!encode()
-!endfile()
-!eoshift()
-!fft()
-!fit()
-!ibits()
-!inquire()
-!integral()
-!interpol()
-!intersect()
-!inverse()
-!ishftc()
-!laminate()
-!mat_rot()
-!mat_rot_int()
-!matmul()
-!median()
-!modulo()
-!nearest()
-!on_error()
-!project()
-!promote()
-!random_seed()
-!rc_droop
-!read()
-!rebin()
-!reshape()
-!rewind()
-!rms()
-!sign()
-!smooth()
-!solve()
-!std_dev()
-!string()
-!system_clock()
-!transfer()
-!transpose()
-!transpose_mul()
-!unpack()
-!where()
-!
-! The following are tests for various bugs which have shown up
-!
-! Bug in I_TO_X found 8/5/96
+#
+# unused
+#
+# compile_dependency()
+# decompile_dependency()
+#
+# Unimplemented functions in opc table
+#
+#backspace()
+#convolve()
+#cshift()
+#date_and_time()
+#decode()
+#derivative()
+#elsewhere()
+#encode()
+#endfile()
+#eoshift()
+#fft()
+#fit()
+#ibits()
+#inquire()
+#integral()
+#interpol()
+#intersect()
+#inverse()
+#ishftc()
+#laminate()
+#mat_rot()
+#mat_rot_int()
+#matmul()
+#median()
+#modulo()
+#nearest()
+#on_error()
+#project()
+#promote()
+#random_seed()
+#rc_droop
+#read()
+#rebin()
+#reshape()
+#rewind()
+#rms()
+#sign()
+#smooth()
+#solve()
+#std_dev()
+#string()
+#system_clock()
+#transfer()
+#transpose()
+#transpose_mul()
+#unpack()
+#where()
+#
+# The following are tests for various bugs which have shown up
+#
+# Bug in I_TO_X found 8/5/96
 _FREQUENCY = [1000.,-.32]
 _DUTY_CYCLE = -1 * _FREQUENCY[1]
 (_DECODER_CHANNEL_1 = * : * : .001,1)
@@ -3122,7 +3122,7 @@ ne(0x60000000QU,0xE0000000QU)
 eq(0x60000000QU,0xE0000000QU)
 eq(0xE0000000QU,0xE0000000QU)
 eq(0x60000000QU,0x60000000QU)
-!old compile did hang
+#old compile did hang
 compile(text(vms()))
 list()
 tuple()
@@ -3134,6 +3134,8 @@ decompile(`list(,"a",1,"b",2),1)
 decompile(`tuple(,"a",1,"b",2),1)
 decompile(`dict(,"a",1,"b",2),1)
 decompile(`zero(32758,1))
-! test if functions compile without treectx when containing pathlike NIDs
+# test if functions compile without treectx when containing pathlike NIDs
 fun nid()nid
 `compile("1")
+# test comment
+/* **/

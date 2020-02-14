@@ -8,13 +8,6 @@
 #include <mdstypes.h>
 #include <mdsplus/mdsconfig.h>
 
-typedef enum {
-#define DEFINE(NAME,value) LEX_##NAME=value,
-#include "lexdef.h"
-#undef DEFINE
-LEX_=0
-} lex_t;
-
 struct TdiFunctionStruct {
   char *name;			/*string to compile/decompile   */
   int (*f1) ();			/*routine to check arguments    */
@@ -26,7 +19,7 @@ struct TdiFunctionStruct {
   unsigned char o2;		/*output maximum cat            */
   unsigned char m1;		/*minimum arguments             */
   unsigned char m2;		/*maximum arguments             */
-  lex_t token;			/*YACC-LEX token for this entry */
+  const int token;		/*YACC-LEX token for this entry */
 };
 
 extern const struct TdiFunctionStruct TdiRefFunction[];

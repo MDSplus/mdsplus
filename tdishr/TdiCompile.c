@@ -43,6 +43,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 
 #include "tdithreadstatic.h"
+#define YYLTYPE TDITHREADSTATIC_TYPE
+#include "tdiyacc.h"
+#include "tdilex.h"
+#define YY_END_OF_BUFFER_CHAR '\0'
+
 #define DEBUG
 #ifdef DEBUG
  #define DBG(...) fprintf(stderr,__VA_ARGS__)
@@ -63,12 +68,12 @@ extern int tdi_yacc();
 
 static void cleanup_compile(TDITHREADSTATIC_ARG){
   LibResetVmZone(&TDI_REFZONE.l_zone);
-  if (TDI_REFZONE.a_begin) {
-    free(TDI_REFZONE.a_begin);
-    TDI_REFZONE.a_begin=NULL;
-  }
+  tdipop_buffer_state(TDI_SCANNER);
+  TDI_BUFFER = TDI_REFZONE.a_begin = NULL;
   TDI_COMPILE_REC = FALSE;
 }
+
+extern void tdi_push_new_buffer(mdsdsc_t *text_ptr, TDITHREADSTATIC_ARG);
 
 static inline void add_compile_info(int status,TDITHREADSTATIC_ARG) {
   if(!(status==TdiSYNTAX
@@ -110,18 +115,16 @@ static inline void add_compile_info(int status,TDITHREADSTATIC_ARG) {
 
 static inline int compile(mdsdsc_t * text_ptr, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr, TDITHREADSTATIC_ARG) {
   int status;
-  TDI_COMPILE_REC = TRUE;
+  if (!TDI_REFZONE.l_zone && IS_NOT_OK(status = LibCreateVmZone(&TDI_REFZONE.l_zone)))
+    return status;
   pthread_cleanup_push((void*)cleanup_compile,(void*)TDITHREADSTATIC_VAR);
-  if (!TDI_REFZONE.l_zone)
-    status = LibCreateVmZone(&TDI_REFZONE.l_zone);
+  tdi_push_new_buffer(text_ptr, TDITHREADSTATIC_VAR);
+  TDI_COMPILE_REC = TRUE;
   TDI_REFZONE.l_status = TdiBOMB;  // In case we bomb out
-  TDI_REFZONE.a_begin  = TDI_REFZONE.a_cur = memcpy(malloc(text_ptr->length), text_ptr->pointer, text_ptr->length);
-  TDI_REFZONE.a_end    = TDI_REFZONE.a_cur + text_ptr->length;
-  TDI_REFZONE.l_ok     = 0;
   TDI_REFZONE.l_narg   = narg - 1;
   TDI_REFZONE.l_iarg   = 0;
   TDI_REFZONE.a_list   = list;
-  if (IS_NOT_OK(tdi_yacc(TDITHREADSTATIC_VAR)) && IS_OK(TDI_REFZONE.l_status))
+  if (tdi_yacc(TDITHREADSTATIC_VAR) && IS_OK(TDI_REFZONE.l_status))
     status = TdiSYNTAX;
   else
     status = TDI_REFZONE.l_status;

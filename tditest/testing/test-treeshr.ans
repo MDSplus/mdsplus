@@ -1799,10 +1799,10 @@ Total of 1 node.
 Grand total of 5 nodes.
 1
 dir 1*
-%TDI-E-BOMB, Bad punctuation, could not compile the text
+%TDI-E-SYNTAX, Bad punctuation or misspelled word or number
 %TDI Error compiling region marked by ^
 dir 1*
-  ^ ^
+    ^
 %TDI Error in EXECUTE("dir 1*")
 
 treeopennew('main',-1)
