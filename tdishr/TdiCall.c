@@ -65,19 +65,24 @@ extern int tdi_put_ident();
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-static int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
-				int (*routine) (), unsigned int *(*called) (),
-				void **result, int *max)
+static inline int interlude(dtype_t rtype, mdsdsc_t **newdsc,
+			int (*routine) (),
+			void **result, int *max)
 {
   switch (rtype) {
+  case DTYPE_MISSING:
+    {
+      LibCallg(newdsc, routine);
+      break;
+    }
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
     {
-      void *(*called_p) () = (void *(*)())called;
+      void *(*called_p) () = (void *(*)())LibCallg;
       void **result_p = (void *)result;
       *max = sizeof(void *);
-      *result_p = (*called_p) (newdsc, routine);
+      *result_p = called_p(newdsc, routine);
       break;
     }
   case DTYPE_D:
@@ -87,20 +92,20 @@ static int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
   case DTYPE_Q:
   case DTYPE_QU:
     { // 8 bytes
-      int64_t (*called_q) () = (int64_t (*)())called;
+      int64_t (*called_q) () = (int64_t (*)())LibCallg;
       int64_t *result_q = (int64_t *)result;
       *max = sizeof(int64_t);
-      *result_q = (*called_q) (newdsc, routine);
+      *result_q = called_q(newdsc, routine);
       break;
     }
   //case DTYPE_F:
   //case DTYPE_FS:
   default:
     { // 4 bytes
-      int32_t (*called_int) () = (int32_t (*)())called;
+      int32_t (*called_int) () = (int32_t (*)())LibCallg;
       int32_t *result_int = (int32_t *)result;
       *max = sizeof(int32_t);
-      *result_int = (*called_int) (newdsc, routine);
+      *result_int = called_int(newdsc, routine);
     }
   }
   return 1;
@@ -191,11 +196,13 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     }
   }
   if STATUS_OK
-    status = TdiInterlude(rtype, newdsc, routine, (void *)LibCallg, (void **)result, &max);
+    status = interlude(rtype, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if STATUS_OK
     switch (rtype) {
+    case DTYPE_MISSING:
+      break;
     case DTYPE_DSC:
       dx.pointer = *(char **)result;
       if (*(void**)result)
