@@ -878,6 +878,7 @@ fi
     <requires package="kernel"/>
     <!-- requires external="true" package="setuptools"/ -->
     <requires external="true" package="numpy"/>
+    <requires external="true" package="find"/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
