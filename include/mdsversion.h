@@ -9,6 +9,8 @@ typedef struct {
 } mds_version_t;
 #pragma pack(pop)
 
-extern const mds_version_t MDSVERSION;
-extern const char *MdsRelease();
-extern const mdsdsc_t *MdsReleaseDsc();
+#define CONCAT2(a,b)	a ## b
+#define CONCAT(a,b)	CONCAT2( a , b )
+#define VERSIONCONST	CONCAT( LIBPREFIX , Version )
+#define GETRELEASE	CONCAT( LIBPREFIX , Release )
+#define GETRELEASEDSC	CONCAT( LIBPREFIX , ReleaseDsc )

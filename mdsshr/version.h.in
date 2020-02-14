@@ -3,11 +3,12 @@
 #include <pthread_port.h>
 #include <mdsversion.h>
 
-EXPORT const mds_version_t MDSVERSION = {
-@RELEASE_MAJOR@,
-@RELEASE_MINOR@,
-@RELEASE_RELEASE@,
-"@RELEASE_BRANCH@",
+EXPORT
+const mds_version_t VERSIONCONST = {
+	@RELEASE_MAJOR@,
+	@RELEASE_MINOR@,
+	@RELEASE_RELEASE@,
+	"@RELEASE_BRANCH@",
 };
 
 
@@ -18,20 +19,22 @@ static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, tag };
 static void buildtag()
 {
 	RELEASE_D.length = sprintf(tag, "%s_release_%d.%d.%d",
-	MDSVERSION.BRANCH,
-	MDSVERSION.MAJOR,
-	MDSVERSION.MINOR,
-	MDSVERSION.MICRO);
+	VERSIONCONST.BRANCH,
+	VERSIONCONST.MAJOR,
+	VERSIONCONST.MINOR,
+	VERSIONCONST.MICRO);
 }
 
-EXPORT const char *MdsRelease()
+EXPORT
+const char *GETRELEASE()
 {
-  pthread_once(&once, buildtag);
-  return tag;
+	pthread_once(&once, buildtag);
+	return tag;
 }
 
-EXPORT const mdsdsc_t *MdsReleaseDsc()
+EXPORT
+const mdsdsc_t *GETRELEASEDSC()
 {
-  pthread_once(&once, buildtag);
-  return &RELEASE_D;
+	pthread_once(&once, buildtag);
+	return &RELEASE_D;
 }

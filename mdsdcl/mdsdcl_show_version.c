@@ -11,12 +11,14 @@
 #include "dcl_p.h"
 
 extern MDSplusGitVersionInfo MDSplusGitVersion;
+extern const mds_version_t MdsVersion;
+extern const char *MdsRelease();
 
 EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
 {
   char *info = *output = malloc(1024);
   info += sprintf(info,"\n\n");
-  info += sprintf(info,"MDSplus version: %d.%d.%d\n",MDSVERSION.MAJOR,MDSVERSION.MINOR,MDSVERSION.MICRO);
+  info += sprintf(info,"MDSplus version: %d.%d.%d\n",MdsVersion.MAJOR,MdsVersion.MINOR,MdsVersion.MICRO);
   info += sprintf(info,"----------------------\n");
   const char *tag = MdsRelease();
   info += sprintf(info,"  Release:  %s\n",tag);

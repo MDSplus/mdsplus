@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Mds
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
