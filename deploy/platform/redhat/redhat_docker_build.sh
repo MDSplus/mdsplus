@@ -152,5 +152,5 @@ publish(){
         use_deltas="--deltas"
     fi
     do_createrepo /publish
-    checkstatus abort "Failure: Problem rsyncing rpm repository with publish area!" $?
+    checkstatus abort "Failure: Problem updating rpm repository in publish area!" $?
 }
