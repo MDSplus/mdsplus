@@ -60,8 +60,8 @@ buildrelease() {
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release apks
     SIGNKEYS=/sign_keys/mdsplus@mdsplus.org-589e05b6.rsa
-    REPO_DIR=/release/${BRANCH}/${ARCH}
-    :&& rsync -a /release/${BRANCH}/${REPO_DIR}/*.apk ${REPO_DIR}/
+    REPO_DIR=/publish/${BRANCH}/${ARCH}
+    :&& rsync -a /release/${BRANCH}/${ARCH}/*.apk ${REPO_DIR}/
     checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
     [ -r /sign_keys/mdsplus@mdsplus.org-589e05b6.rsa ]
     checkstatus abort "Failure: Problem finding signkeys for apk repository!" $?
