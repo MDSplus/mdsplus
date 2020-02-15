@@ -183,6 +183,7 @@ publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
     mkdir -p /publish/${BRANCH}/DEBS
     rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
+    LAST_RELEASE_INFO=/publish/${BRANCH}_${OS}
     if [ ! -r /publish/repo ]
     then
 	:&& rsync -a /release/repo /publish/
