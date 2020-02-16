@@ -70,7 +70,8 @@ publish() {
     fi
     abuild_failure=0
     (
-      apk index -o ${REPO_DIR}/APKINDEX.tar.gz /publish/${BRANCH}/${ARCH}/*.apk
+	# TODO: use same noarch for all archs: requires some synchronisation
+      apk index --rewrite-arch ${ARCH} -o ${REPO_DIR}/APKINDEX.tar.gz ${REPO_DIR}/*.apk
       abuild-sign -k ${SIGNKEYS} ${REPO_DIR}/APKINDEX.tar.gz
     ) || (
       abuild_failure=1
