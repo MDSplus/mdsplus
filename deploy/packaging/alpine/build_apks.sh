@@ -1,4 +1,5 @@
 #!/bin/bash
+[ -z ${BRANCH} ] && exit 1
 pckdir=$(dirname $(realpath $0))
 export HOME=/workspace
 cd /workspace

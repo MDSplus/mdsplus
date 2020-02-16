@@ -59,23 +59,23 @@ buildrelease() {
 
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release apks
-    SIGNKEYS=/sign_keys/mdsplus@mdsplus.org-589e05b6.rsa
-    REPO_DIR=/publish/${BRANCH}/${ARCH}
-    :&& rsync -a /release/${BRANCH}/${ARCH}/*.apk ${REPO_DIR}/
-    checkstatus abort "Failure: Problem copying release rpms to publish area!" $?
-    [ -r /sign_keys/mdsplus@mdsplus.org-589e05b6.rsa ]
-    checkstatus abort "Failure: Problem finding signkeys for apk repository!" $?
-    if [ -r ${REPO_DIR}/APKINDEX.tar.gz ]
-    then mv ${REPO_DIR}/APKINDEX.tar.gz ${REPO_DIR}/APKINDEX.tar.gz.old
+    ## this will move new files into publish and update APKINDEX.tar.gz
+    # if NEW.tar.gz exists or if an old APKINDEX.tar.gz does not yet exist,
+    # it will create a new repository (takes longer, exspecially on a remote fs)
+    R=/release/${BRANCH}
+    P=/publish/${BRANCH}
+    mkdir -p $P/${ARCH} $P/noarch
+    cd $P
+    rsync -a $R/${ARCH}/*.apk $P/${ARCH}/ &&:
+    checkstatus abort "Failure: Problem copying arch apks to publish area!" $?
+    rsync -a $R/noarch/*.apk  $P/noarch/ &&:
+    checkstatus abort "Failure: Problem copying noarch apks to publish area!" $?
+    if [ -r $P/${ARCH}/APKINDEX.tar.gz -a ! -r $P/${ARCH}/NEW.tar.gz ]
+    then apk index -x $P/${ARCH}/APKINDEX.tar.gz -o $P/${ARCH}/NEW.tar.gz $P/${ARCH}/*.apk noarch/*.apk
+    else apk index                               -o $P/${ARCH}/NEW.tar.gz $P/${ARCH}/*.apk noarch/*.apk
     fi
-    abuild_failure=0
-    (
-	# TODO: use same noarch for all archs: requires some synchronisation
-      apk index --rewrite-arch ${ARCH} -o ${REPO_DIR}/APKINDEX.tar.gz ${REPO_DIR}/*.apk
-      abuild-sign -k ${SIGNKEYS} ${REPO_DIR}/APKINDEX.tar.gz
-    ) || (
-      abuild_failure=1
-      mv ${REPO_DIR}/APKINDEX.tar.gz.old ${REPO_DIR}/APKINDEX.tar.gz
-    )
-    checkstatus abort "Failure: Problem updating apk repository in publish!" $abuild_failure
+    checkstatus abort "Failure: Problem updating apk repository in publish!" $?
+    abuild-sign -k /sign_keys/mdsplus@mdsplus.org-589e05b6.rsa $P/${ARCH}/NEW.tar.gz
+    checkstatus abort "Failure: Problem signing apk repository in publish!" $?
+    mv -f $P/${ARCH}/NEW.tar.gz $P/${ARCH}/APKINDEX.tar.gz
 }
