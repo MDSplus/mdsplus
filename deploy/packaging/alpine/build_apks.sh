@@ -1,4 +1,5 @@
 #!/bin/bash
+[ -z ${BRANCH} ] && exit 1
 pckdir=$(dirname $(realpath $0))
 export HOME=/workspace
 cd /workspace
@@ -12,6 +13,8 @@ then
   touch /workspace/.abuild/abuild.conf
   abuild-keygen -aqn # generate new keys
 fi
+rm -rf /release/${BRANCH}/
+mkdir -p /release/${BRANCH}/noarch
 # we have to unset srcdir as it is a reserved name in abuild
 # in the process of building the apks it will wipe $srcdir
 srcdir= \
