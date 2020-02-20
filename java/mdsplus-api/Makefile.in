@@ -507,7 +507,7 @@ JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
 n := 
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
@@ -852,10 +852,10 @@ $(DEPENDENCIES):
 $(JSCH):
 	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
-@USE_JARS_DIR_TRUE@mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
+@USE_JARS_DIR_TRUE@$(java_DATA) : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_FALSE@mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
+@USE_JARS_DIR_FALSE@$(java_DATA): $(JSCH) $(MANIFEST) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	cp -f $(JSCH) $@ &&\
 @USE_JARS_DIR_FALSE@	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .

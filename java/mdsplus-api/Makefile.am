@@ -13,12 +13,12 @@ $(JSCH):
 
 if USE_JARS_DIR
 
-mdsplus-api.jar : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
+$(java_DATA): @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 	cp $< $@
 
 else
 
-mdsplus-api.jar: $(JSCH) $(MANIFEST) classjava.stamp
+$(java_DATA): $(JSCH) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(JSCH) $@ &&\
 	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .

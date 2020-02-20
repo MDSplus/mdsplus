@@ -509,7 +509,7 @@ JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
 n := 
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
@@ -850,10 +850,10 @@ $(DEPENDENCIES):
 	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
-@USE_JARS_DIR_TRUE@jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
+@USE_JARS_DIR_TRUE@$(java_DATA): @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_FALSE@jTraverser2.jar: $(DEPENDENCIES) classjava.stamp
+@USE_JARS_DIR_FALSE@$(java_DATA): $(DEPENDENCIES) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	mkdir -p $(JAVAROOT)/jtraverser &&\
 @USE_JARS_DIR_FALSE@	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\

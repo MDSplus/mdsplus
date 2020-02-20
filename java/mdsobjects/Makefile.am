@@ -8,12 +8,12 @@ DEPENDENCIES = $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
-mdsobjects.jar : @JARS_DIR@/java/mdsobjects/mdsobjects.jar
+$(java_DATA): @JARS_DIR@/java/mdsobjects/mdsobjects.jar
 	cp $< $@
 
 else
 
-mdsobjects.jar: $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	$(JAR) cf $@ -C $(JAVAROOT) .
 

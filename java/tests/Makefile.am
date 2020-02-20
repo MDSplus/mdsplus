@@ -13,10 +13,10 @@ DEPENDENCIES = $(wildcard $(top_srcdir)/java/tests/*.jar)
 install-javaDATA: $(java_DATA)
 
 if USE_JARS_DIR
-taptest.jar: @JARS_DIR@/java/tests/taptest.jar
+$(java_DATA): @JARS_DIR@/java/tests/taptest.jar
 	cp $< $@
 else
-taptest.jar: classjava.stamp
+$(java_DATA): classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 endif
