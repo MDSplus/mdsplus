@@ -2,12 +2,6 @@ import MDSplus
 import time
 from datetime import datetime
 
-try:
-    from influxdb import InfluxDBClient
-except:
-    print("You must install the `influxdb` python package to use the `influxhistorian` device class")
-    exit(1)
-
 class INFLUXHISTORIAN(MDSplus.Device):
 
     DATA_COUNT = 500
@@ -47,6 +41,11 @@ class INFLUXHISTORIAN(MDSplus.Device):
     def store(self, start = 0, end = 0):
         if not self.on:
             return
+            
+        try:
+            from influxdb import InfluxDBClient
+        except:
+            raise Exception("You must install the `influxdb` python package to use the `influxhistorian` device class")
 
         address = self.address.data()
         parts = address.split(":", 2)
