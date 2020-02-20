@@ -9,12 +9,12 @@ DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) $(JTRAVERSER_JAR)
 
 if USE_JARS_DIR
 
-jDispatcher.jar : @JARS_DIR@/java/jdispatcher/jDispatcher.jar
+$(java_DATA): @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 	cp $< $@
 
 else
 
-jDispatcher.jar: $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	$(JAR) cf $@ -C $(JAVAROOT) .
 

@@ -512,7 +512,7 @@ JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
 n := 
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT) $(am__append_1) $(am__append_2)
@@ -845,10 +845,10 @@ $(DEPENDENCIES):
 	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
-@USE_JARS_DIR_TRUE@jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
+@USE_JARS_DIR_TRUE@jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
-@USE_JARS_DIR_TRUE@DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
+@USE_JARS_DIR_TRUE@DeviceBeans.jar: @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@jTraverser.jar: $(DEPENDENCIES) classjava.stamp $(srcdir)/DeviceBeansManifest.mf
