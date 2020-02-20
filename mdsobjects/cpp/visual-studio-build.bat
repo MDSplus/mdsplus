@@ -1,5 +1,11 @@
 @ECHO off
 
+REM ============================= /!\ WARNING /!\ =============================
+REM Before running this script, make sure that the DEF export files exist!!
+REM It is possible to generate these files by calling command "make defs"
+REM from "mdsobjects\cpp" directory under MinGW terminal for example
+REM ============================= /!\ WARNING /!\ =============================
+
 REM Obtain SRCDIR from location of this script
 
 set OLDDIR=%CD%
@@ -23,33 +29,17 @@ set LIB=%MVS%\lib\x64;%MVS%\lib\onecore\x64; %MVS%\atlmfc\lib\x64;%WK%\lib\%WKVE
 REM Various directories used for compiles, links and lib generation
 
 set CPP=%SRCDIR%\mdsobjects\cpp
-set BUILD64=%SRCDIR%\releasebld\64\bin_x86_64
-set BUILD32=%SRCDIR%\releasebld\32\bin_x86
+set BUILD64=%SRCDIR%\bin_x86_64
+set BUILD32=%SRCDIR%\bin_x86
 
 mkdir %BUILD64%
 mkdir %BUILD32%
 
 REM Build Visual Studio compatible lib files for the C based libraries (both 64 and 32 bit versions)
 
-lib /def:%SRCDIR%\defs\MdsShr.def /out:%BUILD64%\MdsShr.lib /machine:x64
-lib /def:%SRCDIR%\defs\TreeShr.def /out:%BUILD64%\TreeShr.lib /machine:x64
-lib /def:%SRCDIR%\defs\TdiShr.def /out:%BUILD64%\TdiShr.lib /machine:x64
-lib /def:%SRCDIR%\defs\MdsIpShr.def /out:%BUILD64%\MdsIpShr.lib /machine:x64
-lib /def:%SRCDIR%\defs\MdsMisc.def /out:%BUILD64%\MdsMisc.lib /machine:x64
-lib /def:%SRCDIR%\defs\MdsServerShr.def /out:%BUILD64%\MdsServerShr.lib /machine:x64
-lib /def:%SRCDIR%\defs\MdsLib.def /out:%BUILD64%\MdsLib.lib /machine:x64
-lib /def:%SRCDIR%\defs\Mdsdcl.def /out:%BUILD64%\Mdsdcl.lib /machine:x64
-lib /def:%SRCDIR%\defs\MdsMath.def /out:%BUILD64%\MdsMath.lib /machine:x64
+for %%i in (%SRCDIR%\defs\*.def) do lib /def:%%i /out:%BUILD64%\%%~ni.lib /machine:x64
+for %%i in (%SRCDIR%\defs\*.def) do lib /def:%%i /out:%BUILD32%\%%~ni.lib /machine:x86
 
-lib /def:%SRCDIR%\defs\MdsShr.def /out:%BUILD32%\MdsShr.lib /machine:x86
-lib /def:%SRCDIR%\defs\TreeShr.def /out:%BUILD32%\TreeShr.lib /machine:x86
-lib /def:%SRCDIR%\defs\TdiShr.def /out:%BUILD32%\TdiShr.lib /machine:x86
-lib /def:%SRCDIR%\defs\MdsIpShr.def /out:%BUILD32%\MdsIpShr.lib /machine:x86
-lib /def:%SRCDIR%\defs\MdsMisc.def /out:%BUILD32%\MdsMisc.lib /machine:x86
-lib /def:%SRCDIR%\defs\MdsServerShr.def /out:%BUILD32%\MdsServerShr.lib /machine:x86
-lib /def:%SRCDIR%\defs\MdsLib.def /out:%BUILD32%\MdsLib.lib /machine:x86
-lib /def:%SRCDIR%\defs\Mdsdcl.def /out:%BUILD32%\Mdsdcl.lib /machine:x86
-lib /def:%SRCDIR%\defs\MdsMath.def /out:%BUILD32%\MdsMath.lib /machine:x86
 
 REM Use Visual studio compiler to compile the CPP modules
 
@@ -66,7 +56,8 @@ cl %CL_OPTS% %CPP%\mdsipobjects.cpp
 cl %CL_OPTS% %CPP%\mdstree.c
 cl %CL_OPTS% %CPP%\mdstreeobjects.cpp
 
-REM Link MdsObjectsCppShr-VS.DLL
+
+REM Link MdsObjectsCppShr-VS.dll x64
 
 link /OUT:"%BUILD64%\MdsObjectsCppShr-VS.dll" /NXCOMPAT /PDB:"MdsObjectsCppShr-VS.pdb" ^
  /DYNAMICBASE "MdsShr.lib" "TreeShr.lib" "TdiShr.lib" "MdsIpShr.lib" "kernel32.lib" "user32.lib" ^
