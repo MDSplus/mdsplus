@@ -22,11 +22,20 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WINDOWS_H
 #include <pthread.h>
 #include <mdsobjects.h>
 #include <time.h>
 #include <string.h>
+
+#ifdef _WIN32
+int nanosleep(const struct timespec *req, struct timespec *rem)
+{
+    DWORD sleep_ms = ((DWORD)req->tv_sec * 1000) + ((DWORD)req->tv_nsec / 1000000);
+    Sleep(sleep_ms);
+
+    return 0;
+}
+#endif
 
 extern "C" {
 EXPORT int registerListener(char *expr, char *tree, int shot);
@@ -382,6 +391,7 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 	return NULL;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
 // recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
@@ -390,17 +400,19 @@ using namespace MDSplus;
 
 EXPORT void EventStream::send(int shot, const char *name, float time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char* msgBuf = new char[strlen(name) + 256];
     sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);
     //ASCII coding: <shot> <name> [F|L] <numSamples> <xval>[ xval]* <yval>[ <yval>]*  where F and L indicate floating or integer times, respectrively
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char* msgBuf = new char[strlen(name) + 256];
     sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode)
@@ -553,10 +565,3 @@ EXPORT void EventStream::registerListener(DataStreamListener *listener, const ch
     names.push_back(std::string(name));
 }
 
-
-
-
-
-
-
-#endif

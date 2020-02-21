@@ -4287,7 +4287,6 @@ public:
     void show();
 };
 
-#ifndef WINDOWS_H
 class EXPORT EventStream:public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
@@ -4301,7 +4300,6 @@ public:
   static void send(int shot, const char *name, Data *timeData, Data *valueData);
   void registerListener(DataStreamListener *listener, const char *name);
 };
-#endif
 
 
 //////////////Support functions////////

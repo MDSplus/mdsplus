@@ -60,7 +60,11 @@ defs:
 
 ifneq "$(VSDLL)" ""
 
-$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
-	$(WINE) ./visual-studio-build.bat
+$(VSDLL): $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
+	@if test -z "$$PTHREADDIR"; then \
+		echo "Variable PTHREADDIR is undefined, cannot build MSVC compatible library!" ; \
+	else \
+		$(WINE) set PTHREADDIR="$(PTHREADDIR)" & ./visual-studio-build.bat ; \
+	fi;
 
 endif
