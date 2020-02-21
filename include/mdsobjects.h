@@ -1,6 +1,5 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-//#define NOMINMAX
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -12,6 +11,7 @@
 #include <stdlib.h>
 
 #ifdef _MSC_VER
+ #define NOMINMAX
  #include <windows.h>
 #else
  #include <sys/types.h>

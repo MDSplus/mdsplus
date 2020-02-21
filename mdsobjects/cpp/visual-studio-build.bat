@@ -55,7 +55,7 @@ cl %CL_OPTS% %CPP%\mdseventobjects.cpp
 cl %CL_OPTS% %CPP%\mdsipobjects.cpp
 cl %CL_OPTS% %CPP%\mdstree.c
 cl %CL_OPTS% %CPP%\mdstreeobjects.cpp
-
+cl %CL_OPTS% %CPP%\datastreams.cpp
 
 REM Link MdsObjectsCppShr-VS.dll x64
 
@@ -66,4 +66,4 @@ link /OUT:"%BUILD64%\MdsObjectsCppShr-VS.dll" /NXCOMPAT /PDB:"MdsObjectsCppShr-V
  /OPT:REF /INCREMENTAL:NO /SUBSYSTEM:WINDOWS /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" ^
  /MANIFEST:embed /OPT:ICF /ERRORREPORT:PROMPT /NOLOGO ^
  /LIBPATH:"%BUILD64%" /TLBID:1 ^
- mdsdata.obj mdsdataobjects.obj mdseventobjects.obj mdsipobjects.obj mdstree.obj mdstreeobjects.obj
+ mdsdata.obj mdsdataobjects.obj mdseventobjects.obj mdsipobjects.obj mdstree.obj mdstreeobjects.obj datastreams.obj
