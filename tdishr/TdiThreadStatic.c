@@ -33,9 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 
 #include "tdithreadstatic.h"
+
 #define YYLTYPE TDITHREADSTATIC_TYPE
 #include "tdiyacc.h"
 #include "tdilex.h"
+#include "../mdsshr/version.h"
 
 static inline TDITHREADSTATIC_TYPE *buffer_alloc() {
   TDITHREADSTATIC_ARG = (TDITHREADSTATIC_TYPE *) calloc(1,sizeof(TDITHREADSTATIC_TYPE));

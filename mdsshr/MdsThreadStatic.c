@@ -30,6 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 
 #include "mdsthreadstatic.h"
+#include "../mdsshr/version.h"
 
 /* Key for the thread-specific buffer */
 static pthread_key_t mts_key;
