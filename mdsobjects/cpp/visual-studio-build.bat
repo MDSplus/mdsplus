@@ -37,6 +37,7 @@ lib /def:%DEFS%\MdsLib.def	/out:%BUILD64%\bin_x86_64\MdsLib.lib	/machine:x64
 lib /def:%DEFS%\Mdsdcl.def	/out:%BUILD64%\bin_x86_64\Mdsdcl.lib	/machine:x64
 lib /def:%DEFS%\MdsMath.def	/out:%BUILD64%\bin_x86_64\MdsMath.lib	/machine:x64
 lib /def:%DEFS%\MdsServerShr.def /out:%BUILD64%\bin_x86_64\MdsServerShr.lib /machine:x64
+lib /def:%DEFS%\MdsServerShr.def /out:%BUILD64%\bin_x86_64\MdsServerShr.lib /machine:x64
 
 lib /def:%DEFS%\MdsShr.def	/out:%BUILD32%\bin_x86\MdsShr.lib	/machine:x86
 lib /def:%DEFS%\TreeShr.def	/out:%BUILD32%\bin_x86\TreeShr.lib	/machine:x86
@@ -52,7 +53,7 @@ REM Use Visual studio compiler to compile the CPP modules
 
 set CL_OPTS=/c /GS /W3 /Zc:wchar_t /I"%SRCDIR%\include" /I"%SRCDIR%\tdishr" /Zi /Gm- /O2 ^
  /Fd"\tmp\vc141.pdb" /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "WINDOWS_H" ^
- /D "_WINDOWS" /D "_USRDLL" /D "MDSOBJECTSCPPSHRVS_EXPORTS" /D "NOMINMAX" ^
+ /D "_WINDOWS" /D "_USRDLL" /D "MDSOBJECTSCPPSHRVS_EXPORTS" ^
  /D "_CRT_SECURE_NO_WARNINGS" /D "_WINDLL" /errorReport:prompt /WX- /Zc:forScope ^
  /Gd /MD /EHsc /nologo  /Fp"MdsObjectsCppShr-VS.pch" /diagnostics:classic
 

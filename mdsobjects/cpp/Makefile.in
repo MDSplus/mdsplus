@@ -13,7 +13,7 @@ CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
 
 CXXSOURCES = \
-	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp datastreams.cpp
+	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp mdsdatastreams.cpp
 
 SOURCES = mdsdata.c mdstree.c
 
