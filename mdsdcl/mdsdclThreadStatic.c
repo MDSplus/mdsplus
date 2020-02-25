@@ -31,6 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 
 #include "mdsdclthreadstatic.h"
+#include "../mdsshr/version.h"
 
 static inline DCLTHREADSTATIC_TYPE *buffer_alloc() {
   return (DCLTHREADSTATIC_TYPE *)calloc(1, sizeof(DCLTHREADSTATIC_TYPE));

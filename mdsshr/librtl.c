@@ -64,7 +64,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#include <release.h>
 
 #define LIBRTL_SRC
 
@@ -1840,17 +1839,4 @@ EXPORT int libffs(const int *const position, const int *const size, const char *
     }
   }
   return status;
-}
-
-EXPORT const char *MdsRelease()
-{
-  return RELEASE;
-}
-
-EXPORT mdsdsc_t *MdsReleaseDsc()
-{
-  static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
-  RELEASE_D.length = (uint16_t)strlen(RELEASE);
-  RELEASE_D.pointer = (char *)RELEASE;
-  return &RELEASE_D;
 }

@@ -113,31 +113,12 @@ extern char *TranslateLogical(const char *name);
 extern void TranslateLogicalFree(char *const value);
 extern int TranslateLogicalXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out);
 extern const char *MdsRelease();
-extern mdsdsc_t *MdsReleaseDsc();
+extern const mdsdsc_t *MdsReleaseDsc();
 extern int MdsPutEnv(const char *const cmd);
 extern void MdsGlobalLock();
 extern void MdsGlobalUnlock();
 extern int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr, mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr);
 extern char* Now32(char* buf);
-
-typedef struct {
-  const char *MAJOR;
-  const char *MINOR;
-  const char *RELEASE;
-  const char *RELEASE_TAG;
-  const char *DATE;
-  const char *MDSVERSION;
-} MDSplusVersionInfo;
-
-typedef struct {
-  const char *GIT_TAG;
-  const char *GIT_BRANCH;
-  const char *GIT_REMOTE;
-  const char *GIT_REMOTE_URL;
-  const char *GIT_COMMIT;
-  const char *GIT_SRCDIR;
-} MDSplusGitVersionInfo;
-
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>

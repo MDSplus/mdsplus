@@ -23,21 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <mdsshr.h>
-
-EXPORT MDSplusVersionInfo MDSplusVersion =
-  {"@RELEASE_MAJOR@",
-   "@RELEASE_MINOR@",
-   "@RELEASE_RELEASE@",
-   "@RELEASE_TAG@",
-   "@RELEASE_DATE@",
-   "@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@"};
-
+#include "dcl_p.h"
 
 #define STR(s) #s
 #define xSTR(s) STR(s)
 #ifdef _GIT_TAG
-EXPORT MDSplusGitVersionInfo MDSplusGitVersion =
+MDSplusGitVersionInfo MDSplusGitVersion =
   {xSTR(_GIT_TAG),
    "@GIT_BRANCH@",
    "@GIT_REMOTE@",
@@ -45,7 +36,7 @@ EXPORT MDSplusGitVersionInfo MDSplusGitVersion =
    "@GIT_COMMIT@",
    "@GIT_SRCDIR@"};
 #else
-EXPORT MDSplusGitVersionInfo MDSplusGitVersion =
+MDSplusGitVersionInfo MDSplusGitVersion =
   {"@GIT_TAG@",
    "@GIT_BRANCH@",
    "@GIT_REMOTE@",

@@ -34,6 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 
 #include "treethreadstatic.h"
+#include "../mdsshr/version.h"
 
 extern int _TreeNewDbid(void** dblist);
 static pthread_rwlock_t treectx_lock = PTHREAD_RWLOCK_INITIALIZER;

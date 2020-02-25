@@ -194,7 +194,8 @@ def buildApks():
     archdir = "/release/%(flavor)s/%(arch)s"%info
     os.system("rm -Rf %s/*"%archdir)
     if info['arch'] == noarch_builder:
-        os.system("rm -Rf %s/*"%noarchdir)
+        os.system("rm -Rf %s"%noarchdir)
+        os.system("mkdir -p %s"%noarchdir)
     for package in root.getiterator('package'):
         pkg = package.attrib['name']
         if pkg in pkg_exclusions: continue
