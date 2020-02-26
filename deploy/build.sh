@@ -446,7 +446,7 @@ BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
     LAST_RELEASE_INFO=$PUBLISHDIR/${DISTNAME}/${BRANCH}_${OS}
-    if [ -r ${LAST_RELEASE_INFO} -a "$(cat ${LAST_RELEASE_INFO})" == "${RELEASE_VERSION}" ]
+    if [ -r ${LAST_RELEASE_INFO} ] && [ "$(cat ${LAST_RELEASE_INFO})" == "${RELEASE_VERSION}" ]
     then
 	GREEN
 	cat <<EOF
