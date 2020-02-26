@@ -1,3 +1,4 @@
+#!/usr/bin/python
 cpy_header = """
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
@@ -54,7 +55,7 @@ class MDSplusException(MdsException):
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
-      if len(argv)==0 or cls is not MDSplusException:
+      if not argv or cls is not MDSplusException:
           return super(MDSplusException,cls).__new__(cls,*argv)
       status = int(argv[0])
       code   = status & -8
@@ -283,8 +284,7 @@ severities=["W", "S", "E", "I", "F", "?", "?", "?"]
 
 def gen_include(root,filename,faclist,msglistm,f_test):
     pfaclist = ["MDSplus"]
-    print filename
-    f_py.write(py_new_file % filename)
+    print(filename)
     with open("%s/include/%sh" % (sourcedir,filename[0:-3]),'w') as f_inc:
         add_c_header(f_inc,filename)
         f_inc.write(inc_head)
@@ -337,30 +337,38 @@ def gen_include(root,filename,faclist,msglistm,f_test):
                        'status':msgn,'message':text,'depr':depr,  'sev':severities[msgn&7]}
                 if not facnam in pfaclist:
                     pfaclist.append(facnam)
-                    f_py.write(py_super_class % {'fac':facnam})
                 msglist.append(msg)
-                f_py.write(py_exc_class % msg)
+
+
+# gen_msglist():
+
+f_test=None
+if len(sys.argv) > 1:
+    f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
+for root,dirs,files in os.walk(sourcedir):
+    for filename in files:
+        if not filename.endswith('messages.xml'):
+            continue
+        try:
+            tree = ET.parse("%s/%s"%(root, filename)).getroot()
+            gen_include(tree,filename.lower(),faclist,msglist,f_test)
+        except Exception as e:
+            print(e)
+if f_test:
+    f_test.close()
+
+msglist = sorted(msglist, key = lambda item: item['msgnum'])
 
 with open("%s/python/MDSplus/mdsExceptions.py"%sourcedir,'w') as f_py:
     add_py_header(f_py)
     f_py.write(py_head)
-    xmllist = {}
-    for root,dirs,files in os.walk(sourcedir):
-        for filename in files:
-            if filename.endswith('messages.xml'):
-                xmllist[filename.lower()] = "%s/%s"%(root,filename)
-    f_test=None
-    if len(sys.argv) > 1:
-        f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
-    for filename,filepath in xmllist.items():
-        try:
-            tree=ET.parse(filepath)
-            root=tree.getroot()
-            gen_include(root,filename,faclist,msglist,f_test)
-        except Exception,e:
-            print e
-    if f_test:
-        f_test.close()
+    facs = set([])
+    for msg in msglist:
+        if not msg['fac'] in facs:
+            if msg['fac'] != "MDSplus":
+                f_py.write(py_super_class % msg)
+            facs.add(msg['fac'])
+        f_py.write(py_exc_class % msg)
 
 with open('%s/mdsshr/MdsGetStdMsg.c'%sourcedir,'w') as f_getmsg:
     add_c_header(f_getmsg)

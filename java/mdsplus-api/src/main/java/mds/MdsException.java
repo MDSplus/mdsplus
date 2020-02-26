@@ -44,6 +44,182 @@ public class MdsException extends IOException{
 		}
 	}
 	private static JLabel statusLabel = null;
+	public static final int         SsINTERNAL                      = 0-1;
+	public static final int         SsSUCCESS                       = 01;
+	public static final int         SsINTOVF                        = 02174;
+	public static final int    MDSplusWARNING                       = 0200000;
+	public static final int    MDSplusSUCCESS                       = 0200011;
+	public static final int    MDSplusERROR                         = 0200022;
+	public static final int    MDSplusFATAL                         = 0200044;
+	public static final int    MDSplusSANDBOX                       = 0200052;
+	public static final int        LibSTRTRU                        = 05300021;
+	public static final int        LibINSVIRMEM                     = 05301024;
+	public static final int        LibINVSTRDES                     = 05301044;
+	public static final int        LibINVARG                        = 05301064;
+	public static final int        LibNOTFOU                        = 05301164;
+	public static final int        LibQUEWASEMP                     = 05301354;
+	public static final int        LibKEYNOTFOU                     = 05301374;
+	public static final int        StrSTRTOOLON                     = 011100164;
+	public static final int        StrNOMATCH                       = 011101010;
+	public static final int        StrINVDELIM                      = 011101020;
+	public static final int        StrNOELEM                        = 011101030;
+	public static final int        StrMATCH                         = 011102031;
+	public static final int        TclNORMAL                        = 012400011;
+	public static final int        TclFAILED_ESSENTIAL              = 012400020;
+	public static final int        TclNO_DISPATCH_TABLE             = 012400030;
+	public static final int        CamDONE_Q                        = 01000300011;
+	public static final int        CamDONE_NOQ                      = 01000300021;
+	public static final int        CamDONE_NOX                      = 01000310000;
+	public static final int        CamSERTRAERR                     = 01000314002;
+	public static final int        CamSCCFAIL                       = 01000314102;
+	public static final int        CamOFFLINE                       = 01000314152;
+	public static final int     MdsdclSUCCESS                       = 01000400011;
+	public static final int     MdsdclEXIT                          = 01000400021;
+	public static final int     MdsdclERROR                         = 01000400030;
+	public static final int     MdsdclNORMAL                        = 01000401451;
+	public static final int     MdsdclPRESENT                       = 01000401461;
+	public static final int     MdsdclIVVERB                        = 01000401472;
+	public static final int     MdsdclABSENT                        = 01000401500;
+	public static final int     MdsdclNEGATED                       = 01000401510;
+	public static final int     MdsdclNOTNEGATABLE                  = 01000401522;
+	public static final int     MdsdclIVQUAL                        = 01000401532;
+	public static final int     MdsdclPROMPT_MORE                   = 01000401542;
+	public static final int     MdsdclTOO_MANY_PRMS                 = 01000401552;
+	public static final int     MdsdclTOO_MANY_VALS                 = 01000401562;
+	public static final int     MdsdclMISSING_VALUE                 = 01000401572;
+	public static final int       TreeNORMAL                        = 01764300011;
+	public static final int       TreeRESOLVED                      = 01764300021;
+	public static final int       TreeNEW                           = 01764300033;
+	public static final int       TreeNOTALLSUBS                    = 01764300043;
+	public static final int       TreeALREADY_OFF                   = 01764300053;
+	public static final int       TreeALREADY_ON                    = 01764300063;
+	public static final int       TreeALREADY_OPEN                  = 01764300073;
+	public static final int       TreeNO_CONTEXT                    = 01764300103;
+	public static final int       TreeON                            = 01764300113;
+	public static final int       TreeOPEN                          = 01764300123;
+	public static final int       TreeOPEN_EDIT                     = 01764300133;
+	public static final int       TreeNMN                           = 01764300140;
+	public static final int       TreeNMT                           = 01764300150;
+	public static final int       TreeNNF                           = 01764300160;
+	public static final int       TreeTNF                           = 01764300170;
+	public static final int       TreeTREENF                        = 01764300200;
+	public static final int       TreeALREADY_THERE                 = 01764300210;
+	public static final int       TreePARENT_OFF                    = 01764300220;
+	public static final int       TreeBOTH_OFF                      = 01764300230;
+	public static final int       TreeOFF                           = 01764300240;
+	public static final int       TreeNOT_OPEN                      = 01764300250;
+	public static final int       TreeNOMETHOD                      = 01764300260;
+	public static final int       TreeBADRECORD                     = 01764300272;
+	public static final int       TreeINVTREE                       = 01764300302;
+	public static final int       TreeDUPTAG                        = 01764300312;
+	public static final int       TreeILLPAGCNT                     = 01764300322;
+	public static final int       TreeMAXOPENEDIT                   = 01764300332;
+	public static final int       TreeNODATA                        = 01764300342;
+	public static final int       TreeNOTOPEN                       = 01764300352;
+	public static final int       TreeNOEDIT                        = 01764300362;
+	public static final int       TreeNOTCHILDLESS                  = 01764300372;
+	public static final int       TreeINVPATH                       = 01764300402;
+	public static final int       TreeILLEGAL_ITEM                  = 01764300412;
+	public static final int       TreeBUFFEROVF                     = 01764300422;
+	public static final int       TreeUNSPRTCLASS                   = 01764300432;
+	public static final int       TreeCONGLOMFULL                   = 01764300442;
+	public static final int       TreeCONGLOM_NOT_FULL              = 01764300452;
+	public static final int       TreeUNRESOLVED                    = 01764300462;
+	public static final int       TreeINVDFFCLASS                   = 01764300472;
+	public static final int       TreeINVRECTYP                     = 01764300502;
+	public static final int       TreeNODNAMLEN                     = 01764300512;
+	public static final int       TreeTAGNAMLEN                     = 01764300522;
+	public static final int       TreeWRITEFIRST                    = 01764300532;
+	public static final int       TreeNOT_CONGLOM                   = 01764300542;
+	public static final int       TreeUNSUPARRDTYPE                 = 01764300552;
+	public static final int       TreeNOTMEMBERLESS                 = 01764300562;
+	public static final int       TreeNOTSON                        = 01764300572;
+	public static final int       TreeNOOVERWRITE                   = 01764300602;
+	public static final int       TreeINVDTPUSG                     = 01764300612;
+	public static final int       TreeEDITTING                      = 01764300622;
+	public static final int       TreeNOWRITEMODEL                  = 01764300632;
+	public static final int       TreeNOWRITESHOT                   = 01764300642;
+	public static final int       TreeNOLOG                         = 01764300652;
+	public static final int       TreeREADONLY                      = 01764300662;
+	public static final int       TreeREADERR                       = 01764300672;
+	public static final int       TreeNOT_IN_LIST                   = 01764300702;
+	public static final int       TreeSUCCESS                       = 01764303101;
+	public static final int       TreeCONTINUING                    = 01764304543;
+	public static final int       TreeCANCEL                        = 01764306200;
+	public static final int       TreeUNSUPTHICKOP                  = 01764306210;
+	public static final int       TreeFAILURE                       = 01764307642;
+	public static final int       TreeFILE_NOT_FOUND                = 01764307652;
+	public static final int       TreeLOCK_FAILURE                  = 01764307662;
+	public static final int       TreeNOSEGMENTS                    = 01764307672;
+	public static final int       TreeINVDTYPE                      = 01764307702;
+	public static final int       TreeINVSHAPE                      = 01764307712;
+	public static final int       TreeINVSHOT                       = 01764307732;
+	public static final int       TreeINVTAG                        = 01764307752;
+	public static final int       TreeNOPATH                        = 01764307762;
+	public static final int       TreeTREEFILEREADERR               = 01764307772;
+	public static final int       TreeMEMERR                        = 01764310002;
+	public static final int       TreeNOCURRENT                     = 01764310012;
+	public static final int       TreeFOPENW                        = 01764310022;
+	public static final int       TreeFOPENR                        = 01764310032;
+	public static final int       TreeFCREATE                       = 01764310042;
+	public static final int       TreeCONNECTFAIL                   = 01764310052;
+	public static final int       TreeNCIWRITE                      = 01764310062;
+	public static final int       TreeDELFAIL                       = 01764310072;
+	public static final int       TreeRENFAIL                       = 01764310102;
+	public static final int       TreeEMPTY                         = 01764310110;
+	public static final int       TreePARSEERR                      = 01764310122;
+	public static final int       TreeNCIREAD                       = 01764310132;
+	public static final int       TreeNOVERSION                     = 01764310142;
+	public static final int       TreeDFREAD                        = 01764310152;
+	public static final int       TreeCLOSEERR                      = 01764310162;
+	public static final int       TreeMOVEERROR                     = 01764310172;
+	public static final int       TreeOPENEDITERR                   = 01764310202;
+	public static final int       TreeREADONLY_TREE                 = 01764310212;
+	public static final int       TreeWRITETREEERR                  = 01764310222;
+	public static final int       TreeNOWILD                        = 01764310232;
+	public static final int        TdiBREAK                         = 01764700010;
+	public static final int        TdiCASE                          = 01764700020;
+	public static final int        TdiCONTINUE                      = 01764700030;
+	public static final int        TdiEXTRANEOUS                    = 01764700040;
+	public static final int        TdiRETURN                        = 01764700050;
+	public static final int        TdiABORT                         = 01764700062;
+	public static final int        TdiBAD_INDEX                     = 01764700072;
+	public static final int        TdiBOMB                          = 01764700102;
+	public static final int        TdiEXTRA_ARG                     = 01764700112;
+	public static final int        TdiGOTO                          = 01764700122;
+	public static final int        TdiINVCLADSC                     = 01764700132;
+	public static final int        TdiINVCLADTY                     = 01764700142;
+	public static final int        TdiINVDTYDSC                     = 01764700152;
+	public static final int        TdiINV_OPC                       = 01764700162;
+	public static final int        TdiINV_SIZE                      = 01764700172;
+	public static final int        TdiMISMATCH                      = 01764700202;
+	public static final int        TdiMISS_ARG                      = 01764700212;
+	public static final int        TdiNDIM_OVER                     = 01764700222;
+	public static final int        TdiNO_CMPLX                      = 01764700232;
+	public static final int        TdiNO_OPC                        = 01764700242;
+	public static final int        TdiNO_OUTPTR                     = 01764700252;
+	public static final int        TdiNO_SELF_PTR                   = 01764700262;
+	public static final int        TdiNOT_NUMBER                    = 01764700272;
+	public static final int        TdiNULL_PTR                      = 01764700302;
+	public static final int        TdiRECURSIVE                     = 01764700312;
+	public static final int        TdiSIG_DIM                       = 01764700322;
+	public static final int        TdiSYNTAX                        = 01764700332;
+	public static final int        TdiTOO_BIG                       = 01764700342;
+	public static final int        TdiUNBALANCE                     = 01764700352;
+	public static final int        TdiUNKNOWN_VAR                   = 01764700362;
+	public static final int        TdiSTRTOOLON                     = 01764700374;
+	public static final int        TdiTIMEOUT                       = 01764700404;
+	public static final int        ApdAPD_APPEND                    = 01767200012;
+	public static final int        ApdDICT_KEYVALPAIR               = 01767200022;
+	public static final int        ApdDICT_KEYCLS                   = 01767200032;
+	public static final int     ServerNOT_DISPATCHED                = 01770300010;
+	public static final int     ServerINVALID_DEPENDENCY            = 01770300022;
+	public static final int     ServerCANT_HAPPEN                   = 01770300032;
+	public static final int     ServerINVSHOT                       = 01770300042;
+	public static final int     ServerABORT                         = 01770300062;
+	public static final int     ServerPATH_DOWN                     = 01770300102;
+	public static final int     ServerSOCKET_ADDR_ERROR             = 01770300112;
+	public static final int     ServerINVALID_ACTION_OPERATION      = 01770300122;
 	public static final int        DevBAD_ENDIDX                    = 04737100012;
 	public static final int        DevBAD_FILTER                    = 04737100022;
 	public static final int        DevBAD_FREQ                      = 04737100032;
@@ -224,185 +400,361 @@ public class MdsException extends IOException{
 	public static final int        DevCOMM_ERROR                    = 04737122712;
 	public static final int        DevCAMERA_NOT_FOUND              = 04737122722;
 	public static final int        DevNOT_A_PYDEVICE                = 04737122732;
-	public static final int       TreeALREADY_OFF                   = 01764300053;
-	public static final int       TreeALREADY_ON                    = 01764300063;
-	public static final int       TreeALREADY_OPEN                  = 01764300073;
-	public static final int       TreeALREADY_THERE                 = 01764300210;
-	public static final int       TreeBADRECORD                     = 01764300272;
-	public static final int       TreeBOTH_OFF                      = 01764300230;
-	public static final int       TreeBUFFEROVF                     = 01764300422;
-	public static final int       TreeCONGLOMFULL                   = 01764300442;
-	public static final int       TreeCONGLOM_NOT_FULL              = 01764300452;
-	public static final int       TreeCONTINUING                    = 01764304543;
-	public static final int       TreeDUPTAG                        = 01764300312;
-	public static final int       TreeEDITTING                      = 01764300622;
-	public static final int       TreeILLEGAL_ITEM                  = 01764300412;
-	public static final int       TreeILLPAGCNT                     = 01764300322;
-	public static final int       TreeINVDFFCLASS                   = 01764300472;
-	public static final int       TreeINVDTPUSG                     = 01764300612;
-	public static final int       TreeINVPATH                       = 01764300402;
-	public static final int       TreeINVRECTYP                     = 01764300502;
-	public static final int       TreeINVTREE                       = 01764300302;
-	public static final int       TreeMAXOPENEDIT                   = 01764300332;
-	public static final int       TreeNEW                           = 01764300033;
-	public static final int       TreeNMN                           = 01764300140;
-	public static final int       TreeNMT                           = 01764300150;
-	public static final int       TreeNNF                           = 01764300160;
-	public static final int       TreeNODATA                        = 01764300342;
-	public static final int       TreeNODNAMLEN                     = 01764300512;
-	public static final int       TreeNOEDIT                        = 01764300362;
-	public static final int       TreeNOLOG                         = 01764300652;
-	public static final int       TreeNOMETHOD                      = 01764300260;
-	public static final int       TreeNOOVERWRITE                   = 01764300602;
-	public static final int       TreeNORMAL                        = 01764300011;
-	public static final int       TreeNOTALLSUBS                    = 01764300043;
-	public static final int       TreeNOTCHILDLESS                  = 01764300372;
-	public static final int       TreeNOT_IN_LIST                   = 01764300702;
-	public static final int       TreeNOTMEMBERLESS                 = 01764300562;
-	public static final int       TreeNOTOPEN                       = 01764300352;
-	public static final int       TreeNOTSON                        = 01764300572;
-	public static final int       TreeNOT_CONGLOM                   = 01764300542;
-	public static final int       TreeNOT_OPEN                      = 01764300250;
-	public static final int       TreeNOWRITEMODEL                  = 01764300632;
-	public static final int       TreeNOWRITESHOT                   = 01764300642;
-	public static final int       TreeNO_CONTEXT                    = 01764300103;
-	public static final int       TreeOFF                           = 01764300240;
-	public static final int       TreeON                            = 01764300113;
-	public static final int       TreeOPEN                          = 01764300123;
-	public static final int       TreeOPEN_EDIT                     = 01764300133;
-	public static final int       TreePARENT_OFF                    = 01764300220;
-	public static final int       TreeREADERR                       = 01764300672;
-	public static final int       TreeREADONLY                      = 01764300662;
-	public static final int       TreeRESOLVED                      = 01764300021;
-	public static final int       TreeSUCCESS                       = 01764303101;
-	public static final int       TreeTAGNAMLEN                     = 01764300522;
-	public static final int       TreeTNF                           = 01764300170;
-	public static final int       TreeTREENF                        = 01764300200;
-	public static final int       TreeUNRESOLVED                    = 01764300462;
-	public static final int       TreeUNSPRTCLASS                   = 01764300432;
-	public static final int       TreeUNSUPARRDTYPE                 = 01764300552;
-	public static final int       TreeWRITEFIRST                    = 01764300532;
-	public static final int       TreeFAILURE                       = 01764307642;
-	public static final int       TreeLOCK_FAILURE                  = 01764307662;
-	public static final int       TreeFILE_NOT_FOUND                = 01764307652;
-	public static final int       TreeCANCEL                        = 01764306200;
-	public static final int       TreeUNSUPTHICKOP                  = 01764306210;
-	public static final int       TreeNOSEGMENTS                    = 01764307672;
-	public static final int       TreeINVDTYPE                      = 01764307702;
-	public static final int       TreeINVSHAPE                      = 01764307712;
-	public static final int       TreeINVSHOT                       = 01764307732;
-	public static final int       TreeINVTAG                        = 01764307752;
-	public static final int       TreeNOPATH                        = 01764307762;
-	public static final int       TreeTREEFILEREADERR               = 01764307772;
-	public static final int       TreeMEMERR                        = 01764310002;
-	public static final int       TreeNOCURRENT                     = 01764310012;
-	public static final int       TreeFOPENW                        = 01764310022;
-	public static final int       TreeFOPENR                        = 01764310032;
-	public static final int       TreeFCREATE                       = 01764310042;
-	public static final int       TreeCONNECTFAIL                   = 01764310052;
-	public static final int       TreeNCIWRITE                      = 01764310062;
-	public static final int       TreeDELFAIL                       = 01764310072;
-	public static final int       TreeRENFAIL                       = 01764310102;
-	public static final int       TreeEMPTY                         = 01764310110;
-	public static final int       TreePARSEERR                      = 01764310122;
-	public static final int       TreeNCIREAD                       = 01764310132;
-	public static final int       TreeNOVERSION                     = 01764310142;
-	public static final int       TreeDFREAD                        = 01764310152;
-	public static final int       TreeCLOSEERR                      = 01764310162;
-	public static final int       TreeMOVEERROR                     = 01764310172;
-	public static final int       TreeOPENEDITERR                   = 01764310202;
-	public static final int       TreeREADONLY_TREE                 = 01764310212;
-	public static final int       TreeWRITETREEERR                  = 01764310222;
-	public static final int       TreeNOWILD                        = 01764310232;
-	public static final int        LibINSVIRMEM                     = 05301024;
-	public static final int        LibINVARG                        = 05301064;
-	public static final int        LibINVSTRDES                     = 05301044;
-	public static final int        LibKEYNOTFOU                     = 05301374;
-	public static final int        LibNOTFOU                        = 05301164;
-	public static final int        LibQUEWASEMP                     = 05301354;
-	public static final int        LibSTRTRU                        = 05300021;
-	public static final int        StrMATCH                         = 011102031;
-	public static final int        StrNOMATCH                       = 011101010;
-	public static final int        StrNOELEM                        = 011101030;
-	public static final int        StrINVDELIM                      = 011101020;
-	public static final int        StrSTRTOOLON                     = 011100164;
-	public static final int    MDSplusWARNING                       = 0200000;
-	public static final int    MDSplusSUCCESS                       = 0200011;
-	public static final int    MDSplusERROR                         = 0200022;
-	public static final int    MDSplusFATAL                         = 0200044;
-	public static final int    MDSplusSANDBOX                       = 0200052;
-	public static final int         SsSUCCESS                       = 01;
-	public static final int         SsINTOVF                        = 02174;
-	public static final int         SsINTERNAL                      = 0-1;
-	public static final int        TdiBREAK                         = 01764700010;
-	public static final int        TdiCASE                          = 01764700020;
-	public static final int        TdiCONTINUE                      = 01764700030;
-	public static final int        TdiEXTRANEOUS                    = 01764700040;
-	public static final int        TdiRETURN                        = 01764700050;
-	public static final int        TdiABORT                         = 01764700062;
-	public static final int        TdiBAD_INDEX                     = 01764700072;
-	public static final int        TdiBOMB                          = 01764700102;
-	public static final int        TdiEXTRA_ARG                     = 01764700112;
-	public static final int        TdiGOTO                          = 01764700122;
-	public static final int        TdiINVCLADSC                     = 01764700132;
-	public static final int        TdiINVCLADTY                     = 01764700142;
-	public static final int        TdiINVDTYDSC                     = 01764700152;
-	public static final int        TdiINV_OPC                       = 01764700162;
-	public static final int        TdiINV_SIZE                      = 01764700172;
-	public static final int        TdiMISMATCH                      = 01764700202;
-	public static final int        TdiMISS_ARG                      = 01764700212;
-	public static final int        TdiNDIM_OVER                     = 01764700222;
-	public static final int        TdiNO_CMPLX                      = 01764700232;
-	public static final int        TdiNO_OPC                        = 01764700242;
-	public static final int        TdiNO_OUTPTR                     = 01764700252;
-	public static final int        TdiNO_SELF_PTR                   = 01764700262;
-	public static final int        TdiNOT_NUMBER                    = 01764700272;
-	public static final int        TdiNULL_PTR                      = 01764700302;
-	public static final int        TdiRECURSIVE                     = 01764700312;
-	public static final int        TdiSIG_DIM                       = 01764700322;
-	public static final int        TdiSYNTAX                        = 01764700332;
-	public static final int        TdiTOO_BIG                       = 01764700342;
-	public static final int        TdiUNBALANCE                     = 01764700352;
-	public static final int        TdiUNKNOWN_VAR                   = 01764700362;
-	public static final int        TdiSTRTOOLON                     = 01764700374;
-	public static final int        TdiTIMEOUT                       = 01764700404;
-	public static final int        ApdAPD_APPEND                    = 01767200012;
-	public static final int        ApdDICT_KEYVALPAIR               = 01767200022;
-	public static final int        ApdDICT_KEYCLS                   = 01767200032;
-	public static final int     MdsdclSUCCESS                       = 01000400011;
-	public static final int     MdsdclEXIT                          = 01000400021;
-	public static final int     MdsdclERROR                         = 01000400030;
-	public static final int     MdsdclNORMAL                        = 01000401451;
-	public static final int     MdsdclPRESENT                       = 01000401461;
-	public static final int     MdsdclIVVERB                        = 01000401472;
-	public static final int     MdsdclABSENT                        = 01000401500;
-	public static final int     MdsdclNEGATED                       = 01000401510;
-	public static final int     MdsdclNOTNEGATABLE                  = 01000401522;
-	public static final int     MdsdclIVQUAL                        = 01000401532;
-	public static final int     MdsdclPROMPT_MORE                   = 01000401542;
-	public static final int     MdsdclTOO_MANY_PRMS                 = 01000401552;
-	public static final int     MdsdclTOO_MANY_VALS                 = 01000401562;
-	public static final int     MdsdclMISSING_VALUE                 = 01000401572;
-	public static final int     ServerNOT_DISPATCHED                = 01770300010;
-	public static final int     ServerINVALID_DEPENDENCY            = 01770300022;
-	public static final int     ServerCANT_HAPPEN                   = 01770300032;
-	public static final int     ServerINVSHOT                       = 01770300042;
-	public static final int     ServerABORT                         = 01770300062;
-	public static final int     ServerPATH_DOWN                     = 01770300102;
-	public static final int     ServerSOCKET_ADDR_ERROR             = 01770300112;
-	public static final int     ServerINVALID_ACTION_OPERATION      = 01770300122;
-	public static final int        CamDONE_Q                        = 01000300011;
-	public static final int        CamDONE_NOQ                      = 01000300021;
-	public static final int        CamDONE_NOX                      = 01000310000;
-	public static final int        CamSERTRAERR                     = 01000314002;
-	public static final int        CamSCCFAIL                       = 01000314102;
-	public static final int        CamOFFLINE                       = 01000314152;
-	public static final int        TclNORMAL                        = 012400011;
-	public static final int        TclFAILED_ESSENTIAL              = 012400020;
-	public static final int        TclNO_DISPATCH_TABLE             = 012400030;
 
 	public static final String getMdsMessage(final int status) {
 		switch(status){
+			case SsINTERNAL:
+				return "%SS-?-INTERNAL, This status is meant for internal use only, you should never have seen this message.";
+			case SsSUCCESS:
+				return "%SS-S-SUCCESS, Success";
+			case SsINTOVF:
+				return "%SS-F-INTOVF, Integer overflow";
+			case MDSplusWARNING:
+				return "%MDSPLUS-W-WARNING, Warning";
+			case MDSplusSUCCESS:
+				return "%MDSPLUS-S-SUCCESS, Success";
+			case MDSplusERROR:
+				return "%MDSPLUS-E-ERROR, Error";
+			case MDSplusFATAL:
+				return "%MDSPLUS-F-FATAL, Fatal";
+			case MDSplusSANDBOX:
+				return "%MDSPLUS-E-SANDBOX, Function disabled for security reasons";
+			case LibSTRTRU:
+				return "%LIB-S-STRTRU, String truncated";
+			case LibINSVIRMEM:
+				return "%LIB-F-INSVIRMEM, Insufficient virtual memory";
+			case LibINVSTRDES:
+				return "%LIB-F-INVSTRDES, Invalid string descriptor";
+			case LibINVARG:
+				return "%LIB-F-INVARG, Invalid argument";
+			case LibNOTFOU:
+				return "%LIB-F-NOTFOU, Entity not found";
+			case LibQUEWASEMP:
+				return "%LIB-F-QUEWASEMP, Queue was empty";
+			case LibKEYNOTFOU:
+				return "%LIB-F-KEYNOTFOU, Key not found";
+			case StrSTRTOOLON:
+				return "%STR-F-STRTOOLON, String too long";
+			case StrNOMATCH:
+				return "%STR-W-NOMATCH, Strings do not match";
+			case StrINVDELIM:
+				return "%STR-W-INVDELIM, Not enough delimited characters";
+			case StrNOELEM:
+				return "%STR-W-NOELEM, Not enough delimited characters";
+			case StrMATCH:
+				return "%STR-S-MATCH, Strings match";
+			case TclNORMAL:
+				return "%TCL-S-NORMAL, Normal successful completion";
+			case TclFAILED_ESSENTIAL:
+				return "%TCL-W-FAILED_ESSENTIAL, Essential action failed";
+			case TclNO_DISPATCH_TABLE:
+				return "%TCL-W-NO_DISPATCH_TABLE, No dispatch table found. Forgot to do DISPATCH/BUILD?";
+			case CamDONE_Q:
+				return "%CAM-S-DONE_Q, I/O completed with X=1, Q=1";
+			case CamDONE_NOQ:
+				return "%CAM-S-DONE_NOQ, I/O completed with X=1, Q=0";
+			case CamDONE_NOX:
+				return "%CAM-W-DONE_NOX, I/O completed with X=0 - probable failure";
+			case CamSERTRAERR:
+				return "%CAM-E-SERTRAERR, serial transmission error on highway";
+			case CamSCCFAIL:
+				return "%CAM-E-SCCFAIL, serial crate controller failure";
+			case CamOFFLINE:
+				return "%CAM-E-OFFLINE, crate is offline";
+			case MdsdclSUCCESS:
+				return "%MDSDCL-S-SUCCESS, Normal successful completion";
+			case MdsdclEXIT:
+				return "%MDSDCL-S-EXIT, Normal exit";
+			case MdsdclERROR:
+				return "%MDSDCL-W-ERROR, Unsuccessful execution of command";
+			case MdsdclNORMAL:
+				return "%MDSDCL-S-NORMAL, Normal successful completion";
+			case MdsdclPRESENT:
+				return "%MDSDCL-S-PRESENT, Entity is present";
+			case MdsdclIVVERB:
+				return "%MDSDCL-E-IVVERB, No such command";
+			case MdsdclABSENT:
+				return "%MDSDCL-W-ABSENT, Entity is absent";
+			case MdsdclNEGATED:
+				return "%MDSDCL-W-NEGATED, Entity is present but negated";
+			case MdsdclNOTNEGATABLE:
+				return "%MDSDCL-E-NOTNEGATABLE, Entity cannot be negated";
+			case MdsdclIVQUAL:
+				return "%MDSDCL-E-IVQUAL, Invalid qualifier";
+			case MdsdclPROMPT_MORE:
+				return "%MDSDCL-E-PROMPT_MORE, More input required for command";
+			case MdsdclTOO_MANY_PRMS:
+				return "%MDSDCL-E-TOO_MANY_PRMS, Too many parameters specified";
+			case MdsdclTOO_MANY_VALS:
+				return "%MDSDCL-E-TOO_MANY_VALS, Too many values";
+			case MdsdclMISSING_VALUE:
+				return "%MDSDCL-E-MISSING_VALUE, Qualifier value needed";
+			case TreeNORMAL:
+				return "%TREE-S-NORMAL, Normal successful completion (deprecated: use TreeSUCCESS)";
+			case TreeRESOLVED:
+				return "%TREE-S-RESOLVED, Indirect reference successfully resolved";
+			case TreeNEW:
+				return "%TREE-I-NEW, New tree created";
+			case TreeNOTALLSUBS:
+				return "%TREE-I-NOTALLSUBS, Main tree opened but not all subtrees found/or connected";
+			case TreeALREADY_OFF:
+				return "%TREE-I-ALREADY_OFF, Node is already OFF";
+			case TreeALREADY_ON:
+				return "%TREE-I-ALREADY_ON, Node is already ON";
+			case TreeALREADY_OPEN:
+				return "%TREE-I-ALREADY_OPEN, Tree is already OPEN";
+			case TreeNO_CONTEXT:
+				return "%TREE-I-NO_CONTEXT, There is no active search to end";
+			case TreeON:
+				return "%TREE-I-ON, Node is ON";
+			case TreeOPEN:
+				return "%TREE-I-OPEN, Tree is OPEN (no edit)";
+			case TreeOPEN_EDIT:
+				return "%TREE-I-OPEN_EDIT, Tree is OPEN for edit";
+			case TreeNMN:
+				return "%TREE-W-NMN, No More Nodes";
+			case TreeNMT:
+				return "%TREE-W-NMT, No More Tags";
+			case TreeNNF:
+				return "%TREE-W-NNF, Node Not Found";
+			case TreeTNF:
+				return "%TREE-W-TNF, Tag Not Found";
+			case TreeTREENF:
+				return "%TREE-W-TREENF, Tree Not Found";
+			case TreeALREADY_THERE:
+				return "%TREE-W-ALREADY_THERE, Node is already in the tree";
+			case TreePARENT_OFF:
+				return "%TREE-W-PARENT_OFF, Parent of this node is OFF";
+			case TreeBOTH_OFF:
+				return "%TREE-W-BOTH_OFF, Both this node and its parent are off";
+			case TreeOFF:
+				return "%TREE-W-OFF, Node is OFF";
+			case TreeNOT_OPEN:
+				return "%TREE-W-NOT_OPEN, Tree not currently open";
+			case TreeNOMETHOD:
+				return "%TREE-W-NOMETHOD, Method not available for this object";
+			case TreeBADRECORD:
+				return "%TREE-E-BADRECORD, Data corrupted: cannot read record";
+			case TreeINVTREE:
+				return "%TREE-E-INVTREE, Invalid tree identification structure";
+			case TreeDUPTAG:
+				return "%TREE-E-DUPTAG, Tag name already in use";
+			case TreeILLPAGCNT:
+				return "%TREE-E-ILLPAGCNT, Illegal page count, error mapping tree file";
+			case TreeMAXOPENEDIT:
+				return "%TREE-E-MAXOPENEDIT, Too many files open for edit";
+			case TreeNODATA:
+				return "%TREE-E-NODATA, No data available for this node";
+			case TreeNOTOPEN:
+				return "%TREE-E-NOTOPEN, No tree file currently open";
+			case TreeNOEDIT:
+				return "%TREE-E-NOEDIT, Tree file is not open for edit";
+			case TreeNOTCHILDLESS:
+				return "%TREE-E-NOTCHILDLESS, Node must be childless to become subtree reference";
+			case TreeINVPATH:
+				return "%TREE-E-INVPATH, Invalid tree pathname specified";
+			case TreeILLEGAL_ITEM:
+				return "%TREE-E-ILLEGAL_ITEM, Invalid item code or part number specified";
+			case TreeBUFFEROVF:
+				return "%TREE-E-BUFFEROVF, Output buffer overflow";
+			case TreeUNSPRTCLASS:
+				return "%TREE-E-UNSPRTCLASS, Unsupported descriptor class";
+			case TreeCONGLOMFULL:
+				return "%TREE-E-CONGLOMFULL, Current conglomerate is full";
+			case TreeCONGLOM_NOT_FULL:
+				return "%TREE-E-CONGLOM_NOT_FULL, Current conglomerate is not yet full";
+			case TreeUNRESOLVED:
+				return "%TREE-E-UNRESOLVED, Not an indirect node reference: No action taken";
+			case TreeINVDFFCLASS:
+				return "%TREE-E-INVDFFCLASS, Invalid data fmt: only CLASS_S can have data in NCI";
+			case TreeINVRECTYP:
+				return "%TREE-E-INVRECTYP, Record type invalid for requested operation";
+			case TreeNODNAMLEN:
+				return "%TREE-E-NODNAMLEN, Node name too long (12 chars max)";
+			case TreeTAGNAMLEN:
+				return "%TREE-E-TAGNAMLEN, Tagname too long (max 24 chars)";
+			case TreeWRITEFIRST:
+				return "%TREE-E-WRITEFIRST, Tree has been modified:  write or quit first";
+			case TreeNOT_CONGLOM:
+				return "%TREE-E-NOT_CONGLOM, Head node of conglomerate does not contain a DTYPE_CONGLOM record";
+			case TreeUNSUPARRDTYPE:
+				return "%TREE-E-UNSUPARRDTYPE, Complex data types not supported as members of arrays";
+			case TreeNOTMEMBERLESS:
+				return "%TREE-E-NOTMEMBERLESS, Subtree reference can not have members";
+			case TreeNOTSON:
+				return "%TREE-E-NOTSON, Subtree reference cannot be a member";
+			case TreeNOOVERWRITE:
+				return "%TREE-E-NOOVERWRITE, Write-once node: overwrite not permitted";
+			case TreeINVDTPUSG:
+				return "%TREE-E-INVDTPUSG, Attempt to store datatype which conflicts with the designated usage of this node";
+			case TreeEDITTING:
+				return "%TREE-E-EDITTING, Tree file open for edit: operation not permitted";
+			case TreeNOWRITEMODEL:
+				return "%TREE-E-NOWRITEMODEL, Data for this node can not be written into the MODEL file";
+			case TreeNOWRITESHOT:
+				return "%TREE-E-NOWRITESHOT, Data for this node can not be written into the SHOT file";
+			case TreeNOLOG:
+				return "%TREE-E-NOLOG, Experiment pathname (xxx_path) not defined";
+			case TreeREADONLY:
+				return "%TREE-E-READONLY, Tree was opened with readonly access";
+			case TreeREADERR:
+				return "%TREE-E-READERR, Error reading record for node";
+			case TreeNOT_IN_LIST:
+				return "%TREE-E-NOT_IN_LIST, Tree being opened was not in the list";
+			case TreeSUCCESS:
+				return "%TREE-S-SUCCESS, Operation successful";
+			case TreeCONTINUING:
+				return "%TREE-I-CONTINUING, Operation continuing: note following error";
+			case TreeCANCEL:
+				return "%TREE-W-CANCEL, User canceled operation";
+			case TreeUNSUPTHICKOP:
+				return "%TREE-W-UNSUPTHICKOP, Unsupported thick client operation";
+			case TreeFAILURE:
+				return "%TREE-E-FAILURE, Operation NOT successful";
+			case TreeFILE_NOT_FOUND:
+				return "%TREE-E-FILE_NOT_FOUND, File or Directory Not Found";
+			case TreeLOCK_FAILURE:
+				return "%TREE-E-LOCK_FAILURE, Error locking file, perhaps NFSLOCKING not enabled on this system";
+			case TreeNOSEGMENTS:
+				return "%TREE-E-NOSEGMENTS, No segments exist in this node";
+			case TreeINVDTYPE:
+				return "%TREE-E-INVDTYPE, Invalid datatype for data segment";
+			case TreeINVSHAPE:
+				return "%TREE-E-INVSHAPE, Invalid shape for this data segment";
+			case TreeINVSHOT:
+				return "%TREE-E-INVSHOT, Invalid shot number - must be -1 (model), 0 (current), or Positive";
+			case TreeINVTAG:
+				return "%TREE-E-INVTAG, Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores";
+			case TreeNOPATH:
+				return "%TREE-E-NOPATH, No 'treename'_path or default_tree_path environment variables defined. Cannot locate tree files.";
+			case TreeTREEFILEREADERR:
+				return "%TREE-E-TREEFILEREADERR, Error reading in tree file contents.";
+			case TreeMEMERR:
+				return "%TREE-E-MEMERR, Memory allocation error.";
+			case TreeNOCURRENT:
+				return "%TREE-E-NOCURRENT, No current shot number set for this tree.";
+			case TreeFOPENW:
+				return "%TREE-E-FOPENW, Error opening file for read-write.";
+			case TreeFOPENR:
+				return "%TREE-E-FOPENR, Error opening file read-only.";
+			case TreeFCREATE:
+				return "%TREE-E-FCREATE, Error creating new file.";
+			case TreeCONNECTFAIL:
+				return "%TREE-E-CONNECTFAIL, Error connecting to remote server.";
+			case TreeNCIWRITE:
+				return "%TREE-E-NCIWRITE, Error writing node characterisitics to file.";
+			case TreeDELFAIL:
+				return "%TREE-E-DELFAIL, Error deleting file.";
+			case TreeRENFAIL:
+				return "%TREE-E-RENFAIL, Error renaming file.";
+			case TreeEMPTY:
+				return "%TREE-W-EMPTY, Empty string provided.";
+			case TreePARSEERR:
+				return "%TREE-E-PARSEERR, Invalid node search string.";
+			case TreeNCIREAD:
+				return "%TREE-E-NCIREAD, Error reading node characteristics from file.";
+			case TreeNOVERSION:
+				return "%TREE-E-NOVERSION, No version available.";
+			case TreeDFREAD:
+				return "%TREE-E-DFREAD, Error reading from datafile.";
+			case TreeCLOSEERR:
+				return "%TREE-E-CLOSEERR, Error closing temporary tree file.";
+			case TreeMOVEERROR:
+				return "%TREE-E-MOVEERROR, Error replacing original treefile with new one.";
+			case TreeOPENEDITERR:
+				return "%TREE-E-OPENEDITERR, Error reopening new treefile for write access.";
+			case TreeREADONLY_TREE:
+				return "%TREE-E-READONLY_TREE, Tree is marked as readonly. No write operations permitted.";
+			case TreeWRITETREEERR:
+				return "%TREE-E-WRITETREEERR, Error writing .tree file";
+			case TreeNOWILD:
+				return "%TREE-E-NOWILD, No wildcard characters permitted in node specifier";
+			case TdiBREAK:
+				return "%TDI-W-BREAK, BREAK was not in DO FOR SWITCH or WHILE";
+			case TdiCASE:
+				return "%TDI-W-CASE, CASE was not in SWITCH statement";
+			case TdiCONTINUE:
+				return "%TDI-W-CONTINUE, CONTINUE was not in DO FOR or WHILE";
+			case TdiEXTRANEOUS:
+				return "%TDI-W-EXTRANEOUS, Some characters were unused, bad number maybe";
+			case TdiRETURN:
+				return "%TDI-W-RETURN, Extraneous RETURN statement, not from a FUN";
+			case TdiABORT:
+				return "%TDI-E-ABORT, Program requested abort";
+			case TdiBAD_INDEX:
+				return "%TDI-E-BAD_INDEX, Index or subscript is too small or too big";
+			case TdiBOMB:
+				return "%TDI-E-BOMB, Bad punctuation, could not compile the text";
+			case TdiEXTRA_ARG:
+				return "%TDI-E-EXTRA_ARG, Too many arguments for function, watch commas";
+			case TdiGOTO:
+				return "%TDI-E-GOTO, GOTO target label not found";
+			case TdiINVCLADSC:
+				return "%TDI-E-INVCLADSC, Storage class not valid, must be scalar or array";
+			case TdiINVCLADTY:
+				return "%TDI-E-INVCLADTY, Invalid mixture of storage class and data type";
+			case TdiINVDTYDSC:
+				return "%TDI-E-INVDTYDSC, Storage data type is not valid";
+			case TdiINV_OPC:
+				return "%TDI-E-INV_OPC, Invalid operator code in a function";
+			case TdiINV_SIZE:
+				return "%TDI-E-INV_SIZE, Number of elements does not match declaration";
+			case TdiMISMATCH:
+				return "%TDI-E-MISMATCH, Shape of arguments does not match";
+			case TdiMISS_ARG:
+				return "%TDI-E-MISS_ARG, Missing argument is required for function";
+			case TdiNDIM_OVER:
+				return "%TDI-E-NDIM_OVER, Number of dimensions is over the allowed 8";
+			case TdiNO_CMPLX:
+				return "%TDI-E-NO_CMPLX, There are no complex forms of this function";
+			case TdiNO_OPC:
+				return "%TDI-E-NO_OPC, No support for this function, today";
+			case TdiNO_OUTPTR:
+				return "%TDI-E-NO_OUTPTR, An output pointer is required";
+			case TdiNO_SELF_PTR:
+				return "%TDI-E-NO_SELF_PTR, No $VALUE is defined for signal or validation";
+			case TdiNOT_NUMBER:
+				return "%TDI-E-NOT_NUMBER, Value is not a scalar number and must be";
+			case TdiNULL_PTR:
+				return "%TDI-E-NULL_PTR, Null pointer where value needed";
+			case TdiRECURSIVE:
+				return "%TDI-E-RECURSIVE, Overly recursive function, calls itself maybe";
+			case TdiSIG_DIM:
+				return "%TDI-E-SIG_DIM, Signal dimension does not match data shape";
+			case TdiSYNTAX:
+				return "%TDI-E-SYNTAX, Bad punctuation or misspelled word or number";
+			case TdiTOO_BIG:
+				return "%TDI-E-TOO_BIG, Conversion of number lost significant digits";
+			case TdiUNBALANCE:
+				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' \"\" or /**/";
+			case TdiUNKNOWN_VAR:
+				return "%TDI-E-UNKNOWN_VAR, Unknown/undefined variable name";
+			case TdiSTRTOOLON:
+				return "%TDI-F-STRTOOLON, string is too long (greater than 65535)";
+			case TdiTIMEOUT:
+				return "%TDI-F-TIMEOUT, task did not complete in alotted time";
+			case ApdAPD_APPEND:
+				return "%APD-E-APD_APPEND, First argument must be APD or *";
+			case ApdDICT_KEYVALPAIR:
+				return "%APD-E-DICT_KEYVALPAIR, A Dictionary requires an even number of elements";
+			case ApdDICT_KEYCLS:
+				return "%APD-E-DICT_KEYCLS, Keys must be scalar, i.e. CLASS_S";
+			case ServerNOT_DISPATCHED:
+				return "%SERVER-W-NOT_DISPATCHED, action not dispatched, depended on failed action";
+			case ServerINVALID_DEPENDENCY:
+				return "%SERVER-E-INVALID_DEPENDENCY, action dependency cannot be evaluated";
+			case ServerCANT_HAPPEN:
+				return "%SERVER-E-CANT_HAPPEN, action contains circular dependency or depends on action which was not dispatched";
+			case ServerINVSHOT:
+				return "%SERVER-E-INVSHOT, invalid shot number, cannot dispatch actions in model";
+			case ServerABORT:
+				return "%SERVER-E-ABORT, Server action was aborted";
+			case ServerPATH_DOWN:
+				return "%SERVER-E-PATH_DOWN, Path to server lost";
+			case ServerSOCKET_ADDR_ERROR:
+				return "%SERVER-E-SOCKET_ADDR_ERROR, Cannot obtain ip address socket is bound to.";
+			case ServerINVALID_ACTION_OPERATION:
+				return "%SERVER-E-INVALID_ACTION_OPERATION, Unknown action operation.";
 			case DevBAD_ENDIDX:
 				return "%DEV-E-BAD_ENDIDX, unable to read end index for channel";
 			case DevBAD_FILTER:
@@ -763,358 +1115,6 @@ public class MdsException extends IOException{
 				return "%DEV-E-CAMERA_NOT_FOUND, Could not find specified camera on the network";
 			case DevNOT_A_PYDEVICE:
 				return "%DEV-E-NOT_A_PYDEVICE, Device is not a python device.";
-			case TreeALREADY_OFF:
-				return "%TREE-I-ALREADY_OFF, Node is already OFF";
-			case TreeALREADY_ON:
-				return "%TREE-I-ALREADY_ON, Node is already ON";
-			case TreeALREADY_OPEN:
-				return "%TREE-I-ALREADY_OPEN, Tree is already OPEN";
-			case TreeALREADY_THERE:
-				return "%TREE-W-ALREADY_THERE, Node is already in the tree";
-			case TreeBADRECORD:
-				return "%TREE-E-BADRECORD, Data corrupted: cannot read record";
-			case TreeBOTH_OFF:
-				return "%TREE-W-BOTH_OFF, Both this node and its parent are off";
-			case TreeBUFFEROVF:
-				return "%TREE-E-BUFFEROVF, Output buffer overflow";
-			case TreeCONGLOMFULL:
-				return "%TREE-E-CONGLOMFULL, Current conglomerate is full";
-			case TreeCONGLOM_NOT_FULL:
-				return "%TREE-E-CONGLOM_NOT_FULL, Current conglomerate is not yet full";
-			case TreeCONTINUING:
-				return "%TREE-I-CONTINUING, Operation continuing: note following error";
-			case TreeDUPTAG:
-				return "%TREE-E-DUPTAG, Tag name already in use";
-			case TreeEDITTING:
-				return "%TREE-E-EDITTING, Tree file open for edit: operation not permitted";
-			case TreeILLEGAL_ITEM:
-				return "%TREE-E-ILLEGAL_ITEM, Invalid item code or part number specified";
-			case TreeILLPAGCNT:
-				return "%TREE-E-ILLPAGCNT, Illegal page count, error mapping tree file";
-			case TreeINVDFFCLASS:
-				return "%TREE-E-INVDFFCLASS, Invalid data fmt: only CLASS_S can have data in NCI";
-			case TreeINVDTPUSG:
-				return "%TREE-E-INVDTPUSG, Attempt to store datatype which conflicts with the designated usage of this node";
-			case TreeINVPATH:
-				return "%TREE-E-INVPATH, Invalid tree pathname specified";
-			case TreeINVRECTYP:
-				return "%TREE-E-INVRECTYP, Record type invalid for requested operation";
-			case TreeINVTREE:
-				return "%TREE-E-INVTREE, Invalid tree identification structure";
-			case TreeMAXOPENEDIT:
-				return "%TREE-E-MAXOPENEDIT, Too many files open for edit";
-			case TreeNEW:
-				return "%TREE-I-NEW, New tree created";
-			case TreeNMN:
-				return "%TREE-W-NMN, No More Nodes";
-			case TreeNMT:
-				return "%TREE-W-NMT, No More Tags";
-			case TreeNNF:
-				return "%TREE-W-NNF, Node Not Found";
-			case TreeNODATA:
-				return "%TREE-E-NODATA, No data available for this node";
-			case TreeNODNAMLEN:
-				return "%TREE-E-NODNAMLEN, Node name too long (12 chars max)";
-			case TreeNOEDIT:
-				return "%TREE-E-NOEDIT, Tree file is not open for edit";
-			case TreeNOLOG:
-				return "%TREE-E-NOLOG, Experiment pathname (xxx_path) not defined";
-			case TreeNOMETHOD:
-				return "%TREE-W-NOMETHOD, Method not available for this object";
-			case TreeNOOVERWRITE:
-				return "%TREE-E-NOOVERWRITE, Write-once node: overwrite not permitted";
-			case TreeNORMAL:
-				return "%TREE-S-NORMAL, Normal successful completion (deprecated: use TreeSUCCESS)";
-			case TreeNOTALLSUBS:
-				return "%TREE-I-NOTALLSUBS, Main tree opened but not all subtrees found/or connected";
-			case TreeNOTCHILDLESS:
-				return "%TREE-E-NOTCHILDLESS, Node must be childless to become subtree reference";
-			case TreeNOT_IN_LIST:
-				return "%TREE-E-NOT_IN_LIST, Tree being opened was not in the list";
-			case TreeNOTMEMBERLESS:
-				return "%TREE-E-NOTMEMBERLESS, Subtree reference can not have members";
-			case TreeNOTOPEN:
-				return "%TREE-E-NOTOPEN, No tree file currently open";
-			case TreeNOTSON:
-				return "%TREE-E-NOTSON, Subtree reference cannot be a member";
-			case TreeNOT_CONGLOM:
-				return "%TREE-E-NOT_CONGLOM, Head node of conglomerate does not contain a DTYPE_CONGLOM record";
-			case TreeNOT_OPEN:
-				return "%TREE-W-NOT_OPEN, Tree not currently open";
-			case TreeNOWRITEMODEL:
-				return "%TREE-E-NOWRITEMODEL, Data for this node can not be written into the MODEL file";
-			case TreeNOWRITESHOT:
-				return "%TREE-E-NOWRITESHOT, Data for this node can not be written into the SHOT file";
-			case TreeNO_CONTEXT:
-				return "%TREE-I-NO_CONTEXT, There is no active search to end";
-			case TreeOFF:
-				return "%TREE-W-OFF, Node is OFF";
-			case TreeON:
-				return "%TREE-I-ON, Node is ON";
-			case TreeOPEN:
-				return "%TREE-I-OPEN, Tree is OPEN (no edit)";
-			case TreeOPEN_EDIT:
-				return "%TREE-I-OPEN_EDIT, Tree is OPEN for edit";
-			case TreePARENT_OFF:
-				return "%TREE-W-PARENT_OFF, Parent of this node is OFF";
-			case TreeREADERR:
-				return "%TREE-E-READERR, Error reading record for node";
-			case TreeREADONLY:
-				return "%TREE-E-READONLY, Tree was opened with readonly access";
-			case TreeRESOLVED:
-				return "%TREE-S-RESOLVED, Indirect reference successfully resolved";
-			case TreeSUCCESS:
-				return "%TREE-S-SUCCESS, Operation successful";
-			case TreeTAGNAMLEN:
-				return "%TREE-E-TAGNAMLEN, Tagname too long (max 24 chars)";
-			case TreeTNF:
-				return "%TREE-W-TNF, Tag Not Found";
-			case TreeTREENF:
-				return "%TREE-W-TREENF, Tree Not Found";
-			case TreeUNRESOLVED:
-				return "%TREE-E-UNRESOLVED, Not an indirect node reference: No action taken";
-			case TreeUNSPRTCLASS:
-				return "%TREE-E-UNSPRTCLASS, Unsupported descriptor class";
-			case TreeUNSUPARRDTYPE:
-				return "%TREE-E-UNSUPARRDTYPE, Complex data types not supported as members of arrays";
-			case TreeWRITEFIRST:
-				return "%TREE-E-WRITEFIRST, Tree has been modified:  write or quit first";
-			case TreeFAILURE:
-				return "%TREE-E-FAILURE, Operation NOT successful";
-			case TreeLOCK_FAILURE:
-				return "%TREE-E-LOCK_FAILURE, Error locking file, perhaps NFSLOCKING not enabled on this system";
-			case TreeFILE_NOT_FOUND:
-				return "%TREE-E-FILE_NOT_FOUND, File or Directory Not Found";
-			case TreeCANCEL:
-				return "%TREE-W-CANCEL, User canceled operation";
-			case TreeUNSUPTHICKOP:
-				return "%TREE-W-UNSUPTHICKOP, Unsupported thick client operation";
-			case TreeNOSEGMENTS:
-				return "%TREE-E-NOSEGMENTS, No segments exist in this node";
-			case TreeINVDTYPE:
-				return "%TREE-E-INVDTYPE, Invalid datatype for data segment";
-			case TreeINVSHAPE:
-				return "%TREE-E-INVSHAPE, Invalid shape for this data segment";
-			case TreeINVSHOT:
-				return "%TREE-E-INVSHOT, Invalid shot number - must be -1 (model), 0 (current), or Positive";
-			case TreeINVTAG:
-				return "%TREE-E-INVTAG, Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores";
-			case TreeNOPATH:
-				return "%TREE-E-NOPATH, No 'treename'_path or default_tree_path environment variables defined. Cannot locate tree files.";
-			case TreeTREEFILEREADERR:
-				return "%TREE-E-TREEFILEREADERR, Error reading in tree file contents.";
-			case TreeMEMERR:
-				return "%TREE-E-MEMERR, Memory allocation error.";
-			case TreeNOCURRENT:
-				return "%TREE-E-NOCURRENT, No current shot number set for this tree.";
-			case TreeFOPENW:
-				return "%TREE-E-FOPENW, Error opening file for read-write.";
-			case TreeFOPENR:
-				return "%TREE-E-FOPENR, Error opening file read-only.";
-			case TreeFCREATE:
-				return "%TREE-E-FCREATE, Error creating new file.";
-			case TreeCONNECTFAIL:
-				return "%TREE-E-CONNECTFAIL, Error connecting to remote server.";
-			case TreeNCIWRITE:
-				return "%TREE-E-NCIWRITE, Error writing node characterisitics to file.";
-			case TreeDELFAIL:
-				return "%TREE-E-DELFAIL, Error deleting file.";
-			case TreeRENFAIL:
-				return "%TREE-E-RENFAIL, Error renaming file.";
-			case TreeEMPTY:
-				return "%TREE-W-EMPTY, Empty string provided.";
-			case TreePARSEERR:
-				return "%TREE-E-PARSEERR, Invalid node search string.";
-			case TreeNCIREAD:
-				return "%TREE-E-NCIREAD, Error reading node characteristics from file.";
-			case TreeNOVERSION:
-				return "%TREE-E-NOVERSION, No version available.";
-			case TreeDFREAD:
-				return "%TREE-E-DFREAD, Error reading from datafile.";
-			case TreeCLOSEERR:
-				return "%TREE-E-CLOSEERR, Error closing temporary tree file.";
-			case TreeMOVEERROR:
-				return "%TREE-E-MOVEERROR, Error replacing original treefile with new one.";
-			case TreeOPENEDITERR:
-				return "%TREE-E-OPENEDITERR, Error reopening new treefile for write access.";
-			case TreeREADONLY_TREE:
-				return "%TREE-E-READONLY_TREE, Tree is marked as readonly. No write operations permitted.";
-			case TreeWRITETREEERR:
-				return "%TREE-E-WRITETREEERR, Error writing .tree file";
-			case TreeNOWILD:
-				return "%TREE-E-NOWILD, No wildcard characters permitted in node specifier";
-			case LibINSVIRMEM:
-				return "%LIB-F-INSVIRMEM, Insufficient virtual memory";
-			case LibINVARG:
-				return "%LIB-F-INVARG, Invalid argument";
-			case LibINVSTRDES:
-				return "%LIB-F-INVSTRDES, Invalid string descriptor";
-			case LibKEYNOTFOU:
-				return "%LIB-F-KEYNOTFOU, Key not found";
-			case LibNOTFOU:
-				return "%LIB-F-NOTFOU, Entity not found";
-			case LibQUEWASEMP:
-				return "%LIB-F-QUEWASEMP, Queue was empty";
-			case LibSTRTRU:
-				return "%LIB-S-STRTRU, String truncated";
-			case StrMATCH:
-				return "%STR-S-MATCH, Strings match";
-			case StrNOMATCH:
-				return "%STR-W-NOMATCH, Strings do not match";
-			case StrNOELEM:
-				return "%STR-W-NOELEM, Not enough delimited characters";
-			case StrINVDELIM:
-				return "%STR-W-INVDELIM, Not enough delimited characters";
-			case StrSTRTOOLON:
-				return "%STR-F-STRTOOLON, String too long";
-			case MDSplusWARNING:
-				return "%MDSPLUS-W-WARNING, Warning";
-			case MDSplusSUCCESS:
-				return "%MDSPLUS-S-SUCCESS, Success";
-			case MDSplusERROR:
-				return "%MDSPLUS-E-ERROR, Error";
-			case MDSplusFATAL:
-				return "%MDSPLUS-F-FATAL, Fatal";
-			case MDSplusSANDBOX:
-				return "%MDSPLUS-E-SANDBOX, Function disabled for security reasons";
-			case SsSUCCESS:
-				return "%SS-S-SUCCESS, Success";
-			case SsINTOVF:
-				return "%SS-F-INTOVF, Integer overflow";
-			case SsINTERNAL:
-				return "%SS-?-INTERNAL, This status is meant for internal use only, you should never have seen this message.";
-			case TdiBREAK:
-				return "%TDI-W-BREAK, BREAK was not in DO FOR SWITCH or WHILE";
-			case TdiCASE:
-				return "%TDI-W-CASE, CASE was not in SWITCH statement";
-			case TdiCONTINUE:
-				return "%TDI-W-CONTINUE, CONTINUE was not in DO FOR or WHILE";
-			case TdiEXTRANEOUS:
-				return "%TDI-W-EXTRANEOUS, Some characters were unused, bad number maybe";
-			case TdiRETURN:
-				return "%TDI-W-RETURN, Extraneous RETURN statement, not from a FUN";
-			case TdiABORT:
-				return "%TDI-E-ABORT, Program requested abort";
-			case TdiBAD_INDEX:
-				return "%TDI-E-BAD_INDEX, Index or subscript is too small or too big";
-			case TdiBOMB:
-				return "%TDI-E-BOMB, Bad punctuation, could not compile the text";
-			case TdiEXTRA_ARG:
-				return "%TDI-E-EXTRA_ARG, Too many arguments for function, watch commas";
-			case TdiGOTO:
-				return "%TDI-E-GOTO, GOTO target label not found";
-			case TdiINVCLADSC:
-				return "%TDI-E-INVCLADSC, Storage class not valid, must be scalar or array";
-			case TdiINVCLADTY:
-				return "%TDI-E-INVCLADTY, Invalid mixture of storage class and data type";
-			case TdiINVDTYDSC:
-				return "%TDI-E-INVDTYDSC, Storage data type is not valid";
-			case TdiINV_OPC:
-				return "%TDI-E-INV_OPC, Invalid operator code in a function";
-			case TdiINV_SIZE:
-				return "%TDI-E-INV_SIZE, Number of elements does not match declaration";
-			case TdiMISMATCH:
-				return "%TDI-E-MISMATCH, Shape of arguments does not match";
-			case TdiMISS_ARG:
-				return "%TDI-E-MISS_ARG, Missing argument is required for function";
-			case TdiNDIM_OVER:
-				return "%TDI-E-NDIM_OVER, Number of dimensions is over the allowed 8";
-			case TdiNO_CMPLX:
-				return "%TDI-E-NO_CMPLX, There are no complex forms of this function";
-			case TdiNO_OPC:
-				return "%TDI-E-NO_OPC, No support for this function, today";
-			case TdiNO_OUTPTR:
-				return "%TDI-E-NO_OUTPTR, An output pointer is required";
-			case TdiNO_SELF_PTR:
-				return "%TDI-E-NO_SELF_PTR, No $VALUE is defined for signal or validation";
-			case TdiNOT_NUMBER:
-				return "%TDI-E-NOT_NUMBER, Value is not a scalar number and must be";
-			case TdiNULL_PTR:
-				return "%TDI-E-NULL_PTR, Null pointer where value needed";
-			case TdiRECURSIVE:
-				return "%TDI-E-RECURSIVE, Overly recursive function, calls itself maybe";
-			case TdiSIG_DIM:
-				return "%TDI-E-SIG_DIM, Signal dimension does not match data shape";
-			case TdiSYNTAX:
-				return "%TDI-E-SYNTAX, Bad punctuation or misspelled word or number";
-			case TdiTOO_BIG:
-				return "%TDI-E-TOO_BIG, Conversion of number lost significant digits";
-			case TdiUNBALANCE:
-				return "%TDI-E-UNBALANCE, Unbalanced () [] {} '' \"\" or /**/";
-			case TdiUNKNOWN_VAR:
-				return "%TDI-E-UNKNOWN_VAR, Unknown/undefined variable name";
-			case TdiSTRTOOLON:
-				return "%TDI-F-STRTOOLON, string is too long (greater than 65535)";
-			case TdiTIMEOUT:
-				return "%TDI-F-TIMEOUT, task did not complete in alotted time";
-			case ApdAPD_APPEND:
-				return "%APD-E-APD_APPEND, First argument must be APD or *";
-			case ApdDICT_KEYVALPAIR:
-				return "%APD-E-DICT_KEYVALPAIR, A Dictionary requires an even number of elements";
-			case ApdDICT_KEYCLS:
-				return "%APD-E-DICT_KEYCLS, Keys must be scalar, i.e. CLASS_S";
-			case MdsdclSUCCESS:
-				return "%MDSDCL-S-SUCCESS, Normal successful completion";
-			case MdsdclEXIT:
-				return "%MDSDCL-S-EXIT, Normal exit";
-			case MdsdclERROR:
-				return "%MDSDCL-W-ERROR, Unsuccessful execution of command";
-			case MdsdclNORMAL:
-				return "%MDSDCL-S-NORMAL, Normal successful completion";
-			case MdsdclPRESENT:
-				return "%MDSDCL-S-PRESENT, Entity is present";
-			case MdsdclIVVERB:
-				return "%MDSDCL-E-IVVERB, No such command";
-			case MdsdclABSENT:
-				return "%MDSDCL-W-ABSENT, Entity is absent";
-			case MdsdclNEGATED:
-				return "%MDSDCL-W-NEGATED, Entity is present but negated";
-			case MdsdclNOTNEGATABLE:
-				return "%MDSDCL-E-NOTNEGATABLE, Entity cannot be negated";
-			case MdsdclIVQUAL:
-				return "%MDSDCL-E-IVQUAL, Invalid qualifier";
-			case MdsdclPROMPT_MORE:
-				return "%MDSDCL-E-PROMPT_MORE, More input required for command";
-			case MdsdclTOO_MANY_PRMS:
-				return "%MDSDCL-E-TOO_MANY_PRMS, Too many parameters specified";
-			case MdsdclTOO_MANY_VALS:
-				return "%MDSDCL-E-TOO_MANY_VALS, Too many values";
-			case MdsdclMISSING_VALUE:
-				return "%MDSDCL-E-MISSING_VALUE, Qualifier value needed";
-			case ServerNOT_DISPATCHED:
-				return "%SERVER-W-NOT_DISPATCHED, action not dispatched, depended on failed action";
-			case ServerINVALID_DEPENDENCY:
-				return "%SERVER-E-INVALID_DEPENDENCY, action dependency cannot be evaluated";
-			case ServerCANT_HAPPEN:
-				return "%SERVER-E-CANT_HAPPEN, action contains circular dependency or depends on action which was not dispatched";
-			case ServerINVSHOT:
-				return "%SERVER-E-INVSHOT, invalid shot number, cannot dispatch actions in model";
-			case ServerABORT:
-				return "%SERVER-E-ABORT, Server action was aborted";
-			case ServerPATH_DOWN:
-				return "%SERVER-E-PATH_DOWN, Path to server lost";
-			case ServerSOCKET_ADDR_ERROR:
-				return "%SERVER-E-SOCKET_ADDR_ERROR, Cannot obtain ip address socket is bound to.";
-			case ServerINVALID_ACTION_OPERATION:
-				return "%SERVER-E-INVALID_ACTION_OPERATION, Unknown action operation.";
-			case CamDONE_Q:
-				return "%CAM-S-DONE_Q, I/O completed with X=1, Q=1";
-			case CamDONE_NOQ:
-				return "%CAM-S-DONE_NOQ, I/O completed with X=1, Q=0";
-			case CamDONE_NOX:
-				return "%CAM-W-DONE_NOX, I/O completed with X=0 - probable failure";
-			case CamSERTRAERR:
-				return "%CAM-E-SERTRAERR, serial transmission error on highway";
-			case CamSCCFAIL:
-				return "%CAM-E-SCCFAIL, serial crate controller failure";
-			case CamOFFLINE:
-				return "%CAM-E-OFFLINE, crate is offline";
-			case TclNORMAL:
-				return "%TCL-S-NORMAL, Normal successful completion";
-			case TclFAILED_ESSENTIAL:
-				return "%TCL-W-FAILED_ESSENTIAL, Essential action failed";
-			case TclNO_DISPATCH_TABLE:
-				return "%TCL-W-NO_DISPATCH_TABLE, No dispatch table found. Forgot to do DISPATCH/BUILD?";
 			default:
 				return "%MDSPLUS-?-UNKNOWN, Unknown exception " + status;
 		}
