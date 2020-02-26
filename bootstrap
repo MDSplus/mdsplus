@@ -25,5 +25,5 @@ autoconf
 
 deploy/gen_messages.py
 
-tdishr/yylex/gen
-mdsdcl/yylex/gen
+deploy/yylex.gen tdishr
+deploy/yylex.gen mdsdcl

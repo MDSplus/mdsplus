@@ -109,3 +109,6 @@ target/
 .project
 .settings/
 .classpath
+
+# deploy/trigger.sh output
+trigger.opts
