@@ -325,43 +325,6 @@ then
     ${SRCDIR}/conf/update_submodules
 fi
 
-if [ ! -z "${MAKE_JARS}" ]
-then
-    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
-    then
-	RED
-	cat <<EOF >&2
-===============================================
-
-Error creating java jar files. Trigger failed.
-Look at make_jars.log artifact for more info .
-
-===============================================
-EOF
-	NORMAL
-	exit 1
-    fi
-fi
-
-if [ ! -z "${MAKE_EPYDOCS}" ]
-then
-    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
-    then
-	RED
-	cat <<EOF >&2
-===============================================
-
-Error creating python documentation. Trigger failed.
-Look at make_epydocs.log artifact for more info .
-
-===============================================
-EOF
-	NORMAL
-	exit 1
-    fi
-fi
-
-
 if [ "$RELEASE" = "yes" ]
 then
     NEW_RELEASE=no
@@ -384,8 +347,8 @@ then
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
 	if [ -z "${PROMOTED}" ]
-	then
-	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}" ${SRCDIR}/deploy/inv_commit_title.msg nomail)
+	then # ${SRCDIR}/deploy/inv_commit_title.msg
+	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}")
 	else
 	    version_inc=PROMOTE
 	fi
@@ -487,6 +450,43 @@ EOF
     NORMAL
     opts="$opts --release"
 fi
+
+if [ ! -z "${MAKE_JARS}" ]
+then
+    if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
+    then
+	RED
+	cat <<EOF >&2
+===============================================
+
+Error creating java jar files. Trigger failed.
+Look at make_jars.log artifact for more info .
+
+===============================================
+EOF
+	NORMAL
+	exit 1
+    fi
+fi
+
+if [ ! -z "${MAKE_EPYDOCS}" ]
+then
+    if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
+    then
+	RED
+	cat <<EOF >&2
+===============================================
+
+Error creating python documentation. Trigger failed.
+Look at make_epydocs.log artifact for more info .
+
+===============================================
+EOF
+	NORMAL
+	exit 1
+    fi
+fi
+
 if [ "$TAG_RELEASE" = "yes" ]
 then
     if ( git tag | grep last_release >/dev/null )
