@@ -23,5 +23,7 @@ automake --add-missing
 
 autoconf
 
+deploy/gen_messages.py
+
 tdishr/yylex/gen
 mdsdcl/yylex/gen

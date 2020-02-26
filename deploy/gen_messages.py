@@ -344,7 +344,7 @@ def gen_include(root,filename,faclist,msglistm,f_test):
 
 f_test=None
 if len(sys.argv) > 1:
-    f_test=open('%s/mdsshr/testmsg.h'%sourcedir,'w');
+    f_test=open('%s/testmsg.h'%sourcedir,'w');
 for root,dirs,files in os.walk(sourcedir):
     for filename in files:
         if not filename.endswith('messages.xml'):

@@ -39,7 +39,7 @@ class MDSplusException(MdsException):
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
-      if len(argv)==0 or cls is not MDSplusException:
+      if not argv or cls is not MDSplusException:
           return super(MDSplusException,cls).__new__(cls,*argv)
       status = int(argv[0])
       code   = status & -8
@@ -120,10 +120,6 @@ class SsINTOVF(SsException):
   msgnam="INTOVF"
 
 MDSplusException.statusDict[1144] = SsINTOVF
-
-
-class MDSplusException(MDSplusException):
-  fac="MDSplus"
 
 
 class MDSplusWARNING(MDSplusException):
