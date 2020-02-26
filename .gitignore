@@ -109,3 +109,9 @@ target/
 .project
 .settings/
 .classpath
+
+# deploy/trigger.sh output
+trigger.opts
+
+# yacc verbose
+*.output

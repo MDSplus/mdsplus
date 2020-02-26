@@ -33,7 +33,7 @@ SYNOPSIS
                  [--release] [--releasedir=directory]
                  [--publish] [--publishdir=directory]
                  [--keys=dir] [--dockerpull] [--color]
-                 [--make_jars ] [--make_epydocs ]
+                 [--make_jars ] [--make_epydocs ] [ --bootstrap ]
 
 DESCRIPTION
     The trigger.sh script is used in conjunction with platform build jobs
@@ -52,7 +52,10 @@ DESCRIPTION
 
 OPTIONS
 
-   --make_jars=fc25
+   --bootstrap
+       run bootstrap before building anything. (requires docker)
+
+   --make_jars=debian9-64
        Build the java jars file in a build_jars subdirectory of the specified os.
        This will make the directory if necessary, cd to that directory and run
        configure --enable-java_only and build the java jars in that directory
@@ -170,6 +173,9 @@ parsecmd() {
 	    --make_jars=*)
 		MAKE_JARS=${i#*=}
 		opts="${opts} --jars"
+		;;
+	    --bootstrap)
+		BOOTSTRAP=yes
 		;;
 	    --make_epydocs)
 		MAKE_EPYDOCS=yes
@@ -451,6 +457,24 @@ EOF
     opts="$opts --release"
 fi
 
+if [ ! -z "${BOOTSTRAP}" ]
+then
+    if ( ! ${SRCDIR}/deploy/build.sh --os=bootstrap --workspace=${SRCDIR} )
+    then
+	RED
+	cat <<EOF >&2
+========================================
+
+Error running bootstrap. Trigger failed.
+
+========================================
+EOF
+	NORMAL
+	exit 1
+    fi
+fi
+
+
 if [ ! -z "${MAKE_JARS}" ]
 then
     if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
@@ -460,7 +484,6 @@ then
 ===============================================
 
 Error creating java jar files. Trigger failed.
-Look at make_jars.log artifact for more info .
 
 ===============================================
 EOF
