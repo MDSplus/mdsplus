@@ -507,7 +507,7 @@ JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
 n := 
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 JAVAROOT = $(builddir)/classes
 bin_SCRIPTS = $(JAVAROOT)
@@ -802,9 +802,9 @@ $(DEPENDENCIES):
 # override so it will not be installed
 install-javaDATA: $(java_DATA)
 
-@USE_JARS_DIR_TRUE@taptest.jar: @JARS_DIR@/java/tests/taptest.jar
+@USE_JARS_DIR_TRUE@$(java_DATA): @JARS_DIR@/java/tests/taptest.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
-@USE_JARS_DIR_FALSE@taptest.jar: classjava.stamp
+@USE_JARS_DIR_FALSE@$(java_DATA): classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 

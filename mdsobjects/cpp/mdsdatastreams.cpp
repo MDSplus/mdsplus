@@ -22,11 +22,19 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WINDOWS_H
 #include <pthread.h>
 #include <mdsobjects.h>
 #include <time.h>
 #include <string.h>
+
+#ifdef _MSC_VER
+inline int nanosleep(const struct timespec *req, struct timespec *rem UNUSED_ARGUMENT)
+{
+	DWORD sleep_ms = ((DWORD)req->tv_sec * 1000) + ((DWORD)req->tv_nsec / 1000000);
+	Sleep(sleep_ms);
+	return 0;
+}
+#endif
 
 extern "C" {
 EXPORT int registerListener(char *expr, char *tree, int shot);
@@ -37,7 +45,7 @@ EXPORT void *getNewSamplesSerializedXd();
 static 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static bool daemonStarted = false;
 static pthread_t thread;
-#define MAX_DIM 64
+
 extern  "C" void *monitorStreamInfo(void *);
 //static MDSplus::TreeNode *getSegmentedNode(MDSplus::Data *data);
 static MDSplus::Data *getNewSamplesSerialized();
@@ -382,6 +390,7 @@ void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
 	return NULL;
 }
 
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
 // recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
@@ -552,11 +561,3 @@ EXPORT void EventStream::registerListener(DataStreamListener *listener, const ch
     listeners.push_back(listener);
     names.push_back(std::string(name));
 }
-
-
-
-
-
-
-
-#endif

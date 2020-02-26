@@ -13,10 +13,10 @@ DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
-jTraverser.jar : @JARS_DIR@/java/jtraverser/jTraverser.jar
+jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 	cp $< $@
 
-DeviceBeans.jar : @JARS_DIR@/java/jtraverser/DeviceBeans.jar
+DeviceBeans.jar: @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 	cp $< $@
 
 else

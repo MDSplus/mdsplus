@@ -1,6 +1,5 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-//#define NOMINMAX
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -12,6 +11,7 @@
 #include <stdlib.h>
 
 #ifdef _MSC_VER
+ #define NOMINMAX
  #include <windows.h>
 #else
  #include <sys/types.h>
@@ -1756,8 +1756,8 @@ public:
 /// \brief The Function class object description of DTYPE_FUNCTION
 ///
 /// MDSplus provides a function data type used for describing references to
-/// built in native TDI functions. When you specify an expression such as "a +
-/// b", MDSplus will compile this into a DTYPE_FUNCTION data item. The function
+/// built in native TDI functions. When you specify an expression such as "a+b",
+/// MDSplus will compile this into a DTYPE_FUNCTION data item. The function
 /// data type consists of a opcode and a list of operands. The opcode is stored
 /// as a 16 bit code and the operands can be any MDSplus data type.
 ///
@@ -2891,7 +2891,7 @@ public:
     virtual Tree *getTree() { return tree; }
 
     /// Set the associated Tree instance
-    virtual void setTree(Tree *tree); 
+    virtual void setTree(Tree *tree);
 
     /// Get the path name for this node
     virtual char *getPath();
@@ -3096,7 +3096,7 @@ public:
 
     /// Write (part of) data segment
     virtual void putSegment(Array *data, int ofs);
-    
+
     /// Write (part of) data segment
     virtual void putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode, int resFactor = 100);
 
@@ -3950,13 +3950,13 @@ public:
     /// can not be deleted.
     ///
     void deletePulse(int shot);
-    
+
     // Evaluate an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
     Data *tdiEvaluate(Data *data);
-    
+
     // Compute an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
     Data *tdiData(Data *data);
-    
+
     // Compile an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
     Data *tdiCompile(const char *expr);
     Data *tdiCompile(const char *expr, Data *arg1);
@@ -3967,10 +3967,10 @@ public:
     Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
     Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
     Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
-    
+
     // Compile an expression with arguments in the context of the tree - ThreaSafe, provided setActiveTree is not used
     Data *tdiCompile(const char *expr, int nArgs ...);
-    
+
     // Execute an  expression in the context of the tree - Thread Safe, provided setActiveTree is not used
     Data *tdiExecute(const char *expr);
     Data *tdiExecute(const char *expr, Data *arg1);
@@ -3981,7 +3981,7 @@ public:
     Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
     Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
     Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
-    
+
     // Execute an expression with arguments in the context of the tree - Thread Safe, provided setActiveTree is not used
     Data *tdiExecute(const char *expr, int nArgs ...);
 
@@ -4287,7 +4287,7 @@ public:
     void show();
 };
 
-#ifndef WINDOWS_H
+#ifdef HAVE_PTHREAD_H
 class EXPORT EventStream:public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
@@ -4302,7 +4302,6 @@ public:
   void registerListener(DataStreamListener *listener, const char *name);
 };
 #endif
-
 
 //////////////Support functions////////
 EXPORT Data *deserialize(char const * serialized);
