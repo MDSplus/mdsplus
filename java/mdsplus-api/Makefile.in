@@ -853,7 +853,7 @@ $(DEPENDENCIES):
 $(JSCH):
 	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
-@USE_JARS_DIR_TRUE@$(java_DATA) : @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
+@USE_JARS_DIR_TRUE@$(java_DATA): @JARS_DIR@/java/mdsplus-api/mdsplus-api.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@$(java_DATA): $(JSCH) $(MANIFEST) classjava.stamp

@@ -814,7 +814,7 @@ $(DEPENDENCIES):
 	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
-@USE_JARS_DIR_TRUE@$(java_DATA) : @JARS_DIR@/java/mdsplus/MdsPlus.jar
+@USE_JARS_DIR_TRUE@$(java_DATA): @JARS_DIR@/java/mdsplus/MdsPlus.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
 
 @USE_JARS_DIR_FALSE@$(java_DATA): $(DEPENDENCIES) classjava.stamp

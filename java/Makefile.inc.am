@@ -11,7 +11,7 @@ JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
 n :=
 s := $(n) #
 c := :
-CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(java_DATA) $(DEPENDENCIES)))
+CLASSPATH = $(JAVAROOT):$(subst $(s),$(c),$(strip $(DEPENDENCIES)))
 CLASSPATH_ENV = CLASSPATH=$(CLASSPATH)
 
 JAVAROOT = $(builddir)/classes
