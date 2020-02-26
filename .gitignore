@@ -112,3 +112,6 @@ target/
 
 # deploy/trigger.sh output
 trigger.opts
+
+# yacc verbose
+*.output
