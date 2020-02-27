@@ -147,7 +147,7 @@ static inline int lex_libcall(LEX_ARGS);
 //"
 %}
 
-white	[ \t\r\l]
+white	[ \t\r]
 anum	[A-Za-z$_0-9]
 exp	([DdEeFfGgHhSsTtVv][\-+]?[0-9]+)
 f3	("."?[0-9]+{exp})
@@ -172,9 +172,7 @@ dqtext	("\""(\n|\\.|[^"\\])*"\"")
 {dqtext}	LEX_TEXT()
 "\""		LEX_UNBALANCE("\"")
 
-
-{white}+	LEX_OK()
-\n		LEX_OK()
+[ \t\r\n\f]+	LEX_OK()	// white and line break and page break
 
 "<="{white}*"="	LEX_OP(BINEQ,	OPC_LE		)
 ">="{white}*"="	LEX_OP(BINEQ,	OPC_GE		)
