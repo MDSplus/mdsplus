@@ -212,8 +212,6 @@ OBJECTS = $(SOURCES:.c=.o)
 
 IO_OBJECTS = $(IO_SOURCES:.c=.o)
 
-EXPORTS = MitDevices.exports
-
 
 all :  @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ \
        @MAKESHLIBDIR@libMitDevices@SHARETYPE@ \
@@ -279,7 +277,7 @@ l8590_mem.c: l8590_sclr_gen.c
 @MAKEBINDIR@reboot_dtaq_satelite : reboot_dtaq_satelite
 	cp ${srcdir}/reboot_dtaq_satelite @MAKEBINDIR@reboot_dtaq_satelite
 
-@MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS) @EXPORTS_FILE@
+@MAKESHLIBDIR@libMitDevices@SHARETYPE@ : $(OBJECTS)
 	$(LINK.c) -o $@ @LINKSHARED@ $(OBJECTS)  -L@MAKESHLIBDIR@ -lCamShr -lXmdsShr -lMdsdcl -lTdiShr -lTreeShr -lMdsShr $(LIBS) $(X_LIBS) $(MOTIF_LIBS) $(X_PRE_LIBS) -lXt -lX11 $(X_EXTRA_LIBS) $(LIBS) $(MATH_LIBS) $(LD_FLAGS)
 	ln -sf libMitDevices@SHARETYPE@ @MAKESHLIBDIR@libMIT\$$DEVICES@SHARETYPE@
 
@@ -296,9 +294,6 @@ l8590_mem.c: l8590_sclr_gen.c
 @MAKELIBDIR@libMitDevicesIO.a : $(IO_OBJECTS)
 	$(AR) -cr $@ $(IO_OBJECTS)
 	$(RANLIB) $@
-
-MitDevices.exports: MitDevices.def
-	$(SED) -e /LIBRARY/\;/\;/d io.def > $@
 
 @MAKEUIDDIR@%.uid: %.uil
 	$(UIL) -o $@ $<

@@ -37,6 +37,7 @@ public class MARTE2_FFTSetup extends DeviceSetup {
         jPanel1 = new javax.swing.JPanel();
         jPanel3 = new javax.swing.JPanel();
         deviceField2 = new DeviceField();
+        deviceField6 = new DeviceField();
         jPanel4 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
 
@@ -88,6 +89,12 @@ public class MARTE2_FFTSetup extends DeviceSetup {
         deviceField2.setOffsetNid(3);
         jPanel3.add(deviceField2);
 
+        deviceField6.setIdentifier("");
+        deviceField6.setLabelString("Timebase div:");
+        deviceField6.setNumCols(4);
+        deviceField6.setOffsetNid(39);
+        jPanel3.add(deviceField6);
+
         jPanel1.add(jPanel3);
 
         deviceField3.setIdentifier("");
@@ -112,6 +119,7 @@ public class MARTE2_FFTSetup extends DeviceSetup {
     private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
+    private DeviceField deviceField6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

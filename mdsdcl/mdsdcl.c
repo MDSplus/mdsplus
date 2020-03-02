@@ -25,13 +25,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <readline/readline.h>
 #include <readline/history.h>
-#include <signal.h>
+
 #include <dcl.h>
 #include <mdsdcl_messages.h>
+
 #include "dcl_p.h"
-#include "mdsdclthreadsafe.h"
+#include "mdsdclthreadstatic.h"
+
 #if defined(__APPLE__) || defined(__MACH__)
 #define _MACOSX
 #endif

@@ -35,7 +35,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare LANL CTR-7    (c)1989,1990
 	NEED CHECKS: Dimensions must match except first one and the smaller first dimension is used.
 */
-#include <STATICdef.h>
 #include <tdishr_messages.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>

@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 
 
@@ -134,7 +133,6 @@ int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[], struct d
   struct descriptor_xd sig[1], uni[1], dat[1];
   struct TdiCatStruct cats[2];
   int cmode = 0;
-
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);
   cats[1].out_dtype = cats[1].in_dtype;
   cats[1].out_cat = cats[1].in_cat;
@@ -144,17 +142,17 @@ int Tdi1BuildPath(opcode_t opcode, int narg, struct descriptor *list[], struct d
 	Change from text to path or event.
 	*********************************/
   if STATUS_OK {
-    dat[0].pointer->dtype = TdiRefFunction[opcode].o1;
-    status = MdsCopyDxXd((struct descriptor *)&dat[0], out_ptr);
+    dat->pointer->dtype = TdiRefFunction[opcode].o1;
+    status = MdsCopyDxXd((struct descriptor *)dat, out_ptr);
   }
   if STATUS_OK
     status = TdiMasterData(narg, sig, uni, &cmode, out_ptr);
-  if (sig[0].pointer)
-    MdsFree1Dx(&sig[0], NULL);
-  if (uni[0].pointer)
-    MdsFree1Dx(&uni[0], NULL);
-  if (dat[0].pointer)
-    MdsFree1Dx(&dat[0], NULL);
+  if (sig->pointer)
+    MdsFree1Dx(sig, NULL);
+  if (uni->pointer)
+    MdsFree1Dx(uni, NULL);
+  if (dat->pointer)
+    MdsFree1Dx(dat, NULL);
   return status;
 }
 

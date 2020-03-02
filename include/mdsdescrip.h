@@ -142,6 +142,8 @@ arsize	total size of array in bytes,
   dimct_t  dimct;	\
   arsize_t arsize;
 
+#define IS_ARRAY_DSC(p) ((p)->class == CLASS_A || (p)->class == CLASS_CA || (p)->class == CLASS_APD)
+
 typedef struct descriptor_a {
   ARRAY_HEAD(char)
   /*

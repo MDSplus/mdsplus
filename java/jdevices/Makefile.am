@@ -11,12 +11,12 @@ DEPENDENCIES = $(JTRAVERSER_JAR)
 
 if USE_JARS_DIR
 
-jDevices.jar: @JARS_DIR@/java/jdevices/jDevices.jar
+$(java_DATA): @JARS_DIR@/java/jdevices/jDevices.jar
 	cp $< $@
 
 else
 
-jDevices.jar: $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ..."; \
 	cp -f $(JAVA_RES) $(JAVAROOT)/;\
 	$(JAR) cf $@ -C $(JAVAROOT) .

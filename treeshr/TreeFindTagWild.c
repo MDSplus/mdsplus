@@ -54,10 +54,12 @@ TreeFindTagEnd(void **ctx);
 +-----------------------------------------------------------------------------*/
 #include <stdlib.h>
 #include <string.h>
+
 #include <treeshr.h>
-#include "treeshrp.h"
-#include "treethreadsafe.h"
 #include <strroutines.h>
+
+#include "treeshrp.h"
+#include "treethreadstatic.h"
 
 extern int MdsCopyDxXd();
 extern char *FindTagWildRemote();

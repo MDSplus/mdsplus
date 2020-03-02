@@ -26,11 +26,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <string.h>
 
+#include <pthread_port.h>
 #include <treeshr.h>
 #include <mdsshr.h>
 #include "mdsip_connections.h"
 #include "mdsIo.h"
-#include <pthread_port.h>
 
 #ifdef DEBUG
  #define DBG(...) fprintf(stderr,__VA_ARGS__)

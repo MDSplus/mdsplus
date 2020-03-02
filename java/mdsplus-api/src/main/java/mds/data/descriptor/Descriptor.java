@@ -386,7 +386,7 @@ public abstract class Descriptor<T>{
 	public Descriptor<?> getData(final DTYPE... omits) {
 		try{
 			if(this instanceof DATA) return this;
-			if(this.use_mds_local()) return Descriptor.mds_local.getDescriptor(this.tree, "DATA($)", this.getLocal());
+			if(this.use_mds_local()) return Descriptor.mds_local.getDescriptor(this.tree, "DATA(($;))", this.getLocal());
 			return this.getData_(omits);
 		}catch(final MdsException e){
 			return Missing.NEW;

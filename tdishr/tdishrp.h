@@ -23,5 +23,4 @@ int Tdi3Multiply(struct descriptor *in1, struct descriptor *in2, struct descript
 int TdiSubtractOctaword(unsigned int *a, unsigned int *b, unsigned int *ans);
 int TdiUnary(struct descriptor *in_ptr, struct descriptor *out_ptr, unsigned int *out_count);
 void UseNativeFloat(struct TdiCatStruct *cat);
-void TdiResetGetRecord();
 #endif

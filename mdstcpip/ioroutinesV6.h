@@ -10,15 +10,13 @@
 char iphost[INET6_ADDRSTRLEN];\
 inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)
 
-#include "mdsip_connections.h"
-#include <STATICdef.h>
-#include <signal.h>
+#include <mdsplus/mdsconfig.h>
+
+#include <errno.h>
 #include <fcntl.h>
 #include <stdlib.h>
-#include <string.h>
-#include <errno.h>
 #include <stdio.h>
-#include <mdsplus/mdsconfig.h>
+#include <string.h>
 #include <time.h>
 #ifdef HAVE_UNISTD_H
  #include <unistd.h>
@@ -26,39 +24,10 @@ inet_ntop(AF_INET6, &sin.sin6_addr, iphost, INET6_ADDRSTRLEN)
 #ifdef HAVE_SYS_FILIO_H
  #include <sys/filio.h>
 #endif
-#ifdef _WIN32
- #ifdef _WIN32_WINNT
-  #undef _WIN32_WINNT
- #endif
- #define _WIN32_WINNT _WIN32_WINNT_WIN8 // Windows 8.0
- #include <winsock2.h>
- #include <ws2tcpip.h>
- #define ioctl ioctlsocket
- #define FIONREAD_TYPE u_long
- typedef int socklen_t;
- #define snprintf _snprintf
- #define MSG_DONTWAIT 0
- #include <io.h>
- #include <process.h>
- #define getpid _getpid
-#else
- #define INVALID_SOCKET -1
- #define FIONREAD_TYPE int
- #include <sys/socket.h>
- #include <netdb.h>
- #include <netinet/in.h>
- #include <netinet/tcp.h>
- #include <arpa/inet.h>
- #include <sys/ioctl.h>
- #include <sys/wait.h>
-#endif
-#define SEND_BUF_SIZE 32768
-#define RECV_BUF_SIZE 32768
-#ifndef MSG_NOSIGNAL
- #define MSG_NOSIGNAL 0
-#endif
-#define LOAD_INITIALIZESOCKETS
-#include <pthread_port.h>
+
+#include <STATICdef.h>
+#include <socket_port.h>
+#include "mdsip_connections.h"
 
 static int GetHostAndPort(char *hostin, struct sockaddr_in6 *sin);
 

@@ -49,48 +49,64 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         jPanel8 = new javax.swing.JPanel();
         deviceField6 = new DeviceField();
         deviceField7 = new DeviceField();
+        deviceField108 = new DeviceField();
+        deviceField109 = new DeviceField();
         jPanel9 = new javax.swing.JPanel();
         deviceField8 = new DeviceField();
         jPanel10 = new javax.swing.JPanel();
         jPanel11 = new javax.swing.JPanel();
         deviceField9 = new DeviceField();
         deviceField10 = new DeviceField();
+        deviceField110 = new DeviceField();
+        deviceField111 = new DeviceField();
         jPanel12 = new javax.swing.JPanel();
         deviceField11 = new DeviceField();
         jPanel13 = new javax.swing.JPanel();
         jPanel14 = new javax.swing.JPanel();
         deviceField12 = new DeviceField();
         deviceField13 = new DeviceField();
+        deviceField112 = new DeviceField();
+        deviceField113 = new DeviceField();
         jPanel15 = new javax.swing.JPanel();
         deviceField14 = new DeviceField();
         jPanel16 = new javax.swing.JPanel();
         jPanel17 = new javax.swing.JPanel();
         deviceField15 = new DeviceField();
         deviceField16 = new DeviceField();
+        deviceField114 = new DeviceField();
+        deviceField115 = new DeviceField();
         jPanel18 = new javax.swing.JPanel();
         deviceField17 = new DeviceField();
         jPanel19 = new javax.swing.JPanel();
         jPanel20 = new javax.swing.JPanel();
         deviceField18 = new DeviceField();
         deviceField19 = new DeviceField();
+        deviceField116 = new DeviceField();
+        deviceField117 = new DeviceField();
         jPanel21 = new javax.swing.JPanel();
         deviceField20 = new DeviceField();
         jPanel22 = new javax.swing.JPanel();
         jPanel23 = new javax.swing.JPanel();
         deviceField21 = new DeviceField();
         deviceField22 = new DeviceField();
+        deviceField118 = new DeviceField();
+        deviceField119 = new DeviceField();
         jPanel24 = new javax.swing.JPanel();
         deviceField23 = new DeviceField();
         jPanel25 = new javax.swing.JPanel();
         jPanel26 = new javax.swing.JPanel();
         deviceField24 = new DeviceField();
         deviceField25 = new DeviceField();
+        deviceField120 = new DeviceField();
+        deviceField121 = new DeviceField();
         jPanel27 = new javax.swing.JPanel();
         deviceField26 = new DeviceField();
         jPanel28 = new javax.swing.JPanel();
         jPanel29 = new javax.swing.JPanel();
         deviceField27 = new DeviceField();
         deviceField28 = new DeviceField();
+        deviceField122 = new DeviceField();
+        deviceField123 = new DeviceField();
         jPanel30 = new javax.swing.JPanel();
         deviceField29 = new DeviceField();
         jPanel31 = new javax.swing.JPanel();
@@ -102,48 +118,64 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         jPanel34 = new javax.swing.JPanel();
         deviceField32 = new DeviceField();
         deviceField33 = new DeviceField();
+        deviceField124 = new DeviceField();
+        deviceField125 = new DeviceField();
         jPanel35 = new javax.swing.JPanel();
         deviceField34 = new DeviceField();
         jPanel36 = new javax.swing.JPanel();
         jPanel37 = new javax.swing.JPanel();
         deviceField35 = new DeviceField();
         deviceField36 = new DeviceField();
+        deviceField126 = new DeviceField();
+        deviceField127 = new DeviceField();
         jPanel38 = new javax.swing.JPanel();
         deviceField37 = new DeviceField();
         jPanel39 = new javax.swing.JPanel();
         jPanel40 = new javax.swing.JPanel();
         deviceField38 = new DeviceField();
         deviceField39 = new DeviceField();
+        deviceField128 = new DeviceField();
+        deviceField129 = new DeviceField();
         jPanel41 = new javax.swing.JPanel();
         deviceField40 = new DeviceField();
         jPanel42 = new javax.swing.JPanel();
         jPanel43 = new javax.swing.JPanel();
         deviceField41 = new DeviceField();
         deviceField42 = new DeviceField();
+        deviceField130 = new DeviceField();
+        deviceField131 = new DeviceField();
         jPanel44 = new javax.swing.JPanel();
         deviceField43 = new DeviceField();
         jPanel45 = new javax.swing.JPanel();
         jPanel46 = new javax.swing.JPanel();
         deviceField44 = new DeviceField();
         deviceField45 = new DeviceField();
+        deviceField132 = new DeviceField();
+        deviceField133 = new DeviceField();
         jPanel47 = new javax.swing.JPanel();
         deviceField46 = new DeviceField();
         jPanel48 = new javax.swing.JPanel();
         jPanel49 = new javax.swing.JPanel();
         deviceField47 = new DeviceField();
         deviceField48 = new DeviceField();
+        deviceField134 = new DeviceField();
+        deviceField135 = new DeviceField();
         jPanel50 = new javax.swing.JPanel();
         deviceField49 = new DeviceField();
         jPanel51 = new javax.swing.JPanel();
         jPanel52 = new javax.swing.JPanel();
         deviceField50 = new DeviceField();
         deviceField51 = new DeviceField();
+        deviceField136 = new DeviceField();
+        deviceField137 = new DeviceField();
         jPanel53 = new javax.swing.JPanel();
         deviceField52 = new DeviceField();
         jPanel54 = new javax.swing.JPanel();
         jPanel55 = new javax.swing.JPanel();
         deviceField53 = new DeviceField();
         deviceField54 = new DeviceField();
+        deviceField138 = new DeviceField();
+        deviceField139 = new DeviceField();
         jPanel56 = new javax.swing.JPanel();
         deviceField55 = new DeviceField();
         jPanel57 = new javax.swing.JPanel();
@@ -155,48 +187,64 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         jPanel60 = new javax.swing.JPanel();
         deviceField58 = new DeviceField();
         deviceField59 = new DeviceField();
+        deviceField140 = new DeviceField();
+        deviceField141 = new DeviceField();
         jPanel61 = new javax.swing.JPanel();
         deviceField60 = new DeviceField();
         jPanel62 = new javax.swing.JPanel();
         jPanel63 = new javax.swing.JPanel();
         deviceField61 = new DeviceField();
         deviceField62 = new DeviceField();
+        deviceField142 = new DeviceField();
+        deviceField143 = new DeviceField();
         jPanel64 = new javax.swing.JPanel();
         deviceField63 = new DeviceField();
         jPanel65 = new javax.swing.JPanel();
         jPanel66 = new javax.swing.JPanel();
         deviceField64 = new DeviceField();
         deviceField65 = new DeviceField();
+        deviceField144 = new DeviceField();
+        deviceField145 = new DeviceField();
         jPanel67 = new javax.swing.JPanel();
         deviceField66 = new DeviceField();
         jPanel68 = new javax.swing.JPanel();
         jPanel69 = new javax.swing.JPanel();
         deviceField67 = new DeviceField();
         deviceField68 = new DeviceField();
+        deviceField146 = new DeviceField();
+        deviceField147 = new DeviceField();
         jPanel70 = new javax.swing.JPanel();
         deviceField69 = new DeviceField();
         jPanel71 = new javax.swing.JPanel();
         jPanel72 = new javax.swing.JPanel();
         deviceField70 = new DeviceField();
         deviceField71 = new DeviceField();
+        deviceField148 = new DeviceField();
+        deviceField149 = new DeviceField();
         jPanel73 = new javax.swing.JPanel();
         deviceField72 = new DeviceField();
         jPanel74 = new javax.swing.JPanel();
         jPanel75 = new javax.swing.JPanel();
         deviceField73 = new DeviceField();
         deviceField74 = new DeviceField();
+        deviceField150 = new DeviceField();
+        deviceField151 = new DeviceField();
         jPanel76 = new javax.swing.JPanel();
         deviceField75 = new DeviceField();
         jPanel77 = new javax.swing.JPanel();
         jPanel78 = new javax.swing.JPanel();
         deviceField76 = new DeviceField();
         deviceField77 = new DeviceField();
+        deviceField152 = new DeviceField();
+        deviceField153 = new DeviceField();
         jPanel79 = new javax.swing.JPanel();
         deviceField78 = new DeviceField();
         jPanel80 = new javax.swing.JPanel();
         jPanel81 = new javax.swing.JPanel();
         deviceField79 = new DeviceField();
         deviceField80 = new DeviceField();
+        deviceField154 = new DeviceField();
+        deviceField155 = new DeviceField();
         jPanel82 = new javax.swing.JPanel();
         deviceField81 = new DeviceField();
         jPanel83 = new javax.swing.JPanel();
@@ -208,52 +256,68 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         jPanel86 = new javax.swing.JPanel();
         deviceField84 = new DeviceField();
         deviceField85 = new DeviceField();
+        deviceField156 = new DeviceField();
+        deviceField157 = new DeviceField();
         jPanel87 = new javax.swing.JPanel();
         deviceField86 = new DeviceField();
         jPanel88 = new javax.swing.JPanel();
         jPanel89 = new javax.swing.JPanel();
         deviceField87 = new DeviceField();
         deviceField88 = new DeviceField();
+        deviceField158 = new DeviceField();
+        deviceField159 = new DeviceField();
         jPanel90 = new javax.swing.JPanel();
         deviceField89 = new DeviceField();
         jPanel91 = new javax.swing.JPanel();
         jPanel92 = new javax.swing.JPanel();
         deviceField90 = new DeviceField();
         deviceField91 = new DeviceField();
+        deviceField160 = new DeviceField();
+        deviceField161 = new DeviceField();
         jPanel93 = new javax.swing.JPanel();
         deviceField92 = new DeviceField();
         jPanel94 = new javax.swing.JPanel();
         jPanel95 = new javax.swing.JPanel();
         deviceField93 = new DeviceField();
         deviceField94 = new DeviceField();
+        deviceField162 = new DeviceField();
+        deviceField163 = new DeviceField();
         jPanel96 = new javax.swing.JPanel();
         deviceField95 = new DeviceField();
         jPanel97 = new javax.swing.JPanel();
         jPanel98 = new javax.swing.JPanel();
         deviceField96 = new DeviceField();
         deviceField97 = new DeviceField();
+        deviceField164 = new DeviceField();
+        deviceField165 = new DeviceField();
         jPanel99 = new javax.swing.JPanel();
         deviceField98 = new DeviceField();
         jPanel100 = new javax.swing.JPanel();
         jPanel101 = new javax.swing.JPanel();
         deviceField99 = new DeviceField();
         deviceField100 = new DeviceField();
+        deviceField166 = new DeviceField();
+        deviceField167 = new DeviceField();
         jPanel102 = new javax.swing.JPanel();
         deviceField101 = new DeviceField();
         jPanel103 = new javax.swing.JPanel();
         jPanel104 = new javax.swing.JPanel();
         deviceField102 = new DeviceField();
         deviceField103 = new DeviceField();
+        deviceField168 = new DeviceField();
+        deviceField169 = new DeviceField();
         jPanel105 = new javax.swing.JPanel();
         deviceField104 = new DeviceField();
         jPanel106 = new javax.swing.JPanel();
         jPanel107 = new javax.swing.JPanel();
         deviceField105 = new DeviceField();
         deviceField106 = new DeviceField();
+        deviceField170 = new DeviceField();
+        deviceField171 = new DeviceField();
         jPanel108 = new javax.swing.JPanel();
         deviceField107 = new DeviceField();
 
-        setDeviceProvider("scdev6vl.nbtf:8100");
+        setDeviceProvider("scdevail.rfx.local:8200");
         setDeviceTitle("MARTe2 Supervisor");
         setDeviceType("MARTE2_SUPERVISOR");
         setHeight(350);
@@ -328,6 +392,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField7.setOffsetNid(9);
         jPanel8.add(deviceField7);
 
+        deviceField108.setIdentifier("");
+        deviceField108.setLabelString("Seg. Len (0 to disable):");
+        deviceField108.setNumCols(4);
+        deviceField108.setOffsetNid(437);
+        jPanel8.add(deviceField108);
+
+        deviceField109.setIdentifier("");
+        deviceField109.setLabelString("Write CPU mask:");
+        deviceField109.setNumCols(4);
+        deviceField109.setOffsetNid(438);
+        jPanel8.add(deviceField109);
+
         jPanel7.add(jPanel8);
 
         deviceField8.setIdentifier("");
@@ -353,6 +429,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField10.setLabelString("CPU Mask: ");
         deviceField10.setOffsetNid(13);
         jPanel11.add(deviceField10);
+
+        deviceField110.setIdentifier("");
+        deviceField110.setLabelString("Seg. Len (0 to disable):");
+        deviceField110.setNumCols(4);
+        deviceField110.setOffsetNid(449);
+        jPanel11.add(deviceField110);
+
+        deviceField111.setIdentifier("");
+        deviceField111.setLabelString("Write CPU mask:");
+        deviceField111.setNumCols(4);
+        deviceField111.setOffsetNid(450);
+        jPanel11.add(deviceField111);
 
         jPanel10.add(jPanel11);
 
@@ -380,6 +468,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField13.setOffsetNid(17);
         jPanel14.add(deviceField13);
 
+        deviceField112.setIdentifier("");
+        deviceField112.setLabelString("Seg. Len (0 to disable):");
+        deviceField112.setNumCols(4);
+        deviceField112.setOffsetNid(461);
+        jPanel14.add(deviceField112);
+
+        deviceField113.setIdentifier("");
+        deviceField113.setLabelString("Write CPU mask:");
+        deviceField113.setNumCols(4);
+        deviceField113.setOffsetNid(462);
+        jPanel14.add(deviceField113);
+
         jPanel13.add(jPanel14);
 
         deviceField14.setIdentifier("");
@@ -405,6 +505,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField16.setLabelString("CPU Mask: ");
         deviceField16.setOffsetNid(21);
         jPanel17.add(deviceField16);
+
+        deviceField114.setIdentifier("");
+        deviceField114.setLabelString("Seg. Len (0 to disable):");
+        deviceField114.setNumCols(4);
+        deviceField114.setOffsetNid(473);
+        jPanel17.add(deviceField114);
+
+        deviceField115.setIdentifier("");
+        deviceField115.setLabelString("Write CPU mask:");
+        deviceField115.setNumCols(4);
+        deviceField115.setOffsetNid(474);
+        jPanel17.add(deviceField115);
 
         jPanel16.add(jPanel17);
 
@@ -432,6 +544,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField19.setOffsetNid(25);
         jPanel20.add(deviceField19);
 
+        deviceField116.setIdentifier("");
+        deviceField116.setLabelString("Seg. Len (0 to disable):");
+        deviceField116.setNumCols(4);
+        deviceField116.setOffsetNid(485);
+        jPanel20.add(deviceField116);
+
+        deviceField117.setIdentifier("");
+        deviceField117.setLabelString("Write CPU mask:");
+        deviceField117.setNumCols(4);
+        deviceField117.setOffsetNid(486);
+        jPanel20.add(deviceField117);
+
         jPanel19.add(jPanel20);
 
         deviceField20.setIdentifier("");
@@ -457,6 +581,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField22.setLabelString("CPU Mask: ");
         deviceField22.setOffsetNid(29);
         jPanel23.add(deviceField22);
+
+        deviceField118.setIdentifier("");
+        deviceField118.setLabelString("Seg. Len (0 to disable):");
+        deviceField118.setNumCols(4);
+        deviceField118.setOffsetNid(497);
+        jPanel23.add(deviceField118);
+
+        deviceField119.setIdentifier("");
+        deviceField119.setLabelString("Write CPU mask:");
+        deviceField119.setNumCols(4);
+        deviceField119.setOffsetNid(498);
+        jPanel23.add(deviceField119);
 
         jPanel22.add(jPanel23);
 
@@ -484,6 +620,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField25.setOffsetNid(33);
         jPanel26.add(deviceField25);
 
+        deviceField120.setIdentifier("");
+        deviceField120.setLabelString("Seg. Len (0 to disable):");
+        deviceField120.setNumCols(4);
+        deviceField120.setOffsetNid(509);
+        jPanel26.add(deviceField120);
+
+        deviceField121.setIdentifier("");
+        deviceField121.setLabelString("Write CPU mask:");
+        deviceField121.setNumCols(4);
+        deviceField121.setOffsetNid(510);
+        jPanel26.add(deviceField121);
+
         jPanel25.add(jPanel26);
 
         deviceField26.setIdentifier("");
@@ -509,6 +657,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField28.setLabelString("CPU Mask: ");
         deviceField28.setOffsetNid(37);
         jPanel29.add(deviceField28);
+
+        deviceField122.setIdentifier("");
+        deviceField122.setLabelString("Seg. Len (0 to disable):");
+        deviceField122.setNumCols(4);
+        deviceField122.setOffsetNid(521);
+        jPanel29.add(deviceField122);
+
+        deviceField123.setIdentifier("");
+        deviceField123.setLabelString("Write CPU mask:");
+        deviceField123.setNumCols(4);
+        deviceField123.setOffsetNid(522);
+        jPanel29.add(deviceField123);
 
         jPanel28.add(jPanel29);
 
@@ -556,6 +716,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField33.setOffsetNid(52);
         jPanel34.add(deviceField33);
 
+        deviceField124.setIdentifier("");
+        deviceField124.setLabelString("Seg. Len (0 to disable):");
+        deviceField124.setNumCols(4);
+        deviceField124.setOffsetNid(558);
+        jPanel34.add(deviceField124);
+
+        deviceField125.setIdentifier("");
+        deviceField125.setLabelString("Write CPU mask:");
+        deviceField125.setNumCols(4);
+        deviceField125.setOffsetNid(559);
+        jPanel34.add(deviceField125);
+
         jPanel33.add(jPanel34);
 
         deviceField34.setIdentifier("");
@@ -581,6 +753,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField36.setLabelString("CPU Mask: ");
         deviceField36.setOffsetNid(56);
         jPanel37.add(deviceField36);
+
+        deviceField126.setIdentifier("");
+        deviceField126.setLabelString("Seg. Len (0 to disable):");
+        deviceField126.setNumCols(4);
+        deviceField126.setOffsetNid(570);
+        jPanel37.add(deviceField126);
+
+        deviceField127.setIdentifier("");
+        deviceField127.setLabelString("Write CPU mask:");
+        deviceField127.setNumCols(4);
+        deviceField127.setOffsetNid(571);
+        jPanel37.add(deviceField127);
 
         jPanel36.add(jPanel37);
 
@@ -608,6 +792,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField39.setOffsetNid(60);
         jPanel40.add(deviceField39);
 
+        deviceField128.setIdentifier("");
+        deviceField128.setLabelString("Seg. Len (0 to disable):");
+        deviceField128.setNumCols(4);
+        deviceField128.setOffsetNid(582);
+        jPanel40.add(deviceField128);
+
+        deviceField129.setIdentifier("");
+        deviceField129.setLabelString("Write CPU mask:");
+        deviceField129.setNumCols(4);
+        deviceField129.setOffsetNid(583);
+        jPanel40.add(deviceField129);
+
         jPanel39.add(jPanel40);
 
         deviceField40.setIdentifier("");
@@ -633,6 +829,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField42.setLabelString("CPU Mask: ");
         deviceField42.setOffsetNid(64);
         jPanel43.add(deviceField42);
+
+        deviceField130.setIdentifier("");
+        deviceField130.setLabelString("Seg. Len (0 to disable):");
+        deviceField130.setNumCols(4);
+        deviceField130.setOffsetNid(594);
+        jPanel43.add(deviceField130);
+
+        deviceField131.setIdentifier("");
+        deviceField131.setLabelString("Write CPU mask:");
+        deviceField131.setNumCols(4);
+        deviceField131.setOffsetNid(595);
+        jPanel43.add(deviceField131);
 
         jPanel42.add(jPanel43);
 
@@ -660,6 +868,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField45.setOffsetNid(68);
         jPanel46.add(deviceField45);
 
+        deviceField132.setIdentifier("");
+        deviceField132.setLabelString("Seg. Len (0 to disable):");
+        deviceField132.setNumCols(4);
+        deviceField132.setOffsetNid(606);
+        jPanel46.add(deviceField132);
+
+        deviceField133.setIdentifier("");
+        deviceField133.setLabelString("Write CPU mask:");
+        deviceField133.setNumCols(4);
+        deviceField133.setOffsetNid(607);
+        jPanel46.add(deviceField133);
+
         jPanel45.add(jPanel46);
 
         deviceField46.setIdentifier("");
@@ -685,6 +905,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField48.setLabelString("CPU Mask: ");
         deviceField48.setOffsetNid(72);
         jPanel49.add(deviceField48);
+
+        deviceField134.setIdentifier("");
+        deviceField134.setLabelString("Seg. Len (0 to disable):");
+        deviceField134.setNumCols(4);
+        deviceField134.setOffsetNid(618);
+        jPanel49.add(deviceField134);
+
+        deviceField135.setIdentifier("");
+        deviceField135.setLabelString("Write CPU mask:");
+        deviceField135.setNumCols(4);
+        deviceField135.setOffsetNid(619);
+        jPanel49.add(deviceField135);
 
         jPanel48.add(jPanel49);
 
@@ -712,6 +944,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField51.setOffsetNid(76);
         jPanel52.add(deviceField51);
 
+        deviceField136.setIdentifier("");
+        deviceField136.setLabelString("Seg. Len (0 to disable):");
+        deviceField136.setNumCols(4);
+        deviceField136.setOffsetNid(630);
+        jPanel52.add(deviceField136);
+
+        deviceField137.setIdentifier("");
+        deviceField137.setLabelString("Write CPU mask:");
+        deviceField137.setNumCols(4);
+        deviceField137.setOffsetNid(631);
+        jPanel52.add(deviceField137);
+
         jPanel51.add(jPanel52);
 
         deviceField52.setIdentifier("");
@@ -737,6 +981,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField54.setLabelString("CPU Mask: ");
         deviceField54.setOffsetNid(80);
         jPanel55.add(deviceField54);
+
+        deviceField138.setIdentifier("");
+        deviceField138.setLabelString("Seg. Len (0 to disable):");
+        deviceField138.setNumCols(4);
+        deviceField138.setOffsetNid(642);
+        jPanel55.add(deviceField138);
+
+        deviceField139.setIdentifier("");
+        deviceField139.setLabelString("Write CPU mask:");
+        deviceField139.setNumCols(4);
+        deviceField139.setOffsetNid(643);
+        jPanel55.add(deviceField139);
 
         jPanel54.add(jPanel55);
 
@@ -784,6 +1040,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField59.setOffsetNid(95);
         jPanel60.add(deviceField59);
 
+        deviceField140.setIdentifier("");
+        deviceField140.setLabelString("Seg. Len (0 to disable):");
+        deviceField140.setNumCols(4);
+        deviceField140.setOffsetNid(679);
+        jPanel60.add(deviceField140);
+
+        deviceField141.setIdentifier("");
+        deviceField141.setLabelString("Write CPU mask:");
+        deviceField141.setNumCols(4);
+        deviceField141.setOffsetNid(680);
+        jPanel60.add(deviceField141);
+
         jPanel59.add(jPanel60);
 
         deviceField60.setIdentifier("");
@@ -809,6 +1077,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField62.setLabelString("CPU Mask: ");
         deviceField62.setOffsetNid(99);
         jPanel63.add(deviceField62);
+
+        deviceField142.setIdentifier("");
+        deviceField142.setLabelString("Seg. Len (0 to disable):");
+        deviceField142.setNumCols(4);
+        deviceField142.setOffsetNid(691);
+        jPanel63.add(deviceField142);
+
+        deviceField143.setIdentifier("");
+        deviceField143.setLabelString("Write CPU mask:");
+        deviceField143.setNumCols(4);
+        deviceField143.setOffsetNid(692);
+        jPanel63.add(deviceField143);
 
         jPanel62.add(jPanel63);
 
@@ -836,6 +1116,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField65.setOffsetNid(103);
         jPanel66.add(deviceField65);
 
+        deviceField144.setIdentifier("");
+        deviceField144.setLabelString("Seg. Len (0 to disable):");
+        deviceField144.setNumCols(4);
+        deviceField144.setOffsetNid(703);
+        jPanel66.add(deviceField144);
+
+        deviceField145.setIdentifier("");
+        deviceField145.setLabelString("Write CPU mask:");
+        deviceField145.setNumCols(4);
+        deviceField145.setOffsetNid(704);
+        jPanel66.add(deviceField145);
+
         jPanel65.add(jPanel66);
 
         deviceField66.setIdentifier("");
@@ -861,6 +1153,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField68.setLabelString("CPU Mask: ");
         deviceField68.setOffsetNid(107);
         jPanel69.add(deviceField68);
+
+        deviceField146.setIdentifier("");
+        deviceField146.setLabelString("Seg. Len (0 to disable):");
+        deviceField146.setNumCols(4);
+        deviceField146.setOffsetNid(715);
+        jPanel69.add(deviceField146);
+
+        deviceField147.setIdentifier("");
+        deviceField147.setLabelString("Write CPU mask:");
+        deviceField147.setNumCols(4);
+        deviceField147.setOffsetNid(716);
+        jPanel69.add(deviceField147);
 
         jPanel68.add(jPanel69);
 
@@ -888,6 +1192,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField71.setOffsetNid(111);
         jPanel72.add(deviceField71);
 
+        deviceField148.setIdentifier("");
+        deviceField148.setLabelString("Seg. Len (0 to disable):");
+        deviceField148.setNumCols(4);
+        deviceField148.setOffsetNid(727);
+        jPanel72.add(deviceField148);
+
+        deviceField149.setIdentifier("");
+        deviceField149.setLabelString("Write CPU mask:");
+        deviceField149.setNumCols(4);
+        deviceField149.setOffsetNid(728);
+        jPanel72.add(deviceField149);
+
         jPanel71.add(jPanel72);
 
         deviceField72.setIdentifier("");
@@ -913,6 +1229,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField74.setLabelString("CPU Mask: ");
         deviceField74.setOffsetNid(115);
         jPanel75.add(deviceField74);
+
+        deviceField150.setIdentifier("");
+        deviceField150.setLabelString("Seg. Len (0 to disable):");
+        deviceField150.setNumCols(4);
+        deviceField150.setOffsetNid(739);
+        jPanel75.add(deviceField150);
+
+        deviceField151.setIdentifier("");
+        deviceField151.setLabelString("Write CPU mask:");
+        deviceField151.setNumCols(4);
+        deviceField151.setOffsetNid(740);
+        jPanel75.add(deviceField151);
 
         jPanel74.add(jPanel75);
 
@@ -940,6 +1268,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField77.setOffsetNid(119);
         jPanel78.add(deviceField77);
 
+        deviceField152.setIdentifier("");
+        deviceField152.setLabelString("Seg. Len (0 to disable):");
+        deviceField152.setNumCols(4);
+        deviceField152.setOffsetNid(751);
+        jPanel78.add(deviceField152);
+
+        deviceField153.setIdentifier("");
+        deviceField153.setLabelString("Write CPU mask:");
+        deviceField153.setNumCols(4);
+        deviceField153.setOffsetNid(752);
+        jPanel78.add(deviceField153);
+
         jPanel77.add(jPanel78);
 
         deviceField78.setIdentifier("");
@@ -965,6 +1305,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField80.setLabelString("CPU Mask: ");
         deviceField80.setOffsetNid(123);
         jPanel81.add(deviceField80);
+
+        deviceField154.setIdentifier("");
+        deviceField154.setLabelString("Seg. Len (0 to disable):");
+        deviceField154.setNumCols(4);
+        deviceField154.setOffsetNid(763);
+        jPanel81.add(deviceField154);
+
+        deviceField155.setIdentifier("");
+        deviceField155.setLabelString("Write CPU mask:");
+        deviceField155.setNumCols(4);
+        deviceField155.setOffsetNid(764);
+        jPanel81.add(deviceField155);
 
         jPanel80.add(jPanel81);
 
@@ -1012,6 +1364,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField85.setOffsetNid(138);
         jPanel86.add(deviceField85);
 
+        deviceField156.setIdentifier("");
+        deviceField156.setLabelString("Seg. Len (0 to disable):");
+        deviceField156.setNumCols(4);
+        deviceField156.setOffsetNid(800);
+        jPanel86.add(deviceField156);
+
+        deviceField157.setIdentifier("");
+        deviceField157.setLabelString("Write CPU mask:");
+        deviceField157.setNumCols(4);
+        deviceField157.setOffsetNid(801);
+        jPanel86.add(deviceField157);
+
         jPanel85.add(jPanel86);
 
         deviceField86.setIdentifier("");
@@ -1037,6 +1401,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField88.setLabelString("CPU Mask: ");
         deviceField88.setOffsetNid(142);
         jPanel89.add(deviceField88);
+
+        deviceField158.setIdentifier("");
+        deviceField158.setLabelString("Seg. Len (0 to disable):");
+        deviceField158.setNumCols(4);
+        deviceField158.setOffsetNid(812);
+        jPanel89.add(deviceField158);
+
+        deviceField159.setIdentifier("");
+        deviceField159.setLabelString("Write CPU mask:");
+        deviceField159.setNumCols(4);
+        deviceField159.setOffsetNid(813);
+        jPanel89.add(deviceField159);
 
         jPanel88.add(jPanel89);
 
@@ -1064,6 +1440,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField91.setOffsetNid(146);
         jPanel92.add(deviceField91);
 
+        deviceField160.setIdentifier("");
+        deviceField160.setLabelString("Seg. Len (0 to disable):");
+        deviceField160.setNumCols(4);
+        deviceField160.setOffsetNid(824);
+        jPanel92.add(deviceField160);
+
+        deviceField161.setIdentifier("");
+        deviceField161.setLabelString("Write CPU mask:");
+        deviceField161.setNumCols(4);
+        deviceField161.setOffsetNid(825);
+        jPanel92.add(deviceField161);
+
         jPanel91.add(jPanel92);
 
         deviceField92.setIdentifier("");
@@ -1089,6 +1477,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField94.setLabelString("CPU Mask: ");
         deviceField94.setOffsetNid(150);
         jPanel95.add(deviceField94);
+
+        deviceField162.setIdentifier("");
+        deviceField162.setLabelString("Seg. Len (0 to disable):");
+        deviceField162.setNumCols(4);
+        deviceField162.setOffsetNid(836);
+        jPanel95.add(deviceField162);
+
+        deviceField163.setIdentifier("");
+        deviceField163.setLabelString("Write CPU mask:");
+        deviceField163.setNumCols(4);
+        deviceField163.setOffsetNid(837);
+        jPanel95.add(deviceField163);
 
         jPanel94.add(jPanel95);
 
@@ -1116,6 +1516,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField97.setOffsetNid(154);
         jPanel98.add(deviceField97);
 
+        deviceField164.setIdentifier("");
+        deviceField164.setLabelString("Seg. Len (0 to disable):");
+        deviceField164.setNumCols(4);
+        deviceField164.setOffsetNid(848);
+        jPanel98.add(deviceField164);
+
+        deviceField165.setIdentifier("");
+        deviceField165.setLabelString("Write CPU mask:");
+        deviceField165.setNumCols(4);
+        deviceField165.setOffsetNid(849);
+        jPanel98.add(deviceField165);
+
         jPanel97.add(jPanel98);
 
         deviceField98.setIdentifier("");
@@ -1141,6 +1553,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField100.setLabelString("CPU Mask: ");
         deviceField100.setOffsetNid(158);
         jPanel101.add(deviceField100);
+
+        deviceField166.setIdentifier("");
+        deviceField166.setLabelString("Seg. Len (0 to disable):");
+        deviceField166.setNumCols(4);
+        deviceField166.setOffsetNid(860);
+        jPanel101.add(deviceField166);
+
+        deviceField167.setIdentifier("");
+        deviceField167.setLabelString("Write CPU mask:");
+        deviceField167.setNumCols(4);
+        deviceField167.setOffsetNid(861);
+        jPanel101.add(deviceField167);
 
         jPanel100.add(jPanel101);
 
@@ -1168,6 +1592,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField103.setOffsetNid(162);
         jPanel104.add(deviceField103);
 
+        deviceField168.setIdentifier("");
+        deviceField168.setLabelString("Seg. Len (0 to disable):");
+        deviceField168.setNumCols(4);
+        deviceField168.setOffsetNid(872);
+        jPanel104.add(deviceField168);
+
+        deviceField169.setIdentifier("");
+        deviceField169.setLabelString("Write CPU mask:");
+        deviceField169.setNumCols(4);
+        deviceField169.setOffsetNid(873);
+        jPanel104.add(deviceField169);
+
         jPanel103.add(jPanel104);
 
         deviceField104.setIdentifier("");
@@ -1193,6 +1629,18 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         deviceField106.setLabelString("CPU Mask: ");
         deviceField106.setOffsetNid(166);
         jPanel107.add(deviceField106);
+
+        deviceField170.setIdentifier("");
+        deviceField170.setLabelString("Seg. Len (0 to disable):");
+        deviceField170.setNumCols(4);
+        deviceField170.setOffsetNid(884);
+        jPanel107.add(deviceField170);
+
+        deviceField171.setIdentifier("");
+        deviceField171.setLabelString("Write CPU mask:");
+        deviceField171.setNumCols(4);
+        deviceField171.setOffsetNid(885);
+        jPanel107.add(deviceField171);
 
         jPanel106.add(jPanel107);
 
@@ -1244,13 +1692,77 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
     private DeviceField deviceField105;
     private DeviceField deviceField106;
     private DeviceField deviceField107;
+    private DeviceField deviceField108;
+    private DeviceField deviceField109;
     private DeviceField deviceField11;
+    private DeviceField deviceField110;
+    private DeviceField deviceField111;
+    private DeviceField deviceField112;
+    private DeviceField deviceField113;
+    private DeviceField deviceField114;
+    private DeviceField deviceField115;
+    private DeviceField deviceField116;
+    private DeviceField deviceField117;
+    private DeviceField deviceField118;
+    private DeviceField deviceField119;
     private DeviceField deviceField12;
+    private DeviceField deviceField120;
+    private DeviceField deviceField121;
+    private DeviceField deviceField122;
+    private DeviceField deviceField123;
+    private DeviceField deviceField124;
+    private DeviceField deviceField125;
+    private DeviceField deviceField126;
+    private DeviceField deviceField127;
+    private DeviceField deviceField128;
+    private DeviceField deviceField129;
     private DeviceField deviceField13;
+    private DeviceField deviceField130;
+    private DeviceField deviceField131;
+    private DeviceField deviceField132;
+    private DeviceField deviceField133;
+    private DeviceField deviceField134;
+    private DeviceField deviceField135;
+    private DeviceField deviceField136;
+    private DeviceField deviceField137;
+    private DeviceField deviceField138;
+    private DeviceField deviceField139;
     private DeviceField deviceField14;
+    private DeviceField deviceField140;
+    private DeviceField deviceField141;
+    private DeviceField deviceField142;
+    private DeviceField deviceField143;
+    private DeviceField deviceField144;
+    private DeviceField deviceField145;
+    private DeviceField deviceField146;
+    private DeviceField deviceField147;
+    private DeviceField deviceField148;
+    private DeviceField deviceField149;
     private DeviceField deviceField15;
+    private DeviceField deviceField150;
+    private DeviceField deviceField151;
+    private DeviceField deviceField152;
+    private DeviceField deviceField153;
+    private DeviceField deviceField154;
+    private DeviceField deviceField155;
+    private DeviceField deviceField156;
+    private DeviceField deviceField157;
+    private DeviceField deviceField158;
+    private DeviceField deviceField159;
     private DeviceField deviceField16;
+    private DeviceField deviceField160;
+    private DeviceField deviceField161;
+    private DeviceField deviceField162;
+    private DeviceField deviceField163;
+    private DeviceField deviceField164;
+    private DeviceField deviceField165;
+    private DeviceField deviceField166;
+    private DeviceField deviceField167;
+    private DeviceField deviceField168;
+    private DeviceField deviceField169;
     private DeviceField deviceField17;
+    private DeviceField deviceField170;
+    private DeviceField deviceField171;
     private DeviceField deviceField18;
     private DeviceField deviceField19;
     private DeviceField deviceField2;

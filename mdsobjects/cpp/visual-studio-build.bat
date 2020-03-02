@@ -25,36 +25,37 @@ REM Various directories used for compiles, links and lib generation
 set CPP=%SRCDIR%\mdsobjects\cpp
 set BUILD64=\workspace\releasebld\64
 set BUILD32=\workspace\releasebld\32
-
+set DEFS=%BUILD64%\defs
 REM Build Visual Studio compatible lib files for the C based libraries (both 64 and 32 bit versions)
 
-lib /def:%SRCDIR%\mdsshr\MdsShr.def /out:%BUILD64%\bin_x86_64\MdsShr.lib /machine:x64
-lib /def:%SRCDIR%\treeshr\TreeShr.def /out:%BUILD64%\bin_x86_64\TreeShr.lib /machine:x64
-lib /def:%SRCDIR%\tdishr\TdiShr.def /out:%BUILD64%\bin_x86_64\TdiShr.lib /machine:x64
-lib /def:%SRCDIR%\mdstcpip\MdsIpShr.def /out:%BUILD64%\bin_x86_64\MdsIpShr.lib /machine:x64
-lib /def:%SRCDIR%\mdsmisc\MdsMisc.def /out:%BUILD64%\bin_x86_64\MdsMisc.lib /machine:x64
-lib /def:%SRCDIR%\servershr\MdsServerShr.def /out:%BUILD64%\bin_x86_64\MdsServerShr.lib /machine:x64
-lib /def:%SRCDIR%\mdslib\MdsLib.def /out:%BUILD64%\bin_x86_64\MdsLib.lib /machine:x64
-lib /def:%SRCDIR%\mdsdcl\Mdsdcl.def /out:%BUILD64%\bin_x86_64\Mdsdcl.lib /machine:x64
-lib /def:%SRCDIR%\math\MdsMath.def /out:%BUILD64%\bin_x86_64\MdsMath.lib /machine:x64
+lib /def:%DEFS%\MdsShr.def	/out:%BUILD64%\bin_x86_64\MdsShr.lib	/machine:x64 >NUL
+lib /def:%DEFS%\TreeShr.def	/out:%BUILD64%\bin_x86_64\TreeShr.lib	/machine:x64 >NUL
+lib /def:%DEFS%\TdiShr.def	/out:%BUILD64%\bin_x86_64\TdiShr.lib	/machine:x64 >NUL
+lib /def:%DEFS%\MdsIpShr.def	/out:%BUILD64%\bin_x86_64\MdsIpShr.lib	/machine:x64 >NUL
+lib /def:%DEFS%\MdsMisc.def	/out:%BUILD64%\bin_x86_64\MdsMisc.lib	/machine:x64 >NUL
+lib /def:%DEFS%\MdsLib.def	/out:%BUILD64%\bin_x86_64\MdsLib.lib	/machine:x64 >NUL
+lib /def:%DEFS%\Mdsdcl.def	/out:%BUILD64%\bin_x86_64\Mdsdcl.lib	/machine:x64 >NUL
+lib /def:%DEFS%\MdsMath.def	/out:%BUILD64%\bin_x86_64\MdsMath.lib	/machine:x64 >NUL
+lib /def:%DEFS%\MdsServerShr.def /out:%BUILD64%\bin_x86_64\MdsServerShr.lib /machine:x64 >NUL
 
-lib /def:%SRCDIR%\mdsshr\MdsShr.def /out:%BUILD32%\bin_x86\MdsShr.lib /machine:x86
-lib /def:%SRCDIR%\treeshr\TreeShr.def /out:%BUILD32%\bin_x86\TreeShr.lib /machine:x86
-lib /def:%SRCDIR%\tdishr\TdiShr.def /out:%BUILD32%\bin_x86\TdiShr.lib /machine:x86
-lib /def:%SRCDIR%\mdstcpip\MdsIpShr.def /out:%BUILD32%\bin_x86\MdsIpShr.lib /machine:x86
-lib /def:%SRCDIR%\mdsmisc\MdsMisc.def /out:%BUILD32%\bin_x86\MdsMisc.lib /machine:x86
-lib /def:%SRCDIR%\servershr\MdsServerShr.def /out:%BUILD32%\bin_x86\MdsServerShr.lib /machine:x86
-lib /def:%SRCDIR%\mdslib\MdsLib.def /out:%BUILD32%\bin_x86\MdsLib.lib /machine:x86
-lib /def:%SRCDIR%\mdsdcl\Mdsdcl.def /out:%BUILD32%\bin_x86\Mdsdcl.lib /machine:x86
-lib /def:%SRCDIR%\math\MdsMath.def /out:%BUILD32%\bin_x86\MdsMath.lib /machine:x86
+lib /def:%DEFS%\MdsShr.def	/out:%BUILD32%\bin_x86\MdsShr.lib	/machine:x86 >NUL
+lib /def:%DEFS%\TreeShr.def	/out:%BUILD32%\bin_x86\TreeShr.lib	/machine:x86 >NUL
+lib /def:%DEFS%\TdiShr.def	/out:%BUILD32%\bin_x86\TdiShr.lib	/machine:x86 >NUL
+lib /def:%DEFS%\MdsIpShr.def	/out:%BUILD32%\bin_x86\MdsIpShr.lib	/machine:x86 >NUL
+lib /def:%DEFS%\MdsMisc.def	/out:%BUILD32%\bin_x86\MdsMisc.lib	/machine:x86 >NUL
+lib /def:%DEFS%\MdsLib.def	/out:%BUILD32%\bin_x86\MdsLib.lib	/machine:x86 >NUL
+lib /def:%DEFS%\Mdsdcl.def	/out:%BUILD32%\bin_x86\Mdsdcl.lib	/machine:x86 >NUL
+lib /def:%DEFS%\MdsMath.def	/out:%BUILD32%\bin_x86\MdsMath.lib	/machine:x86 >NUL
+lib /def:%DEFS%\MdsServerShr.def /out:%BUILD32%\bin_x86\MdsServerShr.lib /machine:x86 >NUL
 
 REM Use Visual studio compiler to compile the CPP modules
 
-set CL_OPTS=/c /GS /W3 /Zc:wchar_t /I"%SRCDIR%\include" /I"%SRCDIR%\tdishr" /Zi /Gm- /O2 ^
- /Fd"\tmp\vc141.pdb" /Zc:inline /fp:precise /D "WIN32" /D "NDEBUG" /D "WINDOWS_H" ^
- /D "_WINDOWS" /D "_USRDLL" /D "MDSOBJECTSCPPSHRVS_EXPORTS" /D "NOMINMAX" ^
- /D "_CRT_SECURE_NO_WARNINGS" /D "_WINDLL" /errorReport:prompt /WX- /Zc:forScope ^
- /Gd /MD /EHsc /nologo  /Fp"MdsObjectsCppShr-VS.pch" /diagnostics:classic
+set CL_OPTS=/c /I"%SRCDIR%\include" /I"%SRCDIR%\tdishr" /MP ^
+ /Fp"MdsObjectsCppShr-VS.pch" /diagnostics:classic /Fd"\tmp\vc141.pdb" ^
+ /Zc:wchar_t /Zc:inline /fp:precise /Zc:forScope ^
+ /D WINDOWS_H /D _WINDOWS /D _USRDLL /D _WINDLL /D MDSOBJECTSCPPSHRVS_EXPORTS ^
+ /W1 /WX- /WL /D _CRT_SECURE_NO_WARNINGS ^
+ /O1 /GS /Gm- /Gw /Gd /MD /EHsc /nologo
 
 cl %CL_OPTS% %CPP%\mdsdata.c
 cl %CL_OPTS% %CPP%\mdsdataobjects.cpp

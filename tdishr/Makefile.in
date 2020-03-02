@@ -1,12 +1,13 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Tdi
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
 @MINGW_TRUE@ IMPLIB=@MAKELIBDIR@TdiShr.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/TdiShr.def
 
 LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lTreeShr -lMdsShr @LIBM@ $(THREAD) @LIBDL@ $(LIBSOCKET)
 SYBASE_INC=@SYBASE_INC@
@@ -113,21 +114,17 @@ install: $(libdir)
 	fi;
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShr.exports
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) @EXPORTS_FILE@
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@TdiShr@SHARETYPE@ $(IMPLIB): $(OBJECTS)
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TdiShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
-TdiShr.exports: TdiShr.def
-	$(SED) -e /LIBRARY/\;/\;/d $< > $@
-
 TdiSql.o : TdiSql.c
 	$(COMPILE.c) $(OUTPUT_OPTION) $< $(SYBASE_INC)
 
-TdiYacc.o : TdiYacc.c
-	$(COMPILE.c) $(OUTPUT_OPTION) $< -Wno-array-bounds
+TdiYacc.o :
+	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiYacc.c -Wno-array-bounds

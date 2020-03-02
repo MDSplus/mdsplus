@@ -1,0 +1,684 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<Form version="1.2" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JDialogFormInfo">
+  <Properties>
+    <Property name="deviceProvider" type="java.lang.String" value="scpsl.nbtf:8123"/>
+    <Property name="deviceTitle" type="java.lang.String" value="Stream Setup"/>
+    <Property name="deviceType" type="java.lang.String" value="STREAM_SETUP"/>
+    <Property name="height" type="int" value="300"/>
+    <Property name="width" type="int" value="1000"/>
+  </Properties>
+  <AccessibilityProperties>
+    <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
+  </AccessibilityProperties>
+  <SyntheticProperties>
+    <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
+  </SyntheticProperties>
+  <AuxValues>
+    <AuxValue name="FormSettings_autoResourcing" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_autoSetComponentName" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_generateFQN" type="java.lang.Boolean" value="true"/>
+    <AuxValue name="FormSettings_generateMnemonicsCode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_i18nAutoMode" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_layoutCodeTarget" type="java.lang.Integer" value="1"/>
+    <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
+    <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
+    <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,1,-37,0,0,3,-119"/>
+  </AuxValues>
+
+  <Layout class="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout"/>
+  <SubComponents>
+    <Component class="DeviceButtons" name="deviceButtons1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Last"/>
+        </Constraint>
+      </Constraints>
+    </Component>
+    <Container class="javax.swing.JScrollPane" name="jScrollPane1">
+      <Constraints>
+        <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout" value="org.netbeans.modules.form.compat2.layouts.DesignBorderLayout$BorderConstraintsDescription">
+          <BorderConstraints direction="Center"/>
+        </Constraint>
+      </Constraints>
+
+      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
+      <SubComponents>
+        <Container class="javax.swing.JPanel" name="jPanel1">
+
+          <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
+            <Property name="columns" type="int" value="1"/>
+            <Property name="rows" type="int" value="16"/>
+          </Layout>
+          <SubComponents>
+            <Container class="javax.swing.JPanel" name="jPanel2">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField1">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="2"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField2">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="3"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField33">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="34"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField34">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="50"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel3">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField3">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="4"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField4">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="5"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField35">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="35"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField36">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="51"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel4">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField5">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="6"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField6">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="7"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField37">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="36"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField38">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="52"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel5">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField7">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="8"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField8">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="9"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField39">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="37"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField40">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="53"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel6">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField9">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="10"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField10">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="11"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField41">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="38"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField42">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="54"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel7">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField11">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="12"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField12">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="13"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField43">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="39"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField44">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="55"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel8">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField13">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="14"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField14">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="15"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField45">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="40"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField46">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="56"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel9">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField15">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="16"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField16">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="17"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField47">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="41"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField48">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="57"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel10">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField17">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="18"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField18">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="19"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField49">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="42"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField50">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="58"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel11">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField19">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="20"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField20">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="21"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField51">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="43"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField52">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="59"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel12">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField21">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="22"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField22">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="23"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField53">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="44"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField54">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="60"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel13">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField23">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="24"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField24">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="25"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField55">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="45"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField56">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="61"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel14">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField25">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="26"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField26">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="27"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField57">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="46"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField58">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="62"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel15">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField27">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="28"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField28">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="29"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField59">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="47"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField60">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="63"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel16">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField29">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="30"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField30">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="31"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField61">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="48"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField62">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="64"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+            <Container class="javax.swing.JPanel" name="jPanel17">
+
+              <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout"/>
+              <SubComponents>
+                <Component class="DeviceField" name="deviceField31">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Node:"/>
+                    <Property name="numCols" type="int" value="30"/>
+                    <Property name="offsetNid" type="int" value="32"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField32">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Stream name:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="33"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField63">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Gain:"/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="49"/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField64">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Offset: "/>
+                    <Property name="numCols" type="int" value="20"/>
+                    <Property name="offsetNid" type="int" value="65"/>
+                  </Properties>
+                </Component>
+              </SubComponents>
+            </Container>
+          </SubComponents>
+        </Container>
+      </SubComponents>
+    </Container>
+  </SubComponents>
+</Form>

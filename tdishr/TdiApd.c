@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Timo Schröder, IPP      2017
 */
 
-#include "STATICdef.h"
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"

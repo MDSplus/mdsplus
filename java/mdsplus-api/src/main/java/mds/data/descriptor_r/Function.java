@@ -30,13 +30,16 @@ public class Function extends Descriptor_R<Short>{
 			this.lorr = lorr;
 		}
 	}
-	private static String						newline;
+
+	public static final String LINEENDING_UNIX = "\n\t\t\t\t\t\t\t";
+	public static final String LINEENDING_WIN = "\r\n\t\t\t\t\t\t\t";
+	private static String						newline = LINEENDING_UNIX;
 	private static final ThreadLocal<Integer>	TdiIndent	= new ThreadLocal<Integer>(){
-																@Override
-																protected Integer initialValue() {
-																	return Integer.valueOf(0);
-																}
-															};
+		@Override
+		protected Integer initialValue() {
+			return Integer.valueOf(0);
+		}
+	};
 
 	public static final Function ABS(final Descriptor<?> dscptrs) {
 		return new Function(OPC.OpcAbs, dscptrs);
@@ -64,7 +67,7 @@ public class Function extends Descriptor_R<Short>{
 	}
 
 	public static final void setWindowsLineEnding(final boolean win_in) {
-		Function.newline = win_in ? "\r\n\t\t\t\t\t\t\t" : "\n\t\t\t\t\t\t\t";
+		Function.newline = win_in ? LINEENDING_WIN : LINEENDING_UNIX;
 	}
 
 	protected static final void addCompoundStatement(final int nstmt, final Function pin, final int offset, final StringBuilder pout, final int mode) {

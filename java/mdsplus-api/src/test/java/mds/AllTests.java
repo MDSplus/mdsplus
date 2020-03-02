@@ -16,7 +16,7 @@ import mds.mdsip.MdsIp.Provider;
 @RunWith(Suite.class)
 @SuiteClasses({TREE_Test.class, CONST_Test.class, Mds_Test.class, TreeShr_Test.class, MdsShr_Test.class, Function_Test.class, Descriptor_S_Test.class, Descriptor_A_Test.class, Descriptor_CA_Test.class}) // , Editors_Test.class})
 public class AllTests{
-	private static boolean			local		= false;
+	private static boolean			local		= true;
 	private static boolean			mdsip		= true;
 	private static boolean			use_local	= false;
 	private static final int		port		= 8000;

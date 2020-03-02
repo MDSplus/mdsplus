@@ -56,7 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1990,1991
 */
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include "tdinelements.h"
@@ -99,7 +98,7 @@ typedef struct {
 int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   register char *pin, *pout;
   int bounded = 0, cmode = -1, dimct, highest = 0, highdim = 0, row;
   int dim;
@@ -123,17 +122,18 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
       DESCRIPTOR_LONG(ans, &check);
       ARRAY(struct descriptor *) * apd = (void *)dat[0].pointer;
       for (idx = 0; idx < ((apd->arsize / apd->length) - 1); idx += 2) {
-	if ((TdiEq(apd->pointer[idx], list[1], &ans MDS_END_ARG) & 1) == 1 && check == 1) {
+	if (IS_OK(TdiEq(apd->pointer[idx], list[1], &ans MDS_END_ARG)) && check == 1) {
 	  status = MdsCopyDxXd(apd->pointer[idx + 1], out_ptr);
-	  break;
+	  goto baddat;
 	}
       }
+      status = MdsCopyDxXd(NULL, out_ptr);
     } else if (dat[0].pointer && dat[0].pointer->dtype == DTYPE_LIST) {
       unsigned int idx;
-      int stat;
       ARRAY(struct descriptor *) * apd = (void *)dat[0].pointer;
-      stat = TdiGetLong(list[1], &idx);
-      if (stat & 1 && idx < apd->arsize / apd->length) {
+      status = TdiGetLong(list[1], &idx);
+      if STATUS_NOT_OK goto baddat;
+      if (idx < apd->arsize / apd->length) {
 	status = MdsCopyDxXd(apd->pointer[idx], out_ptr);
       }
     }
@@ -351,7 +351,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
 int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_xd dwu = EMPTY_XD, sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct descriptor_with_units *pwu;

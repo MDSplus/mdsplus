@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 #define SIGNEDNESS      (TdiCAT_B ^ TdiCAT_BU)
 #define FLOATMASK       (TdiCAT_FLOAT | TdiCAT_LENGTH)
@@ -118,7 +117,7 @@ int TdiCvtArgs(int narg, struct descriptor_xd dat[1], struct TdiCatStruct cats[1
       } else
 	cptr->out_dtype = DTYPE_T;
     } else if (cptr->out_cat != TdiREF_CAT[DTYPE_T].cat)
-      cptr->digits = TdiREF_CAT[cptr->out_dtype].length;
+      cptr->digits = TDIREF_CAT(cptr->out_dtype).length;
   }
 
 	/********************

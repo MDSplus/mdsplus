@@ -56,7 +56,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
        use without specific written approval of MIT Plasma Fusion Center
        Management.
 ------------------------------------------------------------------------------*/
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 

@@ -31,7 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1990,1991
 */
-#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <dbidef.h>
 #include <strroutines.h>
@@ -41,10 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 
-STATIC_CONSTANT DESCRIPTOR(coloncolon, "::");
+static const DESCRIPTOR(coloncolon, "::");
 #define EOL {0,DbiEND_OF_LIST,0,0}
 
-STATIC_CONSTANT struct item {
+static const struct item {
   char *item_name;
   char item_code;
   dtype_t item_dtype;
@@ -65,11 +64,11 @@ STATIC_CONSTANT struct item {
 
 extern int TdiData();
 extern int TdiUpcase();
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiGetLong();
 extern int _TdiEvaluate();
 
-STATIC_ROUTINE int compare(struct descriptor *s1, struct item s2[1])
+static int compare(struct descriptor *s1, struct item s2[1])
 {
   int cmp, len1 = s1->length, len2 = strlen(s2[0].item_name);
   char c0;
@@ -165,7 +164,7 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 	        USING(expression, [DEFAULT], [SHOTID], [EXPT])
 	Note that DEFAULT may be NID/PATH and will not be data at same.
 */
-STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */
+static int fixup_nid(int *pin, /* NID pointer */
 			     int arg __attribute__ ((unused)),
 			     struct descriptor_d *pout)
 {
@@ -179,7 +178,7 @@ STATIC_ROUTINE int fixup_nid(int *pin, /* NID pointer */
   return MDSplusERROR;
 }
 
-STATIC_ROUTINE int fixup_path(struct descriptor *pin,
+static int fixup_path(struct descriptor *pin,
 			      int arg __attribute__ ((unused)),
 			      struct descriptor_d *pout)
 {
@@ -214,7 +213,7 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
   if (narg > 1 && STATUS_OK) {
     if (list[1]) {
       struct descriptor_xd xd = EMPTY_XD;
-      status = TdiGetData(omits, list[1], &xd);
+      status = tdi_get_data(omits, list[1], &xd);
       if (STATUS_OK && xd.pointer)
 	switch (xd.pointer->dtype) {
 	case DTYPE_T:
@@ -233,7 +232,7 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
       };
       status = TreeGetDbi(def_itm);
       if (def_itm[0].pointer == NULL) {
-	STATIC_CONSTANT DESCRIPTOR(top, "\\TOP");
+	static const DESCRIPTOR(top, "\\TOP");
 	StrCopyDx((struct descriptor *)&def, (struct descriptor *)&top);
 	status = MDSplusSUCCESS;
       } else {

@@ -92,15 +92,24 @@ public final class Message extends Object{
 		return(arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128 && arr[idx + 3] == 0);
 	}
 
-	private static final ByteBuffer readBuf(int bytes_to_read, final ReadableByteChannel dis, final Set<TransferEventListener> mdslisteners) throws IOException {
+	private static final ByteBuffer readBuf(int bytes_to_read, final ReadableByteChannel dis, final Set<TransferEventListener> mdslisteners, long abstimeout) throws IOException {
 		final ByteBuffer buf = ByteBuffer.allocateDirect(bytes_to_read);
 		final boolean event = (bytes_to_read > 2000);
 		try{
+			if (abstimeout == 0) abstimeout = System.currentTimeMillis() + 100;
 			while(buf.hasRemaining()){
-				if(dis.read(buf) == -1) throw new SocketException("connection lost");
+				final int read = dis.read(buf);
+				if(read == -1) throw new SocketException("connection lost");
+				else if (read == 0) {
+					if (abstimeout > 0 && System.currentTimeMillis()>abstimeout)
+						throw new SocketException("connection timeout");
+					continue;
+				}
+				if (abstimeout > 0) abstimeout += 100;
 				if(event) Message.dispatchTransferEvent(mdslisteners, dis, null, bytes_to_read, buf.position());
 			}
 		}catch(final IOException e){
+			System.err.printf("Connection lost: %s\n", e.getMessage());
 			Message.dispatchTransferEvent(mdslisteners, dis, e.getMessage(), 0, 0);
 			throw e;
 		}
@@ -113,19 +122,20 @@ public final class Message extends Object{
 		rbc.read(unflattened_length);
 		final int bytes_to_read = unflattened_length.getInt(0) - Message.HEADER_SIZE;
 		try(CompressedChannel cc = new Message.CompressedChannel(rbc);){
-			return Message.readBuf(bytes_to_read, cc, listeners);
+			return Message.readBuf(bytes_to_read, cc, listeners, 0);
 		}
 	}
 
-	public final static Message receive(final ReadableByteChannel rbc, final Set<TransferEventListener> listeners) throws IOException {
-		final ByteBuffer header = Message.readBuf(Message.HEADER_SIZE, rbc, null);
+	public final static Message receive(final ReadableByteChannel rbc, final Set<TransferEventListener> listeners, final int timeout) throws IOException {
+		final long abstimeout = timeout >= 0 ? System.currentTimeMillis() + timeout : -1;
+		final ByteBuffer header = Message.readBuf(Message.HEADER_SIZE, rbc, null, abstimeout);
 		final byte c_type = header.get(Message._clntB);
 		if((c_type & Message.BIG_ENDIAN_MASK) == 0) header.order(ByteOrder.LITTLE_ENDIAN);
 		final int msglen = header.getInt(Message._mlenI);
 		final ByteBuffer body;
 		if(msglen > Message.HEADER_SIZE){
 			if((c_type & Message.COMPRESSED) != 0) body = Message.readCompressedBuf(rbc, header.order(), listeners);
-			else body = Message.readBuf(msglen - Message.HEADER_SIZE, rbc, listeners);
+			else body = Message.readBuf(msglen - Message.HEADER_SIZE, rbc, listeners, 0);
 		}else body = ByteBuffer.allocateDirect(0);
 		body.order(header.order());
 		final Message msg = new Message(header, body);

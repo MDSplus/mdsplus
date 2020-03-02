@@ -22,22 +22,25 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include <libroutines.h>
-#include <mdsshr.h>
-#include <mdsshr_messages.h>
+#include <mdsplus/mdsconfig.h>
+
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <treeshr.h>
-#include <usagedef.h>
-#include "treethreadsafe.h"
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
-#include <ctype.h>
+
+#include <usagedef.h>
 #include <mds_stdarg.h>
+#include <libroutines.h>
+#include <mdsshr.h>
+#include <mdsshr_messages.h>
+#include <treeshr.h>
+
+#include "treethreadstatic.h"
 #include "treeshr_xnci.h"
-extern void **TreeCtx();
 
 /*** Segmented Record Support  ************************
 
@@ -1134,10 +1137,9 @@ static int get_compressed_segment_rows(TREE_INFO *tinfo, const int64_t offset, i
     return TreeFAILURE;
   char dimct = buffer[11];
   if (dimct == 1) {
-    loadint32(rows, &buffer[12]);       // arsize
-    *rows = *rows / swapint16(buffer);  // length
+    *rows = swapint32(&buffer[12]) / swapint16(buffer);  // arsize / length
   } else
-    loadint32(rows, &buffer[16 + dimct * 4]);  // last dim
+    loadint32(rows,&buffer[16 + dimct * 4]);  // last dim
   return TreeSUCCESS;
 }
 
@@ -1819,8 +1821,7 @@ static int get_segment_limits(vars_t *vars, mdsdsc_xd_t *retStart, mdsdsc_xd_t *
           const int filled_rows = get_filled_rows_ts(
               &vars->shead, vars->sinfo, vars->idx, (int64_t *)buffer);
           if (filled_rows > 0) {
-            loadint64(&timestamp,
-                      buffer + (filled_rows - 1) * sizeof(int64_t));
+            loadint64(&timestamp, buffer + (filled_rows - 1) * sizeof(int64_t));
             MdsCopyDxXd(&q_d, retEnd);
           } else
             MdsFree1Dx(retEnd, 0);

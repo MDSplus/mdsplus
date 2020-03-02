@@ -9,12 +9,12 @@ DEPENDENCIES = $(MDSPLUS_API_JAR)
 
 if USE_JARS_DIR
 
-jTraverser2.jar : @JARS_DIR@/java/jtraverser2/jTraverser2.jar
+$(java_DATA): @JARS_DIR@/java/jtraverser2/jTraverser2.jar
 	cp $< $@
 
 else
 
-jTraverser2.jar: $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\

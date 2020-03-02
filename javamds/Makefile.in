@@ -4,13 +4,11 @@ srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-@MINGW_TRUE@ DEF=${srcdir}/JavaMds.def
 
 CFLAGS += -I /media/sf_FedoraShared/include/ -I /media/sf_FedoraShared/include/win32 $(THREAD) @JDK_CFLAGS@
 
 SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = JavaMds.export
 
 all: 	@MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@
 
@@ -24,6 +22,6 @@ clean:
 install: $(libdir)
 	$(INSTALL) -m 755  @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ @libdir@
 
-@MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS) $(DEF)
+@MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@ : $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKJNI@ $(THREAD) $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr -lTreeShr -lTdiShr $(LIBS)
 

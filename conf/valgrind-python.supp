@@ -649,3 +649,47 @@
    fun:_PyCFunction_FastCallKeywords
    obj:*/libpython3.7m.so*
 }
+
+{
+   debian9-64 python3.5
+   Memcheck:Addr1
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Addr4
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Addr8
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Value8
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Cond
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:/usr/*/*python3.5*
+}
+{
+   debian9-64 python3.5
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/bin/x86_64-linux-gnu-gcc-6
+   obj:/usr/bin/x86_64-linux-gnu-gcc-6
+   obj:/usr/bin/x86_64-linux-gnu-gcc-6
+   obj:/usr/bin/x86_64-linux-gnu-gcc-6
+   obj:/usr/bin/x86_64-linux-gnu-gcc-6
+}

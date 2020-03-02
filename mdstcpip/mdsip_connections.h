@@ -2,20 +2,15 @@
 #define __MDSIP_H__
 #define MdsLib_H
 #define _GNU_SOURCE /* glibc2 needs this */
-#include <mdsplus/mdsconfig.h>
+
+#ifndef _WIN32
+ #include <sysexits.h>
+#endif
 #include <mdsdescrip.h>
 #include <status.h>
-#ifdef _WIN32
- #ifndef __SIZE_TYPE__
- typedef int ssize_t;
- #endif
- #include <winsock2.h>
-#else
- #include <sys/types.h>
-#endif
 #include <ipdesc.h>
 #include <mds_stdarg.h>
-#include <pthread.h>
+#include <pthread_port.h>
 #define MDSIP_MAX_ARGS 256
 #define MDSIP_MAX_COMPRESS 9
 
@@ -163,6 +158,9 @@ typedef struct _io_routines {
   ssize_t (*recv_to)(Connection* c, void *buffer, size_t len, int to_msec);
   int     (*check)(Connection* c);
 } IoRoutines;
+#define ACCESS_NOMATCH 0
+#define ACCESS_GRANTED 1
+#define ACCESS_DENIED  2
 
 #define EVENTASTREQUEST "---EVENTAST---REQUEST---"
 #define EVENTCANREQUEST "---EVENTCAN---REQUEST---"
@@ -233,7 +231,7 @@ EXPORT short ArgLen(struct descrip *d);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///
-EXPORT int CheckClient(char *, int, char **);
+EXPORT int CheckClient(const char *, int, char *const *);
 
 ////////////////////////////////////////////////////////////////////////////////
 ///

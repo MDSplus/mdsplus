@@ -235,8 +235,8 @@ static void ResetWave(Widget w)
 	float *x;
 	Boolean *selected;
 	Boolean *pendown;
-	float *knot_x;
-	float *knot_y;
+	float *knot_x = NULL;
+	float *knot_y = NULL;
 	int num_knots = 0;
 	int j;
 	//int knot = 0;
@@ -277,7 +277,8 @@ static void ResetWave(Widget w)
 	y = (float *)XtCalloc(num_knots + count, sizeof(float));
 	selected = XtCalloc(num_knots + count, sizeof(Boolean));
 	pendown = XtCalloc(num_knots + count, sizeof(Boolean));
-	for (j = 0; j < num_knots; j++) {
+        if (knot_x && knot_y)
+	 for (j = 0; j < num_knots; j++) {
 	  x[j] = knot_x[j];
 	  y[j] = knot_y[j];
 	  selected[j] = 1;

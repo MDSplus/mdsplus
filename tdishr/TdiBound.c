@@ -47,7 +47,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include <STATICdef.h>
 
 
 extern struct descriptor *TdiItoXSpecial;
@@ -59,21 +58,23 @@ extern int TdiProduct();
 extern int TdiItoX();
 extern int Tdi3Subtract();
 
-STATIC_CONSTANT DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
-STATIC_CONSTANT dtype_t dtype_l = DTYPE_L;
-STATIC_CONSTANT length_t size_l = (length_t)sizeof(int);
+static const DESCRIPTOR_A(adsc0, sizeof(int), DTYPE_L, 0, 0);
+static const dtype_t dtype_l = DTYPE_L;
+static const length_t size_l = (length_t)sizeof(int);
 
 int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  array_bounds *pa = 0;
+  array_bounds *pa;
   struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   int dim, rank = 0;
 
   status = TdiGetArgs(opcode, 1, list, sig, uni, dat, cats);
+  pa = (array_bounds *) dat[0].pointer;
+  if (pa && pa->class == CLASS_APD) // size lists
+    status = SsINTERNAL;
   if STATUS_OK {
-    pa = (array_bounds *) dat[0].pointer;
     if (pa)
       switch (pa->class) {
       case CLASS_D:
@@ -84,6 +85,8 @@ int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descr
 	  rank = 1;
 	break;
       case CLASS_A:
+      case CLASS_CA:
+      case CLASS_APD:
 	rank = pa->aflags.coeff ? pa->dimct : 1;
 	break;
       default:
@@ -112,8 +115,11 @@ int Tdi1Bound(opcode_t opcode, int narg, struct descriptor *list[], struct descr
     if STATUS_OK
       status = MdsGet1DxA((struct descriptor_a *)&adsc, &size_l, &dtype_l, out_ptr);
   }
-  if (STATUS_OK && rank > 0)
-    (*TdiRefFunction[opcode].f3) (pa, dim, out_ptr->pointer->pointer);
+  if (STATUS_OK && rank > 0) {
+    TdiRefFunction[opcode].f3(pa, dim, out_ptr->pointer->pointer);
+    if (STATUS_OK && pa->dtype == DTYPE_DICTIONARY)
+        *(int*)out_ptr->pointer->pointer /= 2; // count pairs
+  }
   MdsFree1Dx(&dat[0], NULL);
   MdsFree1Dx(&uni[0], NULL);
   MdsFree1Dx(&sig[0], NULL);
@@ -127,7 +133,7 @@ void Tdi3Lbound(array_bounds * pa, int dim, int *pbound)
 {
   int dimct, j;
 
-  if (pa->class != CLASS_A)
+  if (!IS_ARRAY_DSC(pa))
     *pbound = 0;
   else if (pa->aflags.coeff) {
     dimct = pa->dimct;
@@ -154,7 +160,7 @@ void Tdi3Shape(array_bounds * pa, int dim, int *pbound)
 {
   int dimct, j;
 
-  if (pa->class != CLASS_A)
+  if (!IS_ARRAY_DSC(pa))
     *pbound = -1;
   else if (pa->aflags.coeff) {
     dimct = pa->dimct;
@@ -182,8 +188,7 @@ void Tdi3Shape(array_bounds * pa, int dim, int *pbound)
 int Tdi3Size(array_bounds * pa, int dim, int *pbound)
 {
   int dimct, j;
-
-  if (pa->class != CLASS_A)
+  if (!IS_ARRAY_DSC(pa))
     *pbound = pa->dtype == DTYPE_MISSING ? 0 : 1;
   else if (pa->aflags.coeff) {
     *pbound = 1;
@@ -214,8 +219,7 @@ int Tdi3Size(array_bounds * pa, int dim, int *pbound)
 void Tdi3Ubound(array_bounds * pa, int dim, int *pbound)
 {
   int dimct, j;
-
-  if (pa->class != CLASS_A)
+  if (!IS_ARRAY_DSC(pa))
     *pbound = pa->dtype == DTYPE_MISSING ? -1 : 0;
   else if (pa->aflags.coeff) {
     dimct = pa->dimct;

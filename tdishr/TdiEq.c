@@ -88,7 +88,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
-#include <STATICdef.h>
 
 
 

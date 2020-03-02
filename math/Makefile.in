@@ -6,7 +6,6 @@ VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 #### Remove following line after code causing warnings is fixed ####
 FCFLAGS+=-Wno-compare-reals -Wno-uninitialized
-@MINGW_TRUE@ DEF=${srcdir}/MdsMath.def
 
 SOURCES = \
 	caxpy.f \
@@ -54,8 +53,6 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 umach.o : umach.f
 	$(COMPILE.f) $< $(OUTPUT_OPTION) -Wno-conversion
 
-EXPORTS = MdsMath.exports
-
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 
 FFLAGS += $(FCFLAGS)
@@ -68,7 +65,7 @@ $(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@
 	lipo -create -o $@ $^
 endif
 
-$(LIBRARIES): $(OBJECTS)  $(DEF)
+$(LIBRARIES): $(OBJECTS)
 	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
 
 depend:

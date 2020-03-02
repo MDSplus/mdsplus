@@ -45,17 +45,24 @@ then
   RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
   RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
   RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 else
   RELEASE_MAJOR=1
   RELEASE_MINOR=0
   RELEASE_RELEASE=0
-  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 fi
+RELEASE_BRANCH=${BRANCH}
+RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 RELEASE_DATE="$(date)"
 
 dnl look if a version from git directory can be obtained 
 AX_GIT_REVISION
+
+if [[ -z ${RELEASE_BRANCH} ]]
+then if [[ -z ${GIT_BRANCH} ]]
+then RELEASE_BRANCH=unknown
+else RELEASE_BRANCH=${GIT_BRANCH}
+fi;fi
+
 
 dnl add reconfigure target option to autoconf generated Makefile
 AX_RECONFIGURE_TARGETS
@@ -104,6 +111,8 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
+AC_PROG_YACC
+AM_PROG_LEX
 
 # if ln is provided by busybox it does not have -r option
 AX_IS_BUSYBOX([ln],
@@ -388,7 +397,6 @@ MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
 MAKELIBDIR="\$(top_builddir)/lib/"
-EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
@@ -1013,8 +1021,14 @@ AX_PATH_PYTHON([2.6],[$host],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
-AC_MSG_CHECKING(libpython path)
-DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
+
+AC_MSG_CHECKING(PyLib)
+DEF_PYLIB=${PyLib:-$($PYTHON -c '
+import sys,ctypes.util
+name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[[0:2]]
+name = ctypes.util.find_library(name)
+if not name is None: print(name)
+')}
 AC_MSG_RESULT($DEF_PYLIB)
 
 
@@ -1266,7 +1280,6 @@ AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)
 AC_SUBST(DNET_STUB)
-AC_SUBST(EXPORTS_FILE)
 AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
@@ -1335,6 +1348,7 @@ AC_SUBST(NEED_SEMUN)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
+AC_SUBST(RELEASE_BRANCH)
 AC_SUBST(RELEASE_TAG)
 AC_SUBST(RELEASE_DATE)
 
@@ -1408,6 +1422,7 @@ AC_OUTPUT(Makefile.inc
           macosx/Makefile
           math/Makefile
           mdsdcl/Makefile
+	  mdsdcl/mdsdclVersionInfo.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile
@@ -1416,13 +1431,17 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
-	  python/MDSplus/_version.py
           python/MDSplus/docs/Makefile
           python/MDSplus/tests/Makefile
+          python/MDSplus/_version.py
+          pydevices/HtsDevices/_version.py
+          pydevices/MitDevices/_version.py
+          pydevices/RfxDevices/_version.py
+          pydevices/W7xDevices/_version.py
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
-	  mdsshr/MdsVersionInfo.c
+	  mdsshr/version.h
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
@@ -1432,9 +1451,6 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
-	  pydevices/MitDevices/_version.py
-	  pydevices/RfxDevices/_version.py
-	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile

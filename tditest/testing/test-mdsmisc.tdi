@@ -1,0 +1,12 @@
+_y=build_signal($VALUE&10,0:999,0.:9.99:.01)
+_s=*;List(,MdsMisc->GetXYSignalXd(xd(as_is(_y)),val(0),val(0),val(0),val(5),xd(_s)),_s)
+_s=*;List(,MdsMisc->GetXYSignalXd(xd(as_is(_y)),val(0),descr(.99),descr(9.),val(4),xd(_s)),_s)
+list(,treeopennew('main',1),treeaddnode("S",_n,6),treewrite(),setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE=M"))
+#setup for below threshold 500kS
+for(_i=0Q;_i<100000Q;_i+=10000) EXECUTE("MakeSegment(S,(`$),(`$),(`$):(`$),0:9999,,10000)",_i,9999+_i,_i,9999+_i)
+_s=*;list(,MdsMisc->GetXYSignalXd(xd(as_is(S)),val(0),val(0),val(0),val(5),xd(_s)),_s)
+_s=*;list(,MdsMisc->GetXYSignalXd(xd(as_is(S)),val(0),descr(10000Q),descr(90000Q),val(4),xd(_s)),_s)
+#setup for beyond threshold 500kS
+for(;_i<1000000Q;_i+=10000) EXECUTE("MakeSegment(S,(`$),(`$),(`$):(`$),0:9999,,10000)",_i,9999+_i,_i,9999+_i)
+_s=*;list(,MdsMisc->GetXYSignalXd(xd(as_is(S)),val(0),val(0),val(0),val(5),xd(_s)),_s)
+_s=*;list(,MdsMisc->GetXYSignalXd(xd(as_is(S)),val(0),descr(100000Q),descr(900000Q),val(4),xd(_s)),_s)

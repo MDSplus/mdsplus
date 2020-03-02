@@ -22,18 +22,22 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "treeshrp.h"		/* must be first or off_t wrong */
+#include <mdsplus/mdsconfig.h>
+#include <mdsplus/mdsplus.h>
+
 #include <string.h>
 #include <stdlib.h>
-#include <mdsplus/mdsplus.h>
+#include <errno.h>
+#include <fcntl.h>
+
 #include <mdsdescrip.h>
 #include <mdsshr.h>
 #include <ncidef.h>
-#include "treethreadsafe.h"
 #include <treeshr.h>
 #include <mdsshr_messages.h>
-#include <errno.h>
-#include <fcntl.h>
+
+#include "treeshrp.h"
+#include "treethreadstatic.h"
 
 #define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
 
@@ -392,26 +396,28 @@ EXPORT int TreeGetDatafile(TREE_INFO * info, unsigned char *rfa_in, int *buffer_
   return status;
 }
 
-static pthread_rwlock_t viewdate_lock = PTHREAD_RWLOCK_INITIALIZER;
+static pthread_mutex_t viewdate_lock = PTHREAD_MUTEX_INITIALIZER;
 int TreeSetViewDate(int64_t * date) {
-  if (TreeGetThreadStatic()->privateCtx)
-    TreeGetThreadStatic()->ViewDate = *date;
+  TREETHREADSTATIC_INIT;
+  if (TREE_PRIVATECTX)
+    TREE_VIEWDATE = *date;
   else{
-    pthread_rwlock_wrlock(&viewdate_lock);
+    pthread_mutex_lock(&viewdate_lock);
     ViewDate = *date;
-    pthread_rwlock_unlock(&viewdate_lock);
+    pthread_mutex_unlock(&viewdate_lock);
   }
   return TreeSUCCESS;
 }
 
 int TreeGetViewDate(int64_t * date)
 {
-  if (TreeGetThreadStatic()->privateCtx)
-    *date = TreeGetThreadStatic()->ViewDate;
+  TREETHREADSTATIC_INIT;
+  if (TREE_PRIVATECTX)
+    *date = TREE_VIEWDATE;
   else{
-    pthread_rwlock_rdlock(&viewdate_lock);
+    pthread_mutex_lock(&viewdate_lock);
     *date = ViewDate;
-    pthread_rwlock_unlock(&viewdate_lock);
+    pthread_mutex_unlock(&viewdate_lock);
   }
   return TreeSUCCESS;
 }

@@ -24,19 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #define _XOPEN_SOURCE_EXTENDED
 #define _GNU_SOURCE		/* glibc2 needs this */
-#define LOAD_INITIALIZESOCKETS
-#include <pthread_port.h>
-
-#ifdef _WIN32
-#include <ws2tcpip.h>
-#else
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/tcp.h>
-#endif
-
 #include <mdsplus/mdsconfig.h>
+#include <ctype.h>
 #include <sys/time.h>
 #include <time.h>
 #include <string.h>
@@ -49,6 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dirent.h>
 #include <errno.h>
 #include <signal.h>
+#include <socket_port.h>
 
 // #define DEBUG
 #ifdef DEBUG
@@ -58,26 +48,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #ifdef _WIN32
-#include <windows.h>
-#include <process.h>
-#define setenv(name,value,overwrite) _putenv_s(name,value)
-#define unsetenv(name)               _putenv_s(name,"")
-#define localtime_r(time,tm)         localtime_s(tm,time)
-#define ctime_r(tm,buf)              ctime_s(buf,32,tm)
+ #include <process.h>
+ #define setenv(name,value,overwrite) _putenv_s(name,value)
+ #define unsetenv(name)               _putenv_s(name,"")
+ #define localtime_r(time,tm)         localtime_s(tm,time)
+ #define ctime_r(tm,buf)              ctime_s(buf,32,tm)
 #else
-#include <sys/wait.h>
+ #include <sys/wait.h>
 #endif
 
+#include <STATICdef.h>
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
-#include <ctype.h>
-#include "mdsshrthreadsafe.h"
-#include <release.h>
+
 #define LIBRTL_SRC
 
 typedef struct {
@@ -107,8 +94,8 @@ typedef struct node {
   void *right;
   short bal;
 } LibTreeNode;
-
 #include <libroutines.h>
+
 
 #ifndef USE_TM_GMTOFF
 /* tzset() sets the global statics daylight and timezone.
@@ -257,6 +244,7 @@ EXPORT void *LibCallg(void **const a, void* (*const routine)()) {
   return 0;
 }
 
+DEFINE_INITIALIZESOCKETS;
 EXPORT uint32_t LibGetHostAddr(const char *const name){
   INITIALIZESOCKETS;
   uint32_t addr = 0;
@@ -1851,17 +1839,4 @@ EXPORT int libffs(const int *const position, const int *const size, const char *
     }
   }
   return status;
-}
-
-EXPORT const char *MdsRelease()
-{
-  return RELEASE;
-}
-
-EXPORT mdsdsc_t *MdsReleaseDsc()
-{
-  static mdsdsc_t RELEASE_D = { 0, DTYPE_T, CLASS_S, 0 };
-  RELEASE_D.length = (uint16_t)strlen(RELEASE);
-  RELEASE_D.pointer = (char *)RELEASE;
-  return &RELEASE_D;
 }

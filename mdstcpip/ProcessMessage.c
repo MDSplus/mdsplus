@@ -22,16 +22,22 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <mdsplus/mdsconfig.h>
+
 #if defined(linux) && !defined(_LARGEFILE_SOURCE)
 # define _LARGEFILE_SOURCE
 # define _FILE_OFFSET_BITS 64
 # define __USE_FILE_OFFSET64
 #endif
-#include "mdsip_connections.h"
-#include <pthread_port.h>
-#include <mdstypes.h>
+#include <errno.h>
+#include <fcntl.h>
 #include <inttypes.h>
 #include <signal.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #ifdef _WIN32
 # include <io.h>
 #else
@@ -39,30 +45,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <unistd.h>
 # endif
 #endif
-#include <fcntl.h>
-#include "mdsIo.h"
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
+
+#include <condition.h>
+#include <mdstypes.h>
 #include <mdsshr.h>
-#include <treeshr.h>
-#include "../tdishr/tdithreadstatic.h"
 #include <tdishr.h>
+#include <treeshr.h>
 #include <libroutines.h>
 #include <strroutines.h>
-#include <errno.h>
-#include "cvtdef.h"
+
+#include "../tdishr/tdithreadstatic.h"
 #include "../treeshr/treeshrp.h"
+#include "mdsIo.h"
+#include "mdsip_connections.h"
+#include "cvtdef.h"
 
 extern int TdiRestoreContext();
-extern void** TreeCtx();
-extern int TreePerfRead();
-extern int TreePerfWrite();
 extern int TdiSaveContext();
-extern char* TreePath();
-extern char* MaskReplace();
 
 #ifdef min
 #undef min
@@ -553,40 +552,31 @@ typedef struct {
 #ifndef _WIN32
   Condition	*const condition;
 #endif
-  ThreadStatic	*TdiThreadStatic_p;
+  MDSplusThreadStatic_t	*mts;
   Connection	*const connection;
   mdsdsc_xd_t	*const xd_out;
-  void		*tdicontext[6];
 } worker_args_t;
 
 typedef struct {
   worker_args_t	*const wa;
   mdsdsc_xd_t	*const xdp;
-  void		*pc;
 } worker_cleanup_t;
 
-static void WorkerCleanup(void *args) {
-  worker_cleanup_t* const wc = (worker_cleanup_t*)args;
-  if (wc->pc) TreeCtxPop(wc->pc);
-  TdiSaveContext(wc->wa->tdicontext);
+static void WorkerCleanup(worker_cleanup_t* const wc) {
 #ifndef _WIN32
   CONDITION_SET(wc->wa->condition);
 #endif
   free_xd(wc->xdp);
-  void* tdicontext[6] = {0};
-  TdiRestoreContext(tdicontext);
 }
 
 static int WorkerThread(void *args) {
   EMPTYXD(xd);
-  worker_cleanup_t wc = {(worker_args_t*)args,&xd,NULL};
-  TdiThreadStatic(wc.wa->TdiThreadStatic_p);
-  pthread_cleanup_push(WorkerCleanup,(void*)&wc);
-  wc.pc = TreeCtxPush(wc.wa->ctx);
-  TdiRestoreContext(wc.wa->tdicontext);
-  --wc.wa->TDI_INTRINSIC_REC;
+  worker_cleanup_t wc = {(worker_args_t*)args,&xd};
+  pthread_cleanup_push((void*)WorkerCleanup,(void*)&wc);
+  TDITHREADSTATIC(MDSplusThreadStatic(wc.wa->mts));
+  --TDI_INTRINSIC_REC;
   wc.wa->status = TdiIntrinsic(OPC_EXECUTE, wc.wa->connection->nargs, wc.wa->connection->descrip, &xd);
-  ++wc.wa->TDI_INTRINSIC_REC;
+  ++TDI_INTRINSIC_REC;
   if IS_OK(wc.wa->status)
     wc.wa->status = TdiData(xd.pointer, wc.wa->xd_out MDS_END_ARG);
   pthread_cleanup_pop(1);
@@ -595,20 +585,20 @@ static int WorkerThread(void *args) {
 
 static inline int executeCommand(Connection* connection, mdsdsc_xd_t* ans_xd) {
   //fprintf(stderr,"starting task for connection %d\n",connection->id);
+  void *tdicontext[6], *pc = NULL;
+  MDSplusThreadStatic_t *mts = MDSplusThreadStatic(NULL);
 #ifdef _WIN32
   worker_args_t wa = {
 #else
   Condition WorkerRunning = CONDITION_INITIALIZER;
   worker_args_t wa = {.condition = &WorkerRunning,
 #endif
-  .TdiThreadStatic_p=TdiThreadStatic(NULL),
+  .mts=mts,
   .status = -1, .connection = connection, .xd_out = ans_xd};
   if (GetContextSwitching()) {
-    wa.ctx = &connection->DBID;
-    memcpy(wa.tdicontext,connection->tdicontext,sizeof(wa.tdicontext));
-  } else {
-    wa.ctx = TreeCtx();
-    TdiSaveContext(wa.tdicontext);
+    pc = TreeCtxPush(&connection->DBID);
+    TdiSaveContext(tdicontext);
+    TdiRestoreContext(connection->tdicontext);
   }
 #ifdef _WIN32
   HANDLE hWorker= CreateThread(NULL, DEFAULT_STACKSIZE*16, (void*)WorkerThread, &wa, 0, NULL);
@@ -669,10 +659,10 @@ static inline int executeCommand(Connection* connection, mdsdsc_xd_t* ans_xd) {
   if (canceled && result==PTHREAD_CANCELED) wa.status = TdiABORT;
 #endif
 end:;
-  if (GetContextSwitching()) {
-    memcpy(connection->tdicontext,wa.tdicontext,sizeof(wa.tdicontext));
-  } else {
-    TdiRestoreContext(wa.tdicontext);
+  if (pc) {
+    TdiSaveContext(connection->tdicontext);
+    TdiRestoreContext(tdicontext);
+    TreeCtxPop(pc);
   }
   return wa.status;
 }

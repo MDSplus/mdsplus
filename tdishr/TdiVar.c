@@ -44,9 +44,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	        [PRIVATE|PUBLIC] var --         post-decrement
 	        DEALLOCATE (var...)             free data field
 	Utilities:
-	        TdiFindIdent(search, var, [key], [node_ptr], [block_ptr])
-	        TdiGetIdent(var, data)  fetch variable
-	        TdiPutIdent(var, data)  store variable
+	        find_ident(search, var, [key], [node_ptr], [block_ptr])
+	        tdi_get_ident(var, data)  fetch variable
+	        tdi_put_ident(var, data)  store variable
 	        RESET_PRIVATE() RESET_PUBLIC()  release variables
 	        SHOW_PRIVATE([text],...)
 	        SHOW_PUBLIC([text],...)         display variables
@@ -140,29 +140,29 @@ static block_type _public = { 0, 0, 0, 1 };
 const DESCRIPTOR(star, "*");
 const DESCRIPTOR(percent, "%");
 mdsdsc_t *Tdi3Narg(){
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   return &TDI_VAR_NEW_NARG_D;
 }
 
 /*--------------------------------------------------------------
 	Put a byte to output.
 */
-int TdiPutLogical(unsigned char data, mdsdsc_xd_t *out_ptr){
+int tdi_put_logical(uint8_t data, mdsdsc_xd_t *const out_ptr){
   INIT_STATUS;
-  length_t len = (length_t)sizeof(unsigned char);
+  length_t len = (length_t)sizeof(uint8_t);
   dtype_t dtype = DTYPE_BU;
   if (!out_ptr)
     return TdiNULL_PTR;
   status = MdsGet1DxS(&len, &dtype, out_ptr);
   if STATUS_OK
-    *(unsigned char *)out_ptr->pointer->pointer = data;
+    *(uint8_t *)out_ptr->pointer->pointer = data;
   return status;
 }
 
 /*--------------------------------------------------------------
 	Comparison routine.
 */
-static int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type * block_ptr __attribute__ ((unused))){
+static int compare(const mdsdsc_t *const key_ptr, const node_type *const node_ptr, const block_type *const block_ptr __attribute__ ((unused))){
   return StrCaseBlindCompare(key_ptr, &node_ptr->name_dsc);
 }
 
@@ -170,7 +170,7 @@ static int compare(mdsdsc_t *key_ptr, node_type * node_ptr, block_type * block_p
 	Allocation routine, does not set data field.
 	ASSUMED called only once per node.
 */
-static int allocate(mdsdsc_t *key_ptr, node_type ** node_ptr_ptr, block_type * block_ptr){
+static int allocate(const mdsdsc_t *const key_ptr, node_type **const node_ptr_ptr, block_type *const block_ptr){
   INIT_STATUS;
   unsigned int len = sizeof(struct link) - 1 + key_ptr->length;
 
@@ -199,13 +199,14 @@ static int allocate(mdsdsc_t *key_ptr, node_type ** node_ptr_ptr, block_type * b
 	if block_ptr is returned and public public_lock is acquired
 */
 #define _private (*(block_type*)&TDI_VAR_PRIVATE)
-static int TdiFindIdent(int search,
-	                        mdsdsc_r_t *ident_ptr,
-	                        mdsdsc_t *key_ptr,
-	                        node_type ** node_ptr_ptr, block_type ** block_ptr_ptr)
-{
+static int find_ident(
+	const int search,
+	const mdsdsc_r_t *const ident_ptr,
+	mdsdsc_t *const key_ptr,
+	node_type **const node_ptr_ptr,
+	block_type **const block_ptr_ptr,
+	TDITHREADSTATIC_ARG) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
   mdsdsc_t key_dsc;
   mdsdsc_d_t name_dsc;
   node_type *node_ptr;
@@ -281,29 +282,29 @@ static int TdiFindIdent(int search,
 	        So strip ++ and += and use public.
 	        ***************************************/
       if (code == OPC_PUBLIC)
-	status = TdiFindIdent(search & ~1,
+	status = find_ident(search & ~1,
 	                 (mdsdsc_r_t *)ident_ptr->dscptrs[0],
-	                 &key_dsc, &node_ptr, block_ptr_ptr);
+	                 &key_dsc, &node_ptr, block_ptr_ptr,TDITHREADSTATIC_VAR);
       else if (code == OPC_PRIVATE)
-	status = TdiFindIdent(search & ~2,
+	status = find_ident(search & ~2,
 	                 (mdsdsc_r_t *)ident_ptr->dscptrs[0],
-	                 &key_dsc, &node_ptr, block_ptr_ptr);
+	                 &key_dsc, &node_ptr, block_ptr_ptr,TDITHREADSTATIC_VAR);
       else if (code == OPC_EQUALS || code == OPC_EQUALS_FIRST
 	       || code == OPC_POST_DEC || code == OPC_PRE_DEC
 	       || code == OPC_POST_INC || code == OPC_PRE_INC) {
 	INIT_AND_FREEXD_ON_EXIT(tmp);
 	status = TdiEvaluate(ident_ptr, &tmp MDS_END_ARG);
 	if STATUS_OK
-	  status = TdiFindIdent(search,
+	  status = find_ident(search,
 	                   (mdsdsc_r_t *)ident_ptr->dscptrs[0],
-			   &key_dsc, &node_ptr, block_ptr_ptr);
+			   &key_dsc, &node_ptr, block_ptr_ptr,TDITHREADSTATIC_VAR);
 	FREEXD_NOW(tmp);
       } else if (code == OPC_VAR) {
 	name_dsc = EMPTY_D;
 	status = TdiData(ident_ptr->dscptrs[0], &name_dsc MDS_END_ARG);
 	if STATUS_OK
-	  status = TdiFindIdent(search, (mdsdsc_r_t *)&name_dsc,
-	                   &key_dsc, &node_ptr, block_ptr_ptr);
+	  status = find_ident(search, (mdsdsc_r_t *)&name_dsc,
+	                   &key_dsc, &node_ptr, block_ptr_ptr,TDITHREADSTATIC_VAR);
 	StrFree1Dx((mdsdsc_d_t *)&name_dsc);
       } else
 	status = TdiINV_OPC;
@@ -324,26 +325,15 @@ static int TdiFindIdent(int search,
   return status;
 }
 
-int TdiFindSymbol(char* name){
-  mdsdsc_s_t ident_ptr = { strlen(name), DTYPE_T, CLASS_S, name };
-  node_type *node_ptr;
-  block_type *block_ptr = NULL;
-  int status;
-  UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(7, (mdsdsc_r_t *)&ident_ptr, 0, &node_ptr, &block_ptr);
-  UNLOCK_IF_PUBLIC(block_ptr);
-  return STATUS_OK ? (block_ptr==&_public ? 2 : 1) : (status==TdiUNKNOWN_VAR ? 0 : -1);
-}
-
 /*--------------------------------------------------------------
 	Get active variable for VAR and EVALUATE. Copies to MDSSHR space.
 */
-int TdiGetIdent(mdsdsc_t *ident_ptr, mdsdsc_xd_t *data_ptr){
+static int get_ident(const mdsdsc_t *const ident_ptr, mdsdsc_xd_t *const data_ptr,TDITHREADSTATIC_ARG){
   node_type *node_ptr;
   block_type *block_ptr = NULL;
   INIT_STATUS;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, &block_ptr);
+  status = find_ident(7, (mdsdsc_r_t *)ident_ptr, 0, &node_ptr, &block_ptr,TDITHREADSTATIC_VAR);
 #ifdef DEBUG
   char string[64];
   memcpy(string,ident_ptr->pointer,ident_ptr->length);string[ident_ptr->length] = '\0';
@@ -356,24 +346,26 @@ int TdiGetIdent(mdsdsc_t *ident_ptr, mdsdsc_xd_t *data_ptr){
   UNLOCK_IF_PUBLIC(block_ptr);
   return status;
 }
+int tdi_get_ident(const mdsdsc_t *const ident_ptr, mdsdsc_xd_t *const data_ptr) {
+  TDITHREADSTATIC_INIT;
+  return get_ident(ident_ptr,data_ptr,TDITHREADSTATIC_VAR);
+}
 
 /*--------------------------------------------------------------
 	Keep an XD-DSC of whatever.
 	Assumes we are given XD or class-0.
 */
-int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
+static inline int put_ident_inner(const mdsdsc_r_t *const ident_ptr, mdsdsc_xd_t *const data_ptr,TDITHREADSTATIC_ARG){
+  INIT_STATUS;
+  block_type *block_ptr = NULL;
+  UNLOCK_PUBLIC_PUSH;
   mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
-  block_type *block_ptr = NULL;
   mdsdsc_d_t upstr = { 0, DTYPE_T, CLASS_D, 0 };
-  INIT_STATUS;
-  if (ident_ptr->dtype == DTYPE_DSC)
-    return TdiPutIdent((mdsdsc_r_t *)ident_ptr->pointer, data_ptr);
 	/************************************
 	Find where we should place the stuff.
 	************************************/
-  UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, ident_ptr, &key_dsc, 0, &block_ptr);
+  status = find_ident(3, ident_ptr, &key_dsc, 0, &block_ptr,TDITHREADSTATIC_VAR);
   StrUpcase((mdsdsc_t *)&upstr, &key_dsc);
 #ifdef DEBUG
   char string[64];
@@ -400,16 +392,28 @@ int TdiPutIdent(mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *data_ptr){
   UNLOCK_IF_PUBLIC(block_ptr);
   return status;
 }
+static int put_ident(const mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *const data_ptr,TDITHREADSTATIC_ARG){
+  while (ident_ptr->dtype == DTYPE_DSC)
+    ident_ptr = (mdsdsc_r_t *)ident_ptr->pointer;
+  return put_ident_inner(ident_ptr, data_ptr, TDITHREADSTATIC_VAR);
+}
+int tdi_put_ident(const mdsdsc_r_t *ident_ptr, mdsdsc_xd_t *const data_ptr) {
+  TDITHREADSTATIC_INIT;
+  while (ident_ptr->dtype == DTYPE_DSC)
+    ident_ptr = (mdsdsc_r_t *)ident_ptr->pointer;
+  return put_ident_inner(ident_ptr, data_ptr, TDITHREADSTATIC_VAR);
+}
+
 
 /***************************************************************
 	Display/free wildcarded variables.
 	IDENT names are not evaluated.
 	PUBLIC or PRIVATE(ident or text) overrides block_ptr.
 */
-static int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
+static int wild_loop(int (*const doit) (), const mdsdsc_t *const arg, user_type *const user_p,TDITHREADSTATIC_ARG) {
   int status;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (mdsdsc_r_t *)arg, &user_p->match, 0, &user_p->block_ptr);
+  status = find_ident(3, (mdsdsc_r_t *)arg, &user_p->match, 0, &user_p->block_ptr,TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = StrUpcase(&user_p->match, &user_p->match);
   if STATUS_OK {
@@ -428,11 +432,13 @@ static int wild_loop(int (*doit) (),mdsdsc_t *arg,user_type* user_p) {
   UNLOCK_IF_PUBLIC(user_p->block_ptr);
   return status;
 }
-static int wild(int (*doit) (),
-			int narg,
-			mdsdsc_t *list[],
-			block_type * block_ptr, mdsdsc_xd_t *out_ptr)
-{
+static int wild(
+	int (*const doit) (),
+	const int narg,
+	mdsdsc_t *const list[],
+	block_type *const block_ptr,
+	mdsdsc_xd_t *const out_ptr,
+	TDITHREADSTATIC_ARG) {
   INIT_STATUS;
   user_type user = { {0, DTYPE_T, CLASS_D, 0}, 0, 0 };
   user.block_ptr = block_ptr;
@@ -441,7 +447,7 @@ static int wild(int (*doit) (),
   else {
     int j;
     for (j = 0; STATUS_OK && j < narg; ++j)
-      status = wild_loop(doit,list[j],&user);
+      status = wild_loop(doit,list[j],&user,TDITHREADSTATIC_VAR);
   }
   if (user.match.class == CLASS_D)
     StrFree1Dx((mdsdsc_d_t *)&user.match);
@@ -453,8 +459,7 @@ static int wild(int (*doit) (),
 /*--------------------------------------------------------------
 	Release variables.
 */
-static int free_one(node_type * node_ptr, user_type * user_ptr)
-{
+static int free_one(node_type *const node_ptr, user_type *const user_ptr) {
   block_type *block_ptr = user_ptr->block_ptr;
   INIT_STATUS;
 
@@ -481,20 +486,18 @@ static int free_one(node_type * node_ptr, user_type * user_ptr)
 	Release all variables under a header and the headers too.
 	Used to release the FUN variables.
 */
-static int free_all(node_type ** pnode)
-{
+static int free_all(node_type **const pnode,TDITHREADSTATIC_ARG) {
   INIT_STATUS, stat2;
-  GET_TDITHREADSTATIC_P;
   unsigned int len;
   if ((*pnode)->xd.l_length)
     status = LibFreeVm(&(*pnode)->xd.l_length, (void *)&(*pnode)->xd.pointer, &_private.data_zone);
   if ((*pnode)->left) {
-    stat2 = free_all(&((*pnode)->left));
+    stat2 = free_all(&((*pnode)->left),TDITHREADSTATIC_VAR);
     if STATUS_OK
       status = stat2;
   }
   if ((*pnode)->right) {
-    stat2 = free_all(&((*pnode)->right));
+    stat2 = free_all(&((*pnode)->right),TDITHREADSTATIC_VAR);
     if STATUS_OK
       status = stat2;
   }
@@ -509,30 +512,29 @@ static int free_all(node_type ** pnode)
 /*--------------------------------------------------------------
 	Release variables.
 */
-int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
-{
+int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   if (narg == 0 && _private.head) {
-    status = free_all(&_private.head);
+    status = free_all(&_private.head,TDITHREADSTATIC_VAR);
     _private.head = NULL;
     return status;
   }
-  return wild((int (*)())free_one, narg, list, &_private, out_ptr); // runs on public and private, or clears private if no args
+  return wild((int (*)())free_one, narg, list, &_private, out_ptr,TDITHREADSTATIC_VAR); // runs on public and private, or clears private if no args
 }
 
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
 */
-int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
-{
+int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
+  TDITHREADSTATIC_INIT;
   mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
   int found;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr);
+  status = find_ident(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr,TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
@@ -542,7 +544,7 @@ int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute
   else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR)
     status = MDSplusSUCCESS;
   if STATUS_OK
-    status = TdiPutLogical((unsigned char)found, out_ptr);
+    status = tdi_put_logical((unsigned char)found, out_ptr);
   return status;
 }
 
@@ -552,12 +554,13 @@ int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
+  TDITHREADSTATIC_INIT;
   mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
   int found;
   UNLOCK_PUBLIC_PUSH;
-  status = TdiFindIdent(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr);
+  status = find_ident(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr,TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
   UNLOCK_IF_PUBLIC(block_ptr);
@@ -566,7 +569,7 @@ int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
   else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR)
     status = MDSplusSUCCESS;
   if STATUS_OK
-    status = TdiPutLogical((unsigned char)found, out_ptr);
+    status = tdi_put_logical((unsigned char)found, out_ptr);
   return status;
 }
 
@@ -577,7 +580,7 @@ typedef enum {
 EXT_NONE,EXT_FUN,EXT_PY
 } ext_t;
 
-static inline ext_t matchext(const mdsdsc_d_t* file){
+static inline ext_t matchext(const mdsdsc_d_t *const file){
   if (file->length<4) return EXT_NONE;
   char* p = file->pointer+file->length-4;
   char ext[5] = {p[0],toupper(p[1]),toupper(p[2]),toupper(p[3]),'\0'};
@@ -585,7 +588,7 @@ static inline ext_t matchext(const mdsdsc_d_t* file){
   if (strcmp(ext+1,".PY")==0) return EXT_PY;
   return EXT_NONE;
 }
-static inline int findfile_fun(mdsdsc_t *entry, char**funfile,char** pyfile) {
+static inline int findfile_fun(const mdsdsc_t *const entry, char **const funfile,char **const pyfile) {
   int status;
   INIT_AND_FREED_ON_EXIT(bufd,DTYPE_T);
   ext_t isext = EXT_NONE;
@@ -633,7 +636,7 @@ static inline int findfile_fun(mdsdsc_t *entry, char**funfile,char** pyfile) {
 }
 
 extern int TdiCompile();
-int compile_fun(mdsdsc_t *entry,char *file) {
+static int compile_fun(const mdsdsc_t *const entry,const char *const file) {
   if (!file) return  TdiUNKNOWN_VAR;
   int status;
   INIT_AND_FREEXD_ON_EXIT(tmp);
@@ -679,10 +682,10 @@ int compile_fun(mdsdsc_t *entry,char *file) {
   return status;
 }
 
-extern int loadPyFunction(const char*filepath,char**funname);
-extern int callPyFunction(const char*filename,int nargs,mdsdsc_r_t **args,mdsdsc_xd_t *out_ptr);
-static int findFun(mdsdsc_t *ident_ptr, node_type **node_ptr) {
-  int status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0);
+extern int tdi_load_python_fun(const char *const filepath,char **const funname);
+extern int tdi_call_python_fun(const char *const filename,const int nargs,const mdsdsc_r_t *const *const args,mdsdsc_xd_t *const out_ptr);
+static int find_fun(const mdsdsc_t *const ident_ptr, node_type **const node_ptr,TDITHREADSTATIC_ARG) {
+  int status = find_ident(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0,TDITHREADSTATIC_VAR);
   if (status==TdiUNKNOWN_VAR) {
     INIT_AND_FREE_ON_EXIT(char*,pyfile);
     INIT_AND_FREE_ON_EXIT(char*,funfile);
@@ -690,14 +693,14 @@ static int findFun(mdsdsc_t *ident_ptr, node_type **node_ptr) {
     status = findfile_fun(ident_ptr, &funfile, &pyfile);
     if (pyfile) {
       char *funname;
-      status = loadPyFunction(pyfile,&funname);
+      status = tdi_load_python_fun(pyfile,&funname);
       if STATUS_OK {
 	mdsdsc_t function = {strlen(funname),DTYPE_T,CLASS_S,funname};
 	mdsdsc_xd_t tmp = EMPTY_XD;
 	status = MdsCopyDxXd((mdsdsc_t *)&function, &tmp);
 	free(funname);
 	if STATUS_OK {
-	  status = TdiPutIdent((mdsdsc_r_t *)ident_ptr, &tmp);
+	  status = put_ident((mdsdsc_r_t *)ident_ptr, &tmp,TDITHREADSTATIC_VAR);
 	  MdsFree1Dx(&tmp, NULL);
 	}
       }
@@ -707,19 +710,18 @@ static int findFun(mdsdsc_t *ident_ptr, node_type **node_ptr) {
       status = compile_fun(ident_ptr,funfile);
     FREE_NOW(funfile);
     FREE_NOW(pyfile);
-    if STATUS_OK status = TdiFindIdent(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0);
+    if STATUS_OK status = find_ident(7, (mdsdsc_r_t *)ident_ptr, 0, node_ptr, 0,TDITHREADSTATIC_VAR);
   }
   return status;
 }
 
 static pthread_mutex_t lock;
-static void unlock(void *p) {
-  ThreadStatic *const TdiThreadStatic_p = (ThreadStatic *)p;
+static void unlock(TDITHREADSTATIC_ARG) {
   TDI_VAR_REC = FALSE;
   pthread_mutex_unlock(&lock);
 }
-int TdiDoFun(mdsdsc_t *ident_ptr, int nactual, mdsdsc_r_t *actual_arg_ptr[], mdsdsc_xd_t *out_ptr) {
-  GET_TDITHREADSTATIC_P;
+int TdiDoFun(const mdsdsc_t *const ident_ptr, const int nactual, const mdsdsc_r_t *const actual_arg_ptr[], mdsdsc_xd_t *const out_ptr) {
+  TDITHREADSTATIC_INIT;
   node_type *node_ptr;
 /******************************************
 Get name of function to do. Check its type.
@@ -727,22 +729,22 @@ Get name of function to do. Check its type.
   int status;
   // look up method: check cached, check python, or load
   if (TDI_VAR_REC)
-    status = findFun(ident_ptr,&node_ptr);
+    status = find_fun(ident_ptr,&node_ptr,TDITHREADSTATIC_VAR);
   else {
     pthread_mutex_lock(&lock);
     TDI_VAR_REC = TRUE;
-    pthread_cleanup_push(unlock,(void*)TdiThreadStatic_p);
-    status = findFun(ident_ptr,&node_ptr);
+    pthread_cleanup_push((void*)unlock,(void*)TDITHREADSTATIC_VAR);
+    status = find_fun(ident_ptr,&node_ptr,TDITHREADSTATIC_VAR);
     pthread_cleanup_pop(1);
   }
   if STATUS_NOT_OK return status;
-  mdsdsc_r_t *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
+  const mdsdsc_r_t *formal_ptr = 0, *formal_arg_ptr, *actual_ptr;
   if ((formal_ptr = (mdsdsc_r_t *)node_ptr->xd.pointer) == 0) return TdiUNKNOWN_VAR;
   if (formal_ptr->dtype == DTYPE_T) {
     char *funname = malloc(formal_ptr->length+1);
     FREE_ON_EXIT(funname);
     memcpy(funname,formal_ptr->pointer,formal_ptr->length);funname[formal_ptr->length]='\0';
-    status = callPyFunction(funname,nactual,actual_arg_ptr,out_ptr);
+    status = tdi_call_python_fun(funname,nactual,actual_arg_ptr,out_ptr);
     FREE_NOW(funname);
     return status;
   }
@@ -807,14 +809,14 @@ Get name of function to do. Check its type.
     } else if (code == OPC_OUT) {
       old_head = _private.head;
       _private.head = new_head;
-      status = TdiPutIdent(formal_arg_ptr, 0);
+      status = put_ident(formal_arg_ptr, 0,TDITHREADSTATIC_VAR);
       new_head = _private.head;
       _private.head = old_head;
     } else {
       if (code == OPC_AS_IS) {
 	status = MdsCopyDxXd((mdsdsc_t *)actual_ptr, &tmp);
       } else if (actual_ptr->dtype == DTYPE_IDENT) {
-	status = TdiGetIdent((mdsdsc_t *)actual_ptr, &tmp);
+	status = get_ident((mdsdsc_t *)actual_ptr, &tmp,TDITHREADSTATIC_VAR);
 	if (opt && status == TdiUNKNOWN_VAR)
 	  status = MDSplusSUCCESS;
       } else {
@@ -828,7 +830,7 @@ Get name of function to do. Check its type.
       old_head = _private.head;
       _private.head = new_head;
       if STATUS_OK
-	status = TdiPutIdent(formal_arg_ptr, &tmp);
+	status = put_ident(formal_arg_ptr, &tmp,TDITHREADSTATIC_VAR);
       new_head = _private.head;
       _private.head = old_head;
     }
@@ -860,14 +862,14 @@ Get name of function to do. Check its type.
       }
       if (code == OPC_INOUT || code == OPC_OUT) {
 	status =
-	    TdiFindIdent(7, (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0], 0, &node_ptr, 0);
+	    find_ident(7, (mdsdsc_r_t *)formal_arg_ptr->dscptrs[0], 0, &node_ptr, 0, TDITHREADSTATIC_VAR);
 				/**************************
 	                        Do this with old variables.
 	                        **************************/
 	new_head = _private.head;
 	_private.head = old_head;
 	if STATUS_OK
-	  status = TdiPutIdent(actual_arg_ptr[j], &node_ptr->xd);
+	  status = put_ident(actual_arg_ptr[j], &node_ptr->xd, TDITHREADSTATIC_VAR);
 	old_head = _private.head;
 	_private.head = new_head;
       }
@@ -886,15 +888,15 @@ Get name of function to do. Check its type.
 int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-
+  TDITHREADSTATIC_INIT;
   status = TdiEvaluate(list[1], out_ptr MDS_END_ARG);
 	/************************************
 	Place the data or clear the variable.
 	************************************/
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
+    status = put_ident((mdsdsc_r_t *)list[0], out_ptr, TDITHREADSTATIC_VAR);
   else
-    TdiPutIdent((mdsdsc_r_t *)list[0], 0);
+    put_ident((mdsdsc_r_t *)list[0], NULL, TDITHREADSTATIC_VAR);
   return status;
 }
 
@@ -918,39 +920,33 @@ int Tdi1EqualsFirst(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 int Tdi1PreDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
-
   status = TdiSubtract(list[0], &true_dsc, out_ptr MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Increment a variable before use.
 */
-int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
-{
-  INIT_STATUS;
-
-  status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
+int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+  int status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
 /*--------------------------------------------------------------
 	Decrement a variable after use.
 */
-int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
-{
-  INIT_STATUS;
-  mdsdsc_xd_t tmp = EMPTY_XD;
-
-  status = TdiGetIdent(list[0], out_ptr);
+int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+  TDITHREADSTATIC_INIT;
+  EMPTYXD(tmp);
+  int status = get_ident(list[0], out_ptr, TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = TdiSubtract(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], &tmp);
+    status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -960,13 +956,13 @@ int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 */
 int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
-  INIT_STATUS;
-  mdsdsc_xd_t tmp = EMPTY_XD;
-  status = TdiGetIdent(list[0], out_ptr);
+  TDITHREADSTATIC_INIT;
+  EMPTYXD(tmp);
+  int status = get_ident(list[0], out_ptr, TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = TdiAdd(out_ptr->pointer, &true_dsc, &tmp MDS_END_ARG);
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], &tmp);
+    status = put_ident((mdsdsc_r_t *)list[0], &tmp, TDITHREADSTATIC_VAR);
   MdsFree1Dx(&tmp, NULL);
   return status;
 }
@@ -978,10 +974,9 @@ int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 */
 int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
-  INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   node_type *node_ptr;
-  status = LibLookupTree((void **)&_private.head, (void *)list[0], compare, (void **)&node_ptr);
+  int status = LibLookupTree((void **)&_private.head, (void *)list[0], compare, (void **)&node_ptr);
   if STATUS_OK
     status = MdsCopyDxXd(node_ptr->xd.pointer, out_ptr);
   else if (status == LibKEYNOTFOU)
@@ -1012,12 +1007,12 @@ int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__(
 */
 int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
-  INIT_STATUS;
+  int status;
   INIT_AND_FREEXD_ON_EXIT(tmp);
   status = TdiData(list[0], &tmp MDS_END_ARG);
   if STATUS_OK {
     if (narg < 2 || list[1] == 0)
-      status = TdiGetIdent(tmp.pointer, out_ptr);
+      status = tdi_get_ident(tmp.pointer, out_ptr);
     else
       status = TdiEquals(tmp.pointer, list[1], out_ptr MDS_END_ARG);
   }
@@ -1028,9 +1023,7 @@ int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[]
 /***************************************************************
 	Define a function by reconstruction.
 */
-int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
-{
-  INIT_STATUS;
+int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   DESCRIPTOR_FUNCTION(hold, 0, 255);
   int j;
   unsigned short opcode_s = (unsigned short)opcode;
@@ -1039,9 +1032,9 @@ int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   for (j = narg; --j >= 0;)
     if ((hold.arguments[j] = list[j]) == 0)
       return TdiNULL_PTR;
-  status = MdsCopyDxXd((mdsdsc_t *)&hold, out_ptr);
+  int status = MdsCopyDxXd((mdsdsc_t *)&hold, out_ptr);
   if STATUS_OK
-    status = TdiPutIdent((mdsdsc_r_t *)list[0], out_ptr);
+    status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
   return status;
 }
 
@@ -1049,10 +1042,9 @@ int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 	Release the private variables.
 	This to be used by functions.
 */
-int Tdi1ResetPrivate()
-{
+int Tdi1ResetPrivate() {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   _private.head = 0;
   if (_private.data_zone)
     status = LibResetVmZone(&_private.data_zone);
@@ -1064,17 +1056,15 @@ int Tdi1ResetPrivate()
 /*--------------------------------------------------------------
 	Release the public variables.
 */
-int Tdi1ResetPublic()
-{
+int Tdi1ResetPublic() {
   int status;
   LOCK_PUBLIC_PUSH;
+  status = MDSplusSUCCESS;
   _public.head = 0;
-  TdiResetGetRecord();
   if (_public.data_zone)
     status = LibResetVmZone(&_public.data_zone);
-  else if (_public.head_zone)
+  if (_public.head_zone)
     status = LibResetVmZone(&_public.head_zone);
-  else status = MDSplusSUCCESS;
   UNLOCK_PUBLIC;
   return status;
 }
@@ -1082,8 +1072,7 @@ int Tdi1ResetPublic()
 /***************************************************************
 	Display a variable.
 */
-static int show_one(node_type * node_ptr, user_type * user_ptr)
-{
+static int show_one(const node_type *const node_ptr, user_type *const user_ptr) {
   INIT_STATUS;
   mdsdsc_d_t tmp = EMPTY_D;
   mdsdsc_r_t *rptr = (mdsdsc_r_t *)node_ptr->xd.pointer;
@@ -1121,9 +1110,9 @@ static int show_one(node_type * node_ptr, user_type * user_ptr)
 	Display private variables.
 */
 int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   DBG("TdiShowPrivate: %"PRIxPTR"\n",(uintptr_t)(void*)_private.head);
-  return wild((int (*)())show_one, narg, list, &_private, out_ptr);
+  return wild((int (*)())show_one, narg, list, &_private, out_ptr,TDITHREADSTATIC_VAR);
 }
 
 /*--------------------------------------------------------------
@@ -1132,13 +1121,14 @@ int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t
 int Tdi1ShowPublic(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   LOCK_PUBLIC_PUSH;
-  status = wild((int (*)())show_one, narg, list, &_public, out_ptr);
+  TDITHREADSTATIC_INIT;
+  status = wild((int (*)())show_one, narg, list, &_public, out_ptr,TDITHREADSTATIC_VAR);
   UNLOCK_PUBLIC;
   return status;
 }
 
 extern EXPORT int TdiSaveContext(void *ptr[6]){
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   ptr[0] = (void *)_private.head;
   ptr[1] = _private.head_zone;
   ptr[2] = _private.data_zone;
@@ -1170,8 +1160,8 @@ extern EXPORT int TdiDeleteContext(void *ptr[6]){
 /*-------------------------------------------------------------
 	Restore variable context
 */
-extern EXPORT int TdiRestoreContext(void *ptr[6]){
-  GET_TDITHREADSTATIC_P;
+extern EXPORT int TdiRestoreContext(void *const ptr[6]){
+  TDITHREADSTATIC_INIT;
   DBG("TdiRestoreContext: %"PRIxPTR"\n",(uintptr_t)ptr[0]);
   _private.head = (node_type *) ptr[0];
   _private.head_zone = ptr[1];

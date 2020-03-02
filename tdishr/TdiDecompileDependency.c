@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define P_UNARY 12		/*unary: NEGATE(!) IGNORE_UNDEFINED(?) IGNORE_STATUS(~) */
 #define P_TIGHT 16		/*strongest: path <event> and parentheses */
 
-#include <STATICdef.h>
 #include <string.h>
 #include <mdsdescrip.h>
 #include "tdirefstandard.h"
@@ -51,18 +50,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-STATIC_CONSTANT DESCRIPTOR(AND, " & ");
-STATIC_CONSTANT DESCRIPTOR(OR, " | ");
-STATIC_CONSTANT DESCRIPTOR(NEGATE, "!");
-STATIC_CONSTANT DESCRIPTOR(IGNORE_UNDEFINED, "?");
-STATIC_CONSTANT DESCRIPTOR(IGNORE_STATUS, "~");
+static const DESCRIPTOR(AND, " & ");
+static const DESCRIPTOR(OR, " | ");
+static const DESCRIPTOR(NEGATE, "!");
+static const DESCRIPTOR(IGNORE_UNDEFINED, "?");
+static const DESCRIPTOR(IGNORE_STATUS, "~");
 
-STATIC_CONSTANT DESCRIPTOR(LEFT_ANGLE, "<");
-STATIC_CONSTANT DESCRIPTOR(RIGHT_ANGLE, ">");
-STATIC_CONSTANT DESCRIPTOR(LEFT_PAREN, "(");
-STATIC_CONSTANT DESCRIPTOR(RIGHT_PAREN, ")");
+static const DESCRIPTOR(LEFT_ANGLE, "<");
+static const DESCRIPTOR(RIGHT_ANGLE, ">");
+static const DESCRIPTOR(LEFT_PAREN, "(");
+static const DESCRIPTOR(RIGHT_PAREN, ")");
 
-STATIC_ROUTINE int DependencyGet(int prec, struct descriptor_r *pin, struct descriptor_d *pout)
+static int DependencyGet(int prec, struct descriptor_r *pin, struct descriptor_d *pout)
 {
   INIT_STATUS;
   int now = 0;

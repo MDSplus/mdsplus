@@ -28,7 +28,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 #include <math.h>
-#include <STATICdef.h>
 
 #define MAXTYPE (DTYPE_FTC + 1)
 
@@ -640,7 +639,7 @@ static void mem_shift(char *in, int offset, int num)
     *p1++ = *p2++;
 }
 
-STATIC_ROUTINE void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   float *ip = (float *)pa;
   char *op = (char *)pb;
@@ -684,7 +683,7 @@ STATIC_ROUTINE void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int l
   }
 }
 
-STATIC_ROUTINE void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   double *ip = (double *)pa;
   char *op = (char *)pb;
@@ -734,7 +733,7 @@ STATIC_ROUTINE void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int 
   }
 }
 
-STATIC_ROUTINE void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   float *ip = (float *)pa;
   char *op = (char *)pb;
@@ -786,7 +785,7 @@ STATIC_ROUTINE void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int 
   }
 }
 
-STATIC_ROUTINE void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
+static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, char sym)
 {
   double *ip = (double *)pa;
   char *op = (char *)pb;

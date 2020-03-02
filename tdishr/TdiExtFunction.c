@@ -58,18 +58,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
-#include <STATICdef.h>
 
 extern int TdiFaultHandler();
 extern int TdiData();
 extern int TdiDoFun();
 extern int TdiGetLong();
 extern int TdiAllocated();
-extern int TdiPutIdent();
+extern int tdi_put_ident();
 extern int TdiCompile();
 extern int TdiEvaluate();
 
-STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+static const struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
 int TdiFindImageSymbol(struct descriptor_d *image, struct descriptor_d *entry, int (**symbol) ())
 {
@@ -159,8 +158,9 @@ ident: ;
 	  struct descriptor dtest = { sizeof(test), DTYPE_BU, CLASS_S, 0 };
 	  dtest.pointer = (char *)&test;
 	  status = TdiAllocated(pfun, &dtest MDS_END_ARG);
-	  if (status && !test)
-	    status = TdiPutIdent(pfun, 0);
+	  if (status && !test) {
+	    status = tdi_put_ident(pfun, 0);
+	  }
 	}
       }
     }
