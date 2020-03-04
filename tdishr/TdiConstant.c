@@ -33,12 +33,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <mdsshr.h>
+
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-int Tdi1Constant(opcode_t opcode, int narg __attribute__ ((unused)),
-		 mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr)
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+int Tdi1Constant(opcode_t opcode, int narg UNUSED_ARGUMENT,
+		 mdsdsc_t *list[] UNUSED_ARGUMENT, mdsdsc_xd_t *out_ptr)
 {
 
   return MdsCopyDxXd(((mdsdsc_t * (*)())*TdiRefFunction[opcode].f3) (), out_ptr);

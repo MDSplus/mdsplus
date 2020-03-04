@@ -65,6 +65,11 @@ written by
 #include "udtc.h"
 #include "common.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern "C" {
 
@@ -414,7 +419,7 @@ int udt_epoll_add_usock(int eid, UDTSOCKET u, const int * events)
 	}
 }
 
-  int udt_epoll_add_ssock(int eid, SYSSOCKET s, const int * events __attribute__ ((unused)))
+  int udt_epoll_add_ssock(int eid, SYSSOCKET s, const int * events UNUSED_ARGUMENT)
 {
     int rc;
     int flag = 0;

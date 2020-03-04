@@ -33,6 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdarg.h>
 #include <string.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 //#include "mdstree.h"
 using namespace MDSplus;
 using namespace std;

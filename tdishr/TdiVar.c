@@ -84,6 +84,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define DBG(...) {}
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiFaultHandler();
 extern int TdiData();
 extern int TdiDeallocate();
@@ -162,7 +168,7 @@ int tdi_put_logical(uint8_t data, mdsdsc_xd_t *const out_ptr){
 /*--------------------------------------------------------------
 	Comparison routine.
 */
-static int compare(const mdsdsc_t *const key_ptr, const node_type *const node_ptr, const block_type *const block_ptr __attribute__ ((unused))){
+static int compare(const mdsdsc_t *const key_ptr, const node_type *const node_ptr, const block_type *const block_ptr UNUSED_ARGUMENT){
   return StrCaseBlindCompare(key_ptr, &node_ptr->name_dsc);
 }
 
@@ -512,7 +518,7 @@ static int free_all(node_type **const pnode,TDITHREADSTATIC_ARG) {
 /*--------------------------------------------------------------
 	Release variables.
 */
-int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+int Tdi1Deallocate(opcode_t opcode UNUSED_ARGUMENT, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   if (narg == 0 && _private.head) {
@@ -526,7 +532,7 @@ int Tdi1Deallocate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t 
 /*--------------------------------------------------------------
 	Check for allocated variable, private only by default.
 */
-int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+int Tdi1Allocated(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   mdsdsc_t key_dsc = EMPTDY_S;
@@ -551,7 +557,7 @@ int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 /*--------------------------------------------------------------
 	Check for argument present.
 */
-int Tdi1Present(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1Present(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
@@ -885,7 +891,7 @@ Get name of function to do. Check its type.
 /***************************************************************
 	Replace variable. Assumed called by INTRINSIC so that out_ptr is XD-DSC.
 */
-int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1Equals(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
@@ -903,7 +909,7 @@ int Tdi1Equals(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 /*--------------------------------------------------------------
 	Store in first argument of binary opertor.
 */
-int Tdi1EqualsFirst(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1EqualsFirst(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
 
@@ -917,7 +923,7 @@ int Tdi1EqualsFirst(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 /*--------------------------------------------------------------
 	Decrement a variable before use.
 */
-int Tdi1PreDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1PreDec(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   INIT_STATUS;
   status = TdiSubtract(list[0], &true_dsc, out_ptr MDS_END_ARG);
@@ -929,7 +935,7 @@ int Tdi1PreDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 /*--------------------------------------------------------------
 	Increment a variable before use.
 */
-int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+int Tdi1PreInc(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   int status = TdiAdd(list[0], &true_dsc, out_ptr MDS_END_ARG);
   if STATUS_OK
     status = tdi_put_ident((mdsdsc_r_t *)list[0], out_ptr);
@@ -939,7 +945,7 @@ int Tdi1PreInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 /*--------------------------------------------------------------
 	Decrement a variable after use.
 */
-int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+int Tdi1PostDec(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
   int status = get_ident(list[0], out_ptr, TDITHREADSTATIC_VAR);
@@ -954,7 +960,7 @@ int Tdi1PostDec(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 /*--------------------------------------------------------------
 	Increment a variable after use.
 */
-int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1PostInc(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   TDITHREADSTATIC_INIT;
   EMPTYXD(tmp);
@@ -972,7 +978,7 @@ int Tdi1PostInc(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	PRIVATE and PUBLIC must have text argument, not expression.
 	They are keywords, not standard functions. NEED we change this?
 */
-int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1Private(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   TDITHREADSTATIC_INIT;
   node_type *node_ptr;
@@ -988,7 +994,7 @@ int Tdi1Private(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Find by identifier.
 	PRIVATE and PUBLIC must have text argument, not expression.
 */
-int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__((unused)), mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1Public(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   int status;
   LOCK_PUBLIC_PUSH;
@@ -1005,7 +1011,7 @@ int Tdi1Public(opcode_t opcode __attribute__ ((unused)), int narg __attribute__(
 /*--------------------------------------------------------------
 	Find by text expression.
 */
-int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
+int Tdi1Var(opcode_t opcode UNUSED_ARGUMENT, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 {
   int status;
   INIT_AND_FREEXD_ON_EXIT(tmp);
@@ -1109,7 +1115,7 @@ static int show_one(const node_type *const node_ptr, user_type *const user_ptr) 
 /*--------------------------------------------------------------
 	Display private variables.
 */
-int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
+int Tdi1ShowPrivate(opcode_t opcode UNUSED_ARGUMENT, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   TDITHREADSTATIC_INIT;
   DBG("TdiShowPrivate: %"PRIxPTR"\n",(uintptr_t)(void*)_private.head);
   return wild((int (*)())show_one, narg, list, &_private, out_ptr,TDITHREADSTATIC_VAR);
@@ -1118,7 +1124,7 @@ int Tdi1ShowPrivate(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t
 /*--------------------------------------------------------------
 	Display public variables.
 */
-int Tdi1ShowPublic(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
+int Tdi1ShowPublic(opcode_t opcode UNUSED_ARGUMENT, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr){
   int status;
   LOCK_PUBLIC_PUSH;
   TDITHREADSTATIC_INIT;

@@ -108,6 +108,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdsplus/mdsconfig.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static Complex *FindChebPoles(double fp, double fs, double ap, double as, double fc, int *N,
 			      double *gain);
 static Complex *FindButtwPoles(double fp, double fs, double ap, double as, double fc, int *N,
@@ -133,7 +139,7 @@ EXPORT Filter *ChebBilinear(float *fp, float *fs, float *ap, float *as, float *f
   return Bilinear(*fp, *fs, *ap, *as, *fc, out_n, FindChebPoles);
 }
 
-static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
+static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, double fc UNUSED_ARGUMENT, int *N,
 			       double *gain)
 {
   double n_real, Wc, l10;
@@ -180,7 +186,7 @@ static Complex *FindButtwPoles(double Wp, double Ws, double ap, double as, doubl
   return poles;
 }
 
-static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
+static Complex *FindChebPoles(double Wp, double Ws, double ap, double as, double fc UNUSED_ARGUMENT, int *N,
 			      double *gain)
 {
   double eps, Wc, alpha, a, b, l10, treshold, curr_val, angle, V, Vprev, Vnew;

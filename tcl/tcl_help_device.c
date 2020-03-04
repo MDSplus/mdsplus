@@ -20,7 +20,13 @@
 #include <dcl.h>
 #include <tdishr.h>
 
-EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)), char **output __attribute__ ((unused)))
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+EXPORT int tcl_help_device(void *ctx, char **error __attribute__((unused)), char **output UNUSED_ARGUMENT)
 {
   char *device = NULL;
   char *expr = NULL;

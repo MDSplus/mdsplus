@@ -59,6 +59,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <ncidef.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern void **TreeCtx();
 
 extern int SetNciRemote();
@@ -439,7 +445,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 
 +-----------------------------------------------------------------------------*/
 
-int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush __attribute__ ((unused)))
+int TreePutNci(TREE_INFO * info, int node_num, NCI * nci, int flush UNUSED_ARGUMENT)
 {
   int status;
   status = TreeSUCCESS;

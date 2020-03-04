@@ -35,6 +35,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <libroutines.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_SET_VIEW.C --
 *
@@ -48,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/****************************************************************
 	 * TclSetView:
 	 ****************************************************************/
-EXPORT int TclSetView(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetView(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int status;
   int64_t viewDate = -1;

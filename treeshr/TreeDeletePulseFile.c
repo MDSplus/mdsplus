@@ -72,6 +72,12 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 # define DBG(...) {}
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern char *MaskReplace();
 
 extern void **TreeCtx();
@@ -143,7 +149,7 @@ static inline int _TreeDeletePulseFiles(PINO_DATABASE* dblist, int shotid, char*
   return status;
 }
 
-int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles __attribute__ ((unused))){
+int _TreeDeletePulseFile(void *dbid, int shotid, int allfiles UNUSED_ARGUMENT){
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
 /* Make sure tree is open */
   int status = _TreeIsOpen(dblist);

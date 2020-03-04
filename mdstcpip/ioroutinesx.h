@@ -22,6 +22,12 @@ static IoRoutines io_routines = {
 #define IP(addr)   ((uint8_t*)&addr)
 #define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 // Connected client definition for client list
 typedef struct _client {
   SOCKET sock;
@@ -214,7 +220,7 @@ static char *getHostInfo(SOCKET sock, char **hostnameptr){
 }
 
 #ifdef _WIN32
-VOID CALLBACK ShutdownEvent(PVOID arg __attribute__ ((unused)), BOOLEAN fired __attribute__ ((unused))){
+VOID CALLBACK ShutdownEvent(PVOID arg UNUSED_ARGUMENT, BOOLEAN fired UNUSED_ARGUMENT){
   fprintf(stderr, "Service shut down\n");
   exit(0);
 }
@@ -255,7 +261,7 @@ static int getSocketHandle(char *name){
   return *(int *)&h;
 }
 #else
-static void ChildSignalHandler(int num __attribute__ ((unused))){
+static void ChildSignalHandler(int num UNUSED_ARGUMENT){
   sigset_t set, oldset;
   pid_t pid;
   int err;
@@ -440,11 +446,7 @@ static int io_disconnect(Connection* con){
 }
 
 
-#ifdef _WIN32
-int runServerMode(Options *options){
-#else
-int runServerMode(Options *options  __attribute__((unused))){
-#endif
+int runServerMode(Options *options UNUSED_ARGUMENT){
   //////////////////////////////////////////////////////////////////////////
   // SERVER MODE                                ////////////////////////////
   // multiple connections with the same context ////////////////////////////

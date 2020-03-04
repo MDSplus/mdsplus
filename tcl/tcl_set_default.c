@@ -31,6 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_SET_DEFAULT.C --
 *
@@ -45,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/****************************************************************
 	 * TclSetDefault:
 	 ****************************************************************/
-EXPORT int TclSetDefault(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetDefault(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int nid;
   int sts;
@@ -68,8 +74,8 @@ EXPORT int TclSetDefault(void *ctx, char **error, char **output __attribute__ ((
 	/***************************************************************
 	 * TclShowDefault:
 	 ***************************************************************/
-EXPORT int TclShowDefault(void *ctx __attribute__ ((unused)),
-			  char **error __attribute__ ((unused)), char **output)
+EXPORT int TclShowDefault(void *ctx UNUSED_ARGUMENT,
+			  char **error UNUSED_ARGUMENT, char **output)
 {				/* Returns: status                        */
   char *p;
   int nid;

@@ -9,6 +9,13 @@
 
 #include "mdsdclthreadstatic.h"
 
+#if defined(COMPILER_GCC) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+
 #define YYLTYPE void *
 #define yylex dcl_lex
 #include "dcl_p.h"
@@ -173,9 +180,9 @@ PVALUE_ {
 }
 
 %%
-static void yyerror(YYLTYPE *yyloc_param __attribute__ ((unused)),
-		    yyscan_t yyscanner __attribute__ ((unused)),
-		    dclCommandPtr *dclcmd __attribute__ ((unused)), char **error, char *s __attribute__ ((unused))) {
+static void yyerror(YYLTYPE *yyloc_param UNUSED_ARGUMENT,
+		    yyscan_t yyscanner UNUSED_ARGUMENT,
+		    dclCommandPtr *dclcmd UNUSED_ARGUMENT, char **error, char *s UNUSED_ARGUMENT) {
   *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 

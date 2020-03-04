@@ -30,7 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdescrip.h>
 #include <status.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int Tdi3Multiply();
 extern int Tdi3Complex();
@@ -49,7 +53,7 @@ int Tdi3Square(struct descriptor *in_ptr, struct descriptor *out_ptr)
 	F90 elemental, convert complex call to molded type.
 */
 int Tdi3Cmplx(struct descriptor *x_ptr,
-	      struct descriptor *y_ptr, struct descriptor *mold_ptr __attribute__ ((unused)), struct descriptor *out_ptr)
+	      struct descriptor *y_ptr, struct descriptor *mold_ptr UNUSED_ARGUMENT, struct descriptor *out_ptr)
 {
   return Tdi3Complex(x_ptr, y_ptr, out_ptr);
 }

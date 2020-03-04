@@ -37,6 +37,13 @@ DEFINE_INITIALIZESOCKETS;
 static fd_set fdactive;
 static int io_flush(Connection* c);
 #include "ioroutinesx.h"
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +89,7 @@ static void int_select(int signo) {
     close(int_sock);
 }
 #endif
-static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol UNUSED_ARGUMENT, char *host){
   struct SOCKADDR_IN sin;
   SOCKET sock;
   if IS_NOT_OK(GetHostAndPort(host, &sin)) {

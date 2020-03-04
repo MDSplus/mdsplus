@@ -29,6 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <dcl.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_DELETE_PULSE.C --
 *
@@ -39,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 *
 ************************************************************************/
 
-EXPORT int TclDeletePulse(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclDeletePulse(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char *asciiShot = 0;
   int shot;

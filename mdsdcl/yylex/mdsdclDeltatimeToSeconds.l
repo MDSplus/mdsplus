@@ -43,7 +43,7 @@ number [[:digit:]]+
 
 %%
 [[:blank:]]+ ;
-^[[:blank:]]*/{number}[[:blank:]]+({number}|\:) BEGIN has_day;
+^[[:blank:]]\*/{number}[[:blank:]]+({number}|\:) BEGIN has_day;
 <has_day>{number} day=atoi(yytext); BEGIN INITIAL;
 {number} times[idx]=atoi(yytext);
 \: if (idx>2) yyterminate(); idx++;

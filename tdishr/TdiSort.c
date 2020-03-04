@@ -56,7 +56,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdstypes.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
@@ -679,7 +683,7 @@ int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	Sort in place.
 	Method: MAP(array, SORT(array, [upcase]))
 */
-int Tdi1SortVal(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SortVal(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -699,7 +703,7 @@ int Tdi1SortVal(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 	There may any number or arguments.
 	The signality is removed and units are joined by VECTOR.
 */
-int Tdi1Union(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Union(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int j, n, len;
@@ -797,7 +801,7 @@ int Tdi1Union(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	list    vector of valid values
 	upcase  compare in uppercase (for text only)
 */
-int Tdi1IsIn(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IsIn(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *pupcase = narg > 2 ? list[2] : 0;

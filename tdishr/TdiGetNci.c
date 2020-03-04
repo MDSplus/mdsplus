@@ -64,6 +64,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefstandard.h"
 #include "tdinelements.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int tdi_get_data();
 extern int TdiData();
 extern int TdiUpcase();
@@ -225,7 +231,7 @@ inline static int treefindnode(char *dat_ptr, int len, int *nid) {
   return status;
 }
 
-int Tdi1GetNci(opcode_t opcode __attribute__ ((unused)),
+int Tdi1GetNci(opcode_t opcode UNUSED_ARGUMENT,
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)

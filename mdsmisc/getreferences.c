@@ -28,6 +28,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static int CountRefs(struct descriptor *src);
 static void FillRefs(struct descriptor *src, int *ans, int *idx);
 static int GetNid(struct descriptor *dsc);
@@ -43,7 +49,7 @@ EXPORT int GetReferenceCount(int *nid)
   return cnt;
 }
 
-EXPORT void GetReferences(int *nid __attribute__ ((unused)), int *ans)
+EXPORT void GetReferences(int *nid UNUSED_ARGUMENT, int *ans)
 {
   int idx = 0;
   FillRefs((struct descriptor *)&src, ans, &idx);

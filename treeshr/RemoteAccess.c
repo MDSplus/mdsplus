@@ -56,6 +56,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define DBG(...) {}
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static inline char *replaceBackslashes(char *filename) {
   char *ptr;
   while ((ptr = strchr(filename, '\\')) != NULL) *ptr = '/';
@@ -161,7 +167,7 @@ static void host_list_init_cleanup(){
  * This method shall reset the cleanup cycle to ensure full timeout period.
  * If the cleanup cycle is not armed, it is not required to arm it.
  */
-static int remote_access_connect(char *server, int inc_count, void *dbid __attribute__((unused))){
+static int remote_access_connect(char *server, int inc_count, void *dbid UNUSED_ARGUMENT){
   static int (*ReuseCheck) (char *,char *,int) = NULL;
   char unique[128]="\0";
   if IS_OK(LibFindImageSymbol_C("MdsIpShr", "ReuseCheck", &ReuseCheck)) {
@@ -344,11 +350,11 @@ int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, ch
   return status;
 }
 
-int SetStackSizeRemote(PINO_DATABASE *dbid __attribute__ ((unused)), int stack_size __attribute__ ((unused))){
+int SetStackSizeRemote(PINO_DATABASE *dbid UNUSED_ARGUMENT, int stack_size UNUSED_ARGUMENT){
   return 1;
 }
 
-int CloseTreeRemote(PINO_DATABASE * dblist, int call_host __attribute__ ((unused))){
+int CloseTreeRemote(PINO_DATABASE * dblist, int call_host UNUSED_ARGUMENT){
   struct descrip ans = {0};
   struct descrip tree = STR2DESCRIP(dblist->experiment);
   int status;
@@ -449,7 +455,7 @@ struct _FindNodeStruct {
   void *ptr;
 };
 
-int FindNodeEndRemote(PINO_DATABASE * dblist __attribute__ ((unused)), void **ctx_inout){
+int FindNodeEndRemote(PINO_DATABASE * dblist UNUSED_ARGUMENT, void **ctx_inout){
   struct _FindNodeStruct *ctx = (struct _FindNodeStruct *)*ctx_inout;
   if (ctx) {
     MdsIpFree(ctx->ptr);
@@ -491,7 +497,7 @@ int FindNodeWildRemote(PINO_DATABASE * dblist, char const *patharg, int *nid_out
   return status;
 }
 
-char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr __attribute__((unused))){
+char *FindNodeTagsRemote(PINO_DATABASE * dblist, int nid_in, void **ctx_ptr UNUSED_ARGUMENT){
   struct descrip ans = {0};
   char exp[80];
   char *tag = 0;

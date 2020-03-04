@@ -32,6 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <xtreeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 int getShape(struct descriptor *dataD, int *dims, int *numDims){
 /*
  * returns 1-D and N-D shaped arrays
@@ -240,9 +246,9 @@ static inline int mergeArrays(struct descriptor_a *signalsApd, struct descriptor
 }
 
 EXPORT int XTreeDefaultSquish(struct descriptor_a *signalsApd,
-			      struct descriptor *startD __attribute__ ((unused)),
-			      struct descriptor *endD __attribute__ ((unused)),
-			      struct descriptor *minDeltaD __attribute__ ((unused)),
+			      struct descriptor *startD UNUSED_ARGUMENT,
+			      struct descriptor *endD UNUSED_ARGUMENT,
+			      struct descriptor *minDeltaD UNUSED_ARGUMENT,
 			      struct descriptor_xd *outXd){
   if (signalsApd->class == CLASS_XD)
     signalsApd = (struct descriptor_a *)((struct descriptor_xd *)signalsApd)->pointer;

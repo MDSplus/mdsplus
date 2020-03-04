@@ -33,6 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <stdlib.h>
 #include <libroutines.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiDecompile(), TdiCompile(), TdiFloat(), TdiData(), TdiLong(), CvtConvertFloat();
 
 struct descriptor *ObjectToDescrip(JNIEnv * env, jobject obj);
@@ -64,7 +71,7 @@ JNIEXPORT jstring JNICALL Java_Data_toString(JNIEnv * env, jobject obj)
   return ris;
 }
 
-JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jexpr) {
+JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls UNUSED_ARGUMENT, jstring jexpr) {
   EMPTYXD(xd);
   int status, ris = 0;
   const char *expr = (*env)->GetStringUTFChars(env, jexpr, 0);
@@ -83,7 +90,7 @@ JNIEXPORT jint JNICALL Java_Data_evaluate(JNIEnv * env, jclass cls __attribute__
   return ris;
 }
 
-JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls __attribute__ ((unused)), jstring jsource) {
+JNIEXPORT jobject JNICALL Java_Data_fromExpr(JNIEnv * env, jclass cls UNUSED_ARGUMENT, jstring jsource) {
   EMPTYXD(out_xd);
   //EMPTYXD(dec_xd);
   int status;

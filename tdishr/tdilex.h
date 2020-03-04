@@ -2,9 +2,9 @@
 #define tdiHEADER_H 1
 #define tdiIN_HEADER 1
 
-#line 6 "tdilex.h"
+#line 5 "tdilex.h"
 
-#line 8 "tdilex.h"
+#line 7 "tdilex.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -13,9 +13,243 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 6
-#define YY_FLEX_SUBMINOR_VERSION 1
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define tdi_create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer tdi_create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define tdi_delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer tdi_delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define tdi_scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer tdi_scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define tdi_scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string tdi_scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define tdi_scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes tdi_scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define tdi_init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer tdi_init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define tdi_flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer tdi_flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define tdi_load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state tdi_load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define tdi_switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer tdi_switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define tdipush_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state tdipush_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define tdipop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state tdipop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define tdiensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack tdiensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define tdilex_ALREADY_DEFINED
+#else
+#define yylex tdilex
+#endif
+
+#ifdef yyrestart
+#define tdirestart_ALREADY_DEFINED
+#else
+#define yyrestart tdirestart
+#endif
+
+#ifdef yylex_init
+#define tdilex_init_ALREADY_DEFINED
+#else
+#define yylex_init tdilex_init
+#endif
+
+#ifdef yylex_init_extra
+#define tdilex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra tdilex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define tdilex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy tdilex_destroy
+#endif
+
+#ifdef yyget_debug
+#define tdiget_debug_ALREADY_DEFINED
+#else
+#define yyget_debug tdiget_debug
+#endif
+
+#ifdef yyset_debug
+#define tdiset_debug_ALREADY_DEFINED
+#else
+#define yyset_debug tdiset_debug
+#endif
+
+#ifdef yyget_extra
+#define tdiget_extra_ALREADY_DEFINED
+#else
+#define yyget_extra tdiget_extra
+#endif
+
+#ifdef yyset_extra
+#define tdiset_extra_ALREADY_DEFINED
+#else
+#define yyset_extra tdiset_extra
+#endif
+
+#ifdef yyget_in
+#define tdiget_in_ALREADY_DEFINED
+#else
+#define yyget_in tdiget_in
+#endif
+
+#ifdef yyset_in
+#define tdiset_in_ALREADY_DEFINED
+#else
+#define yyset_in tdiset_in
+#endif
+
+#ifdef yyget_out
+#define tdiget_out_ALREADY_DEFINED
+#else
+#define yyget_out tdiget_out
+#endif
+
+#ifdef yyset_out
+#define tdiset_out_ALREADY_DEFINED
+#else
+#define yyset_out tdiset_out
+#endif
+
+#ifdef yyget_leng
+#define tdiget_leng_ALREADY_DEFINED
+#else
+#define yyget_leng tdiget_leng
+#endif
+
+#ifdef yyget_text
+#define tdiget_text_ALREADY_DEFINED
+#else
+#define yyget_text tdiget_text
+#endif
+
+#ifdef yyget_lineno
+#define tdiget_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno tdiget_lineno
+#endif
+
+#ifdef yyset_lineno
+#define tdiset_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno tdiset_lineno
+#endif
+
+#ifdef yyget_column
+#define tdiget_column_ALREADY_DEFINED
+#else
+#define yyget_column tdiget_column
+#endif
+
+#ifdef yyset_column
+#define tdiset_column_ALREADY_DEFINED
+#else
+#define yyset_column tdiset_column
+#endif
+
+#ifdef yywrap
+#define tdiwrap_ALREADY_DEFINED
+#else
+#define yywrap tdiwrap
+#endif
+
+#ifdef yyget_lval
+#define tdiget_lval_ALREADY_DEFINED
+#else
+#define yyget_lval tdiget_lval
+#endif
+
+#ifdef yyset_lval
+#define tdiset_lval_ALREADY_DEFINED
+#else
+#define yyset_lval tdiset_lval
+#endif
+
+#ifdef yyget_lloc
+#define tdiget_lloc_ALREADY_DEFINED
+#else
+#define yyget_lloc tdiget_lloc
+#endif
+
+#ifdef yyset_lloc
+#define tdiset_lloc_ALREADY_DEFINED
+#else
+#define yyset_lloc tdiset_lloc
+#endif
+
+#ifdef yyalloc
+#define tdialloc_ALREADY_DEFINED
+#else
+#define yyalloc tdialloc
+#endif
+
+#ifdef yyrealloc
+#define tdirealloc_ALREADY_DEFINED
+#else
+#define yyrealloc tdirealloc
+#endif
+
+#ifdef yyfree
+#define tdifree_ALREADY_DEFINED
+#else
+#define yyfree tdifree
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -88,9 +322,15 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
 #endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
+
+/* begin standard C++ headers. */
 
 /* TODO: this is always defined, so inline it */
 #define yyconst const
@@ -192,21 +432,21 @@ struct yy_buffer_state
 	};
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
-void tdirestart (FILE *input_file ,yyscan_t yyscanner );
-void tdi_switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-YY_BUFFER_STATE tdi_create_buffer (FILE *file,int size ,yyscan_t yyscanner );
-void tdi_delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void tdi_flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void tdipush_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-void tdipop_buffer_state (yyscan_t yyscanner );
+void yyrestart ( FILE *input_file , yyscan_t yyscanner );
+void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_create_buffer ( FILE *file, int size , yyscan_t yyscanner );
+void yy_delete_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yy_flush_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yypush_buffer_state ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+void yypop_buffer_state ( yyscan_t yyscanner );
 
-YY_BUFFER_STATE tdi_scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
-YY_BUFFER_STATE tdi_scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE tdi_scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_string ( const char *yy_str , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len , yyscan_t yyscanner );
 
-void *tdialloc (yy_size_t ,yyscan_t yyscanner );
-void *tdirealloc (void *,yy_size_t ,yyscan_t yyscanner );
-void tdifree (void * ,yyscan_t yyscanner );
+void *yyalloc ( yy_size_t , yyscan_t yyscanner );
+void *yyrealloc ( void *, yy_size_t , yyscan_t yyscanner );
+void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
@@ -232,50 +472,50 @@ void tdifree (void * ,yyscan_t yyscanner );
 #define YY_EXTRA_TYPE void *
 #endif
 
-int tdilex_init (yyscan_t* scanner);
+int yylex_init (yyscan_t* scanner);
 
-int tdilex_init_extra (YY_EXTRA_TYPE user_defined,yyscan_t* scanner);
+int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int tdilex_destroy (yyscan_t yyscanner );
+int yylex_destroy ( yyscan_t yyscanner );
 
-int tdiget_debug (yyscan_t yyscanner );
+int yyget_debug ( yyscan_t yyscanner );
 
-void tdiset_debug (int debug_flag ,yyscan_t yyscanner );
+void yyset_debug ( int debug_flag , yyscan_t yyscanner );
 
-YY_EXTRA_TYPE tdiget_extra (yyscan_t yyscanner );
+YY_EXTRA_TYPE yyget_extra ( yyscan_t yyscanner );
 
-void tdiset_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
+void yyset_extra ( YY_EXTRA_TYPE user_defined , yyscan_t yyscanner );
 
-FILE *tdiget_in (yyscan_t yyscanner );
+FILE *yyget_in ( yyscan_t yyscanner );
 
-void tdiset_in  (FILE * _in_str ,yyscan_t yyscanner );
+void yyset_in  ( FILE * _in_str , yyscan_t yyscanner );
 
-FILE *tdiget_out (yyscan_t yyscanner );
+FILE *yyget_out ( yyscan_t yyscanner );
 
-void tdiset_out  (FILE * _out_str ,yyscan_t yyscanner );
+void yyset_out  ( FILE * _out_str , yyscan_t yyscanner );
 
-			int tdiget_leng (yyscan_t yyscanner );
+			int yyget_leng ( yyscan_t yyscanner );
 
-char *tdiget_text (yyscan_t yyscanner );
+char *yyget_text ( yyscan_t yyscanner );
 
-int tdiget_lineno (yyscan_t yyscanner );
+int yyget_lineno ( yyscan_t yyscanner );
 
-void tdiset_lineno (int _line_number ,yyscan_t yyscanner );
+void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 
-int tdiget_column  (yyscan_t yyscanner );
+int yyget_column  ( yyscan_t yyscanner );
 
-void tdiset_column (int _column_no ,yyscan_t yyscanner );
+void yyset_column ( int _column_no , yyscan_t yyscanner );
 
-YYSTYPE * tdiget_lval (yyscan_t yyscanner );
+YYSTYPE * yyget_lval ( yyscan_t yyscanner );
 
-void tdiset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
+void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
-       YYLTYPE *tdiget_lloc (yyscan_t yyscanner );
+       YYLTYPE *yyget_lloc ( yyscan_t yyscanner );
     
-        void tdiset_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+        void yyset_lloc ( YYLTYPE * yylloc_param , yyscan_t yyscanner );
     
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -283,18 +523,18 @@ void tdiset_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int tdiwrap (yyscan_t yyscanner );
+extern "C" int yywrap ( yyscan_t yyscanner );
 #else
-extern int tdiwrap (yyscan_t yyscanner );
+extern int yywrap ( yyscan_t yyscanner );
 #endif
 #endif
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char *,yyconst char *,int ,yyscan_t yyscanner);
+static void yy_flex_strncpy ( char *, const char *, int , yyscan_t yyscanner);
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
+static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #endif
 
 #ifndef YY_NO_INPUT
@@ -322,10 +562,10 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int tdilex \
-               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
+extern int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner);
 
-#define YY_DECL int tdilex \
+#define YY_DECL int yylex \
                (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
@@ -343,9 +583,154 @@ extern int tdilex \
 #undef YY_DECL
 #endif
 
-#line 247 "tdilex/TdiLex.l"
+#ifndef tdi_create_buffer_ALREADY_DEFINED
+#undef yy_create_buffer
+#endif
+#ifndef tdi_delete_buffer_ALREADY_DEFINED
+#undef yy_delete_buffer
+#endif
+#ifndef tdi_scan_buffer_ALREADY_DEFINED
+#undef yy_scan_buffer
+#endif
+#ifndef tdi_scan_string_ALREADY_DEFINED
+#undef yy_scan_string
+#endif
+#ifndef tdi_scan_bytes_ALREADY_DEFINED
+#undef yy_scan_bytes
+#endif
+#ifndef tdi_init_buffer_ALREADY_DEFINED
+#undef yy_init_buffer
+#endif
+#ifndef tdi_flush_buffer_ALREADY_DEFINED
+#undef yy_flush_buffer
+#endif
+#ifndef tdi_load_buffer_state_ALREADY_DEFINED
+#undef yy_load_buffer_state
+#endif
+#ifndef tdi_switch_to_buffer_ALREADY_DEFINED
+#undef yy_switch_to_buffer
+#endif
+#ifndef tdipush_buffer_state_ALREADY_DEFINED
+#undef yypush_buffer_state
+#endif
+#ifndef tdipop_buffer_state_ALREADY_DEFINED
+#undef yypop_buffer_state
+#endif
+#ifndef tdiensure_buffer_stack_ALREADY_DEFINED
+#undef yyensure_buffer_stack
+#endif
+#ifndef tdilex_ALREADY_DEFINED
+#undef yylex
+#endif
+#ifndef tdirestart_ALREADY_DEFINED
+#undef yyrestart
+#endif
+#ifndef tdilex_init_ALREADY_DEFINED
+#undef yylex_init
+#endif
+#ifndef tdilex_init_extra_ALREADY_DEFINED
+#undef yylex_init_extra
+#endif
+#ifndef tdilex_destroy_ALREADY_DEFINED
+#undef yylex_destroy
+#endif
+#ifndef tdiget_debug_ALREADY_DEFINED
+#undef yyget_debug
+#endif
+#ifndef tdiset_debug_ALREADY_DEFINED
+#undef yyset_debug
+#endif
+#ifndef tdiget_extra_ALREADY_DEFINED
+#undef yyget_extra
+#endif
+#ifndef tdiset_extra_ALREADY_DEFINED
+#undef yyset_extra
+#endif
+#ifndef tdiget_in_ALREADY_DEFINED
+#undef yyget_in
+#endif
+#ifndef tdiset_in_ALREADY_DEFINED
+#undef yyset_in
+#endif
+#ifndef tdiget_out_ALREADY_DEFINED
+#undef yyget_out
+#endif
+#ifndef tdiset_out_ALREADY_DEFINED
+#undef yyset_out
+#endif
+#ifndef tdiget_leng_ALREADY_DEFINED
+#undef yyget_leng
+#endif
+#ifndef tdiget_text_ALREADY_DEFINED
+#undef yyget_text
+#endif
+#ifndef tdiget_lineno_ALREADY_DEFINED
+#undef yyget_lineno
+#endif
+#ifndef tdiset_lineno_ALREADY_DEFINED
+#undef yyset_lineno
+#endif
+#ifndef tdiget_column_ALREADY_DEFINED
+#undef yyget_column
+#endif
+#ifndef tdiset_column_ALREADY_DEFINED
+#undef yyset_column
+#endif
+#ifndef tdiwrap_ALREADY_DEFINED
+#undef yywrap
+#endif
+#ifndef tdiget_lval_ALREADY_DEFINED
+#undef yyget_lval
+#endif
+#ifndef tdiset_lval_ALREADY_DEFINED
+#undef yyset_lval
+#endif
+#ifndef tdiget_lloc_ALREADY_DEFINED
+#undef yyget_lloc
+#endif
+#ifndef tdiset_lloc_ALREADY_DEFINED
+#undef yyset_lloc
+#endif
+#ifndef tdialloc_ALREADY_DEFINED
+#undef yyalloc
+#endif
+#ifndef tdirealloc_ALREADY_DEFINED
+#undef yyrealloc
+#endif
+#ifndef tdifree_ALREADY_DEFINED
+#undef yyfree
+#endif
+#ifndef tditext_ALREADY_DEFINED
+#undef yytext
+#endif
+#ifndef tdileng_ALREADY_DEFINED
+#undef yyleng
+#endif
+#ifndef tdiin_ALREADY_DEFINED
+#undef yyin
+#endif
+#ifndef tdiout_ALREADY_DEFINED
+#undef yyout
+#endif
+#ifndef tdi_flex_debug_ALREADY_DEFINED
+#undef yy_flex_debug
+#endif
+#ifndef tdilineno_ALREADY_DEFINED
+#undef yylineno
+#endif
+#ifndef tditables_fload_ALREADY_DEFINED
+#undef yytables_fload
+#endif
+#ifndef tditables_destroy_ALREADY_DEFINED
+#undef yytables_destroy
+#endif
+#ifndef tdiTABLES_NAME_ALREADY_DEFINED
+#undef yyTABLES_NAME
+#endif
+
+#line 247 "yylex/TdiLex.l"
 
 
-#line 350 "tdilex.h"
+#line 734 "tdilex.h"
 #undef tdiIN_HEADER
 #endif /* tdiHEADER_H */

@@ -36,6 +36,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdsshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiData();
 extern int TdiEvaluate();
 int unwrapCommaCount(int ndesc, struct descriptor *list[]) {
@@ -124,12 +130,12 @@ free_alist :;
   return status;
 }
 
-int Tdi1List(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1List(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_LIST, narg, list, out_ptr);
 }
-int Tdi1Tuple(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Tuple(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_TUPLE, narg, list, out_ptr);
 }
-int Tdi1Dict(opcode_t opcode __attribute__((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+int Tdi1Dict(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
    return Tdi1Apd(DTYPE_DICTIONARY, narg, list, out_ptr);
 }

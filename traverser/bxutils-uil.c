@@ -150,6 +150,12 @@ static int StrCasecmp(char *, char *);
 #define XTPOINTER	XtPointer
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /*
  * The following enum is used to support wide character sets.
  * Use this enum for references into the Common Wide Characters array.
@@ -959,8 +965,8 @@ static wchar_t *CStrCommonWideCharsGet()
 static Boolean CvtStringToXmString
 ARGLIST((d, args, num_args, fromVal, toVal, data))
 ARG(Display *, d)
-UARG(XrmValue *, args __attribute__ ((unused)))
-ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data __attribute__ ((unused)))
+UARG(XrmValue *, args UNUSED_ARGUMENT)
+ARG(Cardinal *, num_args UNUSED_ARGUMENT) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal) GRAU(XtPointer, data UNUSED_ARGUMENT)
 {
   static XmString resStr;
   char *str;
@@ -1010,9 +1016,9 @@ ARG(Cardinal *, num_args __attribute__ ((unused))) ARG(XrmValue *, fromVal) ARG(
 
 static void XmStringCvtDestroy
 ARGLIST((app, to, data, args, num_args))
-  UARG(XtAppContext, app __attribute__ ((unused)))
-  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
-  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
+  UARG(XtAppContext, app UNUSED_ARGUMENT)
+  ARG(XrmValue *, to) UARG(XtPointer, data UNUSED_ARGUMENT)
+  UARG(XrmValue *, args UNUSED_ARGUMENT) GRAU(Cardinal *, num_args UNUSED_ARGUMENT)
 {
   XmStringFree(*(XmString *) (to->addr));
 }
@@ -1041,7 +1047,7 @@ ARGLIST((d, args, num_args, fromVal, toVal, data))
 ARG(Display *, d)
 ARG(XrmValue *, args)
 ARG(Cardinal *, num_args) ARG(XrmValue *, fromVal) ARG(XrmValue *, toVal)
-GRAU(XtPointer, data __attribute__ ((unused)))
+GRAU(XtPointer, data UNUSED_ARGUMENT)
 {
   static XmString *CStrTable;
   XmString *tblPtr;
@@ -1153,9 +1159,9 @@ GRAU(XtPointer, data __attribute__ ((unused)))
 
 static void XmStringTableCvtDestroy
 ARGLIST((app, to, data, args, num_args))
-  UARG(XtAppContext, app __attribute__ ((unused)))
-  ARG(XrmValue *, to) UARG(XtPointer, data __attribute__ ((unused)))
-  UARG(XrmValue *, args __attribute__ ((unused))) GRAU(Cardinal *, num_args __attribute__ ((unused)))
+  UARG(XtAppContext, app UNUSED_ARGUMENT)
+  ARG(XrmValue *, to) UARG(XtPointer, data UNUSED_ARGUMENT)
+  UARG(XrmValue *, args UNUSED_ARGUMENT) GRAU(Cardinal *, num_args UNUSED_ARGUMENT)
 {
   XmString *tblPtr = *(XmString **) (to->addr);
 
@@ -1211,7 +1217,7 @@ void RegisterBxConverters ARGLIST((appContext)) GRA(XtAppContext, appContext)
 XtPointer CONVERT
 ARGLIST((w, from_string, to_type, to_size, success))
 ARG(Widget, w)
-ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((unused))) GRA(Boolean *, success)
+ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size UNUSED_ARGUMENT) GRA(Boolean *, success)
 {
   XrmValue fromVal, toVal;	/* resource holders             */
   Boolean convResult;		/* return value                 */
@@ -1341,7 +1347,7 @@ ARG(char *, from_string) ARG(char *, to_type) ARG(int, to_size __attribute__ ((u
 
 void MENU_POST
 ARGLIST((p, mw, ev, dispatch))
-  UARG(Widget, p __attribute__ ((unused))) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch __attribute__ ((unused)))
+  UARG(Widget, p UNUSED_ARGUMENT) ARG(XtPointer, mw) ARG(XEvent *, ev) GRAU(Boolean *, dispatch UNUSED_ARGUMENT)
 {
   Arg args[2];
   int argcnt;
@@ -1383,7 +1389,7 @@ ARGLIST((p, mw, ev, dispatch))
 
 void SET_BACKGROUND_COLOR
 ARGLIST((w, args, argcnt, bg_color))
-  ARG(Widget, w __attribute__ ((unused))) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
+  ARG(Widget, w UNUSED_ARGUMENT) ARG(ArgList, args) ARG(Cardinal *, argcnt) GRA(Pixel, bg_color)
 {
 
 #if ((XmVERSION == 1) && (XmREVISION > 0))
@@ -1640,7 +1646,7 @@ XtPointer DOUBLE ARGLIST((val)) GRA(double, val)
 /* ARGSUSED */
 void BxStoreWidgetId(
 #if NeedFunctionPrototypes
-		     Widget w, XtPointer client, XtPointer call __attribute__ ((unused)))
+		     Widget w, XtPointer client, XtPointer call UNUSED_ARGUMENT)
 #else
 		      w, client, call)
 Widget w;

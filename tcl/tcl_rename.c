@@ -32,6 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /***********************************************************************
 * TCL_RENAME.C --
 *
@@ -45,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 * TclRename:
 	 * Rename a node or subtree.
 	 ***************************************************************/
-EXPORT int TclRename(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclRename(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int nid;
   int sts = MdsdclIVVERB;

@@ -40,6 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int TdiDecompile();
 extern int TdiSortVal();
@@ -115,7 +120,7 @@ EXPORT int TclShowAttribute(void *ctx, char **error, char **output)
 
 extern int TdiCompile();
 
-EXPORT int TclSetAttribute(void *ctx, char **error, char **output __attribute__ ((unused)), char *(*getline)(), void *getlineinfo)
+EXPORT int TclSetAttribute(void *ctx, char **error, char **output UNUSED_ARGUMENT, char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *attname = 0;

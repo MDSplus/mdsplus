@@ -47,6 +47,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 enum callback_id { CB_UNKNOWN, CB_AUTOSCALE, CB_CROSSHAIRS, CB_LIMITS, CB_MOVE, CB_STRETCH,
       CB_SET_AT_LIMITS, CB_ADD_POINT,
   CB_DELETE_POINT, CB_PASTE, CB_FIT, CB_USER
@@ -157,7 +163,7 @@ static Widget WaveIdxToWidget(Widget w, int idx)
   return XtNameToWidget(w, IndexedName("*wave", idx));
 }
 
-static void Align(Widget w, int stub __attribute__ ((unused)), XmdsWaveformLimitsCBStruct * cb)
+static void Align(Widget w, int stub UNUSED_ARGUMENT, XmdsWaveformLimitsCBStruct * cb)
 {
   Widget plots = XtNameToWidget(TopWidget(w), "*cw_wvedit");
   int i;
@@ -370,8 +376,8 @@ static Widget TopWidget(Widget w)
   return top;
 }
 
-static void Setup(Widget w, int stub __attribute__ ((unused)), XButtonEvent * event,
-		  Boolean * continue_to_dispatch __attribute__ ((unused)))
+static void Setup(Widget w, int stub UNUSED_ARGUMENT, XButtonEvent * event,
+		  Boolean * continue_to_dispatch UNUSED_ARGUMENT)
 {
   if (event->button == Button3) {
     Widget popup = XtNameToWidget(TopWidget(w), "*waveform_popup");
@@ -382,8 +388,8 @@ static void Setup(Widget w, int stub __attribute__ ((unused)), XButtonEvent * ev
 }
 
 static void /*XtActionProc */ MoveVerticalPane(Widget w, XButtonEvent * event,
-					       String * params __attribute__ ((unused)),
-					       Cardinal * num_params __attribute__ ((unused)))
+					       String * params UNUSED_ARGUMENT,
+					       Cardinal * num_params UNUSED_ARGUMENT)
 {
   Position main_x_root;
   Position main_y_root;
@@ -408,7 +414,7 @@ static void /*XtActionProc */ MoveVerticalPane(Widget w, XButtonEvent * event,
   }
 }
 
-static void /*XtActionProc */ EqualPanes(Widget w, XEvent * event __attribute__ ((unused)),
+static void /*XtActionProc */ EqualPanes(Widget w, XEvent * event UNUSED_ARGUMENT,
 					 String * string, Cardinal * num_strings)
 {
   Widget plots = XtNameToWidget(TopWidget(w), "*cw_wvedit");
@@ -433,7 +439,7 @@ static void /*XtActionProc */ EqualPanes(Widget w, XEvent * event __attribute__ 
   return;
 }
 
-static void Autoscale(Widget w __attribute__ ((unused)), int stub, XmPushButtonCallbackStruct * cb)
+static void Autoscale(Widget w UNUSED_ARGUMENT, int stub, XmPushButtonCallbackStruct * cb)
 {
   Widget wave = setup_wave;
   if (wave) {
@@ -497,7 +503,7 @@ static void Limits(Widget w, int stub, XmdsWaveformLimitsCBStruct * cb)
   e->values[3] = *cb->ymaxval;
 }
 
-static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom * selection __attribute__ ((unused)),
+static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom * selection UNUSED_ARGUMENT,
 						       Atom * type,
 						       XtPointer value, unsigned long *length,
 						       int *format)
@@ -558,7 +564,7 @@ static void /*XtSelectionCallbackProc */ PasteComplete(Widget w, int stub, Atom 
     XtFree((String) value);
 }
 
-static void Paste(Widget w, int stub, XmAnyCallbackStruct * cb __attribute__ ((unused)))
+static void Paste(Widget w, int stub, XmAnyCallbackStruct * cb UNUSED_ARGUMENT)
 {
   if (XA_X_AXIS == 0) {
     XA_X_AXIS = XInternAtom(XtDisplay(w), "DWSCOPE_X_AXIS", 0);
@@ -569,13 +575,13 @@ static void Paste(Widget w, int stub, XmAnyCallbackStruct * cb __attribute__ ((u
 		      (XtPointer) ((char *)0+stub), XtLastTimestampProcessed(XtDisplay(w)));
 }
 
-static void LoseSelection(Widget w, Atom * selection __attribute__ ((unused)))
+static void LoseSelection(Widget w, Atom * selection UNUSED_ARGUMENT)
 {
   XmdsWaveformReverse(w, 0);
   SelectedWidget = 0;
 }
 
-static Boolean ConvertSelection(Widget w, Atom * selection  __attribute__ ((unused)), Atom * target, Atom * type,
+static Boolean ConvertSelection(Widget w, Atom * selection  UNUSED_ARGUMENT, Atom * target, Atom * type,
 				XtPointer * value, unsigned long *length, int *format)
 {
   int status = 0;
@@ -618,8 +624,8 @@ static Boolean ConvertSelection(Widget w, Atom * selection  __attribute__ ((unus
   return status;
 }
 
-static void Cut(Widget w, int stub __attribute__ ((unused)),
-		XmAnyCallbackStruct * callback_struct __attribute__ ((unused)))
+static void Cut(Widget w, int stub UNUSED_ARGUMENT,
+		XmAnyCallbackStruct * callback_struct UNUSED_ARGUMENT)
 {
   if (SelectedWidget == w)
     XtDisownSelection(SelectedWidget, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
@@ -814,7 +820,7 @@ static int WaveToIdx(Widget w)
   return -1;
 }
 
-static void SetAtLimits(Widget w __attribute__ ((unused)), int stub, XmPushButtonCallbackStruct * cb)
+static void SetAtLimits(Widget w UNUSED_ARGUMENT, int stub, XmPushButtonCallbackStruct * cb)
 {
   Widget wave = setup_wave;
   if (wave) {
@@ -856,27 +862,27 @@ static void DeletePoint(Widget w, int stub, XmdsWavedrawValueCBStruct * cb)
   e->values[3] = cb->newy;
 }
 
-static void Print(Widget w __attribute__ ((unused)), int tag __attribute__ ((unused)),
-		  XmdsWavedrawValueCBStruct * cb __attribute__ ((unused)))
+static void Print(Widget w UNUSED_ARGUMENT, int tag UNUSED_ARGUMENT,
+		  XmdsWavedrawValueCBStruct * cb UNUSED_ARGUMENT)
 {
   return;
 }
 
-static void PrintAll(Widget w __attribute__ ((unused)), int tag __attribute__ ((unused)),
-		     XmAnyCallbackStruct * cb __attribute__ ((unused)))
+static void PrintAll(Widget w UNUSED_ARGUMENT, int tag UNUSED_ARGUMENT,
+		     XmAnyCallbackStruct * cb UNUSED_ARGUMENT)
 {
 }
 
-static void ResetCustomizePrint(Widget w __attribute__ ((unused)),
-				int tag __attribute__ ((unused)),
-				XmAnyCallbackStruct * cb __attribute__ ((unused)))
+static void ResetCustomizePrint(Widget w UNUSED_ARGUMENT,
+				int tag UNUSED_ARGUMENT,
+				XmAnyCallbackStruct * cb UNUSED_ARGUMENT)
 {
   XmTextSetString(XtNameToWidget(CustomizePrintWidget, "print_file"), PrintFile);
 }
 
-static void ApplyCustomizePrint(Widget w __attribute__ ((unused)),
-				int tag __attribute__ ((unused)),
-				XmAnyCallbackStruct * cb __attribute__ ((unused)))
+static void ApplyCustomizePrint(Widget w UNUSED_ARGUMENT,
+				int tag UNUSED_ARGUMENT,
+				XmAnyCallbackStruct * cb UNUSED_ARGUMENT)
 {
   ReplaceString(&PrintFile, XmTextGetString(XtNameToWidget(CustomizePrintWidget, "print_file")), 1);
 }

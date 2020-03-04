@@ -59,6 +59,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "mdsip_connections.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static ssize_t gsi_send(Connection* c, const void *buffer, size_t buflen, int nowait);
 static ssize_t gsi_recv(Connection* c, void *buffer, size_t len);
 static int gsi_disconnect(Connection* c);
@@ -215,7 +221,7 @@ static int gsi_authorize(Connection* c, char *username)
   return ans;
 }
 
-static ssize_t gsi_send(Connection* c, const void *bptr, size_t num, int options __attribute__ ((unused)))
+static ssize_t gsi_send(Connection* c, const void *bptr, size_t num, int options UNUSED_ARGUMENT)
 {
   globus_size_t nbytes;
   globus_result_t result;
@@ -279,7 +285,7 @@ static int gsi_reuseCheck(char *host, char *unique, size_t buflen)
   return ans;
 }
 
-static int gsi_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host_in)
+static int gsi_connect(Connection* c, char *protocol UNUSED_ARGUMENT, char *host_in)
 {
   static int activated = 0;
   static globus_xio_stack_t stack_gsi;
@@ -340,18 +346,18 @@ static int gsi_connect(Connection* c, char *protocol __attribute__ ((unused)), c
   return C_OK;
 }
 
-static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused)),
-			 globus_result_t result __attribute__ ((unused)),
-			 globus_byte_t * buffer __attribute__ ((unused)),
-			 globus_size_t len __attribute__ ((unused)),
-			 globus_size_t nbytes __attribute__ ((unused)),
-			 globus_xio_data_descriptor_t data_desc __attribute__ ((unused)), void *userarg)
+static void readCallback(globus_xio_handle_t xio_handle UNUSED_ARGUMENT,
+			 globus_result_t result UNUSED_ARGUMENT,
+			 globus_byte_t * buffer UNUSED_ARGUMENT,
+			 globus_size_t len UNUSED_ARGUMENT,
+			 globus_size_t nbytes UNUSED_ARGUMENT,
+			 globus_xio_data_descriptor_t data_desc UNUSED_ARGUMENT, void *userarg)
 {
   int id = userarg ? *(int *)userarg : -1;
   if (id > 0) {
     GSI_INFO *info = getGsiInfo(id);
     if (info) {
-      globus_result_t res __attribute__ ((unused));
+      globus_result_t res UNUSED_ARGUMENT;
       globus_byte_t buff[1];
       int status = DoMessage(id);
       if STATUS_OK
@@ -361,7 +367,7 @@ static void readCallback(globus_xio_handle_t xio_handle __attribute__ ((unused))
 }
 
 static void acceptCallback(globus_xio_server_t server,
-			   globus_xio_handle_t xio_handle, globus_result_t result __attribute__ ((unused)), void *userarg)
+			   globus_xio_handle_t xio_handle, globus_result_t result UNUSED_ARGUMENT, void *userarg)
 {
   globus_result_t res;
   char *username;

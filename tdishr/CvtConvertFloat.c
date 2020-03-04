@@ -27,6 +27,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsplus.h>
 #include <inttypes.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /** Adapted from VMS V7.0 sources CvtConvertFloat.lis                      **/
 /******************************************************************************/
 /**                                                                          **/
@@ -490,67 +496,67 @@ static const uint32_t cray[] = {
 **-----------------------------------------------------------------------------
 */
 static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_VAX_F output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_VAX_D output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_VAX_G output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_VAX_H output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)));
+				      CVT_IEEE_S output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)));
+				      CVT_IEEE_T output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)));
+				      CVT_IEEE_X output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_IBM_LONG output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)));
+				     CVT_IBM_SHORT output_value, uint32_t options UNUSED_ARGUMENT);
 
 static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)));
+				    CVT_CRAY output_value, uint32_t options UNUSED_ARGUMENT);
 
 static void _round(UNPACKED_REAL intermediate_value,
-			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)));
+			   uint32_t round_bit_position, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				  UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				 UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 static void unpack_cray(CVT_CRAY input_value,
-				UNPACKED_REAL intermediate_value, uint32_t options __attribute__ ((unused)));
+				UNPACKED_REAL intermediate_value, uint32_t options UNUSED_ARGUMENT);
 
 extern EXPORT CVT_STATUS CvtConvertFloat(void *input_value,
 			   uint32_t input_type, void *output_value, uint32_t output_type)
@@ -827,7 +833,7 @@ static void FlipDouble(int *in)
 }
 
 static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_F output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_VAX_F output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -1003,7 +1009,7 @@ static CVT_STATUS pack_vax_f(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_D output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_VAX_D output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -1191,7 +1197,7 @@ static CVT_STATUS pack_vax_d(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_G output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_VAX_G output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -1372,7 +1378,7 @@ static CVT_STATUS pack_vax_g(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
-				     CVT_VAX_H output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_VAX_H output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -1555,7 +1561,7 @@ static CVT_STATUS pack_vax_h(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_S output_value, uint32_t options __attribute__ ((unused)))
+				      CVT_IEEE_S output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -1780,7 +1786,7 @@ static CVT_STATUS pack_ieee_s(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_T output_value, uint32_t options __attribute__ ((unused)))
+				      CVT_IEEE_T output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -2058,7 +2064,7 @@ static CVT_STATUS pack_ieee_t(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
-				      CVT_IEEE_X output_value, uint32_t options __attribute__ ((unused)))
+				      CVT_IEEE_X output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -2355,7 +2361,7 @@ static CVT_STATUS pack_ieee_x(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_LONG output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_IBM_LONG output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -2565,7 +2571,7 @@ static CVT_STATUS pack_ibm_l(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
-				     CVT_IBM_SHORT output_value, uint32_t options __attribute__ ((unused)))
+				     CVT_IBM_SHORT output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -2763,7 +2769,7 @@ static CVT_STATUS pack_ibm_s(UNPACKED_REAL intermediate_value,
 }
 
 static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
-				    CVT_CRAY output_value, uint32_t options __attribute__ ((unused)))
+				    CVT_CRAY output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -2956,7 +2962,7 @@ static CVT_STATUS pack_cray(UNPACKED_REAL intermediate_value,
 }
 
 static void _round(UNPACKED_REAL intermediate_value,
-			   uint32_t round_bit_position, uint32_t options __attribute__ ((unused)))
+			   uint32_t round_bit_position, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3201,7 +3207,7 @@ static void _round(UNPACKED_REAL intermediate_value,
 }
 
 static void unpack_vax_f(CVT_VAX_F input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3319,7 +3325,7 @@ static void unpack_vax_f(CVT_VAX_F input_value,
 }
 
 static void unpack_vax_d(CVT_VAX_D input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3449,7 +3455,7 @@ static void unpack_vax_d(CVT_VAX_D input_value,
 }
 
 static void unpack_vax_g(CVT_VAX_G input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3580,7 +3586,7 @@ static void unpack_vax_g(CVT_VAX_G input_value,
 }
 
 static void unpack_vax_h(CVT_VAX_H input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3709,7 +3715,7 @@ static void unpack_vax_h(CVT_VAX_H input_value,
 }
 
 static void unpack_ieee_s(CVT_IEEE_S input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -3897,7 +3903,7 @@ static void unpack_ieee_s(CVT_IEEE_S input_value,
 }
 
 static void unpack_ieee_t(CVT_IEEE_T input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -4121,7 +4127,7 @@ static void unpack_ieee_t(CVT_IEEE_T input_value,
 }
 
 static void unpack_ieee_x(CVT_IEEE_X input_value,
-				  UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				  UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -4433,7 +4439,7 @@ static void unpack_ieee_x(CVT_IEEE_X input_value,
 }
 
 static void unpack_ibm_l(CVT_IBM_LONG input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -4595,7 +4601,7 @@ static void unpack_ibm_l(CVT_IBM_LONG input_value,
 }
 
 static void unpack_ibm_s(CVT_IBM_SHORT input_value,
-				 UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+				 UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **
@@ -4750,7 +4756,7 @@ static void unpack_ibm_s(CVT_IBM_SHORT input_value,
 
 }
 
-static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32_t options __attribute__ ((unused)))
+static void unpack_cray(CVT_CRAY input_value, UNPACKED_REAL output_value, uint32_t options UNUSED_ARGUMENT)
 /*
 **=============================================================================
 **

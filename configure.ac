@@ -355,14 +355,54 @@ AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
 AC_MSG_CHECKING([for visual studio])
 AC_ARG_WITH([visual_studio],
-            [AS_HELP_STRING([--with-visual-studio],
-                            [directory tree containing visual studio compiler, includes and libs])],
+            [AS_HELP_STRING([[--with-visual-studio[=VS_DIR]]],
+                            [directory tree containing Visual Studio compiler, includes and libs])],
             [AS_VAR_SET([VS_DIR], [$with_visual_studio])],
             [AS_VAR_SET_IF([VS_DIR],
                            [AS_VAR_SET([with_visual_studio], [$VS_DIR])],
                            [AS_VAR_SET([with_visual_studio], [no])])])
 AM_CONDITIONAL([VS],[AS_VAR_TEST_SET([VS_DIR])])
 AC_MSG_RESULT([$with_visual_studio])
+
+AC_MSG_CHECKING([for visual studio version])
+AC_ARG_WITH([visual_studio_ver],
+            [AS_HELP_STRING([--with-visual-studio-ver=VS_VER],
+                            [define Visual Studio version (2015, 2017, 2019...)])],
+            [AS_VAR_SET([VS_VER], [$with_visual_studio_ver])],
+            [AS_VAR_SET_IF([VS_VER],
+                           [AS_VAR_SET([with_visual_studio_ver], [$VS_VER])],
+                           [AS_VAR_SET([with_visual_studio_ver], [no])])])
+AC_MSG_RESULT([$with_visual_studio_ver])
+
+AC_MSG_CHECKING([for visual c++ version])
+AC_ARG_WITH([visual_cpp_ver],
+            [AS_HELP_STRING([--with-visual-cpp-ver=VC_VER],
+                            [define Visual C++ version (12, 13, 14.24.28314...)])],
+            [AS_VAR_SET([VC_VER], [$with_visual_cpp_ver])],
+            [AS_VAR_SET_IF([VC_VER],
+                           [AS_VAR_SET([with_visual_cpp_ver], [$VC_VER])],
+                           [AS_VAR_SET([with_visual_cpp_ver], [no])])])
+AC_MSG_RESULT([$with_visual_cpp_ver])
+
+AC_MSG_CHECKING([for windows sdk])
+AC_ARG_WITH([windows_sdk_ver],
+            [AS_HELP_STRING([--with-windows-sdk-ver=WK_VER],
+                            [define Windows SDK version (7.1, 8.0, 10.0.17134.0...)])],
+            [AS_VAR_SET([WK_VER], [$with_windows_sdk_ver])],
+            [AS_VAR_SET_IF([WK_VER],
+                           [AS_VAR_SET([with_windows_sdk_ver], [$WK_VER])],
+                           [AS_VAR_SET([with_windows_sdk_ver], [no])])])
+AC_MSG_RESULT([$with_windows_sdk_ver])
+
+AC_MSG_CHECKING([for windows pthread])
+AC_ARG_WITH([windows_pthread_dir],
+            [AS_HELP_STRING([--with-windows-pthread-dir=WIN_PTHREADDIR],
+                            [define Windows pthread directory])],
+            [AS_VAR_SET([WIN_PTHREADDIR], [$with_windows_pthread_dir])],
+            [AS_VAR_SET_IF([WIN_PTHREADDIR],
+                           [AS_VAR_SET([with_windows_pthread_dir], [$WIN_PTHREADDIR])],
+                           [AS_VAR_SET([with_windows_pthread_dir], [no])])])
+AC_MSG_RESULT([$with_windows_pthread_dir])
 
 FORLD=ld
 LD=ld LD_LDARC=""
@@ -1384,6 +1424,10 @@ AC_SUBST(DC1394_SUPPORT2)
 AC_SUBST(VS)
 AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
+AC_SUBST(VS_VER)
+AC_SUBST(VC_VER)
+AC_SUBST(WK_VER)
+AC_SUBST(WIN_PTHREADDIR)
 AC_SUBST(JRE)
 AC_SUBST(UIL)
 AC_SUBST(JAVA_TARGET_ARCH)

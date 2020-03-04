@@ -34,7 +34,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int TdiConcat();
 extern int TdiTranslate();
@@ -121,8 +125,8 @@ static void divide(struct descriptor_xd *left_ptr, struct descriptor_xd *right_p
 	Fix categories for opcodes: ABS and ABS1.
 	Unsigned integers are absolute.
 */
-int Tdi2Abs(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Abs(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if ((cats[0].in_cat & TdiCAT_B) == TdiCAT_BU)
@@ -135,8 +139,8 @@ int Tdi2Abs(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __att
 	Category is "or" of inputs setting length and type.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Add(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Add(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -149,9 +153,9 @@ int Tdi2Add(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], stru
 	Category is "or" of inputs setting length and type.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Atan2(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Atan2(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   only_mismatch(uni);
@@ -164,8 +168,8 @@ int Tdi2Atan2(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	DIGITS DSIZE RANGE PRECISION ESIZE
 	LEN LEN_TRIM MAX_EXPONENT MIN_EXPONENT RADIX RANK SIZE_OF SORT?
 */
-int Tdi2Any(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1] __attribute__ ((unused)), int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Any(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1] UNUSED_ARGUMENT, int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (uni[0].pointer)
@@ -176,9 +180,9 @@ int Tdi2Any(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], stru
 /*---------------------------------------------------
 	Fix categories for opcodes: ADJUSTL ADJUSTR TRANSLATE UPCASE.
 */
-int Tdi2Adjust(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Adjust(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[narg].digits = cats[0].digits;
@@ -189,8 +193,8 @@ int Tdi2Adjust(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	Fix categories for opcodes: AINT ANINT CEILING FLOOR NINT.
 	Second argument is KIND.
 */
-int Tdi2Aint(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Aint(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   INIT_STATUS;
 
@@ -218,9 +222,9 @@ int Tdi2Aint(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 /*---------------------------------------------------
 	Fix categories for opcodes: BSEARCH, IS_IN.
 */
-int Tdi2Bsearch(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-		struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-		int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Bsearch(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+		int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -235,9 +239,9 @@ int Tdi2Bsearch(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 /*---------------------------------------------------
 	Fix categories for opcodes, out=logical in1=any, in2..=long: BTEST
 */
-int Tdi2Btest(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Btest(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int j;
 
@@ -251,8 +255,8 @@ int Tdi2Btest(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 /*---------------------------------------------------
 	Fix categories for opcodes ACHAR and CHAR, length 1 text.
 */
-int Tdi2Char(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Char(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   INIT_STATUS;
 
@@ -284,7 +288,7 @@ int Tdi2Char(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 */
 int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
 	      struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   INIT_STATUS;
 
@@ -347,9 +351,9 @@ int Tdi2Cmplx(int narg, struct descriptor_xd uni[1],
 /*---------------------------------------------------
 	Fix categories for opcode: CONCAT text concatenation.
 */
-int Tdi2Concat(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Concat(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -361,8 +365,8 @@ int Tdi2Concat(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	Fix categories for conversion by example.
 	        out = CVT(input, example) converts input to dtype of example.
 */
-int Tdi2Cvt(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Cvt(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[2].out_dtype = cats[0].out_dtype = cats[1].out_dtype;
@@ -374,8 +378,8 @@ int Tdi2Cvt(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __att
 /*---------------------------------------------------
 	Fix categories for opcode: DBLE.
 */
-int Tdi2Dble(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Dble(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[0].out_cat = cats[1].out_cat = cats[narg].out_cat =
@@ -386,9 +390,9 @@ int Tdi2Dble(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 /*---------------------------------------------------
 	Fix categories for opcode: DIVIDE
 */
-int Tdi2Divide(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Divide(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   divide(&uni[0], &uni[1]);
@@ -400,8 +404,8 @@ int Tdi2Divide(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	Fix categories for opcode: DPROD.
 */
 int Tdi2Dprod(int narg, struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   multiply(&uni[0], &uni[1]);
@@ -416,8 +420,8 @@ int Tdi2Dprod(int narg, struct descriptor_xd uni[1],
 	Output category is logical.
 	Example: f-complex with h-real makes h-complex.
 */
-int Tdi2Eq(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	   struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Eq(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	   struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   only_mismatch(uni);
@@ -429,8 +433,8 @@ int Tdi2Eq(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struc
 	Fix categories for opcode: ELEMENT(number, delimiter, source)
 */
 int Tdi2Element(int narg, struct descriptor_xd uni[1],
-		struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-		int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+		struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+		int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   MdsFree1Dx(&uni[0], NULL);
@@ -446,7 +450,7 @@ int Tdi2Element(int narg, struct descriptor_xd uni[1],
 */
 int Tdi2Extract(int narg, struct descriptor_xd uni[1],
 		struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
-		int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+		int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int length, status;
 
@@ -469,8 +473,8 @@ int Tdi2Extract(int narg, struct descriptor_xd uni[1],
 	Data type is set by highest, but complexity is kept.
 	Complexity of output is set by first argument.
 */
-int Tdi2Fix(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Fix(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int cmplx, j;
 
@@ -486,8 +490,8 @@ int Tdi2Fix(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), stru
 /*---------------------------------------------------
 	Fix categories for opcode: IAND, IAND_NOT, IEOR, etc.
 */
-int Tdi2Iand(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Iand(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -502,9 +506,9 @@ int Tdi2Iand(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] 
 /*---------------------------------------------------
 	Fix categories for opcode: INVERSE
 */
-int Tdi2Inverse(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-		struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1] __attribute__ ((unused)),
-		int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Inverse(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+		struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1] UNUSED_ARGUMENT,
+		int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   struct descriptor_xd tmp = uni[0];
 
@@ -522,8 +526,8 @@ int Tdi2Inverse(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	BYTE_UNSIGNED WORD_UNSIGNED LONG_UNSIGNED QUADWORD_UNSIGNED OCTAWORD_UNSIGNED INT_UNSIGNED UNSIGNED
 	D_FLOAT F_FLOAT G_FLOAT H_FLOAT
 */
-int Tdi2Keep(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1] __attribute__ ((unused)), int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Keep(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1] UNUSED_ARGUMENT, int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   return 1;
 }
@@ -531,8 +535,8 @@ int Tdi2Keep(int narg __attribute__ ((unused)), struct descriptor_xd uni[1] __at
 /*---------------------------------------------------
 	Fix categories for logical opcodes: AND, AND_NOT, EQV etc.
 */
-int Tdi2Land(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Land(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   only_mismatch(uni);
@@ -551,9 +555,9 @@ int Tdi2Land(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], str
 	Fix categories for opcodes, out=in1, in2..=long:
 	        IBCLR IBITS IBSET MEDIAN SCALE SET_EXPONENT SMOOTH.
 */
-int Tdi2Long2(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Long2(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int j;
 
@@ -570,9 +574,9 @@ int Tdi2Long2(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	Fix categories for opcodes, in1=any logical, in2=long-scalar out=logical:
 	        ALL ANY COUNT FIRSTLOC LASTLOC.
 */
-int Tdi2Mask1(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Mask1(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (uni[0].pointer)
@@ -589,8 +593,8 @@ int Tdi2Mask1(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	        MAXLOC MINLOC.
 */
 int Tdi2Mask2(int narg, struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int j;
 
@@ -610,9 +614,9 @@ int Tdi2Mask2(int narg, struct descriptor_xd uni[1],
 	MAXVAL MEAN MINVAL RMS STD_DEV SUM.
 	NEED code for PRODUCT.
 */
-int Tdi2Mask3(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Mask3(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[narg] = cats[0];
@@ -631,9 +635,9 @@ int Tdi2Mask3(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	Fix categories for opcodes, out=long-scalar, in1=any numeric, in2=long-scalar in3=any logical:
 	MAXLOC MINLOC.
 */
-int Tdi2Mask3L(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Mask3L(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[narg].out_dtype = DTYPE_L;
@@ -654,8 +658,8 @@ int Tdi2Mask3L(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	        any = MERGE(x,y,b).
 */
 int Tdi2Merge(int narg, struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -674,9 +678,9 @@ int Tdi2Merge(int narg, struct descriptor_xd uni[1],
 /*---------------------------------------------------
 	Fix categories for opcode: MULTIPLY
 */
-int Tdi2Multiply(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-		 struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-		 int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Multiply(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+		 struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+		 int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   multiply(&uni[0], &uni[1]);
@@ -687,8 +691,8 @@ int Tdi2Multiply(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 /*---------------------------------------------------
 	Fix categories for opcodes for most 1-argument function that should not have units.
 */
-int Tdi2None(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1] __attribute__ ((unused)), int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2None(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1] UNUSED_ARGUMENT, int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (uni[0].pointer) {
@@ -701,8 +705,8 @@ int Tdi2None(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], str
 /*---------------------------------------------------
 	Fix categories for opcodes with logical result: NOT LOGICAL
 */
-int Tdi2Not(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Not(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (uni[0].pointer) {
@@ -720,8 +724,8 @@ int Tdi2Not(int narg __attribute__ ((unused)), struct descriptor_xd uni[1], stru
 	Fix categories for opcode without H-complex: COS, EXP, LOG, SIN, SQRT.
 	We choose to convert to G-complex.
 */
-int Tdi2NoHc(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2NoHc(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (uni[0].pointer) {
@@ -739,8 +743,8 @@ int Tdi2NoHc(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] 
 /*---------------------------------------------------
 	Fix categories for opcode: PACK in1 matches in3 if any, in2 = logical.
 */
-int Tdi2Pack(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Pack(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (narg > 2 && uni[2].pointer) {
@@ -763,9 +767,9 @@ int Tdi2Pack(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] 
 /*---------------------------------------------------
 	Fix categories for opcode: POWER.
 */
-int Tdi2Power(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Power(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
 	/******************************************
@@ -795,8 +799,8 @@ int Tdi2Power(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 	Fix categories for opcode: DTYPE_RANGE, also used in I_TO_X and CULL/EXTEND.
 */
 int Tdi2Range(int narg, struct descriptor_xd uni[1],
-	      struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1],
-	      int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	      struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1],
+	      int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   if (narg > 2)
@@ -817,8 +821,8 @@ int Tdi2Range(int narg, struct descriptor_xd uni[1],
 	Fix categories for opcodes: FLOAT INT REAL.
 	This expects arguments (x,[kind])
 */
-int Tdi2Real(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Real(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   INIT_STATUS;
 
@@ -844,9 +848,9 @@ int Tdi2Real(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 /*---------------------------------------------------
 	Fix categories for opcode: REPEAT text duplication.
 */
-int Tdi2Repeat(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
+int Tdi2Repeat(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
 	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   unsigned int ncopies, status;
 
@@ -865,8 +869,8 @@ int Tdi2Repeat(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 	Fix categories for opcodes, output = first:
 	        SHFT SHIFT_LEFT SHIFT_RIGHT.
 */
-int Tdi2Shft(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Shft(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[1].out_dtype = cats[0].out_dtype;
@@ -879,8 +883,8 @@ int Tdi2Shft(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 /*---------------------------------------------------
 	Fix categories for opcode: SIGN NEAREST.
 */
-int Tdi2Sign(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1] __attribute__ ((unused)),
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Sign(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   cats[narg].out_cat = cats[0].out_cat;
@@ -890,9 +894,9 @@ int Tdi2Sign(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 /*---------------------------------------------------
 	Fix categories for opcodes: ABSSQ SQUARE.
 */
-int Tdi2Square(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1] __attribute__ ((unused)),
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Square(int narg UNUSED_ARGUMENT, struct descriptor_xd uni[1],
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1] UNUSED_ARGUMENT,
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   struct descriptor_xd tmp = EMPTY_XD;
   INIT_STATUS;
@@ -906,9 +910,9 @@ int Tdi2Square(int narg __attribute__ ((unused)), struct descriptor_xd uni[1],
 /*---------------------------------------------------
 	Fix categories for opcode: STRING text length specifier.
 */
-int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
+int Tdi2String(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT,
 	       struct descriptor_xd dat[1], struct TdiCatStruct cats[1],
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   unsigned int length, status;
 
@@ -928,8 +932,8 @@ int Tdi2String(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)),
 /*---------------------------------------------------
 	Fix categories for opcode: TEXT text length specifier.
 */
-int Tdi2Text(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), struct descriptor_xd dat[1],
-	     struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Text(int narg, struct descriptor_xd uni[1] UNUSED_ARGUMENT, struct descriptor_xd dat[1],
+	     struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   unsigned int length, status;
 
@@ -950,8 +954,8 @@ int Tdi2Text(int narg, struct descriptor_xd uni[1] __attribute__ ((unused)), str
 	Fix categories for opcodes with text, text, logical:
 	        integer = INDEX(t,t,[b]), SCAN(t,t,[b]), VERIFY(t,t,[b]).
 */
-int Tdi2Ttb(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] __attribute__ ((unused)),
-	    struct TdiCatStruct cats[1], int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+int Tdi2Ttb(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] UNUSED_ARGUMENT,
+	    struct TdiCatStruct cats[1], int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
 
   either(uni);
@@ -964,8 +968,8 @@ int Tdi2Ttb(int narg, struct descriptor_xd uni[1], struct descriptor_xd dat[1] _
 	Fix units for VECTOR, they must match or be missing.
 */
 int Tdi2Vector(int narg, struct descriptor_xd uni[1],
-	       struct descriptor_xd dat[1] __attribute__ ((unused)), struct TdiCatStruct cats[1] __attribute__ ((unused)),
-	       int (**routine_ptr) () __attribute__ ((unused)), int o1 __attribute__ ((unused)), int o2 __attribute__ ((unused)))
+	       struct descriptor_xd dat[1] UNUSED_ARGUMENT, struct TdiCatStruct cats[1] UNUSED_ARGUMENT,
+	       int (**routine_ptr) () UNUSED_ARGUMENT, int o1 UNUSED_ARGUMENT, int o2 UNUSED_ARGUMENT)
 {
   int j;
 

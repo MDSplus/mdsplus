@@ -30,6 +30,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <treeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_WRITE.C --
 *
@@ -43,7 +49,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/***************************************************************
 	 * TclWrite:
 	 ***************************************************************/
-EXPORT int TclWrite(void *ctx, char **error __attribute__ ((unused)), char **output)
+EXPORT int TclWrite(void *ctx, char **error UNUSED_ARGUMENT, char **output)
 {
   int sts;
   char *exp = 0;

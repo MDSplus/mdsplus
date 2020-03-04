@@ -50,6 +50,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #define max(a,b) (((a) > (b)) ? (a) : (b))
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiGetLong();
 extern int TdiDecompileDeindent();
 extern int Tdi0Decompile_R();
@@ -59,7 +65,7 @@ extern int tdi_trace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
-EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
+EXPORT int Tdi1Decompile(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
   TDITHREADSTATIC_INIT;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };

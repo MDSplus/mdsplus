@@ -65,6 +65,13 @@ $ MCR ACTMON -monitor monitor-name
 #include <Xm/MessageB.h>
 #include <Xm/Text.h>
 #include <mdsplus/mdsplus.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static void Exit(Widget w, int *tag, XtPointer callback_data);
 static void MessageAst();
 static void EventUpdate();
@@ -175,7 +182,7 @@ int main(int argc, char** argv)
   return 0;
 }
 
-static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused))){
+static void Exit(Widget w UNUSED_ARGUMENT, int *tag UNUSED_ARGUMENT, XtPointer callback_data UNUSED_ARGUMENT){
   exit(0);
 }
 
@@ -192,8 +199,8 @@ static Widget FindTop(Widget w){
   return w;
 }
 
-static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
-			  XmListCallbackStruct * cb __attribute__ ((unused)))
+static void SetKillTarget(Widget w UNUSED_ARGUMENT, int *tag UNUSED_ARGUMENT,
+			  XmListCallbackStruct * cb UNUSED_ARGUMENT)
 {
   static ServerList *server;
   int idx;
@@ -207,7 +214,7 @@ static void SetKillTarget(Widget w __attribute__ ((unused)), int *tag __attribut
   }
 }
 
-static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb __attribute__ ((unused))){
+static void ConfirmAbort(Widget w, int *tag, XmListCallbackStruct * cb UNUSED_ARGUMENT){
   static int operation;
   static Widget dialog = NULL;
   XmString text_cs;
@@ -274,7 +281,7 @@ static void SetKillSensitive(Widget top){
   }
 }
 
-static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), void *cb __attribute__ ((unused)))
+static void ConfirmServerAbort(Widget w, void *tag UNUSED_ARGUMENT, void *cb UNUSED_ARGUMENT)
 {
   int *op_ptr;
   int operation;
@@ -308,7 +315,7 @@ static void ConfirmServerAbort(Widget w, void *tag __attribute__ ((unused)), voi
   }
 }
 
-static void Disable(Widget w __attribute__ ((unused)), int *tag, XmToggleButtonCallbackStruct * cb)
+static void Disable(Widget w UNUSED_ARGUMENT, int *tag, XmToggleButtonCallbackStruct * cb)
 {
   Widget dw = 0;
   switch (*tag) {

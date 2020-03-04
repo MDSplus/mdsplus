@@ -29,6 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mdsdcl_messages.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_WFEVENT.C --
 *
@@ -44,7 +50,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 * Wait for MDSplus event
 	 ***************************************************************/
 
-EXPORT int TclWfevent(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclWfevent(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char *event = 0;
   char *timeout = 0;

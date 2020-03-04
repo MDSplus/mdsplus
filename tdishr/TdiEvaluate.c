@@ -47,7 +47,11 @@ RULES OF THE GAME:
 #include <string.h>
 #include <mdsplus/mdsplus.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 static const struct descriptor missing = { 0, DTYPE_MISSING, CLASS_S, 0 };
 
@@ -58,8 +62,8 @@ extern int TdiCall();
 extern int TdiImpose();
 extern int Tdi1Vector();
 
-EXPORT int Tdi1Evaluate(opcode_t opcode __attribute__ ((unused)),
-		 int narg __attribute__ ((unused)),
+EXPORT int Tdi1Evaluate(opcode_t opcode UNUSED_ARGUMENT,
+		 int narg UNUSED_ARGUMENT,
 		 struct descriptor *list[], struct descriptor_xd *out_ptr)
 // SsINTERNAL: requires MdsCopyDxXd
 {

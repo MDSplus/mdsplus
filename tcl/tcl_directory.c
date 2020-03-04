@@ -50,6 +50,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_DIRECTORY.C --
 *
@@ -127,7 +133,7 @@ void tclAppend(char **output, char *str)
 	 * TclDirectory:
 	 * Perform directory function
 	 ****************************************************************/
-EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char **output)
+EXPORT int TclDirectory(void *ctx, char **error UNUSED_ARGUMENT, char **output)
 {
   char *tagnam;
   char msg[128];

@@ -76,6 +76,12 @@ int SERVER$DISPATCH_PHASE(int efn, DispatchTable *table, struct descriptor *phas
 #include <tdishr_messages.h>
 #include "servershrp.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiCompletionOf();
 extern int TdiExecute();
 extern int TdiErrorlogsOf();
@@ -499,7 +505,7 @@ static inline void setMonitor(const char* monitor){
     MONITOR_QUEUE_UNLOCK;
 }
 
-EXPORT int ServerDispatchPhase(int *id __attribute__ ((unused)), void *vtable, char *phasenam, char noact_in, int sync, void (*output_rtn) (), const char *monitor){
+EXPORT int ServerDispatchPhase(int *id UNUSED_ARGUMENT, void *vtable, char *phasenam, char noact_in, int sync, void (*output_rtn) (), const char *monitor){
   WRLOCK_TABLE;{
   table = vtable;
   if (table) table->failed_essential = B_FALSE;

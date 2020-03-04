@@ -76,6 +76,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "prototypes.h"
 #include "cts_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 //-------------------------------------------------------------------------
 // global stuff
 //-------------------------------------------------------------------------
@@ -110,7 +116,7 @@ static void str_upcase(char *str)
 //-------------------------------------------------------------------------
 // assign a new module to CTS database
 //-------------------------------------------------------------------------
-EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused)))
+EXPORT int Assign(void *ctx, char **error, char *output UNUSED_ARGUMENT)
 {
   char line[MODULE_ENTRY + 1];
   int dbFileSize, fd, nullMask, numOfEntries;
@@ -227,7 +233,7 @@ EXPORT int Assign(void *ctx, char **error, char *output __attribute__ ((unused))
 //-------------------------------------------------------------------------
 // map generic scsi device names to crate table names
 //-------------------------------------------------------------------------
-EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
+EXPORT int Autoconfig(void *ctx UNUSED_ARGUMENT, char **error, char **output UNUSED_ARGUMENT)
 {
   char highway_name[CRATE_NAME_SIZE + 1], *pHighwayName;
   char line[CRATE_ENTRY];
@@ -288,7 +294,7 @@ EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **o
 //-------------------------------------------------------------------------
 // deassign a module
 //-------------------------------------------------------------------------
-EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int Deassign(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char db_tmp[64];
   int i, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
@@ -388,7 +394,7 @@ EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unuse
 //-------------------------------------------------------------------------
 // set a crate on-line or off-line
 //-------------------------------------------------------------------------
-EXPORT int SetCrate(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int SetCrate(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int status;
   char *cratename;
@@ -689,7 +695,7 @@ EXPORT int AddCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 // Delete a crate from the crate db
 //-------------------------------------------------------------------------
-EXPORT int DelCrate(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int DelCrate(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char crateName[CRATE_NAME_SIZE + 1];
   int index, numOfEntries;

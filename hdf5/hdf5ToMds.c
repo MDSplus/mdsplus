@@ -32,7 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <usagedef.h>
 #include <hdf5.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 static int d_status = EXIT_SUCCESS;
 
@@ -207,7 +211,7 @@ static void PutData(hid_t obj, int nid, char dtype, int htype, int size, int n_d
   }
 }
 
-static int mds_find_attr(hid_t attr_id, const char *name, void *op_data __attribute__ ((unused)))
+static int mds_find_attr(hid_t attr_id, const char *name, void *op_data UNUSED_ARGUMENT)
 {
   hid_t obj, type;
   int nid;

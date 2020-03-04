@@ -36,6 +36,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiExecute();
 
 int tclStringToShot(char *str, int *shot_out, char **error)
@@ -78,7 +84,7 @@ int tclStringToShot(char *str, int *shot_out, char **error)
 	/***************************************************************
 	 * TclSetTree:
 	 **************************************************************/
-EXPORT int TclSetTree(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetTree(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int sts = MdsdclIVVERB;
   int shot;

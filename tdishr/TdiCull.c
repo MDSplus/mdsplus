@@ -44,6 +44,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern struct descriptor *TdiItoXSpecial;
 
@@ -136,7 +141,7 @@ int TdiIextend(int left, int right, struct descriptor_a *px)
 /*---------------------------------------------
 	Remove elements not satisfying mask.
 */
-static int rcull(struct descriptor *pnew __attribute__ ((unused)),
+static int rcull(struct descriptor *pnew UNUSED_ARGUMENT,
 	struct descriptor_a *pmask, struct descriptor_a *px){
   INIT_STATUS;
   char *pm = pmask->pointer, *pi = px->pointer, *po = pi;

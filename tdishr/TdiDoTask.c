@@ -49,6 +49,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include "tdirefstandard.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiGetFloat();
 extern int TdiGetLong();
 extern int TdiGetNid();
@@ -229,8 +235,8 @@ end: ;
   return status;
 }
 
-int Tdi1DoTask(opcode_t opcode __attribute__ ((unused)),
-	       int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DoTask(opcode_t opcode UNUSED_ARGUMENT,
+	       int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   EMPTYXD(task_xd);

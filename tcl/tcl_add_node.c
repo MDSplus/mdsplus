@@ -33,6 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsdcl_messages.h>
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_ADD_NODE.C --
 *
@@ -80,7 +86,7 @@ char tclUsageToNumber(const char *usage, char **error)
   return -1;
 }
 
-EXPORT int TclAddNode(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclAddNode(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {				/* Return: status                 */
   int nid;
   int sts;

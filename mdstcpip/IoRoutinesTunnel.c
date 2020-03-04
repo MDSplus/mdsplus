@@ -26,6 +26,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PROT_TUNNEL
 #include "ioroutines_pipes.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static int io_disconnect(Connection* c){
   io_pipes_t *p = get_pipes(c);
   if (p) {
@@ -58,7 +64,7 @@ static int io_disconnect(Connection* c){
 }
 
 #ifndef _WIN32
-static void ChildSignalHandler(int num __attribute__ ((unused))){
+static void ChildSignalHandler(int num UNUSED_ARGUMENT){
   // Ensure that the handler does not spoil errno.
   int saved_errno = errno;
   pid_t pid;
@@ -188,7 +194,7 @@ err: ;
 #endif
 }
 
-static int io_listen(int argc __attribute__ ((unused)), char **argv __attribute__ ((unused))){
+static int io_listen(int argc UNUSED_ARGUMENT, char **argv UNUSED_ARGUMENT){
   int id, status;
   INIT_AND_FREE_ON_EXIT(char*,username);
 #ifdef _WIN32

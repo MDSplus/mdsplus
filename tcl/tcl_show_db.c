@@ -32,6 +32,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_SHOW_DB.C --
 *
@@ -45,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/***************************************************************
 	 * TclShowDb:
 	 ***************************************************************/
-EXPORT int TclShowDB(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
+EXPORT int TclShowDB(void *ctx UNUSED_ARGUMENT, char **error UNUSED_ARGUMENT, char **output)
 {
   int sts;
   int open;

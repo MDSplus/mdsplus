@@ -61,10 +61,16 @@ doing.
 #include <stdlib.h>
 #include <string.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int ServerConnect();
 extern int GetAnswerInfoTS();
 
-EXPORT char *ServerGetInfo(int full __attribute__ ((unused)), char *server){
+EXPORT char *ServerGetInfo(int full UNUSED_ARGUMENT, char *server){
   char *cmd = "MdsServerShr->ServerInfo:dsc()";
   char *ans;
   char *ansret;

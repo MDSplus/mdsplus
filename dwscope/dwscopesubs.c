@@ -99,6 +99,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int XmdsManageWindow();
 Boolean ConvertSelectionToWave(Widget w, Atom result_type, unsigned long length, CutHeader * header,
 			       WaveInfo * info);
@@ -781,7 +787,7 @@ Boolean ReplaceString(String * old, String new, Boolean free)
   return changed;
 }
 
-void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data __attribute__ ((unused)))
+void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data UNUSED_ARGUMENT)
 {
   if (*file) {
     XmString mask;
@@ -804,9 +810,9 @@ void SetDirMask(Widget w, String * file, XmAnyCallbackStruct * callback_data __a
   }
 }
 
-void DisplayHelp(Widget w_in __attribute__ ((unused)),
-		 String tag __attribute__ ((unused)),
-		 XtPointer callback_data __attribute__ ((unused)))
+void DisplayHelp(Widget w_in UNUSED_ARGUMENT,
+		 String tag UNUSED_ARGUMENT,
+		 XtPointer callback_data UNUSED_ARGUMENT)
 {
 }
 
@@ -835,7 +841,7 @@ void ResetWave(WaveInfo * info)
   ReplaceString(&info->ymax, "", 0);
 }
 
-void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data __attribute__ ((unused)))
+void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data UNUSED_ARGUMENT)
 {
   Widget top = w;
   Widget tw;
@@ -851,8 +857,8 @@ void DisableGlobalDefault(Widget w, String tag, XtPointer callback_data __attrib
     XmToggleButtonGadgetSetState(button, 0, 1);
 }
 
-void InitDefaultsSetupWidget(Widget w, int *tag __attribute__ ((unused)),
-			     XtPointer callback_data __attribute__ ((unused)))
+void InitDefaultsSetupWidget(Widget w, int *tag UNUSED_ARGUMENT,
+			     XtPointer callback_data UNUSED_ARGUMENT)
 {
   static int default_db_inited = 0;
   if (!default_db_inited) {
@@ -892,7 +898,7 @@ static String Concat(String prefix, String postfix)
   return answer;
 }
 
-void ExpandReset(Widget w, int *tag, XtPointer callback_data __attribute__ ((unused)))
+void ExpandReset(Widget w, int *tag, XtPointer callback_data UNUSED_ARGUMENT)
 {
   Widget dsw;
   Widget exw;
@@ -913,14 +919,14 @@ void ExpandReset(Widget w, int *tag, XtPointer callback_data __attribute__ ((unu
   }
 }
 
-void ExpandCancel(Widget w, int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
+void ExpandCancel(Widget w, int *tag UNUSED_ARGUMENT, XtPointer callback_data UNUSED_ARGUMENT)
 {
   Widget dsw;
   for (dsw = w; XtParent(dsw); dsw = XtParent(dsw)) ;
   XtUnmanageChild(XtNameToWidget(dsw, "*expand_dialog"));
 }
 
-void ExpandOk(Widget w, int *tag __attribute__ ((unused)), XtPointer callback_data __attribute__ ((unused)))
+void ExpandOk(Widget w, int *tag UNUSED_ARGUMENT, XtPointer callback_data UNUSED_ARGUMENT)
 {
   Widget dsw;
   Widget exw;

@@ -25,6 +25,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsplus/mdsconfig.h>
 #include <treeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #ifdef USE_PERF
 
 #include <treeioperf.h>
@@ -179,12 +185,12 @@ EXPORT int TreeGetPerf()
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfRead(int bytes __attribute__ ((unused)))
+EXPORT int TreePerfRead(int bytes UNUSED_ARGUMENT)
 {
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfWrite(int bytes __attribute__ ((unused)))
+EXPORT int TreePerfWrite(int bytes UNUSED_ARGUMENT)
 {
   return TreeFAILURE;
 }

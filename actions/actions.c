@@ -62,6 +62,12 @@ MCR ACTIONS -TREE treename
 #include <mds_stdarg.h>
 #include <strroutines.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiDispatchOf();
 extern int TdiExecute();
 extern int TdiGetLong();
@@ -127,7 +133,7 @@ int main(int argc, String * argv)
   return status;
 }
 
-static void Modify(Widget w, XtPointer tag __attribute__ ((unused)), XmListCallbackStruct * cb)
+static void Modify(Widget w, XtPointer tag UNUSED_ARGUMENT, XmListCallbackStruct * cb)
 {
   int i;
   Widget xdbox = XtNameToWidget(XtParent(XtParent(w)), "*modify_xdbox");
@@ -138,7 +144,7 @@ static void Modify(Widget w, XtPointer tag __attribute__ ((unused)), XmListCallb
   }
 }
 
-static void ToggleEssential(Widget w, XtPointer tag __attribute__ ((unused)), XmListCallbackStruct * cb)
+static void ToggleEssential(Widget w, XtPointer tag UNUSED_ARGUMENT, XmListCallbackStruct * cb)
 {
   int i;
   for (i = 0; i < num_actions && actions[i].item_idx != cb->item_position; i++) ;

@@ -33,6 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 /**********************************************************************
 * TCL_DIRECTORY_TAG.C --
@@ -48,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	 * TclDirectoryTag:
 	 * Perform directory of all of the tags
 	 ****************************************************************/
-EXPORT int TclDirectoryTag(void *ctx, char **error __attribute__ ((unused)), char **output)
+EXPORT int TclDirectoryTag(void *ctx, char **error UNUSED_ARGUMENT, char **output)
 {
   int sub_total;
   int grand_total;

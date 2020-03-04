@@ -24,7 +24,14 @@
 #ifndef CLOCK_REALTIME
 #define CLOCK_REALTIME 0
 #endif
-static void clock_gettime(int dummyClock __attribute__ ((unused)), timespec * ts) {
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+static void clock_gettime(int dummyClock UNUSED_ARGUMENT, timespec * ts) {
 	clock_serv_t cclock;
 	mach_timespec_t mts;
 	host_get_clock_service(mach_host_self(), CALENDAR_CLOCK, &cclock);

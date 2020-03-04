@@ -59,6 +59,12 @@ Invoked from MDSEVENT.PRO
 #include <mdsshr.h>
 #include <ipdesc.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct _event_struct {
   int stub_id;
   int base_id;
@@ -154,7 +160,7 @@ EXPORT int IDLMdsGetevi(int argc, void **argv)
 #ifndef _WIN32
 static int event_pipe[2];
 
-static void DoEventUpdate(XtPointer client_data __attribute__ ((unused)), int *source __attribute__ ((unused)), XtInputId * id __attribute__ ((unused)))
+static void DoEventUpdate(XtPointer client_data UNUSED_ARGUMENT, int *source UNUSED_ARGUMENT, XtInputId * id UNUSED_ARGUMENT)
 {
   char *stub_rec;
   char *base_rec;

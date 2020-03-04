@@ -64,7 +64,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define MAX(a,b) (((a) > (b)) ? (a): (b))
 #endif
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int stat;
 extern int TdiFindImageSymbol();
@@ -606,7 +610,7 @@ ARGLIST *arg;
 }
 
 /*********************************************************/
-int Tdi1Dsql(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Dsql(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int rows = 0;
@@ -702,21 +706,21 @@ int Tdi1IsqlSet()
 #else				/* no sybase support */
 static const DESCRIPTOR(msg, "Sybase support not compiled into TDI.  Did you want to MDSConnect ?");
 
-int Tdi1Dsql(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1Dsql(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, const struct descriptor *list[] UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1Isql(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1Isql(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, const struct descriptor *list[] UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);
   return status;
 }
 
-int Tdi1IsqlSet(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), const struct descriptor *list[] __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi1IsqlSet(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, const struct descriptor *list[] UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = MdsCopyDxXd((struct descriptor *)&msg, out_ptr);

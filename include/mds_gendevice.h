@@ -283,19 +283,25 @@ int getmsg(int sts, char **facnam, char **msgnam, char **msgtext)
 #define DevMODSEAR       6
 #define DevMODRANLON     7
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #define declare_variables(in_struct_type)\
-	int error_code __attribute__ ((unused)) = 1;\
+	int error_code UNUSED_ARGUMENT = 1;\
 	int head_nid = GenDeviceHeadNid(nid_d_ptr), status;\
-	short code __attribute__ ((unused));\
-	struct descriptor_xd xd __attribute__ ((unused)) = {0, DTYPE_DSC, CLASS_XD, 0, 0}; \
-	struct descriptor_a *array_d_ptr __attribute__ ((unused));\
-	in_struct_type in_struct __attribute__ ((unused));\
-	static int curr_nid __attribute__ ((unused));\
-	static int curr_int __attribute__ ((unused));\
-	static float curr_float __attribute__ ((unused));\
-	static struct descriptor curr_nid_d __attribute__ ((unused)) = {sizeof(int), DTYPE_NID, CLASS_S, (char *) &curr_nid}; \
-	static struct descriptor curr_float_d __attribute__ ((unused)) = {sizeof(float), DTYPE_FS, CLASS_S, (char *) &curr_float}; \
-	static struct descriptor curr_int_d __attribute__ ((unused)) = {sizeof(int), DTYPE_L, CLASS_S, (char *) &curr_int};
+	short code UNUSED_ARGUMENT;\
+	struct descriptor_xd xd UNUSED_ARGUMENT = {0, DTYPE_DSC, CLASS_XD, 0, 0}; \
+	struct descriptor_a *array_d_ptr UNUSED_ARGUMENT;\
+	in_struct_type in_struct UNUSED_ARGUMENT;\
+	static int curr_nid UNUSED_ARGUMENT;\
+	static int curr_int UNUSED_ARGUMENT;\
+	static float curr_float UNUSED_ARGUMENT;\
+	static struct descriptor curr_nid_d UNUSED_ARGUMENT = {sizeof(int), DTYPE_NID, CLASS_S, (char *) &curr_nid}; \
+	static struct descriptor curr_float_d UNUSED_ARGUMENT = {sizeof(float), DTYPE_FS, CLASS_S, (char *) &curr_float}; \
+	static struct descriptor curr_int_d UNUSED_ARGUMENT = {sizeof(int), DTYPE_L, CLASS_S, (char *) &curr_int};
 
 #define initialize_variables(in_struct_type)\
 	memset((char *)&in_struct, '\0', sizeof(in_struct_type));\

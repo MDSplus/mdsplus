@@ -40,6 +40,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static const DESCRIPTOR(coloncolon, "::");
 #define EOL {0,DbiEND_OF_LIST,0,0}
 
@@ -92,7 +98,7 @@ static int compare(struct descriptor *s1, struct item s2[1])
   return cmp;
 }
 
-int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
+int Tdi1GetDbi(opcode_t opcode UNUSED_ARGUMENT,
 	       int narg,
 	       struct descriptor *list[],
 	       struct descriptor_xd *out_ptr)
@@ -165,7 +171,7 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 	Note that DEFAULT may be NID/PATH and will not be data at same.
 */
 static int fixup_nid(int *pin, /* NID pointer */
-			     int arg __attribute__ ((unused)),
+			     int arg UNUSED_ARGUMENT,
 			     struct descriptor_d *pout)
 {
   char *path = TreeGetPath(*pin);
@@ -179,7 +185,7 @@ static int fixup_nid(int *pin, /* NID pointer */
 }
 
 static int fixup_path(struct descriptor *pin,
-			      int arg __attribute__ ((unused)),
+			      int arg UNUSED_ARGUMENT,
 			      struct descriptor_d *pout)
 {
   char *pathin = MdsDescrToCstring(pin);
@@ -194,7 +200,7 @@ static int fixup_path(struct descriptor *pin,
   return MDSplusERROR;
 }
 
-int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
+int Tdi1Using(opcode_t opcode UNUSED_ARGUMENT,
 	      int narg,
 	      struct descriptor *list[],
 	      struct descriptor_xd *out_ptr)

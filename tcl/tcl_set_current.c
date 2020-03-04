@@ -31,6 +31,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 /***********************************************************************
 * TCL_SET_CURRENT.C --
@@ -48,7 +53,7 @@ extern int TdiExecute();
 	/*****************************************************************
 	 * TclSetCurrent:
 	 *****************************************************************/
-EXPORT int TclSetCurrent(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetCurrent(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int sts;
   char *experiment = 0;

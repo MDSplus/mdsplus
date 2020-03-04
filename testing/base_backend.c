@@ -32,7 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <pthread.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 
 void __assert_fail (const char *__assertion, const char *__file,
@@ -63,10 +67,10 @@ void __test_abort(int code, const char *__msg, const char *__file,
 }
 
 
-void __test_setfork(int value __attribute__ ((unused))) {}
+void __test_setfork(int value UNUSED_ARGUMENT) {}
 
-void __test_init(const char *test_name __attribute__ ((unused)), const char *file __attribute__ ((unused)),
-		 const int line __attribute__ ((unused))) {}
+void __test_init(const char *test_name UNUSED_ARGUMENT, const char *file UNUSED_ARGUMENT,
+		 const int line UNUSED_ARGUMENT) {}
 
 void __test_end() {}
 
@@ -74,13 +78,13 @@ int  __setup_parent() {return 0;}
 
 int  __setup_child() {return 0;}
 
-void __test_assert_fail(const char *file __attribute__ ((unused)), int line __attribute__ ((unused)),
-			const char *expr __attribute__ ((unused)), ...) {}
+void __test_assert_fail(const char *file UNUSED_ARGUMENT, int line UNUSED_ARGUMENT,
+			const char *expr UNUSED_ARGUMENT, ...) {}
 
-void __mark_point(const char *__assertion __attribute__ ((unused)),
-		  const char *__file __attribute__ ((unused)),
-		  ASSERT_LINE_TYPE __line __attribute__ ((unused)),
-		  const char *__function __attribute__ ((unused))) {}
+void __mark_point(const char *__assertion UNUSED_ARGUMENT,
+		  const char *__file UNUSED_ARGUMENT,
+		  ASSERT_LINE_TYPE __line UNUSED_ARGUMENT,
+		  const char *__function UNUSED_ARGUMENT) {}
 
 void __test_exit() { exit(0); }
 

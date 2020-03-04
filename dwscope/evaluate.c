@@ -112,6 +112,12 @@ void CloseDataSources();
 #define _toupper(c)	(((c) >= 'a' && (c) <= 'z') ? (c) & 0xDF : (c))
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern void EventUpdate(XtPointer client_data, int *source, XtInputId * id);
 
 extern pthread_mutex_t event_mutex;
@@ -167,7 +173,7 @@ static Boolean Error(Boolean brief, String topic, String * error, struct descrip
   return 0;
 }
 
-static void DestroyXd(Widget w __attribute__ ((unused)), struct descriptor_xd *xd)
+static void DestroyXd(Widget w UNUSED_ARGUMENT, struct descriptor_xd *xd)
 {
   MdsFree1Dx(xd, 0);
   free(xd);
@@ -354,7 +360,7 @@ void SetupEventInput(XtAppContext app_context, Widget w)
 #else
 
 static int event_pipe[2];
-static void EventAst(void *astparam, int dlen __attribute__ ((unused)), char *data __attribute__ ((unused)))
+static void EventAst(void *astparam, int dlen UNUSED_ARGUMENT, char *data UNUSED_ARGUMENT)
 {
   Boolean *received = (Boolean *) astparam;
   char buf[1];
@@ -386,7 +392,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
+void SetupEventInput(XtAppContext app_context, Widget w UNUSED_ARGUMENT)
 {
   if (pipe(event_pipe) == -1)
     perror("Error creating event pipes");
@@ -677,7 +683,7 @@ static long ConnectEvents()
 #define FreeDescrip(x) if (x.ptr != NULL) {free(x.ptr); x.ptr = NULL;}
 #define Descrip(name,type,ptr) struct descrip name = {type,0,{0,0,0,0,0,0,0},0,ptr}
 
-static Boolean Error(Boolean brief __attribute__ ((unused)), String topic, String * error, String text, struct descrip *dsc)
+static Boolean Error(Boolean brief UNUSED_ARGUMENT, String topic, String * error, String text, struct descrip *dsc)
 {
 /*
   if (brief)
@@ -716,7 +722,7 @@ static int Nelements(struct descrip *in)
     return 1;
 }
 
-static void Destroy(Widget w __attribute__ ((unused)), String ptr)
+static void Destroy(Widget w UNUSED_ARGUMENT, String ptr)
 {
   free(ptr);
 }
@@ -877,7 +883,7 @@ static void DoEventUpdate(XtPointer client_data, int *source, XtInputId * id)
   EventUpdate(client_data, source, id);
 }
 
-void SetupEventInput(XtAppContext app_context, Widget w __attribute__ ((unused)))
+void SetupEventInput(XtAppContext app_context, Widget w UNUSED_ARGUMENT)
 {
   int sock = ConnectEvents();
   if (sock != -1)

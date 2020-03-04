@@ -66,7 +66,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <string.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 
@@ -348,7 +352,7 @@ int Tdi1Subscript(opcode_t opcode, int narg, struct descriptor *list[], struct d
 	Each B value out of range uses extreme values of A.
 	A is treated as a linear array and subscripting is to nearest integer.
 */
-int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Map(opcode_t opcode, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   TDITHREADSTATIC_INIT;

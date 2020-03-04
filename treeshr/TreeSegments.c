@@ -97,6 +97,12 @@ found. They are set to -1 to indicate that there is no data for xxxx stored.
 
 ********************************************************/
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #ifdef WORDS_BIGENDIAN
 #define _WORDS_BIGENDIAN  // can be activated to test WORDS_BIGENDIAN branch on
                           // little endian machines
@@ -1033,9 +1039,9 @@ inline static int putdim_ts(vars_t *vars, int64_t *timestamps) {
 
 inline static int check_compress_dim(vars_t *vars, mdsdsc_xd_t *xd_data_ptr,
                                      mdsdsc_xd_t *xd_dim_ptr
-                                     __attribute__((unused)),
+                                     UNUSED_ARGUMENT,
                                      mdsdsc_a_t *initialValue
-                                     __attribute__((unused))) {
+                                     UNUSED_ARGUMENT) {
   int length = 0;
   vars->shead.data_offset = vars->sinfo->data_offset;
   int status =
@@ -2342,11 +2348,11 @@ int _TreeXNciGetSegments(void *dbid, int nid, const char *xnci, mdsdsc_t *start,
   return status;
 }
 
-int _TreeXNciSetSegmentScale(void *dbid, int nid, const char *xnci __attribute__((unused)), mdsdsc_t *value) {
+int _TreeXNciSetSegmentScale(void *dbid, int nid, const char *xnci UNUSED_ARGUMENT, mdsdsc_t *value) {
   // TODO: support individual scaling
   return _TreeSetXNci(dbid, nid, XNCI_SEGMENT_SCALE_NAME, value);
 }
-int _TreeXNciGetSegmentScale(void *dbid, int nid, const char *xnci __attribute__((unused)), mdsdsc_xd_t *value) {
+int _TreeXNciGetSegmentScale(void *dbid, int nid, const char *xnci UNUSED_ARGUMENT, mdsdsc_xd_t *value) {
   // TODO: support individual scaling
   return _TreeGetXNci(dbid, nid, XNCI_SEGMENT_SCALE_NAME, value);
 }

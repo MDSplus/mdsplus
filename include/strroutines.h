@@ -24,7 +24,14 @@ extern int StrPosition(const mdsdsc_t *const source, const mdsdsc_t *const subst
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
-static void __attribute__((unused)) free_d(void *ptr){
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+static void UNUSED_ARGUMENT free_d(void *ptr){
   StrFree1Dx((mdsdsc_d_t*)ptr);
 }
 #define FREED_ON_EXIT(ptr) pthread_cleanup_push(free_d, ptr)

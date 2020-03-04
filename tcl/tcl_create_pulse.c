@@ -36,6 +36,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_CREATE_PULSE.C --
 *
@@ -100,7 +106,7 @@ static int CheckCondition(int nid)
 	/**************************************************************
 	 * TclCreatePulse:
 	 **************************************************************/
-EXPORT int TclCreatePulse(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclCreatePulse(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int shot;
   char *asciiShot = 0;

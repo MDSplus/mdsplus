@@ -26,6 +26,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PROT_THREAD
 #include "ioroutines_pipes.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #ifdef _WIN32
 # define THREAD_PID    GetCurrentThread()
 #endif
@@ -78,7 +84,7 @@ static void io_listen(void*pp) {
   pthread_cleanup_pop(1);
 }
 
-inline static int io_connect(Connection* c, char* protocol __attribute__((unused)), char *host __attribute__((unused))) {
+inline static int io_connect(Connection* c, char* protocol UNUSED_ARGUMENT, char *host UNUSED_ARGUMENT) {
 #ifdef _WIN32
   io_pipes_t p = {NULL,NULL,NULL,0}, *pp = calloc(sizeof(p),1);
   pp->pth = PARENT_THREAD;

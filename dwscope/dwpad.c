@@ -102,6 +102,12 @@ $ Run SYS$SYSTEM:DWPad
 #include <DXm/DECspecific.h>
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern void XmdsDestroyWidgetCallback();
 extern void XmdsManageChildCallback();
 extern void XmdsRegisterWidgetCallback();
@@ -334,9 +340,9 @@ static void LabelSetString(Widget w, String string)
   XmStringFree(label);
 }
 
-static void ExitWithCheck(Widget w __attribute__ ((unused)),
-			  int *tag __attribute__ ((unused)),
-			  XtPointer callback_data __attribute__ ((unused)))
+static void ExitWithCheck(Widget w UNUSED_ARGUMENT,
+			  int *tag UNUSED_ARGUMENT,
+			  XtPointer callback_data UNUSED_ARGUMENT)
 {
   if (Modified)
     XtManageChild(WriteBeforeExitWidget);
@@ -344,15 +350,15 @@ static void ExitWithCheck(Widget w __attribute__ ((unused)),
     exit(1);
 }
 
-static void Exit(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
-		 XtPointer callback_data __attribute__ ((unused)))
+static void Exit(Widget w UNUSED_ARGUMENT, int *tag UNUSED_ARGUMENT,
+		 XtPointer callback_data UNUSED_ARGUMENT)
 {
   exit(1);
 }
 
-static void ApplyCustomizeWindow(Widget w __attribute__ ((unused)),
-				 int *tag __attribute__ ((unused)),
-				 XtPointer callback_data __attribute__ ((unused)))
+static void ApplyCustomizeWindow(Widget w UNUSED_ARGUMENT,
+				 int *tag UNUSED_ARGUMENT,
+				 XtPointer callback_data UNUSED_ARGUMENT)
 {
   String title = XmTextGetString(XtNameToWidget(CustomizeWindowWidget, "window_title"));
   String icon = XmTextGetString(XtNameToWidget(CustomizeWindowWidget, "icon_name"));
@@ -386,9 +392,9 @@ static void ApplyCustomizeWindow(Widget w __attribute__ ((unused)),
   return;
 }
 
-static void ResetCustomizeWindow(Widget w __attribute__ ((unused)),
-				 int *tag __attribute__ ((unused)),
-				 XtPointer callback_data __attribute__ ((unused)))
+static void ResetCustomizeWindow(Widget w UNUSED_ARGUMENT,
+				 int *tag UNUSED_ARGUMENT,
+				 XtPointer callback_data UNUSED_ARGUMENT)
 {
   char number[12];
   XmTextSetString(XtNameToWidget(CustomizeWindowWidget, "window_title"), PadTitle);
@@ -401,9 +407,9 @@ static void ResetCustomizeWindow(Widget w __attribute__ ((unused)),
   XmToggleButtonSetState(XtNameToWidget(CustomizeWindowWidget, "font_box.big_font"), PadBigFont, 1);
 }
 
-static void ApplyLabel(Widget w __attribute__ ((unused)),
-		       int *tag __attribute__ ((unused)),
-		       XtPointer callback_data __attribute__ ((unused)))
+static void ApplyLabel(Widget w UNUSED_ARGUMENT,
+		       int *tag UNUSED_ARGUMENT,
+		       XtPointer callback_data UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   XtVaGetValues(CurrentWidget, XmNuserData, &info, NULL);
@@ -415,9 +421,9 @@ static void ApplyLabel(Widget w __attribute__ ((unused)),
   }
 }
 
-static void ApplyDataSetup(Widget w __attribute__ ((unused)),
-			   int *tag __attribute__ ((unused)),
-			   XtPointer callback_data __attribute__ ((unused)))
+static void ApplyDataSetup(Widget w UNUSED_ARGUMENT,
+			   int *tag UNUSED_ARGUMENT,
+			   XtPointer callback_data UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   int change_mask;
@@ -429,8 +435,8 @@ static void ApplyDataSetup(Widget w __attribute__ ((unused)),
   return;
 }
 
-static void Ok(Widget w, int *tag __attribute__ ((unused)),
-	       XtPointer callback_data __attribute__ ((unused)))
+static void Ok(Widget w, int *tag UNUSED_ARGUMENT,
+	       XtPointer callback_data UNUSED_ARGUMENT)
 {
   if (ApplyStatus & 1)
     XtUnmanageChild(XtParent(w));
@@ -444,9 +450,9 @@ static void UpdatePopups()
     ResetLabel(NULL, NULL, NULL);
 }
 
-static void EraseDataSetup(Widget w __attribute__ ((unused)),
-			   int *tag __attribute__ ((unused)),
-			   XtPointer callback_data __attribute__ ((unused)))
+static void EraseDataSetup(Widget w UNUSED_ARGUMENT,
+			   int *tag UNUSED_ARGUMENT,
+			   XtPointer callback_data UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   XtVaGetValues(PendingWidget, XmNuserData, &info, NULL);
@@ -457,7 +463,7 @@ static void EraseDataSetup(Widget w __attribute__ ((unused)),
     UpdatePopups();
 }
 
-static void /*XtCallbackProc */ Restore(Widget w __attribute__ ((unused)), int *option,
+static void /*XtCallbackProc */ Restore(Widget w UNUSED_ARGUMENT, int *option,
 					XmFileSelectionBoxCallbackStruct * reason)
 {
   int opt = option ? *option : 0;
@@ -505,7 +511,7 @@ static void /*XtCallbackProc */ Restore(Widget w __attribute__ ((unused)), int *
   }
 }
 
-static void /*XtCallbackProc */ Save(Widget w __attribute__ ((unused)), int *option,
+static void /*XtCallbackProc */ Save(Widget w UNUSED_ARGUMENT, int *option,
 				     XmFileSelectionBoxCallbackStruct * reason)
 {
   int opt = option ? *option : 0;
@@ -553,8 +559,8 @@ static void /*XtCallbackProc */ Save(Widget w __attribute__ ((unused)), int *opt
   }
 }
 
-static void ResetLabel(Widget w __attribute__ ((unused)), int *tag __attribute__ ((unused)),
-		       XtPointer callback_data __attribute__ ((unused)))
+static void ResetLabel(Widget w UNUSED_ARGUMENT, int *tag UNUSED_ARGUMENT,
+		       XtPointer callback_data UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   XmString title = XmStringCreateSimple(SetupTitle());
@@ -566,9 +572,9 @@ static void ResetLabel(Widget w __attribute__ ((unused)), int *tag __attribute__
   XtUnmanageChild(Button3Widget);
 }
 
-static void ResetDataSetup(Widget w __attribute__ ((unused)),
-			   int *tag __attribute__ ((unused)),
-			   XtPointer callback_data __attribute__ ((unused)))
+static void ResetDataSetup(Widget w UNUSED_ARGUMENT,
+			   int *tag UNUSED_ARGUMENT,
+			   XtPointer callback_data UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   CurrentWidget = PendingWidget;
@@ -576,8 +582,8 @@ static void ResetDataSetup(Widget w __attribute__ ((unused)),
   LoadDataSetup(DataSetupWidget, SetupTitle(), info);
 }
 
-static void Setup(Widget w, XtPointer client_data __attribute__ ((unused)), XButtonEvent * event,
-		  Boolean * continue_to_dispatch __attribute__ ((unused)))
+static void Setup(Widget w, XtPointer client_data UNUSED_ARGUMENT, XButtonEvent * event,
+		  Boolean * continue_to_dispatch UNUSED_ARGUMENT)
 {
   int i;
   int num_waves;
@@ -630,9 +636,9 @@ static void SetPadVideo(Widget w, Boolean reverse)
   }
 }
 
-static void Cut(Widget w, XEvent * event __attribute__ ((unused)),
-		String * params __attribute__ ((unused)),
-		Cardinal * num_params __attribute__ ((unused)))
+static void Cut(Widget w, XEvent * event UNUSED_ARGUMENT,
+		String * params UNUSED_ARGUMENT,
+		Cardinal * num_params UNUSED_ARGUMENT)
 {
   if (w == SelectedWidget)
     XtDisownSelection(w, XA_PRIMARY, XtLastTimestampProcessed(XtDisplay(w)));
@@ -644,7 +650,7 @@ static void Cut(Widget w, XEvent * event __attribute__ ((unused)),
   }
 }
 
-static Boolean ConvertSelection(Widget w, Atom * selection __attribute__ ((unused)), Atom * target, Atom * type,
+static Boolean ConvertSelection(Widget w, Atom * selection UNUSED_ARGUMENT, Atom * target, Atom * type,
 				XtPointer * value, unsigned int *length, int *format)
 {
   int r = 0;
@@ -657,7 +663,7 @@ static Boolean ConvertSelection(Widget w, Atom * selection __attribute__ ((unuse
   return ConvertWaveToSelection(w, prefix, info, *target, type, value, length, format);
 }
 
-static void LoseSelection(Widget w, Atom * selection __attribute__ ((unused)))
+static void LoseSelection(Widget w, Atom * selection UNUSED_ARGUMENT)
 {
   SetPadVideo(w, 0);
   if (SelectedWidget == w)
@@ -765,19 +771,19 @@ static void RestoreDatabase(String dbname)
   XrmDestroyDatabase(paddb);
 }
 
-static void Paste(Widget w, XEvent * event __attribute__ ((unused)),
-		  String * params __attribute__ ((unused)),
-		  Cardinal * num_params __attribute__ ((unused)))
+static void Paste(Widget w, XEvent * event UNUSED_ARGUMENT,
+		  String * params UNUSED_ARGUMENT,
+		  Cardinal * num_params UNUSED_ARGUMENT)
 {
   XtGetSelectionValue(w, XA_PRIMARY, XA_TARGETS, (XtSelectionCallbackProc) PasteTypesComplete, 0,
 		      XtLastTimestampProcessed(XtDisplay(w)));
 }
 
-static void PasteTypesComplete(Widget w, XtPointer cdata __attribute__ ((unused)),
-			       Atom * selection __attribute__ ((unused)),
-			       Atom * type __attribute__ ((unused)),
+static void PasteTypesComplete(Widget w, XtPointer cdata UNUSED_ARGUMENT,
+			       Atom * selection UNUSED_ARGUMENT,
+			       Atom * type UNUSED_ARGUMENT,
 			       XtPointer value, unsigned int *length,
-			       int *format __attribute__ ((unused)))
+			       int *format UNUSED_ARGUMENT)
 {
   unsigned int i;
   Atom req_type = XA_STRING;
@@ -793,10 +799,10 @@ static void PasteTypesComplete(Widget w, XtPointer cdata __attribute__ ((unused)
     XtFree(value);
 }
 
-static void PasteComplete(Widget w, XtPointer cdata __attribute__ ((unused)),
-			  Atom * selection __attribute__ ((unused)), Atom * type, XtPointer value,
+static void PasteComplete(Widget w, XtPointer cdata UNUSED_ARGUMENT,
+			  Atom * selection UNUSED_ARGUMENT, Atom * type, XtPointer value,
 			  unsigned int *length,
-			  int *format __attribute__ ((unused)))
+			  int *format UNUSED_ARGUMENT)
 {
   WaveInfo *info;
   XtVaGetValues(w, XmNuserData, &info, NULL);

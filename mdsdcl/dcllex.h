@@ -2,9 +2,9 @@
 #define dcl_HEADER_H 1
 #define dcl_IN_HEADER 1
 
-#line 6 "dcllex.h"
+#line 5 "dcllex.h"
 
-#line 8 "dcllex.h"
+#line 7 "dcllex.h"
 
 #define  YY_INT_ALIGNED short int
 
@@ -13,9 +13,243 @@
 #define FLEX_SCANNER
 #define YY_FLEX_MAJOR_VERSION 2
 #define YY_FLEX_MINOR_VERSION 6
-#define YY_FLEX_SUBMINOR_VERSION 1
+#define YY_FLEX_SUBMINOR_VERSION 4
 #if YY_FLEX_SUBMINOR_VERSION > 0
 #define FLEX_BETA
+#endif
+
+#ifdef yy_create_buffer
+#define dcl__create_buffer_ALREADY_DEFINED
+#else
+#define yy_create_buffer dcl__create_buffer
+#endif
+
+#ifdef yy_delete_buffer
+#define dcl__delete_buffer_ALREADY_DEFINED
+#else
+#define yy_delete_buffer dcl__delete_buffer
+#endif
+
+#ifdef yy_scan_buffer
+#define dcl__scan_buffer_ALREADY_DEFINED
+#else
+#define yy_scan_buffer dcl__scan_buffer
+#endif
+
+#ifdef yy_scan_string
+#define dcl__scan_string_ALREADY_DEFINED
+#else
+#define yy_scan_string dcl__scan_string
+#endif
+
+#ifdef yy_scan_bytes
+#define dcl__scan_bytes_ALREADY_DEFINED
+#else
+#define yy_scan_bytes dcl__scan_bytes
+#endif
+
+#ifdef yy_init_buffer
+#define dcl__init_buffer_ALREADY_DEFINED
+#else
+#define yy_init_buffer dcl__init_buffer
+#endif
+
+#ifdef yy_flush_buffer
+#define dcl__flush_buffer_ALREADY_DEFINED
+#else
+#define yy_flush_buffer dcl__flush_buffer
+#endif
+
+#ifdef yy_load_buffer_state
+#define dcl__load_buffer_state_ALREADY_DEFINED
+#else
+#define yy_load_buffer_state dcl__load_buffer_state
+#endif
+
+#ifdef yy_switch_to_buffer
+#define dcl__switch_to_buffer_ALREADY_DEFINED
+#else
+#define yy_switch_to_buffer dcl__switch_to_buffer
+#endif
+
+#ifdef yypush_buffer_state
+#define dcl_push_buffer_state_ALREADY_DEFINED
+#else
+#define yypush_buffer_state dcl_push_buffer_state
+#endif
+
+#ifdef yypop_buffer_state
+#define dcl_pop_buffer_state_ALREADY_DEFINED
+#else
+#define yypop_buffer_state dcl_pop_buffer_state
+#endif
+
+#ifdef yyensure_buffer_stack
+#define dcl_ensure_buffer_stack_ALREADY_DEFINED
+#else
+#define yyensure_buffer_stack dcl_ensure_buffer_stack
+#endif
+
+#ifdef yylex
+#define dcl_lex_ALREADY_DEFINED
+#else
+#define yylex dcl_lex
+#endif
+
+#ifdef yyrestart
+#define dcl_restart_ALREADY_DEFINED
+#else
+#define yyrestart dcl_restart
+#endif
+
+#ifdef yylex_init
+#define dcl_lex_init_ALREADY_DEFINED
+#else
+#define yylex_init dcl_lex_init
+#endif
+
+#ifdef yylex_init_extra
+#define dcl_lex_init_extra_ALREADY_DEFINED
+#else
+#define yylex_init_extra dcl_lex_init_extra
+#endif
+
+#ifdef yylex_destroy
+#define dcl_lex_destroy_ALREADY_DEFINED
+#else
+#define yylex_destroy dcl_lex_destroy
+#endif
+
+#ifdef yyget_debug
+#define dcl_get_debug_ALREADY_DEFINED
+#else
+#define yyget_debug dcl_get_debug
+#endif
+
+#ifdef yyset_debug
+#define dcl_set_debug_ALREADY_DEFINED
+#else
+#define yyset_debug dcl_set_debug
+#endif
+
+#ifdef yyget_extra
+#define dcl_get_extra_ALREADY_DEFINED
+#else
+#define yyget_extra dcl_get_extra
+#endif
+
+#ifdef yyset_extra
+#define dcl_set_extra_ALREADY_DEFINED
+#else
+#define yyset_extra dcl_set_extra
+#endif
+
+#ifdef yyget_in
+#define dcl_get_in_ALREADY_DEFINED
+#else
+#define yyget_in dcl_get_in
+#endif
+
+#ifdef yyset_in
+#define dcl_set_in_ALREADY_DEFINED
+#else
+#define yyset_in dcl_set_in
+#endif
+
+#ifdef yyget_out
+#define dcl_get_out_ALREADY_DEFINED
+#else
+#define yyget_out dcl_get_out
+#endif
+
+#ifdef yyset_out
+#define dcl_set_out_ALREADY_DEFINED
+#else
+#define yyset_out dcl_set_out
+#endif
+
+#ifdef yyget_leng
+#define dcl_get_leng_ALREADY_DEFINED
+#else
+#define yyget_leng dcl_get_leng
+#endif
+
+#ifdef yyget_text
+#define dcl_get_text_ALREADY_DEFINED
+#else
+#define yyget_text dcl_get_text
+#endif
+
+#ifdef yyget_lineno
+#define dcl_get_lineno_ALREADY_DEFINED
+#else
+#define yyget_lineno dcl_get_lineno
+#endif
+
+#ifdef yyset_lineno
+#define dcl_set_lineno_ALREADY_DEFINED
+#else
+#define yyset_lineno dcl_set_lineno
+#endif
+
+#ifdef yyget_column
+#define dcl_get_column_ALREADY_DEFINED
+#else
+#define yyget_column dcl_get_column
+#endif
+
+#ifdef yyset_column
+#define dcl_set_column_ALREADY_DEFINED
+#else
+#define yyset_column dcl_set_column
+#endif
+
+#ifdef yywrap
+#define dcl_wrap_ALREADY_DEFINED
+#else
+#define yywrap dcl_wrap
+#endif
+
+#ifdef yyget_lval
+#define dcl_get_lval_ALREADY_DEFINED
+#else
+#define yyget_lval dcl_get_lval
+#endif
+
+#ifdef yyset_lval
+#define dcl_set_lval_ALREADY_DEFINED
+#else
+#define yyset_lval dcl_set_lval
+#endif
+
+#ifdef yyget_lloc
+#define dcl_get_lloc_ALREADY_DEFINED
+#else
+#define yyget_lloc dcl_get_lloc
+#endif
+
+#ifdef yyset_lloc
+#define dcl_set_lloc_ALREADY_DEFINED
+#else
+#define yyset_lloc dcl_set_lloc
+#endif
+
+#ifdef yyalloc
+#define dcl_alloc_ALREADY_DEFINED
+#else
+#define yyalloc dcl_alloc
+#endif
+
+#ifdef yyrealloc
+#define dcl_realloc_ALREADY_DEFINED
+#else
+#define yyrealloc dcl_realloc
+#endif
+
+#ifdef yyfree
+#define dcl_free_ALREADY_DEFINED
+#else
+#define yyfree dcl_free
 #endif
 
 /* First, we deal with  platform-specific or compiler-specific issues. */
@@ -88,9 +322,15 @@ typedef unsigned int flex_uint32_t;
 #define UINT32_MAX             (4294967295U)
 #endif
 
+#ifndef SIZE_MAX
+#define SIZE_MAX               (~(size_t)0)
+#endif
+
 #endif /* ! C99 */
 
 #endif /* ! FLEXINT_H */
+
+/* begin standard C++ headers. */
 
 /* TODO: this is always defined, so inline it */
 #define yyconst const
@@ -192,21 +432,21 @@ struct yy_buffer_state
 	};
 #endif /* !YY_STRUCT_YY_BUFFER_STATE */
 
-void dcl_restart (FILE *input_file ,yyscan_t yyscanner );
-void dcl__switch_to_buffer (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__create_buffer (FILE *file,int size ,yyscan_t yyscanner );
-void dcl__delete_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void dcl__flush_buffer (YY_BUFFER_STATE b ,yyscan_t yyscanner );
-void dcl_push_buffer_state (YY_BUFFER_STATE new_buffer ,yyscan_t yyscanner );
-void dcl_pop_buffer_state (yyscan_t yyscanner );
+void yyrestart ( FILE *input_file , yyscan_t yyscanner );
+void yy_switch_to_buffer ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_create_buffer ( FILE *file, int size , yyscan_t yyscanner );
+void yy_delete_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yy_flush_buffer ( YY_BUFFER_STATE b , yyscan_t yyscanner );
+void yypush_buffer_state ( YY_BUFFER_STATE new_buffer , yyscan_t yyscanner );
+void yypop_buffer_state ( yyscan_t yyscanner );
 
-YY_BUFFER_STATE dcl__scan_buffer (char *base,yy_size_t size ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__scan_string (yyconst char *yy_str ,yyscan_t yyscanner );
-YY_BUFFER_STATE dcl__scan_bytes (yyconst char *bytes,int len ,yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_buffer ( char *base, yy_size_t size , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_string ( const char *yy_str , yyscan_t yyscanner );
+YY_BUFFER_STATE yy_scan_bytes ( const char *bytes, int len , yyscan_t yyscanner );
 
-void *dcl_alloc (yy_size_t ,yyscan_t yyscanner );
-void *dcl_realloc (void *,yy_size_t ,yyscan_t yyscanner );
-void dcl_free (void * ,yyscan_t yyscanner );
+void *yyalloc ( yy_size_t , yyscan_t yyscanner );
+void *yyrealloc ( void *, yy_size_t , yyscan_t yyscanner );
+void yyfree ( void * , yyscan_t yyscanner );
 
 /* Begin user sect3 */
 
@@ -241,50 +481,50 @@ void dcl_free (void * ,yyscan_t yyscanner );
 #define YY_EXTRA_TYPE void *
 #endif
 
-int dcl_lex_init (yyscan_t* scanner);
+int yylex_init (yyscan_t* scanner);
 
-int dcl_lex_init_extra (YY_EXTRA_TYPE user_defined,yyscan_t* scanner);
+int yylex_init_extra ( YY_EXTRA_TYPE user_defined, yyscan_t* scanner);
 
 /* Accessor methods to globals.
    These are made visible to non-reentrant scanners for convenience. */
 
-int dcl_lex_destroy (yyscan_t yyscanner );
+int yylex_destroy ( yyscan_t yyscanner );
 
-int dcl_get_debug (yyscan_t yyscanner );
+int yyget_debug ( yyscan_t yyscanner );
 
-void dcl_set_debug (int debug_flag ,yyscan_t yyscanner );
+void yyset_debug ( int debug_flag , yyscan_t yyscanner );
 
-YY_EXTRA_TYPE dcl_get_extra (yyscan_t yyscanner );
+YY_EXTRA_TYPE yyget_extra ( yyscan_t yyscanner );
 
-void dcl_set_extra (YY_EXTRA_TYPE user_defined ,yyscan_t yyscanner );
+void yyset_extra ( YY_EXTRA_TYPE user_defined , yyscan_t yyscanner );
 
-FILE *dcl_get_in (yyscan_t yyscanner );
+FILE *yyget_in ( yyscan_t yyscanner );
 
-void dcl_set_in  (FILE * _in_str ,yyscan_t yyscanner );
+void yyset_in  ( FILE * _in_str , yyscan_t yyscanner );
 
-FILE *dcl_get_out (yyscan_t yyscanner );
+FILE *yyget_out ( yyscan_t yyscanner );
 
-void dcl_set_out  (FILE * _out_str ,yyscan_t yyscanner );
+void yyset_out  ( FILE * _out_str , yyscan_t yyscanner );
 
-			int dcl_get_leng (yyscan_t yyscanner );
+			int yyget_leng ( yyscan_t yyscanner );
 
-char *dcl_get_text (yyscan_t yyscanner );
+char *yyget_text ( yyscan_t yyscanner );
 
-int dcl_get_lineno (yyscan_t yyscanner );
+int yyget_lineno ( yyscan_t yyscanner );
 
-void dcl_set_lineno (int _line_number ,yyscan_t yyscanner );
+void yyset_lineno ( int _line_number , yyscan_t yyscanner );
 
-int dcl_get_column  (yyscan_t yyscanner );
+int yyget_column  ( yyscan_t yyscanner );
 
-void dcl_set_column (int _column_no ,yyscan_t yyscanner );
+void yyset_column ( int _column_no , yyscan_t yyscanner );
 
-YYSTYPE * dcl_get_lval (yyscan_t yyscanner );
+YYSTYPE * yyget_lval ( yyscan_t yyscanner );
 
-void dcl_set_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
+void yyset_lval ( YYSTYPE * yylval_param , yyscan_t yyscanner );
 
-       YYLTYPE *dcl_get_lloc (yyscan_t yyscanner );
+       YYLTYPE *yyget_lloc ( yyscan_t yyscanner );
     
-        void dcl_set_lloc (YYLTYPE * yylloc_param ,yyscan_t yyscanner );
+        void yyset_lloc ( YYLTYPE * yylloc_param , yyscan_t yyscanner );
     
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -292,18 +532,18 @@ void dcl_set_lval (YYSTYPE * yylval_param ,yyscan_t yyscanner );
 
 #ifndef YY_SKIP_YYWRAP
 #ifdef __cplusplus
-extern "C" int dcl_wrap (yyscan_t yyscanner );
+extern "C" int yywrap ( yyscan_t yyscanner );
 #else
-extern int dcl_wrap (yyscan_t yyscanner );
+extern int yywrap ( yyscan_t yyscanner );
 #endif
 #endif
 
 #ifndef yytext_ptr
-static void yy_flex_strncpy (char *,yyconst char *,int ,yyscan_t yyscanner);
+static void yy_flex_strncpy ( char *, const char *, int , yyscan_t yyscanner);
 #endif
 
 #ifdef YY_NEED_STRLEN
-static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
+static int yy_flex_strlen ( const char * , yyscan_t yyscanner);
 #endif
 
 #ifndef YY_NO_INPUT
@@ -331,10 +571,10 @@ static int yy_flex_strlen (yyconst char * ,yyscan_t yyscanner);
 #ifndef YY_DECL
 #define YY_DECL_IS_OURS 1
 
-extern int dcl_lex \
-               (YYSTYPE * yylval_param,YYLTYPE * yylloc_param ,yyscan_t yyscanner);
+extern int yylex \
+               (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner);
 
-#define YY_DECL int dcl_lex \
+#define YY_DECL int yylex \
                (YYSTYPE * yylval_param, YYLTYPE * yylloc_param , yyscan_t yyscanner)
 #endif /* !YY_DECL */
 
@@ -352,9 +592,154 @@ extern int dcl_lex \
 #undef YY_DECL
 #endif
 
-#line 160 "dcl_lex/cmdParse.l"
+#ifndef dcl__create_buffer_ALREADY_DEFINED
+#undef yy_create_buffer
+#endif
+#ifndef dcl__delete_buffer_ALREADY_DEFINED
+#undef yy_delete_buffer
+#endif
+#ifndef dcl__scan_buffer_ALREADY_DEFINED
+#undef yy_scan_buffer
+#endif
+#ifndef dcl__scan_string_ALREADY_DEFINED
+#undef yy_scan_string
+#endif
+#ifndef dcl__scan_bytes_ALREADY_DEFINED
+#undef yy_scan_bytes
+#endif
+#ifndef dcl__init_buffer_ALREADY_DEFINED
+#undef yy_init_buffer
+#endif
+#ifndef dcl__flush_buffer_ALREADY_DEFINED
+#undef yy_flush_buffer
+#endif
+#ifndef dcl__load_buffer_state_ALREADY_DEFINED
+#undef yy_load_buffer_state
+#endif
+#ifndef dcl__switch_to_buffer_ALREADY_DEFINED
+#undef yy_switch_to_buffer
+#endif
+#ifndef dcl_push_buffer_state_ALREADY_DEFINED
+#undef yypush_buffer_state
+#endif
+#ifndef dcl_pop_buffer_state_ALREADY_DEFINED
+#undef yypop_buffer_state
+#endif
+#ifndef dcl_ensure_buffer_stack_ALREADY_DEFINED
+#undef yyensure_buffer_stack
+#endif
+#ifndef dcl_lex_ALREADY_DEFINED
+#undef yylex
+#endif
+#ifndef dcl_restart_ALREADY_DEFINED
+#undef yyrestart
+#endif
+#ifndef dcl_lex_init_ALREADY_DEFINED
+#undef yylex_init
+#endif
+#ifndef dcl_lex_init_extra_ALREADY_DEFINED
+#undef yylex_init_extra
+#endif
+#ifndef dcl_lex_destroy_ALREADY_DEFINED
+#undef yylex_destroy
+#endif
+#ifndef dcl_get_debug_ALREADY_DEFINED
+#undef yyget_debug
+#endif
+#ifndef dcl_set_debug_ALREADY_DEFINED
+#undef yyset_debug
+#endif
+#ifndef dcl_get_extra_ALREADY_DEFINED
+#undef yyget_extra
+#endif
+#ifndef dcl_set_extra_ALREADY_DEFINED
+#undef yyset_extra
+#endif
+#ifndef dcl_get_in_ALREADY_DEFINED
+#undef yyget_in
+#endif
+#ifndef dcl_set_in_ALREADY_DEFINED
+#undef yyset_in
+#endif
+#ifndef dcl_get_out_ALREADY_DEFINED
+#undef yyget_out
+#endif
+#ifndef dcl_set_out_ALREADY_DEFINED
+#undef yyset_out
+#endif
+#ifndef dcl_get_leng_ALREADY_DEFINED
+#undef yyget_leng
+#endif
+#ifndef dcl_get_text_ALREADY_DEFINED
+#undef yyget_text
+#endif
+#ifndef dcl_get_lineno_ALREADY_DEFINED
+#undef yyget_lineno
+#endif
+#ifndef dcl_set_lineno_ALREADY_DEFINED
+#undef yyset_lineno
+#endif
+#ifndef dcl_get_column_ALREADY_DEFINED
+#undef yyget_column
+#endif
+#ifndef dcl_set_column_ALREADY_DEFINED
+#undef yyset_column
+#endif
+#ifndef dcl_wrap_ALREADY_DEFINED
+#undef yywrap
+#endif
+#ifndef dcl_get_lval_ALREADY_DEFINED
+#undef yyget_lval
+#endif
+#ifndef dcl_set_lval_ALREADY_DEFINED
+#undef yyset_lval
+#endif
+#ifndef dcl_get_lloc_ALREADY_DEFINED
+#undef yyget_lloc
+#endif
+#ifndef dcl_set_lloc_ALREADY_DEFINED
+#undef yyset_lloc
+#endif
+#ifndef dcl_alloc_ALREADY_DEFINED
+#undef yyalloc
+#endif
+#ifndef dcl_realloc_ALREADY_DEFINED
+#undef yyrealloc
+#endif
+#ifndef dcl_free_ALREADY_DEFINED
+#undef yyfree
+#endif
+#ifndef dcl_text_ALREADY_DEFINED
+#undef yytext
+#endif
+#ifndef dcl_leng_ALREADY_DEFINED
+#undef yyleng
+#endif
+#ifndef dcl_in_ALREADY_DEFINED
+#undef yyin
+#endif
+#ifndef dcl_out_ALREADY_DEFINED
+#undef yyout
+#endif
+#ifndef dcl__flex_debug_ALREADY_DEFINED
+#undef yy_flex_debug
+#endif
+#ifndef dcl_lineno_ALREADY_DEFINED
+#undef yylineno
+#endif
+#ifndef dcl_tables_fload_ALREADY_DEFINED
+#undef yytables_fload
+#endif
+#ifndef dcl_tables_destroy_ALREADY_DEFINED
+#undef yytables_destroy
+#endif
+#ifndef dcl_TABLES_NAME_ALREADY_DEFINED
+#undef yyTABLES_NAME
+#endif
+
+#line 159 "yylex/cmdParse.l"
 
 
-#line 359 "dcllex.h"
+#line 743 "dcllex.h"
 #undef dcl_IN_HEADER
 #endif /* dcl_HEADER_H */

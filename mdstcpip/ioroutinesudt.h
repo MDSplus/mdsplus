@@ -16,11 +16,18 @@
 int server_epoll = -1;
 #define io_flush NULL
 #include "ioroutinesx.h"
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 //  CONNECT  ///////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static int io_connect(Connection* c, char *protocol __attribute__ ((unused)), char *host){
+static int io_connect(Connection* c, char *protocol UNUSED_ARGUMENT, char *host){
   struct SOCKADDR_IN sin;
   UDTSOCKET sock;
   if IS_OK(GetHostAndPort(host, &sin)) {

@@ -76,6 +76,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "common.h"
 #include "prototypes.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 //-----------------------------------------------------------
 // scsi command lengths, per SCSI-2 spec (ANSI X3T9.2/375R)
 //              group 0:         6 bytes
@@ -779,7 +785,7 @@ static int Jorway73ADoIo(CamKey Key,
 			 BYTE A,
 			 BYTE F,
 			 int Count,
-			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced __attribute__ ((unused)))
+			 BYTE * Data, BYTE Mem, TranslatedIosb * iosb, int dmode, int Enhanced UNUSED_ARGUMENT)
 {
   char dev_name[12];
   int IsDataCommand, scsiDevice;

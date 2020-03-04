@@ -39,6 +39,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiData();
 
 /**********************************************************************
@@ -69,7 +75,7 @@ extern int TdiIdentOf();
 /****************************************************************
  * TclDispatch_close:
  ****************************************************************/
-EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
+EXPORT int TclDispatch_close(void *ctx, char **error UNUSED_ARGUMENT, char **output UNUSED_ARGUMENT)
 {
   char *ident;
   if (IS_NOT_OK(cli_present(ctx, "SERVER")))
@@ -87,7 +93,7 @@ EXPORT int TclDispatch_close(void *ctx, char **error __attribute__ ((unused)), c
 /**************************************************************
  * TclDispatch_build:
  **************************************************************/
-EXPORT int TclDispatch_build(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_build(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   INIT_TCLSTATUS;
   INIT_AND_FREE_ON_EXIT(char*,monitor);
   cli_get_value(ctx, "MONITOR", &monitor);
@@ -127,7 +133,7 @@ static void cln_act(void* cin) {
     free(c->sid);
   }
 }
-EXPORT int TclDispatch(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   int status, sync, IOS;
   cln_act_t c = {0};
   pthread_cleanup_push(cln_act,(void*)&c);
@@ -185,7 +191,7 @@ cleanup: ;
  * TclDispatch_stop_server:
  * TclDispatch_start_server:
  **************************************************************/
-EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   INIT_TCLSTATUS;
   char *ident;
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER_NAME", &ident))) {
@@ -202,7 +208,7 @@ EXPORT int TclDispatch_abort_server(void *ctx, char **error, char **output __att
   return status ? status : TclNORMAL;
 }
 
-EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   INIT_TCLSTATUS;
   char *ident;
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVNAM", &ident))) {
@@ -218,7 +224,7 @@ EXPORT int TclDispatch_stop_server(void *ctx, char **error, char **output __attr
   return status ? status : TclNORMAL;
 }
 
-EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_start_server(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   INIT_TCLSTATUS;
   char *ident;
   while (STATUS_OK && IS_OK(cli_get_value(ctx, "SERVER", &ident))) {
@@ -259,7 +265,7 @@ static inline int setLogging(void *ctx, int logging, char **error) {
   return status;
 }
 
-EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   int status;
   if (cli_present(ctx, "LOG") == MdsdclPRESENT) {
     INIT_AND_FREE_ON_EXIT(char*,log_type);
@@ -282,7 +288,7 @@ EXPORT int TclDispatch_set_server(void *ctx, char **error, char **output __attri
 /**************************************************************
  * TclDispatch_show_server:
  **************************************************************/
-EXPORT int TclDispatch_show_server(void *ctx, char **error __attribute__ ((unused)), char **output){
+EXPORT int TclDispatch_show_server(void *ctx, char **error UNUSED_ARGUMENT, char **output){
   INIT_TCLSTATUS;
   char *ident;
   int dooutput = IS_OK(cli_present(ctx, "OUTPUT"));
@@ -336,7 +342,7 @@ static inline void printIt(char *output){
 /*****************************************************************
  * TclDispatch_phase:
  *****************************************************************/
-EXPORT int TclDispatch_phase(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_phase(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,phase);
   INIT_AND_FREE_ON_EXIT(char*,synch_str);
@@ -401,7 +407,7 @@ static void cln_cmd(void* cin) {
   } else
    free(c->cmd);
 }
-EXPORT int TclDispatch_command(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_command(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   int status, sync, IOS;
   cln_cmd_t c = {0};
   pthread_cleanup_push(cln_cmd,(void*)&c);
@@ -446,7 +452,7 @@ cleanup: ;
 /***************************************************************
  * TclDispatch_check:
  ***************************************************************/
-EXPORT int TclDispatch_check(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int TclDispatch_check(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   if (ServerFailedEssential(DBID_TABLE, cli_present(ctx, "RESET"))) {
     *error = strdup("Error: A essential action failed!\n");
     return TclFAILED_ESSENTIAL;

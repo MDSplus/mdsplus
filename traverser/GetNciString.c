@@ -24,7 +24,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <Xm/Xm.h>
 
-XmString GetNciString(int nid __attribute__ ((unused)))
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+XmString GetNciString(int nid UNUSED_ARGUMENT)
 {
   char *cstring = "GETNCI is not yet implemented";
   XmString ans = XmStringCreateLtoR(cstring, XmSTRING_DEFAULT_CHARSET);

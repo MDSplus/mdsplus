@@ -67,6 +67,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define LIBRTL_SRC
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct {
   char *env;
   char *file;
@@ -281,7 +287,7 @@ static char *GetRegistry(const HKEY where, const char *const pathname)
 }
 
 
-EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag __attribute__ ((unused))){
+EXPORT int LibSpawn(const mdsdsc_t *const cmd, const int waitFlag, const int notifyFlag UNUSED_ARGUMENT){
   if (MdsSandboxEnabled()) return MDSplusSANDBOX;
   char *cmd_c = MdsDescrToCstring(cmd);
   int status;

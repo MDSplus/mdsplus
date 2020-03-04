@@ -33,6 +33,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 // testing //
 #include "testing.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 // inspired from the following C++ procedure:
 //
@@ -67,7 +72,7 @@ int dbiTest(void *ctx, short int code) {
 /// see: stackoverflow.com/questions/3597985/check-for-threads-still-running-after-program-exits
 ///
 ///
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     BEGIN_TESTING(Tree Delete Node);
 

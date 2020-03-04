@@ -51,6 +51,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include <sys/time.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct _MonitorList {
   uint32_t addr;
   uint16_t port;
@@ -621,14 +627,14 @@ static void DoSrvMonitor(SrvJob * job_in){
   SendReply(job_in, (job->mode == MonitorCheckin) ? SrvJobCHECKEDIN : SrvJobFINISHED, status, 0, 0);
 }
 // thread
-static void WorkerExit(void *arg __attribute__ ((unused))){
+static void WorkerExit(void *arg UNUSED_ARGUMENT){
   if (QueueLocked) UnlockQueue();
   CONDITION_RESET(&WorkerRunning);
   WorkerDied++;
   fprintf(stderr,"Worker thread exitted\n");
 }
 // thread
-static void WorkerThread(void *arg __attribute__ ((unused)) ){
+static void WorkerThread(void *arg UNUSED_ARGUMENT ){
   SrvJob *job;
   pthread_cleanup_push(WorkerExit, NULL);
   ProgLoc = 1;

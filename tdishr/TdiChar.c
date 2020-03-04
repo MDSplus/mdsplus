@@ -35,7 +35,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int tdi_hash();
 
@@ -98,7 +102,7 @@ int Tdi3Adjustr(struct descriptor *in_ptr, struct descriptor *out_ptr)
 	F8X elemental, converts integer into ASCII (assumed) text byte.
 	        text = CHAR(integer)
 */
-int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr __attribute__ ((unused)),
+int Tdi3Char(struct descriptor *in_ptr, struct descriptor *kind_ptr UNUSED_ARGUMENT,
 	     struct descriptor *out_ptr)
 {
   INIT_STATUS;
@@ -282,7 +286,7 @@ int Tdi3LenTrim(struct descriptor *in_ptr, struct descriptor *out_ptr)
 	        REPEAT(string, ncopies)
 	Limitation: ncopies must be a scalar.
 */
-int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr __attribute__ ((unused)),
+int Tdi3Repeat(struct descriptor *in1_ptr, struct descriptor *in2_ptr UNUSED_ARGUMENT,
 	       struct descriptor *out_ptr)
 {
   INIT_STATUS;

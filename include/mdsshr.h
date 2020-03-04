@@ -9,6 +9,13 @@
 #include <mdstypes.h>
 #include <stdio.h>
 #include <usagedef.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -123,7 +130,7 @@ extern char* Now32(char* buf);
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 // FREEXD
-static void __attribute__((unused)) free_xd(void *ptr){
+static void UNUSED_ARGUMENT free_xd(void *ptr){
   MdsFree1Dx((mdsdsc_xd_t*)ptr, NULL);
 }
 #define FREEXD_ON_EXIT(ptr) pthread_cleanup_push(free_xd, ptr)

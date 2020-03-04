@@ -6,10 +6,10 @@
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#ifdef _MSC_VER
-#define UNUSED_ARGUMENT
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
 #else
-#define UNUSED_ARGUMENT __attribute__ ((unused))
+#  define UNUSED_ARGUMENT
 #endif
 
 #include "mdsplus/Traits.hpp"

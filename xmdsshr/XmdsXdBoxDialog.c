@@ -62,6 +62,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 static void LoadDialog(Widget shell, void *, void *);
 extern void XmdsXdBoxLoad();
 #include <xmdsshr.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /****************************************************
   Routine to create a Popup Xd Widget.  Use
   resources originalXd, and buttonCallback to setup
@@ -140,7 +147,7 @@ EXPORT Widget XmdsCreateXdBoxDialog(Widget parent, char *name, ArgList args, Car
   return widg;
 }
 
-static void LoadDialog(Widget shell, void *xdbw, void *unused __attribute__ ((unused)))
+static void LoadDialog(Widget shell, void *xdbw, void *unused UNUSED_ARGUMENT)
 {
   XmdsXdBoxLoad((Widget)xdbw);
 }

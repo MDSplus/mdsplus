@@ -65,6 +65,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsshr.h>
 #include <mds_stdarg.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct _bounds {
   int l;
   int u;
@@ -353,7 +360,7 @@ EXPORT int _TdiIntrinsic(void** ctx, opcode_t opcode, int narg, mdsdsc_t *list[]
 	        4 to clear the message buffer
 		8 return message before clear
 */
-int Tdi1Debug(opcode_t opcode __attribute__ ((unused)),
+int Tdi1Debug(opcode_t opcode UNUSED_ARGUMENT,
 	      int narg,
 	      mdsdsc_t *list[],
 	      mdsdsc_xd_t *out_ptr) {

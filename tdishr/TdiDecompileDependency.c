@@ -48,7 +48,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mds_stdarg.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 static const DESCRIPTOR(AND, " & ");
 static const DESCRIPTOR(OR, " | ");
@@ -140,7 +144,7 @@ static int DependencyGet(int prec, struct descriptor_r *pin, struct descriptor_d
 }
 
 /*------------------------------------------------------------------*/
-int Tdi1DecompileDependency(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1DecompileDependency(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT,
 			    struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {

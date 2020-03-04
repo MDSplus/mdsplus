@@ -88,6 +88,11 @@ int ServerSendMessage();
 #define IP(addr)   ((uint8_t*)&addr)
 #define ADDR2IP(a) IP(a)[0],IP(a)[1],IP(a)[2],IP(a)[3]
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern short ArgLen();
 
@@ -538,7 +543,7 @@ static int start_receiver(uint16_t *port_out)
   return STATUS_NOT_OK;
 }
 
-static void ReceiverExit(void *arg __attribute__ ((unused))){
+static void ReceiverExit(void *arg UNUSED_ARGUMENT){
   DBG("ServerSendMessage thread exitted\n");
   CONDITION_RESET(&ReceiverRunning);
 }

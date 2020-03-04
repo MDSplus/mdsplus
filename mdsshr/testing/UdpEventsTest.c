@@ -40,16 +40,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "testing.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static pthread_mutex_t astCount_lock;
 static pthread_mutex_t first_lock;
 static pthread_mutex_t second_lock;
 
-
-
-
 static int astCount = 0;
 
-void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+void eventAst(void *arg, int len UNUSED_ARGUMENT, char *buf UNUSED_ARGUMENT) {
     printf("received event in thread %ld, name=%s\n",
 	   syscall(__NR_gettid),
 	   (char *)arg);
@@ -63,7 +66,7 @@ void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute
 
 static int first = 0,second = 0;
 
-void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+void eventAstFirst(void *arg, int len UNUSED_ARGUMENT, char *buf UNUSED_ARGUMENT) {
     printf("received event in thread %ld, name=%s\n",
 	   syscall(__NR_gettid),
 	   (char *)arg);
@@ -72,7 +75,7 @@ void eventAstFirst(void *arg, int len __attribute__ ((unused)), char *buf __attr
     pthread_mutex_unlock(&first_lock);
 }
 
-void eventAstSecond(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused))) {
+void eventAstSecond(void *arg, int len UNUSED_ARGUMENT, char *buf UNUSED_ARGUMENT) {
     printf("received event in thread %ld, name=%s\n",
 	   syscall(__NR_gettid),
 	   (char *)arg);

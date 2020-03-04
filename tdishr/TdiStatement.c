@@ -37,6 +37,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include "tdithreadstatic.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int TdiIntrinsic();
 extern int TdiEvaluate();
@@ -68,7 +73,7 @@ int Tdi1Break()
 /*-----------------------------------------------------------------
 	CASE within SWITCH.
 */
-int Tdi1Case(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Case(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   return TdiIntrinsic(OPC_STATEMENT, narg - 1, &list[1], out_ptr);
 }
@@ -77,7 +82,7 @@ int Tdi1Case(opcode_t opcode __attribute__ ((unused)), int narg, struct descript
 	Evaluates all arguments but returns last only.
 	        result = evaluation,...evaluation
 */
-int Tdi1Comma(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Comma(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int j;
@@ -100,7 +105,7 @@ int Tdi1Continue()
 /*-----------------------------------------------------------------
 	CASE DEFAULT within SWITCH.
 */
-int Tdi1Default(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Default(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   return TdiIntrinsic(OPC_STATEMENT, narg, &list[0], out_ptr);
 }
@@ -109,7 +114,7 @@ int Tdi1Default(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 	Loops until expression is false, doing a statement.
 	        DO {statement} WHILE (expression);
 */
-int Tdi1Do(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Do(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int test;
@@ -128,7 +133,7 @@ int Tdi1Do(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor
 	Loops FOR expression true and doing a statement.
 	        FOR ([init]; [test]; [update]) statement
 */
-int Tdi1For(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1For(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int test;
@@ -154,7 +159,7 @@ int Tdi1For(opcode_t opcode __attribute__ ((unused)), int narg, struct descripto
 	GOTO a label in active area of code.
 	        GOTO label;
 */
-int Tdi1Goto(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Goto(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   status = TdiEvaluate(list[0], out_ptr MDS_END_ARG);
@@ -173,7 +178,7 @@ int Tdi1Goto(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 	Tests IF expression and does a statement if true or possibly another if false.
 	        IF (expression) statement ELSE statement
 */
-int Tdi1If(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1If(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int test = 0;
@@ -200,7 +205,7 @@ int Tdi1If(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor
 	If last fails, return EMPTY descriptor and success.
 	        first_good = IF_ERROR(a,...)
 */
-int Tdi1IfError(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IfError(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int j;
@@ -218,7 +223,7 @@ int Tdi1IfError(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 	Hold LABEL for GOTO.
 	        label : stmt
 */
-int Tdi1Label(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Label(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   return TdiIntrinsic(OPC_STATEMENT, narg - 1, &list[1], out_ptr);
 }
@@ -239,7 +244,7 @@ int Tdi1Rem()
 	        ...
 	}
 */
-int Tdi1Return(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Return(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   if (narg > 0 && list[0])
@@ -320,7 +325,7 @@ static int goto1(int narg, struct descriptor *list[], struct descriptor_xd *out_
 	Note statements end with a semicolon or right brace.
 	        {statement ... statement}
 */
-int Tdi1Statement(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Statement(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int j;
@@ -424,7 +429,7 @@ static int switch1(struct descriptor *ptest,
   return status;
 }
 
-int Tdi1Switch(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1Switch(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int jdefault = 0;
@@ -457,7 +462,7 @@ int Tdi1Switch(opcode_t opcode __attribute__ ((unused)), int narg, struct descri
 	Loops while expression is true and does a statement.
 	        WHILE (expression) statement
 */
-int Tdi1While(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1While(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   int test;

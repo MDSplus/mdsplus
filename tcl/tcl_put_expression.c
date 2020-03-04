@@ -38,6 +38,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "tcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /***********************************************************************
 * TCL_PUT_EXPRESSION.C --
 *
@@ -54,7 +60,7 @@ extern int TdiCompile();
 	 * TclPutExpression:
 	 * Put an INTEGER (?) expression into a node.
 	 ***************************************************************/
-EXPORT int TclPutExpression(void *ctx, char **error, char **output __attribute__ ((unused)), char *(*getline)(), void *getlineinfo)
+EXPORT int TclPutExpression(void *ctx, char **error, char **output UNUSED_ARGUMENT, char *(*getline)(), void *getlineinfo)
 {
   char *nodnam = 0;
   char *ascValue = 0;

@@ -10,11 +10,17 @@
 
 #include "dcl_p.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern MDSplusGitVersionInfo MDSplusGitVersion;
 extern const mds_version_t MdsVersion;
 extern const char *MdsRelease();
 
-EXPORT int mdsdcl_show_version(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
+EXPORT int mdsdcl_show_version(void *ctx UNUSED_ARGUMENT, char **error UNUSED_ARGUMENT, char **output)
 {
   char *info = *output = malloc(1024);
   info += sprintf(info,"\n\n");

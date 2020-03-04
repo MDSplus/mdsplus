@@ -32,7 +32,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <mdsshr.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 extern int tdi_get_data();
 extern int TdiGetLong();
@@ -49,7 +53,7 @@ extern int TdiTaskOf();
 	        argument = ARG_OF(classR)
 	NEED to remember to use AS_IS to prevent FUNCTION evaluation.
 */
-int Tdi1ArgOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ArgOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -112,7 +116,7 @@ int Tdi1ArgOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	        same = AXIS_OF(slope) !deprecated!
 	        axis_field = AXIS_OF(DIM_OF(signal))
 */
-int Tdi1AxisOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1AxisOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -148,7 +152,7 @@ int Tdi1AxisOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	        begin_field = BEGIN_OF(slope, [n]) !deprecated!
 	        startidx_field = BEGIN_OF(window)
 */
-int Tdi1BeginOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1BeginOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -195,7 +199,7 @@ int Tdi1BeginOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 	Return the class of its argument, but not of the XD.
 	        byte = CLASS_OF(any)
 */
-int Tdi1ClassOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ClassOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *px = list[0];
@@ -229,7 +233,7 @@ int Tdi1Class(opcode_t opcode, int narg, struct descriptor *list[], struct descr
 	Return completion in dispatch information.
 	        completion = COMPLETION_OF(dispatch)
 */
-int Tdi1CompletionOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1CompletionOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -245,7 +249,7 @@ int Tdi1CompletionOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
 	Return completion message in action information.
 	        completion_message = COMPLETION_MESSAGE_OF(action)
 */
-int Tdi1CompletionMessageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[],
+int Tdi1CompletionMessageOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[],
 			    struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -276,7 +280,7 @@ int Tdi1CompletionMessageOf(opcode_t opcode __attribute__ ((unused)), int narg _
 	Return record information.
 	        condition = CONDITION_OF(condition)
 */
-int Tdi1ConditionOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ConditionOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -306,7 +310,7 @@ int Tdi1ConditionOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 	        dimension_field = DIM_OF(signal, [dim_num])
 	        same = DIM_OF(dimension)
 */
-int Tdi1DimOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DimOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   array_bounds *pa;
@@ -393,7 +397,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	        dispatch = DISPATCH_OF(action)
 	        same = DISPATCH_OF(dispatch)
 */
-int Tdi1DispatchOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DispatchOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -426,7 +430,7 @@ int Tdi1DispatchOf(opcode_t opcode __attribute__ ((unused)), int narg __attribut
 	        descriptor = DSCPTR_OF(classR, [number])
 	        descriptor = DSCPTR_OF(classAPD, [number])
 */
-int Tdi1DscptrOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1DscptrOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_r *pr = (struct descriptor_r *)list[0];
@@ -483,7 +487,7 @@ int Tdi1Dscptr(opcode_t opcode, int narg, struct descriptor *list[], struct desc
 	Return the data type of its argument, but not of the XD.
 	        byte = KIND_OF(any)
 */
-int Tdi1KindOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1KindOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor *px = list[0];
@@ -519,7 +523,7 @@ int Tdi1Kind(opcode_t opcode, int narg, struct descriptor *list[], struct descri
 	        end_field = END_OF(&slope,[n]) !deprecated!
 	        endidx_field = END_OF(&window)
 */
-int Tdi1EndOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1EndOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -566,7 +570,7 @@ int Tdi1EndOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	Return error bar associated with value.
 	        error = ERROR_OF(with_error)
 */
-int Tdi1ErrorOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ErrorOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   static const DESCRIPTOR(none, "");
@@ -594,7 +598,7 @@ int Tdi1ErrorOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return errorlog in action information.
 	        errorlogs_field = ERRORLOGS_OF(action)
 */
-int Tdi1ErrorlogsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ErrorlogsOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -623,7 +627,7 @@ int Tdi1ErrorlogsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 	Return help portion of a parameter.
 	        help_field = HELP_OF(param)
 */
-int Tdi1HelpOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1HelpOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -650,7 +654,7 @@ int Tdi1HelpOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	Return dispatch identification information.
 	        ident_field = IDENT_OF(dispatch)
 */
-int Tdi1IdentOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1IdentOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -668,7 +672,7 @@ int Tdi1IdentOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	        text = IMAGE_OF(conglom)
 	        text = IMAGE_OF(routine)
 */
-int Tdi1ImageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ImageOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -703,7 +707,7 @@ int Tdi1ImageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return interrupt in dispatch information, only allowed for asynchronous.
 	        when = INTERRUPT_OF(action or from dispatch)
 */
-int Tdi1InterruptOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1InterruptOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -734,7 +738,7 @@ int Tdi1InterruptOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 	Return language used by procedure.
 	        language_field = LANGUAGE_OF(procedure)
 */
-int Tdi1LanguageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1LanguageOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -761,7 +765,7 @@ int Tdi1LanguageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribut
 	Return method used on object.
 	        method_field = METHOD_OF(method)
 */
-int Tdi1MethodOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1MethodOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -792,7 +796,7 @@ int Tdi1MethodOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute_
 	Return conglomerate information.
 	        model_field = MODEL_OF(conglom)
 */
-int Tdi1ModelOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ModelOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -819,7 +823,7 @@ int Tdi1ModelOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return conglomerate information.
 	        name_field = NAME_OF(conglom)
 */
-int Tdi1NameOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1NameOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -846,7 +850,7 @@ int Tdi1NameOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	Return the number of class-R descriptor pointers.
 	        byte = NDESC_OF(&classR)
 */
-int Tdi1NdescOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1NdescOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_r *pr = (struct descriptor_r *)list[0];
@@ -887,7 +891,7 @@ int Tdi1Ndesc(opcode_t opcode, int narg, struct descriptor *list[], struct descr
 	Return object used by method.
 	        object_field = OBJECT_OF(method)
 */
-int Tdi1ObjectOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ObjectOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -914,7 +918,7 @@ int Tdi1ObjectOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute_
 	Return performance in action information.
 	        performance_field = PERFORMANCE_OF(action)
 */
-int Tdi1PerformanceOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[],
+int Tdi1PerformanceOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[],
 		      struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -945,7 +949,7 @@ int Tdi1PerformanceOf(opcode_t opcode __attribute__ ((unused)), int narg __attri
 	Return phase in dispatch information.
 	        phase_field = PHASE_OF(dispatch)
 */
-int Tdi1PhaseOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1PhaseOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -961,7 +965,7 @@ int Tdi1PhaseOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return procedure using a language.
 	        procedure_field = PROCEDURE_OF(procedure)
 */
-int Tdi1ProcedureOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ProcedureOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -988,7 +992,7 @@ int Tdi1ProcedureOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 	Return program used by program.
 	        program_field = PROGRAM_OF(program)
 */
-int Tdi1ProgramOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ProgramOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1020,7 +1024,7 @@ int Tdi1ProgramOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 	        type = QUALIFIERS_OF(dispatch)
 	        opcode = QUALIFIERS_OF(function)
 */
-int Tdi1QualifiersOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1QualifiersOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1068,7 +1072,7 @@ int Tdi1QualifiersOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
 	        raw_field = RAW_OF(signal)
 	        data = RAW_OF(other)
 */
-int Tdi1RawOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1RawOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1097,7 +1101,7 @@ int Tdi1RawOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ (
 	        routine_field = ROUTINE_OF(call)
 	        routine_field = ROUTINE_OF(routine)
 */
-int Tdi1RoutineOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1RoutineOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1129,7 +1133,7 @@ int Tdi1RoutineOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 	        step_field = SLOPE_OF(range)
 	        slope_field = SLOPE_OF(slope,[n]) !deprecated!
 */
-int Tdi1SlopeOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1SlopeOf(opcode_t opcode UNUSED_ARGUMENT, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   static const dtype_t one_val = 1;
@@ -1179,7 +1183,7 @@ int Tdi1SlopeOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
 	        same = TASK_OF(routine)
 	        same = TASK_OF(method)
 */
-int Tdi1TaskOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1TaskOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1226,7 +1230,7 @@ int Tdi1TaskOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	        time_out_field = TIME_OUT_OF(routine)
 	        time_out_field = TIME_OUT_OF(method)
 */
-int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1TimeoutOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1267,7 +1271,7 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 	        " " = UNITS_OF(other)
 	NEED thought about rescale of units, parameters...
 */
-int Tdi1UnitsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1UnitsOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   static const DESCRIPTOR(none, " ");
@@ -1295,7 +1299,7 @@ int Tdi1UnitsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return validation field of a parameter.
 	        validation_field = VALIDATION_OF(param)
 */
-int Tdi1ValidationOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ValidationOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1326,7 +1330,7 @@ int Tdi1ValidationOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
 	        data_field = VALUE_OF(with_units)
 	        data = VALUE_OF(other)
 */
-int Tdi1ValueOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1ValueOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1375,7 +1379,7 @@ int Tdi1ValueOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 	Return dispatch information.
 	        when_field = WHEN_OF(dispatch)
 */
-int Tdi1WhenOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1WhenOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
@@ -1392,7 +1396,7 @@ int Tdi1WhenOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 	        window_field = WINDOW_OF(dimension)
 	        same = WINDOW_OF(window)
 */
-int Tdi1WindowOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
+int Tdi1WindowOf(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;

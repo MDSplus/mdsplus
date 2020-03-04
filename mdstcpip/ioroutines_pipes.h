@@ -44,6 +44,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define close_pipe(p) close(p)
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct {
 #ifdef _WIN32
   HANDLE out;
@@ -68,7 +74,7 @@ static io_pipes_t *get_pipes(Connection* c){
   return (info_name && !strcmp(PROTOCOL, info_name) && len == sizeof(io_pipes_t)) ? p : 0;
 }
 
-static ssize_t io_send(Connection* c, const void *buffer, size_t buflen, int nowait __attribute__ ((unused))){
+static ssize_t io_send(Connection* c, const void *buffer, size_t buflen, int nowait UNUSED_ARGUMENT){
   io_pipes_t *p = get_pipes(c);
   if (!p) return -1;
 #ifdef _WIN32

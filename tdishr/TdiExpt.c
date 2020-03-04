@@ -35,12 +35,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <treeshr.h>
 
-
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 /*--------------------------------------------------------------
 	Default path name.
 */
-int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi3MdsDefault(struct descriptor *in_ptr UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   char value[4096];
   static const dtype_t dtype = DTYPE_T;
@@ -63,7 +67,7 @@ int Tdi3MdsDefault(struct descriptor *in_ptr __attribute__ ((unused)), struct de
 /*--------------------------------------------------------------
 	Experiment name.
 */
-int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi3Expt(struct descriptor *in_ptr UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   char value[39 - 7];
   int retlen, status;
@@ -87,7 +91,7 @@ int Tdi3Expt(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 /*--------------------------------------------------------------
 	Shot number identifier.
 */
-int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi3Shot(struct descriptor *in_ptr UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   int value;
   int retlen, status;
@@ -111,7 +115,7 @@ int Tdi3Shot(struct descriptor *in_ptr __attribute__ ((unused)), struct descript
 /*--------------------------------------------------------------
 	Shot number identifier converted to string.
 */
-int Tdi3Shotname(struct descriptor *in_ptr __attribute__ ((unused)), struct descriptor_xd *out_ptr)
+int Tdi3Shotname(struct descriptor *in_ptr UNUSED_ARGUMENT, struct descriptor_xd *out_ptr)
 {
   int value;
   int retlen, status;

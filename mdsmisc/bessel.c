@@ -145,6 +145,12 @@ Computes the surface integral for mode 0 of rebuilt emissivity
 
 #define SameSign(x, y) (((x)>0 && (y)>0)||((x)<0 && (y)<0))
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /* Private Routines */
 static double BessJ0(double x);
 static double BessJ1(double x);
@@ -490,7 +496,7 @@ EXPORT double **BesselStartRebuild(double r, int mc_max, int ms_max, int l_max)
   return j_temp;
 }
 
-EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max __attribute__ ((unused)), int l_max, double **j_temp, int mode,
+EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max UNUSED_ARGUMENT, int l_max, double **j_temp, int mode,
 			  int is_cosine)
 {
   double result = 0;
@@ -509,7 +515,7 @@ EXPORT double BesselRebuildModes(double *a, int mc_max, int ms_max __attribute__
   return result;
 }
 
-EXPORT double BesselRebuild(double r __attribute__ ((unused)), double theta, double *a, int mc_max, int ms_max, int l_max,
+EXPORT double BesselRebuild(double r UNUSED_ARGUMENT, double theta, double *a, int mc_max, int ms_max, int l_max,
 		     double **j_temp)
 {
   double result = 0, sum;
@@ -589,7 +595,7 @@ EXPORT Filter *BessInvar(float *fp, float *fs, float *ap, float *as, float *fc, 
   return Invariant(*fp, *fs, *ap, *as, *fc, out_n, FindBessPoles);
 }
 
-static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc __attribute__ ((unused)), int *N,
+static Complex *FindBessPoles(double Wp, double Ws, double ap, double as, double fc UNUSED_ARGUMENT, int *N,
 			      double *gain)
 {
   double norm_wp, norm_ws;

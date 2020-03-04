@@ -28,7 +28,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "mdsplus/mdsconfig.h"
 #include "testing.h"
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     if(!getenv("VALGRIND_TOOL") || strcmp("memcheck",getenv("VALGRIND_TOOL")))
 	SKIP_TEST("This test is supposed to run with valgrind memcheck");

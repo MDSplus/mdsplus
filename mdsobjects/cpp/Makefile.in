@@ -5,12 +5,12 @@ builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
-@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
+@MINGW_TRUE@IMPLIB=@MAKELIBDIR@MdsObjectsCppShr.dll.a
 
 CPPFLAGS += 
 CFLAGS += @SRBINCLUDE@
 CXXFLAGS += -Wno-deprecated $(CFLAGS) @CXXFLAGS@
-LIBS=-L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
+LIBS = -L@MAKESHLIBDIR@ @LIBS@ -lMdsShr -lTreeShr -lTdiShr -lMdsIpShr @SRBLIB@
 
 CXXSOURCES = \
 	mdsdataobjects.cpp mdstreeobjects.cpp mdsipobjects.cpp mdseventobjects.cpp mdsdatastreams.cpp
@@ -19,9 +19,10 @@ SOURCES = mdsdata.c mdstree.c
 
 OBJECTS = $(CXXSOURCES:.cpp=.o)  $(SOURCES:.c=.o)
 
-@VS_TRUE@ VSDLL=@MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
+@VS_TRUE@VSDLL = @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKELIBDIR@MdsObjectsCppShr-VS.lib @MAKELIBDIR@MdsObjectsCppShr-VS.exp
+@HAVE_WINE_TRUE@WINE = wine
 
-all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(VSDLL)
+all: @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(VSDLL)
 
 clean:
 	@ $(RM) $(OBJECTS)
@@ -33,32 +34,42 @@ depend:
 
 install: $(libdir)
 	$(INSTALL) -m 755  @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB) $(libdir)
-	@VS_TRUE@ $(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(libdir)
+	@VS_TRUE@$(INSTALL) -m 755 @MAKELIBDIR@MdsObjectsCppShr-VS.dll @MAKESHLIBDIR@*.lib $(libdir)
 	if test @SHARETYPE@ != .a ; then \
 		$(INSTALL) -m 644  @MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a $(libdir); \
 	fi;
 
-@MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
+@MINGW_TRUE@MAKE_IMPLIB = -Wl,--out-implib,$(IMPLIB)
 @MAKESHLIBDIR@@LIBPRE@MdsObjectsCppShr@SHARETYPE@ $(IMPLIB): $(OBJECTS)
 	$(CXX) $(TARGET_ARCH) $(OUTPUT_OPTION) $(LDFLAGS) @LINKSHARED@ $(OBJECTS) $(LIBS) -lTdiShr -lTreeShr -lMdsShr $(MAKE_IMPLIB) $(CXXFLAGS)
 
-@MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a : $(OBJECTS)
+@MAKELIBDIR@@LIBPRE@MdsObjectsCppShr.a: $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
 
 defs:
 	@mkdir -p $(top_builddir)/defs
 	@for i in $$(find @MAKESHLIBDIR@ -follow -name '*.dll'); do \
-	  deffile=$(top_builddir)/defs/$$(basename $${i/.dll/.def}) ;\
-	  gendef -a - $$i > $$deffile ;\
+		deffile=$(top_builddir)/defs/$$(basename $${i/.dll/.def}) ;\
+		gendef -a - $$i > $$deffile ;\
 	done
 
 .PHONY: defs
 
 ifneq "$(VSDLL)" ""
 
-$(VSDLL) : $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
-	@for i in $(top_builddir)/defs/*.def; do wine cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}"; done
-	wine cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@
+$(VSDLL): $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
+	@if [ "@VS_VER@" == "2017" ] || [ "@VS_VER@" == "2019" ]; then \
+		if [ "@WIN_PTHREADDIR@" == "" ]; then \
+			echo "Variable WIN_PTHREADDIR is undefined, cannot build MSVC compatible library!" ; \
+		else \
+			$(WINE) cmd.exe /C "set WIN_PTHREADDIR=@WIN_PTHREADDIR@ & set VS_VER=@VS_VER@ & set VC_VER=@VC_VER@ & set WK_VER=@WK_VER@ & ./visual-studio-build.bat" ; \
+		fi; \
+	else \
+		for i in $(top_builddir)/defs/*.def; do \
+			$(WINE) cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}" ; \
+		done ; \
+		$(WINE) cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@ ; \
+	fi;
 
 endif

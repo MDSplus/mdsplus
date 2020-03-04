@@ -51,6 +51,12 @@ written by
 #include "epoll.h"
 #include "udt.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 using namespace std;
 
 CEPoll::CEPoll():
@@ -107,7 +113,7 @@ int CEPoll::add_usock(const int eid, const UDTSOCKET& u, const int* events)
    return 0;
 }
 
-int CEPoll::add_ssock(const int eid, const SYSSOCKET& s, const int* events __attribute__ ((unused)))
+int CEPoll::add_ssock(const int eid, const SYSSOCKET& s, const int* events UNUSED_ARGUMENT)
 {
    CGuard pg(m_EPollLock);
 

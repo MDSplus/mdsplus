@@ -62,6 +62,12 @@ extern char *strsignal(int);
 volatile int error_jmp_state;
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 #define MSG_LEN 100
 
 static double default_timeout = TEST_DEFAULT_TIMEOUT;
@@ -220,7 +226,7 @@ void __test_assert_fail(const char *file, int line, const char *expr, ...)
 
 void __mark_point(const char *__assertion, const char *__file,
 	          ASSERT_LINE_TYPE __line, const char *__function
-		  __attribute__ ((unused)))
+		  UNUSED_ARGUMENT)
 {
     if(!suite) __test_init(__assertion,__file,__line);
     send_loc_info(__file, __line);
@@ -233,7 +239,7 @@ void __mark_point(const char *__assertion, const char *__file,
 
 void __assert_fail (const char *__assertion, const char *__file,
 	            ASSERT_LINE_TYPE __line, const char *__function
-		    __attribute__ ((unused)))
+		    UNUSED_ARGUMENT)
 {
     if(!suite) __test_init(__assertion,__file,__line);
     __test_assert_fail(__file,__line,__assertion,NULL);

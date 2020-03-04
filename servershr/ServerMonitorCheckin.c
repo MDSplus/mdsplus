@@ -60,9 +60,15 @@ int SERVER$MONITOR_CHECKIN(struct dsc$descriptor *server, void (*ast)(), int ast
 #include <servershr.h>
 #include "servershrp.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static void (*appAst)() = 0;
 
-static void eventAst(void *astprm, int msglen __attribute__ ((unused)), char *msg) {
+static void eventAst(void *astprm, int msglen UNUSED_ARGUMENT, char *msg) {
   (*appAst)(astprm,msg);
 }
 

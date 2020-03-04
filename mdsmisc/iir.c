@@ -85,7 +85,13 @@ which actually perform digital filtering.
 #include "filter.h"
 #include <mdsplus/mdsconfig.h>
 
-EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain __attribute__ ((unused)))
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+EXPORT Complex *FindFactors(Complex * poles, double fc, int n, double gain UNUSED_ARGUMENT)
 {
   int i, j;
   double currA;

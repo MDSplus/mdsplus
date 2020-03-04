@@ -36,10 +36,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 
-
 #include <../UdpEvents.c>
 #include "testing.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 //  utils   ////////////////////////////////////////////////////////////////////
@@ -58,7 +62,7 @@ static char * _new_unique_event_name(const char *prefix, ...) {
 }
 
 static int astCount = 0;
-void eventAst(void *arg, int len __attribute__ ((unused)), char *buf __attribute__ ((unused)) ) {
+void eventAst(void *arg, int len UNUSED_ARGUMENT, char *buf UNUSED_ARGUMENT ) {
     printf("received event in thread %ld, name=%s\n",
 	   syscall(__NR_gettid),
 	   (char *)arg);
@@ -209,7 +213,7 @@ void test_popEvent() {
 
 static void * _thread_action(void *arg) {
     (void)arg;
-    int status __attribute__ ((unused));
+    int status UNUSED_ARGUMENT;
     status = pthread_setcancelstate(PTHREAD_CANCEL_ENABLE,0);
     status = pthread_setcanceltype(PTHREAD_CANCEL_ASYNCHRONOUS,0);
     while(1) {
@@ -239,7 +243,7 @@ void test_pthread_cancel_Suppresstion() {
 
 
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
     test_handleMessage();
     test_pushEvent();

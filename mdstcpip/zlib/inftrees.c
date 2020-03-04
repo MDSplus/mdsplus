@@ -34,6 +34,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define BUILDFIXED		/* non ANSI compilers may not accept inffixed.h */
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 const char inflate_copyright[] = " inflate 1.1.3 Copyright 1995-1998 Mark Adler ";
 /*
   If you use the zlib library in a product, an acknowledgment is welcome
@@ -403,7 +409,7 @@ uIntf *bl;			/* literal desired/actual bit depth */
 uIntf *bd;			/* distance desired/actual bit depth */
 inflate_huft *FAR * tl;		/* literal/length tree result */
 inflate_huft *FAR * td;		/* distance tree result */
-z_streamp z __attribute__ ((unused));			/* for memory allocation */
+z_streamp z UNUSED_ARGUMENT;			/* for memory allocation */
 {
 #ifdef BUILDFIXED
   /* build fixed tables if not already */

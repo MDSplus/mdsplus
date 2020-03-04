@@ -32,11 +32,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mdsdcl_messages.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /***************************************************************
  * TclSetVersions:
  **************************************************************/
 
-EXPORT int TclSetVersions(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclSetVersions(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int status = 1;
 
@@ -71,7 +77,7 @@ EXPORT int TclSetVersions(void *ctx, char **error, char **output __attribute__ (
   return status;
 }
 
-EXPORT int TclShowVersions(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
+EXPORT int TclShowVersions(void *ctx UNUSED_ARGUMENT, char **error UNUSED_ARGUMENT, char **output)
 {
   int in_model, in_pulse, status;
   DBI_ITM itmlst[] =

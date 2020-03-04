@@ -59,6 +59,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <mds_stdarg.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiFaultHandler();
 extern int TdiData();
 extern int TdiDoFun();
@@ -86,7 +92,7 @@ static void tmp_cleanup(void* tmp_in) {
   for (; --tmp->n >= 0;)
     MdsFree1Dx(&tmp->a[tmp->n], NULL);
 }
-int Tdi1ExtFunction(opcode_t opcode __attribute__ ((unused)),
+int Tdi1ExtFunction(opcode_t opcode UNUSED_ARGUMENT,
 		    int narg,
 		    struct descriptor *list[],
 		    struct descriptor_xd *out_ptr)

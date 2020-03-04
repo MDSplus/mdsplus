@@ -57,6 +57,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strings.h>
 #include "tdithreadstatic.h"
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 int TdiGetRecord(int nid, mdsdsc_xd_t *out);
 
 extern int TdiEvaluate();
@@ -527,8 +533,8 @@ extern EXPORT int TdiGetNid(mdsdsc_t *in_ptr, int *nid_ptr) {
 	WARNING: $THIS is only defined within the subexpressions.
 	WARNING: Use of $THIS or $VALUE can be infinitely recursive.
 */
-int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
-	     mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr) {
+int Tdi1This(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT,
+	     mdsdsc_t *list[] UNUSED_ARGUMENT, mdsdsc_xd_t *out_ptr) {
   TDITHREADSTATIC_INIT;
   if (TDI_SELF_PTR)
     return MdsCopyDxXd((mdsdsc_t *)(TDI_SELF_PTR), out_ptr);
@@ -541,8 +547,8 @@ int Tdi1This(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 	This allows the data field of signals to reference the raw field of a signal
 	and the validation field of params to reference the value field of a param.
 */
-int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ ((unused)),
-	      mdsdsc_t *list[] __attribute__ ((unused)), mdsdsc_xd_t *out_ptr) {
+int Tdi1Value(opcode_t opcode UNUSED_ARGUMENT , int narg UNUSED_ARGUMENT,
+	      mdsdsc_t *list[] UNUSED_ARGUMENT, mdsdsc_xd_t *out_ptr) {
   TDITHREADSTATIC_INIT;
   if (TDI_SELF_PTR)
     switch (TDI_SELF_PTR->dtype) {
@@ -563,7 +569,7 @@ int Tdi1Value(opcode_t opcode __attribute__ ((unused)) , int narg __attribute__ 
 	        status = TdiData(&in, &out MDS_END_ARG)
 */
 static const dtype_t no_omits[] = { 0 };
-int Tdi1Data(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1Data(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT,
 	     mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   return tdi_get_data(no_omits, list[0], out_ptr);
 }
@@ -577,7 +583,7 @@ int Tdi1Data(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((
 	        UNITS(other)            UNITS(DATA(other) not stripping above)
 	        UNITS(other)            " "     (single blank to keep IDL happy)
 */
-int Tdi1Units(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
+int Tdi1Units(opcode_t opcode UNUSED_ARGUMENT, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   mdsdsc_r_t *rptr;
   mdsdsc_xd_t tmp = EMPTY_XD, uni[2];
   struct TdiCatStruct cats[3];
@@ -637,7 +643,7 @@ int Tdi1Units(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list
 	Caution. The units field may be null.
 	        status = TdiDataWithUnits(&in, &out MDS_END_ARG)
 */
-int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1DataWithUnits(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT,
 		      mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   static const dtype_t omits[] = { DTYPE_WITH_UNITS, 0 };
   DESCRIPTOR_WITH_UNITS(dwu, &missing_dsc, 0);
@@ -673,7 +679,7 @@ int Tdi1DataWithUnits(opcode_t opcode __attribute__ ((unused)), int narg __attri
 	Note that $VALUE would not be defined in that form.
 	Need we check that result is logical scalar?
 */
-int Tdi1Validation(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)),
+int Tdi1Validation(opcode_t opcode UNUSED_ARGUMENT, int narg UNUSED_ARGUMENT,
 		   mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   TDITHREADSTATIC_INIT;
   mdsdsc_r_t *rptr;

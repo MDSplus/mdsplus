@@ -49,6 +49,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define setenv(name,value,overwrite) _putenv_s(name,value)
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 typedef struct dclMacroList {
   char *name;			/*!<  macro name */
   int lines;			/*!<  number of lines in macro */
@@ -85,9 +91,9 @@ static int STOP_ON_FAIL = 1;
 	/****************************************************************
 	 * mdsdcl_exit:
 	 ****************************************************************/
-EXPORT int mdsdcl_exit(void *ctx __attribute__ ((unused)),
-		       char *error __attribute__ ((unused)),
-		       char *output __attribute__ ((unused)))
+EXPORT int mdsdcl_exit(void *ctx UNUSED_ARGUMENT,
+		       char *error UNUSED_ARGUMENT,
+		       char *output UNUSED_ARGUMENT)
 {
   return MdsdclEXIT;
 }
@@ -105,9 +111,9 @@ static clock_t cpu_start;
 #endif
 static struct timeval TIMER_START_TIME;
 
-EXPORT int mdsdcl_init_timer(void *ctx __attribute__ ((unused)),
-			     char *error __attribute__ ((unused)),
-			     char *output __attribute__ ((unused)))
+EXPORT int mdsdcl_init_timer(void *ctx UNUSED_ARGUMENT,
+			     char *error UNUSED_ARGUMENT,
+			     char *output UNUSED_ARGUMENT)
 {
   gettimeofday(&TIMER_START_TIME, 0);
 #ifdef HAVE_GETRUSAGE
@@ -118,7 +124,7 @@ EXPORT int mdsdcl_init_timer(void *ctx __attribute__ ((unused)),
   return MdsdclSUCCESS;
 }
 
-EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_show_timer(void *ctx UNUSED_ARGUMENT, char **error, char **output UNUSED_ARGUMENT)
 {
   struct timeval TIMER_NOW_TIME;
   long int esec = 0;
@@ -162,7 +168,7 @@ EXPORT int mdsdcl_show_timer(void *ctx __attribute__ ((unused)), char **error, c
 	/**************************************************************
 	 * mdsdcl_set_prompt:
 	 **************************************************************/
-EXPORT int mdsdcl_set_prompt(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_set_prompt(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char *prompt = 0;
   int status;
@@ -182,7 +188,7 @@ EXPORT int mdsdcl_set_prompt(void *ctx, char **error, char **output __attribute_
 	/****************************************************************
 	 * mdsdcl_type:
 	 ****************************************************************/
-EXPORT int mdsdcl_type(void *ctx, char **error __attribute__ ((unused)), char **output)
+EXPORT int mdsdcl_type(void *ctx, char **error UNUSED_ARGUMENT, char **output)
 {
   char *text = 0;
   cli_get_value(ctx, "P1", &text);
@@ -199,7 +205,7 @@ EXPORT int mdsdcl_type(void *ctx, char **error __attribute__ ((unused)), char **
 	 * mdsdcl_set_hyphen:
 	 ****************************************************************/
 
-EXPORT int mdsdcl_set_hyphen(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_set_hyphen(void *ctx UNUSED_ARGUMENT, char **error, char **output UNUSED_ARGUMENT)
 {
   *error = strdup("SET HYPHEN obsolete, no longer supported\n");
   return MdsdclSUCCESS;
@@ -216,7 +222,7 @@ int mdsdclVerify()
   return MDSDCL_VERIFY;
 }
 
-EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_set_verify(void *ctx, char **error UNUSED_ARGUMENT, char **output UNUSED_ARGUMENT)
 {
   char *verify = 0;
   cli_get_value(ctx, "P1", &verify);
@@ -228,7 +234,7 @@ EXPORT int mdsdcl_set_verify(void *ctx, char **error __attribute__ ((unused)), c
 	/****************************************************************
 	 * mdsdcl_define_symbol:
 	 ****************************************************************/
-EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   char *name=NULL, *value=NULL;
   int status = cli_get_value(ctx, "SYMBOL", &name);
@@ -256,7 +262,7 @@ EXPORT int mdsdcl_define_symbol(void *ctx, char **error, char **output __attribu
   return (status);
 }
 
-EXPORT int mdsdcl_env(void *ctx, char **error, char **output __attribute__ ((unused))){
+EXPORT int mdsdcl_env(void *ctx, char **error, char **output UNUSED_ARGUMENT){
   char *name, *value;
   int status = cli_get_value(ctx, "P1", &name);
   for (value=name ; value[0] && value[0]!='=' ; value++ );
@@ -289,7 +295,7 @@ extern int LibSpawn();
 	/**************************************************************
 	 * mdsdcl_spawn:
 	 **************************************************************/
-EXPORT int mdsdcl_spawn(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_spawn(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int notifyFlag;
   int waitFlag;
@@ -335,7 +341,7 @@ EXPORT char *mdsdclGetHistoryFile()
 	/****************************************************************
 	 * mdsdcl_set_command:
 	 ****************************************************************/
-EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int status;
   char *table = 0;
@@ -400,7 +406,7 @@ EXPORT int mdsdcl_set_command(void *ctx, char **error, char **output __attribute
 	/**************************************************************
 	 * mdsdcl_wait:
 	 **************************************************************/
-EXPORT int mdsdcl_wait(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_wait(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {				/* Return:  status                        */
   char *deltatime = 0;
   int status = MdsdclSUCCESS;
@@ -463,7 +469,7 @@ static dclMacroListPtr mdsdclNewMacro(char *name)
   return l;
 }
 
-EXPORT int mdsdcl_define(void *ctx, char **error, char **output __attribute__ ((unused)), char *(*getline) (), void *getlineinfo)
+EXPORT int mdsdcl_define(void *ctx, char **error, char **output UNUSED_ARGUMENT, char *(*getline) (), void *getlineinfo)
 {
   char *name = 0;
   char *line;
@@ -693,7 +699,7 @@ EXPORT int mdsdcl_do_macro(void *ctx, char **error, char **output)
   return status;
 }
 
-EXPORT int mdsdcl_delete_macro(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_delete_macro(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int status = MdsdclSUCCESS;
   char *name = 0;
@@ -741,7 +747,7 @@ EXPORT int mdsdcl_delete_macro(void *ctx, char **error, char **output __attribut
   return status;
 }
 
-EXPORT int mdsdcl_set_stoponfail(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
+EXPORT int mdsdcl_set_stoponfail(void *ctx, char **error UNUSED_ARGUMENT, char **output UNUSED_ARGUMENT)
 {
   if (cli_present(ctx, "ON") & 1)
     STOP_ON_FAIL = 1;

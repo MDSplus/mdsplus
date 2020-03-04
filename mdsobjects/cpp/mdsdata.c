@@ -122,10 +122,10 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 
 #define MAX_ARGS 128
 
-#ifdef _MSC_VER
-#define UNUSED_ARGUMENT
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
 #else
-#define UNUSED_ARGUMENT __attribute__ ((unused))
+#  define UNUSED_ARGUMENT
 #endif
 
 void *convertToCompoundDsc(int clazz UNUSED_ARGUMENT, int dtype, int length, void *ptr, int ndescs, void **descs)

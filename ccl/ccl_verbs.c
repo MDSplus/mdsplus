@@ -29,6 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <camshr.h>
 #include <mdsshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static int ParseQualifiers();
 static int CheckErrors();
 typedef struct {
@@ -227,7 +233,7 @@ static int CheckErrors(int status, IOSB * iosb, char **error, char **output)
   return status;
 }
 
-EXPORT int ccl_set_xandq(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
+EXPORT int ccl_set_xandq(void *ctx, char **error UNUSED_ARGUMENT, char **output UNUSED_ARGUMENT)
 {
   char *value = 0;
   if (cli_get_value(ctx, "x", &value) & 1) {
@@ -251,20 +257,20 @@ EXPORT int ccl_set_xandq(void *ctx, char **error __attribute__ ((unused)), char 
   return 1;
 }
 
-EXPORT int ccl_set_module(void *ctx, char **error __attribute__ ((unused)), char **output __attribute__ ((unused)))
+EXPORT int ccl_set_module(void *ctx, char **error UNUSED_ARGUMENT, char **output UNUSED_ARGUMENT)
 {
   int status = cli_get_value(ctx, "name", &DefName) & 1;
   return status;
 }
 
-EXPORT int ccl_show_module(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
+EXPORT int ccl_show_module(void *ctx UNUSED_ARGUMENT, char **error UNUSED_ARGUMENT, char **output)
 {
   *output = malloc((DefName ? strlen(DefName) : 12) + 100);
   sprintf(*output, "Module set to %s\n", DefName ? DefName : "<undefined>");
   return 1;
 }
 
-EXPORT int ccl_show_status(void *ctx __attribute__ ((unused)), char **error __attribute__ ((unused)), char **output)
+EXPORT int ccl_show_status(void *ctx UNUSED_ARGUMENT, char **error UNUSED_ARGUMENT, char **output)
 {
   *output = malloc(100);
   sprintf(*output,"Last status = 0x%x, iosb status = 0x%x, bytcnt = %d, %s, %s\n",
@@ -273,7 +279,7 @@ EXPORT int ccl_show_status(void *ctx __attribute__ ((unused)), char **error __at
   return 1;
 }
 
-EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char **output)
+EXPORT int ccl_show_data(void *ctx, char **error UNUSED_ARGUMENT, char **output)
 {
   int *d32 = (int *)D;
   short *d16 = (short *)D;
@@ -340,16 +346,16 @@ EXPORT int ccl_show_data(void *ctx, char **error __attribute__ ((unused)), char 
   return 1;
 }
 
-EXPORT int ccl_set_verbose(void *cts __attribute__ ((unused)),
-			   char **error __attribute__ ((unused)),
-			   char **output __attribute ((unused)))
+EXPORT int ccl_set_verbose(void *cts UNUSED_ARGUMENT,
+			   char **error UNUSED_ARGUMENT,
+			   char **output UNUSED_ARGUMENT)
 {
   return CamVerbose(1);
 }
 
-EXPORT int ccl_set_noverbose(void *cts __attribute__ ((unused)),
-			     char **error __attribute__ ((unused)),
-			     char **output __attribute__ ((unused)))
+EXPORT int ccl_set_noverbose(void *cts UNUSED_ARGUMENT,
+			     char **error UNUSED_ARGUMENT,
+			     char **output UNUSED_ARGUMENT)
 {
   return CamVerbose(0);
 }

@@ -26,9 +26,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <mdsplus/mdsconfig.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern unsigned short RemCamLastIosb[4];
 
-int RemCamVerbose(int flag __attribute__ ((unused)))
+int RemCamVerbose(int flag UNUSED_ARGUMENT)
 {
   return 1;
 }

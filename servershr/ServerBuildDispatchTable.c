@@ -66,6 +66,13 @@ int ServerBuildDispatchTable( )
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include "servershrp.h"
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiDeallocate();
 extern int TdiDispatchOf();
 extern int TdiExecute();
@@ -152,7 +159,7 @@ static int fixup_path(struct descriptor *path_in, int idx, struct descriptor_d *
   return flag;
 }
 
-static int make_idents(struct descriptor *path_in, int idx __attribute__ ((unused)), struct descriptor *path_out __attribute__ ((unused)))
+static int make_idents(struct descriptor *path_in, int idx UNUSED_ARGUMENT, struct descriptor *path_out UNUSED_ARGUMENT)
 {
   if (path_in && path_in->pointer && path_in->pointer[0] == '_')
     path_in->dtype = DTYPE_IDENT;

@@ -44,6 +44,12 @@
 #include <strroutines.h>
 #include <unistd.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int ServerMonitorCheckin();
 extern int str_element();
 
@@ -169,7 +175,7 @@ static void QEvent(LinkedEvent * ev){
   pthread_mutex_unlock(&event_mutex);
 }
 
-static void MessageAst(void* dummy __attribute__ ((unused)), char *reply){
+static void MessageAst(void* dummy UNUSED_ARGUMENT, char *reply){
   LinkedEvent *event = malloc(sizeof(LinkedEvent));
   event->msg = NULL;
   if (!parseMsg(reply, event)) {

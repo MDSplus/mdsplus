@@ -33,6 +33,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <dcl.h>
 #include <treeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_DO_METHOD.C --
 *
@@ -48,7 +54,7 @@ extern void TdiGetLong();
 	/****************************************************************
 	 * TclDoMethod:
 	 ****************************************************************/
-EXPORT int TclDoMethod(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclDoMethod(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   int i;
   int argc;

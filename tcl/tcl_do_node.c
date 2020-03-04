@@ -31,6 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <treeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /**********************************************************************
 * TCL_DO_NODE.C --
 *
@@ -46,7 +52,7 @@ extern int TdiDoTask();
 	/***************************************************************
 	 * TclDoNode:
 	 ***************************************************************/
-EXPORT int TclDoNode(void *ctx, char **error, char **output __attribute__ ((unused)))
+EXPORT int TclDoNode(void *ctx, char **error, char **output UNUSED_ARGUMENT)
 {
   INIT_STATUS, retstatus;
   char *nodnam = NULL;

@@ -31,6 +31,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "treeshrp.h"
 #include <ctype.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern void **TreeCtx();
 /*
  * Exported routines
@@ -232,7 +238,7 @@ EXPORT int _TreeFindNodeRelative(void *dbid, char const *path, int startnid, int
   return (status & 1) ? TreeSUCCESS : status;
 }
 
-EXPORT int _TreeFindNodeEnd(void *dbid __attribute__ ((unused)), void **ctx)
+EXPORT int _TreeFindNodeEnd(void *dbid UNUSED_ARGUMENT, void **ctx)
 {
   if (ctx) {
     if (*ctx) {

@@ -36,7 +36,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CSTRING_TEST0 "this is a test"
 #define CSTRING_TEST1 "THIS IS A TEST"
 
-int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
+int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
 {
 
     long status;

@@ -13,6 +13,12 @@
 
 #define DEFAULT_STACKSIZE 0x800000
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 // helper for reentrant mutex
 #ifndef PTHREAD_MUTEX_RECURSIVE
 # ifdef PTHREAD_MUTEX_RECURSIVE_NP
@@ -60,7 +66,7 @@ int rv = gettimeofday(&now, NULL);\
 #endif
 
 // FREE
-static void __attribute__((unused)) free_if(void *ptr){
+static void UNUSED_ARGUMENT free_if(void *ptr){
   free(*(void**)ptr);
 }
 #define FREE_ON_EXIT(ptr)   pthread_cleanup_push(free_if, (void*)&ptr)
@@ -72,7 +78,7 @@ static void __attribute__((unused)) free_if(void *ptr){
 
 // FCLOSE
 #include <stdio.h>
-static void __attribute__((unused)) fclose_if(void *ptr){
+static void UNUSED_ARGUMENT fclose_if(void *ptr){
   if (*(FILE**)ptr) fclose(*(FILE**)ptr);
 }
 #define FCLOSE_ON_EXIT(ptr)   pthread_cleanup_push(fclose_if, (void*)&ptr)

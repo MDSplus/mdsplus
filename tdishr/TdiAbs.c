@@ -75,6 +75,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include <int128.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int TdiConvert();
 extern int TdiUnary();
 extern int Tdi3Multiply();
@@ -431,7 +437,7 @@ int Tdi3Inot(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
+int Tdi3Logical(struct descriptor *in_ptr, struct descriptor *kind UNUSED_ARGUMENT, struct descriptor *out_ptr)
 {
   INIT_STATUS;
   int out_count = 1;
@@ -470,7 +476,7 @@ int Tdi3Not(struct descriptor *in_ptr, struct descriptor *out_ptr)
   return status;
 }
 
-int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind __attribute__ ((unused)), struct descriptor *out_ptr)
+int Tdi3Nint(struct descriptor *in_ptr, struct descriptor *kind UNUSED_ARGUMENT, struct descriptor *out_ptr)
 {
   INIT_STATUS;
   int out_count = 1;

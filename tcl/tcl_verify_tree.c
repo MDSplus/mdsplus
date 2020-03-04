@@ -29,6 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <treeshr.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 /***********************************************************************
 * TCL_VERIFY_TREE.C --
 *
@@ -42,7 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	/***************************************************************
 	 * TclVerifyTree:
 	 ***************************************************************/
-EXPORT int TclVerifyTree(void *ctx __attribute__ ((unused)), char **error, char **output __attribute__ ((unused)))
+EXPORT int TclVerifyTree(void *ctx UNUSED_ARGUMENT, char **error, char **output UNUSED_ARGUMENT)
 {				/* Returns: status                        */
   int sts;
 

@@ -57,7 +57,7 @@ qualval {unquoted_value_3}|{quoted_value}
   return(COMMENT);
   }
 
-^[[:blank:]]*/{name} {
+^[[:blank:]]\*/{name} {
  if (debug) printf("Begin command\n");
  BEGIN command;
  }
@@ -69,7 +69,6 @@ qualval {unquoted_value_3}|{quoted_value}
  return(CMDFILE);
  }
  
- /* <command>{name}/[[:blank:]/] {*/
 <command>{name} {
  if (debug) printf("got verb %s\n",yytext);
  yylval->str=strdup(yytext);
@@ -77,7 +76,7 @@ qualval {unquoted_value_3}|{quoted_value}
  return(VERB);
  }
 
-<verb>\/{name}/[[:blank:]]*=[[:blank:]]* {
+<verb>\/{name}/[[:blank:]]\*=[[:blank:]]\* {
  if (debug) printf("got qualifier with value %s\n",yytext);
  yylval->str=strdup(yytext+1);
  BEGIN qualifier_with_value;
@@ -102,7 +101,7 @@ qualval {unquoted_value_3}|{quoted_value}
  return(EQUALS);
  }
 
-<qualval_list>{qualval}/[[:blank:]]*\) {
+<qualval_list>{qualval}/[[:blank:]]\*\) {
  if (debug) printf("got last qualval |%s|\n",yytext);
  yylval->str=strdup(yytext);
  return(VALUE);
@@ -112,7 +111,7 @@ qualval {unquoted_value_3}|{quoted_value}
  BEGIN verb;
  }
 
-<qualval_list>{qualval}/[[:blank:]]*, {
+<qualval_list>{qualval}/[[:blank:]]\*, {
  if (debug) printf("got a qualval=%s\n",yytext);
  yylval->str=strdup(yytext);
  return(VALUE);
@@ -133,7 +132,7 @@ qualval {unquoted_value_3}|{quoted_value}
    unput(yytext[0]);
  }
 
-<rest_of_line>.* {int i;
+<rest_of_line>.\* {int i;
 		 restOfLine = strdup(yytext);
 		 for(i=strlen(restOfLine)-1;i>=0;i--)
 		   unput(restOfLine[i]);

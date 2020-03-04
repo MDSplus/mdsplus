@@ -51,6 +51,13 @@ typedef const LPBYTE LPCBYTE;
 #include <mdsplus/mdsconfig.h>
 #include <mdsdescrip.h>
 #include <status.h>
+
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static LOGINREC *loginrec = 0;
 static DBPROCESS *dbproc = 0;
 
@@ -92,7 +99,7 @@ static void SetMsgLen() {
   DBMSGTEXT_DSC.length=strlen(DBMSGTEXT);
 }
 
-static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused)), int dberr, int oserr,
+static int Err_Handler(DBPROCESS * dbproc, int severity UNUSED_ARGUMENT, int dberr, int oserr,
 		       cnst char *dberrstr, cnst char *oserrstr)
 {
 #ifdef WIN32
@@ -121,7 +128,7 @@ static int Err_Handler(DBPROCESS * dbproc, int severity __attribute__ ((unused))
 }
 
 /*------------------------------MESSAGE HANDLER------------------------------*/
-  static int Msg_Handler(DBPROCESS * dbproc __attribute__ ((unused)), DBINT msgno, int msgstate, int severity,
+  static int Msg_Handler(DBPROCESS * dbproc UNUSED_ARGUMENT, DBINT msgno, int msgstate, int severity,
 		       cnst char *msgtext, cnst char *servername, cnst char *procname,
 		       DBUSMALLINT line)
 {

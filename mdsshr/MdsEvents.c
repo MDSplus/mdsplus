@@ -51,6 +51,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define EVENT_THREAD_STACK_SIZE_MIN 102400
 #endif
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 static int receive_ids[256];	/* Connection to receive external events  */
 static int send_ids[256];	/* Connection to send external events  */
 static int receive_sockets[256];	/* Socket to receive external events  */
@@ -336,7 +342,7 @@ static void KillHandler()
 {
 }
 
-static void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg UNUSED_ARGUMENT)
 {
   Poll(handleRemoteEvent);
   return NULL;
@@ -372,7 +378,7 @@ static void KillHandler()
   external_thread_created = 0;
 }
 
-static void *handleRemoteAst(void *arg __attribute__ ((unused)))
+static void *handleRemoteAst(void *arg UNUSED_ARGUMENT)
 {
   INIT_STATUS;
   char buf[16];
@@ -417,7 +423,7 @@ static void *handleRemoteAst(void *arg __attribute__ ((unused)))
 
 #endif//GLOBUS
 
-static int searchOpenServer(char *server __attribute__ ((unused)))
+static int searchOpenServer(char *server UNUSED_ARGUMENT)
 /* Avoid doing MdsConnect on a server already connected before
  * for now, allow socket duplications
  */{

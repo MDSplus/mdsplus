@@ -91,6 +91,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <string.h>
 
+#if defined(__GNUC__ ) || defined(__clang__)
+#  define UNUSED_ARGUMENT __attribute__((__unused__))
+#else
+#  define UNUSED_ARGUMENT
+#endif
+
 extern int Tdi2Mask2();
 extern int Tdi2Mask3();
 extern int Tdi2Mask3L();
@@ -444,7 +450,7 @@ int Tdi1Trans(int opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 	        logical = ALL(mask, [dim])
 */
 int Tdi3All(mdsdsc_t *in_ptr,
-	    mdsdsc_t *pmask __attribute__ ((unused)),
+	    mdsdsc_t *pmask UNUSED_ARGUMENT,
 	    mdsdsc_t *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -468,7 +474,7 @@ int Tdi3All(mdsdsc_t *in_ptr,
 	        logical = ANY(mask, [dim])
 */
 int Tdi3Any(mdsdsc_t *in_ptr,
-	    mdsdsc_t *pmask __attribute__ ((unused)),
+	    mdsdsc_t *pmask UNUSED_ARGUMENT,
 	    mdsdsc_t *out_ptr,
 	    int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -493,7 +499,7 @@ int Tdi3Any(mdsdsc_t *in_ptr,
 	        vector-long = COUNT(mask, dim)
 */
 int Tdi3Count(mdsdsc_t *in_ptr,
-	      mdsdsc_t *pmask __attribute__ ((unused)),
+	      mdsdsc_t *pmask UNUSED_ARGUMENT,
 	      mdsdsc_t *out_ptr,
 	      int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -519,7 +525,7 @@ int Tdi3Count(mdsdsc_t *in_ptr,
 	        array-logical = FIRSTLOC(mask, [dim])
 */
 int Tdi3FirstLoc(mdsdsc_t *in_ptr,
-		 mdsdsc_t *pmask __attribute__ ((unused)),
+		 mdsdsc_t *pmask UNUSED_ARGUMENT,
 		 mdsdsc_t *out_ptr,
 		 int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -544,7 +550,7 @@ int Tdi3FirstLoc(mdsdsc_t *in_ptr,
 	        array-logical = LASTLOC(mask, [dim])
 */
 int Tdi3LastLoc(mdsdsc_t *in_ptr,
-		mdsdsc_t *pmask __attribute__ ((unused)),
+		mdsdsc_t *pmask UNUSED_ARGUMENT,
 		mdsdsc_t *out_ptr,
 		int count0, int count1, int count2, int step0, int step1, int step2)
 {
@@ -572,11 +578,11 @@ int Tdi3LastLoc(mdsdsc_t *in_ptr,
 int Tdi3Replicate(mdsdsc_t *in_ptr,
 		  mdsdsc_t *pmask,
 		  mdsdsc_t *out_ptr,
-		  int count0 __attribute__ ((unused)),
-		  int count1 __attribute__ ((unused)),
+		  int count0 UNUSED_ARGUMENT,
+		  int count1 UNUSED_ARGUMENT,
 		  int count2,
-		  int step0 __attribute__ ((unused)),
-		  int step1 __attribute__ ((unused)),
+		  int step0 UNUSED_ARGUMENT,
+		  int step1 UNUSED_ARGUMENT,
 		  int step2)
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
@@ -596,10 +602,10 @@ int Tdi3Replicate(mdsdsc_t *in_ptr,
 int Tdi3Spread(mdsdsc_t *in_ptr,
 	       mdsdsc_t *pmask,
 	       mdsdsc_t *out_ptr,
-	       int count0, int count1 __attribute__ ((unused)),
+	       int count0, int count1 UNUSED_ARGUMENT,
 	       int count2, int step0,
-	       int step1 __attribute__ ((unused)),
-	       int step2 __attribute__ ((unused)))
+	       int step1 UNUSED_ARGUMENT,
+	       int step2 UNUSED_ARGUMENT)
 {
   char *pin = in_ptr->pointer, *pout = out_ptr->pointer;
   int j0, j1, ncopies = *(int *)pmask;
