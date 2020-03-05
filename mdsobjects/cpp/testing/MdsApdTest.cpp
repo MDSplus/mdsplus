@@ -33,7 +33,7 @@ using namespace MDSplus;
 using namespace testing;
 
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(Apd);
     SKIP_TEST("Apd test is not implemented yet");

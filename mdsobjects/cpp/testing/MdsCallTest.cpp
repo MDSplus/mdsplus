@@ -39,7 +39,7 @@ using namespace testing;
 /// This test refers to three C functions compiled into a shared library that
 /// should be present in ./testutils/libMdsTestDummy.so
 
-int main(int,char **argv UNUSED_ARGUMENT) {
+int main(int,char **argv __attribute__ ((unused))) {
     BEGIN_TESTING(Call);
 
     SKIP_TEST("Skipping this tests for now .. call fails if a full .so path is passed");

@@ -61,7 +61,7 @@ static void* seteventdata(void* args) {
   return NULL;
 }
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     BEGIN_TESTING(Event);
     pthread_attr_t attr, *attrp;

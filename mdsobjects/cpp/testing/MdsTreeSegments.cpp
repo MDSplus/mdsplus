@@ -123,7 +123,7 @@ void BlockAndRows(){
 
 
 #define TEST(prcedure) do{BEGIN_TESTING(prcedure); prcedure(); END_TESTING;}while(0)
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT){
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused))){
     setenv("t_treeseg_path",".",1);
     TEST(putSegment);
     TEST(BlockAndRows);

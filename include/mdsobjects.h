@@ -1,5 +1,7 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
+#include <mdsplus/mdsconfig.h>
+
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -15,16 +17,6 @@
  #include <windows.h>
 #else
  #include <sys/types.h>
- //#include <sys/ipc.h>
- //#include <sys/sem.h>
- //#include <semaphore.h>
-#endif
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h> // should be removed from here //
-#endif
-#ifdef WINDOWS_H
-#define __attribute__(arg)
-#define EXPORT __declspec(dllexport)
 #endif
 
 #include <dbidef.h>

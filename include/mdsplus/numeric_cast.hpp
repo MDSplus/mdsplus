@@ -1,16 +1,11 @@
 #ifndef NUMERIC_CAST_HPP
 #define NUMERIC_CAST_HPP
 
+#include <mdsplus/mdsconfig.h>
 
-//#include <math.h>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#ifdef _MSC_VER
-#define UNUSED_ARGUMENT
-#else
-#define UNUSED_ARGUMENT __attribute__ ((unused))
-#endif
 
 #include "mdsplus/Traits.hpp"
 

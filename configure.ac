@@ -1274,7 +1274,16 @@ AC_MSG_RESULT([$enable_wconversion])
 dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
 dnl add here what goes on tom of mdsconfig.h
-AH_TOP()
+AH_TOP(
+#pragma once
+#ifdef _MSC_VER
+#define __attribute__(...)
+#define EXPORT __declspec(dllexport)
+#endif
+#ifdef WINDOWS_H
+#define MDS_ATTR_FALLTHROUGH
+#else
+)
 
 AC_DEFINE_UNQUOTED([EVENT_THREAD_STACK_SIZE_MIN],[1048576],["event handler thread min stack size [1MB]"])
 
@@ -1308,7 +1317,10 @@ AH_VERBATIM([_WIN32], [
 ])
 
 dnl add here what goes on bottom of mdsconfig.h
-AH_BOTTOM()
+AH_BOTTOM(
+#endif // WINDOWS_H else
+)
+
 
 
 dnl define custom direcotries substitution

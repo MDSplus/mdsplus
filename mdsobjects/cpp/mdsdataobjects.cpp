@@ -677,7 +677,7 @@ double Data::getDouble()
 	return scalar.ptr->getDouble();
 }
 
-Data * Data::getDimensionAt(int dimIdx UNUSED_ARGUMENT) {
+Data * Data::getDimensionAt(int dimIdx __attribute__ ((unused))) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
