@@ -2,11 +2,8 @@
 
 #define MDSTYPES_H
 
-#ifdef WINDOWS_H
-#include <stdint.h>
-#endif
-
 #ifdef _MSC_VER
+#include <stdint.h>
 
 #ifndef _OFF_T_DEFINED
 typedef __int64 off_t;

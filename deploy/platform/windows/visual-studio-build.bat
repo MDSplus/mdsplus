@@ -55,10 +55,11 @@ lib /def:%DEFS%\MdsServerShr.def /out:%BUILD32%\bin_x86\MdsServerShr.lib /machin
 
 REM Use Visual studio compiler to compile the CPP modules
 
+REM _WINDOWS - required for zlib
 SET CL_OPTS=/c /I"%SRCDIR%\include" /I"%BUILD64%\include" /I"%SRCDIR%\tdishr" /MP ^
  /Fp"MdsObjectsCppShr-VS.pch" /diagnostics:classic /Fd"\tmp\vc141.pdb" ^
  /Zc:wchar_t /Zc:inline /fp:precise /Zc:forScope ^
- /D WINDOWS_H /D _WINDOWS /D _USRDLL /D _WINDLL /D MDSOBJECTSCPPSHRVS_EXPORTS ^
+ /D _WINDOWS /D _USRDLL /D _WINDLL /D MDSOBJECTSCPPSHRVS_EXPORTS ^
  /W1 /WX- /WL /D _CRT_SECURE_NO_WARNINGS ^
  /O1 /GS /Gm- /Gw /Gd /MD /EHsc /nologo
 

@@ -787,7 +787,7 @@ fi
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h)
-AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
+AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h sys/resource.h)
 AC_CHECK_HEADERS(malloc.h alloca.h)
 
 
@@ -1239,8 +1239,6 @@ AH_TOP(
 #ifdef _MSC_VER
 #define __attribute__(...)
 #define EXPORT __declspec(dllexport)
-#endif
-#ifdef WINDOWS_H
 #define MDS_ATTR_FALLTHROUGH
 #else
 )
@@ -1278,7 +1276,7 @@ AH_VERBATIM([_WIN32], [
 
 dnl add here what goes on bottom of mdsconfig.h
 AH_BOTTOM(
-#endif // WINDOWS_H else
+#endif // _MSC_VER else
 )
 
 

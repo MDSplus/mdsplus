@@ -7,14 +7,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
-#else
-#ifdef EXPORT
-#undef EXPORT
-#endif
-#define EXPORT
-#endif
 #include <mdstypes.h>
 
 #define TreeBLOCKID 0x3ade68b1
