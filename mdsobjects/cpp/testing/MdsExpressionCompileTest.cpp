@@ -100,7 +100,7 @@ void MultiThreadTest(int ncmd, const char* cmds[]) {
 
 
 #define TEST_INT(cmd,value) do{MDSplus::Data* d=MDSplus::execute(cmd);TEST1(d->getInt()==value);delete d;} while(0)
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT){
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused))){
     BEGIN_TESTING(ExpressionCompile);
     delete MDSplus::execute("_s=[1,2,3]");
     TEST_INT("public _s = 3",3);

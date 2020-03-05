@@ -1,5 +1,7 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
+#include <mdsplus/mdsconfig.h>
+
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -15,17 +17,8 @@
  #include <windows.h>
 #else
  #include <sys/types.h>
- //#include <sys/ipc.h>
- //#include <sys/sem.h>
- //#include <semaphore.h>
 #endif
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h> // should be removed from here //
-#endif
-#ifdef WINDOWS_H
-#define __attribute__(arg)
-#define EXPORT __declspec(dllexport)
-#endif
+#include <mdsplus/mdsconfig.h>
 
 #include <dbidef.h>
 #include <ncidef.h>
@@ -254,7 +247,7 @@ public:
     }
 
     /// \return true if this and data match, false otherwise and as default
-    virtual bool equals(Data *data UNUSED_ARGUMENT) { return false; }
+    virtual bool equals(Data *data __attribute__ ((unused))) { return false; }
 
     /// \return Return the result of TDI evaluate
     Data *evaluate();
@@ -319,7 +312,7 @@ public:
     virtual std::vector<uint64_t> getLongUnsignedArray();
     virtual double * getDoubleArray(int *numElements);
     virtual std::vector<double> getDoubleArray();
-    virtual std::complex<double> * getComplexArray(int *numElements UNUSED_ARGUMENT) {
+    virtual std::complex<double> * getComplexArray(int *numElements __attribute__ ((unused))) {
 	throw MdsException("getComplexArray() not supported for non Complex data types"); }
     virtual std::vector<std::complex<double> > getComplexArray();
     virtual char ** getStringArray(int *numElements) {
@@ -874,7 +867,7 @@ public:
 	init(val, std::string(val).size(), units, error, help, validation);
     }
 
-    String(unsigned char *uval, int len UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int len __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 	// FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
 	// FIXME: Warning: Do not use this constructor in user code
 	char * val = reinterpret_cast<char *>(uval);
@@ -882,7 +875,7 @@ public:
     }
 
     //GAB  definition in order to avoid breaking LabVIEW
-    String(unsigned char *uval, int numDims UNUSED_ARGUMENT, int *dims UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int numDims __attribute__ ((unused)), int *dims __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 	char * val = reinterpret_cast<char *>(uval);
 	init(val, std::string(val).size(), units, error, help, validation);
     }
@@ -4232,7 +4225,7 @@ public:
     ~Connection();
     void openTree(char *tree, int shot);
     void closeAllTrees();
-    void closeTree(char *tree UNUSED_ARGUMENT, int shot UNUSED_ARGUMENT)
+    void closeTree(char *tree __attribute__ ((unused)), int shot __attribute__ ((unused)))
     {
 	closeAllTrees();
     }

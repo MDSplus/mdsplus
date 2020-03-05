@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #ifdef _MSC_VER
-inline int nanosleep(const struct timespec *req, struct timespec *rem UNUSED_ARGUMENT)
+inline int nanosleep(const struct timespec *req, struct timespec *rem __attribute__ ((unused)))
 {
 	DWORD sleep_ms = ((DWORD)req->tv_sec * 1000) + ((DWORD)req->tv_nsec / 1000000);
 	Sleep(sleep_ms);
@@ -370,7 +370,7 @@ EXPORT void *getNewSamplesSerializedXd()
 
 
 ///Periodically check the list of registered data items for new data availability
-void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
+void *monitorStreamInfo(void *par __attribute__ ((unused)))
 {
 	struct timespec waitTime;
 	waitTime.tv_sec = 0;
