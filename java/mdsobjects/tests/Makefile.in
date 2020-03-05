@@ -1490,9 +1490,9 @@ $(DEPENDENCIES):
 	@ echo $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(dir $@)
 
-@USE_JARS_DIR_TRUE@tests.jar: @JARS_DIR@$(subst $(abs_top_srcdir),,$(abs_srcdir))/tests.jar
+@USE_JARS_DIR_TRUE@$(java_DATA): @JARS_DIR@$(subst $(abs_top_srcdir),,$(abs_srcdir))/tests.jar
 @USE_JARS_DIR_TRUE@	cp $< $@
-@USE_JARS_DIR_FALSE@tests.jar: $(TAPTEST_JAR) $(DEPENDENCIES) $(JAVAROOT) classjava.stamp
+@USE_JARS_DIR_FALSE@$(java_DATA): $(TAPTEST_JAR) $(DEPENDENCIES) $(JAVAROOT) classjava.stamp
 @USE_JARS_DIR_FALSE@	@ echo "Creating JAR: $@ ...";\
 @USE_JARS_DIR_FALSE@	$(JAR) cf $@ -C $(JAVAROOT) .
 
@@ -1500,7 +1500,7 @@ $(DEPENDENCIES):
 install-javaDATA: $(java_DATA)
 
 @SKIP_JUNIT_TRUE@$(TESTS):
-@SKIP_JUNIT_FALSE@$(TESTS): $(MAIN_JARS) $(TAPTEST_JAR) tests.jar
+@SKIP_JUNIT_FALSE@$(TESTS): $(MAIN_JARS) $(TAPTEST_JAR) $(java_DATA)
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -26,7 +26,8 @@ cd %OLDDIR%
 
 REM A subset of the Visual Studio binaries, libs and headers
 REM Change VSVER, VCVER and WKVER to use your current version of Visual Studio and SDK
-REM By default, VS2019 with compiler 14.24.28314 and WDK 10.0.17134.0 (Windows 1803)
+REM VS2017 => compiler 14.12.25827 and WDK 10.0.16299.0 (Windows 1709)
+REM VS2019 => compiler 14.24.28314 and WDK 10.0.17134.0 (Windows 1803)
 if defined VS_VER (
 	set VSVER=%VS_VER%
 ) else (

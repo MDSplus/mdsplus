@@ -63,13 +63,15 @@ $(VSDLL): $(CXXSOURCES) $(SOURCES) $(IMPLIB) defs
 		if [ "@WIN_PTHREADDIR@" == "" ]; then \
 			echo "Variable WIN_PTHREADDIR is undefined, cannot build MSVC compatible library!" ; \
 		else \
-			$(WINE) cmd.exe /C "set WIN_PTHREADDIR=@WIN_PTHREADDIR@ & set VS_VER=@VS_VER@ & set VC_VER=@VC_VER@ & set WK_VER=@WK_VER@ & ./visual-studio-build.bat" ; \
+@HAVE_WINE_TRUE@			$(WINE) cmd.exe /C "set WIN_PTHREADDIR=@WIN_PTHREADDIR@ & set VS_VER=@VS_VER@ & set VC_VER=@VC_VER@ & set WK_VER=@WK_VER@ & visual-studio-build.bat" ; \
+@HAVE_WINE_FALSE@			export WIN_PTHREADDIR=@WIN_PTHREADDIR@ && export VS_VER=@VS_VER@ && export VC_VER=@VC_VER@ && export WK_VER=@WK_VER@ && ./visual-studio-build.bat "$@" ; \
 		fi; \
 	else \
-		for i in $(top_builddir)/defs/*.def; do \
-			$(WINE) cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}" ; \
-		done ; \
-		$(WINE) cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@ ; \
+@HAVE_WINE_TRUE@		for i in $(top_builddir)/defs/*.def; do \
+@HAVE_WINE_TRUE@			$(WINE) cmd.exe /C "cd @MAKESHLIBDIR@ & @VS_DIR@\\@VS_ARCH@\\bin\\lib /MACHINE:@VS_ARCH@ /DEF:Z:$${deffile////\\}" ; \
+@HAVE_WINE_TRUE@		done ; \
+@HAVE_WINE_TRUE@		$(WINE) cmd.exe /C vsbuild @VS_DIR@ @VS_ARCH@ @MAKESHLIBDIR@ ; \
+@HAVE_WINE_FALSE@		echo "No Wine configuration detected, please install Wine!" ; \
 	fi;
 
 endif
