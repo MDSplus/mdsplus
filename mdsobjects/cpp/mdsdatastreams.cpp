@@ -399,17 +399,19 @@ using namespace MDSplus;
 
 EXPORT void EventStream::send(int shot, const char *name, float time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char *msgBuf = new char[strlen(name) + 256];
     sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);
     //ASCII coding: <shot> <name> [F|L] <numSamples> <xval>[ xval]* <yval>[ <yval>]*  where F and L indicate floating or integer times, respectrively
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char *msgBuf = new char[strlen(name) + 256];
     sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
+    delete [] msgBuf;
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode)
