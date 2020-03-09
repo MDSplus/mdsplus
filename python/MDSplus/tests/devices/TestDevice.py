@@ -228,7 +228,7 @@ class TestDevice(Device):
     @mdsrecord(filter=int, default=0)
     def done(self): return self.manual_done
 
-    _reg = 0
+    _reg = 0  # used to simulate volatile readout
     @cached_property
     def cache(self):
         self._reg += 1

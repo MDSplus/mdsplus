@@ -2935,7 +2935,6 @@ class cached_property(object):
     del(self._trigger)  <=> clear cache
     """
     def __init__(self, target=None, is_property=False, **opt):
-        """ """
         mode = opt.get('mode', 0)
         self.lock = _threading.Lock()
         self.cache_on_set = (mode & 1) > 0
@@ -2984,7 +2983,7 @@ class mdsrecord(object):
     ...
     dev = tree.MYDEVICE
     dev._trigger = 5   <=>   dev.trigger.record = 5
-    a = dev._trigger   <=>   a = float(dev.trigger.record.data())
+    a = dev._trigger   <=>   a = float(dev.trigger.record)
     del(dev._trigger)  <=>   dev.trigger.record = None
     # if trigger contains no data _trigger defaults to 0
     """
