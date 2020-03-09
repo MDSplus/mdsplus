@@ -421,7 +421,7 @@ class Data(NoTreeRef):
     def __int__(self):
         """Integer: x.__int__() <==> int(x)
         @rtype: int"""
-        return int(self.getLong()._value)
+        return int(_cmp.DATA(_cmp.QUADWORD(self)).evaluate()._value)
     __index__ = __int__
 
     def __len__(self):
@@ -433,12 +433,12 @@ class Data(NoTreeRef):
     def __long__(self):
         """Convert this object to python long
         @rtype: long"""
-        return _ver.long(self.getLong()._value)
+        return _ver.long(_cmp.DATA(_cmp.QUADWORD(self)).evaluate()._value)
 
     def __float__(self):
         """Float: x.__float__() <==> float(x)
         @rtype: float"""
-        return float(self.getDouble()._value)
+        return float(_cmp.DATA(_cmp.FT_FLOAT(self)).evaluate()._value)
 
     def __round__(self,*arg):
         """Round value to next integer: x.__round__() <==> round(x)
@@ -512,19 +512,28 @@ class Data(NoTreeRef):
         except _exc.MDSplusException:
             return None
 
+    def _str_bad_ref(self):
+        return super(Data,self).__str__()
+
     def __str__(self):
         try:
             return _ver.tostr(self.decompile())
         except _exc.MDSplusException:
             return self._str_bad_ref()
 
-    def _str_bad_ref(self):
-        return super(Data,self).__str__()
+    def __bytes__(self):
+        try:
+            return _ver.tobytes(self.decompile())
+        except _exc.MDSplusException:
+            return self._str_bad_ref()
 
     def __repr__(self):
         """Representation
         @rtype: String"""
-        return str(self)
+        try:
+            return _ver.tostr(self.decompile())
+        except _exc.MDSplusException:
+            return self._str_bad_ref()
 
     def data(self,*altvalue):
         """Return primitimive value of the data.
