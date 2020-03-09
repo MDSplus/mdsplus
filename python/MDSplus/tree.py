@@ -2937,6 +2937,7 @@ class cached_property(object):
     def __init__(self, target=None, is_property=False, **opt):
         """ """
         mode = opt.get('mode', 0)
+        self.lock = _threading.Lock()
         self.cache_on_set = (mode & 1) > 0
         if target:
             if is_property:
@@ -2952,23 +2953,26 @@ class cached_property(object):
 
     def __get__(self, inst, cls):
         if inst is None: return self
-        if self.target in inst.__dict__:
-            return inst.__dict__[self.target]
-        else:
-            data = self.target.__get__(inst, cls)
-            inst.__dict__[self.target] = data
-            return data
+        with self.lock:
+            if self.target in inst.__dict__:
+               return inst.__dict__[self.target]
+            else:
+                data = self.target.__get__(inst, cls)
+                inst.__dict__[self.target] = data
+                return data
 
     def __set__(self, inst, value):
         self.target.__set__(inst, value)
-        if (self.cache_on_set):
-            inst.__dict__[self.target] = value
-        else:
-            del(inst.__dict__[self.target])
+        with self.lock:
+            if (self.cache_on_set):
+                inst.__dict__[self.target] = value
+            else:
+                del(inst.__dict__[self.target])
 
     def __delete__(self, inst):
-        if self.target in inst.__dict__:
-            del(inst.__dict__[self.target])
+        with self.lock:
+            if self.target in inst.__dict__:
+                del(inst.__dict__[self.target])
 
 
 class mdsrecord(object):
