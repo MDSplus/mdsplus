@@ -1,11 +1,28 @@
 #!/bin/sh
 # bison -V	# bison (GNU Bison) 3.0.4
 # flex -V	# flex 2.6.1
-YACC=bison
+
+YACC=${YACC:=bison}
 YFLAGS=--verbose
 
-LEX=flex
+LEX=${LEX:=flex}
 LFLAGS=-p
+
+if ! which $YACC >/dev/null 2>&1
+then
+	echo "YACC=$YACC - program not found; not installed?"
+	exit 127
+else
+	$YACC -V | head -n 1
+fi
+
+if ! which $LEX >/dev/null 2>&1
+then
+	echo "LEX=$LEX - program not found; not installed?"
+	exit 127
+else
+	$LEX -V | head -n 1
+fi
 
 cd $1
 OUTFILES="$(echo $(cat yylex/outfiles))"
