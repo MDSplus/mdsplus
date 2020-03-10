@@ -10,7 +10,8 @@ import java.nio.channels.SocketChannel;
 import mds.mdsip.MdsIp.Connection;
 
 public class MdsIpTcp implements Connection{
-	private final SelectionKey select;
+	private final SelectionKey select_out;
+	private final SelectionKey select_in;
 	private final SocketChannel socket;
 
 	public MdsIpTcp(final String host, final int port) throws IOException{
@@ -18,7 +19,8 @@ public class MdsIpTcp implements Connection{
 		try {
 			socket.configureBlocking(false);
 			socket.setOption(StandardSocketOptions.SO_KEEPALIVE, Boolean.TRUE);
-			this.select = socket.register(Selector.open(), SelectionKey.OP_CONNECT);
+			this.select_out = socket.register(Selector.open(), SelectionKey.OP_CONNECT);
+			this.select_in = socket.register(Selector.open(), SelectionKey.OP_READ);
 			socket.connect(new InetSocketAddress(host, port));
 		} catch (IOException e) {
 			socket.close();
@@ -28,22 +30,25 @@ public class MdsIpTcp implements Connection{
 
 	@Override
 	final public void close() throws IOException {
-		synchronized(select){
-			select.cancel();
-			select.channel().close();
+		synchronized(socket) {
+			synchronized(select_out){
+				select_out.cancel();
+			}
+			synchronized(select_in){
+				select_in.cancel();
+			}
 			socket.close();
 		}
 	}
 
 	final private boolean ensure_open() throws IOException {
-		if(!select.isValid()) return false;
-		while(select.interestOps() == SelectionKey.OP_CONNECT){
-			if(select.selector().select(100L) > 0 && select.isConnectable()){
-				synchronized(select){
-					select.selector().selectedKeys().clear();
-					if(!select.isValid()) return false;
-					if(!((SocketChannel)select.channel()).finishConnect()) return false;
-					select.interestOps(SelectionKey.OP_WRITE | SelectionKey.OP_READ);
+		if (!select_out.isValid()) return false;
+		while (select_out.interestOps() == SelectionKey.OP_CONNECT){
+			if (select_out.selector().select(internal_timeout) > 0 && select_out.isConnectable()){
+				synchronized(select_out){
+					if (!(select_out.isValid() && socket.finishConnect()))
+						return false;
+					select_out.interestOps(SelectionKey.OP_WRITE);
 				}
 			}
 		}
@@ -52,17 +57,17 @@ public class MdsIpTcp implements Connection{
 
 	@Override
 	final public boolean isOpen() {
-		return select.isValid();
+		return select_out.isValid();
 	}
 
 	@Override
 	final public int read(ByteBuffer buffer) throws IOException {
-		synchronized (select) {
+		synchronized (select_in) {
 			if(!this.ensure_open()) return -1;
 			final int rem = buffer.remaining();
 			if(rem == 0) return 0;
-			if(select.selector().select(internal_timeout) >= 0 && select.isReadable()){
-				final int read = ((SocketChannel)select.channel()).read(buffer);
+			if(select_in.selector().select(internal_timeout) >= 0 && select_in.isReadable()){
+				final int read = ((SocketChannel)select_in.channel()).read(buffer);
 				if(read == -1) return read;
 			}
 			return rem - buffer.remaining();
@@ -71,13 +76,13 @@ public class MdsIpTcp implements Connection{
 
 	@Override
 	final public int write(final ByteBuffer buffer) throws IOException {
-		synchronized (select) {
+		synchronized (select_out) {
 			if(!this.ensure_open()) return -1;
 			final int rem = buffer.remaining();
 			if(rem == 0) return 0;
-			if(select.selector().select(internal_timeout) >= 0 && select.isWritable()){
-				if(!select.isValid()) return -1;
-				final int sent = ((SocketChannel)select.channel()).write(buffer);
+			if(select_out.selector().select(internal_timeout) >= 0 && select_out.isWritable()){
+				if(!select_out.isValid()) return -1;
+				final int sent = ((SocketChannel)select_out.channel()).write(buffer);
 				if(sent == -1) return sent;
 			}
 			return rem - buffer.remaining();
