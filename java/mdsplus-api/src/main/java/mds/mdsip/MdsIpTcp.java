@@ -30,14 +30,12 @@ public class MdsIpTcp implements Connection{
 
 	@Override
 	final public void close() throws IOException {
-		synchronized(socket) {
-			synchronized(select_out){
-				select_out.cancel();
-			}
+		synchronized(select_out){
 			synchronized(select_in){
+				select_out.cancel();
 				select_in.cancel();
+				socket.close();
 			}
-			socket.close();
 		}
 	}
 
@@ -67,7 +65,7 @@ public class MdsIpTcp implements Connection{
 			final int rem = buffer.remaining();
 			if(rem == 0) return 0;
 			if(select_in.selector().select(internal_timeout) >= 0 && select_in.isReadable()){
-				final int read = ((SocketChannel)select_in.channel()).read(buffer);
+				final int read = socket.read(buffer);
 				if(read == -1) return read;
 			}
 			return rem - buffer.remaining();
@@ -82,7 +80,7 @@ public class MdsIpTcp implements Connection{
 			if(rem == 0) return 0;
 			if(select_out.selector().select(internal_timeout) >= 0 && select_out.isWritable()){
 				if(!select_out.isValid()) return -1;
-				final int sent = ((SocketChannel)select_out.channel()).write(buffer);
+				final int sent = socket.write(buffer);
 				if(sent == -1) return sent;
 			}
 			return rem - buffer.remaining();
