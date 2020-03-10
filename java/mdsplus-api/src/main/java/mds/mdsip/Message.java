@@ -96,16 +96,15 @@ public final class Message extends Object{
 		final ByteBuffer buf = ByteBuffer.allocateDirect(bytes_to_read);
 		final boolean event = (bytes_to_read > 2000);
 		try{
-			if (abstimeout == 0) abstimeout = System.currentTimeMillis() + 100;
 			while(buf.hasRemaining()){
 				final int read = dis.read(buf);
 				if(read == -1) throw new SocketException("connection lost");
 				else if (read == 0) {
-					if (abstimeout > 0 && System.currentTimeMillis()>abstimeout)
+					if (abstimeout == 0
+					|| (abstimeout > 0 && System.currentTimeMillis() > abstimeout))
 						throw new SocketException("connection timeout");
 					continue;
 				}
-				if (abstimeout > 0) abstimeout += 100;
 				if(event) Message.dispatchTransferEvent(mdslisteners, dis, null, bytes_to_read, buf.position());
 			}
 		}catch(final IOException e){
