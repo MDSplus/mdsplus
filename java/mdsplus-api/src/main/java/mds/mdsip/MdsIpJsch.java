@@ -200,7 +200,6 @@ public final class MdsIpJsch implements Connection{
 	private final Channel		channel;
 	private final InputStream	dis;
 	private final OutputStream	dos;
-	private final byte[]		buf;
 	private final Session		session;
 
 	public MdsIpJsch(String user, String host, int port) throws IOException{
@@ -220,7 +219,6 @@ public final class MdsIpJsch implements Connection{
 		}
 		this.dis = this.channel.getInputStream();
 		this.dos = this.channel.getOutputStream();
-		this.buf = new byte[32*1024];
 	}
 
 	@Override
@@ -250,33 +248,49 @@ public final class MdsIpJsch implements Connection{
 		return !this.channel.isClosed() && this.channel.isConnected() && !this.channel.isEOF();
 	}
 
-	@Override
-	public int read(ByteBuffer dat) throws IOException {
-		final int rem = dat.remaining();
-		assert (rem > 0);
-		if (!this.isOpen()) return -1;
-		int avail = dis.available();
-		if (avail == 0) return 0;
-		final int read = dis.read(buf, 0, (rem < buf.length) ? (rem < avail ? rem : avail) : (buf.length < avail ? buf.length : avail));
-		if(read > 0) dat.put(buf, 0, read);
-		return read;
+	private final int wait_available() throws IOException {
+		int i = 1, tot = 0;
+		int avail = 0;
+		synchronized (dis) {
+			try {
+				while ((avail = dis.available()) == 0 && tot < internal_timeout)
+				{
+					dis.wait(i);
+					tot += i++;
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+		return avail;
 	}
 
 	@Override
-	public int write(ByteBuffer dat) throws IOException {
-		final int rem = dat.remaining();
+	public int read(ByteBuffer b) throws IOException {
+		final int rem = b.remaining();
 		assert (rem > 0);
 		if (!this.isOpen()) return -1;
-		if(rem < buf.length){
-			dat.get(buf, 0, rem);
-			dos.write(buf, 0, rem);
+		if (wait_available() == 0) return 0;
+		while (b.hasRemaining())
+		{
+			final int read = dis.read();
+			if (read<0) return read;
+			b.put((byte)read);
+		}
+		return rem - b.remaining();
+	}
+
+	@Override
+	public int write(ByteBuffer b) throws IOException {
+		final int rem = b.remaining();
+		assert (rem > 0);
+		if (!this.isOpen()) return -1;
+		while (b.hasRemaining())
+			dos.write(b.get());
+		final int left = b.remaining();
+		if (left == 0) {
 			dos.flush();
 			return rem;
-		}else{
-			dat.get(buf);
-			dos.write(buf);
-			if (!dat.hasRemaining()) dos.flush();
-			return buf.length;
 		}
+		return rem - left;
 	}
 }

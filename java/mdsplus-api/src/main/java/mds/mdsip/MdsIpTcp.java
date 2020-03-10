@@ -61,7 +61,7 @@ public class MdsIpTcp implements Connection{
 			if(!this.ensure_open()) return -1;
 			final int rem = buffer.remaining();
 			if(rem == 0) return 0;
-			if(select.selector().select(100L) >= 0 && select.isReadable()){
+			if(select.selector().select(internal_timeout) >= 0 && select.isReadable()){
 				final int read = ((SocketChannel)select.channel()).read(buffer);
 				if(read == -1) return read;
 			}
@@ -75,7 +75,7 @@ public class MdsIpTcp implements Connection{
 			if(!this.ensure_open()) return -1;
 			final int rem = buffer.remaining();
 			if(rem == 0) return 0;
-			if(select.selector().select(100L) >= 0 && select.isWritable()){
+			if(select.selector().select(internal_timeout) >= 0 && select.isWritable()){
 				if(!select.isValid()) return -1;
 				final int sent = ((SocketChannel)select.channel()).write(buffer);
 				if(sent == -1) return sent;

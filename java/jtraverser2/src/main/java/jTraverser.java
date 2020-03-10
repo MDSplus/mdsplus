@@ -6,7 +6,8 @@ public class jTraverser{
 	static Pattern pattern = Pattern.compile("(.*)[\\\\/]([^\\\\/]+)_((model|[0-9]+))\\.tree");
 
 	public static void main(final String args[]) {
-		if(args.length >= 4) new jTraverserFacade(args[0], args[1], args[2], args[3], null);
+		if(args.length >= 5) new jTraverserFacade(args[0], args[1], args[2], args[3], args[4]);
+		else if(args.length == 4) new jTraverserFacade(args[0], args[1], args[2], args[3], null);
 		else if(args.length == 3) new jTraverserFacade(args[0], args[1], args[2], null, null);
 		else if(args.length == 2) new jTraverserFacade(args[0], args[1], null, null, null);
 		else if(args.length == 1){
