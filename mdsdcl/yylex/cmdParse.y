@@ -176,7 +176,8 @@ PVALUE_ {
 static void yyerror(YYLTYPE *yyloc_param __attribute__ ((unused)),
 		    yyscan_t yyscanner __attribute__ ((unused)),
 		    dclCommandPtr *dclcmd __attribute__ ((unused)), char **error, char *s __attribute__ ((unused))) {
-  *error=strdup("Invalid syntax for an mdsdcl command\n");
+  if (error)
+    *error=strdup("Invalid syntax for an mdsdcl command\n");
 }
 
 EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **error, char **output, char *(*getline)(), void *getlineInfo) {
