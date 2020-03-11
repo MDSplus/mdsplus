@@ -1,5 +1,5 @@
-%output  "cmdParse.c"
-%defines "dclyacc.h"
+%output  "mdsdcl/cmdParse.c"
+%defines "mdsdcl/dclyacc.h"
 %{
 #include <stdio.h>
 #include <stdlib.h>

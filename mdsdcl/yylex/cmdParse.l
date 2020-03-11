@@ -1,4 +1,4 @@
-%option prefix="dcl_" outfile="cmdParseLex.c" header-file="dcllex.h"
+%option prefix="dcl_" outfile="mdsdcl/cmdParseLex.c" header-file="mdsdcl/dcllex.h"
 %option nostack noyymore noyywrap noyylineno nodefault
 %option unput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option interactive reentrant bison-bridge bison-locations case-insensitive

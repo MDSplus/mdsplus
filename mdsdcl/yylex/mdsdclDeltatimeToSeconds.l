@@ -1,4 +1,4 @@
-%option outfile="mdsdclDeltatimeToSeconds.c"
+%option outfile="mdsdcl/mdsdclDeltatimeToSeconds.c"
 %option nostack noyymore noyywrap noyylineno nodefault
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %{
