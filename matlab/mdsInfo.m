@@ -19,46 +19,48 @@ function info = mdsInfo(varargin)
         MDSINFO = info;
     end
     if nargin > 0
-        MDSINFO.usePython = varargin{1};
+        MDSINFO.usePython = logical(varargin{1});
     end
-    err = [true,true];
+    err = {true,true};
     if MDSINFO.usePython
-        err(1) = setPython;
-        if ~islogical(err(1))
+        err{1} = setPython();
+        if ~islogical(err{1})
             MDSINFO.usePython = false;
-            err(2) = setJavaMds;
+            err{2} = setJavaMds();
         end
     else
-        err(2) = setJavaMds;
-        if ~islogical(err(2))
+        err{2} = setJavaMds();
+        if ~islogical(err{2})
             MDSINFO.usePython = true;
-            err(1) = setPython;
+            err{1} = setPython();
         end
     end
-    if any(~islogical(err))
-        if all(~islogical(err))
+    ok = cellfun(@islogical,err);
+    if ~all(ok)
+        if ~any(ok)
             disp('Unable to connect to MDSplus using either a java bridge or a python bridge')
-            disp(strcat(' Java error: ',err(2).message))
-            disp(strcat(' Python error: ',err(1).message))
+            disp(strcat(' Java error: ',err{2}.message))
+            disp(strcat(' Python error: ',err{1}.message))
             info = [];
             MDSINFO = info;
-        elseif ~islogical(err(2))
+        elseif ~ok(2)
             disp('Unable to connect to MDSplus using java bridge, using python bridge instead')
-            disp(strcat(' Java error: ',err(2).message))
-        else % ~islogical(err(1))
+            disp(strcat(' Java error: ',err{2}.message))
+        else % ~ok(1)
             disp('Unable to connect to MDSplus using python bridge, using python bridge instead')
-            disp(strcat(' Python error: ',err(1).message))
+            disp(strcat(' Python error: ',err{1}.message))
         end
     end
 end
 
 function err = setPython()
+    global MDSINFO
     persistent cache
     if ~isempty(cache)
         err = cache;
     else
         try
-            py.MDSplus.Int32(1);
+            MDSINFO.ispy2 = logical(py.MDSplus.version.ispy2);
             err = false;
             cache = err;
         catch err
