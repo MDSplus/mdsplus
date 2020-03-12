@@ -35,11 +35,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dcl_p.h"
 #include <dcl.h>
 #include "dclyacc.h"
-#define DBG(...)
+#ifdef DEBUG
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define DBG(...) fprintf(stderr, __VA_ARGS__)
+#endif
 char *restOfLine=0;
 %}
 
-%x command verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
+%x verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
 
 name [[:alpha:][:alnum:]_]+
 quoted_exc \"!\"
@@ -57,19 +61,14 @@ qualval {unquoted_value_3}|{quoted_value}
   return(COMMENT);
   }
 
-^[[:blank:]]*/{name} {
- DBG("Begin command\n");
- BEGIN command;
- }
-
-^[[:blank:]]*@[^[:blank:]]+ {
+^[[:blank:]]*@^[:blank:]]+ {
  DBG("got DO/INDIRECT %s\n",yytext);
  yylval->str=strdup(yytext);
  BEGIN verb;
  return(CMDFILE);
  }
 
-<command>{name} {
+^[[:blank:]]*{name} {
  DBG("got verb %s\n",yytext);
  yylval->str=strdup(yytext);
  BEGIN verb;
