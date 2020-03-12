@@ -1,5 +1,5 @@
 function mdsUseLegacy( varargin )
-%mdsUseLegacy - enable (or disable) the use of the legacy mode.
+% MDSUSELEGACY  enable (or disable) the use of the legacy mode.
 %   This function is can be used to enable legacy mode.
 %   In legacy mode floating point values will always be returned as doubles.
 %   Also the warnings about the deprecated functions will be disabled.
@@ -7,15 +7,23 @@ function mdsUseLegacy( varargin )
 %   If you want to turn off legacy mode use mdsUseLegacy(false).
 %   This is not a permanent setting and only applies to the current
 %   invocation of matlab.
-   mdsInfo();
-   global MDSINFO
-   if nargin == 0
-     MDSINFO.useLegacy=true;
-   else
-     MDSINFO.useLegacy=varargin{1};
-   end
-   if MDSINFO.useLegacy
-     display('Legacy mode enabled. Floating point values will be returned as doubles and MDSarg and NATIVEvalue will not display deprecation warnings. It is recommended that you modify your code to not depend on this legacy mode as it will eventually be deprecated.')
-   end
+    mdsInfo();
+    global MDSINFO
+    if nargin == 0
+        MDSINFO.useLegacy = true;
+    else
+        MDSINFO.useLegacy = varargin{1};
+    end
+    if MDSINFO.useLegacy
+        fprintf('%s\n',...
+            'Legacy mode enabled. Floating point values will be returned',...
+            'as doubles and MDSarg and NATIVEvalue will not display',...
+            'deprecation warnings. It is recommended that you modify',...
+            'your code to not depend on this legacy mode as it will',...
+            'eventually be deprecated.')
+        warning('off', 'MDSplus:Legacy')
+    else
+        warning('on', 'MDSplus:Legacy')
+    end
 end
 
