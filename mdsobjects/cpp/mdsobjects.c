@@ -22,7 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#ifndef WINDOWS_H
+#ifndef _MSC_VER
+
 #include <stdio.h>
 #include <string.h>
 #include <mdstypes.h>
@@ -1557,4 +1558,5 @@ static void callback(int nid, void *obj)
   (*env)->CallVoidMethodA(env, obj, mid, args);
   releaseJNIEnv();
 }
+
 #endif

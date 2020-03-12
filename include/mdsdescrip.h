@@ -1,10 +1,8 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED
+#include <mdsplus/mdsconfig.h>
 #include <inttypes.h>
 #include <status.h>
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h>
-#endif
 #define MAX_DIMS   8
 
 #ifdef _WIN32

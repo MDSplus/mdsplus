@@ -5,9 +5,7 @@
   #undef _WIN32_WINNT
  #endif
  #define _WIN32_WINNT _WIN32_WINNT_WIN8 // Windows 8.0
- #ifndef NO_WINDOWS_H
-  #include <winsock2.h>
- #endif
+ #include <winsock2.h>
  #include <ws2tcpip.h>
  #include <io.h>
  #include <process.h>

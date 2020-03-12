@@ -295,3 +295,25 @@ Total of 6 nodes.
 error=
 
 265389633
+tcl('# comment shebang')
+1
+tcl(' ! comment')
+1
+tcl('@abc ! file')
+Error: Unable to open either abc.tcl or abc
+134348809
+tcl('  @abc ! w file')
+Error: Unable to open either abc.tcl or abc
+134348809
+tcl('a/b=1/c ! cmd qual')
+mdsdcl: No such command
+134349626
+tcl(' a/b /c p=1 p=2 ! w cmd')
+mdsdcl: No such command
+134349626
+tcl('a/b/c = (1) p=1 ! cmd list')
+mdsdcl: No such command
+134349626
+tcl('a/b=(1, 2,3 ,  4 )/c ! w list')
+mdsdcl: No such command
+134349626

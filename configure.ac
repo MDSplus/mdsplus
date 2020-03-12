@@ -787,7 +787,7 @@ fi
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h)
-AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
+AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h sys/resource.h)
 AC_CHECK_HEADERS(malloc.h alloca.h)
 
 
@@ -1234,7 +1234,14 @@ AC_MSG_RESULT([$enable_wconversion])
 dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
 dnl add here what goes on tom of mdsconfig.h
-AH_TOP()
+AH_TOP(
+#pragma once
+#ifdef _MSC_VER
+#define __attribute__(...)
+#define EXPORT __declspec(dllexport)
+#define MDS_ATTR_FALLTHROUGH
+#else
+)
 
 AC_DEFINE_UNQUOTED([EVENT_THREAD_STACK_SIZE_MIN],[1048576],["event handler thread min stack size [1MB]"])
 
@@ -1268,7 +1275,10 @@ AH_VERBATIM([_WIN32], [
 ])
 
 dnl add here what goes on bottom of mdsconfig.h
-AH_BOTTOM()
+AH_BOTTOM(
+#endif // _MSC_VER else
+)
+
 
 
 dnl define custom direcotries substitution
