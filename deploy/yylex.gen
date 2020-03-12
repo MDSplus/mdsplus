@@ -24,9 +24,8 @@ else
 	$LEX -V | head -n 1
 fi
 
-cd $1
-OUTFILES="$(echo $(cat yylex/outfiles))"
-ycmd="for y in yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
-lcmd="for l in yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
+OUTFILES="$(echo $(cat $1/yylex/outfiles))"
+ycmd="for y in $1/yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
+lcmd="for l in $1/yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
 scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
 eval "$ycmd ; $lcmd && $scmd"

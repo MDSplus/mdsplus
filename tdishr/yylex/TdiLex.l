@@ -1,4 +1,4 @@
-%option prefix="tdi" outfile="TdiLex.c" header="tdilex.h"
+%option prefix="tdi" outfile="tdishr/TdiLex.c" header="tdishr/tdilex.h"
 %option stack noyymore nodefault noyywrap noyylineno nodefault
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option noyy_scan_buffer noyy_scan_bytes noyy_scan_string
@@ -147,17 +147,17 @@ static inline int lex_libcall(LEX_ARGS);
 //"
 %}
 
-white	[ \t\r]
-anum	[A-Za-z$_0-9]
-exp	([DdEeFfGgHhSsTtVv][\-+]?[0-9]+)
-f3	("."?[0-9]+{exp})
-f2	([0-9]+"."[0-9]*{exp})
-f1	([0-9]*"."[0-9]+)
-f0	([0-9]+".")
+white	[[:blank:]]
+anum	[[:alnum:]_$]
+exp	([DdEeFfGgHhSsTtVv][\-+]?[[:digit:]]+)
+f3	("."?[[:digit:]]+{exp})
+f2	([[:digit:]]+"."[[:digit:]]*{exp})
+f1	([[:digit:]]*"."[[:digit:]]+)
+f0	([[:digit:]]+".")
 
-int	([0-9][0-9A-Za-z]*)
+int	([[:digit:]][[:alnum:]]*)
 float	({f0}|{f1}|{f2}|{f3})
-ident	([A-Za-z$_]{anum}*)
+ident	([[:alpha:]$_]{anum}*)
 path	(((("\\"({ident}"::")?|[.:])?{ident})|(".-"("."?"-")*))([.:]{ident})*)
 libcall	("->"{anum}+(":"|"..")?)
 comment ("/*"(\n|[^\*]+|\*+[^/\*])*\*+"/")
