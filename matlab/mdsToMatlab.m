@@ -137,7 +137,7 @@ function result = java2matlab(mdsthing, info)
             end
         end
         if info.useLegacy
-            if ~ischar(result)
+            if ~ischar(result) && ~iscell(result)
                 result = double(result);
             end
         end
