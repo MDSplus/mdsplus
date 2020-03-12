@@ -1,8 +1,10 @@
 %output  "mdsdcl/cmdParse.c"
 %defines "mdsdcl/dclyacc.h"
 %{
+#define _GNU_SOURCE // required by rhel5 to include stpcpy
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <mdsdcl_messages.h>
 #include <mdsplus/mdsconfig.h>
@@ -14,8 +16,9 @@
 #include "dcl_p.h"
 #include "dcllex.h"
 
-int yydebug=0;
-static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, char *s);
+#define YYERROR_VERBOSE
+
+static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dclcmd, char **error, const char *s);
 %}
 %define api.pure full
 %define api.value.type {union YYSTYPE}
@@ -33,7 +36,7 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
 %token QUALIFIER
 %token EQUALS
 %token VALUE
-%token PVALUE_
+%token P_VALUE
 %token COMMA
 %token END
 %token COMMENT
@@ -43,8 +46,7 @@ static void yyerror(YYLTYPE *yyloc_param, yyscan_t yyscanner, dclCommandPtr *dcl
 %type <value_list> pvalue_list
 %type <qualifier> qualifier
 %type <str> QUALIFIER VERB VALUE CMDFILE
-%type <pvalue> PVALUE_
-
+%type <pvalue> P_VALUE
 %start command
 
 %%
@@ -62,7 +64,7 @@ CMDFILE {
   $$->parameters[0]=memset(malloc(sizeof(dclParameter)),0,sizeof(dclParameter));
   $$->parameters[0]->value_count=1;
   $$->parameters[0]->values=malloc(sizeof(char *));
-  $$->parameters[0]->values[0]=strdup($CMDFILE+1);
+  $$->parameters[0]->values[0]=strdup($CMDFILE);
   free($CMDFILE);
 }
 |VERB {
@@ -141,8 +143,8 @@ VALUE {
 }
 
 pvalue_list:
-PVALUE_ {
-  dclValuePtr dclvalue=$PVALUE_;
+P_VALUE {
+  dclValuePtr dclvalue=$P_VALUE;
   char *value=dclvalue->value;
   $$=malloc(sizeof(dclValueList));
   $$->restOfLine=dclvalue->restOfLine;
@@ -163,8 +165,8 @@ PVALUE_ {
   free(dclvalue);
   $$->values[0]=value;
 }
-| pvalue_list COMMA PVALUE_ {
-  dclValuePtr dclvalue=$PVALUE_;
+| pvalue_list COMMA P_VALUE {
+  dclValuePtr dclvalue=$P_VALUE;
   free(dclvalue->restOfLine);
   $$->values=realloc($$->values,sizeof(char *)*($$->count+1));
   $$->values[$$->count]=dclvalue->value;
@@ -175,9 +177,11 @@ PVALUE_ {
 %%
 static void yyerror(YYLTYPE *yyloc_param __attribute__ ((unused)),
 		    yyscan_t yyscanner __attribute__ ((unused)),
-		    dclCommandPtr *dclcmd __attribute__ ((unused)), char **error, char *s __attribute__ ((unused))) {
-  if (error)
-    *error=strdup("Invalid syntax for an mdsdcl command\n");
+		    dclCommandPtr *dclcmd __attribute__ ((unused)), char **error, const char *s) {
+  if (error) {
+    *error = realloc(*error, strlen(s)+16);
+    sprintf(*error ,"mdsdcl: %s\n", s);
+  }
 }
 
 EXPORT int mdsdcl_do_command_extra_args(char const* command, char **prompt, char **error, char **output, char *(*getline)(), void *getlineInfo) {
