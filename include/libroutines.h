@@ -11,9 +11,6 @@
 #endif
 
 #include <inttypes.h>
-//#ifdef WINDOWS_H
-//#include <stdint.h>
-//#endif
 
 
 /// @{

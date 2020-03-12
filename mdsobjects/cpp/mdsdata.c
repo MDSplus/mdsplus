@@ -25,12 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifndef WINDOWS_H
 #include <mdsplus/mdsconfig.h>
-#else
-#define MAD_DIMS 64
-#define MDS_ATTR_FALLTHROUGH
-#endif
 #include <mdsplus/mdsplus.h>
 #include <mdsdescrip.h>
 #include <mdsshr.h>
@@ -122,13 +117,7 @@ void *convertToArrayDsc(int clazz, int dtype, int length, int arsize, int nDims,
 
 #define MAX_ARGS 128
 
-#ifdef _MSC_VER
-#define UNUSED_ARGUMENT
-#else
-#define UNUSED_ARGUMENT __attribute__ ((unused))
-#endif
-
-void *convertToCompoundDsc(int clazz UNUSED_ARGUMENT, int dtype, int length, void *ptr, int ndescs, void **descs)
+void *convertToCompoundDsc(int clazz __attribute__ ((unused)), int dtype, int length, void *ptr, int ndescs, void **descs)
 {
   EMPTYXD(emptyXd);
   struct descriptor_xd *xds[MAX_ARGS];

@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 
 #ifdef _MSC_VER
-inline int nanosleep(const struct timespec *req, struct timespec *rem UNUSED_ARGUMENT)
+inline int nanosleep(const struct timespec *req, struct timespec *rem __attribute__ ((unused)))
 {
 	DWORD sleep_ms = ((DWORD)req->tv_sec * 1000) + ((DWORD)req->tv_nsec / 1000000);
 	Sleep(sleep_ms);
@@ -370,7 +370,7 @@ EXPORT void *getNewSamplesSerializedXd()
 
 
 ///Periodically check the list of registered data items for new data availability
-void *monitorStreamInfo(void *par UNUSED_ARGUMENT)
+void *monitorStreamInfo(void *par __attribute__ ((unused)))
 {
 	struct timespec waitTime;
 	waitTime.tv_sec = 0;
@@ -399,7 +399,7 @@ using namespace MDSplus;
 
 EXPORT void EventStream::send(int shot, const char *name, float time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char msgBuf[256];
     sprintf(msgBuf, "%d %s F 1 %f %f", shot, name, time, sample);
     //ASCII coding: <shot> <name> [F|L] <numSamples> <xval>[ xval]* <yval>[ <yval>]*  where F and L indicate floating or integer times, respectrively
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
@@ -407,14 +407,14 @@ EXPORT void EventStream::send(int shot, const char *name, float time, float samp
 
 EXPORT void EventStream::send(int shot, const char *name, uint64_t time, float sample)
 {
-    char msgBuf[strlen(name) + 256];
+    char msgBuf[256];
     sprintf(msgBuf, "%d %s L 1 %lu %f", shot, name, (unsigned long)time, sample);
     Event::setEventRaw("STREAMING", strlen(msgBuf), msgBuf);
 }
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode)
 {
-    char *msgBuf = new char[strlen(name) + numSamples * 64 + 256];
+    char *msgBuf = new char[numSamples * 64 + 256];
     if(oscilloscopeMode)
         sprintf(msgBuf, "%d %s A %d", shot, name, numSamples);
     else
@@ -431,7 +431,7 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, float 
 
 EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64_t *times, float *samples)
 {
-    char *msgBuf = new char[strlen(name) + numSamples * 64 + 256];
+    char *msgBuf = new char[numSamples * 64 + 256];
     sprintf(msgBuf, "%d %s L %d", shot, name, numSamples);
     for(int i = 0; i < numSamples; i++)
     {

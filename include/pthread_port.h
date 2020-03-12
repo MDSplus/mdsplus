@@ -5,9 +5,7 @@
 #include <status.h>
 #include <STATICdef.h>
 #ifdef _WIN32
- #ifndef NO_WINDOWS_H
   #include <windows.h>
- #endif
 #endif
 #include <pthread.h>
 
