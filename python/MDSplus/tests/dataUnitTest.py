@@ -354,18 +354,6 @@ class Tests(_UnitTest.Tests):
         self._doTdiTest('_d=dict(*,1,"1",2,"2")', m.Dictionary([1,'1',2,'2']))
         self._doTdiTest('_d=dict(_d,3,"3")', m.Dictionary([1,'1',2,'2',3,"3"]))
 
-    def tdiPythonInterface(self):
-        self._doTdiTest("Py('a=None')",1)
-        self._doTdiTest("Py('a=None','a')",None)
-        self._doTdiTest("Py('a=123','a')",123)
-        self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
-        self._doTdiTest('addfun("test","import __main__\n_file_=__main__.__file__\nstatic=[0]\ndef test():\n static[0]+=1\n return [1 if __main__.__file__==_file_ else 0]+static")',"TEST")
-        if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 1]))
-        self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
-        self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
-        self._doTdiTest("pyfun('str',*,123)",m.String("123"))
-        if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 2]))
-
     def decompile(self):
         self.assertEqual(str(m.Uint8(123)),'123BU')
         self.assertEqual(str(m.Uint16(123)),'123WU')
@@ -379,8 +367,30 @@ class Tests(_UnitTest.Tests):
         self.assertEqual(str(m.Float64(1.2E-3)),'.0012D0')
         self.assertEqual(str(m.Signal(m.ZERO(100000,0.).evaluate(),None,0.)),"Build_Signal(Set_Range(100000,0D0 /*** etc. ***/), *, 0D0)")
 
+    def python_casts(self):
+        for WITH in (m.WithError, m.Parameter, m.WithUnits):
+            data = WITH(1,"with")
+            self.assertEqual(int(data), 1, WITH)
+            if m.version.ispy2:
+                self.assertEqual(long(data), 1, WITH)
+            self.assertEqual(float(data), 1., WITH)
+            self.assertEqual(str(data), "1", WITH)
+            self.assertEqual(bytes(data), b"1", WITH)
+
+    def tdiPythonInterface(self):
+        self._doTdiTest("Py('a=None')",1)
+        self._doTdiTest("Py('a=None','a')",None)
+        self._doTdiTest("Py('a=123','a')",123)
+        self._doTdiTest("Py('import MDSplus;a=MDSplus.Uint8(-1)','a')",m.Uint8(255))
+        self._doTdiTest('addfun("test","import __main__\n_file_=__main__.__file__\nstatic=[0]\ndef test():\n static[0]+=1\n return [1 if __main__.__file__==_file_ else 0]+static")',"TEST")
+        if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 1]))
+        self._doTdiTest("pyfun('Uint8','MDSplus',-1)",m.Uint8(255))
+        self._doTdiTest("pyfun('Uint8',*,-1)",m.Uint8(255))
+        self._doTdiTest("pyfun('str',*,123)",m.String("123"))
+        if not self.inThread: self._doTdiTest("TEST()",m.Array([1, 2]))
+
     @staticmethod
     def getTests():
-        return ['data','scalars','arrays','vmsSupport','tdiFunctions','decompile','tdiPythonInterface']
+        return ['data','scalars','arrays','vmsSupport','tdiFunctions','decompile','python_casts','tdiPythonInterface']
 
 Tests.main(__name__)

@@ -510,21 +510,25 @@ class Opaque(_dat.TreeRefX,Compound):
         return opq
 _dsc.addDtypeToClass(Opaque)
 
-class WithUnits(_dat.TreeRefX,Compound):
+class WithCompound(Compound):
+    def __str__(self): return str(self.__getattr__('data'))
+    def __bytes__(self): return bytes(self.__getattr__('data'))
+
+class WithUnits(_dat.TreeRefX,WithCompound):
     """Specifies a units for any kind of data.
     """
     fields=('data','units')
     dtype_id=211
 _dsc.addDtypeToClass(WithUnits)
 
-class WithError(_dat.TreeRefX,Compound):
+class WithError(_dat.TreeRefX,WithCompound):
     """Specifies error information for any kind of data.
     """
     fields=('data','error')
     dtype_id=213
 _dsc.addDtypeToClass(WithError)
 
-class Parameter(_dat.TreeRefX,Compound):
+class Parameter(_dat.TreeRefX,WithCompound):
     """Specifies a help text and validation information for any kind of data.
     """
     fields=('data','help','validation')
