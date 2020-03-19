@@ -3036,7 +3036,7 @@ def with_mdsrecords(cls):
     """
     def genfun(field, part):
         @mdsrecord(**part)
-        def _(self): return getattr(self, field)
+        def _(self): return self.__getattr__(field)
         return _
     for part in cls.parts:
         field = part['path'].lower().replace('.', '_').replace(':', '_')
