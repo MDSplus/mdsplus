@@ -3029,6 +3029,27 @@ class mdsrecord(object):
         node = self.target.__get__(inst)()
         node.deleteData()
 
+    # useful filters: flattened lists and python2/3 stable chars
+    @staticmethod
+    def int_list(node): return _cmp.INT(node).data().flatten().tolist()
+    @staticmethod
+    def float_list(node): return _cmp.FLOAT(node).data().flatten().tolist()
+    @staticmethod
+    def bytes(node): return _ver.tobytes(node.data())
+    @staticmethod
+    def bytes_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+    @staticmethod
+    def str(node): return _ver.tostr(node.data())
+    @staticmethod
+    def str_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+
+
 
 def with_mdsrecords(cls):
     """ decorator for device class
