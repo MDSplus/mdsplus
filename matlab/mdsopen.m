@@ -1,7 +1,7 @@
 function [ shoto,status ] = mdsopen( expt, shot )
 % MDSOPEN  opend connect to a remote mdsplus data server. 
 %   This routine will invoke a treeopen(expt, shot)
-%   expt may contain information about a remote server "server::expt"
+%   expt may contain information about a remote server 'server::expt'
 
    status = 1;
    shoto = 'Failed';

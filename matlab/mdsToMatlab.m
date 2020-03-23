@@ -46,7 +46,7 @@ function result = python2matlab(value, info)
             end
             f=str2func(dtype);
             dtype = value.dtype.char;
-            if info.ispy2 && contains("Qq",char(dtype))
+            if info.ispy2 && contains('Qq',char(dtype))
                 warning('MDSplus:python2_int64','%s\n',...
                     'Loss of precision: python2 does not support int64 properly. Try python3 instead.',...
                     'You can disable this warning with "warning(''off'', ''MDSplus:python2_int64'')"')
