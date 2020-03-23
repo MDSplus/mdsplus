@@ -3,8 +3,8 @@ classdef MDSplusAPI < handle
 % % e.g.: read signal from remote tree on mds-data-1 using thick client
 %   setenv('default_tree_path', 'mds-data-1::')
 %   mdsip = MDSplusAPI();
-%   mdsip.open("mytree", 7357);
-%   sig = mdsip.tree.getNode(".signals:channel43").getRecord();
+%   mdsip.open('mytree', 7357);
+%   sig = mdsip.tree.getNode('.signals:channel43').getRecord();
 %   dat = sig.toFloatArray();
 %   dim = sig.getDimension().toFloatArray();
 %   plot(dim, dat)
@@ -16,14 +16,14 @@ classdef MDSplusAPI < handle
     methods (Static)
         function null = null()
             % NULL convenient access to java null
-            %   arr = mdsip.toArray(mdsip.compile("1UQ"));
-            %   res = mdsip.api.tdiExecute(mdsip.null, "FLOAT($)", arr);
+            %   arr = mdsip.toArray(mdsip.compile('1UQ'));
+            %   res = mdsip.api.tdiExecute(mdsip.null, 'FLOAT($)', arr);
             %   data = res.getData();
             null = [];
         end
         function arr = toArray(varargin)
             % NULL convenient way to create Descriptor[]
-            %   arr = mdsip.toArray(mdsip.compile("1UQ"));
+            %   arr = mdsip.toArray(mdsip.compile('1UQ'));
             arr = javaArray('mds.data.descriptor.Descriptor', nargin);
             for i = 1:nargin
                 arr(i) = varargin{i};
@@ -58,7 +58,7 @@ classdef MDSplusAPI < handle
         end
         function open(self, expt, shot, varargin)
             % OPEN  opens a tree optional with write access
-            %   mdsip.open("mytree", 7357, true)
+            %   mdsip.open('mytree', 7357, true)
             %   node = mdsip.tree.getNode('DATA')
             import('mds.data.TREE');
             newtree = mds.data.TREE(self.con, expt, shot);
@@ -78,15 +78,15 @@ classdef MDSplusAPI < handle
         end
         function obj = compile(self, expr, varargin)
             % COMPILE  creates mdsplus objects from tdi expression
-            %   obj = mdsip.compile("BUILD_WITH_UNITS(1UQ, 'ns')");
+            %   obj = mdsip.compile('BUILD_WITH_UNITS(1UQ, "ns")');
             arr = MDSplusAPI.toArray(varargin{:});
             data = self.api.tdiCompile(self.tree, expr, arr);
             obj = data.getData();
         end
         function obj = execute(self, expr, varargin)
             % EXECUTE  execute tdi expression with optional $ args
-            %   ag1 = mdsip.compile("BUILD_WITH_UNITS(1UQ, 'ns')");
-            %   obj = mdsip.execute("FLOAT($)", ag1);
+            %   ag1 = mdsip.compile('BUILD_WITH_UNITS(1UQ, "ns")');
+            %   obj = mdsip.execute('FLOAT($)', ag1);
             arr = MDSplusAPI.toArray(varargin{:});
             data = self.api.tdiExecute(self.tree, expr, arr);
             obj = data.getData();
