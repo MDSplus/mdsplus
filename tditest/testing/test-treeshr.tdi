@@ -1,5 +1,5 @@
 _shot=3
-!current_shot('subtree')
+#current_shot('subtree')
 TreeOpen('main',-1,1)
 member
 _nids=getnci('***','nid_number'),size(_nids)
@@ -31,7 +31,7 @@ getnci(.subtree:a12,"usage")
 getnci(.subtree:a12,"fullpath")
 getnci(.subtree:a12,"minpath")
 getnci(.subtree:a12,"node_name")
-!getnci(.subtree:a12:name,"original_part_name")
+getnci(.subtree:a12:name,"original_part_name")
 getnci(.subtree:a12,"path")
 getnci(.subtree:a12,"compressible")
 getnci(member,"compress_on_put")
@@ -91,9 +91,9 @@ TreePutRecord(member,build_with_units(1:1000,'volts'))
 member
 TreeOpen('main',-1,1)
 TreeOpenEdit('main',_shot)
-!should reopen _shot in edit mode
+#should reopen _shot in edit mode
 TreeClose('main',_shot)
-!should leave model open and top tree
+#should leave model open and top tree
 TreeDeletePulseFile(_shot)
 TreeClose()
 TreeOpenNew('main',_shot)
@@ -187,8 +187,8 @@ segs
 TreePutRecord(segs,)
 BeginSegment(segs,0.,99.,0.:99.,data(0:99))
 putsegment(segs,-1,data(0:9))
-getsegment(segs,0)
-segs
+data(getsegment(segs, 0))
+data(dim_of(getsegment(segs, 0)))
 TreeWrite('main',_shot)
 TreeClose()
 TreeShr->TreeCompressDatafile(ref('main'),val(_shot))
@@ -199,3 +199,23 @@ data(signal)[1:100]
 TreeClose()
 TreeOpen('main',-1,1)
 TreeDeletePulseFile(_shot)
+TreeClose()
+TreeOpen('subtree', -1)
+Tcl('dir *:***:startidx')
+Tcl('dir *:input_01:startidx')
+dir 1*
+treeopennew('main',-1)
+treeaddnode('B',_n,6)
+treeWrite()
+TreeShr->_TreeSetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MyAttr"),descr(123))
+_dat=SIN(_dim=0:($2PI):.1);TreeShr->_TreeXNciMakeSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MySeg"),descr(0.),descr($2PI),descr(_dim),descr(_dat),val(-1),val(SHAPE(_dim)[0]))
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)
+tcl('compress main')
+treeopen('main',-1,1)
+List(_d=_t=*,TreeShr->_TreeXNciGetSegment(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),val(0),xd(_d),xd(_t)),ALL(_t==_dim),ALL(_d==_dat))
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("AttributeNames"),xd(_d)),_d)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYSEG"),xd(_d)),_d)
+List(_d=*,TreeShr->_TreeGetXNci(val(TreeShr->TreeDbid:P()),val(1),ref("MYATTR"),xd(_d)),_d)

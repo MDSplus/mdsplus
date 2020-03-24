@@ -91,7 +91,7 @@ int _TreeRemoveNodesTags(void *dbid, int nid)
     next_tag = swapint32(&dblist->tree_info->tag_info[tagidx - 1].tag_link);
     _RemoveTagIdx(dblist, tagidx);
   }
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 
 /*

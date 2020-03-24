@@ -1,3 +1,9 @@
+## We want to know who you are
+The MDSplus developers want to know who you are. If you or your site is using MDSplus please fill the following survey. We promise not to share your contact information. Do not assume that other's from your institution have also filled this out, we will combine the results. 
+
+[MDSplus User Survey](https://docs.google.com/forms/d/e/1FAIpQLScSsA-fY2yTsW076bBreJmNbBqY9jsd-m4vmAdPvfCxXidiOQ/viewform?usp=sf_link).
+
+## Building MDSplus
 To build and install MDSplus on unix systems, you will need to obtain the
 MDSplus distribution from github either as a git repository or as a 
 compressed tar file.

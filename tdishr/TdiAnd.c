@@ -75,7 +75,6 @@ int Tdi3And(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <stdio.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
-#include <STATICdef.h>
 
 static inline int Operate(struct descriptor *in1, struct descriptor *in2, struct descriptor *out,char operator(const char, const char)) {
   if (in1->dtype!=2) {

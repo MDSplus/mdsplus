@@ -1,9 +1,6 @@
 #pragma once
 
 #define MdsCOMPRESSIBLE 3
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h>
-#endif
 #include <usagedef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
@@ -78,6 +75,7 @@ extern int MdsCopyDxXdZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out, void *
 	int (*const fixup_nid)(), void *const fixup_nid_arg,
 	int (*const fixup_path)(),void *const fixup_path_arg);
 extern char *MdsDescrToCstring(const mdsdsc_t *const string_dsc);
+extern void MdsEnableSandbox();
 extern int MDSfprintf(FILE *const fp, const char *const fmt, ...);
 extern void MdsFree(void *const ptr);
 extern int MdsGet1Dx(const l_length_t *const len, const dtype_t *const dtype, mdsdsc_xd_t *const dsc, void **const zone);
@@ -90,6 +88,7 @@ extern int MdsFree1Dx(mdsdsc_xd_t *const dsc, void **const zone);
 extern int MdsMsg(const int status, const char *const fmt, ...);
 extern int MDSQueueEvent(const char *const event, int *const eventid);
 extern int MDSGetEventQueue(const int eventid, const int timeout, int *const data_len, char **const data);
+extern int MdsSandboxEnabled();
 extern int MdsSerializeDscIn(const char *const in, mdsdsc_xd_t *const out);
 extern int MdsSerializeDscOutZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out,
 	int (*const fixupNid) (),void *const fixupNidArg,
@@ -111,31 +110,12 @@ extern char *TranslateLogical(const char *name);
 extern void TranslateLogicalFree(char *const value);
 extern int TranslateLogicalXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out);
 extern const char *MdsRelease();
-extern mdsdsc_t *MdsReleaseDsc();
+extern const mdsdsc_t *MdsReleaseDsc();
 extern int MdsPutEnv(const char *const cmd);
 extern void MdsGlobalLock();
 extern void MdsGlobalUnlock();
 extern int MdsXpand(int *const nitems_ptr, const mdsdsc_a_t *const pack_dsc_ptr, mdsdsc_a_t *const items_dsc_ptr, int *const bit_ptr);
 extern char* Now32(char* buf);
-
-typedef struct {
-  const char *MAJOR;
-  const char *MINOR;
-  const char *RELEASE;
-  const char *RELEASE_TAG;
-  const char *DATE;
-  const char *MDSVERSION;
-} MDSplusVersionInfo;
-
-typedef struct {
-  const char *GIT_TAG;
-  const char *GIT_BRANCH;
-  const char *GIT_REMOTE;
-  const char *GIT_REMOTE_URL;
-  const char *GIT_COMMIT;
-  const char *GIT_SRCDIR;
-} MDSplusGitVersionInfo;
-
 
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>

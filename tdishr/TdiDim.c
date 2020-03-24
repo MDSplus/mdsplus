@@ -83,7 +83,6 @@ int Tdi3xxxxx(struct descriptor *in1, struct descriptor *in2,
 #include <mdstypes.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
-#include <STATICdef.h>
 #include <limits.h>
 #include <int128.h>
 
@@ -93,7 +92,7 @@ extern int TdiConvert();
 extern int Tdi3Subtract();
 extern int CvtConvertFloat();
 
-STATIC_CONSTANT int roprand = 0x8000;
+static const int roprand = 0x8000;
 typedef struct {
   int longword[4];
 } octaword;
@@ -559,7 +558,7 @@ int Tdi3Dim(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
   typedef struct {
     double l[2];
   } octaword_aligned;
-  STATIC_CONSTANT octaword_aligned zero = { {0} };
+  static const octaword_aligned zero = { {0} };
 
   switch (in1->dtype) {
   default:break;

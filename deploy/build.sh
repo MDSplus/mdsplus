@@ -292,30 +292,30 @@ parsecmd() {
 		TEST_RELEASE=yes
 		;;
 	    --test_format=*)
-		TEST_FORMAT="${i#*=}"
+		eval "TEST_FORMAT=${i#*=}"
 		;;
 	    --test_timeunit=*)
-		TEST_TIMEUNIT="${i#*=}"
+		eval "TEST_TIMEUNIT=${i#*=}"
 		;;
 	    --eventport=*)
-		EVENT_PORT="${i#*=}"
+		eval "EVENT_PORT=${i#*=}"
 		;;
 	    --release)
 		RELEASE=yes
 		;;
             --release=*)
-		RELEASE_VERSION="${i#*=}"
+		eval "RELEASE_VERSION=${i#*=}"
 		RELEASE=yes
 		;;
 	    --publish)
 		PUBLISH=yes
 		;;
             --publish=*)
-		RELEASE_VERSION="${i#*=}"
+		eval "RELEASE_VERSION=${i#*=}"
 		PUBLISH=yes
 		;;
 	    --platform=*)
-		PLATFORM="${i#*=}"
+		eval "PLATFORM=${i#*=}"
 		;;
 	    --valgrind)
 		ENABLE_VALGRIND=yes
@@ -323,7 +323,7 @@ parsecmd() {
 	    --valgrind=*)
 		if [ "${ENABLE_VALGRIND}" = "yes" ]
 		then
-		    VALGRIND_TOOLS="${i#*=}"
+		    eval "VALGRIND_TOOLS=${i#*=}"
 		fi
 		;;
 	    --sanitize)
@@ -332,35 +332,35 @@ parsecmd() {
 	    --sanitize=*)
 		if [ "$ENABLE_SANITIZE" = "yes" ]
 		then
-		    SANITIZE="${i#*=}"
+		    eval "SANITIZE=${i#*=}"
 		fi
 		;;
 	    --branch=*)
-		BRANCH="${i#*=}"
+		eval "BRANCH=${i#*=}"
 		;;
 	    --workspace=*)
-		NEW_WORKSPACE="${i#*=}"
+		eval "NEW_WORKSPACE=${i#*=}"
 		;;
 	    --releasedir=*)
-		RELEASEDIR="${i#*=}"
+		eval "RELEASEDIR=${i#*=}"
 		;;
 	    --publishdir=*)
-		PUBLISHDIR="${i#*=}"
+		eval "PUBLISHDIR=${i#*=}"
 		;;
 	    --dockerimage=*)
-		DOCKERIMAGE="${i#*=}"
+		eval "DOCKERIMAGE=${i#*=}"
 		;;
 	    --dockerfile=*)
-		DOCKERFILE="${i#*=}"
+		eval "DOCKERFILE=${i#*=}"
 		;;
 	    --keys=*)
-		KEYS="${i#*=}"
+		eval "KEYS=${i#*=}"
 		;;
 	    --distname=*)
-		DISTNAME="${i#*=}"
+		eval "DISTNAME=${i#*=}"
 		;;
 	    --arch=*)
-		ARCH="${i#*=}"
+		eval "ARCH=${i#*=}"
 		;;
 	    --dockerpull)
 		DOCKERPULL=yes
@@ -375,10 +375,10 @@ parsecmd() {
 		INTERACTIVE="1"
 		;;
 	    --jars)
-		JARS_DIR="${JARS_DIR-$(realpath $(dirname ${0})/../jars)}"
+		JARS_DIR=${JARS_DIR-$(realpath $(dirname ${0})/../jars)}
 		;;
 	    --jars-dir=*)
-		JARS_DIR="$(realpath ${i#*=})"
+		eval "JARS_DIR=$(realpath ${i#*=})"
 		;;
 	    --make-jars)
 		MAKE_JARS="yes"
@@ -387,14 +387,14 @@ parsecmd() {
 		CONFIGURE_PARAMS="$CONFIGURE_PARAMS --disable-java"
 		;;
 	    --docker-srcdir=*)
-		DOCKER_SRCDIR="${i#*=}"
+		eval "DOCKER_SRCDIR=${i#*=}"
 		;;
 	    *)
 		unknownopts="${unknownopts} $i"
 		;;
 	esac
     done
-    if [ ! -z "${unknownopts}" ]
+    if [ -n "${unknownopts}" ]
     then
 	printhelp
 	2>&1 echo "Unknown option(s) specified: ${unknownopts}"
@@ -445,7 +445,8 @@ BRANCH=${BRANCH-$(echo $TAG | cut -d- -f1 | cut -d_ -f1)}
 
 if [ "$RELEASE" = "yes" -o "$PUBLISH" = "yes" ]
 then
-    if [ -r $PUBLISHDIR/${DISTNAME}/${BRANCH}_${RELEASE_VERSION}_${OS} ]
+    LAST_RELEASE_INFO=$PUBLISHDIR/${DISTNAME}/${BRANCH}_${OS}
+    if [ -r ${LAST_RELEASE_INFO} ] && [ "$(cat ${LAST_RELEASE_INFO})" == "${RELEASE_VERSION}" ]
     then
 	GREEN
 	cat <<EOF
@@ -540,7 +541,7 @@ fi
 # from coma delimited to space delimited
 #
 spacedelim() {
-    if [ ! -z "$1" ]
+    if [ -n "$1" ]
     then
 	if [ "$1" = "skip" ]
 	then
@@ -560,14 +561,14 @@ DOCKERIMAGE="$(spacedelim $DOCKERIMAGE)"
 #
 if [ "$DOCKERPULL" = "yes" ]
 then
-    if [ ! -z "$DOCKERIMAGE" ]
+    if [ -n "$DOCKERIMAGE" ]
     then
 	for img in ${DOCKERIMAGE}
 	do
 	    docker pull $img
 	done
     fi
-elif [ ! -z "$DOCKERFILE" ]
+elif [ -n "$DOCKERFILE" ]
 then
     #
     # build docker images if specified.
@@ -602,12 +603,12 @@ then
     TEST_FORMAT=log
 fi
 
-if [ ! -z "$RELEASEDIR" ]
+if [ -n "$RELEASEDIR" ]
 then
     RELEASEDIR=${RELEASEDIR}/${DISTNAME}
 fi
 
-if [ ! -z "$PUBLISHDIR" ]
+if [ -n "$PUBLISHDIR" ]
 then
     PUBLISHDIR=${PUBLISHDIR}/${DISTNAME}
 fi
@@ -668,6 +669,10 @@ EOF
     NORMAL
     if [ "$PUBLISH" = "yes" ]
     then
-	touch $PUBLISHDIR/${BRANCH}_${RELEASE_VERSION}_${OS}
+	# /publish/$OS/ will contain one file per branch and arch containing the latest release
+	# The previous version is captured in *_old
+	# This is supposed to make it easier to fixup repos while keeping the number of files low
+	[ -r ${LAST_RELEASE_INFO} ]&&cp ${LAST_RELEASE_INFO} ${LAST_RELEASE_INFO}_old
+	echo "${RELEASE_VERSION}" > ${LAST_RELEASE_INFO}
     fi
 fi

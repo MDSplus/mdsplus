@@ -52,7 +52,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <strroutines.h>
 #include <tdishr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 extern int TdiConcat();
 extern int TdiData();
@@ -60,25 +59,30 @@ extern int TdiEvaluate();
 extern int TdiFaultHandler();
 extern int TdiFindImageSymbol();
 extern int TdiGetLong();
-extern int TdiPutIdent();
+extern int tdi_put_ident();
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif
 
-STATIC_ROUTINE int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
-				int (*routine) (), unsigned int *(*called) (),
-				void **result, int *max)
+static inline int interlude(dtype_t rtype, mdsdsc_t **newdsc,
+			int (*routine) (),
+			void **result, int *max)
 {
   switch (rtype) {
+  case DTYPE_MISSING:
+    {
+      LibCallg(newdsc, routine);
+      break;
+    }
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
     {
-      void *(*called_p) () = (void *(*)())called;
+      void *(*called_p) () = (void *(*)())LibCallg;
       void **result_p = (void *)result;
       *max = sizeof(void *);
-      *result_p = (*called_p) (newdsc, routine);
+      *result_p = called_p(newdsc, routine);
       break;
     }
   case DTYPE_D:
@@ -88,20 +92,20 @@ STATIC_ROUTINE int TdiInterlude(dtype_t rtype, mdsdsc_t **newdsc,
   case DTYPE_Q:
   case DTYPE_QU:
     { // 8 bytes
-      int64_t (*called_q) () = (int64_t (*)())called;
+      int64_t (*called_q) () = (int64_t (*)())LibCallg;
       int64_t *result_q = (int64_t *)result;
       *max = sizeof(int64_t);
-      *result_q = (*called_q) (newdsc, routine);
+      *result_q = called_q(newdsc, routine);
       break;
     }
   //case DTYPE_F:
   //case DTYPE_FS:
   default:
     { // 4 bytes
-      int32_t (*called_int) () = (int32_t (*)())called;
+      int32_t (*called_int) () = (int32_t (*)())LibCallg;
       int32_t *result_int = (int32_t *)result;
       *max = sizeof(int32_t);
-      *result_int = (*called_int) (newdsc, routine);
+      *result_int = called_int(newdsc, routine);
     }
   }
   return 1;
@@ -192,11 +196,13 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
     }
   }
   if STATUS_OK
-    status = TdiInterlude(rtype, newdsc, routine, (void *)LibCallg, (void **)result, &max);
+    status = interlude(rtype, newdsc, routine, (void **)result, &max);
   if (!out_ptr)
     goto skip;
   if STATUS_OK
     switch (rtype) {
+    case DTYPE_MISSING:
+      break;
     case DTYPE_DSC:
       dx.pointer = *(char **)result;
       if (*(void**)result)
@@ -247,7 +253,7 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
       if (code == OPC_DESCR || code == OPC_REF || code == OPC_XD)
 	pfun = (mds_function_t *)pfun->arguments[0];
       if (pfun && pfun->dtype == DTYPE_IDENT)
-	TdiPutIdent(pfun, &tmp[j]);
+	tdi_put_ident(pfun, &tmp[j]);
     }
     if (tmp[j].pointer)
       MdsFree1Dx(&tmp[j], NULL);

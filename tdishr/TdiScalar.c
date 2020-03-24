@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define _MOVC3(a,b,c) memcpy(c,b,a)
 #include <mdsplus/mdsplus.h>
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
@@ -63,7 +62,7 @@ extern int TdiPower();
 int Tdi1Scalar(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd sig[2], uni[2], dat[2];
+  struct descriptor_xd sig[2] = {EMPTY_XD}, uni[2] = {EMPTY_XD}, dat[2] = {EMPTY_XD};
   struct TdiCatStruct cats[3];
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int cmode = 0, j, (*routine) () = fun_ptr->f3;
@@ -219,8 +218,8 @@ int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
   digits.pointer = (char *)&digits_d;
   status = TdiDigits(x_ptr, &digits MDS_END_ARG);
   if STATUS_OK {
-    STATIC_CONSTANT double two_d = 2.;
-    STATIC_CONSTANT struct descriptor two =
+    static const double two_d = 2.;
+    static const struct descriptor two =
 	{ sizeof(two_d), DTYPE_NATIVE_DOUBLE, CLASS_S, (char *)&two_d };
     digits_d = 1. - digits_d;
     status = TdiPower(&two, &digits, out_ptr MDS_END_ARG);
@@ -234,26 +233,26 @@ int Tdi3Epsilon(struct descriptor *x_ptr, struct descriptor *out_ptr)
 	HUGE(3.0) is 2**(+127)*(1-2**(-24)).
 	        real = HUGE(real)
 */
-STATIC_CONSTANT const unsigned int BU_HUGE[] = { 0xff };
-STATIC_CONSTANT const unsigned int B_HUGE[] = { 0x7f };
-STATIC_CONSTANT const unsigned int WU_HUGE[] = { 0xffff };
-STATIC_CONSTANT const unsigned int W_HUGE[] = { 0x7fff };
-STATIC_CONSTANT const unsigned int LU_HUGE[] = { 0xffffffff };
-STATIC_CONSTANT const unsigned int L_HUGE[] = { 0x7fffffff };
-STATIC_CONSTANT const unsigned int QU_HUGE[] = { 0xffffffff, 0xffffffff };
-STATIC_CONSTANT const unsigned int Q_HUGE[] = { 0xffffffff, 0x7fffffff };
-STATIC_CONSTANT const unsigned int OU_HUGE[] = { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff };
-STATIC_CONSTANT const unsigned int O_HUGE[] = { 0xffffffff, 0xffffffff, 0xffffffff, 0x7fffffff };
-STATIC_CONSTANT const unsigned int F_HUGE[] = { 0xFFFF7FFF };
-STATIC_CONSTANT const unsigned int FC_HUGE[] = { 0xFFFF7FFF };
-STATIC_CONSTANT const unsigned int D_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
-STATIC_CONSTANT const unsigned int DC_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
-STATIC_CONSTANT const unsigned int G_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
-STATIC_CONSTANT const unsigned int GC_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
-STATIC_CONSTANT const unsigned int FS_HUGE[] = { 0x7F7FFFFF };
-STATIC_CONSTANT const unsigned int FSC_HUGE[] = { 0x7F7FFFFF };
-STATIC_CONSTANT const unsigned int FT_HUGE[] = { 0xFFFFFFFF, 0x7FF7FFFF };
-STATIC_CONSTANT const unsigned int FTC_HUGE[] = { 0xFFFFFFFF, 0x7FF7FFFF };
+static const unsigned int BU_HUGE[] = { 0xff };
+static const unsigned int B_HUGE[] = { 0x7f };
+static const unsigned int WU_HUGE[] = { 0xffff };
+static const unsigned int W_HUGE[] = { 0x7fff };
+static const unsigned int LU_HUGE[] = { 0xffffffff };
+static const unsigned int L_HUGE[] = { 0x7fffffff };
+static const unsigned int QU_HUGE[] = { 0xffffffff, 0xffffffff };
+static const unsigned int Q_HUGE[] = { 0xffffffff, 0x7fffffff };
+static const unsigned int OU_HUGE[] = { 0xffffffff, 0xffffffff, 0xffffffff, 0xffffffff };
+static const unsigned int O_HUGE[] = { 0xffffffff, 0xffffffff, 0xffffffff, 0x7fffffff };
+static const unsigned int F_HUGE[] = { 0xFFFF7FFF };
+static const unsigned int FC_HUGE[] = { 0xFFFF7FFF };
+static const unsigned int D_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
+static const unsigned int DC_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
+static const unsigned int G_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
+static const unsigned int GC_HUGE[] = { 0xFFFF7FFF, 0xFFFFFFFF };
+static const unsigned int FS_HUGE[] = { 0x7F7FFFFF };
+static const unsigned int FSC_HUGE[] = { 0x7F7FFFFF };
+static const unsigned int FT_HUGE[] = { 0xFFFFFFFF, 0x7FF7FFFF };
+static const unsigned int FTC_HUGE[] = { 0xFFFFFFFF, 0x7FF7FFFF };
 
 #define CASE(dtype) case DTYPE_##dtype : memcpy(out_ptr->pointer,dtype##_HUGE,sizeof(dtype##_HUGE)); break;
 
@@ -608,11 +607,11 @@ int Tdi3SizeOf(struct descriptor *in_ptr, struct descriptor *out_ptr)
 	TINY(3.0) is 2**(-127), TINY(4G0) is 2**(-1023).
 	        real = TINY(real)
 */
-STATIC_CONSTANT unsigned int F_TINY[] = { 0x80 };
-STATIC_CONSTANT unsigned int D_TINY[] = { 0x80, 0 };
-STATIC_CONSTANT unsigned int G_TINY[] = { 0x10, 0 };
-STATIC_CONSTANT unsigned int FS_TINY[] = { 0x800000 };
-STATIC_CONSTANT unsigned int FT_TINY[] = { 0, 0x100000 };
+static const unsigned int F_TINY[] = { 0x80 };
+static const unsigned int D_TINY[] = { 0x80, 0 };
+static const unsigned int G_TINY[] = { 0x10, 0 };
+static const unsigned int FS_TINY[] = { 0x800000 };
+static const unsigned int FT_TINY[] = { 0, 0x100000 };
 
 int Tdi3Tiny(struct descriptor *in_ptr, struct descriptor *out_ptr)
 {

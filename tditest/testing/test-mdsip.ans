@@ -10,3 +10,27 @@ mdsvalue("$",[[[[[[[[1]]]]]]]])
 [[[[[[[[1]]]]]]]]
 mdsvalue("$",[[[[[[[[1,2]]]]]]],[[[[[[[3,4]]]]]]]])
 [[[[[[[[1,2]]]]]]], [[[[[[[3,4]]]]]]]]
+cat - > /tmp/test-mdsip.hosts << EOF
+unknown@* | MAP_TO_LOCAL
+known@1.* | SELF
+EOF
+          0          1          1          0
+          1          1          1          0
+cat - > /tmp/test-mdsip.hosts << EOF
+!known@2.*.*.7
+unknown@* | MAP_TO_LOCAL
+unknown@* | SELF
+known@*
+!*@*
+*
+EOF
+          1          2          2          0
+          1          1          1          1
+cat - > /tmp/test-mdsip.hosts << EOF
+!known@*.*.*.7
+*
+multi | SELF
+EOF
+          0          0          2          1
+          1          1          2          1
+"/tmp/test-mdsip.hosts"

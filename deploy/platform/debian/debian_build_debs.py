@@ -57,13 +57,13 @@ def getPackageFiles(buildroot,includes,excludes):
         hasuid=False
         for exclude in excludes:
             if '/xuid' in exclude:
-                print "excluding: %s" % exclude
+                print("excluding: %s" % exclude)
                 hasuid=True
         excludefiles=getPackageFiles(buildroot,excludes,[])
         if hasuid:
-            print "Found %d" % len(excludefiles)
+            print("Found %d" % len(excludefiles))
             for exclude in excludefiles:
-                print "excluding: %s" % exclude
+                print("excluding: %s" % exclude)
         for exclude in excludefiles:
             if exclude in files:
                 files.remove(exclude)
@@ -174,7 +174,7 @@ Description: %(description)s
                     f.write("#!/bin/bash\n")
                     f.write("%s" % (script.text.replace("__INSTALL_PREFIX__","/usr/local")))
                     f.close()
-                    os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info,0775)
+                    os.chmod("%(tmpdir)s/DEBIAN/%(script)s" % info, 0o775)
             info['debfile']="/release/%(flavor)s/DEBS/%(arch)s/mdsplus%(rflavor)s%(packagename)s_%(major)d.%(minor)d.%(release)d_%(arch)s.deb" % info
             if subprocess.Popen("dpkg-deb --build %(tmpdir)s %(debfile)s"%info,shell=True).wait() != 0:
                 for k,v in info.items(): print("%s=%s"%(k,v))

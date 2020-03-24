@@ -58,7 +58,6 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 
 ------------------------------------------------------------------------------*/
 
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <mdsdescrip.h>
@@ -70,7 +69,7 @@ int Tdi3xxx(struct descriptor *in, struct descriptor *out)
 
 extern int CvtConvertFloat();
 
-STATIC_CONSTANT int roprand = 0x8000;
+static const int roprand = 0x8000;
 #define radians_to_degrees 57.295778
 #define degrees_to_radians 0.017453293
 
@@ -203,7 +202,7 @@ int Tdi3##name(struct descriptor *in, struct descriptor *out)\
   return 1;\
 }
 
-STATIC_ROUTINE double anint(double val)
+static double anint(double val)
 {
   int tmp;
   val += (val > 0.0) ? .5 : -.5;
@@ -211,26 +210,26 @@ STATIC_ROUTINE double anint(double val)
   return (double)tmp;
 }
 
-STATIC_ROUTINE double trunc_Static(double val)
+static double trunc_Static(double val)
 {
   return (double)((int)val);
 }
 
-STATIC_ROUTINE void cos_complex(double *in, double *out)
+static void cos_complex(double *in, double *out)
 {
   out[0] = cos(in[0]) * cosh(in[1]);
   out[1] = -sin(in[0]) * sinh(in[1]);
   return;
 }
 
-STATIC_ROUTINE void sin_complex(double *in, double *out)
+static void sin_complex(double *in, double *out)
 {
   out[0] = sin(in[0]) * cosh(in[1]);
   out[1] = cos(in[0]) * sinh(in[1]);
   return;
 }
 
-STATIC_ROUTINE void exp_complex(double *in, double *out)
+static void exp_complex(double *in, double *out)
 {
   out[0] = exp(in[0]);
   out[1] = out[0] * sin(in[1]);
@@ -238,7 +237,7 @@ STATIC_ROUTINE void exp_complex(double *in, double *out)
   return;
 }
 
-STATIC_ROUTINE double cabs_d(double in1, double in2)
+static double cabs_d(double in1, double in2)
 {
   double x = (in1 > 0) ? in1 : -in1;
   double y = (in2 > 0) ? in2 : -in2;
@@ -252,7 +251,7 @@ STATIC_ROUTINE double cabs_d(double in1, double in2)
     return y * sqrt(1 + pow((x / y), 2.0));
 }
 
-STATIC_ROUTINE void sqrt_complex(double *in, double *out)
+static void sqrt_complex(double *in, double *out)
 {
   if (in[0] == (double)0.0 && in[1] == (double)0.0) {
     out[0] = (double)0.0;
@@ -269,7 +268,7 @@ STATIC_ROUTINE void sqrt_complex(double *in, double *out)
   return;
 }
 
-STATIC_ROUTINE void log_complex(double *in, double *out)
+static void log_complex(double *in, double *out)
 {
   double theta = 0;
   if (in[0] > 0.0)
@@ -296,47 +295,47 @@ STATIC_ROUTINE void log_complex(double *in, double *out)
   return;
 }
 
-STATIC_ROUTINE double acosd_Static(double in)
+static double acosd_Static(double in)
 {
   return radians_to_degrees * acos(in);
 }
 
-STATIC_ROUTINE double asind_Static(double in)
+static double asind_Static(double in)
 {
   return radians_to_degrees * asin(in);
 }
 
-STATIC_ROUTINE double atand_Static(double in)
+static double atand_Static(double in)
 {
   return radians_to_degrees * atan(in);
 }
 
-STATIC_ROUTINE double cosd_Static(double in)
+static double cosd_Static(double in)
 {
   return cos(degrees_to_radians * in);
 }
 
-STATIC_ROUTINE double log2_Static(double in)
+static double log2_Static(double in)
 {
   return log10(in) / log10(2.);
 }
 
-STATIC_ROUTINE double sind_Static(double in)
+static double sind_Static(double in)
 {
   return sin(degrees_to_radians * in);
 }
 
-STATIC_ROUTINE double tand_Static(double in)
+static double tand_Static(double in)
 {
   return tan(degrees_to_radians * in);
 }
 
-STATIC_ROUTINE double atand2_Static(double in1, double in2)
+static double atand2_Static(double in1, double in2)
 {
   return radians_to_degrees * atan2(in1, in2);
 }
 
-STATIC_ROUTINE double atanh_Static(double in)
+static double atanh_Static(double in)
 {
   double ans;
   if (in <= -1.0 || in >= 1.)

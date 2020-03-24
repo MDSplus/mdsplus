@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
-#include "STATICdef.h"
 #include <tdishr_messages.h>
 #include "tdirefstandard.h"
 #include <stdlib.h>
@@ -35,9 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiGetLong();
-extern int TdiPutLogical();
+extern int tdi_put_logical();
 extern int TdiEvaluate();
 extern int TdiDispatchOf();
 extern int TdiBuildRange();
@@ -55,7 +54,7 @@ int Tdi1ArgOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int iarg = 0;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CALL,
     DTYPE_CONDITION,
     DTYPE_DEPENDENCY,
@@ -66,7 +65,7 @@ int Tdi1ArgOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &iarg);
   if (STATUS_OK && tmp.pointer->class != CLASS_R)
@@ -117,14 +116,14 @@ int Tdi1AxisOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_DIMENSION,
     DTYPE_SLOPE,
     DTYPE_RANGE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_DIMENSION:
@@ -154,14 +153,14 @@ int Tdi1BeginOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descr
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int n = 0;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_RANGE,
     DTYPE_SLOPE,
     DTYPE_WINDOW,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_RANGE:
@@ -208,7 +207,7 @@ int Tdi1ClassOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
     class = px->class;
   else
     class = DTYPE_MISSING;
-  status = TdiPutLogical(class, out_ptr);
+  status = tdi_put_logical(class, out_ptr);
   return status;
 }
 
@@ -251,12 +250,12 @@ int Tdi1CompletionMessageOf(opcode_t opcode __attribute__ ((unused)), int narg _
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_ACTION,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
@@ -281,12 +280,12 @@ int Tdi1ConditionOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CONDITION,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_CONDITION:
@@ -315,7 +314,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
   int dimct;
   int l, u;
   int index = 0;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_SIGNAL,
     DTYPE_DIMENSION,
     0
@@ -324,7 +323,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	/**************************************
 	For array of signals, give array range.
 	**************************************/
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &index);
 
@@ -370,7 +369,7 @@ int Tdi1DimOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 	    || ((struct descriptor_signal *)pa)->dimensions[index] == 0) {
 	  struct descriptor_s index_dsc = { sizeof(int), DTYPE_L, CLASS_S, 0 };
 	  index_dsc.pointer = (char *)&index;
-	  status = TdiGetData(&omits[1], &tmp, &tmp);
+	  status = tdi_get_data(&omits[1], &tmp, &tmp);
 	  if STATUS_OK
 	    status = TdiDimOf(&tmp, &index_dsc, out_ptr MDS_END_ARG);
 	} else
@@ -398,13 +397,13 @@ int Tdi1DispatchOf(opcode_t opcode __attribute__ ((unused)), int narg __attribut
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_ACTION,
     DTYPE_DISPATCH,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
@@ -496,7 +495,7 @@ int Tdi1KindOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
     dtype = px->dtype;
   else
     dtype = DTYPE_MISSING;
-  status = TdiPutLogical(dtype, out_ptr);
+  status = tdi_put_logical(dtype, out_ptr);
   return status;
 }
 
@@ -525,14 +524,14 @@ int Tdi1EndOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int n = 0;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_RANGE,
     DTYPE_SLOPE,
     DTYPE_WINDOW,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_RANGE:
@@ -570,14 +569,14 @@ int Tdi1EndOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descrip
 int Tdi1ErrorOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT DESCRIPTOR(none, "");
+  static const DESCRIPTOR(none, "");
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_WITH_ERROR,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_WITH_ERROR:
@@ -599,11 +598,11 @@ int Tdi1ErrorlogsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_ACTION,
     0
   };
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
@@ -628,12 +627,12 @@ int Tdi1HelpOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_PARAM,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_PARAM:
@@ -673,14 +672,14 @@ int Tdi1ImageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CALL,
     DTYPE_CONGLOM,
     DTYPE_ROUTINE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_CALL:
@@ -718,7 +717,7 @@ int Tdi1InterruptOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
   if STATUS_OK {
     pd = (struct descriptor_dispatch *)tmp.pointer;
     if (*(char *)pd->pointer != TreeSCHED_ASYNC) {
-      status = TdiGetData(omits, pd->when, out_ptr);
+      status = tdi_get_data(omits, pd->when, out_ptr);
       if STATUS_OK {
 	if (out_ptr->pointer == 0 || out_ptr->pointer->dtype != DTYPE_T)
 	  status = TdiINVDTYDSC;
@@ -739,12 +738,12 @@ int Tdi1LanguageOf(opcode_t opcode __attribute__ ((unused)), int narg __attribut
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_PROCEDURE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_PROCEDURE:
@@ -766,13 +765,13 @@ int Tdi1MethodOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute_
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_METHOD,
     DTYPE_OPAQUE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_METHOD:
@@ -797,12 +796,12 @@ int Tdi1ModelOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CONGLOM,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_CONGLOM:
@@ -824,12 +823,12 @@ int Tdi1NameOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CONGLOM,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_CONGLOM:
@@ -859,7 +858,7 @@ int Tdi1NdescOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
     switch (pr->class) {
     case CLASS_R:
       ndesc = pr->ndesc;
-      status = TdiPutLogical(ndesc, out_ptr);
+      status = tdi_put_logical(ndesc, out_ptr);
       break;
     default:
       status = TdiINVCLADSC;
@@ -892,12 +891,12 @@ int Tdi1ObjectOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute_
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_METHOD,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_METHOD:
@@ -920,12 +919,12 @@ int Tdi1PerformanceOf(opcode_t opcode __attribute__ ((unused)), int narg __attri
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_ACTION,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
@@ -966,12 +965,12 @@ int Tdi1ProcedureOf(opcode_t opcode __attribute__ ((unused)), int narg __attribu
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_PROCEDURE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_PROCEDURE:
@@ -993,12 +992,12 @@ int Tdi1ProgramOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_PROGRAM,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_PROGRAM:
@@ -1026,7 +1025,7 @@ int Tdi1QualifiersOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
   struct descriptor *pd;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CALL,
     DTYPE_CONDITION,
     DTYPE_CONGLOM,
@@ -1036,7 +1035,7 @@ int Tdi1QualifiersOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   pd = tmp.pointer;
   if STATUS_OK
     switch (pd->dtype) {
@@ -1073,12 +1072,12 @@ int Tdi1RawOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ (
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_SIGNAL,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_SIGNAL:
@@ -1102,13 +1101,13 @@ int Tdi1RoutineOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_CALL,
     DTYPE_ROUTINE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_CALL:
@@ -1133,19 +1132,19 @@ int Tdi1RoutineOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 int Tdi1SlopeOf(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT unsigned char one_val = 1;
-  STATIC_CONSTANT struct descriptor one =
+  static const dtype_t one_val = 1;
+  static const struct descriptor one =
       { sizeof(unsigned char), DTYPE_BU, CLASS_S, (char *)&one_val };
 
   struct descriptor_xd tmp = EMPTY_XD;
   unsigned int n = 0;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_RANGE,
     DTYPE_SLOPE,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if (STATUS_OK && narg > 1)
     status = TdiGetLong(list[1], &n);
   if STATUS_OK
@@ -1184,7 +1183,7 @@ int Tdi1TaskOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_ACTION,
     DTYPE_METHOD,
     DTYPE_PROCEDURE,
@@ -1193,7 +1192,7 @@ int Tdi1TaskOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ 
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_ACTION:
@@ -1231,7 +1230,7 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_METHOD,
     DTYPE_PROCEDURE,
     DTYPE_PROGRAM,
@@ -1239,7 +1238,7 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_METHOD:
@@ -1271,14 +1270,14 @@ int Tdi1TimeoutOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute
 int Tdi1UnitsOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__ ((unused)), struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT DESCRIPTOR(none, " ");
+  static const DESCRIPTOR(none, " ");
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_WITH_UNITS,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_WITH_UNITS:
@@ -1300,12 +1299,12 @@ int Tdi1ValidationOf(opcode_t opcode __attribute__ ((unused)), int narg __attrib
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_PARAM,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_PARAM:
@@ -1331,7 +1330,7 @@ int Tdi1ValueOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_DIMENSION,
     DTYPE_PARAM,
     DTYPE_SIGNAL,
@@ -1341,7 +1340,7 @@ int Tdi1ValueOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute__
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_DIMENSION:
@@ -1397,13 +1396,13 @@ int Tdi1WindowOf(opcode_t opcode __attribute__ ((unused)), int narg __attribute_
 {
   INIT_STATUS;
   struct descriptor_xd tmp = EMPTY_XD;
-  STATIC_CONSTANT unsigned char omits[] = {
+  static const dtype_t omits[] = {
     DTYPE_DIMENSION,
     DTYPE_WINDOW,
     0
   };
 
-  status = TdiGetData(omits, list[0], &tmp);
+  status = tdi_get_data(omits, list[0], &tmp);
   if STATUS_OK
     switch (tmp.pointer->dtype) {
     case DTYPE_DIMENSION:

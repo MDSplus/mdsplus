@@ -74,7 +74,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <mdsshr.h>
 #include <STATICdef.h>
 
-#define align(bytes,size) ((((bytes) + (size) - 1)/(size)) * (size))
+static inline l_length_t align(l_length_t bytes, l_length_t size) {
+  if (size == 0) return bytes;
+  return ((bytes + size -1)/size)*size;
+}
 
 EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const length_ptr, const dtype_t *const dtype_ptr, mdsdsc_xd_t *const out_xd){
   array_coeff *in_dsc = (array_coeff *) in_ptr;

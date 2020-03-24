@@ -26,7 +26,6 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class EQUINOX_GAM(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.name = 'EquinoxGAM'
     MARTE2_COMPONENT.inputs = [{'name': 'ip', 'type': 'float64', 'dimensions': 0, 'parameters':{}},
 			       {'name': 'btvac0', 'type': 'float64', 'dimensions': 0, 'parameters':{}},
 			       {'name': 'psi', 'type': 'float64', 'dimensions': [216], 'parameters':{}},

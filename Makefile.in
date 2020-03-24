@@ -10,18 +10,20 @@ VPATH=@srcdir@
 
 
 
-JAVA_JAR = \
-	   javascope \
-	   javatraverser \
-	   javatraverser2 \
-	   javadispatcher \
-	   javadevices \
-	   javaclient \
-	   mdsobjects/java
+JAVA_JAR = java/tests \
+	   java/mdsplus-api \
+	   java/mdsplus-api/tests \
+	   java/jscope \
+	   java/jtraverser \
+	   java/jtraverser2 \
+	   java/jdispatcher \
+	   java/jdevices \
+	   java/mdsplus \
+	   java/mdsobjects \
+	   java/mdsobjects/tests
 
 JAVA_APS = \
-	   javamds \
-	   javatraverser2/java/mds/mdslib
+	   javamds
 
 ifeq "@HAVE_MOTIF@" "yes"
 MOTIF_APS = xmdsshr \
@@ -201,12 +203,12 @@ install: $(install_DIRS)
 .PHONY: tests-envdump
 tests-envdump:
 	cd python/MDSobjects/tests&&(\
-	make test-envdump;\
+	make tests-envdump;\
 	cd ../../..;)
 
-test-env:
+tests-env:
 	cd python/MDSplus/tests&&(\
-	make test-env;\
+	make tests-env;\
 	cd ../../..;)
 
 @HAVE_WINE_TRUE@wineconsole:
@@ -220,17 +222,19 @@ camshr: mdsdcl
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
-javadevices: javatraverser
-javadispatcher: javascope javatraverser
+java/jdevices: java/jtraverser
+java/jdispatcher: java/jscope java/jtraverser java/mdsobjects
 javamds: mdstcpip
-javatraverser: javascope
+java/jtraverser: java/jscope
+java/jtraverser2: java/mdsplus-api
+java/mdsplus-api/tests: java/mdsplus-api java/tests
 math: mdsshr
 mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr
 mdsobjects/cpp: mdstcpip
-mdsobjects/java: javascope
+java/mdsobjects: java/jscope java/tests
 mdstcpip: tdishr
 mitdevices: mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip

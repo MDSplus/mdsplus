@@ -51,36 +51,32 @@ int ServerSendMessage();
 	Description:
 
 ------------------------------------------------------------------------------*/
-#define LOAD_INITIALIZESOCKETS
-#include <pthread_port.h>
 #include <mdsplus/mdsconfig.h>
-#include <ipdesc.h>
+
+#include <errno.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #ifdef HAVE_UNISTD_H
   #include <unistd.h>
 #endif
-#include <string.h>
+
+#include <socket_port.h>
+#include <condition.h>
+#include <ipdesc.h>
 #include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
 #include <libroutines.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
-#include <stdio.h>
-#include <errno.h>
 #ifdef _WIN32
- typedef int socklen_t;
  #define random rand
- #define close closesocket
  #define SOCKERROR(...) do{errno = WSAGetLastError();fprintf (stderr, __VA_ARGS__);}while (0)
 #else
  #define SOCKERROR(...) fprintf (stderr, __VA_ARGS__)
- #include <netinet/in.h>
- #include <netdb.h>
- #include <arpa/inet.h>
 #endif
-#include <signal.h>
 
 //#define DEBUG
 #ifdef DEBUG
@@ -450,6 +446,7 @@ static int RegisterJob(int *msgid, int *retstatus, pthread_rwlock_t *lock, void 
   return j->jobid;
 }
 
+DEFINE_INITIALIZESOCKETS;
 static SOCKET CreatePort(uint16_t *port_out) {
   static uint16_t start_port = 0, range_port;
   if (!start_port) {
@@ -724,7 +721,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   int msglen;
   int num;
   int nbytes;
-  nbytes = recv(c->reply_sock, reply, 60, 0);
+  nbytes = recv(c->reply_sock, reply, 60, MSG_WAITALL);
   if (nbytes != 60) {
     RemoveClient(c, fdactive);
     return;
@@ -738,7 +735,7 @@ static void DoMessage(Client * c, fd_set * fdactive)
   if (msglen != 0) {
     msg = (char *)malloc(msglen + 1);
     msg[msglen] = 0;
-    nbytes = recv(c->reply_sock, msg, msglen, 0);
+    nbytes = recv(c->reply_sock, msg, msglen, MSG_WAITALL);
     if (nbytes != msglen) {
       free(msg);
       RemoveClient(c, fdactive);

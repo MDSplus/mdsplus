@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=Tree
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
@@ -38,13 +40,12 @@ TreeSerializeNci.c \
 TreeSetDbi.c \
 TreeSetDefault.c \
 TreeSetNci.c \
-TreeThreadSafe.c \
+TreeThreadStatic.c \
 TreeVerify.c \
 RemoteAccess.c \
 lex.yytreepath.c 
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TreeShr.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@TreeShr.a
 
@@ -65,15 +66,12 @@ install: $(libdir)
 
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) $(DEF) @EXPORTS_FILE@ 
-	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(DEF) $(LIBS) $(MAKE_IMPLIB)
+@MAKESHLIBDIR@@LIBPRE@TreeShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) 
+	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@TreeShr.a : $(OBJECTS)
 	$(AR) -cr $@ $(OBJECTS)
 	@RANLIB@ $@
-
-TreeShr.exports: TreeShr.def
-	$(SED) -e /LIBRARY/\;/\;/d TreeShr.def > $@
 
 lex.yytreepath.o: lex.yytreepath.c
 	$(COMPILE.c) $(CFLAGS) -Wno-sign-compare -Wno-unused-parameter -c $^

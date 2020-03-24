@@ -52,7 +52,6 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 
 ------------------------------------------------------------------------------*/
 
-#include <STATICdef.h>
 #include <mdsdescrip.h>
 #include <mdstypes.h>
 #include <tdishr_messages.h>
@@ -61,7 +60,7 @@ int Tdi3Divide(struct descriptor *in1, struct descriptor *in2, struct descriptor
 
 
 extern int CvtConvertFloat();
-STATIC_CONSTANT int roprand = 0x8000;
+static const int roprand = 0x8000;
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\

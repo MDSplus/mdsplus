@@ -43,12 +43,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <tdishr_messages.h>
 #include <mdsshr_messages.h>
 #include <mdsshr.h>
-#include <STATICdef.h>
 
 
 extern struct descriptor *TdiItoXSpecial;
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiUnits();
 extern int TdiData();
 extern int TdiCvtArgs();
@@ -62,8 +61,8 @@ extern int TdiGetLong();
 extern int Tdi2Range();
 
 extern unsigned short OpcValue;
-STATIC_CONSTANT DESCRIPTOR_FUNCTION_0(value, &OpcValue);
-STATIC_CONSTANT DESCRIPTOR_RANGE(EMPTY_RANGEE, 0, 0, (struct descriptor *)&value);
+static const DESCRIPTOR_FUNCTION_0(value, &OpcValue);
+static const DESCRIPTOR_RANGE(EMPTY_RANGE, 0, 0, (struct descriptor *)&value);
 
 /**********************************************
 	Redo culled array or scalar.
@@ -137,7 +136,7 @@ int TdiIextend(int left, int right, struct descriptor_a *px)
 /*---------------------------------------------
 	Remove elements not satisfying mask.
 */
-STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
+static int rcull(struct descriptor *pnew __attribute__ ((unused)),
 	struct descriptor_a *pmask, struct descriptor_a *px){
   INIT_STATUS;
   char *pm = pmask->pointer, *pi = px->pointer, *po = pi;
@@ -168,7 +167,7 @@ STATIC_ROUTINE int rcull(struct descriptor *pnew __attribute__ ((unused)),
 /*---------------------------------------------
 	Replace elements not in mask.
 */
-STATIC_ROUTINE int rextend(struct descriptor *pnew,
+static int rextend(struct descriptor *pnew,
 			   struct descriptor_a *pmask, struct descriptor_a *px) {
   INIT_STATUS;
   char *pn = pnew->pointer, *pm = pmask->pointer, *pi = px->pointer;
@@ -184,10 +183,10 @@ STATIC_ROUTINE int rextend(struct descriptor *pnew,
 /**********************************************
 	Going to find out who is naughty and nice.
 */
-STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
+static int work(int rroutine(struct descriptor *, struct descriptor_a *, struct descriptor_a *),
 		opcode_t opcode, int narg, struct descriptor *list[3], struct descriptor_xd *out_ptr) {
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_xd in = EMPTY_XD, tmp = EMPTY_XD, units = EMPTY_XD;
   int cmode = -1, dim, s1 = 1;
   struct descriptor_range *new[3];
@@ -195,15 +194,15 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
   struct descriptor_signal *psig = 0;
   struct descriptor_range fake_range;
   struct descriptor dx0, dx1;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
-  STATIC_CONSTANT unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
-  status = TdiGetData(omits, list[0], &in);
+  static const unsigned char omits[] = { DTYPE_DIMENSION, DTYPE_SIGNAL, DTYPE_DIMENSION, 0 };
+  static const unsigned char omitd[] = { DTYPE_WITH_UNITS, DTYPE_DIMENSION, 0 };
+  status = tdi_get_data(omits, list[0], &in);
   if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
     status = TdiUnits(in.pointer, &units MDS_END_ARG);
     if STATUS_OK
-      status = TdiGetData(&omits[1], &in, &in);
+      status = tdi_get_data(&omits[1], &in, &in);
   }
   if (STATUS_OK && narg > 1 && list[1])
     status = TdiGetLong(list[1], &dim);
@@ -220,11 +219,11 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
     if (dim >= psig->ndesc - 2)
       status = TdiBAD_INDEX;
     else
-      status = TdiGetData(omitd, psig->dimensions[dim], &in);
+      status = tdi_get_data(omitd, psig->dimensions[dim], &in);
     if (STATUS_OK && in.pointer->dtype == DTYPE_WITH_UNITS) {
       status = TdiUnits(in.pointer, &units MDS_END_ARG);
       if STATUS_OK
-	status = TdiGetData(&omitd[1], &in, &in);
+	status = tdi_get_data(&omitd[1], &in, &in);
     } else
       MdsFree1Dx(&units, NULL);
     dim = 0;
@@ -288,25 +287,25 @@ STATIC_ROUTINE int work(int rroutine(struct descriptor *, struct descriptor_a *,
 	while (new[2] && new[2]->class == CLASS_XD)
 	  new[2] = (struct descriptor_range *)new[2]->pointer;
 	struct descriptor *keep[3];
-	memcpy(keep,TdiThreadStatic_p->TdiRANGE_PTRS,sizeof(keep));
-	TdiThreadStatic_p->TdiRANGE_PTRS[0] = &dx0;
-	TdiThreadStatic_p->TdiRANGE_PTRS[1] = &dx1;
-	TdiThreadStatic_p->TdiRANGE_PTRS[2] = 0;
+	memcpy(keep,TDI_RANGE_PTRS,sizeof(keep));
+	TDI_RANGE_PTRS[0] = &dx0;
+	TDI_RANGE_PTRS[1] = &dx1;
+	TDI_RANGE_PTRS[2] = 0;
 	if (in.pointer->dtype == DTYPE_DIMENSION) {
-	  TdiThreadStatic_p->TdiRANGE_PTRS[2] = in.pointer;
+	  TDI_RANGE_PTRS[2] = in.pointer;
 		/************************************************************
 	        Dimensions conversion with missing increment uses all values.
 	        ************************************************************/
 	  if (new[2]->dtype == DTYPE_RANGE
 	      && (new[2]->ndesc == 2 || (new[2]->ndesc == 3 && new[2]->deltaval == 0))) {
-	    fake_range = EMPTY_RANGEE;
+	    fake_range = EMPTY_RANGE;
 	    fake_range.begin = new[2]->begin;
 	    fake_range.ending = new[2]->ending;
 	    new[2] = &fake_range;
 	  }
 	}
 	status = TdiGetArgs(opcode, 3, new, sig, uni, dat, cats);
-	memcpy(TdiThreadStatic_p->TdiRANGE_PTRS,keep,sizeof(keep));
+	memcpy(TDI_RANGE_PTRS,keep,sizeof(keep));
       }
       if STATUS_OK
 	status = Tdi2Range(3, uni, dat, cats, 0);

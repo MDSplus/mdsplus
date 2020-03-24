@@ -30,7 +30,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <status.h>
 #include <mdsplus/mdsplus.h>
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include "tdirefstandard.h"
@@ -41,10 +40,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
-STATIC_CONSTANT struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
+static const struct descriptor_d EMPTY_D = { 0, DTYPE_T, CLASS_D, 0 };
 
-STATIC_CONSTANT DESCRIPTOR(dNUL, "\0");
-STATIC_CONSTANT DESCRIPTOR(dBAD, "/*bad*/");
+static const DESCRIPTOR(dNUL, "\0");
+static const DESCRIPTOR(dBAD, "/*bad*/");
 
 /*----------------------------------------------
 	A kludge to get stdout.
@@ -66,8 +65,8 @@ extern int TdiDecompile();
 int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_L;
-  STATIC_CONSTANT length_t len = (length_t)sizeof(int);
+  static const dtype_t dtype = DTYPE_L;
+  static const length_t len = (length_t)sizeof(int);
 
   if (out_ptr == 0)
     return 1;
@@ -80,7 +79,7 @@ int TdiPutLong(int *data, struct descriptor_xd *out_ptr)
 /*----------------------------------------------
 	Internal routine to output a unit
 */
-STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
+static int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 {
   if (!unit) return MdsCopyDxXd(NULL, out_ptr);
   struct descriptor unit_d = { sizeof(void*), DTYPE_POINTER, CLASS_S, (char*)&unit };
@@ -90,7 +89,7 @@ STATIC_ROUTINE int TdiPutUnit(FILE * unit, struct descriptor_xd *out_ptr)
 /*----------------------------------------------
 	Internal routine to input a unit
 */
-STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
+static int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 {
   int status;
   INIT_AND_FREEXD_ON_EXIT(xd);
@@ -113,7 +112,7 @@ STATIC_ROUTINE int TdiGetOutUnit(struct descriptor *in_ptr, FILE ** unit)
 /*----------------------------------------------
 	Internal routine to input a unit
 */
-STATIC_ROUTINE int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
+static int TdiGetInUnit(struct descriptor *in_ptr, FILE ** unit)
 {
   int status;
   INIT_AND_FREEXD_ON_EXIT(xd);
@@ -139,8 +138,8 @@ int Tdi1DateTime(opcode_t opcode __attribute__ ((unused)),
   INIT_STATUS;
   int time[2] = { 0, 0 }, *ptime;
   length_t len;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
-  STATIC_CONSTANT length_t length = 23;
+  static const dtype_t dtype = DTYPE_T;
+  static const length_t length = 23;
 
   if (narg > 0 && list[0]) {
     struct descriptor dtime = { sizeof(time), DTYPE_Q, CLASS_S, 0 };
@@ -321,7 +320,7 @@ int Tdi1Write(opcode_t opcode __attribute__ ((unused)),
   char *pt, *plim;
   EMPTYXD(tmp);
 
-  STATIC_CONSTANT int width = 132;
+  static const int width = 132;
 
   status = TdiGetOutUnit(list[0], &unit);
   if STATUS_OK

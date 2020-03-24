@@ -45,8 +45,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 using namespace MDSplus;
 using namespace std;
 
-extern "C"  void *getManyObj(char *serializedIn);
-extern "C"  void *putManyObj(char *serializedIn);
+extern "C"  void *getManyObj(char *serializedIn) throw (MdsException);
+extern "C"  void *putManyObj(char *serializedIn) throw (MdsException);
 extern "C" void *compileFromExprWithArgs(char *expr, int nArgs, void *args, void *tree);
 extern "C" int  SendArg(int sock, unsigned char idx, char dtype, unsigned char nargs, short length, char ndims,
 int *dims, char *bytes);
@@ -93,7 +93,7 @@ static int convertType(int mdsType)
 }
 
 
-void *getManyObj(char *serializedIn)
+void *getManyObj(char *serializedIn) throw (MdsException)
 {
 	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
@@ -209,7 +209,7 @@ void *getManyObj(char *serializedIn)
 	return result->convertToDsc();
 }
 
-void *putManyObj(char *serializedIn)
+void *putManyObj(char *serializedIn) throw (MdsException)
 {
 	AutoData<List> inArgs((List *)deserialize((const char *)serializedIn));
 	if(inArgs->clazz != CLASS_APD)// || inArgs->dtype != DTYPE_LIST)
@@ -256,14 +256,14 @@ Connection::Connection(char *mdsipAddr, int clevel) //mdsipAddr of the form <IP 
 {
 	mdsipAddrStr.assign((const char *)mdsipAddr);
 	this->clevel = clevel;
-    lockGlobal();
-    SetCompressionLevel(clevel);
-    sockId = ConnectToMds(mdsipAddr);
-    unlockGlobal();
+	lockGlobal();
+	SetCompressionLevel(clevel);
+	sockId = ConnectToMds(mdsipAddr);
+	unlockGlobal();
 	if(sockId <= 0) {
 		std::string msg("Cannot connect to ");
 		msg += mdsipAddr;
-		throw MdsException(msg.c_str());
+		throw MdsException(msg);
 	}
 }
 
@@ -631,7 +631,7 @@ void GetMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void GetMany::insert(char * beforeName UNUSED_ARGUMENT, char *name, char *expr, Data **args, int nArgs)
+void GetMany::insert(char * beforeName __attribute__ ((unused)), char *name, char *expr, Data **args, int nArgs)
 {
 	int nItems = len();
 	int idx;
@@ -726,7 +726,7 @@ void PutMany::append(char *name, char *expr, Data **args, int nArgs) {
 	insert(len(), name, expr, args, nArgs);
 }
 
-void PutMany::insert(char * beforeName UNUSED_ARGUMENT, char *nodeName, char *expr, Data **args, int nArgs) {
+void PutMany::insert(char * beforeName __attribute__ ((unused)), char *nodeName, char *expr, Data **args, int nArgs) {
 	int nItems = len();
 	int idx;
 	String nameKey("node");

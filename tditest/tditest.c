@@ -27,8 +27,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <readline/readline.h>
 #include <readline/history.h>
+#include <signal.h>
 #if defined(__APPLE__) || defined(__MACH__)
-#define _MACOSX;
+#define _MACOSX
 #endif
 #include <mdsdescrip.h>
 #include <mds_stdarg.h>
@@ -118,11 +119,57 @@ char **character_name_completion(const char *text,
   return rl_completion_matches(text, character_name_generator);
 }
 
+static void keyboard_interrupt(int signo __attribute__((__unused__))) {
+  fprintf(stderr,"KeyboardInterrupt\n");
+}
+#ifdef _WIN32
+static inline void set_readline_handlers() {
+  signal(SIGINT, SIG_IGN);
+}
+static inline void set_execute_handlers() {
+  signal(SIGINT, keyboard_interrupt);
+}
+#else // _WIN32
+static struct sigaction act;
+# ifdef HAVE_RL_SET_SIGNALS
+static inline void set_readline_handlers() {
+  rl_catch_signals = 1;
+  rl_set_signals();
+}
+static inline void set_execute_handlers() {
+  rl_clear_signals();
+}
+# else // HAVE_RL_SET_SIGNALS
+#  ifdef _MACOSX
+#   define _rl_sigint SIG_IGN
+#  else // _MACOSX
+static void _rl_sigint(int signo __attribute__((__unused__))) {
+  // reset readline line buffer and state before printing new prompt
+  rl_free_line_state ();
+  rl_cleanup_after_signal ();
+  RL_UNSETSTATE(RL_STATE_ISEARCH|RL_STATE_NSEARCH|RL_STATE_VIMOTION|RL_STATE_NUMERICARG|RL_STATE_MULTIKEY);
+  rl_line_buffer[rl_point = rl_end = rl_mark = 0] = 0;
+  printf("\n");
+}
+#  endif // !_MACOSX
+static inline void set_readline_handlers() {
+  act.sa_handler = _rl_sigint;
+  sigaction(SIGINT, &act, NULL);
+}
+static inline void set_execute_handlers() {
+  act.sa_handler = keyboard_interrupt;
+  sigaction(SIGINT, &act, NULL);
+}
+# endif // !HAVE_RL_SET_SIGNALS
+#endif // !_WIN32
+
 static char *getExpression(FILE *f_in) {
   char buf[MAXEXPR] = {0};
   char  *ans = NULL;
   size_t alen = 0;
   int append;
+  if (f_in == NULL)
+    set_readline_handlers();
   do {
     char  *next;
     size_t nlen;
@@ -174,17 +221,67 @@ int main(int argc, char **argv)
   rl_attempted_completion_function = character_name_completion;
   rl_completer_quote_characters = "\"'";
   rl_completer_word_break_characters = " ,;[{(+-*\\/^<>=:&|!?~";
-  struct descriptor expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
+  mdsdsc_t expr_dsc = { 0, DTYPE_T, CLASS_S, 0};
   EMPTYXD(ans);
-  char *command=NULL;
-  DESCRIPTOR(error_out, "WRITE($,DEBUG(13))");
-  DESCRIPTOR(clear_errors, "WRITE($,DECOMPILE($)),DEBUG(4)");
-  if (argc > 1) {
-    f_in = fopen(argv[1], "r");
-    if (!f_in) {
-      printf("Error opening input file /%s/\n", argv[1]);
+  char * buf, *command;
+  char error_out_c[64], clear_errors_c[64];
+  DESCRIPTOR(mdsconnect, "MDSCONNECT($)");
+  DESCRIPTOR(mdsvalue,   "MDSVALUE('DECOMPILE(`EXECUTE($))',$)");
+  char *server = NULL, *script = NULL, *logfile = NULL;
+  int verbose = FALSE;
+  int i = 1;
+  while (argc > i) {
+    if (strcmp(argv[i],"-v")==0)
+      verbose = TRUE;
+    else if (strcmp(argv[i],"--server")==0)
+       server = argv[++i];
+    else {
+      if (script)
+        logfile = argv[i];
+      else
+        script = argv[i];
+    }
+    i++;
+  }
+  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
+  output_unit.length  = sizeof(void*);
+  output_unit.dtype   = DTYPE_POINTER;
+  output_unit.pointer = (char*)&f_out;
+  if (logfile) {
+    f_out = fopen(logfile,"w");
+    if (!f_out) {
+      printf("Error opening log file '%s'\n", logfile);
       exit(1);
     }
+    if (verbose) fprintf(stderr,"Writing output to file '%s'\n", logfile);
+  } else
+    f_out = stdout;
+  if (server) {
+    DESCRIPTOR_FROM_CSTRING(server_dsc,server);
+    set_execute_handlers();
+    status = TdiExecute((mdsdsc_t *)&mdsconnect, (mdsdsc_t *)&server_dsc, &ans MDS_END_ARG);
+    if STATUS_OK status = *(int*)ans.pointer->pointer;
+    if STATUS_NOT_OK {
+      fprintf(stderr,"Error connecting to server '%s'\n", server);
+      exit(1);
+    }
+    if (verbose) fprintf(stderr,"Connected to server '%s'\n", server);
+    set_readline_handlers();
+    strcpy(error_out_c,"WRITE($,MDSVALUE('DEBUG(13)'))");
+    strcpy(clear_errors_c,"WRITE($,$),MDSVALUE('DEBUG(4)')");
+  } else {
+    strcpy(error_out_c,"WRITE($,DEBUG(13))");
+    strcpy(clear_errors_c,"WRITE($,DECOMPILE($)),DEBUG(4)");
+  }
+  DESCRIPTOR_FROM_CSTRING(error_out,error_out_c);
+  DESCRIPTOR_FROM_CSTRING(clear_errors,clear_errors_c);
+  if (script) {
+    f_in = fopen(script, "r");
+    if (!f_in) {
+      if (verbose) printf("Error opening input file '%s'\n", script);
+      exit(1);
+    }
+    if (verbose) fprintf(stderr,"Executing script '%s'\n", script);
   } else {
 #ifdef _WIN32
     char *home = getenv("USERPROFILE");
@@ -200,46 +297,52 @@ int main(int argc, char **argv)
       read_history(history_file);
     }
   }
-  mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
-  if (argc > 2) {
-    f_out = fopen(argv[2],"w");
-    if (!f_out) {
-      printf("Error opening input file /%s/\n", argv[2]);
-      exit(1);
-    }
-    output_unit.length  = sizeof(void*);
-    output_unit.dtype   = DTYPE_POINTER;
-    output_unit.pointer = (char*)&f_out;
-  } else
-    f_out = stdout;
-  while ((command=getExpression(f_in))
+  // initialize SIGINT handler
+#ifdef _WIN32
+  signal(SIGINT,keyboard_interrupt);
+#else
+  sigemptyset (&act.sa_mask);
+  act.sa_flags = 0;
+  act.sa_handler = keyboard_interrupt;
+  sigaction(SIGINT, &act, NULL);
+#endif
+  set_readline_handlers();
+  while ((buf=command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
       && strcasecmp(command,"quit") != 0   ) {
-    int comment = command[0] == '!';
+    int comment = command[0] == '#';
     if (!comment) {
       if (f_in) {
-	fprintf(f_out,"%s\n",command);
-	fflush(f_out);
+	if (command[0] == '@') {
+	  command++;
+	} else {
+	  fprintf(f_out,"%s\n",command);
+	  fflush(f_out);
+	}
       }
-    }
-    if (!comment) {
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
-      status = TdiExecute((struct descriptor *)&expr_dsc, &ans MDS_END_ARG);
-      add_history(command);
-      if (status&1)
-	TdiExecute((struct descriptor *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+      set_execute_handlers();
+      if (server) {
+        status = TdiExecute((mdsdsc_t *)&mdsvalue,(mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
+        if (STATUS_OK && !ans.pointer)
+          status = 0;
+      } else
+        status = TdiExecute((mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
+      if STATUS_OK
+	TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
       else
-	TdiExecute((struct descriptor *)&error_out, &output_unit, &ans MDS_END_ARG);
+	TdiExecute((mdsdsc_t *)&error_out, &output_unit, &ans MDS_END_ARG);
       fflush(f_out);
+      set_readline_handlers();
+      add_history(command);
     }
-    free(command);
+    free(buf);
   }
-  free(command);
   MdsFree1Dx(&ans,NULL);
   if (history_file) {
     write_history(history_file);
     free(history_file);
   }
-  return !(status&1);
+  return STATUS_NOT_OK;
 }

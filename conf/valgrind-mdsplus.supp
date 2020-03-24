@@ -9,10 +9,25 @@
    fun:__resolv_conf_get_current
    fun:__res_vinit
    fun:__resolv_context_get
-   fun:gethostbyaddr_r@@GLIBC_*
-   fun:gni_host_inet_name.isra.1
+   ...
    fun:getnameinfo
 }
+
+{
+   Bug in getaddrinfo
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__libc_alloc_buffer_allocate
+   fun:__resolv_conf_allocate
+   fun:__resolv_conf_load
+   fun:__resolv_conf_get_current
+   fun:__res_vinit
+   fun:__resolv_context_get
+   ...
+   fun:getaddrinfo
+}
+
 {
    seen in rhel6
    Memcheck:Param
@@ -150,4 +165,15 @@
    fun:_dlerror_run
    fun:dlopen*
    fun:loadLib
+}
+
+{
+   fc26 in getservbyname
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:__nss_database_lookup
+   fun:__nss_services_lookup2
+   fun:getservbyname_r@@GLIBC_2.2.5
+   fun:getservbyname
 }

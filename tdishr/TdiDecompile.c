@@ -32,9 +32,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 #include <tdishr_messages.h>
-#include <STATICdef.h>
-
-#define TdiDECOMPILE_MAX TdiThreadStatic_p->TdiDecompile_max
 
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
@@ -47,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <mds_stdarg.h>
 #include <mdsshr_messages.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 #ifdef max
 #undef max
 #endif
@@ -58,25 +55,25 @@ extern int TdiDecompileDeindent();
 extern int Tdi0Decompile_R();
 extern int TdiConvert();
 extern int Tdi1Evaluate();
-extern int TdiTrace();
+extern int tdi_trace();
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr);
 
 EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr){
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   struct descriptor_d answer = { 0, DTYPE_T, CLASS_D, 0 };
-  TdiThreadStatic_p->TdiIndent = 1;
+  TDI_INDENT = 1;
   if (narg > 1 && list[1])
-    status = TdiGetLong(list[1], &TdiDECOMPILE_MAX);
+    status = TdiGetLong(list[1], &TDI_DECOMPILE_MAX);
   else
-    TdiDECOMPILE_MAX = 0xffff;
+    TDI_DECOMPILE_MAX = 0xffff;
   if STATUS_OK
     status = Tdi0Decompile(list[0], 9999, &answer);
-  while (status == StrSTRTOOLON && TdiDECOMPILE_MAX > 10) {
-    TdiDECOMPILE_MAX /= 10;
-    if (TdiDECOMPILE_MAX > 100)
-      TdiDECOMPILE_MAX = 100;
+  while (status == StrSTRTOOLON && TDI_DECOMPILE_MAX > 10) {
+    TDI_DECOMPILE_MAX /= 10;
+    if (TDI_DECOMPILE_MAX > 100)
+      TDI_DECOMPILE_MAX = 100;
     StrFree1Dx(&answer);
     status = Tdi0Decompile(list[0], 9999, &answer);
   }
@@ -94,27 +91,27 @@ EXPORT int Tdi1Decompile(opcode_t opcode __attribute__ ((unused)), int narg, str
 	Precedence is used by function evaluation.
 */
 #define P_ARG   88
-//STATIC_CONSTANT unsigned char htab[16] =
+//static const unsigned char htab[16] =
 //    { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e',
 //  'f'
 //};
 
-STATIC_CONSTANT DESCRIPTOR(BUILD_EVENT, "BuildEvent(\"");
-STATIC_CONSTANT DESCRIPTOR(CLASS, "??Class_");
-STATIC_CONSTANT DESCRIPTOR(CLOSE_EVENT, "\")");
-STATIC_CONSTANT DESCRIPTOR(COLON, ":");
-STATIC_CONSTANT DESCRIPTOR(COMMA, ",");
-STATIC_CONSTANT DESCRIPTOR(COMMA_SPACE, ", ");
-STATIC_CONSTANT DESCRIPTOR(CMPLX, "Cmplx(");
-STATIC_CONSTANT DESCRIPTOR(DTYPE, "??Dtype_");
-//STATIC_CONSTANT DESCRIPTOR(HEX, "0X");
-STATIC_CONSTANT DESCRIPTOR(LEFT_BRACKET, "[");
-STATIC_CONSTANT DESCRIPTOR(MISSING, "$Missing");
-STATIC_CONSTANT DESCRIPTOR(MORE, " /*** etc. ***/");
-STATIC_CONSTANT DESCRIPTOR(RIGHT_BRACKET, "]");
-STATIC_CONSTANT DESCRIPTOR(RIGHT_PAREN, ")");
-STATIC_CONSTANT DESCRIPTOR(SET_RANGE, "Set_Range(");
-STATIC_CONSTANT DESCRIPTOR(STAR, "*");
+static const DESCRIPTOR(BUILD_EVENT, "BuildEvent(\"");
+static const DESCRIPTOR(CLASS, "??Class_");
+static const DESCRIPTOR(CLOSE_EVENT, "\")");
+static const DESCRIPTOR(COLON, ":");
+static const DESCRIPTOR(COMMA, ",");
+static const DESCRIPTOR(COMMA_SPACE, ", ");
+static const DESCRIPTOR(CMPLX, "Cmplx(");
+static const DESCRIPTOR(DTYPE, "??Dtype_");
+//static const DESCRIPTOR(HEX, "0X");
+static const DESCRIPTOR(LEFT_BRACKET, "[");
+static const DESCRIPTOR(MISSING, "$Missing");
+static const DESCRIPTOR(MORE, " /*** etc. ***/");
+static const DESCRIPTOR(RIGHT_BRACKET, "]");
+static const DESCRIPTOR(RIGHT_PAREN, ")");
+static const DESCRIPTOR(SET_RANGE, "Set_Range(");
+static const DESCRIPTOR(STAR, "*");
 
 int TdiSingle(int val, struct descriptor_d *out_ptr)
 {
@@ -126,7 +123,7 @@ int TdiSingle(int val, struct descriptor_d *out_ptr)
 /*-------------------------------------------------------
 	Handle arrays and arrays of pointers to descriptors.
 */
-STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
+static int tdi_vector(struct descriptor *in_ptr,
 			      int level, char **item_ptr_ptr, struct descriptor_d *out_ptr)
 {
   array_bounds_desc *a_ptr = (array_bounds_desc *) in_ptr;
@@ -187,7 +184,7 @@ STATIC_ROUTINE int tdi_vector(struct descriptor *in_ptr,
 	/******************
 	Squeeze out spaces.
 	******************/
-STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
+static int noblanks(struct descriptor *cdsc_ptr)
 {
   int n = cdsc_ptr->length;
   char *pwas = cdsc_ptr->pointer, *pnow = pwas;
@@ -204,7 +201,7 @@ STATIC_ROUTINE int noblanks(struct descriptor *cdsc_ptr)
 	/*****************************
 	Neater floating point numbers.
 	*****************************/
-STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descriptor *pdc)
+static int closeup(char repl, struct descriptor *pfloat, struct descriptor *pdc)
 {
   int status, sum, j, shift;
   char *pwas = pdc->pointer;
@@ -378,7 +375,7 @@ STATIC_ROUTINE int closeup(char repl, struct descriptor *pfloat, struct descript
 
 int Tdi0Decompile(struct descriptor *in_ptr, int prec, struct descriptor_d *out_ptr)
 {
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   char c0[85], *cptr, *bptr;
   struct descriptor cdsc = { 11, DTYPE_T, CLASS_S, 0 };
   struct descriptor t2 = { 0, DTYPE_T, CLASS_S, 0 };
@@ -662,7 +659,7 @@ complex: ;
       int coeff = a_ptr->aflags.coeff;
       int dimct = coeff ? a_ptr->dimct : 1;
       unsigned int count = (int)a_ptr->arsize / max(1, length);
-      int more = count > TdiDECOMPILE_MAX || a_ptr->arsize >= 32768;
+      int more = count > TDI_DECOMPILE_MAX || a_ptr->arsize >= 32768;
 
 		/**************************************
 	        Special data types made easier to read.
@@ -772,6 +769,6 @@ complex: ;
     break;
   }	/*switch class */
   if STATUS_NOT_OK
-    TdiTrace(OPC_DECOMPILE, 1, in_ptr, out_ptr);
+    tdi_trace(out_ptr);
   return status;
 }

@@ -22,15 +22,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-
-
 ########################################################
-# This module was generated using mdsshr/gen_device.py
-# To add new status messages modify one of the
-# "xxxx_messages.xml files (or add a new one)
-# and then in mdsshr do:
-#     python gen_devices.py
+# This module was generated using mdsshr/gen_messages.py
+# To add new status messages modify
+# one of the "*_messages.xml" files
+# and then do:
+#     python mdsshr/gen_messages.py
 ########################################################
+
 
 class MdsException(Exception):
   pass
@@ -40,7 +39,7 @@ class MDSplusException(MdsException):
   statusDict={}
   severities=["W", "S", "E", "I", "F", "?", "?", "?"]
   def __new__(cls,*argv):
-      if len(argv)==0 or cls is not MDSplusException:
+      if not argv or cls is not MDSplusException:
           return super(MDSplusException,cls).__new__(cls,*argv)
       status = int(argv[0])
       code   = status & -8
@@ -63,7 +62,7 @@ class MDSplusException(MdsException):
     if message is not None:
         message = str(message)
         if len(message)>0:
-            self.message = "%s:\n%s"%(self.message,message)
+            self.message = "%s:%s"%(self.message,message)
     self.severity=self.severities[self.status & 7]
     super(Exception,self).__init__(self.message)
 
@@ -94,8 +93,1454 @@ def checkStatus(status,ignore=tuple(),message=None):
         else:
             raise exception
 
-########################### generated from mitdevices_messages.xml ########################
 
+class SsException(MDSplusException):
+  fac="Ss"
+
+
+class SsINTERNAL(SsException):
+  status=-1
+  message="This status is meant for internal use only, you should never have seen this message."
+  msgnam="INTERNAL"
+
+MDSplusException.statusDict[-8] = SsINTERNAL
+
+
+class SsSUCCESS(SsException):
+  status=1
+  message="Success"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[0] = SsSUCCESS
+
+
+class SsINTOVF(SsException):
+  status=1148
+  message="Integer overflow"
+  msgnam="INTOVF"
+
+MDSplusException.statusDict[1144] = SsINTOVF
+
+
+class MDSplusWARNING(MDSplusException):
+  status=65536
+  message="Warning"
+  msgnam="WARNING"
+
+MDSplusException.statusDict[65536] = MDSplusWARNING
+
+
+class MDSplusSUCCESS(MDSplusException):
+  status=65545
+  message="Success"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[65544] = MDSplusSUCCESS
+
+
+class MDSplusERROR(MDSplusException):
+  status=65554
+  message="Error"
+  msgnam="ERROR"
+
+MDSplusException.statusDict[65552] = MDSplusERROR
+
+
+class MDSplusFATAL(MDSplusException):
+  status=65572
+  message="Fatal"
+  msgnam="FATAL"
+
+MDSplusException.statusDict[65568] = MDSplusFATAL
+
+
+class MDSplusSANDBOX(MDSplusException):
+  status=65578
+  message="Function disabled for security reasons"
+  msgnam="SANDBOX"
+
+MDSplusException.statusDict[65576] = MDSplusSANDBOX
+
+
+class LibException(MDSplusException):
+  fac="Lib"
+
+
+class LibSTRTRU(LibException):
+  status=1409041
+  message="String truncated"
+  msgnam="STRTRU"
+
+MDSplusException.statusDict[1409040] = LibSTRTRU
+
+
+class LibINSVIRMEM(LibException):
+  status=1409556
+  message="Insufficient virtual memory"
+  msgnam="INSVIRMEM"
+
+MDSplusException.statusDict[1409552] = LibINSVIRMEM
+
+
+class LibINVSTRDES(LibException):
+  status=1409572
+  message="Invalid string descriptor"
+  msgnam="INVSTRDES"
+
+MDSplusException.statusDict[1409568] = LibINVSTRDES
+
+
+class LibINVARG(LibException):
+  status=1409588
+  message="Invalid argument"
+  msgnam="INVARG"
+
+MDSplusException.statusDict[1409584] = LibINVARG
+
+
+class LibNOTFOU(LibException):
+  status=1409652
+  message="Entity not found"
+  msgnam="NOTFOU"
+
+MDSplusException.statusDict[1409648] = LibNOTFOU
+
+
+class LibQUEWASEMP(LibException):
+  status=1409772
+  message="Queue was empty"
+  msgnam="QUEWASEMP"
+
+MDSplusException.statusDict[1409768] = LibQUEWASEMP
+
+
+class LibKEYNOTFOU(LibException):
+  status=1409788
+  message="Key not found"
+  msgnam="KEYNOTFOU"
+
+MDSplusException.statusDict[1409784] = LibKEYNOTFOU
+
+
+class StrException(MDSplusException):
+  fac="Str"
+
+
+class StrSTRTOOLON(StrException):
+  status=2392180
+  message="String too long"
+  msgnam="STRTOOLON"
+
+MDSplusException.statusDict[2392176] = StrSTRTOOLON
+
+
+class StrNOMATCH(StrException):
+  status=2392584
+  message="Strings do not match"
+  msgnam="NOMATCH"
+
+MDSplusException.statusDict[2392584] = StrNOMATCH
+
+
+class StrINVDELIM(StrException):
+  status=2392592
+  message="Not enough delimited characters"
+  msgnam="INVDELIM"
+
+MDSplusException.statusDict[2392592] = StrINVDELIM
+
+
+class StrNOELEM(StrException):
+  status=2392600
+  message="Not enough delimited characters"
+  msgnam="NOELEM"
+
+MDSplusException.statusDict[2392600] = StrNOELEM
+
+
+class StrMATCH(StrException):
+  status=2393113
+  message="Strings match"
+  msgnam="MATCH"
+
+MDSplusException.statusDict[2393112] = StrMATCH
+
+
+class TclException(MDSplusException):
+  fac="Tcl"
+
+
+class TclNORMAL(TclException):
+  status=2752521
+  message="Normal successful completion"
+  msgnam="NORMAL"
+
+MDSplusException.statusDict[2752520] = TclNORMAL
+
+
+class TclFAILED_ESSENTIAL(TclException):
+  status=2752528
+  message="Essential action failed"
+  msgnam="FAILED_ESSENTIAL"
+
+MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL
+
+
+class TclNO_DISPATCH_TABLE(TclException):
+  status=2752536
+  message="No dispatch table found. Forgot to do DISPATCH/BUILD?"
+  msgnam="NO_DISPATCH_TABLE"
+
+MDSplusException.statusDict[2752536] = TclNO_DISPATCH_TABLE
+
+
+class CamException(MDSplusException):
+  fac="Cam"
+
+
+class CamDONE_Q(CamException):
+  status=134316041
+  message="I/O completed with X=1, Q=1"
+  msgnam="DONE_Q"
+
+MDSplusException.statusDict[134316040] = CamDONE_Q
+
+
+class CamDONE_NOQ(CamException):
+  status=134316049
+  message="I/O completed with X=1, Q=0"
+  msgnam="DONE_NOQ"
+
+MDSplusException.statusDict[134316048] = CamDONE_NOQ
+
+
+class CamDONE_NOX(CamException):
+  status=134320128
+  message="I/O completed with X=0 - probable failure"
+  msgnam="DONE_NOX"
+
+MDSplusException.statusDict[134320128] = CamDONE_NOX
+
+
+class CamSERTRAERR(CamException):
+  status=134322178
+  message="serial transmission error on highway"
+  msgnam="SERTRAERR"
+
+MDSplusException.statusDict[134322176] = CamSERTRAERR
+
+
+class CamSCCFAIL(CamException):
+  status=134322242
+  message="serial crate controller failure"
+  msgnam="SCCFAIL"
+
+MDSplusException.statusDict[134322240] = CamSCCFAIL
+
+
+class CamOFFLINE(CamException):
+  status=134322282
+  message="crate is offline"
+  msgnam="OFFLINE"
+
+MDSplusException.statusDict[134322280] = CamOFFLINE
+
+
+class MdsdclException(MDSplusException):
+  fac="Mdsdcl"
+
+
+class MdsdclSUCCESS(MdsdclException):
+  status=134348809
+  message="Normal successful completion"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[134348808] = MdsdclSUCCESS
+
+
+class MdsdclEXIT(MdsdclException):
+  status=134348817
+  message="Normal exit"
+  msgnam="EXIT"
+
+MDSplusException.statusDict[134348816] = MdsdclEXIT
+
+
+class MdsdclERROR(MdsdclException):
+  status=134348824
+  message="Unsuccessful execution of command"
+  msgnam="ERROR"
+
+MDSplusException.statusDict[134348824] = MdsdclERROR
+
+
+class MdsdclNORMAL(MdsdclException):
+  status=134349609
+  message="Normal successful completion"
+  msgnam="NORMAL"
+
+MDSplusException.statusDict[134349608] = MdsdclNORMAL
+
+
+class MdsdclPRESENT(MdsdclException):
+  status=134349617
+  message="Entity is present"
+  msgnam="PRESENT"
+
+MDSplusException.statusDict[134349616] = MdsdclPRESENT
+
+
+class MdsdclIVVERB(MdsdclException):
+  status=134349626
+  message="No such command"
+  msgnam="IVVERB"
+
+MDSplusException.statusDict[134349624] = MdsdclIVVERB
+
+
+class MdsdclABSENT(MdsdclException):
+  status=134349632
+  message="Entity is absent"
+  msgnam="ABSENT"
+
+MDSplusException.statusDict[134349632] = MdsdclABSENT
+
+
+class MdsdclNEGATED(MdsdclException):
+  status=134349640
+  message="Entity is present but negated"
+  msgnam="NEGATED"
+
+MDSplusException.statusDict[134349640] = MdsdclNEGATED
+
+
+class MdsdclNOTNEGATABLE(MdsdclException):
+  status=134349650
+  message="Entity cannot be negated"
+  msgnam="NOTNEGATABLE"
+
+MDSplusException.statusDict[134349648] = MdsdclNOTNEGATABLE
+
+
+class MdsdclIVQUAL(MdsdclException):
+  status=134349658
+  message="Invalid qualifier"
+  msgnam="IVQUAL"
+
+MDSplusException.statusDict[134349656] = MdsdclIVQUAL
+
+
+class MdsdclPROMPT_MORE(MdsdclException):
+  status=134349666
+  message="More input required for command"
+  msgnam="PROMPT_MORE"
+
+MDSplusException.statusDict[134349664] = MdsdclPROMPT_MORE
+
+
+class MdsdclTOO_MANY_PRMS(MdsdclException):
+  status=134349674
+  message="Too many parameters specified"
+  msgnam="TOO_MANY_PRMS"
+
+MDSplusException.statusDict[134349672] = MdsdclTOO_MANY_PRMS
+
+
+class MdsdclTOO_MANY_VALS(MdsdclException):
+  status=134349682
+  message="Too many values"
+  msgnam="TOO_MANY_VALS"
+
+MDSplusException.statusDict[134349680] = MdsdclTOO_MANY_VALS
+
+
+class MdsdclMISSING_VALUE(MdsdclException):
+  status=134349690
+  message="Qualifier value needed"
+  msgnam="MISSING_VALUE"
+
+MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
+
+
+class TreeException(MDSplusException):
+  fac="Tree"
+
+
+class TreeNORMAL(TreeException):
+  """ This Exception is deprecated: use TreeSUCCESS """
+  status=265388041
+  message="Normal successful completion (deprecated: use TreeSUCCESS)"
+  msgnam="NORMAL"
+
+MDSplusException.statusDict[265388040] = TreeNORMAL
+
+
+class TreeRESOLVED(TreeException):
+  status=265388049
+  message="Indirect reference successfully resolved"
+  msgnam="RESOLVED"
+
+MDSplusException.statusDict[265388048] = TreeRESOLVED
+
+
+class TreeNEW(TreeException):
+  status=265388059
+  message="New tree created"
+  msgnam="NEW"
+
+MDSplusException.statusDict[265388056] = TreeNEW
+
+
+class TreeNOTALLSUBS(TreeException):
+  status=265388067
+  message="Main tree opened but not all subtrees found/or connected"
+  msgnam="NOTALLSUBS"
+
+MDSplusException.statusDict[265388064] = TreeNOTALLSUBS
+
+
+class TreeALREADY_OFF(TreeException):
+  status=265388075
+  message="Node is already OFF"
+  msgnam="ALREADY_OFF"
+
+MDSplusException.statusDict[265388072] = TreeALREADY_OFF
+
+
+class TreeALREADY_ON(TreeException):
+  status=265388083
+  message="Node is already ON"
+  msgnam="ALREADY_ON"
+
+MDSplusException.statusDict[265388080] = TreeALREADY_ON
+
+
+class TreeALREADY_OPEN(TreeException):
+  status=265388091
+  message="Tree is already OPEN"
+  msgnam="ALREADY_OPEN"
+
+MDSplusException.statusDict[265388088] = TreeALREADY_OPEN
+
+
+class TreeNO_CONTEXT(TreeException):
+  status=265388099
+  message="There is no active search to end"
+  msgnam="NO_CONTEXT"
+
+MDSplusException.statusDict[265388096] = TreeNO_CONTEXT
+
+
+class TreeON(TreeException):
+  status=265388107
+  message="Node is ON"
+  msgnam="ON"
+
+MDSplusException.statusDict[265388104] = TreeON
+
+
+class TreeOPEN(TreeException):
+  status=265388115
+  message="Tree is OPEN (no edit)"
+  msgnam="OPEN"
+
+MDSplusException.statusDict[265388112] = TreeOPEN
+
+
+class TreeOPEN_EDIT(TreeException):
+  status=265388123
+  message="Tree is OPEN for edit"
+  msgnam="OPEN_EDIT"
+
+MDSplusException.statusDict[265388120] = TreeOPEN_EDIT
+
+
+class TreeNMN(TreeException):
+  status=265388128
+  message="No More Nodes"
+  msgnam="NMN"
+
+MDSplusException.statusDict[265388128] = TreeNMN
+
+
+class TreeNMT(TreeException):
+  status=265388136
+  message="No More Tags"
+  msgnam="NMT"
+
+MDSplusException.statusDict[265388136] = TreeNMT
+
+
+class TreeNNF(TreeException):
+  status=265388144
+  message="Node Not Found"
+  msgnam="NNF"
+
+MDSplusException.statusDict[265388144] = TreeNNF
+
+
+class TreeTNF(TreeException):
+  status=265388152
+  message="Tag Not Found"
+  msgnam="TNF"
+
+MDSplusException.statusDict[265388152] = TreeTNF
+
+
+class TreeTREENF(TreeException):
+  status=265388160
+  message="Tree Not Found"
+  msgnam="TREENF"
+
+MDSplusException.statusDict[265388160] = TreeTREENF
+
+
+class TreeALREADY_THERE(TreeException):
+  status=265388168
+  message="Node is already in the tree"
+  msgnam="ALREADY_THERE"
+
+MDSplusException.statusDict[265388168] = TreeALREADY_THERE
+
+
+class TreePARENT_OFF(TreeException):
+  status=265388176
+  message="Parent of this node is OFF"
+  msgnam="PARENT_OFF"
+
+MDSplusException.statusDict[265388176] = TreePARENT_OFF
+
+
+class TreeBOTH_OFF(TreeException):
+  status=265388184
+  message="Both this node and its parent are off"
+  msgnam="BOTH_OFF"
+
+MDSplusException.statusDict[265388184] = TreeBOTH_OFF
+
+
+class TreeOFF(TreeException):
+  status=265388192
+  message="Node is OFF"
+  msgnam="OFF"
+
+MDSplusException.statusDict[265388192] = TreeOFF
+
+
+class TreeNOT_OPEN(TreeException):
+  status=265388200
+  message="Tree not currently open"
+  msgnam="NOT_OPEN"
+
+MDSplusException.statusDict[265388200] = TreeNOT_OPEN
+
+
+class TreeNOMETHOD(TreeException):
+  status=265388208
+  message="Method not available for this object"
+  msgnam="NOMETHOD"
+
+MDSplusException.statusDict[265388208] = TreeNOMETHOD
+
+
+class TreeBADRECORD(TreeException):
+  status=265388218
+  message="Data corrupted: cannot read record"
+  msgnam="BADRECORD"
+
+MDSplusException.statusDict[265388216] = TreeBADRECORD
+
+
+class TreeINVTREE(TreeException):
+  status=265388226
+  message="Invalid tree identification structure"
+  msgnam="INVTREE"
+
+MDSplusException.statusDict[265388224] = TreeINVTREE
+
+
+class TreeDUPTAG(TreeException):
+  status=265388234
+  message="Tag name already in use"
+  msgnam="DUPTAG"
+
+MDSplusException.statusDict[265388232] = TreeDUPTAG
+
+
+class TreeILLPAGCNT(TreeException):
+  status=265388242
+  message="Illegal page count, error mapping tree file"
+  msgnam="ILLPAGCNT"
+
+MDSplusException.statusDict[265388240] = TreeILLPAGCNT
+
+
+class TreeMAXOPENEDIT(TreeException):
+  status=265388250
+  message="Too many files open for edit"
+  msgnam="MAXOPENEDIT"
+
+MDSplusException.statusDict[265388248] = TreeMAXOPENEDIT
+
+
+class TreeNODATA(TreeException):
+  status=265388258
+  message="No data available for this node"
+  msgnam="NODATA"
+
+MDSplusException.statusDict[265388256] = TreeNODATA
+
+
+class TreeNOTOPEN(TreeException):
+  status=265388266
+  message="No tree file currently open"
+  msgnam="NOTOPEN"
+
+MDSplusException.statusDict[265388264] = TreeNOTOPEN
+
+
+class TreeNOEDIT(TreeException):
+  status=265388274
+  message="Tree file is not open for edit"
+  msgnam="NOEDIT"
+
+MDSplusException.statusDict[265388272] = TreeNOEDIT
+
+
+class TreeNOTCHILDLESS(TreeException):
+  status=265388282
+  message="Node must be childless to become subtree reference"
+  msgnam="NOTCHILDLESS"
+
+MDSplusException.statusDict[265388280] = TreeNOTCHILDLESS
+
+
+class TreeINVPATH(TreeException):
+  status=265388290
+  message="Invalid tree pathname specified"
+  msgnam="INVPATH"
+
+MDSplusException.statusDict[265388288] = TreeINVPATH
+
+
+class TreeILLEGAL_ITEM(TreeException):
+  status=265388298
+  message="Invalid item code or part number specified"
+  msgnam="ILLEGAL_ITEM"
+
+MDSplusException.statusDict[265388296] = TreeILLEGAL_ITEM
+
+
+class TreeBUFFEROVF(TreeException):
+  status=265388306
+  message="Output buffer overflow"
+  msgnam="BUFFEROVF"
+
+MDSplusException.statusDict[265388304] = TreeBUFFEROVF
+
+
+class TreeUNSPRTCLASS(TreeException):
+  status=265388314
+  message="Unsupported descriptor class"
+  msgnam="UNSPRTCLASS"
+
+MDSplusException.statusDict[265388312] = TreeUNSPRTCLASS
+
+
+class TreeCONGLOMFULL(TreeException):
+  status=265388322
+  message="Current conglomerate is full"
+  msgnam="CONGLOMFULL"
+
+MDSplusException.statusDict[265388320] = TreeCONGLOMFULL
+
+
+class TreeCONGLOM_NOT_FULL(TreeException):
+  status=265388330
+  message="Current conglomerate is not yet full"
+  msgnam="CONGLOM_NOT_FULL"
+
+MDSplusException.statusDict[265388328] = TreeCONGLOM_NOT_FULL
+
+
+class TreeUNRESOLVED(TreeException):
+  status=265388338
+  message="Not an indirect node reference: No action taken"
+  msgnam="UNRESOLVED"
+
+MDSplusException.statusDict[265388336] = TreeUNRESOLVED
+
+
+class TreeINVDFFCLASS(TreeException):
+  status=265388346
+  message="Invalid data fmt: only CLASS_S can have data in NCI"
+  msgnam="INVDFFCLASS"
+
+MDSplusException.statusDict[265388344] = TreeINVDFFCLASS
+
+
+class TreeINVRECTYP(TreeException):
+  status=265388354
+  message="Record type invalid for requested operation"
+  msgnam="INVRECTYP"
+
+MDSplusException.statusDict[265388352] = TreeINVRECTYP
+
+
+class TreeNODNAMLEN(TreeException):
+  status=265388362
+  message="Node name too long (12 chars max)"
+  msgnam="NODNAMLEN"
+
+MDSplusException.statusDict[265388360] = TreeNODNAMLEN
+
+
+class TreeTAGNAMLEN(TreeException):
+  status=265388370
+  message="Tagname too long (max 24 chars)"
+  msgnam="TAGNAMLEN"
+
+MDSplusException.statusDict[265388368] = TreeTAGNAMLEN
+
+
+class TreeWRITEFIRST(TreeException):
+  status=265388378
+  message="Tree has been modified:  write or quit first"
+  msgnam="WRITEFIRST"
+
+MDSplusException.statusDict[265388376] = TreeWRITEFIRST
+
+
+class TreeNOT_CONGLOM(TreeException):
+  status=265388386
+  message="Head node of conglomerate does not contain a DTYPE_CONGLOM record"
+  msgnam="NOT_CONGLOM"
+
+MDSplusException.statusDict[265388384] = TreeNOT_CONGLOM
+
+
+class TreeUNSUPARRDTYPE(TreeException):
+  status=265388394
+  message="Complex data types not supported as members of arrays"
+  msgnam="UNSUPARRDTYPE"
+
+MDSplusException.statusDict[265388392] = TreeUNSUPARRDTYPE
+
+
+class TreeNOTMEMBERLESS(TreeException):
+  status=265388402
+  message="Subtree reference can not have members"
+  msgnam="NOTMEMBERLESS"
+
+MDSplusException.statusDict[265388400] = TreeNOTMEMBERLESS
+
+
+class TreeNOTSON(TreeException):
+  status=265388410
+  message="Subtree reference cannot be a member"
+  msgnam="NOTSON"
+
+MDSplusException.statusDict[265388408] = TreeNOTSON
+
+
+class TreeNOOVERWRITE(TreeException):
+  status=265388418
+  message="Write-once node: overwrite not permitted"
+  msgnam="NOOVERWRITE"
+
+MDSplusException.statusDict[265388416] = TreeNOOVERWRITE
+
+
+class TreeINVDTPUSG(TreeException):
+  status=265388426
+  message="Attempt to store datatype which conflicts with the designated usage of this node"
+  msgnam="INVDTPUSG"
+
+MDSplusException.statusDict[265388424] = TreeINVDTPUSG
+
+
+class TreeEDITTING(TreeException):
+  status=265388434
+  message="Tree file open for edit: operation not permitted"
+  msgnam="EDITTING"
+
+MDSplusException.statusDict[265388432] = TreeEDITTING
+
+
+class TreeNOWRITEMODEL(TreeException):
+  status=265388442
+  message="Data for this node can not be written into the MODEL file"
+  msgnam="NOWRITEMODEL"
+
+MDSplusException.statusDict[265388440] = TreeNOWRITEMODEL
+
+
+class TreeNOWRITESHOT(TreeException):
+  status=265388450
+  message="Data for this node can not be written into the SHOT file"
+  msgnam="NOWRITESHOT"
+
+MDSplusException.statusDict[265388448] = TreeNOWRITESHOT
+
+
+class TreeNOLOG(TreeException):
+  status=265388458
+  message="Experiment pathname (xxx_path) not defined"
+  msgnam="NOLOG"
+
+MDSplusException.statusDict[265388456] = TreeNOLOG
+
+
+class TreeREADONLY(TreeException):
+  status=265388466
+  message="Tree was opened with readonly access"
+  msgnam="READONLY"
+
+MDSplusException.statusDict[265388464] = TreeREADONLY
+
+
+class TreeREADERR(TreeException):
+  status=265388474
+  message="Error reading record for node"
+  msgnam="READERR"
+
+MDSplusException.statusDict[265388472] = TreeREADERR
+
+
+class TreeNOT_IN_LIST(TreeException):
+  status=265388482
+  message="Tree being opened was not in the list"
+  msgnam="NOT_IN_LIST"
+
+MDSplusException.statusDict[265388480] = TreeNOT_IN_LIST
+
+
+class TreeSUCCESS(TreeException):
+  status=265389633
+  message="Operation successful"
+  msgnam="SUCCESS"
+
+MDSplusException.statusDict[265389632] = TreeSUCCESS
+
+
+class TreeCONTINUING(TreeException):
+  status=265390435
+  message="Operation continuing: note following error"
+  msgnam="CONTINUING"
+
+MDSplusException.statusDict[265390432] = TreeCONTINUING
+
+
+class TreeCANCEL(TreeException):
+  status=265391232
+  message="User canceled operation"
+  msgnam="CANCEL"
+
+MDSplusException.statusDict[265391232] = TreeCANCEL
+
+
+class TreeUNSUPTHICKOP(TreeException):
+  status=265391240
+  message="Unsupported thick client operation"
+  msgnam="UNSUPTHICKOP"
+
+MDSplusException.statusDict[265391240] = TreeUNSUPTHICKOP
+
+
+class TreeFAILURE(TreeException):
+  status=265392034
+  message="Operation NOT successful"
+  msgnam="FAILURE"
+
+MDSplusException.statusDict[265392032] = TreeFAILURE
+
+
+class TreeFILE_NOT_FOUND(TreeException):
+  status=265392042
+  message="File or Directory Not Found"
+  msgnam="FILE_NOT_FOUND"
+
+MDSplusException.statusDict[265392040] = TreeFILE_NOT_FOUND
+
+
+class TreeLOCK_FAILURE(TreeException):
+  status=265392050
+  message="Error locking file, perhaps NFSLOCKING not enabled on this system"
+  msgnam="LOCK_FAILURE"
+
+MDSplusException.statusDict[265392048] = TreeLOCK_FAILURE
+
+
+class TreeNOSEGMENTS(TreeException):
+  status=265392058
+  message="No segments exist in this node"
+  msgnam="NOSEGMENTS"
+
+MDSplusException.statusDict[265392056] = TreeNOSEGMENTS
+
+
+class TreeINVDTYPE(TreeException):
+  status=265392066
+  message="Invalid datatype for data segment"
+  msgnam="INVDTYPE"
+
+MDSplusException.statusDict[265392064] = TreeINVDTYPE
+
+
+class TreeINVSHAPE(TreeException):
+  status=265392074
+  message="Invalid shape for this data segment"
+  msgnam="INVSHAPE"
+
+MDSplusException.statusDict[265392072] = TreeINVSHAPE
+
+
+class TreeINVSHOT(TreeException):
+  status=265392090
+  message="Invalid shot number - must be -1 (model), 0 (current), or Positive"
+  msgnam="INVSHOT"
+
+MDSplusException.statusDict[265392088] = TreeINVSHOT
+
+
+class TreeINVTAG(TreeException):
+  status=265392106
+  message="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
+  msgnam="INVTAG"
+
+MDSplusException.statusDict[265392104] = TreeINVTAG
+
+
+class TreeNOPATH(TreeException):
+  status=265392114
+  message="No 'treename'_path or default_tree_path environment variables defined. Cannot locate tree files."
+  msgnam="NOPATH"
+
+MDSplusException.statusDict[265392112] = TreeNOPATH
+
+
+class TreeTREEFILEREADERR(TreeException):
+  status=265392122
+  message="Error reading in tree file contents."
+  msgnam="TREEFILEREADERR"
+
+MDSplusException.statusDict[265392120] = TreeTREEFILEREADERR
+
+
+class TreeMEMERR(TreeException):
+  status=265392130
+  message="Memory allocation error."
+  msgnam="MEMERR"
+
+MDSplusException.statusDict[265392128] = TreeMEMERR
+
+
+class TreeNOCURRENT(TreeException):
+  status=265392138
+  message="No current shot number set for this tree."
+  msgnam="NOCURRENT"
+
+MDSplusException.statusDict[265392136] = TreeNOCURRENT
+
+
+class TreeFOPENW(TreeException):
+  status=265392146
+  message="Error opening file for read-write."
+  msgnam="FOPENW"
+
+MDSplusException.statusDict[265392144] = TreeFOPENW
+
+
+class TreeFOPENR(TreeException):
+  status=265392154
+  message="Error opening file read-only."
+  msgnam="FOPENR"
+
+MDSplusException.statusDict[265392152] = TreeFOPENR
+
+
+class TreeFCREATE(TreeException):
+  status=265392162
+  message="Error creating new file."
+  msgnam="FCREATE"
+
+MDSplusException.statusDict[265392160] = TreeFCREATE
+
+
+class TreeCONNECTFAIL(TreeException):
+  status=265392170
+  message="Error connecting to remote server."
+  msgnam="CONNECTFAIL"
+
+MDSplusException.statusDict[265392168] = TreeCONNECTFAIL
+
+
+class TreeNCIWRITE(TreeException):
+  status=265392178
+  message="Error writing node characterisitics to file."
+  msgnam="NCIWRITE"
+
+MDSplusException.statusDict[265392176] = TreeNCIWRITE
+
+
+class TreeDELFAIL(TreeException):
+  status=265392186
+  message="Error deleting file."
+  msgnam="DELFAIL"
+
+MDSplusException.statusDict[265392184] = TreeDELFAIL
+
+
+class TreeRENFAIL(TreeException):
+  status=265392194
+  message="Error renaming file."
+  msgnam="RENFAIL"
+
+MDSplusException.statusDict[265392192] = TreeRENFAIL
+
+
+class TreeEMPTY(TreeException):
+  status=265392200
+  message="Empty string provided."
+  msgnam="EMPTY"
+
+MDSplusException.statusDict[265392200] = TreeEMPTY
+
+
+class TreePARSEERR(TreeException):
+  status=265392210
+  message="Invalid node search string."
+  msgnam="PARSEERR"
+
+MDSplusException.statusDict[265392208] = TreePARSEERR
+
+
+class TreeNCIREAD(TreeException):
+  status=265392218
+  message="Error reading node characteristics from file."
+  msgnam="NCIREAD"
+
+MDSplusException.statusDict[265392216] = TreeNCIREAD
+
+
+class TreeNOVERSION(TreeException):
+  status=265392226
+  message="No version available."
+  msgnam="NOVERSION"
+
+MDSplusException.statusDict[265392224] = TreeNOVERSION
+
+
+class TreeDFREAD(TreeException):
+  status=265392234
+  message="Error reading from datafile."
+  msgnam="DFREAD"
+
+MDSplusException.statusDict[265392232] = TreeDFREAD
+
+
+class TreeCLOSEERR(TreeException):
+  status=265392242
+  message="Error closing temporary tree file."
+  msgnam="CLOSEERR"
+
+MDSplusException.statusDict[265392240] = TreeCLOSEERR
+
+
+class TreeMOVEERROR(TreeException):
+  status=265392250
+  message="Error replacing original treefile with new one."
+  msgnam="MOVEERROR"
+
+MDSplusException.statusDict[265392248] = TreeMOVEERROR
+
+
+class TreeOPENEDITERR(TreeException):
+  status=265392258
+  message="Error reopening new treefile for write access."
+  msgnam="OPENEDITERR"
+
+MDSplusException.statusDict[265392256] = TreeOPENEDITERR
+
+
+class TreeREADONLY_TREE(TreeException):
+  status=265392266
+  message="Tree is marked as readonly. No write operations permitted."
+  msgnam="READONLY_TREE"
+
+MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
+
+
+class TreeWRITETREEERR(TreeException):
+  status=265392274
+  message="Error writing .tree file"
+  msgnam="WRITETREEERR"
+
+MDSplusException.statusDict[265392272] = TreeWRITETREEERR
+
+
+class TreeNOWILD(TreeException):
+  status=265392282
+  message="No wildcard characters permitted in node specifier"
+  msgnam="NOWILD"
+
+MDSplusException.statusDict[265392280] = TreeNOWILD
+
+
+class TdiException(MDSplusException):
+  fac="Tdi"
+
+
+class TdiBREAK(TdiException):
+  status=265519112
+  message="BREAK was not in DO FOR SWITCH or WHILE"
+  msgnam="BREAK"
+
+MDSplusException.statusDict[265519112] = TdiBREAK
+
+
+class TdiCASE(TdiException):
+  status=265519120
+  message="CASE was not in SWITCH statement"
+  msgnam="CASE"
+
+MDSplusException.statusDict[265519120] = TdiCASE
+
+
+class TdiCONTINUE(TdiException):
+  status=265519128
+  message="CONTINUE was not in DO FOR or WHILE"
+  msgnam="CONTINUE"
+
+MDSplusException.statusDict[265519128] = TdiCONTINUE
+
+
+class TdiEXTRANEOUS(TdiException):
+  status=265519136
+  message="Some characters were unused, bad number maybe"
+  msgnam="EXTRANEOUS"
+
+MDSplusException.statusDict[265519136] = TdiEXTRANEOUS
+
+
+class TdiRETURN(TdiException):
+  status=265519144
+  message="Extraneous RETURN statement, not from a FUN"
+  msgnam="RETURN"
+
+MDSplusException.statusDict[265519144] = TdiRETURN
+
+
+class TdiABORT(TdiException):
+  status=265519154
+  message="Program requested abort"
+  msgnam="ABORT"
+
+MDSplusException.statusDict[265519152] = TdiABORT
+
+
+class TdiBAD_INDEX(TdiException):
+  status=265519162
+  message="Index or subscript is too small or too big"
+  msgnam="BAD_INDEX"
+
+MDSplusException.statusDict[265519160] = TdiBAD_INDEX
+
+
+class TdiBOMB(TdiException):
+  status=265519170
+  message="Bad punctuation, could not compile the text"
+  msgnam="BOMB"
+
+MDSplusException.statusDict[265519168] = TdiBOMB
+
+
+class TdiEXTRA_ARG(TdiException):
+  status=265519178
+  message="Too many arguments for function, watch commas"
+  msgnam="EXTRA_ARG"
+
+MDSplusException.statusDict[265519176] = TdiEXTRA_ARG
+
+
+class TdiGOTO(TdiException):
+  status=265519186
+  message="GOTO target label not found"
+  msgnam="GOTO"
+
+MDSplusException.statusDict[265519184] = TdiGOTO
+
+
+class TdiINVCLADSC(TdiException):
+  status=265519194
+  message="Storage class not valid, must be scalar or array"
+  msgnam="INVCLADSC"
+
+MDSplusException.statusDict[265519192] = TdiINVCLADSC
+
+
+class TdiINVCLADTY(TdiException):
+  status=265519202
+  message="Invalid mixture of storage class and data type"
+  msgnam="INVCLADTY"
+
+MDSplusException.statusDict[265519200] = TdiINVCLADTY
+
+
+class TdiINVDTYDSC(TdiException):
+  status=265519210
+  message="Storage data type is not valid"
+  msgnam="INVDTYDSC"
+
+MDSplusException.statusDict[265519208] = TdiINVDTYDSC
+
+
+class TdiINV_OPC(TdiException):
+  status=265519218
+  message="Invalid operator code in a function"
+  msgnam="INV_OPC"
+
+MDSplusException.statusDict[265519216] = TdiINV_OPC
+
+
+class TdiINV_SIZE(TdiException):
+  status=265519226
+  message="Number of elements does not match declaration"
+  msgnam="INV_SIZE"
+
+MDSplusException.statusDict[265519224] = TdiINV_SIZE
+
+
+class TdiMISMATCH(TdiException):
+  status=265519234
+  message="Shape of arguments does not match"
+  msgnam="MISMATCH"
+
+MDSplusException.statusDict[265519232] = TdiMISMATCH
+
+
+class TdiMISS_ARG(TdiException):
+  status=265519242
+  message="Missing argument is required for function"
+  msgnam="MISS_ARG"
+
+MDSplusException.statusDict[265519240] = TdiMISS_ARG
+
+
+class TdiNDIM_OVER(TdiException):
+  status=265519250
+  message="Number of dimensions is over the allowed 8"
+  msgnam="NDIM_OVER"
+
+MDSplusException.statusDict[265519248] = TdiNDIM_OVER
+
+
+class TdiNO_CMPLX(TdiException):
+  status=265519258
+  message="There are no complex forms of this function"
+  msgnam="NO_CMPLX"
+
+MDSplusException.statusDict[265519256] = TdiNO_CMPLX
+
+
+class TdiNO_OPC(TdiException):
+  status=265519266
+  message="No support for this function, today"
+  msgnam="NO_OPC"
+
+MDSplusException.statusDict[265519264] = TdiNO_OPC
+
+
+class TdiNO_OUTPTR(TdiException):
+  status=265519274
+  message="An output pointer is required"
+  msgnam="NO_OUTPTR"
+
+MDSplusException.statusDict[265519272] = TdiNO_OUTPTR
+
+
+class TdiNO_SELF_PTR(TdiException):
+  status=265519282
+  message="No $VALUE is defined for signal or validation"
+  msgnam="NO_SELF_PTR"
+
+MDSplusException.statusDict[265519280] = TdiNO_SELF_PTR
+
+
+class TdiNOT_NUMBER(TdiException):
+  status=265519290
+  message="Value is not a scalar number and must be"
+  msgnam="NOT_NUMBER"
+
+MDSplusException.statusDict[265519288] = TdiNOT_NUMBER
+
+
+class TdiNULL_PTR(TdiException):
+  status=265519298
+  message="Null pointer where value needed"
+  msgnam="NULL_PTR"
+
+MDSplusException.statusDict[265519296] = TdiNULL_PTR
+
+
+class TdiRECURSIVE(TdiException):
+  status=265519306
+  message="Overly recursive function, calls itself maybe"
+  msgnam="RECURSIVE"
+
+MDSplusException.statusDict[265519304] = TdiRECURSIVE
+
+
+class TdiSIG_DIM(TdiException):
+  status=265519314
+  message="Signal dimension does not match data shape"
+  msgnam="SIG_DIM"
+
+MDSplusException.statusDict[265519312] = TdiSIG_DIM
+
+
+class TdiSYNTAX(TdiException):
+  status=265519322
+  message="Bad punctuation or misspelled word or number"
+  msgnam="SYNTAX"
+
+MDSplusException.statusDict[265519320] = TdiSYNTAX
+
+
+class TdiTOO_BIG(TdiException):
+  status=265519330
+  message="Conversion of number lost significant digits"
+  msgnam="TOO_BIG"
+
+MDSplusException.statusDict[265519328] = TdiTOO_BIG
+
+
+class TdiUNBALANCE(TdiException):
+  status=265519338
+  message="Unbalanced () [] {} '' \"\" or /**/"
+  msgnam="UNBALANCE"
+
+MDSplusException.statusDict[265519336] = TdiUNBALANCE
+
+
+class TdiUNKNOWN_VAR(TdiException):
+  status=265519346
+  message="Unknown/undefined variable name"
+  msgnam="UNKNOWN_VAR"
+
+MDSplusException.statusDict[265519344] = TdiUNKNOWN_VAR
+
+
+class TdiSTRTOOLON(TdiException):
+  status=265519356
+  message="string is too long (greater than 65535)"
+  msgnam="STRTOOLON"
+
+MDSplusException.statusDict[265519352] = TdiSTRTOOLON
+
+
+class TdiTIMEOUT(TdiException):
+  status=265519364
+  message="task did not complete in alotted time"
+  msgnam="TIMEOUT"
+
+MDSplusException.statusDict[265519360] = TdiTIMEOUT
+
+
+class ApdException(MDSplusException):
+  fac="Apd"
+
+
+class ApdAPD_APPEND(ApdException):
+  status=266141706
+  message="First argument must be APD or *"
+  msgnam="APD_APPEND"
+
+MDSplusException.statusDict[266141704] = ApdAPD_APPEND
+
+
+class ApdDICT_KEYVALPAIR(ApdException):
+  status=266141714
+  message="A Dictionary requires an even number of elements"
+  msgnam="DICT_KEYVALPAIR"
+
+MDSplusException.statusDict[266141712] = ApdDICT_KEYVALPAIR
+
+
+class ApdDICT_KEYCLS(ApdException):
+  status=266141722
+  message="Keys must be scalar, i.e. CLASS_S"
+  msgnam="DICT_KEYCLS"
+
+MDSplusException.statusDict[266141720] = ApdDICT_KEYCLS
+
+
+class ServerException(MDSplusException):
+  fac="Server"
+
+
+class ServerNOT_DISPATCHED(ServerException):
+  status=266436616
+  message="action not dispatched, depended on failed action"
+  msgnam="NOT_DISPATCHED"
+
+MDSplusException.statusDict[266436616] = ServerNOT_DISPATCHED
+
+
+class ServerINVALID_DEPENDENCY(ServerException):
+  status=266436626
+  message="action dependency cannot be evaluated"
+  msgnam="INVALID_DEPENDENCY"
+
+MDSplusException.statusDict[266436624] = ServerINVALID_DEPENDENCY
+
+
+class ServerCANT_HAPPEN(ServerException):
+  status=266436634
+  message="action contains circular dependency or depends on action which was not dispatched"
+  msgnam="CANT_HAPPEN"
+
+MDSplusException.statusDict[266436632] = ServerCANT_HAPPEN
+
+
+class ServerINVSHOT(ServerException):
+  status=266436642
+  message="invalid shot number, cannot dispatch actions in model"
+  msgnam="INVSHOT"
+
+MDSplusException.statusDict[266436640] = ServerINVSHOT
+
+
+class ServerABORT(ServerException):
+  status=266436658
+  message="Server action was aborted"
+  msgnam="ABORT"
+
+MDSplusException.statusDict[266436656] = ServerABORT
+
+
+class ServerPATH_DOWN(ServerException):
+  status=266436674
+  message="Path to server lost"
+  msgnam="PATH_DOWN"
+
+MDSplusException.statusDict[266436672] = ServerPATH_DOWN
+
+
+class ServerSOCKET_ADDR_ERROR(ServerException):
+  status=266436682
+  message="Cannot obtain ip address socket is bound to."
+  msgnam="SOCKET_ADDR_ERROR"
+
+MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
+
+
+class ServerINVALID_ACTION_OPERATION(ServerException):
+  status=266436690
+  message="Unknown action operation."
+  msgnam="INVALID_ACTION_OPERATION"
+
+MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
 
 
 class DevException(MDSplusException):
@@ -1656,1464 +3101,3 @@ class DevNOT_A_PYDEVICE(DevException):
   msgnam="NOT_A_PYDEVICE"
 
 MDSplusException.statusDict[662480344] = DevNOT_A_PYDEVICE
-
-########################### generated from treeshr_messages.xml ########################
-
-
-
-class TreeException(MDSplusException):
-  fac="Tree"
-
-
-class TreeALREADY_OFF(TreeException):
-  status=265388075
-  message="Node is already OFF"
-  msgnam="ALREADY_OFF"
-
-MDSplusException.statusDict[265388072] = TreeALREADY_OFF
-
-
-class TreeALREADY_ON(TreeException):
-  status=265388083
-  message="Node is already ON"
-  msgnam="ALREADY_ON"
-
-MDSplusException.statusDict[265388080] = TreeALREADY_ON
-
-
-class TreeALREADY_OPEN(TreeException):
-  status=265388091
-  message="Tree is already OPEN"
-  msgnam="ALREADY_OPEN"
-
-MDSplusException.statusDict[265388088] = TreeALREADY_OPEN
-
-
-class TreeALREADY_THERE(TreeException):
-  status=265388168
-  message="Node is already in the tree"
-  msgnam="ALREADY_THERE"
-
-MDSplusException.statusDict[265388168] = TreeALREADY_THERE
-
-
-class TreeBADRECORD(TreeException):
-  status=265388218
-  message="Data corrupted: cannot read record"
-  msgnam="BADRECORD"
-
-MDSplusException.statusDict[265388216] = TreeBADRECORD
-
-
-class TreeBOTH_OFF(TreeException):
-  status=265388184
-  message="Both this node and its parent are off"
-  msgnam="BOTH_OFF"
-
-MDSplusException.statusDict[265388184] = TreeBOTH_OFF
-
-
-class TreeBUFFEROVF(TreeException):
-  status=265388306
-  message="Output buffer overflow"
-  msgnam="BUFFEROVF"
-
-MDSplusException.statusDict[265388304] = TreeBUFFEROVF
-
-
-class TreeCONGLOMFULL(TreeException):
-  status=265388322
-  message="Current conglomerate is full"
-  msgnam="CONGLOMFULL"
-
-MDSplusException.statusDict[265388320] = TreeCONGLOMFULL
-
-
-class TreeCONGLOM_NOT_FULL(TreeException):
-  status=265388330
-  message="Current conglomerate is not yet full"
-  msgnam="CONGLOM_NOT_FULL"
-
-MDSplusException.statusDict[265388328] = TreeCONGLOM_NOT_FULL
-
-
-class TreeCONTINUING(TreeException):
-  status=265390435
-  message="Operation continuing: note following error"
-  msgnam="CONTINUING"
-
-MDSplusException.statusDict[265390432] = TreeCONTINUING
-
-
-class TreeDUPTAG(TreeException):
-  status=265388234
-  message="Tag name already in use"
-  msgnam="DUPTAG"
-
-MDSplusException.statusDict[265388232] = TreeDUPTAG
-
-
-class TreeEDITTING(TreeException):
-  status=265388434
-  message="Tree file open for edit: operation not permitted"
-  msgnam="EDITTING"
-
-MDSplusException.statusDict[265388432] = TreeEDITTING
-
-
-class TreeILLEGAL_ITEM(TreeException):
-  status=265388298
-  message="Invalid item code or part number specified"
-  msgnam="ILLEGAL_ITEM"
-
-MDSplusException.statusDict[265388296] = TreeILLEGAL_ITEM
-
-
-class TreeILLPAGCNT(TreeException):
-  status=265388242
-  message="Illegal page count, error mapping tree file"
-  msgnam="ILLPAGCNT"
-
-MDSplusException.statusDict[265388240] = TreeILLPAGCNT
-
-
-class TreeINVDFFCLASS(TreeException):
-  status=265388346
-  message="Invalid data fmt: only CLASS_S can have data in NCI"
-  msgnam="INVDFFCLASS"
-
-MDSplusException.statusDict[265388344] = TreeINVDFFCLASS
-
-
-class TreeINVDTPUSG(TreeException):
-  status=265388426
-  message="Attempt to store datatype which conflicts with the designated usage of this node"
-  msgnam="INVDTPUSG"
-
-MDSplusException.statusDict[265388424] = TreeINVDTPUSG
-
-
-class TreeINVPATH(TreeException):
-  status=265388290
-  message="Invalid tree pathname specified"
-  msgnam="INVPATH"
-
-MDSplusException.statusDict[265388288] = TreeINVPATH
-
-
-class TreeINVRECTYP(TreeException):
-  status=265388354
-  message="Record type invalid for requested operation"
-  msgnam="INVRECTYP"
-
-MDSplusException.statusDict[265388352] = TreeINVRECTYP
-
-
-class TreeINVTREE(TreeException):
-  status=265388226
-  message="Invalid tree identification structure"
-  msgnam="INVTREE"
-
-MDSplusException.statusDict[265388224] = TreeINVTREE
-
-
-class TreeMAXOPENEDIT(TreeException):
-  status=265388250
-  message="Too many files open for edit"
-  msgnam="MAXOPENEDIT"
-
-MDSplusException.statusDict[265388248] = TreeMAXOPENEDIT
-
-
-class TreeNEW(TreeException):
-  status=265388059
-  message="New tree created"
-  msgnam="NEW"
-
-MDSplusException.statusDict[265388056] = TreeNEW
-
-
-class TreeNMN(TreeException):
-  status=265388128
-  message="No More Nodes"
-  msgnam="NMN"
-
-MDSplusException.statusDict[265388128] = TreeNMN
-
-
-class TreeNMT(TreeException):
-  status=265388136
-  message="No More Tags"
-  msgnam="NMT"
-
-MDSplusException.statusDict[265388136] = TreeNMT
-
-
-class TreeNNF(TreeException):
-  status=265388144
-  message="Node Not Found"
-  msgnam="NNF"
-
-MDSplusException.statusDict[265388144] = TreeNNF
-
-
-class TreeNODATA(TreeException):
-  status=265388258
-  message="No data available for this node"
-  msgnam="NODATA"
-
-MDSplusException.statusDict[265388256] = TreeNODATA
-
-
-class TreeNODNAMLEN(TreeException):
-  status=265388362
-  message="Node name too long (12 chars max)"
-  msgnam="NODNAMLEN"
-
-MDSplusException.statusDict[265388360] = TreeNODNAMLEN
-
-
-class TreeNOEDIT(TreeException):
-  status=265388274
-  message="Tree file is not open for edit"
-  msgnam="NOEDIT"
-
-MDSplusException.statusDict[265388272] = TreeNOEDIT
-
-
-class TreeNOLOG(TreeException):
-  status=265388458
-  message="Experiment pathname (xxx_path) not defined"
-  msgnam="NOLOG"
-
-MDSplusException.statusDict[265388456] = TreeNOLOG
-
-
-class TreeNOMETHOD(TreeException):
-  status=265388208
-  message="Method not available for this object"
-  msgnam="NOMETHOD"
-
-MDSplusException.statusDict[265388208] = TreeNOMETHOD
-
-
-class TreeNOOVERWRITE(TreeException):
-  status=265388418
-  message="Write-once node: overwrite not permitted"
-  msgnam="NOOVERWRITE"
-
-MDSplusException.statusDict[265388416] = TreeNOOVERWRITE
-
-
-class TreeNORMAL(TreeException):
-  status=265388041
-  message="Normal successful completion"
-  msgnam="NORMAL"
-
-MDSplusException.statusDict[265388040] = TreeNORMAL
-
-
-class TreeNOTALLSUBS(TreeException):
-  status=265388067
-  message="Main tree opened but not all subtrees found/or connected"
-  msgnam="NOTALLSUBS"
-
-MDSplusException.statusDict[265388064] = TreeNOTALLSUBS
-
-
-class TreeNOTCHILDLESS(TreeException):
-  status=265388282
-  message="Node must be childless to become subtree reference"
-  msgnam="NOTCHILDLESS"
-
-MDSplusException.statusDict[265388280] = TreeNOTCHILDLESS
-
-
-class TreeNOT_IN_LIST(TreeException):
-  status=265388482
-  message="Tree being opened was not in the list"
-  msgnam="NOT_IN_LIST"
-
-MDSplusException.statusDict[265388480] = TreeNOT_IN_LIST
-
-
-class TreeNOTMEMBERLESS(TreeException):
-  status=265388402
-  message="Subtree reference can not have members"
-  msgnam="NOTMEMBERLESS"
-
-MDSplusException.statusDict[265388400] = TreeNOTMEMBERLESS
-
-
-class TreeNOTOPEN(TreeException):
-  status=265388266
-  message="No tree file currently open"
-  msgnam="NOTOPEN"
-
-MDSplusException.statusDict[265388264] = TreeNOTOPEN
-
-
-class TreeNOTSON(TreeException):
-  status=265388410
-  message="Subtree reference cannot be a member"
-  msgnam="NOTSON"
-
-MDSplusException.statusDict[265388408] = TreeNOTSON
-
-
-class TreeNOT_CONGLOM(TreeException):
-  status=265388386
-  message="Head node of conglomerate does not contain a DTYPE_CONGLOM record"
-  msgnam="NOT_CONGLOM"
-
-MDSplusException.statusDict[265388384] = TreeNOT_CONGLOM
-
-
-class TreeNOT_OPEN(TreeException):
-  status=265388200
-  message="Tree not currently open"
-  msgnam="NOT_OPEN"
-
-MDSplusException.statusDict[265388200] = TreeNOT_OPEN
-
-
-class TreeNOWRITEMODEL(TreeException):
-  status=265388442
-  message="Data for this node can not be written into the MODEL file"
-  msgnam="NOWRITEMODEL"
-
-MDSplusException.statusDict[265388440] = TreeNOWRITEMODEL
-
-
-class TreeNOWRITESHOT(TreeException):
-  status=265388450
-  message="Data for this node can not be written into the SHOT file"
-  msgnam="NOWRITESHOT"
-
-MDSplusException.statusDict[265388448] = TreeNOWRITESHOT
-
-
-class TreeNO_CONTEXT(TreeException):
-  status=265388099
-  message="There is no active search to end"
-  msgnam="NO_CONTEXT"
-
-MDSplusException.statusDict[265388096] = TreeNO_CONTEXT
-
-
-class TreeOFF(TreeException):
-  status=265388192
-  message="Node is OFF"
-  msgnam="OFF"
-
-MDSplusException.statusDict[265388192] = TreeOFF
-
-
-class TreeON(TreeException):
-  status=265388107
-  message="Node is ON"
-  msgnam="ON"
-
-MDSplusException.statusDict[265388104] = TreeON
-
-
-class TreeOPEN(TreeException):
-  status=265388115
-  message="Tree is OPEN (no edit)"
-  msgnam="OPEN"
-
-MDSplusException.statusDict[265388112] = TreeOPEN
-
-
-class TreeOPEN_EDIT(TreeException):
-  status=265388123
-  message="Tree is OPEN for edit"
-  msgnam="OPEN_EDIT"
-
-MDSplusException.statusDict[265388120] = TreeOPEN_EDIT
-
-
-class TreePARENT_OFF(TreeException):
-  status=265388176
-  message="Parent of this node is OFF"
-  msgnam="PARENT_OFF"
-
-MDSplusException.statusDict[265388176] = TreePARENT_OFF
-
-
-class TreeREADERR(TreeException):
-  status=265388474
-  message="Error reading record for node"
-  msgnam="READERR"
-
-MDSplusException.statusDict[265388472] = TreeREADERR
-
-
-class TreeREADONLY(TreeException):
-  status=265388466
-  message="Tree was opened with readonly access"
-  msgnam="READONLY"
-
-MDSplusException.statusDict[265388464] = TreeREADONLY
-
-
-class TreeRESOLVED(TreeException):
-  status=265388049
-  message="Indirect reference successfully resolved"
-  msgnam="RESOLVED"
-
-MDSplusException.statusDict[265388048] = TreeRESOLVED
-
-
-class TreeSUCCESS(TreeException):
-  status=265389633
-  message="Operation successful"
-  msgnam="SUCCESS"
-
-MDSplusException.statusDict[265389632] = TreeSUCCESS
-
-
-class TreeTAGNAMLEN(TreeException):
-  status=265388370
-  message="Tagname too long (max 24 chars)"
-  msgnam="TAGNAMLEN"
-
-MDSplusException.statusDict[265388368] = TreeTAGNAMLEN
-
-
-class TreeTNF(TreeException):
-  status=265388152
-  message="Tag Not Found"
-  msgnam="TNF"
-
-MDSplusException.statusDict[265388152] = TreeTNF
-
-
-class TreeTREENF(TreeException):
-  status=265388160
-  message="Tree Not Found"
-  msgnam="TREENF"
-
-MDSplusException.statusDict[265388160] = TreeTREENF
-
-
-class TreeUNRESOLVED(TreeException):
-  status=265388338
-  message="Not an indirect node reference: No action taken"
-  msgnam="UNRESOLVED"
-
-MDSplusException.statusDict[265388336] = TreeUNRESOLVED
-
-
-class TreeUNSPRTCLASS(TreeException):
-  status=265388314
-  message="Unsupported descriptor class"
-  msgnam="UNSPRTCLASS"
-
-MDSplusException.statusDict[265388312] = TreeUNSPRTCLASS
-
-
-class TreeUNSUPARRDTYPE(TreeException):
-  status=265388394
-  message="Complex data types not supported as members of arrays"
-  msgnam="UNSUPARRDTYPE"
-
-MDSplusException.statusDict[265388392] = TreeUNSUPARRDTYPE
-
-
-class TreeWRITEFIRST(TreeException):
-  status=265388378
-  message="Tree has been modified:  write or quit first"
-  msgnam="WRITEFIRST"
-
-MDSplusException.statusDict[265388376] = TreeWRITEFIRST
-
-
-class TreeFAILURE(TreeException):
-  status=265392034
-  message="Operation NOT successful"
-  msgnam="FAILURE"
-
-MDSplusException.statusDict[265392032] = TreeFAILURE
-
-
-class TreeLOCK_FAILURE(TreeException):
-  status=265392050
-  message="Error locking file, perhaps NFSLOCKING not enabled on this system"
-  msgnam="LOCK_FAILURE"
-
-MDSplusException.statusDict[265392048] = TreeLOCK_FAILURE
-
-
-class TreeFILE_NOT_FOUND(TreeException):
-  status=265392042
-  message="File or Directory Not Found"
-  msgnam="FILE_NOT_FOUND"
-
-MDSplusException.statusDict[265392040] = TreeFILE_NOT_FOUND
-
-
-class TreeCANCEL(TreeException):
-  status=265391232
-  message="User canceled operation"
-  msgnam="CANCEL"
-
-MDSplusException.statusDict[265391232] = TreeCANCEL
-
-
-class TreeUNSUPTHICKOP(TreeException):
-  status=265391240
-  message="Unsupported thick client operation"
-  msgnam="UNSUPTHICKOP"
-
-MDSplusException.statusDict[265391240] = TreeUNSUPTHICKOP
-
-
-class TreeNOSEGMENTS(TreeException):
-  status=265392058
-  message="No segments exist in this node"
-  msgnam="NOSEGMENTS"
-
-MDSplusException.statusDict[265392056] = TreeNOSEGMENTS
-
-
-class TreeINVDTYPE(TreeException):
-  status=265392066
-  message="Invalid datatype for data segment"
-  msgnam="INVDTYPE"
-
-MDSplusException.statusDict[265392064] = TreeINVDTYPE
-
-
-class TreeINVSHAPE(TreeException):
-  status=265392074
-  message="Invalid shape for this data segment"
-  msgnam="INVSHAPE"
-
-MDSplusException.statusDict[265392072] = TreeINVSHAPE
-
-
-class TreeINVSHOT(TreeException):
-  status=265392090
-  message="Invalid shot number - must be -1 (model), 0 (current), or Positive"
-  msgnam="INVSHOT"
-
-MDSplusException.statusDict[265392088] = TreeINVSHOT
-
-
-class TreeINVTAG(TreeException):
-  status=265392106
-  message="Invalid tagname - must begin with alpha followed by 0-22 alphanumeric or underscores"
-  msgnam="INVTAG"
-
-MDSplusException.statusDict[265392104] = TreeINVTAG
-
-
-class TreeNOPATH(TreeException):
-  status=265392114
-  message="No 'treename'_path environment variable defined. Cannot locate tree files."
-  msgnam="NOPATH"
-
-MDSplusException.statusDict[265392112] = TreeNOPATH
-
-
-class TreeTREEFILEREADERR(TreeException):
-  status=265392122
-  message="Error reading in tree file contents."
-  msgnam="TREEFILEREADERR"
-
-MDSplusException.statusDict[265392120] = TreeTREEFILEREADERR
-
-
-class TreeMEMERR(TreeException):
-  status=265392130
-  message="Memory allocation error."
-  msgnam="MEMERR"
-
-MDSplusException.statusDict[265392128] = TreeMEMERR
-
-
-class TreeNOCURRENT(TreeException):
-  status=265392138
-  message="No current shot number set for this tree."
-  msgnam="NOCURRENT"
-
-MDSplusException.statusDict[265392136] = TreeNOCURRENT
-
-
-class TreeFOPENW(TreeException):
-  status=265392146
-  message="Error opening file for read-write."
-  msgnam="FOPENW"
-
-MDSplusException.statusDict[265392144] = TreeFOPENW
-
-
-class TreeFOPENR(TreeException):
-  status=265392154
-  message="Error opening file read-only."
-  msgnam="FOPENR"
-
-MDSplusException.statusDict[265392152] = TreeFOPENR
-
-
-class TreeFCREATE(TreeException):
-  status=265392162
-  message="Error creating new file."
-  msgnam="FCREATE"
-
-MDSplusException.statusDict[265392160] = TreeFCREATE
-
-
-class TreeCONNECTFAIL(TreeException):
-  status=265392170
-  message="Error connecting to remote server."
-  msgnam="CONNECTFAIL"
-
-MDSplusException.statusDict[265392168] = TreeCONNECTFAIL
-
-
-class TreeNCIWRITE(TreeException):
-  status=265392178
-  message="Error writing node characterisitics to file."
-  msgnam="NCIWRITE"
-
-MDSplusException.statusDict[265392176] = TreeNCIWRITE
-
-
-class TreeDELFAIL(TreeException):
-  status=265392186
-  message="Error deleting file."
-  msgnam="DELFAIL"
-
-MDSplusException.statusDict[265392184] = TreeDELFAIL
-
-
-class TreeRENFAIL(TreeException):
-  status=265392194
-  message="Error renaming file."
-  msgnam="RENFAIL"
-
-MDSplusException.statusDict[265392192] = TreeRENFAIL
-
-
-class TreeEMPTY(TreeException):
-  status=265392200
-  message="Empty string provided."
-  msgnam="EMPTY"
-
-MDSplusException.statusDict[265392200] = TreeEMPTY
-
-
-class TreePARSEERR(TreeException):
-  status=265392210
-  message="Invalid node search string."
-  msgnam="PARSEERR"
-
-MDSplusException.statusDict[265392208] = TreePARSEERR
-
-
-class TreeNCIREAD(TreeException):
-  status=265392218
-  message="Error reading node characteristics from file."
-  msgnam="NCIREAD"
-
-MDSplusException.statusDict[265392216] = TreeNCIREAD
-
-
-class TreeNOVERSION(TreeException):
-  status=265392226
-  message="No version available."
-  msgnam="NOVERSION"
-
-MDSplusException.statusDict[265392224] = TreeNOVERSION
-
-
-class TreeDFREAD(TreeException):
-  status=265392234
-  message="Error reading from datafile."
-  msgnam="DFREAD"
-
-MDSplusException.statusDict[265392232] = TreeDFREAD
-
-
-class TreeCLOSEERR(TreeException):
-  status=265392242
-  message="Error closing temporary tree file."
-  msgnam="CLOSEERR"
-
-MDSplusException.statusDict[265392240] = TreeCLOSEERR
-
-
-class TreeMOVEERROR(TreeException):
-  status=265392250
-  message="Error replacing original treefile with new one."
-  msgnam="MOVEERROR"
-
-MDSplusException.statusDict[265392248] = TreeMOVEERROR
-
-
-class TreeOPENEDITERR(TreeException):
-  status=265392258
-  message="Error reopening new treefile for write access."
-  msgnam="OPENEDITERR"
-
-MDSplusException.statusDict[265392256] = TreeOPENEDITERR
-
-
-class TreeREADONLY_TREE(TreeException):
-  status=265392266
-  message="Tree is marked as readonly. No write operations permitted."
-  msgnam="READONLY_TREE"
-
-MDSplusException.statusDict[265392264] = TreeREADONLY_TREE
-
-
-class TreeWRITETREEERR(TreeException):
-  status=265392274
-  message="Error writing .tree file"
-  msgnam="WRITETREEERR"
-
-MDSplusException.statusDict[265392272] = TreeWRITETREEERR
-
-
-class TreeNOWILD(TreeException):
-  status=265392282
-  message="No wildcard characters permitted in node specifier"
-  msgnam="NOWILD"
-
-MDSplusException.statusDict[265392280] = TreeNOWILD
-
-########################### generated from mdsshr_messages.xml ########################
-
-
-
-class LibException(MDSplusException):
-  fac="Lib"
-
-
-class LibINSVIRMEM(LibException):
-  status=1409556
-  message="Insufficient virtual memory"
-  msgnam="INSVIRMEM"
-
-MDSplusException.statusDict[1409552] = LibINSVIRMEM
-
-
-class LibINVARG(LibException):
-  status=1409588
-  message="Invalid argument"
-  msgnam="INVARG"
-
-MDSplusException.statusDict[1409584] = LibINVARG
-
-
-class LibINVSTRDES(LibException):
-  status=1409572
-  message="Invalid string descriptor"
-  msgnam="INVSTRDES"
-
-MDSplusException.statusDict[1409568] = LibINVSTRDES
-
-
-class LibKEYNOTFOU(LibException):
-  status=1409788
-  message="Key not found"
-  msgnam="KEYNOTFOU"
-
-MDSplusException.statusDict[1409784] = LibKEYNOTFOU
-
-
-class LibNOTFOU(LibException):
-  status=1409652
-  message="Entity not found"
-  msgnam="NOTFOU"
-
-MDSplusException.statusDict[1409648] = LibNOTFOU
-
-
-class LibQUEWASEMP(LibException):
-  status=1409772
-  message="Queue was empty"
-  msgnam="QUEWASEMP"
-
-MDSplusException.statusDict[1409768] = LibQUEWASEMP
-
-
-class LibSTRTRU(LibException):
-  status=1409041
-  message="String truncated"
-  msgnam="STRTRU"
-
-MDSplusException.statusDict[1409040] = LibSTRTRU
-
-
-class StrException(MDSplusException):
-  fac="Str"
-
-
-class StrMATCH(StrException):
-  status=2393113
-  message="Strings match"
-  msgnam="MATCH"
-
-MDSplusException.statusDict[2393112] = StrMATCH
-
-
-class StrNOMATCH(StrException):
-  status=2392584
-  message="Strings do not match"
-  msgnam="NOMATCH"
-
-MDSplusException.statusDict[2392584] = StrNOMATCH
-
-
-class StrNOELEM(StrException):
-  status=2392600
-  message="Not enough delimited characters"
-  msgnam="NOELEM"
-
-MDSplusException.statusDict[2392600] = StrNOELEM
-
-
-class StrINVDELIM(StrException):
-  status=2392592
-  message="Not enough delimited characters"
-  msgnam="INVDELIM"
-
-MDSplusException.statusDict[2392592] = StrINVDELIM
-
-
-class StrSTRTOOLON(StrException):
-  status=2392180
-  message="String too long"
-  msgnam="STRTOOLON"
-
-MDSplusException.statusDict[2392176] = StrSTRTOOLON
-
-
-class MDSplusWARNING(MDSplusException):
-  status=65536
-  message="Warning"
-  msgnam="WARNING"
-
-MDSplusException.statusDict[65536] = MDSplusWARNING
-
-
-class MDSplusSUCCESS(MDSplusException):
-  status=65545
-  message="Success"
-  msgnam="SUCCESS"
-
-MDSplusException.statusDict[65544] = MDSplusSUCCESS
-
-
-class MDSplusERROR(MDSplusException):
-  status=65554
-  message="Error"
-  msgnam="ERROR"
-
-MDSplusException.statusDict[65552] = MDSplusERROR
-
-
-class MDSplusFATAL(MDSplusException):
-  status=65572
-  message="Fatal"
-  msgnam="FATAL"
-
-MDSplusException.statusDict[65568] = MDSplusFATAL
-
-
-class SsException(MDSplusException):
-  fac="Ss"
-
-
-class SsSUCCESS(SsException):
-  status=1
-  message="Success"
-  msgnam="SUCCESS"
-
-MDSplusException.statusDict[0] = SsSUCCESS
-
-
-class SsINTOVF(SsException):
-  status=1148
-  message="Integer overflow"
-  msgnam="INTOVF"
-
-MDSplusException.statusDict[1144] = SsINTOVF
-
-
-class SsINTERNAL(SsException):
-  status=-1
-  message="This status is meant for internal use only, you should never have seen this message."
-  msgnam="INTERNAL"
-
-MDSplusException.statusDict[-8] = SsINTERNAL
-
-########################### generated from tdishr_messages.xml ########################
-
-
-
-class TdiException(MDSplusException):
-  fac="Tdi"
-
-
-class TdiBREAK(TdiException):
-  status=265519112
-  message="BREAK was not in DO FOR SWITCH or WHILE"
-  msgnam="BREAK"
-
-MDSplusException.statusDict[265519112] = TdiBREAK
-
-
-class TdiCASE(TdiException):
-  status=265519120
-  message="CASE was not in SWITCH statement"
-  msgnam="CASE"
-
-MDSplusException.statusDict[265519120] = TdiCASE
-
-
-class TdiCONTINUE(TdiException):
-  status=265519128
-  message="CONTINUE was not in DO FOR or WHILE"
-  msgnam="CONTINUE"
-
-MDSplusException.statusDict[265519128] = TdiCONTINUE
-
-
-class TdiEXTRANEOUS(TdiException):
-  status=265519136
-  message="Some characters were unused, bad number maybe"
-  msgnam="EXTRANEOUS"
-
-MDSplusException.statusDict[265519136] = TdiEXTRANEOUS
-
-
-class TdiRETURN(TdiException):
-  status=265519144
-  message="Extraneous RETURN statement, not from a FUN"
-  msgnam="RETURN"
-
-MDSplusException.statusDict[265519144] = TdiRETURN
-
-
-class TdiABORT(TdiException):
-  status=265519154
-  message="Program requested abort"
-  msgnam="ABORT"
-
-MDSplusException.statusDict[265519152] = TdiABORT
-
-
-class TdiBAD_INDEX(TdiException):
-  status=265519162
-  message="Index or subscript is too small or too big"
-  msgnam="BAD_INDEX"
-
-MDSplusException.statusDict[265519160] = TdiBAD_INDEX
-
-
-class TdiBOMB(TdiException):
-  status=265519170
-  message="Bad punctuation, could not compile the text"
-  msgnam="BOMB"
-
-MDSplusException.statusDict[265519168] = TdiBOMB
-
-
-class TdiEXTRA_ARG(TdiException):
-  status=265519178
-  message="Too many arguments for function, watch commas"
-  msgnam="EXTRA_ARG"
-
-MDSplusException.statusDict[265519176] = TdiEXTRA_ARG
-
-
-class TdiGOTO(TdiException):
-  status=265519186
-  message="GOTO target label not found"
-  msgnam="GOTO"
-
-MDSplusException.statusDict[265519184] = TdiGOTO
-
-
-class TdiINVCLADSC(TdiException):
-  status=265519194
-  message="Storage class not valid, must be scalar or array"
-  msgnam="INVCLADSC"
-
-MDSplusException.statusDict[265519192] = TdiINVCLADSC
-
-
-class TdiINVCLADTY(TdiException):
-  status=265519202
-  message="Invalid mixture of storage class and data type"
-  msgnam="INVCLADTY"
-
-MDSplusException.statusDict[265519200] = TdiINVCLADTY
-
-
-class TdiINVDTYDSC(TdiException):
-  status=265519210
-  message="Storage data type is not valid"
-  msgnam="INVDTYDSC"
-
-MDSplusException.statusDict[265519208] = TdiINVDTYDSC
-
-
-class TdiINV_OPC(TdiException):
-  status=265519218
-  message="Invalid operator code in a function"
-  msgnam="INV_OPC"
-
-MDSplusException.statusDict[265519216] = TdiINV_OPC
-
-
-class TdiINV_SIZE(TdiException):
-  status=265519226
-  message="Number of elements does not match declaration"
-  msgnam="INV_SIZE"
-
-MDSplusException.statusDict[265519224] = TdiINV_SIZE
-
-
-class TdiMISMATCH(TdiException):
-  status=265519234
-  message="Shape of arguments does not match"
-  msgnam="MISMATCH"
-
-MDSplusException.statusDict[265519232] = TdiMISMATCH
-
-
-class TdiMISS_ARG(TdiException):
-  status=265519242
-  message="Missing argument is required for function"
-  msgnam="MISS_ARG"
-
-MDSplusException.statusDict[265519240] = TdiMISS_ARG
-
-
-class TdiNDIM_OVER(TdiException):
-  status=265519250
-  message="Number of dimensions is over the allowed 8"
-  msgnam="NDIM_OVER"
-
-MDSplusException.statusDict[265519248] = TdiNDIM_OVER
-
-
-class TdiNO_CMPLX(TdiException):
-  status=265519258
-  message="There are no complex forms of this function"
-  msgnam="NO_CMPLX"
-
-MDSplusException.statusDict[265519256] = TdiNO_CMPLX
-
-
-class TdiNO_OPC(TdiException):
-  status=265519266
-  message="No support for this function, today"
-  msgnam="NO_OPC"
-
-MDSplusException.statusDict[265519264] = TdiNO_OPC
-
-
-class TdiNO_OUTPTR(TdiException):
-  status=265519274
-  message="An output pointer is required"
-  msgnam="NO_OUTPTR"
-
-MDSplusException.statusDict[265519272] = TdiNO_OUTPTR
-
-
-class TdiNO_SELF_PTR(TdiException):
-  status=265519282
-  message="No $VALUE is defined for signal or validation"
-  msgnam="NO_SELF_PTR"
-
-MDSplusException.statusDict[265519280] = TdiNO_SELF_PTR
-
-
-class TdiNOT_NUMBER(TdiException):
-  status=265519290
-  message="Value is not a scalar number and must be"
-  msgnam="NOT_NUMBER"
-
-MDSplusException.statusDict[265519288] = TdiNOT_NUMBER
-
-
-class TdiNULL_PTR(TdiException):
-  status=265519298
-  message="Null pointer where value needed"
-  msgnam="NULL_PTR"
-
-MDSplusException.statusDict[265519296] = TdiNULL_PTR
-
-
-class TdiRECURSIVE(TdiException):
-  status=265519306
-  message="Overly recursive function, calls itself maybe"
-  msgnam="RECURSIVE"
-
-MDSplusException.statusDict[265519304] = TdiRECURSIVE
-
-
-class TdiSIG_DIM(TdiException):
-  status=265519314
-  message="Signal dimension does not match data shape"
-  msgnam="SIG_DIM"
-
-MDSplusException.statusDict[265519312] = TdiSIG_DIM
-
-
-class TdiSYNTAX(TdiException):
-  status=265519322
-  message="Bad punctuation or misspelled word or number"
-  msgnam="SYNTAX"
-
-MDSplusException.statusDict[265519320] = TdiSYNTAX
-
-
-class TdiTOO_BIG(TdiException):
-  status=265519330
-  message="Conversion of number lost significant digits"
-  msgnam="TOO_BIG"
-
-MDSplusException.statusDict[265519328] = TdiTOO_BIG
-
-
-class TdiUNBALANCE(TdiException):
-  status=265519338
-  message="Unbalanced () [] {} '' " " or /**/"
-  msgnam="UNBALANCE"
-
-MDSplusException.statusDict[265519336] = TdiUNBALANCE
-
-
-class TdiUNKNOWN_VAR(TdiException):
-  status=265519346
-  message="Unknown/undefined variable name"
-  msgnam="UNKNOWN_VAR"
-
-MDSplusException.statusDict[265519344] = TdiUNKNOWN_VAR
-
-
-class TdiSTRTOOLON(TdiException):
-  status=265519356
-  message="string is too long (greater than 65535)"
-  msgnam="STRTOOLON"
-
-MDSplusException.statusDict[265519352] = TdiSTRTOOLON
-
-
-class TdiTIMEOUT(TdiException):
-  status=265519364
-  message="task did not complete in alotted time"
-  msgnam="TIMEOUT"
-
-MDSplusException.statusDict[265519360] = TdiTIMEOUT
-
-
-class ApdException(MDSplusException):
-  fac="Apd"
-
-
-class ApdAPD_APPEND(ApdException):
-  status=266141706
-  message="First argument must be APD or *"
-  msgnam="APD_APPEND"
-
-MDSplusException.statusDict[266141704] = ApdAPD_APPEND
-
-
-class ApdDICT_KEYVALPAIR(ApdException):
-  status=266141714
-  message="A Dictionary requires an even number of elements"
-  msgnam="DICT_KEYVALPAIR"
-
-MDSplusException.statusDict[266141712] = ApdDICT_KEYVALPAIR
-
-
-class ApdDICT_KEYCLS(ApdException):
-  status=266141722
-  message="Keys must be scalar, i.e. CLASS_S"
-  msgnam="DICT_KEYCLS"
-
-MDSplusException.statusDict[266141720] = ApdDICT_KEYCLS
-
-########################### generated from mdsdcl_messages.xml ########################
-
-
-
-class MdsdclException(MDSplusException):
-  fac="Mdsdcl"
-
-
-class MdsdclSUCCESS(MdsdclException):
-  status=134348809
-  message="Normal successful completion"
-  msgnam="SUCCESS"
-
-MDSplusException.statusDict[134348808] = MdsdclSUCCESS
-
-
-class MdsdclEXIT(MdsdclException):
-  status=134348817
-  message="Normal exit"
-  msgnam="EXIT"
-
-MDSplusException.statusDict[134348816] = MdsdclEXIT
-
-
-class MdsdclERROR(MdsdclException):
-  status=134348824
-  message="Unsuccessful execution of command"
-  msgnam="ERROR"
-
-MDSplusException.statusDict[134348824] = MdsdclERROR
-
-
-class MdsdclNORMAL(MdsdclException):
-  status=134349609
-  message="Normal successful completion"
-  msgnam="NORMAL"
-
-MDSplusException.statusDict[134349608] = MdsdclNORMAL
-
-
-class MdsdclPRESENT(MdsdclException):
-  status=134349617
-  message="Entity is present"
-  msgnam="PRESENT"
-
-MDSplusException.statusDict[134349616] = MdsdclPRESENT
-
-
-class MdsdclIVVERB(MdsdclException):
-  status=134349626
-  message="No such command"
-  msgnam="IVVERB"
-
-MDSplusException.statusDict[134349624] = MdsdclIVVERB
-
-
-class MdsdclABSENT(MdsdclException):
-  status=134349632
-  message="Entity is absent"
-  msgnam="ABSENT"
-
-MDSplusException.statusDict[134349632] = MdsdclABSENT
-
-
-class MdsdclNEGATED(MdsdclException):
-  status=134349640
-  message="Entity is present but negated"
-  msgnam="NEGATED"
-
-MDSplusException.statusDict[134349640] = MdsdclNEGATED
-
-
-class MdsdclNOTNEGATABLE(MdsdclException):
-  status=134349650
-  message="Entity cannot be negated"
-  msgnam="NOTNEGATABLE"
-
-MDSplusException.statusDict[134349648] = MdsdclNOTNEGATABLE
-
-
-class MdsdclIVQUAL(MdsdclException):
-  status=134349658
-  message="Invalid qualifier"
-  msgnam="IVQUAL"
-
-MDSplusException.statusDict[134349656] = MdsdclIVQUAL
-
-
-class MdsdclPROMPT_MORE(MdsdclException):
-  status=134349666
-  message="More input required for command"
-  msgnam="PROMPT_MORE"
-
-MDSplusException.statusDict[134349664] = MdsdclPROMPT_MORE
-
-
-class MdsdclTOO_MANY_PRMS(MdsdclException):
-  status=134349674
-  message="Too many parameters specified"
-  msgnam="TOO_MANY_PRMS"
-
-MDSplusException.statusDict[134349672] = MdsdclTOO_MANY_PRMS
-
-
-class MdsdclTOO_MANY_VALS(MdsdclException):
-  status=134349682
-  message="Too many values"
-  msgnam="TOO_MANY_VALS"
-
-MDSplusException.statusDict[134349680] = MdsdclTOO_MANY_VALS
-
-
-class MdsdclMISSING_VALUE(MdsdclException):
-  status=134349690
-  message="Qualifier value needed"
-  msgnam="MISSING_VALUE"
-
-MDSplusException.statusDict[134349688] = MdsdclMISSING_VALUE
-
-########################### generated from servershr_messages.xml ########################
-
-
-
-class ServerException(MDSplusException):
-  fac="Server"
-
-
-class ServerNOT_DISPATCHED(ServerException):
-  status=266436616
-  message="action not dispatched, depended on failed action"
-  msgnam="NOT_DISPATCHED"
-
-MDSplusException.statusDict[266436616] = ServerNOT_DISPATCHED
-
-
-class ServerINVALID_DEPENDENCY(ServerException):
-  status=266436626
-  message="action dependency cannot be evaluated"
-  msgnam="INVALID_DEPENDENCY"
-
-MDSplusException.statusDict[266436624] = ServerINVALID_DEPENDENCY
-
-
-class ServerCANT_HAPPEN(ServerException):
-  status=266436634
-  message="action contains circular dependency or depends on action which was not dispatched"
-  msgnam="CANT_HAPPEN"
-
-MDSplusException.statusDict[266436632] = ServerCANT_HAPPEN
-
-
-class ServerINVSHOT(ServerException):
-  status=266436642
-  message="invalid shot number, cannot dispatch actions in model"
-  msgnam="INVSHOT"
-
-MDSplusException.statusDict[266436640] = ServerINVSHOT
-
-
-class ServerABORT(ServerException):
-  status=266436658
-  message="Server action was aborted"
-  msgnam="ABORT"
-
-MDSplusException.statusDict[266436656] = ServerABORT
-
-
-class ServerPATH_DOWN(ServerException):
-  status=266436674
-  message="Path to server lost"
-  msgnam="PATH_DOWN"
-
-MDSplusException.statusDict[266436672] = ServerPATH_DOWN
-
-
-class ServerSOCKET_ADDR_ERROR(ServerException):
-  status=266436682
-  message="Cannot obtain ip address socket is bound to."
-  msgnam="SOCKET_ADDR_ERROR"
-
-MDSplusException.statusDict[266436680] = ServerSOCKET_ADDR_ERROR
-
-
-class ServerINVALID_ACTION_OPERATION(ServerException):
-  status=266436690
-  message="None"
-  msgnam="INVALID_ACTION_OPERATION"
-
-MDSplusException.statusDict[266436688] = ServerINVALID_ACTION_OPERATION
-
-########################### generated from camshr_messages.xml ########################
-
-
-
-class CamException(MDSplusException):
-  fac="Cam"
-
-
-class CamDONE_Q(CamException):
-  status=134316041
-  message="I/O completed with X=1, Q=1"
-  msgnam="DONE_Q"
-
-MDSplusException.statusDict[134316040] = CamDONE_Q
-
-
-class CamDONE_NOQ(CamException):
-  status=134316049
-  message="I/O completed with X=1, Q=0"
-  msgnam="DONE_NOQ"
-
-MDSplusException.statusDict[134316048] = CamDONE_NOQ
-
-
-class CamDONE_NOX(CamException):
-  status=134320128
-  message="I/O completed with X=0 - probable failure"
-  msgnam="DONE_NOX"
-
-MDSplusException.statusDict[134320128] = CamDONE_NOX
-
-
-class CamSERTRAERR(CamException):
-  status=134322178
-  message="serial transmission error on highway"
-  msgnam="SERTRAERR"
-
-MDSplusException.statusDict[134322176] = CamSERTRAERR
-
-
-class CamSCCFAIL(CamException):
-  status=134322242
-  message="serial crate controller failure"
-  msgnam="SCCFAIL"
-
-MDSplusException.statusDict[134322240] = CamSCCFAIL
-
-
-class CamOFFLINE(CamException):
-  status=134322282
-  message="crate is offline"
-  msgnam="OFFLINE"
-
-MDSplusException.statusDict[134322280] = CamOFFLINE
-
-########################### generated from tcl_messages.xml ########################
-
-
-
-class TclException(MDSplusException):
-  fac="Tcl"
-
-
-class TclNORMAL(TclException):
-  status=2752521
-  message="Normal successful completion"
-  msgnam="NORMAL"
-
-MDSplusException.statusDict[2752520] = TclNORMAL
-
-
-class TclFAILED_ESSENTIAL(TclException):
-  status=2752528
-  message="Essential action failed"
-  msgnam="FAILED_ESSENTIAL"
-
-MDSplusException.statusDict[2752528] = TclFAILED_ESSENTIAL
-
-
-class TclNO_DISPATCH_TABLE(TclException):
-  status=2752536
-  message="No dispatch table found. Forgot to do DISPATCH/BUILD?"
-  msgnam="NO_DISPATCH_TABLE"
-
-MDSplusException.statusDict[2752536] = TclNO_DISPATCH_TABLE

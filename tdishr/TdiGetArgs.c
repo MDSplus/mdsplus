@@ -34,7 +34,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
@@ -45,9 +44,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdirefcat.h"
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
-extern int TdiGetData();
+extern int tdi_get_data();
 extern int TdiData();
 extern int TdiUnits();
 extern int Tdi2Keep();
@@ -59,22 +58,22 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
 			  struct descriptor_xd *signal_ptr,
 			  struct descriptor_xd *units_ptr, struct descriptor_xd *data_ptr)
 {
-  STATIC_CONSTANT unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
-  STATIC_CONSTANT unsigned char omits[] = { DTYPE_SIGNAL, 0 };
-  STATIC_CONSTANT unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omitsu[] = { DTYPE_SIGNAL, DTYPE_WITH_UNITS, 0 };
+  static const unsigned char omits[] = { DTYPE_SIGNAL, 0 };
+  static const unsigned char omitu[] = { DTYPE_WITH_UNITS, 0 };
   struct descriptor_xd tmp, *keep;
   INIT_STATUS;
-  GET_TDITHREADSTATIC_P;
+  TDITHREADSTATIC_INIT;
   MdsFree1Dx(signal_ptr, NULL);
-  status = TdiGetData(omitsu, in_ptr, data_ptr);
+  status = tdi_get_data(omitsu, in_ptr, data_ptr);
   if STATUS_OK
     switch (data_ptr->pointer->dtype) {
     case DTYPE_SIGNAL:
       *signal_ptr = *data_ptr;
       *data_ptr = EMPTY_XD;
-      keep = TdiThreadStatic_p->TdiSELF_PTR;
-      TdiThreadStatic_p->TdiSELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
-      status = TdiGetData(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
+      keep = TDI_SELF_PTR;
+      TDI_SELF_PTR = (struct descriptor_xd *)signal_ptr->pointer;
+      status = tdi_get_data(omitu, ((struct descriptor_signal *)signal_ptr->pointer)->data, data_ptr);
       if STATUS_OK
 	switch (data_ptr->pointer->dtype) {
 	case DTYPE_WITH_UNITS:
@@ -91,14 +90,14 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
 	  MdsFree1Dx(units_ptr, NULL);
 	  break;
 	}
-      TdiThreadStatic_p->TdiSELF_PTR = keep;
+      TDI_SELF_PTR = keep;
       break;
     case DTYPE_WITH_UNITS:
       tmp = *data_ptr;
       *data_ptr = EMPTY_XD;
       status = TdiUnits(tmp.pointer, units_ptr MDS_END_ARG);
       if STATUS_OK
-	status = TdiGetData(omits, tmp.pointer, data_ptr);
+	status = tdi_get_data(omits, tmp.pointer, data_ptr);
       if STATUS_OK
 	switch (data_ptr->pointer->dtype) {
 	case DTYPE_SIGNAL:
@@ -118,16 +117,20 @@ int TdiGetSignalUnitsData(struct descriptor *in_ptr,
   return status;
 }
 
-void UseNativeFloat(struct TdiCatStruct *cat)
-{
-  unsigned char k;
-  for (k = 0; k < TdiCAT_MAX; k++)
-    if (((TdiREF_CAT[k].cat & ~(0x800)) == (cat->out_cat & ~(0x800))) &&
-	(k == DTYPE_NATIVE_FLOAT ||
-	 k == DTYPE_NATIVE_DOUBLE || k == DTYPE_FLOAT_COMPLEX || k == DTYPE_DOUBLE_COMPLEX)) {
-      cat->out_dtype = k;
-      cat->out_cat = TdiREF_CAT[k].cat;
-    }
+void UseNativeFloat(struct TdiCatStruct *cat) {
+  dtype_t type;
+  tdicat_t tcat;
+#define CHECK(TYPE) tcat = TdiREF_CAT[type = TYPE].cat;\
+  if ((tcat & ~(TdiCAT_WIDE_EXP)) == (cat->out_cat & ~(TdiCAT_WIDE_EXP)))\
+    goto found;
+  CHECK(DTYPE_NATIVE_FLOAT  );
+  CHECK(DTYPE_NATIVE_DOUBLE );
+  CHECK(DTYPE_FLOAT_COMPLEX );
+  CHECK(DTYPE_DOUBLE_COMPLEX);
+  return;
+found: ;
+  cat->out_dtype = type;
+  cat->out_cat   = tcat;
 }
 
 /*-------------------------------------------------------------------*/
@@ -142,9 +145,11 @@ int TdiGetArgs(opcode_t opcode,
   struct TdiCatStruct *cptr;
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int nc = 0, j;
-  unsigned short i1 = TdiREF_CAT[fun_ptr->i1].cat,
-      i2 = TdiREF_CAT[fun_ptr->i2].cat,
-      o1 = TdiREF_CAT[fun_ptr->o1].cat, o2 = TdiREF_CAT[fun_ptr->o2].cat;
+  tdicat_t
+	i1 = TDIREF_CAT(fun_ptr->i1).cat,
+	i2 = TDIREF_CAT(fun_ptr->i2).cat,
+	o1 = TDIREF_CAT(fun_ptr->o1).cat,
+	o2 = TDIREF_CAT(fun_ptr->o2).cat;
   unsigned char nd = 0, jd;
   int use_native = (fun_ptr->f2 != Tdi2Keep && fun_ptr->f2 != Tdi2Long2
 		    && fun_ptr->f2 != Tdi2Any && fun_ptr->f2 != Tdi2Cmplx);

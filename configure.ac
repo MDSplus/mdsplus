@@ -45,17 +45,24 @@ then
   RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
   RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
   RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-  RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 else
   RELEASE_MAJOR=1
   RELEASE_MINOR=0
   RELEASE_RELEASE=0
-  RELEASE_TAG="unknown_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 fi
+RELEASE_BRANCH=${BRANCH}
+RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 RELEASE_DATE="$(date)"
 
 dnl look if a version from git directory can be obtained 
 AX_GIT_REVISION
+
+if [[ -z ${RELEASE_BRANCH} ]]
+then if [[ -z ${GIT_BRANCH} ]]
+then RELEASE_BRANCH=unknown
+else RELEASE_BRANCH=${GIT_BRANCH}
+fi;fi
+
 
 dnl add reconfigure target option to autoconf generated Makefile
 AX_RECONFIGURE_TARGETS
@@ -75,7 +82,7 @@ dnl
 dnl AX_CHECK_ENABLE_DEBUG([enable by default=yes/info/profile/no],
 dnl   [ENABLE DEBUG VARIABLES ...], [DISABLE DEBUG VARIABLES NDEBUG ...],
 dnl   [IS-RELEASE],[DEFAULT_RELEASE_FLAGS])
-AX_CHECK_ENABLE_DEBUG([no],,,,[-g -O3])
+AX_CHECK_ENABLE_DEBUG([no],,,,[-O3])
 
 
 dnl AX_TARGET_SELFHELP /////////////////////////////////////////////////////////
@@ -104,6 +111,14 @@ AC_PROG_MKDIR_P
 AC_PROG_INSTALL
 AC_PROG_SED
 AC_CHECK_TOOL([WINDRES], [windres], [:])
+AC_PROG_YACC
+AM_PROG_LEX
+
+# if ln is provided by busybox it does not have -r option
+AX_IS_BUSYBOX([ln],
+ [AS_VAR_SET([LN_R],["ln"])],
+ [AS_VAR_SET([LN_R],["ln -r"])] )
+AC_SUBST([LN_R])
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
 # This way things get set properly even on Windows.
@@ -127,7 +142,7 @@ AS_CASE(["$host"],
 AC_CHECK_SIZEOF(int *)
 AC_SYS_LARGEFILE
 
-JAVACFLAGS="-encoding UTF-8"
+JAVACFLAGS="-encoding UTF-8 -source \$(JAVASOURCE)"
 FOR_LINKSHARED=""
 
 AC_MSG_CHECKING([whether to build shared libraries])
@@ -170,48 +185,21 @@ AS_CASE([$enable_perf],
         [yes], [AC_DEFINE([USE_PERF], [], [Define if you want to collect performance statistics -- linux only])])
 AC_MSG_RESULT([$enable_perf])
 
-AC_MSG_CHECKING([whether to build the java components])
-AC_ARG_ENABLE([java],
-              [AS_HELP_STRING([--disable-java],
-                              [Do not build java libraries and applications])],
-              [],
-              [AS_VAR_SET([enable_java], [yes])])
-
-dnl # Add address sanitizer options to flags, if requested. Only useful for GCC
-dnl # version 4.8 and later.
-dnl AC_ARG_ENABLE([sanitize-address],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-address],
-dnl    [Enable memory error detection using address sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_a="$enableval"],
-dnl  [enable_san_a="no"]
-dnl )
-
-dnl AC_ARG_ENABLE([sanitize-undefined],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-undefined],
-dnl    [Enable undefined behavior detection using undefined sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_u="$enableval"],
-dnl  [enable_san_u="no"]
-dnl )
-
-dnl AC_ARG_ENABLE([sanitize-thread],
-dnl  [AS_HELP_STRING(
-dnl    [--enable-sanitize-address],
-dnl    [Enable race condition detection using thread sanitizer @<:@default=no@:>@]
-dnl  )],
-dnl  [enable_san_t="$enableval"],
-dnl  [enable_san_t="no"]
-dnl )
-
 dnl AC_ARG_ENABLE([universal],
 dnl              [AS_HELP_STRING([--enable-universal],
 dnl                              [Build MacOSX Universal Binary])],
 dnl              [],
 dnl              [AS_VAR_SET([enable_universal], [no])])
 dnl
+
+AC_MSG_CHECKING([whether to build the java components])
+AC_ARG_ENABLE([java],
+              [AS_HELP_STRING([--disable-java],
+                              [Do not build java libraries and applications])],
+              [],
+              [AS_VAR_SET([enable_java], [yes])])
+AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+
 dnl this new java section hoses macos x... why not use the autoconf java macros?
 dnl I'm faking a disable so I can enable by hand later...
 dnl AS_CASE([$host_vendor],
@@ -222,7 +210,6 @@ dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysr
 dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
 dnl                                                       [F77=fort77])])
 dnl AC_MSG_RESULT([$enable_java])
-
 
 # //////////////////////////////////////////////////////////////////////////// #
 # ///  JDK   ///////////////////////////////////////////////////////////////// #
@@ -245,15 +232,14 @@ AC_ARG_WITH([jdk],
 AC_ARG_WITH([java_target],
 	    [AS_HELP_STRING([--with-java_target=version],
                             [specify version of compiled mdsobjects classes (i.e. 6)])],
-            [AS_VAR_SET([JAVAVERSION], ["-source $withval -target $withval"])],
-            [AS_VAR_SET([JAVAVERSION], [])])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
 
 AC_ARG_WITH([java_bootclasspath],
 	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
                             [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [AS_VAR_APPEND([JAVAVERSION], [" -bootclasspath $withval"])],
-            [AS_VAR_APPEND([JAVAVERSION], [])])
-AC_SUBST([JAVAVERSION])
+            [AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
+            [AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])])
 
 AS_CASE([$enable_java],
         [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
@@ -269,9 +255,7 @@ AS_CASE([$enable_java],
                 AC_MSG_RESULT([$with_jdk])
                 AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
-
-
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
 
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
@@ -367,6 +351,8 @@ AS_CASE([$host],
 AM_CONDITIONAL([MINGW], [AS_VAR_TEST_SET([MINGW])])
 AM_COND_IF([MINGW], [AC_MSG_RESULT([yes])], [AC_MSG_RESULT([no])])
 
+
+
 AC_MSG_CHECKING([for visual studio])
 AC_ARG_WITH([visual_studio],
             [AS_HELP_STRING([--with-visual-studio],
@@ -411,11 +397,11 @@ MAKEUIDDIR="\$(top_builddir)/uid/"
 MAKESHLIBDIR="\$(top_builddir)/lib/"
 MAKEBINDIR="\$(top_builddir)/bin/"
 MAKELIBDIR="\$(top_builddir)/lib/"
-EXPORTS_FILE=""
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
 HUP_TO_INETD=""
+JRE="jre"
 UILCMD="uil"
 FOR_LDFLAGS=""
 SHARETYPE=".so"
@@ -424,8 +410,6 @@ THREAD="-pthread"
 MITDEVICESIO_TARGETS=""
 case "$host" in
 *mingw*)
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        MAKEFLAG_J=""
        MAKEFLAG_O=""
        LIBPRE=""
@@ -463,8 +447,6 @@ case "$host" in
        jni_md_inc_dir="$with_jdk/include/win32";;
 
 *86*linux*)
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        CFLAGS="$CFLAGS -fpic -shared-libgcc -fsigned-char -fno-strict-aliasing ";
        FORLD="$FC";
        LD="gcc"
@@ -492,6 +474,7 @@ case "$host" in
            D32=""
          fi
          TARGET_ARCH="-m32"
+         JAVA_TARGET_ARCH="-d32"
          if which uil32 >/dev/null
          then UILCMD=uil32
          else UILCMD=uil
@@ -522,8 +505,6 @@ case "$host" in
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
        ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        CC=arm-xilinx-linux-gnueabi-gcc;
        LD=arm-xilinx-linux-gnueabi-ld;
        AR=arm-xilinx-linux-gnueabi-ar;
@@ -553,8 +534,6 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
-       JRE = "/jre";
-       UIL = "/usr/bin/X11";
        FCFLAGS="$FCFLAGS -fno-range-check";
        FORLD="$FC"
        FOR_LDFLAGS="-lg2c"
@@ -574,8 +553,6 @@ case "$host" in
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
-       JRE = "";
-       UIL = "/usr/bin/uil";
        THREAD=""
        MACOSX="macosx"
        CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
@@ -810,7 +787,7 @@ fi
 
 dnl Checks for header files.
 AC_CHECK_HEADERS(stdarg.h fcntl.h strings.h sys/ioctl.h syslog.h unistd.h sys/filio.h netdb.h resolv.h sys/types.h linux/types.h drm/drm.h pwd.h grp.h)
-AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h windows.h sys/resource.h)
+AC_CHECK_HEADERS(dlfcn.h dl.h vxWorks.h sys/resource.h)
 AC_CHECK_HEADERS(malloc.h alloca.h)
 
 
@@ -1044,9 +1021,18 @@ AX_PATH_PYTHON([2.6],[$host],,[:])
 AM_CONDITIONAL([HAVE_PYTHON], [test "$PYTHON" != :])
 AX_PYTHON_ARCH(PYTHON_ARCHITECTURE)
 AC_SUBST(PYTHON_ARCHITECTURE)
-AC_MSG_CHECKING(libpython path)
-DEF_PYLIB=$(ldd $PYTHON | grep libpython | awk '{print $3}')
+
+AC_MSG_CHECKING(PyLib)
+DEF_PYLIB=${PyLib:-$($PYTHON -c '
+import sys,ctypes.util
+name = ("python%d%d" if sys.platform.startswith("win") else "python%d.%d")%sys.version_info[[0:2]]
+name = ctypes.util.find_library(name)
+if not name is None: print(name)
+')}
 AC_MSG_RESULT($DEF_PYLIB)
+
+
+
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  TESTS    ///////////////////////////////////////////////////////////// ##
 ## ////////////////////////////////////////////////////////////////////////// ##
@@ -1081,7 +1067,6 @@ AC_CHECK_MEMBERS([struct itimerspec.it_interval, struct itimerspec.it_value], []
 #endif /* HAVE_PTHREAD */
 ])
 
-
 AC_CHECK_PROG(HAVE_WINE, wine, yes,no)
 AM_CONDITIONAL(HAVE_WINE, test x"${HAVE_WINE}" = x"yes")
 
@@ -1105,8 +1090,16 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
                     [echo "sanitizer not available."; exit 111;])
 
 
- # selects particular envs for build:host
- TS_SELECT
+# selects particular envs for build:host
+TS_SELECT
+
+## SKIP JAVA TESTS ##
+AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
+AX_CHECK_JAVA_VERSION([1.8],[],[AS_ECHO(["skipping junit: not JDK 1.8"]); skip_junit=yes])
+TS_CHECK_JAVA([],[],[AS_ECHO(["skipping junit: java not found"]); skip_junit=yes])
+AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
+
+
 
  ## test chain substitution ##
  AC_SUBST(TESTS_ENVIRONMENT)
@@ -1171,6 +1164,34 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
+# 
+# CHECK ASSERT_LINE_TYPE to correctly override assert function in C
+# This is needed for testing functions in mdsplus/testing/testing.h
+#
+AC_DEFUN([AX_TEST_ASSERT_LINE_TYPE],[
+AC_LANG_PUSH([C])
+AC_LINK_IFELSE( [AC_LANG_SOURCE([[
+#include <assert.h>
+#define ASSERT_LINE_TYPE ]] [$1] [[
+void __assert_fail (const char *__assertion, const char *__file,
+                   ASSERT_LINE_TYPE __line, const char *__function) {}
+int main(void) { assert(1); return 0; }
+]])],
+[AS_VAR_SET([ASSERT_LINE_TYPE],["$1"])
+$2],
+[$3])
+AC_LANG_POP([C])
+])
+
+AC_MSG_CHECKING([assert line type])
+AX_TEST_ASSERT_LINE_TYPE([unsigned int],
+[AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+[AX_TEST_ASSERT_LINE_TYPE([int],
+   [AC_MSG_RESULT(["${ASSERT_LINE_TYPE}"])],
+   [AC_MSG_WARN(["None of the tests succeded to set assert line type"])])
+ ])
+
+
 
 # Determine common warning options to apply to C, C++, and Fortran languages
 AS_VAR_SET([WARNFLAGS], ["-Wall -Wextra"])
@@ -1213,7 +1234,19 @@ AC_MSG_RESULT([$enable_wconversion])
 dnl Here we define all custom autoheader adds to mdsconfig.h.in
 
 dnl add here what goes on tom of mdsconfig.h
-AH_TOP()
+AH_TOP(
+#pragma once
+#ifdef _MSC_VER
+#define __attribute__(...)
+#define EXPORT __declspec(dllexport)
+#define MDS_ATTR_FALLTHROUGH
+#else
+)
+
+AC_DEFINE_UNQUOTED([EVENT_THREAD_STACK_SIZE_MIN],[1048576],["event handler thread min stack size [1MB]"])
+
+AS_VAR_SET_IF([ASSERT_LINE_TYPE],
+[AC_DEFINE_UNQUOTED([ASSERT_LINE_TYPE],[$ASSERT_LINE_TYPE],["assert line type"])])
 
 AH_VERBATIM([_LL_CONSTANTS], [
 #ifdef HAVE_LL_CONSTANTS
@@ -1223,6 +1256,13 @@ AH_VERBATIM([_LL_CONSTANTS], [
 #endif
 ])
 
+AH_VERBATIM([_LL_CONSTANTS], [
+#ifdef HAVE_LL_CONSTANTS
+#define LONG_LONG_CONSTANT(value) value##ll
+#else
+#define LONG_LONG_CONSTANT(value) value
+#endif
+])
 
 AH_VERBATIM([_WIN32], [
 #ifdef _WIN32
@@ -1235,7 +1275,10 @@ AH_VERBATIM([_WIN32], [
 ])
 
 dnl add here what goes on bottom of mdsconfig.h
-AH_BOTTOM()
+AH_BOTTOM(
+#endif // _MSC_VER else
+)
+
 
 
 dnl define custom direcotries substitution
@@ -1247,7 +1290,6 @@ AC_SUBST(D3D_PACKAGE)
 AC_SUBST(D3DLIB)
 AC_SUBST(D3D_FFLAGS)
 AC_SUBST(DNET_STUB)
-AC_SUBST(EXPORTS_FILE)
 AC_SUBST(FEXECLIBDIR)
 AC_SUBST(FORLD)
 AC_SUBST(FOR_LDFLAGS)
@@ -1316,6 +1358,7 @@ AC_SUBST(NEED_SEMUN)
 AC_SUBST(RELEASE_MAJOR)
 AC_SUBST(RELEASE_MINOR)
 AC_SUBST(RELEASE_RELEASE)
+AC_SUBST(RELEASE_BRANCH)
 AC_SUBST(RELEASE_TAG)
 AC_SUBST(RELEASE_DATE)
 
@@ -1353,6 +1396,8 @@ AC_SUBST(VS_ARCH)
 AC_SUBST(VS_DIR)
 AC_SUBST(JRE)
 AC_SUBST(UIL)
+AC_SUBST(JAVA_TARGET_ARCH)
+
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
@@ -1368,19 +1413,26 @@ AC_OUTPUT(Makefile.inc
           hdf5/Makefile
           idlmdsevent/Makefile
           idlmdswidgets/Makefile
-          javaclient/Makefile
-          javadispatcher/Makefile
           javamds/Makefile
-          javascope/Makefile
-          javatraverser/Makefile
-          javatraverser2/Makefile
-          javatraverser2/java/mds/mdslib/Makefile
-          javadevices/Makefile
+          java/Makefile
+          java/tests/Makefile
+          java/mdsplus/Makefile
+          java/mdsplus-api/Makefile
+          java/mdsplus-api/tests/Makefile
+          java/mdsobjects/Makefile
+          java/mdsobjects/docs/Makefile
+          java/mdsobjects/tests/Makefile
+          java/jdispatcher/Makefile
+          java/jscope/Makefile
+          java/jtraverser/Makefile
+          java/jtraverser2/Makefile
+          java/jdevices/Makefile
           LabView/Makefile
           manpages/Makefile
           macosx/Makefile
           math/Makefile
           mdsdcl/Makefile
+	  mdsdcl/mdsdclVersionInfo.c
           mdslib/Makefile
           mdslib/docs/Makefile
           mdslib/testing/Makefile
@@ -1389,15 +1441,17 @@ AC_OUTPUT(Makefile.inc
           mdsobjects/cpp/docs/Makefile
           mdsobjects/cpp/testing/Makefile
           mdsobjects/cpp/testing/testutils/Makefile
-	  python/MDSplus/_version.py
           python/MDSplus/docs/Makefile
           python/MDSplus/tests/Makefile
-          mdsobjects/java/Makefile
-          mdsobjects/java/docs/Makefile
+          python/MDSplus/_version.py
+          pydevices/HtsDevices/_version.py
+          pydevices/MitDevices/_version.py
+          pydevices/RfxDevices/_version.py
+          pydevices/W7xDevices/_version.py
           mdsobjects/labview/Makefile
           mdsmisc/Makefile
           mdsshr/Makefile
-	  mdsshr/MdsVersionInfo.c
+	  mdsshr/version.h
           mdsshr/testing/Makefile
 	  mdsshr/docs/Makefile
           mdssql/Makefile
@@ -1407,9 +1461,6 @@ AC_OUTPUT(Makefile.inc
           mdstcpip/docs/img/Makefile
           mdsvme/Makefile
           mitdevices/Makefile
-	  pydevices/MitDevices/_version.py
-	  pydevices/RfxDevices/_version.py
-	  pydevices/W7xDevices/_version.py
           remcam/Makefile
           roam/Makefile
           rpm/Makefile

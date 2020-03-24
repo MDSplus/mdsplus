@@ -1,3 +1,1 @@
-version="@RELEASE_MAJOR@.@RELEASE_MINOR@.@RELEASE_RELEASE@"
-release_tag="@RELEASE_TAG@"
-release_date="@RELEASE_DATE@"
+../../python/MDSplus/_version.py.in

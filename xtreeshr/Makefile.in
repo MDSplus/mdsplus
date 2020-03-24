@@ -1,12 +1,13 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=XTree
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
-@MINGW_TRUE@ IMPLIB=@MAKELIBDIR@XTreeShr.dll.a
-@MINGW_TRUE@ DEF=${srcdir}/XTreeShr.def
+@MINGW_TRUE@IMPLIB = @MAKELIBDIR@XTreeShr.dll.a
 
 CPPFLAGS+=@SRBINCLUDE@
 
@@ -18,7 +19,6 @@ SOURCES = \
 	XTreeGetSegmentList.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = XTreeShr.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB) @MAKELIBDIR@@LIBPRE@XTreeShr.a $(IMPLIB)
 
@@ -37,12 +37,9 @@ install: $(libdir)
 	fi;
 
 @MINGW_TRUE@ MAKE_IMPLIB=-Wl,--out-implib,$(IMPLIB)
-@MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB): $(OBJECTS) @EXPORTS_FILE@ 
+@MAKESHLIBDIR@@LIBPRE@XTreeShr@SHARETYPE@ $(IMPLIB): $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS) -L@MAKESHLIBDIR@ -lTdiShr -lTreeShr -lMdsShr @SRBLIB@ $(MAKE_IMPLIB)
 
 @MAKELIBDIR@@LIBPRE@XTreeShr.a: $(OBJECTS)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
-
-XTreeShr.exports: XTreeShr.def
-	$(SED) -e /LIBRARY/\;/\;/d $< > $@

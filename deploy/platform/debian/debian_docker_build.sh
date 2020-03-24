@@ -11,7 +11,7 @@
 # /publish/repo   -> repository
 # /publish/$branch/DEBS/$arch/*.deb
 #
-set -v
+
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 # configure based on ARCH
@@ -33,7 +33,7 @@ case "${ARCH}" in
     ;;
 esac
 
-if [[ "$OS" == "debian_wheezy" ]]
+if [ "$OS" == "debian_wheezy" -o "${OS:0:7}" = "debian7" ]
 then
   export JDK_DIR=/usr/lib/jvm/java-7-openjdk-${ARCH}
 fi
@@ -73,7 +73,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/${bits};
     pushd /workspace/releasebld/${bits};
-    config ${config_param}
+    config ${config_param} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -95,7 +95,7 @@ buildrelease() {
 	then
 	   continue
 	fi
-        if [[ x${pkg} == x*_bin ]]
+        if [ "${pkg: -4}" = "_bin" ] # ends with _bin
         then
           checkfile=${srcdir}/deploy/packaging/${PLATFORM}/$pkg.$ARCH
         else
@@ -181,33 +181,25 @@ EOF
 
 publish() {
     ### DO NOT CLEAN /publish as it may contain valid older release packages
-    major=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-    minor=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-    release=$(echo ${RELEASE_VERSION} | cut -d. -f3)
     mkdir -p /publish/${BRANCH}/DEBS
     rsync -a /release/${BRANCH}/DEBS/${ARCH} /publish/${BRANCH}/DEBS/
+    LAST_RELEASE_INFO=/publish/${BRANCH}_${OS}
     if [ ! -r /publish/repo ]
     then
-        :&& rsync -a /release/repo /publish/
+	:&& rsync -a /release/repo /publish/
 	checkstatus abort "Failure: Problem copying repo into publish area." $?
     else
 	pushd /publish/repo
 	rsync -a /release/repo/conf/distributions /publish/repo/conf/
 	reprepro clearvanished
-	if [ "${BRANCH}" = "stable" ]
-	then
-	    MAIN_PACKAGE="mdsplus"
-	else
-	    MAIN_PACKAGE="mdsplus-${BRANCH}"
-	fi
-	PREVIOUS_VERSION="$(reprepro -C ${BRANCH} -A ${ARCH} list MDSplus ${MAIN_PACKAGE} | awk '{print $3}' )"
+	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${RELEASE_VERSION}_*
+	checkstatus abort "Failure: Problem installing ${BRANCH} into debian repository." $?
+	PREVIOUS_VERSION="$(cat ${LAST_RELEASE_INFO})"
 	echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}"
-	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${major}\.${minor}\.${release}_*
-       	checkstatus abort "Failure: Problem installing debian into publish repository." $?
-	if [ ! -z "$PREVIOUS_VERSION" ]
+	if [ ! -z $PREVIOUS_VERSION ]
 	then
 	    :&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*
-       	    checkstatus abort "Failure: Problem installing debian into publish repository." $?
+	    checkstatus abort "Failure: Problem installing previous ${BRANCH} into debian repository." $?
 	fi
 	popd
     fi

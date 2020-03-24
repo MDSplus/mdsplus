@@ -2395,9 +2395,9 @@ static void DrawLines(Display * display, Window win, GC gc, XPoint * point, int 
     int num_to_right = 0;
     int num_in_middle = 0;
     short lastx = 0;
-    short enter_y;
-    short max_y;
-    short min_y;
+    short enter_y = 0;
+    short max_y = 0;
+    short min_y = 0;
     short leave_y;
     for (i = 0; i < kp; i++) {
       if (point[i].x < 0) {

@@ -44,7 +44,7 @@ using namespace testing;
 
 
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
 
     Connection cnx((char*)"udt://localhost:8000",0);

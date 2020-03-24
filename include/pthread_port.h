@@ -5,22 +5,35 @@
 #include <status.h>
 #include <STATICdef.h>
 #ifdef _WIN32
- #ifndef NO_WINDOWS_H
-  #ifdef LOAD_INITIALIZESOCKETS
-   #include <winsock2.h>
-  #endif
   #include <windows.h>
- #endif
 #endif
 #include <pthread.h>
 
 #define DEFAULT_STACKSIZE 0x800000
 
-#if defined(PTHREAD_RECURSIVE_MUTEX_NP) && !defined(PTHREAD_RECURSIVE_MUTEX)
-#define PTHREAD_RECURSIVE_MUTEX PTHREAD_RECURSIVE_MUTEX_NP
+// helper for reentrant mutex
+#ifndef PTHREAD_MUTEX_RECURSIVE
+# ifdef PTHREAD_MUTEX_RECURSIVE_NP
+#  define PTHREAD_MUTEX_RECURSIVE PTHREAD_MUTEX_RECURSIVE_NP
+# endif
 #endif
-#if defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP) && !defined(PTHREAD_RECURSIVE_MUTEX_INITIALIZER)
-#define PTHREAD_RECURSIVE_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#ifndef PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+# ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+#  define PTHREAD_RECURSIVE_MUTEX_INITIALIZER PTHREAD_RECURSIVE_MUTEX_INITIALIZER_NP
+# endif
+#endif
+#ifdef PTHREAD_RECURSIVE_MUTEX_INITIALIZER
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_DEF(name) static pthread_mutex_t name = PTHREAD_RECURSIVE_MUTEX_INITIALIZER;
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_INIT(name)
+#else
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_DEF(name)\
+static pthread_mutex_t name;\
+static pthread_once_t __##name##__once = PTHREAD_ONCE_INIT;\
+static void init__##name##__once() {\
+pthread_mutexattr_t attr;if(pthread_mutexattr_init(&attr)) abort();\
+if(pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE)) abort();\
+pthread_mutex_init(&name, &attr);pthread_mutexattr_destroy(&attr);}
+# define STATIC_PTHREAD_RECURSIVE_MUTEX_INIT(name) pthread_once(&__##name##__once,init__##name##__once);
 #endif
 
 #if (defined(_DECTHREADS_) && (_DECTHREADS_ != 1)) || !defined(_DECTHREADS_)
@@ -43,18 +56,6 @@ int rv = gettimeofday(&now, NULL);\
 (timespec)->tv_nsec = rv ? 0 : now.tv_usec * 1000;\
 }
 #endif
-
-typedef struct _Condition {
-  pthread_cond_t  cond;
-  pthread_mutex_t mutex;
-  int             value;
-} Condition;
-
-typedef struct _Condition_p {
-  pthread_cond_t  cond;
-  pthread_mutex_t mutex;
-  void*           value;
-} Condition_p;
 
 // FREE
 static void __attribute__((unused)) free_if(void *ptr){
@@ -79,148 +80,8 @@ static void __attribute__((unused)) fclose_if(void *ptr){
 #define INIT_AS_AND_FCLOSE_ON_EXIT(ptr,value)	FILE *ptr = value;FCLOSE_ON_EXIT(ptr)
 #define INIT_AND_FCLOSE_ON_EXIT(ptr)		INIT_AS_AND_FCLOSE_ON_EXIT(ptr,NULL)
 
-#define CONDITION_INITIALIZER {PTHREAD_COND_INITIALIZER,PTHREAD_MUTEX_INITIALIZER,B_FALSE}
+#define INIT_SHARED_FUNCTION_ONCE(fun) static pthread_once_t __##fun##__once = PTHREAD_ONCE_INIT
+#define RUN_SHARED_FUNCTION_ONCE(fun)  pthread_once(& __##fun##__once,(void*)fun)
+#define RUN_FUNCTION_ONCE(fun) do{INIT_SHARED_FUNCTION_ONCE(fun);RUN_SHARED_FUNCTION_ONCE(fun);}while(0)
 
-#define CONDITION_INIT(input) do{\
-(input)->value = 0;\
-pthread_cond_init(&(input)->cond, pthread_condattr_default);\
-pthread_mutex_init(&(input)->mutex, pthread_mutexattr_default);\
-} while(0)
-#define _CONDITION_LOCK(input)   pthread_mutex_lock(&(input)->mutex)
-#define _CONDITION_UNLOCK(input) pthread_mutex_unlock(&(input)->mutex)
-#define _CONDITION_SIGNAL(input) pthread_cond_signal(&(input)->cond)
-#define _CONDITION_WAIT(input)   pthread_cond_wait(&(input)->cond,&(input)->mutex)
-#define _CONDITION_WAIT_SET(input)   while (!(input)->value) _CONDITION_WAIT(input)
-#define _CONDITION_WAIT_RESET(input) while ( (input)->value) _CONDITION_WAIT(input)
-#define _CONDITION_WAIT_1SEC(input,status) do{\
-struct timespec tp;\
-clock_gettime(CLOCK_REALTIME, &tp);\
-tp.tv_sec++;\
-status pthread_cond_timedwait(&(input)->cond,&(input)->mutex,&tp);\
-} while(0)
-#define CONDITION_SET_TO(input,value_in) do{\
-_CONDITION_LOCK(input);\
-(input)->value = value_in;\
-_CONDITION_SIGNAL(input);\
-_CONDITION_UNLOCK(input);\
-} while(0)
-#define CONDITION_SET(input)   CONDITION_SET_TO(input,B_TRUE)
-#define CONDITION_RESET(input) CONDITION_SET_TO(input,0)
-#define CONDITION_WAIT_SET(input) do{\
-_CONDITION_LOCK(input);\
-_CONDITION_WAIT_SET(input);\
-_CONDITION_UNLOCK(input);\
-} while(0)
-#define CONDITION_WAIT_1SEC(input) do{\
-_CONDITION_LOCK(input);\
-_CONDITION_WAIT_1SEC(input,);\
-_CONDITION_UNLOCK(input);\
-} while(0)
-#define CONDITION_DESTROY(input,destroy_lock) do{\
-pthread_mutex_lock(destroy_lock);\
-pthread_cond_destroy(&(input)->cond);\
-pthread_mutex_destroy(&(input)->mutex);\
-pthread_mutex_unlock(destroy_lock);\
-} while(0)
-#define CONDITION_DESTROY_PTR(input,destroy_lock) do{\
-pthread_mutex_lock(destroy_lock);\
-if (input){\
-pthread_cond_destroy(&(input)->cond);\
-pthread_mutex_destroy(&(input)->mutex);\
-free(input);(input)=NULL;}\
-pthread_mutex_unlock(destroy_lock);\
-} while(0)
-#define CREATE_THREAD(thread, stacksize, target, args)\
-pthread_attr_t attr;\
-pthread_attr_init(&attr);\
-pthread_attr_setstacksize(&attr, DEFAULT_STACKSIZE stacksize);\
-int c_status = pthread_create(&thread, &attr, (void *)target, (void*)args);\
-pthread_attr_destroy(&attr)
-#define CREATE_DETACHED_THREAD(thread, stacksize, target, args)\
-CREATE_THREAD(thread, stacksize, target, args);if (!c_status) pthread_detach(thread);
-
-#define CONDITION_START_THREAD(input, thread, stacksize, target, args) do{\
-_CONDITION_LOCK(input);\
-if (!(input)->value) {\
-  CREATE_DETACHED_THREAD(thread, stacksize, target, args);\
-  if (c_status) {\
-    perror("Error creating pthread");\
-    status = MDSplusERROR;\
-  } else {\
-    _CONDITION_WAIT_SET(input);\
-    status = MDSplusSUCCESS;\
-  }\
-}\
-_CONDITION_UNLOCK(input);\
-} while(0)//"
-#ifdef LOAD_INITIALIZESOCKETS
- #ifndef _WIN32
-  #define INITIALIZESOCKETS
- #else
-  static pthread_once_t InitializeSockets_once = PTHREAD_ONCE_INIT;
-  static void InitializeSockets() {
-    WSADATA wsaData;
-    WORD wVersionRequested;
-    wVersionRequested = MAKEWORD(1, 1);
-    WSAStartup(wVersionRequested, &wsaData);
-  }
-  #define INITIALIZESOCKETS pthread_once(&InitializeSockets_once,InitializeSockets)
- #endif
-#endif
-
-#ifdef LOAD_GETUSERNAME
-#define GETUSERNAME(user_p) GETUSERNAME_BEGIN(user_p);GETUSERNAME_END;
-
-#define GETUSERNAME_BEGIN(user_p) {\
-static pthread_mutex_t username_mutex = PTHREAD_MUTEX_INITIALIZER;\
-pthread_mutex_lock(&username_mutex);\
-if (!user_p) {\
-  user_p = _getUserName()
-
-#define GETUSERNAME_END }\
-pthread_mutex_unlock(&username_mutex);\
-}
-static char* _getUserName(){
-  char *user_p;
-#ifdef _WIN32
-    static char user[128];
-    DWORD bsize = 128;
-    user_p = GetUserName(user, &bsize) ? user : "Windows User";
-#elif __MWERKS__
-    ans.pointer = "Macintosh User";
-#else
-    static char user[256];
-    struct passwd *pwd;
-    pwd = getpwuid(geteuid());
-    if (pwd) {
-      strcpy(user,pwd->pw_name);
-      user_p = user;
-    } else
-#ifdef __APPLE__
-      user_p = "Apple User";
-#else
-    {
-      user_p = getlogin();
-      if (user_p && strlen(user_p)>0){
-	strcpy(user,user_p);
-	user_p = user;
-      } else
-	user_p = "Linux User";
-    }
-#endif
-#endif
-  return user_p;
-}
-#endif
-
-#define RUN_FUNCTION_ONCE(fun) do{ \
-  static pthread_once_t RUN_FUNCTION_once = PTHREAD_ONCE_INIT; \
-  static pthread_mutex_t RUN_FUNCTION_lock = PTHREAD_MUTEX_INITIALIZER; \
-  pthread_mutex_lock(&RUN_FUNCTION_lock); \
-  pthread_cleanup_push((void*)pthread_mutex_unlock,&RUN_FUNCTION_lock); \
-  pthread_once(&RUN_FUNCTION_once,fun); \
-  pthread_cleanup_pop(1); \
-}while(0)
-
-
-#endif//nPTHREAD_PORT_H
+#endif// PTHREAD_PORT_H

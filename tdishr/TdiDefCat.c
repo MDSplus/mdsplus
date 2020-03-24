@@ -37,7 +37,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL CTR-7   (c)1989,1990
 */
-#include <STATICdef.h>
 #include "tdirefcat.h"
 
 #define F_SYM   "F"
@@ -48,7 +47,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // digits for integers: length * 2.4 + 1.6 [1:4,2:6,4:11,8:20,16:40]
 const struct TdiCatStruct_table TdiREF_CAT[] = {
-  {"MISSING", 0, 0, 0, 0},	/*0 Z=unsecified */
+// NAME, CATegory, length, str_length, exponent_NAME
+  {"MISSING", 0, 0, 0, 0},	/*0 Z=unspecified */
   {"V", 0x7fff, 0, 0, 0},	/*1 aligned bit string (bits) */
   {"BU", 0x8100, 1, 4, 0},	/*2 byte unsigned */
   {"WU", 0x8101, 2, 6, 0},	/*3 byte unsigned */

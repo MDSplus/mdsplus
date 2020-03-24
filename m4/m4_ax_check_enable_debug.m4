@@ -90,18 +90,18 @@ AC_DEFUN([AX_CHECK_ENABLE_DEBUG],[
       ],
       [info],[
 	AC_MSG_RESULT(info)
-	CFLAGS="${CFLAGS} -g"
-	CXXFLAGS="${CXXFLAGS} -g"
-	FCFLAGS="${FCFLAGS} -g"
-	OBJCFLAGS="${OBJCFLAGS} -g"
+	CFLAGS="${CFLAGS} -g $5"
+	CXXFLAGS="${CXXFLAGS} -g $5"
+	FCFLAGS="${FCFLAGS} -g $5"
+	OBJCFLAGS="${OBJCFLAGS} -g $5"
       ],
       [profile],[
 	AC_MSG_RESULT(profile)
-	CFLAGS="${CFLAGS} -g -pg"
-	CXXFLAGS="${CXXFLAGS} -g -pg"
-	FCFLAGS="${FCFLAGS} -g -pg"
-	OBJCFLAGS="${OBJCFLAGS} -g -pg"
-	LDFLAGS="${LDFLAGS} -pg"
+	CFLAGS="${CFLAGS} -g -pg $5"
+	CXXFLAGS="${CXXFLAGS} -g -pg $5"
+	FCFLAGS="${FCFLAGS} -g -pg $5"
+	OBJCFLAGS="${OBJCFLAGS} -g -pg $5"
+	LDFLAGS="${LDFLAGS} -pg $5"
       ],
       [
 	AC_MSG_RESULT(no)

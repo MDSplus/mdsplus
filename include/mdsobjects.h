@@ -1,6 +1,7 @@
 #ifndef MDSOBJECTS_H
 #define MDSOBJECTS_H
-//#define NOMINMAX
+#include <mdsplus/mdsconfig.h>
+
 #include <algorithm>
 #include <complex>
 #include <exception>
@@ -12,20 +13,12 @@
 #include <stdlib.h>
 
 #ifdef _MSC_VER
+ #define NOMINMAX
  #include <windows.h>
 #else
  #include <sys/types.h>
- //#include <sys/ipc.h>
- //#include <sys/sem.h>
- //#include <semaphore.h>
 #endif
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h> // should be removed from here //
-#endif
-#ifdef WINDOWS_H
-#define __attribute__(arg)
-#define EXPORT __declspec(dllexport)
-#endif
+#include <mdsplus/mdsconfig.h>
 
 #include <dbidef.h>
 #include <ncidef.h>
@@ -123,8 +116,7 @@ class EXPORT MdsException : public std::exception {
 public:
 
     MdsException(const char *msg): msg(msg) { }
-    //MdsException(int status): msg(MdsGetMsg(status)) { }
-
+    MdsException(std::string msg): msg(msg) { }
     MdsException(int status);
 
     virtual ~MdsException() NOEXCEPT { }
@@ -134,12 +126,12 @@ public:
     /// \return error message
     virtual const char* what() const NOEXCEPT
     {
-	return msg;
+	return msg.c_str();
     }
 
 protected:
 
-    const char *msg;
+    const std::string msg;
 };
 
 
@@ -255,19 +247,21 @@ public:
     }
 
     /// \return true if this and data match, false otherwise and as default
-    virtual bool equals(Data *data UNUSED_ARGUMENT) { return false; }
+    virtual bool equals(Data *data __attribute__ ((unused))) { return false; }
 
     /// \return Return the result of TDI evaluate
     Data *evaluate();
+    Data *evaluate(Tree *tree);
 
     /// eports TDI data functionality, i.e. returns a native type
     /// (scalar or array).
     virtual Data *data();
+    virtual Data *data(Tree *tree);
 
     /// Return the result of TDI decompile
     char *decompile();
 
-    /// Make a dymanically allocated copy of the Data instance Tee
+    /// Make a dymanically allocated copy of the Data instance Tree
     Data *clone();
 
     /// serialize data into non terminated char array using serializeData
@@ -318,7 +312,7 @@ public:
     virtual std::vector<uint64_t> getLongUnsignedArray();
     virtual double * getDoubleArray(int *numElements);
     virtual std::vector<double> getDoubleArray();
-    virtual std::complex<double> * getComplexArray(int *numElements UNUSED_ARGUMENT) {
+    virtual std::complex<double> * getComplexArray(int *numElements __attribute__ ((unused))) {
 	throw MdsException("getComplexArray() not supported for non Complex data types"); }
     virtual std::vector<std::complex<double> > getComplexArray();
     virtual char ** getStringArray(int *numElements) {
@@ -873,7 +867,7 @@ public:
 	init(val, std::string(val).size(), units, error, help, validation);
     }
 
-    String(unsigned char *uval, int len UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int len __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 	// FIXME: Hack to handle broken LabView types that use unsigned char (as uint8) instead of char
 	// FIXME: Warning: Do not use this constructor in user code
 	char * val = reinterpret_cast<char *>(uval);
@@ -881,7 +875,7 @@ public:
     }
 
     //GAB  definition in order to avoid breaking LabVIEW
-    String(unsigned char *uval, int numDims UNUSED_ARGUMENT, int *dims UNUSED_ARGUMENT, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
+    String(unsigned char *uval, int numDims __attribute__ ((unused)), int *dims __attribute__ ((unused)), Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0) {
 	char * val = reinterpret_cast<char *>(uval);
 	init(val, std::string(val).size(), units, error, help, validation);
     }
@@ -1534,7 +1528,7 @@ private:
 /// ordered sequence of data. Nothing in common with software objects
 /// signalling systems.
 
-class Signal: public Compound {
+class EXPORT Signal: public Compound {
 public:
 #ifndef DOXYGEN // hide this part from documentation
     Signal(int dtype, int length, char *ptr, int nDescs, char **descs, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0):
@@ -1542,6 +1536,9 @@ public:
     {
 	setAccessory(units, error, help, validation);
     }
+//Signal descriptor requires length = 0, so override the method
+    void * convertToDsc();
+
 #endif // DOXYGEN end of hidden code
 
     Signal(Data *data, Data *raw, Data *dimension, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0)
@@ -1752,8 +1749,8 @@ public:
 /// \brief The Function class object description of DTYPE_FUNCTION
 ///
 /// MDSplus provides a function data type used for describing references to
-/// built in native TDI functions. When you specify an expression such as "a +
-/// b", MDSplus will compile this into a DTYPE_FUNCTION data item. The function
+/// built in native TDI functions. When you specify an expression such as "a+b",
+/// MDSplus will compile this into a DTYPE_FUNCTION data item. The function
 /// data type consists of a opcode and a list of operands. The opcode is stored
 /// as a 16 bit code and the operands can be any MDSplus data type.
 ///
@@ -2878,6 +2875,7 @@ public:
     ///
     TreeNode(int nid, Tree *tree, Data *units = 0, Data *error = 0, Data *help = 0, Data *validation = 0);
     TreeNode() {tree = 0;}
+    ~TreeNode();
     //Force new and delete in dll for windows
     void *operator new(size_t sz);
     void operator delete(void *p);
@@ -2886,7 +2884,7 @@ public:
     virtual Tree *getTree() { return tree; }
 
     /// Set the associated Tree instance
-    virtual void setTree(Tree *tree) {this->tree = tree;}
+    virtual void setTree(Tree *tree);
 
     /// Get the path name for this node
     virtual char *getPath();
@@ -2928,6 +2926,10 @@ public:
 
     /// Retrieve node from this tree by its realPath string
     virtual TreeNode *getNode(String *relPathStr);
+
+    //Retrieve node from this tree by its realPath string with a wild card
+    virtual TreeNodeArray *getNodeWild(char const * path, int usageMask);
+    virtual TreeNodeArray *getNodeWild(char const *path);
 
     virtual Data *getData();
     virtual void putData(Data *data);
@@ -3077,10 +3079,22 @@ public:
     virtual void makeSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
 	//Begin and fill a new data segment. At the same time make a resampled version
-    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode);
+    virtual void makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
+
+	//Begin and fill a new data segment. At the same time make a resampled minmax version (two samples (min and max) every 100 original samples)
+    virtual void beginSegmentMinMax(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
+
+	//Begin and fill a new data segment. At the same time make a resampled version
+    virtual void beginSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor = 100);
 
     /// Write (part of) data segment
     virtual void putSegment(Array *data, int ofs);
+
+    /// Write (part of) data segment
+    virtual void putSegmentResampled(Array *data, int ofs, TreeNode*resampledNode, int resFactor = 100);
+
+    /// Write (part of) data segment
+    virtual void putSegmentMinMax(Array *data, int ofs, TreeNode*resampledNode, int resFactor = 100);
 
     /// Update start, end time and dimension for the last segment
     virtual void updateSegment(Data *start, Data *end, Data *time);
@@ -3741,7 +3755,7 @@ public:
     /// | NORMAL       | set the tree for normal operations reading and writing data     |
     ///
     Tree(char const * name, int shot, char const * mode);
-
+    Tree(Tree *tree);
     ~Tree();
 
     void *operator new(size_t sz);
@@ -3781,6 +3795,9 @@ public:
 
     /// Get the name of the tree as c string
     const char *getName() const { return name.c_str(); }
+
+    /// Get shot number
+    int getShot() const { return shot; }
 
     /// Get the name of this tree as a std::string
     std::string getNameStr() const { return name; }
@@ -3927,6 +3944,39 @@ public:
     ///
     void deletePulse(int shot);
 
+    // Evaluate an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiEvaluate(Data *data);
+
+    // Compute an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiData(Data *data);
+
+    // Compile an expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiCompile(const char *expr);
+    Data *tdiCompile(const char *expr, Data *arg1);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
+    Data *tdiCompile(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
+
+    // Compile an expression with arguments in the context of the tree - ThreaSafe, provided setActiveTree is not used
+    Data *tdiCompile(const char *expr, int nArgs ...);
+
+    // Execute an  expression in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiExecute(const char *expr);
+    Data *tdiExecute(const char *expr, Data *arg1);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7);
+    Data *tdiExecute(const char *expr, Data *arg1, Data *arg2, Data *arg3, Data *arg4, Data *arg5, Data *arg6, Data *arg7, Data *arg8);
+
+    // Execute an expression with arguments in the context of the tree - Thread Safe, provided setActiveTree is not used
+    Data *tdiExecute(const char *expr, int nArgs ...);
 
     StringArray *findTags(char *wild);
     void removeTag(char const * tagName);
@@ -4175,7 +4225,7 @@ public:
     ~Connection();
     void openTree(char *tree, int shot);
     void closeAllTrees();
-    void closeTree(char *tree UNUSED_ARGUMENT, int shot UNUSED_ARGUMENT)
+    void closeTree(char *tree __attribute__ ((unused)), int shot __attribute__ ((unused)))
     {
 	closeAllTrees();
     }
@@ -4230,7 +4280,7 @@ public:
     void show();
 };
 
-#ifndef WINDOWS_H
+#ifdef HAVE_PTHREAD_H
 class EXPORT EventStream:public Event {
   std::vector<DataStreamListener *> listeners;
   std::vector<std::string> names;
@@ -4239,13 +4289,12 @@ public:
   EventStream():Event("STREAMING"){}
   static void send(int shot, const char *name, float time, float sample);
   static void send(int shot, const char *name, uint64_t time, float sample);
-  static void send(int shot, const char *name, int numSamples, float *times, float *samples);
+  static void send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode = false);
   static void send(int shot, const char *name, int numSamples, uint64_t *times, float *samples);
   static void send(int shot, const char *name, Data *timeData, Data *valueData);
   void registerListener(DataStreamListener *listener, const char *name);
 };
 #endif
-
 
 //////////////Support functions////////
 EXPORT Data *deserialize(char const * serialized);

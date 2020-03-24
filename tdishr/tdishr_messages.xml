@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="SIG_DIM" value="4122" severity="Error" text="Signal dimension does not match data shape"/>
     <status name="SYNTAX" value="4123" severity="Error" text="Bad punctuation or misspelled word or number"/>
     <status name="TOO_BIG" value="4124" severity="Error" text="Conversion of number lost significant digits"/>
-    <status name="UNBALANCE" value="4125" severity="Error" text="Unbalanced () [] {} '' &quot; &quot; or /**/"/>
+    <status name="UNBALANCE" value="4125" severity="Error" text="Unbalanced () [] {} '' &quot;&quot; or /**/"/>
     <status name="UNKNOWN_VAR" value="4126" severity="Error" text="Unknown/undefined variable name"/>
     <status name="STRTOOLON" value="4127" severity="Fatal" text="string is too long (greater than 65535)"/>
     <status name="TIMEOUT" value="4128" severity="Fatal" text="task did not complete in alotted time"/>

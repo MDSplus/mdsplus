@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 
+<!--
      Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
 Redistribution and use in source and binary forms, with or without
@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <deploy>
  <packages>
-  <package name="MDSplus" arch="bin" summary="MDSplus Data Acquisition System" description="MDSplus Data Acquisition System">
+  <package name="MDSplus" arch="noarch" summary="MDSplus Data Acquisition System" description="MDSplus Data Acquisition System">
     <requires package="kernel"/>
     <requires package="java"/>
     <requires package="python"/>
@@ -83,7 +83,7 @@ rm -f /usr/share/applications/mdsplus/java 2&gt;&amp;1
     <!-- rpm scripts -->
     <post>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</post>
     <postun>
- 
+
 if [ "$1" == "0" ]
 then
   rm -f /usr/share/applications/mdsplus/java 2&gt;/dev/null
@@ -96,13 +96,13 @@ fi
     <!-- deb scripts -->
     <postinst>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postinst>
     <prerm>
- 
+
 rm -f /usr/share/applications/mdsplus/java 2&gt;/dev/null
 ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 
     </prerm>
     <!-- end deb scripts -->
-    
+
   </package>
 
   <package name="mitdevices" arch="noarch" summary="Support for MIT Data acquisition devices" description="Support for MIT Data acquisition devices">
@@ -119,7 +119,7 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
       $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MitDevices
     </pre>
     <post>
-      
+
 python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </post>
@@ -130,13 +130,13 @@ python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/de
       fi
     </postun>
     <!-- end rpm scripts -->
-    
+
     <!-- deb scripts -->
     <preinst>
       /usr/local/mdsplus/rpm/removePythonModule.sh MitDevices
     </preinst>
     <postinst>
-      
+
 python -m compileall -q /usr/local/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
 
     </postinst>
@@ -154,7 +154,7 @@ python -m compileall -q /mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
     </post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/MitDevices</post-deinstall>
     <!-- end alpine scripts -->
-    
+
   </package>
 
   <package name="mitdevices_bin" arch="bin" summary="Libraries used for mitdevices" description="Libraries used for mitdevices">
@@ -245,7 +245,7 @@ fi
     </postinst>
     <prerm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</prerm>
     <!-- end deb scripts -->
-    
+
   </package>
 
   <package name="labview" arch="noarch" summary="National Instruments Labview extensions" description="National Instruments Labview extensions">
@@ -303,7 +303,7 @@ rm -f /usr/share/applications/mdsplus/motif 2&gt;/dev/null
 
     </prerm>
     <!-- end deb scripts -->
-    
+
   </package>
 
   <package name="motif_bin" arch="bin" summary="Libraries, UIDS and binary applications required for Motif APS" description="Libraries, UIDS and binary applications required for Motif APS">
@@ -357,7 +357,7 @@ fi
     </preun>
     <postun>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</postun>
     <!-- end rpm scripts -->
-    
+
     <!-- deb scripts -->
     <postinst>
 
@@ -383,7 +383,7 @@ fi
     </prerm>
     <prerm>ldconfig -n /etc/ld.so.conf.d/mdsplus.conf</prerm>
     <!-- end deb scripts -->
-    
+
   </package>
 
   <package name="hdf5" arch="noarch" summary="MDSplus/HDF5 integration" description="MDSplus/HDF5 integration">
@@ -501,7 +501,7 @@ then
   if [ -r /etc/xinetd.d/mdsip ]
   then
     if ( diff -q /etc/xinetd.d/mdsip $RPM_INSTALL_PREFIX/mdsplus/rpm/mdsipd.xinetd &gt; /dev/null )
-    then 
+    then
       rm -f /etc/xinetd.d/mdsip
       if [ -x /sbin/service ]
       then
@@ -517,7 +517,7 @@ then
       mv /etc/services /etc/services.rpmsave
       mv $tmpfile /etc/services
     fi
-  fi 
+  fi
 fi
 
     </preun>
@@ -530,7 +530,7 @@ fi
 
     </postun>
     <!-- end rpm scripts -->
-    
+
     <!-- deb scripts -->
     <postinst>
 
@@ -559,7 +559,7 @@ then
   then
     echo 'mdsip 8000/tcp # MDSplus mdsip service' &gt;&gt; /etc/services
   fi
-fi    
+fi
     </postinst>
     <prerm>
 
@@ -573,7 +573,7 @@ rm -Rf /usr/local/mdsplus/{desktop,pixmaps}
 if [ -r /etc/xinetd.d/mdsip ]
 then
   if ( diff -q /etc/xinetd.d/mdsip /usr/local/mdsplus/rpm/mdsipd.xinetd &gt; /dev/null )
-  then 
+  then
     rm -f /etc/xinetd.d/mdsip
     if [ -x /sbin/service ]
     then
@@ -589,12 +589,12 @@ then
     mv /etc/services /etc/services.save
     mv $tmpfile /etc/services
   fi
-fi 
+fi
 
 
     </prerm>
     <!-- end deb scripts -->
-    
+
     <!-- alpine scripts -->
     <post-install>
 ln -sf /mdsplus /usr/local/
@@ -650,7 +650,7 @@ rm -f /etc/profile.d/mdsplus.csh
     <exclude file="/usr/local/mdsplus/lib/dwscope_setup.ps"/>
     <exclude_staticlibs/>
 
-    <!-- rpm scripts --> 
+    <!-- rpm scripts -->
     <post>
 
 if [ -d /etc/ld.so.conf.d ]
@@ -702,13 +702,13 @@ fi
 if [ "$1" == "0" ]
 then
   ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
-  rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null 
+  rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
 fi
 
     </postun>
     <!-- end rpm scripts -->
-    
-    <!-- deb scripts --> 
+
+    <!-- deb scripts -->
     <postinst>
 
 if [ -d /etc/ld.so.conf.d ]
@@ -751,15 +751,15 @@ fi
 for d in bin lib
 do
   if [ -h /usr/local/mdsplus/$d ]
-  then 
+  then
     rm -f /usr/local/mdsplus/$d
   fi
 done
 ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
-rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null 
+rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     </prerm>
    <!-- end deb scripts -->
-    
+
   </package>
 
   <package name="mssql" arch="bin" summary="Interface to mssql databases" description="Interface to mssql databases">
@@ -804,7 +804,7 @@ fi
     <post-install>python -m compileall -q /mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post-install>
     <post-deinstall> rm -Rf /mdsplus/pydevices/RfxDevices</post-deinstall>
     <!-- end alpine scripts -->
-    
+
   </package>
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
     <requires package="python"/>
@@ -876,9 +876,9 @@ fi
 
   <package name="python" arch="noarch" summary="Python interface to MDSplus" description="Python interface to MDSplus">
     <requires package="kernel"/>
-    <requires external="true" package="setuptools"/>
-    <requires external="True" package="python-devel"/>
+    <!-- requires external="true" package="setuptools"/ -->
     <requires external="true" package="numpy"/>
+    <requires external="true" package="find"/>
     <include dir="/usr/local/mdsplus/python/MDSplus"/>
     <exclude file="/usr/local/mdsplus/python/MDSplus/makedoc.sh"/>
 
@@ -903,18 +903,29 @@ fi
       fi
     </preun>
     <!-- end rpm scripts -->
-    
+
     <!-- deb scripts -->
     <postinst>
-      /usr/local/mdsplus/rpm/removePythonModule.sh MDSplus
+      if test ! -z $(/usr/local/mdsplus/rpm/removePythonModule.sh MDSplus y)
+      then setup_install=y
+      elif echo $PYTHONPATH|grep /usr/local/mdsplus/python>/dev/null
+      then setup_install=n
+      else read -t 10 -p "Do you wish to run setup.py install? (y/N) " setup_install
+      fi
       find /usr/local/mdsplus/python -name '*egg-info' -delete
+
       for py in python python3
       do
         if ( ${py} -c exit\(\) &gt;/dev/null 2&gt;&amp;1 )
         then
           ${py} -m compileall -q -f /usr/local/mdsplus/python &gt;/dev/null 2&gt;&amp;1
-          ${py} /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null 2&gt;&amp;1
-	fi
+          if test "$setup_install" = "y"
+          then
+            if ! ${py} /usr/local/mdsplus/python/MDSplus/setup.py -q install &gt;/dev/null
+            then echo "Could not 'setup.py install' MDSplus for ${py}"
+            fi
+          fi
+        fi
       done
     </postinst>
     <prerm>
@@ -937,7 +948,7 @@ fi
       /mdsplus/rpm/removePythonModule.sh MDSplus
     </pre-upgrade>
     <!-- end alpine scripts -->
-      
+
   </package>
 
   <package name="d3d" arch="noarch" summary="TDI functions used at D3D experiment at General Atomics" description="TDI functions used at D3D experiment at General Atomics">
@@ -987,23 +998,20 @@ AutoReqProv: yes
  <ubuntu>
  </ubuntu>
  <external_packages platform="redhat">
-   <python-devel/>
    <setuptools package="python-setuptools"/>
    <numpy/>
    <xinetd/>
    <java/>
  </external_packages>
  <external_packages platform="alpine">
-   <python-devel package="python-dev"/>
    <setuptools package="py-setuptools"/>
    <numpy/>
    <java/>
  </external_packages>
  <external_packages platform="debian">
-   <python-devel package="python-dev"/>
    <setuptools package="python-setuptools"/>
    <numpy package="python-numpy"/>
    <xinetd package="busybox"/>
-   <java package="default-jre"/>
+   <java package="java-runtime"/>
  </external_packages>
 </deploy>

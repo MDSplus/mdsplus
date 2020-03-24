@@ -28,7 +28,7 @@ buildrelease() {
     mkdir -p ${MDSPLUS_DIR};
     mkdir -p /workspace/releasebld/64;
     pushd /workspace/releasebld/64;
-    config ${test64}
+    config ${test64} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
@@ -36,19 +36,23 @@ buildrelease() {
     popd;
     mkdir -p /workspace/releasebld/32;
     pushd /workspace/releasebld/32;
-    config ${test32}
+    config ${test32} ${ALPHA_DEBUG_INFO}
     if [ -z "$NOMAKE" ]; then
       $MAKE
       $MAKE install
     fi
+    popd
     if [ -z "$NOMAKE" ]; then
-      HOME=/workspace/winebottle64 WINEARCH=win64 wine cmd /C ${srcdir}/mdsobjects/cpp/visual-studio-build.bat
+      pushd /workspace/releasebld/64/mdsobjects/cpp
+      $MAKE defs
+      HOME=/workspace/winebottle64 WINEARCH=win64\
+	wine cmd /C ${srcdir}/deploy/platform/windows/visual-studio-build.bat
       cp /workspace/releasebld/64/bin_x86_64/MdsObjectsCppShr-VS.dll ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/64/bin_x86_64/*.lib ${MDSPLUS_DIR}/bin_x86_64/
       cp /workspace/releasebld/32/bin_x86/*.lib ${MDSPLUS_DIR}/bin_x86/
       cp -r ${srcdir}/icons ${MDSPLUS_DIR}/
+      popd
     fi
-    popd
     ###
     ### pack installer
     ###

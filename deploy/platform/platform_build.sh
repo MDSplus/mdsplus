@@ -8,7 +8,7 @@
 #
 set -e
 volume() {
-  if [ ! -z "$1" ]
+  if [ -n "$1" ]
   then echo "-v $(realpath ${1}):${2}"
   fi
 }
@@ -28,7 +28,7 @@ NORMAL() {
   fi
 }
 spacedelim() {
-    if [ ! -z "$1" ]
+    if [ -n "$1" ]
     then
         if [ "$1" = "skip" ]
         then
@@ -60,7 +60,7 @@ rundocker(){
         image=${images[$idx]}
         arch=${arches[$idx]}
         echo "Building installers for ${arch} using ${image}"
-        if [ ! -z "$INTERACTIVE" ]
+        if [ -n "$INTERACTIVE" ]
         then
             echo "run ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
             echo "or  NOMAKE=1 ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
@@ -111,6 +111,7 @@ rundocker(){
 		   -e "HOME=/workspace" \
 		   -e "JARS_DIR=$jars_dir" \
 		   -e "TEST_TIMEUNIT" \
+		   -e "ALPHA_DEBUG_INFO" \
 		   -v ${SRCDIR}:${DOCKER_SRCDIR} \
 		   -v ${WORKSPACE}:/workspace \
 		   $port_forwarding \
@@ -157,6 +158,11 @@ default_build(){
         mkdir -p ${PUBLISHDIR}/${BRANCH}
     fi
 }
+
+if [ "$BRANCH" = "alpha" ]
+then ALPHA_DEBUG_INFO=--enable-debug=info
+else ALPHA_DEBUG_INFO=
+fi
 set +e
 platform_build="${SRCDIR}/deploy/platform/${PLATFORM}/${PLATFORM}_build.sh"
 if [ -f "${platform_build}" ]

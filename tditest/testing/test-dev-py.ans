@@ -1,7 +1,7 @@
 Tcl('edit main/shot=5/new')
-265388041
+265389633
 Tcl('add node tdidev/model=a12')
-265388041
+265389633
 Tcl('decompile tdidev')
 Build_Conglom("MIT$DEVICES", "A12", *, *)
 1
@@ -61,8 +61,10 @@ Tcl('show data tdidev')
 1
 getnci(tdidev:name,"original_part_name")
 ":NAME"
+py(['from MDSplus import Tree','ans=Tree().TDIDEV.NAME.doMethod("part_name")'],'ans')
+":NAME"
 Tcl('add node pydev/model=cygnet4k')
-265388041
+265389633
 Tcl('dir/full pydev')
 
 \MAIN::TOP
@@ -78,4 +80,4 @@ Total of 1 node.
 getnci(pydev:comment,"original_part_name")
 ":COMMENT"
 Tcl('write')
-265388041
+265389633

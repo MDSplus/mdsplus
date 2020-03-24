@@ -219,7 +219,7 @@ class Nci(object):
     _IS_MEMBER=2
     SET_FLAGS          =( 1,_C.c_uint32,4,int)
     CLEAR_FLAGS        =( 2,_C.c_uint32,4,int)
-    TIME_INSERTED      =( 4,_C.c_uint64,8,int)
+    TIME_INSERTED      =( 4,_C.c_uint64,8,_scr.Uint64)
     OWNER_ID           =( 5,_C.c_uint32,4,int)
     CLASS              =( 6,_C.c_uint8 ,1,int)
     DTYPE              =( 7,_C.c_uint8 ,1,int)
@@ -249,7 +249,7 @@ class Nci(object):
     NUMBER_OF_ELTS     =(32,_C.c_uint32, 4,int)
     DATA_IN_NCI        =(33,_C.c_uint32, 4,bool)
     ERROR_ON_PUT       =(34,_C.c_uint32, 4,bool)
-    RFA                =(35,_C.c_uint64, 8,int)
+    RFA                =(35,_C.c_uint64, 8,_scr.Uint64)
     IO_STATUS          =(36,_C.c_uint32, 4,int)
     IO_STV             =(37,_C.c_uint32, 4,int)
     DTYPE_STR          =(38,_C.c_char_p,64,str)
@@ -425,6 +425,7 @@ class Tree(object):
     def open(self, mode='NORMAL'):
         try:
             env_name = '%s_path'%self.tree.lower()
+
             if not self.path is None:
                 old_path = _mds.getenv(env_name)
                 _mds.setenv(env_name,self.path)
@@ -470,9 +471,8 @@ class Tree(object):
         @param mode: Optional mode, one of 'Normal','Edit','New','Readonly'
         @type mode: str
         """
-        if tree is None:
-            self.public = True
-        else:
+        self.public = tree is None
+        if not self.public:
             if path is not None: self.path = path
             self._ctx = _C.c_void_p(0)
             self.tree = tree
@@ -488,7 +488,7 @@ class Tree(object):
     def __del__(self):
         if not self.public:
             self.__exit__()
-            _TreeShr.TreeFreeDbid(self.ctx)
+            _TreeShr.TreeFreeDbid(self._ctx)
 
     def __exit__(self, *args):
         """ Cleanup for with statement. If tree is open for edit close it. """
@@ -717,8 +717,8 @@ class Tree(object):
                                               _C.c_int32(1)))
 
     def dir(self):
-        """list descendants of top"""
-        self.top.dir()
+        """Return current default dir"""
+        self.default.dir()
 
     def __dir__(self):
         """used for tab completion"""
@@ -789,15 +789,16 @@ class Tree(object):
         @return: Node if found
         @rtype: TreeNode
         """
+
         if isinstance(name,(int,_scr.Int32)):
             ans = TreeNode(name,self)
         else:
-            n=_C.c_int32(0)
+            nid=_C.c_int32(0)
             _exc.checkStatus(
                     _TreeShr._TreeFindNode(self.ctx,
                                            _ver.tobytes(str(name)),
-                                           _C.byref(n)))
-            return TreeNode(int(n.value),self)
+                                           _C.byref(nid)))
+            return TreeNode(int(nid.value),self)
         return ans
 
     def _getNodeWildIter(self, name, *usage):
@@ -871,9 +872,7 @@ class Tree(object):
         @rtype: str
         """
         dt=_C.c_ulonglong(0)
-        status = _TreeShr._TreeGetViewDate(dt)
-        if not status & 1:
-            raise _exc.MDSplusException(status)
+        _exc.checkStatus(_TreeShr.TreeGetViewDate(dt))
         return _scr.Uint64(dt.value).date
 
     @classmethodX
@@ -882,7 +881,6 @@ class Tree(object):
         @param tree: Name of tree
         @type tree: str
         @param inc: Increment (default: 1)
-        @return shot: New current shot number for the specified tree
         @rtype int
         """
         if isinstance(self,(Tree,)): # instancemethod: args shifted by one
@@ -1187,6 +1185,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         item = Nci._nci_item(buflen,code,pointer)
         _exc.checkStatus(_TreeShr._TreeGetNci(self.ctx,self._nid,_C.byref(item)))
         retlen = item.retlen.contents.value
+
         if rtype is str:
             return _ver.tostr(ans.value[0:retlen].rstrip())
         if rtype is None:
@@ -1643,12 +1642,17 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @rtype: None
         """
         arglist=[self.ctx]
-        xd=_dsc.descriptor_xd()
+        xd=_dsc.Descriptor_xd()
         argsobj = [_scr.Int32(self.nid),_scr.String(method)]
-        argsobj+= list(map(_dat.Data,args))
-        arglist+= list(map(_dat.Data.byref,argsobj))
-        arglist+= [xd.ref,_ver.MdsEND_ARG]
-        _exc.checkStatus(_TreeShr._TreeDoMethod(*arglist))
+        arglist+=list(map(_dat.Data.byref,argsobj))
+        arglist.append(len(args))
+        if len(args)>0:
+            argsobj= list(map(_dat.Data,args))
+            arglist.append(_N.array(map(_dat.Data.byref,argsobj)))
+        else:
+            arglist.append(_C.c_void_p(0))
+        arglist+=[xd.ref]
+        _exc.checkStatus(_TreeShr._TreeDoMethodA(*arglist))
         return xd._setTree(self.tree).value
 
     @classmethod
@@ -1862,11 +1866,17 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @return: node matching path
         @rtype: TreeNode
         """
-        if path[0] == '\\':
-            return self.tree.getNode(path)
-        elif not path[0]  in ':.':
-            path=':'+path
-        return self.tree.getNode(self.fullpath+path)
+        if isinstance(path,(int,_scr.Int32)):
+            ans = TreeNode(path,self.tree)
+        else:
+            nidout=_C.c_int32(0)
+            _exc.checkStatus(
+                        _TreeShr._TreeFindNodeRelative(self.ctx,
+                                               _ver.tobytes(str(path)),
+                                               _C.c_int32(self.nid),
+                                               _C.byref(nidout)))
+            return TreeNode(int(nidout.value),self.tree)
+        return ans
 
     def getNodeName(self):
         """Return node name
@@ -1875,20 +1885,42 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         return self.node_name
 
+
     def getNodeWild(self,path,*usage):
-        """Return tree nodes where path is relative to this node
-        @param path: Path relative to this node
-        @type path: str
-        @return: node matching path
+        """Find nodes in tree using a wildcard specification. Returns TreeNodeArray if nodes found.
+        @param name: Node name. May include wildcards.
+        @type name: str
+        @param usage: Optional list of node usages (i.e. "Numeric","Signal",...). Reduces return set by including only nodes with these usages.
+        @type usage: str
+        @return: TreeNodeArray of nodes matching the wildcard path specification and usage types.
         @rtype: TreeNodeArray
         """
+        return TreeNodeArray([nid for nid in self._getNodeWildIter(path,*usage)],self.tree)
+
+    def _getNodeWildIter(self, name, *usage):
+        if len(usage) == 0:
+            usage_mask=0xFFFF
+        else :
+            try:
+                usage_mask=0
+                for u in usage:
+                    usage_mask |= 1 << _usage_table[u.upper()]
+            except KeyError:
+                raise UsageError(u)
+
+        nid=_C.c_int32(0)
+        ctx=_C.c_void_p(0)
         try:
-            olddef=self.tree.default
-            self.tree.default=self
-            ans = self.tree.getNodeWild(path,*usage)
-        finally:
-            self.tree.default=olddef
-        return ans
+            while _TreeShr._TreeFindNodeWildRelative(self.ctx,
+                                     _ver.tobytes(name),
+                                     _C.c_int32(self.nid),
+                                     _C.byref(nid),
+                                     _C.byref(ctx),
+                                     _C.c_int32(usage_mask)) & 1 != 0:
+                yield nid.value
+        except GeneratorExit:
+            pass
+        _TreeShr._TreeFindNodeEnd(self.ctx, _C.pointer(ctx))
 
     def getNumChildren(self):
         """Return number of children nodes.
@@ -2639,6 +2671,19 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
                                             _C.c_int32(int(rows_filled))))
 
 
+    def tcl(self,cmd):
+        """Issue a tcl command with this node being the default node
+        @param cmd: tcl command string
+        @type cmd: str
+        @rtype: int
+        """
+        olddef=self.tree.default
+        self.tree.default=self
+        try:
+            return self.tree.tcl(cmd)
+        finally:
+            self.tree.default=olddef
+
     def updateSegment(self,start,end,dim,idx):
         """Update a segment
         @param start: index of first row of segment
@@ -2879,6 +2924,147 @@ class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
             ans.append(val)
         try:    return _arr.Array(ans)
         except: return _apd.List(*ans)
+
+
+class cached_property(object):
+    """ converts to property with cache
+    cache_on_set: controls if setter will set or clear cache
+    class MYDEVICE(Device):
+        @cached_property
+        def _trigger(self): return self.trigger
+    del(self._trigger)  <=> clear cache
+    """
+    def __init__(self, target=None, is_property=False, **opt):
+        mode = opt.get('mode', 0)
+        self.lock = _threading.Lock()
+        self.cache_on_set = (mode & 1) > 0
+        if target:
+            if is_property:
+                self.target = target
+            else:
+                self.target = property(target)
+
+    def __call__(self, method):
+        if hasattr(self, 'target'):
+            raise Exception("cached_property.target already set")
+        self.target = property(method)
+        return self
+
+    def __get__(self, inst, cls):
+        if inst is None: return self
+        with self.lock:
+            if self.target in inst.__dict__:
+               return inst.__dict__[self.target]
+            else:
+                data = self.target.__get__(inst, cls)
+                inst.__dict__[self.target] = data
+                return data
+
+    def __set__(self, inst, value):
+        self.target.__set__(inst, value)
+        with self.lock:
+            if (self.cache_on_set):
+                inst.__dict__[self.target] = value
+            else:
+                del(inst.__dict__[self.target])
+
+    def __delete__(self, inst):
+        with self.lock:
+            if self.target in inst.__dict__:
+                del(inst.__dict__[self.target])
+
+
+class mdsrecord(object):
+    """ turns method into property
+    expects method that return MDSplus node
+    class MYDEVICE(Device):
+        @mdsrecord(filter=float, default=0)
+        def _trigger(self): return self.trigger
+    ...
+    dev = tree.MYDEVICE
+    dev._trigger = 5   <=>   dev.trigger.record = 5
+    a = dev._trigger   <=>   a = float(dev.trigger.record)
+    del(dev._trigger)  <=>   dev.trigger.record = None
+    # if trigger contains no data _trigger defaults to 0
+    """
+    def __new__(cls, *target, **opt):
+        """ use new so in can return cached_property """
+        self = object.__new__(cls)
+        self.filter = opt.get("filter", None)
+        if 'default' in opt:
+            self.default = [opt['default']]
+        else:
+            self.default = []
+        self.cached = opt.get("cached", None)
+        if target:
+            return self(target[0])
+        return self
+
+    def __call__(self, target):
+        if hasattr(self, 'target'):
+            raise Exception("mdsrecord.target already set")
+        self.target = target
+        if self.cached is None:
+            return self
+        return cached_property(self, True, mode=self.cached)
+
+    def __get__(self, inst, cls):
+        if inst is None: return self
+        node = self.target.__get__(inst, cls)()
+        try:
+            data = node.getRecord()
+        except _exc.TreeNODATA:
+            if self.default:
+                return self.default[0]
+            raise
+        if self.filter is None:
+            return data
+        return self.filter(data)
+
+    def __set__(self, inst, value):
+        node = self.target.__get__(inst)()
+        node.putData(value)
+
+    def __delete__(self, inst):
+        node = self.target.__get__(inst)()
+        node.deleteData()
+
+    # useful filters: flattened lists and python2/3 stable chars
+    @staticmethod
+    def int_list(node): return _cmp.INT(node).data().flatten().tolist()
+    @staticmethod
+    def float_list(node): return _cmp.FLOAT(node).data().flatten().tolist()
+    @staticmethod
+    def bytes(node): return _ver.tobytes(node.data())
+    @staticmethod
+    def bytes_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+    @staticmethod
+    def str(node): return _ver.tostr(node.data())
+    @staticmethod
+    def str_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+
+
+
+def with_mdsrecords(cls):
+    """ decorator for device class
+    adds mdsrecord for each part in parts field
+    """
+    def genfun(field, part):
+        @mdsrecord(**part)
+        def _(self): return self.__getattr__(field)
+        return _
+    for part in cls.parts:
+        field = part['path'].lower().replace('.', '_').replace(':', '_')
+        fun = genfun(field[1:], part)
+        setattr(cls, field, fun)
+    return cls
+
 
 class Device(TreeNode): # HINT: Device begin
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.

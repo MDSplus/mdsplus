@@ -163,11 +163,11 @@ void main_test(){
 	unique_ptr<TreeNode> node = tree->getNode("test_node");
 
 	// getTree()
-	TEST1( node->getTree() == tree );
+	TEST1( node->getTree()->getNameStr() == tree->getNameStr() &&  node->getTree()->getShot() == tree->getShot());
 
 	// setTree()
 	node->setTree(tree2);
-	TEST1( node->getTree() == tree2 );
+	TEST1(node->getTree()->getNameStr() == tree2->getNameStr() &&  node->getTree()->getShot() == tree2->getShot());
 	node->setTree(tree);
 
 	// getPath()
@@ -243,7 +243,7 @@ void main_test(){
 	data = node->getData();
 	TEST1( data->getInt() == 5552368 );
 
-	int len UNUSED_ARGUMENT = node->getLength();
+	int len __attribute__ ((unused)) = node->getLength();
 
 	// getLength()  Nci length of Int32 is 12
 	TEST1( node->getLength() == 12 );
@@ -893,7 +893,7 @@ void main_test(){
     END_TESTING;
 }
 
-int main(int argc UNUSED_ARGUMENT, char *argv[] UNUSED_ARGUMENT)
+int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)))
 {
     std::cout << "START NORMAL TEST\n" << std::flush;
     setenv("t_treenode_path",".",1);

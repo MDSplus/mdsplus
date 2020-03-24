@@ -1,10 +1,8 @@
 #ifndef MDSDESCRIP_H_DEFINED
 #define MDSDESCRIP_H_DEFINED
+#include <mdsplus/mdsconfig.h>
 #include <inttypes.h>
 #include <status.h>
-#ifndef WINDOWS_H
-#include <mdsplus/mdsconfig.h>
-#endif
 #define MAX_DIMS   8
 
 #ifdef _WIN32
@@ -142,6 +140,8 @@ arsize	total size of array in bytes,
   dimct_t  dimct;	\
   arsize_t arsize;
 
+#define IS_ARRAY_DSC(p) ((p)->class == CLASS_A || (p)->class == CLASS_CA || (p)->class == CLASS_APD)
+
 typedef struct descriptor_a {
   ARRAY_HEAD(char)
   /*
@@ -207,7 +207,8 @@ typedef struct {
 /************************************************
   CLASS_XD extended dynamic descriptor definition.
 	Dynamic memory pointed to must be freed
-	using the pointer and length.
+	using the pointer and l_length.
+	length is not used and 0 by default.
 	The descriptor is usually on the stack.
 *************************************************/
 typedef uint32_t l_length_t;
@@ -217,7 +218,7 @@ typedef struct descriptor_xd {
 } mdsdsc_xd_t;
 
 #define EMPTYXD(name) mdsdsc_xd_t\
-  name = {(length_t)0, DTYPE_DSC, CLASS_XD, 0, 0}
+  name = {0, DTYPE_DSC, CLASS_XD, 0, 0}
 
 /************************************************
   CLASS_XS extended static descriptor definition.
@@ -628,8 +629,11 @@ typedef struct descriptor_opaque {
 #define DESCRIPTOR_FLOAT(name, _float) mdsdsc_t\
   name = {(length_t)sizeof(float), DTYPE_NATIVE_FLOAT, CLASS_S, (char*)_float}
 
-#define DESCRIPTOR_LONG(name, _long) mdsdsc_t\
-  name = {(length_t)sizeof(int), DTYPE_L, CLASS_S, (char*)_long}
+#define DESCRIPTOR_LONG(name, _int32) mdsdsc_t\
+  name = {(length_t)sizeof(int32_t), DTYPE_L, CLASS_S, (char*)_int32}
+
+#define DESCRIPTOR_QUADWORD(name, _int64) mdsdsc_t\
+  name = {(length_t)sizeof(int64_t), DTYPE_Q, CLASS_S, (char*)_int64}
 
 #define DESCRIPTOR_NID(name, _nid) mdsdsc_t\
   name = {(length_t)sizeof(int), DTYPE_NID, CLASS_S, (char*)_nid}
@@ -646,7 +650,6 @@ typedef struct descriptor_opaque {
  * array typedefs
  */
 
-#define MAX_DIMS 8
 /* ARRAY_COEFF(a,b*x) acts like ARRAY_BOUNDS(a,b)
  * but bounds and m are merged into m
  */

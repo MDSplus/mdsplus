@@ -41,7 +41,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare, LANL CTR-7   (c)1990
 */
 
-#include <STATICdef.h>
 #include "tdirefcat.h"
 #include "tdirefstandard.h"
 #include <tdishr_messages.h>
@@ -62,7 +61,7 @@ int Tdi1Pack(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   INIT_STATUS;
   int lena, lenm, numa, numm, numv = 0, bytes, j, cmode = -1;
   char *pi, *pm, *po;
-  struct descriptor_xd sig[3], uni[3], dat[3];
+  struct descriptor_xd sig[3] = {EMPTY_XD}, uni[3] = {EMPTY_XD}, dat[3] = {EMPTY_XD};
   struct TdiCatStruct cats[4];
 
   status = TdiGetArgs(opcode, narg, list, sig, uni, dat, cats);

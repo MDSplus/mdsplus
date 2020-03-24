@@ -30,15 +30,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare, LANL P-4     (c)1989,1990,1991,1992
 */
 
-#include <STATICdef.h>
 #include <string.h>
-#include <tdishr.h>
-#include "tdirefcat.h"
-#include "tdireffunction.h"
-#include "tdirefzone.h"
-#include "tdithreadsafe.h"
+
 #include <strroutines.h>
 #include <mds_stdarg.h>
+
+#include "tdirefcat.h"
+#include "tdireffunction.h"
+#include "tdithreadstatic.h"
+#include "tdiyacc.h"
 
 #define P_STMT          96
 #define P_ARG           88
@@ -47,7 +47,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern int Tdi0Decompile();
 extern int TdiSingle();
 
-STATIC_CONSTANT struct op_rec {
+static const struct op_rec {
   char *symbol;
   opcode_t opcode;
   char prec, lorr;
@@ -100,8 +100,8 @@ STATIC_CONSTANT struct op_rec {
   0, 0, 0, 0}
 };
 
-STATIC_CONSTANT DESCRIPTOR(ARROW, "->");
-STATIC_CONSTANT char *bname[] = {
+static const DESCRIPTOR(ARROW, "->");
+static const char *bname[] = {
   "Param",			/*194 */
   "Signal",			/*195 */
   "Dim",			/*196 dtype_dimension */
@@ -128,11 +128,10 @@ STATIC_CONSTANT char *bname[] = {
   "Opaque",			/*217 */
 };
 
-STATIC_ROUTINE int Append(char *pstr, struct descriptor_d *pd)
-{
+static int Append(const char *const pstr, struct descriptor_d *pd) {
   struct descriptor dstr = { 0, DTYPE_T, CLASS_S, 0 };
-  dstr.length = (unsigned short)strlen(pstr);
-  dstr.pointer = pstr;
+  dstr.length = (length_t)strlen(pstr);
+  dstr.pointer = (char*)pstr;
   return StrAppend(pd, &dstr);
 }
 
@@ -148,14 +147,14 @@ void TdiDecompileDeindent(struct descriptor_d *pout)
   return;
 }
 
-STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
-  GET_TDITHREADSTATIC_P;
+static int Indent(int step, struct descriptor_d *pout){
+  TDITHREADSTATIC_INIT;
 #ifdef _WIN32
   const char* newline= "\r\n\t\t\t\t\t\t\t";
-  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8)+1;
+  int identlen = ((TDI_INDENT += step) < 8 ? TDI_INDENT : 8)+1;
 #else
   const char* newline= "\n\t\t\t\t\t\t\t";
-  int identlen = ((TdiThreadStatic_p->TdiIndent += step) < 8 ? TdiThreadStatic_p->TdiIndent : 8);
+  int identlen = ((TDI_INDENT += step) < 8 ? TDI_INDENT : 8);
 #endif
   struct descriptor_d new = { 0, DTYPE_T, CLASS_D, 0 };
   new.length = pout->length + identlen;
@@ -166,7 +165,7 @@ STATIC_ROUTINE int Indent(int step, struct descriptor_d *pout){
   return MDSplusSUCCESS;
 }
 
-STATIC_ROUTINE int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout)
+static int OneStatement(struct descriptor_r *pin, struct descriptor_d *pout)
 {
   INIT_STATUS;
 
@@ -188,7 +187,7 @@ STATIC_ROUTINE int OneStatement(struct descriptor_r *pin, struct descriptor_d *p
   return status;
 }
 
-STATIC_ROUTINE int MultiStatement(int nstmt, struct descriptor_r *pin[], struct descriptor_d *pout)
+static int MultiStatement(int nstmt, struct descriptor_r *pin[], struct descriptor_d *pout)
 {
   int status = MDSplusSUCCESS, j;
 
@@ -202,7 +201,7 @@ STATIC_ROUTINE int MultiStatement(int nstmt, struct descriptor_r *pin[], struct 
   return status;
 }
 
-STATIC_ROUTINE int CompoundStatement(int nstmt,
+static int CompoundStatement(int nstmt,
 				     struct descriptor_r *pin[], struct descriptor_d *pout)
 {
   INIT_STATUS;
@@ -223,7 +222,7 @@ STATIC_ROUTINE int CompoundStatement(int nstmt,
   return status;
 }
 
-STATIC_ROUTINE int Arguments(int first,
+static int Arguments(int first,
 			     char *left,
 			     char *right, struct descriptor_r *pin, struct descriptor_d *pout)
 {
@@ -251,7 +250,7 @@ int Tdi0Decompile_R(struct descriptor_r *pin, int prec, struct descriptor_d *pou
   struct TdiFunctionStruct *fun_ptr;
   int narg = pin->ndesc;
   int m, lorr, newone;
-  struct op_rec *pop;
+  const struct op_rec *pop;
   unsigned int dtype;
   opcode_t opcode;
 

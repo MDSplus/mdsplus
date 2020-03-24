@@ -23,26 +23,31 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import sys
+import traceback
 from MDSplus import TreeNode, Device
-from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION
-from sys import stderr,exc_info
+from MDSplus import TreeNOMETHOD, MDSplusException, PyUNHANDLED_EXCEPTION
 
+
+def domethod(methodobj,args):
+    try:
+        return methodobj(*args)
+    except TypeError as exc:
+        if len(args)>0 or not (method+'()') in str(exc): raise
+        print("""
+Your device method %s.%s requires at least one argument.
+No argument has been provided as it is probably not required by the method.
+MDSplus does not require device methods to accept an argument anymore.
+""" % (model,method))
+        return methodobj(None)
 def PyDoMethod(n,method,*args):
-    def domethod(methodobj,args):
-        try:
-            return methodobj(*args)
-        except TypeError as exc:
-            if exc.message.startswith(method+'()'):
-                print('Your device method %s.%s requires at least one argument.' % (model,method))
-                print('No argument has been provided as it is probably not required by the method.')
-                print('MDSplus does not require device methods to accept an argument anymore.\n')
-                return methodobj(None)
-            else: raise
+    def is_property(obj): return len(args) == 0 and not hasattr(obj,'__call__')
     method = str(method)
     model = n.__class__.__name__
     try:
         if method in TreeNode.__dict__:
             methodobj = n.__getattribute__(method)
+            if is_property(methodobj): return methodobj
         else:
             device = n.conglomerate_nids[0]
             c = device.record
@@ -53,13 +58,13 @@ def PyDoMethod(n,method,*args):
                 methodobj = device.__getattribute__(method)
             except AttributeError:
                 raise TreeNOMETHOD
+            if is_property(methodobj): return methodobj
             if not method in Device.__dict__:
                 print("doing %s(%s).%s(%s)"%(device,model,method,','.join(map(str,args))))
         return domethod(methodobj,args)
     except MDSplusException:
         raise
-    except Exception as exc:
-        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-        import traceback
-        traceback.print_exc()
+    except Exception:
+        print("error doing %s(%s).%s:" % (n,model,method))
+        traceback.print_exc(file=sys.stdout)
         raise PyUNHANDLED_EXCEPTION

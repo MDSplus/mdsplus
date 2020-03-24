@@ -17,6 +17,7 @@ getModDir() {
     echo $mdir
 }
 
+removed=
 mdsplus_dir=$(readlink -f $(dirname ${0})/..)
 for py in python2 python3
 do
@@ -33,6 +34,7 @@ do
 	fi
 	if [ "$?" = 0 ]
 	then
+          removed=y
 	  mdir=$(getModDir $1 ${py} $mdsplus_dir)
           continue # check if there is more
 	fi
@@ -40,3 +42,7 @@ do
     break # out of while loop
   done
 done
+
+if test ! -z $2
+then echo $removed
+fi

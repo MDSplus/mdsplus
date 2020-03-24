@@ -1,16 +1,11 @@
 #ifndef NUMERIC_CAST_HPP
 #define NUMERIC_CAST_HPP
 
+#include <mdsplus/mdsconfig.h>
 
-//#include <math.h>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
-#ifdef _MSC_VER
-#define UNUSED_ARGUMENT
-#else
-#define UNUSED_ARGUMENT __attribute__ ((unused))
-#endif
 
 #include "mdsplus/Traits.hpp"
 
@@ -97,7 +92,7 @@ struct numeric_cast_min_rule {
 template < typename Target, typename Source, typename EnableIf = void >
 struct numeric_cast_precision_rule {
     typedef numeric_cast_trait<Target,Source> trait;
-  static inline void apply(Source value UNUSED_ARGUMENT) {
+  static inline void apply(Source value __attribute__ ((unused))) {
     //        if( trait::is_coercion ) {
     //            if( value > (Source)(1<<numeric_limits<Target>::digits) )
     //                throw(std::range_error("scalar loss of precision for digit overflow") );

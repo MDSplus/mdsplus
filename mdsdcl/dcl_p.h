@@ -86,4 +86,14 @@ extern int mdsdcl_do_help(const char *command, char **error, char **output);
 extern int mdsdclDeltatimeToSeconds(const char *deltatime);
 extern int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
 		      char **output_out, char *(*getline) (), void *getlineinfo);
+
+typedef struct {
+  const char *GIT_TAG;
+  const char *GIT_BRANCH;
+  const char *GIT_REMOTE;
+  const char *GIT_REMOTE_URL;
+  const char *GIT_COMMIT;
+  const char *GIT_SRCDIR;
+} MDSplusGitVersionInfo;
+
 #endif

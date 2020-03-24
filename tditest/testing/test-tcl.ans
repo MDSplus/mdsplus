@@ -6,7 +6,7 @@ mdsdcl: --> failed on line 'abort server gub'
 Tcl('set command tcl')
 1
 Tcl('set tree main')
-265388041
+265389633
 Tcl('dir')
 
 \MAIN::TOP
@@ -44,53 +44,53 @@ Tag listing for *sub*::*
 Total of 6 tags
 1
 Tcl('set default .subtree')
-265388041
+265389633
 Tcl('set def \\main::top')
-265388041
+265389633
 Tcl('dir A*/FULL')
 
 Total of 0 nodes.
 1
 Tcl('close')
-265388041
+265389633
 Tcl('edit/new main/shot=1')
-265388041
+265389633
 Tcl('add node any/usage=any')
-265388041
+265389633
 Tcl('add node .child/usage=structure')
-265388041
+265389633
 Tcl('add node action/usage=action')
-265388041
+265389633
 Tcl('add node device/usage=device')
-265388041
+265389633
 Tcl('add node dispatch/usage=dispatch')
-265388041
+265389633
 Tcl('add node numeric/usage=numeric')
-265388041
+265389633
 Tcl('add node signal/usage=signal')
-265388041
+265389633
 Tcl('add node task/usage=task')
-265388041
+265389633
 Tcl('add node text/usage=text')
-265388041
+265389633
 Tcl('add node window/usage=window')
-265388041
+265389633
 Tcl('add node axis/usage=axis')
-265388041
+265389633
 Tcl('add node .subtree/usage=subtree')
-265388041
+265389633
 Tcl('add node comp_data/usage=compound_data')
-265388041
+265389633
 Tcl('add tag any any_tag1')
-265388041
+265389633
 Tcl('add tag .child child_tag')
-265388041
+265389633
 Tcl('add tag any any_tag2')
-265388041
+265389633
 Tcl('add tag any any_tag3')
-265388041
+265389633
 Tcl('put text """This is a test"""')
-265388041
+265389633
 Tcl('set attr text/name=att1 42')
 265389633
 Tcl('set attr signal/name=att1 100')
@@ -113,13 +113,13 @@ Tcl('show attr signal/name=att1')
 100
 1
 Tcl('write')
-265388041
+265389633
 Tcl('close')
-265388041
+265389633
 Tcl('edit main/shot=1')
-265388041
+265389633
 Tcl('close')
-265388041
+265389633
 Tcl('set tree main/shot=1')
 265388067
 Tcl('dir ***')
@@ -135,7 +135,7 @@ Tcl('dir ***')
 Total of 13 nodes.
 1
 Tcl('close')
-265388041
+265389633
 Tcl('set tree main/shot=1')
 265388067
 Tcl('create pulse 2')
@@ -159,22 +159,22 @@ Tcl('set tree main/shot=1')
 Tcl('delete pulse 2')
 265389633
 Tcl('close')
-265388041
+265389633
 Tcl('clean main/shot=1/override')
-265388041
+265389633
 Tcl('compress main/shot=1')
-265388041
+265389633
 Tcl('compress main/shot=1/override')
-265388041
+265389633
 Tcl('set tree main/shot=1')
 265388067
 Tcl('defined server gub')
 mdsdcl: No such command
 134349626
 Tcl('close')
-265388041
+265389633
 Tcl('edit main/shot=1')
-265388041
+265389633
 Tcl('delete node axis')
 1
 Tcl('dir ***')
@@ -201,7 +201,7 @@ Tag listing for *::*
 Total of 5 tags
 1
 Tcl('remove tag any_tag2')
-265388041
+265389633
 Tcl('dir/tag')
 
 Tag listing for *::*
@@ -244,7 +244,7 @@ Tcl('show default')
 \MAIN::TOP
 1
 Tcl('set default \\main::top')
-265388041
+265389633
 Tcl('show default')
 \MAIN::TOP
 1
@@ -252,7 +252,7 @@ Tcl('show db')
 000  MAIN          shot: 1 [\MAIN::TOP] open for edit,modified
 001  MAIN          shot: 2 [\MAIN::TOP]   
 
-265388041
+265389633
 Tcl('show server gub')
 Checking server: gub
 Error connecting to server
@@ -262,7 +262,7 @@ Node summary:
   Allocated = 12/14
   Free      = 0/14
   Other     = 2/14
-265388041
+265389633
 Tcl('quit')
 134348817
 Tcl('close')
@@ -273,11 +273,11 @@ use CLOSE/CONFIRM to discard changes.
 mdsdcl: --> failed on line 'close          '
 265388378
 Tcl('set tree main')
-265388041
+265389633
 Tcl('delete pulse 1')
 265389633
 _status=Tcl(['set tree main','dir','close'],_out,_err)
-265388041
+265389633
 write(*,"output=",_out,"error=",_err),_status 
 output=
                                                                                                                        
@@ -294,4 +294,26 @@ Total of 6 nodes.
                                                                                                                        
 error=
 
-265388041
+265389633
+tcl('# comment shebang')
+1
+tcl(' ! comment')
+1
+tcl('@abc ! file')
+Error: Unable to open either abc.tcl or abc
+134348809
+tcl('  @abc ! w file')
+Error: Unable to open either abc.tcl or abc
+134348809
+tcl('a/b=1/c ! cmd qual')
+mdsdcl: No such command
+134349626
+tcl(' a/b /c p=1 p=2 ! w cmd')
+mdsdcl: No such command
+134349626
+tcl('a/b/c = (1) p=1 ! cmd list')
+mdsdcl: No such command
+134349626
+tcl('a/b=(1, 2,3 ,  4 )/c ! w list')
+mdsdcl: No such command
+134349626

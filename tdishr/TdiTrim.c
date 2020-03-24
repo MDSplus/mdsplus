@@ -27,7 +27,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1991
 */
-#include <STATICdef.h>
 #include "tdinelements.h"
 #include "tdirefcat.h"
 #include "tdireffunction.h"
@@ -49,7 +48,7 @@ extern int TdiMasterData();
 int Tdi1Trim(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd sig[1], uni[1], dat[1];
+  struct descriptor_xd sig[1] = {EMPTY_XD}, uni[1] = {EMPTY_XD}, dat[1] = {EMPTY_XD};
   struct TdiCatStruct cats[2];
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int j, cmode = -1;
@@ -103,7 +102,7 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
   int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  static const dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
   if (STATUS_OK && ind < (int)TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;
@@ -123,10 +122,10 @@ int Tdi3OpcodeBuiltin(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 */
 int Tdi3OpcodeString(struct descriptor *in_ptr, struct descriptor_xd *out_ptr)
 {
-  STATIC_CONSTANT DESCRIPTOR(str1, "OPC" "$");
+  static const DESCRIPTOR(str1, "OPC" "$");
   int ind = TdiFUNCTION_MAX;
   INIT_STATUS;
-  STATIC_CONSTANT dtype_t dtype = DTYPE_T;
+  static const dtype_t dtype = DTYPE_T;
   status = TdiGetLong(in_ptr, &ind);
   if (STATUS_OK && ind < TdiFUNCTION_MAX) {
     char *name_ptr = TdiRefFunction[ind].name;

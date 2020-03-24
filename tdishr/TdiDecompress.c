@@ -36,7 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 	Ken Klare, LANL P-4     (c)1989,1990,1992
 */
-#include <STATICdef.h>
 #include <stdlib.h>
 #include "tdirefstandard.h"
 #include "tdirefcat.h"
@@ -53,7 +52,7 @@ extern int TdiMasterData();
 int Tdi1Decompress(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  struct descriptor_xd sig[4], uni[4], dat[4];
+  struct descriptor_xd sig[4] = {EMPTY_XD}, uni[4] = {EMPTY_XD}, dat[4] = {EMPTY_XD};
   struct TdiCatStruct cats[5];
   int cmode = -1, j, (*symbol) ();
   int bit = 0;

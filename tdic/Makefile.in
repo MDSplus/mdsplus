@@ -5,8 +5,6 @@ builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
-@MINGW_TRUE@ DEF=${srcdir}/TdiShrExt.def
-
 LIBS=@LIBS@ -L@MAKESHLIBDIR@ -lMdsIpShr -lTdiShr -lMdsShr -lTreeShr
 TDIC_LIBS= $(LIBS) -ldl @LIBREADLINE@
 
@@ -14,7 +12,6 @@ SOURCES = \
         TdiShrExt.c
 
 OBJECTS = $(SOURCES:.c=.o)
-EXPORTS = TdiShrExt.exports
 
 all : @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEBINDIR@ @MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ @MAKELIBDIR@@LIBPRE@TdiShrExt.a @MAKEBINDIR@tdic$(EXE)
 
@@ -34,7 +31,7 @@ install: $(libdir) $(bindir)
 	fi;
 	$(INSTALL) -m 755  @MAKEBINDIR@tdic$(EXE) $(bindir)
 
-@MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS) $(DEF) @EXPORTS_FILE@
+@MAKESHLIBDIR@@LIBPRE@TdiShrExt@SHARETYPE@ : $(OBJECTS)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $(OBJECTS) $(LIBS)
 
 @MAKELIBDIR@@LIBPRE@TdiShrExt.a : $(OBJECTS)
@@ -44,6 +41,3 @@ install: $(libdir) $(bindir)
 @MINGW_TRUE@@MAKEBINDIR@tdic$(EXE): tdic.c icon.o
 @MINGW_FALSE@@MAKEBINDIR@tdic$(EXE): tdic.c
 	$(LINK.c) $(OUTPUT_OPTION) $^ $(TDIC_LIBS)
-
-tdishrext.exports: tdishrext.def
-	$(SED) -e /LIBRARY/\;/\;/d $< > $@

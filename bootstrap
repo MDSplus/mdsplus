@@ -1,16 +1,31 @@
 #! /bin/sh
 cd $(dirname $0)
-if !(automake --version | grep automake | grep 1.15)
+
+unset abort
+testprog() {
+# $1 prog, $2 package
+if ! which $1 >/dev/null 2>&1
 then
-warning() {
-echo 'WARNING:'
-echo 'WARNING: If you intend to issue a pull request on github.com,'
-echo 'WARNING: please use "git status" or "git diff" to check for changes.'
-echo 'WARNING: If you experience unintended changes, you are using a different version of automake,'
-echo 'WARNING: In this case, please use "deploy/build.sh --os=bootstrap" instead.'
-echo 'WARNING:'
+	export abort=$?
+	echo "Please install package providing '$1' in order to bootstrap"
+	shift
+	echo "The required package may be named $@."
+	echo "We recommend using docker if available:"
+	echo "  deploy/build.sh --os=bootstrap"
+fi
 }
-trap warning EXIT
+
+testprog aclocal	automake
+testprog autoheader	autoconf
+testprog automake	automake
+testprog autoconf	autoconf
+testprog python		python2 or python3
+testprog bison		bison
+testprog flex		flex
+
+if [ ! -z $abort ]
+then
+	exit $abort
 fi
 
 aclocal -I ./m4
@@ -22,3 +37,8 @@ autoheader
 automake --add-missing
 
 autoconf
+
+python deploy/gen_messages.py
+
+deploy/yylex.gen tdishr
+deploy/yylex.gen mdsdcl

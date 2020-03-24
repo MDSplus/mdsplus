@@ -46,11 +46,11 @@ extern "C" {
 	char *MdsGetMsg(int sts);
 
 	void *convertToScalarDsc(int clazz, int dtype, int length, char *ptr);
-	void *evaluateData(void *dscPtr, int isEvaluate, int *retStatus);
+	void *evaluateData(void *dscPtr, void *ctx, int isEvaluate, int *retStatus);
 	void freeDsc(void *dscPtr);
 	void *convertFromDsc(void *dscPtr);
-	char *decompileDsc(void *dscPtr);
-	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, int *retStatus);
+	char *decompileDsc(void *ctx, void *dscPtr);
+	void *compileFromExprWithArgs(const char *expr, int nArgs, void *args, void *tree, void *ctx, int *retStatus);
 	void *convertToArrayDsc(int clazz, int dtype, int length, int l_length, int nDims, int *dims, void *ptr);
 	void *convertToCompoundDsc(int clazz, int dtype, int length, void *ptr, int ndescs, void **descs);
 	void *convertToApdDsc(int type, int ndescs, void **ptr);
@@ -296,7 +296,20 @@ Data *Data::data()
 {
 	void *dscPtr = convertToDsc();
 	int retStatus;
-	void *evalPtr = evaluateData(dscPtr, 0, &retStatus);
+	void *evalPtr = evaluateData(dscPtr, NULL, 0, &retStatus);
+	if(!(retStatus & 1))
+		throw MdsException(retStatus);
+
+	Data *retData = (Data *)convertFromDsc(evalPtr);
+	freeDsc(dscPtr);
+	freeDsc(evalPtr);
+	return retData;
+}
+Data *Data::data(Tree *tree)
+{
+	void *dscPtr = convertToDsc();
+	int retStatus;
+	void *evalPtr = evaluateData(dscPtr, (tree)?tree->getCtx():NULL, 0, &retStatus);
 	if(!(retStatus & 1))
 		throw MdsException(retStatus);
 
@@ -310,8 +323,21 @@ Data *Data::evaluate()
 {
 	void *dscPtr = convertToDsc();
 	int retStatus;
-	void *evalPtr = evaluateData(dscPtr, 1, &retStatus);
-    if( !(retStatus & 1) )
+	void *evalPtr = evaluateData(dscPtr, NULL, 1, &retStatus);
+	if( !(retStatus & 1) )
+		throw MdsException(retStatus);
+	Data *retData = (Data *)convertFromDsc(evalPtr);
+	freeDsc(dscPtr);
+	freeDsc(evalPtr);
+	return retData;
+}
+
+Data *Data::evaluate(Tree *tree)
+{
+	void *dscPtr = convertToDsc();
+	int retStatus;
+	void *evalPtr = evaluateData(dscPtr, (tree)?tree->getCtx():NULL, 1, &retStatus);
+	if( !(retStatus & 1) )
 		throw MdsException(retStatus);
 	Data *retData = (Data *)convertFromDsc(evalPtr);
 	freeDsc(dscPtr);
@@ -322,7 +348,7 @@ Data *Data::evaluate()
 char *Data::decompile()
 {
 	void *dscPtr = convertToDsc();
-	char * retStr = decompileDsc(dscPtr);
+	char * retStr = decompileDsc(dscPtr, 0);
 	freeDsc(dscPtr);
 	//Get rid of malloc'd stuff
 	char *retDec = new char[strlen(retStr)+1];
@@ -651,7 +677,7 @@ double Data::getDouble()
 	return scalar.ptr->getDouble();
 }
 
-Data * Data::getDimensionAt(int dimIdx UNUSED_ARGUMENT) {
+Data * Data::getDimensionAt(int dimIdx __attribute__ ((unused))) {
 	return executeWithArgs("DIM_OF($)", 1, this);
 }
 
@@ -695,15 +721,15 @@ Data * MDSplus::compileWithArgs(const char *expr, int nArgs ...) {
     Data * res;
     try {
 	AutoPointer<Tree> actTree(getActiveTree());
-	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree.ptr, &status);
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], actTree, (actTree)?actTree->getCtx():NULL, &status);
     } catch(MdsException &exc)
     {
-	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], 0, &status);
+	res = (Data *)compileFromExprWithArgs(expr, nArgs, &args[0], NULL, NULL, &status);
     }
 
-	if(!(status & 1))
-		throw MdsException(status);
-	return res;
+    if(!(status & 1))
+	    throw MdsException(status);
+    return res;
 }
 
 ///
@@ -724,25 +750,23 @@ Data * MDSplus::compile(const char *expr, Tree *tree) {
 /// \return new instanced Data representing compiled script
 ///
 Data * MDSplus::compileWithArgs(const char *expr, Tree *tree, int nArgs ...) {
-		int i;
-		void *args[MAX_ARGS];
+	int i;
+	void *args[MAX_ARGS];
 
-		va_list v;
-		va_start(v, nArgs);
-		for(i = 0; i < nArgs; i++)
-		{
-			Data *currArg = va_arg(v, Data *);
-			args[i] = currArg->convertToDsc();
-		}
-	if(tree)
-	    setActiveTree(tree);
-		int status;
-		Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, &status);
-		for(i = 0; i < nArgs; i++)
-		    freeDsc(args[i]);
-		if(!(status & 1))
-			throw MdsException(status);
-		return res;
+	va_list v;
+	va_start(v, nArgs);
+	for(i = 0; i < nArgs; i++)
+	{
+		Data *currArg = va_arg(v, Data *);
+		args[i] = currArg->convertToDsc();
+	}
+	int status;
+	Data *res = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, tree, (tree)?tree->getCtx():NULL, &status);
+	for(i = 0; i < nArgs; i++)
+	    freeDsc(args[i]);
+	if(!(status & 1))
+		throw MdsException(status);
+	return res;
 }
 
 
@@ -766,7 +790,7 @@ Data * MDSplus::executeWithArgs(const char *expr, int nArgs ...) {
 		try {
 			actTree = getActiveTree();
 		}catch(MdsException const & exc){actTree = 0;}
-		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, &status);
+		Data *compData = (Data *)compileFromExprWithArgs(expr, nArgs, (void *)args, actTree, (actTree)?actTree->getCtx():NULL, &status);
 		if(!(status & 1))
 			throw MdsException(status);
 		Data *evalData = compData->data();
@@ -793,10 +817,8 @@ Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 			Data *currArg = va_arg(v, Data *);
 			args[i] = currArg->convertToDsc();
 		}
-		if(tree)
-			setActiveTree(tree);
 		int status;
-		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, &status);
+		Data *compData = (Data *)compileFromExprWithArgs((char *)expr, nArgs, (void *)args, tree, (tree)?tree->getCtx():NULL, &status);
 		if(!(status & 1))
 			throw MdsException(status);
 		if(!compData)
@@ -809,35 +831,6 @@ Data * MDSplus::executeWithArgs(const char *expr, Tree *tree, int nArgs ...) {
 		return evalData;
 }
 
-/*
-Data * MDSplus::executeWithArgs(const char *expr, Data **dataArgs, int nArgs)
-	{
-		void *args[MAX_ARGS];
-		int i;
-		int actArgs = (nArgs < MAX_ARGS)?nArgs:MAX_ARGS;
-		for(i = 0; i < actArgs; i++)
-			args[nArgs++] = dataArgs[i]->convertToDsc();
-
-		int status;
-		Data *compData = (Data *)compileFromExprWithArgs(expr, actArgs, (void *)args, 0, &status);
-		if(!(status & 1))
-			throw MdsException(status);
-		if(!compData)
-		{
-			char *msg = new char[20 + strlen(expr)];
-			sprintf(msg, "Cannot compile %s", expr);
-			MdsException *exc = new MdsException(msg);
-			delete [] msg;
-			throw exc;
-		}
-		Data *evalData = compData->data();
-		deleteData (compData);
-		for(i = 0; i < actArgs; i++)
-		    freeDsc(args[i]);
-
-		return evalData;
-}
-*/
 
 //Complete Conversion to Dsc by condsidering help, units and error
 
@@ -927,8 +920,16 @@ Data * Array::getElementAt(int *getDims, int getNumDims)
 
 	if(getNumDims == nDims) //return a scalar
 		return (Data *)createScalarData(dtype, length, ptr+(startIdx * length), 0,0,0,0, 0);
+	
+	int *revDims = new int[nDims - getNumDims+1];
+	//Dimensions must be reversed in order to feed them to createArrayData
+	for(int i = 0; i < nDims - getNumDims+1; i++)
+		revDims[i] = dims[nDims-i-1];
+	
 	//Otherwise return an array
-	return (Data *)createArrayData(dtype, length, nDims - getNumDims, &dims[getNumDims], ptr+(startIdx * length), 0,0,0,0);
+	Data *retData =  (Data *)createArrayData(dtype, length, nDims - getNumDims, revDims, ptr+(startIdx * length), 0,0,0,0);
+	delete[] revDims;
+	return retData;
 }
 
 
@@ -948,9 +949,11 @@ Array *Array::getSubArray(int startDim, int nSamples)
 	//Compute startIdx of selected data portion
 	int startIdx = startDim * rowItems;
 	int *newDims = new int[nDims];
+
+	//Dimension must be reverted since createArrayData uses the array DESCRIPTOR_A dimension order
 	for(i = 1; i < nDims; i++)
-		newDims[i] = dims[i];
-	newDims[0] = nSamples;
+		newDims[nDims - i-1] = dims[i];
+	newDims[nDims - 1] = nSamples;
 
 	Array *retArr = (Array *)createArrayData(dtype, length, nDims, newDims, ptr+(startIdx * length), 0,0,0,0);
 	delete [] newDims;
@@ -1347,6 +1350,11 @@ void *TreePath::convertToDsc()
 void *Compound::convertToDsc()
 {
 	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, sizeof(short), (void *)&opcode, descs.size(), (void **)(&descs[0])));
+}
+
+void *Signal::convertToDsc()
+{
+	return completeConversionToDsc(convertToCompoundDsc(clazz, dtype, 0, (void *)&opcode, descs.size(), (void **)(&descs[0])));
 }
 
 void *Apd::convertToDsc()

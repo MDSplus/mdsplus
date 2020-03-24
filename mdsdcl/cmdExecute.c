@@ -23,30 +23,25 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <pthread_port.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include <assert.h>
 #include <ctype.h>
-#include <libroutines.h>
-
 #include <libxml/tree.h>
 #include <libxml/parser.h>
 #include <libxml/xpath.h>
 #include <libxml/xpathInternals.h>
+
+#include <libroutines.h>
 #include <mdsshr.h>
+#include <treeshr.h>
 #include <dcl.h>
 #include <mdsdcl_messages.h>
+
 #include "dcl_p.h"
-#include "mdsdclthreadsafe.h"
-#include <treeshr.h>
-
-
-dclDocListPtr mdsdcl_getdocs(){
-  GET_THREADSTATIC_P;
-  return DCLDOCS;
-}
+#include "mdsdclthreadstatic.h"
 
 /*! Free the memory associated with a parameter definition structure.
  \param p [in,out] the address of a pointer to  a dclParameter struct.
@@ -996,26 +991,27 @@ int processCommand(dclDocListPtr docList, xmlNodePtr verbNode_in, dclCommandPtr 
 static void mdsdclSetupCommands(xmlDocPtr doc)
 {
   /* Set prompt and def_file if defined in top level module key */
-
   struct _xmlAttr *p;
   if (doc->children && doc->children) {
+    DCLTHREADSTATIC_INIT;
     for (p = doc->children->properties; p; p = p->next) {
-      if ((strcasecmp((const char *)p->name, "prompt") == 0) && p->children && p->children->content)
-	mdsdclSetPrompt((const char *)p->children->content);
-      else if ((strcasecmp((const char *)p->name, "def_file") == 0) &&
-	       p->children && p->children->content)
-	mdsdclSetDefFile((const char *)p->children->content);
+      if ((strcasecmp((const char *)p->name, "prompt") == 0) &&
+		p->children && p->children->content) {
+	free(DCL_PROMPT);
+	DCL_PROMPT = strdup((char *)p->children->content);
+      } else if ((strcasecmp((const char *)p->name, "def_file") == 0) &&
+		p->children && p->children->content) {
+	free(DCL_DEFFILE);
+        if (p->children->content[0] == '*')
+          DCL_DEFFILE = strdup((char *)p->children->content + 1);
+        else
+          DCL_DEFFILE = strdup((char *)p->children->content);
+      }
     }
   }
 }
 
 
-
-/* Static shared list of parsed docs */
-static dclDocListPtr SdclDocs = NULL;
-STATIC_THREADSAFE pthread_mutex_t SdclDocs_lock   = PTHREAD_MUTEX_INITIALIZER;
-#define   LOCK_SDCLDOCS pthread_mutex_lock  (&SdclDocs_lock);
-#define UNLOCK_SDCLDOCS pthread_mutex_unlock(&SdclDocs_lock);
 
 /*! Add a command table by parsing an xml command definition file.
     The file is located in a directory specified by an environment
@@ -1029,6 +1025,13 @@ STATIC_THREADSAFE pthread_mutex_t SdclDocs_lock   = PTHREAD_MUTEX_INITIALIZER;
 inline static void xmlInitParser_supp() {
   // so it can targeted for valgrind suppression
   xmlInitParser();
+}
+static inline void mdsdcl_alloc_docdef(dclDocListPtr doc_l, DCLTHREADSTATIC_ARG){
+  dclDocListPtr doc_p = malloc(sizeof(dclDocList));
+  doc_p->name = doc_l->name;
+  doc_p->doc  = doc_l->doc;
+  doc_p->next = DCL_DOCS;
+  DCL_DOCS = doc_p;
 }
 EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 {
@@ -1061,28 +1064,31 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
 
   /* See if that command table has already been loaded in the private list. If it has, pop that table
      to the top of the stack and return */
-  GET_THREADSTATIC_P;
-  for (doc_l = DCLDOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
+  DCLTHREADSTATIC_INIT;
+  for (doc_l = DCL_DOCS, doc_p = 0; doc_l; doc_p = doc_l, doc_l = doc_l->next) {
     if (strcmp(doc_l->name, commands) == 0) {
       if (doc_p) {
 	doc_p->next = doc_l->next;
-	doc_l->next = DCLDOCS;
-	DCLDOCS = doc_l;
+	doc_l->next = DCL_DOCS;
+	DCL_DOCS = doc_l;
       }
       free(commands);
-      mdsdclSetupCommands(DCLDOCS->doc);
+      mdsdclSetupCommands(DCL_DOCS->doc);
       return 0;
     }
   }
   /* See if that command table has already been loaded in the static list. If it has, add that table
      to the top of the private stack and return */
-  LOCK_SDCLDOCS;
-  for (doc_l = SdclDocs; doc_l ; doc_l = doc_l->next) {
+  /* Static shared list of parsed docs */
+  static dclDocListPtr dcl_docs_cache = NULL;
+  static pthread_mutex_t lock   = PTHREAD_MUTEX_INITIALIZER;
+  pthread_mutex_lock(&lock);
+  for (doc_l = dcl_docs_cache; doc_l ; doc_l = doc_l->next) {
     if (strcmp(doc_l->name, commands) == 0) {
-      UNLOCK_SDCLDOCS; // no need to hold it as tail is immutable
-      mdsdclAllocDocDef(doc_l);
+      pthread_mutex_unlock(&lock);
+      mdsdcl_alloc_docdef(doc_l, DCLTHREADSTATIC_VAR);
       free(commands);
-      mdsdclSetupCommands(DCLDOCS->doc);
+      mdsdclSetupCommands(DCL_DOCS->doc);
       return 0;
     }
   }
@@ -1112,7 +1118,7 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
   /* If cannot find the file or parse it, set the error string */
 
   if (doc == 0) {
-    UNLOCK_SDCLDOCS;
+    pthread_mutex_unlock(&lock);
     char *errstr = malloc(strlen(filename) + 50);
     sprintf(errstr, " Error: unable to parse %s\n", filename);
     *error = errstr;
@@ -1123,12 +1129,12 @@ EXPORT int mdsdclAddCommands(const char *name_in, char **error)
     doc_l = malloc(sizeof(dclDocList));
     doc_l->name = commands;
     doc_l->doc = doc;
-    doc_l->next = SdclDocs;
-    SdclDocs = doc_l;
-    UNLOCK_SDCLDOCS;
-    mdsdclAllocDocDef(doc_l);
+    doc_l->next = dcl_docs_cache;
+    dcl_docs_cache = doc_l;
+    pthread_mutex_unlock(&lock);
+    mdsdcl_alloc_docdef(doc_l, DCLTHREADSTATIC_VAR);
     status = 0;
-    mdsdclSetupCommands(DCLDOCS->doc);
+    mdsdclSetupCommands(DCL_DOCS->doc);
   }
   free(filename);
   return status;
@@ -1190,8 +1196,8 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
   char *output = 0;
   dclDocListPtr doc_l;
   cmd->image=0;
-  GET_THREADSTATIC_P;
-  if (!DCLDOCS)
+  DCLTHREADSTATIC_INIT;
+  if (!DCL_DOCS)
     mdsdclAddCommands("mdsdcl_commands", &error);
   if (mdsdclVerify() && strlen(cmd->command_line) > 0) {
     char *prompt = mdsdclGetPrompt();
@@ -1207,7 +1213,7 @@ int cmdExecute(dclCommandPtr cmd, char **prompt_out, char **error_out,
     }
     free(prompt);
   }
-  for (doc_l = DCLDOCS; doc_l != NULL &&
+  for (doc_l = DCL_DOCS; doc_l != NULL &&
        invalid_command(status) && (status != MdsdclPROMPT_MORE); doc_l = doc_l->next) {
     dclCommandPtr cmdDef = memset(malloc(sizeof(dclCommand)), 0, sizeof(dclCommand));
     cmdDef->verb = strdup(cmd->verb);
@@ -1371,10 +1377,13 @@ EXPORT int cli_get_value(void *ctx, const char *name, char **value)
   return ans;
 }
 
-int mdsdcl_get_input_nosymbols(char *prompt __attribute__ ((unused)),
-			       char **input __attribute__ ((unused)))
-{
-  return 1;
+EXPORT char *mdsdclGetPrompt(){
+  char *ans;
+  DCLTHREADSTATIC_INIT;
+  if (!DCL_PROMPT)
+    DCL_PROMPT = strdup("Command> ");
+  ans = strdup(DCL_PROMPT);
+  return ans;
 }
 
 static void (*MDSDCL_OUTPUT_RTN) (char *output) = 0;

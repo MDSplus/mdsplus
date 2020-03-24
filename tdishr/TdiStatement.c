@@ -30,13 +30,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Ken Klare, LANL P-24    (c)1989,1990,1995
 */
 
-#include <STATICdef.h>
 #include "tdirefstandard.h"
 #include <strroutines.h>
 #include <tdishr_messages.h>
 #include <stdlib.h>
 #include <mdsshr.h>
-#include "tdithreadsafe.h"
+#include "tdithreadstatic.h"
 
 
 extern int TdiIntrinsic();
@@ -46,7 +45,7 @@ extern int TdiGe();
 extern int TdiLe();
 extern int TdiEq();
 
-STATIC_ROUTINE int goto1(int, struct descriptor *[], struct descriptor_xd *);
+static int goto1(int, struct descriptor *[], struct descriptor_xd *);
 
 /*-----------------------------------------------------------------
 	ABORT processing.
@@ -204,18 +203,14 @@ int Tdi1If(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor
 int Tdi1IfError(opcode_t opcode __attribute__ ((unused)), int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  int keep, j;
-  GET_TDITHREADSTATIC_P;
-  keep = TdiON_ERROR;
-  TdiON_ERROR = 0;
+  int j;
   for (j = 0; j < narg; ++j) {
     status = TdiEvaluate(list[j], out_ptr MDS_END_ARG);
     if STATUS_OK
       break;
   }
-  TdiON_ERROR = keep;
-  if (j >= narg)
-    status = MdsFree1Dx(out_ptr, NULL);
+  if STATUS_NOT_OK
+    MdsFree1Dx(out_ptr, NULL);
   return status;
 }
 
@@ -283,7 +278,7 @@ int Tdi1Return(opcode_t opcode __attribute__ ((unused)), int narg, struct descri
 	WHERE (exp) stmt ELSEWHERE stmt
 	{stmt ...}
 */
-STATIC_ROUTINE int goto1(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
+static int goto1(int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   int status = SsINTERNAL;
   int j = 0, off, opcode;
@@ -351,7 +346,7 @@ int Tdi1Statement(opcode_t opcode __attribute__ ((unused)), int narg, struct des
 	        FOR IF ELSE SWITCH WHERE ELSEWHERE or WHILE.
 	NEED to handle vector cases and stepped ranges, NEED IS_IN.
 */
-STATIC_ROUTINE int switch1(struct descriptor *ptest,
+static int switch1(struct descriptor *ptest,
 			   int *jdefault,
 			   struct descriptor_function ***pdefault,
 			   int narg,

@@ -1,0 +1,31 @@
+#!/bin/sh
+# bison -V	# bison (GNU Bison) 3.0.4
+# flex -V	# flex 2.6.1
+
+YACC=${YACC:=bison}
+YFLAGS=--verbose
+
+LEX=${LEX:=flex}
+LFLAGS=-p
+
+if ! which $YACC >/dev/null 2>&1
+then
+	echo "YACC=$YACC - program not found; not installed?"
+	exit 127
+else
+	$YACC -V | head -n 1
+fi
+
+if ! which $LEX >/dev/null 2>&1
+then
+	echo "LEX=$LEX - program not found; not installed?"
+	exit 127
+else
+	$LEX -V | head -n 1
+fi
+
+OUTFILES="$(echo $(cat $1/yylex/outfiles))"
+ycmd="for y in $1/yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
+lcmd="for l in $1/yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
+scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
+eval "$ycmd ; $lcmd && $scmd"

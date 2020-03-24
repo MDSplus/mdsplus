@@ -453,7 +453,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
        **/
 
       if (status & 1) {
-	int ansdescr;
+	int ansdescr = 0;
 	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;
@@ -679,7 +679,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
        **/
 
       if (status & 1) {
-	int ansdescr;
+	int ansdescr = 0;
 	int dims[MAX_DIMS];
 	int null = 0;
 	int dtype = arg->dtype;

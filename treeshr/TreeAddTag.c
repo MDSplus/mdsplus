@@ -99,7 +99,7 @@ First we make sure tree is open for editting and
 the tag name specified does not already exist.
 ************************************************/
 
-  status = IS_OPEN_FOR_EDIT(dblist) ? TreeNORMAL : TreeNOEDIT;
+  status = IS_OPEN_FOR_EDIT(dblist) ? TreeSUCCESS : TreeNOEDIT;
   if (!(status & 1))
     return status;
 
@@ -260,6 +260,6 @@ the tag name specified does not already exist.
   node_ptr->tag_link = swapint32(&tags);
   dblist->tree_info->header->tags = tags;
   dblist->modified = 1;
-  return TreeNORMAL;
+  return TreeSUCCESS;
 
 }

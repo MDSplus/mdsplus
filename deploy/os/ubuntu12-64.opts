@@ -1,1 +1,1 @@
---platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/docker:ubuntu12-64 --distname=Ubuntu12 --arch=amd64
+--platform=debian --valgrind=memcheck,helgrind --dockerimage=mdsplus/builder:ubuntu12-64 --distname=Ubuntu12 --arch=amd64

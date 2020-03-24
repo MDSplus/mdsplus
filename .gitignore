@@ -103,3 +103,15 @@ testing/*Devices/
 
 # file created by release build trigger.sh script
 trigger.opts
+
+eclipse/
+target/
+.project
+.settings/
+.classpath
+
+# deploy/trigger.sh output
+trigger.opts
+
+# yacc verbose
+*.output

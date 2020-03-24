@@ -70,7 +70,15 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(exattr['ATT3'],'this is plasma current')
 
     def openTrees(self):
-        with Tree('pytree',self.shot+1,'new'): pass
+        with Tree('pytree',self.shot+1,'new') as pytree:
+            a = pytree.addNode('A','TEXT')
+            pytree.write()
+        pytree.open()
+        a.record = 'a'*64
+        self.assertEqual(pytree.getDatafileSize(),84)
+        pytree.close()
+        with Tree('pytree',self.shot+1,'new') as pytree:
+            self.assertEqual(pytree.getDatafileSize(),0) # new should clear datafile (O_TRUNC)
         filepath = ('%s/pytree_%03d.tree'%(self.tmpdir,self.shot+1)).replace(os.sep,'/')
         self.assertEqual(Tree.getFileName('pytree',self.shot+1), filepath)
         pytree = Tree('pytree',self.shot+1)
@@ -363,8 +371,28 @@ class Tests(_UnitTest.TreeTests):
             pytree.SIG_CMPRS.record=node.record
             self.assertTrue((pytree.SIG_CMPRS.record == node.record).all(),
                              msg="Error writing compressed signal%s"%node)
+    def mdsrecords(self):
+        with Tree('pytree',self.shot+11,'new') as pytree:
+            node = pytree.addDevice('DEV', 'TestDevice')
+            pytree.write()
+        pytree.normal()
+        cls = node.__class__
+        self.assertFalse(cls._init1_done.cache_on_set)
+        self.assertTrue(cls._init2_done.cache_on_set)
+        self.assertEqual(node._manual_done, -1)
+        self.assertEqual(node.done, 0)
+        node._manual_done = 123.456
+        self.assertEqual(node._manual_done, 123.456)
+        self.assertEqual(node.done, 123)
+        self.assertEqual(float(node.manual_done.getData()), 123.456)
+        self.assertEqual(node._manual_done.__class__, float)
+        self.assertEqual(node.cache, 1)
+        self.assertEqual(node.cache, 1)
+        del(node.cache)
+        self.assertEqual(node.cache, 2)
+
     @staticmethod
     def getTests():
-        return ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getXYSignal','getCompression']
+        return ['extAttr','openTrees','getNode','setDefault','nodeLinkage','nciInfo','getData','getXYSignal','getCompression','mdsrecords']
 
 Tests.main(__name__)

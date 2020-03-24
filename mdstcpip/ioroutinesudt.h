@@ -80,7 +80,13 @@ static int io_listen(int argc, char **argv){
       exit(EXIT_FAILURE);
     }
     char *matchString[] = { "multi" };
-    CheckClient(0, 1, matchString);
+    if (CheckClient(0, 1, matchString) == ACCESS_DENIED)
+#ifdef _WIN32
+  // cannot change user on Windows
+  fprintf(stderr,"WARNING: 'multi' user found hostfile but Windows cannot change user.\n");
+#else
+  exit(EX_NOPERM);
+#endif
     for (rp = result; rp != NULL; rp = rp->ai_next) {
       ssock = udt_socket(rp->ai_family, rp->ai_socktype, rp->ai_protocol);
       if (ssock == INVALID_SOCKET)
