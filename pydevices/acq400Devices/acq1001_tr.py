@@ -136,10 +136,10 @@ chan_combos = [8, 16, 24, 32, 40, 48, 64]
 class_ch_dict = {}
 
 for channel_count in chan_combos:
-    name_str = "ACQ1001_TR_" + str(channel_count)
+    name_str = "ACQ1001_TR_{}".format(str(channel_count))
     class_ch_dict[name_str] = type(name_str, (_ACQ1001_TR,), {"nchan": channel_count})
     assemble(class_ch_dict[name_str])
 
 for key,val in class_ch_dict.items():
-        exec("{}={}".format(key, val))
+        exec("{} = {}".format(key, "val"))
 
