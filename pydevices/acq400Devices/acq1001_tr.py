@@ -132,7 +132,7 @@ def assemble(cls):
         cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
 
 
-chan_combos = [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
+chan_combos = [8, 16, 24, 32, 40, 48, 64]
 class_ch_dict = {}
 
 for channel_count in chan_combos:
@@ -141,5 +141,5 @@ for channel_count in chan_combos:
     assemble(class_ch_dict[name_str])
 
 for key,val in class_ch_dict.items():
-        exec(key + '=val')
+        exec("{}={}".format(key, val))
 
