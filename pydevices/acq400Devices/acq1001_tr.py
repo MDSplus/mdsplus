@@ -37,13 +37,15 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
-class TRANSIENT(MDSplus.Device):
+INPFMT = ':INPUT_%3.3d'
+
+class _ACQ1001_TR(MDSplus.Device):
     """
-    D-Tacq ACQ2106_MGT support.
+    D-Tacq ACQ1001 transient support.
 
     """
 
-    parts=[
+    base_parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
         {'path':':NODE','type':'text','value':'acq1001_329', 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
@@ -55,15 +57,15 @@ class TRANSIENT(MDSplus.Device):
         {'path':':PULL_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',52,None),Method(None,'PULL',head))",'options':('no_write_shot',)},
         ]
 
-    uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
-    nchans = uut.nchan()
-    for i in range(nchans):
-        parts.append({'path':':INPUT_%3.3d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
-                      'valueExpr':'head.setChanScale(%d)' %(i+1,)})
+    # uut = acq400_hapi.Acq400(parts[0]["value"], monitor=False)
+    # nchans = uut.nchan()
+    # for i in range(nchans):
+    #     parts.append({'path':':INPUT_%3.3d'%(i+1,),'type':'signal','options':('no_write_model','write_once',),
+    #                   'valueExpr':'head.setChanScale(%d)' %(i+1,)})
 
-    del i
+    # del i
 
-    debug=None
+    # debug=None
     trig_types=[ 'hard', 'soft', 'automatic']
 
 
@@ -112,17 +114,17 @@ class TRANSIENT(MDSplus.Device):
         print("Finished capture.")
     ARM=arm
 
-
+    # TODO: Change to store.
     def pull(self):
         print("Starting data collection now.")
-        import os
-        import sys
-        import tempfile
+        # import os
+        # import sys
+        # import tempfile
 
         uut = acq400_hapi.Acq400(self.node.data())
         self.chans = []
-
-        for ii in range(self.nchans):
+        nchans = uut.nchan()
+        for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
         channel_data = uut.read_channels()
@@ -131,3 +133,65 @@ class TRANSIENT(MDSplus.Device):
                 ch.putData(channel_data[ic])
 
     PULL=pull
+
+
+
+def assemble(cls):
+    cls.parts = list(_ACQ1001_TR.base_parts)
+    for ch in range(1, cls.nchan+1):
+        cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
+                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+
+
+class ACQ1001_TR_8(_ACQ1001_TR):
+    nchan=8
+assemble(ACQ1001_TR_8)
+
+class ACQ1001_TR_16(_ACQ1001_TR):
+    nchan=16
+assemble(ACQ1001_TR_16)
+
+class ACQ1001_TR_24(_ACQ1001_TR):
+    nchan=24
+assemble(ACQ1001_TR_24)
+
+class ACQ1001_TR_32(_ACQ1001_TR):
+    nchan=32
+assemble(ACQ1001_TR_32)
+
+class ACQ1001_TR_40(_ACQ1001_TR):
+    nchan=40
+assemble(ACQ1001_TR_40)
+
+class ACQ1001_TR_48(_ACQ1001_TR):
+    nchan=48
+assemble(ACQ1001_TR_48)
+
+class ACQ1001_TR_64(_ACQ1001_TR):
+    nchan=64
+assemble(ACQ1001_TR_64)
+
+class ACQ1001_TR_80(_ACQ1001_TR):
+    nchan=80
+assemble(ACQ1001_TR_80)
+
+class ACQ1001_TR_96(_ACQ1001_TR):
+    nchan=96
+assemble(ACQ1001_TR_96)
+
+class ACQ1001_TR_128(_ACQ1001_TR):
+    nchan=128
+assemble(ACQ1001_TR_128)
+
+class ACQ1001_TR_160(_ACQ1001_TR):
+    nchan=160
+assemble(ACQ1001_TR_160)
+
+class ACQ1001_TR_192(_ACQ1001_TR):
+    nchan=192
+assemble(ACQ1001_TR_192)
+
+
