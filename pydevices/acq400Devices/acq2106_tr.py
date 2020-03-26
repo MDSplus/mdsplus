@@ -23,51 +23,36 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import numpy as np
-import MDSplus
-import threading
-import Queue
-import socket
-import time
-import inspect
 import acq400_base
 
-print(acq400_base._ACQ400_BASE)
-
-
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
-
-INPFMT = ':INPUT_%3.3d'
 
 class _ACQ2106_TR(acq400_base._ACQ400_BASE):
     """
     D-Tacq ACQ2106 transient support.
     """
+    pass
+
+
+
+class_ch_dict = acq400_base.create_classes(
+    _ACQ2106_TR, "ACQ2106_TR", 
+    list(_ACQ2106_TR.base_parts), 
+    [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
+)
+
+if __name__ == '__main__':
+    acq400_base.print_generated_classes(class_ch_dict)
     
-    pass # Class has no methods of it's own - it inherits all from ACQ400_BASE
-
-
-def assemble(cls):
-    cls.parts = list(_ACQ2106_TR.base_parts)
-    for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
-        cls.parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-
-
-chan_combos = [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
-class_ch_dict = {}
-
-for channel_count in chan_combos:
-    name_str = "ACQ2106_TR_{}".format(str(channel_count))
-    class_ch_dict[name_str] = type(name_str, (_ACQ2106_TR,), {"nchan": channel_count})
-    assemble(class_ch_dict[name_str])
-
-for key,val in class_ch_dict.items():
-        exec("{} = {}".format(key, "val"))
-
+# public classes created in this module
+# ACQ2106_TR_8
+# ACQ2106_TR_16
+# ACQ2106_TR_24
+# ACQ2106_TR_32
+# ACQ2106_TR_40
+# ACQ2106_TR_48
+# ACQ2106_TR_64
+# ACQ2106_TR_80
+# ACQ2106_TR_96
+# ACQ2106_TR_128
+# ACQ2106_TR_160
+# ACQ2106_TR_192
