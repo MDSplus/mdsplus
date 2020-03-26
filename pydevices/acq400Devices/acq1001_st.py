@@ -63,3 +63,16 @@ for channel_count in chan_combos:
 for key,val in class_ch_dict.items():
         exec("{} = {}".format(key, "val"))
 
+
+
+if __name__ == '__main__':
+    acq400_base.print_generated_classes(class_ch_dict)
+
+# public classes created in this module
+# ACQ1001_ST_8
+# ACQ1001_ST_16
+# ACQ1001_ST_24
+# ACQ1001_ST_32
+# ACQ1001_ST_40
+# ACQ1001_ST_48
+# ACQ1001_ST_64
