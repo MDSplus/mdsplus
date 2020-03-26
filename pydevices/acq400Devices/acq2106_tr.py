@@ -42,16 +42,16 @@ except:
 
 INPFMT = ':INPUT_%3.3d'
 
-class _ACQ1001_TR(acq400_base._ACQ400_BASE):
+class _ACQ2106_TR(acq400_base._ACQ400_BASE):
     """
-    D-Tacq ACQ1001 transient support.
+    D-Tacq ACQ2106 transient support.
     """
-
+    
     pass # Class has no methods of it's own - it inherits all from ACQ400_BASE
 
 
 def assemble(cls):
-    cls.parts = list(_ACQ1001_TR.base_parts)
+    cls.parts = list(_ACQ2106_TR.base_parts)
     for ch in range(1, cls.nchan+1):
         cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
                           'valueExpr':'head.setChanScale(%d)' %(ch,)})
@@ -60,12 +60,12 @@ def assemble(cls):
         cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
 
 
-chan_combos = [8, 16, 24, 32, 40, 48, 64]
+chan_combos = [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
 class_ch_dict = {}
 
 for channel_count in chan_combos:
-    name_str = "ACQ1001_TR_{}".format(str(channel_count))
-    class_ch_dict[name_str] = type(name_str, (_ACQ1001_TR,), {"nchan": channel_count})
+    name_str = "ACQ2106_TR_{}".format(str(channel_count))
+    class_ch_dict[name_str] = type(name_str, (_ACQ2106_TR,), {"nchan": channel_count})
     assemble(class_ch_dict[name_str])
 
 for key,val in class_ch_dict.items():
