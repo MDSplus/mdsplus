@@ -25,14 +25,6 @@
 
 import acq400_base
 
-
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
-
-INPFMT = ':INPUT_%3.3d'
-
 class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
     """
     D-Tacq ACQ2106 stream support.
@@ -41,29 +33,11 @@ class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
     pass
 
 
-def assemble(cls):
-    cls.parts = list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts)
-    
-    for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
-        cls.parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-
-
-chan_combos = [8, 16, 24, 32, 40, 48, 64]
-class_ch_dict = {}
-
-for channel_count in chan_combos:
-    name_str = "ACQ1001_ST_{}".format(str(channel_count))
-    class_ch_dict[name_str] = type(name_str, (_ACQ1001_ST,), {"nchan": channel_count})
-    assemble(class_ch_dict[name_str])
-
-for key,val in class_ch_dict.items():
-        exec("{} = {}".format(key, "val"))
-
-
+class_ch_dict = acq400_base.create_classes(
+    _ACQ1001_ST, "ACQ1001_ST", 
+    list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts), 
+    [8, 16, 24, 32, 40, 48, 64]
+)
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
