@@ -316,3 +316,10 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                         else:
                             self.full_buffers.put(buf)
 
+def int_key_chan(elem):
+    return int(elem.split('_')[2])
+
+def print_generated_classes(class_dict):
+    print("# public classes created in this module")
+    for key in sorted(class_dict.keys(), key=int_key_chan):
+        print("# {}".format(key))
