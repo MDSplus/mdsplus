@@ -1,4 +1,4 @@
-%option prefix="dcl_" outfile="cmdParseLex.c" header-file="dcllex.h"
+%option prefix="dcl_" outfile="mdsdcl/cmdParseLex.c" header-file="mdsdcl/dcllex.h"
 %option nostack noyymore noyywrap noyylineno nodefault
 %option unput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option interactive reentrant bison-bridge bison-locations case-insensitive
@@ -35,11 +35,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "dcl_p.h"
 #include <dcl.h>
 #include "dclyacc.h"
-int debug=0;
-char *restOfLine=0;
+//#define DEBUG
+#ifdef DEBUG
+# define DBG(...) do{\
+fprintf(stderr, "cmdParse: ");\
+fprintf(stderr, __VA_ARGS__);\
+fprintf(stderr, "\n");\
+}while(0) //"
+#else
+# define DBG(...)
+#endif
+#define DBGM(RETURN,prefix)	DBG("%-9s -> %-12s : '%s'", #RETURN, #prefix, yytext)
 %}
 
-%x command verb qualifier qualifier_with_value qualifier_with_value_list qualval qualval_list rest_of_line parameter
+%x start verb qualifier qualval qualval_list rest_of_line parameter
 
 name [[:alpha:][:alnum:]_]+
 quoted_exc \"!\"
@@ -53,108 +62,93 @@ qualval {unquoted_value_3}|{quoted_value}
 
 %%
 
-^[[:blank:]]*! {
-  return(COMMENT);
-  }
+#		return(COMMENT);
+!		return(COMMENT);
 
-^[[:blank:]]*/{name} {
- if (debug) printf("Begin command\n");
- BEGIN command;
- }
-
-^[[:blank:]]*@[^[:blank:]]+ {
- if (debug) printf("got DO/INDIRECT %s\n",yytext);
- yylval->str=strdup(yytext);
+@[^[:blank:]]+ {
+ DBGM(CMDFILE,verb);
+ yylval->str=strdup(yytext+1);
  BEGIN verb;
  return(CMDFILE);
  }
- 
- /* <command>{name}/[[:blank:]/] {*/
-<command>{name} {
- if (debug) printf("got verb %s\n",yytext);
+
+{name} {
+ DBGM(VERB,verb);
  yylval->str=strdup(yytext);
  BEGIN verb;
  return(VERB);
  }
 
-<verb>\/{name}/[[:blank:]]*=[[:blank:]]* {
- if (debug) printf("got qualifier with value %s\n",yytext);
+<verb,qualifier>\/{name} {
+ DBGM(QUALIFIER,qualifier);
  yylval->str=strdup(yytext+1);
- BEGIN qualifier_with_value;
+ BEGIN qualifier;
  return(QUALIFIER);
  }
 
-<verb>\/{name} {
- if (debug) printf("got qualifier %s\n",yytext);
- yylval->str=strdup(yytext+1);
- return(QUALIFIER);
- }
-
-<qualifier_with_value>[[:blank:]]*=[[:blank:]]*\( {
- if (debug) printf("got a qualval_list\n");
+<qualifier>=[[:blank:]]*\( {
+ DBGM(list,qualval_list);
  BEGIN qualval_list;
  return(EQUALS);
  }
 
-<qualifier_with_value>[[:blank:]]*=[[:blank:]]* {
- if (debug) printf("got a qualval nolist\n");
+<qualifier>= {
+ DBGM(EQUALS,qualval);
  BEGIN qualval;
  return(EQUALS);
  }
 
-<qualval_list>{qualval}/[[:blank:]]*\) {
- if (debug) printf("got last qualval |%s|\n",yytext);
- yylval->str=strdup(yytext);
- return(VALUE);
- }
-
-<qualval_list>[[:blank:]]*\) {
+<qualval_list>\) {
+ DBGM(listend,verb);
  BEGIN verb;
  }
 
-<qualval_list>{qualval}/[[:blank:]]*, {
- if (debug) printf("got a qualval=%s\n",yytext);
+<qualval_list>{qualval} {
+ DBGM(VALUE,qualval_list);
  yylval->str=strdup(yytext);
  return(VALUE);
  }
 
 <qualval>{qualval} {
- if (debug) printf("got qualval |%s|\n",yytext);
+ DBGM(VALUE,verb);
  yylval->str=strdup(yytext);
  BEGIN verb;
  return(VALUE);
  }
 
-<verb>! {
-  yyterminate();
-  }
+<verb,qualifier>!		yyterminate();
 
-<verb>[^[:blank:]] {BEGIN rest_of_line;
-   unput(yytext[0]);
+<*>,		DBGM(COMMA,*);return(COMMA);
+
+<*>[[:blank:]]+ DBGM(white,*);
+
+<verb,qualifier>[^[:blank:]] {
+ DBGM(start,rest_of_line);
+ unput(yytext[0]);
+ BEGIN rest_of_line;
  }
 
-<rest_of_line>.* {int i;
-		 restOfLine = strdup(yytext);
-		 for(i=strlen(restOfLine)-1;i>=0;i--)
-		   unput(restOfLine[i]);
-		 BEGIN parameter;
-		 }
-		 
-<rest_of_line>EOL BEGIN parameter;
+<rest_of_line>.* {
+ DBGM(store,parameter);
+ int i;
+ yylval->str = strdup(yytext);
+ for(i=strlen(yylval->str)-1;i>=0;i--)
+   unput(yylval->str[i]);
+ BEGIN parameter;
+ }
+
+<*>(EOL|\n)	DBG("end       parameter    : 0x%02x",(int)yytext[0]);BEGIN parameter;
 
 <parameter>{value} {
+ DBGM(P_VALUE,verb);
  dclValuePtr value=malloc(sizeof(dclValue));
  value->value=strdup(yytext);
- value->restOfLine=restOfLine;
- restOfLine=0;
+ value->restOfLine=yylval->str;
  BEGIN verb;
  yylval->pvalue=value;
- return(PVALUE_);}
+ return(P_VALUE);
+ }
 
-<*>, return(COMMA);
-
-<*>[[:blank:]] ;
-
-<*>.
+<*>.		DBG("any       *           : 0x%02x",(int)yytext[0]);
 
 %%

@@ -23,9 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import sys
+import traceback
 from MDSplus import TreeNode, Device
-from MDSplus import TreeNOMETHOD,MDSplusException,PyUNHANDLED_EXCEPTION
-from sys import stderr,exc_info
+from MDSplus import TreeNOMETHOD, MDSplusException, PyUNHANDLED_EXCEPTION
 
 
 def domethod(methodobj,args):
@@ -63,8 +64,7 @@ def PyDoMethod(n,method,*args):
         return domethod(methodobj,args)
     except MDSplusException:
         raise
-    except Exception as exc:
-        stderr.write("Python error in %s.%s:\n%s\n\n" % (model,method,str(exc)))
-        import traceback
-        traceback.print_exc()
+    except Exception:
+        print("error doing %s(%s).%s:" % (n,model,method))
+        traceback.print_exc(file=sys.stdout)
         raise PyUNHANDLED_EXCEPTION

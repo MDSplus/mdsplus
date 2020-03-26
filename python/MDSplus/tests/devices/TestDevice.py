@@ -25,70 +25,211 @@
 
 import time
 import threading
-from MDSplus import Device,DevUNKOWN_STATE,Int32Array
+from MDSplus import Device, DevUNKOWN_STATE, Int32Array
+from MDSplus import with_mdsrecords, mdsrecord, cached_property
 
+
+@with_mdsrecords
 class TestDevice(Device):
-    parts=[
-        {'path': ':ACTIONSERVER',               'type': 'TEXT',    'options':('no_write_shot','write_once')},
-        {'path': ':ACTIONSERVER:INIT1',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(Dispatch(head.ACTIONSERVER,"INIT",10),Method(None,"init1",head))'},
-        {'path': ':ACTIONSERVER:INIT2',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(Dispatch(head.ACTIONSERVER,"INIT",head.ACTIONSERVER.INIT1),Method(None,"init2",head))'},
-        {'path': ':ACTIONSERVER:PULSE',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
-        {'path': ':ACTIONSERVER:PULSE:DISPATCH','type': 'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"PULSE",10)'},
-        {'path': ':ACTIONSERVER:PULSE:TASK',    'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"pulse",head)'},
-        {'path': ':ACTIONSERVER:STORE',         'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
-        {'path': ':ACTIONSERVER:STORE:DISPATCH','type': 'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"STORE",10)'},
-        {'path': ':ACTIONSERVER:STORE:TASK',    'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"store",head)'},
-        {'path': ':ACTIONSERVER:MANUAL',        'type': 'ACTION',  'options':('no_write_shot','write_once'), 'valueExpr':'Action(node.DISPATCH,node.TASK)'},
-        {'path': ':ACTIONSERVER:MANUAL:DISPATCH','type':'DISPATCH','options':('no_write_shot','write_once'), 'valueExpr':'Dispatch(head.ACTIONSERVER,"MANUAL",10)'},
-        {'path': ':ACTIONSERVER:MANUAL:TASK',   'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"manual",head)'},
-        {'path': ':TASK_TEST',                  'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"test",head)'},
-        {'path': ':TASK_ERROR1',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(None,"error",head)'},
-        {'path': ':TASK_TIMEOUT',               'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(1.,"timeout",head)'},
-        {'path': ':TASK_ERROR2',                'type': 'TASK',    'options':('no_write_shot','write_once'), 'valueExpr':'Method(10.,"error",head)'},
-        {'path': ':INIT1_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
-        {'path': ':INIT2_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
-        {'path': ':PULSE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
-        {'path': ':STORE_DONE',                 'type': 'NUMERIC', 'options':('no_write_model','write_once')},
-        {'path': ':MANUAL_DONE',                'type': 'NUMERIC', 'options':('no_write_model','write_once')},
-        {'path': ':DATA',                       'type': 'SIGNAL',  'options':('no_write_model','write_once')},
+    parts = [
+        dict(
+            path=':ACTIONSERVER',
+            type='TEXT',
+            options=('no_write_shot', 'write_once'),
+        ),
+        dict(
+            path=':ACTIONSERVER:INIT1',
+            type='ACTION',
+            options=('no_write_shot', 'write_once'),
+            valueExpr=(
+             'Action('
+             'Dispatch(head.ACTIONSERVER, "INIT", 10),'
+             'Method(None, "init1", head))'),
+        ),
+        dict(
+            path=':ACTIONSERVER:INIT2',
+            type='ACTION',
+            options=('no_write_shot', 'write_once'),
+            valueExpr=(
+             'Action('
+             'Dispatch(head.ACTIONSERVER, "INIT", head.ACTIONSERVER.INIT1),'
+             'Method(None, "init2", head))'),
+        ),
+        dict(
+            path=':ACTIONSERVER:PULSE',
+            type='ACTION',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Action(node.DISPATCH, node.TASK)'
+        ),
+        dict(
+            path=':ACTIONSERVER:PULSE:DISPATCH',
+            type='DISPATCH',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Dispatch(head.ACTIONSERVER, "PULSE", 10)'
+        ),
+        dict(
+            path=':ACTIONSERVER:PULSE:TASK',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(None, "pulse", head)'
+        ),
+        dict(
+            path=':ACTIONSERVER:STORE',
+            type='ACTION',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Action(node.DISPATCH, node.TASK)',
+        ),
+        dict(
+            path=':ACTIONSERVER:STORE:DISPATCH',
+            type='DISPATCH',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Dispatch(head.ACTIONSERVER, "STORE", 10)',
+        ),
+        dict(
+            path=':ACTIONSERVER:STORE:TASK',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(None,"store",head)',
+        ),
+        dict(
+            path=':ACTIONSERVER:MANUAL',
+            type='ACTION',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Action(node.DISPATCH,node.TASK)',
+        ),
+        dict(
+            path=':ACTIONSERVER:MANUAL:DISPATCH',
+            type='DISPATCH',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Dispatch(head.ACTIONSERVER, "MANUAL", 10)',
+        ),
+        dict(
+            path=':ACTIONSERVER:MANUAL:TASK',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(None,"manual",head)',
+        ),
+        dict(
+            path=':TASK_TEST',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(None, "test", head)',
+        ),
+        dict(
+            path=':TASK_ERROR1',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(None, "error", head)'
+        ),
+        dict(
+            path=':TASK_TIMEOUT',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(1., "timeout", head)',
+        ),
+        dict(
+            path=':TASK_ERROR2',
+            type='TASK',
+            options=('no_write_shot', 'write_once'),
+            valueExpr='Method(10., "error", head)',
+        ),
+        dict(
+            path=':INIT1_DONE',
+            type='NUMERIC',
+            options=('no_write_model', 'write_once'),
+            filter=float,
+            cached=0,  # cache_on_set = False
+        ),
+        dict(
+            path=':INIT2_DONE',
+            type='NUMERIC',
+            options=('no_write_model', 'write_once'),
+            filter=float,
+            cached=1,  # cache_on_set = True
+        ),
+        dict(
+            path=':PULSE_DONE',
+            type='NUMERIC',
+            options=('no_write_model', 'write_once'),
+            filter=float,
+        ),
+        dict(
+            path=':STORE_DONE',
+            type='NUMERIC',
+            options=('no_write_model', 'write_once'),
+            filter=float,
+        ),
+        dict(
+            path=':MANUAL_DONE',
+            type='NUMERIC',
+            options=('no_write_model', 'write_once'),
+            filter=float,
+            default=-1,
+        ),
+        dict(
+            path=':DATA',
+            type='SIGNAL',
+            options=('no_write_model', 'write_once'),
+        ),
     ]
+
     class Worker(threading.Thread):
         """An async worker should be a proper class
            This ensures that the methods remian in memory
            It should at least take one argument: teh device node
         """
-        def __init__(self,dev):
-            super(TestDevice.Worker,self).__init__(name=dev.path)
-            # make a thread safe copy of the device node with a non-global context
+        def __init__(self, dev):
+            super(TestDevice.Worker, self).__init__(name=dev.path)
+            # make thread safe copy of device node with a non-global context
             self.dev = dev.copy()
+
         def run(self):
             self.dev.tree.normal()
-            self.dev.DATA.beginSegment(0,9,Int32Array(range(10)),Int32Array([0]*10))
+            self.dev.DATA.beginSegment(0, 9,
+                                       Int32Array(range(10)),
+                                       Int32Array([0]*10))
             for i in range(10):
                 time.sleep(.1)
-                self.dev.DATA.putSegment(Int32Array([i]),i)
+                self.dev.DATA.putSegment(Int32Array([i]), i)
+
     def init1(self):
-        self.init1_done.record = time.time()
+        self._init1_done = time.time()
+
     def init2(self):
         """start async worker"""
         thread = self.Worker(self)
         thread.start()
         # store thread reference in persistent field
-        self.persistent = {'thread':thread}
-        self.init2_done.record = time.time()
+        self.persistent = dict(thread=thread)
+        self._init2_done = time.time()
+
     def pulse(self):
-        self.pulse_done.record = time.time()
+        self._pulse_done = time.time()
+
     def store(self):
         """joins async worker"""
         self.persistent['thread'].join()
         # cleanup thread reference
         self.persistent = None
-        self.store_done.record = time.time()
+        self._store_done = time.time()
+
     def manual(self):
-        self.manual_done.record = time.time()
+        self._manual_done = time.time()
+
     def test(self):
         return 'TEST'
+
     def error(self):
         raise DevUNKOWN_STATE
+
     def timeout(self):
         time.sleep(10)
+
+    @mdsrecord(filter=int, default=0)
+    def done(self): return self.manual_done
+
+    _reg = 0  # used to simulate volatile readout
+    @cached_property
+    def cache(self):
+        self._reg += 1
+        return self._reg

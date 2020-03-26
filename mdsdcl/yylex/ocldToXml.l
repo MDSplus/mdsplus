@@ -1,4 +1,4 @@
-%option outfile="ocldToXml.c"
+%option outfile="mdsdcl/ocldToXml.c"
 %option nostack noyymore noyywrap noyylineno
 %option nounput noinput noyy_push_state noyy_pop_state noyy_top_state
 %option case-insensitive

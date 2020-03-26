@@ -32,7 +32,9 @@ import mds.data.descriptor_s.Pointer;
 public class MdsIp extends Mds{
 
 
-	public interface Connection extends Closeable, ReadableByteChannel, WritableByteChannel{}
+	public interface Connection extends Closeable, ReadableByteChannel, WritableByteChannel{
+		static final long internal_timeout = 1000L; // ms
+	}
 	private final class MRT extends Thread // mds Receive Thread
 	{
 		private boolean	killed	= false;

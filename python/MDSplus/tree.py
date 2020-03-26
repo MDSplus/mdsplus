@@ -1868,7 +1868,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         if isinstance(path,(int,_scr.Int32)):
             ans = TreeNode(path,self.tree)
-        else:       
+        else:
             nidout=_C.c_int32(0)
             _exc.checkStatus(
                         _TreeShr._TreeFindNodeRelative(self.ctx,
@@ -2924,6 +2924,147 @@ class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
             ans.append(val)
         try:    return _arr.Array(ans)
         except: return _apd.List(*ans)
+
+
+class cached_property(object):
+    """ converts to property with cache
+    cache_on_set: controls if setter will set or clear cache
+    class MYDEVICE(Device):
+        @cached_property
+        def _trigger(self): return self.trigger
+    del(self._trigger)  <=> clear cache
+    """
+    def __init__(self, target=None, is_property=False, **opt):
+        mode = opt.get('mode', 0)
+        self.lock = _threading.Lock()
+        self.cache_on_set = (mode & 1) > 0
+        if target:
+            if is_property:
+                self.target = target
+            else:
+                self.target = property(target)
+
+    def __call__(self, method):
+        if hasattr(self, 'target'):
+            raise Exception("cached_property.target already set")
+        self.target = property(method)
+        return self
+
+    def __get__(self, inst, cls):
+        if inst is None: return self
+        with self.lock:
+            if self.target in inst.__dict__:
+               return inst.__dict__[self.target]
+            else:
+                data = self.target.__get__(inst, cls)
+                inst.__dict__[self.target] = data
+                return data
+
+    def __set__(self, inst, value):
+        self.target.__set__(inst, value)
+        with self.lock:
+            if (self.cache_on_set):
+                inst.__dict__[self.target] = value
+            else:
+                del(inst.__dict__[self.target])
+
+    def __delete__(self, inst):
+        with self.lock:
+            if self.target in inst.__dict__:
+                del(inst.__dict__[self.target])
+
+
+class mdsrecord(object):
+    """ turns method into property
+    expects method that return MDSplus node
+    class MYDEVICE(Device):
+        @mdsrecord(filter=float, default=0)
+        def _trigger(self): return self.trigger
+    ...
+    dev = tree.MYDEVICE
+    dev._trigger = 5   <=>   dev.trigger.record = 5
+    a = dev._trigger   <=>   a = float(dev.trigger.record)
+    del(dev._trigger)  <=>   dev.trigger.record = None
+    # if trigger contains no data _trigger defaults to 0
+    """
+    def __new__(cls, *target, **opt):
+        """ use new so in can return cached_property """
+        self = object.__new__(cls)
+        self.filter = opt.get("filter", None)
+        if 'default' in opt:
+            self.default = [opt['default']]
+        else:
+            self.default = []
+        self.cached = opt.get("cached", None)
+        if target:
+            return self(target[0])
+        return self
+
+    def __call__(self, target):
+        if hasattr(self, 'target'):
+            raise Exception("mdsrecord.target already set")
+        self.target = target
+        if self.cached is None:
+            return self
+        return cached_property(self, True, mode=self.cached)
+
+    def __get__(self, inst, cls):
+        if inst is None: return self
+        node = self.target.__get__(inst, cls)()
+        try:
+            data = node.getRecord()
+        except _exc.TreeNODATA:
+            if self.default:
+                return self.default[0]
+            raise
+        if self.filter is None:
+            return data
+        return self.filter(data)
+
+    def __set__(self, inst, value):
+        node = self.target.__get__(inst)()
+        node.putData(value)
+
+    def __delete__(self, inst):
+        node = self.target.__get__(inst)()
+        node.deleteData()
+
+    # useful filters: flattened lists and python2/3 stable chars
+    @staticmethod
+    def int_list(node): return _cmp.INT(node).data().flatten().tolist()
+    @staticmethod
+    def float_list(node): return _cmp.FLOAT(node).data().flatten().tolist()
+    @staticmethod
+    def bytes(node): return _ver.tobytes(node.data())
+    @staticmethod
+    def bytes_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+    @staticmethod
+    def str(node): return _ver.tostr(node.data())
+    @staticmethod
+    def str_list(node):
+        return [_ver.tostr(x).rstrip()
+                for x in node.data().flatten()]
+
+
+
+
+def with_mdsrecords(cls):
+    """ decorator for device class
+    adds mdsrecord for each part in parts field
+    """
+    def genfun(field, part):
+        @mdsrecord(**part)
+        def _(self): return self.__getattr__(field)
+        return _
+    for part in cls.parts:
+        field = part['path'].lower().replace('.', '_').replace(':', '_')
+        fun = genfun(field[1:], part)
+        setattr(cls, field, fun)
+    return cls
+
 
 class Device(TreeNode): # HINT: Device begin
     """Used for device support classes. Provides ORIGINAL_PART_NAME, PART_NAME and Add methods and allows referencing of subnodes as conglomerate node attributes.

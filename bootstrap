@@ -1,6 +1,33 @@
 #! /bin/sh
 cd $(dirname $0)
 
+unset abort
+testprog() {
+# $1 prog, $2 package
+if ! which $1 >/dev/null 2>&1
+then
+	export abort=$?
+	echo "Please install package providing '$1' in order to bootstrap"
+	shift
+	echo "The required package may be named $@."
+	echo "We recommend using docker if available:"
+	echo "  deploy/build.sh --os=bootstrap"
+fi
+}
+
+testprog aclocal	automake
+testprog autoheader	autoconf
+testprog automake	automake
+testprog autoconf	autoconf
+testprog python		python2 or python3
+testprog bison		bison
+testprog flex		flex
+
+if [ ! -z $abort ]
+then
+	exit $abort
+fi
+
 aclocal -I ./m4
 
 autoheader
@@ -11,7 +38,7 @@ automake --add-missing
 
 autoconf
 
-deploy/gen_messages.py
+python deploy/gen_messages.py
 
 deploy/yylex.gen tdishr
 deploy/yylex.gen mdsdcl
