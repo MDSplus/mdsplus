@@ -26,7 +26,7 @@
 import acq400_base
 
 
-class _ACQ1001_TR(acq400_base._ACQ400_BASE):
+class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
     """
     D-Tacq ACQ1001 transient support.
     """
