@@ -165,26 +165,20 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
             self.chans = []
             self.decim = []
             # self.nchans = self.dev.sites*32
-            print("Inside MDSWorker")
             uut = acq400_hapi.Acq400(self.dev.node.data())
             self.nchans = uut.nchan()
 
-            print("Inside MDSWorker2")
             for i in range(self.nchans):
                 self.chans.append(getattr(self.dev, 'INPUT_%3.3d'%(i+1)))
                 self.decim.append(getattr(self.dev, 'INPUT_%3.3d:DECIMATE' %(i+1)).data())
-            print("Inside MDSWorker3")
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
 
-            print("Inside MDSWorker4")
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
-            print("Inside MDSWorker5")
 
             for i in range(self.NUM_BUFFERS):
                 self.empty_buffers.put(bytearray(self.segment_bytes))
-            print("Inside MDSWorker6")
             self.device_thread = self.DeviceWorker(self)
 
         def run(self):
@@ -198,7 +192,6 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            print("MDSWorker running")
             if self.dev.debug:
                 print("MDSWorker running")
 
