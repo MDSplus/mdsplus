@@ -349,6 +349,6 @@ def create_classes(base_class, root_name, parts, channel_choices):
         class_name = "{}_{}".format(root_name, str(nchan))
         my_parts = list(parts)
         my_classes[class_name] = assemble(
-            type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts})) 
-        exec("{} = {}".format(class_name, "my_classes[class_name]"))        
+            type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
+        # exec("{} = {}".format(class_name, "my_classes[class_name]"))
     return my_classes

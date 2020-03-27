@@ -33,16 +33,19 @@ class _ACQ2106_TR(acq400_base._ACQ400_BASE):
     pass
 
 
-
 class_ch_dict = acq400_base.create_classes(
-    _ACQ2106_TR, "ACQ2106_TR", 
-    list(_ACQ2106_TR.base_parts), 
-    [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
+    _ACQ2106_TR, "ACQ2106_TR",
+    list(_ACQ2106_TR.base_parts),
+    acq400_base.ACQ2106_CHANNEL_CHOICES
 )
+
+for key,val in class_ch_dict.items():
+    val.__module__ = _ACQ2106_TR.__module__
+    exec("{} = {}".format(key, "val"))
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
-    
+
 # public classes created in this module
 # ACQ2106_TR_8
 # ACQ2106_TR_16

@@ -34,10 +34,15 @@ class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
 
 
 class_ch_dict = acq400_base.create_classes(
-    _ACQ1001_ST, "ACQ1001_ST", 
-    list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts), 
-    [8, 16, 24, 32, 40, 48, 64]
+    _ACQ1001_ST, "ACQ1001_ST",
+    list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts),
+    acq400_base.ACQ1001_CHANNEL_CHOICES
 )
+
+for key,val in class_ch_dict.items():
+    val.__module__ = _ACQ1001_ST.__module__
+    exec("{} = {}".format(key, "val"))
+
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
