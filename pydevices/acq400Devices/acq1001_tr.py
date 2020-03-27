@@ -23,51 +23,29 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import numpy as np
-import MDSplus
-import threading
-import Queue
-import socket
-import time
-import inspect
 import acq400_base
 
-print(acq400_base._ACQ400_BASE)
-
-
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
-
-INPFMT = ':INPUT_%3.3d'
 
 class _ACQ1001_TR(acq400_base._ACQ400_BASE):
     """
     D-Tacq ACQ1001 transient support.
     """
+    pass
 
-    pass # Class has no methods of it's own - it inherits all from ACQ400_BASE
+class_ch_dict = acq400_base.create_classes(
+    _ACQ1001_TR, "ACQ1001_TR", 
+    list(_ACQ1001_TR.base_parts), 
+    [8, 16, 24, 32, 40, 48, 64]
+)
 
+if __name__ == '__main__':
+    acq400_base.print_generated_classes(class_ch_dict)
 
-def assemble(cls):
-    cls.parts = list(_ACQ1001_TR.base_parts)
-    for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':INPFMT%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
-        cls.parts.append({'path':INPFMT%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-        cls.parts.append({'path':INPFMT%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
-
-
-chan_combos = [8, 16, 24, 32, 40, 48, 64]
-class_ch_dict = {}
-
-for channel_count in chan_combos:
-    name_str = "ACQ1001_TR_{}".format(str(channel_count))
-    class_ch_dict[name_str] = type(name_str, (_ACQ1001_TR,), {"nchan": channel_count})
-    assemble(class_ch_dict[name_str])
-
-for key,val in class_ch_dict.items():
-        exec("{} = {}".format(key, "val"))
-
+# public classes created in this module
+# ACQ1001_TR_8
+# ACQ1001_TR_16
+# ACQ1001_TR_24
+# ACQ1001_TR_32
+# ACQ1001_TR_40
+# ACQ1001_TR_48
+# ACQ1001_TR_64

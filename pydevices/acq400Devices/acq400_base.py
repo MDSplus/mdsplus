@@ -38,7 +38,7 @@ try:
 except:
     acq400_hapi = __import__('acq400_hapi', globals())
 
-INPFMT = ':INPUT_%3.3d'
+
 
 
 class _ACQ400_BASE(MDSplus.Device):
@@ -316,3 +316,43 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                         else:
                             self.full_buffers.put(buf)
 
+def int_key_chan(elem):
+    return int(elem.split('_')[2])
+
+def print_generated_classes(class_dict):
+    print("# public classes created in this module")
+    key1 = None
+    for key in sorted(class_dict.keys(), key=int_key_chan):
+        if key1 is None:
+            key1 = key
+        print("# {}".format(key))
+    print("{}".format(key1))
+    for p in class_dict[key1].parts:
+        print("{}".format(p))
+
+
+INPFMT3 = ':INPUT_%3.3d'
+#INPFMT2 = ':INPUT_%2.2d'
+
+def assemble(cls):
+    inpfmt = INPFMT3
+# probably easier for analysis code if ALWAYS INPUT_001    
+#    inpfmt = INPFMT2 if cls.nchan < 100 else INPFMT3
+    for ch in range(1, cls.nchan+1):
+        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',),
+                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':inpfmt%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':inpfmt%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+    return cls
+
+
+def create_classes(base_class, root_name, parts, channel_choices):
+    my_classes = {}
+    for nchan in channel_choices:
+        class_name = "{}_{}".format(root_name, str(nchan))
+        my_parts = list(parts)
+        my_classes[class_name] = assemble(
+            type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts})) 
+        exec("{} = {}".format(class_name, "my_classes[class_name]"))        
+    return my_classes
