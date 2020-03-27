@@ -157,7 +157,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         NUM_BUFFERS = 20
 
         def __init__(self,dev):
-            super(_ACQ400_BASE.MDSWorker,self).__init__(name=dev.path)
+            super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
             self.dev = dev.copy()
@@ -327,9 +327,12 @@ def print_generated_classes(class_dict):
 INPFMT3 = ':INPUT_%3.3d'
 #INPFMT2 = ':INPUT_%2.2d'
 
+ACQ2106_CHANNEL_CHOICES = [8, 16, 24, 32, 40, 48, 64, 80, 96, 128, 160, 192]
+ACQ1001_CHANNEL_CHOICES = [8, 16, 24, 32, 40, 48, 64]
+
 def assemble(cls):
     inpfmt = INPFMT3
-# probably easier for analysis code if ALWAYS INPUT_001    
+# probably easier for analysis code if ALWAYS INPUT_001
 #    inpfmt = INPFMT2 if cls.nchan < 100 else INPFMT3
     for ch in range(1, cls.nchan+1):
         cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',),
