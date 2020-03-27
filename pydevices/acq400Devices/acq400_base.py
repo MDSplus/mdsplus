@@ -50,7 +50,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
     base_parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
-        {'path':':NODE','type':'text','value':'acq1001_329', 'options':('no_write_shot',)},
+        {'path':':NODE','type':'text','value':'acq1001_999', 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
