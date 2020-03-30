@@ -3564,10 +3564,10 @@ If you did intend to write to a subnode of the device you should check the prope
             MODEL = model.upper()
             models = _dat.Data.execute('MdsDevices()').data()
             for idx in range(len(models)):
-                modname = models[idx][0].rstrip()
+                modname = _ver.tostr(models[idx][0].rstrip())
                 MODNAME = modname.upper()
                 if MODEL == MODNAME:
-                    package = models[idx][1].rstrip()
+                    package = _ver.tostr(models[idx][1].rstrip())
                     if package == "pydevice":
                         break
                     try:
