@@ -55,6 +55,7 @@ class _ACQ400_BASE(MDSplus.Device):
         {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
         {'path':':FREQ','type':'numeric', 'value': int(1e6), 'options':('no_write_shot',)},
+        {'path':':SAMPLES','type':'numeric', 'value': int(1e5), 'options':('no_write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':ARM_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",'options':('no_write_shot',)},
         {'path':':STORE_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',52,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
@@ -94,6 +95,8 @@ class _ACQ400_BASE(MDSplus.Device):
             uut.s0.transient = 'SOFT_TRIGGER=0'
         if trg == 'automatic':
             uut.s0.transient = 'SOFT_TRIGGER=1'
+
+        uut.s0.transient = "POST={}".format(self.samples.data())
 
         print('Finished init')
     INIT = init
