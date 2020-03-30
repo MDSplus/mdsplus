@@ -385,5 +385,8 @@ def create_classes(base_class, root_name, parts, channel_choices):
         my_parts = list(parts)
         my_classes[class_name] = assemble(
             type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
+        # needed because of lockout in mdsplus code file
+        # python/MDSplus/tree.py function findPyDevices
+        my_classes[class_name].__module__ = base_class.__module__
         # exec("{} = {}".format(class_name, "my_classes[class_name]"))
     return my_classes

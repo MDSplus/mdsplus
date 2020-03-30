@@ -40,7 +40,6 @@ class_ch_dict = acq400_base.create_classes(
 )
 
 for key,val in class_ch_dict.items():
-    val.__module__ = _ACQ2106_TR.__module__
     exec("{} = {}".format(key, "val"))
 
 if __name__ == '__main__':
