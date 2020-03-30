@@ -56,7 +56,6 @@ class_ch_dict = acq400_base.create_classes(
 )
 
 for key,val in class_ch_dict.items():
-    val.__module__ = _ACQ2106_ST.__module__
     exec("{} = {}".format(key, "val"))
 
 for key,val in class_ch_dict.items():
