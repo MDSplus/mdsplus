@@ -99,32 +99,6 @@ class _ACQ400_BASE(MDSplus.Device):
     INIT = init
 
 
-    # def arm(self):
-    #     print("Capturing now.")
-    #     uut = acq400_hapi.Acq400(self.node.data())
-    #     shot_controller = acq400_hapi.ShotController([uut])
-    #     shot_controller.run_shot()
-    #     print("Finished capture.")
-    # ARM=arm
-    #
-    # # TODO: Change to store.
-    # def store(self):
-    #     print("Starting data collection now.")
-    #
-    #     uut = acq400_hapi.Acq400(self.node.data())
-    #     self.chans = []
-    #     nchans = uut.nchan()
-    #     for ii in range(nchans):
-    #         self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
-    #
-    #     channel_data = uut.read_channels()
-    #     for ic, ch in enumerate(self.chans):
-    #         if ch.on:
-    #             ch.putData(channel_data[ic])
-    #
-    # STORE=store
-
-
 class _ACQ400_ST_BASE(_ACQ400_BASE):
 
     """
@@ -324,7 +298,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         print("Finished capture.")
     ARM=arm
 
-    # TODO: Change to store.
+
     def store(self):
         print("Starting data collection now.")
 
