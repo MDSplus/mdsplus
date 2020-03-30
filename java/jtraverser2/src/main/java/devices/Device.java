@@ -4,6 +4,8 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
@@ -23,11 +25,19 @@ import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.StringDsc;
 
 public class Device{
-	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable) throws Exception {
+	private static final String getModel(Nid nid) throws Exception {
 		final Conglom conglom = (Conglom)nid.getRecord();
 		if(conglom == null) throw new Exception("Record not a Conglom");
 		final StringDsc model = (StringDsc)conglom.getModel().getDataS();
 		if(model == null) throw new Exception("No model string");
+		return model.toString();
+	}
+
+	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable) throws Exception {
+		return Device.getEditor(frame, nid, editable, getModel(nid));
+	}
+
+	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable, String model) throws Exception {
 		Class<?> device_cls;
 		try{
 			device_cls = Class.forName(new StringBuilder().append("devices.").append(model.toString()).toString());
@@ -36,6 +46,19 @@ public class Device{
 		}
 		final Constructor<?> constr = device_cls.getConstructor(Frame.class, NODE.class, boolean.class);
 		return (Device)constr.newInstance(frame, nid, Boolean.valueOf(editable));
+	}
+
+	public static void showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception {
+		String model = Device.getModel(nid);
+		try {
+			Class<?> device_class = Class.forName("DeviceSetup");
+			Method open =  device_class.getMethod("showDialog", Nid.class, String.class);
+			open.invoke(null, nid, model);
+		}
+		catch (Exception e)
+		{
+			Device.getEditor(frame, nid, editable, getModel(nid)).showDialog();
+		}
 	}
 	protected final NODE<?>		head;
 	protected final Editor[]	edit;
@@ -86,6 +109,24 @@ public class Device{
 				orig_name = name;
 			}
 			this.addExpr(i, name, orig_name, false, false);
+		}
+		if (this.pane.getComponentCount() == 0)
+		{
+			for(int i = 1; i < this.node.length; i++)
+			{
+				final byte usage = node_infos[i].usage;
+				if(usage == NODE.USAGE_STRUCTURE) continue;
+				String orig_name;
+				final String name = node_infos[i].minpath;
+				this.node[i] = new Nid(node_infos[i].nid_number, tree);
+				this.node[i].setNodeInfoC(node_infos[i]);
+				try{
+					orig_name = this.node[i].getNciOriginalPartName();
+				}catch(final MdsException e){
+					orig_name = name;
+				}
+				this.addExpr(i, name, orig_name, false, false);
+			}
 		}
 		final JScrollPane sp = new JScrollPane(this.pane);
 		sp.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);

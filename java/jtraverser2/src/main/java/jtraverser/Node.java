@@ -25,9 +25,11 @@ import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
+import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
 import mds.data.descriptor_s.Nid;
+import mds.data.descriptor_s.StringDsc;
 
 public class Node{
 	public static class TreeNodeLabel extends JLabel{
@@ -729,7 +731,7 @@ public class Node{
 
 	public final void setupDevice(final boolean editable) {
 		try{
-			Device.getEditor((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable).showDialog();
+			Device.showDialog((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable);
 		}catch(final Exception e){
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this.treeview, e + "\n" + e.getMessage(), "Error opening device setup", JOptionPane.WARNING_MESSAGE);
