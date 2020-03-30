@@ -334,10 +334,16 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         for ii in range(nchans):
             self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
+        uut.fetch_all_calibration()
+        eslo = uut.cal_eslo[1:]
+        eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
+
         for ic, ch in enumerate(self.chans):
             if ch.on:
                 ch.putData(channel_data[ic])
+                ch.EOFF.putData(float(eoff[ic]))
+                ch.ESLO.putData(float(eslo[ic]))
 
     STORE=store
 
@@ -375,6 +381,8 @@ def assemble(cls):
         cls.parts.append({'path':inpfmt%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':inpfmt%(ch,)+':EOFF','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':inpfmt%(ch,)+':ESLO', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
     return cls
 
 
