@@ -69,7 +69,6 @@ class _ACQ400_BASE(MDSplus.Device):
 
 
     def init(self):
-        print('Running init')
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
@@ -98,7 +97,6 @@ class _ACQ400_BASE(MDSplus.Device):
 
         uut.s0.transient = "POST={}".format(self.samples.data())
 
-        print('Finished init')
     INIT = init
 
 
@@ -119,11 +117,9 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
 
     def arm(self):
-        print("Capturing now.")
         self.running.on=True
         thread = self.MDSWorker(self)
         thread.start()
-        # print("Finished capture.")
     ARM=arm
 
     def stop(self):
@@ -247,7 +243,6 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                     try:
                         buf = self.empty_buffers.get(block=False)
                     except Empty:
-                        # print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
                     toread =self.segment_bytes
@@ -294,16 +289,13 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     """
 
     def arm(self):
-        print("Capturing now.")
         uut = acq400_hapi.Acq400(self.node.data())
         shot_controller = acq400_hapi.ShotController([uut])
         shot_controller.run_shot()
-        print("Finished capture.")
     ARM=arm
 
 
     def store(self):
-        print("Starting data collection now.")
 
         uut = acq400_hapi.Acq400(self.node.data())
         self.chans = []
