@@ -399,11 +399,10 @@ class StringArray(Array):
         elif _ver.ispy3 or not value.flags.writeable or not value.flags.c_contiguous:
             value = value.copy('C')
         length = value.itemsize
-        if length>0:
-            for i in _ver.xrange(len(value.flat)):
-                val = value.flat[i]
-                if len(val)<length or val[-1] == 0:
-                    value.flat[i]=val.ljust(length)
+        if length  > 0:
+            for i, val in enumerate(value.flat):
+                if len(val) < length:
+                    value.flat[i] = val.ljust(length)
         self._value = value
     @property
     def value(self):
