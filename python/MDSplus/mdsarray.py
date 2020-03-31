@@ -107,8 +107,9 @@ class Array(_dat.Data):
             except Exception: pass
         else:
             value = _N.array(value, self.ntype)
-        if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:
-            # empty shape happens if value has been a scalar, e.g. int
+        if not value.shape:
+            value = _N.array([value])
+        elif len(value.shape) > Array.__MAX_DIM:
             value = value.flatten()
         self._value = _N.array(value, dtype=self.ntype, copy=False, order='C')
 
