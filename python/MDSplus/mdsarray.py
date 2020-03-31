@@ -214,20 +214,25 @@ class Array(_dat.Data):
         return _cmd.Compound._descriptorWithProps(self,d)
 
 
+    @staticmethod
+    def _get_numpy(d, shape, ntype, ctype, length, isstr=False):
+        buf = _C.cast(d.pointer, _C.POINTER(ctype*length)).contents
+        if isstr:
+            buf = _ver.buffer(buf)
+        arr = _N.ndarray(shape, ntype, buf)
+        if d.pointer == arr.__array_interface__['data'][0]:
+            d.pointer = 0  # numpy must free memory
+        return arr
+
     @classmethod
-    def fromDescriptor(cls,d):
-        def getNumpy(ntype,ctype,length):
-            buffer = _ver.buffer(_C.cast(d.pointer,_C.POINTER(ctype*length)).contents)
-            return _N.ndarray(shape,ntype,buffer)
+    def fromDescriptor(cls, d):
         if d.dtype == 0:
             d.dtype = Int32Array.dtype_id
         if d.coeff:
-            d.arsize=d.length
-            shape=list()
-            for i in range(d.dimct):
-                dim=d.coeff_and_bounds[d.dimct-i-1]
-                d.arsize=d.arsize*dim
-                shape.append(dim)
+            d.arsize = d.length
+            shape = d.coeff_and_bounds[d.dimct-1::-1]
+            for dim in shape:
+                d.arsize *= dim
         elif d.length == 0:
             shape=[0]
         else:
@@ -240,16 +245,16 @@ class Array(_dat.Data):
                         strarr=[strarr]*dim
                 ans = StringArray(_N.array(strarr))
             else:
-                ans = StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
+                ans = StringArray(cls._get_numpy(d,shape,_N.dtype(('S',d.length)),_C.c_byte,d.arsize,True))
             return ans
         if d.dtype == _tre.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
-            nids=getNumpy(_N.int32,_C.c_int32,d.arsize//d.length)
+            nids=cls._get_numpy(d,shape,_N.int32,_C.c_int32,d.arsize//d.length)
             return _tre.TreeNodeArray(list(nids))
         if d.dtype == Complex64Array.dtype_id:
-            return Array(getNumpy(_N.complex64,_C.c_float,(d.arsize<<1)//d.length))
+            return Array(cls._get_numpy(d,shape,_N.complex64,_C.c_float,(d.arsize<<1)//d.length))
         if d.dtype == Complex128Array.dtype_id:
-            return Array(getNumpy(_N.complex128,_C.c_double,(d.arsize<<1)//d.length))
+            return Array(cls._get_numpy(d,shape,_N.complex128,_C.c_double,(d.arsize<<1)//d.length))
         if d.dtype == FloatFArray.dtype_id:
             return _cmp.FS_FLOAT(d).evaluate()
         if d.dtype == FloatDArray.dtype_id:
@@ -265,7 +270,7 @@ class Array(_dat.Data):
         if d.dtype in _dsc.dtypeToArrayClass:
             cls = _dsc.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                return Array(getNumpy(cls.ctype,cls.ctype,d.arsize//d.length))
+                return Array(cls._get_numpy(d,shape,cls.ctype._type_,cls.ctype,d.arsize//d.length))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 makeArray = Array
 
