@@ -58,6 +58,20 @@ class_ch_dict = acq400_base.create_classes(
 for key,val in class_ch_dict.items():
     exec("{} = {}".format(key, "val"))
 
-for key,val in class_ch_dict.items():
-        exec("{} = {}".format(key, "val"))
+if __name__ == '__main__':
+    acq400_base.print_generated_classes(class_ch_dict)
 
+
+# public classes created in this module
+# ACQ2106_ST_8
+# ACQ2106_ST_16
+# ACQ2106_ST_24
+# ACQ2106_ST_32
+# ACQ2106_ST_40
+# ACQ2106_ST_48
+# ACQ2106_ST_64
+# ACQ2106_ST_80
+# ACQ2106_ST_96
+# ACQ2106_ST_128
+# ACQ2106_ST_160
+# ACQ2106_ST_192
