@@ -106,10 +106,11 @@ class Array(_dat.Data):
             try:   value=_N.ctypeslib.as_array(value)
             except Exception: pass
         else:
-            value = _N.array(value)
-        if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:  # happens if value has been a scalar, e.g. int
+            value = _N.array(value, self.ntype)
+        if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:
+            # empty shape happens if value has been a scalar, e.g. int
             value = value.flatten()
-        self._value = value.__array__(self.ntype).copy('C')
+        self._value = _N.array(value, dtype=self.ntype, copy=False, order='C')
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
