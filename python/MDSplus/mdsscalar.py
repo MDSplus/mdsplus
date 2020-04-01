@@ -136,6 +136,8 @@ class Scalar(_dat.Data):
         """Return the numpy scalar representation of the scalar"""
         return self._value
 
+    def data(self): return self.value
+
     def decompile(self):
         formats={ Int8:'%dB' , Int16:'%dW' , Int32:'%d'  , Int64:'%dQ',
                  Uint8:'%uBU',Uint16:'%uWU',Uint32:'%uLU',Uint64:'%uQU'}

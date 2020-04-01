@@ -22,37 +22,27 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import numpy as _N
+import ctypes as _C
+
 
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
-import numpy as _N
-import ctypes as _C
 
-_ver=_mimport('version')
-_dsc=_mimport('descriptor')
-_dat=_mimport('mdsdata')
-_scr=_mimport('mdsscalar')
-_cmd=_mimport('compound')
+_ver = _mimport('version')
+_dsc = _mimport('descriptor')
+_dat = _mimport('mdsdata')
+_scr = _mimport('mdsscalar')
+_cmd = _mimport('compound')
+
 
 class Array(_dat.Data):
     ctype = None
     __MAX_DIM = 8
-    @property  # used by numpy.array
-    def __array_interface__(self):
-        data = self.value
-        return {
-            'shape':data.shape,
-            'typestr':data.dtype.str,
-            'descr':data.dtype.descr,
-            'strides':data.strides,
-            'data':data,
-            'version':3,
-        }
-
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data array
         @param value: Any value
@@ -116,13 +106,18 @@ class Array(_dat.Data):
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
 
-    def __getattribute__(self,name):
-        try: return super(Array,self).__getattribute__(name)
-        except AttributeError: pass
-        if name=='_value': raise Exception('_value undefined')
-        try: return self._value.__getattribute__(name)
-        except AttributeError:  pass
-        raise AttributeError
+    def __getattribute__(self, name):
+        try:
+            return super(Array, self).__getattribute__(name)
+        except AttributeError:
+            if name == '_value':
+                raise Exception('_value undefined')
+            try:
+                return getattr(self._value, name)
+            except AttributeError:
+                raise AttributeError
+
+    def data(self): return self.value
 
     @property
     def value(self):
