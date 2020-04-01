@@ -10,6 +10,7 @@
 ./usr/local/mdsplus/nodejs/event_server.js
 ./usr/local/mdsplus/nodejs/index.html
 ./usr/local/mdsplus/nodejs/mdsipRest-multi.js
+./usr/local/mdsplus/nodejs/panel.html
 ./usr/local/mdsplus/pixmaps/mdstcl.png
 ./usr/local/mdsplus/pixmaps/small_mdsplus_logo.jpg
 ./usr/local/mdsplus/pixmaps/tdi.png
