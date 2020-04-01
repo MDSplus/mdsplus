@@ -254,41 +254,36 @@ class Data(NoTreeRef):
     """ binary operator methods (order: https://docs.python.org/2/library/operator.html) """
     @staticmethod
     def __bool(data):
-        if isinstance(data,_arr.Array):
-            return data.all().bool()
-        if isinstance(data,Data):
-            return data.bool()
-        return bool(data)
+        if _N.isscalar(data):
+            return bool(data)
+        return data
 
-    def __lt__(self,y):
-        return _cmp.LT(self,y).evaluate().bool()
-    def __rlt__(self,y):
-        return  Data(y)<self
-
-    def __le__(self,y):
-        return _cmp.LE(self,y).evaluate().bool()
-    def __rle__(self,y):
-        return  Data(y)<=self
-
-    def __eq__(self,y):
-        return _cmp.EQ(self,y).evaluate().bool()
-    def __req__(self,y):
-        return  Data(y)==self
-
-    def __ne__(self,y):
-        return _cmp.NE(self,y).evaluate().bool()
-    def __rne__(self,y):
-        return Data(y)!=self
-
-    def __gt__(self,y):
-        return _cmp.GT(self,y).evaluate().bool()
-    def __rgt__(self,y):
-        return  Data(y)>self
-
-    def __ge__(self,y):
-        return _cmp.GE(self,y).evaluate().bool()
-    def __rge__(self,y):
-        return  Data(y)>=self
+    if _ver.npver < (1,8):  # e.g. on fc18 slower but more compatible
+        def __lt__(self,y): return _cmp.LT(self,y).evaluate().bool()
+        def __rlt__(self,y): return  Data(y)<self
+        def __le__(self,y): return _cmp.LE(self,y).evaluate().bool()
+        def __rle__(self,y): return  Data(y)<=self
+        def __eq__(self,y): return _cmp.EQ(self,y).evaluate().bool()
+        def __req__(self,y): return  Data(y)==self
+        def __ne__(self,y): return _cmp.NE(self,y).evaluate().bool()
+        def __rne__(self,y): return Data(y)!=self
+        def __gt__(self,y): return _cmp.GT(self,y).evaluate().bool()
+        def __rgt__(self,y): return  Data(y)>self
+        def __ge__(self,y): return _cmp.GE(self,y).evaluate().bool()
+        def __rge__(self,y): return  Data(y)>=self
+    else:
+        def __lt__(self,y): return self.__bool(self.data() < y)
+        def __rlt__(self,y): return self.__bool(y < self.data())
+        def __le__(self,y): return self.__bool(self.data() <= y)
+        def __rle__(self,y): return self.__bool(y <= self.data())
+        def __eq__(self,y): return self.__bool(self.data() == y)
+        def __req__(self,y): return self.__bool(y == self.data())
+        def __ne__(self,y): return self.__bool(self.data() != y)
+        def __rne__(self,y): return self.__bool(y != self.data())
+        def __gt__(self,y): return self.__bool(self.data() > y)
+        def __rgt__(self,y): return self.__bool(y > self.data())
+        def __ge__(self,y): return self.__bool(self.data() >= y)
+        def __rge__(self,y): return self.__bool(y >= self.data())
 
     def __add__(self,y):
         return _cmp.ADD(self,y).evaluate()
@@ -371,9 +366,9 @@ class Data(NoTreeRef):
         self._value = (self**y)._value
 
     def __xor__(self,y):
-        return _cmp.MULTIPLY(self,y).evaluate()
+        return bool(self)^y
     def __rxor__(self,y):
-        return Data(y)^self
+        return y^bool(self)
     def __ixor__(self,y):
         self._value = (self^y)._value
 
@@ -386,7 +381,10 @@ class Data(NoTreeRef):
     def __pos__(self):
         return _cmp.UNARY_PLUS(self).evaluate()
     def __nonzero__(self):
-        return Data.__bool(self != 0)
+        ans = self != 0
+        if isinstance(ans, _N.ndarray):
+            return ans.all()
+        return ans
 
     def decompile(self):
         """Return string representation

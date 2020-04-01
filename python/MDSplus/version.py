@@ -32,6 +32,7 @@ from numpy import generic as npscalar
 from numpy import ndarray as nparray
 from numpy import string_ as npbytes
 from numpy import unicode_ as npunicode
+from numpy import version as npver
 from sys import version_info as pyver
 import os
 ispy3 = pyver>(3,)
@@ -39,6 +40,7 @@ ispy2 = pyver<(3,)
 iswin = os.sys.platform.startswith('win')
 isdarwin = os.sys.platform.startswith('darwin')
 npstr = npunicode if ispy3 else npbytes
+npver = tuple(int(v) for v in npver.version.split('.'))
 if isinstance(__builtins__, dict):
     has_long      = 'long'       in __builtins__
     has_unicode   = 'unicode'    in __builtins__
