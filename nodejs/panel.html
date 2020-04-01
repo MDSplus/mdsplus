@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <meta name="author" content="Gianluca.Moro@unipd.it"> 
+  <!-- Version: see variable versionNumber -->
+  <title>SingleWebScope</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
+  <!-- Last Plot.ly on 20190320: v1.45.3 -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+</head>
+
+<body style="margin-left: 1; margin-right: 1; margin-top: 0; margin-bottom: 0;">
+
+  <div id="app">
+
+    <div align="right" style="position: absolute; top: 15px; right: 15px; z-index: 5">
+      <font size="1" color="white">{{ versionNumber }}</font>
+      <b>{{ incomingPacketAnimation[(incomingPacketNumber&1)] }}
+         Shot #{{ panels[0].signals[0].lastShotNumber }}</b>
+    </div>
+
+    <div style="width: 100%; display: inline-block; float: right; border-style: none;">
+      <graph-window-list :panels="panels" :charts="charts" :restylevent="restylevent">
+      </graph-window-list>
+    </div>
+
+  </div>
+
+  <!-- templates to build GUI -->
+  <template id="graph-window-list">
+    <div>
+      <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" 
+        :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
+    </div>
+  </template>
+
+  <template id="reactive-chart">
+    <div :ref="panel.name" style="width: 100%;  border: 1px; border-style: solid"></div>
+  </template>
+
+<script>
+
+var lastUpdate = Date.now();
+var isThereDataToPlot = false;
+var incomingPacketNumber = 0;
+
+/* GRAPH */
+Vue.component("reactive-chart", {
+  props: ["panel", "charts", "index", "restylevent"],
+  template: '#reactive-chart', 
+  mounted() {
+    for (i=0; i<this.charts.length; i++) {
+      Plotly.newPlot(this.$refs[this.charts[i].uuid], this.charts[i].traces, 
+                     this.charts[i].layout, {displayModeBar: false});
+    }
+  },
+  watch: {
+    restylevent: {
+      handler: function() {
+        for (i=0; i<this.charts.length; i++) {
+          Plotly.react(
+            this.$refs[this.charts[i].uuid],
+            this.charts[i].traces,
+            this.charts[i].layout
+          );
+        }
+      }
+    },
+
+    charts: {
+      handler: function() {
+       var current = Date.now();
+
+       // limit update frequency to 10Hz (100ms)
+       if (current - lastUpdate < 100) {
+         isThereDataToPlot = true;
+         return; 
+       }
+
+       lastUpdate = Date.now();
+       isThereDataToPlot = false;
+
+        for (i=0; i<this.charts.length; i++) {
+          Plotly.react(
+            this.$refs[this.charts[i].uuid],
+            this.charts[i].traces,
+            this.charts[i].layout
+          );
+        }
+      },
+      deep: true
+    }
+  }
+});
+/* End GRAPH */
+
+Vue.component('graph-window-list', {
+  template: '#graph-window-list',
+  props: ['panels', 'charts', 'restylevent']
+})
+
+var defaultLayoutOptions = {
+  title:'WebScope',
+  showlegend: false,
+  xaxis: {
+    title: 'x'
+  },
+  yaxis: {
+    title: 'y'
+  }
+};
+
+var defaultLineOptions = {
+  color: "#5e9e7e",
+  width: 1,
+  shape: "line"
+};
+
+var vm = new Vue({
+  el: '#app',
+  data: function () {
+   return {
+     charts: [
+       {
+         uuid: "Temperature",
+         traces: [
+           {
+             x: [],
+             y: [],
+             line: defaultLineOptions,
+           }
+         ],
+         layout: defaultLayoutOptions,
+       }
+      ],
+
+    panels: [
+       { name: 'Temperature',
+         windowLength: 120,
+         xlabel: '',
+         ylabel: '',
+
+         signals: [
+           { name: 'p1s1', lastShotNumber: -2, color: 'red' },
+           { name: 'p1s2', lastShotNumber: -2, color: 'blue' },
+           { name: 'p2s1', lastShotNumber: -2, color: 'green' },
+         ]},
+
+    ],
+    panelName: '',
+    panelWindowLength: 120,
+    xlabel: '',
+    ylabel: '',
+    signalName: '',
+    signalColor: '#000000',
+    versionNumber: '201908281800',
+    restylevent: null,
+    incomingPacketAnimation: ['/', '\\'],
+    isDebug: 0,
+   } // end return
+  },
+
+  created() {
+    window.addEventListener('resize', this.handleResize)
+    this.handleResize();
+
+    // parse URL parameters
+    var url = window.location.href;
+    var params = { panel: "", length: 0, xlabel: "", ylabel: "",  s: [], c: [] };
+    var parser = document.createElement('a');
+    parser.href = url;
+    var query = parser.search.substring(1);
+    var vars = query.split('&');   
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split('=');
+      if (pair[0] == "panel") params.panel = decodeURIComponent(pair[1]);
+      if (pair[0] == "length") params.length = decodeURIComponent(pair[1]);
+      if (pair[0] == "s") params.s.push(decodeURIComponent(pair[1]));
+      if (pair[0] == "c") params.c.push(decodeURIComponent(pair[1]));
+      if (pair[0] == "xlabel") params.xlabel = decodeURIComponent(pair[1]);
+      if (pair[0] == "ylabel") params.ylabel = decodeURIComponent(pair[1]);
+      if (pair[0] == "debug") this.isDebug = decodeURIComponent(pair[1]);
+    }
+    var st = [];
+    for (var i=0; i<params.s.length; i++) {
+      var col;
+      if(typeof params.c[i] === 'undefined') {
+        col = 'black';
+      } else {
+       col = params.c[i];
+      }
+      st.push({name: params.s[i], lastShotNumber: -2, color: col});
+    }
+
+    if (params.panel != "") {
+      this.panels = [ {
+        name: params.panel,
+        windowLength: params.length,
+        xlabel: params.xlabel,
+        ylabel: params.ylabel,
+        signals: st,
+      } ];  
+      this.startGraph();
+    }
+
+  },
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize)
+  },
+
+  methods: {
+    handleResize: function() {
+      this.charts[0].layout.height = window.innerHeight-10;
+      this.charts[0].layout.width = window.innerWidth;
+    },
+
+    //
+    // graph management
+    //
+    updateChart: function (receivedMsg) {
+      if (this.isDebug == 1) {console.log('l=' + this.panels[0].windowLength + ' RECEIVED ' + receivedMsg); }
+      var msgArray = receivedMsg.split(" ");
+      var msgProgressiveId = msgArray[0]; // 
+      var msgShotNumber    = msgArray[1]; //
+      var msgSignalName    = msgArray[2]; //
+      var msgFormat        = msgArray[3]; // "L" - date as UTC, "F" - date as float, "A" - date as float and reset array
+      var msgLength        = parseInt(msgArray[4]); //
+
+      if (msgArray.length != 5 + 2*msgLength) {
+        console.log("Wrong format for incoming message: " + receivedMsg);
+        return; // something wrong - cannot parse message
+      }
+
+      var msgLabels = msgArray.slice(5, 5+msgLength);
+
+      //console.log("msgFormat=" + msgFormat);
+
+      if ((msgFormat == "L") || (msgFormat == "l")) {
+        msgLabels = msgLabels.map(function (x) {
+          return (new Date(parseInt(x)));
+        });
+      }
+
+      if ((msgFormat == "F") || (msgFormat == "f") || (msgFormat == "A") || (msgFormat == "a")) {
+        msgLabels = msgLabels.map(function (x) {
+          return (parseFloat(x));
+        });
+      }
+
+      var msgValues = msgArray.slice(5+msgLength, 5+2*msgLength);
+
+      for (i=0; i<this.panels.length; i++) {
+	for (j=0; j<this.panels[i].signals.length; j++) {
+          if (this.panels[i].signals[j].name == msgSignalName) {
+            //
+            // we found the incoming signal in this panel
+            //
+ 	    this.charts[i].traces[j].name = msgSignalName;
+            if (msgFormat == "A" || this.panels[i].signals[j].lastShotNumber != msgShotNumber) {
+              this.charts[i].traces[j].x = msgLabels;
+              this.charts[i].traces[j].y = msgValues;
+            } else {
+              var len = this.charts[i].traces[j].x.length;
+              if (len == 0 || msgLabels[0] >= this.charts[i].traces[j].x[len-1]) {
+                this.charts[i].traces[j].x = this.charts[i].traces[j].x.concat(msgLabels);
+                this.charts[i].traces[j].y = this.charts[i].traces[j].y.concat(msgValues);
+              } else {
+                if (this.isDebug == 1) { 
+                  console.log("Skipping len=" + len + " msgLabels[0]=" + msgLabels[0] + 
+                              " this.charts[i].traces[j].x[len-1]=" + this.charts[i].traces[j].x[len-1] + 
+                              " type:" + typeof msgLabels[0]); }
+              }
+            }
+            this.panels[i].signals[j].lastShotNumber = msgShotNumber;
+            //console.log(this.panels[i].windowLength + " " + this.charts[i].traces[j].x.length);
+            if (this.panels[i].windowLength > 0 && this.charts[i].traces[j].x.length > this.panels[i].windowLength) {
+              this.charts[i].traces[j].x = this.charts[i].traces[j].x.slice(-this.panels[i].windowLength);
+              this.charts[i].traces[j].y = this.charts[i].traces[j].y.slice(-this.panels[i].windowLength);
+            }
+
+/// xxx
+            if (this.panels[i].windowLength > 0) {
+              var arr = this.charts[i].traces[j].x;
+              this.charts[i].layout.xaxis.range = [ arr[0], arr[arr.length-1] ];
+//              this.charts[i].layout.xaxis.range = [ arr[0], arr.slice(-1)[0] ];
+            }
+/// xxx
+
+
+          }
+        }
+        this.charts[i].layout.datarevision = new Date().getTime(); // timestamp of last update
+      }
+    }, // end updateChart()
+
+    /* function to start SSE */
+    ServerSentEventStart: function (signals) {
+      console.log("Starting ServerSentEventStart for " + signals);
+      var eventSource = new EventSource("/sse?" + signals);
+      var callbackFunc = this.updateChart;
+      //var callbackPanels = this.panels;
+      eventSource.onmessage = function (event) {
+        var received_msg = event.data;
+        incomingPacketNumber++;
+        //console.log('RECEIVED: ' + received_msg);
+        // example: RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
+        // example: RECEIVED: 1403 666 ccci L 1 1553705772843 8.614104
+        callbackFunc(received_msg);
+      };
+    },
+
+    startGraph: function() {
+      // init graph structure
+      this.charts = [];
+      for(i=0; i<this.panels.length; i++) {
+        this.charts.push({
+          uuid: this.panels[i].name,
+          traces: [],
+          layout: {
+              title: {text: this.panels[i].name, y:1, yanchor: "top", pad: {t:5}},
+              showlegend: false,
+              margin: { l:40,r:10,t:10,b:30 },
+              xaxis: { title: this.panels[i].xlabel },
+              yaxis: { title: this.panels[i].ylabel },
+              height: window.innerHeight-10,
+              // width: window.innerWidth,
+            },
+          });
+        for (j=0; j<this.panels[i].signals.length; j++) {
+          this.charts[i].traces.push({
+            x: [],
+            y: [],
+            line: { color: this.panels[i].signals[j].color, width:1, shape: "line" },
+          });            
+        }
+        setInterval( function() { 
+          if (isThereDataToPlot) {
+            isThereDataToPlot = false;
+            this.restylevent = new Date().getTime(); // timestamp of last update
+          }
+        }.bind(this), 1000);
+      }
+
+      // start Server    
+      sgns = this.panels.map(p => p.signals).flat().map(x => x.name).join(",");     
+      this.restylevent = new Date().getTime(); // timestamp of last update
+      this.ServerSentEventStart("signals=" + sgns); // example string: "signals=s1,s2,s3"
+    },
+  }
+});
+
+</script>
+</body>
+</html>
