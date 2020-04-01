@@ -313,7 +313,9 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 ch.putData(channel_data[ic])
                 ch.EOFF.putData(float(eoff[ic]))
                 ch.ESLO.putData(float(eslo[ic]))
+                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
 
+                ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
     STORE=store
 
     pass
@@ -352,6 +354,7 @@ def assemble(cls):
         cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':EOFF','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':ESLO', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
+        cls.parts.append({'path':inpfmt%(ch,)+':CAL_INPUT', 'type':'signal'})
     return cls
 
 
