@@ -3138,4 +3138,5 @@ decompile(`zero(32758,1))
 fun nid()nid
 `compile("1")
 # test comment
-/* **/
+/* case should raise TREE-W-NOT_OPEN **/
+case
