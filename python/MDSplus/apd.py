@@ -118,7 +118,7 @@ class Dictionary(dict,Apd):
         def __new__(cls,items):
             return _N.asarray(tuple(d for d in items),'object').view(Dictionary.dict_np)
         def tolist(self):
-            return dict(super(Dictionary.dict_np,self).tolist())
+            return dict(kv for kv in self)
 
     _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
