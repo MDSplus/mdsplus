@@ -13,6 +13,9 @@ var app = express();
 var fs = require("fs");
 var sse;
 
+
+var frozenShot = -2;
+
 //check arguments
 if(process.argv.length != 3 && process.argv.length != 4)
 {
@@ -65,12 +68,33 @@ app.get('/panel.html', function(req, res) {
       res.end(data.toString());
 });
 
-
-function parseGetRequest(inputString) {
-
-  
-}
+///////////////////////////////////////////////////
+var pendingMessages = {};
+var clients = {};
+function sendMessage(message, url) {
+//  listener.send('1 '+message);
+  //return;
+  if (pendingMessages[url] == undefined)
+  {
+    pendingMessages[url] = {numMessages: 0, messages: '', lastTime: Date.now()-101}; //Force the first message to be sent
+  }
+  pendingMessages[url].numMessages++;
+  pendingMessages[url].messages += ' '+message;
  
+  if(Date.now() > pendingMessages[url].lastTime + 300) //10Hz max freq update
+  {
+      for(var i = 0; i < clients[url].length; i++)	
+          clients[url][i].send(pendingMessages[url].numMessages.toString() + pendingMessages[url].messages)
+      if(debug) console.log(pendingMessages[url].numMessages.toString() + pendingMessages[url].messages)
+      //console.log('Listener: ');
+      //console.log(listener);
+      pendingMessages[url] =  {numMessages: 0, messages: '', lastTime: Date.now()};
+  }
+}
+
+//////////////////////////////////////////
+
+
 function getArrayOfSignals(inputString) {
   var pathAndParams = inputString.split("?");
   var signalsString = pathAndParams[1].split("=")[1];
@@ -85,7 +109,6 @@ function getArrayOfSignals(inputString) {
    sse.on('connection', function(client) {
      client.on('close', function(client) { if(debug) console.log('DISCONNECT!');removeConnections(client);})
       console.log('RECEIVED CONNECTION - URL: ' + client.req.url);
-
       var signals = getArrayOfSignals(client.req.url);
       console.log(signals);
 
@@ -126,6 +149,7 @@ function handleEventReception(evMessage)
     try {
       var evItems = evMessage.split(' ');
       var shot = parseInt(evItems[0]);
+      if(shot == frozenShot) return;
       var name = evItems[1];
       var numSamples = parseInt(evItems[3]);
       var times = [];
@@ -136,15 +160,15 @@ function handleEventReception(evMessage)
 	  samples.push(parseFloat(evItems[4+numSamples+i]));
       }
       if(debug) console.log('Received ' + name, numSamples);
-      if(evItems[2] != 'A')
-          addSamples(name, shot, times, samples, evItems[2] == 'L');
+      addSamples(name, shot, times, samples, evItems[2] == 'L');
       if(connections[name] != undefined)
       {
 	  for(var i = 0; i < connections[name].listeners.length; i++)
 	  {
 	      if(debug) console.log('Sending '+ connections[name].timestamp.toString() + ' '+ evMessage);
-	      connections[name].listeners[i].send(connections[name].timestamp.toString() + ' '+ evMessage);
-	  }
+	      sendMessage(connections[name].timestamp.toString() + ' '+ evMessage, connections[name].urls[i]);
+	      //connections[name].listeners[i].send(connections[name].timestamp.toString() + ' '+ evMessage);
+ 	  }
 	  connections[name].timestamp++;
       }
     }
@@ -167,14 +191,24 @@ function removeConnection(name, listener)
     console.log(connections[name]);
     var index = connections[name].listeners.indexOf(listener);
     connections[name].listeners.splice(index, 1);
+    for (client in clients)
+    {
+        index = client.indexOf(listener);
+	if(index >= 0)
+	  client.splice(index, 1);
+    }
 }
 
 function handleNewConnection(name, listener)
 {
+  console.log('HANDLE NEW CONNECTION: '+ listener.req.url);
     if(connections[name] == undefined)
-	connections[name] = {timestamp:0, listeners: [listener]};
+	connections[name] = {timestamp:0, listeners: [listener], urls:[listener.req.url]};
     else
+    {
 	connections[name].listeners.push(listener);
+	connections[name].urls.push(listener.req.url);
+    }
     if(history[name] != undefined)
     {
         var msg = history[name].shot.toString() + ' '+name+((history[name].isAbsoluteTime)?' L ':' F ')+ history[name].times.length.toString();
@@ -183,14 +217,33 @@ function handleNewConnection(name, listener)
         for(var i = 0; i < history[name].samples.length; i++)
 	    msg = msg + ' '+ history[name].samples[i].toString();
         if(debug) console.log("New Connection: " + msg);
-        listener.send(connections[name].timestamp.toString() + ' '+ msg);
+        listener.send('1 '+ connections[name].timestamp.toString() + ' '+ msg);
     }
 }
 
 
 function handleNewConnectionList(signals, listener) {
    signals.map(x => handleNewConnection(x, listener));
+   
+    if(clients[listener.req.url] == undefined)
+        clients[listener.req.url] = [listener];
+    else
+        clients[listener.req.url].push(listener);
 }
+
+
+function handleFreezeShot(shotStr)
+{
+    console.log('Freeze shot '+shotStr);
+    frozenShot = parseInt(shotStr);
+}
+
+function handleUnfreezeShot()
+{
+    console.log('Unfreeze shot '+ frozenShot);
+    frozenShot = -2;
+}
+
 ////////////////EVENT STUFF////////////////////
 const dgram = require('dgram');
 const eventServer = dgram.createSocket({
@@ -224,6 +277,14 @@ function handleEvent(msg, rinfo)
   if(eventName == 'STREAMING')
   {
       handleEventReception(eventData);
+  }
+  else if(eventName == 'STREAMING_FREEZE')
+  {
+      handleFreezeShot(eventData);
+  }
+  else if (eventName = 'STREAMING_UNFREEZE')
+  {
+      handleUnfreezeShot()
   }
 }
 

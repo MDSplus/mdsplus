@@ -4,46 +4,48 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <meta name="author" content="Gianluca.Moro@unipd.it"> 
-  <!-- Version: see variable versionNumber -->
   <title>WebScope</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.6.8/vue.min.js"></script>
+  <!-- Last Plot.ly on 20190320: v1.45.3 -->
+  <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+  <!-- Version: see variable versionNumber -->
 </head>
 
-<!-- help message shown when clicking on the header -->
 <script>
-var helpMessage = 
+const versionNumber = '201910230900';
+
+// help message shown when clicking on the header
+const helpMessage = 
 'WebScope - Usage:' +
 'URL:PORT/?htitle=TITLE&panel=NAME1&s=SIGNALNAME&mnext&panel=NAME2&s=SIGNALNAME\n' +
 '\n' +
-'For other information:\n' +
-'Backend usage: Gabriele.Manduchi@igi.cnr.it\n' +
-'Frontend usage: Gianluca.Moro@igi.cnr.it\n' +
+'For other information: Gianluca.Moro@igi.cnr.it (frontend), Gabriele.Manduchi@igi.cnr.it (backend)\n' +
 '\n' +
-'Global parameters:\n' +
 '- htitle=TITLE: title shown in the header\n' +
 '\n' +
-'Multipanels configuration:\n' +
 'Many panels can be present, each with a set of parameters (at least panel,length,s)\n' +
 '- mnext: show another panel in the same line of the previous one\n' +
 '- mnextnl: same as mnext, but starts a new row of panels\n' +
+'- defaultLength=nnn: number of samples if not indicated in panel configuration\n' + 
 '\n' +
 'Panel configuration:\n' +
 '- panel=NAME: name of the panel\n' +
 '- length=nnn: number of samples\n' +
 '- xlabel=LABEL: label of X axis\n' +
 '- ylabel=LABEL: label of Y axis\n' +
-'- s=NAME: name of signal (you can show as many signals as you want)\n' +
+'- s=NAME: name of signal\n' +
 '- c=COLOR: signal color (default: black, can be: yellow,red,blue,cyan,green,...)\n' +
+'\n' +
 '- debug=1: enable debug messages\n' +
 '\n';
 </script>
 
-<body style="margin-left: 0; margin-right: 0; margin-top: 0; margin-bottom: 0;">
+<body style="margin:3px">
 
   <!-- the Vue.js app -->
   <div id="app">
 
-    <header style="display:inline" onclick="alert(helpMessage)">
+    <header id="mainHeader" style="display:inline;" onclick="alert(helpMessage)">
 
       <!-- Flag of ITER -->
       <svg xmlns="http://www.w3.org/2000/svg" width="30" height="20" viewBox="0 0 81 54">
@@ -99,17 +101,19 @@ var helpMessage =
         <rect width="1" height="2" x="2" fill="#ce2b37"/>
       </svg>
 
-      <!-- running clock -->   
-      <font size="4"><b>{{ currentDate }} {{ currentTime }}</b> </font>
-
-      <!-- hidden version number -->
-      <font size="4" color="white">{{ versionNumber }}</font>
-
-      <!-- page title defined by parameter htitle -->
-      <div style="float: right;"><font size="4"><b>{{ htitle }}</b> </font></div>
+      <!-- running clock, version, title and shot number -->   
+      <font size="4"><b>
+        {{ currentDate }} {{ currentTime }}
+        <font size="1" color="white">{{ versionNumber }}</font> <!-- hidden -->
+        {{ htitle }} <!-- page title defined by parameter htitle -->
+        <div style="display:inline; float: right;">
+          {{ incomingPacketAnimation[(incomingPacketNumber&1)] }}Shot #{{ lastShotNumber }} 
+        </div>
+      </b></font>
     </header>
 
-    <!-- graphs -->
+    <!-- graphs su FRAME -->
+<!--
     <table width="100%" v-for="rowElems in subQuery" cellspacing="0" style="border-collapse: collapse; border:none">
       <tr>
         <td v-for="elem in rowElems" style="padding: 0px;">
@@ -119,85 +123,460 @@ var helpMessage =
         </td>
       </tr>
     </table>
+-->
+
+    <div> <!-- style="width: 100%; display: inline-block; float: right; border-style: none;" -->
+      <graph-window-list-of-rows :panels="panels" :charts="charts" :restylevent="restylevent">
+      </graph-window-list-of-rows>
+    </div>
 
   </div> <!-- end of Vue.js app -->
 
+  <!-- template to build GUI -->
+  <template id="graph-window-list-of-rows">
+    <div> <!-- style="width: 100%;" -->
+        <graph-window-list v-for="(panelsinrow, key, index) in panels" :panels="panelsinrow" :charts="charts" 
+          :key="key" :index="index" :restylevent="restylevent"></graph-window-list>
+    </div>
+  </template>
+
+  <!-- template to build GUI -->
+  <template id="graph-window-list">
+    <div>  <!-- style="width: 100%; display:inline;" -->
+        <reactive-chart v-for="(panel, key, index) in panels" :panel="panel" :charts="charts" 
+          :key="key" :index="index" :restylevent="restylevent"></reactive-chart>
+    </div>
+  </template>
+
+  <!-- template to build GUI -->
+  <template id="reactive-chart"> <!-- style="width: 100%;" -->
+    <div :ref="panel.chartUuid" :id=panel.chartUuid style="display: inline-block; margin:1px; border: 1px; border-style: solid; border-color: black;"></div>
+  </template>
+
 <script>
 
-function removeBorderAmp(str) {
-    if (str.charAt(0) === '&') str = str.slice(1);
-    if (str.charAt(str.length -1) === '&') str = str.slice(0, -1);
-    return str;
-}
+const defaultWindowLength = 120;
+const defaultRowyx = 0;
+const defaultLastShotNumber = -2
+
+const defaultBodyMargin = 3;
+
+//get header occupation -  available infos: width, height, top, bottom, left, right (27px)
+const defaultHeaderHeight = document.getElementById('mainHeader').getBoundingClientRect().bottom;
+const defaultStartingPanelWidth = 150;
+const defaultStartingPanelHeight = 100;
+
+const defaultLineOptionsColor = 'black';
+const defaultLineOptionsWidth = 1;
+const defaultLineOptionsShape = 'line';
+
+const incomingPacketAnimation = ['/', '\\'];
+
+let lastUpdate = Date.now();
+let isThereDataToPlot = false;
+let incomingPacketNumber = 0;
+
+/* GRAPH */
+Vue.component("reactive-chart", {
+  props: ["panel", "charts", "index", "restylevent"],
+  template: '#reactive-chart', 
+  mounted() {
+    //console.log("Read panel infos: chartIndex: ", this.$props.panel.chartIndex);
+    let chart = this.$props.charts[this.$props.panel.chartIndex];
+    Plotly.newPlot(chart.uuid, chart.traces, chart.layout, {displayModeBar: false});
+  },
+  watch: {
+    restylevent: {
+      handler: function() {
+        let chart = this.$props.charts[this.$props.panel.chartIndex];
+        Plotly.react(chart.uuid, chart.traces, chart.layout);
+      }
+    },
+
+    charts: {
+      handler: function() {
+        // limit update frequency to 10Hz (100ms)
+        //if (Date.now() - lastUpdate < 100) {
+        //  //if (this.isDebug == 1) { 
+        //    console.log("charts: skipping plot!!!"); 
+        //  //}
+        //  isThereDataToPlot = true;
+        //  return; 
+        //}
+
+        isThereDataToPlot = false;
+        lastUpdate = Date.now();
+        let chart = this.$props.charts[this.$props.panel.chartIndex];
+        Plotly.react(chart.uuid, chart.traces, chart.layout);
+      },
+      deep: true
+    }
+  }
+});
+/* End GRAPH */
+
+Vue.component('graph-window-list', {
+  template: '#graph-window-list',
+  props: ['panels', 'charts', 'restylevent']
+})
+
+Vue.component('graph-window-list-of-rows', {
+  template: '#graph-window-list-of-rows',
+  props: ['panels', 'charts', 'restylevent']
+})
 
 var vm = new Vue({
   el: '#app',
   data: function () {
     return {
       htitle: '',         // header title
-      currentDate: '',
-      currentTime: '',
-      lastShotNumber: -2,
-      mpanels: [1],       // number of panels to show for each line
-      msize: [],          // if present, pixels of each row, otherwise equally distributed
-      subQuery: [],       // query for each frame 
+      currentDate: '',    // clock management
+      currentTime: '',    // time management
+      lastShotNumber: -2, // current shot
+      defaultLength: defaultWindowLength,
       isDebug: 0,
-      versionNumber: '201908011100',
+      restylevent: null,
+
+      charts: [
+      /* array of charts, mapped to corresponding panel via uuid
+        {
+         uuid: "Temperature",
+         traces: [
+           {
+             x: [],
+             y: [],
+             line: {
+               color: defaultLineOptionsColor,
+               width: defaultLineOptionsWidth,
+               shape: defaultLineOptionsShape,
+             },
+           }
+         ],
+         layout: {
+           title: {
+             text:'WebScope',
+             y: 1,
+             yanchor: "top",
+             pad: {t:5},
+             font: {
+               family: 'Courier New, monospace',
+               size: 24
+           },
+           showlegend: false,
+           xaxis: { title: 'x' },
+           yaxis: { title: 'y' },
+         },
+       } */
+      ],
+
+      panels: [
+      /* array of array: each elementis an array of panels to be fitted in a row
+       { name: 'Temperature',
+         windowLength: defaultWindowLength,
+         width: defaultStartingPanelWidth;
+         height: defaultStartingPanelHeight;
+         xlabel: '',
+         ylabel: '',
+         rowypx: 0,
+         chartIndex: -1,
+         signals: [
+           { name: 'p1s1', lastShotNumber: -2, color: 'red' },
+           { name: 'p1s2', lastShotNumber: -2, color: 'blue' },
+           { name: 'p2s1', lastShotNumber: -2, color: 'green' },
+         ]},
+      */
+      ],
+
     } // end return
   },
 
-  computed: {
-    computedIframeh() {
-        return ( Math.floor(90 / this.mpanels.length) ); 
-    },
-  },
+  //computed: {
+  //  computedIframeh() {
+  //      return ( Math.floor(90 / this.mpanels.length) ); 
+  //  },
+  //},
+
+  // TODO: check if there is a missing panelName?
 
   created() {
+    window.addEventListener('resize', this.handleResize)
+
     // parse URL parameters
     var url = window.location.href;
     var parser = document.createElement('a');
     parser.href = url;
     var query = parser.search.substring(1);
-    if (this.isDebug) { console.log("Page initialization with parameters: " + query); }
     var vars = query.split('&');   
     for (var i = 0; i < vars.length; i++) {
 	var pair = vars[i].split('=');
-        if (pair[0] == "mnextnl")   this.mpanels.push(1);
-        if (pair[0] == "mnext")     this.mpanels[this.mpanels.length-1]++;
-        if (pair[0] == "htitle")    this.htitle = decodeURIComponent(pair[1]);
-        if (pair[0] == "msize")     this.msize = decodeURIComponent(pair[1]).split(',');
-        if (pair[0] == "debug")     this.isDebug = decodeURIComponent(pair[1]);
+        if (pair[0] == "htitle") this.htitle = decodeURIComponent(pair[1]);
+        if (pair[0] == "debug") this.isDebug = decodeURIComponent(pair[1]);
+        if (pair[0] == "defaultLength" || pair[0] == "defaultlength") 
+          this.defaultLength = decodeURIComponent(pair[1]);
     }
+    if (this.isDebug) { console.log("Page initialization with parameters: ", query); }
 
-    var rows = query.split("mnextnl");
-    for (var nrow=0; nrow<rows.length; nrow++) {
-        this.subQuery[nrow] = rows[nrow].split("mnext");        
-        for (var i=0; i<this.subQuery[nrow].length; i++) {
-            this.subQuery[nrow][i] = "/panel.html?" + removeBorderAmp(this.subQuery[nrow][i]);
-        }
-    }
+    this.panels = query.split("mnextnl").map(row =>
+      row.split("mnext").map(pan => {
+            let vars = pan.split('&');   
+            let ausName = 'defaultName'; 
+            let ausWindowLength = this.defaultLength; 
+            let ausS = []; 
+            let ausC = [];
+            let ausXlabel = ''; 
+            let ausYlabel = ''; 
+            let ausRowypx = defaultRowyx;
+            for (var i = 0; i < vars.length; i++) {
+              var pair = vars[i].split('=');
+	      switch (pair[0]) {
+                case "panel":  ausName = decodeURIComponent(pair[1]); break;
+                case "length": ausWindowLength = decodeURIComponent(pair[1]); break;
+                case "s":      ausS.push(decodeURIComponent(pair[1])); break;
+                case "c":      ausC.push(decodeURIComponent(pair[1])); break;
+                case "xlabel": ausXlabel = decodeURIComponent(pair[1]); break;
+                case "ylabel": ausYlabel = decodeURIComponent(pair[1]); break;
+                case "rowypx": ausRowypx = decodeURIComponent(pair[1]); break;
+              }
+            }
+            return { name:ausName, 
+                     windowLength: ausWindowLength, 
+                     width: defaultStartingPanelWidth,
+                     height: defaultStartingPanelHeight,
+                     xlabel:ausXlabel, 
+                     ylabel:ausYlabel, 
+                     rowypx:ausRowypx,
+                     chartIndex:-1,
+                     signals: ausS.map(function (s,i) {
+                                return { name:s, 
+                                         lastShotNumber: defaultLastShotNumber, 
+                                         color: (typeof ausC[i] === 'undefined')?'black':ausC[i]};
+                                       })
+                   };
+      })
+    );
 
     if (this.isDebug) { 
-      console.log("Configuration: htitle=" + this.htitle + " mpanels=" + this.mpanels + " msize=" + this.msize + " debug=" + this.isDebug); 
-      console.log("Query for each panel: " + this.subQuery);
+      console.log("Configuration: htitle=" + this.htitle + " panels=", this.panels, " debug=" + this.isDebug); 
     }
+
+    this.startGraph();
+
   },
+
+  destroyed() {
+    window.removeEventListener('resize', this.handleResize)
+  },
+
+  methods: {
+
+    computeChartHeightWidth: function() {
+      let globalH = window.innerHeight; // defaultHeaderHeight
+      let globalW = window.innerWidth;
+
+      if (this.isDebug == 1) { console.log("Window size (h,w): " + globalH + "," + globalW); }
+      let numberOfRows = this.panels.length;
+      let heightOfRow = Math.trunc((globalH-defaultHeaderHeight-10*numberOfRows)/numberOfRows);
+      for (var i=0; i<this.panels.length; i++) {
+        let widthOfRow = Math.trunc((globalW-2*defaultBodyMargin-4*this.panels[i].length)/this.panels[i].length);
+        for (var j=0; j<this.panels[i].length; j++) {
+          this.panels[i][j].height = heightOfRow;
+          this.panels[i][j].width = widthOfRow;
+        }
+      }
+
+    },
+
+    updateChartHeightWidth: function() {
+      for (var i=0; i<this.panels.length; i++) {
+        for (var j=0; j<this.panels[i].length; j++) {
+          let index = this.panels[i][j].chartIndex;
+          this.charts[index].layout.height = this.panels[i][j].height;
+          this.charts[index].layout.width = this.panels[i][j].width;
+        }
+      }
+    },
+
+    handleResize: function() {
+      this.computeChartHeightWidth();
+      this.updateChartHeightWidth();
+    },
+
+    multiUpdateChart: function (msgArray) {
+      // if (this.isDebug == 1) { console.log('multiUpdateChart: RECEIVED ' + msgArray); }
+      let numberOfMulti = parseInt(msgArray[0]);
+      // if (this.isDebug == 1) { console.log('multiUpdateChart: PACKETS: ' + numberOfMulti); }
+      // remove first element - which is the number of packets
+      let managedElements = 1;
+      for (var i=0; i<numberOfMulti; i++) {
+        // console.log("multiUpdateChart: pacchetto: " + i);
+        for(var h = 0; h < managedElements; h++)
+          msgArray.shift();
+//        msgArray.shift(0, managedElements);
+        managedElements = this.updateChart(msgArray);
+        // console.log("multiUpdateChart: FINE pacchetto: " + i);
+      }
+    },
+
+    updateChart: function (msgArray) {
+      var msgProgressiveId = msgArray[0];
+      var msgShotNumber    = msgArray[1];
+      var msgSignalName    = msgArray[2];
+      if(this.isDebug == 1) console.log("UPDATE CART!!!!!!!!!!!!!!!!!!!!!! signal name: " + msgSignalName + " format: " + msgArray[3]);
+      var msgFormat        = msgArray[3].toUpperCase(); 
+                             // "L" date as UTC, "F" date as float, "A" date as float and reset array
+      var msgLength        = parseInt(msgArray[4]);
+
+      //if (msgArray.length != 5 + 2*msgLength) {
+      //  console.log("Wrong format for incoming message: " + receivedMsg);
+      //  return; // something wrong - cannot parse message
+      //}
+      let managedElements = 5 + 2*msgLength;
+      let msgLabels = msgArray.slice(5, 5+msgLength);
+      switch (msgFormat) {
+        case "L": 
+          msgLabels = msgLabels.map(function (x) { return (new Date(parseInt(x))); }); 
+          break;
+        case "F":
+        case "A":
+          msgLabels = msgLabels.map(function (x) { return (parseFloat(x)); }); 
+          break;
+      }
+      let msgValues = msgArray.slice(5+msgLength, 5+2*msgLength);
+
+      if(this.isDebug == 1) console.log('Cerco '+msgSignalName);
+      for (var i=0; i<this.panels.length; i++) {
+       for (var k=0; k<this.panels[i].length; k++) {
+	for (var j=0; j<this.panels[i][k].signals.length; j++) {
+          if (this.panels[i][k].signals[j].name == msgSignalName) {
+              if(this.isDebug == 1) console.log('Trovato '+j + ' '+i+' '+k+' '+msgSignalName);
+            //
+            // we found the incoming signal in this panel
+            //
+            let chartIndex = this.panels[i][k].chartIndex;
+ 	    this.charts[chartIndex].traces[j].name = msgSignalName;
+            if (msgFormat == "A" || this.panels[i][k].signals[j].lastShotNumber != msgShotNumber) {
+              this.charts[chartIndex].traces[j].x = msgLabels;
+              this.charts[chartIndex].traces[j].y = msgValues;
+            } else {
+              var len = this.charts[chartIndex].traces[j].x.length;
+              if (len == 0 || msgLabels[0] >= this.charts[chartIndex].traces[j].x[len-1]) {
+                this.charts[chartIndex].traces[j].x = this.charts[chartIndex].traces[j].x.concat(msgLabels);
+                this.charts[chartIndex].traces[j].y = this.charts[chartIndex].traces[j].y.concat(msgValues);
+                if (this.isDebug == 1) console.log('Aggiorno chart '+chartIndex);
+              } else {
+                if (this.isDebug == 1) { 
+                  console.log("Skipping len=" + len + " msgLabels[0]=" + msgLabels[0] + 
+                              " this.charts[chartIndex].traces[j].x[len-1]=" + 
+                              this.charts[chartIndex].traces[j].x[len-1] + 
+                              " type:" + typeof msgLabels[0]); }
+              }
+            }
+            this.panels[i][k].signals[j].lastShotNumber = msgShotNumber;
+            this.lastShotNumber = msgShotNumber;
+
+            if (this.panels[i][k].windowLength > 0 && 
+                this.charts[chartIndex].traces[j].x.length > this.panels[i][k].windowLength) {
+              this.charts[chartIndex].traces[j].x = this.charts[chartIndex].traces[j].x.slice(-this.panels[i][k].windowLength);
+              this.charts[chartIndex].traces[j].y = this.charts[chartIndex].traces[j].y.slice(-this.panels[i][k].windowLength);
+            }
+
+            /// if windowLength is fixed, keep always that size, even if no data is present
+            if (this.panels[i][k].windowLength > 0) {
+//              if (this.isDebug == 1) { console.log("updateChart: chartIndex=" + chartIndex + " arr[0]=" + arr[0] + "") }
+              var arr = this.charts[chartIndex].traces[j].x;
+              this.charts[chartIndex].layout.xaxis.range = [ arr[0], arr[arr.length-1] ];
+            }
+            this.charts[chartIndex].layout.datarevision = new Date().getTime(); // timestamp of last update
+          }
+        }
+       } // end for panel row
+      } // end for panel complete
+      return managedElements;
+    }, // end updateChart
+
+    /* function to start SSE */
+    ServerSentEventStart: function (signals) {
+      if (this.isDebug == 1) { console.log("Starting ServerSentEventStart for " + signals); }
+      var eventSource = new EventSource("/sse?" + signals);
+      var callbackFunc = this.multiUpdateChart;
+      var localDebug = this.isDebug;
+      eventSource.onmessage = function (event) {
+        var received_msg = event.data.replace(/\s+/g, ' '); // remove multi-spaces
+        incomingPacketNumber++;
+        if (localDebug >= 1) { console.log('EVENT RECEIVED: ' + incomingPacketNumber+ '  '+received_msg); }
+        // example: RECEIVED: 2698 666 p1s1 F 1 2870.000000 -8.979409
+        // example: RECEIVED: 1403 666 ccci L 1 1553705772843 8.614104
+        callbackFunc(received_msg.split(" "));
+      };
+    },
+
+    startGraph: function() {
+      // init graph structure
+      this.charts = [];
+      for (var i=0; i<this.panels.length; i++) { // for all the rows
+        for (var j=0; j<this.panels[i].length; j++) { // for all the panels in this row
+          let tpij = this.panels[i][j];
+          let chartUuid = tpij.name + "_r" + i + "c" + j;
+          this.charts.push({
+            uuid: chartUuid,
+            traces: tpij.signals.map(function (s,sIndex) { return {
+                x: [],
+                y: [],
+                line: { color: tpij.signals[sIndex].color, 
+                        width: defaultLineOptionsWidth, 
+                        shape: defaultLineOptionsShape },
+              }}),
+            layout: {
+                title: {text: tpij.name, y:1, yanchor: "top", pad: {t:2}, font: {size: 10}},
+                showlegend: false,
+                margin: { l:40,r:10,t:10,b:30 },
+                xaxis: { title: tpij.xlabel },
+                yaxis: { title: tpij.ylabel },
+                height: tpij.height,
+                width: tpij.width,
+
+              },
+            });
+          this.panels[i][j].chartIndex = this.charts.length - 1;
+          this.panels[i][j].chartUuid = chartUuid;
+        } // end for panels - row
+      } // end for panels - complete
+
+      this.handleResize();
+
+      setInterval( function() { 
+        if (isThereDataToPlot) {
+          isThereDataToPlot = false;
+          this.restylevent = new Date().getTime(); // timestamp of last update
+        }
+      }.bind(this), 1000);
+
+      if (this.isDebug) { console.log("Starting with charts: ", this.charts); }
+
+      // start Server    
+      this.restylevent = new Date().getTime(); // timestamp of last update
+      // example string: "signals=s1,s2,s3"
+      this.ServerSentEventStart("signals=" + 
+        this.panels.flat().map(p => p.signals).flat().map(x => x.name).join(",")); 
+    },
+  },
+
 
 });
 
 <!-- clock management -->
-var week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
-var timerID = setInterval(updateTime, 1000);
-function zeroPad(i) {
-  if (i < 10) {i = "0" + i};
-  return i;
+const week = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+function pad0(i) { 
+  return (i<10?"0"+i:i); 
 }
 function updateTime() {
   var cd = new Date();
-  vm.currentTime = zeroPad(cd.getHours()) + ':' + zeroPad(cd.getMinutes()) + ':' + zeroPad(cd.getSeconds());
-  vm.currentDate = zeroPad(cd.getDate()) + '/' + zeroPad(cd.getMonth()+1) + '/' + cd.getFullYear() + ' ' + week[cd.getDay()];
+  vm.currentTime = pad0(cd.getHours()) + ':' + pad0(cd.getMinutes()) + ':' + pad0(cd.getSeconds());
+  vm.currentDate = pad0(cd.getDate()) + '/' + pad0(cd.getMonth()+1) + '/' + cd.getFullYear() + ' ' + week[cd.getDay()];
+  setTimeout(updateTime, 1000);
 };
 updateTime();
+<!-- END OF clock management -->
 
 </script>
 
