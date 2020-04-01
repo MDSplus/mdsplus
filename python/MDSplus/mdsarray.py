@@ -404,7 +404,7 @@ class StringArray(Array):
         if length  > 0:
             for i, val in enumerate(value.flat):
                 if len(val) < length:
-                    value.flat[i] = val.ljust(length)
+                    value.flat[i] = _ver.tobytes(val).ljust(length)
         self._value = value
     @property
     def value(self):
