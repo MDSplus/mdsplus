@@ -119,17 +119,12 @@ class Data(NoTreeRef):
     _help=None
     _validation=None
     __descriptor=None
-    @property  # used by numpy.array
+    @property  # numpy array
     def __array_interface__(self):
         data = self.data()
-        return {
-            'shape':data.shape,
-            'typestr':data.dtype.str,
-            'descr':data.dtype.descr,
-            'strides':data.strides,
-            'data':data,
-            'version':3,
-        }
+        aif = data.__array_interface__
+        aif['data'] = data
+        return aif
 
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data object
