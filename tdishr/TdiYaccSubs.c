@@ -218,12 +218,10 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG) {
 int tdi_yacc_RESOLVE(mds_function_t **out_ptr_ptr, TDITHREADSTATIC_ARG) {
   mds_function_t *out_ptr = *out_ptr_ptr;
   struct TdiFunctionStruct *this_ptr;
-  int j, ndesc, opcode;
-
   if (out_ptr == 0 || out_ptr->dtype != DTYPE_FUNCTION)
     return MDSplusSUCCESS;
-  ndesc = out_ptr->ndesc;
-  opcode = *(unsigned short *)out_ptr->pointer;
+  int j, ndesc = out_ptr->ndesc;
+  opcode_t opcode = *(opcode_t *)out_ptr->pointer;
   this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   if (ndesc < this_ptr->m1 || ndesc > this_ptr->m2)
     goto doit;			/*force an error */

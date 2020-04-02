@@ -313,7 +313,6 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 		USING must have first argument with relative paths.
 		********************************************************************/
 bracket	: '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
-	| '['			{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
 	| bracket ',' ass		{if ($$.rptr->ndesc >= 250) {
 					_RESOLVE($1);
 					_FULL1(OPC_VECTOR,$1,$$);
@@ -445,6 +444,7 @@ primaX	: modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/
 	| textX
 	| paren								/*primary parentheses*/
 	| bracket ']'		{_RESOLVE($$);}				/*constructor*/
+	| '[' ']'		{_JUST0(OPC_VECTOR,$$);_RESOLVE($$);}	/*null constructor*/
 	;
 	/******************************************************
 	A terminal semicolon in lex makes final exp into stmt.
