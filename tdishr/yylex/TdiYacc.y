@@ -243,10 +243,10 @@ label	: flabel
 	We separate comma in expression from comma in subscript
 	because subscripts permit null/full value.
 	*********************************************************/
-unaryX	: ADD unaryX 		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
-	| UNARY unaryX	 	{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
-	| UNARYS unaryX 	{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
-	| INC unaryX 		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
+unaryX	: ADD unaryX		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
+	| UNARY unaryX		{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
+	| UNARYS unaryX		{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
+	| INC unaryX		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
 	| postX
 	;
 ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
@@ -314,7 +314,7 @@ ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
 		********************************************************************/
 bracket	: '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
 	| '['			{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
-	| bracket ',' ass 		{if ($$.rptr->ndesc >= 250) {
+	| bracket ',' ass		{if ($$.rptr->ndesc >= 250) {
 					_RESOLVE($1);
 					_FULL1(OPC_VECTOR,$1,$$);
 				}
@@ -334,12 +334,12 @@ exp	: opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
 	| ass
 	| ass ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 	;
-sub	: exp 		{if ($$.rptr
+sub	: exp		{if ($$.rptr
 				&& $$.builtin != -2
 				&& $$.rptr->dtype == DTYPE_FUNCTION
 				&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
 				else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
-       	| %empty		{_JUST0(OPC_ABORT,$$);}
+	| %empty		{_JUST0(OPC_ABORT,$$);}
 	;
 paren	: '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
 	| '(' stmt_lst ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
@@ -362,7 +362,7 @@ postX	: primaX
 					$$.rptr->ndesc++;
 					_RESOLVE($$);
 				}
-	| postX INC 	 {int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
+	| postX INC	 {int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
 					_JUST1(j,$1,$$);}		/*postINC*/
 	| flabel '(' sub ')'	{$$=$3;
 				if ($1.builtin < 0) {int j;		/*unknown today*/
