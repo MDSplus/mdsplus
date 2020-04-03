@@ -23,14 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import numpy as np
-import MDSplus
-import threading
-# import Queue
-from queue import Queue, Empty
-import socket
-import time
-import inspect
 import acq400_base
 
 
