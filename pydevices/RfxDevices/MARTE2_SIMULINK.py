@@ -64,6 +64,7 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
       WrapperLib.WCAPI_GetNumModelParameters.restype  = ctypes.c_int
       numParameters = WrapperLib.WCAPI_GetNumModelParameters(mmi)
 
+
 # Input structure
       WrapperLib.WCAPI_GetRootInputs.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetRootInputs.restype  = ctypes.POINTER(None)
@@ -327,7 +328,7 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
                 raise Exception('Unsupported parameter datatype.')
 
        # retrieved data is saved to a dictionary
-          paramDict = dict(name = retrievedName, type = MARTe2Typename, dimensions = dimension, value = mdsplusValue)
+          paramDict = dict(name = 'Parameters.'+retrievedName, type = MARTe2Typename, dimensions = dimension, value = mdsplusValue)
         
         # dictionary is appended to the MDSplus-style list
           paramList.append(paramDict)

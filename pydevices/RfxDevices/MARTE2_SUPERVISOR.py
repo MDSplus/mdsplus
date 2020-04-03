@@ -12,10 +12,10 @@ class MARTE2_SUPERVISOR(Device):
       parts.append({'path':'.STATE_'+str(stateIdx+1)+':NAME', 'type':'text'})
       parts.append({'path':'.STATE_'+str(stateIdx+1)+':NUM_THREADS', 'type':'numeric'})
       for threadIdx in range(10):
-	parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1), 'type':'structure'})
-	parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':NAME', 'type':'text'})
-	parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':CORE', 'type':'numeric'})
-	parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAMS', 'type':'text'})
+        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1), 'type':'structure'})
+        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':NAME', 'type':'text'})
+        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':CORE', 'type':'numeric'})
+        parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAMS', 'type':'text'})
     parts.append({'path':'.TIMES', 'type':'structure'}) 
     for stateIdx in range(10):
       parts.append({'path':'.TIMES.STATE_'+str(stateIdx+1), 'type':'structure'})
@@ -50,6 +50,7 @@ class MARTE2_SUPERVISOR(Device):
     MODE_OUTPUT = 4
 
     def getInfo(self):
+      error = ''
       info = {}
       t=self.getTree()
       numStates = self.num_states.data()
@@ -69,26 +70,26 @@ class MARTE2_SUPERVISOR(Device):
             currGamNid = t.getNode(gam);
             nid = currGamNid.getNid()
             if nid in threadMap:
-	      threadMap[nid] += [threadName]
-	    else:
-	      threadMap[nid] = [threadName]
+              threadMap[nid] += [threadName]
+            else:
+              threadMap[nid] = [threadName]
 
 
       #Second iteration, build the remaining
       for state in range(numStates):
-	stateInfo = {}
-	stateInfo['name'] = getattr(self, 'state_%d_name'%(state+1)).data()
+        stateInfo = {}
+        stateInfo['name'] = getattr(self, 'state_%d_name'%(state+1)).data()
         numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
         stateThreads = []
         for thread in range(numThreads):
-	  threadInfo = {}
+          threadInfo = {}
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
           threadName = getattr(self, 'state_%d_thread_%d_name'%(state+1, thread+1)).data()
           try:
-	    core = getattr(self, 'state_%d_thread_%d_core'%(state+1, thread+1)).data()
-	    threadInfo['core'] = core
-	  except:
-	    pass
+            core = getattr(self, 'state_%d_thread_%d_core'%(state+1, thread+1)).data()
+            threadInfo['core'] = core
+          except:
+            pass
           threadInfo['name'] = threadName
           gamNames = []
           threadPeriod = 0
@@ -103,7 +104,8 @@ class MARTE2_SUPERVISOR(Device):
                   currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
                   gamNids.append(currGamNid.getNid())
                   if currPeriod > 0 and threadPeriod > 0:
-                    print("MARTE2 SUPERVISOR ERROR: More than one component driving thread timing");
+                    error = 'More than one component driving thread timing'
+                    print('MARTE2 SUPERVISOR ERROR: '+ error);
                   else:
                     if currPeriod > 0:
                       threadPeriod = currPeriod
@@ -114,15 +116,16 @@ class MARTE2_SUPERVISOR(Device):
                 gamNames += gamList
 #######################TIMINGS
           if threadPeriod == 0:
-            print("MARTE2 SUPERVISOR ERROR: No component driving thread timing");
+            error = 'No component driving thread timing'
+            print('MARTE2 SUPERVISOR ERROR: '+error);
 
           gamList = []
           self.getTimingInfo(state, thread, threadPeriod, retGams, retData, gamList)
           gamNames += gamList
 #############################
  
-	  threadInfo['gams'] = gamNames
-	  stateThreads.append(threadInfo)
+          threadInfo['gams'] = gamNames
+          stateThreads.append(threadInfo)
         stateInfo['threads'] = stateThreads
         statesInfo.append(stateInfo)
       info['states'] = statesInfo
@@ -135,7 +138,7 @@ class MARTE2_SUPERVISOR(Device):
 #      print(info)
 #      print('@@@@@@@@@@@@@@@@@@@@@@@')
 #      print(threadMap)
-      return info, threadMap
+      return error, info, threadMap
 
 
 #Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
@@ -156,7 +159,7 @@ class MARTE2_SUPERVISOR(Device):
           gamClass = currGamNid.getData().getDevice()
           gamInstance = gamClass(currGamNid)
           gamMode = gamInstance.mode.data()
- 	  if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
+          if gamMode == MARTE2_SUPERVISOR.MODE_GAM:
             timeSignals.append(gamName+'_ReadTime')
             timeSignals.append(gamName+'_ExecTime')
           elif gamMode == MARTE2_SUPERVISOR.MODE_OUTPUT:
@@ -231,7 +234,9 @@ class MARTE2_SUPERVISOR(Device):
 
 
     def buildConfiguration(self):
-      info, threadMap = self.getInfo()
+      error, info, threadMap = self.getInfo()
+      if error != '':
+        return 0
       confText = '+MDS_EVENTS = {\n'
       confText += '  Class = MDSEventManager\n'
       confText += '  StackSize = 1048576\n'
@@ -295,7 +300,7 @@ class MARTE2_SUPERVISOR(Device):
       confText += '  }\n'
 
       for dataSource in info['data_sources']:
-	confText += dataSource
+        confText += dataSource
       confText += '  }\n'
 
       confText += ' +States = {\n'
@@ -312,29 +317,29 @@ class MARTE2_SUPERVISOR(Device):
       confText += '    }\n'
 
       for state in info['states']:
-	confText += '  +'+state['name'] + ' = {\n'
-	confText += '  Class = RealTimeState\n'
-	confText += '  +Threads = {\n'
-	confText += '    Class = ReferenceContainer\n'
-	for thread in state['threads']:
-	  confText += '    +'+thread['name']+' = {\n'
+        confText += '  +'+state['name'] + ' = {\n'
+        confText += '  Class = RealTimeState\n'
+        confText += '  +Threads = {\n'
+        confText += '    Class = ReferenceContainer\n'
+        for thread in state['threads']:
+          confText += '    +'+thread['name']+' = {\n'
           confText += '      Class = RealTimeThread\n'
           if 'core' in thread:
-	    confText += '      CPUs = '+str(thread['core'])+'\n'
+            confText += '      CPUs = '+str(thread['core'])+'\n'
           functionStr = ''
           for gamName in thread['gams']:
-	    functionStr += gamName + ' '
-	  confText += '      Functions = {'+functionStr+'}\n'
-	  confText += '     }\n'
-	confText += '   }\n'
-	confText += '  }\n'
+           functionStr += gamName + ' '
+          confText += '      Functions = {'+functionStr+'}\n'
+          confText += '     }\n'
+        confText += '   }\n'
+        confText += '  }\n'
       confText += ' }\n'
       confText += ' +Scheduler = {\n'
       confText += '   Class = GAMScheduler\n'
       confText += '   TimingDataSource = Timings\n'
       confText += ' }\n'
       confText += '}\n'
-      print confText
+      print (confText)
       f = open(info['name']+'_marte_configuration.cfg', 'w')
       f.write(confText)
       f.close()
@@ -379,8 +384,6 @@ class MARTE2_SUPERVISOR(Device):
       eventString1 = marteName+':StopCurrentStateExecution:XX'
       eventString2 = marteName+':'+'PrepareNextState:IDLE'
       eventString3 = marteName+':StartNextStateExecution:XX'
-      print(eventString1)
-      print(eventString2)
       Event.seteventRaw(marteName, np.frombuffer(eventString1, dtype = np.uint8))
       time.sleep(0.1)
       Event.seteventRaw(marteName, np.frombuffer(eventString2, dtype = np.uint8))
@@ -401,8 +404,9 @@ class MARTE2_SUPERVISOR(Device):
       gamInstances = []
  
 
-      info, threadMap = self.getInfo()
-
+      error, info, threadMap = self.getInfo()
+      if error != '':
+        return error
       for state in range(numStates):
         numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
         for thread in range(numThreads):

@@ -165,7 +165,6 @@ class MARTE2_COMPONENT(Device):
         else: 
           currValStr += char
       tokens = currValStr.split()
-      print(tokens)
       if len(tokens) <= 1:
         return valStr
       outVal = ''
@@ -222,7 +221,6 @@ class MARTE2_COMPONENT(Device):
       rootParDict = {}
       for paramDict in paramDicts:
         currName = paramDict['name']
-        print('CURR NAME: '+currName)
         names = currName.split('.')
         if len(names) == 1: #resolve current level of parameters       
           for tab in range(nTabs):
@@ -236,15 +234,11 @@ class MARTE2_COMPONENT(Device):
             rootParDict[names[0]].append({'name': currName[currName.find('.')+1:], 'is_text': paramDict['is_text'], 'value': paramDict['value']})
           else:
             rootParDict[names[0]] = [{'name': currName[currName.find('.')+1:], 'is_text': paramDict['is_text'], 'value': paramDict['value']}]
-      print('ORA MI CHIAMO')
       for key in rootParDict.keys():
-	print('KEY: '+key)
         for tab in range(nTabs):
           outText += '   '
         outText += key+' = {\n' 
-        print('MI CHIAMO')
         outText = self.reportParameters(rootParDict[key], outText, nTabs + 1)
-        print('MI CHIAMATO')
         for tab in range(nTabs):
           outText += '   '
         outText += '}\n'
@@ -1378,9 +1372,6 @@ class MARTE2_COMPONENT(Device):
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
-
-      
-      print('OUT OPERIOD: '+str(outPeriod))
       return outPeriod
 
 
@@ -1714,7 +1705,7 @@ class MARTE2_COMPONENT(Device):
 
       timebase = self.timebase.getData() #Will always succeed since it is called AFTER checkGeneric
       if isinstance(timebase, Range):
-        return TIMEBASE_GENERATOR  #Note this will be overridden by Sync
+        return MARTE2_COMPONENT.TIMEBASE_GENERATOR  #Note this will be overridden by Sync
 
       prevTimebase = timebase   #Checks no more needed here
       while isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
