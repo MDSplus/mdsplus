@@ -213,6 +213,31 @@ static char *getExpression(FILE *f_in) {
   return ans;
 }
 
+static void print_help(int error)
+{
+  FILE *file = error ? stderr : stdout;
+  fprintf(file,
+"tditest help:\n"
+"  -h, --help		: print this help and exit\n"
+"  -q, --quiet		: suppress output of errors and results\n"
+"  -s, --server <server>	: evaluate expression on server (experimental)\n"
+"  -v, --verbose		: print this help and exit\n"
+);
+  exit(error);
+}
+
+static inline char *get_arg(
+	const int argc,
+	char **const  args,
+	const int inext,
+	const char *const arg)
+{
+  if (argc <= inext) {
+    fprintf(stderr, "Error %s requires a value but none given\n", arg);
+    print_help(2);
+  }
+  return args[inext];
+}
 int main(int argc, char **argv)
 {
   FILE *f_in = NULL;
@@ -227,33 +252,69 @@ int main(int argc, char **argv)
   char error_out_c[64], clear_errors_c[64];
   DESCRIPTOR(mdsconnect, "MDSCONNECT($)");
   DESCRIPTOR(mdsvalue,   "MDSVALUE('DECOMPILE(`EXECUTE($))',$)");
-  char *server = NULL, *script = NULL, *logfile = NULL;
+  char *server = NULL, *script = NULL, *output = NULL;
+  int quiet = FALSE;
   int verbose = FALSE;
-  int i = 1;
-  while (argc > i) {
-    if (strcmp(argv[i],"-v")==0)
-      verbose = TRUE;
-    else if (strcmp(argv[i],"--server")==0)
-       server = argv[++i];
-    else {
-      if (script)
-        logfile = argv[i];
+  int i;
+  for (i = 1 ; argc > i ; i++) {
+    const char *arg = argv[i];
+    if (*arg == '-')
+    {arg++;
+      if (*arg == '-') // --long word
+      {arg++;
+        if (strcmp(argv[i],"help")==0)
+          print_help(0);
+        else if (strcmp(argv[i],"output")==0)
+          output = get_arg(argc, argv, ++i, arg-2);
+        else if (strcmp(argv[i],"quiet")==0)
+          quiet = TRUE;
+        else if (strcmp(argv[i],"verbose")==0)
+          verbose = TRUE;
+        else if (strcmp(argv[i],"server")==0)
+          server = get_arg(argc, argv, ++i, arg-2);
+        else
+        {
+          fprintf(stderr, "Unknown parameter --%s:\n", arg);
+          print_help(1);
+        }
+      }
       else
-        script = argv[i];
+      {
+       for (;*arg;arg++) // -short letter
+       {
+        switch (*arg)
+        {
+          case 'h': print_help(0);     break;
+          case 'o': output = get_arg(argc, argv, ++i, "-o");break;
+          case 'q': quiet = TRUE;      break;
+          case 'v': verbose = TRUE;    break;
+          case 's': server = get_arg(argc, argv, ++i, "-s");break;
+          default:
+          {
+            fprintf(stderr, "Unknown parameter -%c:\n", *arg);
+            print_help(1);
+          }
+        }
+      }
+     }
     }
-    i++;
+    else
+    {// input
+      script = argv[i];
+      break;
+    }
   }
   mdsdsc_t output_unit = {0, 0, CLASS_S, 0};
   output_unit.length  = sizeof(void*);
   output_unit.dtype   = DTYPE_POINTER;
   output_unit.pointer = (char*)&f_out;
-  if (logfile) {
-    f_out = fopen(logfile,"w");
+  if (output) {
+    f_out = fopen(output,"w");
     if (!f_out) {
-      printf("Error opening log file '%s'\n", logfile);
+      printf("Error opening log file '%s'\n", output);
       exit(1);
     }
-    if (verbose) fprintf(stderr,"Writing output to file '%s'\n", logfile);
+    if (verbose) fprintf(stderr,"Writing output to file '%s'\n", output);
   } else
     f_out = stdout;
   if (server) {
@@ -294,6 +355,7 @@ int main(int argc, char **argv)
       char *history = ".tditest";
       history_file = malloc(strlen(history) + strlen(home) + 2);
       sprintf(history_file, S_SEP_S, home, history);
+      if (verbose) fprintf(stderr,"Reading from history file '%s'\n", history_file);
       read_history(history_file);
     }
   }
@@ -306,6 +368,21 @@ int main(int argc, char **argv)
   act.sa_handler = keyboard_interrupt;
   sigaction(SIGINT, &act, NULL);
 #endif
+  if (argc > i && ! server)
+  {
+    const int i0 = i;
+    char buf[16];
+    set_execute_handlers();
+    mdsdsc_t argdsc = {0, DTYPE_T, CLASS_S, 0};
+    expr_dsc.pointer = buf;
+    for (; argc > i ; i++)
+    {
+      expr_dsc.length = sprintf(expr_dsc.pointer, "_$%d=$;*", i-i0);
+      argdsc.pointer = argv[i];
+      argdsc.length = strlen(argv[i]);
+      status = TdiExecute((mdsdsc_t *)&expr_dsc, &argdsc, &ans MDS_END_ARG);
+    }
+  }
   set_readline_handlers();
   while ((buf=command=getExpression(f_in))
       && strcasecmp(command,"exit") != 0
@@ -313,27 +390,31 @@ int main(int argc, char **argv)
     int comment = command[0] == '#';
     if (!comment) {
       if (f_in) {
-	if (command[0] == '@') {
-	  command++;
-	} else {
-	  fprintf(f_out,"%s\n",command);
-	  fflush(f_out);
+	if (command[0] == '@')
+          command++;
+	else if (!quiet)
+        {
+          fprintf(f_out,"%s\n",command);
+          fflush(f_out);
 	}
       }
+      set_execute_handlers();
       expr_dsc.length = strlen(command);
       expr_dsc.pointer = command;
-      set_execute_handlers();
       if (server) {
         status = TdiExecute((mdsdsc_t *)&mdsvalue,(mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
         if (STATUS_OK && !ans.pointer)
           status = 0;
       } else
         status = TdiExecute((mdsdsc_t *)&expr_dsc, &ans MDS_END_ARG);
-      if STATUS_OK
-	TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
-      else
-	TdiExecute((mdsdsc_t *)&error_out, &output_unit, &ans MDS_END_ARG);
-      fflush(f_out);
+      if (!quiet)
+      {
+        if STATUS_OK
+          TdiExecute((mdsdsc_t *)&clear_errors, &output_unit, &ans, &ans MDS_END_ARG);
+        else
+          TdiExecute((mdsdsc_t *)&error_out, &output_unit, &ans MDS_END_ARG);
+        fflush(f_out);
+      }
       set_readline_handlers();
       add_history(command);
     }
@@ -341,6 +422,7 @@ int main(int argc, char **argv)
   }
   MdsFree1Dx(&ans,NULL);
   if (history_file) {
+    if (verbose) fprintf(stderr,"Writing to history file '%s'\n", history_file);
     write_history(history_file);
     free(history_file);
   }
