@@ -1,3 +1,14 @@
+# allocations _$0 should end with "/test-tdishr.tdi"
+EXTRACT(len(_$0)-16,16,_$0)
+# deallocate _$0 as it varies with os in tests
+deallocate(_$0)
+_a=1
+allocated(_a)
+show_private(_a)
+show_private()
+deallocate()
+allocated(_a)
+show_private()
 #
 # Functions implemented in TdiAbs.c
 #
@@ -2939,13 +2950,6 @@ ceiling(-1.:-3:-.1)
 #
 # Functions implemented in TdiVar
 #
-_a=1
-allocated(_a)
-show_private(_a)
-show_private()
-deallocate()
-allocated(_a)
-show_private()
 _a=1
 _b=42
 deallocate(_a)

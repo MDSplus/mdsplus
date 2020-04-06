@@ -1,3 +1,26 @@
+EXTRACT(len(_$0)-16,16,_$0)
+"/test-tdishr.tdi"
+deallocate(_$0)
+1
+_a=1
+1
+allocated(_a)
+1BU
+show_private(_a)
+Private _A	= 1
+1
+show_private()
+Private _$1	= "1"
+Private _$2	= "2"
+Private _$3	= "3"
+Private _A	= 1
+4
+deallocate()
+*
+allocated(_a)
+0BU
+show_private()
+0
 abs(255bu)
 255BU
 abs([255bu,1bu,254bu])
@@ -5582,30 +5605,6 @@ ceiling(1.:3:.1)
 [1.,2.,2.,2.,2.,2.,2.,2.,2.,2.,2.,3.,3.,3.,3.,3.,3.,3.,3.,3.,3.]
 ceiling(-1.:-3:-.1)
 [-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-1.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-2.,-3.]
-_a=1
-1
-allocated(_a)
-1BU
-show_private(_a)
-Private _A	= 1
-1
-show_private()
-Private _A	= 1
-Private _ARRAY	= Set_Range(-5:4,0:4,[[0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.], [0.,0.,0.,0.,0.,0.,0.,0.,0.,0.]])
-Private _B	= "case 2"
-Private _C	= [[0,3,5], [7,4,8]]
-Private _FSOURCE	= [[0,3,2], [7,4,8]]
-Private _M	= [0,0,0,9,0,0,7]
-Private _MASK	= [[1,0,1], [0,0,1]]
-Private _SIGNAL	= Build_Signal(_array, *, -9 : 0, 1 : 5)
-Private _TSOURCE	= [[1,6,5], [2,4,6]]
-9
-deallocate()
-*
-allocated(_a)
-0BU
-show_private()
-0
 _a=1
 1
 _b=42
