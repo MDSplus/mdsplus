@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 /*      tdiYacc.Y
-	YACC converts this to tdiYacc.C to compile TDI statements.
+	YACC converts this to tdiYacc.C to compile TDI stmts.
 	Each YACC-LEX symbol has a returned token and a tdiyylval value.
 	Precedence is associated with a token and is set left and right below.
 	tdi_lex_... routines and TdiRefFunction depend on tokens from tdiYacc.
@@ -47,14 +47,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 	Josh Stillerman and Thomas W. Fredian, MIT PFC, TDI$PARSE.Y.
 	Ken Klare, LANL P-4     (c)1989,1990,1991
 
-	Note statements like    {;} {a;} {a,b,c;}
+	Note stmts like    {;} {a;} {a,b,c;}
 	Watch -3^4*5    Fortran says -((3^4)*5), CC/high-unary-precedence would give ((-3)^4)*5
 	Watch 3^-4*5    Fortran illegal, Vax 3^(-(4*5)), CC would give (3^(-4))*5
 	NEED x^float    where float=int(float) to be x^int.
 	NEED x^2        square(x) and x^.5 to be sqrt(x).
 	Limitations:
 	        () implies no arguments. Use (*) for one. (x,*,y) is permitted, (x,,y) may be.
-	        255 statements, 253 commas and arguments. NEED to check, done in RESOLVE.
+	        255 stmts, 253 commas and arguments. NEED to check, done in RESOLVE.
 	        Recursion will not work as coded, could happen in IMMEDIATE of compile.
 	        (YYMAXDEPTH - something) arguments.
 	        All binary stores are allowed, watch a > = b, it is not (a (>=) b), it is (a = (a > b)).
@@ -159,10 +159,10 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
 %token	<mark>	FUN	MODIF	VBL	AMODIF
 
-%type	<mark>	program	stmt0	stmt	stmt_ls
+%type	<mark>	program	stmts	stmt
 %type	<mark>	vector	vector0
-%type	<mark>	fundef	fundef0
-%type	<mark>	using	using0
+%type	<mark>	fundef	fundef0	fundef1
+%type	<mark>	using	using0	using1
 %type	<mark>	flabel	label
 %type	<mark>	exp	ass	opt
 %type	<mark>	unaryX	postX	primaX	modif
@@ -226,12 +226,12 @@ flabel:
   IDENT	| CAST	| CONST	| GOTO  | AMODIF
 | DO	| ELSE	| ELSEW	| LABEL
 | FUN	| VBL	| COND	| ARG
-| BREAK | MODIF | MULS  | DEFAULT
-| LANDS | LEQS  | LGES  | LORS  | LEQVS
+| BREAK | MODIF | DEFAULT
 ;
 label:
- flabel | MUL
+ flabel | MUL	| MULS
 | LAND  | LEQ   | LGE   | LOR   | LEQV
+| LANDS | LEQS  | LGES  | LORS  | LEQVS
 | WHERE	| WHILE	| CASE	| USING | RETURN
 | FOR	| IF	| UNARY	| SWITCH| SIZEOF
 ;
@@ -251,14 +251,11 @@ unaryX:
 
 ass:
   '`' ass		{$$.rptr=$2.rptr; $$.builtin= -2;__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
-| ERROR			{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 | unaryX
 | unaryX '=' ass	{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
-| unaryX BINEQ ass	{struct marker tmp;		/*binary operation and assign*/
-				_JUST2($2.builtin,$1,$3,tmp);
-				_JUST1(OPC_EQUALS_FIRST,tmp,$$);}
+| unaryX BINEQ ass	{struct marker tmp;_JUST2($2.builtin,$1,$3,tmp);_JUST1(OPC_EQUALS_FIRST,tmp,$$);}/*binary operation and assign*/
 | ass '?' ass RANGE ass	{_JUST3(OPC_CONDITIONAL,$3,$5,$1,$$);}/*COND right-to-left*/
-| ass RANGE ass		{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
+| ass RANGE	ass	{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
 				if ($3.rptr->ndesc == 2)
 					{$$=$3;
 					$$.rptr->dscptrs[2]=$$.rptr->dscptrs[1];
@@ -306,6 +303,7 @@ ass:
 | ass '*'	ass	{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
 | ass POWER	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
 | '*'			{$$=_EMPTY_MARKER;}
+| ERROR			{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 ;
 	/********************************************************************
 	Argument lists, optional or required. No arguments for empty list ().
@@ -325,11 +323,11 @@ vector0:
 			$$.rptr->dscptrs[$$.rptr->ndesc++] = (mdsdsc_t *)$3.rptr;
 			}
 ;
-opt:
+opt: /*optional expression*/
   exp
 | %empty		{$$=_EMPTY_MARKER;}			/*null argument*/
 ;
-exp:
+exp: /* expressions */
   opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
 		&&	$$.builtin != -2
 		&&	$$.rptr->dtype == DTYPE_FUNCTION
@@ -338,9 +336,8 @@ exp:
 			$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
 		else _FULL2(OPC_COMMA,$1,$3,$$);}	/*first comma*/
 | ass
-| ass ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
 ;
-sub:
+sub: /* subscript of function args */
   exp		{if ($$.rptr
 		&& $$.builtin != -2
 		&& $$.rptr->dtype == DTYPE_FUNCTION
@@ -350,18 +347,25 @@ sub:
 ;
 paren:
   '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
-| '(' stmt_ls ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
+| '(' stmts ')'		{$$=$2; $$.builtin= -2;}		/*stmt group*/
 ;
 using0:
-  USING '('		{++TDI_REFZONE.l_rel_path;}
+  USING '('			{++TDI_REFZONE.l_rel_path;}
+using1:
+  using0 ass ',' ass ','	{_FULL2(OPC_ABORT,$2,$4,$$);--TDI_REFZONE.l_rel_path;}
+| using0 ass ',' ','		{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$);--TDI_REFZONE.l_rel_path;}
 ;
 using:
-  using0 ass ',' ass ','	{_FULL2(OPC_ABORT,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
-| using0 ass ',' ','		{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$); --TDI_REFZONE.l_rel_path;}
-;
+  using1 sub ')'		{int j;	/*USING(expr,[default],[shotid],[expt])*/
+				$$.rptr->pointer= (uint8_t *)&OpcUsing;
+				for (j=0; j < $2.rptr->ndesc; ++j)
+					$$.rptr->dscptrs[$$.rptr->ndesc++]=$2.rptr->dscptrs[j];
+				}
+| using0 ass ',' ass ')'	{_JUST2(OPC_USING,$2,$4,$$);--TDI_REFZONE.l_rel_path;}
 	/*******************************************
 	Postfix expression. NEED to understand effect of primary lvalue.
 	*******************************************/
+;
 postX:
   primaX
 | postX '[' sub ']'	{int j;
@@ -372,8 +376,7 @@ postX:
 			$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 			$$.rptr->ndesc++;
 			_RESOLVE($$);}
-| postX INC		{int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
-			_JUST1(j,$1,$$);}		/*postINC*/
+| postX INC		{_JUST1(($2.builtin==OPC_PRE_INC?OPC_POST_INC:OPC_POST_DEC),$1,$$);}	/*postINC*/
 | label '(' sub ')'	{$$=$3;if ($1.builtin < 0) {int j;
 				$$.rptr->pointer= (uint8_t *)&OpcExtFunction;
 				for (j=$$.rptr->ndesc; --j>=0;)
@@ -413,12 +416,7 @@ postX:
 				$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;
 				$$.rptr->ndesc += 2;
 				}
-| using sub ')'			{int j;	/*USING(expr,[default],[shotid],[expt])*/
-				$$.rptr->pointer= (uint8_t *)&OpcUsing;
-				for (j=0; j < $2.rptr->ndesc; ++j)
-					$$.rptr->dscptrs[$$.rptr->ndesc++]=$2.rptr->dscptrs[j];
-				}
-| using0 ass ',' ass ')'	{_JUST2(OPC_USING,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
+| using
 ;
 	/*****************************************************
 	ANSI C says "..." "..." is compile-time concatenation.
@@ -460,16 +458,19 @@ primaX:
 ;
 	/******************************************************
 	A terminal semicolon in lex makes final exp into stmt.
-	Do not build a statement list unless and until needed.
+	Do not build a stmt list unless and until needed.
 	These constructs cost little and add a lot.
 	******************************************************/
 fundef0:
-  FUN flabel '('	{$$=$2;}			/* FUN vbl(list)stmt	*/
-| FUN MODIF flabel '('	{_JUST1($2.builtin,$3,$$);}	/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
-| MODIF FUN flabel '('	{_JUST1($1.builtin,$3,$$);}	/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
+  FUN MODIF	{$$=$2;}	/*FUN PRIVATE/PUBLIC vbl(list)stmt*/
+| MODIF FUN	{$$=$1;}	/*PRIVATE/PUBLIC FUN vbl(list)stmt*/
+;
+fundef1:
+  FUN	  flabel '('	{$$=$2;}
+| fundef0 flabel '('	{_JUST1($1.builtin,$2,$$);}
 ;
 fundef:
-  fundef0 sub ')'	{int j;	$$=$2;
+  fundef1 sub ')'	{int j;	$$=$2;
 			$$.rptr->pointer= (uint8_t *)&OpcFun;
 			for (j=$$.rptr->ndesc; --j>=0;)
 				$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
@@ -477,34 +478,30 @@ fundef:
 			$$.rptr->ndesc += 2;
 			++TDI_REFZONE.l_rel_path;}
 ;
-stmt0:
-  '`' stmt0				{$$.rptr=$2.rptr; $$.builtin= -2;
-					__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
+stmt: /* must terminate on ; or } */
+  '`' stmt				{$$.rptr=$2.rptr;$$.builtin= -2;__RUN(tdi_yacc_IMMEDIATE(&$$.rptr,TDITHREADSTATIC_VAR));}
 | BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
 | CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
 | CASE DEFAULT stmt			{_FULL1($2.builtin,$3,$$);}		/* CASE DEFAULT stmt	*/
-| DO '{' stmt_ls '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
+| DO '{' stmts '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
 | FOR '(' opt ';' opt ';' opt ')' stmt	{_JUST4($1.builtin,$3,$5,$7,$9,$$);}	/* FOR(opt;opt;opt)stmt */
 | GOTO VBL ';'				{_JUST1($1.builtin,$2,$$);}		/* GOTO label;		*/
 | IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
 | IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
 | LABEL VBL RANGE stmt			{_FULL2(OPC_LABEL,$2,$4,$$);}		/* LABEL label:stmt	*/
-| SWITCH paren stmt0			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
+| SWITCH paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
 | WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
 | WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
 | WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
 | fundef stmt				{TDI_REFZONE.l_rel_path--;$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
-| '{' stmt_ls '}'			{$$=$2; _RESOLVE($$);}          /* {statement list}     */
+| '{' stmts '}'				{$$=$2; _RESOLVE($$);}			/* {stmt list}     */
+| opt ';'				{$$=$1;}
 ;
-stmt:
-  stmt0
-| opt ';'	{$$=$1;}
-;
-stmt_ls:
+stmts:
   stmt
-| stmt_ls stmt	{short opcode;
-		if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/
-		else if ($2.rptr == 0) {}		/* trailing null statement	*/
+| stmts stmt	{short opcode;
+		if ($$.rptr == 0) {$$=$2;}		/* initial null stmt	*/
+		else if ($2.rptr == 0) {}		/* trailing null stmt	*/
 		else if ($$.rptr->dtype == DTYPE_FUNCTION
 		&& $$.rptr->ndesc < 250
 		&& ((opcode = *(opcode_t *)$$.rptr->pointer) == OPC_STATEMENT
@@ -515,7 +512,7 @@ stmt_ls:
 		else	{_FULL2(OPC_STATEMENT,$1,$2,$$);}}
 ;
 program:
-  stmt_ls	{_RESOLVE($$);		/*statements*/
+  stmts	{_RESOLVE($$);		/*stmts*/
 		TDI_REFZONE.a_result=(struct descriptor_d *)$$.rptr;
 		TDI_REFZONE.l_status=SsSUCCESS;}/* success */
 | %empty	{$$=_EMPTY_MARKER;}				/* nothing	*/
