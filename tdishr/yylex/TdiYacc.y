@@ -154,17 +154,19 @@ static const struct marker _EMPTY_MARKER = { 0 };
 
 %token	<mark>	CAST	CONST	INC	ARG	SIZEOF
 %token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR
-%token	<mark>	POWER	PROMO	RANGE	SHIFT	BINEQ
+%token	<mark>	POWER	PROMO	SHIFT	BINEQ
 %token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY	LEQV
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
 %token	<mark>	FUN	MODIF	VBL	AMODIF
 
 %type	<mark>	program	stmt0	stmt	stmt_ls
-%type	<mark>	llabel	flabel	label	using	using0
-%type	<mark>	fun	funvbl	modif
+%type	<mark>	vector	vector0
+%type	<mark>	fundef	fundef0
+%type	<mark>	using	using0
+%type	<mark>	flabel	label
 %type	<mark>	exp	ass	opt
-%type	<mark>	unaryX	postX	primaX
-%type	<mark>	bracket	paren	sub	textX
+%type	<mark>	unaryX	postX	primaX	modif
+%type	<mark>	paren	sub	text
 
 /*****************************************************************
 	Precedence: lowest to highest. -=not available, ?=not explicit
@@ -215,9 +217,6 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	Other tabular tokens give IDENT. $nonstandard and _names give VBL.
 	*********************************************************/
 
-llabel:
-  LABEL VBL	{$$=$2;}
-;
 	/*********************************
 	generated shift/reduce conflicts
 	but allows reuse of keywords for
@@ -313,9 +312,13 @@ ass:
 	Use * for single missing argument. (*) is 1 missing, (,) is two.
 	USING must have first argument with relative paths.
 	********************************************************************/
-bracket:
+vector:
+  vector0 ']'		{_RESOLVE($$);}				/*constructor*/
+| '[' ']'		{_JUST0(OPC_VECTOR,$$);_RESOLVE($$);}	/*null constructor*/
+
+vector0:
   '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
-| bracket ',' ass	{if ($$.rptr->ndesc >= 250) {
+| vector0 ',' ass	{if ($$.rptr->ndesc >= 250) {
 				_RESOLVE($1);
 				_FULL1(OPC_VECTOR,$1,$$);
 				}
@@ -420,9 +423,9 @@ postX:
 	/*****************************************************
 	ANSI C says "..." "..." is compile-time concatenation.
 	*****************************************************/
-textX:
+text:
   TEXT
-| textX TEXT	{MAKE_S(DTYPE_T, $1.rptr->length + $2.rptr->length, $$.rptr);
+| text TEXT	{MAKE_S(DTYPE_T, $1.rptr->length + $2.rptr->length, $$.rptr);
 		StrConcat((mdsdsc_t *)$$.rptr, (mdsdsc_t *)$1.rptr, $2.rptr MDS_END_ARG);}
 ;
 	/********************************************************************
@@ -451,30 +454,28 @@ primaX:
 				{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
 			}
 | VALUE
-| textX
+| text
 | paren								/*primary parentheses*/
-| bracket ']'		{_RESOLVE($$);}				/*constructor*/
-| '[' ']'		{_JUST0(OPC_VECTOR,$$);_RESOLVE($$);}	/*null constructor*/
+| vector
 ;
 	/******************************************************
 	A terminal semicolon in lex makes final exp into stmt.
 	Do not build a statement list unless and until needed.
 	These constructs cost little and add a lot.
 	******************************************************/
-funvbl:
+fundef0:
   FUN flabel '('	{$$=$2;}			/* FUN vbl(list)stmt	*/
 | FUN MODIF flabel '('	{_JUST1($2.builtin,$3,$$);}	/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
 | MODIF FUN flabel '('	{_JUST1($1.builtin,$3,$$);}	/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
 ;
-fun:
-  funvbl sub ')'	{int j;	$$=$2;
+fundef:
+  fundef0 sub ')'	{int j;	$$=$2;
 			$$.rptr->pointer= (uint8_t *)&OpcFun;
 			for (j=$$.rptr->ndesc; --j>=0;)
 				$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
 			$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
 			$$.rptr->ndesc += 2;
-			++TDI_REFZONE.l_rel_path;
-			}
+			++TDI_REFZONE.l_rel_path;}
 ;
 stmt0:
   '`' stmt0				{$$.rptr=$2.rptr; $$.builtin= -2;
@@ -487,13 +488,12 @@ stmt0:
 | GOTO VBL ';'				{_JUST1($1.builtin,$2,$$);}		/* GOTO label;		*/
 | IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
 | IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
-| llabel RANGE stmt			{_FULL2(OPC_LABEL,$1,$3,$$);}		/* LABEL label:stmt	*/
+| LABEL VBL RANGE stmt			{_FULL2(OPC_LABEL,$2,$4,$$);}		/* LABEL label:stmt	*/
 | SWITCH paren stmt0			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
 | WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
 | WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
 | WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
-| fun stmt				{TDI_REFZONE.l_rel_path--;
-					$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
+| fundef stmt				{TDI_REFZONE.l_rel_path--;$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
 | '{' stmt_ls '}'			{$$=$2; _RESOLVE($$);}          /* {statement list}     */
 ;
 stmt:
