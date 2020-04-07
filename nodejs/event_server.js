@@ -24,7 +24,7 @@ if(process.argv.length != 3 && process.argv.length != 4)
 }
 
 var debug = false;
-if(process.argv[3] == 'debug')
+if(process.argv.length > 3 && process.argv[3] == 'debug')
 {
     debug = true;
     console.log("DEBUG enabled");
