@@ -163,7 +163,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %type	<mark>	vector	vector0
 %type	<mark>	fundef	fundef0	fundef1
 %type	<mark>	using	using0	using1
-%type	<mark>	flabel	label
+%type	<mark>	label
 %type	<mark>	exp	ass	opt
 %type	<mark>	unaryX	postX	primaX	modif
 %type	<mark>	paren	sub	text
@@ -222,19 +222,18 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	but allows reuse of keywords for
 	image or routine names
 	*********************************/
-flabel:
+label:
   IDENT	| CAST	| CONST	| GOTO  | AMODIF
 | DO	| ELSE	| ELSEW	| LABEL
 | FUN	| VBL	| COND	| ARG
 | BREAK | MODIF | DEFAULT
-;
-label:
- flabel | MUL	| MULS
+| MUL	| MULS
 | LAND  | LEQ   | LGE   | LOR   | LEQV
 | LANDS | LEQS  | LGES  | LORS  | LEQVS
 | WHERE	| WHILE	| CASE	| USING | RETURN
 | FOR	| IF	| UNARY	| SWITCH| SIZEOF
 ;
+
 	/*********************************************************
 	CONCAT/COMMA require function with same/correct token.
 	With match we can append, otherwise create a big one.
@@ -466,8 +465,8 @@ fundef0:
 | MODIF FUN	{$$=$1;}	/*PRIVATE/PUBLIC FUN vbl(list)stmt*/
 ;
 fundef1:
-  FUN	  flabel '('	{$$=$2;}
-| fundef0 flabel '('	{_JUST1($1.builtin,$2,$$);}
+  FUN	  label '('	{$$=$2;}
+| fundef0 label '('	{_JUST1($1.builtin,$2,$$);}
 ;
 fundef:
   fundef1 sub ')'	{int j;	$$=$2;
