@@ -15,6 +15,39 @@ def intSI(x):
         else:
             return int(x)
 
+
+def wait_for_state(uut, state, timeout=0):
+    UUTS = [uut]
+    time0 = 0
+    if time0 == 0:
+        time0 = time.time()
+    for uut in UUTS:
+        olds = ""
+        finished = False
+        dots = 0
+        pollcat = 0
+
+        while not finished:
+            st = uut.s0.TRANS_ACT_STATE.split(' ')[1] #Real name TRANS_ACT:STATE
+            finished = st == state
+            news = "polling {}:{} {} waiting for {}".format(uut.uut, st, 'DONE' if finished else '', state)
+            if news != olds:
+                sys.stdout.write("\n{:06.2f}: {}".format(time.time() - time0, news))
+                olds = news
+            else:
+                sys.stdout.write('.')
+                dots += 1
+                if dots >= 20:
+                    dots = 0
+                    olds = ""
+            if not finished:
+                if timeout and (time.time() - time0) > timeout:
+                    sys.exit("\ntimeout waiting for {}".format(news))
+                time.sleep(1)
+            pollcat += 1
+    print("")
+
+
 class ActionScript:
     def __init__(self, script_and_args):
         self.sas = script_and_args.split()
@@ -112,7 +145,7 @@ class ShotController:
         ii = 0
         for u in self.uuts:
             if channels == ():
-                cmap[u] = channels                  # default : ALL
+                cmap[u] = list(range(1, u.nchan()+1))  # default : ALL
             elif type(channels) == int:
                 cmap[u] = channels                  # single value
             elif type(channels[0]) != tuple:
@@ -133,13 +166,14 @@ class ShotController:
         if self.uuts[0].save_data:
             with open("%s/format" % (self.uuts[0].save_data), 'w') as fid:
                 for u in self.uuts:
-                    for ch in channels if len(channels) > 0 else range(1,u.nchan()+1):
+                    for ch in cmap[u]:
                         fid.write("%s_CH%02d RAW %s 1\n" % (u.uut, ch, 's'))
 
 
         return (chx, len(self.uuts), len(chx[0]), len(chx[0][0]))
 
-    def __init__(self, _uuts):
+    def __init__(self, _uuts, shot=None):
         self.uuts = _uuts
-        for u in self.uuts:
-            u.s1.shot = 0
+        if shot != None:
+            for u in self.uuts:
+                u.s1.shot = shot
