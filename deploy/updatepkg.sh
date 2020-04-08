@@ -19,7 +19,8 @@
 #
 jars=""
 #         redhat debian32/64 debian armhf
-for os in fc23   ubuntu16    raspberrypi
+$(dirname $0)/build.sh --os=bootstrap
+for os in debian9-64 debian7-32 raspberrypi fc25
 do
     echo "$(date) Build of $os starting"
     if ( $(dirname $0)/build.sh --os=$os --test=skip --release ${jars} --updatepkg > ./updatepkg.log 2>&1 )
@@ -30,6 +31,6 @@ do
 	echo "$(date) Build of $os failed. See ./updatepkg.log for details"
 	exit $stat
     fi
-    jars="--jars-dir=build/fc23/alpha/releasebld/64"
+    jars="--jars-dir=build/debian9-64/alpha/releasebld/64"
 done
 
