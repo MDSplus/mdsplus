@@ -23,13 +23,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import acq400_base
-
-
 try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
+    acq400_base = __import__('acq400_base', globals(), level=1)
 except:
-    acq400_hapi = __import__('acq400_hapi', globals())
+    acq400_base = __import__('acq400_base', globals())
+
 
 INPFMT = ':INPUT_%3.3d'
 

@@ -30,10 +30,6 @@ import socket
 import math
 import numpy as np
 
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
 
 class _ACQ2106_423ST(MDSplus.Device):
     """
@@ -237,6 +233,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                             self.full_buffers.put(buf)
 
     def init(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
         if self.ext_clock.length > 0:
@@ -279,6 +276,7 @@ class _ACQ2106_423ST(MDSplus.Device):
     STOP=stop
 
     def trig(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
     TRIG=trig

@@ -33,14 +33,6 @@ import time
 import inspect
 
 
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
-
-
-
-
 class _ACQ400_BASE(MDSplus.Device):
     """
     D-Tacq ACQ400 Base parts and methods.
@@ -69,7 +61,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
 
     def init(self):
-
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
         trig_types=[ 'hard', 'soft', 'automatic']
@@ -131,8 +123,8 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
+            import acq400_hapi
             threading.Thread.__init__(self)
-
             self.dev = dev.copy()
 
             self.chans = []
@@ -289,6 +281,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     """
 
     def arm(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         shot_controller = acq400_hapi.ShotController([uut])
         shot_controller.run_shot()
@@ -296,7 +289,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
 
 
     def store(self):
-
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         self.chans = []
         nchans = uut.nchan()

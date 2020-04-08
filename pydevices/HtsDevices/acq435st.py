@@ -27,10 +27,6 @@ import MDSplus
 import threading
 from queue import Queue, Empty
 
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
 
 class ACQ435ST(MDSplus.Device):
     """
@@ -269,7 +265,7 @@ class ACQ435ST(MDSplus.Device):
         from threading import Thread
         import tempfile
         import subprocess
-
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
@@ -318,6 +314,7 @@ class ACQ435ST(MDSplus.Device):
     STOP=stop
 
     def trig(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('soft_trigger','1')
     TRIG=trig
