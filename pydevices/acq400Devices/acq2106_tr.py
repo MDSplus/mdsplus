@@ -23,7 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import acq400_base
+try:
+    acq400_base = __import__('acq400_base', globals(), level=1)
+except:
+    acq400_base = __import__('acq400_base', globals())
 
 
 class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
