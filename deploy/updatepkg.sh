@@ -20,7 +20,7 @@
 jars=""
 #         redhat debian32/64 debian armhf
 $(dirname $0)/build.sh --os=bootstrap
-for os in debian9-64 raspberrypi fc25
+for os in debian9-64 debian7-32 raspberrypi fc25
 do
     echo "$(date) Build of $os starting"
     if ( $(dirname $0)/build.sh --os=$os --test=skip --release ${jars} --updatepkg > ./updatepkg.log 2>&1 )
