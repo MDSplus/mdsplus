@@ -29,14 +29,10 @@ except:
     acq400_base = __import__('acq400_base', globals())
 
 
-INPFMT = ':INPUT_%3.3d'
-
 class _ACQ2106_ST(acq400_base._ACQ400_ST_BASE):
     """
     D-Tacq ACQ2106 stream support.
-
     """
-    pass
 
 
 class_ch_dict = acq400_base.create_classes(
@@ -45,12 +41,13 @@ class_ch_dict = acq400_base.create_classes(
     acq400_base.ACQ2106_CHANNEL_CHOICES
 )
 
+
 for key,val in class_ch_dict.items():
-    exec("{} = {}".format(key, "val"))
+    globals()[key] = val
+
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
-
 
 # public classes created in this module
 # ACQ2106_ST_8

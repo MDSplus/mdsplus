@@ -23,14 +23,19 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import numpy as np
-import MDSplus
+import sys
 import threading
-# import Queue
-from queue import Queue, Empty
 import socket
 import time
 import inspect
+
+import numpy as np
+import MDSplus
+
+if MDSplus.version.ispy3:
+    from queue import Queue, Empty
+else:
+    from Queue import Queue, Empty
 
 
 class _ACQ400_BASE(MDSplus.Device):
@@ -311,8 +316,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
     STORE=store
 
-    pass
-
 
 def int_key_chan(elem):
     return int(elem.split('_')[2])
@@ -361,5 +364,4 @@ def create_classes(base_class, root_name, parts, channel_choices):
         # needed because of lockout in mdsplus code file
         # python/MDSplus/tree.py function findPyDevices
         my_classes[class_name].__module__ = base_class.__module__
-        # exec("{} = {}".format(class_name, "my_classes[class_name]"))
     return my_classes

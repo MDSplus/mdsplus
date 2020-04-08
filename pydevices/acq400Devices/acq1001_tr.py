@@ -22,6 +22,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 try:
     acq400_base = __import__('acq400_base', globals(), level=1)
 except:
@@ -32,7 +33,7 @@ class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
     """
     D-Tacq ACQ1001 transient support.
     """
-    pass
+
 
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_TR, "ACQ1001_TR",
@@ -40,8 +41,10 @@ class_ch_dict = acq400_base.create_classes(
     acq400_base.ACQ1001_CHANNEL_CHOICES
 )
 
+
 for key,val in class_ch_dict.items():
-    exec("{} = {}".format(key, "val"))
+    globals()[key] = val
+
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
