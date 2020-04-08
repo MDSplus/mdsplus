@@ -869,7 +869,8 @@ inline static int check_sinfo(vars_t *vars) {
   return TreeSUCCESS;
 }
 
-inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,  int checkcompress()) {
+inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
+                              int checkcompress(vars_t*vars,mdsdsc_xd_t*,mdsdsc_xd_t*,mdsdsc_a_t*)) {
   int status = TreeSUCCESS;
   vars->add_length = 0;
   if (vars->idx == -1) {
@@ -918,7 +919,7 @@ inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,  int check
                                  vars->xnci, vars->idx - 1, &xd_data, &xd_dim);
     lock_nci(vars);
     if STATUS_OK
-      status = checkcompress(vars, xd_data, xd_dim, initialValue);
+      status = checkcompress(vars, &xd_data, &xd_dim, initialValue);
     MdsFree1Dx(&xd_data, 0);
     MdsFree1Dx(&xd_dim, 0);
   }
