@@ -128,7 +128,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
             decimator = lcma(self.decim)
 
-            if self.seg_length % decimator:		
+            if self.seg_length % decimator:
                  self.seg_length = (self.seg_length // decimator + 1) * decimator
 
             self.device_thread.start()
@@ -199,7 +199,7 @@ class _ACQ2106_423ST(MDSplus.Device):
                     except Empty:
                         print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
-                        
+
                     toread =self.segment_bytes
                     try:
                         view = memoryview(buf)
