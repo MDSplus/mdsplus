@@ -6279,5 +6279,12 @@ Fun nid () {
 }
 `compile("1")
 1
-/* **/
+/* case should raise TREE-W-NOT_OPEN **/
 $Missing
+case
+%TREE-W-NOT_OPEN, Tree not currently open
+%TDI Error compiling region marked by ^
+case
+   ^
+%TDI Error in EXECUTE("case")
+

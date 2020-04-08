@@ -159,8 +159,8 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
 %token	<mark>	FUN	MODIF	VBL	AMODIF
 
-%type	<mark>	program	stmt0	stmt	stmt_lst
-%type	<mark>	slabel	ulabel	flabel	label	using	using0
+%type	<mark>	program	stmt0	stmt	stmt_ls
+%type	<mark>	llabel	flabel	label	using	using0
 %type	<mark>	fun	funvbl	modif
 %type	<mark>	exp	ass	opt
 %type	<mark>	unaryX	postX	primaX
@@ -215,169 +215,174 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	Other tabular tokens give IDENT. $nonstandard and _names give VBL.
 	*********************************************************/
 
-slabel	: LABEL	VBL			{$$=$2;}
-	;
+llabel:
+  LABEL VBL	{$$=$2;}
+;
 	/*********************************
 	generated shift/reduce conflicts
 	but allows reuse of keywords for
 	image or routine names
 	*********************************/
-ulabel	: IDENT	| CAST	| CONST	| GOTO	| SIZEOF
-	| DO	| ELSE	| ELSEW	| LABEL	| RETURN
-	| FUN	| VBL	| COND	| ARG	| DEFAULT
-	| AMODIF
-	;
-flabel	: ulabel
-	| BREAK | MODIF
-	| MUL	| MULS
-	| LAND	| LEQ	| LGE	| LOR	| LEQV
-	| LANDS | LEQS	| LGES	| LORS	| LEQVS
-	;
-label	: flabel
-	| WHERE	| WHILE	| CASE	| USING
-	| FOR	| IF	| UNARY	| SWITCH
-	;
+flabel:
+  IDENT	| CAST	| CONST	| GOTO  | AMODIF
+| DO	| ELSE	| ELSEW	| LABEL
+| FUN	| VBL	| COND	| ARG
+| BREAK | MODIF | MULS  | DEFAULT
+| LANDS | LEQS  | LGES  | LORS  | LEQVS
+;
+label:
+ flabel | MUL
+| LAND  | LEQ   | LGE   | LOR   | LEQV
+| WHERE	| WHILE	| CASE	| USING | RETURN
+| FOR	| IF	| UNARY	| SWITCH| SIZEOF
+;
 	/*********************************************************
 	CONCAT/COMMA require function with same/correct token.
 	With match we can append, otherwise create a big one.
 	We separate comma in expression from comma in subscript
 	because subscripts permit null/full value.
 	*********************************************************/
-unaryX	: ADD unaryX 		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
-	| UNARY unaryX	 	{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
-	| UNARYS unaryX 	{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
-	| INC unaryX 		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
-	| postX
-	;
-ass	: '`'	ass			{$$.rptr=$2.rptr; $$.builtin= -2;
-					__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
-	| ERROR				{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
-	| unaryX
-	| unaryX '=' ass		{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
-	| unaryX BINEQ ass		{struct marker tmp;		/*binary operation and assign*/
-						_JUST2($2.builtin,$1,$3,tmp);
-						_JUST1(OPC_EQUALS_FIRST,tmp,$$);}
-	| ass '?' ass RANGE ass		{_JUST3(OPC_CONDITIONAL,$3,$5,$1,$$);}/*COND right-to-left*/
-	| ass RANGE ass			{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
-						if ($3.rptr->ndesc == 2)
-							{$$=$3;
-							$$.rptr->dscptrs[2]=$$.rptr->dscptrs[1];
-							$$.rptr->dscptrs[1]=$$.rptr->dscptrs[0];
-							$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
-							++$$.rptr->ndesc;}
-						else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ASIS;}
-					else	{static unsigned int vmlen = sizeof(struct descriptor_range);
-						LibGetVm(&vmlen, (void **)&$$.rptr, &TDI_REFZONE.l_zone);
-						$$.rptr->length = 0;
-						$$.rptr->dtype = DTYPE_RANGE;
-						$$.rptr->class = CLASS_R;
-						$$.rptr->pointer = 0;
-						$$.rptr->ndesc = 2;
-						$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
-						$$.rptr->dscptrs[1]=(mdsdsc_t *)$3.rptr;
-						_RESOLVE($$);}
-					}
-	| ass PROMO	ass		{_JUST2($2.builtin,$1,$3,$$);}/*PROMO right-to-left*/
-	| ass LEQV	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LEQV*/
-	| ass LOR	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LOR*/
-	| ass LORS	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LORS*/
-	| ass LAND	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LAND*/
-	| ass LANDS	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LANDS*/
-	| ass IOR	ass		{_JUST2($2.builtin,$1,$3,$$);}/*IOR*/
-	| ass IXOR	ass		{_JUST2($2.builtin,$1,$3,$$);}/*IXOR*/
-	| ass IAND	ass		{_JUST2($2.builtin,$1,$3,$$);}/*IAND*/
-	| ass LEQ	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LEQ*/
-	| ass LEQS	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LEQS*/
-	| ass LGE	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LGE*/
-	| ass LGES	ass		{_JUST2($2.builtin,$1,$3,$$);}/*LGES*/
-	| ass IN	ass		{_JUST2($2.builtin,$1,$3,$$);}/*IS_IN*/
-	| ass CONCAT	ass		{if ($$.rptr == 0) $$=$3;
-					else if ($$.rptr->dtype == DTYPE_FUNCTION
-					&&	*(opcode_t *)$$.rptr->pointer == OPC_CONCAT
-					&&	$$.rptr->ndesc < 250)
-						{$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
-						_RESOLVE($$);}
-					else {_FULL2($2.builtin,$1,$3,$$);}
-					}
-	| ass SHIFT	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*SHIFT*/
-	| ass ADD	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*ADD*/
-	| ass MUL	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*MUL*/
-	| ass MULS	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*MULS*/
-	| ass '*'	ass		{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
-	| ass POWER	ass		{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
-	| '*'				{$$=_EMPTY_MARKER;}
-	;
-		/********************************************************************
-		Argument lists, optional or required. No arguments for empty list ().
-		Use * for single missing argument. (*) is 1 missing, (,) is two.
-		USING must have first argument with relative paths.
-		********************************************************************/
-bracket	: '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
-	| '['			{_JUST0(OPC_VECTOR,$$);}		/*null constructor*/
-	| bracket ',' ass 		{if ($$.rptr->ndesc >= 250) {
-					_RESOLVE($1);
-					_FULL1(OPC_VECTOR,$1,$$);
-				}
-				$$.rptr->dscptrs[$$.rptr->ndesc++] = (mdsdsc_t *)$3.rptr;
-				}
-	;
-opt	: exp
-	| %empty		{$$=_EMPTY_MARKER;}			/*null argument*/
-	;
-exp	: opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
-			&&	$$.builtin != -2
-			&&	$$.rptr->dtype == DTYPE_FUNCTION
-			&&	*(opcode_t *)$$.rptr->pointer == OPC_COMMA
+unaryX:
+  ADD unaryX		{_JUST1((($1.builtin == OPC_SUBTRACT) ? OPC_UNARY_MINUS : OPC_UNARY_PLUS),$2,$$);}
+| UNARY unaryX		{_JUST1($1.builtin,$2,$$);}	/*UNARY*/
+| UNARYS unaryX		{_JUST1($1.builtin,$2,$$);}	/*UNARYS*/
+| INC unaryX		{_JUST1($1.builtin,$2,$$);}	/*preINC*/
+| postX
+;
+
+ass:
+  '`' ass		{$$.rptr=$2.rptr; $$.builtin= -2;__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
+| ERROR			{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
+| unaryX
+| unaryX '=' ass	{_JUST2(OPC_EQUALS,$1,$3,$$);}/*assign right-to-left*/
+| unaryX BINEQ ass	{struct marker tmp;		/*binary operation and assign*/
+				_JUST2($2.builtin,$1,$3,tmp);
+				_JUST1(OPC_EQUALS_FIRST,tmp,$$);}
+| ass '?' ass RANGE ass	{_JUST3(OPC_CONDITIONAL,$3,$5,$1,$$);}/*COND right-to-left*/
+| ass RANGE ass		{if ($3.rptr && $3.rptr->dtype == DTYPE_RANGE)
+				if ($3.rptr->ndesc == 2)
+					{$$=$3;
+					$$.rptr->dscptrs[2]=$$.rptr->dscptrs[1];
+					$$.rptr->dscptrs[1]=$$.rptr->dscptrs[0];
+					$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+					++$$.rptr->ndesc;}
+				else {TDI_REFZONE.l_status=TdiEXTRA_ARG; yyerror(TDITHREADSTATIC_VAR, "extra args"); return YY_ASIS;}
+			else	{static unsigned int vmlen = sizeof(struct descriptor_range);
+				LibGetVm(&vmlen, (void **)&$$.rptr, &TDI_REFZONE.l_zone);
+				$$.rptr->length = 0;
+				$$.rptr->dtype = DTYPE_RANGE;
+				$$.rptr->class = CLASS_R;
+				$$.rptr->pointer = 0;
+				$$.rptr->ndesc = 2;
+				$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+				$$.rptr->dscptrs[1]=(mdsdsc_t *)$3.rptr;
+				_RESOLVE($$);}
+			}
+| ass PROMO	ass	{_JUST2($2.builtin,$1,$3,$$);}/*PROMO right-to-left*/
+| ass LEQV	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LEQV*/
+| ass LOR	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LOR*/
+| ass LORS	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LORS*/
+| ass LAND	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LAND*/
+| ass LANDS	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LANDS*/
+| ass IOR	ass	{_JUST2($2.builtin,$1,$3,$$);}/*IOR*/
+| ass IXOR	ass	{_JUST2($2.builtin,$1,$3,$$);}/*IXOR*/
+| ass IAND	ass	{_JUST2($2.builtin,$1,$3,$$);}/*IAND*/
+| ass LEQ	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LEQ*/
+| ass LEQS	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LEQS*/
+| ass LGE	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LGE*/
+| ass LGES	ass	{_JUST2($2.builtin,$1,$3,$$);}/*LGES*/
+| ass IN	ass	{_JUST2($2.builtin,$1,$3,$$);}/*IS_IN*/
+| ass CONCAT	ass	{if ($$.rptr == 0) $$=$3;
+			else if ($$.rptr->dtype == DTYPE_FUNCTION
+			&&	*(opcode_t *)$$.rptr->pointer == OPC_CONCAT
 			&&	$$.rptr->ndesc < 250)
-				$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
-			else _FULL2(OPC_COMMA,$1,$3,$$);}	/*first comma*/
-	| ass
-	| ass ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
-	;
-sub	: exp 		{if ($$.rptr
-				&& $$.builtin != -2
-				&& $$.rptr->dtype == DTYPE_FUNCTION
-				&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
-				else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
-       	| %empty		{_JUST0(OPC_ABORT,$$);}
-	;
-paren	: '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
-	| '(' stmt_lst ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
-	;
-using0	: USING '('		{++TDI_REFZONE.l_rel_path;}
-	;
-using	: using0 ass ',' ass ',' {_FULL2(OPC_ABORT,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
-	| using0 ass ',' ','	{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$); --TDI_REFZONE.l_rel_path;}
-	;
+				{$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
+				_RESOLVE($$);}
+			else {_FULL2($2.builtin,$1,$3,$$);}
+			}
+| ass SHIFT	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*SHIFT*/
+| ass ADD	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*ADD*/
+| ass MUL	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*MUL*/
+| ass MULS	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*MULS*/
+| ass '*'	ass	{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
+| ass POWER	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
+| '*'			{$$=_EMPTY_MARKER;}
+;
+	/********************************************************************
+	Argument lists, optional or required. No arguments for empty list ().
+	Use * for single missing argument. (*) is 1 missing, (,) is two.
+	USING must have first argument with relative paths.
+	********************************************************************/
+bracket:
+  '[' ass		{_FULL1(OPC_VECTOR,$2,$$);}		/*constructor*/
+| bracket ',' ass	{if ($$.rptr->ndesc >= 250) {
+				_RESOLVE($1);
+				_FULL1(OPC_VECTOR,$1,$$);
+				}
+			$$.rptr->dscptrs[$$.rptr->ndesc++] = (mdsdsc_t *)$3.rptr;
+			}
+;
+opt:
+  exp
+| %empty		{$$=_EMPTY_MARKER;}			/*null argument*/
+;
+exp:
+  opt ',' opt	{if (	$$.rptr			/*comma is left-to-right weakest*/
+		&&	$$.builtin != -2
+		&&	$$.rptr->dtype == DTYPE_FUNCTION
+		&&	*(opcode_t *)$$.rptr->pointer == OPC_COMMA
+		&&	$$.rptr->ndesc < 250)
+			$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$3.rptr;
+		else _FULL2(OPC_COMMA,$1,$3,$$);}	/*first comma*/
+| ass
+| ass ERROR	{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}
+;
+sub:
+  exp		{if ($$.rptr
+		&& $$.builtin != -2
+		&& $$.rptr->dtype == DTYPE_FUNCTION
+		&& *(opcode_t *)$$.rptr->pointer == OPC_COMMA) ;
+		else _JUST1(OPC_ABORT,$1,$$);}		/*first subscript*/
+| %empty	{_JUST0(OPC_ABORT,$$);}
+;
+paren:
+  '(' exp ')'		{$$=$2; $$.builtin= -2;}		/*expression group*/
+| '(' stmt_ls ')'	{$$=$2; $$.builtin= -2;}		/*statement group*/
+;
+using0:
+  USING '('		{++TDI_REFZONE.l_rel_path;}
+;
+using:
+  using0 ass ',' ass ','	{_FULL2(OPC_ABORT,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
+| using0 ass ',' ','		{_FULL2(OPC_ABORT,$2,_EMPTY_MARKER,$$); --TDI_REFZONE.l_rel_path;}
+;
 	/*******************************************
 	Postfix expression. NEED to understand effect of primary lvalue.
 	*******************************************/
-postX	: primaX
-	| postX '[' sub ']'	{int j;
-					$$=$3;
-					$$.rptr->pointer= (uint8_t *)&OpcSubscript;
-					for (j=$$.rptr->ndesc; --j>=0; )
-						$$.rptr->dscptrs[j+1]=$$.rptr->dscptrs[j];
-					$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
-					$$.rptr->ndesc++;
-					_RESOLVE($$);
-				}
-	| postX INC 	 {int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
-					_JUST1(j,$1,$$);}		/*postINC*/
-	| flabel '(' sub ')'	{$$=$3;
-				if ($1.builtin < 0) {int j;		/*unknown today*/
-					$$.rptr->pointer= (uint8_t *)&OpcExtFunction;
-					for (j=$$.rptr->ndesc; --j>=0;)
-						$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
-					$$.rptr->dscptrs[0]=0;
-					$$.rptr->dscptrs[1]=(mdsdsc_t *)$1.rptr;
-					$$.rptr->ndesc += 2;
-				}
-				else	{				/*intrinsic*/
-					*(opcode_t *)$$.rptr->pointer=$1.builtin;
-					_RESOLVE($$);}
-				}
-	| label POINT '(' sub ')' {int j;
+postX:
+  primaX
+| postX '[' sub ']'	{int j;
+			$$=$3;
+			$$.rptr->pointer= (uint8_t *)&OpcSubscript;
+			for (j=$$.rptr->ndesc; --j>=0; )
+				$$.rptr->dscptrs[j+1]=$$.rptr->dscptrs[j];
+			$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+			$$.rptr->ndesc++;
+			_RESOLVE($$);}
+| postX INC		{int j=$2.builtin==OPC_PRE_INC ? OPC_POST_INC :  OPC_POST_DEC;
+			_JUST1(j,$1,$$);}		/*postINC*/
+| label '(' sub ')'	{$$=$3;if ($1.builtin < 0) {int j;
+				$$.rptr->pointer= (uint8_t *)&OpcExtFunction;
+				for (j=$$.rptr->ndesc; --j>=0;)
+					$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
+				$$.rptr->dscptrs[0]=0;
+				$$.rptr->dscptrs[1]=(mdsdsc_t *)$1.rptr;
+				$$.rptr->ndesc += 2;
+			} else	{				/*intrinsic*/
+				*(opcode_t *)$$.rptr->pointer=$1.builtin;
+				_RESOLVE($$);}
+			}
+| label POINT '(' sub ')'	{int j;
 				$$=$4;			/*external*/
 				$$.rptr->dtype=DTYPE_CALL;
 				$$.rptr->length=0;
@@ -388,7 +393,7 @@ postX	: primaX
 				$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;
 				$$.rptr->ndesc += 2;
 				}
-	| label POINT label '(' sub ')' {int j;
+| label POINT label '(' sub ')' {int j;
 				$$=$5;			/*typed external*/
 				StrUpcase((mdsdsc_t *)$3.rptr, (mdsdsc_t *)$3.rptr);
 				for (j=TdiCAT_MAX; j-->0;)
@@ -405,105 +410,116 @@ postX	: primaX
 				$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;
 				$$.rptr->ndesc += 2;
 				}
-	| using sub ')'		{int j;	/*USING(expr,[default],[shotid],[expt])*/
-					$$.rptr->pointer= (uint8_t *)&OpcUsing;
-					for (j=0; j < $2.rptr->ndesc; ++j)
-						$$.rptr->dscptrs[$$.rptr->ndesc++]=$2.rptr->dscptrs[j];
+| using sub ')'			{int j;	/*USING(expr,[default],[shotid],[expt])*/
+				$$.rptr->pointer= (uint8_t *)&OpcUsing;
+				for (j=0; j < $2.rptr->ndesc; ++j)
+					$$.rptr->dscptrs[$$.rptr->ndesc++]=$2.rptr->dscptrs[j];
 				}
-	| using0 ass ',' ass ')' {_JUST2(OPC_USING,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
-	;
-		/*****************************************************
-		ANSI C says "..." "..." is compile-time concatenation.
-		*****************************************************/
-textX	: TEXT
-	| textX TEXT		{MAKE_S(DTYPE_T, $1.rptr->length + $2.rptr->length, $$.rptr);
-					StrConcat((mdsdsc_t *)$$.rptr, (mdsdsc_t *)$1.rptr, $2.rptr MDS_END_ARG);
-				}
-	;
-		/********************************************************************
-		We reserve all names starting with $ or _ for constants or variables.
-		Wait to make path/arg/const for simple; they may be text for -> or (.
-		Simple name are members of current node in tree.
-		********************************************************************/
-modif	: MODIF	| AMODIF ;
-primaX	: modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/PRIVATE variable*/
-	| AMODIF AMODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
-					_JUST1($2.builtin,$3,tmp);
-					_JUST1($1.builtin,tmp,$$);}
-	| ulabel		{if (*$$.rptr->pointer == '$') {
-					if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
-					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_ARG)
-					{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
-					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_CONST)
-						_JUST0($1.builtin,$$);
-				} else	if (*$$.rptr->pointer == '_')
-					$$.rptr->dtype=DTYPE_IDENT;
-				else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == LEX_ERROR)
-					{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
-				}
-	| VALUE
-	| textX
-	| paren								/*primary parentheses*/
-	| bracket ']'		{_RESOLVE($$);}				/*constructor*/
-	;
+| using0 ass ',' ass ')'	{_JUST2(OPC_USING,$2,$4,$$); --TDI_REFZONE.l_rel_path;}
+;
+	/*****************************************************
+	ANSI C says "..." "..." is compile-time concatenation.
+	*****************************************************/
+textX:
+  TEXT
+| textX TEXT	{MAKE_S(DTYPE_T, $1.rptr->length + $2.rptr->length, $$.rptr);
+		StrConcat((mdsdsc_t *)$$.rptr, (mdsdsc_t *)$1.rptr, $2.rptr MDS_END_ARG);}
+;
+	/********************************************************************
+	We reserve all names starting with $ or _ for constants or variables.
+	Wait to make path/arg/const for simple; they may be text for -> or (.
+	Simple name are members of current node in tree.
+	********************************************************************/
+modif:
+  MODIF
+| AMODIF
+;
+primaX:
+  modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/PRIVATE variable*/
+| AMODIF AMODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
+			_JUST1($2.builtin,$3,tmp);
+			_JUST1($1.builtin,tmp,$$);}
+| label			{if (*$$.rptr->pointer == '$') {
+				if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
+				else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_ARG)
+				{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
+				else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_CONST)
+					_JUST0($1.builtin,$$);
+			} else	if (*$$.rptr->pointer == '_')
+				$$.rptr->dtype=DTYPE_IDENT;
+			else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == LEX_ERROR)
+				{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
+			}
+| VALUE
+| textX
+| paren								/*primary parentheses*/
+| bracket ']'		{_RESOLVE($$);}				/*constructor*/
+| '[' ']'		{_JUST0(OPC_VECTOR,$$);_RESOLVE($$);}	/*null constructor*/
+;
 	/******************************************************
 	A terminal semicolon in lex makes final exp into stmt.
 	Do not build a statement list unless and until needed.
 	These constructs cost little and add a lot.
 	******************************************************/
-funvbl	: FUN ulabel				{$$=$2;}				/* FUN vbl(list)stmt	*/
-	| FUN MODIF ulabel			{_JUST1($2.builtin,$3,$$);}		/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
-	| MODIF FUN ulabel			{_JUST1($1.builtin,$3,$$);}		/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
-	;
-fun	: funvbl '(' sub ')'			{int j;	$$=$3;
-							$$.rptr->pointer= (uint8_t *)&OpcFun;
-							for (j=$$.rptr->ndesc; --j>=0;)
-								$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
-							$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
-							$$.rptr->ndesc += 2;
-							++TDI_REFZONE.l_rel_path;
-						}
-	;
-stmt0	: '`' stmt0				{$$.rptr=$2.rptr; $$.builtin= -2;
-						__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
-	| BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
-	| CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
-	| CASE DEFAULT stmt			{_FULL1($2.builtin,$3,$$);}		/* CASE DEFAULT stmt	*/
-	| DO '{' stmt_lst '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
-	| FOR '(' opt ';' opt ';' opt ')' stmt	{_JUST4($1.builtin,$3,$5,$7,$9,$$);}	/* FOR(opt;opt;opt)stmt */
-	| GOTO VBL ';'				{_JUST1($1.builtin,$2,$$);}		/* GOTO label;		*/
-	| IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
-	| IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
-	| slabel RANGE stmt			{_FULL2(OPC_LABEL,$1,$3,$$);}		/* LABEL label:stmt	*/
-	| SWITCH paren stmt0			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
-	| WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
-	| WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
-	| WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
-	| fun stmt				{TDI_REFZONE.l_rel_path--;
-						$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
-	| '{' stmt_lst '}'                      {$$=$2; _RESOLVE($$);}          /* {statement list}     */
-	;
-stmt	: stmt0
-	| opt ';'				{$$=$1;}
-stmt_lst : stmt
-	| stmt_lst stmt	{short opcode;
-			if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/
-			else if ($2.rptr == 0) {}		/* trailing null statement	*/
-			else if ($$.rptr->dtype == DTYPE_FUNCTION
-			&& $$.rptr->ndesc < 250
-			&& ((opcode = *(opcode_t *)$$.rptr->pointer) == OPC_STATEMENT
-				|| opcode == OPC_CASE
-				|| opcode == OPC_DEFAULT
-				|| opcode == OPC_LABEL
-			)) {$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$2.rptr;}
-			else	{_FULL2(OPC_STATEMENT,$1,$2,$$);}
+funvbl:
+  FUN flabel '('	{$$=$2;}			/* FUN vbl(list)stmt	*/
+| FUN MODIF flabel '('	{_JUST1($2.builtin,$3,$$);}	/* FUN PRIVATE/PUBLIC vbl(list)stmt*/
+| MODIF FUN flabel '('	{_JUST1($1.builtin,$3,$$);}	/* PRIVATE/PUBLIC FUN vbl(list)stmt*/
+;
+fun:
+  funvbl sub ')'	{int j;	$$=$2;
+			$$.rptr->pointer= (uint8_t *)&OpcFun;
+			for (j=$$.rptr->ndesc; --j>=0;)
+				$$.rptr->dscptrs[j+2]=$$.rptr->dscptrs[j];
+			$$.rptr->dscptrs[0]=(mdsdsc_t *)$1.rptr;
+			$$.rptr->ndesc += 2;
+			++TDI_REFZONE.l_rel_path;
 			}
-	;
-program : stmt_lst	{_RESOLVE($$);		/*statements*/
-			TDI_REFZONE.a_result=(struct descriptor_d *)$$.rptr;
-			TDI_REFZONE.l_status=SsSUCCESS;}/* success */
-	| %empty	{$$=_EMPTY_MARKER;}				/* nothing	*/
-	| ERROR		{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
-	| error		{TDI_REFZONE.l_status=TdiSYNTAX; yyerror(TDITHREADSTATIC_VAR, "syntax error"); return YY_ASIS;} /* YACC error	*/
-	;
+;
+stmt0:
+  '`' stmt0				{$$.rptr=$2.rptr; $$.builtin= -2;
+					__RUN(tdi_yacc_IMMEDIATE(&$$.rptr, TDITHREADSTATIC_VAR));}
+| BREAK	';'				{_JUST0($1.builtin,$$);}		/* BREAK/CONTINUE;	*/
+| CASE paren stmt			{_FULL2($1.builtin,$2,$3,$$);}		/* CASE(exp) stmt	*/
+| CASE DEFAULT stmt			{_FULL1($2.builtin,$3,$$);}		/* CASE DEFAULT stmt	*/
+| DO '{' stmt_ls '}' WHILE paren ';'	{_JUST2($1.builtin,$6,$3,$$);}		/* DO stmt WHILE(exp);	*/
+| FOR '(' opt ';' opt ';' opt ')' stmt	{_JUST4($1.builtin,$3,$5,$7,$9,$$);}	/* FOR(opt;opt;opt)stmt */
+| GOTO VBL ';'				{_JUST1($1.builtin,$2,$$);}		/* GOTO label;		*/
+| IF paren stmt ELSE stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* IF(exp)stmtELSEstmt	*/
+| IF paren stmt	%prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* IF(exp)stmt		*/
+| llabel RANGE stmt			{_FULL2(OPC_LABEL,$1,$3,$$);}		/* LABEL label:stmt	*/
+| SWITCH paren stmt0			{_JUST2($1.builtin,$2,$3,$$);}		/* SWITCH(exp)stmt	*/
+| WHERE paren stmt ELSEW stmt		{_JUST3($1.builtin,$2,$3,$5,$$);}	/* WHERE(exp)stmtELSEWHEREstmt	*/
+| WHERE paren stmt %prec END		{_JUST2($1.builtin,$2,$3,$$);}		/* WHERE(exp)stmt	*/
+| WHILE paren stmt			{_JUST2($1.builtin,$2,$3,$$);}		/* WHILE(exp)stmt	*/
+| fun stmt				{TDI_REFZONE.l_rel_path--;
+					$$.rptr->dscptrs[1]=(mdsdsc_t *)$2.rptr;}
+| '{' stmt_ls '}'			{$$=$2; _RESOLVE($$);}          /* {statement list}     */
+;
+stmt:
+  stmt0
+| opt ';'	{$$=$1;}
+;
+stmt_ls:
+  stmt
+| stmt_ls stmt	{short opcode;
+		if ($$.rptr == 0) {$$=$2;}		/* initial null statement	*/
+		else if ($2.rptr == 0) {}		/* trailing null statement	*/
+		else if ($$.rptr->dtype == DTYPE_FUNCTION
+		&& $$.rptr->ndesc < 250
+		&& ((opcode = *(opcode_t *)$$.rptr->pointer) == OPC_STATEMENT
+			|| opcode == OPC_CASE
+			|| opcode == OPC_DEFAULT
+			|| opcode == OPC_LABEL
+		)) {$$.rptr->dscptrs[$$.rptr->ndesc++]=(mdsdsc_t *)$2.rptr;}
+		else	{_FULL2(OPC_STATEMENT,$1,$2,$$);}}
+;
+program:
+  stmt_ls	{_RESOLVE($$);		/*statements*/
+		TDI_REFZONE.a_result=(struct descriptor_d *)$$.rptr;
+		TDI_REFZONE.l_status=SsSUCCESS;}/* success */
+| %empty	{$$=_EMPTY_MARKER;}				/* nothing	*/
+| ERROR		{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}	/* LEX_ERROR	*/
+| error		{TDI_REFZONE.l_status=TdiSYNTAX; yyerror(TDITHREADSTATIC_VAR, "syntax error"); return YY_ASIS;} /* YACC error	*/
+;
 %%
