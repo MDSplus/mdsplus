@@ -1,3 +1,4 @@
+#!/usr/bin/python
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -34,20 +35,16 @@ class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
     D-Tacq ACQ2106 stream support.
     """
 
-
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_ST, "ACQ1001_ST",
     list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts),
     acq400_base.ACQ1001_CHANNEL_CHOICES
 )
-
-
-for key,val in class_ch_dict.items():
-    globals()[key] = val
-
+globals().update(class_ch_dict)
 
 if __name__ == '__main__':
     acq400_base.print_generated_classes(class_ch_dict)
+del(class_ch_dict)
 
 # public classes created in this module
 # ACQ1001_ST_8
