@@ -34,6 +34,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PID.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RFXMODEL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_TANK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_STREAM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SUPERVISOR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SYNCH_IN.py

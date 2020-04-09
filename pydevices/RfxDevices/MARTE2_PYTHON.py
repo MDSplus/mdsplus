@@ -67,15 +67,15 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
       for i in range(0, pygam.getNumberOfParameters()):
         currVal = pygam.getParameterDefaultValue(i)
         currDims = pygam.getParameterDimensions(i)
-        if currDims == 0:
-          mdsValue = currVal
+        if currDims[0] == 1 and currDims[1] == 1:
+          mdsValue = currVal[0]
         else:
           if pygam.getParameterType(i) == np.float32 or pygam.getParameterType(i) == np.float64:
             mdsValue = Float64Array(currVal)
           else:
             mdsValue = Int32Array(currVal)
         
-        MARTE2_COMPONENT.parameters.append({'name': pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
+        MARTE2_COMPONENT.parameters.append({'name': 'Parameters.'+pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
 
       parts = []
       MARTE2_COMPONENT.buildGam(parts, 'PyGAM', MARTE2_COMPONENT.MODE_GAM)

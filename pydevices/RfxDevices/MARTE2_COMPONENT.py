@@ -41,18 +41,18 @@ class MARTE2_COMPONENT(Device):
       parts.append({'path':'.PARAMETERS', 'type': 'structure'})
       idx = 1
       for parameter in cls.parameters:
-        parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-        parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':parameter['name']})
+        parts.append({'path':'.PARAMETERS.PAR_'+str(idx), 'type':'structure'})
+        parts.append({'path':'.PARAMETERS.PAR_'+str(idx)+':NAME', 'type':'text', 'value':parameter['name']})
         if(parameter['type'] == 'string'):
           if 'value' in parameter:
-            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value': parameter['value'] })
+            parts.append({'path':'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'text', 'value': parameter['value'] })
           else:
-            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text'})
+            parts.append({'path':'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'text'})
         else:
           if 'value' in parameter:
-            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':parameter['value']})
+            parts.append({'path':'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric', 'value':parameter['value']})
           else:
-            parts.append({'path':'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric'})
+            parts.append({'path':'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric'})
         idx = idx+1
 
     @classmethod
@@ -88,12 +88,12 @@ class MARTE2_COMPONENT(Device):
         parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
         if len(pars) > 0:
           for par in pars:
-            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx), 'type':'structure'})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
             if(par['type'] == 'string'):
-               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
+               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
             else:
-               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
+               parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
 
             idx = idx + 1
 
@@ -120,12 +120,12 @@ class MARTE2_COMPONENT(Device):
         parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS', 'type':'structure'})
         if len(pars) > 0:
           for par in pars:
-            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx), 'type':'structure'})
-            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
+            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx), 'type':'structure'})
+            parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':NAME', 'type':'text', 'value':par['name']})
             if(par['type'] == 'string'):
-               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
+               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
             else:
-               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PARAMETER_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
+               parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
             idx = idx + 1
 
     @classmethod
@@ -165,7 +165,6 @@ class MARTE2_COMPONENT(Device):
         else: 
           currValStr += char
       tokens = currValStr.split()
-      print(tokens)
       if len(tokens) <= 1:
         return valStr
       outVal = ''
@@ -194,7 +193,7 @@ class MARTE2_COMPONENT(Device):
       name = name.replace('.', '_')
       return name
 
-    def addSignalParameters(self, parsNode, text):
+    def addSignalParametersOLD(self, parsNode, text):
       for parNode in parsNode.getChildren():
         name = parNode.getNode(':NAME').data()
         value = parNode.getNode(':VALUE').data()
@@ -203,6 +202,48 @@ class MARTE2_COMPONENT(Device):
         else:
           text += '        '+name+' = '+str(value)+'\n'
       return text
+
+    def addSignalParameters(self, parsNode, text):
+      paramDicts = []
+      for parNode in parsNode.getChildren():
+        name = parNode.getNode(':NAME').data()
+        value = parNode.getNode(':VALUE').data()
+        if parNode.getNode(':VALUE').getUsage() == 'TEXT':
+          paramDicts.append({'name': name, 'value': value, 'is_text':True})
+        else:
+          paramDicts.append({'name': name, 'value': value, 'is_text':False})
+ 
+      text = self.reportParameters(paramDicts, text, 2)
+      return text
+
+
+    def reportParameters(self, paramDicts, outText, nTabs = 1):
+      rootParDict = {}
+      for paramDict in paramDicts:
+        currName = paramDict['name']
+        names = currName.split('.')
+        if len(names) == 1: #resolve current level of parameters       
+          for tab in range(nTabs):
+            outText += '    '
+          if paramDict['is_text']:
+            outText += paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
+          else:
+            outText += paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
+        else:
+          if names[0] in rootParDict:
+            rootParDict[names[0]].append({'name': currName[currName.find('.')+1:], 'is_text': paramDict['is_text'], 'value': paramDict['value']})
+          else:
+            rootParDict[names[0]] = [{'name': currName[currName.find('.')+1:], 'is_text': paramDict['is_text'], 'value': paramDict['value']}]
+      for key in rootParDict.keys():
+        for tab in range(nTabs):
+          outText += '   '
+        outText += key+' = {\n' 
+        outText = self.reportParameters(rootParDict[key], outText, nTabs + 1)
+        for tab in range(nTabs):
+          outText += '   '
+        outText += '}\n'
+      return outText
+
 
     @classmethod
     def convertName(cls, name, nameList):
@@ -528,11 +569,12 @@ class MARTE2_COMPONENT(Device):
       gamList.append(gamName)
       gamText = '  +'+gamName+' = {\n'
       gamText += '    Class = '+gamClass+'\n'
-      for paramDict in paramDicts:
-        if paramDict['is_text']:
-          gamText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
-        else:
-          gamText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
+      gamText = self.reportParameters(paramDicts, gamText, 1)
+      #for paramDict in paramDicts:
+      #  if paramDict['is_text']:
+      #    gamText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
+      #  else:
+      #    gamText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
 #input Signals
       gamText += '    InputSignals = {\n'
@@ -980,11 +1022,12 @@ class MARTE2_COMPONENT(Device):
 #Head and parameters
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
-      for paramDict in paramDicts:
-        if paramDict['is_text']:
-          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
-        else:
-          dataSourceText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
+      dataSourceText = self.reportParameters(paramDicts, dataSourceText, 1)
+#      for paramDict in paramDicts:
+#        if paramDict['is_text']:
+#          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
+#        else:
+#          dataSourceText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
     #Output Signals
       dataSourceText += '    Signals = {\n'
@@ -1055,6 +1098,7 @@ class MARTE2_COMPONENT(Device):
           dataSourceText += '        Period = '+str(period/outputDict['samples'])+'\n' #We must keep into account the number of samples in an input device
           dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
           dataSourceText += '        AutomaticSegmentation = 0\n'
+          dataSourceText += '        Type = uint32\n'
           dataSourceText += '      }\n'
 
 
@@ -1328,9 +1372,6 @@ class MARTE2_COMPONENT(Device):
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
-
-      
-      print('OUT OPERIOD: '+str(outPeriod))
       return outPeriod
 
 
@@ -1570,11 +1611,12 @@ class MARTE2_COMPONENT(Device):
       dataSourceText = '  +'+dataSourceName+' = {\n'
       dataSourceText += '    Class = '+dataSourceClass+'\n'
 #parameters
-      for paramDict in paramDicts:
-        if paramDict['is_text']:
-          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
-        else:
-          dataSourceText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
+      dataSourceText = self.reportParameters(paramDicts, dataSourceText, 1)
+#      for paramDict in paramDicts:
+#        if paramDict['is_text']:
+#          dataSourceText += '    '+paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
+#        else:
+#          dataSourceText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
 #input Signals
       dataSourceText += '    Signals = {\n'
@@ -1663,7 +1705,7 @@ class MARTE2_COMPONENT(Device):
 
       timebase = self.timebase.getData() #Will always succeed since it is called AFTER checkGeneric
       if isinstance(timebase, Range):
-        return TIMEBASE_GENERATOR  #Note this will be overridden by Sync
+        return MARTE2_COMPONENT.TIMEBASE_GENERATOR  #Note this will be overridden by Sync
 
       prevTimebase = timebase   #Checks no more needed here
       while isinstance(timebase, TreeNode) or isinstance(timebase, TreePath):
