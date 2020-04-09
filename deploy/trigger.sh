@@ -514,8 +514,8 @@ if [ "$TAG_RELEASE" = "yes" ]
 then
     if ( git tag | grep last_release >/dev/null )
     then
-      	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
-      	curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+        RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4)
+        curl --data @- -H "Authorization: token $(cat $KEYS/.git_token)" "https://api.github.com/repos/MDSplus/mdsplus/releases" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
@@ -524,9 +524,9 @@ then
 $(git log --decorate=full --no-merges last_release..HEAD | awk '{gsub("\\\\","\\\\");gsub("\"","\\\"");print $0"\\n"}')"
 }
 EOF
-	if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-      	then
-		curl --data @- "https://api.github.com/repos/MDSplus/mdsplus/releases?access_token=$(cat $KEYS/.git_token)" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
+        if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+        then
+            curl --data @- -H "Authorization: token $(cat $KEYS/.git_token)" "https://api.github.com/repos/MDSplus/mdsplus/releases" > ${WORKSPACE}/tag_release.log 2>&1 <<EOF
 {
   "tag_name":"${RELEASE_TAG}",
   "target_commitish":"${BRANCH}",
