@@ -165,88 +165,88 @@ opts=""
 parsecmd() {
     for i in $1
     do
-	case $i in
-	    --help|-h|-\?)
-		printhelp
-		exit
-		;;
-	    --make_jars=*)
-		MAKE_JARS=${i#*=}
-		opts="${opts} --jars"
-		;;
-	    --bootstrap)
-		BOOTSTRAP=yes
-		;;
-	    --make_epydocs)
-		MAKE_EPYDOCS=yes
-		;;
-	    --test)
-		opts="${opts} ${i}"
+        case $i in
+            --help|-h|-\?)
+                printhelp
+                exit
+                ;;
+            --make_jars=*)
+                MAKE_JARS=${i#*=}
+                opts="${opts} --jars"
+                ;;
+            --bootstrap)
+                BOOTSTRAP=yes
+                ;;
+            --make_epydocs)
+                MAKE_EPYDOCS=yes
+                ;;
+            --test)
+                opts="${opts} ${i}"
                 ;;
             --testrelease)
                 opts="${opts} ${i}"
-		;;
-	    --test=skip)
-		opts="${opts} ${i}"
-		;;
-	    --test_timeunit=*)
-		opts="${opts} --test_timeunit=${i#*=}"
-		;;
-	    --test_format=*)
-		opts="${opts} ${i}"
-		;;
-	    --release)
-		RELEASE=yes
-		;;
-	    --tag_release)
-		TAG_RELEASE=yes
-		;;
-	    --publish)
-		opts="${opts} ${i}"
-		PUBLISH=yes
-		;;
-	    --valgrind)
-		opts="${opts} ${i}"
-		;;
-	    --valgrind=*)
-		opts="${opts} ${i}"
-		;;
-	    --sanitize)
-		opts="${opts} ${i}"
-		;;
-	    --sanitize=*)
-		opts="${opts} ${i}"
-		;;
-	    --releasedir=*)
-		opts="${opts} ${i}"
-		;;
-	    --publishdir=*)
-		opts="${opts} ${i}"
-		;;
-	    --keys=*)
-		opts="${opts} ${i}"
-		KEYS=${i#*=}
-		;;
-	    --dockerpull)
-		opts="${opts} ${i}"
-		;;
-	    --color)
-		opts="${opts} ${i}"
-		COLOR=yes
-		;;
-	    --promoted=*)
-		PROMOTED=${i#*=}
-		;;
-	    *)
-		unknownopts="${unknownopts} $i"
-		;;
-	esac
+                ;;
+            --test=skip)
+                opts="${opts} ${i}"
+                ;;
+            --test_timeunit=*)
+                opts="${opts} --test_timeunit=${i#*=}"
+                ;;
+            --test_format=*)
+                opts="${opts} ${i}"
+                ;;
+            --release)
+                RELEASE=yes
+                ;;
+            --tag_release)
+                TAG_RELEASE=yes
+                ;;
+            --publish)
+                opts="${opts} ${i}"
+                PUBLISH=yes
+                ;;
+            --valgrind)
+                opts="${opts} ${i}"
+                ;;
+            --valgrind=*)
+                opts="${opts} ${i}"
+                ;;
+            --sanitize)
+                opts="${opts} ${i}"
+                ;;
+            --sanitize=*)
+                opts="${opts} ${i}"
+                ;;
+            --releasedir=*)
+                opts="${opts} ${i}"
+                ;;
+            --publishdir=*)
+                opts="${opts} ${i}"
+                ;;
+            --keys=*)
+                opts="${opts} ${i}"
+                KEYS=${i#*=}
+                ;;
+            --dockerpull)
+                opts="${opts} ${i}"
+                ;;
+            --color)
+                opts="${opts} ${i}"
+                COLOR=yes
+                ;;
+            --promoted=*)
+                PROMOTED=${i#*=}
+                ;;
+            *)
+                unknownopts="${unknownopts} $i"
+                ;;
+        esac
     done
     if [ ! -z "${unknownopts}" ]
     then
-	printhelp
-	2>&1 echo "Unknown option(s) specified: ${unknownopts}"
-	exit 1
+        printhelp
+        2>&1 echo "Unknown option(s) specified: ${unknownopts}"
+        exit 1
     fi
 }
 
@@ -306,9 +306,9 @@ then
     PROMOTED_RELEASE_TAG=$(git describe --tags --abbrev=0 --match ${PROMOTED}_release* origin/${PROMOTED})
     if ( ${SRCDIR}/deploy/promote.sh ${BRANCH} ${PROMOTED_RELEASE_TAG} )
     then
-	MAJOR=$(echo $PROMOTED_RELEASE_TAG | cut -f2 -d-)
-	MINOR=$(echo $PROMOTED_RELEASE_TAG | cut -f3 -d-)
-	RELEASEV=$(echo $PROMOTED_RELEASE_TAG | cut -f4 -d-)
+        MAJOR=$(echo $PROMOTED_RELEASE_TAG | cut -f2 -d-)
+        MINOR=$(echo $PROMOTED_RELEASE_TAG | cut -f3 -d-)
+        RELEASEV=$(echo $PROMOTED_RELEASE_TAG | cut -f4 -d-)
     else
       RED
       cat <<EOF >&2
@@ -336,49 +336,49 @@ then
     NEW_RELEASE=no
     if [ -z ${RELEASE_TAG} ]
     then
-	RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4);
+        RELEASE_TAG=$(git describe --tags | cut -d- -f1,2,3,4);
     fi
     if [ -z ${RELEASE_TAG} ]
     then
-	RELEASE_TAG="${BRANCH}_release-1-0-0"
+        RELEASE_TAG="${BRANCH}_release-1-0-0"
     fi
     if [ -z "${PROMOTED}" ]
     then
-	MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
-	MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
-	RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
+        MAJOR=$(echo $RELEASE_TAG | cut -f2 -d-);
+        MINOR=$(echo $RELEASE_TAG | cut -f3 -d-);
+        RELEASEV=$(echo $RELEASE_TAG | cut -f4 -d-);
     fi
     GIT_COMMIT=$(git rev-list -n 1 HEAD)
     LAST_RELEASE_COMMIT=$(git rev-list -n 1 $RELEASE_TAG)
     if [ "${LAST_RELEASE_COMMIT}" != "${GIT_COMMIT}" ]
     then
-	if [ -z "${PROMOTED}" ]
-	then # ${SRCDIR}/deploy/inv_commit_title.msg
-	    version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}")
-	else
-	    version_inc=PROMOTE
-	fi
-	case "$version_inc" in
-	    PROMOTE)
-		NEW_RELEASE=yes
-		;;
-	    BADCOMMIT)
-		RED
-		cat <<EOF >&2
+        if [ -z "${PROMOTED}" ]
+        then # ${SRCDIR}/deploy/inv_commit_title.msg
+            version_inc=$(${SRCDIR}/deploy/commit_type_check.sh "${LAST_RELEASE_COMMIT}")
+        else
+            version_inc=PROMOTE
+        fi
+        case "$version_inc" in
+            PROMOTE)
+                NEW_RELEASE=yes
+                ;;
+            BADCOMMIT)
+                RED
+                cat <<EOF >&2
 =========================================================
 
 WARNING: Commit contains an invalid commit title.
 
 =========================================================
 EOF
-		NORMAL
-		#exit 1
-		NEW_RELEASE=yes
-		let RELEASEV=$RELEASEV+1
-		;;
-	    SAME)
-		GREEN
-		cat <<EOF >&2
+                NORMAL
+                #exit 1
+                NEW_RELEASE=yes
+                let RELEASEV=$RELEASEV+1
+                ;;
+            SAME)
+                GREEN
+                cat <<EOF >&2
 =========================================================
 
 INFO: All commits are of category Build, Docs or Tests.
@@ -387,12 +387,12 @@ INFO: All commits are of category Build, Docs or Tests.
 =========================================================
 
 EOF
-		NORMAL
-		NEW_RELEASE=no
-		;;
-	    MINOR)
-		GREEN
-		cat <<EOF >&2
+                NORMAL
+                NEW_RELEASE=no
+                ;;
+            MINOR)
+                GREEN
+                cat <<EOF >&2
 =========================================================
 
 INFO: New features added. New release will be a minor
@@ -401,14 +401,14 @@ INFO: New features added. New release will be a minor
 =========================================================
 
 EOF
-		NORMAL
-		NEW_RELEASE=yes
-		let MINOR=$MINOR+1
-		let RELEASEV=0
-		;;
-	    PATCH)
-		GREEN
-		cat <<EOF >&2
+                NORMAL
+                NEW_RELEASE=yes
+                let MINOR=$MINOR+1
+                let RELEASEV=0
+                ;;
+            PATCH)
+                GREEN
+                cat <<EOF >&2
 =========================================================
 
 INFO: No new features added. Fix commits added so
@@ -418,13 +418,13 @@ INFO: No new features added. Fix commits added so
 =========================================================
 
 EOF
-		NORMAL
-		NEW_RELEASE=yes
-		let RELEASEV=$RELEASEV+1
-		;;
-	    *)
-		GREEN $RED
-		cat <<EOF >&2
+                NORMAL
+                NEW_RELEASE=yes
+                let RELEASEV=$RELEASEV+1
+                ;;
+            *)
+                GREEN $RED
+                cat <<EOF >&2
 =========================================================
 
 INFO: Unknown release check return of $version_inc
@@ -433,17 +433,17 @@ INFO: Unknown release check return of $version_inc
 =========================================================
 
 EOF
-		NORMAL
-	    	NEW_RELEASE=yes
-		let RELEASEV=$RELEASEV+1
-		;;
-	esac
+                NORMAL
+                    NEW_RELEASE=yes
+                let RELEASEV=$RELEASEV+1
+                ;;
+        esac
     fi
     RELEASE_TAG=${BRANCH}_release-${MAJOR}-${MINOR}-${RELEASEV};
     if [ "$NEW_RELEASE" = "yes" ]
     then
-	git tag -f last_release ${LAST_RELEASE_COMMIT}
-	git tag -f ${RELEASE_TAG}
+        git tag -f last_release ${LAST_RELEASE_COMMIT}
+        git tag -f ${RELEASE_TAG}
     fi
     GREEN
     cat <<EOF
@@ -461,16 +461,16 @@ if [ ! -z "${BOOTSTRAP}" ]
 then
     if ( ! ${SRCDIR}/deploy/build.sh --os=bootstrap --workspace=${SRCDIR} )
     then
-	RED
-	cat <<EOF >&2
+        RED
+        cat <<EOF >&2
 ========================================
 
 Error running bootstrap. Trigger failed.
 
 ========================================
 EOF
-	NORMAL
-	exit 1
+        NORMAL
+        exit 1
     fi
 fi
 
@@ -479,16 +479,16 @@ if [ ! -z "${MAKE_JARS}" ]
 then
     if ( ! ${SRCDIR}/deploy/build.sh --make-jars --os=${MAKE_JARS} --workspace=${SRCDIR} )
     then
-	RED
-	cat <<EOF >&2
+        RED
+        cat <<EOF >&2
 ===============================================
 
 Error creating java jar files. Trigger failed.
 
 ===============================================
 EOF
-	NORMAL
-	exit 1
+        NORMAL
+        exit 1
     fi
 fi
 
@@ -496,8 +496,8 @@ if [ ! -z "${MAKE_EPYDOCS}" ]
 then
     if ( ! ${SRCDIR}/python/MDSplus/makedoc.sh ${SRCDIR}/python/MDSplus/doc )
     then
-	RED
-	cat <<EOF >&2
+        RED
+        cat <<EOF >&2
 ===============================================
 
 Error creating python documentation. Trigger failed.
@@ -505,8 +505,8 @@ Look at make_epydocs.log artifact for more info .
 
 ===============================================
 EOF
-	NORMAL
-	exit 1
+        NORMAL
+        exit 1
     fi
 fi
 
@@ -534,12 +534,12 @@ EOF
   "body":"New release. Commit messages could not be included"
 }
 EOF
-	 fi
-	 git tag -d last_release
-         if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
-         then
-     	     RED
-	     cat <<EOF >&2
+        fi
+        git tag -d last_release
+        if ( ! grep tag_name ${WORKSPACE}/tag_release.log > /dev/null )
+        then
+            RED
+            cat <<EOF >&2
 =========================================================
 
 Failed to tag a new release on github. Response/error
@@ -548,10 +548,10 @@ FAILURE
 
 =========================================================
 EOF
-	     cat ${WORKSPACE}/tag_release.log
-	     NORMAL
-	     exit 1
-         fi
+            cat ${WORKSPACE}/tag_release.log
+            NORMAL
+            exit 1
+        fi
     fi
 fi
 echo $opts > ${SRCDIR}/trigger.opts
