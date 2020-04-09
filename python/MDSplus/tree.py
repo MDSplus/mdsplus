@@ -3539,8 +3539,8 @@ If you did intend to write to a subnode of the device you should check the prope
                               if not v.__module__ == modname:           continue # filter: no super classes
                               kupper = k.upper()
                               if not kupper in ans: ans[kupper] = v
-                              else: _sys.stderr.write("Device '%s' from '%s' already imported from '%s'\n"%(k,modname,ans[k].__module__))
-                            except Exception as e: print(str(e))
+                              else: _sys.stderr.write("Device '%s' from '%s' already imported from '%s'\n" % (k,modname,ans[k].__module__))
+                            except Exception as e: _sys.stderr.write('Error importing %s from %s: %s\n' % (k, fname, e))
                       except: pass
                   finally:
                     sys.path.remove(dp)
