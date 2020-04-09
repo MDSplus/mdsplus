@@ -22,42 +22,35 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-#
-import sys
-import os
 
-name='acq400_hapi'
-pname = name
-setupkw = {
-      'name'         : name,
-      'version'      : '0.1',
-      'description'  : "Python API for D-TACQ acq4xx devices",
-      'long_description': """
-      This module provides callable api for ACQ4XX devices that are reachable on the
-      network.
-      """,
-      'author'       : 'Peter Milne',
-      'author_email' : 'peter.milne@d-tacq.com',
-      'url'          : 'http://www.d-tacq.com/',
-      'package_dir'  : {pname:'.',
-                     },
-      'packages'     : [pname,
-                  ],
-      'classifiers'  : [
-      'Programming Language :: Python',
-      'Intended Audience :: Science/Research',
-      'Environment :: Console',
-      'Topic :: Scientific/Engineering',
-      ],
-      'keywords'     : ['data acquisition','hardware','digital to analog'],
-#       install_requires=['numpy','ctypes'],
-    }
 
 try:
-    from setuptools import setup
-    setupkw['include_package_data'] = False
-    setupkw['zip_safe']   = False
+    acq400_base = __import__('acq400_base', globals(), level=1)
 except:
-    from distutils.core import setup
+    acq400_base = __import__('acq400_base', globals())
 
-setup(**setupkw)
+
+class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
+    """
+    D-Tacq ACQ1001 transient support.
+    """
+
+class_ch_dict = acq400_base.create_classes(
+    _ACQ1001_TR, "ACQ1001_TR",
+    list(_ACQ1001_TR.base_parts),
+    acq400_base.ACQ1001_CHANNEL_CHOICES
+)
+globals().update(class_ch_dict)
+
+if __name__ == '__main__':
+    acq400_base.print_generated_classes(class_ch_dict)
+del(class_ch_dict)
+
+# public classes created in this module
+# ACQ1001_TR_8
+# ACQ1001_TR_16
+# ACQ1001_TR_24
+# ACQ1001_TR_32
+# ACQ1001_TR_40
+# ACQ1001_TR_48
+# ACQ1001_TR_64
