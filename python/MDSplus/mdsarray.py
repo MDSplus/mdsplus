@@ -22,37 +22,27 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
+import numpy as _N
+import ctypes as _C
+
 
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
-    except:
+    except Exception:
         return __import__(name, globals())
 
-import numpy as _N
-import ctypes as _C
 
-_ver=_mimport('version')
-_dsc=_mimport('descriptor')
-_dat=_mimport('mdsdata')
-_scr=_mimport('mdsscalar')
-_cmd=_mimport('compound')
+_ver = _mimport('version')
+_dsc = _mimport('descriptor')
+_dat = _mimport('mdsdata')
+_scr = _mimport('mdsscalar')
+_cmd = _mimport('compound')
+
 
 class Array(_dat.Data):
     ctype = None
     __MAX_DIM = 8
-    @property  # used by numpy.array
-    def __array_interface__(self):
-        data = self.value
-        return {
-            'shape':data.shape,
-            'typestr':data.dtype.str,
-            'descr':data.dtype.descr,
-            'strides':data.strides,
-            'data':data,
-            'version':3,
-        }
-
     def __new__(cls,*value):
         """Convert a python object to a MDSobject Data array
         @param value: Any value
@@ -106,21 +96,28 @@ class Array(_dat.Data):
             try:   value=_N.ctypeslib.as_array(value)
             except Exception: pass
         else:
-            value = _N.array(value)
-        if len(value.shape) == 0 or len(value.shape) > Array.__MAX_DIM:  # happens if value has been a scalar, e.g. int
+            value = _N.array(value, self.ntype)
+        if not value.shape:
+            value = _N.array([value])
+        elif len(value.shape) > Array.__MAX_DIM:
             value = value.flatten()
-        self._value = value.__array__(self.ntype).copy('C')
+        self._value = _N.array(value, dtype=self.ntype, copy=False, order='C')
 
     def _str_bad_ref(self):
         return _ver.tostr(self._value)
 
-    def __getattribute__(self,name):
-        try: return super(Array,self).__getattribute__(name)
-        except AttributeError: pass
-        if name=='_value': raise Exception('_value undefined')
-        try: return self._value.__getattribute__(name)
-        except AttributeError:  pass
-        raise AttributeError
+    def __getattribute__(self, name):
+        try:
+            return super(Array, self).__getattribute__(name)
+        except AttributeError:
+            if name == '_value':
+                raise Exception('_value undefined')
+            try:
+                return getattr(self._value, name)
+            except AttributeError:
+                raise AttributeError
+
+    def data(self): return self.value
 
     @property
     def value(self):
@@ -217,20 +214,25 @@ class Array(_dat.Data):
         return _cmd.Compound._descriptorWithProps(self,d)
 
 
+    @staticmethod
+    def _get_numpy(d, shape, ntype, ctype, length, isstr=False):
+        buf = _C.cast(d.pointer, _C.POINTER(ctype*length)).contents
+        if isstr:
+            buf = _ver.buffer(buf)
+        arr = _N.ndarray(shape, ntype, buf)
+        if d.pointer == arr.__array_interface__['data'][0]:
+            d.pointer = 0  # numpy must free memory
+        return arr
+
     @classmethod
-    def fromDescriptor(cls,d):
-        def getNumpy(ntype,ctype,length):
-            buffer = _ver.buffer(_C.cast(d.pointer,_C.POINTER(ctype*length)).contents)
-            return _N.ndarray(shape,ntype,buffer)
+    def fromDescriptor(cls, d):
         if d.dtype == 0:
             d.dtype = Int32Array.dtype_id
         if d.coeff:
-            d.arsize=d.length
-            shape=list()
-            for i in range(d.dimct):
-                dim=d.coeff_and_bounds[d.dimct-i-1]
-                d.arsize=d.arsize*dim
-                shape.append(dim)
+            d.arsize = d.length
+            shape = d.coeff_and_bounds[d.dimct-1::-1]
+            for dim in shape:
+                d.arsize *= dim
         elif d.length == 0:
             shape=[0]
         else:
@@ -243,16 +245,16 @@ class Array(_dat.Data):
                         strarr=[strarr]*dim
                 ans = StringArray(_N.array(strarr))
             else:
-                ans = StringArray(getNumpy(_N.dtype(('S',d.length)),_C.c_byte,d.arsize))
+                ans = StringArray(cls._get_numpy(d,shape,_N.dtype(('S',d.length)),_C.c_byte,d.arsize,True))
             return ans
         if d.dtype == _tre.TreeNode.dtype_id:
             d.dtype=Int32Array.dtype_id
-            nids=getNumpy(_N.int32,_C.c_int32,d.arsize//d.length)
+            nids=cls._get_numpy(d,shape,_N.int32,_C.c_int32,d.arsize//d.length)
             return _tre.TreeNodeArray(list(nids))
         if d.dtype == Complex64Array.dtype_id:
-            return Array(getNumpy(_N.complex64,_C.c_float,(d.arsize<<1)//d.length))
+            return Array(cls._get_numpy(d,shape,_N.complex64,_C.c_float,(d.arsize<<1)//d.length))
         if d.dtype == Complex128Array.dtype_id:
-            return Array(getNumpy(_N.complex128,_C.c_double,(d.arsize<<1)//d.length))
+            return Array(cls._get_numpy(d,shape,_N.complex128,_C.c_double,(d.arsize<<1)//d.length))
         if d.dtype == FloatFArray.dtype_id:
             return _cmp.FS_FLOAT(d).evaluate()
         if d.dtype == FloatDArray.dtype_id:
@@ -268,7 +270,7 @@ class Array(_dat.Data):
         if d.dtype in _dsc.dtypeToArrayClass:
             cls = _dsc.dtypeToArrayClass[d.dtype]
             if cls.ctype is not None:
-                return Array(getNumpy(cls.ctype,cls.ctype,d.arsize//d.length))
+                return Array(cls._get_numpy(d,shape,cls.ctype._type_,cls.ctype,d.arsize//d.length))
         raise TypeError('Arrays of dtype %d are unsupported.' % d.dtype)
 makeArray = Array
 
@@ -399,11 +401,10 @@ class StringArray(Array):
         elif _ver.ispy3 or not value.flags.writeable or not value.flags.c_contiguous:
             value = value.copy('C')
         length = value.itemsize
-        if length>0:
-            for i in _ver.xrange(len(value.flat)):
-                val = value.flat[i]
-                if len(val)<length or val[-1] == 0:
-                    value.flat[i]=val.ljust(length)
+        if length  > 0:
+            for i, val in enumerate(value.flat):
+                if len(val) < length:
+                    value.flat[i] = _ver.tobytes(val).ljust(length)
         self._value = value
     @property
     def value(self):

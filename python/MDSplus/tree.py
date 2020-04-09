@@ -2782,7 +2782,7 @@ class TreeNodeArray(_dat.TreeRef,_arr.Int32Array): # HINT: TreeNodeArray begin
         nids = _N.array(nids)
         if len(nids.shape) == 0:  # happens if value has been a scalar, e.g. int
             nids = nids.reshape(1)
-        self._value = nids.__array__(_N.int32)
+        self._value = _N.array(nids, dtype=_N.int32, copy=False)
         if 'tree' in kw:
             self.tree = tree
         elif isinstance(tree[0],(Tree,)):
@@ -3564,10 +3564,10 @@ If you did intend to write to a subnode of the device you should check the prope
             MODEL = model.upper()
             models = _dat.Data.execute('MdsDevices()').data()
             for idx in range(len(models)):
-                modname = _ver.tostr(models[idx][0].rstrip())
+                modname = _ver.tostr(models[idx][0].tolist().rstrip())
                 MODNAME = modname.upper()
                 if MODEL == MODNAME:
-                    package = _ver.tostr(models[idx][1].rstrip())
+                    package = _ver.tostr(models[idx][1].tolist().rstrip())
                     if package == "pydevice":
                         break
                     try:

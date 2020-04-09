@@ -48,7 +48,6 @@ class Apd(_dat.TreeRefX,_arr.Array):
     @property
     def _descriptor(self):
         descs=self.descs
-        _compound=_mimport('compound')
         d=_dsc.Descriptor_apd()
         d.scale=0
         d.digits=0
@@ -72,7 +71,7 @@ class Apd(_dat.TreeRefX,_arr.Array):
                     descs_ptrs[idx] = d.array[idx].ptr_
             d.pointer=_C.cast(_C.pointer(descs_ptrs),_C.c_void_p)
         d.a0=d.pointer
-        return _compound.Compound._descriptorWithProps(self,d)
+        return _cmp.Compound._descriptorWithProps(self,d)
 
     @classmethod
     def fromDescriptor(cls,d):
@@ -98,7 +97,6 @@ class Apd(_dat.TreeRefX,_arr.Array):
         """Return the number of descriptors in the apd"""
         return self.getNumDescs()
 
-
     def append(self,value):
         """Append a value to apd"""
         self[len(self)]=_dat.Data(value)
@@ -107,7 +105,6 @@ class Apd(_dat.TreeRefX,_arr.Array):
     @property
     def value(self):
         return _N.array(self.descs,object)
-
 
     @property
     def _value(self):
@@ -121,7 +118,7 @@ class Dictionary(dict,Apd):
         def __new__(cls,items):
             return _N.asarray(tuple(d for d in items),'object').view(Dictionary.dict_np)
         def tolist(self):
-            return dict(super(Dictionary.dict_np,self).tolist())
+            return dict(kv for kv in self)
 
     _key_value_exception = Exception('A dictionary requires an even number of elements read as key-value pairs.')
 
@@ -226,3 +223,4 @@ descriptor.dtypeToArrayClass[Apd.dtype_id]=Apd
 descriptor.dtypeToArrayClass[List.dtype_id]=List
 descriptor.dtypeToArrayClass[Dictionary.dtype_id]=Dictionary
 _tre=_mimport('tree')
+_cmp=_mimport('compound')
