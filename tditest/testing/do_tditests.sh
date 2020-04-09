@@ -31,7 +31,7 @@ then
  # fixes [?1034h for old readline verisons, rhel5/6/7, fc17/18/20
  export TERM=vt100
 else
- cmd="$TDITEST $zdrv$srcdir/$test.tdi"
+ cmd="$TDITEST $zdrv$srcdir/$test.tdi 1 2 3"
 fi
 
 if [ -z ${MDSPLUS_DIR} ]
