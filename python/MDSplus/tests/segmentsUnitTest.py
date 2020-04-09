@@ -102,6 +102,7 @@ class Tests(_UnitTest.TreeTests):
         ndim,ndat = array(dim,int32),array(dat,int32)
         ### makeSegment ###
         node = ptree.MS
+        node.compress_segments = True
         seglen = 1
         for i in range(0,length,seglen):
             node.makeSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen])
