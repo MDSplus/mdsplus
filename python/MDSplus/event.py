@@ -250,7 +250,7 @@ the e.join() would return exiting the problem.
                 payload += ' '+str(times[i])
             for i in range(0, nSamples):
                 payload += ' '+str(samples[i])
-        Event.seteventRaw('STREAMING', _N.uint8(bytearray(payload, 'utf8')))
+        Event.seteventRaw('signal', _N.uint8(bytearray(payload, 'utf8')))
 
 
     def getQueue(self):
