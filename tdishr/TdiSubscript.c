@@ -440,6 +440,13 @@ int Tdi1Map(opcode_t opcode, int narg __attribute__ ((unused)), struct descripto
     pindex = (int *)dat[0].pointer->pointer;
     if STATUS_OK {
       N_ELEMENTS(dat[0].pointer, n);
+      if (n <= 0)
+      {
+        mdsdsc_a_t *const arr = (mdsdsc_a_t *)out_ptr->pointer;
+        arr->arsize = 0;
+        arr->aflags.coeff = 0;
+        goto none;
+      }
     }
   }
   if STATUS_OK {

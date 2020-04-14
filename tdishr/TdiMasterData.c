@@ -43,9 +43,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 
 
-
-static const EMPTYXD(emptyxd);
-
 int TdiMasterData(int nsig,
 		  struct descriptor_xd sig[1],
 		  struct descriptor_xd uni[1], int *cmode_ptr, struct descriptor_xd *out_ptr)
@@ -76,12 +73,11 @@ int TdiMasterData(int nsig,
 	If we have a signal, embed units or data.
 	***************************************/
   if (cmode >= 0 && cmode < nsig) {
-    struct descriptor_xd tmp;
+    EMPTYXD(tmp);
     struct descriptor_signal *sig_ptr = (struct descriptor_signal *)sig[cmode].pointer;
     struct descriptor *keep_ptr = sig_ptr->data;
     struct descriptor *raw_ptr = sig_ptr->raw;
     DESCRIPTOR_WITH_UNITS(wu, 0, 0);
-    tmp = emptyxd;
     sig_ptr->raw = 0;
 		/************************************
 	        If we have units, embed data in them.
@@ -98,9 +94,8 @@ int TdiMasterData(int nsig,
     MdsFree1Dx(out_ptr, NULL);
     *out_ptr = tmp;
   } else if (pdu) {
-    struct descriptor_xd tmp;
+    EMPTYXD(tmp);
     DESCRIPTOR_WITH_UNITS(wu, 0, 0);
-    tmp = emptyxd;
     wu.data = out_ptr->pointer;
     wu.units = pdu;
     MdsCopyDxXd((struct descriptor *)&wu, &tmp);
