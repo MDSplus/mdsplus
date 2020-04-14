@@ -111,6 +111,7 @@ EXPORT int MdsGet1DxA(const mdsdsc_a_t *const in_ptr, const length_t *const leng
       if (!in_dsc->aflags.coeff) {//new_arsize==0; in_dsc->a0 invalid
 	out_dsc->aflags.coeff = 1;
 	out_dsc->a0 = out_dsc->pointer;
+        out_dsc->dimct = 0;
       } else {
 	int64_t offset;
 	if (out_dsc->class == CLASS_CA)
