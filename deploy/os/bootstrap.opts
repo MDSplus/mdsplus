@@ -1,1 +1,1 @@
---platform=bootstrap --dockerimage=mdsplus/builder:fc23 --release
+--platform=bootstrap --dockerimage=mdsplus/builder:debian_stretch-64 --release
