@@ -6287,3 +6287,13 @@ case
    ^
 %TDI Error in EXECUTE("case")
 
+x_to_i(["abc"],[]) /** [] **/
+[]
+x_to_i(["def4","abc"],["abc"]) /** [1] ; trailing " " ignored **/
+[1]
+bsearch("d",["def4","abc"]) /** no match : index = -1 **/
+-1
+x_to_i(["def4","abc"],["d"]) /** bsearch returns -1 mapping to nearest, i.e. 0-th element (storted) **/
+[1]
+build_signal([1,2,3],*,["a","b","c"])["d"] /** empty signal **/
+Build_Signal([], *, [])
