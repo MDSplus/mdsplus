@@ -549,11 +549,11 @@ class BASLERACA(Device):
       try:
           self.restoreWorker()
           if ( self.worker != None and self.worker.isAlive() ):
-     	    self.debugPrint("Stop acquisition Thread...")
+            self.debugPrint("Stop acquisition Thread...")
             self.stopAcquisition()
-     	    self.debugPrint("Initialize...")
+            self.debugPrint("Initialize...")
             self.init()
-	    self.restoreInfo()
+            self.restoreInfo()
       except:
           pass
 

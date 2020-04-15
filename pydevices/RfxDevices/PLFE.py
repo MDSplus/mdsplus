@@ -112,7 +112,7 @@ class PLFE(Device):
 
                except socket.error as e:
 
-                    print traceback.format_exc()
+                    print (traceback.format_exc())
 
                     if not ntry:
 
@@ -196,7 +196,7 @@ class PLFE(Device):
 
                except socket.error as e:
 
-                    print traceback.format_exc()
+                    print (traceback.format_exc())
 
                     if not ntry:
 
@@ -251,16 +251,16 @@ class PLFE(Device):
           
           msg = self.recv_message(ip, port)
           
-          print "= msg received =========================================================================================="
-          print msg          
-          print "========================================================================================================\n"          
+          print ("= msg received ==========================================================================================")
+          print (msg )         
+          print ( "========================================================================================================\n" )         
 
 
           data = self.deserialize_msg(msg)
           
-          print "= msg received deserialized ============================================================================"
+          print ("= msg received deserialized ============================================================================")
           print('\n'.join(map(str, data)))
-          print "========================================================================================================\n"           
+          print( "========================================================================================================\n"      )     
               
           
           cmd = ''
@@ -270,9 +270,9 @@ class PLFE(Device):
                cmd = cmd + '#' + e[0] + '{0:03d}'.format(~int(e[2:]) & 0xFF)
                
 
-          print "= msg to send (negate of initial msg) =================================================================" 
-          print cmd
-          print "========================================================================================================\n"           
+          print ("= msg to send (negate of initial msg) =================================================================" )
+          print (cmd)
+          print ( "========================================================================================================\n"       )    
  
 
           self.send_message(ip, port, cmd)
@@ -280,18 +280,18 @@ class PLFE(Device):
           
           msg = self.recv_message(ip, port)
           
-          print "= msg received ========================================================================================="
-          print msg
-          print "========================================================================================================\n"           
+          print ("= msg received =========================================================================================")
+          print (msg)
+          print ( "========================================================================================================\n")           
          
           
           data2 = self.deserialize_msg(msg)
           
  
           
-          print "= msg received deserialized ============================================================================"
+          print ("= msg received deserialized ============================================================================")
           print('\n'.join(map(str, data2)))
-          print "========================================================================================================\n"           
+          print ( "========================================================================================================\n"    )       
 
           
           
@@ -358,33 +358,33 @@ class PLFE(Device):
                     out[i]['bits'] = '{0:08b}'.format(w)                   
                     
                     
-          print "= msg to send deserialized (derived from jTraverser) ==================================================="
+          print ("= msg to send deserialized (derived from jTraverser) ===================================================")
           print('\n'.join(map(str, out)))
-          print "========================================================================================================\n"          
+          print ( "========================================================================================================\n"  )        
  
           
           msg = self.serialize_msg(out)
           
-          print "= msg to send ==========================================================================================" 
-          print msg               
-          print "========================================================================================================\n"          
+          print ("= msg to send ==========================================================================================" )
+          print (msg )              
+          print ( "========================================================================================================\n"          )
 
           
           self.send_message(ip, port, msg)
           
           msg = self.recv_message(ip, port)
           
-          print "= msg received =========================================================================================" 
-          print msg
-          print "========================================================================================================\n"          
+          print ("= msg received =========================================================================================" )
+          print (msg)
+          print ( "========================================================================================================\n"     )     
           
          
 
           data2 = self.deserialize_msg(msg)
           
-          print "= msg received deserialized ============================================================================" 
+          print ("= msg received deserialized ============================================================================" )
           print('\n'.join(map(str, data2)))               
-          print "========================================================================================================\n"          
+          print ( "========================================================================================================\n"   )       
           
           filter_dict = {0: 'OFF', 1: 'ON'}
           trans_dict = {0: 'OFF', 1: 'ON'}
@@ -419,9 +419,9 @@ class PLFE(Device):
           
           msg = self.recv_message(ip, port)
           
-          print "= msg received =========================================================================================="
-          print msg          
-          print "========================================================================================================\n"          
+          print ("= msg received ==========================================================================================")
+          print (msg )         
+          print ("========================================================================================================\n" )         
 
 
 
@@ -431,18 +431,18 @@ class PLFE(Device):
           for i, e in enumerate(msg.split('#')[1:]):
                cmd_final = cmd_final + '#' + e[0] + '{0:03d}'.format(int(e[2:]))
                
-          print "= msg to send after read completition (equal to initial msg) ===========================================" 
-          print cmd_final
-          print "========================================================================================================\n"              
+          print ("= msg to send after read completition (equal to initial msg) ===========================================" )
+          print (cmd_final)
+          print ( "========================================================================================================\n")              
 
 
 
 
           data = self.deserialize_msg(msg)
           
-          print "= msg received deserialized ============================================================================"
+          print ("= msg received deserialized ============================================================================")
           print('\n'.join(map(str, data)))
-          print "========================================================================================================\n"           
+          print ( "========================================================================================================\n"  )         
               
           
           cmd = ''
@@ -452,9 +452,9 @@ class PLFE(Device):
                cmd = cmd + '#' + e[0] + '{0:03d}'.format(~int(e[2:]) & 0xFF)
                
 
-          print "= msg to send (negate of initial msg) =================================================================" 
-          print cmd
-          print "========================================================================================================\n"           
+          print ("= msg to send (negate of initial msg) =================================================================" )
+          print (cmd)
+          print ( "========================================================================================================\n"   )        
  
 
           self.send_message(ip, port, cmd)
@@ -462,18 +462,18 @@ class PLFE(Device):
           
           msg = self.recv_message(ip, port)
           
-          print "= msg received ========================================================================================="
-          print msg
-          print "========================================================================================================\n"           
+          print ("= msg received =========================================================================================")
+          print (msg)
+          print ("========================================================================================================\n"   )        
          
           
           data2 = self.deserialize_msg(msg)
           
  
           
-          print "= msg received deserialized ============================================================================"
+          print ("= msg received deserialized ============================================================================")
           print('\n'.join(map(str, data2)))
-          print "========================================================================================================\n"
+          print ( "========================================================================================================\n")
           
           status_dict = {0: 'PRESENT', 1: 'ABSENT'}
           control_dict = {0: 'LOCAL', 1: 'REMOTE'}
@@ -484,29 +484,29 @@ class PLFE(Device):
           
 
           for i in range(6):
-               print 'BOARD{0:d}'.format(i + 1)
+               print ('BOARD{0:d}'.format(i + 1))
                if data[i]['status']:
-                    print '\tStatus:\t\tABSENT'
-                    print '\tControl:\t--------'
-                    print '\tCH1 gain:\t--------'
-                    print '\tCH1 filter:\t--------'
-                    print '\tCH1 trans:\t--------'
-                    print '\tCH2 gain:\t--------'
-                    print '\tCH2 filter:\t--------'
-                    print '\tCH2 trans:\t--------'                    
+                    print ('\tStatus:\t\tABSENT')
+                    print ('\tControl:\t--------')
+                    print ('\tCH1 gain:\t--------')
+                    print ('\tCH1 filter:\t--------')
+                    print ('\tCH1 trans:\t--------')
+                    print ('\tCH2 gain:\t--------')
+                    print ('\tCH2 filter:\t--------')
+                    print ('\tCH2 trans:\t--------'    )                
                else:
-                    print '\tStatus:\t\tPRESENT'                    
+                    print ('\tStatus:\t\tPRESENT')                    
                     if int(data2[i]['setup']) == (~int(data[i]['setup']) & 0xFF):                         
-                         print '\tControl:\tREMOTE'
+                         print ('\tControl:\tREMOTE')
                     else:
-                         print '\tControl:\tLOCAL'
+                         print ('\tControl:\tLOCAL')
                          
-                    print '\tCH1 gain:\t{0:d}'.format(gain_dict[int(data[i]['bits'][6:8], 2)])
-                    print '\tCH1 filter:\t{0}'.format(filter_dict[int(data[i]['bits'][3])])
-                    print '\tCH1 trans:\t{0}'.format(trans_dict[int(data[i]['bits'][2])])
-                    print '\tCH2 gain:\t{0:d}'.format(gain_dict[int(data[i]['bits'][4:6], 2)])
-                    print '\tCH2 filter:\t{0}'.format(filter_dict[int(data[i]['bits'][1])])
-                    print '\tCH2 trans:\t{0}'.format(trans_dict[int(data[i]['bits'][0])])                         
+                    print ('\tCH1 gain:\t{0:d}'.format(gain_dict[int(data[i]['bits'][6:8], 2)]))
+                    print ('\tCH1 filter:\t{0}'.format(filter_dict[int(data[i]['bits'][3])]))
+                    print ('\tCH1 trans:\t{0}'.format(trans_dict[int(data[i]['bits'][2])]))
+                    print ('\tCH2 gain:\t{0:d}'.format(gain_dict[int(data[i]['bits'][4:6], 2)]))
+                    print ('\tCH2 filter:\t{0}'.format(filter_dict[int(data[i]['bits'][1])]))
+                    print ('\tCH2 trans:\t{0}'.format(trans_dict[int(data[i]['bits'][0])]) )                        
                         
 
           self.send_message(ip, port, cmd_final)

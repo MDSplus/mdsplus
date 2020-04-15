@@ -164,8 +164,8 @@ class RFX_RPADC(Device):
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
                                 self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, frequency1, isSingle)
-	    self.chan_a.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
-	    self.chan_b.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
+            self.chan_a.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
+            self.chan_b.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1

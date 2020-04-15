@@ -74,7 +74,7 @@ class SPECTRO_CFG(Device):
 
         try :
             for i in range(0,self.LOS_NUM):
-                print 'LOS_%03d = @%s@ len %d'%(i+1, los_tags[i].strip(), len(los_tags[i]))
+                print ('LOS_%03d = @%s@ len %d'%(i+1, los_tags[i].strip(), len(los_tags[i])))
                 if  "None" in los_tags[i]  or (len(los_tags[i].strip()) == 0)  :
                     continue
                 try:
@@ -84,7 +84,7 @@ class SPECTRO_CFG(Device):
                     if los_tags[i] in curr_tags :
                         continue
                     """
-                    print '----- LOS_%03d = %s len %d'%(i+1, los_tags[i], len(los_tags[i]))
+                    print ('----- LOS_%03d = %s len %d'%(i+1, los_tags[i], len(los_tags[i])))
                     getattr(self, 'los_%03d'%(i+1)).addTags(los_tags[i].strip())
                 except Exception as e :
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing label field on LoS %s '%(i+1) + str(e) )
@@ -99,7 +99,7 @@ class SPECTRO_CFG(Device):
 
     def load_config(self):
 
-        print sys.version_info
+        print (sys.version_info)
         
         from openpyxl import load_workbook
 

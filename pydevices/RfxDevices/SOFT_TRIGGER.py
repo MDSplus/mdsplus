@@ -120,7 +120,7 @@ class SOFT_TRIGGER(Device):
         for chan in range(16):
             try:
                 mode = getattr(self, 'channel_'+str(chan+1)+'_mode').data()
-	    except:
+            except:
                 emsg = 'Invalid Mode for channel '+str(chan+1)
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevBAD_PARAMETER
@@ -183,11 +183,11 @@ class SOFT_TRIGGER(Device):
             self.stopReq = False
             self.eventDict = {}
             for chan in range(len(eventNames)):
-    	        try:
+                try:
                     self.eventDict[eventTimes[chan]].append(eventNames[chan])
                 except:
                     self.eventDict[eventTimes[chan]] = [eventNames[chan]]
-	    self.evTimes = list(set(eventTimes))
+            self.evTimes = list(set(eventTimes))
             self.evTimes.sort()
             print('EV TIMES: ', self.evTimes)
 

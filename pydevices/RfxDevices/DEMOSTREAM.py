@@ -51,15 +51,15 @@ class DEMOSTREAM(Device):
 
 
         def run(self):
-	    DataArray = c_short * DEMOSTREAM.NUM_CHUNK_SAMPLES
+            DataArray = c_short * DEMOSTREAM.NUM_CHUNK_SAMPLES
             rawChan = DataArray()
             self.dataNode.deleteData()
 
             while not self.stopped:
-	        status = self.deviceLib.acquireChunk(c_char_p(self.addr), byref(rawChan), c_int(DEMOSTREAM.NUM_CHUNK_SAMPLES))
-	        if status == -1:
-	            print 'Acquisition Failed'
-	            return 
+                status = self.deviceLib.acquireChunk(c_char_p(self.addr), byref(rawChan), c_int(DEMOSTREAM.NUM_CHUNK_SAMPLES))
+                if status == -1:
+                    print ('Acquisition Failed')
+                    return 
                 dataArr = Int16Array(rawChan)
                 startTime = Float64(self.currTime)
                 endTime = Float64(self.currTime + self.period * DEMOSTREAM.NUM_CHUNK_SAMPLES)
@@ -78,28 +78,28 @@ class DEMOSTREAM(Device):
 ################################################################################
        
     def start_store(self):
-	try:
-      	    deviceLib = CDLL("libDemoAdcShr.so")
-	except:
-	    print 'Cannot link to device library'
-	    return 0
+        try:
+           deviceLib = CDLL("libDemoAdcShr.so")
+        except:
+            print ('Cannot link to device library')
+            return 0
 
-	try:
-   	    addr = self.addr.data()
-	except:
-	    print 'Missing Address in device'
-	    return 0
-	try:
-	    frequency = self.clock_freq.data()
+        try:
+            addr = self.addr.data()
+        except:
+            print ('Missing Address in device')
+            return 0
+        try:
+            frequency = self.clock_freq.data()
             period = 1./frequency
-	except:
-	    print 'Missing clock frequency'
-	    return 0
-	try:
-	    trigTime = self.trig_source.data()
- 	except:
-	    print 'Missing trigger time'
-	    return 0
+        except:
+            print ('Missing clock frequency')
+            return 0
+        try:
+            trigTime = self.trig_source.data()
+        except:
+            print ('Missing trigger time')
+            return 0
 
         if not self.checkWorker():
               return 0
@@ -121,28 +121,27 @@ class DEMOSTREAM(Device):
 #############################################################
   
     def init(self):
-	try:
-      	    deviceLib = CDLL("libDemoAdcShr.so")
-	except:
-	    print 'Cannot link to device library'
-	    return 0
+        try:
+            deviceLib = CDLL("libDemoAdcShr.so")
+        except:
+            print ('Cannot link to device library')
+            return 0
 
-	try:
-   	    addr = self.addr.data()
-	except:
-	    print 'Missing Address in device'
-	    return 0
+        try:
+            addr = self.addr.data()
+        except:
+            print ('Missing Address in device')
+            return 0
 
-	clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
-	try:
-	    clockFreq = self.clock_freq.data()
-	    clockMode = clockDict[clockFreq]
-	except:
-	    print 'Missing or invalid clock frequency'
-	    return 0
+        clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
+        try:
+            clockFreq = self.clock_freq.data()
+            clockMode = clockDict[clockFreq]
+        except:
+            print ('Missing or invalid clock frequency')
+            return 0
 
 
-	deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(0))
-	return 1
-
+        deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(0))
+        return 1
 

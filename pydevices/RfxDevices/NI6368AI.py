@@ -177,7 +177,7 @@ class NI6368AI(Device):
     """
     def restoreInfo(self):
         if NI6368AI.niLib is None:
-	    NI6368AI.niLib = CDLL("libnixseries.so")
+            NI6368AI.niLib = CDLL("libnixseries.so")
         if NI6368AI.niInterfaceLib is None:
             NI6368AI.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -436,9 +436,9 @@ class NI6368AI(Device):
         if self.restoreInfo() == self.DEV_IS_OPEN :
             try:
                self.restoreWorker()
-               print 'Chech Start Store'
+               print ('Chech Start Store')
                if self.worker.isAlive():
-                  print 'stop Store'
+                  print ('stop Store')
                   self.stop_store()
                self.restoreInfo()
             except:
@@ -645,7 +645,7 @@ class NI6368AI(Device):
             else:
                 self.debugPrint('PXI 6368 preTrigger   = ', Int32(int(preTrigger)))
                 self.debugPrint('PXI 6368 postTrigger   = ', Int32(int(postTrigger)))
-		if  trigTime > startTime or trigMode == 'INTERNAL' : 
+                if  trigTime > startTime or trigMode == 'INTERNAL' : 
                     self.debugPrint ('PXI 6368 Acquire only post trigger when triger time > start Time or trigger mode internal') 
                     nSamples = postTrigger
                     startIdx = 0
@@ -804,7 +804,7 @@ class NI6368AI(Device):
 #Acquisition in progress module check
         try:
             self.restoreWorker()
-            print 'Check worker is running'
+            print ('Check worker is running')
             if self.worker.isAlive():
                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module is acquiring')
                return
@@ -826,10 +826,10 @@ class NI6368AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        print 'Tree opening'
+        print ('Tree opening')
         treePtr = c_void_p(0)
         NI6368AI.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
-        print 'Tree opemed'
+        print ('Tree opened')
 
         stopAcq = c_void_p(0)
         NI6368AI.niInterfaceLib.getStopAcqFlag(byref(stopAcq));
@@ -905,8 +905,8 @@ class NI6368AI(Device):
       self.debugPrint ("=============== PXI 6368 trigger  ===========")
 
       if self.restoreInfo() != self.DEV_IS_OPEN  :
-	    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
-	    raise mdsExceptions.TclFAILED_ESSENTIAL
+            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
+            raise mdsExceptions.TclFAILED_ESSENTIAL
 
       try:
             status = NI6368AI.niLib.xseries_start_ai(c_int(self.ai_fd))
