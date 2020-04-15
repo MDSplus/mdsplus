@@ -4,7 +4,7 @@ from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_ui
 import os
 from time import sleep
 import sys, traceback
-import exceptions
+#import exceptions
 
 class CRIO_FAU(Device):
     """NI Compact RIO SPIDER Interlock Fast Acquisition Units"""
@@ -69,7 +69,7 @@ class CRIO_FAU(Device):
             if status < 0 :
                 raise mdsExceptions.TclFAILED_ESSENTIAL
         except BaseException as e:
-            print str(e)
+            print (str(e))
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open cRIO FAU session')
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return
@@ -107,7 +107,7 @@ class CRIO_FAU(Device):
             bufSize = self.device.buf_size.data()
 
             trigSource = self.device.trig_source.data() 
-            print 'AsynchStore trigget time', trigSource
+            print ('AsynchStore trigger time', trigSource)
 
          
             chanNid = []
@@ -124,7 +124,7 @@ class CRIO_FAU(Device):
                if self.stopFlag:
                   self.stopReq = True
                 
-            print 'AsynchStore stop'
+            print ('AsynchStore stop')
 
             return
 
@@ -158,7 +158,7 @@ class CRIO_FAU(Device):
 
         try:
             trigMode = self.trig_mode.data()
-            print "Trigger Node = ", trigMode
+            print ("Trigger Node = ", trigMode)
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Read FAU trigger mode error. Set to INTERNAL')
             trigMode = 'INTERNAL'
@@ -183,7 +183,7 @@ class CRIO_FAU(Device):
                 trigSource = 0.
                 self.trig_source.putData( Float32(trigSource) )
 
-        print "Trigger Source = ", trigSource
+        print ("Trigger Source = ", trigSource)
 
         status = CRIO_FAU.niInterfaceLib.setFauAcqParam(self.session, c_short(pteMask), c_int(pteFreq), c_short(tickFreqCode) )
 
@@ -226,10 +226,10 @@ class CRIO_FAU(Device):
         self.worker.configure(self, tsmpFreq, treePtr)
 
         trigMode = self.trig_mode.data()
-        print "Trigg mode ",  trigMode       
+        print ("Trigg mode ",  trigMode )      
         if( trigMode == "INTERNAL" ):
               status = CRIO_FAU.niInterfaceLib.startFauAcquisition(self.session)
-              print "Start FAU acquisition"    
+              print ("Start FAU acquisition")    
               if status < 0:
                   Data.execute('DevLogErr($1,$2)', self.getNid(), 'FAU start acquisition device error.')
                   raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -238,7 +238,7 @@ class CRIO_FAU(Device):
 
         acqState = c_short();
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
-        print "Acquisition State ", acqState.value
+        print ("Acquisition State ", acqState.value)
 
         self.saveWorker()
         self.worker.start()
@@ -256,10 +256,10 @@ class CRIO_FAU(Device):
 
         self.restoreWorker()
         if self.worker.isAlive():
-            print "stop_worker"
+            print ("stop_worker")
             self.worker.stop()
             self.worker.join()
-        print "Close Info"
+        print ("Close Info")
         self.closeInfo()
         return 1
     

@@ -855,7 +855,7 @@ class DIO4(Device):
                 evCode = Data.execute('TimingDecodeEvent($1)', evName)
             else:
                 evCode = 0
-            print "SW Event ",evCode 
+            print ("SW Event ",evCode )
             if evCode != 0:
                 setattr(self,'out_ev_sw_code', evCode)
             else:

@@ -136,51 +136,51 @@ class PI_SCT320(Device):
 
     def setParameter(self, dev, value, param):
         out = []
-        print 'setParameter ', param,  value        
+        print ('setParameter ', param,  value  )      
         status = self.sendCommand(dev, '%d %s'%(value,param), out)
-        print 'Parameter configured ',  status
+        print ('Parameter configured ',  status)
         return status
 
     def getParameter(self, dev, param, out = []):
-        print 'getParameter ', param        
+        print ('getParameter ', param  )      
         status = self.sendCommand(dev, '?'+param, out) 
-        print 'getParameter ', param, out      
+        print ('getParameter ', param, out)      
         return status
 
 
     def computeLambda(self, grating):
         try:
-            print 'OK', grating
+            print ('OK', grating)
             G=float(getattr(self, 'gratings_grating_%02d_groove'%(grating)).data())           #;grooving reticolo gr/mm
-            print 'G', G
+            print ('G', G)
             gamma = np.pi / 180.* getattr(self, 'gratings_grating_%02d_inclusion'%(grating)).data()           #; inclusion angle gamma=18.5*!dtor
-            print 'gamma',gamma
+            print ('gamma',gamma)
             delta = np.pi / 180.* float(getattr(self, 'gratings_grating_%02d_detector'%(grating)).data())     #; detector angle 8.77*!dtor
-            print 'delta',delta
+            print ('delta',delta)
             f=getattr(self, 'gratings_grating_%02d_focal'%(grating)).data()                   #; focal length [mm]
-            print 'f',f
+            print ('f',f)
             p_size=self.sensor_pixel_width.data()                                             #; pixel size (width) [micron]
-            print 'p_size',p_size
+            print ('p_size',p_size)
             n_pix=float(self.sensor_width.data())                                             #; xdimDet
-            print 'n_pix',n_pix
+            print ('n_pix',n_pix)
             lambda_0= self.lambda_0.data() * 10                                               #; (A) 
-            print 'lambda_0',lambda_0
+            print ('lambda_0',lambda_0)
             d=1./G                                                                            #;mm
-            print 'd', d
+            print ('d', d)
 
             x_max=n_pix*p_size/1000.                                                          #;mm chip size
-            print 'x_max',x_max
+            print ('x_max',x_max)
             m=1                                                                               #;diffraction order
             psi=np.arcsin(m*lambda_0*1E-7/2/d/np.cos(gamma/2.))
-            print 'psi xx',psi
+            print ('psi xx',psi)
             x=(np.arange(n_pix) + 1 )/n_pix*x_max-x_max/2.                                       #;x=(findgen(n_pix)+1)/n_pix*x_max-x_max/2.
-            print 'x',x, np.cos(delta)
+            print ('x',x, np.cos(delta))
             #csi=atan(x/f)                                                                    #;vale se delta e' piccolo
             csi=np.arctan(x*np.cos(delta)/(f+x*np.sin(delta))) 
-            print 'csi',csi
+            print ('csi',csi)
 
             lambda_arr=d/m*2*(np.sin(psi+csi/2)*np.cos(gamma/2+csi/2))*1E7 
-            print 'lambda_arr', len(lambda_arr) , lambda_arr
+            print ('lambda_arr', len(lambda_arr) , lambda_arr)
             getattr(self, 'gratings_grating_%02d_lambda_nm'%(grating)).putData(lambda_arr) 
 
             
@@ -206,7 +206,7 @@ class PI_SCT320(Device):
 
    
         try:
-            print "Load Calibration File ", self.calibration_file_path.data()
+            print ("Load Calibration File ", self.calibration_file_path.data())
             spectroCalibFile = self.calibration_file_path.data()
             wb = load_workbook(spectroCalibFile, data_only=True)
         except Exception as e :
@@ -360,14 +360,14 @@ class PI_SCT320(Device):
             for gr_val in gratingsNodeList :
                for gr in range(0,3):
                    #print gr_val[0]%(gr+1), gr_val[1], gr_val[2]
-	           if gr_val[1] == 'text' :
-		       getattr(self, gr_val[0]%(gr+1)).putData(gr_val[2][gr])
-	           elif gr_val[1] == 'int' :
-		       getattr(self, gr_val[0]%(gr+1)).putData( int( gr_val[2][gr] ) )
-	           elif gr_val[1] == 'float' :
-		       getattr(self, gr_val[0]%(gr+1)).putData( float( gr_val[2][gr] ) )
-	           elif gr_val[1] == 'signal' :
-		       getattr(self, gr_val[0]%(gr+1)).putData( Signal( gr_val[2][1 + (gr * 2)], None, gr_val[2][gr * 2] ) )
+                   if gr_val[1] == 'text' :
+                       getattr(self, gr_val[0]%(gr+1)).putData(gr_val[2][gr])
+                   elif gr_val[1] == 'int' :
+                       getattr(self, gr_val[0]%(gr+1)).putData( int( gr_val[2][gr] ) )
+                   elif gr_val[1] == 'float' :
+                       getattr(self, gr_val[0]%(gr+1)).putData( float( gr_val[2][gr] ) )
+                   elif gr_val[1] == 'signal' :
+                       getattr(self, gr_val[0]%(gr+1)).putData( Signal( gr_val[2][1 + (gr * 2)], None, gr_val[2][gr * 2] ) )
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing grating calibration %s field %s'%( gr_val[0]%(gr+1), str(e)) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -377,12 +377,12 @@ class PI_SCT320(Device):
     
     def init(self):
 
-        print '---------------- INNIT --------------------'
+        print ('---------------- INNIT --------------------')
         import serial
   
         try:
             detector = self.detector.getData().getPath()
-            print "DETECTOR ", detector
+            print ("DETECTOR ", detector)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve DETECTOR '+ str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -391,7 +391,7 @@ class PI_SCT320(Device):
 
         try:
             height = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:HEIGHT')
-            print height
+            print (height)
             self.sensor_height.putData(height)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve HEIGHT sensor '+ str(e) )
@@ -399,7 +399,7 @@ class PI_SCT320(Device):
         
         try:
             width = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:WIDTH')
-            print width
+            print (width)
             self.sensor_width.putData(width)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve WIDTH sensor '+ str(e) )
@@ -407,7 +407,7 @@ class PI_SCT320(Device):
 
         try:
             pixelHeigh = Data.execute(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
-            print pixelHeigh
+            print (pixelHeigh)
             self.sensor_pixel_height.putData(pixelHeigh)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve PIXEL_HEIGHT sensor '+ str(e) )
@@ -415,7 +415,7 @@ class PI_SCT320(Device):
         
         try:
             pixelWidth = Data.execute(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
-            print pixelWidth
+            print (pixelWidth)
             self.sensor_pixel_width.putData(pixelWidth)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve PIXEL_WIDTH sensor '+ str(e) )
@@ -505,7 +505,7 @@ class PI_SCT320(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot save reference spectrometer roi to ccd roi data '+ str(e) )
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        print '-------------------------------------------'
+        print ('-------------------------------------------')
         return (1)
 
 

@@ -223,8 +223,8 @@ class NI6259EV(Device):
             chanPostTimes = NI6259EV.ni6259chanPostTimes[nid]
             chanFd = []
             chanNid = []
-	    f1Div = self.device.freq1_div.data()
-	    f2Div = self.device.freq2_div.data()
+            f1Div = self.device.freq1_div.data()
+            f2Div = self.device.freq2_div.data()
             baseFreq = self.device.clock_freq.data()
             baseStart = self.device.clock_start.data()
             coeff_array = c_float*4
@@ -380,7 +380,7 @@ class NI6259EV(Device):
             try:
                 if self.restoreWorker():
                     if self.worker.isAlive():
-                        print 'stop Store'
+                        print ('stop Store')
                         self.stop_store()
                         self.restoreInfo()
             except:

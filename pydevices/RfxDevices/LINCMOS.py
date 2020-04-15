@@ -58,8 +58,8 @@ class LINCMOS(Device):
             ipAddr = self.ip_addr.data()
             ip,port = ipAddr.split(":")
             port = int(port)
-            print 'Server Address = ', ip
-            print 'Server Port = ', str(port)
+            print ('Server Address = ', ip)
+            print ('Server Port = ', str(port))
         except:
             ip = "localhost"
             port = 7500
@@ -68,7 +68,7 @@ class LINCMOS(Device):
         # Get Integration Time
         try:
             intTime = str(self.int_time.data())
-            print 'Integration Time = ', intTime 
+            print ('Integration Time = ', intTime) 
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid integration time parameter value')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -76,7 +76,7 @@ class LINCMOS(Device):
         # Get Num. Frames
         try:
             nFrames = str(self.n_frames.data())
-            print 'Number of Frames = ', nFrames 
+            print ('Number of Frames = ', nFrames )
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid Number of Frames parameter value')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -89,7 +89,7 @@ class LINCMOS(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         msg="LIN_CMOS#" + shotNum + "#" + nFrames.zfill(4) + "#" + intTime + "\r\n"
-        print "Message to Send: " + msg
+        print ("Message to Send: " + msg)
 
         # Connect to server
         try:
@@ -103,7 +103,7 @@ class LINCMOS(Device):
         try:
             s.send(msg)
             data = s.recv(16)  #responses: LIN_CMOS#ACQ_ACK, LIN_CMOS#ACQ_ERR, LIN_CMOS#ACQ_END
-            print data
+            print (data)
             if data=="LIN_CMOS#ACQ_ERR":
               Data.execute('DevLogErr($1,$2)', self.nid, 'ERROR: LINCMOS acquisition error')
               raise mdsExceptions.TclFAILED_ESSENTIAL

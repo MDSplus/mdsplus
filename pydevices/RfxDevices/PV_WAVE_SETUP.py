@@ -33,7 +33,7 @@ class PV_WAVE_SETUP(Device):
 
     def init(self):
 
-        print '================= INIT EPICS WAVE SETUP ==============='
+        print ('================= INIT EPICS WAVE SETUP ===============')
 
         wavex = CaChannel()
         wavey = CaChannel()
@@ -70,14 +70,14 @@ class PV_WAVE_SETUP(Device):
                     pv_wave_x = getattr(self, 'wave_%d_pv_x'%(chan)).data()
                     wavex.searchw(pv_wave_x)
                 except:
-		    msg = 'Error on PV waveform %d x variable'%(chan)
+                    msg = 'Error on PV waveform %d x variable'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
                 try:
                     wavex_data = getattr(self, 'wave_%d_x'%(chan)).data()
                 except:
-		    msg = 'Error reading x waveform %d values'%(chan)		
+                    msg = 'Error reading x waveform %d values'%(chan)		
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
         
@@ -85,7 +85,7 @@ class PV_WAVE_SETUP(Device):
                     pv_wave_y = getattr(self, 'wave_%d_pv_y'%(chan)).data()
                     wavey.searchw(pv_wave_y)
                 except:
-		    msg = 'Error reading y waveform %d values'%(chan)
+                    msg = 'Error reading y waveform %d values'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -93,7 +93,7 @@ class PV_WAVE_SETUP(Device):
                 try:
                     wavey_data = getattr(self, 'wave_%d_y'%(chan)).data()
                 except:
-		    msg = 'Error reading y waveform %d values'%(chan)		
+                    msg = 'Error reading y waveform %d values'%(chan)		
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -107,14 +107,14 @@ class PV_WAVE_SETUP(Device):
         del wavex
         del wavey        
         del trig
-        print '======================================================='
+        print ('=======================================================')
 
         return 1
 
 
     def reset(self):
 
-        print '================= RESET EPICS WAVE SETUP ==============='
+        print ('================= RESET EPICS WAVE SETUP ===============')
 
         wavex = CaChannel()
         wavey = CaChannel()
@@ -128,7 +128,7 @@ class PV_WAVE_SETUP(Device):
                     pv_wave_x = getattr(self, 'wave_%d_pv_x'%(chan)).data()
                     wavex.searchw(pv_wave_x)
                 except:
-		    msg = 'Error on PV waveform %d x variable'%(chan)
+                    msg = 'Error on PV waveform %d x variable'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -137,7 +137,7 @@ class PV_WAVE_SETUP(Device):
                     pv_wave_y = getattr(self, 'wave_%d_pv_y'%(chan)).data()
                     wavey.searchw(pv_wave_y)
                 except:
-		    msg = 'Error reading y waveform %d values'%(chan)
+                    msg = 'Error reading y waveform %d values'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -147,7 +147,7 @@ class PV_WAVE_SETUP(Device):
 
         del wavex
         del wavey        
-        print '========================================================'
+        print ('========================================================')
 
         return 1
 

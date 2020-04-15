@@ -28,10 +28,10 @@ class DEMOADC(Device):
    	{'path':':TRIG_SOURCE','type':'numeric', 'value':0},
    	{'path':':PTS','type':'numeric', 'value':1000}]
     for i in range(4):
-	parts.append({'path':'.CHANNEL_%d'%(i),'type':'structure'})
-	parts.append({'path':'.CHANNEL_%d:START_IDX'%(i),'type':'numeric', 'value':0})
-	parts.append({'path':'.CHANNEL_%d:END_IDX'%(i),'type':'numeric', 'value':1000})
-	parts.append({'path':'.CHANNEL_%d:DATA'%(i),'type':'signal', 'options':('no_write_model','compress_on_put')})
+        parts.append({'path':'.CHANNEL_%d'%(i),'type':'structure'})
+        parts.append({'path':'.CHANNEL_%d:START_IDX'%(i),'type':'numeric', 'value':0})
+        parts.append({'path':'.CHANNEL_%d:END_IDX'%(i),'type':'numeric', 'value':1000})
+        parts.append({'path':'.CHANNEL_%d:DATA'%(i),'type':'signal', 'options':('no_write_model','compress_on_put')})
 
     parts.append({'path':':INIT_ACTION','type':'action',
 	'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'init',head))",
@@ -67,11 +67,11 @@ class DEMOADC(Device):
 #
 #Since we need to link against a shaed library from python, we need ctypes package.
         from ctypes import CDLL, c_int, c_char_p
-	try:
-      	    deviceLib = CDLL("libDemoAdcShr.so")
-	except:
-	    print 'Cannot link to device library'
-	    return 0
+        try:
+           deviceLib = CDLL("libDemoAdcShr.so")
+        except:
+            print ('Cannot link to device library')
+            return 0
 
 #deviceLib is the ctype DLL object which allows to call library routines
 
@@ -80,72 +80,72 @@ class DEMOADC(Device):
 #1) instantiate a TreeNode object, passing the integer nid to the constructor
 #2) read and evaluate (in the case the content is an expression) its content via TreeNode.data() method 
 #all data access operation will be but in a try block in order to check for missing or wrong configuration data
-	try:
-   	    addr = self.addr
+        try:
+            addr = self.addr
 #we expect to get a string in addr
-	except:
-	    print 'Missing addr in device'
-	    return 0
+        except:
+            print ('Missing addr in device')
+            return 0
  
 #read the clock frequency and convert to clock mode. We use a dictionary for the conversion, and assume 
-	clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
-	try:
-	    clockFreq = self.clock_freq.data()
-	    clockMode = clockDict[clockFreq]
-	except:
-	    print 'Missing or invalid clock frequency'
-	    return 0
+        clockDict = {1000:1, 5000:2, 10000:3, 50000:4, 100000:5}
+        try:
+            clockFreq = self.clock_freq.data()
+            clockMode = clockDict[clockFreq]
+        except:
+            print ('Missing or invalid clock frequency')
+            return 0
 
 #read Post Trigger Samples and check for consistency
-	try:
-	    pts = self.pts.data()
-	except:
-	    print 'Missing or invalid Post Trigger Samples'
-	    return 0
+        try:
+            pts = self.pts.data()
+        except:
+            print ('Missing or invalid Post Trigger Samples')
+            return 0
 
 #all required configuation collected. Call external routine initialize passing the right parameters
 #we use ctypes functions to convert python variable to appropriate C types to be passed to the external routine
-	deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(pts))
+        deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(pts))
 #return success
-	return 1
+        return 1
 
 
 ##################################STORE################################################
 #store method, called to get samples from the ADC and to store waveforms in the tree
     def store(self):
 #import required symbols from MDSSplus and ctypes packages
-      	from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
-      	from ctypes import CDLL, c_char_p, c_short, byref
+        from MDSplus import Tree, TreeNode, Int16Array, Float64Array, Int32, Int64, Float32, Float64, Signal, Data, Dimension, Window, Range
 
+        from ctypes import CDLL,c_char_p,c_short,byref
 #instantiate library object
-    	try:
-      	    deviceLib = CDLL("libDemoAdcShr.so")
-	except:
-	    print 'Cannot link to device library'
-	    return 0
+        try:
+            deviceLib = CDLL("libDemoAdcShr.so")
+        except:
+            print ('Cannot link to device library')
+            return 0
 
 
 #get addr
-	try:
-   	    addr = self.addr
+        try:
+            addr = self.addr
 #we expect to get a string in addr
-	except:
-	    print 'Missing Addr in device'
-	    return 0
+        except:
+            print ('Missing Addr in device')
+            return 0
 
 
 #instantiate four short arrays with 65536 samples each. They will be passed to the acquire() external routine
-	DataArray = c_short * 65536
-	rawChan = []
-	rawChan.append(DataArray())
-	rawChan.append(DataArray())
-	rawChan.append(DataArray())
-	rawChan.append(DataArray())
+        DataArray = c_short * 65536
+        rawChan = []
+        rawChan.append(DataArray())
+        rawChan.append(DataArray())
+        rawChan.append(DataArray())
+        rawChan.append(DataArray())
 
-	status = deviceLib.acquire(c_char_p(addr), byref(rawChan[0]), byref(rawChan[1]), byref(rawChan[2]), byref(rawChan[3]))
-	if status == -1:
-	    print 'Acquisition Failed'
-	    return 0
+        status = deviceLib.acquire(c_char_p(addr), byref(rawChan[0]), byref(rawChan[1]), byref(rawChan[2]), byref(rawChan[3]))
+        if status == -1:
+            print ('Acquisition Failed')
+            return 0
 
 #at this point the raw signals are contained in rawChan1-4. We must now:
 #1) reduce the dimension of the stored array using the start idx and end idx parameters for each channel, which define
@@ -156,59 +156,59 @@ class DEMOADC(Device):
 #4) store the Signal object in the tree
 
 #read PostTriggerSamples
-	try:
-	    pts = self.pts.data()
-	except:
-	    print 'Missing or invalid Post Trigger Samples'
-	    return 0
+        try:
+            pts = self.pts.data()
+        except:
+           print ('Missing or invalid Post Trigger Samples')
+           return 0
 #for each channel we read start idx and end idx
-	startIdx = []
-	endIdx = []
-	try :
-	    for chan in range(0,4):
-		currStartIdx = self.__getattr__('channel_%d_start_idx'%(chan)).data()
-		currEndIdx = self.__getattr__('channel_%d_end_idx'%(chan)).data()
-		startIdx.append(currStartIdx)
-		endIdx.append(currEndIdx)
-	except:
-	    print 'Cannot read start idx or end idx'
-	    return 0
+        startIdx = []
+        endIdx = []
+        try :
+           for chan in range(0,4):
+                currStartIdx = self.__getattr__('channel_%d_start_idx'%(chan)).data()
+                currEndIdx = self.__getattr__('channel_%d_end_idx'%(chan)).data()
+                startIdx.append(currStartIdx)
+                endIdx.append(currEndIdx)
+        except:
+           print ('Cannot read start idx or end idx')
+           return 0
 #1)Build reduced arrays based on start idx and end idx for each channel
 #recall that a transient recorder stores acquired data in a circular buffer and stops after acquiring 
 #PTS samples after the trigger. This means that the sample corresponding to the trigger is at offset PTS samples
 #before the end of the acquired sample array.
 
 #the total number of samples returned by routine acquire()
-	totSamples = 65536
+        totSamples = 65536
 
 #we read the time associated with the trigger. It is specified in the TRIG_SOURCE field of the device tree structure.
 #it will be required in order to associate the correct time with each acquired sample
-	try:
-	    trigTime = self.trig_source.data()
-	except:
-	    print 'Missing or invalid Post Trigger Samples'
-	    return 0
+        try:
+            trigTime = self.trig_source.data()
+        except:
+            print ('Missing or invalid Post Trigger Samples')
+            return 0
 #we need clock frequency as well
-	try:
-	    clockFreq = self.clock_freq.data()
-	    clockPeriod = 1./clockFreq
-	except:
-	    print 'Missing or invalid clock frequency'
-	    return 0
+        try:
+            clockFreq = self.clock_freq.data()
+            clockPeriod = 1./clockFreq
+        except:
+            print ('Missing or invalid clock frequency')
+            return 0
 	
 
 #the following steps are performed for each acquired channel 
-	reducedRawChans = []
-	for chan in range(0,4):
-	    actStartIdx = totSamples - pts + startIdx[chan]  #first index of the part of interest of the sample array
-	    actEndIdx = totSamples - pts  + endIdx[chan]   #last index of the part of interest of the sample array
+        reducedRawChans = []
+        for chan in range(0,4):
+            actStartIdx = totSamples - pts + startIdx[chan]  #first index of the part of interest of the sample array
+            actEndIdx = totSamples - pts  + endIdx[chan]   #last index of the part of interest of the sample array
 #make sure we do not exceed original array limits
-	    if actStartIdx < 0:
-		actStartIdx = 0
-	    if actEndIdx > totSamples:
-		actEndIdx = totSamples - 1
+            if actStartIdx < 0:
+                actStartIdx = 0
+            if actEndIdx > totSamples:
+                actEndIdx = totSamples - 1
 #build reshaped array
-	    reducedRawChan = rawChan[chan][actStartIdx:actEndIdx] 
+            reducedRawChan = rawChan[chan][actStartIdx:actEndIdx] 
 	    
 
 #2)Build timing information. For this purpose we use a  MDSplus "Dimension" object which contains two fields:
@@ -224,7 +224,7 @@ class DEMOADC(Device):
 #specify start and end times(it is a continuous, single speed clock).
 #
 #build the Dimension object in a single call
-	    dim = Dimension(Window(startIdx[chan], endIdx[chan], trigTime), Range(None, None, clockPeriod))
+            dim = Dimension(Window(startIdx[chan], endIdx[chan], trigTime), Range(None, None, clockPeriod))
 
 
 #3) Put all togenther in a "Signal" object. MDSplus Signal objects define three fields: samples, raw samples, dimension
@@ -237,27 +237,27 @@ class DEMOADC(Device):
 #   The MDSplus syntax for this conversion is:  10.*$VALUE/32768.
 #   We shall use Data method compile() to build the MDSplus internal representation of this expression, and the stick it
 #   as the first field of the Signal object
-  	    convExpr = Data.compile("10.* $VALUE/32768.")
+            convExpr = Data.compile("10.* $VALUE/32768.")
 
 #use MDSplus Int16Array object to vest the short array reducedRawChan into the appropriate MDSplus type
-	    rawMdsData = Int16Array(reducedRawChan)
+            rawMdsData = Int16Array(reducedRawChan)
 
 #every MDSplus data type can have units associated with it
-	    rawMdsData.setUnits("Count")
-	    convExpr.setUnits("Volt")
+            rawMdsData.setUnits("Count")
+            convExpr.setUnits("Volt")
 
 #build the signal object
-	    signal = Signal(convExpr, rawMdsData, dim)
+            signal = Signal(convExpr, rawMdsData, dim)
 
 #write the signal in the tree 
-    	    try:
-		self.__getattr__('channel_%d_data'%(chan)).putData(signal)
+            try:
+                self.__getattr__('channel_%d_data'%(chan)).putData(signal)
             except:
-    		print 'Cannot write Signal in the tree' 
- 		return 0
+                print ('Cannot write Signal in the tree') 
+                return 0
 
 #endfor chan in range(0,4):
 
 #return success (odd numbers in MDSplus)
-	return 1
+        return 1
 

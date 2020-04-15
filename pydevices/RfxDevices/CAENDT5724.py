@@ -71,11 +71,12 @@ class CAENDT5724(Device):
 	  'options':('no_write_shot',)})
     parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
 
-    cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
-    cvV2718 = 1L                    # V2718 PCI-VME bridge with optical link       
-    cvA2818 = 2L                    # PCI board with optical link                  
-    cvA2719 = 3L                    # Optical link piggy-back                      
-    cvA32_S_DATA = 0x0D             # A32 supervisory data access                  */
+    cvV1718 = 0                    # CAEN V1718 USB-VME bridge    
+    cvV2718 = 1                    # V2718 PCI-VME bridge with optical link       
+    cvA2818 = 2                    # PCI board with optical link                  
+    cvA2719 = 3                    # Optical link piggy-back                      
+    cvA32_S_DATA = 0x0D             # A32 supervisory data access                  
+
     cvD32 = 0x04		    # D32
     cvD64 = 0x08
 
@@ -83,8 +84,8 @@ class CAENDT5724(Device):
     MEM_4MS   = 4194304
     InternalFrequency = 100E6
 
-    HANDLE_RESTORE = 1L
-    HANDLE_OPEN  = 2L
+    HANDLE_RESTORE = 1
+    HANDLE_OPEN  = 2
 
     caenLib = None
     caenInterfaceLib = None
@@ -117,10 +118,10 @@ class CAENDT5724(Device):
 #Support class for continuous store
     class AsynchStore(Thread):
 
-      cvV1718 = 0L                    # CAEN V1718 USB-VME bridge    
-      cvV2718 = 1L                    # V2718 PCI-VME bridge with optical link       
-      cvA2818 = 2L                    # PCI board with optical link                  
-      cvA2719 = 3L                    # Optical link piggy-back                      
+      cvV1718 = 0                    # CAEN V1718 USB-VME bridge    
+      cvV2718 = 1                    # V2718 PCI-VME bridge with optical link       
+      cvA2818 = 2                    # PCI board with optical link                  
+      cvA2719 = 3                    # Optical link piggy-back                      
       cvA32_S_DATA = 0x0D             # A32 supervisory data access                 
       cvD32 = 0x04		      # D32
       cvD64 = 0x08
@@ -183,7 +184,7 @@ class CAENDT5724(Device):
 
         if self.acqMode == "TRANSIENT RECORDER":
            numTrigger = len(self.device.trig_source.getData())
-	else:
+        else:
            #continuous
            numTrigger = -1
         
@@ -208,10 +209,10 @@ class CAENDT5724(Device):
           #print 'CONDITION ISSUED'
 
 	  # Read number of buffers 
-	  actSegments = c_int(0)
-	  status = CAENDT5724.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
-	  if status != 0:
-	     print 'Error reading number of acquired segments' 
+          actSegments = c_int(0)
+          status = CAENDT5724.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+          if status != 0:
+             print ('Error reading number of acquired segments')
              continue
 
 
@@ -222,11 +223,11 @@ class CAENDT5724(Device):
 
 
           if self.acqMode == "TRANSIENT RECORDER" and segmentCounter == numTrigger :
-            print 'Transient Recoder acquisition completed!!!!'
+            print ('Transient Recoder acquisition completed!!!!')
             return 0
 
           if self.stopReq :
-            print 'ASYNCH STORE EXITED!!!!'
+            print ('ASYNCH STORE EXITED!!!!')
             return 0
           status = CAENDT5724.caenLib.CAENVME_IRQEnable(self.handle, c_int(0x01));
         #endwhile self.stopReq == 0:
@@ -276,7 +277,7 @@ class CAENDT5724(Device):
       try:
         CAENDT5724.caenLib
       except:
-          print 'Error loading library libCAENVME.so' 
+          print ('Error loading library libCAENVME.so' )
           return 0
 
       if CAENDT5724.caenInterfaceLib is None:
@@ -285,7 +286,7 @@ class CAENDT5724(Device):
       try:
         CAENDT5724.caenInterfaceLib
       except:
-          print 'Error loading library libCaenInterface.so' 
+          print ('Error loading library libCaenInterface.so' )
           return 0
         
       try:
@@ -302,12 +303,12 @@ class CAENDT5724(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Board ID specification')
           return 0
         self.handle = c_long(0)
-        print 'HANDLE NOT FOUND INITIALIZE CAEN MODULE'
+        print ('HANDLE NOT FOUND INITIALIZE CAEN MODULE')
         #status = caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(0), c_int(boardId), byref(self.handle))
         #Device VMEDevice (V3718 card ) is 0, BOARID is istead  VMELink from 0 to 3 for the V3718 4 link card
         status = CAENDT5724.caenLib.CAENVME_Init(c_int(self.cvV2718), c_int(boardId), c_int(0), byref(self.handle))
         if status != 0:
-          print 'Error initializing CAENVME' 
+          print ('Error initializing CAENVME' )
           return 0
         
         self.cv     = Condition()
@@ -367,12 +368,12 @@ class CAENDT5724(Device):
       else:
         self.chanMemory = self.MEM_4MS
         
-      print 'Channel Memory: ', self.chanMemory
+      print ('Channel Memory: ', self.chanMemory)
  
       numChannels = devType.value >> 16
-      print 'DevType code: ', devType.value
-      print 'NUM CHANNELS: ', numChannels
-      print 'Channel Memory: ', self.chanMemory
+      print ('DevType code: ', devType.value)
+      print ('NUM CHANNELS: ', numChannels)
+      print ('Channel Memory: ', self.chanMemory)
       self.num_channels.putData(numChannels)
 
       """      
@@ -413,8 +414,8 @@ class CAENDT5724(Device):
         return 0
 
       #Channel configurations
-      trigEnableCode = 0L
-      chanEnableCode = 0L
+      trigEnableCode = 0
+      chanEnableCode = 0
       enabledDict = {'ENABLED':1, 'DISABLED':0}
       numChannels = self.num_channels.data()
       for chan in range(0,numChannels):
@@ -453,13 +454,13 @@ class CAENDT5724(Device):
 	
         #Set offset
         offset = offset + dac_offset
-        print 'Ch ', chan ,'Offset Volt = ',offset
+        print ('Ch ', chan ,'Offset Volt = ',offset)
         if(offset > 1.125):
           offset = 1.125
         if(offset < -1.125):
           offset = -1.125
         offset = (offset / 1.125) * 32767
-        print 'Ch ', chan ,'Offset Val. =', int(offset)
+        print ('Ch ', chan ,'Offset Val. =', int(offset))
 
 
         status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x1098 + chan * 0x100), byref(c_int(int(offset + 0x08000))), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
@@ -574,12 +575,12 @@ class CAENDT5724(Device):
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
           return 0
 
-      print 'startIdx      : ', int(startIdx)
-      print 'endIdx        : ', int(endIdx)
-      print 'SEGMENT SIZE  : ', int(segmentSize)
-      print 'PTS           : ', pts
-      print 'currStartIdx  : ', currStartIdx
-      print 'currEndIdx    : ', currEndIdx
+      print ('startIdx      : ', int(startIdx))
+      print ('endIdx        : ', int(endIdx))
+      print ('SEGMENT SIZE  : ', int(segmentSize))
+      print ('PTS           : ', pts)
+      print ('currStartIdx  : ', currStartIdx)
+      print ('currEndIdx    : ', currEndIdx)
 
       acqMode = self.acq_mode.data()
       if acqMode == 'CONTINUOUS' or acqMode == 'CONTINUOUS WITH COUNTER' or acqMode == 'TRANSIENT RECORDER':
@@ -620,7 +621,7 @@ class CAENDT5724(Device):
         vmeAddress = 0
         #Module SW trigger
         data = c_int(0)
-        status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+        status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
         if status != 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5724 Device'  )
           return 0
@@ -704,7 +705,7 @@ class CAENDT5724(Device):
         if (chanMask & (1 << chan)) != 0:
           nActChans = nActChans + 1
       if nActChans == 0:
-        print 'No active groups' 
+        print ('No active groups') 
         return 1
       segmentSize = 16 + 2 * segmentSamples * nActChans
       acqMode = self.acq_mode.data()
@@ -806,7 +807,7 @@ class CAENDT5724(Device):
 
       vmeAddress = 0
       #Stop device 
-      status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
+      status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(0)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       if status != 0:
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error stopping device')
         return 0
@@ -815,7 +816,7 @@ class CAENDT5724(Device):
 
       self.restoreWorker()
       if self.worker.isAlive():
-          print "PXI CAENDT5724 stop_worker"
+          print ("PXI CAENDT5724 stop_worker")
           self.worker.stop()
       del self.worker
  

@@ -239,8 +239,8 @@ class PI_CAM(Device):
         
         PI_CAM.instanceValues[self.nid]  = camVarInst
 
-        print "saveInfo ", camVarInst.calculatedBufferSize, camVarInst.readoutStride, camVarInst.frameStride, \
-                           camVarInst.framesPerReadout, camVarInst.dataBuffer, camVarInst.frameSize 
+        print ("saveInfo ", camVarInst.calculatedBufferSize, camVarInst.readoutStride, camVarInst.frameStride, \
+                           camVarInst.framesPerReadout, camVarInst.dataBuffer, camVarInst.frameSize )
 
 
     def restoreInfo(self):
@@ -276,7 +276,7 @@ class PI_CAM(Device):
                         modelName,openDemo = modelValue.split('::')
                         if openDemo == 'demo':
                             isDemo = True
-                            print "WARNING : Activate Demo camera ", modelName, serialNumber
+                            print ("WARNING : Activate Demo camera ", modelName, serialNumber)
                     except:
                         modelName = modelValue
                 except:
@@ -310,14 +310,14 @@ class PI_CAM(Device):
                         numCamsAvailable = c_int(0)
                         camIDs = c_void_p(0)
                         PI_CAM.picamlib.Picam_GetAvailableCameraIDs( byref(camIDs), byref(numCamsAvailable) )
-                        print ">>>>>>>>>>>> numCamsAvailable ", numCamsAvailable, camIDs
+                        print (">>>>>>>>>>>> numCamsAvailable ", numCamsAvailable, camIDs)
                         if numCamsAvailable != 0 :
                             camIDs = cast(camIDs, POINTER( (PicamCameraID) * int(numCamsAvailable.value))).contents
                             cameraFound = False
                             for i in range(numCamsAvailable.value) :
                                 name = c_char_p(0)
                                 error = PI_CAM.picamlib.Picam_GetEnumerationString( PicamEnumeratedType.Model, camIDs[i].model, byref(name) )
-                                print ">>>>>>>>>>>>", name.value,  int(camIDs[i].serial_number), serialNumber
+                                print (">>>>>>>>>>>>", name.value,  int(camIDs[i].serial_number), serialNumber)
                                 if name.value == modelName and int(camIDs[i].serial_number) == serialNumber:
                                    camID = camIDs[i]
                                    cameraFound = True
@@ -347,7 +347,7 @@ class PI_CAM(Device):
                             break
                         PI_CAM.picamlib.Picam_DestroyString(model_name)
 
-                    print  i,  model_count.value
+                    print  (i,  model_count.value)
                     if i < model_count.value-1:                            
                         print("[%d] Picam aivalable Demo camera model %d\n" %( i, model_array[i] ))
                         print("Picam aivalable Demo camera model %s\n" %(model_name.value))
@@ -400,7 +400,7 @@ class PI_CAM(Device):
                 frameSize            = camVarInst.frameSize
                 dataBuffer           = camVarInst.dataBuffer
 
-                print "retoreInfo ", calculatedBufferSize, readoutStride, frameStride, framesPerReadout , dataBuffer, frameSize
+                print ("retoreInfo ", calculatedBufferSize, readoutStride, frameStride, framesPerReadout , dataBuffer, frameSize)
                 
 ##            else:
 ##                PI_CAM.picamlib.Picam_UninitializeLibrary();
@@ -412,22 +412,22 @@ class PI_CAM(Device):
 
     def closeInfo(self):
         try:
-            print "Close Info"
+            print ("Close Info")
             if self.nid in PI_CAM.cameras.keys():
                 self.camera = PI_CAM.cameras[self.nid]
                 del(PI_CAM.cameras[self.nid])
                 del(PI_CAM.instanceValues[self.nid])
                 #error = PI_CAM.picamlib.PicamAdvanced_CloseCamera( self.camera )
-                print "Close Camera"
+                print ("Close Camera")
                 isRunning = c_int(0)
                 error = PI_CAM.picamlib.Picam_IsAcquisitionRunning( self.camera, byref(isRunning) )
-                print "Camera is running", isRunning.value
+                print ("Camera is running", isRunning.value)
                 
                 error = PI_CAM.picamlib.PicamAdvanced_CloseCameraDevice( self.camera )
                 if error != PicamError.NoError :
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot close PI_CAM Camera '+  self.getErrorSting(error))
                 else:
-                    print "Camera Closed"
+                    print ("Camera Closed")
                 PI_CAM.picamlib.Picam_UninitializeLibrary()
                 PI_CAM.picamlib = None
         except Exception as e:
@@ -444,12 +444,12 @@ class PI_CAM(Device):
 ##////////////////////////////////////////////////////////////////////////////////
     def IsRelevantChanged ( self, camera,  parameter,  relevant ) :
         # - generate log message
-        print "---- IsRelevantChanged ----"
+        print ("---- IsRelevantChanged ----")
         if relevant :
-           print  self.getEnumString( PicamEnumeratedType.Parameter, parameter ), " relevance changed to true"
+           print  (self.getEnumString( PicamEnumeratedType.Parameter, parameter ), " relevance changed to true")
         else:
-           print  self.getEnumString( PicamEnumeratedType.Parameter, parameter ), " relevance changed to false"
-        print "---------------------------"
+           print  (self.getEnumString( PicamEnumeratedType.Parameter, parameter ), " relevance changed to false")
+        print ("---------------------------")
         return PicamError.NoError;
 
 ##////////////////////////////////////////////////////////////////////////////////
@@ -461,11 +461,11 @@ class PI_CAM(Device):
 ##////////////////////////////////////////////////////////////////////////////////
     def ValueAccessChanged(self, camera, parameter, access ):
         # - generate log message
-        print "----- ValueAccessChanged access ", access
+        print ("----- ValueAccessChanged access ", access)
         #print  self.getEnumString( PicamEnumeratedType.Parameter, parameter ), " value access changed to ", self.GetEnumString( PicamEnumeratedType.ValueAccess, access )
-        print "---- Parameter   " + self.getEnumString( PicamEnumeratedType.Parameter, parameter )
-        print "---- ValueAccess " + self.getEnumString( PicamEnumeratedType.ValueAccess, access )
-        print "---------------------------"
+        print ("---- Parameter   " + self.getEnumString( PicamEnumeratedType.Parameter, parameter ))
+        print ("---- ValueAccess " + self.getEnumString( PicamEnumeratedType.ValueAccess, access ))
+        print ("---------------------------")
         return PicamError.NoError
 
 
@@ -479,7 +479,7 @@ class PI_CAM(Device):
         picamModel = c_void_p(0)
         error = PI_CAM.picamlib.PicamAdvanced_GetCameraModel( self.camera, byref(picamModel) )
         if error != PicamError.NoError :
-            print "Failed to get camera model.", self.getErrorSting(error)
+            print ("Failed to get camera model.", self.getErrorSting(error))
             return
 
         # - register with each parameter
@@ -487,7 +487,7 @@ class PI_CAM(Device):
         count = c_long()
         error = PI_CAM.picamlib.Picam_GetParameters( picamModel, byref(parameters), byref(count) );
         if error != PicamError.NoError :
-            print "Failed to get camera parameters.", self.getErrorSting(error)
+            print ("Failed to get camera parameters.", self.getErrorSting(error))
             return
 
         parameters = cast(parameters, POINTER(c_int))
@@ -532,7 +532,7 @@ class PI_CAM(Device):
             # - register for relevance changes
             error = PI_CAM.picamlib.PicamAdvanced_RegisterForIsRelevantChanged( picamModel, c_int(parameters[i]), PI_CAM.callBacks["IsRelevantChanged"] );
             if error != PicamError.NoError :
-                print "Failed to register for relevance changes.", self.getErrorSting(error)
+                print ("Failed to register for relevance changes.", self.getErrorSting(error))
                 return
 
 ##            print "Param : ", self.getEnumString( PicamEnumeratedType.Parameter, parameters[i] ) 
@@ -540,7 +540,7 @@ class PI_CAM(Device):
             # - register for value access changes
             error = PI_CAM.picamlib.PicamAdvanced_RegisterForValueAccessChanged( picamModel, c_int(parameters[i]), PI_CAM.callBacks["ValueAccessChanged"] )
             if error != PicamError.NoError :
-                print "Failed to register for access changes.", self.getErrorSting(error)
+                print ("Failed to register for access changes.", self.getErrorSting(error))
                 return
 
             # - register for value changes
@@ -565,7 +565,7 @@ class PI_CAM(Device):
     def ParameterLargeIntegerValueChanged( self, camera, parameter, value ):
         #/ - generate log message
         message = self.getEnumString( PicamEnumeratedType.Parameter, parameter ) + " value changed to " + str(value)
-        print message 
+        print (message )
 
         return PicamError.NoError
 
@@ -583,17 +583,17 @@ class PI_CAM(Device):
             return PicamError.NoError
 
         #/ - generate log message
-        print  self.getEnumString( PicamEnumeratedType.Parameter, parameter )
-        print "region.roi_count = ", region.roi_count
+        print  (self.getEnumString( PicamEnumeratedType.Parameter, parameter ))
+        print ("region.roi_count = ", region.roi_count)
 
         for i in range(region.roi_count):
-            print "x         = ", region.roi_array[i].x
-            print "width     = ",region.roi_array[i].width
-            print "x_binning = ",region.roi_array[i].x_binning
+            print ("x         = ", region.roi_array[i].x)
+            print ("width     = ",region.roi_array[i].width)
+            print ("x_binning = ",region.roi_array[i].x_binning)
 
-            print "y         = ",region.roi_array[i].y
-            print "height    = ",region.roi_array[i].height
-            print "y_binning = ",region.roi_array[i].y_binning
+            print ("y         = ",region.roi_array[i].y)
+            print ("height    = ",region.roi_array[i].height)
+            print ("y_binning = ",region.roi_array[i].y_binning)
 
 
         return PicamError.NoError
@@ -672,7 +672,7 @@ class PI_CAM(Device):
         valueType = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterValueType( model, parameter, byref(valueType) )
         if error != PicamError.NoError :
-            print "Failed to get parameter value type..", self.getErrorSting(error)
+            print ("Failed to get parameter value type..", self.getErrorSting(error))
             return False
 
         valueType = valueType.value
@@ -691,11 +691,11 @@ class PI_CAM(Device):
         elif valueType == PicamValueType_Modulations:
                 error = PI_CAM.picamlib.PicamAdvanced_RegisterForModulationsValueChanged( model, parameter, PI_CAM.callBacks["ParameterModulationsValueChanged"] );
         else:
-            print "Unexpected value type.",  valueType
+            print ("Unexpected value type.",  valueType)
             return False
 
         if error != PicamError.NoError :
-            print "Failed to register for value changes.",  valueType, self.getErrorSting(error)
+            print ("Failed to register for value changes.",  valueType, self.getErrorSting(error))
             return False
 
         return True
@@ -710,7 +710,7 @@ class PI_CAM(Device):
         constraintType = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterConstraintType( model, parameter, byref(constraintType) )
         if error != PicamError.NoError :
-            print "Failed to get parameter constraint type.", self.getErrorSting(error)
+            print ("Failed to get parameter constraint type.", self.getErrorSting(error))
             return False;
 
         constraintType = constraintType.value
@@ -735,11 +735,11 @@ class PI_CAM(Device):
 ##        elif constraintType == PicamConstraintType_Modulations:
 ##            error = PicamAdvanced_RegisterForDependentModulationsConstraintChanged( model, parameter, ModulationsConstraintChanged )
         else :
-           print "Unexpected constraint type. ", constraintType
+           print ("Unexpected constraint type. ", constraintType)
            return False;
 
         if  error != PicamError.NoError :
-            print "Failed to register for constraint changes. ", self.getErrorSting(error)
+            print ("Failed to register for constraint changes. ", self.getErrorSting(error))
             return False;
      
         return True;
@@ -757,7 +757,7 @@ class PI_CAM(Device):
         valueType = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterValueType( camera, parameter, byref(valueType) );
         if error != PicamError.NoError : 
-            print "Failed to get parameter value type.", self.getErrorSting(error)
+            print ("Failed to get parameter value type.", self.getErrorSting(error))
             return PicamError.NoError
 
         constraint = cast( (constraint), POINTER(PicamCollectionConstraint) ).contents
@@ -782,7 +782,7 @@ class PI_CAM(Device):
                     enumType = c_int(0)
                     error = PI_CAM.picamlib.Picam_GetParameterEnumeratedType( camera, parameter, byref(enumType) )
                     if error != PicamError.NoError :
-                        print "Failed to get enumerated type. ", self.getErrorSting(error)
+                        print ("Failed to get enumerated type. ", self.getErrorSting(error))
                         return PicamError.NoError
                     message += self.getEnumString( enumType, int(constraint.values_array[i]) )
             
@@ -793,7 +793,7 @@ class PI_CAM(Device):
                 else :
                     message += str(constraint.values_array[i]) + " (unknown value type " + str(valueType) + ")";
 
-        print message
+        print (message)
 
         return PicamError.NoError
 
@@ -1510,7 +1510,7 @@ class PI_CAM(Device):
         onlineReadoutRate = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue(camera, self.picamParameter.OnlineReadoutRateCalculation, byref(onlineReadoutRate) );
         if error != PicamError.NoError :
-            print "Failed to get online readout rate.", self.getErrorSting(error)
+            print ("Failed to get online readout rate.", self.getErrorSting(error))
             return PicamError.NoError
         
 
@@ -1530,7 +1530,7 @@ class PI_CAM(Device):
         valueType = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterValueType( camera, parameter, byref(valueType) )
         if error != PicamError.NoError :
-            print "Failed to get parameter value type. ", self.getErrorSting(error)
+            print ("Failed to get parameter value type. ", self.getErrorSting(error))
             return PicamError.NoError
 
         valueType = valueType.value
@@ -1548,7 +1548,7 @@ class PI_CAM(Device):
                 enumType = c_int(0)
                 error = PI_CAM.picamlib.Picam_GetParameterEnumeratedType( camera, parameter, byref(enumType) )
                 if error != PicamError.NoError :
-                    print "Failed to get enumerated type.", self.getErrorSting(error)
+                    print ("Failed to get enumerated type.", self.getErrorSting(error))
                     return PicamError.NoError
                 message += self.getEnumString( enumType, value )
         else:
@@ -1585,24 +1585,24 @@ class PI_CAM(Device):
         running = c_int(0)
         error = PI_CAM.picamlib.Picam_IsAcquisitionRunning( self.camera, byref(running) );
         if error != PicamError.NoError :
-            print "Failed to determine if acquiring.", self.getErrorSting(error)
+            print ("Failed to determine if acquiring.", self.getErrorSting(error))
             return
      
         #/ - set the exposure time appropriately
         model = c_void_p(0)
         error = PI_CAM.picamlib.PicamAdvanced_GetCameraModel( self.camera, byref(model) );
         if error != PicamError.NoError :
-            print "Failed to get camera model.", self.getErrorSting(error)
+            print ("Failed to get camera model.", self.getErrorSting(error))
             return
         if running.value :
             error = PI_CAM.picamlib.Picam_SetParameterFloatingPointValueOnline( model, self.picamParameter.ExposureTime, c_double(exposure) )
             if error != PicamError.NoError :
-                print "Failed to set exposure time online.", self.getErrorSting(error)
+                print ("Failed to set exposure time online.", self.getErrorSting(error))
                 return
         else :
             error = PI_CAM.picamlib.Picam_SetParameterFloatingPointValue( model, self.picamParameter.ExposureTime, c_double(exposure) )
             if error != PicamError.NoError :
-                print "Failed to set exposure time.", self.getErrorSting(error)
+                print ("Failed to set exposure time.", self.getErrorSting(error))
                 return
         
 ##////////////////////////////////////////////////////////////////////////////////
@@ -1615,13 +1615,13 @@ class PI_CAM(Device):
         onlineReadoutRate = c_double(0)
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue( self.camera, self.picamParameter.OnlineReadoutRateCalculation, byref(onlineReadoutRate) );
         if error != PicamError.NoError :
-            print "Failed to get online readout rate.", self.getErrorSting(error)
+            print ("Failed to get online readout rate.", self.getErrorSting(error))
 
         #- get the current readout stride ( era device_ sostituito con camera )
         readoutStride = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue(self.camera, self.picamParameter.ReadoutStride, byref(readoutStride) );
         if error != PicamError.NoError :
-            print "Failed to get readout stride.", self.getErrorSting(error)
+            print ("Failed to get readout stride.", self.getErrorSting(error))
      
         #- calculate the buffer size
         self.calculateBufferSize( readoutStride.value, onlineReadoutRate.value );
@@ -1633,7 +1633,7 @@ class PI_CAM(Device):
 ##////////////////////////////////////////////////////////////////////////////////
     def registerCameraCallbacks(self):
 
-        print " REGISTERED CALLBACK "
+        print (" REGISTERED CALLBACK ")
 
         OnlineReadoutRateCalculationChangedCallback = PicamAdvanced.OnlineReadoutRateCalculationChangedCallback(self.onlineReadoutRateCalculationChanged) 
         PI_CAM.callBacks['OnlineReadoutRateCalculationChanged'] = OnlineReadoutRateCalculationChangedCallback
@@ -1641,7 +1641,7 @@ class PI_CAM(Device):
         #/ - register online readout rate changed
         error = PI_CAM.picamlib.PicamAdvanced_RegisterForFloatingPointValueChanged( self.camera, self.picamParameter.OnlineReadoutRateCalculation, PI_CAM.callBacks['OnlineReadoutRateCalculationChanged'] );
         if error != PicamError.NoError :
-            print "Failed to register for online readout rate changed.", self.getErrorSting(error)
+            print ("Failed to register for online readout rate changed.", self.getErrorSting(error))
 
         ReadoutStrideChangedCallback = PicamAdvanced.ReadoutStrideChangedCallback(self.readoutStrideChanged) 
         PI_CAM.callBacks['ReadoutStrideChanged'] = ReadoutStrideChangedCallback
@@ -1649,7 +1649,7 @@ class PI_CAM(Device):
         #/ - register readout stride changed
         error = PI_CAM.picamlib.PicamAdvanced_RegisterForIntegerValueChanged(self.camera, self.picamParameter.ReadoutStride, PI_CAM.callBacks['ReadoutStrideChanged'] );
         if error != PicamError.NoError :
-            print "Failed to register for readout stride changed.", self.getErrorSting(error)
+            print ("Failed to register for readout stride changed.", self.getErrorSting(error))
 
         #/ - register parameter changed
         self.registerParameterCallbacks();
@@ -1661,7 +1661,7 @@ class PI_CAM(Device):
 
         error = PI_CAM.picamlib.PicamAdvanced_RegisterForAcquisitionUpdated(self.camera, PI_CAM.callBacks['AcquisitionUpdated'] );
         if error != PicamError.NoError :
-            print "Failed to register for acquisition updated.", self.getErrorSting(error)
+            print ("Failed to register for acquisition updated.", self.getErrorSting(error))
 
 
 
@@ -1676,7 +1676,7 @@ class PI_CAM(Device):
         readoutStride = c_int(0)
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( camera, self.picamParameter.ReadoutStride, byref(readoutStride) );
         if error != PicamError.NoError :
-           print "Failed to get readout stride.", self.getErrorSting(error)
+           print ("Failed to get readout stride.", self.getErrorSting(error))
            return PicamError.NoError 
 
         self.calculateBufferSize( readoutStride.value, value );
@@ -1718,39 +1718,39 @@ class PI_CAM(Device):
         #/ - cache the readout stride device_
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ReadoutStride, byref(data) );
         if error != PicamError.NoError :
-           print "Failed to get readout stride.", self.getErrorSting(error)
+           print ("Failed to get readout stride.", self.getErrorSting(error))
            return False 
         readoutStride = data.value
-        print "readoutStride", readoutStride
+        print ("readoutStride", readoutStride)
 
         data = c_int(0)
         #/ - cache the frame stride
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.FrameStride, byref(data) );
         if error != PicamError.NoError :
-           print "Failed to get frame stride.", self.getErrorSting(error)
+           print ("Failed to get frame stride.", self.getErrorSting(error))
            return False
         frameStride = data.value
-        print "frameStride", frameStride
+        print ("frameStride", frameStride)
 
         data = c_int(0)
         #/ - cache the frames per readout
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.FramesPerReadout, byref(data) );
         if error != PicamError.NoError :
-           print "Failed to get frames per readout.", self.getErrorSting(error)
+           print ("Failed to get frames per readout.", self.getErrorSting(error))
            return False
         
         framesPerReadout = data.value
-        print "framesPerReadout",framesPerReadout
+        print ("framesPerReadout",framesPerReadout)
 
         data = c_int(0)
         #/ - cache the frames size
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.FrameSize, byref(data) );
         if error != PicamError.NoError :
-           print "Failed to get frames per readout.", self.getErrorSting(error)
+           print ("Failed to get frames per readout.", self.getErrorSting(error))
            return False
         
         frameSize = data.value
-        print "frameSize",frameSize
+        print ("frameSize",frameSize)
 
         
         return True;
@@ -1815,13 +1815,13 @@ class PI_CAM(Device):
             overran = c_int(0)
             error = PI_CAM.picamlib.PicamAdvanced_HasAcquisitionBufferOverrun( device, byref(overran) );
             if( error != PicamError.NoError ):
-                print "Failed check for buffer overrun. ", self.getEnumString( PicamEnumeratedType.Error, error )
+                print ("Failed check for buffer overrun. ", self.getEnumString)( PicamEnumeratedType.Error, error )
             elif( overran ):
                 print ( "Buffer overran." )
 
         #/ - note when acquisition has completed
         if not status.running :
-            print 'acquisitionInactive'
+            print ('acquisitionInactive')
     ##        SetEvent( acquisitionInactive_ );
     ##        PostMessage( main_, WM_ACQUISITION_STOPPED, 0, 0 );
 
@@ -1840,7 +1840,7 @@ class PI_CAM(Device):
     def setReadoutCount( self, readouts ):
         error = PI_CAM.picamlib.Picam_SetParameterLargeIntegerValue( self.camera, self.picamParameter.ReadoutCount, c_int(readouts) );
         if( error != PicamError.NoError ):
-            print "Cannot set readout count. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Cannot set readout count. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return False
         return True;
 
@@ -1854,14 +1854,14 @@ class PI_CAM(Device):
         model = c_void_p(0)
         error = PI_CAM.picamlib.PicamAdvanced_GetCameraModel( self.camera, byref(model) )
         if( error != PicamError.NoError ):    
-            print "Failed to get camera model. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Failed to get camera model. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return False
 
         #/ - apply changes to the device
         #/ - any changes to the model will be handled through change callbacks
         error = PI_CAM.picamlib.PicamAdvanced_CommitParametersToCameraDevice( model );
         if( error != PicamError.NoError ):    
-            print "Failed to commit to camera device. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Failed to commit to camera device. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return False
 
         return True;
@@ -1881,7 +1881,7 @@ class PI_CAM(Device):
         #error = Picam_AreParametersCommitted( device_, &committed );
         error = PI_CAM.picamlib.Picam_AreParametersCommitted( self.camera, byref(committed) );
         if( error != PicamError.NoError ):
-            print "Cannot determine if parameters need to be committed. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Cannot determine if parameters need to be committed. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return
 
         #/ - commit parameters from the model to the device _device
@@ -1889,12 +1889,12 @@ class PI_CAM(Device):
             model = c_void_p(0);
             error = PI_CAM.picamlib.PicamAdvanced_GetCameraModel( self.camera, byref(model) );
             if( error != PicamError.NoError ):
-                print "Cannot get the camera model. ", self.getEnumString( PicamEnumeratedType.Error, error )
+                print ("Cannot get the camera model. ", self.getEnumString( PicamEnumeratedType.Error, error ))
                 return
 
             error = PI_CAM.picamlib.PicamAdvanced_CommitParametersToCameraDevice( model );
             if( error != PicamError.NoError ):
-                print "Failed to commit the camera model parameters. ", self.getEnumString( PicamEnumeratedType.Error, error )
+                print ("Failed to commit the camera model parameters. ", self.getEnumString( PicamEnumeratedType.Error, error ))
                 return
 
         #/ - reallocate circular buffer if necessary _device
@@ -1914,7 +1914,7 @@ class PI_CAM(Device):
         picamBuffer = PicamAcquisitionBuffer()
         error = PI_CAM.picamlib.PicamAdvanced_GetAcquisitionBuffer( self.camera, byref(picamBuffer) );
         if( error != PicamError.NoError ):
-            print "Failed to get circular buffer. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Failed to get circular buffer. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return
 
 
@@ -1924,7 +1924,7 @@ class PI_CAM(Device):
             picamBuffer.memory_size = len(dataBuffer)
             error = PI_CAM.picamlib.PicamAdvanced_SetAcquisitionBuffer( self.camera, byref(picamBuffer) );
             if( error != PicamError.NoError ):
-                print "Failed to set circular buffer. ", self.getEnumString( PicamEnumeratedType.Error, error )
+                print ("Failed to set circular buffer. ", self.getEnumString( PicamEnumeratedType.Error, error ))
                 return
 
         
@@ -1943,7 +1943,7 @@ class PI_CAM(Device):
         #/ - start device_
         error = PI_CAM.picamlib.Picam_StartAcquisition( self.camera );
         if( error != PicamError.NoError ):
-            print "Failed to start acquisition. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Failed to start acquisition. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return
     ##    // - indicate acquisition has begun
     ##    acquiring_ = true;
@@ -1956,7 +1956,7 @@ class PI_CAM(Device):
     def stopAcquisition(self):
         error = PI_CAM.picamlib.Picam_StopAcquisition( self.camera );
         if( error != PicamError.NoError ):
-            print "Failed to stop acquisition. ", self.getEnumString( PicamEnumeratedType.Error, error )
+            print ("Failed to stop acquisition. ", self.getEnumString( PicamEnumeratedType.Error, error ))
             return
 
 ################################### Worker Management
@@ -1991,7 +1991,7 @@ class PI_CAM(Device):
             self.trigMode = self.device.clock_mode.data()
             if self.trigMode == 'EXTERNAL':
                 self.colockSource = self.device.clock_source.data()
-                print "colockSource ", self.colockSource
+                print ("colockSource ", self.colockSource)
                 self.numFrames = len( self.colockSource )
             else :
                 self.numFrames = self.device.num_frames.data()
@@ -2053,11 +2053,11 @@ class PI_CAM(Device):
                      currTime = self.colockSource[self.count]
                 else :
                      currTime = self.count
-                print "Curr Time ", currTime
+                print ("Curr Time ", currTime)
                 self.count = self.count + 1
                 roiIndex = 0;
                 for i in range(self.region.roi_count):
-                    print "Frame %d Roi %d "%(loop,i)
+                    print ("Frame %d Roi %d "%(loop,i))
                     w = self.region.roi_array[i].width/self.region.roi_array[i].x_binning;
                     h = self.region.roi_array[i].height/self.region.roi_array[i].y_binning;
                     roiPixel = w * h
@@ -2093,7 +2093,7 @@ class PI_CAM(Device):
                     self.stopReq = True
                 if self.count+1 >= self.numFrames :
                     self.stopReq = True
-                    print "END Thread"
+                    print ("END Thread")
             
 ##            NUM_FRAMES = 5
 ##            NO_TIMEOUT = 10000
@@ -2117,7 +2117,7 @@ class PI_CAM(Device):
 ##                    self.stopReq = True
                      
 
-            print 'ASYNCH WORKER TERMINATED'
+            print ('ASYNCH WORKER TERMINATED')
             #self.device.closeInfo()
             return
 
@@ -2229,88 +2229,88 @@ class PI_CAM(Device):
         if( error == PicamError.NoError ):
             strVal = self.getEnumString( PicamEnumeratedType.CcdCharacteristicsMask, intVal )
             self.sensor_information_ccd_charact.putData(strVal)
-            print "Sensor CcdCharacteristics ", strVal
+            print ("Sensor CcdCharacteristics ", strVal)
             
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorType, byref(intVal) )
         if( error == PicamError.NoError ):
             strVal = self.getEnumString( PicamEnumeratedType.SensorType, intVal )
-            print "Sensor SensorType            ", strVal
+            print ("Sensor SensorType            ", strVal)
             self.sensor_information_type.putData(strVal)
                    
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue( self.camera, self.picamParameter.PixelGapHeight, byref(doubleVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_pixel_gap_height.putData(doubleVal)
-            print "Sensor PixelGapHeight        ", doubleVal.value
+            print ("Sensor PixelGapHeight        ", doubleVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue( self.camera, self.picamParameter.PixelGapWidth, byref(doubleVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_pixel_gap_width.putData(doubleVal)
-            print "Sensor PixelGapWidth         ", doubleVal.value
+            print ("Sensor PixelGapWidth         ", doubleVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue( self.camera, self.picamParameter.PixelHeight, byref(doubleVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_pixel_height.putData(doubleVal)
-            print "Sensor PixelHeight           ", doubleVal.value
+            print ("Sensor PixelHeight           ", doubleVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterFloatingPointValue( self.camera, self.picamParameter.PixelWidth, byref(doubleVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_pixel_width.putData(doubleVal)
-            print "Sensor PixelWidth            ", doubleVal.value
+            print ("Sensor PixelWidth            ", doubleVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveWidth, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_width.putData(intVal)
-            print "Sensor ActiveWidth           ", intVal.value
+            print ("Sensor ActiveWidth           ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_height.putData(intVal)
-            print "Sensor ActiveHeight          ", intVal.value
+            print ("Sensor ActiveHeight          ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveLeftMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_left_m.putData(intVal)
-            print "Sensor ActiveLeftMargin      ", intVal.value
+            print ("Sensor ActiveLeftMargin      ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveTopMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_top_m.putData(intVal)
-            print "Sensor ActiveTopMargin       ", intVal.value
+            print ("Sensor ActiveTopMargin       ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveRightMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_right_m.putData(intVal)
-            print "Sensor ActiveRightMargin     ", intVal.value
+            print ("Sensor ActiveRightMargin     ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorActiveBottomMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_bottom_m.putData(intVal)
-            print "Sensor ActiveBottomMargin    ", intVal.value
+            print ("Sensor ActiveBottomMargin    ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorSecondaryActiveHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_active_sec_height.putData(intVal)
-            print "Sensor SecondaryActiveHeight ", intVal.value
+            print ("Sensor SecondaryActiveHeight ", intVal.value)
         
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorMaskedHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_masked_height.putData(intVal)
-            print "Sensor MaskedHeight          ", intVal.value
+            print ("Sensor MaskedHeight          ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorMaskedTopMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_masked_top_m.putData(intVal)
-            print "Sensor MaskedTopMargin       ", intVal.value
+            print ("Sensor MaskedTopMargin       ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorMaskedBottomMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_masked_bottom_m.putData(intVal)
-            print "Sensor MaskedBottomMargin    ", intVal.value
+            print ("Sensor MaskedBottomMargin    ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SensorSecondaryMaskedHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_information_masked_sec_height.putData(intVal)
-            print "Sensor SecondaryMaskedHeight ", intVal.value
+            print ("Sensor SecondaryMaskedHeight ", intVal.value)
 
 
     ##- Save sensor layout parameters
@@ -2323,57 +2323,57 @@ class PI_CAM(Device):
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveWidth, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_width.putData(intVal)
-            print "Sensor Layout  ActiveWidth           ", intVal.value
+            print ("Sensor Layout  ActiveWidth           ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_height.putData(intVal)
-            print "Sensor Layout  ActiveHeight          ", intVal.value
+            print ("Sensor Layout  ActiveHeight          ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveLeftMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_left_m.putData(intVal)
-            print "Sensor Layout  ActiveLeftMargin      ", intVal.value
+            print ("Sensor Layout  ActiveLeftMargin      ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveTopMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_top_m.putData(intVal)
-            print "Sensor Layout  ActiveTopMargin       ", intVal.value
+            print ("Sensor Layout  ActiveTopMargin       ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveRightMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_right_m.putData(intVal)
-            print "Sensor Layout  ActiveRightMargin     ", intVal.value
+            print ("Sensor Layout  ActiveRightMargin     ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ActiveBottomMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_bottom_m.putData(intVal)
-            print "Sensor Layout  ActiveBottomMargin    ", intVal.value
+            print ("Sensor Layout  ActiveBottomMargin    ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SecondaryActiveHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_active_sec_height.putData(intVal)
-            print "Sensor Layout  SecondaryActiveHeight ", intVal.value
+            print ("Sensor Layout  SecondaryActiveHeight ", intVal.value)
         
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.MaskedHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_masked_height.putData(intVal)
-            print "Sensor Layout  MaskedHeight          ", intVal.value
+            print ("Sensor Layout  MaskedHeight          ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.MaskedTopMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_masked_top_m.putData(intVal)
-            print "Sensor Layout  MaskedTopMargin       ", intVal.value
+            print ("Sensor Layout  MaskedTopMargin       ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.MaskedBottomMargin, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_masked_bottom_m.putData(intVal)
-            print "Sensor Layout  MaskedBottomMargin    ", intVal.value
+            print ("Sensor Layout  MaskedBottomMargin    ", intVal.value)
 
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.SecondaryMaskedHeight, byref(intVal) )
         if( error == PicamError.NoError ):
             self.sensor_layout_masked_sec_height.putData(intVal)
-            print "Sensor Layout  SecondaryMaskedHeight ", intVal.value
+            print ("Sensor Layout  SecondaryMaskedHeight ", intVal.value)
 
 
    
@@ -2384,7 +2384,7 @@ class PI_CAM(Device):
         temperature = c_double(0)
         error = PI_CAM.picamlib.Picam_ReadParameterFloatingPointValue( self.camera, self.picamParameter.SensorTemperatureReading, byref(temperature) )
         if( error == PicamError.NoError ):
-            print "Sensor Temperature ", temperature.value , " degrees C"
+            print ("Sensor Temperature ", temperature.value , " degrees C")
         else:
             self.getErrorSting( );
         
@@ -2392,9 +2392,9 @@ class PI_CAM(Device):
         status = c_int(0)
         error = PI_CAM.picamlib.Picam_ReadParameterIntegerValue( self.camera, self.picamParameter.SensorTemperatureStatus, byref(status) )
         if( error == PicamError.NoError ):
-            print "Sensor status ", self.getEnumString( PicamEnumeratedType.SensorTemperatureStatus, status )
+            print ("Sensor status ", self.getEnumString)( PicamEnumeratedType.SensorTemperatureStatus, status )
         else :
-            print "Error : ", self.getErrorSting( error );
+            print ("Error : ", self.getErrorSting( error ))
         return temperature.value
     
     ##- set clean cycle count directly from hardware
@@ -2418,10 +2418,10 @@ class PI_CAM(Device):
     ##- set readout orientation mode directly from hardware
     def setReadoutOrientationMode(self, orientationMode):
         orient = c_int(-1)
-        print "------ ORIENTATION ", orient
+        print ("------ ORIENTATION ", orient)
         #error = PI_CAM.picamlib.Picam_SetParameterIntegerValue( self.camera, self.picamParameter.ReadoutOrientation, (orientationMode) )
         error = PI_CAM.picamlib.Picam_GetParameterIntegerValue( self.camera, self.picamParameter.ReadoutOrientation, byref(orient) )
-        print "------ ORIENTATION ", self.getEnumString( PicamEnumeratedType.OrientationMask, orient )
+        print ("------ ORIENTATION ", self.getEnumString( PicamEnumeratedType.OrientationMask, orient ))
         return error
 
 
@@ -2441,11 +2441,11 @@ class PI_CAM(Device):
     ##            Each trigger acquires another frame and reads out after the last frame is stored.
     ##    PicamTriggerResponse_StartOnSingleTrigger
     ##            The camera begins acquisition after a single trigger and continues without the need for further triggers.
-        print "SetTriggerMode ", trigMode
+        print ("SetTriggerMode ", trigMode)
 
 
         if trigMode == 'EXTERNAL':
-            print ">>>>>>>>>>>>>>>> set EXTERNAL"
+            print (">>>>>>>>>>>>>>>> set EXTERNAL")
             error = PI_CAM.picamlib.Picam_SetParameterIntegerValue( self.camera, self.picamParameter.TriggerSource, PicamTriggerSource.External );
             if error == PicamError.NoError:
                 error = PI_CAM.picamlib.Picam_SetParameterIntegerValue( self.camera, self.picamParameter.TriggerDetermination, PicamTriggerDetermination.PositivePolarity)
@@ -2457,7 +2457,7 @@ class PI_CAM(Device):
             #if error == PicamError.NoError:
             #    error = PI_CAM.picamlib.Picam_SetParameterIntegerValue( self.camera, self.picamParameter.TriggerDetermination, PicamTriggerDetermination.PositivePolarity)
         else :
-            print ">>>>>>>>>>>>>>>> set INTERNAL"
+            print (">>>>>>>>>>>>>>>> set INTERNAL")
             error = PI_CAM.picamlib.Picam_SetParameterIntegerValue( self.camera, self.picamParameter.TriggerResponse, PicamTriggerResponse.NoResponse )
         return error
             
@@ -2510,7 +2510,7 @@ class PI_CAM(Device):
             for spec in range(0,24):
                 specNode = getattr(self, 'spectrum_%02d'%(spec+1))
                 if specNode.isOn() :
-                    print 'Spectrum ', spec, ' ON' 
+                    print ('Spectrum ', spec, ' ON') 
                     getattr(self, 'spectrum_%02d_data'%(spec+1)).deleteData()
                     getattr(self, 'spectrum_%02d_data'%(spec+1)).setCompressOnPut(False)
                     try :
@@ -2526,7 +2526,7 @@ class PI_CAM(Device):
                         specNode.setOn(False)
                         continue
                 
-            print "Rois ", rois
+            print ("Rois ", rois)
             error = self.setRois(rois)
             if  error != PicamError.NoError :
                 del(rois)
@@ -2631,7 +2631,7 @@ class PI_CAM(Device):
             self.saveInfo()
             print('===============================================')
         except Exception as e :
-            print e
+            print (e)
             self.saveInfo()
             self.closeInfo()
             raise mdsExceptions.TclFAILED_ESSENTIAL

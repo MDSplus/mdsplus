@@ -128,13 +128,13 @@ class NI6683(Device):
                 raise DevBAD_PARAMETER
 
             try:
-	        self.fd =  NI6683.niLib.nisync_open_device(c_int(devType), c_int(boardId))
+                self.fd =  NI6683.niLib.nisync_open_device(c_int(devType), c_int(boardId))
             except Exception as e:
                 emsg = 'Cannot open device : %s'%(str(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
             self.termDict = {}
-	    for termName in NI6683.termNameDict.keys():
+            for termName in NI6683.termNameDict.keys():
                 try:
                     self.termDict[termName] = NI6683.niLib.nisync_open_terminal(c_int(devType), c_int(boardId), c_int(NI6683.termNameDict[termName]), c_int(self.NISYNC_READ_NONBLOCKING))
                     print(termName + ': '+str(self.termDict[termName]))
@@ -151,7 +151,7 @@ class NI6683(Device):
         if self.nid in NI6683.ni6683Fds.keys():
             self.fd = NI6683.ni6683Fds[self.nid]
             del(NI6683.ni6683Fds[self.nid])
-	    for termName in NI6683.termNameDict.keys():
+            for termName in NI6683.termNameDict.keys():
                 try:
                   os.close(self.termDict[termName]);
                 except Exception as e:
@@ -213,7 +213,7 @@ class NI6683(Device):
             emsg = 'Error reading start time in ' + termName
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevBAD_PARAMETER
-	if np.isscalar(start):
+        if np.isscalar(start):
             start = [start]
         try:
             pulseLen = getattr(self, termName.lower()+'_pulse_len').data()
@@ -221,9 +221,9 @@ class NI6683(Device):
             emsg = 'Error reading pulse len in ' + termName
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevBAD_PARAMETER
-	if np.isscalar(pulseLen):
+        if np.isscalar(pulseLen):
             pulseLen = [pulseLen]
-	minLen = len(start)
+        minLen = len(start)
         if minLen > len(pulseLen):
             minLen = len(pulseLen)
         startNs = []
@@ -529,8 +529,8 @@ class NI6683(Device):
         def configure(self, device):
             self.stopReq = False
             self.device = device
-	    self.poll = select.poll()
-	    self.nameDict = {}
+            self.poll = select.poll()
+            self.nameDict = {}
             READ_ONLY = select.POLLIN | select.POLLPRI | select.POLLHUP | select.POLLERR
 
             for name in NI6683.ni6683RecorderDict[self.device.nid]:
@@ -548,7 +548,7 @@ class NI6683(Device):
                     if event & select.EPOLLIN == 0:
                         print('NO DATA')
                     if event & select.EPOLLERR != 0:
-                        print 'POLL ERROR!!'
+                        print ('POLL ERROR!!')
                         return
                         continue
                     timestamp = c_ulonglong()

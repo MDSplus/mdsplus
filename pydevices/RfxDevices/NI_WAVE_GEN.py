@@ -70,7 +70,7 @@ class NI_WAVE_GEN(Device):
 
     def restoreInfo(self):
         if NI_WAVE_GEN.niLib6259 is None:
-	    NI_WAVE_GEN.niLib6259 = CDLL("libpxi6259.so")
+            NI_WAVE_GEN.niLib6259 = CDLL("libpxi6259.so")
         if NI_WAVE_GEN.niInterfaceLib is None:
             NI_WAVE_GEN.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -140,7 +140,7 @@ class NI_WAVE_GEN(Device):
         for ch in range(4) :
 
             # open file descriptor for each AO channel
-	    aoChFd = os.open(NI_WAVE_GEN.boardTypeDict[boardType] + str(boardId) + '.ao.' + str(ch), os.O_RDWR | os.O_NONBLOCK)        
+            aoChFd = os.open(NI_WAVE_GEN.boardTypeDict[boardType] + str(boardId) + '.ao.' + str(ch), os.O_RDWR | os.O_NONBLOCK)        
             if aoChFd < 0 :
                 errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to open channel: " + os.strerror(errno))
@@ -154,7 +154,7 @@ class NI_WAVE_GEN(Device):
                 offset = ( chMax + chMin ) / 2
                 level = ( chMax - chMin ) / 2
 
-                print "ch type ", chType
+                print ("ch type ", chType)
 
                 # create one complete sine period in volts
             
@@ -207,7 +207,7 @@ class NI_WAVE_GEN(Device):
 
     def init(self):
 
-        print '================= NI Wavefor Generation Init ==============='
+        print ('================= NI Wavefor Generation Init ===============')
 
         if self.restoreInfo() == mdsExceptions.TclFAILED_ESSENTIAL :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
@@ -264,16 +264,16 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-	sampleRate = wavePoint * waveFreq;
-	periodDivisor = (20000000 / sampleRate);
-        print 'periodDivisor ', periodDivisor, aoConfig
+        sampleRate = wavePoint * waveFreq;
+        periodDivisor = (20000000 / sampleRate);
+        print ('periodDivisor ', periodDivisor, aoConfig)
 
         if NI_WAVE_GEN.niLib6259.pxi6259_set_ao_update_clk(aoConfig, self.AO_UPDATE_SOURCE_SELECT_UI_TC, self.AO_UPDATE_SOURCE_POLARITY_RISING_EDGE, c_uint(periodDivisor)) != 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to configure AO update clock!")
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         # load AO configuration and let it apply
-        print "ao_fd " , self.ao_fd
+        print ("ao_fd " , self.ao_fd)
         if NI_WAVE_GEN.niLib6259.pxi6259_load_ao_conf(c_int(self.ao_fd), aoConfig) != 0:
             errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Failed to load configuration! (%d) %s' % (errno, os.strerror( errno )) )
@@ -290,7 +290,7 @@ class NI_WAVE_GEN(Device):
 
 ##########Start generation
     def start_gen(self):
-        print "================ NI Waveform Geneation Start Store ============="
+        print ("================ NI Waveform Geneation Start Store =============")
 
         if self.restoreInfo() != NI_WAVE_GEN.HANDLE_FOUND  :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')
@@ -306,7 +306,7 @@ class NI_WAVE_GEN(Device):
 
 ##########Stop generation
     def stop_gen(self):
-        print "================ NI Waveform Geneation Stop Store ============="
+        print ("================ NI Waveform Geneation Stop Store =============")
 
         if self.restoreInfo() != NI_WAVE_GEN.HANDLE_FOUND :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device')

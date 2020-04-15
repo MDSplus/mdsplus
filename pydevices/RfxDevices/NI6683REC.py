@@ -4,7 +4,7 @@ from ctypes import CDLL, byref, c_longlong, c_int, c_void_p, c_float, c_char_p, 
 import os
 import time
 import sys, traceback
-import exceptions
+#import exceptions
 import select
 import errno
 from datetime import datetime
@@ -142,7 +142,7 @@ class NI6683REC(Device):
 
     def restoreInfo(self):
          try:
-            print 'restoreInfo'
+            print ('restoreInfo')
             self.devFd = NI6683REC.fds[self.nid]
             self.timeNid = NI6683REC.nids[self.nid]
          except:
@@ -189,7 +189,7 @@ class NI6683REC(Device):
         try:
             #print "test",devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING
             self.devFd.append(NI6683REC.NiSyncLib.nisync_open_terminal(devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING));
-            print "Pulse ", trigTermName, self.devFd[0] 
+            print ("Pulse ", trigTermName, self.devFd[0] )
 
             nids = []
             nids.append(self.pulse_time_tai_ns)     
@@ -211,19 +211,19 @@ class NI6683REC(Device):
                         continue
 
                     #print "TRIG_%d"%(tr+1),devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING
-                    print "TRIG_%d"%(tr+1), trigTermName, trigTerm
+                    print ("TRIG_%d"%(tr+1), trigTermName, trigTerm)
                     self.devFd.append(NI6683REC.NiSyncLib.nisync_open_terminal(devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING))
                     
                     nids = []
                     nids.append( getattr(self, 'trig_%d_tai_ns'%(tr+1)) )     
                     self.timeNid[self.devFd[len(self.devFd)-1]] = nids    
 
-                    print "devFd", trigTermName, self.devFd[len(self.devFd)-1]
+                    print ("devFd", trigTermName, self.devFd[len(self.devFd)-1])
                 else:
                     self.devFd.append(-1)
 
         except BaseException as e:
-            print str(e)
+            print (str(e))
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Exception on NiSync Timing Device on open terminal %s '%(trigTermName))
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return
@@ -254,7 +254,7 @@ class NI6683REC(Device):
             for fd in self.device.devFd :
                if fd == -1 :
                   continue
-               print "Poll register fd", fd
+               print ("Poll register fd", fd)
                poll.register(fd, select.POLLIN)
 
             nTimestamps = c_int(1000)
@@ -274,29 +274,29 @@ class NI6683REC(Device):
             while not self.stopReq:
                poolfd = poll.poll(timeout)
                for fd1, event in poolfd :
-                   print "fd    = ", fd1
-                   print "event = ", event
+                   print ("fd    = ", fd1)
+                   print ("event = ", event)
                    count = NI6683REC.NiSyncLib.nisync_read_timestamps_ns(fd1, byref(ts), nTimestamps);
-                   print "count = ", count
-                   print "------------------------------------------------"
+                   print ("count = ", count)
+                   print ("------------------------------------------------")
                    for i in range(count) :
-                       print 1000000000. / (ts[i].nanos-ts_nanos_prev), ts[i].nanos, count
+                       print (1000000000. / (ts[i].nanos-ts_nanos_prev), ts[i].nanos, count)
                        dt = datetime.fromtimestamp(ts[i].nanos // 1000000000)
                        dt_str = dt.strftime('%Y-%m-%d %H:%M:%S') +"."+ str(int(( (ts[i].nanos-tai_utc_delay) % 1000000000))).zfill(9)
-                       print dt_str
+                       print (dt_str)
 
                        nids = self.device.timeNid[fd1];
                        try:
                            if ( len(nids) == 2 ) :
-                               print nids[0].getPath()
+                               print (nids[0].getPath())
                                nids[0].putData(Int64(ts[i].nanos))
-                               print nids[0].getPath()
+                               print (nids[0].getPath())
                                nids[1].putData(dt_str)
                            else:
-                               print nids[0].getPath()
+                               print (nids[0].getPath())
                                nids[0].putRow(1000, Int64(ts[i].nanos), Int64(ts[i].nanos) )
                        except BaseException as e:
-                           print e
+                           print (e)
                            print('Error save timestamp')
                            
                        """
@@ -310,7 +310,7 @@ class NI6683REC(Device):
                        """
                        ts_nanos_prev = ts[i].nanos
                      #break
-                   print "------------------------------------------------"
+                   print ("------------------------------------------------")
                time.sleep(1)
 
             for fd in self.device.devFd :
@@ -318,7 +318,7 @@ class NI6683REC(Device):
                   continue
                poll.unregister(fd)
                 
-            print 'AsynchStore stop'
+            print ('AsynchStore stop')
 
             return
 
@@ -334,7 +334,7 @@ class NI6683REC(Device):
             self.restoreInfo() 
             self.stop()
         except:
-            print 'Not started'
+            print ('Not started')
             pass
  
 
@@ -384,7 +384,7 @@ class NI6683REC(Device):
 
         status = NI6683REC.NiSyncLib.nisync_enable_timestamp_trigger(self.devFd[0], trigEdge, trigDecCnt)
 
-        print "self.devFd", self.devFd, status, trigEdge, trigDecCnt
+        print ("self.devFd", self.devFd, status, trigEdge, trigDecCnt)
 
 
         if status < 0 :  
@@ -431,7 +431,7 @@ class NI6683REC(Device):
 
         self.worker.configure(self)
 
-        print "Start Worker"
+        print ("Start Worker")
 
         self.saveWorker()
         self.worker.start()
@@ -451,12 +451,12 @@ class NI6683REC(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         self.restoreWorker()
-        print ">>>>>>>>>>>>", self.worker
+        print (">>>>>>>>>>>>", self.worker)
         if self.worker != None and self.worker.isAlive():
-            print "stop_worker"
+            print ("stop_worker")
             self.worker.stop()
             self.worker.join()
-        print "Close Info"
+        print ("Close Info")
         self.closeInfo()
         return 1
 
