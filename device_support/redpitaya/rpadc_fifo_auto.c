@@ -60,7 +60,7 @@ static struct file_operations fops = {
     .poll = device_poll,
 };
 
-#define BUFSIZE 65536
+#define BUFSIZE 200000
 
 struct rpadc_fifo_auto_dev {
     struct platform_device *pdev;
@@ -74,6 +74,8 @@ struct rpadc_fifo_auto_dev {
 	void * iomap_packetizer;
 	void * iomap_post_register;
 	void * iomap_pre_register;
+	void * iomap_trig_event_code;
+	void * iomap_event_code;
 	void * iomap_data_fifo;
 	void * iomap1_data_fifo;
 	void * iomap_time_fifo;
@@ -654,6 +656,26 @@ static long device_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		copy_from_user (dev->iomap_pre_register, (void __user *)arg, sizeof(u32));
 		return 0;
 	}
+	case RPADC_FIFO_AUTO_GET_TRIG_EVENT_CODE:
+	{
+		copy_to_user ((void __user *)arg, dev->iomap_trig_event_code, sizeof(u32));
+		return 0;
+	}
+	case RPADC_FIFO_AUTO_SET_TRIG_EVENT_CODE:
+	{
+		copy_from_user (dev->iomap_trig_event_code, (void __user *)arg, sizeof(u32));
+		return 0;
+	}
+	case RPADC_FIFO_AUTO_GET_EVENT_CODE:
+	{
+		copy_to_user ((void __user *)arg, dev->iomap_event_code, sizeof(u32));
+		return 0;
+	}
+	case RPADC_FIFO_AUTO_SET_EVENT_CODE:
+	{
+		copy_from_user (dev->iomap_event_code, (void __user *)arg, sizeof(u32));
+		return 0;
+	}
 	case RPADC_FIFO_AUTO_GET_DATA_FIFO_LEN:
 	{
 		u32 val = readFifo(dev->iomap_data_fifo,RDFO);
@@ -698,6 +720,8 @@ static long device_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		currConf.packetizer = *((u32 *)dev->iomap_packetizer);
 		currConf.post_register = *((u32 *)dev->iomap_post_register);
 		currConf.pre_register = *((u32 *)dev->iomap_pre_register);
+		currConf.trig_event_code = *((u32 *)dev->iomap_trig_event_code);
+		currConf.event_code = *((u32 *)dev->iomap_event_code);
 		copy_to_user ((void __user *)arg, &currConf, sizeof(currConf));
 	}
 	case RPADC_FIFO_AUTO_SET_REGISTERS:
@@ -716,6 +740,10 @@ static long device_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			*((u32 *)dev->iomap_post_register) = currConf.post_register;
 		if(currConf.pre_register_enable)
 			*((u32 *)dev->iomap_pre_register) = currConf.pre_register;
+		if(currConf.trig_event_code_enable)
+			*((u32 *)dev->iomap_trig_event_code) = currConf.trig_event_code;
+		if(currConf.event_code_enable)
+			*((u32 *)dev->iomap_event_code) = currConf.event_code;
 	}
 
  
@@ -892,20 +920,24 @@ static int rpadc_fifo_auto_probe(struct platform_device *pdev)
 	case 2:
 		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		off = r_mem->start & ~PAGE_MASK;
-		staticPrivateInfo.iomap_mode_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
+		staticPrivateInfo.iomap_event_code = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
 	case 3:
 		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		off = r_mem->start & ~PAGE_MASK;
-		staticPrivateInfo.iomap_packetizer = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
+		staticPrivateInfo.iomap_mode_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
 	case 4:
 		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		off = r_mem->start & ~PAGE_MASK;
-		staticPrivateInfo.iomap_post_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
+		staticPrivateInfo.iomap_packetizer = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
 	case 5:
 		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		off = r_mem->start & ~PAGE_MASK;
-		staticPrivateInfo.iomap_pre_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
+		staticPrivateInfo.iomap_post_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
 	case 6:
+		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		off = r_mem->start & ~PAGE_MASK;
+		staticPrivateInfo.iomap_pre_register = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
+	case 7:
 		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		off = r_mem->start & ~PAGE_MASK;
 		staticPrivateInfo.iomap_time_fifo = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff);
@@ -913,6 +945,10 @@ static int rpadc_fifo_auto_probe(struct platform_device *pdev)
 		off = r_mem->start & ~PAGE_MASK;
 		staticPrivateInfo.iomap1_time_fifo = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff);
 	break;
+	case 8:
+		r_mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		off = r_mem->start & ~PAGE_MASK;
+		staticPrivateInfo.iomap_trig_event_code = devm_ioremap(&pdev->dev,r_mem->start+off,0xffff); break;
 
 
 	 default: printk("ERROR: Unexpected rpadc_fifo_auto_probe call\n");
@@ -944,6 +980,7 @@ static int rpadc_fifo_auto_remove(struct platform_device *pdev)
 static const struct of_device_id rpadc_fifo_auto_of_ids[] = {
 { .compatible = "xlnx,axi-dma-test-1.00.a",},
 { .compatible = "xlnx,axi-cfg-register-1.0",},
+{ .compatible = "xlnx,axi-sts-register-1.0",},
 { .compatible = "xlnx,axi-fifo-mm-s-4.1",},
 {}
 };

@@ -45,6 +45,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
         deviceField7 = new DeviceField();
         deviceField8 = new DeviceField();
         deviceField10 = new DeviceField();
+        deviceField3 = new DeviceField();
         jPanel5 = new javax.swing.JPanel();
         deviceField5 = new DeviceField();
         deviceField6 = new DeviceField();
@@ -53,7 +54,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
         setDeviceTitle("RedPitaya ADC");
         setDeviceType("RFX_RPADC");
         setHeight(300);
-        setWidth(700);
+        setWidth(800);
         getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
 
         jPanel1.setLayout(new java.awt.GridLayout(6, 1));
@@ -103,7 +104,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         jPanel1.add(jPanel4);
 
-        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL"});
+        deviceChoice4.setChoiceItems(new String[] {"INTERNAL", "TRIG_EXTERNAL", "EXTERNAL", "HIGHWAY"});
         deviceChoice4.setIdentifier("");
         deviceChoice4.setLabelString("Clock Mode:");
         deviceChoice4.setOffsetNid(14);
@@ -120,6 +121,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         deviceField7.setIdentifier("");
         deviceField7.setLabelString("Pre Samples: ");
+        deviceField7.setNumCols(4);
         deviceField7.setOffsetNid(12);
         jPanel6.add(deviceField7);
 
@@ -130,8 +132,15 @@ public class RFX_RPADCSetup extends DeviceSetup {
 
         deviceField10.setIdentifier("");
         deviceField10.setLabelString("Event Level:");
+        deviceField10.setNumCols(4);
         deviceField10.setOffsetNid(10);
         jPanel6.add(deviceField10);
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Event code: ");
+        deviceField3.setNumCols(4);
+        deviceField3.setOffsetNid(23);
+        jPanel6.add(deviceField3);
 
         jPanel1.add(jPanel6);
 
@@ -163,6 +172,7 @@ public class RFX_RPADCSetup extends DeviceSetup {
     private DeviceField deviceField1;
     private DeviceField deviceField10;
     private DeviceField deviceField2;
+    private DeviceField deviceField3;
     private DeviceField deviceField4;
     private DeviceField deviceField5;
     private DeviceField deviceField6;
