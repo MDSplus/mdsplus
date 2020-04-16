@@ -34,19 +34,21 @@ Clock can be internal or external and is specified by field Clock Mode that can 
 --TRIG_EXTERNAL: meaningful for mode TRIGGER_STREAMING or EVENT_STREAMING and useful when using a sampling speed higher that the external clock
      in this case the external clock is used  to measure event time, and internal clock (decimated as specified in field "Decimation") is used 
      for sampling.
-     
+--HIGHWAY: takinh 1 MHz clock from the INCAA DIO4 timing highway. The highway is provided on the clock input
+
 When EXTERNAL or TRIG_EXTERNAL clock mode specified, field Ext. Clock specifies the clock source (must be a range data type)
 When INTERNAL or TRIG_EXTERNAL clock mode specified, the 125MHz internal clock is divided by the value specified in field "Decimation"
+When HIGHAY, the event code in Setup Event COde: field is recognized as trigger
 
 Field trigger time specifies the time of the initial trigger (valid for all modes) and is used to build signal timebases. 
 
 
 				    *************INSTALLATION***************
 				    
-1) Firmware upload. The bitstream is in file rpadc_fifo.bit. It must be copied on the redpitaya board and EVERY TIME the board is powered
+1) Firmware upload. The bitstream is in file rfx_nioadc_dma_0. It must be copied on the redpitaya board and EVERY TIME the board is powered
 it must be installed with the comand:  
     
-    cat rpadc_fifo.bit /dev/xdevcfg
+    cat rfx_nioadc_dma_0.1.bit /dev/xdevcfg
     
 2) Device tree installation. Performed only once with the following commands, followed by a system reboot
 
