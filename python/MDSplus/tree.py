@@ -311,7 +311,9 @@ class Tree(object):
         expt = str(expt).lower()
         def getTreePath():
             # split path variable into single paths and replaces the ~t treename
-            expt_paths = _mds.getenv(expt+'_path')
+            expt_paths = _mds.getenv('%s_path' % expt)
+            if expt_paths is None:
+                expt_paths = _mds.getenv('default_tree_path')
             if expt_paths is None:
                 raise _exc.TreeNOPATH
             return expt_paths.replace('~t',expt).split(';')
