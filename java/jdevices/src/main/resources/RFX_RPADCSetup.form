@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="RedPitaya ADC"/>
     <Property name="deviceType" type="java.lang.String" value="RFX_RPADC"/>
     <Property name="height" type="int" value="300"/>
-    <Property name="width" type="int" value="700"/>
+    <Property name="width" type="int" value="800"/>
   </Properties>
   <SyntheticProperties>
     <SyntheticProperty name="formSizePolicy" type="int" value="2"/>
@@ -140,10 +140,11 @@
             <Component class="DeviceChoice" name="deviceChoice4">
               <Properties>
                 <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
-                  <StringArray count="3">
+                  <StringArray count="4">
                     <StringItem index="0" value="INTERNAL"/>
                     <StringItem index="1" value="TRIG_EXTERNAL"/>
                     <StringItem index="2" value="EXTERNAL"/>
+                    <StringItem index="3" value="HIGHWAY"/>
                   </StringArray>
                 </Property>
                 <Property name="identifier" type="java.lang.String" value=""/>
@@ -170,6 +171,7 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Pre Samples: "/>
+                <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="12"/>
               </Properties>
             </Component>
@@ -184,7 +186,16 @@
               <Properties>
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Event Level:"/>
+                <Property name="numCols" type="int" value="4"/>
                 <Property name="offsetNid" type="int" value="10"/>
+              </Properties>
+            </Component>
+            <Component class="DeviceField" name="deviceField3">
+              <Properties>
+                <Property name="identifier" type="java.lang.String" value=""/>
+                <Property name="labelString" type="java.lang.String" value="Event code: "/>
+                <Property name="numCols" type="int" value="4"/>
+                <Property name="offsetNid" type="int" value="23"/>
               </Properties>
             </Component>
           </SubComponents>

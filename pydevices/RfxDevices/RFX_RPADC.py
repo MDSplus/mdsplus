@@ -27,6 +27,7 @@ class RFX_RPADC(Device):
         {'path':':GAIN_B', 'type':'numeric', 'value':1.},  		
         {'path':':OFFSET_A', 'type':'numeric', 'value':0.},  		
         {'path':':OFFSET_B', 'type':'numeric', 'value':0.},  		
+        {'path':':EVENT_CODE', 'type':'numeric', 'value':0.},  		
         {'path':':RAW_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
         {'path':':RAW_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
         {'path':':CHAN_A', 'type':'signal'},
@@ -44,7 +45,8 @@ class RFX_RPADC(Device):
 
 
     class Configuration:
-      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, postSamples, segmentSamples, frequency, frequency1, single):
+      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, 
+		    postSamples, segmentSamples, frequency, frequency1, single):
           self.lib = lib
           self.fd = fd
           self.name = name
@@ -76,7 +78,6 @@ class RFX_RPADC(Device):
           self.frequency = conf.frequency
           self.frequency1 = conf.frequency1
           self.single = conf.single
-
 
       def run(self):
           print('START THREAD', self.name, self.shot)
@@ -112,18 +113,16 @@ class RFX_RPADC(Device):
             except:
                 print('Invalid mode: ' + self.mode.data())
                 return 0
-            print('letto mode')
             if mode == 2 or mode == 4:  #force segment composted of a single block
                 isSingle = 1
             else:
                 isSingle = 0
-            clockModeDict = {'INTERNAL':0,'TRIG_EXTERNAL':1, 'EXTERNAL':2, 'TRIG_EVENT':3, 'EXT_EVENT':4}
+            clockModeDict = {'INTERNAL':0,'TRIG_EXTERNAL':1, 'EXTERNAL':2, 'TRIG_EVENT':3, 'EXT_EVENT':4, 'HIGHWAY':5}
             try:
                 clockMode = clockModeDict[self.clock_mode.data()]
             except:
                 print('Invalid clock mode: ' + self.clock_mode.data())
                 return 0
-            print('letto clock')
             if self.mode.data() == 'STREAMING':
                 preSamples = 0
                 postSamples = 0
@@ -136,7 +135,6 @@ class RFX_RPADC(Device):
                 trigAboveThreshold = 0
             evLevel = self.ev_level.data()
             evSamples = self.ev_samples.data()
-            print('leggo clock_mode')
             try:
                 decimation = self.decimation.data()
                 frequency = 125E6/decimation;
@@ -147,23 +145,36 @@ class RFX_RPADC(Device):
 
             if self.clock_mode.data() != 'INTERNAL':
                 try:
-                    period = Data.execute('slope_of($)', self.ext_clock)
+                    if self.clock_mode.data() == 'HIGHWAY':
+                        period = 1E-6 * decimation
+                    else:
+                        period = Data.execute('slope_of($)', self.ext_clock) * decimation
                     frequency = 1./period
-                    if self.clock_mode.data() == 'EXTERNAL':
+                    if self.clock_mode.data() == 'EXTERNAL' or self.clock_mode.data() == 'HIGHWAY':
                         frequency1 = frequency
                 except:
                     print('Cannot resolve external clock')
                     return 0
             segSize = self.seg_size.data()
+            if self.clock_mode.data() == 'HIGHWAY':
+                try:
+                    event_code = self.event_code.data()
+                except:
+                    print('Cannot resolve event code')
+                    return 0
+            else:
+                event_code = 0;
+ 	      
             print('opening device')
             self.fd = self.lib.rpadcInit(c_int(mode), c_int(clockMode), c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
-                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation))
+                                         c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(event_code))
             if self.fd < 0:
                 print("Error opening device")
                 return 0
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
-                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, frequency1, isSingle)
+                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, 
+                                frequency1, isSingle)
             self.chan_a.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
             self.chan_b.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
         except:
@@ -177,7 +188,7 @@ class RFX_RPADC(Device):
            worker.daemon = True
            worker.start()
         except:
-            raise mdsExceptions.TclFAILED_ESSENTIAL
+	   raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1
 
     def stop_store(self):
