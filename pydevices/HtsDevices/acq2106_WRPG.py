@@ -162,13 +162,14 @@ class ACQ2106_WRPG(MDSplus.Device):
         times_usecs = []
         for elements in t_times:
             times_usecs.append(int(elements * 1E6)) #in micro-seconds
-        # Building a pair between the t_times and hex states:
-        state_list = zip(times_usecs, binrows)
+        # Building a pair between the t_times and bin states:
+        stl_list = zip(times_usecs, binrows)
 
         # Creating the STL file with the path and file name given in self.stl_file.data()
         f=open(self.stl_file.data(), 'w')
 
-        for s in state_list:
+        # Write to file with states in HEX form.
+        for s in stl_list:
             f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
 
         f.close()
