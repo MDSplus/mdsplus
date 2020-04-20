@@ -94,6 +94,35 @@ class _ACQ400_BASE(MDSplus.Device):
 
         uut.s0.transient = "POST={}".format(self.samples.data())
 
+        #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
+        uut.s0.SIG_CLK_MB_FIN = '0'
+
+        #Set the Sampling rate in the ACQ:
+        # MB Clock (WR Clock): 20MHz
+        # mb_freq = uut.s0.SIG_CLK_MB_FREQ
+        mb_freq = 20000000.00 #MHz
+
+        print("Setting sample rate to {} Hz".format(self.freq.data()))
+        clockdiv      = mb_freq/self.freq.data()
+
+        uut.s1.CLKDIV = "{}".format(clockdiv)
+
+        acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
+        print("After setting the sample rate the value in the ACQ is {} Hz".format(acq_sample_freq))
+
+        #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
+        uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
+        uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
+        uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
+
+        #Setting SYNC Main Timing Highway Source Routing --> White Rabbit Time Trigger
+        uut.s0.SIG_SRC_TRG_0 ='WRTT'
+
+        #Setting the trigger in ACQ2106 stream control
+        uut.s1.TRG       ='enable'
+        uut.s1.TRG_DX    ='d0'
+        uut.s1.TRG_SENSE ='rising'
+
     INIT = init
 
 
@@ -118,6 +147,15 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         thread = self.MDSWorker(self)
         thread.start()
     ARM=arm
+
+    def trig(self, msg=''):
+        import acq400_hapi
+        message = str(msg)
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        print("The message is: %s" %message)
+        wrtdtx = '1 --tx_id=' + message
+        uut.s0.wrtd_tx_immediate = wrtdtx
+    TRIG=trig
 
     def stop(self):
         self.running.on = False
@@ -254,14 +292,14 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        # print("Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            # print (' recv timed out, retry later')
                             continue
                         else:
                             print (e)
