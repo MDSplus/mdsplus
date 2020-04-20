@@ -29,8 +29,6 @@ import time
 import socket
 import math
 import numpy as np
-import csv
-import copy
 
 try:
     acq400_hapi = __import__('acq400_hapi', globals(), level=1)
@@ -41,18 +39,7 @@ class ACQ2106_WRPG(MDSplus.Device):
     """
     D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
 
-    32 Channels * number of slots
-    Minimum 2Khz Operation
-    24 bits == +-10V
-
-    3 trigger modes:
-      Automatic - starts recording on arm
-      Soft - starts recording on trigger method (reboot / configuration required to switch )
-      Hard - starts recording on hardware trigger input
-
-    Software sample decimation
-
-    Settable segment length in number of samples
+    DIO with 32 channels
 
     debugging() - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
 
@@ -74,6 +61,9 @@ class ACQ2106_WRPG(MDSplus.Device):
 
     def init(self):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        
+        #Number of channels of the DIO482
+        nchans = 32
 
         # #Setting the trigger in the GPG module
         uut.s0.GPG_ENABLE    ='enable'
@@ -83,9 +73,10 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut.s0.GPG_MODE      ='ONCE'
 
         #Create the STL table from a series of transition times and states given in OUTPUT.
+        start_time = time.time()
         print("Building STL: start")
-        self.set_stl()
-        print("Building STL: end")
+        self.set_stl(nchans)
+        print("Building STL: end --- %s seconds ---" % (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debugging information during loading
@@ -96,21 +87,19 @@ class ACQ2106_WRPG(MDSplus.Device):
 
 
     def load_stl_file(self,traces):
-        example_stl=self.stl_file.data()    
+        stl_table = self.stl_file.data()    
 
-        print('Path to State Table: ', example_stl)
+        print('Path to State Table: {}'.format(stl_table))
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
         
         print('Loading STL table into WRPG')
-        with open(example_stl, 'r') as fp:
+        with open(stl_table, 'r') as fp:
             uut.load_wrpg(fp.read(), uut.s0.trace)
 
-    def set_stl(self):
-        nchan = 32
 
-        states_hex    = []
-        states_bits   = []
+    def set_stl(self, nchan):
+
         all_t_times   = []
         all_t_times_states = []
 
@@ -120,7 +109,7 @@ class ACQ2106_WRPG(MDSplus.Device):
             # Pair of (transition time, state) for each channel:
             chan_t_states = chan_t_times.data()
 
-            # Creation of an array that contains as EVERY OTHER element all the transition times in it, adding them
+            # Creation of an array that contains, as EVERY OTHER element, all the transition times in it, appending them
             # for each channel:
             for x in np.nditer(chan_t_states):
                 all_t_times_states.append(x) #Appends arrays made of one element,
@@ -136,49 +125,51 @@ class ACQ2106_WRPG(MDSplus.Device):
 
         # t_times contains the unique set of transitions times used in the experiment:
         t_times = sorted(np.float64(t_times))
-        print(t_times)
 
         # initialize the state matrix
-        cols = nchan
-        state = [[0]*cols]
+        rows, cols = (len(t_times), nchan)
+        state = [[0 for i in range(cols)] for j in range(rows)]
 
-        # Building the state matrix. For each transition times given by t_times, we look for those times that
-        # appear in the channel. If a transition time does not appear in that channel, then the state
-        # doesn't change.
+        # Building the state matrix. For each channel, we traverse all the transition times to find those who are in the particular channel. 
+        # If the transition time is in the channel, we copied its state into the state[i][j] element. 
+        # If a transition time does not appear in that channel, we keep the previous state for, i.e. the state doesn't change.
+        for j in range(nchan):
+            chan_t_states = self.__getattr__('OUTPUT_%3.3d' % (j+1))
 
-        for i in range(len(t_times)):
-            for j in range(nchan):
-                chan_t_states = self.__getattr__('OUTPUT_%3.3d' % (j+1))
-                
-                # chan_t_states its elements are pairs of [ttimes, state]. e.g [[0.0, 0],[1.0, 1],...]
-                # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: e.g [[1D0], [2D0], [3D0], [4D0] ... ]
-                # chan_t_states[1] are all the second elements of those pairs, the states: .e.g [[0],[1],...]
-                for s in range(len(chan_t_states[0])):
+            for i in range(len(t_times)):
+
+                if i == 0:
+                    state[i][j] = 0
+                else:
+                    state[i][j] = state[i-1][j]
                     
-                    #Check if the transition time is one of the times that belongs to this channel:
-                    if t_times[i] == chan_t_states[0][s][0]:
-                        print("inside ", int(chan_t_states[1][s][0]))
-                        state[i][j] = int(chan_t_states[1][s][0]) 
+                    # chan_t_states its elements are pairs of [ttimes, state]. e.g [[0.0, 0],[1.0, 1],...]
+                    # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: e.g [[1D0], [2D0], [3D0], [4D0] ... ]
+                    # chan_t_states[1] are all the second elements of those pairs, the states: .e.g [[0],[1],...]
+                    for t in range(len(chan_t_states[0])):
+                        #Check if the transition time is one of the times that belongs to this channel:
+                        if t_times[i] == chan_t_states[0][t][0]:
+                            state[i][j] = int(chan_t_states[1][t][0])
 
-            # Building the string of 1s and 0s for each transition time:
-            binstr = ''
-            for element in np.flip(state[i]):
-                binstr += str(element)
-            states_bits.append(binstr)
-            
-            # If the transition time is not in that channel, then keep a copy of the state of the previous channel
-            state.append(copy.deepcopy(state[i]))
+
+        # Building the string of 1s and 0s for each transition time:
+        binrows = []
+        for row in state:
+            rowstr = [str(i) for i in np.flip(row)]  # flipping the bits so that chan 1 is in the far right position
+            binrows.append(''.join(rowstr))
 
         # Converting the original units of the transtion times in seconds, to micro-seconts:
         times_usecs = []
         for elements in t_times:
             times_usecs.append(int(elements * 1E6)) #in micro-seconds
         # Building a pair between the t_times and hex states:
-        state_list = zip(times_usecs, states_bits)
+        state_list = zip(times_usecs, binrows)
 
+        # Creating the STL file with the path and file name given in self.stl_file.data()
         f=open(self.stl_file.data(), 'w')
 
         for s in state_list:
             f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
 
         f.close()
+
