@@ -129,7 +129,8 @@ class ACQ2106_WRPG(MDSplus.Device):
         rows, cols = (len(t_times), nchan)
         state = [[0 for i in range(cols)] for j in range(rows)]
 
-        # Building the state matrix. For each channel, we traverse all the transition times to find those who are in the particular channel. 
+        # Building the state matrix. For each channel, we traverse all the transition times to find those who are 
+        # in the particular channel. 
         # If the transition time is in the channel, we copied its state into the state[i][j] element. 
         # If a transition time does not appear in that channel, we keep the previous state for, i.e. the state doesn't change.
         for j in range(nchan):
@@ -143,8 +144,10 @@ class ACQ2106_WRPG(MDSplus.Device):
                     state[i][j] = state[i-1][j]
                     
                     # chan_t_states its elements are pairs of [ttimes, state]. e.g [[0.0, 0],[1.0, 1],...]
-                    # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: e.g [[1D0], [2D0], [3D0], [4D0] ... ]
-                    # chan_t_states[1] are all the second elements of those pairs, the states: .e.g [[0],[1],...]
+                    # chan_t_states[0] are all the first elements of those pairs, i.e the trans. times: 
+                    # e.g [[1D0], [2D0], [3D0], [4D0] ... ]
+                    # chan_t_states[1] are all the second elements of those pairs, i.e. the states: 
+                    # e.g [[0],[1],...]
                     for t in range(len(chan_t_states[0])):
                         #Check if the transition time is one of the times that belongs to this channel:
                         if t_times[i] == chan_t_states[0][t][0]:

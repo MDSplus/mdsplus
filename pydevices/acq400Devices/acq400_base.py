@@ -41,6 +41,10 @@ class _ACQ400_BASE(MDSplus.Device):
     D-Tacq ACQ400 Base parts and methods.
 
     All other carrier/function combinations use this class as a parent class.
+
+    MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
+	MDSplus.Device.dprint(debuglevel, fmt, args)
+         - print if debuglevel >= MDSplus.Device.debug
     """
 
     base_parts=[
