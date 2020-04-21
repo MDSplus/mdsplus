@@ -56,6 +56,14 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':STL_FILE',    'type':'TEXT'},
     ]
 
+    debug=None
+
+    def debugging(self):
+        import os
+        if self.debug == None:
+            self.debug=os.getenv("DEBUG_DEVICES")
+        return(self.debug)
+
     for j in range(32):
         parts.append({'path':':OUTPUT_%3.3d' % (j+1,), 'type':'NUMERIC', 'options':('no_write_shot',)})
 
@@ -72,11 +80,16 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
+        
+        if self.debugging():
+            start_time = time.time()
+            print("Building STL: start")
+
         #Create the STL table from a series of transition times and states given in OUTPUT.
-        start_time = time.time()
-        print("Building STL: start")
         self.set_stl(nchans)
-        print("Building STL: end --- %s seconds ---" % (time.time() - start_time))
+        
+        if self.debugging():    
+            print("Building STL: end --- %s seconds ---" % (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debugging information during loading
@@ -89,11 +102,11 @@ class ACQ2106_WRPG(MDSplus.Device):
     def load_stl_file(self,traces):
         stl_table = self.stl_file.data()    
 
-        print('Path to State Table: {}'.format(stl_table))
+        if self.debugging():
+            print('Path to State Table: {}'.format(stl_table))
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
         
-        print('Loading STL table into WRPG')
         with open(stl_table, 'r') as fp:
             uut.load_wrpg(fp.read(), uut.s0.trace)
 
