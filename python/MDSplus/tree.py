@@ -34,6 +34,7 @@ import threading as _threading
 import gc as _gc
 import os as _os
 import sys as _sys
+import time as _time
 #### Load base python modules referenced ###
 #
 _ver=_mimport('version')
@@ -3143,12 +3144,28 @@ class Device(TreeNode): # HINT: Device begin
         for i in range(16):
             self.__setattr__('signals_channel_%02d' % (i+1,),Signal(...))
     """
-    debug = _mds.getenv('DEBUG_DEVICES')
+    try:
+        debug = int(_mds.getenv('DEBUG_DEVICES', '0'))
+    except ValueError:
+        _sys.stdout.write("MDSplus.Device Error: Invalid DEBUG_DEVICES '%s'" %
+                          _mds.getenv('DEBUG_DEVICES'))
+        debug = 0
     gtkThread = None
 
     """ debug safe import """
-    if debug:
-        if int(debug)<0:
+    if debug == 0:
+        def dprint(self, fmt, *args): pass
+        @staticmethod
+        def _debugDevice(device): return device
+    else:
+        def dprint(self, debuglevel, fmt, *args):
+            if debuglevel > self.debug:
+                return
+            now = _time.time()
+            line = str(fmt) if not args else (fmt % args)
+            _sys.stdout.write('%.3f: [%s] %s\n' % (now, self, line))
+            _sys.stdout.flush()
+        if debug < 0:
             @staticmethod
             def _debugDevice(dev):
                 if not (isinstance(dev,(type,)) and issubclass(dev,(Device,))):
@@ -3165,35 +3182,32 @@ class Device(TreeNode): # HINT: Device begin
                 return type(dev.__name__,(Device,),db)
         else:
             @staticmethod
-            def _debugDevice(device):
-                return device
-        @staticmethod
-        def _debug(s,p=tuple()):
-            _sys.stdout.write(s % p)
-    else:
-        @staticmethod
-        def _debug(s,p=tuple()):
-            pass
-        @staticmethod
-        def _debugDevice(device):
-            return device
+            def _debugDevice(device): return device
+
     @staticmethod
     def _mimport(loc,glob,filename,name=None):
+        debug = Device.debug & 8
         if isinstance(name,(tuple,list)):
             for n in name:
                 Device._mimport(loc,glob,filename,n)
             return
         if name is None: name = filename
-        Device._debug('loading %-21s',(name+':'))
+        if debug:
+            _sys.stdout.write('loading %-21s' % (name+':',))
         try:
             try:
                 device = __import__(filename, glob, fromlist=[name], level=1).__getattribute__(name)
             except:
                 device = __import__(filename, glob, fromlist=[name]).__getattribute__(name)
-            Device._debug(' successful\n')
+            if debug:
+                _sys.stdout.write(' successful\n')
             loc[name] = Device._debugDevice(device)
         except Exception as exc:
-            Device._debug(' failed: %s\n'%exc)
+            if debug:
+                _sys.stdout.write(' failed: %s\n' % (exc,))
+        finally:
+            if debug:
+                _sys.stdout.flush()
     """ /debug safe import """
     parts = []
     part_names = tuple()
