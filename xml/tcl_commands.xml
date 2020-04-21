@@ -90,6 +90,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     SET ATTRIBUTE  - Set an extended attribute for a node.
     SET CURRENT    - Set the current shot number fo a tree.
     SET DEFAULT    - Change the current location in a tree.
+    SET NODE       - Modify node characteristics in an MDSplus tree.
     SET TREE       - Open an MDSplus tree.
     SET VIEW       - Specify a point in time for examining the tree.
                      This command only applies to trees with versioning enabled.
