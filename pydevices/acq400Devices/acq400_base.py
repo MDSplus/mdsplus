@@ -146,6 +146,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
     ARM=arm
 
     def trig(self, msg=''):
+        import acq400_hapi
         message = str(msg)
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         print("The message is: %s" %message)
