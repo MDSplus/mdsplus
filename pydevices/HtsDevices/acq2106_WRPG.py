@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+# Copyright (c) 2020, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -23,17 +23,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-import threading
-from queue import Queue, Empty
 import time
-import socket
-import math
-import numpy as np
+import numpy
 
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
 
 class ACQ2106_WRPG(MDSplus.Device):
     """
@@ -41,7 +33,9 @@ class ACQ2106_WRPG(MDSplus.Device):
 
     DIO with 32 channels
 
-    debugging() - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
+    MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
+		MDSplus.Device.dprint(debuglevel, fmt, args)
+         - print if debuglevel >= MDSplus.Device.debug
 
     """
 
@@ -56,18 +50,12 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':STL_FILE',    'type':'TEXT'},
     ]
 
-    debug=None
-
-    def debugging(self):
-        import os
-        if self.debug == None:
-            self.debug=os.getenv("DEBUG_DEVICES")
-        return(self.debug)
 
     for j in range(32):
         parts.append({'path':':OUTPUT_%3.3d' % (j+1,), 'type':'NUMERIC', 'options':('no_write_shot',)})
 
     def init(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         
         #Number of channels of the DIO482
@@ -80,30 +68,28 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
-        
-        if self.debugging():
+        if self.debug >= 2:
             start_time = time.time()
-            print("Building STL: start")
+            self.dprint(2, "Building STL: start")
 
         #Create the STL table from a series of transition times and states given in OUTPUT.
         self.set_stl(nchans)
         
-        if self.debugging():    
-            print("Building STL: end --- %s seconds ---" % (time.time() - start_time))
+        self.dprint(2, "Building STL: end --- %s seconds ---", (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
-        traces = False  # True: shows debugging information during loading
+        traces = False  # True: shows debug information during loading
         self.load_stl_file(traces)
-        print('WRPG has loaded the STL')
+        self.dprint(1,'WRPG has loaded the STL')
       
     INIT=init
 
 
     def load_stl_file(self,traces):
+        import acq400_hapi
         stl_table = self.stl_file.data()    
+        self.dprint(1, 'Path to State Table: %r', stl_table)
 
-        if self.debugging():
-            print('Path to State Table: {}'.format(stl_table))
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
         
@@ -124,7 +110,7 @@ class ACQ2106_WRPG(MDSplus.Device):
 
             # Creation of an array that contains, as EVERY OTHER element, all the transition times in it, appending them
             # for each channel:
-            for x in np.nditer(chan_t_states):
+            for x in numpy.nditer(chan_t_states):
                 all_t_times_states.append(x) #Appends arrays made of one element,
 
         # Choosing only the transition times:
@@ -137,7 +123,7 @@ class ACQ2106_WRPG(MDSplus.Device):
                 t_times.append(i)
 
         # t_times contains the unique set of transitions times used in the experiment:
-        t_times = sorted(np.float64(t_times))
+        t_times = sorted(numpy.float64(t_times))
 
         # initialize the state matrix
         rows, cols = (len(t_times), nchan)
@@ -168,7 +154,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         # Building the string of 1s and 0s for each transition time:
         binrows = []
         for row in state:
-            rowstr = [str(i) for i in np.flip(row)]  # flipping the bits so that chan 1 is in the far right position
+            rowstr = [str(i) for i in numpy.flip(row)]  # flipping the bits so that chan 1 is in the far right position
             binrows.append(''.join(rowstr))
 
         # Converting the original units of the transtion times in seconds, to micro-seconts:
