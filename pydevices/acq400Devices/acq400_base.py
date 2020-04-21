@@ -94,6 +94,9 @@ class _ACQ400_BASE(MDSplus.Device):
 
         uut.s0.transient = "POST={}".format(self.samples.data())
 
+        #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
+        uut.s0.SIG_CLK_MB_FIN = '0'
+
         #Set the Sampling rate in the ACQ:
         # MB Clock (WR Clock): 20MHz
         # mb_freq = uut.s0.SIG_CLK_MB_FREQ
@@ -289,14 +292,14 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        # print("Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            # print (' recv timed out, retry later')
                             continue
                         else:
                             print (e)
