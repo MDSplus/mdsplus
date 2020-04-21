@@ -22,14 +22,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-import sys
 import threading
 import socket
 import time
-import inspect
 
-import numpy as np
+import numpy
 import MDSplus
 
 if MDSplus.version.ispy3:
@@ -102,13 +99,14 @@ class _ACQ400_BASE(MDSplus.Device):
         # mb_freq = uut.s0.SIG_CLK_MB_FREQ
         mb_freq = 20000000.00 #MHz
 
-        print("Setting sample rate to {} Hz".format(self.freq.data()))
+        self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
         clockdiv      = mb_freq/self.freq.data()
 
         uut.s1.CLKDIV = "{}".format(clockdiv)
 
         acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
-        print("After setting the sample rate the value in the ACQ is {} Hz".format(acq_sample_freq))
+        self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz",
+                    acq_sample_freq)
 
         #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
         uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
@@ -152,7 +150,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         import acq400_hapi
         message = str(msg)
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        print("The message is: %s" %message)
+        self.dprint(1, "The message is: %s", message)
         wrtdtx = '1 --tx_id=' + message
         uut.s0.wrtd_tx_immediate = wrtdtx
     TRIG=trig
@@ -180,7 +178,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.chans.append(getattr(self.dev, 'INPUT_%3.3d'%(i+1)))
                 self.decim.append(getattr(self.dev, 'INPUT_%3.3d:DECIMATE' %(i+1)).data())
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*numpy.int16(0).nbytes
 
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
@@ -200,8 +198,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            if self.dev.debug:
-                print("MDSWorker running")
+            self.dev.dprint(1, "MDSWorker running")
 
             event_name = self.dev.seg_event.data()
 
@@ -223,7 +220,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 except Empty:
                     continue
 
-                buffer = np.frombuffer(buf, dtype='int16')
+                buffer = numpy.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
                     slength = self.seg_length/self.decim[i]
@@ -240,7 +237,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / numpy.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -248,7 +245,6 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
             def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
@@ -263,8 +259,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.running = False
 
             def run(self):
-                if self.debug:
-                    print("DeviceWorker running")
+                self.dev.dprint(1, "DeviceWorker running")
 
                 self.running = True
 
@@ -302,16 +297,16 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                             # print (' recv timed out, retry later')
                             continue
                         else:
-                            print (e)
+                            self.dev.dprint(0, "error: %s", e)
                             break
                     except socket.error as e:
                         # Something else happened, handle error, exit, etc.
-                        print("socket error", e)
+                        self.dev.dprint(0, "socket error: %s", e)
                         self.full_buffers.put(buf[:self.segment_bytes-toread])
                         break
                     else:
                         if toread != 0:
-                            print ('orderly shutdown on server end')
+                            self.dev.dprint(1, 'orderly shutdown on server end')
                             break
                         else:
                             self.full_buffers.put(buf)
