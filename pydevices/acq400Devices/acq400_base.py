@@ -250,6 +250,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
             def __init__(self,mds):
                 threading.Thread.__init__(self)
+                self.dprint = mds.dev.dprint
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
@@ -265,7 +266,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
             def run(self):
 
-                self.dev.dprint(1, "DeviceWorker running")
+                self.dprint(1, "DeviceWorker running")
 
                 self.running = True
 
@@ -303,16 +304,16 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                             # print (' recv timed out, retry later')
                             continue
                         else:
-                            self.dev.dprint(0, "error: %s", e)
+                            self.dprint(0, "error: %s", e)
                             break
                     except socket.error as e:
                         # Something else happened, handle error, exit, etc.
-                        self.dev.dprint(0, "socket error: %s", e)
+                        self.dprint(0, "socket error: %s", e)
                         self.full_buffers.put(buf[:self.segment_bytes-toread])
                         break
                     else:
                         if toread != 0:
-                            self.dev.dprint(1, 'orderly shutdown on server end')
+                            self.dprint(1, 'orderly shutdown on server end')
 
                             break
                         else:
