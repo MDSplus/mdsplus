@@ -75,7 +75,8 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Create the STL table from a series of transition times and states given in OUTPUT.
         self.set_stl(nchans)
         
-        self.dprint(2, "Building STL: end --- %s seconds ---", (time.time() - start_time))
+        if self.debug >= 2:
+            self.dprint(2, "Building STL: end --- %s seconds ---", (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debug information during loading
