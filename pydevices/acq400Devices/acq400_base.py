@@ -118,8 +118,12 @@ class _ACQ400_BASE(MDSplus.Device):
         uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
         uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
-        #Setting SYNC Main Timing Highway Source Routing --> White Rabbit Time Trigger
-        uut.s0.SIG_SRC_TRG_0 ='WRTT'
+        # Setting SYNC Main Timing Highway Source Routing --> White Rabbit Time Trigger
+        # uut.s0.SIG_SRC_TRG_0 ='WRTT'
+        # When using two WRTT triggers:
+        uut.s0.SIG_SRC_TRG_0 ='WRTT0'
+        uut.s0.SIG_SRC_TRG_1 ='WRTT1'
+
 
         #Setting the trigger in ACQ2106 stream control
         uut.s1.TRG       ='enable'
