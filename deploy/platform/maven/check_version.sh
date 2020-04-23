@@ -24,7 +24,7 @@ get_modules() {
 project_changed() {
  export LATEST=$(get_latest)
  MODULES=$(get_modules)
- if get_release_diff|grep -P "^java/(${MODULES// /\|})/.*.java\$" >/dev/null
+ if get_release_diff|grep -P "^java/(${MODULES// /\|})/(pom.xml|src/.*)\$" >/dev/null
  then
   echo yes
   return 0
