@@ -25,7 +25,8 @@
 import MDSplus
 import time
 import numpy
-
+import os
+from tempfile import mkstemp
 
 class ACQ2106_WRPG(MDSplus.Device):
     """
@@ -47,7 +48,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
-        {'path':':STL_FILE',    'type':'TEXT'},
+        # {'path':':STL_FILE',    'type':'TEXT'},
     ]
 
 
@@ -64,7 +65,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         # #Setting the trigger in the GPG module
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
-        uut.s0.GPG_TRG_DX    ='d0'
+        uut.s0.GPG_TRG_DX    ='d1'   #d1 when testing two WRTTs, WRTT0 or WRTT1. d0 when testing using only one WRTT.
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
@@ -88,8 +89,9 @@ class ACQ2106_WRPG(MDSplus.Device):
 
     def load_stl_file(self,traces):
         import acq400_hapi
-        stl_table = self.stl_file.data()    
-        self.dprint(1, 'Path to State Table: %r', stl_table)
+
+        stl_table = self.stl_file
+        self.dprint(1, 'Path to State Table: %s', stl_table)
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
@@ -169,11 +171,18 @@ class ACQ2106_WRPG(MDSplus.Device):
         stl_list = zip(times_usecs, binrows)
 
         # Creating the STL file with the path and file name given in self.stl_file.data()
-        f=open(self.stl_file.data(), 'w')
+        fd, temp_path = mkstemp(prefix='acq2106-dio482-', suffix='.stl')
+
+        self.dprint(1, 'STL temp file: %s', temp_path)
+
+        self.stl_file = temp_path
+
+        # f=open(self.stl_file.data(), 'w')
+        f = open(temp_path, 'w')
 
         # Write to file with states in HEX form.
         for s in stl_list:
             f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
 
         f.close()
-
+        os.close(fd)
