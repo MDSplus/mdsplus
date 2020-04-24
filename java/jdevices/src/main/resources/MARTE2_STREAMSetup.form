@@ -6,7 +6,7 @@
     <Property name="deviceTitle" type="java.lang.String" value="MARTe2 Stream"/>
     <Property name="deviceType" type="java.lang.String" value="MARTE2_STREAM"/>
     <Property name="height" type="int" value="500"/>
-    <Property name="width" type="int" value="700"/>
+    <Property name="width" type="int" value="900"/>
   </Properties>
   <AccessibilityProperties>
     <Property name="AccessibleContext.accessibleName" type="java.lang.String" value=""/>
@@ -61,7 +61,7 @@
                 <Property name="identifier" type="java.lang.String" value=""/>
                 <Property name="labelString" type="java.lang.String" value="Timebase div.:"/>
                 <Property name="numCols" type="int" value="4"/>
-                <Property name="offsetNid" type="int" value="83"/>
+                <Property name="offsetNid" type="int" value="107"/>
               </Properties>
             </Component>
             <Component class="DeviceChoice" name="deviceChoice9">
@@ -150,7 +150,7 @@
               <Properties>
                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                    <TitledBorder title="Signal 1(Time)"/>
+                    <TitledBorder title="Signal 1(Time if TimeStreaming mode)"/>
                   </Border>
                 </Property>
               </Properties>
@@ -170,7 +170,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -181,6 +181,15 @@
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
                     <Property name="offsetNid" type="int" value="28"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField15">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="36"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -201,7 +210,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="38"/>
+                    <Property name="offsetNid" type="int" value="41"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice2">
@@ -209,7 +218,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -218,8 +227,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="35"/>
+                    <Property name="offsetNid" type="int" value="38"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField16">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="46"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -240,7 +258,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="45"/>
+                    <Property name="offsetNid" type="int" value="51"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice3">
@@ -248,7 +266,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -257,8 +275,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="42"/>
+                    <Property name="offsetNid" type="int" value="48"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField17">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="56"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -279,7 +306,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="52"/>
+                    <Property name="offsetNid" type="int" value="61"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice4">
@@ -287,7 +314,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -296,8 +323,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="49"/>
+                    <Property name="offsetNid" type="int" value="58"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField18">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="66"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -318,7 +354,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="59"/>
+                    <Property name="offsetNid" type="int" value="71"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice5">
@@ -326,7 +362,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -335,8 +371,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="56"/>
+                    <Property name="offsetNid" type="int" value="68"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField19">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="76"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -357,7 +402,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="66"/>
+                    <Property name="offsetNid" type="int" value="81"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice6">
@@ -365,7 +410,7 @@
                     <Property name="choiceItems" type="[Ljava.lang.String;" editor="org.netbeans.beaninfo.editors.StringArrayEditor">
                       <StringArray count="6">
                         <StringItem index="0" value="float32"/>
-                        <StringItem index="1" value="float63"/>
+                        <StringItem index="1" value="float64"/>
                         <StringItem index="2" value="int16"/>
                         <StringItem index="3" value="int32"/>
                         <StringItem index="4" value="uint16"/>
@@ -374,8 +419,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="63"/>
+                    <Property name="offsetNid" type="int" value="68"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField20">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="86"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -396,7 +450,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="73"/>
+                    <Property name="offsetNid" type="int" value="91"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice7">
@@ -413,8 +467,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="70"/>
+                    <Property name="offsetNid" type="int" value="88"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField21">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="96"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
@@ -435,7 +498,7 @@
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Value: "/>
                     <Property name="numCols" type="int" value="35"/>
-                    <Property name="offsetNid" type="int" value="80"/>
+                    <Property name="offsetNid" type="int" value="101"/>
                   </Properties>
                 </Component>
                 <Component class="DeviceChoice" name="deviceChoice8">
@@ -452,8 +515,17 @@
                     </Property>
                     <Property name="identifier" type="java.lang.String" value=""/>
                     <Property name="labelString" type="java.lang.String" value="Type: "/>
-                    <Property name="offsetNid" type="int" value="77"/>
+                    <Property name="offsetNid" type="int" value="98"/>
                     <Property name="updateIdentifier" type="java.lang.String" value=""/>
+                  </Properties>
+                </Component>
+                <Component class="DeviceField" name="deviceField22">
+                  <Properties>
+                    <Property name="identifier" type="java.lang.String" value=""/>
+                    <Property name="labelString" type="java.lang.String" value="Channel: "/>
+                    <Property name="numCols" type="int" value="15"/>
+                    <Property name="offsetNid" type="int" value="106"/>
+                    <Property name="textOnly" type="boolean" value="true"/>
                   </Properties>
                 </Component>
               </SubComponents>
