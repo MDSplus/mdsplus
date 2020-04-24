@@ -73,11 +73,11 @@ class MARTE2_NI6259(MARTE2_COMPONENT):
 
     parts = []
     MARTE2_COMPONENT.buildGam(parts, 'NI6259::NI6259ADC', MARTE2_COMPONENT.MODE_SYNCH_INPUT, 
-	'build_range(0, 1000000, 1./(build_path(".parameters:parameter_1:value")*build_path(".outputs.adc0_0:samples")))')
+	'build_range(0, 1000000, 1./(build_path(".parameters:par_1:value")*build_path(".outputs.adc0_0:samples")))')
 
     def prepareMarteInfo(self):
-      print('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))')
-      self.timebase.putData(Data.compile('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:parameter_1:value"))'))
+      print('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))')
+      self.timebase.putData(Data.compile('0:1000000 : 8.*build_path("\\'+self.getFullPath()+'.outputs.adc0_0:samples") / (build_path("\\'+self.getFullPath()+'.parameters:par_1:value"))'))
       self.outputs_time_idx = 1  #The second produced signal is time
 #put the same value of Samples and segment lengthin all output nodes
       self.outputs_adc1_0_samples.putData(self.outputs_adc0_0_samples.data())

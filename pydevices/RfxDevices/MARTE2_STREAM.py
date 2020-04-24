@@ -26,14 +26,14 @@
 from MDSplus import *
 from MARTE2_COMPONENT import *
 class MARTE2_STREAM(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.inputs = [{'name': 'OutStream1', 'type': 'int32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream2', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream3', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream4', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream5', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream6', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream7', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
-			       {'name': 'OutStream8', 'type': 'float32', 'dimensions': 0, 'parameters':{}}]
+    MARTE2_COMPONENT.inputs = [{'name': 'OutStream1', 'type': 'int32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH1'}]},
+			       {'name': 'OutStream2', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH2'}]},
+			       {'name': 'OutStream3', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH3'}]},
+			       {'name': 'OutStream4', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH4'}]},
+			       {'name': 'OutStream5', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH5'}]},
+			       {'name': 'OutStream6', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH6'}]},
+			       {'name': 'OutStream7', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH7'}]},
+			       {'name': 'OutStream8', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH8'}]}]
     MARTE2_COMPONENT.parameters = [{'name':'EventDivision', 'type': 'float32'},
 				   {'name':'ShotNumber', 'type': 'int32'},
 				   {'name':'TimeIdx', 'type': 'int32', 'value':0},
@@ -47,7 +47,7 @@ class MARTE2_STREAM(MARTE2_COMPONENT):
     MARTE2_COMPONENT.buildGam(parts, 'StreamOut', MARTE2_COMPONENT.MODE_OUTPUT)
 
     def prepareMarteInfo(self):
-      if self.parameters_parameter_4_value.data() == 0: #If oscilloscope mode
+      if self.parameters_par_4_value.data() == 0: #If oscilloscope mode
         for chanIdx in range(8):
           currInput = getattr(self, 'inputs_outstream%d_value'%(chanIdx+1))
           info = self.getInputChanInfo(currInput)
