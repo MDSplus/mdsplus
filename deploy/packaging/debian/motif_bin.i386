@@ -13,6 +13,7 @@
 ./usr/local/mdsplus/uid/XmdsXdBox.uid
 ./usr/local/mdsplus/uid/actions.uid
 ./usr/local/mdsplus/uid/actmon.uid
+./usr/local/mdsplus/uid/cw_wvedit.uid
 ./usr/local/mdsplus/uid/dwpad.uid
 ./usr/local/mdsplus/uid/dwscope.uid
 ./usr/local/mdsplus/uid/traverser.uid
