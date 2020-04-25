@@ -67,7 +67,10 @@ class MARTE2_SUPERVISOR(Device):
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
           threadName = getattr(self, 'state_%d_thread_%d_name'%(state+1, thread+1)).data()
           for gam in gams:
-            currGamNid = t.getNode(gam);
+            try:
+                currGamNid = t.getNode(gam);
+            except:
+                return 'Cannot get device '+gam, {}, {} 
             nid = currGamNid.getNid()
             if nid in threadMap:
               threadMap[nid] += [threadName]
@@ -101,8 +104,12 @@ class MARTE2_SUPERVISOR(Device):
                 gamInstance = gamClass(currGamNid)
                 gamList = []
                 if not (currGamNid.getNid() in gamNids):
-                  currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
-                  gamNids.append(currGamNid.getNid())
+                  try:
+                    gamInstance.prepareMarteInfo()
+                    currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
+                  except:
+                    return 'Cannot get timebase for ' + gam, {},{}
+                  gamNids.append(currGamNid.getNid()) 
                   if currPeriod > 0 and threadPeriod > 0:
                     error = 'More than one component driving thread timing'
                     print('MARTE2 SUPERVISOR ERROR: '+ error);
@@ -402,11 +409,7 @@ class MARTE2_SUPERVISOR(Device):
       t=self.getTree()
       numStates = self.num_states.data()
       gamInstances = []
- 
 
-      error, info, threadMap = self.getInfo()
-      if error != '':
-        return error
       for state in range(numStates):
         numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
         for thread in range(numThreads):
@@ -417,6 +420,7 @@ class MARTE2_SUPERVISOR(Device):
                 currGamNid = t.getNode(gam);
               except:
                 return 'Cannot get Device '+gam
+              print(str(currGamNid))
               nid = currGamNid.getNid()
               if currGamNid.isOn():
                 gamClass = currGamNid.getData().getDevice()
@@ -426,10 +430,14 @@ class MARTE2_SUPERVISOR(Device):
             return 'Cannot get Device list for tread '+str(thread)+' of state '+str(state)
       for gamInstance in gamInstances:
         try:
+
           gamInstance.prepareMarteInfo()
         except:
           return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'   
 
+      error, info, threadMap = self.getInfo()
+      if error != '':
+        return error
       for gamInstance in gamInstances:
         status = gamInstance.check(threadMap)
         if status != '':
