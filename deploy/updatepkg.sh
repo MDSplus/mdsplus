@@ -18,22 +18,32 @@
 # account to be enabled to run docker.
 #
 # ensure we are in source folder, so build path is found
+if [ -z $1 ]
+then
+logfile=/dev/stdout
+logmessage=
+else
+logfile=$(realpath $1)
+logmessage=" Check '$logfile' for details."
+fi
 cd $(dirname $0)/..
+
+
 echo "$(date) updating package files for $(pwd)"
 # bootstrap makefiles
-deploy/build.sh --os=bootstrap
+deploy/build.sh --os=bootstrap > "$logfile" 2>&1
 # build jars on first cycle (build on debian9-64)
 jars=""
 # debian-amd64 debian-i386 debian-armhf redhat-*
 for os in debian9-64 debian7-32 raspberrypi fc25
 do
     echo "$(date) Build of $os starting"
-    if ( deploy/build.sh --os=$os --test=skip --release ${jars} --updatepkg )
+    if ( deploy/build.sh --os=$os --test=skip --release ${jars} --updatepkg >> "$logfile" 2>&1 )
     then
 	echo "$(date) Build of $os completed successfully"
     else
 	stat=$?
-	echo "$(date) Build of $os failed."
+	echo "$(date) Build of $os failed.${logmessage}"
 	exit $stat
     fi
     # use jars from first build in subsequention cycles
