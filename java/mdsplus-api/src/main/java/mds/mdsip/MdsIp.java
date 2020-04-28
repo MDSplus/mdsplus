@@ -136,7 +136,7 @@ public class MdsIp extends Mds{
 			this.eventId = -1;
 			this.eventName = name;
 		}*/
-	}// end PMET class
+	} // end PMET class
 	public final static class Provider{
 		private static final String DEFAULT_LOCAL   = "local";
 		private static final int	DEFAULT_PORT	= 8000;
@@ -172,14 +172,14 @@ public class MdsIp extends Mds{
 				}
 				final int at = provider.indexOf("@");
 				final int cn = provider.indexOf(":");
-				this.user = at < 0 ? Provider.DEFAULT_USER : provider.substring(0, at);
+				this.user = at < 0 ? null : provider.substring(0, at);
 				this.host = cn < 0 ? provider.substring(at + 1).toLowerCase() : provider.substring(at + 1, cn).toLowerCase();
 				this.port = cn < 0 ? 0 : Short.parseShort(provider.substring(cn + 1));
 			}
 		}
 
 		public Provider(final String host, final int port){
-			this(host, port, Provider.DEFAULT_USER, false);
+			this(host, port, null, false);
 		}
 
 		public Provider(final String host, final int port, final String user){
@@ -226,15 +226,21 @@ public class MdsIp extends Mds{
 		}
 
 		public int getPort() {
-			return this.port != 0 ? this.port : (this.use_ssh ? 22 : Provider.DEFAULT_PORT);
+			return this.port != 0 ? this.port : (this.use_ssh ? 0 : Provider.DEFAULT_PORT);
+		}
+
+		public final String getUser() {
+			return this.user==null ? Provider.DEFAULT_USER : this.user;
 		}
 
 		@Override
 		public final String toString() {
 			if (this.use_local) return this.host;
-			final StringBuilder sb = new StringBuilder(this.user.length() + this.host.length() + 16);
+			final StringBuilder sb = new StringBuilder();
 			if(this.use_ssh) sb.append(PREFIX_SSH);
-			sb.append(this.user).append('@').append(this.host);
+			if (this.user!=null)
+				sb.append(this.user).append('@');
+			sb.append(this.host);
 			if(this.port != 0) sb.append(':').append(this.port);
 			return sb.toString();
 		}
@@ -406,7 +412,6 @@ public class MdsIp extends Mds{
 
 	/** re-/connects to the servers mdsip service **/
 	public final boolean connect() {
-		if(this.connected) return true;
 		try{
 			this.connectToServer();
 		}catch(final IOException e){
@@ -433,10 +438,10 @@ public class MdsIp extends Mds{
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
-		final Message msg = Message.receive(this.connection, null, 3000);
+		final Message msg = Message.receive(this.connection, null, 10_000);
 		tictoc += System.nanoTime();
 		if(DEBUG.N) System.out.println(tictoc);
-		this.isLowLatency = tictoc < 50000000;// if response is faster than 50ms
+		this.isLowLatency = tictoc < 50_000_000;// if response is faster than 50ms
 		if(msg.getStatus() == 0){
 			this.close();
 			throw new IOException("Server responded status == 0");

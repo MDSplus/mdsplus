@@ -95,13 +95,14 @@ public final class Message extends Object{
 	private static final ByteBuffer readBuf(int bytes_to_read, final ReadableByteChannel dis, final Set<TransferEventListener> mdslisteners, long abstimeout) throws IOException {
 		final ByteBuffer buf = ByteBuffer.allocateDirect(bytes_to_read);
 		final boolean event = (bytes_to_read > 2000);
+		if (abstimeout == 0)
+			abstimeout = System.currentTimeMillis() + 3_000;
 		try{
 			while(buf.hasRemaining()){
 				final int read = dis.read(buf);
 				if(read == -1) throw new SocketException("connection lost");
 				else if (read == 0) {
-					if (abstimeout == 0
-					|| (abstimeout > 0 && System.currentTimeMillis() > abstimeout))
+					if (abstimeout > 0 && System.currentTimeMillis() > abstimeout)
 						throw new SocketException("connection timeout");
 					continue;
 				}

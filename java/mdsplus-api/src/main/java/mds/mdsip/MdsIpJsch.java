@@ -8,6 +8,8 @@ import java.io.OutputStream;
 import java.net.ConnectException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.Vector;
+
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.JPasswordField;
@@ -16,6 +18,8 @@ import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 import com.jcraft.jsch.Channel;
 import com.jcraft.jsch.ChannelExec;
+import com.jcraft.jsch.ConfigRepository;
+import com.jcraft.jsch.ConfigRepository.Config;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.OpenSSHConfig;
@@ -57,6 +61,69 @@ public final class MdsIpJsch implements Connection{
 			System.out.println(String.format("%s: %s", type, message));
 		}
 	}
+	static private final class SshServerInfo {
+		final SshServerInfo proxy;
+		final String proxyjump;
+		final String user;
+		final String hostname;
+		final Config config;
+		final int port;
+
+		static public SshServerInfo parse(final String serverstring, ConfigRepository cr) {
+			final int at = serverstring.indexOf("@");
+			final int cn = serverstring.indexOf(":");
+			final String user = at < 0 ? null : serverstring.substring(0, at);
+			final String host = cn < 0 ? serverstring.substring(at + 1).toLowerCase() : serverstring.substring(at + 1, cn).toLowerCase();
+			final int port = cn < 0 ? 0 : Integer.parseInt(serverstring.substring(cn + 1));
+			return new SshServerInfo(user, host, port, cr);
+		}
+
+		public SshServerInfo(final String user, final String host, final int port) {
+			this(user, host, port, MdsIpJsch.getConfigRepository());
+		}
+
+		private SshServerInfo(final String user, final String host, final int port, ConfigRepository cr) {
+			config = cr.getConfig(host);
+			String hostname = config.getHostname();
+			this.hostname = hostname!=null ? hostname : host;
+			if (user!=null)
+				this.user = user;
+			else {
+				final String cuser = config.getUser();
+				this.user = cuser!=null ? cuser : System.getProperty("user.name");
+			}
+			if (port!=0)
+				this.port = port;
+			else {
+				final int pport = config.getPort();
+				this.port = pport>0 ? pport : 22;
+			}
+			this.proxyjump = config.getValue("ProxyJump");
+			this.proxy = this.proxyjump==null ? null : SshServerInfo.parse(this.proxyjump, cr);
+		}
+
+		public Vector<Session> connect(int timeout) throws JSchException {
+			Vector<Session> sessions;
+			Session session;
+			if (this.proxy!=null) {
+				sessions = this.proxy.connect(timeout);
+				int pport = sessions.firstElement().setPortForwardingL(0, this.hostname, this.port);
+				session = ((JSch)MdsIpJsch.jsch).getSession(this.user, "127.0.0.1", pport);
+			} else {
+				sessions = new Vector<Session>();
+				session = ((JSch)MdsIpJsch.jsch).getSession(this.user, this.hostname, this.port);
+			}
+			final String strictHostKeyChecking = config.getValue("StrictHostKeyChecking");
+			if (strictHostKeyChecking!=null)
+				session.setConfig("StrictHostKeyChecking", strictHostKeyChecking);
+			sessions.insertElementAt(session, 0);
+			session.setUserInfo(userinfo);
+			userinfo.tried_pw = false;
+			session.connect(timeout);
+			return sessions;
+		}
+	}
+
 	public static final class UserInfo implements com.jcraft.jsch.UserInfo, UIKeyboardInteractive{
 		static HashMap<String, String[]>	keyboard_ans			= new HashMap<String, String[]>();
 		static HashMap<String, UserInfo>	keyboard_this			= new HashMap<String, UserInfo>();
@@ -155,14 +222,22 @@ public final class MdsIpJsch implements Connection{
 	}
 	private static final Object		jsch;
 	private static final UserInfo	userinfo;
+	private static final File dotssh = new File(System.getProperty("user.home"), ".ssh");
+	private static final ConfigRepository getConfigRepository() {
+		final File config = new File(dotssh, "config");
+		if(config.exists()) try{
+			return OpenSSHConfig.parseFile(config.getAbsolutePath());
+		}catch(final IOException e){
+			e.printStackTrace();
+		}
+		return OpenSSHConfig.nullConfig;
+	}
 	static{
 		JSch _jsch;
 		try{
 			_jsch = new JSch();
-			final File dotssh = new File(System.getProperty("user.home"), ".ssh");
 			final File known_hosts = new File(dotssh, "known_hosts");
 			final File id_rsa = new File(dotssh, "id_rsa");
-			final File config = new File(dotssh, "config");
 			if(!dotssh.exists()) dotssh.mkdirs();
 			if(known_hosts.exists()) try{
 				_jsch.setKnownHosts(known_hosts.getAbsolutePath());
@@ -177,11 +252,6 @@ public final class MdsIpJsch implements Connection{
 			if(id_rsa.exists()) try{
 				_jsch.addIdentity(id_rsa.getAbsolutePath());
 			}catch(final JSchException e){
-				e.printStackTrace();
-			}
-			if(config.exists()) try{
-				_jsch.setConfigRepository(OpenSSHConfig.parseFile(config.getAbsolutePath()));
-			}catch(final IOException e){
 				e.printStackTrace();
 			}
 		}catch(final Exception e){
@@ -200,17 +270,15 @@ public final class MdsIpJsch implements Connection{
 	private final Channel		channel;
 	private final InputStream	dis;
 	private final OutputStream	dos;
-	private final Session		session;
+	private final Vector<Session> sessions;
 
 	public MdsIpJsch(String user, String host, int port) throws IOException{
 		if(MdsIpJsch.jsch == null) throw new IOException("JSch not found! SSH connection not available.");
 		try{
-			session = ((JSch)MdsIpJsch.jsch).getSession(user, host, port);
-			session.setUserInfo(userinfo);
-			userinfo.tried_pw = false;
 			if(debug.DEBUG.ON) JSch.setLogger(new MdsIpJsch.Logger());
-			session.connect(10000);// timeout in ms
-			channel = session.openChannel("exec");
+			SshServerInfo serverinfo = new SshServerInfo(user, host, port);
+			sessions = serverinfo.connect(10_000); // timeout in ms
+			channel = sessions.firstElement().openChannel("exec");
 			((ChannelExec)channel).setCommand("/bin/sh -l -c mdsip-server-ssh");
 			channel.connect();
 		}catch(final Exception e){
@@ -225,15 +293,16 @@ public final class MdsIpJsch implements Connection{
 	synchronized public void close() throws IOException {
 		try{
 			try {
-				this.dis.close();
+				this.dos.close();
 			}finally {
 				try {
-					this.dos.close();
+					this.dis.close();
 				}finally {
 					try{
 						this.channel.disconnect();
 					}finally{
-						this.session.disconnect();
+						for (Session session:sessions)
+							session.disconnect();
 					}
 				}
 			}
