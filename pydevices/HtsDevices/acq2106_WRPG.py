@@ -68,7 +68,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         # the digitazer, like d1.
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
-        uut.s0.GPG_TRG_DX    ='d1'   #d1 when testing two WRTTs, WRTT0 or WRTT1. d0 when testing using only one WRTT.
+        uut.s0.GPG_TRG_DX    ='d1'   #d1 for WRTT1. d0 for WRTT0 or EXT.
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
