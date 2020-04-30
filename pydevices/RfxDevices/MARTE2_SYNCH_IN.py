@@ -26,7 +26,7 @@
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('TestSynchIn', MC.MARTE2_SYNCH_IN.MODE_SYNCH_INPUT)
+@MC.BUILDER('TestSynchIn', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 class MARTE2_SYNCH_IN(MC.MARTE2_COMPONENT):
     outputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
     parameters = [{'name':'Parameter1', 'type': 'float32'}, {'name':'Parameter2', 'type': 'string'}]
