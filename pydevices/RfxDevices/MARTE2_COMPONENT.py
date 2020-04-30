@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
+from MDSplus import Device, Data, TreeNode, Range, TreePath
 import numpy as np
 class MARTE2_COMPONENT(Device):
     """MARTE2 components superclass"""

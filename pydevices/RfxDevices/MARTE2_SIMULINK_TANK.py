@@ -1,4 +1,4 @@
-from MARTE2_SIMULINK import *
+from MARTE2_SIMULINK import MARTE2_SIMULINK
 
 class MARTE2_SIMULINK_TANK(MARTE2_SIMULINK):
     parts = MARTE2_SIMULINK.buildPythonGam('Tank')

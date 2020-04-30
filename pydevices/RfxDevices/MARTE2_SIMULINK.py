@@ -24,7 +24,7 @@
 #
 
 from MDSplus import *
-from MARTE2_COMPONENT import *
+from  MARTE2_COMPONENT import MARTE2_COMPONENT
 import ctypes
 
 class MARTE2_SIMULINK(MARTE2_COMPONENT):

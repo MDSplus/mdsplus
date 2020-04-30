@@ -66,7 +66,11 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
           threadName = getattr(self, 'state_%d_thread_%d_name'%(state+1, thread+1)).data()
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
             try:
                 currGamNid = t.getNode(gam);
             except:
@@ -96,7 +100,12 @@ class MARTE2_SUPERVISOR(Device):
           threadInfo['name'] = threadName
           gamNames = []
           threadPeriod = 0
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
+
             currGamNid = t.getNode(gam);
             nid = currGamNid.getNid()
             if currGamNid.isOn():
@@ -104,11 +113,11 @@ class MARTE2_SUPERVISOR(Device):
                 gamInstance = gamClass(currGamNid)
                 gamList = []
                 if not (currGamNid.getNid() in gamNids):
-                  try:
-                    gamInstance.prepareMarteInfo()
-                    currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
-                  except:
-                    return 'Cannot get timebase for ' + gam, {},{}
+                  #try:
+                  gamInstance.prepareMarteInfo()
+                  currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
+                  #except:
+                    #return 'Cannot get timebase for ' + gam, {},{}
                   gamNids.append(currGamNid.getNid()) 
                   if currPeriod > 0 and threadPeriod > 0:
                     error = 'More than one component driving thread timing'
@@ -158,7 +167,12 @@ class MARTE2_SUPERVISOR(Device):
       cpuMask = getattr(self, 'times_state_%d_thread_%d_cpu_mask'%(state+1, thread+1)).data()
       gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
       timeSignals = []
-      for gam in gams:
+      for gam1 in gams:
+        if isinstance(gam1, str):
+            gam = gam1
+        else:
+            gam = str(gam1,'utf_8')
+
         currGamNid = self.getTree().getNode(gam)
         nid = currGamNid.getNid()
         if currGamNid.isOn():
@@ -415,7 +429,12 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           try:
             gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
-            for gam in gams:
+            for gam1 in gams:
+              if isinstance(gam1, str):
+                gam = gam1
+              else:
+                gam = str(gam1,'utf_8')
+
               try:
                 currGamNid = t.getNode(gam);
               except:
@@ -451,7 +470,12 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           timebaseGenerator = ''
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
+
             try:
               currGamNid = t.getNode(gam);
             except:
