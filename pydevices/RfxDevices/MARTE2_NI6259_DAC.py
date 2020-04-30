@@ -30,17 +30,17 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6259_DAC(MC.MARTE2_COMPONENT):
     inputs = [
       {'name': 'DAC0_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'},
-									   {'name':'Trigger', 'type':'int', 'value':1}]},
+                                       {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'},
+                                       {'name':'Trigger', 'type':'int', 'value':1}]},
       {'name': 'DAC0_1', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]},
+                                       {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]},
       {'name': 'DAC0_2', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]},
+                                       {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]},
       {'name': 'DAC0_3', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]}]
+                                       {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]}]
     parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
-				   {'name': 'BoardId', 'type': 'int32', 'value':0},
-				   {'name': 'ClockUpdateSource', 'type': 'string', 'value': 'UI_TC'},
-				   {'name': 'ClockUpdatePolarity', 'type': 'string', 'value': 'RISING_EDGE'},
-				   {'name': 'ClockUpdateDivisor', 'type': 'int32', 'value':10}]
+                   {'name': 'BoardId', 'type': 'int32', 'value':0},
+                   {'name': 'ClockUpdateSource', 'type': 'string', 'value': 'UI_TC'},
+                   {'name': 'ClockUpdatePolarity', 'type': 'string', 'value': 'RISING_EDGE'},
+                   {'name': 'ClockUpdateDivisor', 'type': 'int32', 'value':10}]
     parts = []

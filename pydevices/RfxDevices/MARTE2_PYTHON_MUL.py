@@ -35,7 +35,3 @@ else:
 @BUILDER
 class MARTE2_PYTHON_MUL(MP.MARTE2_PYTHON):
     pass
-
-
-
-
