@@ -9,43 +9,46 @@ from datetime import datetime
 
 class NI6683REC(Device):
     """ niSync PXIe SPIDER timing device """
-    parts=[{'path':':COMMENT',    'type':'text'},
-           {'path':':DEV_TYPE',   'type':'text', 'value':'PXI6683H'},
-           {'path':':DEV_NUM',    'type':'numeric', 'value':0},
-           {'path':':TRIG_DEC_CNT',  'type':'numeric', 'value':1},
-           {'path':':TAIUTC_DELAY',   'type':'numeric', 'valueExpr': 'Data.compile("37000000000Q")' },
-           {'path':'.PULSE_TIME', 'type':'structure'},
-           {'path':'.PULSE_TIME:REF_TIME',  'type':'numeric', 'value':-6.},
-           {'path':'.PULSE_TIME:TRIG_TERM',  'type':'text', 'value':'PFI1'},
-           {'path':'.PULSE_TIME:TRIG_EDGE',  'type':'text', 'value':'RISING'},
-           {'path':'.PULSE_TIME:TAI_NS', 'type':'numeric','options':('no_write_model')},
-           {'path':'.PULSE_TIME:UTC_NS', 'type':'numeric',
-                 'valueExpr': 'Data.compile("$1 - $2",head.pulse_time_tai_ns, head.taiutc_delay)'},
-           {'path':'.PULSE_TIME:DATE'  , 'type':'text','options':('no_write_model')}]
-
+    parts = [
+        {'path':':COMMENT',    'type':'text'},
+        {'path':':DEV_TYPE',   'type':'text', 'value':'PXI6683H'},
+        {'path':':DEV_NUM',    'type':'numeric', 'value':0},
+        {'path':':TRIG_DEC_CNT',  'type':'numeric', 'value':1},
+        {'path':':TAIUTC_DELAY',   'type':'numeric', 'valueExpr': 'Data.compile("37000000000Q")' },
+        {'path':'.PULSE_TIME', 'type':'structure'},
+        {'path':'.PULSE_TIME:REF_TIME',  'type':'numeric', 'value':-6.},
+        {'path':'.PULSE_TIME:TRIG_TERM',  'type':'text', 'value':'PFI1'},
+        {'path':'.PULSE_TIME:TRIG_EDGE',  'type':'text', 'value':'RISING'},
+        {'path':'.PULSE_TIME:TAI_NS', 'type':'numeric','options':('no_write_model')},
+        {'path':'.PULSE_TIME:UTC_NS', 'type':'numeric',
+         'valueExpr': 'Data.compile("$1 - $2",head.pulse_time_tai_ns, head.taiutc_delay)'},
+        {'path':'.PULSE_TIME:DATE'  , 'type':'text','options':('no_write_model,')},
+    ]
     for i in range(8):
-        parts.append({'path':'.TRIG_%d'%(i+1), 'type':'structure'})
-        parts.append({'path':'.TRIG_%d:COMMENT'%(i+1),  'type':'text'})
-        parts.append({'path':'.TRIG_%d:TERM'%(i+1),  'type':'text', 'value':'PFI2'})
-        parts.append({'path':'.TRIG_%d:EDGE'%(i+1),  'type':'text', 'value':'RISING'})
-        parts.append({'path':'.TRIG_%d:TAI_NS'%(i+1), 'type':'numeric','options':('no_write_model')})
-        parts.append({'path':'.TRIG_%d:UTC_NS'%(i+1), 'type':'numeric',
-                       'valueExpr': 'Data.compile("($1 - $2)", head.trig_%d_tai_ns, head.taiutc_delay)'%(i+1)})
-        parts.append({'path':'.TRIG_%d:TIME'%(i+1), 'type':'numeric',
-                       'valueExpr': 'Data.compile("data(($1 - $2)/1000000000.)+$3", head.trig_%d_tai_ns, head.pulse_time_tai_ns, head.pulse_time_ref_time)'%(i+1)})
+        parts.extend([
+            {'path':'.TRIG_%d'%(i+1), 'type':'structure'},
+            {'path':'.TRIG_%d:COMMENT'%(i+1),  'type':'text'},
+            {'path':'.TRIG_%d:TERM'%(i+1),  'type':'text', 'value':'PFI2'},
+            {'path':'.TRIG_%d:EDGE'%(i+1),  'type':'text', 'value':'RISING'},
+            {'path':'.TRIG_%d:TAI_NS'%(i+1), 'type':'numeric','options':('no_write_model')},
+            {'path':'.TRIG_%d:UTC_NS'%(i+1), 'type':'numeric',
+             'valueExpr': 'Data.compile("($1 - $2)", head.trig_%d_tai_ns, head.taiutc_delay)'%(i+1)},
+            {'path':'.TRIG_%d:TIME'%(i+1), 'type':'numeric',
+             'valueExpr': 'Data.compile("data(($1 - $2)/1000000000.)+$3", head.trig_%d_tai_ns, head.pulse_time_tai_ns, head.pulse_time_ref_time)'%(i+1)},
+        ])
 
 
-    parts.append({'path':':INIT_ACTION','type':'action',
+    parts.extend([
+        {'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('TIMING_SERVER','INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':START_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':START_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('TIMING_SERVER','READY',50,None),Method(None,'start',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('TIMING_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop',head))",
-        'options':('no_write_shot',)})
-
-
+        'options':('no_write_shot',)},
+    ])
 
 
     NISYNC_DEVICE_TYPE_UNKNOWN  = c_int(-1)
@@ -57,10 +60,10 @@ class NI6683REC(Device):
     NISYNC_READ_BLOCKING    = c_int(0) # Wait until some data is available
     NISYNC_READ_NONBLOCKING = c_int(1) # Return immediately even if no data is available
 
-    NISYNC_EDGE_RISING	= c_int(0)
-    NISYNC_EDGE_FALLING	= c_int(1)
-    NISYNC_EDGE_ANY		= c_int(2)
-    NISYNC_EDGE_INVALID	= c_int(3)
+    NISYNC_EDGE_RISING    = c_int(0)
+    NISYNC_EDGE_FALLING    = c_int(1)
+    NISYNC_EDGE_ANY        = c_int(2)
+    NISYNC_EDGE_INVALID    = c_int(3)
 
     NISYNC_PFI0 = c_int(0)
     NISYNC_PFI1 = c_int(1)
@@ -157,7 +160,6 @@ class NI6683REC(Device):
             del NI6683REC.nids[self.nid]
         except:
             pass
-        return
 
     def initializeInfo(self):
 
@@ -223,8 +225,6 @@ class NI6683REC(Device):
             print (str(e))
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Exception on NiSync Timing Device on open terminal %s '%(trigTermName))
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
-
 
 
 ################################### Worker Management
@@ -403,7 +403,6 @@ class NI6683REC(Device):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot enable pulse time timestamp for trigger %d'%(tr+1))
                     continue
 
-        return 1
 
     def start(self):
 
@@ -437,8 +436,6 @@ class NI6683REC(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'SPIDER timing device device not armed')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return 1
-
     def stop(self):
 
         try:
@@ -455,5 +452,4 @@ class NI6683REC(Device):
             self.worker.join()
         print ("Close Info")
         self.closeInfo()
-        return 1
 
