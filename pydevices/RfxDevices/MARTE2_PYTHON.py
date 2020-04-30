@@ -22,20 +22,33 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from MARTE2_COMPONENT import MARTE2_COMPONENT
+import MDSplus
 import numpy as np
 
-class MARTE2_PYTHON(MARTE2_COMPONENT):
-    @classmethod
-    def convertType(cls, type,):
-      typeConv = {int:'int32', float: 'float64', np.int16: 'int16', np.int32: 'int32', np.float32: 'float32', np.float64: 'float64'}
-      return typeConv[type]
+MC = __import__('MARTE2_COMPONENT', globals())
 
- 
-    @classmethod
-    def buildPythonGam(cls, pygam, module):
+
+class MARTE2_PYTHON(MC.MARTE2_COMPONENT):
+    pass
+
+
+class BUILDER:
+  @staticmethod
+  def convertType(cls, type,):
+    typeConv = {int:'int32', float: 'float64', np.int16: 'int16', np.int32: 'int32', np.float32: 'float32', np.float64: 'float64'}
+    return typeConv[type]
+
+  def __init__(self, module, pygam=None):
+      self.module = module
+      self.pygam = pygam or module.pygam
+
+  def __call__(self, cls):
+    cls.inputs = []
+    cls.outputs = []
+    cls.parameters = []
+    try:
+      pygam, module = self.pygam, self.module
       pygam.initialize()
-      MARTE2_COMPONENT.inputs = []
       for i in range(0, pygam.getNumberOfInputs()):
         currDimension = pygam.getInputDimensions(i)
         if currDimension[0] == 1 :
@@ -45,10 +58,9 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
             inDimensions = [currDimension[1]]
         else:
           inDimensions = [currDimension[0],currDimension[1]]
-          
-        MARTE2_COMPONENT.inputs.append({'name': pygam.getInputName(i), 'type': cls.convertType(pygam.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
 
-      MARTE2_COMPONENT.outputs = []
+        cls.inputs.append({'name': pygam.getInputName(i), 'type': self.convertType(pygam.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
+
       for i in range(0, pygam.getNumberOfOutputs()):
         currDimension = pygam.getOutputDimensions(i)
         if currDimension[0] == 1 :
@@ -58,10 +70,10 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
             outDimensions = [currDimension[1]]
         else:
           outDimensions = [currDimension[0],currDimension[1]]
-          
-        MARTE2_COMPONENT.outputs.append({'name': pygam.getOutputName(i), 'type': cls.convertType(pygam.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
 
-      MARTE2_COMPONENT.parameters = [{'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1].split('.')[0]}]
+        cls.outputs.append({'name': pygam.getOutputName(i), 'type': self.convertType(pygam.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
+
+      cls.parameters.append({'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1].split('.')[0]})
       for i in range(0, pygam.getNumberOfParameters()):
         currVal = pygam.getParameterDefaultValue(i)
         currDims = pygam.getParameterDimensions(i)
@@ -69,14 +81,21 @@ class MARTE2_PYTHON(MARTE2_COMPONENT):
           mdsValue = currVal[0]
         else:
           if pygam.getParameterType(i) == np.float32 or pygam.getParameterType(i) == np.float64:
-            mdsValue = Float64Array(currVal)
+            mdsValue = MDSplus.Float64Array(currVal)
           else:
-            mdsValue = Int32Array(currVal)
-        
-        MARTE2_COMPONENT.parameters.append({'name': 'Parameters.'+pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
+            mdsValue = MDSplus.Int32Array(currVal)
 
-      parts = []
-      MARTE2_COMPONENT.buildGam(parts, 'PyGAM', MARTE2_COMPONENT.MODE_GAM)
-      return parts
+        cls.parameters.append({'name': 'Parameters.'+pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
+    except:
+        pass
+    cls.parts = []
+    cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+    return cls
 
- 
+
+def BUILDER_FALLBACK(cls):
+    cls.outputs = []
+    cls.parameters = []
+    cls.parts = []
+    cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+    return cls

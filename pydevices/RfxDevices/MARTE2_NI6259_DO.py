@@ -23,10 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_NI6259_DO(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.inputs = [
+MC = __import__('MARTE2_COMPONENT', globals())
+
+
+@MC.BUILDER('NI6259::NI6259DIO', MC.MARTE2_COMPONENT.MODE_OUTPUT)
+class MARTE2_NI6259_DO(MC.MARTE2_COMPONENT):
+    inputs = [
       {'name': 'DIO_0', 'type': 'uint32', 'dimensions': 0, 'parameters':[{'name':'PortId', 'type': 'int', 'value':0},
 									   {'name':'Mask', 'type':'int', 'value': 1},
 									   {'name':'Trigger', 'type':'int', 'value':1}]},
@@ -34,12 +36,6 @@ class MARTE2_NI6259_DO(MARTE2_COMPONENT):
 									   {'name':'Mask', 'type':'int', 'value': 1}]},
       {'name': 'DIO_2', 'type': 'uint32', 'dimensions': 0, 'parameters':[{'name':'PortId', 'type': 'int', 'value':2},
 									   {'name':'Mask', 'type':'int', 'value': 1}]}]
-    MARTE2_COMPONENT.parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
+    parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
 				   {'name': 'BoardId', 'type': 'int32', 'value':0}]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'NI6259::NI6259DIO', MARTE2_COMPONENT.MODE_OUTPUT)
-
-#    def prepareMarteInfo(self):
-
-
-

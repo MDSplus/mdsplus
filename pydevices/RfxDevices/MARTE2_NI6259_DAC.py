@@ -23,10 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_NI6259_DAC(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.inputs = [
+MC = __import__('MARTE2_COMPONENT', globals())
+
+
+@MC.BUILDER('NI6259::NI6259DAC', MC.MARTE2_COMPONENT.MODE_OUTPUT)
+class MARTE2_NI6259_DAC(MC.MARTE2_COMPONENT):
+    inputs = [
       {'name': 'DAC0_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
 									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'},
 									   {'name':'Trigger', 'type':'int', 'value':1}]},
@@ -36,14 +38,9 @@ class MARTE2_NI6259_DAC(MARTE2_COMPONENT):
 									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]},
       {'name': 'DAC0_3', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
 									   {'name':'OutputPolarity', 'type':'string', 'value': 'Bipolar'}]}]
-    MARTE2_COMPONENT.parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
+    parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
 				   {'name': 'BoardId', 'type': 'int32', 'value':0},
 				   {'name': 'ClockUpdateSource', 'type': 'string', 'value': 'UI_TC'},
 				   {'name': 'ClockUpdatePolarity', 'type': 'string', 'value': 'RISING_EDGE'},
 				   {'name': 'ClockUpdateDivisor', 'type': 'int32', 'value':10}]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'NI6259::NI6259DAC', MARTE2_COMPONENT.MODE_OUTPUT)
-
-#    def prepareMarteInfo(self):
-
-

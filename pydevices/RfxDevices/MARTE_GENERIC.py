@@ -23,7 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# -*- coding: iso-8859-1 -*-
 from MDSplus import mdsExceptions, Device, Tree, Data, Event
 from os import environ
 from time import sleep

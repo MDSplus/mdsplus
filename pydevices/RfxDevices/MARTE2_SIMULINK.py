@@ -26,9 +26,9 @@
 import MDSplus
 import ctypes
 
-MARTE2_COMPONENT = __import__('MARTE2_COMPONENT', globals())
+MC = __import__('MARTE2_COMPONENT', globals())
 
-class MARTE2_SIMULINK(MARTE2_COMPONENT.MARTE2_COMPONENT):
+class MARTE2_SIMULINK(MC.MARTE2_COMPONENT):
     pass
 
 # TODO: device class need <lib_name>.so to get node struct,

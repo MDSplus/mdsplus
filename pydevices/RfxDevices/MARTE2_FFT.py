@@ -23,19 +23,20 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_FFT(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.inputs = [
+from MDSplus import Data, TreeNode, TreePath
+
+MC = __import__('MARTE2_COMPONENT', globals())
+
+
+@MC.BUILDER('FFTGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+class MARTE2_FFT(MC.MARTE2_COMPONENT):
+    inputs = [
       {'name': 'In', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]}]
-    MARTE2_COMPONENT.outputs = [
+    outputs = [
       {'name': 'OutModule', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]},
       {'name': 'OutPhase', 'type':'float64', 'dimensions': Data.compile('[256]'), 'parameters':[]}]
-
-    MARTE2_COMPONENT.parameters = [{'name':'NumberOfSamples', 'type': 'int32', 'value':256}]
-
+    parameters = [{'name':'NumberOfSamples', 'type': 'int32', 'value':256}]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'FFTGAM', MARTE2_COMPONENT.MODE_GAM)
 
     def prepareMarteInfo(self):
       self.outputs_outphase_seg_len.putData(self.outputs_outmodule_seg_len.getData())

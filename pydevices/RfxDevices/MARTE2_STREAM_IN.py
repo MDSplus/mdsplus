@@ -23,24 +23,32 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_STREAM_IN(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.outputs = [{'name': 'Out1', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'Channel', 'type':'string','value':'CH1'}]},
-{'name': 'Out2', 'type': 'float32', 'dimensions': -1, 'parameters':[{'name':'Channel', 'type':'string','value':'CH2'}]},
-{'name': 'Out3', 'type': 'float32', 'dimensions': -1, 'parameters':[{'name':'Channel', 'type':'string','value':'CH3'}]},
-{'name': 'Out4', 'type': 'float32', 'dimensions': -1, 'parameters':[{'name':'Channel', 'type':'string','value':'CH4'}]},
-{'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters':[]}]
+from MDSplus import Data
 
-    MARTE2_COMPONENT.parameters = [{'name':'NumberOfBuffers', 'type': 'int32', 'value':100}, 
-                                   {'name':'CpuMask', 'type': 'int32', 'value': 127},
-                                   {'name':'StackSize', 'type': 'int32', 'value': 1000000},
-                                   {'name':'SynchronizingIdx', 'type': 'int32', 'value' : 0},
-                                   {'name':'Period', 'type': 'float32', 'value' : 1E-2}]
+MC = __import__('MARTE2_COMPONENT', globals())
 
+
+@MC.BUILDER('StreamIn', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
+class MARTE2_STREAM_IN(MC.MARTE2_COMPONENT):
+    outputs = [
+        {'name': 'Out1', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH1'}]},
+        {'name': 'Out2', 'type': 'float32', 'dimensions': -1, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH2'}]},
+        {'name': 'Out3', 'type': 'float32', 'dimensions': -1, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH3'}]},
+        {'name': 'Out4', 'type': 'float32', 'dimensions': -1, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH4'}]},
+        {'name': 'Time', 'type': 'uint32', 'dimensions': 0, 'parameters':[]},
+    ]
+    parameters = [
+        {'name':'NumberOfBuffers', 'type': 'int32', 'value':100},
+        {'name':'CpuMask', 'type': 'int32', 'value': 127},
+        {'name':'StackSize', 'type': 'int32', 'value': 1000000},
+        {'name':'SynchronizingIdx', 'type': 'int32', 'value' : 0},
+        {'name':'Period', 'type': 'float32', 'value' : 1E-2},
+    ]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'StreamIn', MARTE2_COMPONENT.MODE_SYNCH_INPUT)
 
     def prepareMarteInfo(self):
         self.timebase.putData(Data.compile('0:1000000 : (build_path("\\'+self.getFullPath()+'.parameters:par_5:value"))'))
-

@@ -1864,4 +1864,11 @@ class MARTE2_COMPONENT(Device):
         return status
       return self.checkSpecific()
 
-
+class BUILDER:
+    def __init__(self, clazz, mode, timebaseExpr=None):
+        self.clazz = clazz
+        self.mode = mode
+        self.timebaseExpr = timebaseExpr
+    def __call__(self, cls):
+        cls.buildGam(cls.parts, self.clazz, self.mode, self.timebaseExpr)
+        return cls

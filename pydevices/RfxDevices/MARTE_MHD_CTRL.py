@@ -23,12 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
-except:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
+MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
-class MARTE_MHD_CTRL(MARTE_GENERIC):
+
+class MARTE_MHD_CTRL(MARTE_GENERIC.MARTE_GENERIC):
     parNames = ['cleaningEnable', 'extrapolationEnable', 'reconfigurationEnable', 'dynamicDecouplerEnable', 'staticDecouplerEnable', 'applyCleaning', 'extrapolationRadius',
     'rgM_1', 'rgN_1', 'rgFreq_1', 'rgAmpl_1','rgPhase_1','rgTStart_1','rgRiseTime_1','rgTEnd_1','rgFallTime_1','rgThreshold_1','rgIsRelative_1',
     'rgM_2', 'rgN_2', 'rgFreq_2', 'rgAmpl_2','rgPhase_2','rgTStart_2','rgRiseTime_2','rgTEnd_2','rgFallTime_2','rgThreshold_2','rgIsRelative_2',
@@ -71,7 +69,7 @@ class MARTE_MHD_CTRL(MARTE_GENERIC):
                 (['ZERO(192,0.)']*5+['0']*3)*8 +  # VS Controller
                  ['DIAGONAL(ADD(ZERO(192,0.),1.))','ADD(ZERO(192,0.),1.)','ADD(ZERO(192,0.),-1.)','ZERO(192,0.)'] +
                  ['0']*8 + ['-1']*4)  # Start and end of freeze and Bp Autozero time
-    parts = list(MARTE_GENERIC.parts)
+    parts = list(MARTE_GENERIC.MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

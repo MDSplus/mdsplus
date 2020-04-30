@@ -23,15 +23,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
-except:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
+MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
-class MARTE_MHD_I(MARTE_GENERIC):
+
+class MARTE_MHD_I(MARTE_GENERIC.MARTE_GENERIC):
     parNames = ['InputMapping', 'InputAutozero', 'i2t']
     parValues = [0,0,0]
-    parts = list(MARTE_GENERIC.parts)
+    parts = list(MARTE_GENERIC.MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

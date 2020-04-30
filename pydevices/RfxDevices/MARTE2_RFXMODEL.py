@@ -1,8 +1,9 @@
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_RFXMODEL(MARTE2_COMPONENT):
-    
-    MARTE2_COMPONENT.parameters = [
+from MDSplus import Data
+MC = __import__('MARTE2_COMPONENT', globals())
+
+@MC.BUILDER('SimulinkInterfaceGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+class MARTE2_RFXMODEL(MC.MARTE2_COMPONENT):
+    parameters = [
         {'name' : 'AAGain', 'type' : 'float64'},
         {'name' : 'BV_GAIN', 'type' : 'float64'},
         {'name' : 'CCKp', 'type' : 'float64'},
@@ -76,7 +77,7 @@ class MARTE2_RFXMODEL(MARTE2_COMPONENT):
         {'name' : 'taupHorShiftFF', 'type' : 'float64'},
         {'name' : 'tauzHorShiftFF', 'type' : 'float64'},
         {'name' : 'time_step', 'type' : 'float64'}]
-    MARTE2_COMPONENT.inputs = [
+    inputs = [
         {'name' : 'Horizontal_Shift', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'Btw', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'Ip', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
@@ -103,7 +104,7 @@ class MARTE2_RFXMODEL(MARTE2_COMPONENT):
         {'name' : 'q_ref', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'delta_I_FS_add', 'type' : 'float64', 'dimensions' : Data.compile('[8]'), 'parameters': {}},
         {'name' : 'Ip_ref', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}}]
-    MARTE2_COMPONENT.outputs = [
+    outputs = [
         {'name' : 'PCAT_Ref', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'PMAT_Ref', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'TFAT_Ref', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
@@ -113,6 +114,5 @@ class MARTE2_RFXMODEL(MARTE2_COMPONENT):
         {'name' : 'FS_FB_Ref', 'type' : 'float64', 'dimensions' : Data.compile('[8]'), 'parameters': {}},
         {'name' : 'time', 'type' : 'float64', 'dimensions' : 0, 'parameters': {}},
         {'name' : 'FF', 'type' : 'float64', 'dimensions' : Data.compile('[8]'), 'parameters': {}}]
-    
+
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'SimulinkInterfaceGAM', MARTE2_COMPONENT.MODE_GAM)

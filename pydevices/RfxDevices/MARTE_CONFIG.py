@@ -23,8 +23,8 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# -*- coding: iso-8859-1 -*-
-from MDSplus import mdsExceptions, Device
+from MDSplus import Device
+
 
 class MARTE_CONFIG(Device):
     """MARTe configuration"""

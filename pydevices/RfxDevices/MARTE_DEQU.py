@@ -23,17 +23,16 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
-except:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
+MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
-class MARTE_DEQU(MARTE_GENERIC):
+
+class MARTE_DEQU(MARTE_GENERIC.MARTE_GENERIC):
     parNames = ['InputMapping', 'InputAutozero', 'bpCorrectionCoeffs', 'torI2TLimit', 'FluxDiffCorrectionOn', 'FluxDiffCorrectionCoeffs', 'AliasRemoveOn', 'TimeConstLpfMandF', 'FourthHarmRecOn', 'deltaTequ']
     parValues = ['0','0', 'ADD(ZERO(32,0.),1.)','0','0', 'Float32Array([-331.63E-9,-123.053E-9,-24.8494E-9,10.2545E-9,15.5055E-9,-35.3507E-9,-186.869E-9])','0','0.16','0','0.05']
-    parts = list(MARTE_GENERIC.parts)
-    parts.append({'path':'.PARAMS', 'type':'structure'})
-    parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
+    parts = MARTE_GENERIC.MARTE_GENERIC.parts + [
+        {'path':'.PARAMS', 'type':'structure'},
+        {'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)},
+    ]
     for i in range(len(parNames)):
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'})
