@@ -3154,7 +3154,7 @@ class Device(TreeNode): # HINT: Device begin
 
     """ debug safe import """
     if debug == 0:
-        def dprint(self, fmt, *args): pass
+        def dprint(self, debuglevel, fmt, *args): pass
         @staticmethod
         def _debugDevice(device): return device
     else:
