@@ -31,44 +31,45 @@ from time import sleep, mktime
 
 class ZELOS2150GV(Device):
     """Zelos 2150GV Camera"""
-    parts=[
-      {'path':':NAME', 'type':'text'},
-      {'path':':COMMENT', 'type':'text'},
-      {'path':':IP', 'type':'text'},
-      {'path':':EXP_TIME', 'type':'numeric', 'value':20E-3},
-      {'path':':AUTO_EXP', 'type':'text', 'value':'NO'},
-      {'path':':EXP_LEV', 'type':'numeric', 'value':0},
-      {'path':':AUTO_GAIN', 'type':'text', 'value':'NO'},
-      {'path':':GAIN_LEV', 'type':'numeric', 'value':100},
-      {'path':':SLOW_SCAN', 'type':'text', 'value':'NO'},
-      {'path':':FRAME_X', 'type':'numeric', 'value':11},
-      {'path':':FRAME_Y', 'type':'numeric', 'value':11},
-      {'path':':FRAME_WIDTH', 'type':'numeric', 'value':1920},
-      {'path':':FRAME_HEIGHT', 'type':'numeric', 'value':1080},
-      {'path':':MEAS_X', 'type':'numeric', 'value':11},
-      {'path':':MEAS_Y', 'type':'numeric', 'value':11},
-      {'path':':MEAS_WIDTH', 'type':'numeric', 'value':1920},
-      {'path':':MEAS_HEIGHT', 'type':'numeric', 'value':1080},
-      {'path':':VER_BINNING', 'type':'numeric', 'value':1},
-      {'path':':HOR_BINNING', 'type':'numeric', 'value':1},
-      {'path':':FRAME_SYNC', 'type':'text', 'value':'INTERNAL'},
-      {'path':':FRAME_PERIOD', 'type':'numeric', 'value':100E-3},
-      {'path':':FRAME_CLOCK', 'type':'numeric'},
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
-      {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
-      {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
-      {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},
-      {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
-      {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767}]
-    parts.append({'path':':INIT_ACT','type':'action',
-      'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
-      'options':('no_write_shot',)})
-    parts.append({'path':':START_ACT','type':'action',
-      'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
-      'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACT','type':'action',
-      'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-      'options':('no_write_shot',)})
+    parts = [
+        {'path':':NAME', 'type':'text'},
+        {'path':':COMMENT', 'type':'text'},
+        {'path':':IP', 'type':'text'},
+        {'path':':EXP_TIME', 'type':'numeric', 'value':20E-3},
+        {'path':':AUTO_EXP', 'type':'text', 'value':'NO'},
+        {'path':':EXP_LEV', 'type':'numeric', 'value':0},
+        {'path':':AUTO_GAIN', 'type':'text', 'value':'NO'},
+        {'path':':GAIN_LEV', 'type':'numeric', 'value':100},
+        {'path':':SLOW_SCAN', 'type':'text', 'value':'NO'},
+        {'path':':FRAME_X', 'type':'numeric', 'value':11},
+        {'path':':FRAME_Y', 'type':'numeric', 'value':11},
+        {'path':':FRAME_WIDTH', 'type':'numeric', 'value':1920},
+        {'path':':FRAME_HEIGHT', 'type':'numeric', 'value':1080},
+        {'path':':MEAS_X', 'type':'numeric', 'value':11},
+        {'path':':MEAS_Y', 'type':'numeric', 'value':11},
+        {'path':':MEAS_WIDTH', 'type':'numeric', 'value':1920},
+        {'path':':MEAS_HEIGHT', 'type':'numeric', 'value':1080},
+        {'path':':VER_BINNING', 'type':'numeric', 'value':1},
+        {'path':':HOR_BINNING', 'type':'numeric', 'value':1},
+        {'path':':FRAME_SYNC', 'type':'text', 'value':'INTERNAL'},
+        {'path':':FRAME_PERIOD', 'type':'numeric', 'value':100E-3},
+        {'path':':FRAME_CLOCK', 'type':'numeric'},
+        {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
+        {'path':':STREAMING', 'type':'text', 'value':'Stream and Store'},
+        {'path':':STREAM_PORT', 'type':'numeric', 'value':8888},
+        {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},
+        {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
+        {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767},
+        {'path':':INIT_ACT','type':'action',
+         'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
+         'options':('no_write_shot',)},
+        {'path':':START_ACT','type':'action',
+         'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
+         'options':('no_write_shot',)},
+        {'path':':STOP_ACT','type':'action',
+         'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+         'options':('no_write_shot',)},
+    ]
     handles = {}
     workers = {}
     kappaLib = None
@@ -266,7 +267,7 @@ class ZELOS2150GV(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot Set Color Coding')
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-###Exposure	Mode
+###Exposure    Mode
       if self.frame_sync.data() == 'EXTERNAL':
         status = ZELOS2150GV.kappaLib.kappaSetExposureMode(self.handle, c_int(3)) #3 = ZELOS_ENUM_EXPOSUREMODE_RESETRESTART
       else:
@@ -342,7 +343,6 @@ class ZELOS2150GV(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set horizontal or vertical binning')
         raise mdsExceptions.TclFAILED_ESSENTIAL
       self.saveInfo()
-      return
 
 ####################trigger###PER ORA NON FUNZIONA
     def trigger(self):
@@ -358,7 +358,6 @@ class ZELOS2150GV(Device):
         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot issue software trigger if external synchornization')
         raise mdsExceptions.TclFAILED_ESSENTIAL
       self.saveInfo()
-      return
 
 ##########start store############################################################################
     def start_store(self):
@@ -380,7 +379,6 @@ class ZELOS2150GV(Device):
       self.worker.configure(self, width, height, hBuffers)
       self.saveWorker()
       self.worker.start()
-      return
 
 
 ##########stop store############################################################################
@@ -389,4 +387,3 @@ class ZELOS2150GV(Device):
       self.restoreWorker()
       self.worker.stop()
       print('FLAG SETTATO')
-      return

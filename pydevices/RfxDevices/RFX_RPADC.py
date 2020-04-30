@@ -10,18 +10,18 @@ class RFX_RPADC(Device):
         {'path':':BUF_SIZE', 'type':'numeric', 'value':100000},
         {'path':':SEG_SIZE', 'type':'numeric', 'value':100000},
         {'path':':TRIGGER', 'type':'numeric'},
-        {'path':':DURATION', 'type':'numeric'},				#if <= 0 streaming
-        {'path':':MODE', 'type':'text','value':'STREAMING'}, 		#STREAMING or EVENT_STREAMING or TRIGGER_STREAMING or TRIGGER_SINGLE
-        {'path':':EV_MODE', 'type':'text','value':'UPPER'}, 		#event generation in respect of EV_LEVEL: UPPER or LOWER
-        {'path':':EV_CHANNEL', 'type':'text','value':'A'}, 		#channel (A or B) used for event detection
-        {'path':':EV_LEVEL', 'type':'numeric'},  			#event generation level
-        {'path':':EV_SAMPLES', 'type':'numeric', 'value': 2},  		#event validation samples
-        {'path':':PRE_SAMPLES', 'type':'numeric', 'value': 100},  	#pre trigger samples
-        {'path':':POST_SAMPLES', 'type':'numeric', 'value': 100},  	#post trigger samples
-        {'path':':CLOCK_MODE', 'type':'text', 'value': 'INTERNAL'},  	#Clock mode
-        {'path':':EXT_CLOCK', 'type':'numeric'},  			#Ext. Clock
-        {'path':':TRIG_EVENT', 'type':'numeric'	},  			#if clock_mode == TRIG_EVENT or clock_mode == EXT_EVENT
-        {'path':':RANGE_A', 'type':'numeric', 'value':1.},  		#1/20 Vpp
+        {'path':':DURATION', 'type':'numeric'},                #if <= 0 streaming
+        {'path':':MODE', 'type':'text','value':'STREAMING'},         #STREAMING or EVENT_STREAMING or TRIGGER_STREAMING or TRIGGER_SINGLE
+        {'path':':EV_MODE', 'type':'text','value':'UPPER'},         #event generation in respect of EV_LEVEL: UPPER or LOWER
+        {'path':':EV_CHANNEL', 'type':'text','value':'A'},         #channel (A or B) used for event detection
+        {'path':':EV_LEVEL', 'type':'numeric'},              #event generation level
+        {'path':':EV_SAMPLES', 'type':'numeric', 'value': 2},          #event validation samples
+        {'path':':PRE_SAMPLES', 'type':'numeric', 'value': 100},      #pre trigger samples
+        {'path':':POST_SAMPLES', 'type':'numeric', 'value': 100},      #post trigger samples
+        {'path':':CLOCK_MODE', 'type':'text', 'value': 'INTERNAL'},      #Clock mode
+        {'path':':EXT_CLOCK', 'type':'numeric'},              #Ext. Clock
+        {'path':':TRIG_EVENT', 'type':'numeric'    },              #if clock_mode == TRIG_EVENT or clock_mode == EXT_EVENT
+        {'path':':RANGE_A', 'type':'numeric', 'value':1.},          #1/20 Vpp
         {'path':':RANGE_B', 'type':'numeric', 'value':1.},
         {'path':':GAIN_A', 'type':'numeric', 'value':1.},
         {'path':':GAIN_B', 'type':'numeric', 'value':1.},
@@ -46,7 +46,7 @@ class RFX_RPADC(Device):
 
     class Configuration:
       def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
-		    postSamples, segmentSamples, frequency, frequency1, single):
+            postSamples, segmentSamples, frequency, frequency1, single):
           self.lib = lib
           self.fd = fd
           self.name = name
@@ -82,11 +82,12 @@ class RFX_RPADC(Device):
       def run(self):
           print('START THREAD', self.name, self.shot)
           try:
-             self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
-                                  c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
-                                  c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
-          except ValueError:
-               print(ValueError)
+             self.lib.rpadcStream(
+                 c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
+                 c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
+                 c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
+          except ValueError as e:
+               print(e)
                raise mdsExceptions.TclFAILED_ESSENTIAL
 
           print('THREAD TERMINATED')
