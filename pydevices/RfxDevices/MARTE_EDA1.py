@@ -27,7 +27,7 @@ MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
 
 class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
-    params = zip(['ccType', 'psConfiguration','ccKp','ccTEnd','tokccTStart','tokccVMax','rfpccIpStar','rfpccDeltaIpStar','rfpccDeltaTRampDown',
+    params = list(zip(['ccType', 'psConfiguration','ccKp','ccTEnd','tokccTStart','tokccVMax','rfpccIpStar','rfpccDeltaIpStar','rfpccDeltaTRampDown',
         'rfpccPOhmMax','rfpccTauz','rfpccTaup','rfpccDeltaTBumpless','aaGain','invAAGain','rfpcc2VrtStar','rfpcc2PCATMaxOnTime','bvGain',
         'maxPVATCurr','decouplerGain','compResGain','Kp','Ki','tStartEquilIntegralAction','minIpCurr','equilNonlinearFactorSaturation',
         'fsMMFRT','fsBvRT','ffwdOn','fdbkOn','voltageControl','equiFlux','strainAlarmLatchTime','tokccVLoopThreshold ','tokccVRogThreshold ',
@@ -43,7 +43,7 @@ class MARTE_EDA1(MARTE_GENERIC.MARTE_GENERIC):
         ['0.3','1.5','Float32Array([0.9239,0.3827,-0.3827,-0.9239,-0.9239,-0.3827,0.3827,0.9239])','500','0','0.3','300','1500','7.5','0','0','5.649E-5','0','0'] +
         ['0.3','1.5','Float32Array([0.8315,-0.1951,-0.9808,-0.5556,0.5556,0.9808,0.1951,-0.8315])','500','0','0.3','300','150' ,'7.5','0','0','5950'    ,'0','0'] + ['0']*12 +
         ['Float32Array([.15,.3,.15,.3,.15,.3,.3,.3])','Float32Array([9000E3,2250E3,6000E3,2250E3,6000E3,1500E3,1500E3,2250E3])','.3','.5','0.','0.','.55','.8','0','1','0','1.','0','1.','0.'] +
-        ['Float32Array([0.,0.,0.,0.])']*2 + ['0','10.2','100E-9','160000','.95','1000','1','Int32Array([-2746,-889,4100,0,-1692,-1157,-206,426])','1','1','1','0'])
+        ['Float32Array([0.,0.,0.,0.])']*2 + ['0','10.2','100E-9','160000','.95','1000','1','Int32Array([-2746,-889,4100,0,-1692,-1157,-206,426])','1','1','1','0']))
     parts = MARTE_GENERIC.MARTE_GENERIC.parts + [
         {'path':'.PARAMS', 'type':'structure'},
         {'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(params)},
