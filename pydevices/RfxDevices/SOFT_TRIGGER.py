@@ -30,15 +30,10 @@ RfxDevices
 @copyright: 2018
 @license: GNU GPL
 """
-from MDSplus import mdsExceptions, Device, Data, Int64, Int64Array, Uint64, Event, Float64
-from MDSplus.mdsExceptions import DevCOMM_ERROR
-from MDSplus.mdsExceptions import DevBAD_PARAMETER
+from MDSplus import Device, Data, Uint64, Event, Float64
+from MDSplus.mdsExceptions import DevCOMM_ERROR, DevBAD_PARAMETER
 from threading import Thread
-from ctypes import CDLL, c_int, byref, c_byte, c_ulonglong, c_ubyte, c_char_p
-from time import sleep
-import sys
-import numpy as np
-import select
+from ctypes import CDLL, byref, c_ulonglong, c_char_p
 import os
 
 class SOFT_TRIGGER(Device):
@@ -47,7 +42,7 @@ class SOFT_TRIGGER(Device):
         {'path':':REL_START', 'type':'numeric', 'value': -5},
         {'path':':ABS_START', 'type':'numeric', 'value': 0},
         {'path':':SYNC_DEVICE', 'type':'TEXT', 'value': 'DEFAULT'},
-	{'path':':ADVANCE_TIME', 'type':'numeric', 'value': 0}]
+    {'path':':ADVANCE_TIME', 'type':'numeric', 'value': 0}]
     for chanIdx in range(16):
         parts.append({'path':'.CHANNEL_'+str(chanIdx+1), 'type':'structure'})
         parts.append({'path':'.CHANNEL_'+str(chanIdx+1) +':MODE', 'type':'text', 'value':'DISABLED'})
@@ -101,7 +96,7 @@ class SOFT_TRIGGER(Device):
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
                 raise DevCOMM_ERROR
 
-            retval = SOFT_TRIGGER.tcnLib.tcn_init()
+            retVal = SOFT_TRIGGER.tcnLib.tcn_init()
             if retVal != 0:
                 emsg = 'Cannot initialize TCN'
                 Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
@@ -145,7 +140,6 @@ class SOFT_TRIGGER(Device):
             worker.daemon = True
             worker.configure(self, eventNames, eventTimes, advanceTime)
             worker.start()
-        return 1
 
     def soft_init(self):
         self.debugPrint('=================  SOFT_TRIGGER soft_init ===============')
@@ -170,10 +164,6 @@ class SOFT_TRIGGER(Device):
             emsg = 'Cannot wake TCN'
             Data.execute('DevLogErr($1,$2)', self.getNid(), emsg)
             raise DevCOMM_ERROR
-        return 1
-
-
-
 
     class AsynchEvent(Thread):
 
@@ -200,8 +190,3 @@ class SOFT_TRIGGER(Device):
                     for eventName in self.eventDict[self.evTimes[evIdx]]:
                         print('EVENT ' + eventName + ' AT '+str(self.evTimes[evIdx]))
                         Event.setevent(eventName, Float64(self.evTimes[evIdx]))
-
-
-
-
-
