@@ -228,7 +228,7 @@ class MARTE_GENERIC(Device):
     def seq_store_start(self):
       self.post_req()
       sleep(3)
-      self.store(ag)
+      self.store()
       return
 
     def seq_store_stop(self):
