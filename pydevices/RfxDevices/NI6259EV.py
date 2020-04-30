@@ -23,14 +23,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float64Array, Float32Array
-from MDSplus.mdsExceptions import DevCOMM_ERROR
+from MDSplus import mdsExceptions, Device, Data, Float32
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_double
 import os
 import time
-import sys, traceback
 
 class NI6259EV(Device):
     """NI PXI-6259 M-series multi functional data acquisition card"""
@@ -308,7 +306,7 @@ class NI6259EV(Device):
                 coeff[0] = coeff[2] = coeff[3] = 0
                 coeff[1] = c_float( gainValue / 65536. )
                 print('SCRIVO CALIBRAZIONE', coeff)
-                getattr(self.device, 'channel_%d_calib'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
+                getattr(self.device, 'channel_%d_calib'%(self.chanMap[chan]+1)).putData(Float32(coeff))
                 print('SCRITTO')
 
 
@@ -450,7 +448,7 @@ class NI6259EV(Device):
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
             except Exception as e:
-                self.debugPrint (estr(e))
+                self.debugPrint (str(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 raise DevBAD_PARAMETER
             if(enabled):
