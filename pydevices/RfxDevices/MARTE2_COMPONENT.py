@@ -25,6 +25,8 @@
 
 from MDSplus import Device, Data, TreeNode, Range, TreePath
 import numpy as np
+
+
 class MARTE2_COMPONENT(Device):
     """MARTE2 components superclass"""
     MODE_GAM = 1
@@ -143,7 +145,7 @@ class MARTE2_COMPONENT(Device):
 
       if mode != MARTE2_COMPONENT.MODE_OUTPUT:
           cls.buildOutputs(parts)
-  
+
 # add timebase division, valid only if the timebase refers to a MASRTE2 device belonging to a different thread
       parts.append({'path':':TIMEBASE_DIV', 'type': 'numeric'})
 
@@ -162,7 +164,7 @@ class MARTE2_COMPONENT(Device):
       for char in valStr:
         if char == '[' or char == ']':
           currValStr += ' '+char+' '
-        else: 
+        else:
           currValStr += char
       tokens = currValStr.split()
       if len(tokens) <= 1:
@@ -212,7 +214,7 @@ class MARTE2_COMPONENT(Device):
           paramDicts.append({'name': name, 'value': value, 'is_text':True})
         else:
           paramDicts.append({'name': name, 'value': value, 'is_text':False})
- 
+
       text = self.reportParameters(paramDicts, text, 2)
       return text
 
@@ -222,7 +224,7 @@ class MARTE2_COMPONENT(Device):
       for paramDict in paramDicts:
         currName = paramDict['name']
         names = currName.split('.')
-        if len(names) == 1: #resolve current level of parameters       
+        if len(names) == 1: #resolve current level of parameters
           for tab in range(nTabs):
             outText += '    '
           if paramDict['is_text']:
@@ -237,7 +239,7 @@ class MARTE2_COMPONENT(Device):
       for key in rootParDict.keys():
         for tab in range(nTabs):
           outText += '   '
-        outText += key+' = {\n' 
+        outText += key+' = {\n'
         outText = self.reportParameters(rootParDict[key], outText, nTabs + 1)
         for tab in range(nTabs):
           outText += '   '
@@ -328,7 +330,7 @@ class MARTE2_COMPONENT(Device):
       except:
         outputTrigger = None
 
-      if mode != MARTE2_COMPONENT.MODE_OUTPUT:      
+      if mode != MARTE2_COMPONENT.MODE_OUTPUT:
         outTimeNid = self.outputs_out_time;
         outTimeIdx = self.outputs_time_idx.data()
         preTrigger = self.outputs_pre_trigger.data()
@@ -336,13 +338,13 @@ class MARTE2_COMPONENT(Device):
         cpuMask = self.outputs_cpu_mask.data()
 
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
-          'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts, 
-          'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger, 
+          'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts,
+          'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger,
           'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask}
       else:
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
           'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts}
-  
+
 
 
     def onSameThread(self, threadMap, node):
@@ -525,7 +527,7 @@ class MARTE2_COMPONENT(Device):
           gamText += '        DataSource = '+gamName+'_Timer_DDB\n'
           gamText += '        Type = uint32\n'
           gamText += '        NumberOfElements = 1\n'
- #         gamText += '        Frequency = '+str(round(1./period,4))+'\n' 
+ #         gamText += '        Frequency = '+str(round(1./period,4))+'\n'
           gamText += '      }\n'
           gamText += '    }\n'
           gamText += '    OutputSignals = {\n'
@@ -563,7 +565,7 @@ class MARTE2_COMPONENT(Device):
             timerDDB = origName+'_Output_Synch'
             try:
               outPeriod = timebase.getDescAt(2).data() #Get period from driving synchronizing device
-            except: 
+            except:
               outPeriod = 0
         else:
           if self.onSameThread(threadMap, prevTimebase.getParent()):
@@ -572,9 +574,9 @@ class MARTE2_COMPONENT(Device):
             timerDDB = origName+'_Timer_Synch'
             try:
               outPeriod = timebase.getDescAt(2).data() #Get period from driving synchronizing device
-            except: 
+            except:
               outPeriod = 0
- 
+
       else:
         print('ERROR: Invalid timebase definition')
         return 0
@@ -592,7 +594,6 @@ class MARTE2_COMPONENT(Device):
 
 #input Signals
       gamText += '    InputSignals = {\n'
-      treeInputs = False
       nonGamInputNodes = []
       for inputDict in inputDicts:
         if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent() == self: #This is a Time field referring to this timebase
@@ -611,9 +612,9 @@ class MARTE2_COMPONENT(Device):
               sourceGamName = self.convertPath(sourceNode.getFullPath())
               if 'name' in inputDict:
                   signalGamName = inputDict['name']
-                  aliasName = inputDict['value'].getParent().getNode(':name').data() 
+                  aliasName = inputDict['value'].getParent().getNode(':name').data()
               else:
-                  signalGamName = inputDict['value'].getParent().getNode(':name').data() 
+                  signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
             isTreeRef = True
           if isTreeRef:
@@ -638,7 +639,7 @@ class MARTE2_COMPONENT(Device):
                 gamText += '        Samples = '+str(syncDiv)+'\n'
                 forceUsingSamples = True
               except:
-                pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined 
+                pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
 
             else:
               gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
@@ -726,7 +727,7 @@ class MARTE2_COMPONENT(Device):
           currTimebase = currTimebase.data()
           period = currTimebase[1] - currTimebase[0]
 
-             
+
         try:
           syncDiv = self.timebase_div.data()
           period = period * syncDiv
@@ -748,7 +749,7 @@ class MARTE2_COMPONENT(Device):
         if outputTrigger != None:
           dataSourceText += '        TimeSignal = 1\n'
         dataSourceText += '      }\n'
-         
+
         for outputDict in outputDicts:
           if outputDict['seg_len'] > 0:
             dataSourceText += '      '+outputDict['name']+' = {\n'
@@ -763,13 +764,13 @@ class MARTE2_COMPONENT(Device):
 
         gamList.append(gamName+'_TreeOutIOGAM')
         gamText ='  +'+gamName+'_TreeOutIOGAM = {\n'
-        if outputTrigger != None: #If using output trigger, the trigger must be converted to uint8       
+        if outputTrigger != None: #If using output trigger, the trigger must be converted to uint8
           gamText += '    Class = ConversionGAM\n'
         else:
           gamText += '    Class = IOGAM\n'
- 
+
         gamText += '    InputSignals = {\n'
- 
+
 #MdsWriter Trigger management
         if outputTrigger != None:
           physicalTrigger = True
@@ -790,7 +791,7 @@ class MARTE2_COMPONENT(Device):
                   syncDiv = self.timebase_div.data()
                   gamText += '        Samples = '+str(syncDiv)+'\n'
                 except:
-                  pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined 
+                  pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
 
               else:
                 gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
@@ -827,7 +828,7 @@ class MARTE2_COMPONENT(Device):
           gamText += '      DataSource = '+gamName+'_TreeOutput\n'
           gamText += '      type = uint8\n'
           gamText += '    }\n'
-#Time signal 
+#Time signal
         gamText += '      Time = {\n'
         gamText += '        DataSource = '+gamName+'_TreeOutput\n'
         gamText += '        Type = uint32\n'
@@ -1031,7 +1032,7 @@ class MARTE2_COMPONENT(Device):
           currTimebase = currTimebase.data()
           outPeriod = currTimebase[1] - currTimebase[0]
 #endif isSynch
- 
+
 
 
 
@@ -1068,7 +1069,7 @@ class MARTE2_COMPONENT(Device):
       dataSources.append(dataSourceText)
 
 #MDSWriter management
-      nonGamInputNodes = []      
+      nonGamInputNodes = []
       if configDict['storeSignals']:
         dataSourceText = '  +'+dataSourceName+'_TreeOutput = {\n'
         dataSourceText += '    Class = MDSWriter\n'
@@ -1098,7 +1099,7 @@ class MARTE2_COMPONENT(Device):
         else:
           currTimebase = currTimebase.data()
           period = currTimebase[1] - currTimebase[0]
- 
+
 
 
 
@@ -1131,7 +1132,7 @@ class MARTE2_COMPONENT(Device):
 #Keep track of index of time signal for synchronizing input devices
             if isSynch and outIdx == configDict['outTimeIdx'] and outputTrigger != None:
               dataSourceText += '        TimeSignal = 1\n'
-   
+
             dataSourceText += '      }\n'
           outIdx = outIdx + 1
         dataSourceText += '    }\n'
@@ -1149,7 +1150,7 @@ class MARTE2_COMPONENT(Device):
       gamText += '    Class = IOGAM\n'
       gamText += '    InputSignals = {\n'
 
- 
+
       firstOut = True
       for outputDict in outputDicts:
         gamText += '      '+outputDict['name'] + ' = {\n'
@@ -1167,7 +1168,7 @@ class MARTE2_COMPONENT(Device):
         gamText += '      }\n'
       gamText += '    }\n'
       gamText += '    OutputSignals = {\n'
- 
+
       synchThreadSignals = []
       asynchThreadSignals = []
       for outputDict in outputDicts:
@@ -1217,14 +1218,14 @@ class MARTE2_COMPONENT(Device):
               gamText += '      '+triggerSigName+' = {\n'
               if self.onSameThread(threadMap, triggerNode):
                 gamText += '        DataSource = '+triggerGamName+'_Output_DDB\n'
-              elif self.sameSynchSource(sourceNode):
+              elif False: # self.sameSynchSource(sourceNode):  # FIXME: sourceNode undefined
                 gamText += '        DataSource = '+triggerGamName+'_Output_Synch\n'
 
                 try:
                   syncDiv = self.timebase_div.data()
                   gamText += '        Samples = '+str(syncDiv)+'\n'
                 except:
-                  pass #Consider ealTimeSynchronization downsampling only if timebase_div is defined 
+                  pass #Consider ealTimeSynchronization downsampling only if timebase_div is defined
 
               else:
                 gamText += '        DataSource = '+triggerGamName+'_Output_Asynch\n'
@@ -1269,7 +1270,7 @@ class MARTE2_COMPONENT(Device):
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+dataSourceName+'_TreeOutput'
           gamText += '    }\n'
- 
+
         for outputDict in outputDicts:
           if outputDict['seg_len'] > 0:
             gamText += '      '+outputDict['name'] + ' = {\n'
@@ -1288,7 +1289,7 @@ class MARTE2_COMPONENT(Device):
             gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
             gamText += '      }\n'
 
- 
+
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
@@ -1402,7 +1403,7 @@ class MARTE2_COMPONENT(Device):
       timebase = configDict['timebase']
       paramDicts = configDict['paramDicts']
       inputDicts = configDict['inputDicts']
-      outputDicts = configDict['outputDicts']
+      outputDicts = configDict['outputDicts']  #  TODO: unused
       outPeriod = 0  #If different from 0, this means that the corresponing component is driving the thread timing
 
 
@@ -1482,7 +1483,7 @@ class MARTE2_COMPONENT(Device):
             timerDDB = origName+'_Output_Synch'
             try:
               outPeriod = timebase.getDescAt(2).data() #Get period from driving synchronizing device
-            except: 
+            except:
               outPeriod = 0
         else:
           if self.onSameThread(threadMap, prevTimebase.getParent()):
@@ -1491,7 +1492,7 @@ class MARTE2_COMPONENT(Device):
             timerDDB = origName+'_Timer_Synch'
             try:
               outPeriod = timebase.getDescAt(2).data() #Get period from driving synchronizing device
-            except: 
+            except:
               outPeriod = 0
       else:
         print('ERROR: Invalid timebase definition')
@@ -1504,10 +1505,9 @@ class MARTE2_COMPONENT(Device):
 
 #input Signals
       gamText += '    InputSignals = {\n'
-      treeInputs = False
       nonGamInputNodes = []
       signalNames = []
-      signalSamples = []  #to record the same number of samples for the output IOGAM fields   
+      signalSamples = []  #to record the same number of samples for the output IOGAM fields
 
 
       for inputDict in inputDicts:
@@ -1533,7 +1533,7 @@ class MARTE2_COMPONENT(Device):
               gamText += '        DataSource = '+dataSourceName+'_TreeInput\n'
               if 'type' in inputDict:
                 gamText += '        Type = '+inputDict['type']+'\n'
-          else: 
+          else:
 
             forceUsingSamples = False  #Used to force the use of Samples instead of dimensions in case of SYnch datasource
 
@@ -1552,7 +1552,7 @@ class MARTE2_COMPONENT(Device):
                 forceUsingSamples = True
               except:
                 signalSamples.append(1)
-                pass #Consider ealTimeSynchronization downsampling only if timebase_div is defined 
+                pass #Consider ealTimeSynchronization downsampling only if timebase_div is defined
 
             else:
               gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
@@ -1584,11 +1584,11 @@ class MARTE2_COMPONENT(Device):
         gamText += '      '+signalNames[idx]+' = {\n'
         if signalSamples[idx] > 1:
           gamText += '        Samples = '+str(signalSamples[idx])+'\n'
- 
+
         idx = idx+1
         gamText += '        DataSource = '+dataSourceName+'\n'
         gamText += '        Type = '+outputDict['type']+'\n'
- 
+
         if outputDict['dimensions'] == 0:
           numberOfElements = 1
           numberOfDimensions = 0
@@ -1713,7 +1713,7 @@ class MARTE2_COMPONENT(Device):
       try:
         chanNid = valNid.getData()
         if not(isinstance(chanNid, TreeNode) or isinstance(chanNid, TreePath)):  #Link to other component up in the chain
-          return None 
+          return None
         if isinstance(chanNid, TreePath):
             chanNid = TreeNode(chanNid, self.getTree())
         chanNid = chanNid.getParent()
@@ -1736,7 +1736,7 @@ class MARTE2_COMPONENT(Device):
         return None
       return retInfo
 
- 
+
 
 #Prpeparatory work before reading MARTe2 information. To be overridden by subclasses/
     def prepareMarteInfo(self):
@@ -1747,7 +1747,7 @@ class MARTE2_COMPONENT(Device):
     def checkTimebase(self, threadMap):
       mode = self.mode.getData()
       if mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
-        return TIMEBASE_GENERATOR  
+        return MARTE2_COMPONENT.TIMEBASE_GENERATOR
 
       timebase = self.timebase.getData() #Will always succeed since it is called AFTER checkGeneric
       if isinstance(timebase, Range):
@@ -1761,7 +1761,7 @@ class MARTE2_COMPONENT(Device):
         else:
           prevTimebase = TreeNode(timebase, self.getTree())
           timebase = prevTimebase.getData()
- 
+
       if self.onSameThread(threadMap, prevTimebase.getParent()):
         return MARTE2_COMPONENT.TIMEBASE_FROM_SAME_THREAD
       else:
@@ -1799,8 +1799,8 @@ class MARTE2_COMPONENT(Device):
             return 'Invalid timebase reference: '+ prevTimebase().getNodeName()
         except:
           return 'Invalid timebase reference'
-#Check Inputs        
-            
+#Check Inputs
+
       configDict = self.getGamInfo()
       inputDicts = configDict['inputDicts']
       inputIdx = 0
@@ -1816,6 +1816,7 @@ class MARTE2_COMPONENT(Device):
           if sourceNode.getUsage() != 'DEVICE':
             isTreeRef = True
           else:
+              # FIXME: all three vars unused
             gamClass = sourceNode.getNode('GAM_CLASS') #Make sure it is a MARTe2 device
             sourceGamName = self.convertPath(sourceNode.getFullPath())
             signalGamName = inputDict['value'].getParent().getNode(':name').data()
@@ -1823,7 +1824,7 @@ class MARTE2_COMPONENT(Device):
           isTreeRef = True
         if isTreeRef:
           continue    #We cannot say anything if it is a reference to a a node that is not the output of a MARTe2 device
-      
+
         if inputDict['value'].getParent().getParent().getNodeName() != 'OUTPUTS':
           return 'Input '+str(inputIdx)+' is not the output field of a MARTe2 device'
         inType = inputDict['value'].getParent().getNode(':TYPE').getData()
@@ -1847,7 +1848,7 @@ class MARTE2_COMPONENT(Device):
           if inDimensions != inputDict['dimensions']:
             return 'Dimension mismatch for input '+str(inputIdx)+': expected '+str(inputDict['dimensions'])+'  found '+str(inDimensions)
 
-      
+
       return ''
 
 #Specific consistency check to be implemented by MARTE2_COMPONENT subclasses
