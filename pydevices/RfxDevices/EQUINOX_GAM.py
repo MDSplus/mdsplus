@@ -31,7 +31,7 @@ class EQUINOX_GAM(MC.MARTE2_COMPONENT):
     inputs = [
         {'name': 'ip', 'type': 'float64', 'dimensions': 0, 'parameters':[]},
         {'name': 'btvac0', 'type': 'float64', 'dimensions': 0, 'parameters':[]},
-	    {'name': 'psi', 'type': 'float64', 'dimensions': [216], 'parameters':[]},
+        {'name': 'psi', 'type': 'float64', 'dimensions': [216], 'parameters':[]},
         {'name': 'br', 'type': 'float64', 'dimensions': [216], 'parameters':[]},
         {'name': 'bz', 'type': 'float64', 'dimensions': [216], 'parameters':[]},
         {'name': 'neint_fir', 'type': 'float64', 'dimensions': [8], 'parameters':[]},

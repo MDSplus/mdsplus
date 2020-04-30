@@ -30,44 +30,50 @@ from time import sleep
 
 class CAENDT5724(Device):
     """CAEN DT5724 4 Channels 14 Bit 100MS/S Digitizer"""
-    parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
-      {'path':':COMMENT', 'type':'text'},
-      {'path':':TRIG_MODE', 'type':'text', 'value':'OVER THRESHOLD'},
-      {'path':':TRIG_SOFT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_EXT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_SOURCE', 'type':'numeric'},
-      {'path':':CLOCK_MODE', 'type':'text', 'value':'250 MHz'},
-      {'path':':CLOCK_SOURCE', 'type':'numeric'},
-      {'path':':NUM_SEGMENTS', 'type':'numeric','value':1024},
-      {'path':':USE_TIME', 'type':'text', 'value':'YES'},
-      {'path':':PTS', 'type':'numeric','value':1024},
-      {'path':':START_IDX', 'type':'numeric','value':0},
-      {'path':':END_IDX', 'type':'numeric','value':1024},
-      {'path':':START_TIME', 'type':'numeric','value':0},
-      {'path':':END_TIME', 'type':'numeric','value':1E-6},
-      {'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT RECORDER'},
-      {'path':':IRQ_EVENTS', 'type':'numeric','value':0}]
+    parts = [
+        {'path':':BOARD_ID', 'type':'numeric', 'value':0},
+        {'path':':COMMENT', 'type':'text'},
+        {'path':':TRIG_MODE', 'type':'text', 'value':'OVER THRESHOLD'},
+        {'path':':TRIG_SOFT', 'type':'text', 'value':'ENABLED'},
+        {'path':':TRIG_EXT', 'type':'text', 'value':'ENABLED'},
+        {'path':':TRIG_SOURCE', 'type':'numeric'},
+        {'path':':CLOCK_MODE', 'type':'text', 'value':'250 MHz'},
+        {'path':':CLOCK_SOURCE', 'type':'numeric'},
+        {'path':':NUM_SEGMENTS', 'type':'numeric','value':1024},
+        {'path':':USE_TIME', 'type':'text', 'value':'YES'},
+        {'path':':PTS', 'type':'numeric','value':1024},
+        {'path':':START_IDX', 'type':'numeric','value':0},
+        {'path':':END_IDX', 'type':'numeric','value':1024},
+        {'path':':START_TIME', 'type':'numeric','value':0},
+        {'path':':END_TIME', 'type':'numeric','value':1E-6},
+        {'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT RECORDER'},
+        {'path':':IRQ_EVENTS', 'type':'numeric','value':0},
+    ]
     for i in range(0,4):
-        parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
-        parts.append({'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'})
-        parts.append({'path':'.CHANNEL_%d:TRIG_STATE'%(i+1), 'type':'text', 'value':'DISABLED'})
-        parts.append({'path':'.CHANNEL_%d:OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DAC_OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_LEVEL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_SAMPL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'})
-        parts.append({'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'})
-    del i
-    parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':START_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'start_store',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-	  'options':('no_write_shot',)})
-    parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
+        parts.extend([
+            {'path':'.CHANNEL_%d'%(i+1), 'type':'structure'},
+            {'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'},
+            {'path':'.CHANNEL_%d:TRIG_STATE'%(i+1), 'type':'text', 'value':'DISABLED'},
+            {'path':'.CHANNEL_%d:OFFSET'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:DAC_OFFSET'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:THRESH_LEVEL'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:THRESH_SAMPL'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'},
+            {'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'},
+        ])
+    del(i)
+    parts.extend([
+        {'path':':INIT_ACTION','type':'action',
+      'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'init',head))",
+      'options':('no_write_shot',)},
+        {'path':':START_ACTION','type':'action',
+      'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'start_store',head))",
+      'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
+      'valueExpr':"Action(Dispatch('PXI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
+      'options':('no_write_shot',)},
+        {'path':':NUM_CHANNELS', 'type':'numeric','value':0},
+    ])
 
     cvV1718 = 0                    # CAEN V1718 USB-VME bridge
     cvV2718 = 1                    # V2718 PCI-VME bridge with optical link
@@ -75,7 +81,7 @@ class CAENDT5724(Device):
     cvA2719 = 3                    # Optical link piggy-back
     cvA32_S_DATA = 0x0D             # A32 supervisory data access
 
-    cvD32 = 0x04		    # D32
+    cvD32 = 0x04            # D32
     cvD64 = 0x08
 
     MEM_512kS = 524288
@@ -121,7 +127,7 @@ class CAENDT5724(Device):
       cvA2818 = 2                    # PCI board with optical link
       cvA2719 = 3                    # Optical link piggy-back
       cvA32_S_DATA = 0x0D             # A32 supervisory data access
-      cvD32 = 0x04		      # D32
+      cvD32 = 0x04              # D32
       cvD64 = 0x08
 
 
@@ -206,7 +212,7 @@ class CAENDT5724(Device):
           self.cv.release()
           #print 'CONDITION ISSUED'
 
-	  # Read number of buffers
+      # Read number of buffers
           actSegments = c_int(0)
           status = CAENDT5724.caenLib.CAENVME_ReadCycle(self.handle, c_int(vmeAddress + 0x812C), byref(actSegments), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
           if status != 0:
@@ -437,7 +443,7 @@ class CAENDT5724(Device):
         """
         dac_offset = getattr(self, 'channel_%d_dac_offset'%(chan+1)).data()
 
-	#Channel offset compensation
+    #Channel offset compensation
         try:
           offset = getattr(self, 'channel_%d_offset'%(chan+1)).data()
         except:
@@ -538,7 +544,7 @@ class CAENDT5724(Device):
       useTime=self.use_time.data()
       if useTime == 'YES':
         try:
-	  #Start and End Index acquisition burst calculation is prfomend with trigger time set to 0
+      #Start and End Index acquisition burst calculation is prfomend with trigger time set to 0
           trigSource = 0.
           startTime = self.start_time.data()
           endTime = self.end_time.data()
@@ -750,11 +756,11 @@ class CAENDT5724(Device):
              trigSource = self.trig_source.data()
              t0 = trigSource[0]
              sleep(t0)
-	     print "SW Trigger ", trigSource[0]
+         print("SW Trigger " + trigSource[0])
              status = CAENDT5724.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8108), byref(c_int(0L)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
              if status != 0:
                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error in sofware trigger DT5724 Device'  )
-               rraise mdsExceptions.DevCOMM_ERROR
+               raise mdsExceptions.DevCOMM_ERROR
 
              if len(trigSource) == 1 :
                sleep( 1 )

@@ -569,7 +569,7 @@ class BASLERACA(Device):
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
-      	self.worker.stop()
+          self.worker.stop()
 
 ##########software trigger (start saving in mdsplus)############################################
     def swTrigger(self):

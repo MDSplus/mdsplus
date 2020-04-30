@@ -31,11 +31,11 @@ import traceback
 
 class FLIRSC65X(Device):
     """FLIR655 NEW Camera"""
-    parts=[								#offset nid
-      {'path':':IP_NAME', 'type':'text'},					#1
+    parts=[                                #offset nid
+      {'path':':IP_NAME', 'type':'text'},                    #1
       {'path':':COMMENT', 'type':'text'},
 
-      {'path':'.OBJECT', 'type':'structure'},				#3
+      {'path':'.OBJECT', 'type':'structure'},                #3
       {'path':'.OBJECT:EMISSIVITY', 'type':'numeric', 'value':920E-3},
       {'path':'.OBJECT:DISTANCE', 'type':'numeric', 'value':2},
       {'path':'.OBJECT:REFL_TEMP', 'type':'numeric', 'value':20},
@@ -45,21 +45,21 @@ class FLIRSC65X(Device):
       {'path':'.OBJECT:ATM_HUM', 'type':'numeric', 'value':0.50},
       {'path':'.OBJECT:ATM_TRANS', 'type':'numeric', 'value':99E-2},
 
-      {'path':'.FRAME', 'type':'structure'},				#12
+      {'path':'.FRAME', 'type':'structure'},                #12
       {'path':'.FRAME:X', 'type':'numeric', 'value':0},
       {'path':'.FRAME:Y', 'type':'numeric', 'value':0},
       {'path':'.FRAME:WIDTH', 'type':'numeric', 'value':640},
       {'path':'.FRAME:HEIGHT', 'type':'numeric', 'value':480},
       {'path':'.FRAME:TEMP_UNIT', 'type':'text', 'value':'Radiometric'},
 
-      {'path':'.CAM_SETUP', 'type':'structure'},				#18
+      {'path':'.CAM_SETUP', 'type':'structure'},                #18
       {'path':'.CAM_SETUP:FOCAL_LENGTH', 'type':'text', 'value':'25'},
       {'path':'.CAM_SETUP:MEAS_RANGE', 'type':'text', 'value':'100...650'},
       {'path':'.CAM_SETUP:FOCUS_POS', 'type':'numeric', 'value':0},
       {'path':'.CAM_SETUP:CALIB_AUTO', 'type':'text', 'value':'NO'},
       {'path':'.CAM_SETUP:CALIB_TIME', 'type':'numeric', 'value':4},
 
-      {'path':'.TIMING', 'type':'structure'},					#24
+      {'path':'.TIMING', 'type':'structure'},                    #24
       {'path':'.TIMING:TRIG_MODE', 'type':'text', 'value':'INTERNAL'},
       {'path':'.TIMING:TRIG_SOURCE', 'type':'numeric'},
       {'path':'.TIMING:TIME_BASE', 'type':'numeric'},
@@ -67,7 +67,7 @@ class FLIRSC65X(Device):
       {'path':'.TIMING:BURST_DUR', 'type':'numeric', 'value':5},
       {'path':'.TIMING:SKIP_FRAME', 'type':'numeric', 'value':0},
 
-      {'path':'.STREAMING', 'type':'structure'},				#31
+      {'path':'.STREAMING', 'type':'structure'},                #31
       {'path':'.STREAMING:MODE', 'type':'text', 'value':'Stream and Store'},
       {'path':'.STREAMING:SERVER', 'type':'text', 'value':'localhost'},
       {'path':'.STREAMING:PORT', 'type':'numeric', 'value':8888},
@@ -698,7 +698,7 @@ class FLIRSC65X(Device):
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
-      	self.worker.stop()
+          self.worker.stop()
       return 1
 
 

@@ -28,8 +28,8 @@ import socket  #to connect to labview PC
 
 class LINCMOS(Device):
     """LINCMOS NEW"""
-    parts=[								#offset nid
-      {'path':':IP_ADDR', 'type':'text'},					#1
+    parts=[                                #offset nid
+      {'path':':IP_ADDR', 'type':'text'},                    #1
 
       {'path':':COMMENT', 'type':'text'},
       {'path':':INT_TIME', 'type':'numeric', 'value':350E-3},

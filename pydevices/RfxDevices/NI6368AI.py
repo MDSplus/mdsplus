@@ -26,7 +26,6 @@
 from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window
 from MDSplus import Int32, Float32, Float32Array, Float64
 from ctypes import CDLL,Structure,c_int,c_uint,c_char,c_byte,c_ubyte,c_float,byref,c_char_p,c_void_p,c_short,c_ulonglong
-#from ctypes import *
 from threading import Thread
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 import time
@@ -86,22 +85,24 @@ class NI6368AI(Device):
 
 
     class XSERIES_DEV_INFO(Structure):
-        _fields_ = [("product_id", c_uint),
-                    ("device_name", c_char * 20),
-                    ("is_simultaneous", c_ubyte),
-                    ("is_pcie", c_ubyte),
-                    ("adc_number", c_uint),
-                    ("dac_number", c_uint),
-                    ("port0_length", c_uint),
-                    ("max_ai_channels", c_uint),
-                    ("serial_number", c_uint),
-                    ("aichan_size", c_uint),
-                    ("aochan_size", c_uint),
-                    ("ext_cal_time", c_float),
-                    ("ext_cal_temp", c_ulonglong),
-                    ("self_cal_time", c_float),
-                    ("self_cal_temp", c_ulonglong),
-                    ("geographical_addr", c_uint)]
+        _fields_ = [
+            ("product_id", c_uint),
+            ("device_name", c_char * 20),
+            ("is_simultaneous", c_ubyte),
+            ("is_pcie", c_ubyte),
+            ("adc_number", c_uint),
+            ("dac_number", c_uint),
+            ("port0_length", c_uint),
+            ("max_ai_channels", c_uint),
+            ("serial_number", c_uint),
+            ("aichan_size", c_uint),
+            ("aochan_size", c_uint),
+            ("ext_cal_time", c_float),
+            ("ext_cal_temp", c_ulonglong),
+            ("self_cal_time", c_float),
+            ("self_cal_temp", c_ulonglong),
+            ("geographical_addr", c_uint),
+        ]
 
 
 
@@ -598,7 +599,7 @@ class NI6368AI(Device):
                     startIdx = Data.execute('x_to_i($1, $2)', Dimension(Window(0, None, trigTime), clockSource), startTime + trigTime)
                 else:
                     startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, None, trigTime + startTime), clockSource), trigTime)
-		`"""
+        `"""
 
                 self.debugPrint('PXI 6368 startIdx = ', Int32(int(startIdx)))
                 self.start_idx.putData(Int32(int(startIdx)))

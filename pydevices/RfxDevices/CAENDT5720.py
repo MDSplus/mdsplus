@@ -78,7 +78,7 @@ class CAENDT5720(Device):
     cvA2818 = 2          # PCI board with optical link
     cvA2719 = 3          # Optical link piggy-back
     cvA32_S_DATA = 0x0D  # A32 supervisory data access
-    cvD32 = 0x04		  # D32
+    cvD32 = 0x04          # D32
     cvD64 = 0x08
     IRQw = 0
     cv = 0
@@ -119,7 +119,7 @@ class CAENDT5720(Device):
       cvA2818 = 2          # PCI board with optical link
       cvA2719 = 3          # Optical link piggy-back
       cvA32_S_DATA = 0x0D  # A32 supervisory data access
-      cvD32 = 0x04	    # D32
+      cvD32 = 0x04        # D32
       cvD64 = 0x08
 
       def configure(self, handle, startIdx, endIdx, pts, actChans, nActChans, dt, trigTime, segmentSamples, segmentSize, chanMask, nid, device, cv, readCv, useCounter, irqEvents):
@@ -512,21 +512,15 @@ class CAENDT5720(Device):
           startIdx = -Data.execute('x_to_i($1,$2)', Dimension(Window(0, segmentSize, trigSource + startTime), clockSource), trigSource)
         self.start_idx.putData(Int32(startIdx + 0.5))
 #Internal/External clock
-#      print 'startIdx: ', startIdx
-#      print 'endIdx: ', endIdx
-#      print 'SEGMENT SIZE: ', segmentSize, pts
-#      print 'PTS: ', pts
+
       currStartIdx = segmentSize - pts + startIdx.data()
-#      print 'currStartIdx: ', currStartIdx
+
       if currStartIdx < 0:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/pre-trigger samples')
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
       currEndIdx = segmentSize - pts + endIdx.data()
-#      print 'segmentSize: ', segmentSize
-#      print 'PTS: ', pts
-#      print 'endIdx: ', endIdx
-#      print 'currEndIdx: ', currEndIdx
+
       if currEndIdx >= segmentSize:
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid segment size/post-trigger samples')
           raise mdsExceptions.TclFAILED_ESSENTIAL
