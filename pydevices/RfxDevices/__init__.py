@@ -52,10 +52,6 @@ try:
 except:
     __version__='Unknown'
 
-def _mimport(filename,name=None,local=locals()):
-    from MDSplus import Device
-    Device._mimport(local,globals(),filename,name)
-
 _mimport('ACQIPPSETUP')
 _mimport('CAENDT5720')
 _mimport('CAENDT5724')
@@ -107,12 +103,9 @@ _mimport('MARTE2_EXPR')
 _mimport('MARTE2_PYTHON')
 _mimport('MARTE2_PYTHON_PID')
 _mimport('MARTE2_SIMULINK')
-_mimport('MARTE2_RTSM')
-_mimport('MARTE2_SIMULINK_EQUILIBRIO')
 _mimport('MARTE2_SIMULINK_TANK')
 _mimport('MARTE2_STREAM_IN')
 _mimport('EQUINOX_GAM')
-_mimport('PROVA_GAM')
 _mimport('MILL3')
 _mimport('NI6259AI')
 _mimport('NI6259EV')
@@ -128,13 +121,11 @@ _mimport('SIS3820')
 _mimport('SPIDER')
 _mimport('SPIDER_SM')
 _mimport('ZELOS2150GV')
-_mimport('SPIDER_TIMING')
 _mimport('SPIDER_SETUP')
 _mimport('PV_WAVE_SETUP')
 _mimport('CRIO_FAU')
 _mimport('PI_CAM')
 _mimport('RFX_RPADC')
-_mimport('RFX_RPADC_F')
 _mimport('LINCMOS')
 _mimport('PLFE')
 _mimport('DEMOADC')
