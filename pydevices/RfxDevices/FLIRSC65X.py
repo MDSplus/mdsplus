@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -153,7 +153,7 @@ class FLIRSC65X(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 ###restore info###   (returned value 0:error 1:camera opened 2:camera was already opened)
-    def restoreInfo(self):     
+    def restoreInfo(self):
       print("restore Info")
       try:
         if FLIRSC65X.flirLib is None:
@@ -207,8 +207,8 @@ class FLIRSC65X(Device):
 
 ###remove info###
     def removeInfo(self):
-      try:  
-        status = FLIRSC65X.flirLib.flirClose(self.handle)  #close camera 
+      try:
+        status = FLIRSC65X.flirLib.flirClose(self.handle)  #close camera
         if status < 0:
             FLIRSC65X.flirLib.getLastError(self.handle, self.error)
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot close camera : ' + self.error.raw )
@@ -446,7 +446,7 @@ class FLIRSC65X(Device):
 
 ###Read and save current Focus Position
       try:
-        focusPosRes = self.readFocusPos()
+        focusPosRes = self.readFocusPos()  # TODO: unused
       except:
         Data.execute('DevLogErr($1,$2)', self.nid, 'Error reading focus position')
         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -470,7 +470,7 @@ class FLIRSC65X(Device):
           storeEnabled = c_int(1)
 
 
-      if 1:    #streamingEnabled   (FM: setStreamingMode use this flag) 
+      if 1:    #streamingEnabled   (FM: setStreamingMode use this flag)
           try:
              if self.streaming_autoscale.data() == 'YES' :
                   autoAdjustLimit = c_int(1)
@@ -540,7 +540,7 @@ class FLIRSC65X(Device):
           #FM: recover device name and pass it to setStreaming to overlay text on frame!!!
           deviceName = str(self).rsplit(":",1)
           deviceName = deviceName[1]
-          print("Device Name ", deviceName)        
+          print("Device Name ", deviceName)
 
       status = FLIRSC65X.flirLib.setStreamingMode(self.handle, frameTempUnitCode, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, c_char_p(deviceName));
       if status < 0:
@@ -597,9 +597,9 @@ class FLIRSC65X(Device):
 
 ####################MANUAL CALIBRATION ACTION
     def calib(self):
-      restoreRes=self.restoreInfo()  
+      restoreRes=self.restoreInfo()
       if restoreRes == 0:
-          raise mdsExceptions.TclFAILED_ESSENTIAL  
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       status = FLIRSC65X.flirLib.executeAutoCalib(self.handle)
       if status < 0:
@@ -615,9 +615,9 @@ class FLIRSC65X(Device):
 
 ####################MANUAL AUTOFOCUS ACTION
     def autofocus(self):
-      restoreRes=self.restoreInfo()  
+      restoreRes=self.restoreInfo()
       if restoreRes == 0:
-          raise mdsExceptions.TclFAILED_ESSENTIAL  
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       status = FLIRSC65X.flirLib.executeAutoFocus(self.handle)
       if status < 0:
@@ -633,9 +633,9 @@ class FLIRSC65X(Device):
 
 ####################READ FOCUS POSITION
     def readFocusPos(self):
-      restoreRes=self.restoreInfo() 
+      restoreRes=self.restoreInfo()
       if restoreRes == 0:
-          raise mdsExceptions.TclFAILED_ESSENTIAL    
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       focPos=c_int(0)
       status = FLIRSC65X.flirLib.getFocusAbsPosition(self.handle, byref(focPos))
@@ -645,7 +645,7 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Read Focus Position : '+ self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
-      self.cam_setup_focus_pos.putData(focPos.value)  #save focus position in MDS 
+      self.cam_setup_focus_pos.putData(focPos.value)  #save focus position in MDS
 
       if restoreRes == 1:    #camera must be closed because has been opened only for this action
         self.removeInfo()
@@ -655,9 +655,9 @@ class FLIRSC65X(Device):
 
 ####################WRITE FOCUS POSITION
     def writeFocusPos(self):
-      restoreRes=self.restoreInfo()  
+      restoreRes=self.restoreInfo()
       if restoreRes == 0:
-          raise mdsExceptions.TclFAILED_ESSENTIAL    
+          raise mdsExceptions.TclFAILED_ESSENTIAL
 
       status = FLIRSC65X.flirLib.setFocusAbsPosition(self.handle, c_int(self.cam_setup_focus_pos.data()))
       if status < 0:

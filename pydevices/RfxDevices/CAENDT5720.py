@@ -24,7 +24,7 @@
 #
 
 from MDSplus import mdsExceptions, Device, Data, Window, Range, Dimension, TreePath, Signal
-from MDSplus import mdsExceptions, Int32, Float32, Float64, Int16Array, Float64Array
+from MDSplus import Int32, Float32, Float64, Int16Array, Float64Array
 from numpy import ndarray
 from threading import Thread, Condition
 from ctypes import CDLL, c_int, c_short, c_long, byref, Structure
@@ -32,41 +32,47 @@ from time import sleep
 
 class CAENDT5720(Device):
     """CAEN DT5720 4 Channels 12 Bit 250MS/S Digitizer"""
-    parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
-      {'path':':COMMENT', 'type':'text'},
-      {'path':':TRIG_MODE', 'type':'text', 'value':'OVER THRESHOLD'},
-      {'path':':TRIG_SOFT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_EXT', 'type':'text', 'value':'ENABLED'},
-      {'path':':TRIG_SOURCE', 'type':'numeric'},
-      {'path':':CLOCK_MODE', 'type':'text', 'value':'250 MHz'},
-      {'path':':CLOCK_SOURCE', 'type':'numeric'},
-      {'path':':NUM_SEGMENTS', 'type':'numeric','value':1024},
-      {'path':':USE_TIME', 'type':'text', 'value':'YES'},
-      {'path':':PTS', 'type':'numeric','value':1024},
-      {'path':':START_IDX', 'type':'numeric','value':0},
-      {'path':':END_IDX', 'type':'numeric','value':1024},
-      {'path':':START_TIME', 'type':'numeric','value':0},
-      {'path':':END_TIME', 'type':'numeric','value':1E-6},
-      {'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT RECORDER'},
-      {'path':':IRQ_EVENTS', 'type':'numeric','value':0}]
+    parts=[
+        {'path':':BOARD_ID', 'type':'numeric', 'value':0},
+        {'path':':COMMENT', 'type':'text'},
+        {'path':':TRIG_MODE', 'type':'text', 'value':'OVER THRESHOLD'},
+        {'path':':TRIG_SOFT', 'type':'text', 'value':'ENABLED'},
+        {'path':':TRIG_EXT', 'type':'text', 'value':'ENABLED'},
+        {'path':':TRIG_SOURCE', 'type':'numeric'},
+        {'path':':CLOCK_MODE', 'type':'text', 'value':'250 MHz'},
+        {'path':':CLOCK_SOURCE', 'type':'numeric'},
+        {'path':':NUM_SEGMENTS', 'type':'numeric','value':1024},
+        {'path':':USE_TIME', 'type':'text', 'value':'YES'},
+        {'path':':PTS', 'type':'numeric','value':1024},
+        {'path':':START_IDX', 'type':'numeric','value':0},
+        {'path':':END_IDX', 'type':'numeric','value':1024},
+        {'path':':START_TIME', 'type':'numeric','value':0},
+        {'path':':END_TIME', 'type':'numeric','value':1E-6},
+        {'path':':ACQ_MODE', 'type':'text','value':'TRANSIENT RECORDER'},
+        {'path':':IRQ_EVENTS', 'type':'numeric','value':0},
+    ]
     for i in range(0,4):
-        parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
-        parts.append({'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'})
-        parts.append({'path':'.CHANNEL_%d:TRIG_STATE'%(i+1), 'type':'text', 'value':'DISABLED'})
-        parts.append({'path':'.CHANNEL_%d:OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DAC_OFFSET'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_LEVEL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:THRESH_SAMPL'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'})
-        parts.append({'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'})
+        parts.extend([
+            {'path':'.CHANNEL_%d'%(i+1), 'type':'structure'},
+            {'path':'.CHANNEL_%d:STATE'%(i+1), 'type':'text', 'value':'ENABLED'},
+            {'path':'.CHANNEL_%d:TRIG_STATE'%(i+1), 'type':'text', 'value':'DISABLED'},
+            {'path':'.CHANNEL_%d:OFFSET'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:DAC_OFFSET'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:THRESH_LEVEL'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:THRESH_SAMPL'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal'},
+            {'path':'.CHANNEL_%d:SEG_RAW'%(i+1), 'type':'signal'},
+        ])
     del(i)
-    parts.append({'path':':INIT_ACTION','type':'action',
+    parts.extend([
+        {'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STORE_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':STORE_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'store',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':NUM_CHANNELS', 'type':'numeric','value':0})
+        'options':('no_write_shot',)},
+        {'path':':NUM_CHANNELS', 'type':'numeric','value':0},
+    ])
     cvV1718 = 0          # CAEN V1718 USB-VME bridge
     cvV2718 = 1          # V2718 PCI-VME bridge with optical link
     cvA2818 = 2          # PCI board with optical link
@@ -552,7 +558,6 @@ class CAENDT5720(Device):
         runCommand = runCommand | 0x00000040
       status = CAENDT5720.caenLib.CAENVME_WriteCycle(self.handle, c_int(vmeAddress + 0x8100), byref(c_int(4)), c_int(self.cvA32_S_DATA), c_int(self.cvD32))
       self.saveInfo()
-      return
 
 
 ################################TRIGGER###################################
@@ -566,7 +571,6 @@ class CAENDT5720(Device):
         if status != 0:
           print('Error resetting V1740 Device')
           raise mdsExceptions.TclFAILED_ESSENTIAL
-        return
       except:
         print('Generic SW trigger Error')
         raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -709,7 +713,3 @@ class CAENDT5720(Device):
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot write Signal in tree')
             raise mdsExceptions.TclFAILED_ESSENTIAL
       #endfor chan in range(numChannels)
-      return
-
-
-

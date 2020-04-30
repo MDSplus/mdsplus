@@ -39,38 +39,43 @@ class CAENV1740(Device):
     cvD32 = 0x04                    # D32
     cvD64 = 0x08
     parts =[
-            {'path':':COMMENT',     'type':'text'},
-            {'path':':BOARD_ID',    'type':'numeric',  'value':0},
-            {'path':':VME_ADDRESS', 'type':'numeric'},
-            {'path':':TRIG_MODE',   'type':'text',     'value':'OVER'},
-            {'path':':TRIG_SOFT',   'type':'text',     'value':'ENABLED'},
-            {'path':':TRIG_EXT',    'type':'text',     'value':'ENABLED'},
-            {'path':':TRIG_SOURCE', 'type':'numeric',  'value':0},
-            {'path':':TRIG_INT_TIM','type':'text',     'value':'ENABLED'},
-            {'path':':CLOCK_MODE',  'type':'text',     'value':'62.5 MHz'},
-            {'path':':CLOCK_DIV',   'type':'numeric',  'value':0},
-            {'path':':CLOCK_SOURCE','type':'numeric'},
-            {'path':':NUM_SEGMENTS','type':'numeric',  'value':1024},
-            {'path':':USE_TIME',    'type':'text',     'value':'TRUE'},
-            {'path':':PTS', 'type': 'text'},
-            {'path':':START_IDX',   'type':'numeric'},
-            {'path':':END_IDX',     'type':'numeric'},
-            {'path':':START_TIME',  'type':'numeric',  'value':0},
-            {'path':':END_TIME',    'type':'numeric',  'value':1E-6},
-            {'path':':CONT_SAMPL',  'type':'text',     'value':'NO'},
-           ]
+        {'path':':COMMENT',     'type':'text'},
+        {'path':':BOARD_ID',    'type':'numeric',  'value':0},
+        {'path':':VME_ADDRESS', 'type':'numeric'},
+        {'path':':TRIG_MODE',   'type':'text',     'value':'OVER'},
+        {'path':':TRIG_SOFT',   'type':'text',     'value':'ENABLED'},
+        {'path':':TRIG_EXT',    'type':'text',     'value':'ENABLED'},
+        {'path':':TRIG_SOURCE', 'type':'numeric',  'value':0},
+        {'path':':TRIG_INT_TIM','type':'text',     'value':'ENABLED'},
+        {'path':':CLOCK_MODE',  'type':'text',     'value':'62.5 MHz'},
+        {'path':':CLOCK_DIV',   'type':'numeric',  'value':0},
+        {'path':':CLOCK_SOURCE','type':'numeric'},
+        {'path':':NUM_SEGMENTS','type':'numeric',  'value':1024},
+        {'path':':USE_TIME',    'type':'text',     'value':'TRUE'},
+        {'path':':PTS', 'type': 'text'},
+        {'path':':START_IDX',   'type':'numeric'},
+        {'path':':END_IDX',     'type':'numeric'},
+        {'path':':START_TIME',  'type':'numeric',  'value':0},
+        {'path':':END_TIME',    'type':'numeric',  'value':1E-6},
+        {'path':':CONT_SAMPL',  'type':'text',     'value':'NO'},
+    ]
     for g in range(8):
-        parts+=[{'path':'GROUP_%d'%(g+1),             'type':'structure'},
-                {'path':'GROUP_%d:STATE'%(g+1),       'type':'text',     'value':'ENABLED',  'options':('no_write_shot',)},
-                {'path':'GROUP_%d:TRIG_STATE'%(g+1),  'type':'text',     'value':'DISABLED', 'options':('no_write_shot',)},
-                {'path':'GROUP_%d:TR_TRESH_LEV'%(g+1),'type':'numeric',  'value':0,          'options':('no_write_shot',)},
-                {'path':'GROUP_%d:TRIG_TRESH'%(g+1),  'type':'numeric',  'value':0,          'options':('no_write_shot',)},
-                {'path':'GROUP_%d:OFFSET'%(g+1),      'type':'numeric',  'value':0,          'options':('no_write_shot',)},
-               ]
-    parts+= [{'path':':DATA%02d'%(i+1), 'type':'signal', 'options':('no_write_model','write_once')} for i in range(64)]
-    parts+=[{'path':':INIT_ACTION', 'type':'action','valueExpr':"Action(Dispatch('VME_SERVER','INIT' ,50,None),Method(None,'INIT' ,head))",'options':('no_write_shot',)},
-            {'path':':STORE_ACTION','type':'action','valueExpr':"Action(Dispatch('VME_SERVER','STORE',50,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
-           ]
+        parts.extend([
+            {'path':'GROUP_%d'%(g+1),             'type':'structure'},
+            {'path':'GROUP_%d:STATE'%(g+1),       'type':'text',     'value':'ENABLED',  'options':('no_write_shot',)},
+            {'path':'GROUP_%d:TRIG_STATE'%(g+1),  'type':'text',     'value':'DISABLED', 'options':('no_write_shot',)},
+            {'path':'GROUP_%d:TR_TRESH_LEV'%(g+1),'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+            {'path':'GROUP_%d:TRIG_TRESH'%(g+1),  'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+            {'path':'GROUP_%d:OFFSET'%(g+1),      'type':'numeric',  'value':0,          'options':('no_write_shot',)},
+        ])
+    parts.extend([
+        {'path':':DATA%02d'%(i+1), 'type':'signal', 'options':('no_write_model','write_once')}
+        for i in range(64)
+    ])
+    parts.extend([
+        {'path':':INIT_ACTION', 'type':'action','valueExpr':"Action(Dispatch('VME_SERVER','INIT' ,50,None),Method(None,'INIT' ,head))",'options':('no_write_shot',)},
+        {'path':':STORE_ACTION','type':'action','valueExpr':"Action(Dispatch('VME_SERVER','STORE',50,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
+    ])
 
     def init(self):
       if CAENV1740.caenLib is None:

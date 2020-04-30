@@ -1,12 +1,9 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Int64, Int8
+from MDSplus import mdsExceptions, Device, Data, Int64
 from threading import Thread
-from ctypes import CDLL, byref, c_longlong, c_int, c_void_p, c_float, c_char_p, c_uint, c_short, c_byte, c_double, get_errno, Structure, c_ubyte
+from ctypes import CDLL, byref, c_longlong, c_int, Structure, c_ubyte
 import os
 import time
-import sys, traceback
-#import exceptions
 import select
-import errno
 from datetime import datetime
 
 
@@ -124,7 +121,7 @@ class NI6683REC(Device):
     class nisyncTimestampNanos(Structure):
         #creates a struct to match nisync_timestamp_nanos
         _fields_ = [('edge', c_ubyte),
-                    ('nanos', c_longlong)]    
+                    ('nanos', c_longlong)]
 
 
     #devFd = None
@@ -134,7 +131,7 @@ class NI6683REC(Device):
     workers = {}
 
 
-######### National Instruments Sync Device Manager 
+######### National Instruments Sync Device Manager
 
     def saveInfo(self):
         NI6683REC.fds[self.nid] = self.devFd
@@ -147,7 +144,7 @@ class NI6683REC(Device):
             self.timeNid = NI6683REC.nids[self.nid]
          except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
- 
+
     def closeInfo(self):
         try:
             self.devFd = NI6683REC.fds[self.nid]
@@ -156,7 +153,7 @@ class NI6683REC(Device):
                    continue
                 os.close(fd)
             del(NI6683REC.fds[self.nid])
-            self.devFd = -1               
+            self.devFd = -1
             del NI6683REC.nids[self.nid]
         except:
             pass
@@ -166,7 +163,7 @@ class NI6683REC(Device):
 
         if NI6683REC.NiSyncLib is None:
            NI6683REC.NiSyncLib = CDLL("libnisync.so")
- 
+
         try:
             devType = c_int(self.DevTypeDict[self.dev_type.data()])
         except:
@@ -192,15 +189,15 @@ class NI6683REC(Device):
             print ("Pulse ", trigTermName, self.devFd[0] )
 
             nids = []
-            nids.append(self.pulse_time_tai_ns)     
-            nids.append(self.pulse_time_date)     
-                 
-            self.timeNid[self.devFd[0]] = nids    
+            nids.append(self.pulse_time_tai_ns)
+            nids.append(self.pulse_time_date)
+
+            self.timeNid[self.devFd[0]] = nids
 
             if self.devFd < 0 :
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open terminal %s NiSync Timing Device'%(trigTermName))
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-            
+
             for tr in range(8):
                 if getattr(self, 'trig_%d'%(tr+1)).isOn():
                     try:
@@ -213,10 +210,10 @@ class NI6683REC(Device):
                     #print "TRIG_%d"%(tr+1),devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING
                     print ("TRIG_%d"%(tr+1), trigTermName, trigTerm)
                     self.devFd.append(NI6683REC.NiSyncLib.nisync_open_terminal(devType, devNum, trigTerm, self.NISYNC_READ_NONBLOCKING))
-                    
+
                     nids = []
-                    nids.append( getattr(self, 'trig_%d_tai_ns'%(tr+1)) )     
-                    self.timeNid[self.devFd[len(self.devFd)-1]] = nids    
+                    nids.append( getattr(self, 'trig_%d_tai_ns'%(tr+1)) )
+                    self.timeNid[self.devFd[len(self.devFd)-1]] = nids
 
                     print ("devFd", trigTermName, self.devFd[len(self.devFd)-1])
                 else:
@@ -247,7 +244,7 @@ class NI6683REC(Device):
         def configure(self, device):
             self.device = device
             self.stopReq = False
- 
+
         def run(self):
 
             poll = select.poll()
@@ -267,7 +264,7 @@ class NI6683REC(Device):
             except:
                tai_utc_delay = 37000000000;
                self.device.taiutc_delay.putData(Int64(tai_utc_delay))
-            
+
 
             timeout = 1000
             ts_nanos_prev = 0
@@ -298,7 +295,7 @@ class NI6683REC(Device):
                        except BaseException as e:
                            print (e)
                            print('Error save timestamp')
-                           
+
                        """
                        try:
                            self.device.pulse_time_tai_ns.putData( Int64(ts.nanos))
@@ -317,7 +314,7 @@ class NI6683REC(Device):
                if fd == -1 :
                   continue
                poll.unregister(fd)
-                
+
             print ('AsynchStore stop')
 
             return
@@ -325,18 +322,18 @@ class NI6683REC(Device):
         def stop(self):
             self.stopReq = True
 
-      
+
 #############End Inner class AsynchStore
 
     def init(self):
 
         try:
-            self.restoreInfo() 
+            self.restoreInfo()
             self.stop()
         except:
             print ('Not started')
             pass
- 
+
 
 #Configuration check
 
@@ -387,7 +384,7 @@ class NI6683REC(Device):
         print ("self.devFd", self.devFd, status, trigEdge, trigDecCnt)
 
 
-        if status < 0 :  
+        if status < 0 :
             self.closeInfo()
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot enable pulse time timestamp trigger')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -402,7 +399,7 @@ class NI6683REC(Device):
                     continue
 
                 status = NI6683REC.NiSyncLib.nisync_enable_timestamp_trigger(self.devFd[tr+1], trigEdge, trigDecCnt)
-                if status < 0 :  
+                if status < 0 :
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot enable pulse time timestamp for trigger %d'%(tr+1))
                     continue
 
@@ -411,7 +408,7 @@ class NI6683REC(Device):
     def start(self):
 
         try:
-            self.restoreInfo() 
+            self.restoreInfo()
         except:
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'SPIDER timing device device not initialized')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -425,8 +422,8 @@ class NI6683REC(Device):
         except:
                pass
 
-        self.worker = self.AsynchStore()        
-        self.worker.daemon = True 
+        self.worker = self.AsynchStore()
+        self.worker.daemon = True
         self.worker.stopReq = False
 
         self.worker.configure(self)

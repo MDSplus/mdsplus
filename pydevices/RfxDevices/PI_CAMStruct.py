@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -22,7 +22,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from ctypes import CDLL, byref, c_int, c_char, c_void_p, c_byte, c_float, c_char_p, c_longlong, c_double, Structure, POINTER
+from ctypes import c_int, c_char, c_void_p, c_byte, c_longlong, c_double, Structure, POINTER
 
 
 class PicamEnumeratedType :
@@ -522,7 +522,7 @@ class  PicamValueType :
     Modulations   = 8
     #-------------------------------------------------------------------------*/
     #- PicamValueType;  (9) */
-    
+
     #define PI_V('v,c,n) (((PicamConstraintType_##c)<<24)+((PicamValueType_##v)<<16)+(n))
     #ExposureTime                      = v.FloatingPoint<<24 + c.Range<<16 + 23
     #ExposureTime                      = self.PIcamValueType.FloatingPoint<<24 + PicamConstraintType.Range<<16 + 23
@@ -531,7 +531,7 @@ class PicamParameter :
     #c = PicamConstraintType()
     #v = self.PIcamValueType()
     def PI_V(self,v,c,n):
-        return c_int( (getattr(PicamConstraintType,c)<<24) + (getattr(PicamValueType,v)<<16) + (n)) 
+        return c_int( (getattr(PicamConstraintType,c)<<24) + (getattr(PicamValueType,v)<<16) + (n))
     def __init__(self):
         #--------------------------------------------------------------------------------------*/
         #- Shutter Timing ---------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ class PicamParameter :
         self.EnableSensorWindowHeater          = self.PI_V('Boolean',       'Collection',  127)
         #--------------------------------------------------------------------------------------*/
         #- PicamParameter;  (133) */
-    
+
 #-----------------------------------------------------------------------------*/
 #- Acquisition Control -------------------------------------------------------*/
 #-----------------------------------------------------------------------------*/
@@ -713,12 +713,12 @@ class PicamAcquisitionErrorsMask :
     ConnectionLost = 0x2
 #-PicamAcquisitionErrorsMask; # (0x4) */
 #-----------------------------------------------------------------------------*/
-    
-    
+
+
 class PicamCameraID(Structure) :
     _fields_ = [('model', c_int),
                ('computer_interface', c_int),
-               ('sensor_name', (c_char * 64)), 
+               ('sensor_name', (c_char * 64)),
                ('serial_number', (c_char * 64))]
 
 
@@ -739,7 +739,7 @@ class PicamRois(Structure):
                ('roi_count', c_int)]
 #- PicamRois;
 #-----------------------------------------------------------------------------*/
-    
+
 #-----------------------------------------------------------------------------*/
 #- Camera Parameter Constraints - Enumerated Types ---------------------------*/
 #-----------------------------------------------------------------------------*/
@@ -817,7 +817,7 @@ class PicamAcquisitionStatus(Structure):
                 ('errors', c_int),
                 ('readout_rate', c_double)]
 #- PicamAcquisitionStatus;
-    
+
 #*----------------------------------------------------------------------------*/
 #* Acquisition Setup - Buffer ------------------------------------------------*/
 #*----------------------------------------------------------------------------*/
@@ -932,7 +932,7 @@ class PicamOutputSignal:
     Busy                = c_int( 3)
     AlwaysLow           = c_int( 4)
     AlwaysHigh          = c_int( 5)
-    Acquiring           = c_int( 6) 
+    Acquiring           = c_int( 6)
     ShiftingUnderMask   = c_int( 7)
     Exposing            = c_int( 8)
     EffectivelyExposing = c_int( 9)
@@ -969,7 +969,7 @@ class PicamPixelFormat:
 #-PicamPixelFormat; /* (2) */
 #-----------------------------------------------------------------------------*/
 class PicamReadoutControlMode:
-    FullFrame       = c_int(1)  
+    FullFrame       = c_int(1)
     FrameTransfer   = c_int(2)
     Interline       = c_int(5)
     Kinetics        = c_int(3)

@@ -24,12 +24,12 @@
 #
 
 from MDSplus import mdsExceptions, Device, Data, Float32, Float32Array, version
+import json
+from time import sleep
 if version.ispy3:
     import http as httplib
 else:
     import httplib
-import json
-from  time import sleep
 
 class REDPYTADC(Device):
   parts=[{'path':':IP_ADDR', 'type':'text'},{'path':':COMMENT', 'type':'text'},

@@ -54,7 +54,7 @@ except:
 
 def _mimport(filename,name=None,local=locals()):
     from MDSplus import Device
-    Device._mimport(globals(),local,filename,name)
+    Device._mimport(local,globals(),filename,name)
 
 _mimport('ACQIPPSETUP')
 _mimport('CAENDT5720')
@@ -71,12 +71,10 @@ _mimport('FEMTO')
 _mimport('FLIRSC65X')
 _mimport('MARTE_CONFIG')
 # MARTE_COMMON
-_mimport('MARTE_COMMON')
 _mimport('MARTE_DEVICE')
 _mimport('MARTE_RTSM')
 _mimport('MARTE_DUTY_CYCLE')
 # MARTE_GENERIC
-_mimport('MARTE_GENERIC')
 _mimport('MARTE')
 _mimport('MARTE_BREAKDOWN')
 _mimport('MARTE_DEQU')
