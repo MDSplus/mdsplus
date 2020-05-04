@@ -75,6 +75,7 @@ static inline int interlude(dtype_t rtype, mdsdsc_t **newdsc,
       LibCallg(newdsc, routine);
       break;
     }
+  case DTYPE_C:
   case DTYPE_T:
   case DTYPE_POINTER:
   case DTYPE_DSC:
@@ -120,7 +121,7 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   char result[8] = { 0 };// we need up to 8 bytes
   unsigned short code;
   mdsdsc_t *newdsc[256] = {0};
-  mdsdsc_t dx = { 0, rtype, CLASS_S, result };
+  mdsdsc_t dx = { 0, rtype == DTYPE_C ? DTYPE_T : rtype, CLASS_S, result };
   unsigned char origin[255];
   if (narg > 255 + 2)
     status = TdiNDIM_OVER;
@@ -222,6 +223,7 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
 	  break;
 	}
       break;
+    case DTYPE_C: /* like T but with free */
     case DTYPE_T:
     case DTYPE_PATH:
     case DTYPE_EVENT:
@@ -244,6 +246,8 @@ int TdiCall(dtype_t rtype, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr)
   }
   if STATUS_OK
     status = MdsCopyDxXd(&dx, out_ptr);
+  if (rtype == DTYPE_C)
+    free(*(char **)result); // free result
  skip:
   for (j = 0; j < ntmp; ++j) {
     for (pfun = (mds_function_t *)list[origin[j]]; pfun && pfun->dtype == DTYPE_DSC;)
