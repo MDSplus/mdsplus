@@ -6297,3 +6297,5 @@ x_to_i(["def4","abc"],["d"]) /** bsearch returns -1 mapping to nearest, i.e. 0-t
 [1]
 build_signal([1,2,3],*,["a","b","c"])["d"] /** empty signal **/
 Build_Signal([], *, [])
+TreeShr->MaskReplace:T(ref("/trees/~j~i/~h~g/~f~e/~d~c/~t"), ref("test"), val(123456789))
+"/trees/01/23/45/67/test"
