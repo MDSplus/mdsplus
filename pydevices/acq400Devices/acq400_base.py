@@ -65,6 +65,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
     def setChanScale(self,num):
         chan=self.__getattr__('INPUT_%3.3d' % num)
+        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
 
 
     def init(self):
@@ -118,8 +119,9 @@ class _ACQ400_BASE(MDSplus.Device):
         uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
         uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
-        # Setting SYNC Main Timing Highway Source Routing --> White Rabbit Time Trigger
-        # uut.s0.SIG_SRC_TRG_0 ='WRTT'
+        # Setting SYNC Main Timing Highway Source Routing --> EXT or White Rabbit Time Trigger
+        # uut.s0.SIG_SRC_TRG_0 ='EXT'
+
         # When using two WRTT triggers:
         uut.s0.SIG_SRC_TRG_0 ='WRTT0'
         uut.s0.SIG_SRC_TRG_1 ='WRTT1'
@@ -188,6 +190,20 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.decim.append(getattr(self.dev, 'INPUT_%3.3d:DECIMATE' %(i+1)).data())
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*numpy.int16(0).nbytes
+
+            #Fechting all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+            uut.fetch_all_calibration()
+            eslo = uut.cal_eslo[1:]
+            eoff = uut.cal_eoff[1:]
+            channel_data = uut.read_channels()
+
+            for ic, ch in enumerate(self.chans):
+                if ch.on:
+                    ch.EOFF.putData(float(eoff[ic]))
+                    ch.ESLO.putData(float(eslo[ic]))
+                    expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+
+                    ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
