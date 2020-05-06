@@ -345,12 +345,19 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     A child class of _ACQ400_BASE that contains the specific methods for
     taking a transient capture.
     """
+    def stop(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data())
+        uut.s0.set_abort = 1
+        self.running = False
+    STOP=stop
 
     def arm(self):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
-        shot_controller = acq400_hapi.ShotController([uut])
-        shot_controller.run_shot()
+        # shot_controller = acq400_hapi.ShotController([uut])
+        # shot_controller.run_shot()
+        uut.s0.set_arm = 1
     ARM=arm
 
 
