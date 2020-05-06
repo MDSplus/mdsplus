@@ -69,8 +69,6 @@ int TreeCreatePulseFile(int shotid,int numnids, int *nids)
 # define DBG(...) {}
 #endif
 
-extern char *MaskReplace();
-
 STATIC_ROUTINE int _CopyFile(int src_fd, int dst_fd, int lock_it);
 
 extern void **TreeCtx();
