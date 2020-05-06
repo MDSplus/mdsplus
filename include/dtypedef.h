@@ -46,6 +46,8 @@ DEFINE(FS		,52)	/* IEEE float basic single S */
 DEFINE(FT		,53)	/* IEEE float basic double T */
 DEFINE(FSC		,54)	/* IEEE float basic single S complex */
 DEFINE(FTC		,55)	/* IEEE float basic double T complex */
+DEFINE(C		,56)	/* used for TdiCall returned char* that must be freed */
+
 DEFINE(IDENT		,191)
 DEFINE(NID		,192)
 DEFINE(PATH		,193)

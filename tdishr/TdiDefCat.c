@@ -103,7 +103,8 @@ const struct TdiCatStruct_table TdiREF_CAT[] = {
   {"FS", 0x8703, 4, 16, FS_SYM},	/*52 ieee single floating */
   {"FT", 0x8707, 8, 32, FT_SYM},	/*53 ieee double floating */
   {"FSC", 0x9703, 8, 24, FS_SYM},	/*54 ieee single floating complex */
-  {"FTC", 0x9707, 16, 48, FT_SYM}	/*55 ieee double floating complex */
+  {"FTC", 0x9707, 16, 48, FT_SYM},	/*55 ieee double floating complex */
+  {"C", 0x8000, 0, 0, 0},	/*56 like 14 but used with TdiCall result will be freed */
 };
 
 const tdicat_t TdiCAT_MAX = sizeof(TdiREF_CAT) / sizeof(struct TdiCatStruct_table);
