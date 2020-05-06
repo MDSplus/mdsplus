@@ -15,10 +15,10 @@ function  result = mdsToMatlab( mdsthing )
 end
 
 function result = python2matlab(value, info)
-    if startsWith(class(value),'py.MDSplus')
+    if strncmp(class(value),'py.MDSplus', 10)
         value = value.data();
     end
-    if ~startsWith(class(value),'py.numpy')
+    if ~strncmp(class(value),'py.numpy', 8)
         result = value;
     else
         dtype = char(value.dtype.name);
@@ -72,7 +72,7 @@ function result = python2matlab(value, info)
 end
 
 function result = java2matlab(mdsthing, info)
-    if ~startsWith(class(mdsthing),'MDSplus')
+    if ~strncmp(class(mdsthing),'MDSplus',7)
         result = mdsthing;
     else
         if numel(mdsthing.getShape()) > 0
