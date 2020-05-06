@@ -83,24 +83,24 @@ int Tdi1Build(opcode_t opcode, int narg, struct descriptor *list[], struct descr
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
   int j, k, modif;
-  uint16_t modif_s;
+  opcode_t modif_s;
   uint8_t  modif_c;
 
   build.length = 0;
   build.dtype = fun_ptr->o1;
-  build.ndesc = (unsigned char)narg;
+  build.ndesc = (uint8_t)narg;
   if (fun_ptr->o2 != fun_ptr->o1) {
     status = TdiGetLong(list[0], &modif);
     switch (fun_ptr->o2) {
     case DTYPE_BU:
       build.length = 1;
       modif_c = (uint8_t)modif;
-      build.pointer = (uint8_t*)&modif_c;
+      build.pointer = (opcode_t*)&modif_c;
       break;
     case DTYPE_WU:
       build.length = 2;
-      modif_s = (uint16_t)modif;
-      build.pointer = (uint8_t*)&modif_s;
+      modif_s = (opcode_t)modif;
+      build.pointer = &modif_s;
       break;
     default:
       status = TdiINVDTYDSC;
@@ -171,8 +171,8 @@ int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[], struct descri
   struct TdiFunctionStruct *fun_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   DESCRIPTOR_FUNCTION(build, 0, 255);
   struct descriptor_xd xd[255];
-  unsigned char modif_c;
-  unsigned short modif_s;
+  uint8_t modif_c;
+  opcode_t modif_s;
 
   build.length = 0;
   build.dtype = fun_ptr->o1;
@@ -182,13 +182,13 @@ int Tdi1Make(opcode_t opcode, int narg, struct descriptor *list[], struct descri
     switch (fun_ptr->o2) {
     case DTYPE_BU:
       build.length = 1;
-      modif_c = (unsigned char)modif;
-      build.pointer = &modif_c;
+      modif_c = (uint8_t)modif;
+      build.pointer = (opcode_t*)&modif_c;
       break;
     case DTYPE_WU:
       build.length = 2;
-      modif_s = (unsigned short)modif;
-      build.pointer = (unsigned char *)&modif_s;
+      modif_s = (opcode_t)modif;
+      build.pointer = &modif_s;
       break;
     default:
       status = TdiINVDTYDSC;
