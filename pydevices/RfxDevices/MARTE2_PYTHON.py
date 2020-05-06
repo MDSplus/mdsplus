@@ -22,8 +22,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import MDSplus
+
 import numpy as np
+
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
@@ -33,67 +34,89 @@ class MARTE2_PYTHON(MC.MARTE2_COMPONENT):
 
 
 class BUILDER:
-  @staticmethod
-  def convertType(cls, type,):
-    typeConv = {int:'int32', float: 'float64', np.int16: 'int16', np.int32: 'int32', np.float32: 'float32', np.float64: 'float64'}
-    return typeConv[type]
+    types = {
+        int:'int32',
+        float: 'float64',
+        np.int16: 'int16',
+        np.int32: 'int32',
+        np.float32: 'float32',
+        np.float64: 'float64',
+    }
 
-  def __init__(self, module, pygam=None):
-      self.module = module
-      self.pygam = pygam or module.pygam
+    def __init__(self, module, pygam=None):
+        self.module = module
+        self.pygam = pygam or module.pygam
 
-  def __call__(self, cls):
-    cls.inputs = []
-    cls.outputs = []
-    cls.parameters = []
-    try:
-      pygam, module = self.pygam, self.module
-      pygam.initialize()
-      for i in range(0, pygam.getNumberOfInputs()):
-        currDimension = pygam.getInputDimensions(i)
-        if currDimension[0] == 1 :
-          if currDimension[1] == 1:
-            inDimensions = 0
-          else:
-            inDimensions = [currDimension[1]]
-        else:
-          inDimensions = [currDimension[0],currDimension[1]]
+    @classmethod
+    def convert_io(cls, name, dim, dtype):
+        if dim[0] == 1 :
+            if dim[1] == 1:
+              dim = 0
+            else:
+              dim = [dim[1]]
+        try:
+            dtype = cls.types[dtype]
+        except KeyError:
+            dtype = 'float64'
+        return {
+            'name': name,
+            'type': dtype,
+            'dimensions': dim,
+            'parameters': [],
+        }
 
-        cls.inputs.append({'name': pygam.getInputName(i), 'type': self.convertType(pygam.getInputType(i)), 'dimensions': inDimensions, 'parameters':[]})
+    @classmethod
+    def convert_param(cls, name, dim, dtype, val):
+        if dim[0] == 1 and dim[1] == 1:
+            val = val[0]
+        try:
+            dtype = cls.types[dtype]
+        except KeyError:
+             dtype = 'int32'
+        return {
+            'name': 'Parameters.' + name,
+            'type': dtype,
+            'value': np.array(val, dtype),
+        }
 
-      for i in range(0, pygam.getNumberOfOutputs()):
-        currDimension = pygam.getOutputDimensions(i)
-        if currDimension[0] == 1 :
-          if currDimension[1] == 1:
-            outDimensions = 0
-          else:
-            outDimensions = [currDimension[1]]
-        else:
-          outDimensions = [currDimension[0],currDimension[1]]
-
-        cls.outputs.append({'name': pygam.getOutputName(i), 'type': self.convertType(pygam.getOutputType(i)), 'dimensions': outDimensions, 'parameters':[]})
-
-      cls.parameters.append({'name': 'FileName', 'type': 'string', 'value': module.__file__.split('/')[-1].split('.')[0]})
-      for i in range(0, pygam.getNumberOfParameters()):
-        currVal = pygam.getParameterDefaultValue(i)
-        currDims = pygam.getParameterDimensions(i)
-        if currDims[0] == 1 and currDims[1] == 1:
-          mdsValue = currVal[0]
-        else:
-          if pygam.getParameterType(i) == np.float32 or pygam.getParameterType(i) == np.float64:
-            mdsValue = MDSplus.Float64Array(currVal)
-          else:
-            mdsValue = MDSplus.Int32Array(currVal)
-
-        cls.parameters.append({'name': 'Parameters.'+pygam.getParameterName(i), 'type': 'float64', 'value': mdsValue})
-    except:
-        pass
-    cls.parts = []
-    cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
-    return cls
+    def __call__(self, cls):
+        self.pygam.initialize()
+        cls.inputs = [
+            self.convert_io(
+                self.pygam.getInputName(i),
+                self.pygam.getInputDimensions(i),
+                self.pygam.getInputType(i),
+            )
+            for i in range(self.pygam.getNumberOfInputs())
+        ]
+        cls.outputs = [
+            self.convert_io(
+                self.pygam.getOutputName(i),
+                self.pygam.getOutputDimensions(i),
+                self.pygam.getOutputType(i),
+            )
+            for i in range(self.pygam.getNumberOfOutputs())
+        ]
+        cls.parameters = [{
+            'name': 'FileName',
+            'type': 'string',
+            'value': self.module.__file__.split('/')[-1].split('.')[0]},
+        ] + [
+            self.convert_param(
+                self.pygam.getParameterName(i),
+                self.pygam.getParameterDimensions(i),
+                self.pygam.getParameterType(i),
+                self.pygam.getParameterDefaultValue(i),
+            )
+            for i in range(self.pygam.getNumberOfParameters())
+        ]
+        cls.parts = []
+        cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+        return cls
 
 
 def BUILDER_FALLBACK(cls):
+    cls.inputs = []
     cls.outputs = []
     cls.parameters = []
     cls.parts = []
