@@ -3150,3 +3150,4 @@ bsearch("d",["def4","abc"]) /** no match : index = -1 **/
 x_to_i(["def4","abc"],["d"]) /** bsearch returns -1 mapping to nearest, i.e. 0-th element (storted) **/
 build_signal([1,2,3],*,["a","b","c"])["d"] /** empty signal **/
 TreeShr->MaskReplace:C(ref("/trees/~j~i/~h~g/~f~e/~d~c/~t"), ref("test"), val(123456789))
+switch(5){case(0:2,4:6,8:10)_=$TRUE;break;case default _=$FALSE;break;};_
