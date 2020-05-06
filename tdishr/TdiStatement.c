@@ -447,7 +447,11 @@ int Tdi1Switch(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *lis
   int jdefault = 0;
   mds_function_t **pdefault = NULL;
   mdsdsc_xd_t tmp = EMPTY_XD;
-
+  if (list[0] && list[0]->dtype == DTYPE_FUNCTION && *(opcode_t*)list[0]->pointer == OPC_COMMA && narg == 2 && !list[1]) {
+    // switch used in function form
+    narg = ((mds_function_t *)list[0])->ndesc;
+    list = ((mds_function_t *)list[0])->arguments;
+  }
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
   if STATUS_OK
     status = switch1(tmp.pointer, &jdefault, &pdefault, narg - 1,
