@@ -26,14 +26,14 @@
 import threading
 import socket
 import time
-
+from queue import Queue, Empty
 import numpy
 import MDSplus
 
-if MDSplus.version.ispy3:
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+try:
+    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
+except:
+    acq400_hapi = __import__('acq400_hapi', globals())
 
 
 class _ACQ400_BASE(MDSplus.Device):
@@ -69,7 +69,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
 
     def init(self):
-        import acq400_hapi
+        
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
         trig_types=[ 'hard', 'soft', 'automatic']
@@ -158,7 +158,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
     ARM=arm
 
     def trig(self, msg=''):
-        import acq400_hapi
+
         message = str(msg)
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         self.dprint(1, "The message is: %s", message)
@@ -175,7 +175,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
-            import acq400_hapi
+            
             threading.Thread.__init__(self)
             self.dev = dev.copy()
 
@@ -345,25 +345,30 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     A child class of _ACQ400_BASE that contains the specific methods for
     taking a transient capture.
     """
-    def stop(self):
-        import acq400_hapi
+    def _arm(self):
         uut = acq400_hapi.Acq400(self.node.data())
-        uut.s0.set_abort = 1
-        self.running = False
-    STOP=stop
+        shot_controller = acq400_hapi.ShotController([uut])
+        shot_controller.run_shot()
+        return None
+    _ARM=_arm
 
     def arm(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
-        # shot_controller = acq400_hapi.ShotController([uut])
-        # shot_controller.run_shot()
-        uut.s0.set_arm = 1
+        thread = threading.Thread(target = self._arm)
+        thread.start()
     ARM=arm
 
 
     def store(self):
-        import acq400_hapi
+        thread = threading.Thread(target = self._store)
+        thread.start()
+        return None
+    STORE=store
+
+
+    def _store(self):
+
         uut = acq400_hapi.Acq400(self.node.data())
+        while uut.statmon.get_state() != 0: continue
         self.chans = []
         nchans = uut.nchan()
         for ii in range(nchans):
@@ -382,7 +387,8 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
 
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
-    STORE=store
+
+    _STORE=_store
 
 
 def int_key_chan(elem):
