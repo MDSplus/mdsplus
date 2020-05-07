@@ -63,6 +63,9 @@ cmdParseLex.o: cmdParseLex.c
 @MAKEBINDIR@mdsdcl$(EXE): mdsdcl.c @MAKESHLIBDIR@@LIBPRE@Mdsdcl@SHARETYPE@ $(IMPLIB) 
 	$(LINK.c) $(OUTPUT_OPTION) $<  -L@MAKESHLIBDIR@ -lMdsdcl -lMdsShr -lTreeShr $(LIBS) @LIBREADLINE@
 
+mdsdclDeltatimeToSeconds.o :
+	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/mdsdclDeltatimeToSeconds.c -Wno-sign-compare
+
 #cmdParse.c: cmdParse.y
 #        bison cmdParse.y
 
