@@ -30,36 +30,38 @@ from time import sleep
 
 class ACQIPPSETUP(Device):
     """IPP probe & thermocoupels acquisition setup"""
-    parts=[ {'path':':COMMENT', 'type':'text'}]
-    parts.append({'path':'.PROBE', 'type':'structure'})
-    parts.append({'path':'.PROBE:START_TIME', 'type':'numeric', 'value':0})
-    parts.append({'path':'.PROBE:END_TIME', 'type':'numeric', 'value':0})
-    parts.append({'path':'.PROBE:CLOCK_FREQ', 'type':'numeric', 'value':1000})
-    parts.append({'path':'.PROBE:TRIG_MODE', 'type':'text','value':'EXTERNAL'})
+    parts=[
+        {'path':':COMMENT', 'type':'text'},
+        {'path':'.PROBE', 'type':'structure'},
+        {'path':'.PROBE:START_TIME', 'type':'numeric', 'value':0},
+        {'path':'.PROBE:END_TIME', 'type':'numeric', 'value':0},
+        {'path':'.PROBE:CLOCK_FREQ', 'type':'numeric', 'value':1000},
+        {'path':'.PROBE:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
 
-    parts.append({'path':'.SWEEP_WAVE', 'type':'structure'})
-    parts.append({'path':'.SWEEP_WAVE:DEV_TYPE', 'type':'text','value':'NI6368'})
-    parts.append({'path':'.SWEEP_WAVE:BOARD_ID', 'type':'numeric', 'value':0})
-    parts.append({'path':'.SWEEP_WAVE:AO_CHAN', 'type':'numeric', 'value':0})
-    parts.append({'path':'.SWEEP_WAVE:MIN', 'type':'numeric', 'value':0})
-    parts.append({'path':'.SWEEP_WAVE:MAX', 'type':'numeric', 'value':0})
-    parts.append({'path':'.SWEEP_WAVE:FREQ', 'type':'numeric', 'value':1000})
-    parts.append({'path':'.SWEEP_WAVE:TRIG_MODE', 'type':'text','value':'EXTERNAL'})
+        {'path':'.SWEEP_WAVE', 'type':'structure'},
+        {'path':'.SWEEP_WAVE:DEV_TYPE', 'type':'text','value':'NI6368'},
+        {'path':'.SWEEP_WAVE:BOARD_ID', 'type':'numeric', 'value':0},
+        {'path':'.SWEEP_WAVE:AO_CHAN', 'type':'numeric', 'value':0},
+        {'path':'.SWEEP_WAVE:MIN', 'type':'numeric', 'value':0},
+        {'path':'.SWEEP_WAVE:MAX', 'type':'numeric', 'value':0},
+        {'path':'.SWEEP_WAVE:FREQ', 'type':'numeric', 'value':1000},
+        {'path':'.SWEEP_WAVE:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
 
-    parts.append({'path':'.TC', 'type':'structure'})
-    parts.append({'path':'.TC:START_TIME', 'type':'numeric', 'value':0})
-    parts.append({'path':'.TC:END_TIME', 'type':'numeric', 'value':0})
-    parts.append({'path':'.TC:CLOCK_FREQ', 'type':'numeric', 'value':1000})
-    parts.append({'path':'.TC:TRIG_MODE', 'type':'text','value':'EXTERNAL'})
+        {'path':'.TC', 'type':'structure'},
+        {'path':'.TC:START_TIME', 'type':'numeric', 'value':0},
+        {'path':'.TC:END_TIME', 'type':'numeric', 'value':0},
+        {'path':'.TC:CLOCK_FREQ', 'type':'numeric', 'value':1000},
+        {'path':'.TC:TRIG_MODE', 'type':'text','value':'EXTERNAL'},
 
-    parts.append({'path':':INIT_ACTION','type':'action',
+        {'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_wave_gen',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop_wave_gen',head))",
-        'options':('no_write_shot',)})
+        'options':('no_write_shot',)},
 
-    parts.append({'path':'.SWEEP_WAVE:WAVE_EXPR', 'type':'numeric'})
+        {'path':'.SWEEP_WAVE:WAVE_EXPR', 'type':'numeric'},
+    ]
 
     isRunning = False
     niInterfaceLib = None
@@ -131,16 +133,6 @@ class ACQIPPSETUP(Device):
 
             ACQIPPSETUP.niInterfaceLib.generateWaveformOnOneChannel_6368(c_int(board_id), c_int(channel), c_double(offset), c_double(level), c_int(waverate), c_int(softwareTrigger) );
 
-            """
-    	      count = 0
-    	      delay = 2;
-            while count < 5:
-                time.sleep(delay)
-                count += 1
-                print " %s" % (  time.ctime(time.time()) )
-            """
-            return
-
 
     def restoreInfo(self):
         if ACQIPPSETUP.niInterfaceLib is None:
@@ -169,7 +161,6 @@ class ACQIPPSETUP(Device):
 
         print("===============================================")
 
-        return
 
 
     def stop_wave_gen(self):
@@ -181,4 +172,3 @@ class ACQIPPSETUP(Device):
         sleep(2)
         print("===============================================")
 
-        return

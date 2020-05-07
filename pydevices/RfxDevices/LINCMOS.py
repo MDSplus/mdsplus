@@ -1,4 +1,4 @@
-# 
+#
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,13 +23,13 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, version
+from MDSplus import mdsExceptions, Device, Data
 import socket  #to connect to labview PC
 
 class LINCMOS(Device):
     """LINCMOS NEW"""
-    parts=[								#offset nid
-      {'path':':IP_ADDR', 'type':'text'},					#1
+    parts=[                                #offset nid
+      {'path':':IP_ADDR', 'type':'text'},                    #1
 
       {'path':':COMMENT', 'type':'text'},
       {'path':':INT_TIME', 'type':'numeric', 'value':350E-3},
@@ -68,7 +68,7 @@ class LINCMOS(Device):
         # Get Integration Time
         try:
             intTime = str(self.int_time.data())
-            print ('Integration Time = ', intTime) 
+            print ('Integration Time = ', intTime)
         except:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Invalid integration time parameter value')
             raise mdsExceptions.TclFAILED_ESSENTIAL

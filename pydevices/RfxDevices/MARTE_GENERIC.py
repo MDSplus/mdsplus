@@ -23,7 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-# -*- coding: iso-8859-1 -*-
 from MDSplus import mdsExceptions, Device, Tree, Data, Event
 from os import environ
 from time import sleep
@@ -76,11 +75,11 @@ class MARTE_GENERIC(Device):
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DESCRIPTION'%(i+1), 'type':'text'})
       parts.append({'path':'.SIGNALS.USER.USER_%03d:DATA'%(i+1), 'type':'signal'})
     parts.append({'path':':INIT_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('CPCI_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
-	  'options':('no_write_shot',)})
+      'valueExpr':"Action(Dispatch('CPCI_SERVER','SEQ_INIT',50,None),Method(None,'init',head))",
+      'options':('no_write_shot',)})
     parts.append({'path':':STORE_ACTION','type':'action',
-	  'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
-	  'options':('no_write_shot',)})
+      'valueExpr':"Action(Dispatch('MARTE_SERVER','SEQ_STORE',50,None),Method(None,'store',head))",
+      'options':('no_write_shot',)})
     del(i)
 
     def getEventName(self):
@@ -228,7 +227,7 @@ class MARTE_GENERIC(Device):
     def seq_store_start(self):
       self.post_req()
       sleep(3)
-      self.store(ag)
+      self.store()
       return
 
     def seq_store_stop(self):

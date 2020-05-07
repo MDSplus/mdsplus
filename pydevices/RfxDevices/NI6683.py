@@ -30,12 +30,11 @@ RfxDevices
 @copyright: 2018
 @license: GNU GPL
 """
-from MDSplus import mdsExceptions, Device, Data, Int64, Int64Array, Uint64, Event
-from MDSplus.mdsExceptions import DevCOMM_ERROR
-from MDSplus.mdsExceptions import DevBAD_PARAMETER
+from MDSplus import Device, Data, Uint64, Event, Float64
+from MDSplus.mdsExceptions import DevCOMM_ERROR, DevBAD_PARAMETER
 from threading import Thread
 from ctypes import CDLL, c_int, byref, c_byte, c_ulonglong, c_ubyte
-from time import sleep
+import os
 import sys
 import numpy as np
 import select
@@ -87,8 +86,8 @@ class NI6683(Device):
     NISYNC_LEVEL_HIGH = 1
     NISYNC_READ_BLOCKING = 0
     NISYNC_READ_NONBLOCKING = 1
-    NISYNC_EDGE_RISING	= 0
-    NISYNC_EDGE_FALLING	= 1
+    NISYNC_EDGE_RISING    = 0
+    NISYNC_EDGE_FALLING    = 1
     NISYNC_EDGE_ANY = 2
 
 
@@ -487,7 +486,6 @@ class NI6683(Device):
                 self.checkStatus(status, 'Cannot enable timestamp triggers')
                 print('ADESSO ZONTO ' + termName +' in ', NI6683.ni6683RecorderDict[self.nid])
                 NI6683.ni6683RecorderDict[self.nid].append(termName)
-        return 1
 
     def soft_init(self):
         self.debugPrint('=================  PXI 6683 soft_init ===============')
@@ -511,7 +509,6 @@ class NI6683(Device):
         worker.daemon = True
         worker.configure(self)
         worker.start()
-        return 1
 
 
     def stop_store(self):
@@ -521,7 +518,6 @@ class NI6683(Device):
           self.debugPrint("PXI 6683 stop_worker")
           worker.stop()
           worker.join()
-          return 1
 
 
     class AsynchStore(Thread):
@@ -550,17 +546,16 @@ class NI6683(Device):
                     if event & select.EPOLLERR != 0:
                         print ('POLL ERROR!!')
                         return
-                        continue
                     timestamp = c_ulonglong()
                     status = NI6683.niLib.nisync_read_timestamps_ns(c_int(readyFd), byref(timestamp), c_int(1))
                     self.device.checkStatus(status, 'Cannot get current time')
                     termName = self.nameDict[readyFd]
                     recorderNid = getattr(self.device, termName.lower()+'_raw_events')
-                    eventRelTime = getRelTime(self, timestamp.value)
+                    eventRelTime = self.device.getRelTime(timestamp.value)
                     recorderNid.putRow(10, Float64(eventRelTime), Float64(eventRelTime))
                     try:
                         eventNameNid = getattr(self.device, termName.lower()+'_event_name')
-                        eventName = eventDameNid.data()
+                        eventName = eventNameNid.data()
                         Event.setevent(eventName, Uint64(timestamp.value))
                     except:
                         pass

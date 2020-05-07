@@ -27,20 +27,26 @@ from MDSplus import mdsExceptions, Device, Data, Int8Array
 from ctypes import CDLL, c_char_p
 
 class FEMTO(Device):
-    parts=[{'path':':NAME','type':'text'},{'path':':COMMENT', 'type':'text'},
-    {'path':':IP_ADDR', 'type':'text'},{'path':':COM_PORT', 'type':'text', 'value':'COM1'}]
-
+    parts = [
+        {'path':':NAME','type':'text'},
+        {'path':':COMMENT', 'type':'text'},
+        {'path':':IP_ADDR', 'type':'text'},
+        {'path':':COM_PORT', 'type':'text', 'value':'COM1'},
+    ]
     for i in range(1,66):
-        parts.append({'path':'.CHANNEL_%02d'%(i),'type':'structure'})
-        parts.append({'path':'.CHANNEL_%02d:GAIN'%(i),'type':'text', 'value':'0'})
-        parts.append({'path':'.CHANNEL_%02d:ACDC'%(i),'type':'text', 'value':'0'})
-        parts.append({'path':'.CHANNEL_%02d:HSLN'%(i),'type':'text', 'value':'0'})
+        parts.extend([
+            {'path':'.CHANNEL_%02d'%(i),'type':'structure'},
+            {'path':'.CHANNEL_%02d:GAIN'%(i),'type':'text', 'value':'0'},
+            {'path':'.CHANNEL_%02d:ACDC'%(i),'type':'text', 'value':'0'},
+            {'path':'.CHANNEL_%02d:HSLN'%(i),'type':'text', 'value':'0'},
+        ])
     del(i)
-
-    parts.append({'path':':INIT_ACTION','type':'action',
-        'valueExpr':"Action(Dispatch('FEDE_SERVER','INIT',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-
+    parts.append({
+        'path': ':INIT_ACTION',
+        'type': 'action',
+        'valueExpr': "Action(Dispatch('FEDE_SERVER','INIT',50,None),Method(None,'init',head))",
+        'options': ('no_write_shot',),
+    })
 
     def init(self):
         from array import array
@@ -158,4 +164,3 @@ class FEMTO(Device):
             Data.execute('MdsDisconnect()')
 
         print('Init Femto Amplifier: end.')
-        return

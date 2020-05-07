@@ -23,11 +23,18 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
-class MARTE2_IN(MARTE2_COMPONENT):
-    MARTE2_COMPONENT.outputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
-    MARTE2_COMPONENT.parameters = [{'name':'Parameter1', 'type': 'float32'}, {'name':'Parameter2', 'type': 'string'}]
+MC = __import__('MARTE2_COMPONENT', globals())
 
+
+@MC.BUILDER('TestIn', MC.MARTE2_COMPONENT.MODE_INPUT)
+class MARTE2_IN(MC.MARTE2_COMPONENT):
+    outputs = [
+        {'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}},
+        {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}},
+    ]
+    parameters = [
+        {'name':'Parameter1', 'type': 'float32'},
+        {'name':'Parameter2', 'type': 'string'},
+    ]
     parts = []
-    MARTE2_COMPONENT.buildGam(parts, 'TestIn', MARTE2_COMPONENT.MODE_INPUT)
+

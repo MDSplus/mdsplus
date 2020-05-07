@@ -1,49 +1,50 @@
-from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window
-from MDSplus import Int32, Float32, Float32Array, Float64
-from ctypes import *
-from threading import Thread
+from MDSplus import mdsExceptions, Device, Data
+from ctypes import CDLL, c_int, c_uint, c_float, byref, c_void_p, c_ubyte
 import time
 import os
-import errno
-import traceback
 import numpy as np
 
 class NI_WAVE_GEN(Device):
     """NI PXI-6259 / 6368 Analog Output Waveform Generation"""
-    parts=[{'path':':COMMENT',      'type':'text'},
+    parts = [
+        {'path':':COMMENT',      'type':'text'},
         {'path':':BOARD_ID',  'type':'numeric', 'value':0},
         {'path':':BOARD_TYPE',   'type':'text', 'value':'NI6259'},
         {'path':':WAVE_POINT',   'type':'numeric', 'value':1000},
         {'path':':TRIG_MODE',    'type':'text','value':'EXTERNAL'},
         {'path':':TRIG_SOURCE',  'type':'numeric','value':0},
-        {'path':':SERIAL_NUM',   'type':'numeric'}]
+        {'path':':SERIAL_NUM',   'type':'numeric'},
+    ]
 
 
     for i in range(0,4):
-        parts.append({'path':'.AO_%d'%(i+1),      'type':'structure'})
-        parts.append({'path':'.AO_%d:MAX'%(i+1),  'type':'numeric', 'value':1.})
-        parts.append({'path':'.AO_%d:MIN'%(i+1),  'type':'numeric', 'value':0.})
-        parts.append({'path':'.AO_%d:X'%(i+1),    'type':'numeric'})
-        parts.append({'path':'.AO_%d:Y'%(i+1),    'type':'numeric'})
-        parts.append({'path':'.AO_%d:TYPE'%(i+1), 'type':'text','value':'SIN'})
-        parts.append({'path':'.AO_%d:FREQ'%(i+1), 'type':'numeric'})
+        parts.extend([
+            {'path':'.AO_%d'%(i+1),      'type':'structure'},
+            {'path':'.AO_%d:MAX'%(i+1),  'type':'numeric', 'value':1.},
+            {'path':'.AO_%d:MIN'%(i+1),  'type':'numeric', 'value':0.},
+            {'path':'.AO_%d:X'%(i+1),    'type':'numeric'},
+            {'path':'.AO_%d:Y'%(i+1),    'type':'numeric'},
+            {'path':'.AO_%d:TYPE'%(i+1), 'type':'text','value':'SIN'},
+            {'path':'.AO_%d:FREQ'%(i+1), 'type':'numeric'},
+        ])
     del (i)
-
-    parts.append({'path':':INIT_ACTION','type':'action',
+    parts.extend([
+        {'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':START_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':START_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_gen',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_gen',head))",
-        'options':('no_write_shot',)})
+        'options':('no_write_shot',)},
+    ])
 
-    AO_UPDATE_SOURCE_SELECT_UI_TC 		= c_int(0)
-    AO_UPDATE_SOURCE_POLARITY_RISING_EDGE	= c_int(0)
+    AO_UPDATE_SOURCE_SELECT_UI_TC = c_int(0)
+    AO_UPDATE_SOURCE_POLARITY_RISING_EDGE = c_int(0)
 
-    AO_DAC_POLARITY_UNIPOLAR			= c_int(0)
-    AO_DAC_POLARITY_BIPOLAR			= c_int(1)
+    AO_DAC_POLARITY_UNIPOLAR = c_int(0)
+    AO_DAC_POLARITY_BIPOLAR = c_int(1)
 
     #File descriptor
     #ao_fd = 0
@@ -53,19 +54,17 @@ class NI_WAVE_GEN(Device):
     waveWorkers = {}
     niLib6259 = None
     niLib6368 = None
-    niInterfaceLib = None 
+    niInterfaceLib = None
 
 #Dictionaries and maps
     boardTypeDict = {'NI6259':'/dev/pxi6259.', 'NI6368':'/dev/pxie6368.'}
     waveTypeDict = {'AS_IS':1 , 'SIN':2 , 'COS':3 , 'TRIANGULAR':4 , 'SQUARE':5 , 'SAWTOOTH':6}
 
     HANDLE_FOUND = 2
-    NO_ERROR = 1
-
 
     def saveInfo(self):
         NI_WAVE_GEN.waveAOFds[self.getNid()] = self.ao_fd
-	#NI_WAVE_GEN.waveAOChFds.update({self.getNid():self.currFd})
+    #NI_WAVE_GEN.waveAOChFds.update({self.getNid():self.currFd})
 
 
     def restoreInfo(self):
@@ -106,7 +105,6 @@ class NI_WAVE_GEN(Device):
             except:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), '--Cannot open device '+ fileName)
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        return NI_WAVE_GEN.NO_ERROR
 
     def closeInfo(self):
         try:
@@ -116,7 +114,6 @@ class NI_WAVE_GEN(Device):
         except:
             pass
             #print('CLOSE INFO: HANDLE NOT FOUND')
-        return 1 
 
 ######################## Worker Management
     def saveWorker(self):
@@ -135,12 +132,12 @@ class NI_WAVE_GEN(Device):
         boardId = self.board_id.data();
         boardType = self.board_type.data();
         wavePoint = self.wave_point.data();
-         
+
 
         for ch in range(4) :
 
             # open file descriptor for each AO channel
-            aoChFd = os.open(NI_WAVE_GEN.boardTypeDict[boardType] + str(boardId) + '.ao.' + str(ch), os.O_RDWR | os.O_NONBLOCK)        
+            aoChFd = os.open(NI_WAVE_GEN.boardTypeDict[boardType] + str(boardId) + '.ao.' + str(ch), os.O_RDWR | os.O_NONBLOCK)
             if aoChFd < 0 :
                 errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to open channel: " + os.strerror(errno))
@@ -157,7 +154,7 @@ class NI_WAVE_GEN(Device):
                 print ("ch type ", chType)
 
                 # create one complete sine period in volts
-            
+
                 ix = np.arange(wavePoint)
 
                 if chType == 'SIN':
@@ -188,8 +185,8 @@ class NI_WAVE_GEN(Device):
 
                      xi = np.linspace(0,1,wavePoint)
                      sigData = np.interp(xi, aoX, aoY, wavePoint)
- 
-                scaledWriteArray = ( c_float * len(sigData) )(*sigData)  
+
+                scaledWriteArray = ( c_float * len(sigData) )(*sigData)
 
             else:
                 zero_arr = np.zeros(wavePoint)
@@ -197,13 +194,13 @@ class NI_WAVE_GEN(Device):
 
             # write sine to AO channel
             retval = NI_WAVE_GEN.niLib6259.pxi6259_write_ao(aoChFd, scaledWriteArray, c_uint(wavePoint))
-            if retval != wavePoint : 
+            if retval != wavePoint :
                 errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
                 Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed while writing! Written samples.: "+ os.strerror(errno))
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
             os.close(aoChFd)
- 
+
 
     def init(self):
 
@@ -214,22 +211,22 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-	# Stop the segment
-        """ 
-	NI_WAVE_GEN.niLib6259.xseries_stop_ao(c_int(self.ao_fd))
+    # Stop the segment
+        """
+    NI_WAVE_GEN.niLib6259.xseries_stop_ao(c_int(self.ao_fd))
 
-	retval = NI_WAVE_GEN.niLib6259.xseries_reset_ao(self.ao_fd);
+    retval = NI_WAVE_GEN.niLib6259.xseries_reset_ao(self.ao_fd);
         if retval :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetiing device')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
-	retval = NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(c_int(self.ao_fd))
+
+    retval = NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(c_int(self.ao_fd))
         if retval :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting device')
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
 
-	retval = NI_WAVE_GEN.niLib6259.pxi6259_reset_ao(c_int(self.ao_fd));
+    retval = NI_WAVE_GEN.niLib6259.pxi6259_reset_ao(c_int(self.ao_fd));
         if retval :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error resetting device')
             raise mdsExceptions.TclFAILED_ESSENTIAL
@@ -242,7 +239,7 @@ class NI_WAVE_GEN(Device):
         if NI_WAVE_GEN.niLib6259.pxi6259_set_ao_waveform_generation(aoConfig, c_int(1)) :
             Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to set AO waveform generation!");
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
         for ch in range(4) :
             # configure AO channel
             if NI_WAVE_GEN.niLib6259.pxi6259_add_ao_channel(aoConfig, c_uint(ch), self.AO_DAC_POLARITY_BIPOLAR) :
@@ -250,7 +247,7 @@ class NI_WAVE_GEN(Device):
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
         wavePoint = self.wave_point.data();
- 
+
         # set AO count
         if NI_WAVE_GEN.niLib6259.pxi6259_set_ao_count(aoConfig, c_uint(wavePoint), c_uint(1), c_ubyte(1)) :
              Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to configure AO count!");
@@ -285,10 +282,7 @@ class NI_WAVE_GEN(Device):
 
         self.saveInfo()
 
-        return NI_WAVE_GEN.NO_ERROR
-
-
-##########Start generation
+    ##########Start generation
     def start_gen(self):
         print ("================ NI Waveform Geneation Start Store =============")
 
@@ -297,12 +291,11 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         # start AO segment (signal generation)
-        if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(c_int(self.ao_fd)) != 0 : 
+        if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(c_int(self.ao_fd)) != 0 :
             errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to start AO!: %s" %(os.strerror(errno)))
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        return NI_WAVE_GEN.NO_ERROR
 
 ##########Stop generation
     def stop_gen(self):
@@ -322,18 +315,15 @@ class NI_WAVE_GEN(Device):
         self.configChannels(0)
 
         # start AO segment (signal generation)
-        if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(self.ao_fd) : 
+        if NI_WAVE_GEN.niLib6259.pxi6259_start_ao(self.ao_fd) :
             Data.execute('DevLogErr($1,$2)', self.getNid(), "Failed to start AO!")
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         time.sleep(2)
 
-        if NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(self.ao_fd) : 
+        if NI_WAVE_GEN.niLib6259.pxi6259_stop_ao(self.ao_fd) :
             Data.execute('DevLogErr($1,$2)', self.getNid(), "Error stopping AO generation")
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         self.closeInfo()
-
-        return NI_WAVE_GEN.NO_ERROR
-
 

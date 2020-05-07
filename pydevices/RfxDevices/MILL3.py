@@ -24,8 +24,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from MDSplus import mdsExceptions, Device, Data, version
-#from pymodbus.client.sync import ModbusTcpClient
-#from pymodbus.exceptions import ModbusException
 import struct
 import time
 

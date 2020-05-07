@@ -8,32 +8,32 @@ class BASLERACA(Device):
     """BASLER NEW Camera"""
     parts=[                                                              #offset nid
       {'path':':IP_NAME', 'type':'text', 'value':'192.168.54.96'},          #1
-      {'path':':COMMENT', 'type':'text'},                                
+      {'path':':COMMENT', 'type':'text'},
 
       {'path':'.FRAME', 'type':'structure'},                             #3
-      {'path':'.FRAME:X', 'type':'numeric', 'value':8},                  
-      {'path':'.FRAME:Y', 'type':'numeric', 'value':8},                  
-      {'path':'.FRAME:WIDTH', 'type':'numeric', 'value':1920},            
-      {'path':'.FRAME:HEIGHT', 'type':'numeric', 'value':1200},           
-      {'path':'.FRAME:PIXEL_FORMAT', 'type':'text', 'value':'Mono12'}, 
+      {'path':'.FRAME:X', 'type':'numeric', 'value':8},
+      {'path':'.FRAME:Y', 'type':'numeric', 'value':8},
+      {'path':'.FRAME:WIDTH', 'type':'numeric', 'value':1920},
+      {'path':'.FRAME:HEIGHT', 'type':'numeric', 'value':1200},
+      {'path':'.FRAME:PIXEL_FORMAT', 'type':'text', 'value':'Mono12'},
 
       {'path':'.CAM_SETUP', 'type':'structure'},                         #9
-      {'path':'.CAM_SETUP:GAIN_AUTO', 'type':'text', 'value':'Off'}, 
-      {'path':'.CAM_SETUP:GAIN', 'type':'numeric', 'value':0},        
+      {'path':'.CAM_SETUP:GAIN_AUTO', 'type':'text', 'value':'Off'},
+      {'path':'.CAM_SETUP:GAIN', 'type':'numeric', 'value':0},
       {'path':'.CAM_SETUP:GAMMA_EN', 'type':'text', 'value':'Off'},
-      {'path':'.CAM_SETUP:EXP_AUTO', 'type':'text', 'value':'Off'}, 
-      {'path':'.CAM_SETUP:EXPOSURE', 'type':'numeric', 'value':800E3}, 
+      {'path':'.CAM_SETUP:EXP_AUTO', 'type':'text', 'value':'Off'},
+      {'path':'.CAM_SETUP:EXPOSURE', 'type':'numeric', 'value':800E3},
 
       {'path':'.TIMING', 'type':'structure'},                             #15
-      {'path':'.TIMING:TRIG_MODE', 'type':'text', 'value':'INTERNAL'},    
-      {'path':'.TIMING:TRIG_SOURCE', 'type':'numeric'},                   
-      {'path':'.TIMING:TIME_BASE', 'type':'numeric'},                     
-      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':1},         
-      {'path':'.TIMING:BURST_DUR', 'type':'numeric', 'value':5},          
-      {'path':'.TIMING:SKIP_FRAME', 'type':'numeric', 'value':0},         
+      {'path':'.TIMING:TRIG_MODE', 'type':'text', 'value':'INTERNAL'},
+      {'path':'.TIMING:TRIG_SOURCE', 'type':'numeric'},
+      {'path':'.TIMING:TIME_BASE', 'type':'numeric'},
+      {'path':'.TIMING:FRAME_RATE', 'type':'numeric', 'value':1},
+      {'path':'.TIMING:BURST_DUR', 'type':'numeric', 'value':5},
+      {'path':'.TIMING:SKIP_FRAME', 'type':'numeric', 'value':0},
 
       {'path':'.STREAMING', 'type':'structure'},                              #22
-      {'path':'.STREAMING:MODE', 'type':'text', 'value':'Stream and Store'},  
+      {'path':'.STREAMING:MODE', 'type':'text', 'value':'Stream and Store'},
       {'path':'.STREAMING:SERVER', 'type':'text', 'value':'localhost'},
       {'path':'.STREAMING:PORT', 'type':'numeric', 'value':8888},
       {'path':'.STREAMING:AUTOSCALE', 'type':'text', 'value':'NO'},
@@ -46,17 +46,17 @@ class BASLERACA(Device):
 
       {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
       {'path':':FRAMES_METAD', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
-      {'path':':FRAME0_TIME', 'type':'numeric','value':0}]
-
-    parts.append({'path':':INIT_ACT','type':'action',
+      {'path':':FRAME0_TIME', 'type':'numeric','value':0},
+      {'path':':INIT_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
-      'options':('no_write_shot',)})
-    parts.append({'path':':START_ACT','type':'action',
+      'options':('no_write_shot',)},
+      {'path':':START_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','INIT',50,None),Method(None,'startAcquisition',head))",
-      'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACT','type':'action',
+      'options':('no_write_shot',)},
+      {'path':':STOP_ACT','type':'action',
       'valueExpr':"Action(Dispatch('CAMERA_SERVER','STORE',50,None),Method(None,'stopAcquisition',head))",
-      'options':('no_write_shot',)})
+      'options':('no_write_shot',)},
+    ]
 
     handle = c_int(-1)
     handles = {}
@@ -120,11 +120,9 @@ class BASLERACA(Device):
     def restoreWorker(self):
         if self.nid in BASLERACA.workers.keys():
             self.worker = BASLERACA.workers[self.nid]
-            return 1
         else:
             Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot restore worker!!')
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        return 1
 
 ###restore info###
     def restoreInfo(self):
@@ -168,8 +166,6 @@ class BASLERACA(Device):
           BASLERACA.baslerLib.getLastError(self.handle, self.error)
           Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot open device '+ name +'('+self.error.raw+')')
           raise mdsExceptions.TclFAILED_ESSENTIAL
-
-      return 1
 
 ###remove info###
     def removeInfo(self):
@@ -445,8 +441,8 @@ class BASLERACA(Device):
           self.debugPrint("streaming adj ROI h  ", adjRoiH)
           deviceName = str(self).rsplit(":",1)        #Recover device name to overlay it as text on frame
           deviceName = deviceName[1]
-          self.debugPrint("Device Name ", deviceName)     
-      
+          self.debugPrint("Device Name ", deviceName)
+
           status = BASLERACA.baslerLib.setStreamingMode(self.handle, streamingEnabled,  autoAdjustLimit, c_char_p(streamingServer), streamingPort,  lowLim,  highLim, adjRoiX, adjRoiY, adjRoiW, adjRoiH, c_char_p(deviceName));
           if status < 0:
             BASLERACA.baslerLib.getLastError(self.handle, self.error)
@@ -490,8 +486,6 @@ class BASLERACA(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.debugPrint('Init action completed.')
-      return 1
-
 
 
 ####################CHANGE GAIN
@@ -506,7 +500,6 @@ class BASLERACA(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return 1
 
 
 ####################CHANGE EXPOSURE
@@ -521,7 +514,6 @@ class BASLERACA(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return 1
 
 
 ####################READ INTERNAL TEMPERATURE
@@ -536,7 +528,6 @@ class BASLERACA(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return 1
 
 
 ##########start acquisition############################################################################
@@ -557,7 +548,6 @@ class BASLERACA(Device):
       except:
           pass
 
-
       self.debugPrint("Starting Acquisition...")
 
       self.worker = self.AsynchStore()
@@ -575,14 +565,11 @@ class BASLERACA(Device):
       self.worker.configure(self)
       self.saveWorker()
       self.worker.start()
-      return 1
-
 
 ##########stop acquisition############################################################################
     def stopAcquisition(self):
       if self.restoreWorker() :
-      	self.worker.stop()
-      return 1
+          self.worker.stop()
 
 ##########software trigger (start saving in mdsplus)############################################
     def swTrigger(self):
@@ -607,4 +594,3 @@ class BASLERACA(Device):
         raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.saveInfo()
-      return 1

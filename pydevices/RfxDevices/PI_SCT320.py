@@ -1,8 +1,6 @@
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float32Array, Int16Array, Signal
-from ctypes import CDLL, cdll, memmove, byref, c_int, c_char, c_void_p, c_byte, c_float, c_char_p, c_long, c_longlong, c_ushort, Structure, POINTER, cast, sizeof
+from MDSplus import mdsExceptions, Device, Data, Float32, Signal
 import numpy as np
 import time
-import sys
 
 
 class PI_SCT320(Device):
@@ -80,7 +78,7 @@ class PI_SCT320(Device):
 
     for i in range(0,9):
         parts.append({'path':'.GRATINGS.GRATING_%02d:FOCAL_POS'%(i+1), 'type':'numeric'})
-     
+
     del(i)
 
 
@@ -102,13 +100,13 @@ class PI_SCT320(Device):
                   [ 'gratings_grating_03_adjust', 16, 3, 'int']]
 
 
-    
+
 
     ROI_NUM     = 24
     GRATING_NUM = 3
     SLIT_NUM    = 2
     WIDTH_NUM   = 3
-    
+
     def sendCommand(self, dev, cmd, out ):
         dev.write(cmd+'\r')
         time.sleep(1)
@@ -124,7 +122,7 @@ class PI_SCT320(Device):
                if len(ls) > 0 and ls[len(ls) - 1] == 'ok':
                    ls = ls[:len(ls) - 1]
                    if len(ls) > 0 :
-                      out.append(ls)  
+                      out.append(ls)
                    return self.SCT_320_OK
                if line.find('?') != -1:
                    print('Unknow command')
@@ -136,15 +134,15 @@ class PI_SCT320(Device):
 
     def setParameter(self, dev, value, param):
         out = []
-        print ('setParameter ', param,  value  )      
+        print ('setParameter ', param,  value  )
         status = self.sendCommand(dev, '%d %s'%(value,param), out)
         print ('Parameter configured ',  status)
         return status
 
     def getParameter(self, dev, param, out = []):
-        print ('getParameter ', param  )      
-        status = self.sendCommand(dev, '?'+param, out) 
-        print ('getParameter ', param, out)      
+        print ('getParameter ', param  )
+        status = self.sendCommand(dev, '?'+param, out)
+        print ('getParameter ', param, out)
         return status
 
 
@@ -163,7 +161,7 @@ class PI_SCT320(Device):
             print ('p_size',p_size)
             n_pix=float(self.sensor_width.data())                                             #; xdimDet
             print ('n_pix',n_pix)
-            lambda_0= self.lambda_0.data() * 10                                               #; (A) 
+            lambda_0= self.lambda_0.data() * 10                                               #; (A)
             print ('lambda_0',lambda_0)
             d=1./G                                                                            #;mm
             print ('d', d)
@@ -176,17 +174,17 @@ class PI_SCT320(Device):
             x=(np.arange(n_pix) + 1 )/n_pix*x_max-x_max/2.                                       #;x=(findgen(n_pix)+1)/n_pix*x_max-x_max/2.
             print ('x',x, np.cos(delta))
             #csi=atan(x/f)                                                                    #;vale se delta e' piccolo
-            csi=np.arctan(x*np.cos(delta)/(f+x*np.sin(delta))) 
+            csi=np.arctan(x*np.cos(delta)/(f+x*np.sin(delta)))
             print ('csi',csi)
 
-            lambda_arr=d/m*2*(np.sin(psi+csi/2)*np.cos(gamma/2+csi/2))*1E7 
+            lambda_arr=d/m*2*(np.sin(psi+csi/2)*np.cos(gamma/2+csi/2))*1E7
             print ('lambda_arr', len(lambda_arr) , lambda_arr)
-            getattr(self, 'gratings_grating_%02d_lambda_nm'%(grating)).putData(lambda_arr) 
+            getattr(self, 'gratings_grating_%02d_lambda_nm'%(grating)).putData(lambda_arr)
 
-            
+
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot compute lambda axis for grating %d : %s'%(grating, str(e)) )
-    
+
 
     def load_calib(self):
 
@@ -204,7 +202,7 @@ class PI_SCT320(Device):
                               [ 'gratings_grating_%02d_focal_pos', 'float'],
                               [ 'gratings_grating_%02d_dispersion', 'signal']] # <node>, <signal>, <x values, y values>
 
-   
+
         try:
             print ("Load Calibration File ", self.calibration_file_path.data())
             spectroCalibFile = self.calibration_file_path.data()
@@ -228,14 +226,14 @@ class PI_SCT320(Device):
 
             cal_gratings_date = str(sheet['C8'].value)
             cal_gratings_comment = str(sheet['C9'].value)
-            
-            
+
+
             param = 'GRATINGS'
             sheet=wb['GRATINGS']
             col=sheet['B']
             geoove_arr = [float(c.value) for c in col[1:len(col):1]]
             gratingsNodeList[0].append(geoove_arr)
-            
+
             col=sheet['C']
             blaze_arr = [str(c.value) for c in col[1:len(col):1]]
             gratingsNodeList[1].append(blaze_arr)
@@ -263,11 +261,11 @@ class PI_SCT320(Device):
             col=sheet['I']
             detector_arr = [float(c.value) for c in col[1:len(col):1]]
             gratingsNodeList[7].append(detector_arr)
-            
+
             col=sheet['J']
             flocal_pos_arr = [float(c.value) for c in col[1:len(col):1]]
             gratingsNodeList[8].append(flocal_pos_arr)
-            
+
             param = 'FWHM'
             sheet=wb['FWHM']
             col=sheet['E']
@@ -281,8 +279,8 @@ class PI_SCT320(Device):
             param = 'DISPERSION'
             sheet=wb['DISPERSION']
             matrix=sheet['C2':chr(ord('C') + cal_dispersion_fit_points - 1)+'7']
-            grating_disp_arr = [c.value for c in np.asarray(matrix).reshape(cal_dispersion_fit_points * 2*3)] 
-            gratingsNodeList[9].append(Float32Array(np.array(grating_disp_arr,'float32').reshape([2*3, cal_dispersion_fit_points])))
+            grating_disp_arr = [c.value for c in np.asarray(matrix).reshape(cal_dispersion_fit_points * 2*3)]
+            gratingsNodeList[9].append(Float32(np.array(grating_disp_arr,'float32').reshape([2*3, cal_dispersion_fit_points])))
 
             param = 'INTENSITY'
             sheet=wb['INTENSITY']
@@ -291,11 +289,11 @@ class PI_SCT320(Device):
 
 
             wb.close()
-            
+
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot read or invalid format on sheet %s geometry calibration file %s'%(param, str(e)) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
         try:
             self.calibration_geometry_comment.putData(cal_geometry_comment)
         except Exception as e :
@@ -328,28 +326,28 @@ class PI_SCT320(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            data = Float32Array(np.array(fwhm_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM]))
+            data = Float32(np.array(fwhm_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM]))
             self.calibration_geometry_fwhm.putData(data)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing geometry calibration fwhm field ' + str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            data = Float32Array(np.array(offset_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM]))
+            data = Float32(np.array(offset_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM]))
             self.calibration_geometry_offset.putData(data)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing geometry calibration offset field ' + str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            data = Float32Array(np.array(grating_disp_arr,'float32').reshape([6,cal_dispersion_fit_points]))
+            data = Float32(np.array(grating_disp_arr,'float32').reshape([6,cal_dispersion_fit_points]))
             self.calibration_geometry_grating_disp.putData(data)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing geometry calibration dispersion field ' + str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         try:
-            data = Float32Array(np.array(intensity_coeff_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM,(cal_intensity_degree+1)]))
+            data = Float32(np.array(intensity_coeff_arr,'float32').reshape([self.WIDTH_NUM,self.SLIT_NUM,self.GRATING_NUM,self.ROI_NUM,(cal_intensity_degree+1)]))
             self.calibration_intensity_coeff.putData(data)
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing geometry calibration offset field ' + str(e) )
@@ -374,12 +372,12 @@ class PI_SCT320(Device):
         return 1
 
 
-    
+
     def init(self):
 
         print ('---------------- INNIT --------------------')
         import serial
-  
+
         try:
             detector = self.detector.getData().getPath()
             print ("DETECTOR ", detector)
@@ -396,7 +394,7 @@ class PI_SCT320(Device):
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve HEIGHT sensor '+ str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
         try:
             width = Data.execute(detector+'.SENSOR.INFORMATION.ACTIVE:WIDTH')
             print (width)
@@ -412,7 +410,7 @@ class PI_SCT320(Device):
         except Exception as e :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve PIXEL_HEIGHT sensor '+ str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
         try:
             pixelWidth = Data.execute(detector+'.SENSOR.INFORMATION.PIXEL:HEIGHT')
             print (pixelWidth)
@@ -440,17 +438,17 @@ class PI_SCT320(Device):
                     d = getattr(self, val[0]).getData()
                     #print val, out[val[1]][val[2]]
                     if d != out[val[1]][val[2]] :
-                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %s pulse file %s  '%(val[0],out[val[1]][val[2]], d) )                        
+                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %s pulse file %s  '%(val[0],out[val[1]][val[2]], d) )
                elif val[3] == 'int' :
                     d = getattr(self, val[0]).getData()
                     #print val, int(out[val[1]][val[2]])
                     if d != int(out[val[1]][val[2]]) :
-                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %d pulse file %d  '%(val[0],int(out[val[1]][val[2]]), d) )                        
+                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %d pulse file %d  '%(val[0],int(out[val[1]][val[2]]), d) )
                elif val[3] == 'float' :
                     d = getattr(self, val[0]).getData()
                     #print val, float(out[val[1]][val[2]])
                     if d != float(out[val[1]][val[2]]) :
-                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %f pulse file %f  '%(val[0],float(out[val[1]][val[2]]), d) )                           
+                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Inconsisent grating calibration value %s spectrometer %f pulse file %f  '%(val[0],float(out[val[1]][val[2]]), d) )
         else :
             if dev != 0 :
                 dev.close()
@@ -465,7 +463,7 @@ class PI_SCT320(Device):
                     if grating != int(out[0][0]) :
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error GRATING cofigured value' )
                 else:
-                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading GRATING value' )                        
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading GRATING value' )
             else:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error witing GRATING value' )
         except Exception as e :
@@ -479,10 +477,10 @@ class PI_SCT320(Device):
             if self.setParameter(dev, lambda_0, 'GOTO') == self.SCT_320_OK :
                 out = []
                 if self.getParameter(dev, 'NM', out) == self.SCT_320_OK :
-                    readLambda = float(out[0][0]) 
-                    self.lambda_0.putData(readLambda) 
+                    readLambda = float(out[0][0])
+                    self.lambda_0.putData(readLambda)
                 else:
-                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading LAMBDA_0 value' )                        
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error reading LAMBDA_0 value' )
             else:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error witing LAMBDA_0 value' )
         except Exception as e :
@@ -490,7 +488,7 @@ class PI_SCT320(Device):
                 dev.close()
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot resolve LAMBDA_0 value '+ str(e) )
             raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
         if dev != 0 :
             dev.close()
 
@@ -508,28 +506,3 @@ class PI_SCT320(Device):
         print ('-------------------------------------------')
         return (1)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    

@@ -23,12 +23,10 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_COMMON = __import__('MARTE_COMMON', globals(), level=1).MARTE_COMMON
-except:
-    MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
+MARTE_COMMON = __import__('MARTE_COMMON', globals())
 
-class MARTE_RTSM(MARTE_COMMON):
+
+class MARTE_RTSM(MARTE_COMMON.MARTE_COMMON):
     parNames = ['numStates', 'stateTime','stateNumNext','stateNext','stateNextMask','stateNextPattern','stateOutMode','stateOutBits', 'triggerTime', 'frequency']
 
     parValues = ['1']+['ZERO(8,0.)']*2+['ZERO(64,0.)']*4+['ZERO(8,0.)', '0', '1000']
@@ -42,7 +40,7 @@ class MARTE_RTSM(MARTE_COMMON):
         'state7_wave1','state7_wave2','state7_wave3','state7_wave4','state7_wave5','state7_wave6','state7_wave7','state7_wave8',
         'state8_wave1','state8_wave2','state8_wave3','state8_wave4','state8_wave5','state8_wave6','state8_wave7','state8_wave8']
 
-    parts = list(MARTE_COMMON.parts)
+    parts = list(MARTE_COMMON.MARTE_COMMON.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

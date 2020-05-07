@@ -23,18 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_COMMON = __import__('MARTE_COMMON', globals(), level=1).MARTE_COMMON
-except:
-    MARTE_COMMON = __import__('MARTE_COMMON', globals()).MARTE_COMMON
+MARTE_COMMON = __import__('MARTE_COMMON', globals())
 
-class MARTE_DEVICE(MARTE_COMMON):
+
+class MARTE_DEVICE(MARTE_COMMON.MARTE_COMMON):
     parNames = ['param1', 'param2', 'param3', 'param4', 'param5', 'param6', 'param7', 'param8', 'param9', 'param10', 'param11', 'param12', 'param13', 'param14', 'param15', 'param16' ]
     waveParNames = ['paramWave1', 'paramWave2', 'paramWave3', 'paramWave4', 'paramWave5', 'paramWave6', 'paramWave7', 'paramWave8']
     parValues = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
-    parts = list(MARTE_COMMON.parts)
-    parts.append({'path':'.PARAMS', 'type':'structure'})
-    parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
+    parts = MARTE_COMMON.MARTE_COMMON.parts + [
+        {'path':'.PARAMS', 'type':'structure'},
+        {'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)},
+    ]
     for i in range(len(parNames)):
       parts.append({'path':'.PARAMS:PAR_%03d'%(i+1), 'type':'structure'})
       parts.append({'path':'.PARAMS:PAR_%03d:DESCRIPTION'%(i+1), 'type':'text'})

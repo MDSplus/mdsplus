@@ -28,29 +28,30 @@ from threading import Thread
 from time import sleep
 from ctypes import CDLL, c_uint, c_int, c_char_p, c_double
 
+#TODO: use persistant field for
+
 class CONTIPPSETUP(Device):
     """Probe temperature control setup"""
-
-    parts=[ {'path':':COMMENT', 'type':'text'},
-    {'path':':BOARD_ID', 'type':'numeric', 'value':0},
-    {'path':':AI_CHAN_LIST', 'type':'numeric'},
-    {'path':':AI_FDCH_IDX', 'type':'numeric'},
-    {'path':':CLOCK_FREQ', 'type':'numeric', 'value':10},
-    {'path':':AOCH_ID', 'type':'numeric', 'value':0},
-    {'path':':DOCH_ID', 'type':'numeric', 'value':0},
-    {'path':':TEMP_REF', 'type':'numeric', 'value':50}]
-
-    parts.append({'path':':START_ACTION','type':'action',
+    parts = [
+        {'path':':COMMENT', 'type':'text'},
+        {'path':':BOARD_ID', 'type':'numeric', 'value':0},
+        {'path':':AI_CHAN_LIST', 'type':'numeric'},
+        {'path':':AI_FDCH_IDX', 'type':'numeric'},
+        {'path':':CLOCK_FREQ', 'type':'numeric', 'value':10},
+        {'path':':AOCH_ID', 'type':'numeric', 'value':0},
+        {'path':':DOCH_ID', 'type':'numeric', 'value':0},
+        {'path':':TEMP_REF', 'type':'numeric', 'value':50},
+        {'path':':START_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start',head))",
-        'options':('no_write_shot',)})
-
-    parts.append({'path':':STOP_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'stop',head))",
-        'options':('no_write_shot',)})
-
-    parts.append({'path':':WAIT_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':WAIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','POST_PULSE_CHECK',50,None),Method(None,'exit',head))",
-        'options':('no_write_shot',)})
+        'options':('no_write_shot',)},
+    ]
+
 
     niInterfaceLib = None
     threadActive = False
@@ -75,22 +76,22 @@ class CONTIPPSETUP(Device):
             CONTIPPSETUP.niInterfaceLib.temperatureProbeControl(c_uint(self.board_id), ai_chan_list_c, c_int(ai_num_chan), c_int(self.ai_fdch_idx), c_double(self.clock_freq), c_int(self.aoch_id), c_int(self.doch_id), c_double(self.temp_ref) );
             print("Thread STOP")
             CONTIPPSETUP.threadActive = False
-            return
 
 
     def restoreInfo(self):
         if CONTIPPSETUP.niInterfaceLib is None:
-            CONTIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
+            try:
+                CONTIPPSETUP.niInterfaceLib = CDLL("libNiInterface.so")
+            except:
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
+                raise mdsExceptions.TclFAILED_ESSENTIAL
 
     def start(self):
         print('OK Init')
         self.restoreInfo()
-        if CONTIPPSETUP.niInterfaceLib == 0 :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
         if CONTIPPSETUP.threadActive :
             CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("start"))
-        return
+            return
 
         self.worker = self.AsynchWaveGen()
         self.worker.daemon = True
@@ -148,26 +149,19 @@ class CONTIPPSETUP(Device):
         self.worker.start()
         print("End Initialization")
         CONTIPPSETUP.threadActive = True
-        return
 
 
     def exit(self):
         print("End Initialization")
         self.restoreInfo()
-        if CONTIPPSETUP.niInterfaceLib == 0 :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
+
         CONTIPPSETUP.threadActive = False
         CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("exit"))
         sleep(2)
-        return
 
 
     def stop(self):
         self.restoreInfo()
-        if CONTIPPSETUP.niInterfaceLib == 0 :
-            Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot load libNiInterface.so')
-            raise mdsExceptions.TclFAILED_ESSENTIAL
+
         CONTIPPSETUP.niInterfaceLib.temperatureCtrlCommand(c_char_p("stop"))
         sleep(2)
-        return

@@ -1,8 +1,11 @@
 
-from MDSplus import *
+from MDSplus import Device, Event
 import subprocess
 import numpy as np
 import time
+
+MC = __import__('MARTE2_COMPONENT', globals())
+
 
 class MARTE2_SUPERVISOR(Device):
     """National Instrument 6683 device. Generation of clock and triggers and recording of events """
@@ -16,7 +19,7 @@ class MARTE2_SUPERVISOR(Device):
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':NAME', 'type':'text'})
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':CORE', 'type':'numeric'})
         parts.append({'path':'.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAMS', 'type':'text'})
-    parts.append({'path':'.TIMES', 'type':'structure'}) 
+    parts.append({'path':'.TIMES', 'type':'structure'})
     for stateIdx in range(10):
       parts.append({'path':'.TIMES.STATE_'+str(stateIdx+1), 'type':'structure'})
       for threadIdx in range(10):
@@ -33,7 +36,7 @@ class MARTE2_SUPERVISOR(Device):
         parts.append({'path':'.TIMES.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAM7', 'type':'signal'})
         parts.append({'path':'.TIMES.STATE_'+str(stateIdx+1)+'.THREAD_'+str(threadIdx+1)+':GAM8', 'type':'signal'})
 
-    
+
     parts.append({'path':':INIT','type':'action',
         'valueExpr':"Action(Dispatch('MARTE_SERVER','PON',50,None),Method(None,'init',head))",
         'options':('no_write_shot',)})
@@ -66,11 +69,15 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
           threadName = getattr(self, 'state_%d_thread_%d_name'%(state+1, thread+1)).data()
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
             try:
                 currGamNid = t.getNode(gam);
             except:
-                return 'Cannot get device '+gam, {}, {} 
+                return 'Cannot get device '+gam, {}, {}
             nid = currGamNid.getNid()
             if nid in threadMap:
               threadMap[nid] += [threadName]
@@ -96,7 +103,12 @@ class MARTE2_SUPERVISOR(Device):
           threadInfo['name'] = threadName
           gamNames = []
           threadPeriod = 0
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
+
             currGamNid = t.getNode(gam);
             nid = currGamNid.getNid()
             if currGamNid.isOn():
@@ -104,12 +116,12 @@ class MARTE2_SUPERVISOR(Device):
                 gamInstance = gamClass(currGamNid)
                 gamList = []
                 if not (currGamNid.getNid() in gamNids):
-                  try:
-                    gamInstance.prepareMarteInfo()
-                    currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
-                  except:
-                    return 'Cannot get timebase for ' + gam, {},{}
-                  gamNids.append(currGamNid.getNid()) 
+                  #try:
+                  gamInstance.prepareMarteInfo()
+                  currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
+                  #except:
+                    #return 'Cannot get timebase for ' + gam, {},{}
+                  gamNids.append(currGamNid.getNid())
                   if currPeriod > 0 and threadPeriod > 0:
                     error = 'More than one component driving thread timing'
                     print('MARTE2 SUPERVISOR ERROR: '+ error);
@@ -130,7 +142,7 @@ class MARTE2_SUPERVISOR(Device):
           self.getTimingInfo(state, thread, threadPeriod, retGams, retData, gamList)
           gamNames += gamList
 #############################
- 
+
           threadInfo['gams'] = gamNames
           stateThreads.append(threadInfo)
         stateInfo['threads'] = stateThreads
@@ -158,9 +170,13 @@ class MARTE2_SUPERVISOR(Device):
       cpuMask = getattr(self, 'times_state_%d_thread_%d_cpu_mask'%(state+1, thread+1)).data()
       gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
       timeSignals = []
-      for gam in gams:
+      for gam1 in gams:
+        if isinstance(gam1, str):
+            gam = gam1
+        else:
+            gam = str(gam1,'utf_8')
+
         currGamNid = self.getTree().getNode(gam)
-        nid = currGamNid.getNid()
         if currGamNid.isOn():
           gamName = currGamNid.getNodeName()
           gamClass = currGamNid.getData().getDevice()
@@ -173,10 +189,10 @@ class MARTE2_SUPERVISOR(Device):
             timeSignals.append(gamName+'_IOGAM_WriteTime')
           else:
             timeSignals.append(gamName+'_DDBOutIOGAM_ReadTime')
-	
+
       if len(timeSignals) == 0:
         return
-      currGam = '+State_%d_Thread_%d_TIMES_IOGAM = {\n'%(state+1, thread+1)  
+      currGam = '+State_%d_Thread_%d_TIMES_IOGAM = {\n'%(state+1, thread+1)
       currGam += '  Class = IOGAM\n'
       currGam += '  InputSignals = {\n'
       currGam += '    '+stateName+'_'+threadName+'_CycleTime = {\n'
@@ -227,7 +243,7 @@ class MARTE2_SUPERVISOR(Device):
 
       sigIdx = 1
       for timeSignal in timeSignals:
-        dataSource += '      '+timeSignal + ' = {\n'  
+        dataSource += '      '+timeSignal + ' = {\n'
         dataSource += '        NodeName = '+getattr(self, 'times_state_%d_thread_%d_gam'%(state+1, thread+1)+str(sigIdx)).getFullPath()+'\n'
         dataSource += '        Period = '+str(threadPeriod) + '\n'
         dataSource += '        MakeSegmentAfterNWrites = '+str(segLen)+'\n'
@@ -237,7 +253,7 @@ class MARTE2_SUPERVISOR(Device):
       dataSource += '    }\n'
       dataSource += '  }\n'
       dataSources.append(dataSource)
-     
+
 
 
     def buildConfiguration(self):
@@ -415,13 +431,17 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           try:
             gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
-            for gam in gams:
+            for gam1 in gams:
+              if isinstance(gam1, str):
+                gam = gam1
+              else:
+                gam = str(gam1,'utf_8')
+
               try:
                 currGamNid = t.getNode(gam);
               except:
                 return 'Cannot get Device '+gam
               print(str(currGamNid))
-              nid = currGamNid.getNid()
               if currGamNid.isOn():
                 gamClass = currGamNid.getData().getDevice()
                 gamInstance = gamClass(currGamNid)
@@ -433,7 +453,7 @@ class MARTE2_SUPERVISOR(Device):
 
           gamInstance.prepareMarteInfo()
         except:
-          return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'   
+          return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'
 
       error, info, threadMap = self.getInfo()
       if error != '':
@@ -451,23 +471,27 @@ class MARTE2_SUPERVISOR(Device):
         for thread in range(numThreads):
           timebaseGenerator = ''
           gams = getattr(self, 'state_%d_thread_%d_gams'%(state+1, thread+1)).data()
-          for gam in gams:
+          for gam1 in gams:
+            if isinstance(gam1, str):
+                gam = gam1
+            else:
+                gam = str(gam1,'utf_8')
+
             try:
               currGamNid = t.getNode(gam);
             except:
               return 'Cannot get Device '+gam
-            nid = currGamNid.getNid()
             if currGamNid.isOn():
               gamClass = currGamNid.getData().getDevice()
               gamInstance = gamClass(currGamNid)
               timebaseMode = gamInstance.checkTimebase(threadMap)
-              if timebaseMode == MARTE2_COMPONENT.TIMEBASE_GENERATOR:
+              if timebaseMode == MC.MARTE2_COMPONENT.TIMEBASE_GENERATOR:
                 if timebaseGenerator == '':
                   timebaseGenerator = gamInstance.name.data()
                 else:
                   return 'Multiple timebases in state %d, thread %d'%(state+1, thread+1)+': '+ timebaseGenerator + ', ' + gamInstance.name.data()
           if timebaseGenerator == '':
-            return 'No Timebase defined in state %d, thread %d'%(state+1, thread+1) 
+            return 'No Timebase defined in state %d, thread %d'%(state+1, thread+1)
       return 'Configuration OK'
 
 

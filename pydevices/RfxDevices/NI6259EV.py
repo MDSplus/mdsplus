@@ -23,18 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float64Array, Float32Array
-from MDSplus.mdsExceptions import DevCOMM_ERROR
+from MDSplus import mdsExceptions, Device, Data, Float32
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 from threading import Thread
 from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_double
 import os
 import time
-import sys, traceback
 
 class NI6259EV(Device):
     """NI PXI-6259 M-series multi functional data acquisition card"""
-    parts=[{'path':':BOARD_ID', 'type':'numeric', 'value':0},
+    parts = [
+        {'path':':BOARD_ID', 'type':'numeric', 'value':0},
         {'path':':COMMENT', 'type':'text'},
         {'path':':INPUT_MODE', 'type':'text', 'value':'RSE'},
         {'path':':FREQ1_DIV', 'type':'numeric', 'value':1},
@@ -45,29 +44,34 @@ class NI6259EV(Device):
         {'path':':CLOCK_FREQ', 'type':'numeric'},
         {'path':':SERIAL_NUM', 'type':'numeric'},
         {'path':':CONVERT_CLK', 'type':'numeric', 'value':20},
-        {'path':':HISTORY_LEN', 'type':'numeric', 'value':0.2}]
+        {'path':':HISTORY_LEN', 'type':'numeric', 'value':0.2},
+    ]
 
-    for i in range(0,32):
-        parts.append({'path':'.CHANNEL_%d'%(i+1), 'type':'structure'})
-        parts.append({'path':'.CHANNEL_%d:MODE'%(i+1), 'type':'text', 'value':'DISABLED'})
-        parts.append({'path':'.CHANNEL_%d:POLARITY'%(i+1), 'type':'text', 'value':'BIPOLAR'})
-        parts.append({'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'})
-        parts.append({'path':'.CHANNEL_%d:EVENT_NAME'%(i+1), 'type':'text'})
-        parts.append({'path':'.CHANNEL_%d:START_TIME'%(i+1), 'type':'numeric', 'value':0})
-        parts.append({'path':'.CHANNEL_%d:END_TIME'%(i+1), 'type':'numeric', 'value':1E-2})
-        parts.append({'path':'.CHANNEL_%d:CALIB'%(i+1), 'type':'numeric', 'options':('no_write_model')  })
-        parts.append({'path':'.CHANNEL_%d:RAW'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
-        parts.append({'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
+    for i in range(32):
+        parts.extend([
+            {'path':'.CHANNEL_%d'%(i+1), 'type':'structure'},
+            {'path':'.CHANNEL_%d:MODE'%(i+1), 'type':'text', 'value':'DISABLED'},
+            {'path':'.CHANNEL_%d:POLARITY'%(i+1), 'type':'text', 'value':'BIPOLAR'},
+            {'path':'.CHANNEL_%d:RANGE'%(i+1), 'type':'text', 'value':'10V'},
+            {'path':'.CHANNEL_%d:EVENT_NAME'%(i+1), 'type':'text'},
+            {'path':'.CHANNEL_%d:START_TIME'%(i+1), 'type':'numeric', 'value':0},
+            {'path':'.CHANNEL_%d:END_TIME'%(i+1), 'type':'numeric', 'value':1E-2},
+            {'path':'.CHANNEL_%d:CALIB'%(i+1), 'type':'numeric', 'options':('no_write_model')},
+            {'path':'.CHANNEL_%d:RAW'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')},
+            {'path':'.CHANNEL_%d:DATA'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')},
+        ])
     del(i)
-    parts.append({'path':':INIT_ACTION','type':'action',
+    parts.extend([
+        {'path':':INIT_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':START_ACTION','type':'action',
+        'options':('no_write_shot',)},
+        {'path':':START_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','INIT',50,None),Method(None,'start_store',head))",
-        'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACTION','type':'action',
+        'options':('no_write_shot',)},
+         {'path':':STOP_ACTION','type':'action',
         'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',50,None),Method(None,'stop_store',head))",
-        'options':('no_write_shot',)})
+        'options':('no_write_shot',)},
+    ])
 
 
 #File descriptor
@@ -308,7 +312,7 @@ class NI6259EV(Device):
                 coeff[0] = coeff[2] = coeff[3] = 0
                 coeff[1] = c_float( gainValue / 65536. )
                 print('SCRIVO CALIBRAZIONE', coeff)
-                getattr(self.device, 'channel_%d_calib'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
+                getattr(self.device, 'channel_%d_calib'%(self.chanMap[chan]+1)).putData(Float32(coeff))
                 print('SCRITTO')
 
 
@@ -340,8 +344,12 @@ class NI6259EV(Device):
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
 
             while not self.stopReq:
-                status = NI6259EV.niInterfaceLib.pxi6259EV_readAndSaveAllChannels(c_int(numChans), chanFd_c, isBurst_c, f1Divs_c, f2Divs_c, c_double(maxDelay), c_double(baseFreq),
-			preTimes_c, postTimes_c, c_double(baseStart), c_int(bufSize), c_int(segmentSize), eventNames_c, chanNid_c, self.treePtr, saveList, self.stopAcq)
+                status = NI6259EV.niInterfaceLib.pxi6259EV_readAndSaveAllChannels(
+                    c_int(numChans), chanFd_c, isBurst_c, f1Divs_c, f2Divs_c,
+                    c_double(maxDelay), c_double(baseFreq),
+                    preTimes_c, postTimes_c, c_double(baseStart),
+                    c_int(bufSize), c_int(segmentSize), eventNames_c,
+                    chanNid_c, self.treePtr, saveList, self.stopAcq)
 
                 if status < 1:
                     return 0
@@ -450,7 +458,7 @@ class NI6259EV(Device):
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
             except Exception as e:
-                self.debugPrint (estr(e))
+                self.debugPrint (str(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 raise DevBAD_PARAMETER
             if(enabled):

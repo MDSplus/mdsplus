@@ -1,7 +1,7 @@
 
-from MDSplus import *
+from MDSplus import mdsExceptions, Device, Data
 from threading import Thread
-from ctypes import *
+from ctypes import CDLL, c_int, c_double, c_char_p
 
 
 class RFX_RPADC(Device):
@@ -10,24 +10,24 @@ class RFX_RPADC(Device):
         {'path':':BUF_SIZE', 'type':'numeric', 'value':100000},
         {'path':':SEG_SIZE', 'type':'numeric', 'value':100000},
         {'path':':TRIGGER', 'type':'numeric'},
-        {'path':':DURATION', 'type':'numeric'},				#if <= 0 streaming
-        {'path':':MODE', 'type':'text','value':'STREAMING'}, 		#STREAMING or EVENT_STREAMING or TRIGGER_STREAMING or TRIGGER_SINGLE
-        {'path':':EV_MODE', 'type':'text','value':'UPPER'}, 		#event generation in respect of EV_LEVEL: UPPER or LOWER
-        {'path':':EV_CHANNEL', 'type':'text','value':'A'}, 		#channel (A or B) used for event detection
-        {'path':':EV_LEVEL', 'type':'numeric'},  			#event generation level
-        {'path':':EV_SAMPLES', 'type':'numeric', 'value': 2},  		#event validation samples
-        {'path':':PRE_SAMPLES', 'type':'numeric', 'value': 100},  	#pre trigger samples
-        {'path':':POST_SAMPLES', 'type':'numeric', 'value': 100},  	#post trigger samples
-        {'path':':CLOCK_MODE', 'type':'text', 'value': 'INTERNAL'},  	#Clock mode
-        {'path':':EXT_CLOCK', 'type':'numeric'},  			#Ext. Clock
-        {'path':':TRIG_EVENT', 'type':'numeric'	},  			#if clock_mode == TRIG_EVENT or clock_mode == EXT_EVENT
-        {'path':':RANGE_A', 'type':'numeric', 'value':1.},  		#1/20 Vpp
-        {'path':':RANGE_B', 'type':'numeric', 'value':1.},  			
-        {'path':':GAIN_A', 'type':'numeric', 'value':1.},  		
-        {'path':':GAIN_B', 'type':'numeric', 'value':1.},  		
-        {'path':':OFFSET_A', 'type':'numeric', 'value':0.},  		
-        {'path':':OFFSET_B', 'type':'numeric', 'value':0.},  		
-        {'path':':EVENT_CODE', 'type':'numeric', 'value':0.},  		
+        {'path':':DURATION', 'type':'numeric'},                #if <= 0 streaming
+        {'path':':MODE', 'type':'text','value':'STREAMING'},         #STREAMING or EVENT_STREAMING or TRIGGER_STREAMING or TRIGGER_SINGLE
+        {'path':':EV_MODE', 'type':'text','value':'UPPER'},         #event generation in respect of EV_LEVEL: UPPER or LOWER
+        {'path':':EV_CHANNEL', 'type':'text','value':'A'},         #channel (A or B) used for event detection
+        {'path':':EV_LEVEL', 'type':'numeric'},              #event generation level
+        {'path':':EV_SAMPLES', 'type':'numeric', 'value': 2},          #event validation samples
+        {'path':':PRE_SAMPLES', 'type':'numeric', 'value': 100},      #pre trigger samples
+        {'path':':POST_SAMPLES', 'type':'numeric', 'value': 100},      #post trigger samples
+        {'path':':CLOCK_MODE', 'type':'text', 'value': 'INTERNAL'},      #Clock mode
+        {'path':':EXT_CLOCK', 'type':'numeric'},              #Ext. Clock
+        {'path':':TRIG_EVENT', 'type':'numeric'    },              #if clock_mode == TRIG_EVENT or clock_mode == EXT_EVENT
+        {'path':':RANGE_A', 'type':'numeric', 'value':1.},          #1/20 Vpp
+        {'path':':RANGE_B', 'type':'numeric', 'value':1.},
+        {'path':':GAIN_A', 'type':'numeric', 'value':1.},
+        {'path':':GAIN_B', 'type':'numeric', 'value':1.},
+        {'path':':OFFSET_A', 'type':'numeric', 'value':0.},
+        {'path':':OFFSET_B', 'type':'numeric', 'value':0.},
+        {'path':':EVENT_CODE', 'type':'numeric', 'value':0.},
         {'path':':RAW_A', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
         {'path':':RAW_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
         {'path':':CHAN_A', 'type':'signal'},
@@ -45,8 +45,8 @@ class RFX_RPADC(Device):
 
 
     class Configuration:
-      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples, 
-		    postSamples, segmentSamples, frequency, frequency1, single):
+      def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
+            postSamples, segmentSamples, frequency, frequency1, single):
           self.lib = lib
           self.fd = fd
           self.name = name
@@ -82,11 +82,12 @@ class RFX_RPADC(Device):
       def run(self):
           print('START THREAD', self.name, self.shot)
           try:
-             self.lib.rpadcStream(c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
-                                  c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
-                                  c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
-          except ValueError:
-               print(ValueError)
+             self.lib.rpadcStream(
+                 c_int(self.fd), c_char_p(self.name), c_int(self.shot), c_int(self.chanANid), c_int(self.chanBNid),
+                 c_int(self.triggerNid), c_int(self.preSamples), c_int(self.postSamples),
+                 c_int(self.segmentSamples), c_double(self.frequency), c_double(self.frequency1), c_int(self.single))
+          except ValueError as e:
+               print(e)
                raise mdsExceptions.TclFAILED_ESSENTIAL
 
           print('THREAD TERMINATED')
@@ -163,8 +164,8 @@ class RFX_RPADC(Device):
                     print('Cannot resolve event code')
                     return 0
             else:
-                event_code = 0;
- 	      
+                event_code = 0
+
             print('opening device')
             self.fd = self.lib.rpadcInit(c_int(mode), c_int(clockMode), c_int(preSamples), c_int(postSamples), c_int(trigFromChanA),
                                          c_int(trigAboveThreshold), c_int(evLevel), c_int(evSamples), c_int(decimation), c_int(event_code))
@@ -173,7 +174,7 @@ class RFX_RPADC(Device):
                 return 0
             print('device opened')
             self.conf.configure(self.lib, self.fd, self.getTree().name, self.getTree().shot, self.raw_a.getNid(), self.raw_b.getNid(),
-                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency, 
+                                self.trigger.getNid(), self.start_time.getNid(), preSamples, postSamples, segSize, frequency,
                                 frequency1, isSingle)
             self.chan_a.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_a, self.range_a, self.gain_a, self.offset_a))
             self.chan_b.putData(Data.compile('($1*$2/8192.)*$3 + $4', self.raw_b, self.range_b, self.gain_b, self.offset_b))
@@ -183,12 +184,12 @@ class RFX_RPADC(Device):
 
     def start_store(self):
         try:
-           worker = self.AsynchStore()
-           worker.configure(self.conf)
-           worker.daemon = True
-           worker.start()
+            worker = self.AsynchStore()
+            worker.configure(self.conf)
+            worker.daemon = True
+            worker.start()
         except:
-	   raise mdsExceptions.TclFAILED_ESSENTIAL
+            raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1
 
     def stop_store(self):
@@ -208,12 +209,3 @@ class RFX_RPADC(Device):
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1
-
-
-
-
-
-
-
-
-

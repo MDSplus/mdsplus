@@ -31,7 +31,7 @@ import time
 
 class FAKECAMERA(Device):
     """Fake Camera"""
-    parts=[
+    parts = [
       {'path':':NAME', 'type':'text', 'value':'Fake Camera 1'},
       {'path':':COMMENT', 'type':'text'},
       {'path':':EXP_NAME', 'type':'text', 'value':'cameratest'},
@@ -44,16 +44,17 @@ class FAKECAMERA(Device):
       {'path':':STREAM_AUTOS', 'type':'text', 'value':'NO'},
       {'path':':STREAM_LOLIM', 'type':'numeric', 'value':0},
       {'path':':STREAM_HILIM', 'type':'numeric', 'value':32767},
-      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},]
-    parts.append({'path':':INIT_ACT','type':'action',
+      {'path':':FRAMES', 'type':'signal','options':('no_write_model', 'no_compress_on_put')},
+      {'path':':INIT_ACT','type':'action',
           'valueExpr':"Action(Dispatch('CAMERA_SERVER','PULSE_PREP',50,None),Method(None,'init',head))",
-          'options':('no_write_shot',)})
-    parts.append({'path':':START_ACT','type':'action',
+          'options':('no_write_shot',)},
+      {'path':':START_ACT','type':'action',
           'valueExpr':"Action(Dispatch('CPCI_SERVER','INIT',50,None),Method(None,'start_store',head))",
-          'options':('no_write_shot',)})
-    parts.append({'path':':STOP_ACT','type':'action',
+          'options':('no_write_shot',)},
+      {'path':':STOP_ACT','type':'action',
           'valueExpr':"Action(Dispatch('CPCI_SERVER','STORE',50,None),Method(None,'stop_store',head))",
-          'options':('no_write_shot',)})
+          'options':('no_write_shot',)},
+    ]
 
     handle = 0
     handles = {}

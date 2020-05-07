@@ -23,92 +23,99 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import *
-from MARTE2_COMPONENT import *
+import MDSplus
 import ctypes
 
-class MARTE2_SIMULINK(MARTE2_COMPONENT):
+MC = __import__('MARTE2_COMPONENT', globals())
 
-    @classmethod
-    def buildPythonGam(cls, modelName):
-        
-      ModelLib = ctypes.cdll.LoadLibrary(modelName + '.so')
-      
-      initializeFunc = modelName + '_initialize'
+class MARTE2_SIMULINK(MC.MARTE2_COMPONENT):
+    pass
 
-# Initialization function is called with a dynamically-specified name
+# TODO: device class need <lib_name>.so to get node struct,
+#       thats bad without <lib_name>.so
+def BUILDER(cls):
+    try:
+      ModelLib = ctypes.cdll.LoadLibrary(cls.lib_name + '.so')
+    except OSError:
+      cls.inputs  = []
+      cls.outputs = []
+      cls.parameters = []
+    else:
+      initializeFunc = cls.lib_name + '_initialize'
+
+      # Initialization function is called with a dynamically-specified name
       ModelLib[initializeFunc]()
 
-# By default functions are assumed to return the C int type.
-# Other return types can be specified by setting the restype attribute.
+      # By default functions are assumed to return the C int type.
+      # Other return types can be specified by setting the restype attribute.
       ModelLib.GetMmiPtr.argtypes = []
       ModelLib.GetMmiPtr.restype = ctypes.POINTER(None)
       mmi = ModelLib.GetMmiPtr()
 
       WrapperLib = ctypes.cdll.LoadLibrary("rtw_capi_wrapper.so")
 
-# ** GENERAL MODEL DATA **
+      # ** GENERAL MODEL DATA **
 
-# Number of inputs
+      # Number of inputs
       WrapperLib.WCAPI_GetNumRootInputs.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetNumRootInputs.restype  = ctypes.c_int
       numInputs = WrapperLib.WCAPI_GetNumRootInputs(mmi)
 
-# Number of outputs
+      # Number of outputs
       WrapperLib.WCAPI_GetNumRootOutputs.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetNumRootOutputs.restype  = ctypes.c_int
       numOutputs = WrapperLib.WCAPI_GetNumRootOutputs(mmi)
-      
-# Number of parameters
+
+      # Number of parameters
       WrapperLib.WCAPI_GetNumModelParameters.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetNumModelParameters.restype  = ctypes.c_int
       numParameters = WrapperLib.WCAPI_GetNumModelParameters(mmi)
 
 
-# Input structure
+      # Input structure
       WrapperLib.WCAPI_GetRootInputs.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetRootInputs.restype  = ctypes.POINTER(None)
       RootInputStruct = WrapperLib.WCAPI_GetRootInputs(mmi)
 
-# Output structure
+      # Output structure
       WrapperLib.WCAPI_GetRootOutputs.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetRootOutputs.restype  = ctypes.POINTER(None)
       RootOutputStruct = WrapperLib.WCAPI_GetRootOutputs(mmi)
 
-# Parameter structure
+      # Parameter structure
       WrapperLib.WCAPI_GetModelParameters.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetModelParameters.restype  = ctypes.POINTER(None)
       ParameterStruct = WrapperLib.WCAPI_GetModelParameters(mmi)
 
-# DataType structure
+      # DataType structure
       WrapperLib.WCAPI_GetDataTypeMap.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetDataTypeMap.restype  = ctypes.POINTER(None)
       DataTypeMap = WrapperLib.WCAPI_GetDataTypeMap(mmi)
 
-# Dimension structure
+      # Dimension structure
       WrapperLib.WCAPI_GetDimensionMap.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetDimensionMap.restype  = ctypes.POINTER(None)
       DimensionMap = WrapperLib.WCAPI_GetDimensionMap(mmi)
 
-# Dimension structure
+      # Dimension structure
       WrapperLib.WCAPI_GetDataAddressMap.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetDataAddressMap.restype  = ctypes.POINTER(ctypes.POINTER(None))
       DataAddrMap = WrapperLib.WCAPI_GetDataAddressMap(mmi)
 
-# Dimension array
+      # Dimension array
       WrapperLib.WCAPI_GetDimensionArray.argtypes = [ctypes.POINTER(None)]
       WrapperLib.WCAPI_GetDimensionArray.restype  = ctypes.POINTER(ctypes.c_uint)
       DimensionArray = WrapperLib.WCAPI_GetDimensionArray(mmi)
 
-# ** SIGNAL DATA **
+      # ** SIGNAL DATA **
 
-# Functions are imported from the library:
+      # Functions are imported from the library:
 
-# 1. Name
+      # 1. Name
       WrapperLib.WCAPI_GetSignalName.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetSignalName.restype  = ctypes.c_char_p
 
-# 2. Type
+      # 2. Type
       WrapperLib.WCAPI_GetSignalDataTypeIdx.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetSignalDataTypeIdx.restype  = ctypes.c_uint
 
@@ -118,13 +125,13 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
       WrapperLib.WCAPI_GetDataTypeCName.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetDataTypeCName.restype  = ctypes.c_char_p
 
-# 3. Dimensions
+      # 3. Dimensions
       WrapperLib.WCAPI_GetDimArrayIndex.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetDimArrayIndex.restype  = ctypes.c_uint
 
       WrapperLib.WCAPI_GetNumDims.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetNumDims.restype  = ctypes.c_uint
-      
+
       WrapperLib.WCAPI_GetSignalDimensionIdx.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetSignalDimensionIdx.restype  = ctypes.c_uint16
 
@@ -133,25 +140,25 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
           return strIn[1:-1]
         return strIn
 
-# Function to retrieve data on inputs and outputs
+      # Function to retrieve data on inputs and outputs
       def GetSignalData(SignalStruct, numOfSignals):
-    
+
         signalList = []
-    
+
         for signalIdx in range(numOfSignals):
-        
-        # name is retrieved
+
+          # name is retrieved
           retrievedName = WrapperLib.WCAPI_GetSignalName(SignalStruct, signalIdx)
           retrievedName = retrievedName.decode("utf-8")
           retrievedName = removeAngular(retrievedName)
-        
-        # type is retrieved
+
+          # type is retrieved
           retrievedTypeIdx = WrapperLib.WCAPI_GetSignalDataTypeIdx(SignalStruct, signalIdx)
           retrievedSLIdType    = WrapperLib.WCAPI_GetDataTypeSLId(DataTypeMap, retrievedTypeIdx)
-        
+
           retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(DataTypeMap, retrievedTypeIdx)
           retrievedCTypename = retrievedCTypename.decode("utf-8")
-        
+
           if retrievedSLIdType == 0:
             MARTe2Typename = 'float64'
           elif retrievedSLIdType == 1:
@@ -172,75 +179,72 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
             MARTe2Typename = 'bool'
           else:
             raise Exception('Unsupported datatype.')
-        
-        # dimensions are retrieved
+
+          # dimensions are retrieved
           dimIdx = WrapperLib.WCAPI_GetSignalDimensionIdx(SignalStruct, signalIdx)
-        
+
           dimArrayIdx = WrapperLib.WCAPI_GetDimArrayIndex(DimensionMap, dimIdx) # Starting position in the dimensionArray
           dimNum      = WrapperLib.WCAPI_GetNumDims(DimensionMap,       dimIdx) # Number of elements in the dimensionArray referring to this signal
-        
+
           currDimension = []
           for currIdx in range(dimNum):
             currDimension.append(DimensionArray[dimArrayIdx + currIdx])
           if currDimension[0] == 1 and currDimension[1] == 1:
             dimension = 0
-          elif currDimension[0] == 1 or currDimension[1] == 1: 
+          elif currDimension[0] == 1 or currDimension[1] == 1:
             dimension = [currDimension[0]*currDimension[1]]
           else:
             dimension = currDimension
-        
-        # retrieved data is saved to a dictionary
+
+          # retrieved data is saved to a dictionary
           signalDict = dict(name = retrievedName, type = MARTe2Typename, dimensions = dimension, parameters = {})
-        
-        # dictionary is appended to the MDSplus-style list
+
+          # dictionary is appended to the MDSplus-style list
           signalList.append(signalDict)
-    
+
         return signalList
 
-      MARTE2_COMPONENT.inputs  = GetSignalData(RootInputStruct,  numInputs)
-      MARTE2_COMPONENT.outputs = GetSignalData(RootOutputStruct, numOutputs)
+      # ** PARAMETER DATA **
 
-# ** PARAMETER DATA **
-   
-# Name
+      # Name
       WrapperLib.WCAPI_GetModelParameterName.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetModelParameterName.restype  = ctypes.c_char_p
 
-# Type
-# same as the ones used for signals
+      # Type
+      # same as the ones used for signals
 
-# Dimension 
+      # Dimension
       WrapperLib.WCAPI_GetModelParameterDimensionIdx.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetModelParameterDimensionIdx.restype = ctypes.c_uint
 
       WrapperLib.WCAPI_GetModelParameterDataTypeIdx.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetModelParameterDataTypeIdx.restype = ctypes.c_uint
-      
-# Value
+
+      # Value
       WrapperLib.WCAPI_GetModelParameterAddrIdx.argtypes = [ctypes.POINTER(None), ctypes.c_int]
       WrapperLib.WCAPI_GetModelParameterAddrIdx.restype  = ctypes.c_uint
 
       WrapperLib.WCAPI_GetDataAddress.argtypes = [ctypes.POINTER(ctypes.POINTER(None)), ctypes.c_int]
       WrapperLib.WCAPI_GetDataAddress.restype  = ctypes.c_void_p
 
-# Function to retrieve data on parameters
+      # Function to retrieve data on parameters
       def GetModelParameterData(ParameterStruct, numOfParameters):
-    
+
         paramList = []
-    
+
         for paramIdx in range(numOfParameters):
-        
-        # name is retrieved
+
+          # name is retrieved
           retrievedName = WrapperLib.WCAPI_GetModelParameterName(ParameterStruct, paramIdx)
           retrievedName = retrievedName.decode("utf-8")
-        
-        # type is retrieved
+
+          # type is retrieved
           retrievedTypeIdx  = WrapperLib.WCAPI_GetModelParameterDataTypeIdx(ParameterStruct, paramIdx)
           retrievedSLIdType = WrapperLib.WCAPI_GetDataTypeSLId(DataTypeMap, retrievedTypeIdx)
-        
+
           retrievedCTypename = WrapperLib.WCAPI_GetDataTypeCName(DataTypeMap, retrievedTypeIdx)
           retrievedCTypename = retrievedCTypename.decode("utf-8")
-        
+
           if retrievedSLIdType == 0:
             MARTe2Typename = 'float64'
             pythonTypename = ctypes.c_double
@@ -270,23 +274,23 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
             pythonTypename = ctypes.c_bool
           else:
             raise Exception('Unsupported parameter datatype.')
-            
-     # actual parameter value is retrieved
+
+          # actual parameter value is retrieved
           paramAddrIdx = WrapperLib.WCAPI_GetModelParameterAddrIdx(ParameterStruct, paramIdx)
           paramDataAddr = WrapperLib.WCAPI_GetDataAddress(DataAddrMap, paramAddrIdx)
           paramPointer = ctypes.cast(paramDataAddr, ctypes.POINTER(pythonTypename))
-        
-        
-        # dimensions are retrieved
+
+
+          # dimensions are retrieved
           dimIdx = WrapperLib.WCAPI_GetModelParameterDimensionIdx(ParameterStruct, paramIdx)
-        
+
           dimArrayIdx = WrapperLib.WCAPI_GetDimArrayIndex(DimensionMap, dimIdx) # Starting position in the dimensionArray
           dimNum      = WrapperLib.WCAPI_GetNumDims(DimensionMap,       dimIdx) # Number of elements in the dimensionArray referring to this signal
-        
+
           currDimension = []
           for currIdx in range(dimNum):
             currDimension.append(DimensionArray[dimArrayIdx + currIdx])
- 
+
           if currDimension[0] == 1 and currDimension[1] == 1:  # scalar
             dimension = 0
             mdsplusValue = paramPointer[0]
@@ -295,7 +299,8 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
             valueList = []
             for idx in range(dimension):
                 valueList.append(paramPointer[idx])
-          else:                                                # matrix or column vector (MARTe2 sees column vectors as matrices)
+          else:
+            # matrix or column vector (MARTe2 sees column vectors as matrices)
             dimension = currDimension
             idx = 0
             valueList = []
@@ -306,56 +311,45 @@ class MARTE2_SIMULINK(MARTE2_COMPONENT):
                   idx = idx + 1
               valueList.append(valueRow)
               valueRow = []
-        
+
           if currDimension[0] != 1 or currDimension[1] != 1:
               if retrievedSLIdType == 0:
-                mdsplusValue = Float32Array(valueList)
+                mdsplusValue = MDSplus.Float32Array(valueList)
               elif retrievedSLIdType == 1:
-                mdsplusValue = Float64Array(valueList)
+                mdsplusValue = MDSplus.Float64Array(valueList)
               elif retrievedSLIdType == 2:
-                mdsplusValue = Int8Array(valueList)
+                mdsplusValue = MDSplus.Int8Array(valueList)
               elif retrievedSLIdType == 3:
-                mdsplusValue = Uint8Array(valueList)
+                mdsplusValue = MDSplus.Uint8Array(valueList)
               elif retrievedSLIdType == 4:
-                mdsplusValue = Int16Array(valueList)
+                mdsplusValue = MDSplus.Int16Array(valueList)
               elif retrievedSLIdType == 5:
-                mdsplusValue = Uint16Array(valueList)
+                mdsplusValue = MDSplus.Uint16Array(valueList)
               elif retrievedSLIdType == 6:
-                mdsplusValue = Int32Array(valueList)
+                mdsplusValue = MDSplus.Int32Array(valueList)
               elif retrievedSLIdType == 7:
-                mdsplusValue = Uint32Array(valueList)
+                mdsplusValue = MDSplus.Uint32Array(valueList)
               else:
                 raise Exception('Unsupported parameter datatype.')
 
-       # retrieved data is saved to a dictionary
+          # retrieved data is saved to a dictionary
           paramDict = dict(name = 'Parameters.'+retrievedName, type = MARTe2Typename, dimensions = dimension, value = mdsplusValue)
-        
-        # dictionary is appended to the MDSplus-style list
+
+          # dictionary is appended to the MDSplus-style list
           paramList.append(paramDict)
-    
+
         return paramList
-      
+
       # First parameter should be the model name
-      modelNameDict = dict(name = 'ModelName', type = 'string', dimensions = 0, value = modelName)
-      
+      modelNameDict = dict(name = 'ModelName', type = 'string', dimensions = 0, value = cls.lib_name)
+
       modelParameters = GetModelParameterData(ParameterStruct, numParameters)
       modelParameters.insert(0, modelNameDict)
-      
-      MARTE2_COMPONENT.parameters = modelParameters
-    
-      parts = []
-      MARTE2_COMPONENT.buildGam(parts, 'SimulinkInterfaceGAM', MARTE2_COMPONENT.MODE_GAM)
-      return parts
 
- 
+      cls.inputs  = GetSignalData(RootInputStruct,  numInputs)
+      cls.outputs = GetSignalData(RootOutputStruct, numOutputs)
+      cls.parameters = modelParameters
 
-
-
-
-
-
-
-
-
-
-
+    cls.parts = []
+    cls.buildGam(cls.parts, 'SimulinkInterfaceGAM', cls.MODE_GAM)
+    return cls

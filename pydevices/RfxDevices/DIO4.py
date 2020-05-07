@@ -866,7 +866,7 @@ class DIO4(Device):
             if evCode == 0:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid Event specification for software channel')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
             try:
                 evTime = getattr(self, 'out_ev_sw_time').data()
             except:
@@ -875,12 +875,12 @@ class DIO4(Device):
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Invalid event time specification for software channel')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
             nodePath = getattr(self, 'out_ev_sw_time').getFullPath()
-            status = eventTime = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
+            status = Data.execute('TimingRegisterEventTime($1, $2)', evName, nodePath)
             if status == -1:
                 Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot register software event time')
                 raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        
+
             if swMode == 'REMOTE':
                 status = Data.execute('MdsValue("DIO4HWEventTrigger(0, $1, $2)", $1,$2)', boardId, evCode)
                 if status == 0:
@@ -891,7 +891,7 @@ class DIO4(Device):
                 status = Data.execute("DIO4HWEventTrigger(0, $1, $2)", boardId, evCode)
                 if status == 0:
                     Data.execute('DevLogErr($1, $2)', self.nid, 'Cannot execute HW event trigger')
-                    raise mdsExceptions.TclFAILED_ESSENTIAL        
+                    raise mdsExceptions.TclFAILED_ESSENTIAL
         else:
             print('SW EVENT OFF')
 

@@ -23,16 +23,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
-except:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
+MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
-class MARTE_EDA3(MARTE_GENERIC):
+
+class MARTE_EDA3(MARTE_GENERIC.MARTE_GENERIC):
     parNames = ['tauVTheta','tauVTor','tauD','kp','ki','kd','vCompOn','iCompOn','iFBOn','iPTrig','tTrig',
        'deltaVTorTrig','deltaTBT1','deltaTBT2','rVesselTuningFactor', 'thetaNom,', 'tTrigVth', 'deltaTBT1Vth', 'DeadTimeCompOn', 'kDeadTimeComp', 'DeTiMinHystCurrThreshold', 'DeTiMaxHystCurrThreshold']
     parValues = [0.002,0.0005,0.002,1.367,0.,0.,0.,1.,1.,0.,0.002,0.,0.01,0.01,1.,1.42,0, 0, 0,0,0,0]
-    parts = list(MARTE_GENERIC.parts)
+    parts = list(MARTE_GENERIC.MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

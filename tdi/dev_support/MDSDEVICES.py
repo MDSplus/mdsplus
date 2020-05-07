@@ -1,8 +1,7 @@
 from threading import Lock
-from time import time
-cache = [None]
-lock = Lock() # locks the cache
-def MDSDEVICES():
+
+ # locks the cache
+def MDSDEVICES(lock=Lock(), cache=[None]):
   with lock:
    if cache[0] is None:
     from MDSplus import Device,tdi,version,getenv

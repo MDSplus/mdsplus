@@ -23,17 +23,14 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-try:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals(), level=1).MARTE_GENERIC
-except:
-    MARTE_GENERIC = __import__('MARTE_GENERIC', globals()).MARTE_GENERIC
+MARTE_GENERIC = __import__('MARTE_GENERIC', globals())
 
-class MARTE_MHD_BT(MARTE_GENERIC):
+class MARTE_MHD_BT(MARTE_GENERIC.MARTE_GENERIC):
     parNames = ['InputMapping', 'InputAutozero', 'triggerMode', 'ttMinAmp', 'ttMaxAmp', 'ttMinPhase', 'ttMaxPhase', 'ttMinRatio', 'ttMaxRatio',
       'nTrigTimes', 'trigTimes', 'trigDuration', 'trigThreshold', 'trigInhibitTime', 'trigEndTime',
       'correctionMode', 'btCorrectionCoeffs']
     parValues = [0]*17
-    parts = list(MARTE_GENERIC.parts)
+    parts = list(MARTE_GENERIC.MARTE_GENERIC.parts)
     parts.append({'path':'.PARAMS', 'type':'structure'})
     parts.append({'path':'.PARAMS:NUM_ACTIVE', 'type':'numeric', 'value':len(parNames)})
     for i in range(len(parNames)):

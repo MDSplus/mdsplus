@@ -1,9 +1,4 @@
-from MDSplus import mdsExceptions, Device, Data, Dimension, Range, Window
-from MDSplus import mdsExceptions, Int32, Float32, Float32Array, Float64
-from ctypes import *
-import os
-import errno
-from   CaChannel import *
+from MDSplus import mdsExceptions, Device, Data
 
 
 class PV_WAVE_SETUP(Device):
@@ -32,8 +27,8 @@ class PV_WAVE_SETUP(Device):
         'options':('no_write_shot',)})
 
     def init(self):
-
         print ('================= INIT EPICS WAVE SETUP ===============')
+        from CaChannel import CaChannel
 
         wavex = CaChannel()
         wavey = CaChannel()
@@ -63,7 +58,7 @@ class PV_WAVE_SETUP(Device):
 
             #wavex.searchw('NB-SIGV-GISA:PZ%d-WAVEX'%(chan))
             #wavey.searchw('NB-SIGV-GISA:PZ%d-WAVEY'%(chan))
-            
+
             if getattr(self, 'wave_%d'%(chan)).isOn() :
 
                 try:
@@ -77,10 +72,10 @@ class PV_WAVE_SETUP(Device):
                 try:
                     wavex_data = getattr(self, 'wave_%d_x'%(chan)).data()
                 except:
-                    msg = 'Error reading x waveform %d values'%(chan)		
+                    msg = 'Error reading x waveform %d values'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
-        
+
                 try:
                     pv_wave_y = getattr(self, 'wave_%d_pv_y'%(chan)).data()
                     wavey.searchw(pv_wave_y)
@@ -93,7 +88,7 @@ class PV_WAVE_SETUP(Device):
                 try:
                     wavey_data = getattr(self, 'wave_%d_y'%(chan)).data()
                 except:
-                    msg = 'Error reading y waveform %d values'%(chan)		
+                    msg = 'Error reading y waveform %d values'%(chan)
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
@@ -105,7 +100,7 @@ class PV_WAVE_SETUP(Device):
                 wavey.putw(wavey_data)
 
         del wavex
-        del wavey        
+        del wavey
         del trig
         print ('=======================================================')
 
@@ -113,8 +108,8 @@ class PV_WAVE_SETUP(Device):
 
 
     def reset(self):
-
         print ('================= RESET EPICS WAVE SETUP ===============')
+        from CaChannel import CaChannel
 
         wavex = CaChannel()
         wavey = CaChannel()
@@ -123,7 +118,7 @@ class PV_WAVE_SETUP(Device):
         for chan in range(1, 3):
 
             if getattr(self, 'wave_%d'%(chan)).isOn() :
-				
+
                 try:
                     pv_wave_x = getattr(self, 'wave_%d_pv_x'%(chan)).data()
                     wavex.searchw(pv_wave_x)
@@ -132,7 +127,7 @@ class PV_WAVE_SETUP(Device):
                     Data.execute('DevLogErr($1,$2)', self.getNid(), msg)
                     raise mdsExceptions.TclFAILED_ESSENTIAL
 
-        
+
                 try:
                     pv_wave_y = getattr(self, 'wave_%d_pv_y'%(chan)).data()
                     wavey.searchw(pv_wave_y)
@@ -146,7 +141,7 @@ class PV_WAVE_SETUP(Device):
 
 
         del wavex
-        del wavey        
+        del wavey
         print ('========================================================')
 
         return 1
