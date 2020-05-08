@@ -27,5 +27,5 @@ fi
 OUTFILES="$(echo $(cat $1/yylex/outfiles))"
 ycmd="for y in $1/yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
 lcmd="for l in $1/yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
-scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
-eval "$ycmd ; $lcmd && $scmd"
+# scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
+eval "$ycmd ; $lcmd " # && $scmd"
