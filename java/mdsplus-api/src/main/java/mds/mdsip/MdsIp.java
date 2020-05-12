@@ -434,7 +434,7 @@ public class MdsIp extends Mds{
 		}
 		if(DEBUG.D) System.out.println(this.connection.toString());
 		/* connect to mdsip */
-		final Message message = new Message(this.provider.user, this.getMsgId());
+		final Message message = new Message(this.provider.getUser(), this.getMsgId());
 		message.useCompression(this.use_compression);
 		long tictoc = -System.nanoTime();
 		message.send(this.connection);
