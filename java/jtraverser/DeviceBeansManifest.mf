@@ -1,5 +1,3 @@
-Main-Class: jTraverser
-
 Name: DeviceDispatch.class
 Java-Bean: True
 

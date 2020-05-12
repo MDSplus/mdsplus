@@ -9,14 +9,11 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jTraverser.jar DeviceBeans.jar
 java_DATA = jTraverser.jar DeviceBeans.jar
-DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) 
+DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
 jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
-	cp $< $@
-
-DeviceBeans.jar: @JARS_DIR@/java/jtraverser/DeviceBeans.jar
 	cp $< $@
 
 else
@@ -26,10 +23,10 @@ jTraverser.jar: $(DEPENDENCIES) classjava.stamp $(srcdir)/DeviceBeansManifest.mf
 	cp -f $(JAVA_RES) $(JAVAROOT)/ &&\
 	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
 
-DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
-	@ echo "Creating JAR: $@ ...";\
-	${LN_R} -sfT ./jTraverser.jar $@
 endif
+
+DeviceBeans.jar: jTraverser.jar
+	${LN_R} -sf ./jTraverser.jar $@
 
 if MINGW
 bin_SCRIPTS += jTraverser.bat
