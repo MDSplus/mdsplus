@@ -144,7 +144,7 @@ Var INPOS
 	IntOp  $R1 $R1 - $R0			; get max_inpos
 	StrCpy $INPOS 0				; init search pos
 	${Do}					; Loop until "substr" is found or "string" reaches its end
-		${If} $INPOS > $R1 		; Check if end of "string"
+		${If} $INPOS > $R1		; Check if end of "string"
 			StrCpy $INPOS -1	; set INPOS to NOT_FOUND
 			${ExitDo}
 		${EndIf}
@@ -320,7 +320,7 @@ FunctionEnd
 Function AddToEnv ; name value
 	Push $R0
 	${ReadEnv} $R0 `$0`
-	${If} `$R0` == "" 		; if env did not exist or was empty
+	${If} `$R0` == ""		; if env did not exist or was empty
 		${WriteEnv} `$0` `$1`
 	${ElseIfNot} `;$1;` in `;$R0;`	; if env does not contain <value>
 		Push $R1
@@ -372,7 +372,7 @@ Function un.RemoveFromEnv ; name value
 				${If} $INPOS == 0		; remove <value> and ';' from head
 					IntOp  $INPOS $R1 + 1		;; offset = value_len + 1 for ';'
 					StrCpy $R0 $R0 $R2 $INPOS	;; cut head
-				${Else} 			; remove ';' and <value> from env at $INPOS
+				${Else}				; remove ';' and <value> from env at $INPOS
 					IntOp  $R3 $INPOS - 1		;; set pre len so it will exclude the ';' before <value>
 					StrCpy $R3 $R0 $R3		;; store pre part in tmpstr
 					IntOp  $INPOS $R1 + $INPOS	;; set post offset to $INPOS + value_len 
@@ -707,11 +707,14 @@ Section "java tools" java
 	File icons/jscope.ico
 	File icons/jtraverser.ico
 	File icons/jtraverser2.ico
+	Push $R0
+	${GetBinDir} $R0
 	!insertmacro MUI_STARTMENU_WRITE_BEGIN Application
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jScope.lnk"      javaw '-cp "$INSTDIR\java\classes\jScope.jar";"$INSTDIR\java\Classes" -Xmx1G jScope'	"$INSTDIR\java\jscope.ico"	0 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser.lnk"  javaw '-cp "$INSTDIR\java\classes\jTraverser.jar" jTraverser'				"$INSTDIR\java\jtraverser.ico"	0 SW_SHOWMINIMIZED
-		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser2.lnk" javaw '-jar "$INSTDIR\java\classes\jTraverser2.jar"'					"$INSTDIR\java\jtraverser2.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jScope.lnk"      "$R0\jScope.bat"		""	"$INSTDIR\java\jscope.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser.lnk"  "$R0\jTraverser.bat"	""	"$INSTDIR\java\jtraverser.ico"	0 SW_SHOWMINIMIZED
+		CreateShortCut "$SMPROGRAMS\$StartMenuFolder\jTraverser2.lnk" "$R0\jTraverser2.bat"	""	"$INSTDIR\java\jtraverser2.ico"	0 SW_SHOWMINIMIZED
 	!insertmacro MUI_STARTMENU_WRITE_END
+	Pop $R0
 SectionEnd ; java
 
 SectionGroup /e "!APIs" apis
@@ -792,7 +795,7 @@ SectionGroup /e "!APIs" apis
 	Pop  $R0
   SectionEnd ; python_su
   Section "Compile python" python_comp
-  	SectionIn 1 2
+	SectionIn 1 2
         nsExec::Exec /OEM /TIMEOUT=10000 'python -m compileall "$INSTDIR\python\MDSplus"'
 	Exch $R0
 	Pop  $R0

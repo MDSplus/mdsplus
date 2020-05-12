@@ -32,7 +32,7 @@ DeviceBeans.jar: jTraverser.jar DeviceBeansManifest.mf
 endif
 
 if MINGW
-bin_SCRIPTS += traverser.bat
+bin_SCRIPTS += jTraverser.bat
 else
 bin_SCRIPTS += jTraverser
 EXTRA_DIST += jTraverser.template
