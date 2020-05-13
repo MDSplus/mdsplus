@@ -353,9 +353,9 @@ static int switch_case(
 	mdsdsc_xd_t *out_ptr)
 {
   int status = MDSplusSUCCESS;
-  if (arg && arg->dtype == DTYPE_FUNCTION && *(opcode_t*)arg->pointer == OPC_COMMA ) {
+  mds_function_t *const fun = (mds_function_t *)arg;
+  if (fun && fun->dtype == DTYPE_FUNCTION && *fun->pointer == OPC_COMMA ) {
     int i;
-    const mds_function_t *fun = (mds_function_t *)arg;
     for (i = 0 ; STATUS_OK && IS_NOT_OK(*test_ptr) && i < fun->ndesc ; i++) {
       status = switch_case(ptest, fun->arguments[i], test_ptr, out_ptr);
     }
@@ -397,7 +397,7 @@ static int switch1(
 
   for (j = 0; STATUS_OK && j < narg; ++j)
     if (list[j] && list[j]->dtype == DTYPE_FUNCTION) {
-      opcode_t opcode = *(opcode_t *)list[j]->pointer;
+      opcode_t opcode = *list[j]->pointer;
 
       off = -1;
       if (opcode == OPC_STATEMENT)
@@ -447,10 +447,11 @@ int Tdi1Switch(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *lis
   int jdefault = 0;
   mds_function_t **pdefault = NULL;
   mdsdsc_xd_t tmp = EMPTY_XD;
-  if (list[0] && list[0]->dtype == DTYPE_FUNCTION && *(opcode_t*)list[0]->pointer == OPC_COMMA && narg == 2 && !list[1]) {
+  mds_function_t *const fun = (mds_function_t *)list[0];
+  if (fun && fun->dtype == DTYPE_FUNCTION && *fun->pointer == OPC_COMMA && narg == 2 && !list[1]) {
     // switch used in function form
-    narg = ((mds_function_t *)list[0])->ndesc;
-    list = ((mds_function_t *)list[0])->arguments;
+    list = fun->arguments;
+    narg = fun->ndesc;
   }
   status = TdiEvaluate(list[0], &tmp MDS_END_ARG);
   if STATUS_OK
