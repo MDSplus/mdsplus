@@ -75,7 +75,7 @@ EXPORT int l8590___store(struct descriptor *niddsc_ptr __attribute__ ((unused)),
   static int latch_nid;
   static DESCRIPTOR_NID(latch, &latch_nid);
   static FUNCTION(1) value = {
-    2, DTYPE_FUNCTION, CLASS_R, (unsigned char *)&OpcValue, 0, {0}};
+    sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)&OpcValue, 0, {0}};
   static DESCRIPTOR_SIGNAL_1(signal, &value, &counts, &latch);
   latch_nid = setup->head_nid + L8590_N_LATCH;
   pio(setup->name, 2, 0, &samples);

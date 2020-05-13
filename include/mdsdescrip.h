@@ -380,27 +380,27 @@ typedef struct descriptor_slope {
 }
 
 typedef struct descriptor_function {
-  RECORD_HEAD(uint8_t)
+  RECORD_HEAD(opcode_t)
   mdsdsc_t *arguments[1];
 } mds_function_t;
 
 #define FUNCTION(nargs) struct{	\
-  RECORD_HEAD(uint8_t)		\
+  RECORD_HEAD(opcode_t)		\
   mdsdsc_t *arguments[nargs];	\
 }
 
 #define DESCRIPTOR_FUNCTION(name, opcode_ptr, nargs) FUNCTION(nargs)\
-  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)opcode_ptr, nargs, __fill_value__ {0}}
+  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)opcode_ptr, nargs, __fill_value__ {0}}
 
 #define DESCRIPTOR_FUNCTION_0(name, opcode_ptr) mds_function_t\
-  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)opcode_ptr,     0, __fill_value__ {0}}
+  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)opcode_ptr,     0, __fill_value__ {0}}
 
 #define DESCRIPTOR_FUNCTION_1(name, opcode_ptr, arg) mds_function_t\
-  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)opcode_ptr,     1, __fill_value__ \
+  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)opcode_ptr,     1, __fill_value__ \
 	{(mdsdsc_t*)arg}}
 
 #define DESCRIPTOR_FUNCTION_2(name, opcode_ptr, arg_1, arg_2) FUNCTION(2)\
-  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (uint8_t*)opcode_ptr,     2, __fill_value__ \
+  name = {(length_t)sizeof(opcode_t), DTYPE_FUNCTION, CLASS_R, (opcode_t*)opcode_ptr,     2, __fill_value__ \
 	{(mdsdsc_t*)arg_1, (mdsdsc_t*)arg_2}}
 
 typedef struct descriptor_conglom {

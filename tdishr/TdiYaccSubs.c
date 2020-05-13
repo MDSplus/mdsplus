@@ -106,33 +106,33 @@ int tdi_yacc_BUILD(
 	struct marker *arg3,
 	struct marker *arg4,
 	TDITHREADSTATIC_ARG) {
-  mds_function_t *tmp;
+  mds_function_t *fun;
   int dsc_size = sizeof(mds_function_t) + sizeof(mdsdsc_t *) * (ndesc - 1);
   unsigned int vm_size = dsc_size + sizeof(unsigned short);
   struct TdiFunctionStruct *this_ptr = (struct TdiFunctionStruct *)&TdiRefFunction[opcode];
   int status;
-  RETURN_IF_NOT_OK(LibGetVm(&vm_size, (void **)&tmp, &TDI_REFZONE.l_zone));
+  RETURN_IF_NOT_OK(LibGetVm(&vm_size, (void **)&fun, &TDI_REFZONE.l_zone));
   out->builtin = -1;
-  out->rptr = (mdsdsc_r_t *)tmp;
+  out->rptr = (mdsdsc_r_t *)fun;
 
-  *tmp = EMPTY_FUN;		/* clears ndesc upper bits */
-  tmp->pointer = (unsigned char *)((char *)tmp + dsc_size);
-  *(unsigned short *)tmp->pointer = (unsigned short)opcode;
-  tmp->ndesc = (unsigned char)nused;
+  *fun = EMPTY_FUN;		/* clears ndesc upper bits */
+  fun->pointer = (opcode_t *)((char *)fun + dsc_size);
+  *fun->pointer = opcode;
+  fun->ndesc = (unsigned char)nused;
   switch (nused) {
   default:
     return TdiEXTRA_ARG;
   case 4:
-    tmp->arguments[3] = (mdsdsc_t *)arg4->rptr;
+    fun->arguments[3] = (mdsdsc_t *)arg4->rptr;
     MDS_ATTR_FALLTHROUGH
   case 3:
-    tmp->arguments[2] = (mdsdsc_t *)arg3->rptr;
+    fun->arguments[2] = (mdsdsc_t *)arg3->rptr;
     MDS_ATTR_FALLTHROUGH
   case 2:
-    tmp->arguments[1] = (mdsdsc_t *)arg2->rptr;
+    fun->arguments[1] = (mdsdsc_t *)arg2->rptr;
     MDS_ATTR_FALLTHROUGH
   case 1:
-    tmp->arguments[0] = (mdsdsc_t *)arg1->rptr;
+    fun->arguments[0] = (mdsdsc_t *)arg1->rptr;
     MDS_ATTR_FALLTHROUGH
   case 0:
     break;
