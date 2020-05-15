@@ -62,10 +62,12 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Number of channels of the DIO482
         nchans = 32
 
+        # uut.s0.SIG_SRC_TRG_0 ='WRTT0'
         # Setting the trigger in the GPG module. These settings depends very much on what is the
         # configuration of the experiment. For example, when using one WRTT timing highway, the we can use d0, which will be
         # the same used by the digitazer module. Otherwise, we can choose a different one, to be a independent highway from
         # the digitazer, like d1.
+        uut.s0.SIG_EVENT_SRC_0 = 'GPG'
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
         uut.s0.GPG_TRG_DX    ='d1'   #d1 for WRTT1. d0 for WRTT0 or EXT.
