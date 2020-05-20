@@ -63,11 +63,6 @@ class _ACQ400_BASE(MDSplus.Device):
     trig_types=[ 'hard', 'soft', 'automatic']
 
 
-    def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
-
-
     def init(self):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         trig_types=[ 'hard', 'soft', 'automatic']
@@ -121,22 +116,22 @@ class _ACQ400_BASE(MDSplus.Device):
         uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
         # Setting SYNC Main Timing Highway Source Routing --> EXT or White Rabbit Time Trigger
-        uut.s0.SIG_SRC_TRG_0 ='EXT'
-        uut.s0.SIG_SRC_TRG_1 ='STRIG'  #Soft TRIG
+        # uut.s0.SIG_SRC_TRG_0 ='EXT'
+        # uut.s0.SIG_SRC_TRG_1 ='STRIG'  #Soft TRIG
 
         # When using two WRTT triggers:
-        # uut.s0.SIG_SRC_TRG_0 ='WRTT0'
-        #uut.s0.SIG_SRC_TRG_1 ='WRTT1'
+        uut.s0.SIG_SRC_TRG_0 ='WRTT0'
+        uut.s0.SIG_SRC_TRG_1 ='WRTT1'
 
         #Setting the trigger in ACQ2106 stream control
         uut.s1.TRG       ='enable'
-        uut.s1.TRG_DX    ='d1'
+        uut.s1.TRG_DX    ='d0'
         uut.s1.TRG_SENSE ='rising'
 
         if presamples !=0:
             uut.s0.SIG_EVENT_SRC_0 = 'TRG' # The source needs to be TRG to be able to connect d0 with EXT
             uut.s1.EVENT0    ='enable'
-            uut.s1.EVENT0_DX ='d0'
+            uut.s1.EVENT0_DX ='d1'
             uut.s1.EVENT0_SENSE ='rising'
 
     INIT = init
@@ -595,8 +590,7 @@ def assemble(cls):
 # probably easier for analysis code if ALWAYS INPUT_001
 #    inpfmt = INPFMT2 if cls.nchan < 100 else INPFMT3
     for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',)})
         cls.parts.append({'path':inpfmt%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
