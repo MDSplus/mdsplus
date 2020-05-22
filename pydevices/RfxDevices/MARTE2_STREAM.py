@@ -31,22 +31,39 @@ MC = __import__('MARTE2_COMPONENT', globals())
 @MC.BUILDER('StreamOut', MC.MARTE2_COMPONENT.MODE_OUTPUT)
 class MARTE2_STREAM(MC.MARTE2_COMPONENT):
     inputs = [
-        {'name': 'OutStream1', 'type': 'int32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH1'}]},
-        {'name': 'OutStream2', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH2'}]},
-        {'name': 'OutStream3', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH3'}]},
-        {'name': 'OutStream4', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH4'}]},
-        {'name': 'OutStream5', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH5'}]},
-        {'name': 'OutStream6', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH6'}]},
-        {'name': 'OutStream7', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH7'}]},
-        {'name': 'OutStream8', 'type': 'float32', 'dimensions': 0, 'parameters':[
-            {'name':'Channel', 'type':'string','value':'CH8'}]},
+        {'name': 'OutStream01', 'type': 'int32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH01'}]},
+        {'name': 'OutStream02', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH02'}]},
+        {'name': 'OutStream03', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH03'}]},
+        {'name': 'OutStream04', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH04'}]},
+        {'name': 'OutStream05', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH05'}]},
+        {'name': 'OutStream06', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH06'}]},
+        {'name': 'OutStream07', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH07'}]},
+        {'name': 'OutStream08', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH08'}]},
+        {'name': 'OutStream09', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH09'}]},
+        {'name': 'OutStream10', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH10'}]},
+        {'name': 'OutStream11', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH11'}]},
+        {'name': 'OutStream12', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH12'}]},
+        {'name': 'OutStream13', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH13'}]},
+        {'name': 'OutStream14', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH14'}]},
+        {'name': 'OutStream15', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH15'}]},
+        {'name': 'OutStream16', 'type': 'float32', 'dimensions': 0, 'parameters':[
+            {'name':'Channel', 'type':'string','value':'CH16'}]},
+
     ]
     parameters = [
         {'name':'EventDivision', 'type': 'float32'},
