@@ -59,8 +59,10 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
 #define break_on_no_node if (!node_exists) {status = TreeNNF; break; }
 #define set_retlen(length) if (itm->buffer_length < (int)(length)) { status = TreeBUFFEROVF; break; } else retlen=(length)
 
+#define NODE_NOT_FOUND_NAME "<no-node>   "
+#define NODE_NOT_FOUND_PATH "\\NODE::NOT.FOUND"
+
 static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs);
-static const char *nonode = "<no-node>   ";
 
 extern void **TreeCtx();
 
@@ -408,17 +410,19 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	  ((node->usage == TreeUSAGE_SUBTREE_TOP) ? TreeUSAGE_SUBTREE : node->usage);
       break;
     case NciNODE_NAME:
-      if (node_exists) {
+      if (node_exists)
+      {
 	string = strncpy(malloc(sizeof(NODE_NAME) + 1), node->name, sizeof(NODE_NAME));
 	string[sizeof(NODE_NAME)] = '\0';
-      } else
-	string = strcpy(malloc(sizeof(NODE_NAME) + 1), nonode);
+      }
+      else
+        string = strdup(NODE_NOT_FOUND_NAME);
       break;
     case NciPATH:
       if (node_exists)
 	string = getPath(dblist, node, 0);
       else
-	string = strcpy(malloc(sizeof(NODE_NAME) + 1), nonode);
+        string = strdup(NODE_NOT_FOUND_PATH);
       break;
     case NciORIGINAL_PART_NAME:
       break_on_no_node;
@@ -443,9 +447,9 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
       break;
     case NciFULLPATH:
       if (node_exists) {
-	char *part = malloc(256 * 12);
+	char *part = malloc(0x1000);
 	char *temp;
-	string = malloc(256 * 12);
+	string = malloc(0x1000);
 	string[0] = 0;
 	part[0] = 0;
 	for (; parent_of(dblist, node); node = parent_of(dblist, node)) {
@@ -468,7 +472,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	strcat(string, part);
 	free(part);
       } else
-	string = strcpy(malloc(sizeof(NODE_NAME) + 1), nonode);
+        string = strdup(NODE_NOT_FOUND_PATH);
       break;
     case NciMINPATH:
       if (node_exists) {
@@ -478,13 +482,13 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	  strcpy(&string[1], dblist->tree_info->treenam);
 	  strcat(string, "::TOP");
 	} else {
-	  char *part = malloc(256 * 12);
+	  char *part = malloc(0x1000);
 	  char *temp;
 	  NODE *default_node = dblist->default_node;
 	  NODE *ancestor = (NODE *) - 1;
 	  char *path_string;
 	  int hyphens;
-	  string = malloc(256 * 12);
+	  string = malloc(0x1000);
 	  string[0] = 0;
 	  part[0] = 0;
 	  for (hyphens = 0; parent_of(dblist, default_node);
@@ -531,7 +535,7 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 	  free(part);
 	}
       } else
-	string = strcpy(malloc(sizeof(NODE_NAME) + 1), nonode);
+        string = strdup(NODE_NOT_FOUND_PATH);
       break;
     case NciPARENT_TREE:
       {
@@ -597,8 +601,8 @@ int TreeGetNci(int nid_in, struct nci_itm *nci_itm){
 
 static char *getPath(PINO_DATABASE * dblist, NODE * node, int remove_tree_refs)
 {
-  char *string = malloc(256 * 12);
-  char *part = malloc(256 * 12);
+  char *string = malloc(0x1000);
+  char *part = malloc(0x1000);
   char *temp;
   TREE_INFO *default_node_info = NULL;
   TREE_INFO *info = dblist->tree_info;
