@@ -130,5 +130,5 @@ TdiYacc.o :
 	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiYacc.c -Wno-array-bounds
 
 TdiLex.o :
-	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiLex.c -Wno-sign-compare
+	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiLex.c -Wno-sign-compare -Wno-unused-parameter
 
