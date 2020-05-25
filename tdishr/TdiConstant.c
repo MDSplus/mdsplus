@@ -33,8 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "tdireffunction.h"
 #include "tdirefstandard.h"
 #include <mdsshr.h>
+#include <math.h>
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
     _Pragma ("GCC diagnostic ignored \"-Wcast-function-type\"")
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
 #endif
 
 int Tdi1Constant(opcode_t opcode, int narg __attribute__ ((unused)),
@@ -80,12 +85,13 @@ Major sources:
 "1980 Revised NRL Plasma Formulary" by Book.
 	NEED to remove / ** / when ANSI C permits sharp-sharp
 */
-typedef void (*MISSING) ();
-typedef unsigned char BU;
-typedef float FLOAT;
+typedef void* MISSING;
+typedef uint8_t BU;
+typedef float FS;
+typedef double FT;
 typedef struct {
   float x, y;
-} FLOAT_COMPLEX;
+} FSC;
 typedef unsigned int FROP;
 
 #define DTYPE_FROP      DTYPE_F
@@ -120,39 +126,37 @@ typedef unsigned int FROP;
 	static const DESCRIPTOR_WITH_UNITS(Tdi##x##Constant,&dwe##x,&du##x);\
 	mdsdsc_t *Tdi3##x(){return (mdsdsc_t *)&Tdi##x##Constant;}
 
-#define II {(float)0., (float)1.}
-#define RR 0x8000
-
-DATUM(FLOAT, 2Pi, (float)6.2831853072)	/* circumference/radius    */
-UERR(FLOAT, A0, (float)5.29177249e-11, (float)0.00000024e-11, "m")	/*a0       Bohr radius             */
-DERR(FLOAT, Alpha, (float)7.29735308e-3, (float)0.00000033e-3)	/* fine-structure constant */
-UERR(FLOAT, Amu, (float)1.6605402e-27, (float)0.0000010e-27, "kg")	/* u atomic mass unit, unified */
-UNITS(FLOAT, C, (float)299792458., "m/s")	/* c speed of light(exact) */
-UNITS(FLOAT, Cal, (float)4.1868, "J")	/* calorie                 */
-DATUM(FLOAT, Degree, (float).01745329252)	/* pi/180                  */
-UNITS(FLOAT, Epsilon0, (float)8.854187817e-12, "F/m")	/* permitivity of vacuum(exact) */
-UERR(FLOAT, Ev, (float)1.60217733e-19, (float)0.00000049e-19, "J/eV")	/* eV electron volt        */
-DATUM(BU, False, 0)		/* logically false         */
-UERR(FLOAT, Faraday, (float)9.6485309e4, (float)0.0000029e4, "C/mol")	/*F        Faraday constant        */
-UERR(FLOAT, G, (float)6.67259e-11, (float)0.00085, "m^3/s^2/kg")	/*G gravitational constant */
-UERR(FLOAT, Gas, (float)8.314510, (float)0.000070, "J/K/mol")	/*R       gas constant            */
-UNITS(FLOAT, Gn, (float)9.80665, "m/s^2")	/*gn       acceleration of gravity(exact) */
-UERR(FLOAT, H, (float)6.6260755e-34, (float)0.0000040, "J*s")	/*h        Planck constant         */
-UERR(FLOAT, Hbar, (float)1.05457266e-34, (float)0.00000063, "J*s")	/*hbar h/(2pi)             */
-DATUM(FLOAT_COMPLEX, I, II)	/*i        imaginary               */
-UERR(FLOAT, K, (float)1.380658e-23, (float)0.000012e-23, "J/K")	/*k        Boltzmann constant      */
-UERR(FLOAT, Me, (float)9.1093897e-31, (float)0.0000054e-31, "kg")	/*me       mass of electron        */
-DATUM(MISSING, Missing, 0)	/* missing argument        */
-UERR(FLOAT, Mp, (float)1.6726231e-27, (float)0.0000010e-27, "kg")	/*mp       mass of proton          */
-UNITS(FLOAT, Mu0, (float)12.566370614e-7, "N/A^2")	/* permeability of vacuum(exact) */
-UERR(FLOAT, N0, (float)2.686763e25, (float)0.000023e25, "/m^3")	/*n0       Loschmidt's number (STP) */
-UERR(FLOAT, Na, (float)6.0221367e23, (float)0.0000036e23, "/mol")	/*NA or L Avogadro number  */
-UNITS(FLOAT, P0, (float)1.01325e5, "Pa")	/*atm      atmospheric pressure(exact) */
-DATUM(FLOAT, Pi, (float)3.1415926536)	/* circumference/diameter  */
-UERR(FLOAT, Qe, (float)1.60217733e-19, (float)0.000000493e-19, "C")	/*e        charge on electron      */
-UERR(FLOAT, Re, (float)2.81794092e-15, (float)0.00000038e-15, "m")	/*re       classical electron radius */
-DATUM(FROP, Roprand, RR)	/* reserved operand        */
-UERR(FLOAT, Rydberg, (float)1.0973731534e7, (float)0.0000000013e7, "/m")	/*Rinf Rydberg constant    */
-UNITS(FLOAT, T0, (float)273.16, "K")	/*?        standard temperature    */
-UNITS(FLOAT, Torr, (float)1.3332e2, "Pa")	/*?torr 1mm Hg pressure    */
-DATUM(BU, True, 1)
+#define I_DATA {0., 1.}
+DATUM(FT,	2Pi,		2*M_PI					)/*	circumference/radius	*/
+UERR (FS,	A0,		5.29177249e-11,	0.00000024e-11,	"m"	)/*a0	Bohr radius		*/
+DERR (FS,	Alpha,		7.29735308e-3,	0.00000033e-3		)/*	fine-structure constant	*/
+UERR (FS,	Amu,		1.6605402e-27,	0.0000010e-27,	"kg"	)/*u	unified atomic mass unit*/
+UNITS(FS,	C,		299792458.,			"m/s"	)/*c	speed of light		*/
+UNITS(FS,	Cal,		4.1868,				"J"	)/*	calorie			*/
+DATUM(FS,	Degree,		M_PI/180				)/*	pi/180			*/
+UNITS(FS,	Epsilon0,	8.854187817e-12,		"F/m"	)/*eps0 permitivity of vacuum	*/
+UERR (FS,	Ev,	 	1.60217733e-19,	0.00000049e-19,	"J/eV"	)/*eV	electron volt		*/
+DATUM(BU,	False,		0					)/*	logically false		*/
+UERR (FS,	Faraday,	9.6485309e4,	0.0000029e4,	"C/mol"	)/*F	Faraday constant	*/
+UERR (FS,	G,		6.67259e-11,	0.00085,    "m^3/s^2/kg")/*G gravitational constant	*/
+UERR (FS,	Gas,		8.314510,	0.000070,      "J/K/mol")/*R	gas constant		*/
+UNITS(FS,	Gn,		9.80665,			"m/s^2"	)/*gn	acceleration of gravity	*/
+UERR (FS,	H,		6.6260755e-34,	0.0000040,	"J*s"	)/*h	Planck constant		*/
+UERR (FS,	Hbar,		1.05457266e-34,	0.00000063,	"J*s"	)/*hbar h/(2pi)			*/
+DATUM(FSC,	I,		I_DATA					)/*i	imaginary		*/
+UERR (FS,	K,		1.380658e-23,	0.000012e-23,	"J/K"	)/*k	Boltzmann constant	*/
+UERR (FS,	Me,		9.1093897e-31,	0.0000054e-31,	"kg"	)/*me	mass of electron	*/
+DATUM(MISSING,	Missing,	0					)/*	missing argument	*/
+UERR (FS,	Mp,		1.6726231e-27,	0.0000010e-27,	"kg"	)/*mp	mass of proton		*/
+UNITS(FS,	Mu0,		12.566370614e-7,		"N/A^2"	)/*mu0	permeability of vacuum	*/
+UERR (FS,	N0,		2.686763e25,	0.000023e25, "/m^3"	)/*n0	Loschmidt's number (STP)*/
+UERR (FS,	Na,		6.0221367e23,	0.0000036e23, "/mol"	)/*NA	Avogadro number		*/
+UNITS(FS,	P0,		1.01325e5,			"Pa"	)/*atm	atmospheric pressure	*/
+DATUM(FT,	Pi,		M_PI					)/*pi	circumference/diameter  */
+UERR (FS,	Qe, 		1.60217733e-19, 0.000000493e-19,"C"	)/*e	charge on electron      */
+UERR (FS,	Re, 		2.81794092e-15,	0.00000038e-15,	"m"	)/*re	class. electron radius	*/
+DATUM(FROP, 	Roprand,	0x8000					)/*	reserved operand        */
+UERR (FS,	Rydberg,	1.0973731534e7, 0.0000000013e7,	"/m"	)/*Rinf	Rydberg constant	*/
+UNITS(FS,	T0,		273.16,				"K"	)/*	0 degC in Kelvin	*/
+UNITS(FS,	Torr,		1.3332e2,			"Pa"	)/*	torr 1mm Hg pressure    */
+DATUM(BU,	True,		1					)/*	logically true		*/

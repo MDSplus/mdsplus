@@ -64,13 +64,15 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 
-
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
 extern void DoubleToWideInt();
 
-#define radians_to_degrees 57.295778
+const double radians_to_degrees = 180./M_PI;
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -148,9 +150,9 @@ static inline double mod_float(double x, double m)
 
 static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 {
-  double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
   double in2_d = WideIntToDouble(in2, size/sizeof(int), is_signed);
-  double ans = fmod(in1_d, in2_d);
+  double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
+  double ans = mod_float(in1_d, in2_d);
   DoubleToWideInt(&ans, size/sizeof(int), out);
 }
 
@@ -181,11 +183,11 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 	case DTYPE_QU:	Operate(uint64_t, %)
 	case DTYPE_O:	OperateBin(in1->length, 1, mod_bin)
 	case DTYPE_OU:	OperateBin(in1->length, 0, mod_bin)
-	case DTYPE_F:	OperateFloat(float,  DTYPE_F,  fmod);
-	case DTYPE_FS:	OperateFloat(float,  DTYPE_FS, fmod);
-	case DTYPE_D:	OperateFloat(double, DTYPE_D,  fmod);
-	case DTYPE_G:	OperateFloat(double, DTYPE_G,  fmod);
-	case DTYPE_FT:	OperateFloat(double, DTYPE_FT, fmod);
+	case DTYPE_F:	OperateFloat(float,  DTYPE_F,  mod_float);
+	case DTYPE_FS:	OperateFloat(float,  DTYPE_FS, mod_float);
+	case DTYPE_D:	OperateFloat(double, DTYPE_D,  mod_float);
+	case DTYPE_G:	OperateFloat(double, DTYPE_G,  mod_float);
+	case DTYPE_FT:	OperateFloat(double, DTYPE_FT, mod_float);
     default:
       return TdiINVDTYDSC;
   }
