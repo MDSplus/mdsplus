@@ -132,8 +132,8 @@ static inline int lex_libcall(LEX_ARGS);
 #define LEX_PATH()		{LEX_OK(); return lex_path(LEX_VARS);}
 #define LEX_TEXT()		{LEX_OK(); return lex_text(LEX_VARS);}
 #define LEX_LIBCALL()		{LEX_OK(); return lex_libcall(LEX_VARS);}
-#define LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.builtin = opc; return LEX_##token;}
-#define LEX_CHAR(c)		{LEX_OK(); yylval_param->mark.builtin = -1; return c;}
+#define LEX_OP(token,opc)	{LEX_OK(); yylval_param->mark.rptr = NULL; yylval_param->mark.builtin = opc; return LEX_##token;}
+#define LEX_CHAR(c)		{LEX_OK(); yylval_param->mark.rptr = NULL; yylval_param->mark.builtin = -1; return c;}
 #define LEX_BALANCE(token,cnt,mod)	{cnt mod;\
  if (yy_flex_debug) fprintf(stderr,"BALANCE %c %d\n",token,cnt);\
  if (cnt<0) LEX_UNBALANCE("([{") else LEX_CHAR(token)}

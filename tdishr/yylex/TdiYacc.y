@@ -155,9 +155,11 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %token	<mark>	CAST	CONST	INC	ARG	SIZEOF
 %token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR
 %token	<mark>	POWER	PROMO	SHIFT	BINEQ
+%token	<mark>	FUN	VBL	MODIF	MODIFA
+
 %token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY	LEQV
+/*symbol varian: must not be subgroup of label*/
 %token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
-%token	<mark>	FUN	MODIF	VBL	AMODIF
 
 %type	<mark>	program	stmts	stmt
 %type	<mark>	vector	vector0
@@ -165,7 +167,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 %type	<mark>	using	using0	using1
 %type	<mark>	label
 %type	<mark>	exp	ass	opt
-%type	<mark>	unaryX	postX	primaX	modif
+%type	<mark>	unaryX	postX	primaX
 %type	<mark>	paren	sub	text
 
 /*****************************************************************
@@ -223,15 +225,10 @@ static const struct marker _EMPTY_MARKER = { 0 };
 	image or routine names
 	*********************************/
 label:
-  IDENT	| CAST	| CONST	| GOTO  | AMODIF
-| DO	| ELSE	| ELSEW	| LABEL
-| FUN	| VBL	| COND	| ARG
-| BREAK | MODIF | DEFAULT
-| MUL	| MULS
-| LAND  | LEQ   | LGE   | LOR   | LEQV
-| LANDS | LEQS  | LGES  | LORS  | LEQVS
-| WHERE	| WHILE	| CASE	| USING | RETURN
-| FOR	| IF	| UNARY	| SWITCH| SIZEOF
+ ARG	|BREAK	|CASE	|CAST	|COND	|CONST	|DEFAULT|DO
+|ELSE	|ELSEW	|FOR	|FUN	|GOTO	|IDENT	|IF	|LABEL
+|LAND	|LEQ	|LEQV	|LGE	|LOR	|MODIF	|MODIFA	|MUL
+|RETURN	|SIZEOF	|SWITCH	|UNARY	|USING	|VBL	|WHERE	|WHILE
 ;
 
 	/*********************************************************
@@ -430,25 +427,40 @@ text:
 	Wait to make path/arg/const for simple; they may be text for -> or (.
 	Simple name are members of current node in tree.
 	********************************************************************/
-modif:
-  MODIF
-| AMODIF
-;
 primaX:
-  modif VBL		{_JUST1($1.builtin,$2,$$);}		/*IN/INOUT/OPTIONAL/OUT/PUBLIC/PRIVATE variable*/
-| AMODIF AMODIF VBL	{struct marker tmp;			/*OPTIONAL IN/INOUT/OUT*/
+  MODIF VBL		{_JUST1($1.builtin,$2,$$);}	/*PUBLIC/PRIVATE variable*/
+| MODIFA VBL		{_JUST1($1.builtin,$2,$$);}	/*IN/INOUT/OPTIONAL/OUT variable*/
+| MODIFA MODIFA VBL	{struct marker tmp;		/*OPTIONAL IN/INOUT/OUT*/
 			_JUST1($2.builtin,$3,tmp);
 			_JUST1($1.builtin,tmp,$$);}
-| label			{if (*$$.rptr->pointer == '$') {
-				if($$.builtin < 0) $$.rptr->dtype=DTYPE_IDENT;
-				else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_ARG)
-				{__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));}
-				else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_CONST)
-					_JUST0($1.builtin,$$);
-			} else	if (*$$.rptr->pointer == '_')
-				$$.rptr->dtype=DTYPE_IDENT;
-			else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == LEX_ERROR)
-				{yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;}
+| label			{
+				if (!$$.rptr)
+				{
+					yyerror(TDITHREADSTATIC_VAR, "label but rptr is NULL"); return YY_ERR;
+				}
+				else if (*$$.rptr->pointer == '$')
+				{
+					if($$.builtin < 0)
+					{
+						$$.rptr->dtype=DTYPE_IDENT;
+					}
+					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_ARG)
+					{
+						__RUN(tdi_yacc_ARG(&$$, TDITHREADSTATIC_VAR));
+					}
+					else if ((TdiRefFunction[$$.builtin].token & LEX_M_TOKEN) == LEX_CONST)
+					{
+						_JUST0($1.builtin,$$);
+					}
+				}
+				else if (*$$.rptr->pointer == '_')
+				{
+					$$.rptr->dtype=DTYPE_IDENT;
+				}
+				else if (tdi_lex_path($1.rptr->length, $1.rptr->pointer, &$$, TDITHREADSTATIC_VAR) == LEX_ERROR)
+				{
+					yyerror(TDITHREADSTATIC_VAR, "yacc_path failed"); return YY_ERR;
+				}
 			}
 | VALUE
 | text
