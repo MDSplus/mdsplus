@@ -91,5 +91,5 @@ int dimension;
     return LibKEYNOTFOU;
   else
     *code_ptr = table[current].code;
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
