@@ -6299,3 +6299,11 @@ build_signal([1,2,3],*,["a","b","c"])["d"] /** empty signal **/
 Build_Signal([], *, [])
 TreeShr->MaskReplace:C(ref("/trees/~j~i/~h~g/~f~e/~d~c/~t"), ref("test"), val(123456789))
 "/trees/01/23/45/67/test"
+_=*;switch(3){case(0:2,4:6,8:10)_=$TRUE;break;case default _=$FALSE;break;};_
+0BU
+_=*;switch(5){case(0:2,4:6,8:10)_=$TRUE;break;case default _=$FALSE;break;};_
+1BU
+_=*;switch(3,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),statement(_=$TRUE,break()))));_
+0BU
+_=*;switch(5,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),statement(_=$TRUE,break()))));_
+1BU

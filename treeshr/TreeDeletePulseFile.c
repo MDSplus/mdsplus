@@ -72,8 +72,6 @@ int TreeDeletePulseFile(int shotid,int numnids, int *nids)
 # define DBG(...) {}
 #endif
 
-extern char *MaskReplace();
-
 extern void **TreeCtx();
 
 int TreeDeletePulseFile(int shotid, int allfiles)

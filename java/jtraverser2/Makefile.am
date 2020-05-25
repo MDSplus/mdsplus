@@ -25,7 +25,7 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 endif
 
 if MINGW
-bin_SCRIPTS += traverser2.bat
+bin_SCRIPTS += jTraverser2.bat
 else
 bin_SCRIPTS += jTraverser2
 EXTRA_DIST = jTraverser2.template

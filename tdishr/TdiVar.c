@@ -1026,9 +1026,9 @@ int Tdi1Var(opcode_t opcode __attribute__ ((unused)), int narg, mdsdsc_t *list[]
 int Tdi1Fun(opcode_t opcode, int narg, mdsdsc_t *list[], mdsdsc_xd_t *out_ptr) {
   DESCRIPTOR_FUNCTION(hold, 0, 255);
   int j;
-  unsigned short opcode_s = (unsigned short)opcode;
-  hold.pointer = (unsigned char *)&opcode_s;
-  hold.ndesc = (unsigned char)narg;
+  opcode_t opcode_s = opcode;
+  hold.pointer = &opcode_s;
+  hold.ndesc = (uint8_t)narg;
   for (j = narg; --j >= 0;)
     if ((hold.arguments[j] = list[j]) == 0)
       return TdiNULL_PTR;

@@ -36,8 +36,8 @@ AX_IS_RELEASE([always])
 # ////// RELEASE INFO //////////////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
 
-    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[        
-    # ],[        
+    # AC_ARG_WITH(release_version, [AS_HELP_STRING([--with-release-version],[tag a partivular version name])],[
+    # ],[
     # ])
 
 if [[ ! -z ${RELEASE_VERSION} ]]
@@ -54,7 +54,7 @@ RELEASE_BRANCH=${BRANCH::12}
 RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 RELEASE_DATE="$(date)"
 
-dnl look if a version from git directory can be obtained 
+dnl look if a version from git directory can be obtained
 AX_GIT_REVISION
 
 if [[ -z ${RELEASE_BRANCH} ]]
@@ -114,10 +114,8 @@ AC_CHECK_TOOL([WINDRES], [windres], [:])
 AC_PROG_YACC
 AM_PROG_LEX
 
-# if ln is provided by busybox it does not have -r option
-AX_IS_BUSYBOX([ln],
- [AS_VAR_SET([LN_R],["ln"])],
- [AS_VAR_SET([LN_R],["ln -r"])] )
+# ln does not always provide the -r (relative) option
+AS_IF([ln --help | grep -- "--relative" &>/dev/null],[AS_VAR_SET([LN_R],["ln -r"])],[AS_VAR_SET([LN_R],["ln"])])
 AC_SUBST([LN_R])
 
 # Always do the visibility check but don't set AM_CFLAGS on Windows.
@@ -1164,7 +1162,7 @@ CFLAGS="$CFLAGS_lib_check_save"
 #
 
 
-# 
+#
 # CHECK ASSERT_LINE_TYPE to correctly override assert function in C
 # This is needed for testing functions in mdsplus/testing/testing.h
 #
