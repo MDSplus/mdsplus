@@ -154,12 +154,12 @@ static const struct marker _EMPTY_MARKER = { 0 };
 
 %token	<mark>	CAST	CONST	INC	ARG	SIZEOF
 %token	<mark>	ADD	CONCAT	IAND	IN	IOR	IXOR
-%token	<mark>	POWER	PROMO	SHIFT	BINEQ
+%token	<mark>	POWER	PROMO	SHIFT	BINEQ	MUL	MOD
 %token	<mark>	FUN	VBL	MODIF	MODIFA
 
-%token	<mark>	LAND	LEQ	LGE	LOR	MUL	UNARY	LEQV
+%token	<mark>	LAND	LEQ	LGE	LOR	UNARY	LEQV
 /*symbol varian: must not be subgroup of label*/
-%token	<mark>	LANDS	LEQS	LGES	LORS	MULS	UNARYS	LEQVS
+%token	<mark>	LANDS	LEQS	LGES	LORS	UNARYS	LEQVS
 
 %type	<mark>	program	stmts	stmt
 %type	<mark>	vector	vector0
@@ -195,7 +195,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 		//-	-	-	3	< >	(min max)
 %left SHIFT	//5	-	-	-	<< >>
 %left ADD	//4	5	3	3	+ - .binary.
-%left MUL MULS '*'//3 %	3	2	2 # MOD	* /
+%left MUL MOD '*' //3 %	3	2	2 # MOD	* /
 %right POWER	//-	2	1	1	** ^
 
 %right UNARY UNARYS//2 * &	4 + -	3	?	+ - .unary.
@@ -227,7 +227,7 @@ static const struct marker _EMPTY_MARKER = { 0 };
 label:
  ARG	|BREAK	|CASE	|CAST	|COND	|CONST	|DEFAULT|DO
 |ELSE	|ELSEW	|FOR	|FUN	|GOTO	|IDENT	|IF	|LABEL
-|LAND	|LEQ	|LEQV	|LGE	|LOR	|MODIF	|MODIFA	|MUL
+|LAND	|LEQ	|LEQV	|LGE	|LOR	|MODIF	|MODIFA	|MOD
 |RETURN	|SIZEOF	|SWITCH	|UNARY	|USING	|VBL	|WHERE	|WHILE
 ;
 
@@ -294,9 +294,9 @@ ass:
 			}
 | ass SHIFT	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*SHIFT*/
 | ass ADD	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*ADD*/
-| ass MUL	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*MUL*/
-| ass MULS	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*MULS*/
-| ass '*'	ass	{_JUST2(OPC_MULTIPLY,$1,$3,$$);}
+| ass MUL	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*'a / b' and 'a % b'*/
+| ass '*'	ass	{_JUST2(OPC_MULTIPLY,$1,$3,$$);}/*'a * b'*/
+| ass MOD	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*'a MOD b'*/
 | ass POWER	ass	{_JUST2($2.builtin,$1,$3,$$);}	/*POWER right-to-left*/
 | '*'			{$$=_EMPTY_MARKER;}
 | ERROR			{yyerror(TDITHREADSTATIC_VAR, "lex error"); return YY_ERR;}

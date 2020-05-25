@@ -267,7 +267,7 @@ OPC (	Min,		MIN ,		MinMax,Add,		Min,		BU,HC,	BU,HC,	2,254,	OK	)/*;f9	(x,y..)			*
 OPC (	MinExponent,	MINEXPONENT ,	Scalar,Any,		MinExponent,	F,HC,	L,L,	1,1,	OK	)/*;f9	(model)			*/
 OPC (	MinLoc,		MINLOC ,		Trans,	Mask3L,		MinLoc,	T,HC,SUBSCRIPT,SUBSCRIPT,1,3,	OK	)/*;f9	(x,[dim], [mask])		*/
 OPC (	MinVal,		MINVAL ,		Trans,	Mask3,		MinVal,		T,HC,	T,HC,	1,3,	OK	)/*;f9	(x,[dim],[mask])	*/
-OPC (	Mod,		MOD ,		Same,	Add,		Mod,		BU,HC,	BU,HC,	2,2,	MUL+N	)/*;f9	(a,p)			*/
+OPC (	Mod,		MOD ,		Same,	Add,		Mod,		BU,HC,	BU,HC,	2,2,	MOD+N	)/*;f9	(a,p)			*/
 OPC (	ModelOf,	MODEL_OF ,	ModelOf, undef,		undef, CONGLOM,CONGLOM,	XX,YY,	1,1,	OK+I	)/*;mds	(conglom)		*/
 OPC (	Multiply,	MULTIPLY ,	Same,	Multiply,	Multiply,	BU,HC,	BU,HC,	2,2,	MUL+S	)/*;%	a*b			*/
 OPC (	NameOf,		NAME_OF ,	NameOf, undef,		undef, 	CONGLOM,CONGLOM,	T,T,	1,1,	OK+I	)/*;mds	(conglom)	*/
