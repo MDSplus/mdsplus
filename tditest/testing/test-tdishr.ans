@@ -6307,3 +6307,10 @@ _=*;switch(3,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),
 0BU
 _=*;switch(5,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),statement(_=$TRUE,break()))));_
 1BU
+<syntax error at '<'
+%TDI-E-SYNTAX, Bad punctuation or misspelled word or number
+%TDI Error compiling region marked by ^
+<syntax error at '<'
+^
+%TDI Error in EXECUTE("<syntax error at '<'")
+

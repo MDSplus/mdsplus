@@ -169,6 +169,6 @@ int paragon_rpt___store(struct descriptor *niddsc_ptr __attribute__ ((unused)), 
     MdsFree1Dx(&text_names,0);
     MdsFree1Dx(&text,0);
   }
-  return TreeNORMAL;
+  return TreeSUCCESS;
 }
 */

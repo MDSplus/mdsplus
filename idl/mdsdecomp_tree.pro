@@ -79,7 +79,7 @@ pro setup_node,nid,lun
   if (mdsvalue('getnci($1,"IS_MEMBER")',nid)) then begin
     if (mdsvalue('getnci($,"LENGTH")',nid) ne 0) then begin
       value = mdsvalue('DECOMPILE(`getnci($,"RECORD"))',nid)
-      if strpos(value,"<no-node>") eq -1 then begin
+      if strpos(value,"\\NODE::NOT.FOUND") eq -1 then begin
         printf,lun,'PUT/EXTEND/NOLF/EOF="****" ' + path
         strt = 0l
         len = strlen(value)
