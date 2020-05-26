@@ -2468,71 +2468,71 @@ VERIFY("ABBA","A")
 VERIFY("ABBA","A",$TRUE)
 2
 $2PI
-6.28319
+6.283185307179586D0
 $A0
-Build_With_Units(Build_With_Error(52.9177E-12, 2400E-21), "m")
+Build_With_Units(Build_With_Error(52.9177E-12, 1168.02E-21), "m")
 $Alpha
-Build_With_Error(.00729735, 330E-12)
+Build_With_Error(.00729735, 143.276E-12)
 $Amu
-Build_With_Units(Build_With_Error(1660.54E-30, 1000E-36), "kg")
+Build_With_Units(Build_With_Error(1660.54E-30, 43.0666E-36), "kg")
 $Atm
 Build_With_Units(101325., "Pa")
 $C
-Build_With_Units(299.792E6, "m/s")
+Build_With_Units(299792458D0, "m/s")
 $Cal
 Build_With_Units(4.1868, "J")
 $Degree
-.0174533
+.0174532925199433D0
 $Epsilon0
-Build_With_Units(8854.19E-15, "F/m")
+Build_With_Units(8854.187817620389D-15, "F/m")
 $Ev
-Build_With_Units(Build_With_Error(160.218E-21, 49E-27), "J/eV")
+Build_With_Units(Build_With_Error(160.218E-21, 3654.14E-30), "J/eV")
 $False
 0BU
 $Faraday
-Build_With_Units(Build_With_Error(96485.3, .029), "C/mol")
+Build_With_Units(Build_With_Error(96485.3, .00381419), "C/mol")
 $G
-Build_With_Units(Build_With_Error(66.7259E-12, .00085), "m^3/s^2/kg")
+Build_With_Units(Build_With_Error(66.743E-12, 1500.02E-18), "m^3/s^2/kg")
 $Gas
-Build_With_Units(Build_With_Error(8.31451, 70E-6), "J/K/mol")
+Build_With_Units(Build_With_Error(8.31446, 43.5899E-9), "J/K/mol")
 $Gn
 Build_With_Units(9.80665, "m/s^2")
 $H
-Build_With_Units(Build_With_Error(662.608E-36, 4000E-9), "J*s")
+Build_With_Units(Build_With_Error(662.607E-36, 2857.25E-45), "J*s")
 $Hbar
-Build_With_Units(Build_With_Error(105.457E-36, 630E-9), "J*s")
+Build_With_Units(Build_With_Error(105.457E-36, 1967.42E-45), "J*s")
 $I
 Cmplx(0.,1.)
 $K
-Build_With_Units(Build_With_Error(13.8066E-24, 120E-30), "J/K")
+Build_With_Units(Build_With_Error(13.8065E-24, 276.341E-33), "J/K")
 $Me
-Build_With_Units(Build_With_Error(910.939E-33, 540E-39), "kg")
+Build_With_Units(Build_With_Error(910.938E-33, 25.8874E-39), "kg")
 $Missing
 $Missing
 $Mp
-Build_With_Units(Build_With_Error(1672.62E-30, 1000E-36), "kg")
+Build_With_Units(Build_With_Error(1672.62E-30, 85.2717E-36), "kg")
 $Mu0
-Build_With_Units(1256.64E-9, "N/A^2")
+Build_With_Units(1256.637061435917D-9, "N/A^2")
 $N0
-Build_With_Units(Build_With_Error(26.8676E24, 230E18), "/m^3")
+Build_With_Units(Build_With_Error(26.8678E24, 743.623E15), "/m^3")
 $Na
-Build_With_Units(Build_With_Error(602.214E21, 360E15), "/mol")
+Build_With_Units(Build_With_Error(602.214E21, 11.645E15), "/mol")
 $P0
 Build_With_Units(101325., "Pa")
 $Pi
-3.14159
+3.141592653589793D0
 $Qe
-Build_With_Units(Build_With_Error(160.218E-21, 49.3E-27), "C")
+Build_With_Units(Build_With_Error(160.218E-21, 3654.14E-30), "C")
 $Re
-Build_With_Units(Build_With_Error(2817.94E-18, 380E-24), "m")
+Build_With_Units(Build_With_Error(2817.94E-18, 12.7156E-24), "m")
 $Roprand
 $ROPRAND
 $Rydberg
-Build_With_Units(Build_With_Error(10.9737E6, .013), "/m")
+Build_With_Units(Build_With_Error(10.9737E6, .443876), "/m")
 $T0
-Build_With_Units(273.16, "K")
+Build_With_Units(273.15, "K")
 $Torr
-Build_With_Units(133.32, "Pa")
+Build_With_Units(133.3223684210526D0, "Pa")
 $True
 1BU
 byte_unsigned(42ub)
