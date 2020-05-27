@@ -1,7 +1,7 @@
 package MDSplus;
 
 /**
- * Compound is the common supreclass for all CLASS_R types.
+ * Compound is the common superclass for all CLASS_R types.
  * Its fields contain all the required information (Descriptor array, keyword).
  * Its getter/setter methods allow to read/replace descriptors, based on their
  * index.
@@ -20,7 +20,7 @@ public class Compound extends Data {
 	/**
 	 * The data (descriptor) array.
 	 */
-	Data[] descs;
+	protected Data[] descs;
 
 	public Compound(Data help, Data units, Data error, Data validation)
 	{
@@ -80,5 +80,20 @@ public class Compound extends Data {
 	        descs = newDescs;
 	    }
 	}
+        public void setCtxTree(Tree ctxTree)
+	{
+		this.ctxTree = ctxTree;
+ 	        for(int i = 0; i  < descs.length; i++)
+                {
+	            if(descs[i] != null)
+                        descs[i].setCtxTree(ctxTree);
+                }
+               
+	}
+
+        public int getOpcode()
+        {
+            return opcode;
+        }
 
 }

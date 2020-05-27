@@ -13,12 +13,12 @@ public class DataEditor
   JPanel panel;
   JComboBox combo;
   int mode_idx, curr_mode_idx;
-  Data data;
-  Data units;
+  MDSplus.Data data;
+  MDSplus.Data units;
   boolean editable = true;
   TreeDialog dialog;
 
-  public DataEditor(Data data, TreeDialog dialog)
+  public DataEditor(MDSplus.Data data, TreeDialog dialog)
   {
     this.dialog = dialog;
     this.data = data;
@@ -30,13 +30,13 @@ public class DataEditor
     }
     else
     {
-      if (data instanceof ParameterData)
+      if (data.getHelp() != null)
 	  mode_idx = 2;
-      else if(data instanceof FunctionData && ((FunctionData)data).opcode == PythonEditor.OPC_FUN)
+      else if(data instanceof MDSplus.Function && ((MDSplus.Function)data).getOpcode() == PythonEditor.OPC_FUN)
       {
-	  Data[] args = ((FunctionData)data).getArgs();
+	  MDSplus.Data[] args = ((MDSplus.Function)data).getArguments();
 	  try {
-	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
+	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof MDSplus.String) &&
 	    args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
 	        mode_idx = 3;
 	    else
@@ -45,10 +45,10 @@ public class DataEditor
       }
       else
 	  mode_idx = 1;
-      if (data.dtype == Data.DTYPE_WITH_UNITS)
+      if (data.getUnits() != null)
       {
-	this.data = ( (WithUnitsData) data).getDatum();
-	units = ( (WithUnitsData) data).getUnits();
+	this.data = data;
+	units = data.getUnits();
       }
       else
       {
@@ -82,12 +82,12 @@ public class DataEditor
 	panel.add(expr_edit = new LabeledExprEditor(data));
 	break;
       case 2:
-	Data _data, _help = null, _validation = null;
-	if (data != null && data instanceof ParameterData)
+	MDSplus.Data _data, _help = null, _validation = null;
+	if (data != null && (data.getHelp() != null || data.getValidation() != null))
 	{
-	    _data = ( (ParameterData)data).getDatum();
-	    _help = ( (ParameterData)data).getHelp();
-	    _validation = ( (ParameterData)data).getValidation();
+	    _data = data;
+	    _help = data.getHelp();
+	    _validation = data.getValidation();
 	}
 	else
 	    _data = data;
@@ -97,9 +97,9 @@ public class DataEditor
 	panel.add(param_edit);
 	break;
       case 3:
-	if (data != null && data instanceof FunctionData)
+	if (data != null && data instanceof MDSplus.Function)
 	{
-	  python_edit = new PythonEditor(((FunctionData)data).getArgs());
+	  python_edit = new PythonEditor(((MDSplus.Function)data).getArguments());
 	}
 	else
 	{
@@ -141,9 +141,9 @@ public class DataEditor
     dialog.repack();
   }
 
-  public Data getData()
+  public MDSplus.Data getData()
   {
-    Data units;
+    MDSplus.Data units;
     switch (curr_mode_idx)
     {
       case 0:
@@ -152,11 +152,15 @@ public class DataEditor
 	units = units_edit.getData();
 	if (units != null)
 	{
-	  if (units instanceof StringData &&
-	      ( (StringData) units).datum.equals(""))
+	  if (units instanceof MDSplus.String &&
+                ((MDSplus.String)units).getString().equals(""))
 	    return expr_edit.getData();
 	  else
-	    return new WithUnitsData(expr_edit.getData(), units);
+          {
+              MDSplus.Data retData = expr_edit.getData();
+              retData.setUnits(units);
+              return retData;
+          }
 	}
 	else
 	  return expr_edit.getData();
@@ -164,11 +168,15 @@ public class DataEditor
 	  units = units_edit.getData();
 	  if (units != null)
 	  {
-	    if (units instanceof StringData &&
-	        ( (StringData) units).datum.equals(""))
+	    if (units instanceof MDSplus.String &&
+	        ( (MDSplus.String) units).getString().equals(""))
 	      return param_edit.getData();
 	    else
-	      return new WithUnitsData(param_edit.getData(), units);
+            {
+                MDSplus.Data retData = param_edit.getData();
+                retData.setUnits(units);
+                return retData;
+             }
 	  }
 	  else
 	    return param_edit.getData();
@@ -177,11 +185,15 @@ public class DataEditor
 	  units = units_edit.getData();
 	  if (units != null)
 	  {
-	    if (units instanceof StringData &&
-	        ( (StringData) units).datum.equals(""))
+	    if (units instanceof MDSplus.String &&
+	        ( (MDSplus.String) units).getString().equals(""))
 	      return python_edit.getData();
 	    else
-	      return new WithUnitsData(python_edit.getData(), units);
+            {
+                MDSplus.Data retData = python_edit.getData();
+                retData.setUnits(units);
+                return retData;
+            }
 	  }
 	  else
 	    return python_edit.getData();
@@ -189,7 +201,7 @@ public class DataEditor
     return null;
   }
 
-  public void setData(Data data)
+  public void setData(MDSplus.Data data)
   {
     this.data = data;
     if (data == null)
@@ -200,13 +212,13 @@ public class DataEditor
     }
     else
     {
-      if(data instanceof ParameterData)
+      if(data.getHelp() != null)
 	mode_idx = 2;
-      else if(data instanceof FunctionData && ((FunctionData)data).opcode == PythonEditor.OPC_FUN)
+      else if(data instanceof MDSplus.Function && ((MDSplus.Function)data).getOpcode() == PythonEditor.OPC_FUN)
       {
-	  Data[] args = ((FunctionData)data).getArgs();
+	  MDSplus.Data[] args = ((MDSplus.Function)data).getArguments();
 	  try {
-	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringData) &&
+	  if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof MDSplus.String) &&
 	    args[1].getString()!= null && args[1].getString().toUpperCase().equals("PY"))
 	        mode_idx = 3;
 	    else
@@ -215,10 +227,10 @@ public class DataEditor
       }
       else
 	mode_idx = 1;
-      if (data.dtype == Data.DTYPE_WITH_UNITS)
+      if (data.getUnits() != null)
       {
-	this.data = ( (WithUnitsData) data).getDatum();
-	units = ( (WithUnitsData) data).getUnits();
+	this.data = data;
+	units = data.getUnits();
       }
       else
       {

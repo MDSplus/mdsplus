@@ -1,6 +1,7 @@
 //package jTraverser;
 import java.awt.Dimension;
 import java.rmi.RemoteException;
+import java.text.SimpleDateFormat;
 
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -9,14 +10,16 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 public class Node
-{
-    RemoteTree experiment;
-    Data data;
-    NodeInfo info;
-    NidData nid;
+{    
+    static long VMS_OFFSET = 0x7c95674beb4000L;
+
+    MDSplus.Tree experiment;
+    MDSplus.Data data;
+    MDSplus.TreeNode nid;
     Node parent;
     Node[] sons;
     Node[] members;
+    NodeInfo info;
     boolean is_member;
     JLabel tree_label;
     NodeBeanInfo bean_info;
@@ -26,37 +29,39 @@ public class Node
     boolean is_on;
     private DefaultMutableTreeNode treenode;
 
-    public Node(RemoteTree experiment, Tree hierarchy) throws DatabaseException, RemoteException
+    public Node(MDSplus.Tree experiment, Tree hierarchy) throws MDSplus.MdsException
     {
 	this.experiment = experiment;
 	this.hierarchy = hierarchy;
-	if (experiment.isRealtime())
-	    nid = new NidData(1);
-	else
-	    nid = new NidData(0);
-	info = experiment.getInfo(nid, Tree.context);
+	nid = new MDSplus.TreeNode(0, Tree.curr_experiment);
 	parent = null;
 	is_member = false;
 	sons = new Node[0];
 	members = new Node[0];
     }
 
-    public Node(RemoteTree experiment, Tree hierarchy, Node parent, boolean is_member, NidData nid)
+    public Node(MDSplus.Tree experiment, Tree hierarchy, Node parent, boolean is_member, MDSplus.TreeNode nid)
     {
 	this.experiment = experiment;
 	this.hierarchy = hierarchy;
 	this.parent = parent;
 	this.is_member = is_member;
 	this.nid = nid;
-	try{info = experiment.getInfo(nid, Tree.context);}
-	catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
 	sons = new Node[0];
 	members = new Node[0];
     }
 
     public void setTreeNode(DefaultMutableTreeNode treenode){this.treenode = treenode;}
     public DefaultMutableTreeNode getTreeNode(){return treenode;}
-
+    void checkInfo()
+    {
+        if(info == null)
+        {
+            try {
+                info = getInfo();
+            }catch(Exception exc){System.out.println(exc);}
+        }
+    }
     void setOnUnchecked()
     {
 	needsOnCheck = true;
@@ -73,15 +78,10 @@ public class Node
 	currNode.setOnUnchecked();
     }
 
-    public void setSubtree() throws DatabaseException, RemoteException
+    public void setSubtree() throws MDSplus.MdsException
     {
-	experiment.setSubtree(nid, Tree.context);
-	try
-	{
-	    info = experiment.getInfo(nid, Tree.context);
-	    tree_label = null;
-	}
-	catch (Exception exc){jTraverser.stderr("Error getting info", exc);}
+	nid.setSubtree(true);
+	tree_label = null;
     }
 
     public void updateCell()
@@ -90,65 +90,59 @@ public class Node
     }
 
 
-    public void updateData() throws DatabaseException, RemoteException
+    public void updateData() throws MDSplus.MdsException
     {
-	data = experiment.getData(nid, Tree.context);
+	data = nid.getData();
     }
 
-    public void updateInfo() throws DatabaseException, RemoteException
-    {
-	info = experiment.getInfo(nid, Tree.context);
-    }
 
-    public void expand() throws DatabaseException, RemoteException
+    public void expand() throws MDSplus.MdsException
     {
 	int i;
-	NidData sons_nid[] = experiment.getSons(nid, Tree.context);
-	if (sons_nid == null) sons_nid = new NidData[0];
-	NidData members_nid[] = experiment.getMembers(nid, Tree.context);
-	if (members_nid == null) members_nid = new NidData[0];
-	sons = new Node[sons_nid.length];
-	members = new Node[members_nid.length];
-	for (i = 0; i < sons_nid.length; i++)
-	    sons[i] = new Node(experiment, hierarchy, this, false, sons_nid[i]);
-	for (i = 0; i < members_nid.length; i++)
+	MDSplus.TreeNodeArray sons_nid = nid.getChildren();
+	MDSplus.TreeNodeArray  members_nid = nid.getMembers();
+	sons = new Node[sons_nid.size()];
+	members = new Node[members_nid.size()];
+	for (i = 0; i < sons_nid.size(); i++)
+	    sons[i] = new Node(experiment, hierarchy, this, false, sons_nid.getElementAt(i));
+	for (i = 0; i < members_nid.size(); i++)
 	    members[i] = new Node(experiment, hierarchy, this, true,
-	                          members_nid[i]);
+	                          members_nid.getElementAt(i));
     }
 
-    public void setDefault() throws DatabaseException, RemoteException
+    public void setDefault() throws MDSplus.MdsException
     {
-	experiment.setDefault(nid, Tree.context);
+	experiment.setDefault(nid);
     }
 
-    public void toggle() throws DatabaseException, RemoteException
+    public void toggle() throws MDSplus.MdsException
     {
-	if (experiment.isOn(nid, Tree.context))
-	    experiment.setOn(nid, false, Tree.context);
+	if (nid.isOn())
+	    nid.setOn(false);
 	else
-	    experiment.setOn(nid, true, Tree.context);
+	    nid.setOn(true);
 	setOnUnchecked();
     }
 
     public void turnOn()
     {
-	try{experiment.setOn(nid, true, Tree.context);}
+	try{nid.setOn(true);}
 	catch (Exception exc){jTraverser.stderr("Error turning on", exc);}
 	setOnUnchecked();
     }
 
     public void turnOff()
     {
-	try{experiment.setOn(nid, false, Tree.context);}
+	try{nid.setOn(false);}
 	catch (Exception exc){jTraverser.stderr("Error turning off", exc);}
 	setOnUnchecked();
     }
 
-    public void doAction() throws DatabaseException, RemoteException
+    public void doAction() throws MDSplus.MdsException
     {
 	try
 	{
-	    experiment.doAction(nid, Tree.context);
+	    nid.doAction();
 	}
 	catch (Exception e)
 	{
@@ -158,75 +152,86 @@ public class Node
 	}
     }
 
-    public void setData(Data data) throws DatabaseException, RemoteException
+    public void setData(MDSplus.Data data) throws MDSplus.MdsException
     {
 	this.data = data;
-	experiment.putData(nid, data, Tree.context);
+	nid.putData(data);
     }
 
-    public Data getData() throws DatabaseException, RemoteException
+    public MDSplus.Data getData() throws MDSplus.MdsException
     {
-	data = experiment.getData(nid, Tree.context);
+	data = nid.getData();
 	return data;
     }
 
-    public NodeInfo getInfo() throws DatabaseException, RemoteException
+    public NodeInfo getInfo() throws MDSplus.MdsException
     {
-	try{
-	    info = experiment.getInfo(nid, Tree.context);
-	}
-	catch (Exception exc){jTraverser.stderr("Error checking info",exc);}
-	return info;
+        long time = nid.getTimeInserted();
+        time = (time - VMS_OFFSET)/10000L;
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTimeInMillis(time);
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
+        String dateStr = sdf.format(cal.getTime());
+        return new NodeInfo(nid.getDclass(), nid.getDtype(), nid.getUsage(), nid.getNciFlags(),  
+                    nid.getOwnerId(), nid.getLength(), nid.getConglomerateNodes().size(), 
+                    nid.getConglomerateElt(), dateStr, nid.getNodeName(),
+                    nid.getFullPath(), nid.getMinPath(), nid.getPath(), nid.getNumSegments());
+ 
     }
 
-    public void setInfo(NodeInfo info) throws DatabaseException, RemoteException{}
+    public void setInfo(NodeInfo info) throws MDSplus.MdsException{}
 
     public final Node[] getSons(){return sons;}
     public final Node[] getMembers(){return members;}
     public final String toString(){return getName();}
     // info interface
-    public final byte getDType(){return info.getDType();}
-    public final byte getDClass(){return info.getDClass();}
-    public final byte getUsage(){return info.getUsage();}
-    public final int getOwner() {return info.getOwner();}
-    public final int getLength() {return info.getLength();}
-    public final int getConglomerateNids() {return info.getConglomerateNids(); }
-    public final int getConglomerateElt() { return info.getConglomerateElt();}
-    public final String getDate(){return info.getDate();}
-    public final String getName(){return info.getName();}
-    public final String getFullPath(){return info.getFullPath();}
-    public final String getMinPath(){return info.getMinPath();}
-    public final String getPath(){return info.getPath();}
-    public final boolean isState(){return info.isState();}
-    public final boolean isParentState(){return info.isParentState();}
-    public final boolean isEssential(){return info.isEssential();}
-    public final boolean isCached(){return info.isCached();}
-    public final boolean isVersion(){return info.isVersion();}
-    public final boolean isSegmented(){return info.isSegmented();}
-    public final boolean isSetup(){return info.isSetup();}
-    public final boolean isWriteOnce(){return info.isWriteOnce();}
-    public final boolean isCompressible(){return info.isCompressible();}
-    public final boolean isDoNotCompress(){return info.isDoNotCompress();}
-    public final boolean isCompressOnPut(){return info.isCompressOnPut();}
-    public final boolean isNoWriteModel(){return info.isNoWriteModel();}
-    public final boolean isNoWriteShot(){return info.isNoWriteShot();}
-    public final boolean isPathReference(){return info.isPathReference();}
-    public final boolean isNidReference(){return info.isNidReference();}
-    public final boolean isCompressSegments(){return info.isCompressSegments();}
-    public final boolean isIncludeInPulse(){return info.isIncludeInPulse();}
+    public final String getDType(){checkInfo(); return info.getDType();}
+    public final String getDClass(){checkInfo(); return info.getDClass();}
+    public final String getUsage(){checkInfo();return info.getUsage();}
+    public final int getOwner() {checkInfo();return info.getOwner();}
+    public final int getLength() {checkInfo();return info.getLength();}
+    public final int getConglomerateNids() {checkInfo();return info.getConglomerateNids(); }
+    public final int getConglomerateElt() {checkInfo(); return info.getConglomerateElt();}
+    public final String getDate(){checkInfo();return info.getDate();}
+    public final String getName(){checkInfo();return info.getName();}
+    public final String getFullPath(){checkInfo();return info.getFullPath();}
+    public final String getMinPath(){checkInfo();return info.getMinPath();}
+    public final String getPath(){checkInfo();return info.getPath();}
+    public final boolean isState(){checkInfo();return info.isState();}
+    public final boolean isParentState(){checkInfo();return info.isParentState();}
+    public final boolean isEssential(){checkInfo();return info.isEssential();}
+    public final boolean isCached(){checkInfo();return info.isCached();}
+    public final boolean isVersion(){checkInfo();return info.isVersion();}
+    public final boolean isSegmented(){checkInfo();return info.isSegmented();}
+    public final boolean isSetup(){checkInfo();return info.isSetup();}
+    public final boolean isWriteOnce(){checkInfo();return info.isWriteOnce();}
+    public final boolean isCompressible(){checkInfo();return info.isCompressible();}
+    public final boolean isDoNotCompress(){checkInfo();return info.isDoNotCompress();}
+    public final boolean isCompressOnPut(){checkInfo();return info.isCompressOnPut();}
+    public final boolean isNoWriteModel(){checkInfo();return info.isNoWriteModel();}
+    public final boolean isNoWriteShot(){checkInfo();return info.isNoWriteShot();}
+    public final boolean isPathReference(){checkInfo();return info.isPathReference();}
+    public final boolean isNidReference(){checkInfo();return info.isNidReference();}
+    public final boolean isCompressSegments(){checkInfo();return info.isCompressSegments();}
+    public final boolean isIncludeInPulse(){checkInfo();return info.isIncludeInPulse();}
 
-    public final void setFlag(byte idx) throws DatabaseException, RemoteException
+    public final void setFlag(byte idx) throws MDSplus.MdsException
     {
-	experiment.setFlags(nid, 1<<idx);
-	info.setFlags(experiment.getFlags(nid));
+        checkInfo();
+	nid.setNciFlag(idx);
+	info.setFlags(nid.getNciFlags());
     }
-    public void clearFlag(byte idx) throws DatabaseException, RemoteException
+    public void clearFlag(byte idx) throws MDSplus.MdsException
     {
-	experiment.clearFlags(nid, 1<<idx);
-	info.setFlags(experiment.getFlags(nid));
+        checkInfo();
+	nid.clearNciFlag(idx);
+	info.setFlags(nid.getNciFlags());
     }
     public int getFlags()
-    {   try{info.setFlags(experiment.getFlags(nid));}
+            
+    {   
+        checkInfo();
+        try{info.setFlags(nid.getNciFlags());}
 	catch(Exception exc){jTraverser.stderr("Error updating flags",exc);}
 	return info.getFlags();
     }
@@ -238,7 +243,7 @@ public class Node
 	    needsOnCheck = false;
 	    try
 	    {
-	        is_on = experiment.isOn(nid, Tree.context);
+	        is_on = nid.isOn();
 	    }
 	    catch (Exception exc){jTraverser.stderr("Error checking state",exc);}
 	}
@@ -247,10 +252,10 @@ public class Node
 
     public void setupDevice()
     {
-	ConglomData conglom = null;
+	MDSplus.Conglom conglom = null;
 	try
 	{
-	    conglom = (ConglomData) experiment.getData(nid, Tree.context);
+	    conglom = (MDSplus.Conglom) nid.getData();
 	}
 	catch (Exception e)
 	{
@@ -260,12 +265,12 @@ public class Node
 	}
 	if (conglom != null)
 	{
-	    Data model = conglom.getModel();
+	    MDSplus.Data model = conglom.getModel();
 	    if (model != null)
 	    {
 	        try
 	        {
-	            DeviceSetup ds = DeviceSetup.getDevice(nid.getInt());
+	            DeviceSetup ds = DeviceSetup.getDevice(nid.getNid());
 	            if (ds == null)
 	            {
 	                String deviceClassName = model.getString() + "Setup";
@@ -273,7 +278,7 @@ public class Node
 	                ds = (DeviceSetup) deviceClass.newInstance();
 	                Dimension prevDim = ds.getSize();
 	                ds.addDataChangeListener(hierarchy);
-	                ds.configure(experiment, nid.getInt(), this);
+	                ds.configure(new Database(Tree.curr_experiment), nid.getNid());
 	                if (ds.getContentPane().getLayout() != null)
 	                    ds.pack();
 			try {
@@ -288,15 +293,15 @@ public class Node
 	        }
 	        catch (Exception e)
 	        {
-	     		try {
-	        		experiment.doDeviceMethod(nid, "dw_setup", Tree.context) ;
-	    		}catch(Exception exc) {
+/*	     		try {
+	        		nid.doMethod("dw_setup") ;
+	    		}catch(Exception exc) */{
 
 	             	JOptionPane.showMessageDialog(FrameRepository.frame,
-	                                          e.getMessage(),
-	                                          "Error in device setup: " + e,
+	                                          "Class "+e.getMessage()+" not found",
+	                                          "Error in device setup: ",
 	                                          JOptionPane.WARNING_MESSAGE);
-	            	e.printStackTrace();
+	            	//e.printStackTrace();
 	            	return;
 	        	}
 				}
@@ -309,16 +314,22 @@ public class Node
 
     public boolean isDefault()
     {
-	NidData curr_nid = null;
+	MDSplus.TreeNode curr_nid = null;
 	try
 	{
-	    curr_nid = experiment.getDefault(Tree.context);
+	    curr_nid = experiment.getDefault();
 	}
 	catch (Exception exc){
 	    jTraverser.stderr("Error getting default", exc);
 	    return false;
 	}
-	return curr_nid.datum == nid.datum;
+        try {
+            return curr_nid.getNid() == nid.getNid();
+        }catch(Exception exc)
+        {
+            System.out.println(exc);
+            return false;
+        }
     }
 
     public NodeBeanInfo getBeanInfo()
@@ -332,7 +343,7 @@ public class Node
     {
 	try
 	{
-	    return experiment.getTags(nid, Tree.context);
+	    return nid.findTags();
 	}
 	catch (Exception exc)
 	{
@@ -340,28 +351,31 @@ public class Node
 	}
     }
 
-    public void setTags(String[] tags) throws DatabaseException, RemoteException
+    public void setTags(String[] tags) throws MDSplus.MdsException
     {
-	experiment.setTags(nid, tags, Tree.context);
+        String[] oldTags = nid.findTags();
+        for(int i = 0; i < oldTags.length; i++)
+            nid.removeTag(oldTags[i]);
+        for (int i = 0; i < tags.length; i++)
+            nid.addTag(tags[i]);
     }
 
-    public Node addNode(int usage, String name) throws DatabaseException,
-	RemoteException
+    public Node addNode(String name, String usage) throws MDSplus.MdsException
     {
-	NidData prev_default = experiment.getDefault(Tree.context), new_nid = null;
-	experiment.setDefault(nid, Tree.context);
+	MDSplus.TreeNode prev_default = experiment.getDefault(), new_nid = null;
+	experiment.setDefault(nid);
 	try
 	{
 	    if (info == null)
-	        info = experiment.getInfo(nid, Tree.context);
-	    if (usage == NodeInfo.USAGE_STRUCTURE && !name.startsWith(".") &&
+	        info = getInfo();
+	    if (usage.equals("STRUCTURE") && !name.startsWith(".") &&
 	        !name.startsWith(":"))
 	        name = "." + name;
-	    new_nid = experiment.addNode(name, usage, Tree.context);
+	    new_nid = experiment.addNode(name, usage);
 	}
 	finally
 	{
-	    experiment.setDefault(prev_default, Tree.context);
+	    experiment.setDefault(prev_default);
 	}
 	Node newNode = new Node(experiment, hierarchy, this, true, new_nid);
 	if (name.charAt(0) == '.')
@@ -383,20 +397,20 @@ public class Node
 	return newNode;
     }
 
-    public Node addDevice(String name, String type) throws DatabaseException,
-	RemoteException
+    public Node addDevice(String name, String type) throws MDSplus.MdsException
     {
-	NidData prev_default = experiment.getDefault(Tree.context), new_nid = null;
-	experiment.setDefault(nid, Tree.context);
+	MDSplus.TreeNode prev_default = experiment.getDefault(), new_nid = null;
+	experiment.setDefault(nid);
 	try
 	{
 	    if (info == null)
-	        info = experiment.getInfo(nid, Tree.context);
-	    new_nid = experiment.addDevice(name, type, Tree.context);
+	        getInfo();
+	    experiment.addDevice(name, type);
+            new_nid = experiment.getNode(name);
 	}
 	finally
 	{
-	    experiment.setDefault(prev_default, Tree.context);
+	    experiment.setDefault(prev_default);
 	}
 	Node newNode = new Node(experiment, hierarchy, this, true, new_nid);
 	if (name.charAt(0) == '.')
@@ -418,26 +432,25 @@ public class Node
 	return newNode;
     }
 
-    public Node addChild(String name) throws DatabaseException, RemoteException
+    public Node addChild(String name) throws MDSplus.MdsException
     {
-	NidData prev_default = experiment.getDefault(Tree.context), new_nid;
-	experiment.setDefault(nid, Tree.context);
+	MDSplus.TreeNode prev_default = experiment.getDefault(), new_nid;
+	experiment.setDefault(nid);
 	if (info == null)
-	    info = experiment.getInfo(nid, Tree.context);
+	    getInfo();
 	if (!name.startsWith(":") && !name.startsWith("."))
 	    name = "." + name;
-	new_nid = experiment.addNode(name, NodeInfo.USAGE_STRUCTURE,
-	                             Tree.context);
-	experiment.setDefault(prev_default, Tree.context);
+	new_nid = experiment.addNode(name, "STRUCTURE");
+	experiment.setDefault(prev_default);
 	return new Node(experiment, hierarchy, this, true, new_nid);
     }
 
     public int startDelete()
     {
-	NidData[] nids ={nid};
+	MDSplus.TreeNode [] nids ={nid};
 	try
 	{
-	    return experiment.startDelete(nids, Tree.context).length;
+	    return experiment.getNodeWild(nid.getPath()+"***").size();
 	}
 	catch (Exception exc){jTraverser.stderr("Error starting delete", exc);}
 	return 0;
@@ -446,7 +459,7 @@ public class Node
     public void executeDelete()
     {
 	try {
-	    experiment.executeDelete(Tree.context);
+	    experiment.deleteNode(nid.getPath());
 	} catch (Exception exc) {
 		jTraverser.stderr("Error executing delete", exc);
 	}
@@ -467,8 +480,8 @@ public class Node
 	    try
 	{
 	    String sep = is_member ? ":" : ".";
-	    experiment.renameNode(nid, newParent.getFullPath()+sep+newName, Tree.context);
-	    info = experiment.getInfo(nid, Tree.context);
+	    nid.rename(newName);
+	    info = getInfo();
 	}
 	catch(Exception exc)
 		{
@@ -486,7 +499,7 @@ public class Node
 	return true;
     }
 
-    public int getNumSegments() { return info.getNumSegments();}
+    public int getNumSegments() {checkInfo(); return info.getNumSegments();}
 
     private ImageIcon loadIcon(String gifname)
     {
@@ -499,49 +512,62 @@ public class Node
 
     public JLabel getIcon(boolean isSelected)
     {
-	if (info == null)return null;
+	if (info == null)
+            checkInfo();
 	ImageIcon icon = null;
-	switch (getUsage())
+ 	if(getUsage().equals("NONE")||getUsage().equals("STRUCTURE"))
 	{
-	    case NodeInfo.USAGE_NONE:
-	        icon = loadIcon("structure.gif");
-	        break;
-	    case NodeInfo.USAGE_ACTION:
-	        icon = loadIcon("action.gif");
-	        break;
-	    case NodeInfo.USAGE_DEVICE:
-	        icon = loadIcon("device.gif");
-	        break;
-	    case NodeInfo.USAGE_DISPATCH:
-	        icon = loadIcon("dispatch.gif");
-	        break;
-	    case NodeInfo.USAGE_ANY:
-	    case NodeInfo.USAGE_NUMERIC:
-	        icon = loadIcon("numeric.gif");
-	        break;
-	    case NodeInfo.USAGE_TASK:
+	    icon = loadIcon("structure.gif");
+        }
+        else if(getUsage().equals("ACTION"))
+        {
+	    icon = loadIcon("action.gif");
+        }
+        else if(getUsage().equals("DEVICE"))
+        {
+	    icon = loadIcon("device.gif");
+        }
+        else if(getUsage().equals("DISPATCH"))
+        {
+	    icon = loadIcon("dispatch.gif");
+        }
+        else if(getUsage().equals("ANY")|| getUsage().equals("NUMERIC"))
+        {
+	    icon = loadIcon("numeric.gif");
+        }
+        else if(getUsage().equals("TASK"))
+        {
 	        icon = loadIcon("task.gif");
-	        break;
-	    case NodeInfo.USAGE_TEXT:
-	        icon = loadIcon("text.gif");
-	        break;
-	    case NodeInfo.USAGE_WINDOW:
-	        icon = loadIcon("window.gif");
-	        break;
-	    case NodeInfo.USAGE_AXIS:
-	        icon = loadIcon("axis.gif");
-	        break;
-	    case NodeInfo.USAGE_SIGNAL:
+        }
+        else if(getUsage().equals("TEXT"))
+        {
+	    icon = loadIcon("text.gif");
+        }
+        else if(getUsage().equals("WINDOW"))
+        {
+	    icon = loadIcon("window.gif");
+        }
+        else if(getUsage().equals("AXIS"))
+        {
+	    icon = loadIcon("axis.gif");
+        }
+        else if(getUsage().equals("SIGNAL"))
+        {
 	        icon = loadIcon("signal.gif");
-	        break;
-	    case NodeInfo.USAGE_SUBTREE:
+        }
+        else if(getUsage().equals("SUBTREE"))
+        {
 	        icon = loadIcon("subtree.gif");
-	        break;
-	    case NodeInfo.USAGE_COMPOUND_DATA:
+        }
+        else if(getUsage().equals("COMPOUND"))
+        {
 	        icon = loadIcon("compound.gif");
-	        break;
 	}
+        if(icon == null)
+            System.out.println("BUM");
 	tree_label = new TreeNode(this, getName(), icon, isSelected);
+        if(tree_label == null)
+           System.out.println("BAM");
 	return tree_label;
     }
 
@@ -560,9 +586,9 @@ public class Node
 	    for (int i = 0; i < toNode.members.length; i++)
 	        usedNames[idx++] = toNode.members[i].getName();
 
-	    if (fromNode.getUsage() == NodeInfo.USAGE_DEVICE)
+	    if(fromNode.getUsage().equals("DEVICE"))
 	    {
-	        ConglomData conglom = (ConglomData) fromNode.getData();
+	        MDSplus.Conglom conglom = (MDSplus.Conglom) fromNode.getData();
 	        Node newNode = Tree.addDevice( (isMember ? ":" : ".") +
 	                                      getUniqueName(fromNode.getName(), usedNames),
 	                                      conglom.getModel().getString(),
@@ -579,9 +605,9 @@ public class Node
 	        newNode.expand();
 	        try
 	        {
-	            Data data = fromNode.getData();
+	            MDSplus.Data data = fromNode.getData();
 	            if (data != null &&
-	                fromNode.getUsage() != NodeInfo.USAGE_ACTION)
+	                !fromNode.getUsage().equals("ACTION"))
 	                newNode.setData(data);
 	        }
 	        catch (Exception exc)
@@ -615,10 +641,10 @@ public class Node
 	catch (Exception exc){jTraverser.stderr("Error expanding nodes", exc);}
 	try
 	{
-	    Data data = fromNode.getData();
+	    MDSplus.Data data = fromNode.getData();
 	    if (data != null)
 	    {
-	        if (! (data instanceof ActionData))
+	        if (! (data instanceof MDSplus.Action))
 	            toNode.setData(data);
 	    }
 	}

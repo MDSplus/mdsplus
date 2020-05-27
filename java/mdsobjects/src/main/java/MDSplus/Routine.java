@@ -48,14 +48,17 @@ public class Routine extends Compound
 
 	public Data getTimeout()
 	{
+            resizeDescs(1);
 	    return descs[0];
 	}
 	public Data getImage()
 	{
+            resizeDescs(2);
 	    return descs[1];
 	}
 	public Data getRoutine()
 	{
+            resizeDescs(3);
 	    return descs[2];
 	}
 
@@ -65,6 +68,7 @@ public class Routine extends Compound
 	 */
 	public Data getArgumentAt(int idx)
 	{
+            resizeDescs(4+idx);
 	    return descs[3+idx];
 	}
 
@@ -85,6 +89,7 @@ public class Routine extends Compound
 	 */
 	public void setTimeout(Data data)
 	{
+            resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -100,6 +105,7 @@ public class Routine extends Compound
 	}
 	public void setImage(Data data)
 	{
+            resizeDescs(2);
 	    descs[1] = data;
 	}
 
@@ -109,6 +115,7 @@ public class Routine extends Compound
 	 */
 	public void setRoutine(Data data)
 	{
+            resizeDescs(3);
 	    descs[2] = data;
 	}
 }

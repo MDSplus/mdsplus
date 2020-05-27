@@ -8,14 +8,14 @@ import java.lang.reflect.Method;
 
 public class NodeBeanInfo extends SimpleBeanInfo
 {
-    int usage;
-    RemoteTree experiment;
+    String usage;
+    MDSplus.Tree experiment;
     String name;
 
     /* This constructor is intended to be used only by the traverser and not
     by a standard Bean Bulder, which  considers only the class to discriminate the
     corresponding BeanInfo object */
-    public NodeBeanInfo(RemoteTree experiment, int usage, String name)
+    public NodeBeanInfo(MDSplus.Tree experiment, String usage, String name)
     {
 	this.experiment  = experiment;
 	this.usage = usage;
@@ -55,17 +55,32 @@ public class NodeBeanInfo extends SimpleBeanInfo
     }
     boolean isSupported(String short_descr)
     {
-	if(usage == NodeInfo.USAGE_STRUCTURE || usage == NodeInfo.USAGE_NONE)
-	    if(short_descr.equals("Display Data") || short_descr.equals("Modify Data"))
+	if(usage.equals("STRUCTURE ")|| usage.equals("NONE"))
+        {
+	    if(short_descr.equals("Display Data") || short_descr.equals("Modify Data")
+                 || short_descr.equals("Setup Device") || short_descr.equals("Do Action") )
 		return false;
-	if(usage != NodeInfo.USAGE_ACTION && usage != NodeInfo.USAGE_TASK)
-	    if(short_descr.equals("Do Action"))
+        }
+        else if(usage.equals("ACTION") || usage.equals("TASK"))
+        {
+               if(short_descr.equals("Setup Device"))
+                    return false;
+               if(short_descr.equals("Do Action"))
+		return true;
+        }
+        else if(usage.equals("DEVICE"))
+        {
+	    if(short_descr.equals("Modify Data")||short_descr.equals("Do Action"))
 		return false;
-	if(usage != NodeInfo.USAGE_DEVICE)
-	    if(short_descr.equals("Setup Device"))
+        }
+        else
+        {
+ 	    if(short_descr.equals("Setup Device")||short_descr.equals("Do Action"))
 		return false;
-    try {
-	    if(experiment.isReadonly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
+        }
+        
+        try {
+	    if(experiment.isReadOnly() && (short_descr.equals("Modify Data") || short_descr.equals("Toggle On/Off")))
 		return false;
 	}catch(Exception exc){return false;}
 	return true;

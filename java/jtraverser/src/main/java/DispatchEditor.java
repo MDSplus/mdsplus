@@ -8,21 +8,21 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
     DispatchEdt dispatch_edit;
     LabeledExprEditor expr_edit;
     JComboBox combo;
-    Data data;
+    MDSplus.Data data;
     int dtype_idx, curr_dtype_idx;
     boolean editable = true;
     TreeDialog dialog;
 
-    public DispatchEditor(Data data, TreeDialog dialog)
+    public DispatchEditor(MDSplus.Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
 	this.data = data;
 	if(data == null)
 	    dtype_idx = 0;
-	else if(data.dtype == Data.DTYPE_DISPATCH)
+	else if(data instanceof MDSplus.Dispatch)
 	{
-	    DispatchData ddata = (DispatchData)data;
-	    if(ddata.getType() == DispatchData.SCHED_SEQ)
+	    MDSplus.Dispatch ddata = (MDSplus.Dispatch)data;
+	    if(ddata.getOpcode() == MDSplus.Dispatch.SCHED_SEQ)
 		dtype_idx = 1;
 	    else
 		dtype_idx = 2;
@@ -48,14 +48,14 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	    case 0: return;
 	    case 1:
 		if(dtype_idx == curr_dtype_idx)
-		    dispatch_edit = new DispatchEdt((DispatchData)data, false);
+		    dispatch_edit = new DispatchEdt((MDSplus.Dispatch)data, false);
 		else
 		    dispatch_edit = new DispatchEdt(null, false);
 		add(dispatch_edit);
 		break;
 	    case 2:
 		if(dtype_idx == curr_dtype_idx)
-		    dispatch_edit = new DispatchEdt((DispatchData)data, true);
+		    dispatch_edit = new DispatchEdt((MDSplus.Dispatch)data, true);
 		else
 		    dispatch_edit = new DispatchEdt(null, true);
 		add(dispatch_edit);
@@ -104,7 +104,7 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	repaint();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	switch(curr_dtype_idx)  {
 	    case 0: return null;
@@ -115,15 +115,15 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 	return null;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.data = (DispatchData)data;
+	this.data = data;
 	if(data == null)
 	    dtype_idx = 0;
-	else if(data.dtype == Data.DTYPE_DISPATCH)
+	else if(data instanceof MDSplus.Dispatch)
 	{
-	    DispatchData ddata = (DispatchData)data;
-	    if(ddata.getType() == DispatchData.SCHED_SEQ)
+	    MDSplus.Dispatch ddata = (MDSplus.Dispatch)data;
+	    if(ddata.getOpcode() == MDSplus.Dispatch.SCHED_SEQ)
 		dtype_idx = 1;
 	    else
 		dtype_idx = 2;
@@ -144,19 +144,20 @@ public class DispatchEditor extends JPanel implements ActionListener,Editor
 class DispatchEdt extends JPanel
 {
     boolean is_sequential = false;
-    DispatchData data;
+    MDSplus.Dispatch data;
     LabeledExprEditor ident_edit, phase_edit, sequence_edit, completion_edit;
-    public DispatchEdt(DispatchData data, boolean is_conditional)
+    public DispatchEdt(MDSplus.Dispatch data, boolean is_conditional)
     {
 	this.data = data;
 	if(this.data == null)
 	{
 	    if(is_conditional)
-		this.data = new DispatchData(DispatchData.SCHED_COND, null, null, null, null);
+		this.data = new MDSplus.Dispatch(MDSplus.Dispatch.SCHED_COND, null, null, null, null);
 	else
-		this.data = new DispatchData(DispatchData.SCHED_SEQ, null, null, null, null);
-    }
-	if(this.data.getType() == DispatchData.SCHED_SEQ)
+		this.data = new MDSplus.Dispatch(MDSplus.Dispatch.SCHED_SEQ, null, null, null, null);
+        }
+        this.data.setCtxTree(Tree.curr_experiment);
+	if(this.data.getOpcode() == MDSplus.Dispatch.SCHED_SEQ)
 	    is_sequential = true;
 	ident_edit = new LabeledExprEditor("Ident", new ExprEditor(this.data.getIdent(), true));
 	phase_edit = new LabeledExprEditor("Phase", new ExprEditor(this.data.getPhase(), true));
@@ -188,18 +189,13 @@ class DispatchEdt extends JPanel
 	completion_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	Data data;
-	data = ident_edit.getData();
-	data = phase_edit.getData();
-	data = sequence_edit.getData();
-	data = completion_edit.getData();
-
-
-	return new DispatchData(is_sequential?DispatchData.SCHED_SEQ:DispatchData.SCHED_COND,
+	MDSplus.Data d =  new MDSplus.Dispatch((is_sequential)?MDSplus.Dispatch.SCHED_SEQ:MDSplus.Dispatch.SCHED_COND,
 	    ident_edit.getData(), phase_edit.getData(), sequence_edit.getData(),
 	    completion_edit.getData());
+        d.setCtxTree((Tree.curr_experiment));
+        return d;
     }
 
     public void setEditable(boolean editable)

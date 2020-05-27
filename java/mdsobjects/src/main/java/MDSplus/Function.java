@@ -49,6 +49,7 @@ public class Function extends Compound
 	 */
 	public Data getArgumentAt(int idx)
 	{
+           resizeDescs(idx + 1);
 	    return descs[idx];
 	}
 
@@ -71,7 +72,15 @@ public class Function extends Compound
 	 */
 	public void setArgumentAt(int idx, Data arg)
 	{
+           resizeDescs(idx + 1);
 	    descs[idx] = arg;
 	}
-
+	/**
+	 * Expose function opcode
+	 */
+        public int getOpcode()
+        {
+            return opcode;
+        }
+        
 }

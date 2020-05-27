@@ -169,6 +169,7 @@ public class Data {
 	private native Data cloneData();
 	private native Data dataData(long ctx);
 	private native String evaluateData(long ctx);
+        public static native java.lang.String getMdsMsg(int status);
 
 	@Override
 	public java.lang.String toString()

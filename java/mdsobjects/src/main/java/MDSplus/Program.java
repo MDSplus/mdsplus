@@ -39,11 +39,13 @@ public class Program extends Compound
 
 	public Data getProgram()
 	{
+           resizeDescs(2);
 	    return descs[1];
 	}
 
 	public Data getTimeout()
 	{
+           resizeDescs(1);
 	    return descs[0];
 	}
 
@@ -53,6 +55,7 @@ public class Program extends Compound
 	 */
 	public void setProgram(Data data)
 	{
+           resizeDescs(2);
 	    descs[1] = data;
 	}
 
@@ -62,6 +65,7 @@ public class Program extends Compound
 	 */
 	public void setTimeout(Data data)
 	{
+           resizeDescs(1);
 	    descs[0] = data;
 	}
 

@@ -12,6 +12,8 @@ public class Action extends Compound
 	        Data help, Data units, Data error, Data validation)
 	{
 	    super(help, units, error, validation);
+	    clazz = CLASS_R;
+	    dtype = DTYPE_ACTION;
 	    descs = new Data[]{dispatch, task, errorLog, completionMessage, performance};
 	    opcode = 0;
 	}
@@ -39,27 +41,37 @@ public class Action extends Compound
 
 	public Data getDispatch()
 	{
-	    return descs[0];
+            try {
+                return descs[0];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data getTask()
 	{
-	    return descs[1];
+            try {
+                return descs[1];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data getErrorLog()
 	{
-	    return descs[2];
+            try {
+                return descs[2];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data getCompletionMessage()
 	{
-	    return descs[3];
+            try {
+                return descs[3];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data getPerformance()
 	{
-	    return descs[3];
+            try {
+                return descs[4];
+            }catch(Exception exc){return null;}
 	}
 
 	/**
@@ -68,6 +80,7 @@ public class Action extends Compound
 	 */
 	public void setDispatch(Data data)
 	{
+           resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -77,6 +90,7 @@ public class Action extends Compound
 	 */
 	public void setTask(Data data)
 	{
+           resizeDescs(2);
 	    descs[1] = data;
 	}
 
@@ -86,6 +100,7 @@ public class Action extends Compound
 	 */
 	public void setErrorLog(Data data)
 	{
+           resizeDescs(3);
 	    descs[2] = data;
 	}
 
@@ -95,6 +110,7 @@ public class Action extends Compound
 	 */
 	public void setCompletionMessage(Data data)
 	{
+           resizeDescs(4);
 	    descs[3] = data;
 	}
 
@@ -104,6 +120,7 @@ public class Action extends Compound
 	 */
 	public void setPerformance(Data data)
 	{
+           resizeDescs(5);
 	    descs[4] = data;
 	}
 

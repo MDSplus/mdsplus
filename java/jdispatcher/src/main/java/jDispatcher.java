@@ -103,7 +103,7 @@ class jDispatcher
 	/**
 	         Indexed by sequence number. For each sequence number, a vector of actions is defined.
 	 */
-	Hashtable<ActionData, Vector<Action>> dependencies = new Hashtable<ActionData, Vector<Action>>();
+	Hashtable<MDSplus.Action, Vector<Action>> dependencies = new Hashtable<MDSplus.Action, Vector<Action>>();
 	/**
 	         Indexed by action data (not actions!). For each action, a vector of potentially dependent actions is defined.
 	         Note that the hierarchy of ActionData does not override equals and hashCode, and therefore
@@ -139,7 +139,7 @@ class jDispatcher
      Indexed by phase name. Associates dispatch data structures with each phase.
      */
 
-    Hashtable<ActionData, Action> actions = new Hashtable<ActionData, Action>();
+    Hashtable<MDSplus.Action, Action> actions = new Hashtable<MDSplus.Action, Action>();
     /**
 	 Indexed by ActionData, used to retrieve actions from ActionData in method isEnabled
      */
@@ -326,11 +326,11 @@ class jDispatcher
 
     boolean isConditional(Action action)
     {
-	DispatchData dispatch = (DispatchData) action.getAction().getDispatch();
-	if(dispatch.getType() != DispatchData.SCHED_SEQ )
+	MDSplus.Dispatch dispatch = (MDSplus.Dispatch) action.getAction().getDispatch();
+	if(dispatch.getOpcode() != MDSplus.Dispatch.SCHED_SEQ )
 	    return true;
-	 if((dispatch.getWhen() instanceof NidData) || (dispatch.getWhen() instanceof PathData)
-	     || (dispatch.getWhen() instanceof IdentData))
+	 if((dispatch.getWhen() instanceof MDSplus.TreeNode) || (dispatch.getWhen() instanceof MDSplus.TreePath)
+	     || (dispatch.getWhen() instanceof MDSplus.Ident))
 	        return true;
 	return false;
 
@@ -370,10 +370,14 @@ class jDispatcher
 
     public void setTree(String tree, int shot)
     {
-	Database mdsTree = new Database(tree, shot);
+	MDSplus.Tree mdsTree;
 	try {
-		mdsTree.open();
-	}catch(Exception exc) {System.err.println("Cannot open tree " + tree + " " + shot);}
+            mdsTree = new MDSplus.Tree(tree, shot);
+	}catch(Exception exc) 
+        {
+            System.err.println("Cannot open tree " + tree + " " + shot);
+            return;
+        }
 	this.tree = tree;
 	this.shot = shot;
 	Enumeration server_list = servers.elements();
@@ -425,7 +429,7 @@ class jDispatcher
      protected String getServerClass(Action action)
     {
 	try {
-	    DispatchData dispatch = (DispatchData)action.getAction().getDispatch();
+	    MDSplus.Dispatch dispatch = (MDSplus.Dispatch)action.getAction().getDispatch();
 	    String serverClass = dispatch.getIdent().getString().toUpperCase();
 	    if (serverClass == null || serverClass.equals(""))
 	        return defaultServerName;
@@ -448,7 +452,7 @@ class jDispatcher
 	action_nids.put(new Integer(action.getNid()), action);
 
 	//Check if the Action is sequential
-	DispatchData dispatch = (DispatchData) action.getAction().getDispatch();
+	MDSplus.Dispatch dispatch = (MDSplus.Dispatch) action.getAction().getDispatch();
 	if (dispatch == null) {
 	    System.out.println("Warning: Action " + action +
 	                       " without dispatch info");
@@ -481,9 +485,9 @@ class jDispatcher
 	    }
 	    curr_phase.all_actions.put(new Integer(action.getNid()), action);
 	    boolean isSequenceNumber = true;
-	    if (dispatch.getType() == DispatchData.SCHED_SEQ) {
+	    if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_SEQ) {
 	        int seq_number = 0;
-	        if(dispatch.getWhen() instanceof NidData)
+	        if(dispatch.getWhen() instanceof MDSplus.TreeNode)
 	            isSequenceNumber = false;
 	        else
 	        {
@@ -496,7 +500,7 @@ class jDispatcher
 	            }
 	        }
 	        if(!isSequenceNumber)
-	            dispatch.descs[2] =  traverseSeqExpression(action.getAction(), dispatch.getWhen());
+	            dispatch.setWhen(traverseSeqExpression(action.getAction(), dispatch.getWhen()));
 
 	        Hashtable<Integer, Vector<Action>> seqActions = curr_phase.totSeqActions.get(serverClass);
 	        if(seqActions == null)
@@ -551,7 +555,7 @@ class jDispatcher
 //////////////////////////GAB CHRISTMAS 2004
 	    //Handle Conditional actions with no dependencies
 	    //these will be dispatched asynchronously at the beginning of the phase
-	    if (dispatch.getType() == DispatchData.SCHED_COND &&
+	    if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND &&
 	        dispatch.getWhen() == null) {
 	        curr_phase.immediate_actions.addElement(action);
 	    }
@@ -569,7 +573,7 @@ class jDispatcher
 
     protected void buildDependencies()
     {
-	DispatchData dispatch;
+	MDSplus.Dispatch dispatch;
 
 	Enumeration phaseNames = phases.keys();
 	while (phaseNames.hasMoreElements()) {
@@ -578,28 +582,28 @@ class jDispatcher
 	        continue;
 	    Enumeration action_list = currPhase.dependencies.keys();
 	    while (action_list.hasMoreElements()) {
-	        ActionData action_data = (ActionData) action_list.nextElement();
+	        MDSplus.Action action_data = (MDSplus.Action) action_list.nextElement();
 	        try {
-	            dispatch = (DispatchData) action_data.getDispatch();
+	            dispatch = (MDSplus.Dispatch) action_data.getDispatch();
 	        }
 	        catch (Exception e) {
 	            continue;
 	        }
-	        if (dispatch.getType() == DispatchData.SCHED_COND)
+	        if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND)
 	            traverseDispatch(action_data, dispatch.getWhen(), currPhase);
 
 	    }
 	}
     }
 
-    protected void traverseDispatch(ActionData action_data, Data when,
+    protected void traverseDispatch(MDSplus.Action action_data, MDSplus.Data when,
 	                            PhaseDescriptor currPhase)
     {
 	Action action;
 	if (when == null)
 	    return;
-	if (when instanceof ConditionData) {
-	    Vector<Action> act_vector = currPhase.dependencies.get(((ConditionData)when).getArgument());
+	if (when instanceof MDSplus.Condition) {
+	    Vector<Action> act_vector = currPhase.dependencies.get(((MDSplus.Condition)when).getArg());
 	    if (act_vector != null &&
 	        (action = actions.get(action_data)) != null)
 	        act_vector.addElement(action);
@@ -607,7 +611,7 @@ class jDispatcher
 	        System.out.println(
 	            "Warning: condition does not refer to a known action");
 	}
-	else if (when instanceof ActionData) {
+	else if (when instanceof MDSplus.Action) {
 	    Vector<Action> act_vector = currPhase.dependencies.get(when);
 	    if (act_vector != null &&
 	        (action = actions.get(action_data)) != null)
@@ -616,14 +620,14 @@ class jDispatcher
 	        System.out.println(
 	            "Warning: condition does not refer to a known action");
 	}
-	else if (when instanceof DependencyData) {
-	    Data[] args = ( (DependencyData) when).getArguments();
+	else if (when instanceof MDSplus.Dependency) {
+	    MDSplus.Data[] args = ( (MDSplus.Dependency) when).getDescs();
 	    for (int i = 0; i < args.length; i++)
 	        traverseDispatch(action_data, args[i], currPhase);
 	}
     }
 
-    protected Data traverseSeqExpression(ActionData action_data, Data seq)
+    protected MDSplus.Data traverseSeqExpression(MDSplus.Action action_data, MDSplus.Data seq)
     {
 	Action action = actions.get(action_data);
 	if (action == null) {
@@ -631,17 +635,17 @@ class jDispatcher
 	        "Internal error in traverseSeqExpression: no action for action_data");
 	    return null;
 	}
-	Database tree = InfoServer.getDatabase();
+	MDSplus.Tree tree = InfoServer.getDatabase();
 	if (seq == null)
 	    return null;
-	if (seq instanceof PathData || seq instanceof NidData) {
+	if (seq instanceof MDSplus.TreePath || seq instanceof MDSplus.TreeNode) {
 	    int nid;
 	    try {
 
-	        if (seq instanceof PathData)
-	            nid = (tree.resolve( (PathData) seq, 0)).getInt();
+	        if (seq instanceof MDSplus.TreePath)
+	            nid = (tree.getNode( (MDSplus.TreePath) seq)).getNid();
 	        else
-	            nid = seq.getInt();
+	            nid = ((MDSplus.TreeNode)seq).getNid();
 	        Vector<Action> actVect = nidDependencies.get(new Integer(nid));
 	        if (actVect == null) {
 	            actVect = new Vector<Action>();
@@ -651,10 +655,10 @@ class jDispatcher
 	        String expr = "PUBLIC _ACTION_" + Integer.toHexString(nid) +
 	            " = COMPILE('$_UNDEFINED')";
 	        try {
-	            tree.evaluateData(Data.fromExpr(expr), 0);
+	            tree.tdiExecute(expr);
 	        }
 	        catch (Exception exc) {} //Will always generate an exception since the variable is undefined
-	        return new IdentData("_ACTION_" + Integer.toHexString(nid));
+	        return new MDSplus.Ident("_ACTION_" + Integer.toHexString(nid));
 	    }
 	    catch (Exception exc) {
 	        System.err.println(
@@ -662,8 +666,8 @@ class jDispatcher
 	        return null;
 	    }
 	}
-	if (seq instanceof CompoundData) {
-	    Data[] descs = ( (CompoundData) seq).getDescs();
+	if (seq instanceof MDSplus.Compound) {
+	    MDSplus.Data[] descs = ( (MDSplus.Compound) seq).getDescs();
 	    for (int i = 0; i < descs.length; i++)
 	        descs[i] = traverseSeqExpression(action_data, descs[i]);
 	}
@@ -864,17 +868,16 @@ class jDispatcher
 
     public void dispatchAction(String actionPath)
     {
-	Database currTree = InfoServer.getDatabase();
-	NidData nid;
+	MDSplus.Tree currTree = InfoServer.getDatabase();
+	MDSplus.TreeNode nid;
 	try {
-	    nid = currTree.resolve(new PathData(actionPath), 0);
+	    nid = currTree.getNode(actionPath);
+            dispatchAction(nid.getNid());
 	}catch(Exception exc)
 	{
 	    System.err.println("Cannot resolve " + actionPath);
 	    return;
 	}
-	dispatchAction(nid.getInt());
-
     }
 
 
@@ -949,7 +952,7 @@ class jDispatcher
 	//update status in report
 	Action action = event.getAction();
 	try {
-	    String mdsevent = ( (StringData) ( ( (DispatchData) (action.
+	    String mdsevent = ( (MDSplus.String) ( ( (MDSplus.Dispatch) (action.
 	        getAction().getDispatch())).getCompletion())).getString();
 	    if (mdsevent != null && !mdsevent.equals("\"\"")) {
 	        MdsHelper.generateEvent(mdsevent, 0);
@@ -980,7 +983,7 @@ class jDispatcher
 	        {
 	            Action curr_action = depend_actions.nextElement();
 	            if (curr_action.isOn() &&
-	                isEnabled( ( (DispatchData) curr_action.getAction().
+	                isEnabled( ( (MDSplus.Dispatch) curr_action.getAction().
 	                        getDispatch()).getWhen())) { //the dependent action is now enabled
 	                dep_dispatched.addElement(curr_action);
 	            curr_action.setStatus(Action.DISPATCHED, 0, verbose);
@@ -993,12 +996,12 @@ class jDispatcher
 	    //Handle now possible dependencies based on sequence expression
 	    Vector<Action> depVect = nidDependencies.get(new Integer(action.getNid()));
 	    if (depVect != null && depVect.size() > 0) {
-	        Database tree = InfoServer.getDatabase();
+	        MDSplus.Tree tree = InfoServer.getDatabase();
 	        String doneExpr = "PUBLIC _ACTION_" +
 	            Integer.toHexString(action.getNid()) + " = " +
 	            action.getStatus();
 	        try {
-	            tree.evaluateData(Data.fromExpr(doneExpr), 0);
+	            tree.tdiExecute(doneExpr);
 	        }
 	        catch (Exception exc) {
 	            System.err.println(
@@ -1008,9 +1011,8 @@ class jDispatcher
 	        for (int i = 0; i < depVect.size(); i++) {
 	            Action currAction = depVect.elementAt(i);
 	            try {
-	                Data retData = tree.evaluateData( ( (DispatchData)
-	                    currAction.getAction().
-	                    getDispatch()).getWhen(), 0);
+	                MDSplus.Data retData = tree.tdiEvaluate( ( (MDSplus.Dispatch)
+	                    currAction.getAction().getDispatch()).getWhen());
 	                int retStatus = retData.getInt();
 	                if ( (retStatus & 0x00000001) != 0) { //Condition satisfied
 	                    dep_dispatched.addElement(currAction);
@@ -1135,7 +1137,7 @@ class jDispatcher
 	}
     }
 
-    protected boolean isEnabled(Data when)
+    protected boolean isEnabled(MDSplus.Data when)
     /**
 	 Check whether this action is enabled to execute, based on the current status hold
 	 in curr_status.reports hashtable.
@@ -1143,9 +1145,9 @@ class jDispatcher
 	 a TDI expression.
      */
     {
-	if (when instanceof ConditionData) {
-	    int modifier = ( (ConditionData) when).getModifier();
-	    Action action = actions.get(((ConditionData) when).getArgument());
+	if (when instanceof MDSplus.Condition) {
+	    int modifier = ( (MDSplus.Condition) when).getOpcode();
+	    Action action = actions.get(((MDSplus.Condition) when).getArg());
 	   if(action == null) //Action not present, maybe not enabled
 	       return false;
 	    int dispatch_status = action.getDispatchStatus();
@@ -1157,32 +1159,32 @@ class jDispatcher
 	            if ( (status & 1) != 0)
 	                return true;
 	            return false;
-	        case ConditionData.IGNORE_UNDEFINED: //???
-	        case ConditionData.IGNORE_STATUS:
+	        case MDSplus.Condition.TreeIGNORE_UNDEFINED: //???
+	        case MDSplus.Condition.TreeIGNORE_STATUS:
 	            return true;
-	        case ConditionData.NEGATE_CONDITION:
+	        case MDSplus.Condition.TreeNEGATE_CONDITION:
 	            if ( (status & 1) == 0)
 	                return true;
 	            return false;
 	    }
 	}
-	if (when instanceof ActionData) {
+	if (when instanceof MDSplus.Action) {
 	    Action action = actions.get(when);
 	    if (action.getDispatchStatus() != Action.DONE)
 	        return false;
 	}
-	if (when instanceof DependencyData) {
-	    Data args[] = ( (DependencyData) when).getArguments();
+	if (when instanceof MDSplus.Dependency) {
+	    MDSplus.Data args[] = ( (MDSplus.Dependency) when).getDescs();
 	    if (args.length != 2) {
 	        System.out.println(
 	            "Error: dependency needs 2 arguments. Ignored");
 	        return false;
 	    }
-	    int opcode = ( (DependencyData) when).getOpcode();
+	    int opcode = ( (MDSplus.Dependency) when).getOpcode();
 	    switch (opcode) {
-	        case DependencyData.DEPENDENCY_AND:
+	        case MDSplus.Dependency.TreeDEPENDENCY_AND:
 	            return isEnabled(args[0]) && isEnabled(args[1]);
-	        case DependencyData.DEPENDENCY_OR:
+	        case MDSplus.Dependency.TreeDEPENDENCY_OR:
 	            return isEnabled(args[0]) || isEnabled(args[1]);
 	    }
 	}

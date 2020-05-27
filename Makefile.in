@@ -14,13 +14,14 @@ JAVA_JAR = java/tests \
 	   java/mdsplus-api \
 	   java/mdsplus-api/tests \
 	   java/jscope \
+	   java/mdsobjects \
+	   java/devicebeans \
 	   java/jtraverser \
 	   java/jtraverser2 \
-	   java/jdispatcher \
 	   java/jdevices \
 	   java/mdsplus \
-	   java/mdsobjects \
 	   java/mdsobjects/tests
+#	   java/jdispatcher \
 
 JAVA_APS = \
 	   javamds

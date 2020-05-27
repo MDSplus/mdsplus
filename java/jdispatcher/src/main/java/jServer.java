@@ -516,9 +516,9 @@ public class jServer
 
 	if (args.length > 1 ) {
 	    String tclBatch = args[1];
-	    Database tree = new Database();
 	    try {
-	        tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"), 0);
+	        MDSplus.Data.execute("tcl(\'@" + tclBatch + "\')", new MDSplus.Data[0]);
+//	        tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"), 0);
 	    }
 	    catch (Exception exc) {
 	        System.err.println("Error executing initial TCL batch: " + exc);

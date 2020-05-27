@@ -93,8 +93,11 @@ class MdsHelper
 	System.out.println("MdsHelper set experiment " + exp);
 	experiment = exp;
     }
-    public static synchronized native String getErrorString(int status);
-    public static native void generateEvent(String event, int shot);
+     public static native void generateEvent(String event, int shot);
+    public static String getErrorString(int status)
+    {
+        return MDSplus.Data.getMdsMsg(status);
+    }
  //   public static String getErrorString(int status){return "Error message not yet implemented"; }
     public static int toPhaseId(String phase_name)
     {

@@ -12,7 +12,7 @@ class jDispatcherIp
     String treeName;
     String currTreeName;
 
-    Database tree;
+    MDSplus.Tree tree;
 
     public void setDispatcher(jDispatcher dispatcher) {
 	this.dispatcher = dispatcher;
@@ -23,7 +23,12 @@ class jDispatcherIp
 	this.dispatcher = dispatcher;
 	this.treeName = treeName;
 	System.out.println("Tree name per jDispatcherIp : " + treeName);
-	tree = new Database(treeName, -1);
+        try {
+            tree = new MDSplus.Tree(treeName, -1);
+        }catch(Exception exc)
+        {
+            System.err.println("Cannot open tree "+treeName+": "+exc);
+        }
     }
 
     public MdsMessage handleMessage(MdsMessage[] messages) {
@@ -69,7 +74,7 @@ class jDispatcherIp
 	    buf[2] = (byte) ( (ris >> 8) & 0xFF);
 	    buf[3] = (byte) (ris & 0xFF);
 
-	    MdsMessage msg = new MdsMessage( (byte) 0, (byte) Data.DTYPE_L,
+	    MdsMessage msg = new MdsMessage( (byte) 0, (byte) MDSplus.Data.DTYPE_L,
 	                                    (byte) 0, new int[] {1}
 	                                    , buf);
 	    msg.status = 1;
@@ -241,7 +246,7 @@ class jDispatcherIp
 
     int getCurrentShot() {
 	try {
-	    return tree.getCurrentShot(treeName);
+	    return tree.getCurrent();
 	}
 	catch (Exception exc) {
 	    return -1;
@@ -250,15 +255,15 @@ class jDispatcherIp
 
     void setCurrentShot(int shot) {
 	try {
-	    tree.setCurrentShot(currTreeName, shot);
+	    (new MDSplus.Tree(currTreeName, shot)).setCurrent();
 	}
 	catch (Exception exc) {}
     }
 
     void incrementCurrentShot() {
 	try {
-	    int shot = tree.getCurrentShot(treeName);
-	    tree.setCurrentShot(shot + 1);
+	    int shot = tree.getCurrent();
+	    (new MDSplus.Tree(currTreeName, shot + 1)).setCurrent();
 	}
 	catch (Exception exc) {
 	    System.err.println("Error incrementing current shot");

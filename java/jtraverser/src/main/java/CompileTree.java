@@ -14,17 +14,17 @@ import org.xml.sax.SAXParseException;
 
 public class CompileTree extends Thread
 {
-    Database tree;
+    MDSplus.Tree tree;
     String experiment;
     int shot;
 
     //originalNames and renamedNames keep info about nodes to be renamed
-    Vector renamedDevices = new Vector();
-    Vector renamedFieldNids = new Vector();
-    Vector newNames = new Vector();
-    Vector unresolvedExprV = new Vector();
-    Vector unresolvedNidV = new Vector();
-    Vector subtreeNids = new Vector();
+    Vector <String>renamedDevices = new Vector();
+    Vector <String>  renamedFieldNids = new Vector();
+    Vector <String>newNames = new Vector();
+    Vector <String>unresolvedExprV = new Vector();
+    Vector <MDSplus.TreeNode> unresolvedNidV = new Vector();
+    Vector <MDSplus.TreeNode> subtreeNids = new Vector();
 
     public static void main(String args[])
     {
@@ -94,16 +94,13 @@ public class CompileTree extends Thread
 	   ioe.printStackTrace();
 	}
 
-
-	tree = new Database(experiment, shot);
-	tree.setEditable(true);
-	try {
-	    tree.openNew();
-	}catch(Exception exc)
-	{
-	    System.out.println("Error opening tree " + experiment +" : " + exc);
-	    System.exit(0);
-	}
+        try {
+            tree = new MDSplus.Tree(experiment, shot, "NEW");
+        }catch(Exception exc)
+        {
+            System.out.println(exc);
+            System.exit(0);
+        }
 
 	Element rootNode = document.getDocumentElement();
 	NodeList nodes = rootNode.getChildNodes();
@@ -118,14 +115,15 @@ public class CompileTree extends Thread
 	//handle renamed nodes
 	for(int i = 0; i < newNames.size(); i++)
 	{
-	    String newName = (String)newNames.elementAt(i);
-	    String deviceName = (String)renamedDevices.elementAt(i);
-	    String offsetStr = (String)renamedFieldNids.elementAt(i);
+	    String newName = newNames.elementAt(i);
+	    String deviceName = renamedDevices.elementAt(i);
+	    String offsetStr = renamedFieldNids.elementAt(i);
 	    try {
 	        int deviceOffset = Integer.parseInt(offsetStr);
-	        NidData deviceNid = tree.resolve(new PathData(deviceName), 0);
-	        NidData renamedNid = new NidData(deviceNid.getInt()+deviceOffset);
-	        tree.renameNode(renamedNid, newName, 0);
+	        MDSplus.TreeNode deviceNid = tree.getNode(new MDSplus.TreePath(deviceName));
+	        MDSplus.TreeNode renamedNid = new MDSplus.TreeNode(deviceNid.getNid()+deviceOffset);
+                renamedNid.setCtxTree(Tree.curr_experiment);
+	        renamedNid.rename(newName);
 	    }catch(Exception exc)
 	    {
 	        System.out.println("Error renaming node of " + deviceName + " to " + newName + " : " + exc);
@@ -133,18 +131,20 @@ public class CompileTree extends Thread
 	}
 
 	for (int i = 0; i < unresolvedNidV.size(); i++) {
-	  Data data = null;
+          if(unresolvedExprV.elementAt(i).trim().equals("<no-node>"))
+              continue;
+	  MDSplus.Data data = null;
 	  try {
 
 	  //System.out.println((String) unresolvedExprV.elementAt(i));
-	    tree.setDefault((NidData) unresolvedNidV.elementAt(i), 0);
-	    data = Data.fromExpr( (String) unresolvedExprV.elementAt(i));
-	  }
+	    tree.setDefault((MDSplus.TreeNode) unresolvedNidV.elementAt(i));
+ 	    data = tree.tdiCompile(unresolvedExprV.elementAt(i));
+  	  }
 	  catch (Exception exc) {
 	     System.out.println("Error parsing expression " + unresolvedExprV.elementAt(i) + " : " + exc);
 	  }
 	  try {
-	    tree.putData( (NidData) unresolvedNidV.elementAt(i), data, 0);
+	    unresolvedNidV.elementAt(i).putData(data);
 	  }
 	  catch (Exception exc) {
 	    System.out.println("Error writing data: " + exc);
@@ -156,7 +156,7 @@ public class CompileTree extends Thread
       for(int i = 0; i < subtreeNids.size(); i++)
 	{
 	    try {
-	        tree.setSubtree((NidData)subtreeNids.elementAt(i), 0);
+	        subtreeNids.elementAt(i).setSubtree(true);
 	    }
 	    catch (Exception exc) {
 	    System.out.println("Error setting subtree: " + exc);
@@ -167,8 +167,8 @@ public class CompileTree extends Thread
 
 
 	try {
-	    tree.write(0);
-	    tree.close(0);
+	    tree.write();
+	    tree.close();
 	}catch(Exception exc)
 	{
 	    System.out.println("Error closeing tree: " + exc);
@@ -180,12 +180,12 @@ public class CompileTree extends Thread
 	String type = node.getNodeName();
 	String name = node.getAttribute("NAME");
 	String usageStr = node.getAttribute("USAGE");
-	NidData nid = null;
+	MDSplus.TreeNode nid = null;
 	boolean success;
 
 	//System.out.println(name);
 	try {
-	    NidData parentNid = tree.getDefault(0);
+	    MDSplus.TreeNode parentNid = tree.getDefault();
 	    success = false;
 	    if(type.equals("data"))
 	    {
@@ -195,7 +195,7 @@ public class CompileTree extends Thread
 	        {
 	            String dataStr = dataNode.getData();
 
-	            Data data = null;
+	            MDSplus.Data data = null;
 	          /*  try {
 		    System.out.println(dataStr);
 
@@ -203,21 +203,21 @@ public class CompileTree extends Thread
 	            }catch(Exception exc)*/
 	            {
 	              unresolvedExprV.addElement(dataStr);
-	              unresolvedNidV.addElement(tree.getDefault(0));
+	              unresolvedNidV.addElement(tree.getDefault());
 	             }
 	            try {
-	                nid = tree.getDefault(0);
+	                nid = tree.getDefault();
 	                if(isDeviceField)
 	                {
-	                    Data oldData;
+	                    MDSplus.Data oldData;
 	                    try {
-	                        oldData = tree.getData(nid, 0);
+	                        oldData = nid.getData();
 	                    }catch(Exception exc) {oldData = null; }
 	                    if(oldData == null || !dataStr.equals(oldData.toString()))
-	                        tree.putData(nid, data, 0);
+	                        nid.putData(data);
 	                }
 	                else
-	                    tree.putData(nid, data, 0);
+	                    nid.putData(data);
 	            }catch(Exception exc)
 	            {
 	                System.out.println("Error writing data: " + exc);
@@ -234,7 +234,7 @@ public class CompileTree extends Thread
 	    {
 	        String newName;
 	        try {
-	            newName = (tree.getInfo(parentNid, 0)).getFullPath();
+	            newName = parentNid.getFullPath();
 	        }catch(Exception exc)
 	        {
 	            System.err.println("Error getting renamed path: " + exc);
@@ -255,10 +255,10 @@ public class CompileTree extends Thread
 	        try  {
 //                    if(name.length() > 12) name = name.substring(0,12);
 //                    nid = tree.addNode("."+name, NodeInfo.USAGE_STRUCTURE, 0);
-	            nid = addNode("."+name, NodeInfo.USAGE_STRUCTURE);
+	            nid = addNode("."+name, "STRUCTURE");
 	            if(usageStr != null && usageStr.equals("SUBTREE"))
 	                subtreeNids.addElement(nid);
-	            tree.setDefault(nid, 0);
+	            tree.setDefault(nid);
 	            success = true;
 	        }catch(Exception exc)
 	        {
@@ -267,21 +267,11 @@ public class CompileTree extends Thread
 	    }
 	    if(type.equals("member"))
 	    {
-	        int usage = NodeInfo.USAGE_NONE;
-	        if(usageStr.equals("NONE")) usage = NodeInfo.USAGE_NONE;
-	        if(usageStr.equals("ACTION")) usage = NodeInfo.USAGE_ACTION;
-	        if(usageStr.equals("NUMERIC")) usage = NodeInfo.USAGE_NUMERIC;
-	        if(usageStr.equals("SIGNAL")) usage = NodeInfo.USAGE_SIGNAL;
-	        if(usageStr.equals("TASK")) usage = NodeInfo.USAGE_TASK;
-	        if(usageStr.equals("TEXT")) usage = NodeInfo.USAGE_TEXT;
-	        if(usageStr.equals("WINDOW")) usage = NodeInfo.USAGE_WINDOW;
-	        if(usageStr.equals("AXIS")) usage = NodeInfo.USAGE_AXIS;
-	        if(usageStr.equals("DISPATCH")) usage = NodeInfo.USAGE_DISPATCH;
 	        try {
 //                    if(name.length() > 12) name = name.substring(0,12);
 //                    nid = tree.addNode(":"+name, usage, 0);
-	            nid = addNode(":"+name, usage);
-	            tree.setDefault(nid, 0);
+	            nid = addNode(":"+name, usageStr);
+	            tree.setDefault(nid);
 	            success = true;
 	        }catch(Exception exc)
 	        {
@@ -296,12 +286,9 @@ public class CompileTree extends Thread
 	        try {
 	            Thread.currentThread().sleep(100);
 
-	            nid = tree.addDevice(name.trim(), model, 0);
-	            if(nid != null)
-	            {
-	                tree.setDefault(nid, 0);
-	                success = true;
-	            }
+	            tree.addDevice(name.trim(), model);
+	            tree.setDefault(nid = tree.getNode(name.trim()));
+	            success = true;
 	        }
 	        catch(Exception exc){}
 	    }
@@ -309,8 +296,8 @@ public class CompileTree extends Thread
 	    if(type.equals("field"))
 	    {
 	      try {
-	        nid = tree.resolve(new PathData(name), 0);
-	        tree.setDefault(nid, 0);
+	        nid = tree.getNode(name);
+	        tree.setDefault(nid);
 	        success = true;
 	      }catch(Exception exc)
 	      {
@@ -330,7 +317,8 @@ public class CompileTree extends Thread
 	                tags[i++] = st.nextToken();
 	            try
 	            {
-	                tree.setTags(nid, tags, 0);
+                        for(int j = 0; j < tags.length; j++)
+                            nid.addTag(tags[j]);
 	            }catch(Exception exc)
 	            {
 	                System.out.println("Error adding tags " + tagsStr + " : " + exc);
@@ -360,7 +348,7 @@ public class CompileTree extends Thread
 	                    flags |= NodeInfo.COMPRESS_SEGMENTS;
 	            }
 	            try {
-	               tree.setFlags(nid, flags);
+	               nid.setNciFlags(flags);
 	            }catch(Exception exc)
 	            {
 	                System.out.println("Error setting flags to node " + name + " : " + exc);
@@ -373,9 +361,9 @@ public class CompileTree extends Thread
 	        {
 	            try {
 	             if(stateStr.equals("ON"))
-	                tree.setOn(nid, true, 0);
+	                nid.setOn(true);
 	            if(stateStr.equals("OFF"))
-	                tree.setOn(nid, false, 0);
+	                nid.setOn(false);
 	            }catch(Exception exc)
 	            {
 	                //System.out.println("Error setting state of node " + name + " : " + exc);
@@ -391,7 +379,7 @@ public class CompileTree extends Thread
 	                recCompile((Element)currNode);
 	        }
 	    }
-	    tree.setDefault(parentNid, 0);
+	    tree.setDefault(parentNid);
 	}catch(Exception exc)
 	{
 	    System.out.println("Internal error in recCompile: " + exc);
@@ -399,9 +387,9 @@ public class CompileTree extends Thread
 	}
     }
 
-    NidData  addNode(String name, int usage) throws Exception
+    MDSplus.TreeNode  addNode(String name, String usage) throws Exception
     {
-	NidData prevNid = tree.getDefault(0);
+	MDSplus.TreeNode prevNid = tree.getDefault();
 	String currName = name.substring(1);
 	String prevNode = "";
 	while(currName.length() > 12)
@@ -409,11 +397,11 @@ public class CompileTree extends Thread
 	      String shortName = currName.substring(0, 12);
 	      currName = currName.substring(12);
 	      try {
-		tree.addNode(prevNode + "."+shortName, NodeInfo.USAGE_STRUCTURE, 0);
+		tree.addNode(prevNode + "."+shortName, "STRUCTURE");
 	      }catch(Exception exc){}
 	      prevNode += "."+shortName;
 	}
-	return tree.addNode(prevNode+name.substring(0,1)+currName, usage, 0);
+	return tree.addNode(prevNode+name.substring(0,1)+currName, usage);
     }
 }
 

@@ -2,7 +2,7 @@ import java.util.*;
 
 class Action
 {
-    ActionData action;
+    MDSplus.Action action;
     String server_address="DUMMY";
     int nid;
     String name;
@@ -24,7 +24,7 @@ class Action
 
 
 
-    public Action(ActionData action, int nid, String name, boolean on, boolean essental, String server_address)
+    public Action(MDSplus.Action action, int nid, String name, boolean on, boolean essental, String server_address)
     {
 	this.action = action;
 	this.nid = nid;
@@ -38,7 +38,7 @@ class Action
 
   //public int getTimestamp() {return timestamp; }
     public synchronized void setTimestamp(int timestamp) {this.timestamp = timestamp; }
-    public synchronized ActionData getAction() {return action; }
+    public synchronized MDSplus.Action getAction() {return action; }
     public synchronized int getNid() {return nid; }
     public synchronized String getName() {return name; }
     public synchronized boolean isOn() {return on; }
@@ -61,7 +61,7 @@ class Action
 	if(verbose)
 	{
 	    try {
-	        server = ((DispatchData)action.getDispatch()).getIdent().getString();
+	        server = ((MDSplus.Dispatch)action.getDispatch()).getIdent().getString();
 	    } catch(Exception e) {server = ""; }
 	    switch(dispatch_status) {
 	        case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +

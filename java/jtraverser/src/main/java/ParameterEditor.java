@@ -33,13 +33,17 @@ public class ParameterEditor extends JPanel implements Editor
       validity.setEditable(editable);
     }
 
-    public Data getData() {return new ParameterData(expr.getData(), help.getData(), validity.getData());}
-    public void setData(Data data)
+    public MDSplus.Data getData() 
     {
-      if (data instanceof ParameterData) {
-	expr.setData( ( (ParameterData) data).getDatum());
-	help.setData( ( (ParameterData) data).getHelp());
-	validity.setData( ( (ParameterData) data).getValidation());
-      }
+        MDSplus.Data retData = expr.getData();
+        retData.setHelp(help.getData());
+        retData.setValidation(validity.getData());
+        return retData;
+    }
+    public void setData(MDSplus.Data data)
+    {
+	expr.setData(data);
+	help.setData(data.getHelp());
+	validity.setData(data.getValidation());
     }
 }

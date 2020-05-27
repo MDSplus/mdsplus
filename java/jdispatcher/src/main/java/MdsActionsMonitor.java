@@ -110,7 +110,7 @@ class MdsActionsMonitor extends MdsIp implements MonitorListener, Runnable
 	        mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(),
 	            MdsHelper.toPhaseId(event.getPhase()), action.getNid(),
 	            action.getName(), action.isOn()?1:0, mode,
-	            ((DispatchData)(action.getAction().getDispatch())).getIdent().getString(),
+	            ((MDSplus.Dispatch)(action.getAction().getDispatch())).getIdent().getString(),
 	            action.getServerAddress(),
 	            action.getStatus());
 	    }

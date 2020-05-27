@@ -17,7 +17,7 @@ import org.w3c.dom.Text;
 
 public class DecompileTree
 {
-    static Database mdsTree;
+    static MDSplus.Tree mdsTree;
     static Document document;
     public static void main(String args[])
     {
@@ -60,45 +60,43 @@ public class DecompileTree
 	}
 	Element tree = (Element) document.createElement("tree");
 
-	mdsTree = new Database(treeName, shot);
+        MDSplus.TreeNode topNid = null;
 	try {
-	    mdsTree.open();
+            mdsTree = new MDSplus.Tree(treeName, shot);
+            topNid = new MDSplus.TreeNode(0, mdsTree);
 	}catch(Exception exc)
 	{
 	    System.err.println("Cannot open tree: " + exc);
 	    System.exit(0);
 	}
-	NidData topNid = new NidData(0);
-	NidData [] sons;
+	MDSplus.TreeNodeArray sons = null;
 	try {
-	    sons = mdsTree.getSons(topNid, 0);
-	}catch(Exception exc) {sons = new NidData[0];}
-	for(int i = 0; i < sons.length; i++)
+	    sons = topNid.getChildren();
+	}catch(Exception exc) {}
+	for(int i = 0; i < sons.size(); i++)
 	{
 	    Element docSon = (Element) document.createElement("node");
 	    tree.appendChild(docSon);
-	    recDecompile(sons[i], docSon, false, isFull);
+	    recDecompile(sons.getElementAt(i), docSon, false, isFull);
 	 }
-	NidData [] members;
+	MDSplus.TreeNodeArray members = null;
 	try {
-	    members = mdsTree.getMembers(topNid, 0);
-            if( members == null ) members = new NidData[0];
-	}catch(Exception exc) {members = new NidData[0];}
+	    members = topNid.getMembers();
+ 	}catch(Exception exc) {}
 
-	for(int i = 0; i < members.length; i++)
+	for(int i = 0; i < members.size(); i++)
 	{
 	    Element docMember = null;
 	    try {
-	        NodeInfo info = mdsTree.getInfo(members[i], 0);
-	        if(info.getUsage() == NodeInfo.USAGE_DEVICE)
+	        if(members.getElementAt(i).getUsage() == "DEVICE")
 	            docMember = (Element) document.createElement("device");
-	        else if(info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
+	        else if(members.getElementAt(i).getUsage().equals("COMPOUND_DATA"))
 	            docMember = (Element) document.createElement("compound_data");
 	        else
 	            docMember = (Element) document.createElement("member");
 	    }catch(Exception exc){System.err.println(exc);}
 	    tree.appendChild(docMember);
-	    recDecompile(members[i], docMember, false, isFull);
+	    recDecompile(members.getElementAt(i), docMember, false, isFull);
 	}
 	TransformerFactory transFactory = TransformerFactory.newInstance();
 	try {
@@ -114,100 +112,72 @@ public class DecompileTree
 
 
 
-    static void recDecompile(NidData nid, Element node, boolean isDeviceField, boolean isFull)
+    static void recDecompile(MDSplus.TreeNode nid, Element node, boolean isDeviceField, boolean isFull)
     {
 	try {
-	    NidData prevNid = mdsTree.getDefault(0);
-	    mdsTree.setDefault(nid, 0);
-
-	    NodeInfo info = null;
-	    try {
-	        info = mdsTree.getInfo(nid, 0);
-	    }catch(Exception exc)
-	    {
-	        System.err.println("Error getting info: " + exc);
-	    }
-	    System.out.println(info.getFullPath());
+	    MDSplus.TreeNode prevNid = mdsTree.getDefault();
+	    mdsTree.setDefault(nid);
+	    System.out.println(nid.getFullPath());
 	    String [] tags;
 	    try {
-	        tags = mdsTree.getTags(nid, 0);
+	        tags = nid.findTags();
 	    }catch(Exception exc){tags = new String[0];}
 	    if(isDeviceField) //Handle device field display
 	    {
-	        Data data = null;
-
-		//TACON
-		if(info.getName().endsWith("_GAIN"))
-			System.out.println("TACON: "+ info.getName());
-
-		if(info.isSetup() || isFull || info.getName().endsWith("_GAIN"))
+	        MDSplus.Data data = null;
 
 
-	        //if(info.isSetup() || isFull)
+		if(nid.isSetup() || isFull ) //|| nid.getNodeName().endsWith("_GAIN"))
 	        {
 	            try {
-	                data = mdsTree.getData(nid, 0);
+	                data = nid.getData();
 	            }catch(Exception exc) { data = null;}
 	        }
 	        //Handle Possible non-device subtree. Never, never do that!!.....
-	        NidData sons[], members[];
-	        Vector subtreeNodes = new Vector();
+	        MDSplus.TreeNodeArray sons = null, members = null;
+	        Vector<MDSplus.TreeNode> subtreeNodes = new Vector<MDSplus.TreeNode>();
 	        try {
-	            sons = mdsTree.getSons(nid, 0);
-	        }catch(Exception exc) { sons = new NidData[0];}
-	        for(int i = 0; i < sons.length; i++)
+	            sons = nid.getChildren();
+	        }catch(Exception exc) {}
+	        for(int i = 0; i < sons.size(); i++)
 	        {
 	            try {
-	                NodeInfo currInfo = mdsTree.getInfo(sons[i], 0);
-	                if(currInfo.getConglomerateElt() == 1) //Descendant NOT belonging to the device
-	                    subtreeNodes.addElement(sons[i]);
+	                if(sons.getElementAt(i).getConglomerateElt() == 1) //Descendant NOT belonging to the device
+	                    subtreeNodes.addElement(sons.getElementAt(i));
 	            }catch(Exception exc){}
 	        }
-	        Vector subtreeMembers = new Vector();
+	        Vector<MDSplus.TreeNode> subtreeMembers = new Vector<MDSplus.TreeNode>();
 	        try {
-	            members = mdsTree.getMembers(nid, 0);
-                    if( members == null ) members = new NidData[0];
-	        }catch(Exception exc) { members = new NidData[0];}
-	        for(int i = 0; i < members.length; i++)
+	            members = nid.getMembers();
+	        }catch(Exception exc) {}
+	        for(int i = 0; i < members.size(); i++)
 	        {
 	            try {
-	                NodeInfo currInfo = mdsTree.getInfo(members[i], 0);
-	                if(currInfo.getConglomerateElt() == 1) //Descendant NOT belonging to the device
-	                    subtreeMembers.addElement(members[i]);
+	                if(members.getElementAt(i).getConglomerateElt() == 1) //Descendant NOT belonging to the device
+	                    subtreeMembers.addElement(members.getElementAt(i));
 	            }catch(Exception exc){}
 	        }
 
-	        if((!info.isOn() && info.isParentOn())
-	            || (info.isOn() && !info.isParentOn())
-	            || (info.isSetup()&& data != null) || tags.length > 0
+	        if((!nid.isOn() && !nid.isParentOff())
+	            || (nid.isOn() && nid.isParentOff())
+	            || (nid.isSetup()&& data != null) || tags.length > 0
 	            || subtreeNodes.size() > 0 || subtreeMembers.size() > 0
 	            || isFull
-
-//TACON
-||info.getName().endsWith("_GAIN")
-
 
 		    ) //show it only at these conditions
 	        {
 	            Element fieldNode = (Element) document.createElement("field");
 	            node.appendChild(fieldNode);
-	            int conglomerateElt = info.getConglomerateElt();
-	            NidData deviceNid = new NidData(nid.getInt() - conglomerateElt + 1);
-	            NodeInfo deviceInfo = null;
-	            try {
-	                deviceInfo = mdsTree.getInfo(deviceNid, 0);
-	            }catch(Exception exc)
-	            {
-	                System.err.println("Error getting device info: " + exc);
-	            }
-	            String devicePath = deviceInfo.getFullPath();
-	            String fieldPath = info.getFullPath();
+	            int conglomerateElt = nid.getConglomerateElt();
+	            MDSplus.TreeNode deviceNid = new MDSplus.TreeNode(nid.getNid() - conglomerateElt + 1, mdsTree);
+	            String devicePath = deviceNid.getFullPath();
+	            String fieldPath = nid.getFullPath();
 	            if(fieldPath.startsWith(devicePath)) //if the field has not been renamed
 	            {
 	                fieldNode.setAttribute("NAME", fieldPath.substring(devicePath.length(), fieldPath.length()));
-	                if(!info.isOn() && info.isParentOn())
+	                if(!nid.isOn() && !nid.isParentOff())
 	                    fieldNode.setAttribute("STATE", "OFF");
-	                if(info.isOn() && !info.isParentOn())
+	                if(nid.isOn() && nid.isParentOff())
 	                    fieldNode.setAttribute("STATE", "ON");
 	                if(tags.length > 0)
 	                {
@@ -229,24 +199,24 @@ public class DecompileTree
 	        for(int i = 0; i < subtreeNodes.size(); i++)
 	        {
 	            Element currNode = (Element) document.createElement("node");
-	            recDecompile((NidData)subtreeNodes.elementAt(i), currNode, false, isFull);
+	            recDecompile(subtreeNodes.elementAt(i), currNode, false, isFull);
 	        }
 	        for(int i = 0; i < subtreeMembers.size(); i++)
 	        {
 	            Element currNode = (Element) document.createElement("member");
-	            recDecompile((NidData)subtreeMembers.elementAt(i), currNode, false, isFull);
+	            recDecompile(subtreeMembers.elementAt(i), currNode, false, isFull);
 	        }
 
 	    } //End management of device fields
 	    else
 	    {
 
-	        node.setAttribute("NAME", info.getName());
-	        if(info.getUsage() == NodeInfo.USAGE_DEVICE || info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
+	        node.setAttribute("NAME", nid.getNodeName());
+	        if(nid.getUsage().equals("DEVICE")|| nid.getUsage().equals("COMPOUND_DATA"))
 	        {
-	            ConglomData deviceData = null;
+	            MDSplus.Conglom deviceData = null;
 	            try {
-	                deviceData = (ConglomData)mdsTree.getData(nid, 0);
+	                deviceData = (MDSplus.Conglom)nid.getData();
 	            }catch(Exception exc)
 	            {
 	                System.err.println("Error reading device data: " + exc);
@@ -254,25 +224,18 @@ public class DecompileTree
 	            String model = deviceData.getModel().toString();
 	            node.setAttribute("MODEL", model.substring(1, model.length() - 1));
 	        }
-	        int conglomerateElt = info.getConglomerateElt();
+	        int conglomerateElt = nid.getConglomerateElt();
 
 	        //Handle renamed device fields
 	        if(conglomerateElt > 1)
 	        {
-	            NidData deviceNid = new NidData(nid.getInt() - conglomerateElt + 1);
-	            NodeInfo deviceInfo = null;
-	            try {
-	                deviceInfo = mdsTree.getInfo(deviceNid, 0);
-	            }catch(Exception exc)
-	            {
-	                System.err.println("Error getting device info: " + exc);
-	            }
-	            node.setAttribute("DEVICE", deviceInfo.getFullPath());
+	            MDSplus.TreeNode deviceNid = new MDSplus.TreeNode(nid.getNid() - conglomerateElt + 1, mdsTree);
+	            node.setAttribute("DEVICE", deviceNid.getFullPath());
 	            node.setAttribute("OFFSET_NID", "" + conglomerateElt);
 	        }
 	        //tags
 	        try {
-	            tags = mdsTree.getTags(nid, 0);
+	            tags = nid.findTags();
 	        }catch(Exception exc)
 	        {
 	            System.err.println("Error getting tags: " + exc);
@@ -286,47 +249,33 @@ public class DecompileTree
 	            node.setAttribute("TAGS", tagList);
 	        }
 	        //state
-	        if(!info.isOn() && info.isParentOn())
+	        if(!nid.isOn() && !nid.isParentOff())
 	            node.setAttribute("STATE", "OFF");
-	        if(info.isOn() && !info.isParentOn())
+	        if(nid.isOn() && nid.isParentOff())
 	            node.setAttribute("STATE", "ON");
 	        //flags
 	        String flags = "";
-	        if(info.isWriteOnce()) flags += (flags.length() > 0)?",WRITE_ONCE":"WRITE_ONCE";
-	        if(info.isCompressible()) flags += (flags.length() > 0)?",COMPRESSIBLE":"COMPRESSIBLE";
-	        if(info.isCompressOnPut()) flags += (flags.length() > 0)?",COMPRESS_ON_PUT":"COMPRESS_ON_PUT";
-	        if(info.isNoWriteModel()) flags += (flags.length() > 0)?",NO_WRITE_MODEL":"NO_WRITE_MODEL";
-	        if(info.isNoWriteShot()) flags += (flags.length() > 0)?",NO_WRITE_SHOT":"NO_WRITE_SHOT";
-	        if(info.isCompressSegments()) flags += (flags.length() > 0)?",COMPRESS_SEGMENTS":"COMPRESS_SEGMENTS";
+	        if(nid.isWriteOnce()) flags += (flags.length() > 0)?",WRITE_ONCE":"WRITE_ONCE";
+	        if(nid.isCompressOnPut()) flags += (flags.length() > 0)?",COMPRESSIBLE":"COMPRESSIBLE";
+	        if(nid.isCompressOnPut()) flags += (flags.length() > 0)?",COMPRESS_ON_PUT":"COMPRESS_ON_PUT";
+	        if(nid.isNoWriteModel()) flags += (flags.length() > 0)?",NO_WRITE_MODEL":"NO_WRITE_MODEL";
+	        if(nid.isNoWriteShot()) flags += (flags.length() > 0)?",NO_WRITE_SHOT":"NO_WRITE_SHOT";
+	        if(nid.isCompressSegments()) flags += (flags.length() > 0)?",COMPRESS_SEGMENTS":"COMPRESS_SEGMENTS";
 
 	        if(flags.length() > 0)
 	            node.setAttribute("FLAGS", flags);
 
 	        //usage
-	        int usage = info.getUsage();
-	        if(usage != NodeInfo.USAGE_STRUCTURE
-	            && usage != NodeInfo.USAGE_DEVICE && usage != NodeInfo.USAGE_COMPOUND_DATA)
+	        String usage = nid.getUsage();
+	        if(!usage.equals("STRUCTURE")
+	            && !usage.equals("DEVICE") && !usage.equals("COMPOUND_DATA"))
 	        {
-	            String usageStr = "";
-	            switch(usage) {
-	                case NodeInfo.USAGE_NONE : usageStr = "NONE"; break;
-	                case NodeInfo.USAGE_ACTION : usageStr = "ACTION"; break;
-	                case NodeInfo.USAGE_DISPATCH : usageStr = "DISPATCH"; break;
-	                case NodeInfo.USAGE_NUMERIC : usageStr = "NUMERIC"; break;
-	                case NodeInfo.USAGE_SIGNAL : usageStr = "SIGNAL"; break;
-	                case NodeInfo.USAGE_TASK : usageStr = "TASK"; break;
-	                case NodeInfo.USAGE_TEXT : usageStr = "TEXT"; break;
-	                case NodeInfo.USAGE_WINDOW : usageStr = "WINDOW"; break;
-	                case NodeInfo.USAGE_AXIS : usageStr = "AXIS"; break;
-	                case NodeInfo.USAGE_SUBTREE : usageStr = "SUBTREE"; break;
-	            }
-	            node.setAttribute("USAGE", usageStr);
-
+	            node.setAttribute("USAGE", usage);
 	            //if(info.isSetup())
 	            {
-	                Data data;
+	                MDSplus.Data data;
 	                try {
-	                    data = mdsTree.getData(nid, 0);
+	                    data = nid.getData();
 	                }catch(Exception exc) { data = null;}
 	                if(data != null)
 	                {
@@ -339,49 +288,47 @@ public class DecompileTree
 	        }
 
 	    //handle descendants, if not subtree
-	        if(usage != NodeInfo.USAGE_SUBTREE)
+	        if(!usage.equals("SUBTREE"))
 	        {
-	            NidData [] sons;
+	            MDSplus.TreeNodeArray sons = null;
 	            try {
-	                sons = mdsTree.getSons(nid, 0);
-	            }catch(Exception exc){sons = new NidData[0];}
-	            if(info.getUsage() == NodeInfo.USAGE_DEVICE || info.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
+	                sons = nid.getChildren();
+	            }catch(Exception exc){}
+	            if(nid.getUsage().equals("DEVICE")|| nid.getUsage().equals("COMPOUND_DATA"))
 	            {
 	             // int numFields = info.getConglomerateNids() - 1;
-	              int numFields = info.getConglomerateNids();
+	              int numFields = nid.getConglomerateNodes().size();
 	                for(int i = 1; i < numFields; i++)
-	                    recDecompile(new NidData(nid.getInt() + i), node, true, isFull);
+	                    recDecompile(new MDSplus.TreeNode(nid.getNid() + i, mdsTree), node, true, isFull);
 	            }
 	            else
 	            {
-	                for(int i = 0; i < sons.length; i++)
+	                for(int i = 0; i < sons.size(); i++)
 	                {
 	                    Element docSon = (Element) document.createElement("node");
 	                    node.appendChild(docSon);
-	                    recDecompile(sons[i], docSon, false, isFull);
+	                    recDecompile(sons.getElementAt(i), docSon, false, isFull);
 	                }
-	                NidData [] members;
+	                MDSplus.TreeNodeArray members = null;
 	                try {
-	                    members = mdsTree.getMembers(nid, 0);
-                            if( members == null ) members = new NidData[0];
-	                }catch(Exception exc){members = new NidData[0];}
-	                for(int i = 0; i < members.length; i++)
+	                    members = nid.getMembers();
+ 	                }catch(Exception exc){}
+	                for(int i = 0; i < members.size(); i++)
 	                {
 	                    Element docMember;
-	                    NodeInfo currInfo = mdsTree.getInfo(members[i], 0);
-	                    if(currInfo.getUsage() == NodeInfo.USAGE_DEVICE)
-	                        docMember = (Element) document.createElement((currInfo.getUsage() == NodeInfo.USAGE_DEVICE )?"device":"compound_data");
-	                    else if(currInfo.getUsage() == NodeInfo.USAGE_COMPOUND_DATA)
+	                    if(members.getElementAt(i).getUsage().equals("DEVICE"))
+	                        docMember = (Element) document.createElement("device");
+	                    else if(members.getElementAt(i).getUsage().equals("COMPOUND_DATA"))
 	                        docMember = (Element) document.createElement("compound_data");
 	                    else
 	                        docMember = (Element) document.createElement("member");
 	                    node.appendChild(docMember);
-	                    recDecompile(members[i], docMember, false, isFull);
+	                    recDecompile(members.getElementAt(i), docMember, false, isFull);
 	                }
 	            }
 	        }
 	    }
-	    mdsTree.setDefault(prevNid, 0);
+	    mdsTree.setDefault(prevNid);
 	}catch(Exception exc)
 	{
 	    System.err.println(exc);

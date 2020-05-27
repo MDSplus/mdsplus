@@ -4,18 +4,19 @@ import java.awt.*;
 
 public class ProcedureEditor extends JPanel implements Editor
 {
-    ProcedureData procedure;
+    MDSplus.Procedure procedure;
     LabeledExprEditor procedure_edit, language_edit, timeout_edit;
     ArgEditor arg_edit;
 
     public ProcedureEditor() {this(null);}
-    public ProcedureEditor(ProcedureData procedure)
+    public ProcedureEditor(MDSplus.Procedure  procedure)
     {
 	this.procedure = procedure;
 	if(this.procedure == null)
 	{
-	    this.procedure = new ProcedureData(null, null, null, new Data[0]);
+	    this.procedure = new MDSplus.Procedure (null, null, null, new MDSplus.Data[0]);
 	}
+        this.procedure.setCtxTree(Tree.curr_experiment);
 	setLayout(new BorderLayout());
 	JPanel jp = new JPanel();
 	GridLayout gl = new GridLayout(2,1);
@@ -43,19 +44,20 @@ public class ProcedureEditor extends JPanel implements Editor
 	timeout_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	return new ProcedureData(timeout_edit.getData(), language_edit.getData(),
+	return new MDSplus.Procedure(timeout_edit.getData(), language_edit.getData(),
 	                     procedure_edit.getData(),arg_edit.getData());
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.procedure = (ProcedureData)data;
+	this.procedure = (MDSplus.Procedure)data;
 	if(this.procedure == null)
 	{
-	    this.procedure = new ProcedureData(null, null, null, new Data[0]);
+	    this.procedure = new MDSplus.Procedure(null, null, null, new MDSplus.Data[0]);
 	}
+        this.procedure.setCtxTree(Tree.curr_experiment);
 	reset();
     }
 

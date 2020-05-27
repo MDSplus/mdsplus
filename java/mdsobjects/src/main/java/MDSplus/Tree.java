@@ -117,6 +117,8 @@ public class Tree {
 	}
 
 	public boolean isOpen() { return open;}
+
+
 	@Override
 	public java.lang.String toString()
 	{
@@ -178,6 +180,8 @@ public class Tree {
 	//Thread safe context dependent tdi operations
 	private static native Data execute(long ctx, java.lang.String expr, Data[] args);
 	private static native Data compile(long ctx, java.lang.String expr, Data[] args);
+	private static native Data data(long ctx, Data data);
+	private static native Data evaluate(long ctx, Data data);
 
 	protected long getCtx(){return ctx;}
 
@@ -501,6 +505,20 @@ public class Tree {
 	public Data tdiExecute(java.lang.String expr)
 	{
 		Data retData =  execute(ctx, expr, new Data[0]);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public Data tdiData(Data data)
+	{
+		Data retData =  data(ctx, data);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
+	public Data tdiEvaluate(Data data)
+	{
+		Data retData =  evaluate(ctx, data);
 		retData.setCtxTree(this);
 		return retData;
 	}

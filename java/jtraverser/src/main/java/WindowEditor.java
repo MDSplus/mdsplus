@@ -10,17 +10,17 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
     WindowEdt window_edit;
     JComboBox combo;
     int mode_idx, curr_mode_idx;
-    Data data;
+    MDSplus.Data data;
     boolean editable = true;
     TreeDialog dialog;
 
-    public WindowEditor(Data data, TreeDialog dialog)
+    public WindowEditor(MDSplus.Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
 	this.data = data;
 	if(data == null)
 	    mode_idx = 0;
-	else if(data.dtype == Data.DTYPE_WINDOW)
+	else if(data instanceof MDSplus.Window)
 	    mode_idx = 1;
 	else
 	    mode_idx = 2;
@@ -42,7 +42,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	    case 0: return;
 	    case 1:
 		if(mode_idx == 1)
-		    window_edit = new WindowEdt((WindowData)data);
+		    window_edit = new WindowEdt((MDSplus.Window)data);
 		else
 		    window_edit = new WindowEdt(null);
 		add(window_edit, "Center");
@@ -98,7 +98,7 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	repaint();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	switch(curr_mode_idx)  {
 	    case 0: return null;
@@ -110,12 +110,12 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 	return null;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
 	this.data = data;
 	if(data == null)
 	    mode_idx = 0;
-	else if(data.dtype == Data.DTYPE_WINDOW)
+	else if(data instanceof MDSplus.Window)
 	    mode_idx = 1;
 	else
 	    mode_idx = 2;
@@ -133,17 +133,18 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 
 static class WindowEdt extends JPanel
 {
-    WindowData window;
+    MDSplus.Window window;
     LabeledExprEditor startidx_edit, endidx_edit, value0_edit;
 
     public WindowEdt() {this(null);}
-    public WindowEdt(WindowData window)
+    public WindowEdt(MDSplus.Window window)
     {
 	this.window = window;
 	if(this.window == null)
 	{
-	    this.window = new WindowData(null, null, null);
+	    this.window = new MDSplus.Window(null, null, null);
 	}
+        this.window.setCtxTree(Tree.curr_experiment);
 	GridLayout gl = new GridLayout(3, 1);
 	gl.setVgap(0);
 	setLayout(gl);
@@ -165,10 +166,12 @@ static class WindowEdt extends JPanel
 	value0_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	return new WindowData(startidx_edit.getData(), endidx_edit.getData(),
+	MDSplus.Data w =  new MDSplus.Window(startidx_edit.getData(), endidx_edit.getData(),
 	    value0_edit.getData());
+        w.setCtxTree(Tree.curr_experiment);
+        return w;
     }
 
     public void setEditable(boolean editable)

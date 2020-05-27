@@ -41,7 +41,7 @@ Ensures action dispatching to servers, keeping load balancing.
     {
 	String server_class;
 	try{
-	    server_class = ((DispatchData)action.getAction().getDispatch()).getIdent().getString();
+	    server_class = ((MDSplus.Dispatch)action.getAction().getDispatch()).getIdent().getString();
 	}
 	catch(Exception exc)
 	{
@@ -116,7 +116,7 @@ Ensures action dispatching to servers, keeping load balancing.
     {
 	String server;
 	try{
-	    server = ((DispatchData)event.getAction().getAction().getDispatch()).getIdent().getString();
+	    server = ((MDSplus.Dispatch)event.getAction().getAction().getDispatch()).getIdent().getString();
 	}catch(Exception exc) {return; }
 	Vector<Server> server_vect = servers.get(server.toUpperCase());
 	if(server_vect == null) //it is the default server

@@ -8,6 +8,10 @@ package MDSplus;
  */
 public class Condition extends Compound
 {
+    public static final int TreeNEGATE_CONDITION = 7;
+    public static final int TreeIGNORE_UNDEFINED = 8;
+    public static final int TreeIGNORE_STATUS = 9;
+
     public Condition(int opcode, Data arg,
 	    Data help, Data units, Data error, Data validation)
     {
@@ -44,7 +48,8 @@ public class Condition extends Compound
 
     public Data getArg()
     {
-	    return descs[0];
+        resizeDescs(1);
+	return descs[0];
     }
 
     /**

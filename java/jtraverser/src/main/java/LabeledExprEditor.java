@@ -5,9 +5,9 @@ import java.awt.*;
 public class LabeledExprEditor extends JPanel implements Editor
 {
     ExprEditor expr;
-    public LabeledExprEditor(Data data)
+    public LabeledExprEditor(MDSplus.Data data)
     {
-    this("Expression", new ExprEditor(data, (data != null && data.dtype == Data.DTYPE_T), 4, 20));
+    this("Expression", new ExprEditor(data, (data != null && (data instanceof MDSplus.String)), 4, 20));
     }
     public LabeledExprEditor(String label_str)
     {
@@ -30,7 +30,7 @@ public class LabeledExprEditor extends JPanel implements Editor
 	expr.setEditable(editable);
     }
 
-    public Data getData() {return expr.getData();}
-    public void setData(Data data) {expr.setData(data);}
+    public MDSplus.Data getData() {return expr.getData();}
+    public void setData(MDSplus.Data data) {expr.setData(data);}
 
 }

@@ -4,21 +4,22 @@ import java.awt.*;
 
 public class MethodEditor extends JPanel implements Editor
 {
-    MethodData method;
+    MDSplus.Method method;
     LabeledExprEditor device_edit, method_edit, timeout_edit;
     ArgEditor arg_edit;
 
     public MethodEditor() {this(null);}
-    public MethodEditor(MethodData method)
+    public MethodEditor(MDSplus.Method method)
     {
 	this.method = method;
 	if(this.method == null)
 	{
-	    this.method = new MethodData(null, null, null, new Data[0]);
+	    this.method = new MDSplus.Method(null, null, null, new MDSplus.Data[0]);
 	}
+        this.method.setCtxTree(Tree.curr_experiment);
 	setLayout(new BorderLayout());
 	device_edit = new LabeledExprEditor("Device", new ExprEditor(
-	    this.method.getDevice(), true));
+	    this.method.getObject(), true));
 	method_edit = new LabeledExprEditor("Method", new ExprEditor(
 	    this.method.getMethod(), true));
     JPanel jp = new JPanel();
@@ -41,19 +42,22 @@ public class MethodEditor extends JPanel implements Editor
 	timeout_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	return new MethodData(timeout_edit.getData(), method_edit.getData(),
+         MDSplus.Method m = new MDSplus.Method(timeout_edit.getData(), method_edit.getData(),
 	    device_edit.getData(), arg_edit.getData());
-    }
+        m.setCtxTree(Tree.curr_experiment);
+        return m;
+     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.method = (MethodData) data;
+	this.method = (MDSplus.Method) data;
 	if(this.method == null)
 	{
-	    this.method = new MethodData(null, null, null, new Data[0]);
+	    this.method = new MDSplus.Method(null, null, null, new MDSplus.Data[0]);
 	}
+        this.method.setCtxTree(Tree.curr_experiment);
 	reset();
     }
 
