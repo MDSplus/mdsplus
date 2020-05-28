@@ -1,3 +1,5 @@
+./usr/local/mdsplus/bin/CompileTree
+./usr/local/mdsplus/bin/DecompileTree
 ./usr/local/mdsplus/bin/SetMdsplusFileProtection
 ./usr/local/mdsplus/bin/actlog
 ./usr/local/mdsplus/bin/build_test

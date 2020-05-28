@@ -16,7 +16,7 @@ maven-tests:
 maven-clean:
 	$(MVN) clean
 
-JAVA_DIRS = mdsplus mdsplus-api jtraverser2 jscope mdsobjects jtraverser jtraverser2 jdevices jdispatcher
+JAVA_DIRS = mdsplus mdsplus-api jtraverser2 jscope mdsobjects jtraverser devicebeans jdevices jdispatcher
 
 .PHONY: $(all_DIRS) $(clean_DIRS)
 
