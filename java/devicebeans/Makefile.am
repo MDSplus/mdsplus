@@ -6,7 +6,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = DeviceBeans.jar
 java_DATA = DeviceBeans.jar
-DEPENDENCIES = $(JSCOPE_JAR)
+DEPENDENCIES = $(JAVAROOT) $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
