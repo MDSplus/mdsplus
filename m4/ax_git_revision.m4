@@ -1,5 +1,6 @@
 # ===========================================================================
-#      http://www.gnu.org/software/autoconf-archive/ac_git_revision.html
+#      http://www.gnu.org/software/autoconf-archive/ax_git_revision.html
+#      EDITED! timo schroeder
 # ===========================================================================
 #
 # SYNOPSIS
@@ -9,7 +10,7 @@
 # DESCRIPTION
 #  Adds Git variables to code that can be used to locate your current install
 #  upon the source repository that triggered the "make install" command
-#  
+#
 # LICENSE
 #
 #   Copyright (c) 2016 Andrea Rigoni Garola <andrea.rigoni@igi.cnr.it>
@@ -57,10 +58,10 @@ AC_DEFUN([AX_GIT_REVISION],[
         [AS_VAR_SET([enable_uncommitted_install],[])])
 
     AC_CHECK_PROG([HAVE_GIT],[git],[yes],[no])
-    AS_IF([test -d ${srcdir}/.git],,AS_VAR_SET([HAVE_GIT],[no]))    
-    
+    AS_IF([test -d ${srcdir}/.git],,AS_VAR_SET([HAVE_GIT],[no]))
+
     AS_VAR_SET([abs_top_srcdir],[$(cd ${srcdir}; pwd)])
-    AS_IF([test -d ${abs_top_srcdir}],,AS_VAR_SET([HAVE_GIT],[no]))    
+    AS_IF([test -d ${abs_top_srcdir}],,AS_VAR_SET([HAVE_GIT],[no]))
 
     AS_VAR_IF([HAVE_GIT],[yes],[
         AS_VAR_SET([GIT],["git --git-dir=${abs_top_srcdir}/.git --work-tree=${abs_top_srcdir} "])
@@ -77,27 +78,35 @@ AC_DEFUN([AX_GIT_REVISION],[
             AS_VAR_SET([GIT_REMOTE],[LOCAL])
             AS_VAR_SET([GIT_REMOTE_URL],["source code upstream is not set, please refer to local srcdir."])
         ])
-        
+
         ## substs
         GIT_DEFINE_TARGETS
-        
+
         dnl TODO: verify matching TAG regexp
         AC_CHECK_PROG([HAVE_AWK],[awk],[yes],[no])
         AS_VAR_IF([HAVE_AWK],[yes],[
             AS_IF([test -z "${RELEASE_VERSION}"],[
                 dnl AS_VAR_SET([RELEASE_TAG],[$(echo ${GIT_TAG} | ${AWK} '{ match($[]0,/([[a-zA-Z0-9_-]]+[[^0-9-]]+)-([[0-9]]+-[[0-9]]+-[[0-9]]+)/,arr); print arr[[0]] }' )])
                 AS_VAR_SET([RELEASE_TAG],[${GIT_TAG}])
-                AS_VAR_SET([RELEASE_VERSION],[$(echo ${GIT_TAG} | ${AWK} '{ match($[]0,/[[0-9]]+-[[0-9]]+-[[0-9]]+/,arr); print arr[[0]] }' | ${AWK} '{ gsub("-","."); print }' ) ])
+                AS_VAR_SET([RELEASE_MAJOR],  [$(echo ${RELEASE_TAG} | ${AWK} -F"-" '{ print $[]2 }' ) ])
+                AS_VAR_SET([RELEASE_MINOR],  [$(echo ${RELEASE_TAG} | ${AWK} -F"-" '{ print $[]3 }' ) ])
+                AS_VAR_SET([RELEASE_RELEASE],[$(echo ${RELEASE_TAG} | ${AWK} -F"-" '{ print $[]4 }' ) ])
+		AS_VAR_SET([RELEASE_VERSION],[${RELEASE_MAJOR}.${RELEASE_MINOR}.${RELEASE_RELEASE}])
+                AS_VAR_SET([RELEASE_DATE],   [$(${GIT} log -1 --format="%ad")])
+	    ],[
                 AS_VAR_SET([RELEASE_MAJOR],  [$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $[]1 }' ) ])
                 AS_VAR_SET([RELEASE_MINOR],  [$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $[]2 }' ) ])
                 AS_VAR_SET([RELEASE_RELEASE],[$(echo ${RELEASE_VERSION} | ${AWK} -F"." '{ print $[]3 }' ) ])
-                AS_VAR_SET([RELEASE_DATE],   [$(${GIT} log -1 --format="%ad")])
-        ])])
+	])])
+    ])
+    AS_IF([test -z "${RELEASE_MAJOR}"],[
+	AS_VAR_SET([RELEASE_MAJOR],	[0])
+	AS_VAR_SET([RELEASE_MINOR],	[0])
+	AS_VAR_SET([RELEASE_RELEASE],	[0])
+	AS_VAR_SET([RELEASE_DATE],	[$(date)])
     ])
     AC_POP_LOCAL([ax_git_revision])
 ])
-
-
 
 
 AC_DEFUN_LOCAL([ax_git_revision],[GIT_DEFINE_TARGETS],[
@@ -106,7 +115,7 @@ AS_VAR_READ([AX_GIT_REVISION_TARGETS],[
 # //////////////////////////////////////////////////////////////////////////// #
 # //// GIT REVISION TARGETS  ///////////////////////////////////////////////// #
 # //////////////////////////////////////////////////////////////////////////// #
- 
+
 # check for uncommitted modified files and eventually define "M" for the GIT_TAG
 _git_check_changes = \$(shell ${GIT} diff-index --quiet HEAD || echo M)
 
@@ -118,7 +127,7 @@ _git_check_changes = \$(shell ${GIT} diff-index --quiet HEAD || echo M)
 # ///////////// #
 GIT_TAG         = ${GIT_TAG}\$(_git_check_changes)
 GIT_SRCDIR      = \$(abs_top_srcdir)
-GIT_BRANCH      = ${GIT_BRANCH} 
+GIT_BRANCH      = ${GIT_BRANCH}
 GIT_REMOTE      = ${GIT_REMOTE}
 GIT_REMOTE_URL  = ${GIT_REMOTE_URL}
 
@@ -136,7 +145,7 @@ git_info: ##@@miscellaneous dump release tag
 	  echo "   commit: ... \$(GIT_COMMIT)"; \
 	  echo "   remote_url: \$(GIT_REMOTE_URL)"; \
 	  echo "";
-      
+
 
 ifeq (install,\$(filter install,\$(MAKECMDGOALS)))
 ${enable_uncommitted_install}\$(if \$(_git_check_changes),\$(error ERROR: There are uncommitted changes, install not allowed))

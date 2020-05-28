@@ -40,29 +40,18 @@ AX_IS_RELEASE([always])
     # ],[
     # ])
 
-if [[ ! -z ${RELEASE_VERSION} ]]
-then
-  RELEASE_MAJOR=$(echo ${RELEASE_VERSION} | cut -d. -f1)
-  RELEASE_MINOR=$(echo ${RELEASE_VERSION} | cut -d. -f2)
-  RELEASE_RELEASE=$(echo ${RELEASE_VERSION} | cut -d. -f3)
-else
-  RELEASE_MAJOR=1
-  RELEASE_MINOR=0
-  RELEASE_RELEASE=0
-fi
-RELEASE_BRANCH=${BRANCH::12}
-RELEASE_TAG="${BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
-RELEASE_DATE="$(date)"
-
 dnl look if a version from git directory can be obtained
 AX_GIT_REVISION
 
-if [[ -z ${RELEASE_BRANCH} ]]
-then if [[ -z ${GIT_BRANCH} ]]
-then RELEASE_BRANCH=unknown
-else RELEASE_BRANCH=${GIT_BRANCH::12}
-fi;fi
-
+dnl fixup branch and tag
+RELEASE_BRANCH=${BRANCH::12}
+if   [[ ! -z "${BRANCH::12}" ]]
+then RELEASE_BRANCH=${BRANCH::12}
+elif [[ ! -z "${GIT_BRANCH::12}" ]]
+then RELEASE_BRANCH=${GIT_BRANCH::12}
+else RELEASE_BRANCH=unknown
+fi
+RELEASE_TAG="${RELEASE_BRANCH}_release-${RELEASE_MAJOR}-${RELEASE_MINOR}-${RELEASE_RELEASE}"
 
 dnl add reconfigure target option to autoconf generated Makefile
 AX_RECONFIGURE_TARGETS
