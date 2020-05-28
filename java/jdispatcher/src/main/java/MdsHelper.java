@@ -1,5 +1,6 @@
 import java.util.*;
 import java.io.*;
+import java.nio.ByteBuffer;
 class MdsHelper
 {
     static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
@@ -93,7 +94,12 @@ class MdsHelper
 	System.out.println("MdsHelper set experiment " + exp);
 	experiment = exp;
     }
-     public static native void generateEvent(String event, int shot);
+    public  static void generateEvent(String event, int shot)
+    {
+        byte[]shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
+        MDSplus.Event.setEventRaw(event, shotBytes);
+    }
+             
     public static String getErrorString(int status)
     {
         return MDSplus.Data.getMdsMsg(status);

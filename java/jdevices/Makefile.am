@@ -7,7 +7,7 @@ EXTRA_DIST = *.form
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 java_DATA = jDevices.jar
-DEPENDENCIES = $(JTRAVERSER_JAR)
+DEPENDENCIES = $(DEVICE_BEANS_JAR) $(JSCOPE_JAR) $(MDSOBJECTS_JAR) 
 
 if USE_JARS_DIR
 

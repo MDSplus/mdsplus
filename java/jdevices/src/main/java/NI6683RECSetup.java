@@ -895,18 +895,18 @@ public class NI6683RECSetup extends DeviceSetup {
         {
             int currBaseNid = baseNid+TRIGGER_1 + TRIGGER_INC * trigIdx;              
             
-            NidData nidTimes = new NidData(currBaseNid + NI6683REC_TIME);
-            NidData nidUTC   = new NidData(currBaseNid + NI6683REC_UTC_NS); 
+            int nidTimes = currBaseNid + NI6683REC_TIME;
+            int nidUTC   = currBaseNid + NI6683REC_UTC_NS; 
             //System.out.println("base Nid "+baseNid+" subtree "+subtree);
             try { 
-                NodeInfo ni = subtree.getInfo(nidTimes, Tree.context);
+                //NodeInfo ni = subtree.getInfo(nidTimes, Tree.context);
                 //System.out.println(ni.getPath());
-                String timeStr = Tree.dataToString(subtree.evaluateData(nidTimes, Tree.context));
+                String timeStr = subtree.getString(subtree.getDataExpr(nidTimes));
                 //System.out.println(ni.getPath()+" "+timeStr);
 
-                ni = subtree.getInfo(nidUTC, Tree.context);
+                //ni = subtree.getInfo(nidUTC, Tree.context);
                 //System.out.println(ni.getPath());
-                String utcStr = Tree.dataToString(subtree.evaluateData(nidUTC, Tree.context));
+                String utcStr = subtree.getString(subtree.getDataExpr(nidUTC));
                 //System.out.println(ni.getPath()+" "+utcStr);
 
 

@@ -1,5 +1,5 @@
 from MDSplus import Device, Data, Range, Dimension, Window, Signal, Int16Array
-from ctypes import CDLL,c_char_p,c_short,byref
+from ctypes import CDLL,c_char_p,c_short,byref, c_int
 
 class DEMOADC(Device):
     """A Demo 4 Channel, 16 but digitizer"""
@@ -74,7 +74,7 @@ class DEMOADC(Device):
 #Since we need to link against a shaed library from python, we need ctypes package.
         from ctypes import CDLL, c_int, c_char_p
         try:
-           deviceLib = CDLL("libDemoAdcShr.so")
+           deviceLibCDLL = CDLL("libDemoAdcShr.so")
         except:
             print ('Cannot link to device library')
             return 0
@@ -87,7 +87,7 @@ class DEMOADC(Device):
 #2) read and evaluate (in the case the content is an expression) its content via TreeNode.data() method
 #all data access operation will be but in a try block in order to check for missing or wrong configuration data
         try:
-            addr = self.addr
+            address = self.addr.data()
 #we expect to get a string in addr
         except:
             print ('Missing addr in device')
@@ -111,7 +111,13 @@ class DEMOADC(Device):
 
 #all required configuation collected. Call external routine initialize passing the right parameters
 #we use ctypes functions to convert python variable to appropriate C types to be passed to the external routine
-        deviceLib.initialize(c_char_p(addr), c_int(clockMode), c_int(pts))
+#        try:
+        print(address)
+        try:
+            deviceLibCDLL.initialize(c_char_p(address), c_int(clockMode), c_int(pts))
+        except:
+            print('Error initializing driver')
+            return 0
 #return success
         return 1
 
@@ -131,7 +137,7 @@ class DEMOADC(Device):
 
 #get addr
         try:
-            addr = self.addr
+            addr = self.addr.data()
 #we expect to get a string in addr
         except:
             print ('Missing Addr in device')

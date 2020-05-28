@@ -7,9 +7,9 @@ EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser.jar DeviceBeans.jar
-java_DATA = jTraverser.jar DeviceBeans.jar
-DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
+dist_java_DATA = jTraverser.jar 
+java_DATA = jTraverser.jar 
+DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) $(DEVICE_BEANS_JAR)
 
 if USE_JARS_DIR
 
@@ -18,22 +18,29 @@ jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 
 else
 
-jTraverser.jar: $(DEPENDENCIES) classjava.stamp $(srcdir)/DeviceBeansManifest.mf
+jTraverser.jar: $(DEPENDENCIES) classjava.stamp 
 	@ echo "Creating JAR: $@ ...";\
-	cp -f $(JAVA_RES) $(JAVAROOT)/ &&\
-	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
+	cp -f $(JAVA_RES)  $(JAVAROOT)/ &&\
+	$(JAR) cf $@ -C $(JAVAROOT) .
 
+	
+	
 endif
-
-DeviceBeans.jar: jTraverser.jar
-	${LN_R} -sf ./jTraverser.jar $@
 
 if MINGW
 bin_SCRIPTS += jTraverser.bat
 else
 bin_SCRIPTS += jTraverser
+bin_SCRIPTS += CompileTree
+bin_SCRIPTS += DecompileTree
 EXTRA_DIST += jTraverser.template
+EXTRA_DIST += CompileTree.template
+EXTRA_DIST += DecompileTree.template
 jTraverser: $(srcdir)/jTraverser.template
+	cp $< $@
+CompileTree: $(srcdir)/CompileTree.template
+	cp $< $@
+DecompileTree: $(srcdir)/DecompileTree.template
 	cp $< $@
 endif
 

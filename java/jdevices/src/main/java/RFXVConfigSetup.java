@@ -370,11 +370,11 @@ public class RFXVConfigSetup extends DeviceSetup {
    {
        for(int i = 1; i <= 3; i++)
        {
-	   NidData ctrlNid = new NidData(this.baseNid + 14 +  i  * 5);
+	   int ctrlNid = this.baseNid + 14 +  i  * 5;
 	   String val;
 	   JCheckBox cb;
 	   try {
-	        val = Tree.dataToString((Data) subtree.getData(ctrlNid, Tree.context ));
+	        val = subtree.getString(subtree.getDataExpr(ctrlNid));
 	        if( val.equals("\"CONTROLLED\"") )
 	        {
 	            cb =  (JCheckBox)getComponentByBame( this, "controlled" + i );
@@ -392,9 +392,9 @@ public class RFXVConfigSetup extends DeviceSetup {
        }
    }
 
-   public void configure(RemoteTree subtree, int baseNid, Node node)
+   public void configure(TreeInterface subtree, int baseNid)
    {
-       super.configure(subtree, baseNid, node);
+       super.configure(subtree, baseNid);
        resetCtrlState();
        return;
    }
@@ -412,11 +412,11 @@ public class RFXVConfigSetup extends DeviceSetup {
 
        for(int i = 1; i <= 3; i++)
        {
-	   NidData ctrlNid = new NidData(this.baseNid + 14 +  i  * 5);
+	   int ctrlNid = this.baseNid + 14 +  i  * 5;
 	   JCheckBox cb1 =  (JCheckBox)getComponentByBame( this, "controlled" + i );
 	   String val =  cb1.isSelected() ? "CONTROLLED" : "UNCONTROLLED";
 	    try {
-	        subtree.putData(ctrlNid, new StringData(val), Tree.context);
+	        subtree.putDataExpr(ctrlNid, val);
 	    }
 	    catch(Exception e)
 	    {

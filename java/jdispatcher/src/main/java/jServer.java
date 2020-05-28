@@ -584,7 +584,7 @@ public class jServer
 
 	    status = node.doAction();
 	    System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
-	    if((status & 1) != 0)
+	    if((status & 1) == 0)
 	    {
 		String errDevMsg = MDSplus.Data.execute("getLastError()", new MDSplus.Data[0]).getString();
 		String errMsg = MDSplus.Data.execute("getmsg()", new MDSplus.Data[]{new MDSplus.Int32(status)}).getString();
