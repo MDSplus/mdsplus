@@ -24,5 +24,6 @@ public interface TreeInterface {
     public void setOn(int nid, boolean on)  throws Exception;
     public int getNumConglomerateNids(int nid)  throws Exception;
     public int getNode(String path)  throws Exception;
-    
+    public int  registerMdsEvent(String eventName, DataChangeListener listener);
+    public void unregisterMdsEvent(int eventId);
   }

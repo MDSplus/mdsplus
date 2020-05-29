@@ -17,11 +17,15 @@ public abstract class DeviceComponent extends JPanel
     protected boolean isHighlighted = false;
     private boolean is_initialized = false;
     private boolean enabled = true;
+    
+    private int refShot = -2;
 
 
 
     void setSubtree(TreeInterface subtree) {this.subtree = subtree; }
     TreeInterface getSubtree(){return subtree; }
+    public void setRefShot(int refShot){this.refShot = refShot;}
+    public int getRefShot(){return refShot;}
     public void setBaseNid(int nid) {baseNid = nid; }
     public int getBaseNid() {return baseNid; }
     public void setOffsetNid(int nid) {offsetNid = nid; }
@@ -77,6 +81,7 @@ public abstract class DeviceComponent extends JPanel
 	}
 	else
 	    displayData(curr_data, curr_on);
+        checkRefShot();
     }
 
     public void reset()
@@ -84,6 +89,18 @@ public abstract class DeviceComponent extends JPanel
 	curr_data = init_data;
 	curr_on = init_on;
 	displayData(curr_data, curr_on);
+    }
+    
+    public void update()
+    {
+        try {
+            String updatedData = subtree.getDataExpr(baseNid+offsetNid);
+            String prevInitData = init_data;
+            init_data = updatedData;
+            reset();
+            init_data = prevInitData;
+        }
+        catch(Exception exc){}
     }
 
     public void apply() throws Exception
@@ -121,6 +138,7 @@ public abstract class DeviceComponent extends JPanel
 	        System.out.println("Error writing device state: " + e);
 	    }
 	}
+        checkRefShot();
     }
 
     public void apply(int currBaseNid) throws Exception
@@ -153,6 +171,7 @@ public abstract class DeviceComponent extends JPanel
 	        System.out.println("Error writing device state: " + e);
 	    }
 	}
+        checkRefShot();
     }
 
 
@@ -241,6 +260,25 @@ public abstract class DeviceComponent extends JPanel
     //Get an object incuding all related info (will be data except for DeviceWaveform
     protected Object getFullData(){return getData();}
 
+    public void checkRefShot()
+    {
+        if(refShot < -1) return;
+        try {
+            String refPath = subtree.getFullPath(baseNid + offsetNid);
+            String refExpr = "USING("+refPath+",,"+refShot+")";
+            System.out.println(refExpr);
+            String refDataExpr = subtree.execute(refExpr);
+            String currDataExpr = subtree.execute(curr_data);
+            if(!currDataExpr.equals(refDataExpr))
+                setHighlight(true);
+            else
+                setHighlight(false);
+        }
+        catch(Exception exc){}
+        
+    }
+    
+    
     public void setHighlight(boolean isHighlighted)
     {
 	this.isHighlighted = isHighlighted;

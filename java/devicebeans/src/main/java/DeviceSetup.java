@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class DeviceSetup
-    extends JDialog
+    extends JDialog implements DataChangeListener
 {
     protected String deviceType;
     protected String deviceTitle;
@@ -30,7 +30,7 @@ public class DeviceSetup
     static Vector openDevicesV = new Vector();
 
     static JFrame owner;
-    
+    protected String updateEvent = null;
     public void setOwner(JFrame owner)
     {
         DeviceSetup.owner = owner;
@@ -56,7 +56,6 @@ public class DeviceSetup
 	int width = super.getWidth();
 	setSize(width, height);
     }
-
     public void setReadOnly(boolean readOnly)
     {
 	this.readOnly = readOnly;
@@ -96,6 +95,15 @@ public class DeviceSetup
     {
 	DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
 	return deviceProvider;
+    }
+   public void setUpdateEvent(String updateEvent)
+    {
+	this.updateEvent = updateEvent;
+    }
+
+    public String getUpdateEvent()
+    {
+	return updateEvent;
     }
 
     public void setDeviceTitle(String deviceTitle)
@@ -323,6 +331,16 @@ public class DeviceSetup
 	{
 	    System.out.println("Error in Configure: " + exc);
 	}
+        if(updateEvent != null)
+        {
+            try {
+                subtree.registerMdsEvent(updateEvent, this);
+            }
+            catch(Exception exc)
+            {
+                System.out.println("Cannot register to MDS event "+ updateEvent+": " + exc);
+            }
+        }
 
     }
 
@@ -423,6 +441,30 @@ public class DeviceSetup
 	}
 	for (int i = 0; i < num_components; i++)
 	    ( (DeviceComponent) device_components.elementAt(i)).reset();
+
+	try
+	{
+	    subtree.setDefault(oldNid);
+	}
+	catch (Exception exc)
+	{
+	    System.out.println("Error in Configure: " + exc);
+	}
+    }
+   public void update()
+    {
+	int oldNid = 0;
+	try
+	{
+	    oldNid = subtree.getDefault();
+	    subtree.setDefault(baseNid);
+	}
+	catch (Exception exc)
+	{
+	    System.out.println(exc);
+	}
+	for (int i = 0; i < num_components; i++)
+	    ( (DeviceComponent) device_components.elementAt(i)).update();
 
 	try
 	{
@@ -562,7 +604,10 @@ public class DeviceSetup
 	        ( (DeviceComponent) components.elementAt(i)).fireUpdate(id, val);
 	}
     }
-
+    public void dataChanged(DataChangeEvent e)
+    {
+        update();
+    }
     void cancel()
     {
 	activeNidHash.remove(new Integer(baseNid));

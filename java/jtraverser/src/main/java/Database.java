@@ -1,6 +1,7 @@
 //package jTraverser;
 import java.util.Date;
 import java.text.SimpleDateFormat;
+import java.util.Vector;
 
 public class Database implements TreeInterface{
     static long VMS_OFFSET = 0x7c95674beb4000L;
@@ -11,6 +12,7 @@ public class Database implements TreeInterface{
     boolean is_editable = false;
     MDSplus.Tree tree;
     public Database() {super();}
+    static Vector<TreeInterfaceEvent> events = new Vector<TreeInterfaceEvent>();
     public Database(MDSplus.Tree tree)
     {
 	this.name = tree.getName();
@@ -329,6 +331,37 @@ public class Database implements TreeInterface{
         MDSplus.TreeNode node = new MDSplus.TreeNode(nid, tree);
         return node.getNodeName();
        
+    }
+    public int  registerMdsEvent(String eventName, DataChangeListener listener)
+    {
+        try {
+            events.add(new TreeInterfaceEvent(eventName, listener));
+            return events.size() - 1;
+        }catch(Exception exc)
+        {
+            return -1;
+        }
+        
+    }
+    public void unregisterMdsEvent(int id)
+    {
+        try {
+            events.elementAt(id).dispose();
+        }catch(Exception exc){}
+    }
+    class TreeInterfaceEvent extends MDSplus.Event
+    {
+       DataChangeListener listener;
+       public  TreeInterfaceEvent(String eventName, DataChangeListener listener) throws Exception
+       {
+            super(eventName);
+            this.listener = listener;
+       }
+       public void run()
+       {
+           listener.dataChanged(new DataChangeEvent(Database.this.getName(), 
+                   Database.this.getShot(), this.getName()));
+       }
     }
     
   }

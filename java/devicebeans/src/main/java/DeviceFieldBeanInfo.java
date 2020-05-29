@@ -34,7 +34,8 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
 	       property("showState", "Display on/off state"),
 	       property("editable", "Text field editable"),
 	       property("displayEvaluated", "Display evaluated data"),
-	       property("preferredWidth", "Preferred width")
+	       property("preferredWidth", "Preferred width"),
+               property("refShot", "Reference shot number")
 	    };
 	    return props;
 	}catch(IntrospectionException e)

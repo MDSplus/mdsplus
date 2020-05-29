@@ -5,7 +5,7 @@ public class DeviceSetupBeanInfo extends SimpleBeanInfo
 {
     static String beanDeviceType = null;
     static String beanDeviceProvider = null;
-    public PropertyDescriptor property(String name, String description)
+     public PropertyDescriptor property(String name, String description)
     throws IntrospectionException
     {
 	PropertyDescriptor p = new PropertyDescriptor(name, DeviceSetup.class);
@@ -26,6 +26,7 @@ public class DeviceSetupBeanInfo extends SimpleBeanInfo
 	        property("deviceProvider", "The IP address of the device repository"),
 	        property("deviceTitle", "The title of the device setup form"),
 	        property("layout", "The Layout manager"),
+	        property("updateEvent", "The update event name")
 	    };
 	     return props;
 	}catch(IntrospectionException e)
