@@ -24,11 +24,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-try:
-    acq400_base = __import__('acq400_base', globals(), level=1)
-except:
-    acq400_base = __import__('acq400_base', globals())
+import importlib
 
+acq400_base = importlib.import_module('acq400_base')
 
 class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
     """
@@ -40,6 +38,7 @@ class_ch_dict = acq400_base.create_classes(
     list(_ACQ1001_TR.base_parts),
     acq400_base.ACQ1001_CHANNEL_CHOICES
 )
+
 globals().update(class_ch_dict)
 
 if __name__ == '__main__':
