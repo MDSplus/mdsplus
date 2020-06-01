@@ -68,7 +68,8 @@ class ACQ2106_WRTD(MDSplus.Device):
 
     def init(self, newmsg=''):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
+        #uut = acq400_hapi.Acq400(self.node.data())
+        uut = acq400_hapi.Acq2106('172.20.240.13', has_wr=True)
 
         msgs  = str(newmsg)
         wrmgs = msgs.split(":")
