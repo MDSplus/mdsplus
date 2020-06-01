@@ -25,8 +25,6 @@
 import MDSplus
 import time
 import threading
-import paramiko
-
 
 class ACQ2106_WRTD(MDSplus.Device):
     """
@@ -47,19 +45,20 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_SRC',    'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
         {'path':':EVENT0_SRC',  'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0,       'options':('write_shot',)},
+        {'path':':T0',          'type':'numeric', 'value': 0.1,       'options':('write_shot',)},
         {'path':':WRTT0_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WRTT1_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_TICKNS', 'type':'text', 'value': "WRTD_TICKNS=50", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_DNS',    'type':'text', 'value': "WRTD_DELTA_NS=50000000", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_VBOSE',  'type':'text', 'value': "WRTD_VERBOSE=2", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_RTP',    'type':'text', 'value': "WRTD_RTPRIO=15", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "WRTD_RX_MATCHES=$(hostname)", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "WRTD_RX_MATCHES1=$(hostname)", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_RX_DTP', 'type':'text', 'value': "WRTD_RX_DOUBLETAP=double_tap", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_DELAY',  'type':'text', 'value': "WRTD_DELAY01=5000000", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_ID',     'type':'text', 'value': "WRTD_ID=wrtt0", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_TX',     'type':'text', 'value': "WRTD_TX=0", 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_RTP',    'type':'numeric', 'value': 15, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_RX_DTP', 'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_ID',     'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_TX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
 
         {'path':':RUNNING',     'type':'numeric', 'options':('no_write_model',)},
         {'path':':LOG_OUTPUT',  'type':'text',    'options':('no_write_model', 'write_once', 'write_shot',)},
@@ -99,23 +98,23 @@ class ACQ2106_WRTD(MDSplus.Device):
         # j='WRTD_TX=0'
 
         #Record the state of the WRTD environment:
-        self.wrtd_delay  = uut.s11.WRTD_DELAY01
-        self.wrtd_dns    = uut.s11.WRTD_DELTA_NS
-        self.wrtd_id     = uut.s11.WRTD_ID
-        self.wrtd_rx     = uut.s11.WRTD_RX
-        self.wrtd_rx_dtp = uut.s11.WRTD_RX_DOUBLETAP
-        self.wrtd_rx_m   = uut.s11.WRTD_RX_MATCHES
-        self.wrtd_rx_m1  = uut.s11.WRTD_RX_MATCHES1
-        self.wrtd_tickns = uut.s11.WRTD_TICKNS
-        self.wrtd_tx     = uut.s11.WRTD_TX
-        self.wrtd_vbose  = uut.s11.WRTD_VERBOSE
+        self.wrtd_delay.record  = uut.cC.WRTD_DELAY01
+        self.wrtd_dns.record    = uut.cC.WRTD_DELTA_NS
+        self.wrtd_id.record     = uut.cC.WRTD_ID
+        self.wrtd_rx.record     = uut.cC.WRTD_RX
+        self.wrtd_rx_dtp.record = uut.cC.WRTD_RX_DOUBLETAP
+        self.wrtd_rx_m.record   = str(wrmgs[0])
+        self.wrtd_rx_m1.record  = str(wrmgs[1])
+        self.wrtd_tickns.record = uut.cC.WRTD_TICKNS
+        self.wrtd_tx.record     = uut.cC.WRTD_TX
+        self.wrtd_vbose.record  = uut.cC.WRTD_VERBOSE
 
         # Define RX matches:
-        uut.s11.WRTD_RX_MATCHES  = str(wrmgs[0])
-        uut.s11.WRTD_RX_MATCHES1 = str(wrmgs[1])
+        uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
+        uut.cC.WRTD_RX_MATCHES1 = str(wrmgs[1])
 
         #Commit the changes for WRTD RX
-        uut.s11.wrtd_commit_rx = 1
+        uut.cC.wrtd_commit_rx = 1
 
     INIT=init
 
@@ -149,5 +148,9 @@ class ACQ2106_WRTD(MDSplus.Device):
         uut.s0.wrtd_tx_immediate = wrtdtx
     
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
+
+        #Reseting the RX matches to its orignal default values found in the acq2106:
+        #/mnt/local/sysconfig/wr.sh
+        uut.cC.wrtd_reset = 1
 
     TRIG=trig
