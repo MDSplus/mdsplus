@@ -345,13 +345,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         {'path':':WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'}
         ]
 
-    def arm(self):
-        import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
-        shot_controller = acq400_hapi.ShotController([uut])
-        shot_controller.run_shot()
-    ARM=arm
-
     def get_WRTD_Tree(self):
         tree_name    = self.wrtd_tree.data()
         shot_number  = self.wrtd_shot.data() # the open shot, i.e 0
