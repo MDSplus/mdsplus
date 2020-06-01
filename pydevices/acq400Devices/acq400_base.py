@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
+# Copyright (c) 2020, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -23,19 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import sys
 import threading
 import socket
 import time
-import inspect
-
-import numpy as np
+from queue import Queue, Empty
+import numpy
 import MDSplus
 
-if MDSplus.version.ispy3:
-    from queue import Queue, Empty
-else:
-    from Queue import Queue, Empty
+try:
+    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
+except:
+    acq400_hapi = __import__('acq400_hapi', globals())
 
 
 class _ACQ400_BASE(MDSplus.Device):
@@ -43,32 +41,33 @@ class _ACQ400_BASE(MDSplus.Device):
     D-Tacq ACQ400 Base parts and methods.
 
     All other carrier/function combinations use this class as a parent class.
+
+    MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
+	MDSplus.Device.dprint(debuglevel, fmt, args)
+         - print if debuglevel >= MDSplus.Device.debug
     """
 
     base_parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
-        {'path':':NODE','type':'text','value':'acq1001_999', 'options':('no_write_shot',)},
-        {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
-        {'path':':TRIG_MODE','type':'text', 'value': 'role_default', 'options':('no_write_shot',)},
-        {'path':':ROLE','type':'text', 'value': 'master', 'options':('no_write_shot',)},
-        {'path':':FREQ','type':'numeric', 'value': int(1e6), 'options':('no_write_shot',)},
-        {'path':':SAMPLES','type':'numeric', 'value': int(1e5), 'options':('no_write_shot',)},
-        {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
-        {'path':':ARM_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",'options':('no_write_shot',)},
+        {'path':':NODE','type':'text',            'value':'acq1001_999', 'options':('no_write_shot',)},
+        {'path':':SITE','type':'numeric',         'value': 1, 'options':('no_write_shot',)},
+        {'path':':TRIG_MODE','type':'text',       'value': 'role_default', 'options':('no_write_shot',)},
+        {'path':':TRIG_SRC','type':'text',        'value': 'STRIG', 'options':('no_write_shot',)},
+        {'path':':TRIG_DX','type':'text',         'value': 'd1', 'options':('no_write_shot',)},
+        {'path':':ROLE','type':'text',            'value': 'master', 'options':('no_write_shot',)},
+        {'path':':FREQ','type':'numeric',         'value': int(1e6), 'options':('no_write_shot',)},
+        {'path':':PRESAMPLES','type':'numeric',   'value': int(1e5), 'options':('no_write_shot',)},
+        {'path':':SAMPLES','type':'numeric',      'value': int(1e5), 'options':('no_write_shot',)},
+        {'path':':INIT_ACTION', 'type':'action',  'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
+        {'path':':ARM_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",'options':('no_write_shot',)},
         {'path':':STORE_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',52,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
         ]
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
 
-    def setChanScale(self,num):
-        chan=self.__getattr__('INPUT_%3.3d' % num)
-
-
     def init(self):
-        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-
         trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
 
@@ -92,7 +91,45 @@ class _ACQ400_BASE(MDSplus.Device):
         if trg == 'automatic':
             uut.s0.transient = 'SOFT_TRIGGER=1'
 
-        uut.s0.transient = "POST={}".format(self.samples.data())
+        # If PRE samples different from zero
+        uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.samples.data())
+
+        #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
+        uut.s0.SIG_CLK_MB_FIN = '0'
+
+        #Set the Sampling rate in the ACQ:
+        # MB Clock (WR Clock): 20MHz
+        # mb_freq = uut.s0.SIG_CLK_MB_FREQ
+        mb_freq = 20000000.00 #MHz
+
+        self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
+        clockdiv      = mb_freq/self.freq.data()
+
+        uut.s1.CLKDIV = "{}".format(clockdiv)
+
+        acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
+        
+        self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz", acq_sample_freq)
+
+        #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
+        uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
+        uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
+        uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
+
+        # Setting SYNC Main Timing Highway Source Routing
+        uut.s0.SIG_SRC_TRG_0   = self.EVENT0_SRC.data()   # (hard trigger) in bus d0
+        uut.s0.SIG_SRC_TRG_1   = self.TRIG_SRC.data()     # (soft trigger) in bus d1
+        uut.s0.SIG_EVENT_SRC_0 = self.EVENT0_SRC.data()   # The source needs to be TRG to make the transition PRE->POST
+
+        #Setting the bus to use for ACQ2106 stream control
+        uut.s1.TRG       = 'enable'
+        uut.s1.TRG_DX    = self.TRIG_DX.data()
+        uut.s1.TRG_SENSE = 'rising'
+
+        if self.samples.data() !=0:
+            uut.s1.EVENT0       = 'enable'
+            uut.s1.EVENT0_DX    = self.EVENT0_DX.data()
+            uut.s1.EVENT0_SENSE = 'rising'
 
     INIT = init
 
@@ -108,8 +145,8 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         {'path':':RUNNING',     'type':'numeric',                  'options':('no_write_model',)},
         {'path':':SEG_LENGTH',  'type':'numeric', 'value': 8000,   'options':('no_write_shot',)},
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
-        {'path':':SEG_EVENT',   'type':'text',   'value': 'STREAM','options':('no_write_shot',)},
-        {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)}
+        {'path':':SEG_EVENT',   'type':'text',    'value': 'STREAM','options':('no_write_shot',)},
+        {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
         ]
 
 
@@ -128,7 +165,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
-            import acq400_hapi
+            
             threading.Thread.__init__(self)
             self.dev = dev.copy()
 
@@ -142,7 +179,21 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.chans.append(getattr(self.dev, 'INPUT_%3.3d'%(i+1)))
                 self.decim.append(getattr(self.dev, 'INPUT_%3.3d:DECIMATE' %(i+1)).data())
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*numpy.int16(0).nbytes
+
+            #Fechting all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+            uut.fetch_all_calibration()
+            eslo = uut.cal_eslo[1:]
+            eoff = uut.cal_eoff[1:]
+            channel_data = uut.read_channels()
+
+            for ic, ch in enumerate(self.chans):
+                if ch.on:
+                    ch.EOFF.putData(float(eoff[ic]))
+                    ch.ESLO.putData(float(eslo[ic]))
+                    expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+
+                    ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
@@ -162,8 +213,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                     ans = lcm(ans, e)
                 return int(ans)
 
-            if self.dev.debug:
-                print("MDSWorker running")
+            self.dev.dprint(1, "DeviceWorker running")
 
             event_name = self.dev.seg_event.data()
 
@@ -185,7 +235,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 except Empty:
                     continue
 
-                buffer = np.frombuffer(buf, dtype='int16')
+                buffer = numpy.frombuffer(buf, dtype='int16')
                 i = 0
                 for c in self.chans:
                     slength = self.seg_length/self.decim[i]
@@ -202,7 +252,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / numpy.int16(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
@@ -210,7 +260,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
             def __init__(self,mds):
                 threading.Thread.__init__(self)
-                self.debug = mds.dev.debug
+                self.dprint = mds.dev.dprint
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
                 self.segment_bytes = mds.segment_bytes
@@ -225,8 +275,8 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.running = False
 
             def run(self):
-                if self.debug:
-                    print("DeviceWorker running")
+
+                self.dprint(1, "DeviceWorker running")
 
                 self.running = True
 
@@ -254,26 +304,27 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("Got a timeout.")
+                        # print("Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' recv timed out, retry later')
+                            # print (' recv timed out, retry later')
                             continue
                         else:
-                            print (e)
+                            self.dprint(0, "error: %s", e)
                             break
                     except socket.error as e:
                         # Something else happened, handle error, exit, etc.
-                        print("socket error", e)
+                        self.dprint(0, "socket error: %s", e)
                         self.full_buffers.put(buf[:self.segment_bytes-toread])
                         break
                     else:
                         if toread != 0:
-                            print ('orderly shutdown on server end')
+                            self.dprint(1, 'orderly shutdown on server end')
+
                             break
                         else:
                             self.full_buffers.put(buf)
@@ -284,6 +335,15 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     A child class of _ACQ400_BASE that contains the specific methods for
     taking a transient capture.
     """
+    tr_base_parts = [
+        {'path':':RUNNING',     'type':'numeric',                      'options':('no_write_model',)},
+        {'path':':TRIG_TIME',   'type':'numeric',                      'options':('write_shot',)},
+        {'path':':EVENT0_SRC',  'type':'text',    'value': 'EXTernal', 'options':('no_write_shot',)},
+        {'path':':EVENT0_DX',   'type':'text',    'value': 'DX',       'options':('no_write_shot',)},
+        {'path':':WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')}
+        {'path':':WRTD_T0',     'type': 'text', 'value':'T0','options': ('no_write_shot')}
+        {'path':':WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'}
+        ]
 
     def arm(self):
         import acq400_hapi
@@ -292,9 +352,118 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         shot_controller.run_shot()
     ARM=arm
 
+    def get_WRTD_Tree(self):
+        tree_name    = self.wrtd_tree.data()
+        shot_number  = self.wrtd_shot.data() # the open shot, i.e 0
+        wrtd_tree   = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
+        return wrtd_tree
+
+    def state(self):
+        uut = acq400_hapi.Acq400(self.node.data())
+        _status = [int(x) for x in uut.s0.state.split(" ")]
+
+        #statemon = acq400_hapi.acq400.Statusmonitor(self.node.data(), _status)
+        #istate   = int(statemon.get_state())
+
+        trstate = acq400_hapi.acq400.STATE.str(_status[0])
+        
+        print("TR state: {}".format(trstate))
+        print("TR status: {}".format(_status))
+    STATE=state
+    
+    def stop(self):
+        uut = acq400_hapi.Acq400(self.node.data())
+        print("PRE {}, POST {} and ELAPSED {}".format(uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
+        uut.s0.set_abort=1
+    STOP = stop
+
+
+    def _arm(self):
+        uut = acq400_hapi.Acq400(self.node.data())
+        shot_controller = acq400_hapi.ShotController([uut])
+        shot_controller.run_shot()
+        return None
+    _ARM=_arm
+
+    def arm(self):
+        thread = threading.Thread(target = self._arm)
+        thread.start()
+    ARM=arm
+
 
     def store(self):
-        import acq400_hapi
+        thread = threading.Thread(target = self._store)
+        thread.start()
+        return None
+    STORE=store
+
+    def _store(self):
+
+        uut = acq400_hapi.Acq400(self.node.data())
+        while uut.statmon.get_state() != 0: continue
+        self.chans = []
+        nchans = uut.nchan()
+        for ii in range(nchans):
+            self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
+
+        uut.fetch_all_calibration()
+        eslo = uut.cal_eslo[1:]
+        eoff = uut.cal_eoff[1:]
+        channel_data = uut.read_channels()
+
+        wrtd_tree = self.get_WRTD_Tree()
+        t0 = wrtd_tree.getNode(self.wrtd_t0.data()).data()
+
+        for ic, ch in enumerate(self.chans):
+            if ch.on:
+                ch.putData(channel_data[ic])
+                ch.EOFF.putData(float(eoff[ic]))
+                ch.ESLO.putData(float(eslo[ic]))
+
+                #Expression to calculate the calibrarted inputs:
+                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+
+                ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
+
+    _STORE=_store
+
+class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
+    """
+    A sub-class of _ACQ400_TR_BASE that includes functions for MR data
+    and the extra nodes for MR processing.
+    """
+
+    mr_base_parts = [
+        {'path':':DT',       'type':'numeric','options':('write_shot',)},
+        {'path':':TB_NS',    'type':'signal', 'options':('no_write_model','write_once',)},
+        {'path':':DECIMS',   'type':'signal','options':('no_write_model','write_once',)},
+        {'path':':Fclk',     'type':'numeric','value':40000000,'options':('write_shot',)},
+        {'path':':trg0_src', 'type':'text',   'value':'EXT','options':('write_model',)},
+        {'path':':evsel0',   'type':'numeric','value':4,'options':('write_model',)},
+        {'path':':MR10DEC',  'type':'numeric','value':8,'options':('write_model',)},
+        {'path':':STL',      'type':'text',   'options':('write_model',)}
+        ]
+
+
+    def _create_time_base(self, decims, dt):
+        tb = np.zeros(decims.shape[-1])
+        ttime = 0
+        for ix, dec in enumerate(decims):
+                tb[ix] = ttime
+                ttime += float(dec) * dt
+
+        return tb
+
+    def create_time_base(self, uut):
+        decims = uut.read_decims()
+        dt = 1 / ((round(float(uut.s0.SIG_CLK_MB_FREQ.split(" ")[1]), -4)) * 1e-9)
+        tb_ns = self._create_time_base(decims, dt)
+
+        self.DECIMS.putData(decims)
+        self.DT.putData(dt)
+        self.TB_NS.putData(tb_ns)
+
+    def store(self):
         uut = acq400_hapi.Acq400(self.node.data())
         self.chans = []
         nchans = uut.nchan()
@@ -312,9 +481,83 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 ch.EOFF.putData(float(eoff[ic]))
                 ch.ESLO.putData(float(eslo[ic]))
                 expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
-
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
+
+	    self.create_time_base(uut)
+        # return None
     STORE=store
+
+
+    def arm():
+        # A customised ARM function for the acq2106_MR setup.
+        uut = acq400_hapi.Acq400(self.node.data())
+        shot_controller = acq400_hapi.ShotController(uut)
+        shot_controller.run_shot(remote_trigger=self.selects_trg_src(uut, self.trg0_src.data()))
+        return None
+    ARM = arm
+
+
+    def selects_trg_src(self, uut, src):
+        def select_trg_src():
+            uut.s0.SIG_SRC_TRG_0 = src
+        return select_trg_src
+
+
+    def denormalise_stl(self, stl):
+
+        # lines = args.stl.splitlines()
+        lines = stl.splitlines()
+        stl_literal_lines = []
+        for line in lines:
+            if line.startswith('#') or len(line) < 2:
+                # if args.verbose:
+                #     print(line)
+                continue
+            else:
+                action = line.split('#')[0]
+
+                if action.startswith('+'): # support relative increments
+                    delayp = '+'
+                    action  = action[1:]
+                else:
+                    delayp = ''
+
+                delay, state = [int(x) for x in action.split(',')]
+                # delayk = int(delay * self.Fclk.data() / 1000000)
+                delayk = int(delay * 40000000 / 1000000)
+                delaym = delayk - delayk % self.MR10DEC.data()
+                state = state << self.evsel0.data()
+                elem = "{}{:d},{:02x}".format(delayp, delaym, state)
+                stl_literal_lines.append(elem)
+                # if args.verbose:
+                #     print(line)
+
+        return "\n".join(stl_literal_lines)
+
+
+    def init(self):
+        # args.uuts = [ acq400_hapi.Acq2106(u, has_comms=False) for u in args.uut ]
+        uut = acq400_hapi.Acq2106(self.node.data())
+        # master = args.uuts[0]
+        self.STL.putData("/home/dt100/PROJECTS/acq400_hapi/user_apps/STL/acq2106_test10.stl")
+        with open(self.STL.data(), 'r') as fp:
+            stl = fp.read()
+
+        lit_stl = self.denormalise_stl(stl)
+
+        uut.s0.SIG_SRC_TRG_0 = 'NONE'
+
+        # for u in args.uuts:
+        # acq400_hapi.Acq400UI.exec_args(uut, args)
+        uut.s0.gpg_trg = '1,0,1'
+        uut.s0.gpg_clk = '1,1,1'
+        uut.s0.GPG_ENABLE = '0'
+        uut.load_gpg(lit_stl, 2) # TODO: Change to MDSplus debug.
+        uut.set_MR(True, evsel0=self.evsel0.data(), evsel1=self.evsel0.data()+1, MR10DEC=self.MR10DEC.data())
+        uut.s0.set_knob('SIG_EVENT_SRC_{}'.format(self.evsel0.data()), 'GPG')
+        uut.s0.set_knob('SIG_EVENT_SRC_{}'.format(self.evsel0.data()+1), 'GPG')
+        uut.s0.GPG_ENABLE = '1'
+    INIT = init
 
 
 def int_key_chan(elem):
@@ -343,8 +586,7 @@ def assemble(cls):
 # probably easier for analysis code if ALWAYS INPUT_001
 #    inpfmt = INPFMT2 if cls.nchan < 100 else INPFMT3
     for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',),
-                          'valueExpr':'head.setChanScale(%d)' %(ch,)})
+        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',)})
         cls.parts.append({'path':inpfmt%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
