@@ -10,7 +10,7 @@ DEPENDENCIES = $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
-DeviceBeans.jar: @JARS_DIR@/java/devicebeans/DeviceBeans.jar 
+DeviceBeans.jar: @JARS_DIR@/java/devicebeans/DeviceBeans.jar
 	cp $< $@
 
 else
@@ -21,5 +21,6 @@ DeviceBeans.jar: $(JAVAROOT) $(DEPENDENCIES)   classjava.stamp  $(srcdir)/Device
 	$(JAR) cfm $@ $(srcdir)/DeviceBeansManifest.mf -C $(JAVAROOT) .
 endif
 
-SOURCE = *.java
+SOURCE = *.java\
+ mds/devices/*.java
 RESOURCES = *.gif

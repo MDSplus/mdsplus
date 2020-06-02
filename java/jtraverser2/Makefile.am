@@ -39,7 +39,7 @@ SOURCE =\
  jtraverser/editor/*.java\
  jtraverser/editor/usage/*.java\
  jtraverser/tools/*.java\
- devices/*.java\
- devices/acq4xx/*.java\
+ mds/devices/*.java\
+ mds/devices/acq4xx/*.java\
  jTraverser.java
 RESOURCES = jtraverser/*.gif

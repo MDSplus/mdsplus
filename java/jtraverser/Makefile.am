@@ -7,9 +7,9 @@ EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser.jar 
-java_DATA = jTraverser.jar 
-DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR) $(DEVICE_BEANS_JAR)
+dist_java_DATA = jTraverser.jar
+java_DATA = jTraverser.jar
+DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
@@ -18,13 +18,12 @@ jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 
 else
 
-jTraverser.jar: $(DEPENDENCIES) classjava.stamp 
+jTraverser.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	cp -f $(JAVA_RES)  $(JAVAROOT)/ &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
-	
-	
+
 endif
 
 if MINGW
@@ -44,5 +43,6 @@ DecompileTree: $(srcdir)/DecompileTree.template
 	cp $< $@
 endif
 
-SOURCE = *.java
+SOURCE = *.java\
+ mds/devices/*.java
 RESOURCES = *.gif
