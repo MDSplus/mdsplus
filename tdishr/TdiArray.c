@@ -63,6 +63,49 @@ extern int Tdi3Add();
 extern int TdiConvert();
 extern int CvtConvertFloat();
 
+#include <mdsdescrip.h>
+#include <tdishr_messages.h>
+
+inline int tdi_n_elements(const mdsdsc_t *const dsc_ptr, int *const status) {
+  int count;
+  if (dsc_ptr->dtype == DTYPE_MISSING)
+    count = 0;
+  else
+  {
+    switch (dsc_ptr->class)
+    {
+      default:
+      {
+        count = 0;
+        *status = TdiINVCLADSC;
+      } break;
+      case CLASS_A:
+      {
+        array_coeff *aptr = (array_coeff *)dsc_ptr;
+        if (aptr->length != 0)
+        {
+          count = aptr->arsize / aptr->length;
+        }
+        else if ( aptr->dtype == DTYPE_T && aptr->aflags.coeff == 1 && aptr->dimct > 0)
+        {
+          count = aptr->m[0];
+          int i;
+          for ( i=1 ; i < aptr->dimct ; i++ )
+            count *= aptr->m[i];
+        }
+        else
+          count = 0;
+      } break;
+      case CLASS_S:
+      case CLASS_D:
+      {
+        count = 1;
+      } break;
+    }
+  }
+  return count;
+}
+
 extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
@@ -81,18 +124,24 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
     arr.class = CLASS_S;
   else {
     status = TdiData(list[0], &tmp MDS_END_ARG);
+    if STATUS_OK
+      ndim = tdi_n_elements(tmp.pointer, &status);
     if STATUS_OK {
-    N_ELEMENTS(tmp.pointer, ndim)};
-    if STATUS_OK {
-      arr.dimct = (unsigned char)ndim;
-      arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
-      arr.a0 = 0;
       if (ndim > MAX_DIMS)
-	status = TdiNDIM_OVER;
-      else {
-	cvt.pointer = (int *)&arr.m[0];
-	cvt.arsize = sizeof(int) * ndim;
-	status = TdiConvert(tmp.pointer, &cvt);
+        status = TdiNDIM_OVER;
+      else
+      {
+        if (ndim == 0)
+          arr.class = CLASS_S;
+        else
+        {
+          arr.dimct = (unsigned char)ndim;
+          arr.aflags.coeff = (unsigned char)(tmp.pointer->class == CLASS_A);
+          arr.a0 = 0;
+          cvt.pointer = (int *)&arr.m[0];
+          cvt.arsize = sizeof(int) * ndim;
+	  status = TdiConvert(tmp.pointer, &cvt);
+        }
       }
     }
   }
@@ -100,27 +149,36 @@ extern int Tdi1Array(opcode_t opcode, int narg, struct descriptor *list[], struc
 	/*****************************
 	Data type from opcode or mold.
 	*****************************/
-  if (narg <= 1 || list[1] == 0) {
-    dtype = fun_ptr->o1;
-    length = TdiREF_CAT[dtype].length;
-  } else
-    switch (list[1]->class) {
-    case CLASS_S:
-    case CLASS_D:
-    case CLASS_A:
-    case CLASS_CA:
-      dtype = list[1]->dtype;
-      length = list[1]->length;
-      break;
-    default:
-      if STATUS_OK
-	status = TdiData(list[1], &tmp MDS_END_ARG);
-      if STATUS_OK {
-	dtype = tmp.pointer->dtype;
-	length = tmp.pointer->length;
-      }
-      break;
+  if STATUS_OK
+  {
+    if (narg <= 1 || list[1] == 0)
+    {
+      dtype = fun_ptr->o1;
+      length = TdiREF_CAT[dtype].length;
     }
+    else
+    {
+      switch (list[1]->class)
+      {
+        case CLASS_S:
+        case CLASS_D:
+        case CLASS_A:
+        case CLASS_CA:
+        {
+          dtype = list[1]->dtype;
+          length = list[1]->length;
+        } break;
+        default:
+        {
+          status = TdiData(list[1], &tmp MDS_END_ARG);
+          if STATUS_OK {
+            dtype = tmp.pointer->dtype;
+            length = tmp.pointer->length;
+          }
+        } break;
+      }
+    }
+  }
   MdsFree1Dx(&tmp, NULL);
 
 	/*****************************

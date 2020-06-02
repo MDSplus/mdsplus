@@ -6314,3 +6314,7 @@ _=*;switch(5,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),
 ^
 %TDI Error in EXECUTE("<syntax error at '<'")
 
+_d=2W;zero(shape(_d),_d[0])
+0W
+_d=[[2LU]];zero(shape(_d),_d[0])
+Long_Unsigned([[0LU]])
