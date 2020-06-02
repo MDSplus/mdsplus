@@ -29,7 +29,7 @@ public class TreeNode extends Data
 			NciM_PATH_REFERENCE = 0x00002000,
 			NciM_NID_REFERENCE = 0x00004000,
 			NciM_INCLUDE_IN_PULSE = 0x00008000,
-                        NciM_COMPRESS_SEGMENTS = 0x00010000;
+			NciM_COMPRESS_SEGMENTS = 0x00010000;
 
 
 	static final int  NciTIME_INSERTED = 4,
@@ -135,9 +135,9 @@ public class TreeNode extends Data
 	private static native long getNciLong(int nid, long ctx, int nciType) throws MdsException;
 	private static native java.lang.String getNciString(int nid, long ctx, int nciType) throws MdsException;
 	private static native void setNciFlag(int nid, long ctx, int flagType, boolean flag) throws MdsException;
-	private static native void setNciFlags(int nid, long ctx, int flags) throws MdsException;
+	//private static native void setNciFlags(int nid, long ctx, int flags) throws MdsException;
 	private static native boolean getNciFlag(int nid, long ctx, int flagType) throws MdsException;
-	private static native int getNciFlags(int nid, long ctx) throws MdsException;
+	//private static native int getNciFlags(int nid, long ctx) throws MdsException;
 	private static native int[]getNciNids(int nid, long ctx, int nciNumType, int nciType) throws MdsException;
 	private static native void turnOn(int nid, long ctx, boolean on) throws MdsException;
 	private static native boolean isOn(int nid, long ctx) throws MdsException;
@@ -251,9 +251,9 @@ public class TreeNode extends Data
 		return getNci(nid, ctxTree.getCtx(), NciNUMBER_OF_ELTS);
 	}
 
-        /**
-         * Return the flag word
-         */
+	/**
+	 * Return the flag word
+	 */
 	public int getFlags() throws MdsException
 	{
 		resolveNid();
@@ -593,38 +593,39 @@ public class TreeNode extends Data
 	public int getNciFlags() throws MdsException
 	{
 		resolveNid();
-		return getNciFlags(nid, ctxTree.getCtx());
+		int flags = 0;
+		for (int i = 0, flag = 1 ; i < 31 ; flag = 1 << ++i)
+			if (getNciFlag(nid, ctxTree.getCtx(), flag))
+				flags += flag;
+		return flags;
 	}
 
 	public void setNciFlags(int flags) throws MdsException
 	{
 		resolveNid();
-		setNciFlags(nid, ctxTree.getCtx(), flags);
+		for (int i = 0, flag = 1 ; i < 31 ; flag = 1 << ++i)
+			setNciFlag(nid, ctxTree.getCtx(), 1<<i, (flags & flag) > 0);
 	}
+
 	public boolean getNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		int flags =  getNciFlags(nid, ctxTree.getCtx());
-                return (flags & (1 << flagId)) != 0;
+		return getNciFlag(nid, ctxTree.getCtx(), 1 << flagId);
 	}
 
 	public void setNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		int flags =  getNciFlags(nid, ctxTree.getCtx());
-                flags |= (1 << flagId);
-		setNciFlags(nid, ctxTree.getCtx(), flags);
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
 	}
 
 	public void clearNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		int flags =  getNciFlags(nid, ctxTree.getCtx());
-                flags &= ~(1 << flagId);
-		setNciFlags(nid, ctxTree.getCtx(), flags);
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
 	}
 
-        
+
 	/**
 	 * Return true if the node is On
 	 */
@@ -635,7 +636,7 @@ public class TreeNode extends Data
 	}
 	/**
 	 * Return true if node parent is off
-         **/
+	 **/
 	public boolean isParentOff() throws MdsException
 	{
 		resolveNid();
@@ -686,7 +687,7 @@ public class TreeNode extends Data
 	public Data getData() throws MdsException
 	{
 		resolveNid();
- 		Data  data = getData(nid, ctxTree.getCtx());
+		Data  data = getData(nid, ctxTree.getCtx());
 		data.setCtxTree(ctxTree);
 		return data;
 	}
@@ -757,19 +758,19 @@ public class TreeNode extends Data
 		resolveNid();
 		int usage = getNci(nid, ctxTree.getCtx(), NciUSAGE);
 		switch(usage)  {
-			case TreeUSAGE_ACTION: return "ACTION";
-			case TreeUSAGE_ANY: return "ANY";
-			case TreeUSAGE_AXIS: return "AXIS";
-			case TreeUSAGE_COMPOUND_DATA: return "COMPOUND_DATA";
-			case TreeUSAGE_DEVICE: return "DEVICE";
-			case TreeUSAGE_DISPATCH: return "DISPATCH";
-			case TreeUSAGE_STRUCTURE: return "STRUCTURE";
-			case TreeUSAGE_NUMERIC: return "NUMERIC";
-			case TreeUSAGE_SIGNAL: return "SIGNAL";
-			case TreeUSAGE_SUBTREE: return "SUBTREE";
-			case TreeUSAGE_TASK: return "TASK";
-			case TreeUSAGE_TEXT: return "TEXT";
-			case TreeUSAGE_WINDOW: return "WINDOW";
+		case TreeUSAGE_ACTION: return "ACTION";
+		case TreeUSAGE_ANY: return "ANY";
+		case TreeUSAGE_AXIS: return "AXIS";
+		case TreeUSAGE_COMPOUND_DATA: return "COMPOUND_DATA";
+		case TreeUSAGE_DEVICE: return "DEVICE";
+		case TreeUSAGE_DISPATCH: return "DISPATCH";
+		case TreeUSAGE_STRUCTURE: return "STRUCTURE";
+		case TreeUSAGE_NUMERIC: return "NUMERIC";
+		case TreeUSAGE_SIGNAL: return "SIGNAL";
+		case TreeUSAGE_SUBTREE: return "SUBTREE";
+		case TreeUSAGE_TASK: return "TASK";
+		case TreeUSAGE_TEXT: return "TEXT";
+		case TreeUSAGE_WINDOW: return "WINDOW";
 		}
 		return "";
 	}
