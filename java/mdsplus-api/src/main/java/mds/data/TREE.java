@@ -999,4 +999,8 @@ public final class TREE implements ContextEventListener, CTX{
 		if(this.opened) this.mds.addContextEventListener(this);
 		else this.mds.removeContextEventListener(this);
 	}
+
+	public final Nid getNode(int nid) {
+		return new Nid(nid, this);
+	}
 }

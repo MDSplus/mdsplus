@@ -3,8 +3,6 @@ package mds.devices;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -15,16 +13,18 @@ import javax.swing.ScrollPaneConstants;
 import jtraverser.editor.Editor;
 import jtraverser.editor.EnumEditor;
 import jtraverser.editor.ExprEditor;
+import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
 import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
+import mds.devices.Interface.Setup;
 import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.StringDsc;
 
-public class Device{
+public class Device implements Interface {
 	private static final String getModel(Nid nid) throws Exception {
 		final Conglom conglom = (Conglom)nid.getRecord();
 		if(conglom == null) throw new Exception("Record not a Conglom");
@@ -44,20 +44,25 @@ public class Device{
 		}catch(final ClassNotFoundException e){
 			device_cls = Device.class;
 		}
-		final Constructor<?> constr = device_cls.getConstructor(Frame.class, NODE.class, boolean.class);
-		return (Device)constr.newInstance(frame, nid, Boolean.valueOf(editable));
+		return (Device) device_cls.getConstructor(Frame.class, NODE.class, boolean.class)
+				.newInstance(frame, nid, Boolean.valueOf(editable));
 	}
 
 	public static void showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception {
-		String model = Device.getModel(nid);
-		try {
-			Class<?> device_class = Class.forName("DeviceSetup");
-			Method open =  device_class.getMethod("showDialog", Nid.class, String.class);
-			open.invoke(null, nid, model);
+		final String model = Device.getModel(nid);
+		try
+		{
+			final int nidnum = nid.getNidNumber();
+			final Class<?> devicesetup = Class.forName("DeviceSetup");
+			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class) //
+					.invoke(null, nidnum);
+			if (setup == null)
+				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class) //
+					.invoke(null, nidnum, model, new Device(nid), frame);
 		}
 		catch (Exception e)
 		{
-			Device.getEditor(frame, nid, editable, getModel(nid)).showDialog();
+			Device.getEditor(frame, nid, editable, model).showDialog();
 		}
 	}
 	protected final NODE<?>		head;
@@ -66,20 +71,23 @@ public class Device{
 	protected final boolean		editable;
 	protected JComponent		pane;
 	protected final Frame		frame;
+	private final TREE tree;
+	private final Mds mds;
 
 	public Device(final Frame frame, final NODE<?> head, final boolean editable){
 		this.frame = frame;
 		this.pane = new JPanel();
 		this.head = head;
 		this.editable = editable;
-		final TREE tree = this.head.getTree();
+		this.tree = head.getTree();
+		this.mds = this.tree.getMds();
 		NodeInfo[] node_infos;
 		NODE<?>[] nodes;
 		try{
 			final Nid olddefault = tree.getDefaultC();
 			this.head.setDefault();
 			try{
-				node_infos = TREE.NodeInfo.getDeviceNodeInfos(head, tree.getMds(), tree);
+				node_infos = TREE.NodeInfo.getDeviceNodeInfos(head, mds, tree);
 			}finally{
 				olddefault.setDefault();
 			}
@@ -148,6 +156,18 @@ public class Device{
 		this.editable = editable;
 		this.edit = new Editor[nargs];
 		this.node = new NODE[nargs];
+		this.tree = head.getTree();
+		this.mds = this.tree.getMds();
+	}
+
+	public Device(final NODE<?> head) {
+		this.head = head;
+		this.tree = head.getTree();
+		this.mds = this.tree.getMds();
+		this.edit = null;
+		this.node = null;
+		this.frame = null;
+		this.editable = false;
 	}
 
 	public JComponent getPane() {
@@ -189,5 +209,121 @@ public class Device{
 		}catch(final MdsException e){
 			JOptionPane.showMessageDialog(this.frame, e + "\n" + e.getMessage(), "addExpr " + path, JOptionPane.WARNING_MESSAGE);
 		}
+	}
+
+	@Override
+	public final String getName() {
+		return tree.expt;
+	}
+
+	@Override
+	public final int getShot() {
+		return tree.shot;
+	}
+
+	@Override
+	public final void setDefault(int nid) throws Exception {
+		tree.setDefault(nid);
+	}
+
+	@Override
+	public final int getDefault() throws Exception {
+		return tree.getDefault();
+	}
+
+	@Override
+	public final String getFullPath(int nid) throws Exception {
+		return tree.getNciFullPath(nid);
+	}
+
+	@Override
+	public final void doDeviceMethod(int nid, String method) throws Exception {
+		tree.doDeviceMethod(nid, method);
+	}
+
+	@Override
+	public final String getDataExpr(int nid) throws Exception {
+		return tree.getRecord(nid).decompile();
+	}
+
+	@Override
+	public int getInt(String expr) throws Exception {
+		return mds.getInteger(tree, expr);
+	}
+
+	@Override
+	public float getFloat(String expr) throws Exception {
+		return mds.getFloat(tree, expr);
+	}
+
+	@Override
+	public int[] getIntArray(String expr) throws Exception {
+		return mds.getIntegerArray(tree, expr);
+	}
+
+	@Override
+	public float[] getFloatArray(String expr) throws Exception {
+		return mds.getFloatArray(tree, expr);
+	}
+
+	@Override
+	public double getDouble(String expr) throws Exception {
+		return mds.getDouble(tree, expr);
+	}
+
+	@Override
+	public String getString(String expr) throws Exception {
+		return mds.getString(tree, expr);
+	}
+
+	@Override
+	public String[] getStringArray(String expr) throws Exception {
+		return mds.getStringArray(tree, expr);
+	}
+
+	@Override
+	public String getNodeName(int nid) throws Exception {
+		return tree.getNciNodeName(nid);
+	}
+
+	@Override
+	public String execute(String expr) throws Exception {
+		return mds.getDescriptor(tree, expr).decompile();
+	}
+
+	@Override
+	public void putDataExpr(int nid, String expr) throws Exception {
+		tree.putRecord(nid, mds.getAPI().tdiCompile(tree, expr).getData());
+
+	}
+
+	@Override
+	public String getUsage(int nid) throws Exception {
+		return tree.getNciUsageStr(nid);
+	}
+
+	@Override
+	public boolean isOn(int nid) throws Exception {
+		return tree.getNciState(nid) == 0;
+	}
+
+	@Override
+	public void setOn(int nid, boolean on) throws Exception {
+		tree.getNode(nid).setOn(on);
+	}
+
+	@Override
+	public int getNumConglomerateNids(int nid) throws Exception {
+		return tree.getNciNumberOfElts(nid);
+	}
+
+	@Override
+	public int getNode(String path) throws Exception {
+		return tree.getNode(path).getNciNidNumber();
+	}
+
+	@Override
+	public void dataChanged(int... nids) {
+		//NOP
 	}
 }
