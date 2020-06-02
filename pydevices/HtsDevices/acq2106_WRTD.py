@@ -59,6 +59,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_ID',     'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_TX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_RX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
 
         {'path':':RUNNING',     'type':'numeric', 'options':('no_write_model',)},
         {'path':':LOG_OUTPUT',  'type':'text',    'options':('no_write_model', 'write_once', 'write_shot',)},
@@ -77,38 +78,20 @@ class ACQ2106_WRTD(MDSplus.Device):
         self.wrtt0_msg.record = str(wrmgs[0])
         self.wrtt1_msg.record = str(wrmgs[1])
 
-        # a='export WRTD_TICKNS=50'                  # For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
-        # b='export WRTD_DELTA_NS=50000000'          # 50msec - our "safe time for broadcast"
-        # c='export WRTD_VERBOSE=2'                  # use for debugging - eg logread -f or nc localhost 4280
-
-        # # Peter's test configuration:
-        # # runs in REAL TIME mode, maybe good for WRTD_DNS..
-        # d='export WRTD_RTPRIO=15'
-
-        # #Match for WRTT0:
-        # e='export WRTD_RX_MATCHES=$(hostname),wrtt0,' + str(wrmgs[0])
-
-        # #Match for WRTT1:
-        # f='export WRTD_RX_MATCHES1=wrtt1,' + str(wrmgs[1])
-
-        # # Match for DOUBLETAP:
-        # # set WRTT0, delay WRTD_DELAY01, set WRTT1
-        # g='export WRTD_RX_DOUBLETAP=double_tap' 
-        # h='export WRTD_DELAY01=5000000'
-        # i='export WRTD_ID=wrtt0'
-        # j='WRTD_TX=0'
-
         #Record the state of the WRTD environment:
-        self.wrtd_delay.record  = uut.cC.WRTD_DELAY01
-        self.wrtd_dns.record    = uut.cC.WRTD_DELTA_NS
-        self.wrtd_id.record     = uut.cC.WRTD_ID
-        self.wrtd_rx.record     = uut.cC.WRTD_RX
-        self.wrtd_rx_dtp.record = uut.cC.WRTD_RX_DOUBLETAP
-        self.wrtd_rx_m.record   = str(wrmgs[0])
-        self.wrtd_rx_m1.record  = str(wrmgs[1])
-        self.wrtd_tickns.record = uut.cC.WRTD_TICKNS
-        self.wrtd_tx.record     = uut.cC.WRTD_TX
-        self.wrtd_vbose.record  = uut.cC.WRTD_VERBOSE
+        self.wr_init_wrtd_delay.record  = MDSplus.Int64(uut.cC.WRTD_DELAY01)
+        self.wr_init_wrtd_dns.record    = MDSplus.Int64(uut.cC.WRTD_DELTA_NS) # 50msec - our "safe time for broadcast"
+        self.wr_init_wrtd_id.record     = uut.cC.WRTD_ID
+        self.wr_init_wrtd_rx_dtp.record = uut.cC.WRTD_RX_DOUBLETAP            # Match for DOUBLETAP: set WRTT0, delay WRTD_DELAY01, set WRTT1
+        self.wr_init_wrtd_rx_m.record   = str(wrmgs[0])                       # Match for WRTT0
+        self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1])                       # Match for WRTT1
+        self.wr_init_wrtd_tickns.record = MDSplus.Int64(uut.cC.WRTD_TICKNS)   # For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
+        self.wr_init_wrtd_tx.record     = MDSplus.Int64(uut.cC.WRTD_TX)
+        self.wr_init_wrtd_rx.record     = MDSplus.Int64(uut.cC.WRTD_RX)
+        self.wr_init_wrtd_vbose.record  = MDSplus.Int64(uut.cC.WRTD_VERBOSE)  # use for debugging - eg logread -f or nc localhost 4280
+
+        # Turn on RX:
+        uut.cC.WRTD_RX = '1'
 
         # Define RX matches:
         uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
@@ -121,22 +104,25 @@ class ACQ2106_WRTD(MDSplus.Device):
 
     def trig(self, msg=''):
         import acq400_hapi
-        uut = acq400_hapi.Acq400(self.node.data())
+        uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
 
         message = str(msg)
 
         self.TRIG_MSG.record = message
 
+        # Choose the source (eg. WRTT0 or WRTT1) that use go through the bus (TRG, EVENT) and the signal (d0, d1)
         if message in self.WRTT0_MSG.data():
             uut.s0.SIG_SRC_TRG_0   = 'WRTT0'
-            uut.s0.SIG_EVENT_SRC_0 = 'WRTT0'
+            # To be sure that the EVENT bus is set to TRG
+            uut.s0.SIG_EVENT_SRC_0 = 'TRG'
             # Save choices in tree node:
             self.trig_src.record   = 'WRTT0'
             self.event0_src.record = 'WRTT0'
 
         elif message in self.WRTT1_MSG.data():
             uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
-            uut.s0.SIG_EVENT_SRC_0 = 'WRTT1'
+            # To be sure that the EVENT bus is set to TRG
+            uut.s0.SIG_EVENT_SRC_0 = 'TRG'
             # Save choices in tree node:
             self.trig_src.record   = 'WRTT1'
             self.event0_src.record = 'WRTT1'
@@ -144,14 +130,16 @@ class ACQ2106_WRTD(MDSplus.Device):
         else:
             print('Message does not match either of the WRTTs available')
 
+        # Turn on RX:
+        # uut.cC.WRTD_TX = '1'
 
         wrtdtx = '1 --tx_id=' + message
-        uut.s0.wrtd_tx_immediate = wrtdtx
+        uut.cC.wrtd_tx_immediate = wrtdtx
     
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
 
-        #Reseting the RX matches to its orignal default values found in the acq2106:
-        #/mnt/local/sysconfig/wr.sh
-        uut.cC.wrtd_reset = 1
+        # Reseting the RX matches to its orignal default values found in the acq2106:
+        # /mnt/local/sysconfig/wr.sh
+        # uut.cC.wrtd_reset_tx = 1
 
     TRIG=trig
