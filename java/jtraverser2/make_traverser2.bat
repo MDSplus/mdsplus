@@ -27,7 +27,8 @@ SET CLASSPATH=-classpath ".;%MDSPLUS_DIR%\java\classes\mdsplus-api.jar"
 SET OUTFILE=%PWD%\jTraverser2.jar
 SET MANIFEST=
 SET SOURCES=^
-devices\*.java ^
+mds\devices\*.java ^
+mds\devices\acq4xx\*.java ^
 jtraverser\*.java ^
 jtraverser\dialogs\*.java ^
 jtraverser\editor\*.java ^
@@ -68,7 +69,13 @@ IF 0%1 NEQ 0 GOTO:EOF
 ECHO start jTraverser2?
 PAUSE
 CLS
-"%JDK_HOME%\bin\java.exe" -cp "%OUTFILE%;%MDSPLUS_DIR%\java\classes\mdsplus-api.jar" -Xss5M jTraverser
+"%JDK_HOME%\bin\java.exe" -cp ^
+"%OUTFILE%^
+;%MDSPLUS_DIR%\java\classes\mdsplus-api.jar^
+;%MDSPLUS_DIR%\java\classes\jScope.jar^
+;%MDSPLUS_DIR%\java\classes\DeviceBeans.jar^
+;%MDSPLUS_DIR%\java\classes\jDevices.jar^
+" jTraverser
 :end
 PAUSE
 EXIT /B ERROR

@@ -13,4 +13,10 @@ exec env \
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
 DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
-java -jar $MDSPLUS_DIR/java/classes/jTraverser2.jar "$@"
+CLASSPATH=\
+$MDSPLUS_DIR/java/classes/jTraverser2.jar:\
+$MDSPLUS_DIR/java/classes/mdsplus-api.jar:\
+$MDSPLUS_DIR/java/classes/jScope.jar:\
+$MDSPLUS_DIR/java/classes/DeviceBeans.jar:\
+$MDSPLUS_DIR/java/classes/jDevices.jar \
+java jTraverser "$@"

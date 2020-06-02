@@ -19,8 +19,8 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
 	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
-	cp -f $(MDSPLUS_API_JAR) $@ &&\
-	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
+	#cp -f $(MDSPLUS_API_JAR) $@ &&\
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 

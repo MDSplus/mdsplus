@@ -1,7 +1,4 @@
 #!/bin/sh
-#!
-#! display MDSplus javascope
-#
 lib=lib
 if java -d64 -version >  /dev/null 2>&1; then
   if [ -r $MDSPLUS_DIR/lib64 ] ; then
@@ -16,5 +13,10 @@ exec env \
 LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
 DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
-CLASSPATH=$MDSPLUS_DIR/java/classes/jTraverser.jar:$MDSPLUS_DIR/java/classes/jScope.jar:$MDSPLUS_DIR/java/classes/jDevices.jar:$MDSPLUS_DIR/java/classes/DeviceBeans.jar:$MDSPLUS_DIR/java/classes/mdsobjects.jar \
-java -Xss5M -Djava.library.path=$MDSPLUS_DIR/${lib} jTraverser $1 $2 $3 $4 $5 $6 $7
+CLASSPATH=\
+$MDSPLUS_DIR/java/classes/jTraverser.jar:\
+$MDSPLUS_DIR/java/classes/mdsobjects.jar:\
+$MDSPLUS_DIR/java/classes/jScope.jar:\
+$MDSPLUS_DIR/java/classes/DeviceBeans.jar:\
+$MDSPLUS_DIR/java/classes/jDevices.jar \
+java -Xss5M -Djava.library.path=$MDSPLUS_DIR/${lib} jTraverser "$@"
