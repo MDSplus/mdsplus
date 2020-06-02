@@ -17,7 +17,7 @@ import java.awt.event.MouseListener;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
-import java.io.FileDescriptor;
+import java.util.Stack;
 import java.util.Vector;
 
 import javax.swing.ButtonGroup;
@@ -50,10 +50,9 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
-import mds.devices.Interface;
 
 public class Tree extends JScrollPane implements TreeSelectionListener,
-    MouseListener, ActionListener, KeyListener, Interface.DataChangeListener
+    MouseListener, ActionListener, KeyListener
 {
     static jTraverser frame;
     static int curr_dialog_idx;
@@ -66,7 +65,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
     private JMenuItem menu_items[];
     private JPopupMenu pop;
     private DialogSet dialog_sets[];
-    private java.util.Stack trees, experiments;
+    private Stack trees, experiments;
     private JDialog open_dialog, add_node_dialog, add_subtree_dialog;
     private JTextField open_exp, open_shot;
     private JRadioButton open_readonly, open_edit, open_normal;
@@ -239,9 +238,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 		setViewportView(new JPanel());
 		frame.reportChange(null, 0, false, false);
 	    }
-	DeviceSetup.closeOpenDevices();
+	    Database.closeSetups();
         pop = null;
-	dialogs.update();
+        dialogs.update();
 	    frame.pack();
 	    repaint();
     }
@@ -1107,9 +1106,10 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    return curr_dialog;
 	}
     }
-    public void dataChanged(Interface.DataChangeEvent e)
+
+    public void dataChanged()
     {
-	reportChange();
+        reportChange();
     }
 
     //Inner class FromTranferHandler managed drag operation
