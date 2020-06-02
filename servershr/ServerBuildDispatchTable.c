@@ -198,7 +198,7 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **t
   memset(tree, ' ', sizeof(tree));
   TreeGetDbi(itmlst);
   for (i = 0, cptr = tree; i < 12; i++)
-    if (cptr[i] == (char)32)
+    if (cptr[i] == ' ')
       break;
     else
       tree[i] = cptr[i];
@@ -280,24 +280,26 @@ EXPORT int ServerBuildDispatchTable(char *wildcard, char *monitor_name, void **t
       char tree[13];
       char *cptr;
       for (i = 0, cptr = (*table_ptr)->tree; i < 12; i++)
-	if (cptr[i] == (char)32)
+	if (cptr[i] == ' ')
 	  break;
 	else
 	  tree[i] = cptr[i];
       tree[i] = 0;
-      for (i = 0; i < num_actions; /* i++ */ i += num_actions - 1) {
-	int mode;
-	int on = actions[i].on;
-	char *server = "";
-	mode = i ? (i == (num_actions - 1) ? MonitorBuildEnd : MonitorBuild) : MonitorBuildBegin;
-	if (!(ServerSendMonitor(monitor_name, tree, (*table_ptr)->shot,
-				actions[i].phase,
-				actions[i].nid,
-				on,
-				mode,
-				server,
-				actions[i].status)&1))
-	  break;
+      char *server = "";
+#define SKIP_OTHERS
+#define SEND(i, mode) ServerSendMonitor(\
+	monitor_name, tree, (*table_ptr)->shot,\
+	actions[i].phase, actions[i].nid, actions[i].on,\
+	mode, server, actions[i].status)
+      if IS_OK(SEND(0, MonitorBuildBegin)) { // send begin
+#ifdef SKIP_OTHERS
+	if (num_actions > 1)
+#else
+        for (i = 1 ; i < num_actions-1 ; i++ )
+	  IS_NOT_OK(SEND(i, MonitorBuild)) break; // send others
+	if (i == num_actions-1)
+#endif
+	  SEND(num_actions-1, MonitorBuildEnd); // send last
       }
     }
   } else
