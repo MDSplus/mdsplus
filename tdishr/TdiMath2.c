@@ -64,13 +64,15 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 #include <mdsdescrip.h>
 #include <tdishr_messages.h>
 
-
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
 
 extern int CvtConvertFloat();
 extern double WideIntToDouble();
 extern void DoubleToWideInt();
 
-#define radians_to_degrees 57.295778
+const double radians_to_degrees = 180./M_PI;
 
 #define SetupArgs \
   struct descriptor_a *ina1 = (struct descriptor_a *)in1;\
@@ -116,11 +118,13 @@ extern void DoubleToWideInt();
 
 static const int roprand = 0x8000;
 
-static double mod_d(double in1, double in2)
+static inline double mod_float(double x, double m)
 {
+  if (m == 0.0)
+    return x;
   double intpart;
-  modf((in2 != 0.0) ? in1 / in2 : 0., &intpart);
-  return in1 - intpart * in2;
+  modf(x / m, &intpart);
+  return x - intpart * m;
 }
 
 #define OperateFloatOne(dtype,routine,p1,p2) \
@@ -146,9 +150,9 @@ static double mod_d(double in1, double in2)
 
 static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 {
-  double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
   double in2_d = WideIntToDouble(in2, size/sizeof(int), is_signed);
-  double ans = mod_d(in1_d, in2_d);
+  double in1_d = WideIntToDouble(in1, size/sizeof(int), is_signed);
+  double ans = mod_float(in1_d, in2_d);
   DoubleToWideInt(&ans, size/sizeof(int), out);
 }
 
@@ -169,28 +173,23 @@ static void mod_bin(int size, int is_signed, char *in1, char *in2, char *out)
 int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_B:
-    Operate(char, %)
-    case DTYPE_BU:Operate(unsigned char, %)
-    case DTYPE_W:Operate(short, %)
-    case DTYPE_WU:Operate(unsigned short, %)
-    case DTYPE_L:Operate(int, %)
-    case DTYPE_LU:Operate(unsigned int, %)
-    case DTYPE_Q:OperateBin(in1->length, 1, mod_bin)
-    case DTYPE_QU:OperateBin(in1->length, 0, mod_bin)
-    case DTYPE_O:OperateBin(in1->length, 1, mod_bin)
-    case DTYPE_OU:OperateBin(in1->length, 0, mod_bin)
-    case DTYPE_F:OperateFloat(float, DTYPE_F, mod_d);
-  case DTYPE_FS:
-    OperateFloat(float, DTYPE_FS, mod_d);
-  case DTYPE_D:
-    OperateFloat(double, DTYPE_D, mod_d);
-  case DTYPE_G:
-    OperateFloat(double, DTYPE_G, mod_d);
-  case DTYPE_FT:
-    OperateFloat(double, DTYPE_FT, mod_d);
-  default:
-    return TdiINVDTYDSC;
+	case DTYPE_B:	Operate( int8_t,  %)
+	case DTYPE_BU:	Operate(uint8_t,  %)
+	case DTYPE_W:	Operate( int16_t, %)
+	case DTYPE_WU:	Operate(uint16_t, %)
+	case DTYPE_L:	Operate( int32_t, %)
+	case DTYPE_LU:	Operate(uint32_t, %)
+	case DTYPE_Q:	Operate( int64_t, %)
+	case DTYPE_QU:	Operate(uint64_t, %)
+	case DTYPE_O:	OperateBin(in1->length, 1, mod_bin)
+	case DTYPE_OU:	OperateBin(in1->length, 0, mod_bin)
+	case DTYPE_F:	OperateFloat(float,  DTYPE_F,  mod_float);
+	case DTYPE_FS:	OperateFloat(float,  DTYPE_FS, mod_float);
+	case DTYPE_D:	OperateFloat(double, DTYPE_D,  mod_float);
+	case DTYPE_G:	OperateFloat(double, DTYPE_G,  mod_float);
+	case DTYPE_FT:	OperateFloat(double, DTYPE_FT, mod_float);
+    default:
+      return TdiINVDTYDSC;
   }
   return 1;
 }
@@ -198,16 +197,11 @@ int Tdi3Mod(struct descriptor *in1, struct descriptor *in2, struct descriptor *o
 int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_F:
-    OperateFloat(float, DTYPE_F, atan2);
-  case DTYPE_FS:
-    OperateFloat(float, DTYPE_FS, atan2);
-  case DTYPE_D:
-    OperateFloat(double, DTYPE_D, atan2);
-  case DTYPE_G:
-    OperateFloat(double, DTYPE_G, atan2);
-  case DTYPE_FT:
-    OperateFloat(double, DTYPE_FT, atan2);
+	case DTYPE_F:	OperateFloat(float,  DTYPE_F,  atan2);
+	case DTYPE_FS:	OperateFloat(float,  DTYPE_FS, atan2);
+	case DTYPE_D:	OperateFloat(double, DTYPE_D,  atan2);
+	case DTYPE_G:	OperateFloat(double, DTYPE_G,  atan2);
+	case DTYPE_FT:	OperateFloat(double, DTYPE_FT, atan2);
   default:
     return TdiINVDTYDSC;
   }
@@ -217,16 +211,11 @@ int Tdi3Atan2(struct descriptor *in1, struct descriptor *in2, struct descriptor 
 int Tdi3Atan2d(struct descriptor *in1, struct descriptor *in2, struct descriptor *out)
 {
   SetupArgs switch (in1->dtype) {
-  case DTYPE_F:
-    OperateFloat(float, DTYPE_F, radians_to_degrees * atan2);
-  case DTYPE_FS:
-    OperateFloat(float, DTYPE_FS, radians_to_degrees * atan2);
-  case DTYPE_D:
-    OperateFloat(double, DTYPE_D, radians_to_degrees * atan2);
-  case DTYPE_G:
-    OperateFloat(double, DTYPE_G, radians_to_degrees * atan2);
-  case DTYPE_FT:
-    OperateFloat(double, DTYPE_FT, radians_to_degrees * atan2);
+	case DTYPE_F:	OperateFloat(float,  DTYPE_F,  radians_to_degrees * atan2);
+	case DTYPE_FS:	OperateFloat(float,  DTYPE_FS, radians_to_degrees * atan2);
+	case DTYPE_D:	OperateFloat(double, DTYPE_D,  radians_to_degrees * atan2);
+	case DTYPE_G:	OperateFloat(double, DTYPE_G,  radians_to_degrees * atan2);
+	case DTYPE_FT:	OperateFloat(double, DTYPE_FT, radians_to_degrees * atan2);
   default:
     return TdiINVDTYDSC;
   }
