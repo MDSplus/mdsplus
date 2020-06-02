@@ -3,13 +3,13 @@
 */
 
 import java.awt.*;
-import javax.swing.JPanel;
 import javax.swing.*;
 import javax.swing.border.*;
 //import com.symantec.itools.javax.swing.borders.EtchedBorder;
 
 public class RFXPConfigSetup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public RFXPConfigSetup(JFrame parent)
 	{
 		super(parent);

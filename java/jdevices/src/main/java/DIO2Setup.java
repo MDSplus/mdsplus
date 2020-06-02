@@ -3,12 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
 import javax.swing.*;
 
 public class DIO2Setup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public DIO2Setup(JFrame parent)
 	{
 		super(parent);

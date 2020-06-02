@@ -1,6 +1,5 @@
 import java.awt.*;
 import javax.swing.*;
-import javax.swing.border.*;
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -10,7 +9,9 @@ import javax.swing.border.*;
  * @version 1.0
  */
 
-public class WE7116Setup extends DeviceSetup {
+public class WE7116Setup extends DeviceSetup
+{
+  private static final long serialVersionUID = 1L;
   BorderLayout borderLayout1 = new BorderLayout();
   JPanel jPanel1 = new JPanel();
   JPanel jPanel6 = new JPanel();

@@ -25,12 +25,10 @@ import mds.data.TREE.NodeInfo;
 import mds.data.TREE.RecordInfo;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
-import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
 import mds.devices.Device;
 import mds.data.descriptor_s.Nid;
-import mds.data.descriptor_s.StringDsc;
 
 public class Node{
 	public static class TreeNodeLabel extends JLabel{

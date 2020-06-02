@@ -3,12 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.*;
 
 public class ACQD270Setup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public ACQD270Setup(JFrame parent)
 	{
 	  super(parent);

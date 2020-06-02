@@ -3,13 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JTabbedPane;
-import javax.swing.JScrollPane;
-import javax.swing.JPanel;
 import javax.swing.*;
 
 public class Aurora14Setup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public Aurora14Setup(JFrame parent)
 	{
 		super(parent);

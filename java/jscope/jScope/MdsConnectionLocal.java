@@ -1,10 +1,9 @@
 package jScope;
 import java.io.*;
-import java.util.*;
 
 public class MdsConnectionLocal extends MdsConnection
 {
-    Process p;
+	Process p;
     public MdsConnectionLocal()
     {
 	this.provider = "local";

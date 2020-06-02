@@ -1,6 +1,5 @@
 
 import javax.swing.JLabel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 /*
@@ -12,8 +11,9 @@ import javax.swing.table.TableModel;
  *
  * @author taliercio
  */
-public class SPECTRO_CFGSetup extends DeviceSetup {
-
+public class SPECTRO_CFGSetup extends DeviceSetup
+{
+	private static final long serialVersionUID = 1L;
     /**
      * Creates new form SPECTRO_CFGSetup
      */
