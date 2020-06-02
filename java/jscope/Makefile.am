@@ -37,6 +37,7 @@ $(java_DATA): classjava.stamp
 
 EXTRA_DIST += colors1.tbl
 if USE_JARS_DIR
+
 jScope.jar: @JARS_DIR@/java/jscope/jScope.jar
 	cp $< $@
 
@@ -44,18 +45,21 @@ WaveDisplay.jar: @JARS_DIR@/java/jscope/WaveDisplay.jar
 	cp $< $@
 
 else
+
 jScope.jar: colors1.tbl
-	@ echo "Creating JAR: $@ ..."; \
-	  $(MKDIR_P) $(builddir)/jdocs; \
-	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
-	  $(JAR) cf $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
-		     -C $(srcdir) colors1.tbl; \
-	  rm -Rf $(builddir)/jdocs;
+	@ echo "Creating JAR: $@ ...";\
+	$(MKDIR_P) $(builddir)/jdocs &&\
+	cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs &&\
+	echo "Main-Class: jScope" > $(MANIFEST) &&\
+	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\
+	$(JAR) cmf $(MANIFEST) $@ $(JSCOPE_CLASS) $(builddir)/jdocs -C $(srcdir) colors1.tbl;\
+	rm -Rf $(builddir)/jdocs;
 
 WaveDisplay.jar:
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) cf $@ $(WAVEDISPLAY_CLASS)
+	@ echo "Creating JAR: $@ ...";\
+	$(JAR) cf $@ $(WAVEDISPLAY_CLASS)
 
+MANIFEST = MANIFEST.MF
 dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
 COMMON_CLASS = $(COMMON_SRC:.java=*.class)
 JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
