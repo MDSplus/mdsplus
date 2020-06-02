@@ -2,9 +2,9 @@ import javax.swing.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-
+import mds.devices.Interface;
 public class DeviceSetup
-    extends JDialog implements DataChangeListener
+    extends JDialog implements Interface.DataChangeListener
 {
     protected String deviceType;
     protected String deviceTitle;
@@ -12,7 +12,7 @@ public class DeviceSetup
     public int baseNid, num_components = 0;
     protected Vector device_components = new Vector();
     protected Vector device_controls = new Vector();
-    public TreeInterface subtree = null;
+    public Interface subtree = null;
     protected Vector dataChangeListeners = new Vector();
     protected String[] methods;
     protected DeviceButtons buttons = null;
@@ -158,7 +158,7 @@ public class DeviceSetup
     {
 	activeNidHash.remove(new Integer(baseNid));
     }
-    public void configure(TreeInterface subtree, int baseNid)
+    public void configure(Interface subtree, int baseNid)
     {
 	activeNidHash.put(new Integer(baseNid), this);
 	int oldNid = 0;
@@ -476,7 +476,7 @@ public class DeviceSetup
 	}
     }
 
-    public void addDataChangeListener(DataChangeListener listener)
+    public void addDataChangeListener(Interface.DataChangeListener listener)
     {
 	dataChangeListeners.addElement(listener);
     }
@@ -485,8 +485,8 @@ public class DeviceSetup
     {
 	int num_listeners = dataChangeListeners.size();
 	for (int i = 0; i < num_listeners; i++)
-	    ( (DataChangeListener) dataChangeListeners.elementAt(i)).
-	        dataChanged(new DataChangeEvent(this, 0, null));
+	    ( (Interface.DataChangeListener) dataChangeListeners.elementAt(i)).
+	        dataChanged(new Interface.DataChangeEvent(this, 0, null));
     }
 
     public void propagateData(int offsetNid, Object data)
@@ -604,7 +604,7 @@ public class DeviceSetup
 	        ( (DeviceComponent) components.elementAt(i)).fireUpdate(id, val);
 	}
     }
-    public void dataChanged(DataChangeEvent e)
+    public void dataChanged(Interface.DataChangeEvent e)
     {
         update();
     }

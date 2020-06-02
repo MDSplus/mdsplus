@@ -1,6 +1,5 @@
 //package jTraverser;
 import java.awt.Dimension;
-import java.rmi.RemoteException;
 import java.text.SimpleDateFormat;
 
 import javax.swing.ImageIcon;
@@ -274,7 +273,7 @@ public class Node
 	            if (ds == null)
 	            {
 	                String deviceClassName = model.getString() + "Setup";
-	                Class deviceClass = Class.forName(deviceClassName);
+	                Class<?> deviceClass = Class.forName(deviceClassName);
 	                ds = (DeviceSetup) deviceClass.newInstance();
 	                Dimension prevDim = ds.getSize();
 	                ds.addDataChangeListener(hierarchy);
@@ -447,7 +446,6 @@ public class Node
 
     public int startDelete()
     {
-	MDSplus.TreeNode [] nids ={nid};
 	try
 	{
 	    return experiment.getNodeWild(nid.getPath()+"***").size();
@@ -479,7 +477,6 @@ public class Node
 	    }
 	    try
 	{
-	    String sep = is_member ? ":" : ".";
 	    nid.rename(newName);
 	    info = getInfo();
 	}

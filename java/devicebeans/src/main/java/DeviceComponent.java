@@ -1,8 +1,11 @@
 import javax.swing.*;
+
+import mds.devices.Interface;
+
 import java.awt.*;
 public abstract class DeviceComponent extends JPanel
 {
-    TreeInterface subtree;
+    Interface subtree;
 
     public int mode = DATA;
     public static final int DATA = 0, STATE = 1, DISPATCH = 2;
@@ -22,8 +25,8 @@ public abstract class DeviceComponent extends JPanel
 
 
 
-    void setSubtree(TreeInterface subtree) {this.subtree = subtree; }
-    TreeInterface getSubtree(){return subtree; }
+    void setSubtree(Interface subtree) {this.subtree = subtree; }
+    Interface getSubtree(){return subtree; }
     public void setRefShot(int refShot){this.refShot = refShot;}
     public int getRefShot(){return refShot;}
     public void setBaseNid(int nid) {baseNid = nid; }

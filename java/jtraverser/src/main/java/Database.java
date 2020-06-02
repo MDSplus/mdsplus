@@ -1,9 +1,9 @@
-//package jTraverser;
-import java.util.Date;
+
 import java.text.SimpleDateFormat;
 import java.util.Vector;
+import mds.devices.Interface;
 
-public class Database implements TreeInterface{
+public class Database implements Interface{
     static long VMS_OFFSET = 0x7c95674beb4000L;
     String name;
     int shot;

@@ -7,6 +7,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JCheckBox;
 
+import mds.devices.Interface;
+
 /*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
@@ -392,7 +394,7 @@ public class RFXVConfigSetup extends DeviceSetup {
        }
    }
 
-   public void configure(TreeInterface subtree, int baseNid)
+   public void configure(Interface subtree, int baseNid)
    {
        super.configure(subtree, baseNid);
        resetCtrlState();

@@ -16,7 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import devices.Device;
+
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -28,6 +28,7 @@ import mds.data.descriptor_r.Action;
 import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
+import mds.devices.Device;
 import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.StringDsc;
 

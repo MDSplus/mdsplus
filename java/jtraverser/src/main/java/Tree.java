@@ -50,8 +50,10 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
+import mds.devices.Interface;
+
 public class Tree extends JScrollPane implements TreeSelectionListener,
-    MouseListener, ActionListener, KeyListener, DataChangeListener
+    MouseListener, ActionListener, KeyListener, Interface.DataChangeListener
 {
     static jTraverser frame;
     static int curr_dialog_idx;
@@ -1105,7 +1107,7 @@ public class Tree extends JScrollPane implements TreeSelectionListener,
 	    return curr_dialog;
 	}
     }
-    public void dataChanged(DataChangeEvent e)
+    public void dataChanged(Interface.DataChangeEvent e)
     {
 	reportChange();
     }

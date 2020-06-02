@@ -38,6 +38,7 @@ public class DeviceCustomizer extends Panel
             return lastFields;
 	lastDeviceType = DeviceSetupBeanInfo.beanDeviceType;
 	String linFields = "";
+	// TODO: use subtree execute
 	if(deviceProvider == null || !deviceProvider.equals(DeviceSetupBeanInfo.beanDeviceProvider))
 	{
             try {
