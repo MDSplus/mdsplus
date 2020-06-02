@@ -16,11 +16,9 @@ else
 
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	mkdir -p $(JAVAROOT)/jtraverser &&\
-	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
 	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
 	echo "Class-Path: mdsplus-api.jar DeviceBeans.jar WaveDisplay.jar jDevices.jar" >> $(MANIFEST) &&\
-	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) . -C $(java_resdir) $(RESOURCES)
 
 endif
 
@@ -34,12 +32,12 @@ jTraverser2: $(srcdir)/jTraverser2.template
 endif
 
 SOURCE =\
- jtraverser/*.java\
- jtraverser/dialogs/*.java\
- jtraverser/editor/*.java\
- jtraverser/editor/usage/*.java\
- jtraverser/tools/*.java\
+ mds/jtraverser/*.java\
+ mds/jtraverser/dialogs/*.java\
+ mds/jtraverser/editor/*.java\
+ mds/jtraverser/editor/usage/*.java\
+ mds/jtraverser/tools/*.java\
  mds/devices/*.java\
  mds/devices/acq4xx/*.java\
  jTraverser.java
-RESOURCES = jtraverser/*.gif
+RESOURCES = mds/jtraverser/*.gif

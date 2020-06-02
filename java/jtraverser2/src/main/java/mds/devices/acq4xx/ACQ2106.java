@@ -8,12 +8,12 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import jtraverser.editor.Editor;
-import jtraverser.editor.EnumEditor;
-import jtraverser.editor.EnumEditor.MODE;
 import mds.MdsException;
 import mds.data.descriptor_s.NODE;
 import mds.devices.Device;
+import mds.jtraverser.editor.Editor;
+import mds.jtraverser.editor.EnumEditor;
+import mds.jtraverser.editor.EnumEditor.MODE;
 
 public class ACQ2106 extends Device{
 	final ACQ4xx[]		modules;

@@ -20,10 +20,9 @@ else
 
 jTraverser.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	cp -f $(JAVA_RES)  $(JAVAROOT)/ &&\
 	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar DeviceBeans.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\
-	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) . -C $(java_resdir) $(RESOURCES)
 
 endif
 
