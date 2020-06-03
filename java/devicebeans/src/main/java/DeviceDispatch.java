@@ -6,11 +6,10 @@ import javax.swing.border.*;
 public class DeviceDispatch extends DeviceComponent
 {
 	private static final long serialVersionUID = 1L;
-	DeviceDispatchField dispatch_fields[], active_field;
-	String actions[];
-	int num_actions;
-	JDialog dialog = null;
-	JComboBox menu;
+	private DeviceDispatchField dispatch_fields[], active_field;
+	private String actions[];
+	private JDialog dialog = null;
+	private final JComboBox menu;
 	protected boolean initializing = false;
 	public DeviceDispatch()
 	{
@@ -36,7 +35,8 @@ public class DeviceDispatch extends DeviceComponent
 		}
 		int endNid = baseNidData + num_components;
 		final int action_nids[] = new int[num_components];
-		for(int nid = baseNidData, num_actions = 0; nid < endNid; nid++)
+		int num_actions = 0;
+		for(int nid = baseNidData ; nid < endNid; nid++)
 		{// find all actions
 			try {
 				if(subtree.getUsage(nid).equals("ACTION"))

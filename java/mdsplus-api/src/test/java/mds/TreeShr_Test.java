@@ -261,12 +261,12 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeSetSegmentScale(ctx, 1, new BINARY.Add(new BINARY.Multiply(CONST.$VALUE, new Float32(0.5f)), new Float32(0.1f))));
 			Assert.assertEquals("$VALUE * .5 + .1", TreeShr_Test.treeshr.treeGetSegmentScale(ctx, 1).decompile());
 			final float data[] = new float[]{.1f, .15f, .2f, .25f, .3f, .35f, .4f, .45f, .5f, .55f, .6f, .65f, .7f, .75f, .8f, .85f, .9f, .95f, 1.f, 1.05f, 1.1f, 1.15f, 1.2f, 1.25f, 1.3f, 1.35f, 1.4f, 1.45f, 1.5f, 1.55f};
-			Assert.assertArrayEquals(data, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).toFloatArray(), 1e-5f);
+			Assert.assertArrayEquals(data, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).getData().toFloatArray(), 1e-5f);
 			// TIMECONTEXT
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeSetTimeContext(ctx, new Long(1000001000000l), new Long(1000007000000l), new Long(2000000l)));
 			// Assert.assertArrayEquals(new float[]{.15f, .25f, .35f, .45f}, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).toFloatArray(), 1e-5f);
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeSetTimeContext(ctx));
-			Assert.assertArrayEquals(data, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).toFloatArray(), 1e-5f);
+			Assert.assertArrayEquals(data, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).getData().toFloatArray(), 1e-5f);
 			final Signal sig = TreeShr_Test.treeshr.treeGetSegment(ctx, 1, 0);
 			Assert.assertArrayEquals(new int[]{10}, sig.getValue().getShape());
 			Assert.assertArrayEquals(sig.getDimension().toLongArray(), TreeShr_Test.treeshr.treeGetSegmentDim(ctx, 1, 0).toLongArray());
@@ -285,7 +285,7 @@ public class TreeShr_Test{
 			Assert.assertEquals(3, TreeShr_Test.treeshr.treeAddNode(ctx, "ANY", NODE.USAGE_ANY).getData());
 			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 1, new Action(new Path("TSK"), new Path("ANY"), null, null, null)));
 			Assert.assertEquals(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 3, TreeShr_Test.mds.getAPI().tdiCompile(ctx, "_=1,_").getData()));
-			Assert.assertEquals("_ = 1, _", TreeShr_Test.treeshr.treeGetRecord(ctx, 3).decompile());
+			Assert.assertEquals("_ = 1, _", TreeShr_Test.treeshr.treeGetRecord(ctx, 3).getData().decompile());
 		}finally{
 		}
 	}
@@ -316,7 +316,7 @@ public class TreeShr_Test{
 			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treePutRecord(ctx, 1, signal));
 			Assert.assertEquals(signal.decompile(), signal.serializeDsc().deserialize().decompile());
 			final String dec = "Build_Signal(Long_Unsigned(Set_Range(4,5,4,5,4,3,2,1,0LU /*** etc. ***/)), *, [1000000000000QU])";
-			Assert.assertEquals(dec, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).decompile());
+			Assert.assertEquals(dec, TreeShr_Test.treeshr.treeGetRecord(ctx, 1).getData().decompile());
 		}finally{
 		}
 	}
