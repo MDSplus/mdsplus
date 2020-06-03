@@ -42,7 +42,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				break;
 
 			case MdsMonitorEvent.MonitorServerConnected :
-				//System.out.println(me);
 				serversInfoPanel.updateServerState(me.server_address, true);
 				break;
 			case MdsMonitorEvent.MonitorServerDisconnected :
@@ -50,14 +49,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				String msg;
 				if(si != null)
 				{
-					final String serverClass = si.getClassName();
-					msg = "Disconnect from server class "+serverClass+" address :"+me.server_address;
+					if (si.killed)
+						msg = null;
+					else
+						msg = "Disconnect from server class "+si.getClassName()+" address :"+me.server_address;
 				}
 				else
-				{
 					msg = "Disconnect from server class address :"+me.server_address;
-				}
-				JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
+				if (msg != null)
+					JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
 				serversInfoPanel.updateServerState(me.server_address, false);
 				break;
 			case MdsMonitorEvent.MonitorBuildBegin :
@@ -191,25 +191,22 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	}//End ErrorMgr class
 
 
-	static Font disp_font        = new Font("Platino Linotype", Font.ITALIC, 12);
-	static Font doing_font       = new Font("Platino Linotype", Font.ITALIC | Font.BOLD, 12);
-	static Font done_font        = new Font("Platino Linotype", Font.PLAIN, 12);
-	static Font done_failed_font = new Font("Platino Linotype", Font.ITALIC, 12);
+	//private final static Font disp_font        = new Font("Platino Linotype", Font.ITALIC, 12);
+	//private final static Font doing_font       = new Font("Platino Linotype", Font.ITALIC | Font.BOLD, 12);
+	private final static Font done_font        = new Font("Platino Linotype", Font.PLAIN, 12);
+	//private final static Font done_failed_font = new Font("Platino Linotype", Font.ITALIC, 12);
 
-	MdsServer     mds_server = null;
-	MdsConnection dispatcher = null;
+	private MdsServer     mds_server = null;
+	private MdsConnection dispatcher = null;
 
-	JDesktopPane desktop = null;
-	JLabel total_actions_l, dispatched_l,    doing_l, done_l,
-	failed_l, exp_l, shot_l, phase_l;
-	int    disp_count = 0,  doing_count = 0, done_count = 0,
-			failed_count = 0, total_count;
-
-	ButtonGroup   phase_group = new ButtonGroup();
-	JMenu         phase_m = new JMenu("Phase");
-	JPopupMenu    do_command_menu = new JPopupMenu();
-	JMenuItem     do_redispatch;
-	JMenuItem     do_abort;
+	private JDesktopPane desktop = null;
+	private final JLabel total_actions_l, dispatched_l, doing_l, done_l, failed_l, exp_l, shot_l, phase_l;
+	private int disp_count = 0, doing_count = 0, done_count = 0, failed_count = 0, total_count = 0;
+	private final ButtonGroup   phase_group = new ButtonGroup();
+	private final JMenu         phase_m = new JMenu("Phase");
+	private final JPopupMenu    do_command_menu = new JPopupMenu();
+	private JMenuItem do_redispatch;
+	private JMenuItem do_abort;
 
 	JList<MdsMonitorEvent> curr_list;
 	int   item_idx;
@@ -1182,12 +1179,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		System.out.println("-------------- Start phase : "+me);
 
 		final String phase_st = MdsHelper.toPhaseName(me.phase);
-
 		executing_list.removeAllElements();
-		phase_l.setText("Phase: "+phase_st);
-
+		phase_l.setText("Phase: " + phase_st);
 		phase_m.setEnabled(false);
-
 		curr_phase = show_phase = me.phase;
 	}
 
@@ -1287,7 +1281,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	            dispatcher = null;
 	        } catch (Exception exc) {dispatcher = null;}
 	            return;
-				 */            }
+				 */
+			}
 		}
 		if(e.getSource() == dispatcher)
 		{
@@ -1318,9 +1313,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 	public static void main(final String[] args)
 	{
-
-		jDispatchMonitor dm;
-		int i;
+		final jDispatchMonitor dm;
+		
 		String experiment = null;
 		String monitor_server = null;
 
@@ -1330,18 +1324,18 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			System.exit(0);
 		}
 
-
 		if( args.length > 0 )
 		{
+			int i;
 			for( i = 0; i < args.length && !args[i].equals("-e") ; i++ );
-
 			if( i < args.length )
 			{
 				experiment = args[i + 1];
 				if( args.length >= 3 )
 					monitor_server =  ( (i == 0) ? args[i+2] : args[0] );
-
-			} else {
+			}
+			else
+			{
 				monitor_server = args[0];
 			}
 		}
@@ -1350,16 +1344,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 		//MdsHelper.initialization(experiment);
 
-
 		dm = new jDispatchMonitor(monitor_server, experiment);
-
-
-		/*
-	if(args != null &&  args.length > 0 && args[0].length() != 0)
-	    dm = new jDispatchMonitor(args[0]);
-	else
-	    dm = new jDispatchMonitor();
-		 */
 		dm.pack();
 		dm.setSize(600, 700);
 		dm.setVisible(true);

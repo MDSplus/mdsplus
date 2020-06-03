@@ -274,7 +274,7 @@ class jDispatcherIp
 	if (args.length >= 1)
 	    treeName = args[0];
 	else
-	    treeName = "RFX";
+	    treeName = "test";
 
 		Properties properties = MdsHelper.initialization(treeName);
 		if( properties == null )

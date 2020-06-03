@@ -13,25 +13,28 @@ import java.io.*;
 
  public class ServerInfo
  {
-	private boolean active;
-	private String  className;
-	private String  address;
-	private String  subTree;
-	private boolean isJava;
-	private int     watchdogPort;
-	private String  startScript;
-	private String  stopScript;
+
+	private final String  className;
+	private final String  address;
+	private final String  subTree;
+	private final boolean isJava;
+	private final int     watchdogPort;
+	private final String  startScript;
+	private final String  stopScript;
 	private MdsMonitorEvent  monitorEvent;
 	private int     pos;
-
+	boolean killed = false;
+	private jServer server;
+	private boolean active;
+	
 	public class TableButton extends JButton
 	{
 		private static final long serialVersionUID = 1L;
-		private ServerInfo serverInfo;
+		private final ServerInfo serverInfo;
 	    public TableButton(String label, ServerInfo serverInfo)
 	    {
 	        super(label);
-	    this.serverInfo = serverInfo;
+	        this.serverInfo = serverInfo;
 	    }
 
 	    public ServerInfo getInfo()
@@ -101,6 +104,8 @@ import java.io.*;
 
 	public void setActive(boolean active)
 	{
+		if (this.killed && active)
+			this.killed = false;
 	    this.active = active;
 	}
 
@@ -155,19 +160,26 @@ import java.io.*;
 
 	public void startServer()
 	{
-	    startServer(this);
+		startServer(this);
 	}
 
-	public void startServer(ServerInfo si)
+	private static void startServer(ServerInfo si)
 	{
-	    Runtime r = Runtime.getRuntime();
 	    try
 	    {
+	    	if (si.server != null) return;
+	    	
 	        if( si.getStartScript() != null)
 	        {
 	            //final Process p = 
-	            r.exec(si.getStartScript());
+	            Runtime.getRuntime().exec(si.getStartScript());
 	            // p could be logged here
+	        } 
+	        else if (si.address.startsWith("localhost:"))
+	        {
+	        	final int port = Integer.valueOf(si.address.substring(10));
+	        	si.server = new jServer(port);
+	        	si.server.start();
 	        }
 	    }
 	    catch(IOException exc)
@@ -183,11 +195,19 @@ import java.io.*;
 
 	public void stopServer(ServerInfo si)
 	{
-	    Runtime r = Runtime.getRuntime();
 	    try
 	    {
-	        if( si.getStopScript() != null)
-	            r.exec(si.getStopScript());
+	    	if (si.server != null)
+	    	{
+	    		si.server.stop();
+	    		si.server = null;
+	    		si.killed = true;
+	    	}
+	    	else if( si.getStopScript() != null)
+	        {
+	            Runtime.getRuntime().exec(si.getStopScript());
+	        }
+	        
 	    }
 	    catch(IOException exc)
 	    {

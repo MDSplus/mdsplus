@@ -5,8 +5,7 @@ import java.util.*;
 
 import mds.wavedisplay.*;
 
-public class jServer
-extends MdsIp
+public class jServer extends MdsIp
 {
 	static final int SrvNoop = 0; /**** Used to start server ****/
 	static final int SrvAbort = 1;
@@ -35,15 +34,11 @@ extends MdsIp
 
 	public static int doingNid;
 
-	Vector<Socket> retSocketsV = new Vector<Socket>();
-	MDSplus.Tree mdsTree = null;
-	ActionQueue actionQueue = new ActionQueue();
-	Worker worker = new Worker();
-	boolean watchdogStarted = false;
-
-
-
-
+	private final Vector<Socket> retSocketsV = new Vector<Socket>();
+	private MDSplus.Tree mdsTree = null;
+	private final ActionQueue actionQueue = new ActionQueue();
+	private final Worker worker;
+	private boolean watchdogStarted = false;
 
 	//static inner class ActionDescriptor is used to keep action-related information
 	static class ActionDescriptor
@@ -111,14 +106,10 @@ extends MdsIp
 		{
 			actionV.removeAllElements();
 		}
-		synchronized ActionDescriptor nextAction()
+		synchronized ActionDescriptor nextAction() throws InterruptedException
 		{
-			while (actionV.size() == 0) {
-				try {
-					wait();
-				}
-				catch (final InterruptedException exc) {}
-			}
+			while (actionV.size() == 0)
+				wait();
 			final ActionDescriptor retAction = actionV.elementAt(0);
 			actionV.removeElementAt(0);
 			return retAction;
@@ -138,13 +129,12 @@ extends MdsIp
 	//It gets the nid to be executed from an instance of nidQueue, and executes
 	//he action on a separate thread until either the timeout is reached (is specified)
 	//or an abort command is received
-	class Worker
-	extends Thread
+	class Worker extends Thread
 	{
 		ActionDescriptor currAction;
 		int retStatus = 0;
 		boolean currentActionAborted = false;
-
+	
 		public synchronized void awakeWorker()
 		{
 			notify();
@@ -159,37 +149,38 @@ extends MdsIp
 		@Override
 		public void run()
 		{
-			while (true) {
-				currAction = actionQueue.nextAction();
+			while (!jServer.this.stopRequest) {
+				try {
+					currAction = actionQueue.nextAction();
+				} catch (InterruptedException e) {
+					continue;
+				}
 				//NidData nid = currAction.getNid();
-				final String message = "" + currAction.getId() + " " + SrvJobSTARTING +
-						" 1 0";
+				final String message = "" + currAction.getId() + " " + SrvJobSTARTING + " 1 0";
 
-				writeAnswer(currAction.getAddress(), currAction.getPort(),
-						message);
+				writeAnswer(currAction.getAddress(), currAction.getPort(), message);
 				ActionMaker currMaker;
 				synchronized (this) {
 					currentActionAborted = false;
 
 					currMaker = new ActionMaker(currAction);
 					currMaker.start();
-					try {
-						wait(); //until either the action terminates or timeout expires or an abort is received
-					}
-					catch (final InterruptedException exc) {}
+					try { wait(); //until either the action terminates or timeout expires or an abort is received
+					} catch (final InterruptedException exc) {}
 				}
-				if (!currentActionAborted) {
-					//String answer = "" + currAction.getId() + " " + SrvJobFINISHED + " 1 0";
-					final String answer = "" + currAction.getId() + " " +
-							SrvJobFINISHED + " " +
-							retStatus + " 0";
-					writeAnswer(currAction.getAddress(), currAction.getPort(),
-							answer);
-				}
-				else {
+				if (currentActionAborted)
+				{
 					currMaker.setAborted();
 					final String answer = "" + currAction.getId() + " " +
 							SrvJobABORTED + " 1 0";
+					writeAnswer(currAction.getAddress(), currAction.getPort(),
+							answer);
+				}
+				else
+				{
+					final String answer = "" + currAction.getId() + " " +
+							SrvJobFINISHED + " " +
+							retStatus + " 0";
 					writeAnswer(currAction.getAddress(), currAction.getPort(),
 							answer);
 				}
@@ -197,8 +188,7 @@ extends MdsIp
 		}
 
 		//Inner class ActionMaker executes the action and records whether such action has been aborted
-		class ActionMaker
-		extends Thread
+		class ActionMaker extends Thread
 		{
 			boolean aborted = false;
 			ActionDescriptor action;
@@ -223,17 +213,30 @@ extends MdsIp
 				aborted = true;
 			}
 		} //End ActionMaker class implementation
-
-	} //End Worker class impementation
+	} //End Worker class implementation
 
 	/////jServer class implementation
 
 	jServer(final int port)
 	{
 		super(port);
-		worker.start();
+		worker = new Worker();
 	}
-
+	
+	public void run() {
+		worker.setName(String.format("Worker(%d)", port));
+		worker.setDaemon(true);
+		worker.start();
+		super.run();
+	}
+	
+	public void stop() {
+		closeAll();
+		stopRequest = true;
+		worker.interrupt();
+		super.stop();
+	}
+	
 	synchronized Socket getRetSocket(final InetAddress ip, final int port)
 	{
 		for (int i = 0; i < retSocketsV.size(); i++) {
@@ -477,7 +480,7 @@ extends MdsIp
 
 	}
 
-	public static void main(final String args[])
+	public static void main(final String... args)
 	{
 		int port;
 
@@ -603,7 +606,7 @@ extends MdsIp
 			}
 		}
 	}
-
+	
 	void startWatchdog(final int watchdogPort)
 	{
 		if (watchdogStarted)return;
@@ -612,8 +615,7 @@ extends MdsIp
 	}
 
 	//Class WatchdogHandler handles watchdog (an integer is received and sent back)
-	class WatchdogHandler
-	extends Thread
+	class WatchdogHandler extends Thread
 	{
 		int port;
 		WatchdogHandler(final int port)

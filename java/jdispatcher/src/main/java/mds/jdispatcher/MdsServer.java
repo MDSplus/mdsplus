@@ -216,7 +216,6 @@ class MdsServer extends MdsConnection
 
 	public  void shutdown()
 	{
-
 		if(server_event_listener != null && server_event_listener.size() != 0)
 		{
 			server_event_listener.removeAllElements();

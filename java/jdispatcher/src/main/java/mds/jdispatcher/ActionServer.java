@@ -32,7 +32,6 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	public ActionServer(final String tree, final String ip_address, final String server_class, final String subtree,
 			final boolean useJavaServer, final int watchdogPort)
 	{
-		//System.out.println("------------------------------Action Server "+ ip_address);
 		this.tree = tree;
 		this.server_class = server_class;
 		this.ip_address = ip_address;
@@ -48,10 +47,19 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		catch(final Exception exc)
 		{
 			System.out.println("Cannot connect to server " + ip_address + " server class " + server_class);
-			mds_server = null;
-			ready = active = false;
+			shutdown();
 			startServerPoll();
 		}
+	}
+	private final boolean shutdown() {
+		ready = active = false;
+		if(mds_server != null)
+		{
+			mds_server.shutdown();
+			mds_server = null;
+			return true;
+		}
+		return false;
 	}
 	@Override
 	public void setTree(final String tree) {this.tree = tree; }
@@ -71,28 +79,22 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	{
 		if(e.getID() == ConnectionEvent.LOST_CONNECTION)
 		{
-			try {
-				if(mds_server != null)
-				{
-					mds_server = null;
-					mds_server.shutdown();
-				}
-				else
+			try			
+			{
+				if(!shutdown())
 					return; //Already processed
-			}catch(final Exception exc)
+			}
+			catch(final Exception exc)
 			{
 				System.err.println("Error shutting down socket : " + ip_address);
 			}
 			System.out.println("Detected server crash : " + server_class);
-			try {
-				Thread.sleep(2000); //Give time to mdsip server to start its own threads
-			}
-			catch (final Exception exc) {}
+			try { Thread.sleep(2000); //Give time to mdsip server to start its own threads
+			} catch (final Exception exc) {}
 
 			processDisconnected(ip_address);
 
-			final java.util.Timer conn_timer = new java.util.Timer();
-			conn_timer.schedule(new TimerTask()
+			timer.schedule(new TimerTask()
 			{
 				@Override
 				public void run()
@@ -366,7 +368,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	}
 
 	@Override
-	public /* OCT 2008 synchronized */ void abort(final boolean flush)
+	public void abort(final boolean flush)
 	{
 		enqueued_actions.removeAllElements();
 		if(mds_server == null) return;
@@ -376,7 +378,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	}
 
 	@Override
-	public /*synchronized*/ boolean abortAction(final Action action)
+	public boolean abortAction(final Action action)
 	{
 		if((doing_actions.get(new Integer(action.getNid())) == null) && enqueued_actions.indexOf(action) == -1)
 			return false;
@@ -388,8 +390,6 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		}
 		return true;
 	}
-
-
 
 	void startServerPoll()
 	{
