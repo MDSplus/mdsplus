@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 interface ServerListener
 {
     public void actionStarting(ServerEvent event);

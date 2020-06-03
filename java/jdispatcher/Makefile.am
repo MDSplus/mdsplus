@@ -14,7 +14,7 @@ else
 
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	echo "Main-Class: jDispatchMonitor" >> $(MANIFEST) &&\
+	echo "Main-Class: mds.jdispatcher.jDispatchMonitor" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar jTraverser.jar WaveDisplay.jar" >> $(MANIFEST) &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
@@ -33,4 +33,4 @@ jServer: jServer.template
 	cp $< $@
 endif
 
-SOURCE = *.java
+SOURCE = mds/jdispatcher/*.java

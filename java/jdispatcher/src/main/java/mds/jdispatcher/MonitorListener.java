@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 interface MonitorListener
 {
     public void beginSequence(MonitorEvent event);

@@ -1,6 +1,8 @@
+package mds.jdispatcher;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+
 import mds.wavedisplay.*;
 
 public class jServer

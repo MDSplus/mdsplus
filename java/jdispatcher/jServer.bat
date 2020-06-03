@@ -3,4 +3,4 @@
 ;%MDSPLUS_DIR%\java\classes\jTraverser.jar^
 ;%MDSPLUS_DIR%\java\classes\mdsobjects.jar^
 ;%MDSPLUS_DIR%\java\classes\WaveDisplay.jar^
-" jServer %*
+" mds.jdispatcher.jServer %*

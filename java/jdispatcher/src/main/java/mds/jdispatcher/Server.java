@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 interface Server
 /**
 Abstracts Server functionality

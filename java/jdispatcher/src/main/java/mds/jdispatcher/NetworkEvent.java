@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 import java.awt.AWTEvent;
 
 public class NetworkEvent extends AWTEvent {

@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 import java.util.*;
 
 class MdsServerEvent extends EventObject

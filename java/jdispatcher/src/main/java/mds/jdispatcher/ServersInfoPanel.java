@@ -1,3 +1,4 @@
+package mds.jdispatcher;
 /*
  * ServerShowDialog.java
  *
