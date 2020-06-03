@@ -54,11 +54,11 @@ public class Device implements Interface {
 		{
 			final int nidnum = nid.getNidNumber();
 			final Class<?> devicesetup = Class.forName("DeviceSetup");
-			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class) //
-					.invoke(null, nidnum);
+			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class, boolean.class) //
+					.invoke(null, nidnum, !editable);
 			if (setup == null)
-				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class) //
-					.invoke(null, nidnum, model, new Device(nid), frame);
+				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class, boolean.class) //
+					.invoke(null, nidnum, model, new Device(nid), frame, !editable);
 		}
 		catch (Exception e)
 		{

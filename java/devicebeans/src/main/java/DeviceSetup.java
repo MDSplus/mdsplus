@@ -46,6 +46,8 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	public void setReadOnly(final boolean readOnly)
 	{
 		this.readOnly = readOnly;
+		if (buttons != null)
+			buttons.setReadOnly(readOnly);
 		for (DeviceControl comp : device_controls)
 			comp.setReadOnly(readOnly);
 	}
@@ -194,6 +196,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 				if (comp instanceof DeviceButtons) {
 					buttons = (DeviceButtons)comp;
 					methods = ((DeviceButtons)comp).getMethods();
+					buttons.setReadOnly(readOnly);
 				}
 				else if (comp instanceof DeviceComponent)
 					device_components.addElement((DeviceComponent)comp);
@@ -474,13 +477,16 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		justApplied = false;
 	}
 
-	public final static Setup getSetup(int nid)
+	public final static Setup getSetup(final int nid, final boolean readOnly)
 	{
 		DeviceSetup ds = activeNidHash.get(new Integer(nid));
-		if (ds != null) ds.setVisible(true);
+		if (ds != null) {
+			ds.setReadOnly(readOnly);
+			ds.setVisible(true);
+		}
 		return ds;
 	}
-	public static Setup newSetup(int nid, String model, Interface iface, Object pointOrComponent) throws Exception {
+	public static Setup newSetup(final int nid, final String model, final Interface iface, final Object pointOrComponent, final boolean readOnly) throws Exception {
 		Point point = null;
 		Component parent = null;
 		if (pointOrComponent instanceof Component) {
@@ -493,6 +499,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
 		Dimension prevDim = ds.getSize();
 		ds.configure(iface, nid);
+		ds.setReadOnly(readOnly);
 		if (ds.getContentPane().getLayout() != null)
 			ds.pack();
 		ds.setSize(prevDim);

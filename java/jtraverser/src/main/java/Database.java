@@ -4,13 +4,14 @@ import mds.devices.Interface;
 
 public class Database implements Interface{
 	static public Setup showSetup(int nid, String model, Tree tree) throws Exception {
+		final boolean readOnly = Tree.curr_experiment.isReadOnly();
 		final Class<?> devicesetup = Class.forName("DeviceSetup");
-		final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class) //
-				.invoke(null, nid);
+		final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class, boolean.class) //
+				.invoke(null, nid, readOnly);
 		if (setup != null)
 			return setup;
-		return (Setup) devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class) //
-				.invoke(null, nid, model, new Database(tree), FrameRepository.frame);
+		return (Setup) devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class, boolean.class) //
+				.invoke(null, nid, model, new Database(tree), FrameRepository.frame, readOnly);
 	}
 	static public void closeSetups() {
 		try {
