@@ -299,7 +299,7 @@ public class Device implements Interface {
 
 	@Override
 	public String getUsage(int nid) throws Exception {
-		return tree.getNciUsageStr(nid);
+		return NODE.getUsageStr(tree.getNciUsage(nid));
 	}
 
 	@Override
