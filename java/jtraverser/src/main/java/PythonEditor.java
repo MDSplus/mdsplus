@@ -20,7 +20,7 @@ public class PythonEditor extends JPanel implements Editor {
 
     static final int OPC_FUN = 162;
 
-    public PythonEditor(Data []dataArgs)
+    public PythonEditor(MDSplus.Data []dataArgs)
     {
 	JScrollPane scroll_pane;
 	if(rows > 1)
@@ -64,7 +64,7 @@ public class PythonEditor extends JPanel implements Editor {
 	text_area.setText(program);
 	text_field = new JTextField(retVar);
     }
-    void getProgram(Data []dataArgs)
+    void getProgram(MDSplus.Data []dataArgs)
     {
 	if(dataArgs.length <= 3)
 	    retVar = "";
@@ -76,7 +76,7 @@ public class PythonEditor extends JPanel implements Editor {
 	}
 	String [] lines;
 	try {
-	    if(dataArgs[2] instanceof StringArray)
+	    if(dataArgs[2] instanceof MDSplus.String)
 	        lines = dataArgs[2].getStringArray();
 	    else
 	    {
@@ -90,7 +90,7 @@ public class PythonEditor extends JPanel implements Editor {
 	    }
 	} catch(Exception exc){program = "";}
     }
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	String programTxt = text_area.getText();
 	if(programTxt == null || programTxt.equals(""))
@@ -112,25 +112,27 @@ public class PythonEditor extends JPanel implements Editor {
 	    for(int j = 0; j < maxLen - len; j++)
 	        lines[i] += " ";
 	}
-	StringArray stArr = new StringArray(lines);
+	MDSplus.StringArray stArr = new MDSplus.StringArray(lines);
 	String retVarTxt = text_field.getText();
-	Data retArgs[];
+	MDSplus.Data retArgs[];
 	if(retVarTxt == null || retVarTxt.equals(""))
 	{
-	    retArgs = new Data[3];
+	    retArgs = new MDSplus.Data[3];
 	    retArgs[0] = null;
-	    retArgs[1] = new StringData("Py");
+	    retArgs[1] = new MDSplus.String("Py");
 	    retArgs[2] = stArr;
 	}
 	else
 	{
-	    retArgs = new Data[4];
+	    retArgs = new MDSplus.Data[4];
 	    retArgs[0] = null;
-	    retArgs[1] = new StringData("Py");
+	    retArgs[1] = new MDSplus.String("Py");
 	    retArgs[2] = stArr;
-	    retArgs[3] = new StringData(retVarTxt);
+	    retArgs[3] = new MDSplus.String(retVarTxt);
 	}
-	return new FunctionData(OPC_FUN, retArgs);
+	MDSplus.Data f =  new MDSplus.Function(OPC_FUN, retArgs);
+        f.setCtxTree(Tree.curr_experiment);
+        return f;
     }
 
     public void setEditable(boolean editable)

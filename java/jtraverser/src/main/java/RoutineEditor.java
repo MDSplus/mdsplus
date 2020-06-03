@@ -4,18 +4,19 @@ import java.awt.*;
 
 public class RoutineEditor extends JPanel implements Editor
 {
-    RoutineData routine;
+    MDSplus.Routine routine;
     LabeledExprEditor image_edit, routine_edit, timeout_edit;
     ArgEditor arg_edit;
 
     public RoutineEditor() {this(null);}
-    public RoutineEditor(RoutineData routine)
+    public RoutineEditor(MDSplus.Routine routine)
     {
 	this.routine = routine;
 	if(this.routine == null)
 	{
-	    this.routine = new RoutineData(null, null, null, new Data[0]);
+	    this.routine = new MDSplus.Routine(null, null, null, new MDSplus.Data[0]);
 	}
+        this.routine.setCtxTree(Tree.curr_experiment);
 	setLayout(new BorderLayout());
 	JPanel jp = new JPanel();
 	GridLayout gl = new GridLayout(2,1);
@@ -43,24 +44,27 @@ public class RoutineEditor extends JPanel implements Editor
 	timeout_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	Data data1 = timeout_edit.getData();
+	MDSplus.Data data1 = timeout_edit.getData();
 	data1 = image_edit.getData();
 	data1 = routine_edit.getData();
-	Data data[] = arg_edit.getData();
+	MDSplus.Data data[] = arg_edit.getData();
 
-	return new RoutineData(timeout_edit.getData(), image_edit.getData(),
+	MDSplus.Data r =  new MDSplus.Routine(timeout_edit.getData(), image_edit.getData(),
 	    routine_edit.getData(), arg_edit.getData());
+        r.setCtxTree(Tree.curr_experiment);
+        return r;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.routine = (RoutineData)data;
+	this.routine = (MDSplus.Routine)data;
 	if(this.routine == null)
 	{
-	    this.routine = new RoutineData(null, null, null, new Data[0]);
+	    this.routine = new MDSplus.Routine(null, null, null, new MDSplus.Data[0]);
 	}
+        this.routine.setCtxTree(Tree.curr_experiment);
 	reset();
     }
     public void setEditable(boolean editable)

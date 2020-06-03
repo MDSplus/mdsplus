@@ -7,6 +7,7 @@ JTRAVERSER_JAR = $(abs_top_builddir)/java/jtraverser/jTraverser.jar
 JTRAVERSER2_JAR = $(abs_top_builddir)/java/jtraverser2/jTraverser2.jar
 MDSOBJECTS_JAR = $(abs_top_builddir)/java/mdsobjects/mdsobjects.jar
 JSCOPE_JAR = $(abs_top_builddir)/java/jscope/jScope.jar
+DEVICE_BEANS_JAR = $(abs_top_builddir)/java/devicebeans/DeviceBeans.jar
 
 n :=
 s := $(n) #

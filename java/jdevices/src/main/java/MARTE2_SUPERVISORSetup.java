@@ -1669,9 +1669,7 @@ public class MARTE2_SUPERVISORSetup extends DeviceSetup {
         // TODO add your handling code here:
         String msg;
         try {
-            Data exprData = subtree.dataFromExpr("checkMarte(\'"+subtree.getName()+"\', "+baseNid+")");
-            Data msgData = subtree.evaluateData(exprData, 0);
-            msg = msgData.getString();
+            msg = subtree.getString(subtree.execute("checkMarte(\'"+subtree.getName()+"\', "+baseNid+")"));
             if(msg.equals(""))
                 msg = "Configuration OK";
         } catch(Exception exc){msg = exc.toString();}

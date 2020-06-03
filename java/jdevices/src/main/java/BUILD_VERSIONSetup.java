@@ -11,7 +11,9 @@ import javax.swing.*;
  * @version 1.0
  */
 
-public class BUILD_VERSIONSetup extends DeviceSetup {
+public class BUILD_VERSIONSetup extends DeviceSetup
+{
+  private static final long serialVersionUID = 1L;
   BorderLayout borderLayout1 = new BorderLayout();
   DeviceButtons deviceButtons1 = new DeviceButtons();
   JPanel jPanel1 = new JPanel();

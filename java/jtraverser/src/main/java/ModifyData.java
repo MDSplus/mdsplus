@@ -76,65 +76,70 @@ public class ModifyData extends NodeEditor
     }
 
     public void setNode(Node _node)
-    {	Data data;
+    {	MDSplus.Data data;
 	node = _node;
 	try{
 	    data = node.getData();
 
 	}catch(Exception e){data = null;}
 
-	switch(node.getUsage())
-	{
-	    case NodeInfo.USAGE_ACTION:
-		if(action_edit == null)
-		    action_edit = new ActionEditor(data, frame);
-		else
-		    action_edit.setData(data);
-		action_edit.setEditable(is_editable);
-		replace(action_edit);
-		break;
-	    case NodeInfo.USAGE_DISPATCH:
-		if(dispatch_edit == null)
-		    dispatch_edit = new DispatchEditor(data, frame);
-		else
-		    dispatch_edit.setData(data);
-		replace(dispatch_edit);
-		dispatch_edit.setEditable(is_editable);
-		break;
-	    case NodeInfo.USAGE_TASK:
-		if(task_edit == null)
-		    task_edit = new TaskEditor(data, frame);
-		else
-		    task_edit.setData(data);
-		replace(task_edit);
-		task_edit.setEditable(is_editable);
-		break;
-	    case NodeInfo.USAGE_WINDOW:
-		if(window_edit == null)
-		    window_edit = new WindowEditor(data, frame);
-		else
-		    window_edit.setData(data);
-		replace(window_edit);
-		window_edit.setEditable(is_editable);
-		break;
-	    case NodeInfo.USAGE_AXIS:
-	    if(data instanceof RangeData)
+        String usage = node.getUsage();
+	if(usage.equals("ACTION"))
+        {
+            if(action_edit == null)
+                action_edit = new ActionEditor(data, frame);
+            else
+                action_edit.setData(data);
+            action_edit.setEditable(is_editable);
+            replace(action_edit);
+        }
+        else if(usage.equals("DISPATCH"))
+        {
+            if(dispatch_edit == null)
+                dispatch_edit = new DispatchEditor(data, frame);
+            else
+                dispatch_edit.setData(data);
+            replace(dispatch_edit);
+            dispatch_edit.setEditable(is_editable);
+        }
+        else if(usage.equals("TASK"))
+        {
+            if(task_edit == null)
+                task_edit = new TaskEditor(data, frame);
+            else
+                task_edit.setData(data);
+            replace(task_edit);
+            task_edit.setEditable(is_editable);
+        }
+        else if(usage.equals("WINDOW"))
+        {
+            if(window_edit == null)
+                window_edit = new WindowEditor(data, frame);
+            else
+                window_edit.setData(data);
+            replace(window_edit);
+            window_edit.setEditable(is_editable);
+       }
+        else if(usage.equals("AXIS"))
+        {
+	    //if(data instanceof MDSplus.Range)
 	    {
 		    if(range_edit == null)
-			range_edit = new RangeEditor((RangeData)data);
+			range_edit = new RangeEditor((MDSplus.Range)data);
 		    else
 			range_edit.setData(data);
-		replace(range_edit);
+                    replace(range_edit);
 		    range_edit.setEditable(is_editable);
-		    break;
-		}
-	    default :
-		if(data_edit == null)
-		    data_edit = new DataEditor(data, frame);
-		else
-		    data_edit.setData(data);
-		replace(data_edit);
-		data_edit.setEditable(is_editable);
+            }
+        }
+        else
+        {
+            if(data_edit == null)
+                data_edit = new DataEditor(data, frame);
+            else
+                data_edit.setData(data);
+            replace(data_edit);
+            data_edit.setEditable(is_editable);
 	}
 
 	if(node.isOn())

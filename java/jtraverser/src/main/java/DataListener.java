@@ -3,5 +3,5 @@
 of the ddatum is possibly changed */
 
 interface DataListener {
-    public void DataChanged(Data data);
+    public void DataChanged(MDSplus.Data data);
     }

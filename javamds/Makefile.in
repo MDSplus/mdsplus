@@ -7,7 +7,7 @@ VPATH=@srcdir@
 
 CFLAGS += -I /media/sf_FedoraShared/include/ -I /media/sf_FedoraShared/include/win32 $(THREAD) @JDK_CFLAGS@
 
-SOURCES = javamds.c ServerSupport.c JavaData.c JavaTrav.c mdsobjects.c
+SOURCES = ServerSupport.c mdsobjects.c
 OBJECTS = $(SOURCES:.c=.o)
 
 all: 	@MAKELIBDIR@ @MAKELIBDIR@@LIBPRE@JavaMds@SHARETYPEJNI@

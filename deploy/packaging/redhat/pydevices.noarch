@@ -1,0 +1,4 @@
+./usr/local/mdsplus/pydevices/dtacq
+./usr/local/mdsplus/pydevices/dtacq/acq4xx.py
+./usr/local/mdsplus/pydevices/phantomhighspeed
+./usr/local/mdsplus/pydevices/phantomhighspeed/phantom.py

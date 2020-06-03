@@ -1,6 +1,5 @@
 
 import javax.swing.JLabel;
-import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
 /*
@@ -12,8 +11,9 @@ import javax.swing.table.TableModel;
  *
  * @author taliercio
  */
-public class SPECTRO_CFGSetup extends DeviceSetup {
-
+public class SPECTRO_CFGSetup extends DeviceSetup
+{
+	private static final long serialVersionUID = 1L;
     /**
      * Creates new form SPECTRO_CFGSetup
      */
@@ -350,9 +350,9 @@ public class SPECTRO_CFGSetup extends DeviceSetup {
         for( k = 0, c = tbm.getColumnCount()-2; c<tbm.getColumnCount() ;c++ ,k++ ) {
             for(r=0;r<tbm.getRowCount();r++)
             {
-                NidData nidData = new NidData(baseNid+SPECTRO_CFG_LOS_001_NOTE + SPECTRO_CFG_LOS_OFFSET * r + k);
+                int nidData = baseNid+SPECTRO_CFG_LOS_001_NOTE + SPECTRO_CFG_LOS_OFFSET * r + k;
                 try {    
-                     str_data = subtree.getData(nidData, Tree.context).getString();
+                     str_data = subtree.getString(subtree.getDataExpr(nidData));
                 }catch(Exception e) {continue;}
                 if ( tbm.getColumnClass(c).isInstance(b) )
                 {
@@ -379,12 +379,12 @@ public class SPECTRO_CFGSetup extends DeviceSetup {
                    new_value = tbm.getValueAt( r, c).toString();
                } catch(Exception e) {continue;}
                
-               NidData nidData = new NidData(baseNid+SPECTRO_CFG_LOS_001_NOTE + SPECTRO_CFG_LOS_OFFSET * r + k);
+               int nidData = baseNid+SPECTRO_CFG_LOS_001_NOTE + SPECTRO_CFG_LOS_OFFSET * r + k;
                try {    
-                    old_value = subtree.getData(nidData, Tree.context).getString();
+                    old_value = subtree.getString(subtree.getDataExpr(nidData));
                     if (new_value.equals(old_value))
                         continue;
-                    subtree.putData(nidData, new StringData(new_value), Tree.context);
+                    subtree.putDataExpr(nidData, new_value);
                }catch(Exception e) {continue;}
             }
         }    
@@ -394,7 +394,7 @@ public class SPECTRO_CFGSetup extends DeviceSetup {
         // TODO add your handling code here:
         int r=0,c=0;
         int offsetNid = 5;//CONFIG_LOS offset nid
-        Data curr_data;
+        String curr_data;
         String data[];
         Boolean los_flag[] = new Boolean[MAX_LOS];
        
@@ -413,10 +413,10 @@ public class SPECTRO_CFGSetup extends DeviceSetup {
         //Last two colums, note ad calib flag, can be changed via setup.
         //Values are read from LOS node
         for(c=1;c<tbm.getColumnCount()-2;c++) {
-            NidData nidData = new NidData(baseNid+offsetNid + (c-1));
+            int nidData = baseNid+offsetNid + (c-1);
             try {
-                curr_data = subtree.getData(nidData, Tree.context);
-                data = curr_data.getStringArray();
+                curr_data = subtree.getDataExpr(nidData);
+                data = subtree.getStringArray(curr_data);
             }catch(Exception e) {continue;}
             
             for(r=0;r<Math.min(tbm.getRowCount(), data.length);r++)

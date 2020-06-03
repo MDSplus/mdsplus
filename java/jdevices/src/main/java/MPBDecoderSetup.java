@@ -3,12 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JTabbedPane;
-import javax.swing.JPanel;
 import javax.swing.*;
 
 public class MPBDecoderSetup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public MPBDecoderSetup(JFrame parent)
 	{
 		super(parent);

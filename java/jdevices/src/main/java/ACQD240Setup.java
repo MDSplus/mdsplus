@@ -4,12 +4,11 @@
 
 
 import java.awt.*;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.*;
 
 public class ACQD240Setup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public ACQD240Setup(JFrame parent)
 	{
 	  super(parent);

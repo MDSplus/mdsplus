@@ -3,11 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JTabbedPane;
 import javax.swing.*;
 
 public class MPBEncoderSetup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public MPBEncoderSetup(JFrame parent)
 	{
 		super(parent);

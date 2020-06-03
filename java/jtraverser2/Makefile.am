@@ -19,8 +19,8 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	mkdir -p $(JAVAROOT)/jtraverser &&\
 	cp -f $(JAVA_RES) $(JAVAROOT)/jtraverser &&\
 	echo "Main-Class: jTraverser" > $(MANIFEST) &&\
-	cp -f $(MDSPLUS_API_JAR) $@ &&\
-	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
+	#cp -f $(MDSPLUS_API_JAR) $@ &&\
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 
@@ -39,6 +39,7 @@ SOURCE =\
  jtraverser/editor/*.java\
  jtraverser/editor/usage/*.java\
  jtraverser/tools/*.java\
- devices/*.java\
+ mds/devices/*.java\
+ mds/devices/acq4xx/*.java\
  jTraverser.java
 RESOURCES = jtraverser/*.gif

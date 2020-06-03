@@ -508,7 +508,7 @@ public class CompositeWaveDisplay extends JApplet implements WaveContainerListen
 
 	JPanel panel = new JPanel()
 	{
-	    public void print(Graphics g){}
+		public void print(Graphics g){}
 	    public void printAll(Graphics g){}
 	};
 

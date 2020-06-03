@@ -39,16 +39,19 @@ public class Range extends Compound
 
 	public Data getBegin()
 	{
+            resizeDescs(1);
 	    return descs[0];
 	}
 
 	public Data getEnding()
 	{
+            resizeDescs(2);
 	    return descs[1];
 	}
 
 	public Data getDeltaVal()
 	{
+            resizeDescs(3);
 	    return descs[2];
 	}
 
@@ -58,6 +61,7 @@ public class Range extends Compound
 	 */
 	public void setBegin(Data data)
 	{
+            resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -67,6 +71,7 @@ public class Range extends Compound
 	 */
 	public void setEnding(Data data)
 	{
+           resizeDescs(2);
 	    descs[1] = data;
 	}
 
@@ -76,6 +81,7 @@ public class Range extends Compound
 	 */
 	public void setDeltaVal(Data data)
 	{
+            resizeDescs(3);
 	    descs[2] = data;
 	}
 

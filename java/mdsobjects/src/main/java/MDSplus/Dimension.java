@@ -41,11 +41,13 @@ public class Dimension extends Compound
 
 	public Data getWindow()
 	{
+            resizeDescs(1);
 	    return descs[0];
 	}
 
 	public Data getAxis()
 	{
+           resizeDescs(2);
 	    return descs[1];
 	}
 
@@ -55,6 +57,7 @@ public class Dimension extends Compound
 	 */
 	public void setWindow(Data data)
 	{
+           resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -64,7 +67,7 @@ public class Dimension extends Compound
 	 */
 	public void setAxis(Data data)
 	{
+           resizeDescs(2);
 	    descs[1] = data;
 	}
-
-}
+ }

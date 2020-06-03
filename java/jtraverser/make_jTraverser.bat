@@ -20,12 +20,12 @@ GOTO:end
 SET JAVAC="%JDK_HOME%\bin\javac.exe"
 SET JAR="%JDK_HOME%\bin\jar.exe"
 SET JARDIR=%PWD%\classes
-SET JCFLAGS=-O -g:none
-SET CLASSPATH=-classpath ".;%MDSPLUS_DIR%\java\classes\jScope.jar"
+SET JCFLAGS=-O -source 6 -g:none
+SET CLASSPATH=-classpath ".;%MDSPLUS_DIR%\java\classes\mdsobjects.jar;%MDSPLUS_DIR%\java\classes\jScope.jar"
 
 SET OUTFILE=%PWD%\jTraverser.jar
-SET MANIFEST=%PWD%\DeviceBeansManifest.mf
-SET SOURCES=*.java
+SET SOURCES=*.java^
+ mds/devices/*.java
 SET RESOURCES=*.gif
 
 ECHO compiling *.java to *.class . . .
@@ -43,7 +43,7 @@ ECHO creating jar packages
 SET CLASSES=%SOURCES:.java=*.class%
 PUSHD %JARDIR%
 DEL /Q %OUTFILE%
-%JAR% -cmf %MANIFEST% %OUTFILE% %CLASSES% %RESOURCES%
+%JAR% -cf %OUTFILE% %CLASSES% %RESOURCES%
 POPD
 
 :cleanup
@@ -60,7 +60,13 @@ IF 0%1 NEQ 0 GOTO:EOF
 ECHO start jTraverser?
 PAUSE
 CLS
-"%JDK_HOME%\bin\java.exe" -cp "%OUTFILE%;%MDSPLUS_DIR%\java\classes\jScope.jar;%MDSPLUS_DIR%\java\classes\jDevices.jar" -Xss5M jTraverser
+"%JDK_HOME%\bin\java.exe" -cp ^
+"%OUTFILE%^
+;%MDSPLUS_DIR%\java\classes\mdsobjects.jar^
+;%MDSPLUS_DIR%\java\classes\jScope.jar^
+;%MDSPLUS_DIR%\java\classes\DeviceBeans.jar^
+;%MDSPLUS_DIR%\java\classes\jDevices.jar^
+" -Xss5M jTraverser
 
 :end
 PAUSE

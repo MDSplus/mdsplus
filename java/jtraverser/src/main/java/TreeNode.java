@@ -35,7 +35,7 @@ public class TreeNode extends JLabel
     {
 	    super((node.isDefault() ? "("+node.getName()+")" : node.getName()), icon, JLabel.LEFT);
 	    this.node = node;
-	if (node.getUsage()==NodeInfo.USAGE_SUBTREE)
+	if (node.getUsage().equals("SUBTREE"))
 	    setForeground(node.isIncludeInPulse() ? CInclude : CExclude);
 	else
 	{

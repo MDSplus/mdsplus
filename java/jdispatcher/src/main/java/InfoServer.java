@@ -4,7 +4,7 @@ class InfoServer implements Server
 {
     String tree;
     int shot = -1;
-    static Database model_database;
+    static MDSplus.Tree model_database;
 
     public InfoServer() {tree = null; }
     public InfoServer(String tree) {this.tree = tree; }
@@ -18,7 +18,7 @@ class InfoServer implements Server
     public void abort(boolean flush){}
     public boolean abortAction(Action action) {return false; }
 
-    public static Database getDatabase() {return model_database;}
+    public static MDSplus.Tree getDatabase() {return model_database;}
     public void setTree(String tree)
     {
 	this.tree = tree;
@@ -33,9 +33,8 @@ class InfoServer implements Server
     {
       System.out.println("InfoServer: beginSequence...");
 	try {
-	    model_database = new Database(tree, -1);
-	    model_database.open();
-	    model_database.create(shot);
+	    model_database = new MDSplus.Tree(tree, -1);
+	    model_database.createPulse(shot);
 	}catch(Exception exc) {model_database = null; System.out.println("Error opening " + tree + " shot " + shot + ": " + exc);}
 	System.out.println("InfoServer: beginSequence terminated");
       }
@@ -43,7 +42,7 @@ class InfoServer implements Server
     {
 	if(model_database != null)
 	try {
-	    model_database.close(0);
+	    model_database.close();
 	    model_database = null;
 	}catch(Exception exc) {System.out.println("Error closing " + tree + " shot " + shot + "\n" + exc);}
     }
@@ -53,16 +52,15 @@ class InfoServer implements Server
 	if(model_database == null)
 	{
 	    try {
-	        model_database = new Database(tree, shot);
-	        model_database.open();
+	        model_database = new MDSplus.Tree(tree, shot);
 	    }catch(Exception exc){return null; }
 	}
 	try {
-	    NidData rootNid = model_database.resolve(new PathData(rootPath), 0);
-	    NidData prevDef = model_database.getDefault(0);
-	    model_database.setDefault(rootNid, 0);
+	    MDSplus.TreeNode rootNid = model_database.getNode(rootPath);
+	    MDSplus.TreeNode prevDef = model_database.getDefault();
+	    model_database.setDefault(rootNid);
 	    Action [] actions = collectActions();
-	    model_database.setDefault(prevDef, 0);
+	    model_database.setDefault(prevDef);
 	    return actions;
 	}catch(Exception exc){return null; }
     }
@@ -75,39 +73,43 @@ class InfoServer implements Server
 	int nid_int, num_actions;
 	String name;
 	Boolean on;
-	Hashtable<Integer, ActionData> action_table = new Hashtable<Integer, ActionData>();
+	Hashtable<Integer, MDSplus.Action> action_table = new Hashtable<Integer, MDSplus.Action>();
 
 	if(model_database == null)
 	{
 	    try {
-	        model_database = new Database(tree, shot);
-	        model_database.open();
+	        model_database = new MDSplus.Tree(tree, shot);
 	    }catch(Exception exc){return null; }
 	}
-	NidData[]nids = null;
+	MDSplus.TreeNodeArray nids = null;
 	try {
-	    nids = model_database.getWild(NodeInfo.USAGE_ACTION, 0);
+	    nids = model_database.getNodeWild("***", 1 << MDSplus.Tree.TreeUSAGE_ACTION);
 	}catch(Exception exc) {return null; }
 	if(nids == null) return null;
-	int [] nid_array = new int[nids.length];
-	for(int i = num_actions = 0; i < nids.length; i++)
+	int [] nid_array = new int[nids.size()];
+	for(int i = num_actions = 0; i < nids.size(); i++)
 	{
+            MDSplus.TreeNode nid = null;
 	    try{
-	        if(!model_database.isOn(nids[i], 0))
+                nid = nids.getElementAt(i);
+	        if(!nid.isOn())
 	            continue;
-	        NodeInfo info = model_database.getInfo(nids[i], 0);
 	        //check dispatch and task fields
-	        ActionData action_data = (ActionData)model_database.getData(nids[i], 0);
+	        MDSplus.Action action_data = (MDSplus.Action)nid.getData();
 	        if(action_data.getDispatch() == null || action_data.getTask() == null)
 	            continue;
 
-	        action = new Action(action_data, nids[i].getInt(), info.getFullPath(),
-	            model_database.isOn(nids[i], 0), info.isEssential(), null );
+	        action = new Action(action_data, nid.getNid(), nid.getFullPath(),
+	            nid.isOn(), nid.isEssential(), null );
 	        action_vect.addElement(action);
-	        nid_array[num_actions] = nids[i].getInt();
-	        action_table.put(new Integer(nids[i].getInt()), action_data);
+	        nid_array[num_actions] = nid.getNid();
+	        action_table.put(new Integer(nid.getNid()), action_data);
 	        num_actions++;
-	    }catch(Exception exc){}
+	    }catch(Exception exc)
+            {
+                System.out.println(nid);
+                System.out.println(exc);
+            }
 	}
 	Action actions[] = new Action[action_vect.size()];
 	action_vect.copyInto(actions);
@@ -115,7 +117,7 @@ class InfoServer implements Server
 //Now nids and paths needs to be resolved by substituting them with ActionData
 	for(int i = 0; i < num_actions; i++)
 	    try{
-	        traverseAction((DispatchData)actions[i].getAction().getDispatch(), action_table);
+	        traverseAction((MDSplus.Dispatch)actions[i].getAction().getDispatch(), action_table);
 	    }catch(Exception exc){}
 //System.out.println("End collectAction()");
 
@@ -123,10 +125,10 @@ class InfoServer implements Server
     }
 
 
-    protected Data traverseAction(Data data, Hashtable<Integer, ActionData> action_table)
+    protected MDSplus.Data traverseAction(MDSplus.Data data, Hashtable<Integer, MDSplus.Action> action_table)
     {
-	ActionData action_d;
-	if(data instanceof NidData)
+	MDSplus.Action action_d;
+	if(data instanceof MDSplus.TreeNode)
 	{
 	    try {
 	        action_d = action_table.get(new Integer(data.getInt()));
@@ -136,11 +138,11 @@ class InfoServer implements Server
 	    else
 	        return action_d;
 	}
-	if(data instanceof PathData)
+	if(data instanceof MDSplus.TreePath)
 	{
-	    NidData nid = null;
+	    MDSplus.TreeNode nid = null;
 	    try {
-	        nid = model_database.resolve((PathData)data, 0);
+	        nid = model_database.getNode((MDSplus.TreePath)data);
 	        action_d = action_table.get(new Integer(nid.getInt()));
 	    }catch(Exception exc) {return data; }
 	    if(action_d == null)
@@ -148,19 +150,19 @@ class InfoServer implements Server
 	    else
 	        return action_d;
 	}
-	if(data instanceof DispatchData)
+	if(data instanceof MDSplus.Dispatch)
 	{
-	    DispatchData dispData = (DispatchData)data;
-	    dispData.descs[0] = traverseAction(dispData.descs[0], action_table);
-	    dispData.descs[1] = traverseAction(dispData.descs[1], action_table);
-	    if(dispData.getType() != DispatchData.SCHED_SEQ)
-	        dispData.descs[2] = traverseAction(dispData.descs[2], action_table);
-	    dispData.descs[3] = traverseAction(dispData.descs[3], action_table);
+	    MDSplus.Dispatch dispData = (MDSplus.Dispatch)data;
+	    dispData.setIdent(traverseAction(dispData.getIdent(), action_table));
+	    dispData.setPhase(traverseAction(dispData.getPhase(), action_table));
+	    if(dispData.getOpcode() != MDSplus.Dispatch.SCHED_SEQ)
+	        dispData.setWhen(traverseAction(dispData.getWhen(), action_table));
+	    dispData.setCompletion(traverseAction(dispData.getCompletion(), action_table));
 	    return data;
 	}
-	if(data instanceof CompoundData)
+	if(data instanceof MDSplus.Compound)
 	{
-	    Data [] descs =((CompoundData)data).getDescs();
+	    MDSplus.Data [] descs =((MDSplus.Compound)data).getDescs();
 	    for(int i = 0; i < descs.length; i++)
 	        descs[i] = traverseAction(descs[i], action_table);
 	    return data;

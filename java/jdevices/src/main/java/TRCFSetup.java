@@ -3,14 +3,11 @@
 */
 
 import java.awt.*;
-import javax.swing.JTabbedPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JViewport;
 import javax.swing.*;
 
 public class TRCFSetup extends DeviceSetup
 {
+	private static final long serialVersionUID = 1L;
 	public TRCFSetup(JFrame parent)
 	{
 

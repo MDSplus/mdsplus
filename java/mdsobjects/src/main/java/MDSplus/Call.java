@@ -44,12 +44,16 @@ public class Call extends Compound
 
 	public Data getImage()
 	{
-		return descs[0];
+            try {
+                return descs[0];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data getRoutine()
 	{
-		return descs[1];
+            try {
+                return descs[1];
+            }catch(Exception exc){return null;}
 	}
 
 	public Data[] getArguments()
@@ -66,7 +70,9 @@ public class Call extends Compound
 	 */
 	public Data getArgumentAt(int idx)
 	{
-	    return descs[2+idx];
+            try {
+                return descs[2+idx];
+            }catch(Exception exc){return null;}
 	}
 
 	/**
@@ -75,6 +81,7 @@ public class Call extends Compound
 	 */
 	public void setImage(Data data)
 	{
+            resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -84,6 +91,7 @@ public class Call extends Compound
 	 */
 	public void setRoutine(Data data)
 	{
+            resizeDescs(2);
 	    descs[1] = data;
 	}
 

@@ -25,7 +25,7 @@ public class TreePath extends TreeNode
 		clazz = CLASS_S;
 		dtype = DTYPE_PATH;
 		this.path = path;
-		this.tree = tree;
+		this.ctxTree = tree;
 	}
 
 	public TreePath(java.lang.String path, Tree tree) throws MdsException
@@ -51,6 +51,6 @@ public class TreePath extends TreeNode
 	@Override
 	protected void resolveNid() throws MdsException
 	{
-		nid = Tree.findNode(tree.getCtx(), path);
+		nid = Tree.findNode(ctxTree.getCtx(), path);
 	}
 }

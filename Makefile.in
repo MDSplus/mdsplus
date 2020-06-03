@@ -14,12 +14,13 @@ JAVA_JAR = java/tests \
 	   java/mdsplus-api \
 	   java/mdsplus-api/tests \
 	   java/jscope \
+	   java/mdsobjects \
+	   java/devicebeans \
 	   java/jtraverser \
 	   java/jtraverser2 \
-	   java/jdispatcher \
 	   java/jdevices \
+	   java/jdispatcher \
 	   java/mdsplus \
-	   java/mdsobjects \
 	   java/mdsobjects/tests
 
 JAVA_APS = \
@@ -222,10 +223,11 @@ camshr: mdsdcl
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
-java/jdevices: java/jtraverser
-java/jdispatcher: java/jscope java/jtraverser java/mdsobjects
+java/devicebeans: java/jscope
+java/jdevices: java/jscope java/devicebeans
+java/jdispatcher: java/jscope java/mdsobjects
 javamds: mdstcpip
-java/jtraverser: java/jscope
+java/jtraverser: java/jscope java/mdsobjects java/devicebeans java/jdevices
 java/jtraverser2: java/mdsplus-api
 java/mdsplus-api/tests: java/mdsplus-api java/tests
 math: mdsshr

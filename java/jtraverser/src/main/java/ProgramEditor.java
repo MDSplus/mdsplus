@@ -4,17 +4,18 @@ import java.awt.*;
 
 public class ProgramEditor extends JPanel implements Editor
 {
-    ProgramData program;
+    MDSplus.Program program;
     LabeledExprEditor program_edit, timeout_edit;
 
     public ProgramEditor() {this(null);}
-    public ProgramEditor(ProgramData program)
+    public ProgramEditor(MDSplus.Program program)
     {
 	this.program = program;
 	if(this.program == null)
 	{
-	    this.program = new ProgramData(null, null);
+	    this.program = new MDSplus.Program(null, null);
 	}
+        this.program.setCtxTree(Tree.curr_experiment);
 	program_edit = new LabeledExprEditor("Program", new ExprEditor(
 	    this.program.getProgram(), true));
 	timeout_edit = new LabeledExprEditor("Timeout", new ExprEditor(
@@ -33,17 +34,19 @@ public class ProgramEditor extends JPanel implements Editor
 	timeout_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	return new ProgramData(timeout_edit.getData(), program_edit.getData());
+	MDSplus.Data p =  new MDSplus.Program(timeout_edit.getData(), program_edit.getData());
+        p.setCtxTree(Tree.curr_experiment);
+        return p;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.program = (ProgramData)data;
+	this.program = (MDSplus.Program)data;
 	if(this.program == null)
 	{
-	    this.program = new ProgramData(null, null);
+	    this.program = new MDSplus.Program(null, null);
 	}
 	reset();
     }

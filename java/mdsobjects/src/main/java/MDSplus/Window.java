@@ -40,16 +40,19 @@ public class Window extends Compound
 
 	public Data getStartIdx()
 	{
+            resizeDescs(1);
 	    return descs[0];
 	}
 
 	public Data getEndIdx()
 	{
+            resizeDescs(2);
 	    return descs[1];
 	}
 
 	public Data getValueAt0()
 	{
+            resizeDescs(3);
 	    return descs[2];
 	}
 
@@ -59,6 +62,7 @@ public class Window extends Compound
 	 */
 	public void setStartIdx(Data data)
 	{
+            resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -68,6 +72,7 @@ public class Window extends Compound
 	 */
 	public void setEndIdx(Data data)
 	{
+            resizeDescs(2);
 	    descs[1] = data;
 	}
 
@@ -77,6 +82,7 @@ public class Window extends Compound
 	 */
 	public void setValueAt0(Data data)
 	{
+            resizeDescs(3);
 	    descs[2] = data;
 	}
 }

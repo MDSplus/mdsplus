@@ -10,13 +10,13 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
     JComboBox combo;
     JPanel mode_panel;
     int mode_idx, curr_mode_idx;
-    Data data;
-    RangeData range;
-    Data units;
+    MDSplus.Data data;
+    MDSplus.Range range;
+    MDSplus.Data units;
     boolean editable = true;
     TreeDialog dialog;
 
-    public AxisEditor(Data data, TreeDialog dialog)
+    public AxisEditor(MDSplus.Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
 	this.data = data;
@@ -29,17 +29,12 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	}
 	else
 	{
-	    if(data.dtype == Data.DTYPE_WITH_UNITS)
-	    {
-		units = ((WithUnitsData)data).getUnits();
-		this.data = ((WithUnitsData)data).getDatum();
-	    }
-	    else
-		this.data = data;
-	    if(this.data.dtype == Data.DTYPE_RANGE)
+            units = data.getUnits();
+            this.data = data;
+	    if(data instanceof  MDSplus.Range)
 	    {
 		mode_idx = 1;
-		range = (RangeData)this.data;
+		range = (MDSplus.Range)this.data;
 		this.data = null;
 	    }
 	    else
@@ -124,27 +119,31 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	repaint();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	switch(curr_mode_idx)  {
 	    case 0: return null;
 	    case 1:
-		Data units = units_edit.getData();
+            {
+		MDSplus.Data units = units_edit.getData();
+                MDSplus.Data retData = range_edit.getData();
 		if(units != null)
-		    return new WithUnitsData(range_edit.getData(), units);
-		else
-		    return range_edit.getData();
+		    retData.setUnits(units);
+		return retData;
+            }   
 	    case 2:
+            {
 		units = units_edit.getData();
+                MDSplus.Data retData = expr_edit.getData();
 		if(units != null)
-		    return new WithUnitsData(expr_edit.getData(), units);
-		else
-		    return expr_edit.getData();
+		    retData.setUnits(units);
+		return retData;
+            }
 	}
 	return null;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
 	this.data = data;
 	if(data == null)
@@ -156,17 +155,12 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 	}
 	else
 	{
-	    if(data.dtype == Data.DTYPE_WITH_UNITS)
-	    {
-		units = ((WithUnitsData)data).getUnits();
-		this.data = ((WithUnitsData)data).getDatum();
-	    }
-	    else
-		this.data = data;
-	    if(this.data.dtype == Data.DTYPE_RANGE)
+            units = data.getUnits();
+            this.data = data;
+	    if(data instanceof MDSplus.Range)
 	    {
 		mode_idx = 1;
-		range = (RangeData)this.data;
+		range = (MDSplus.Range)this.data;
 		this.data = null;
 	    }
 	    else

@@ -194,15 +194,15 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
 	        int timeout = 0;
 	        try {
-	            Data task = doing_action.getAction().getTask();
-	            if(task instanceof RoutineData)
-	                timeout = ((RoutineData)task).getTimeout().getInt();
-	            else if (task instanceof ProcedureData)
-	                timeout = ((ProcedureData)task).getTimeout().getInt();
-	            else if (task instanceof MethodData)
-	                timeout = ((MethodData)task).getTimeout().getInt();
-	            else if (task instanceof ProgramData)
-	                timeout = ((ProgramData)task).getTimeout().getInt();
+	            MDSplus.Data task = doing_action.getAction().getTask();
+	            if(task instanceof MDSplus.Routine)
+	                timeout = ((MDSplus.Routine)task).getTimeout().getInt();
+	            else if (task instanceof MDSplus.Procedure)
+	                timeout = ((MDSplus.Procedure)task).getTimeout().getInt();
+	            else if (task instanceof MDSplus.Method)
+	                timeout = ((MDSplus.Method)task).getTimeout().getInt();
+	            else if (task instanceof MDSplus.Program)
+	                timeout = ((MDSplus.Program)task).getTimeout().getInt();
 	        }catch(Exception exc){}
 	        if(timeout > 0)
 	        {

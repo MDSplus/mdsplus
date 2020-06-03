@@ -16,7 +16,7 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
-import devices.Device;
+
 import mds.MdsException;
 import mds.data.DATA;
 import mds.data.DTYPE;
@@ -27,6 +27,7 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Action;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
+import mds.devices.Device;
 import mds.data.descriptor_s.Nid;
 
 public class Node{
@@ -729,7 +730,7 @@ public class Node{
 
 	public final void setupDevice(final boolean editable) {
 		try{
-			Device.getEditor((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable).showDialog();
+			Device.showDialog((Frame)SwingUtilities.getRoot(this.treeview), this.nid, editable);
 		}catch(final Exception e){
 			e.printStackTrace();
 			JOptionPane.showMessageDialog(this.treeview, e + "\n" + e.getMessage(), "Error opening device setup", JOptionPane.WARNING_MESSAGE);

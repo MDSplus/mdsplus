@@ -3,9 +3,9 @@ import java.beans.*;
 import java.awt.*;
 
 public abstract class NodeDataPropertyEditor implements PropertyEditor {
-    protected Data data;
+    protected MDSplus.Data data;
 
-    public void setValue(Object o){data = (Data)o;}
+    public void setValue(Object o){data = (MDSplus.Data)o;}
     public Object getValue() {return data;}
     public void setAsText(String s)
     {
@@ -15,7 +15,7 @@ public abstract class NodeDataPropertyEditor implements PropertyEditor {
     }
     public String getAsText() {
 	try {
-	    return Tree.dataToString(data);
+	    return ""+data;
 	    } catch (Exception e) {return null; }
     }
     public String []getTags() {return null;}

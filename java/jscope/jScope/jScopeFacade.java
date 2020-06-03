@@ -97,8 +97,6 @@ import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
-import javax.swing.filechooser.FileNameExtensionFilter;
-
 
 
 public class jScopeFacade

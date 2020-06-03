@@ -48,11 +48,13 @@ public class Signal extends Compound
 	 */
 	public void setData(Data data)
 	{
+            resizeDescs(1);
 	    descs[0] = data;
 	}
 
 	public Data getData()
 	{
+            resizeDescs(1);
 	    return descs[0];
 	}
 
@@ -62,11 +64,13 @@ public class Signal extends Compound
 	 */
 	public void setRaw(Data raw)
 	{
+            resizeDescs(2);
 	    descs[1] = raw;
 	}
 
 	public Data getRaw()
 	{
+            resizeDescs(2);
 	    return descs[1];
 	}
 
@@ -76,6 +80,7 @@ public class Signal extends Compound
 	 */
 	public Data[] getDimensions()
 	{
+            resizeDescs(3);
 	    Data []dimensions = new Data[descs.length - 2];
 	    for(int i = 0; i < dimensions.length; i++)
 	        dimensions[i] = descs[2+i];
@@ -88,6 +93,7 @@ public class Signal extends Compound
 	 */
 	public Data getDimensionAt(int idx)
 	{
+            resizeDescs(3+idx);
 	    return descs[2+idx];
 	}
 

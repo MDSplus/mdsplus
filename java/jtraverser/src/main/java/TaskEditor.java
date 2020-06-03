@@ -12,11 +12,11 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
     ProgramEditor program_edit;
     ProcedureEditor procedure_edit;
     JComboBox combo;
-    Data data;
+    MDSplus.Data data;
     boolean editable = true;
     TreeDialog dialog;
 
-    public TaskEditor(Data data, TreeDialog dialog)
+    public TaskEditor(MDSplus.Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
 	this.data = data;
@@ -24,13 +24,16 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	    dtype_idx = 0;
 	else
 	{
-	    switch(data.dtype) {
-		case Data.DTYPE_METHOD: dtype_idx = 1; break;
-		case Data.DTYPE_ROUTINE: dtype_idx = 2; break;
-		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break;
-		case Data.DTYPE_PROGRAM: dtype_idx = 4; break;
-		default: dtype_idx  = 5;
-	    }
+	    if(data instanceof MDSplus.Method)
+                dtype_idx = 1; 
+            else if(data instanceof MDSplus.Routine)
+		dtype_idx = 2;
+           else if(data instanceof MDSplus.Procedure)
+                dtype_idx = 3; 
+           else if(data instanceof MDSplus.Program)
+		dtype_idx = 4; 
+           else
+		dtype_idx  = 5;
 	}
 	curr_dtype_idx = dtype_idx;
 	String names[] = {"Undefined", "Method", "Routine", "Procedure", "Program",
@@ -52,28 +55,28 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	    case 0: return;
 	    case 1:
 		if(dtype_idx == curr_dtype_idx)
-		    method_edit = new MethodEditor((MethodData)data);
+		    method_edit = new MethodEditor((MDSplus.Method)data);
 		else
 		    method_edit = new MethodEditor(null);
 		add(method_edit);
 		break;
 	    case 2:
 		if(dtype_idx == curr_dtype_idx)
-		    routine_edit = new RoutineEditor((RoutineData)data);
+		    routine_edit = new RoutineEditor((MDSplus.Routine)data);
 		else
 		    routine_edit = new RoutineEditor(null);
 		add(routine_edit);
 		break;
 	    case 3:
 		if(dtype_idx == curr_dtype_idx)
-		    procedure_edit = new ProcedureEditor((ProcedureData)data);
+		    procedure_edit = new ProcedureEditor((MDSplus.Procedure)data);
 		else
 		    procedure_edit = new ProcedureEditor(null);
 		add(procedure_edit);
 		break;
 	    case 4:
 		if(dtype_idx == curr_dtype_idx)
-		    program_edit = new ProgramEditor((ProgramData)data);
+		    program_edit = new ProgramEditor((MDSplus.Program)data);
 		else
 		    program_edit = new ProgramEditor(null);
 		add(program_edit);
@@ -123,7 +126,7 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	repaint();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	switch(curr_dtype_idx)  {
 	    case 0: return null;
@@ -136,20 +139,23 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	return null;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
 	this.data = data;
 	if(data == null)
 	    dtype_idx = 0;
 	else
 	{
-	    switch(data.dtype) {
-		case Data.DTYPE_METHOD: dtype_idx = 1; break;
-		case Data.DTYPE_ROUTINE: dtype_idx = 2; break;
-		case Data.DTYPE_PROCEDURE: dtype_idx = 3; break;
-		case Data.DTYPE_PROGRAM: dtype_idx = 4; break;
-		default: dtype_idx  = 5;
-	    }
+	    if(data instanceof MDSplus.Method)
+                dtype_idx = 1; 
+            else if(data instanceof MDSplus.Routine)
+		dtype_idx = 2;
+           else if(data instanceof MDSplus.Procedure)
+                dtype_idx = 3; 
+           else if(data instanceof MDSplus.Program)
+		dtype_idx = 4; 
+           else
+		dtype_idx  = 5;
 	}
 	reset();
     }

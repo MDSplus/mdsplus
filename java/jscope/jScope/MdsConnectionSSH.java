@@ -1,6 +1,5 @@
 package jScope;
 import java.io.*;
-import java.util.*;
 
 public class MdsConnectionSSH extends MdsConnection
 {

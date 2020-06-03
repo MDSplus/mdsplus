@@ -10,12 +10,12 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
     LabeledExprEditor notify_edit, expr_edit;
     JComboBox combo;
     int mode_idx, curr_mode_idx;
-    Data data;
+    MDSplus.Data data;
     JPanel action_panel;
     boolean editable;
     TreeDialog dialog;
 
-    public ActionEditor(Data data, TreeDialog dialog)
+    public ActionEditor(MDSplus.Data data, TreeDialog dialog)
     {
 	this.dialog = dialog;
 	this.data = data;
@@ -24,13 +24,13 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 
 	else
 	{
-	    if(data.dtype == Data.DTYPE_ACTION)
+	    if(data instanceof MDSplus.Action)
 		mode_idx = 1;
 	    else
 		mode_idx = 2;
 	}
 	if(data == null)
-	    this.data = new ActionData(null, null, null, null, null);
+	    this.data = new MDSplus.Action(null, null, null, null, null);
 
 	curr_mode_idx = mode_idx;
 	String names[] = {"Undefined", "Action", "Expression"};
@@ -51,9 +51,9 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	    case 1:
 		if(curr_mode_idx == mode_idx)
 		{
-		    dispatch_edit = new DispatchEditor(((ActionData)data).getDispatch(),dialog);
-		    task_edit = new TaskEditor(((ActionData)data).getTask(),dialog);
-		    notify_edit = new LabeledExprEditor("Notify", new ExprEditor(((ActionData)data).getErrorlogs(), true));
+		    dispatch_edit = new DispatchEditor(((MDSplus.Action)data).getDispatch(),dialog);
+		    task_edit = new TaskEditor(((MDSplus.Action)data).getTask(),dialog);
+		    notify_edit = new LabeledExprEditor("Notify", new ExprEditor(((MDSplus.Action)data).getErrorLog(), true));
 
 		}
 		else
@@ -123,34 +123,35 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	repaint();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	switch(curr_mode_idx)  {
 	    case 0: return null;
 	    case 1:
-		Data data1 = dispatch_edit.getData();
-		Data data2 = task_edit.getData();
-		return new ActionData(dispatch_edit.getData(), task_edit.getData(),
+		MDSplus.Data a = new MDSplus.Action(dispatch_edit.getData(), task_edit.getData(),
 		null, null, null);
+                a.setCtxTree(Tree.curr_experiment);
+                 return a;
 	    case 2: return expr_edit.getData();
 	}
 	return null;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
 	this.data = data;
 	if(data == null)
 	    mode_idx = 0;
 	else
 	{
-	    if(data.dtype == Data.DTYPE_ACTION)
+	    if(data instanceof MDSplus.Action)
 		mode_idx = 1;
 	    else
 		mode_idx = 2;
 	}
 	if(data == null)
-	    this.data = new ActionData(null, null, null, null, null);
+	    this.data = new MDSplus.Action(null, null, null, null, null);
+            this.data.setCtxTree(Tree.curr_experiment);
 	reset();
     }
 

@@ -3,9 +3,9 @@ import java.beans.*;
 import java.awt.*;
 
 public class NodeInfoPropertyEditor implements PropertyEditor {
-    protected Data data;
+    protected MDSplus.Data data;
 
-    public void setValue(Object o){data = (Data)o;}
+    public void setValue(Object o){data = (MDSplus.Data)o;}
     public Object getValue() {return data;}
     public void setAsText(String s){}
     public String getAsText() {return null; }

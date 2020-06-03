@@ -7,7 +7,7 @@ import java.awt.event.*;
 
 public class ExprEditor extends JPanel implements ActionListener, Editor{
     String expr;
-    Data data;
+    MDSplus.Data data;
     int rows, columns;
     JButton left = null, right = null;
     JTextArea text_area;
@@ -18,7 +18,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     boolean quotes_added;
     boolean editable = true;
 
-    public ExprEditor(Data data, boolean default_to_string)
+    public ExprEditor(MDSplus.Data data, boolean default_to_string)
     {
 	this(data, default_to_string, 1, 20);
     }
@@ -26,7 +26,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     {
 	this(null, default_to_string, 1, 20);
     }
-    public ExprEditor(Data data, boolean default_to_string,
+    public ExprEditor(MDSplus.Data data, boolean default_to_string,
 	int rows, int columns)
     {
     boolean quotes_needed;
@@ -37,7 +37,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
     if(rows > 1)
 	    default_scroll = true;
 	if(data != null)
-	    expr = Tree.dataToString(data);
+	    expr = data.toString();
 	else
 	    expr = null;
 	quotes_needed = (default_to_string && (expr == null || expr.charAt(0) == '\"'));
@@ -122,7 +122,7 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	if(data == null)
 	    expr = "";
 	else
-	    expr = Tree.dataToString(data);
+	    expr = data.toString();
 	if(default_to_string)
 	{
 	    int len = expr.length();
@@ -134,20 +134,22 @@ public class ExprEditor extends JPanel implements ActionListener, Editor{
 	else
 	    text_field.setText(expr);
     }
-    public Data getData()
+    public MDSplus.Data getData()
     {
 	if(default_scroll)
 	    expr = text_area.getText();
 	else
 	    expr = text_field.getText();
 
+        if(expr == null || expr.trim().length() == 0)
+            return null;
 	if(quotes_added)
-	    return Tree.dataFromExpr("\"" + expr + "\"");
+	    return Tree.curr_experiment.tdiCompile("\"" + expr + "\"");
 	else
-	    return Tree.dataFromExpr(expr);
+	    return Tree.curr_experiment.tdiCompile(expr);
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
 	this.data = data;
 	reset();

@@ -7,12 +7,12 @@ public class ArgEditor extends JScrollPane
     int num_args;
     Dimension preferred;
     ExprEditor [] args;
-    public ArgEditor(Data []data) {this(data, 9, new Dimension(220, 89));}
+    public ArgEditor(MDSplus.Data []data) {this(data, 9, new Dimension(220, 89));}
     public ArgEditor() {this(null, 9, new Dimension(220, 89));}
-    public ArgEditor(Data [] data, int num_args, Dimension preferred)
+    public ArgEditor(MDSplus.Data [] data, int num_args, Dimension preferred)
     {
 	if(data == null)
-	    data = new Data[num_args];
+	    data = new MDSplus.Data[num_args];
 	this.preferred = preferred;
 	this.num_args = num_args;
 	JPanel jp = new JPanel();
@@ -44,15 +44,25 @@ public class ArgEditor extends JScrollPane
 	    args[i].setEditable(editable);
     }
 
-    public Data [] getData()
+    public MDSplus.Data [] getData()
     {
-	Data data[] = new Data[num_args];
-	for(int i = 0; i < num_args; i++)
+        int actArgs = 0;
+        for(int i = 0; i < num_args; i++)
+        {
+            if(args[i].getData() == null)
+                break;
+            actArgs++;
+        }
+	MDSplus.Data data[] = new MDSplus.Data[actArgs];
+	for(int i = 0; i < actArgs; i++)
+        {
 	    data[i] = args[i].getData();
+            data[i].setCtxTree(Tree.curr_experiment);
+        }
 	return data;
     }
 
-    public void setData(Data [] data)
+    public void setData(MDSplus.Data [] data)
     {
 	int min_len, i;
 	if(data == null)

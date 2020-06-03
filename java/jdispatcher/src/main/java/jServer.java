@@ -516,9 +516,9 @@ public class jServer
 
 	if (args.length > 1 ) {
 	    String tclBatch = args[1];
-	    Database tree = new Database();
 	    try {
-	        tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"), 0);
+	        MDSplus.Data.execute("tcl(\'@" + tclBatch + "\')", new MDSplus.Data[0]);
+//	        tree.evaluateData(Data.fromExpr("tcl(\'@" + tclBatch + "\')"), 0);
 	    }
 	    catch (Exception exc) {
 	        System.err.println("Error executing initial TCL batch: " + exc);
@@ -584,7 +584,7 @@ public class jServer
 
 	    status = node.doAction();
 	    System.out.println("" + new Date() + ", Done " + name + " in " + tree + " shot " + shot);
-	    if((status & 1) != 0)
+	    if((status & 1) == 0)
 	    {
 		String errDevMsg = MDSplus.Data.execute("getLastError()", new MDSplus.Data[0]).getString();
 		String errMsg = MDSplus.Data.execute("getmsg()", new MDSplus.Data[]{new MDSplus.Int32(status)}).getString();

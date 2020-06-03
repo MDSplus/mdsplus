@@ -4,17 +4,18 @@ import java.awt.*;
 
 public class RangeEditor extends JPanel implements Editor
 {
-    RangeData range;
+    MDSplus.Range range;
     LabeledExprEditor begin_edit, end_edit, delta_edit;
 
     public RangeEditor() {this(null);}
-    public RangeEditor(RangeData range)
+    public RangeEditor(MDSplus.Range range)
     {
 	this.range = range;
 	if(this.range == null)
 	{
-	    this.range = new RangeData(null, null, null);
+	    this.range = new MDSplus.Range(null, null, null);
 	}
+        this.range.setCtxTree(Tree.curr_experiment);
 	GridLayout gl = new GridLayout(3, 1);
 	gl.setVgap(0);
 	setLayout(gl);
@@ -22,10 +23,10 @@ public class RangeEditor extends JPanel implements Editor
 	    this.range.getBegin(), false));
 	add(begin_edit);
 	end_edit = new LabeledExprEditor( "End", new ExprEditor(
-	    this.range.getEnd(), false));
+	    this.range.getEnding(), false));
 	add(end_edit);
 	delta_edit = new LabeledExprEditor( "Increment", new ExprEditor(
-	    this.range.getDelta(), false));
+	    this.range.getDeltaVal(), false));
 	add(delta_edit);
     }
 
@@ -36,21 +37,24 @@ public class RangeEditor extends JPanel implements Editor
 	delta_edit.reset();
     }
 
-    public Data getData()
+    public MDSplus.Data getData()
     {
-	return new RangeData(begin_edit.getData(), end_edit.getData(), delta_edit.getData());
+	MDSplus.Data r = new MDSplus.Range(begin_edit.getData(), end_edit.getData(), delta_edit.getData());
+        r.setCtxTree(Tree.curr_experiment);
+        return r;
     }
 
-    public void setData(Data data)
+    public void setData(MDSplus.Data data)
     {
-	this.range = (RangeData)data;
+	this.range = (MDSplus.Range)data;
 	if(this.range == null)
 	{
-	    this.range = new RangeData(null, null, null);
+	    this.range = new MDSplus.Range(null, null, null);
 	}
+        this.range.setCtxTree(Tree.curr_experiment);
 	begin_edit.setData(range.getBegin());
-	end_edit.setData(range.getEnd());
-	delta_edit.setData(range.getDelta());
+	end_edit.setData(range.getEnding());
+	delta_edit.setData(range.getDeltaVal());
 	reset();
     }
 

@@ -1414,6 +1414,7 @@ AC_OUTPUT(Makefile.inc
           java/jtraverser/Makefile
           java/jtraverser2/Makefile
           java/jdevices/Makefile
+          java/devicebeans/Makefile
           LabView/Makefile
           manpages/Makefile
           macosx/Makefile

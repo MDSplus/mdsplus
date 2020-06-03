@@ -8,6 +8,8 @@ package MDSplus;
  */
 public class Dependency extends Compound
 {
+    public static final int TreeDEPENDENCY_AND = 10;
+    public static final int TreeDEPENDENCY_OR = 11;
 
     public Dependency(int opcode, Data arg1, Data arg2,
 	    Data help, Data units, Data error, Data validation)
@@ -42,11 +44,13 @@ public class Dependency extends Compound
 
     public Data getArg1()
     {
+        resizeDescs(1);
 	return descs[0];
     }
 
     public Data getArg2()
     {
+        resizeDescs(2);
 	return descs[1];
     }
 
@@ -55,6 +59,7 @@ public class Dependency extends Compound
      */
     public void setArg1(Data data)
     {
+        resizeDescs(1);
 	descs[0] = data;
     }
 
@@ -64,6 +69,7 @@ public class Dependency extends Compound
      */
     public void setArg2(Data data)
     {
+        resizeDescs(2);
 	descs[1] = data;
     }
 }

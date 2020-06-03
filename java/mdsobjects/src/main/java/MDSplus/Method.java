@@ -40,11 +40,13 @@ public class Method extends Compound
 
 	public Data getMethod()
 	{
+           resizeDescs(2);
 	    return descs[1];
 	}
 
 	public Data getObject()
 	{
+           resizeDescs(3);
 	    return descs[2];
 	}
 
@@ -58,6 +60,7 @@ public class Method extends Compound
 
 	public Data getTimeout()
 	{
+           resizeDescs(1);
 	    return descs[0];
 	}
 
@@ -67,6 +70,7 @@ public class Method extends Compound
 	 */
 	public Data getArgumentAt(int idx)
 	{
+           resizeDescs(4+idx);
 	    return descs[3+idx];
 	}
 
@@ -76,6 +80,7 @@ public class Method extends Compound
 	 */
 	public void setMethod(Data data)
 	{
+           resizeDescs(1);
 	    descs[1] = data;
 	}
 
@@ -85,6 +90,7 @@ public class Method extends Compound
 	 */
 	public void setObject(Data data)
 	{
+           resizeDescs(2);
 	    descs[2] = data;
 	}
 
@@ -105,6 +111,7 @@ public class Method extends Compound
 	 */
 	public void setTimeout(Data data)
 	{
+           resizeDescs(1);
 	    descs[0] = data;
 	}
 
@@ -118,4 +125,11 @@ public class Method extends Compound
 	    resizeDescs(3+idx+1);
 	    descs[3+idx] = arg;
 	}
+        
+        
+        public static void main(java.lang.String args[])
+        {
+            Data m =  new Method(null, new String("INITY"), new String("OG"), new Data[0]);
+            System.out.println(m);
+        }
 }
