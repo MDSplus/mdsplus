@@ -139,6 +139,8 @@ extern "C" {
 #define MDSplus_TreeNode_NciM_NID_REFERENCE 16384L
 #undef MDSplus_TreeNode_NciM_INCLUDE_IN_PULSE
 #define MDSplus_TreeNode_NciM_INCLUDE_IN_PULSE 32768L
+#undef MDSplus_TreeNode_NciM_COMPRESS_SEGMENTS
+#define MDSplus_TreeNode_NciM_COMPRESS_SEGMENTS 65536L
 #undef MDSplus_TreeNode_NciTIME_INSERTED
 #define MDSplus_TreeNode_NciTIME_INSERTED 4L
 #undef MDSplus_TreeNode_NciOWNER_ID
@@ -277,11 +279,27 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setNciFlag
 
 /*
  * Class:     MDSplus_TreeNode
+ * Method:    setNciFlags
+ * Signature: (IJI)V
+ */
+JNIEXPORT void JNICALL Java_MDSplus_TreeNode_setNciFlags
+  (JNIEnv *, jclass, jint, jlong, jint);
+
+/*
+ * Class:     MDSplus_TreeNode
  * Method:    getNciFlag
  * Signature: (IJI)Z
  */
 JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_getNciFlag
   (JNIEnv *, jclass, jint, jlong, jint);
+
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    getNciFlags
+ * Signature: (IJ)I
+ */
+JNIEXPORT jint JNICALL Java_MDSplus_TreeNode_getNciFlags
+  (JNIEnv *, jclass, jint, jlong);
 
 /*
  * Class:     MDSplus_TreeNode
@@ -305,6 +323,14 @@ JNIEXPORT void JNICALL Java_MDSplus_TreeNode_turnOn
  * Signature: (IJ)Z
  */
 JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isOn
+  (JNIEnv *, jclass, jint, jlong);
+
+/*
+ * Class:     MDSplus_TreeNode
+ * Method:    isParentOff
+ * Signature: (IJ)Z
+ */
+JNIEXPORT jboolean JNICALL Java_MDSplus_TreeNode_isParentOff
   (JNIEnv *, jclass, jint, jlong);
 
 /*

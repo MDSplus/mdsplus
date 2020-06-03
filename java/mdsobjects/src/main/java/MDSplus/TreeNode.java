@@ -135,9 +135,9 @@ public class TreeNode extends Data
 	private static native long getNciLong(int nid, long ctx, int nciType) throws MdsException;
 	private static native java.lang.String getNciString(int nid, long ctx, int nciType) throws MdsException;
 	private static native void setNciFlag(int nid, long ctx, int flagType, boolean flag) throws MdsException;
-	//private static native void setNciFlags(int nid, long ctx, int flags) throws MdsException;
+	private static native void setNciFlags(int nid, long ctx, int flags) throws MdsException;
 	private static native boolean getNciFlag(int nid, long ctx, int flagType) throws MdsException;
-	//private static native int getNciFlags(int nid, long ctx) throws MdsException;
+	private static native int getNciFlags(int nid, long ctx) throws MdsException;
 	private static native int[]getNciNids(int nid, long ctx, int nciNumType, int nciType) throws MdsException;
 	private static native void turnOn(int nid, long ctx, boolean on) throws MdsException;
 	private static native boolean isOn(int nid, long ctx) throws MdsException;
@@ -593,36 +593,28 @@ public class TreeNode extends Data
 	public int getNciFlags() throws MdsException
 	{
 		resolveNid();
-		int flags = 0;
-		for (int i = 0, flag = 1 ; i < 31 ; flag = 1 << ++i)
-			if (getNciFlag(nid, ctxTree.getCtx(), flag))
-				flags += flag;
-		return flags;
+		return this.getNciFlags(nid, ctxTree.getCtx());
 	}
-
 	public void setNciFlags(int flags) throws MdsException
 	{
 		resolveNid();
-		for (int i = 0, flag = 1 ; i < 31 ; flag = 1 << ++i)
-			setNciFlag(nid, ctxTree.getCtx(), 1<<i, (flags & flag) > 0);
+		this.setNciFlags(nid, ctxTree.getCtx(),flags);
 	}
-
 	public boolean getNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		return getNciFlag(nid, ctxTree.getCtx(), 1 << flagId);
+		return this.getNciFlag(nid, ctxTree.getCtx(), 1<<flagId);
 	}
-
 	public void setNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
+		this.setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
 	}
 
 	public void clearNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
+		this.setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
 	}
 
 
