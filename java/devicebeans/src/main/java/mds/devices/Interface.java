@@ -17,7 +17,7 @@ public interface Interface {
 	public float[] getFloatArray(String expr) throws Exception;
 	public double getDouble(String expr) throws Exception;
 	public String getString(String expr) throws Exception;
-	public String []getStringArray(String expr) throws Exception;
+	public String[] getStringArray(String expr) throws Exception;
 	public String getNodeName(int nid) throws Exception;
 	public String execute(String expr) throws Exception;
 	public void putDataExpr(int nid, String expr) throws Exception;
