@@ -3,7 +3,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-import jScope.*;
+
+import mds.wavedisplay.*;
 
 public class jDispatchMonitor extends JFrame implements MdsServerListener,
 	                                                ConnectionListener

@@ -1,7 +1,7 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
-import jScope.*;
+import mds.wavedisplay.*;
 
 public class jServer
     extends MdsIp

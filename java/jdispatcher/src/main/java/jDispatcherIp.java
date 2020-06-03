@@ -1,8 +1,5 @@
 import java.util.*;
-import java.io.*;
-import jScope.*;
-
-
+import mds.wavedisplay.*;
 
 class jDispatcherIp
     extends MdsIp {

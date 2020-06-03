@@ -1,6 +1,5 @@
 import java.util.*;
-import java.awt.event.*;
-import jScope.*;
+import mds.wavedisplay.*;
 
 class ActionServer implements Server, MdsServerListener, ConnectionListener
 {

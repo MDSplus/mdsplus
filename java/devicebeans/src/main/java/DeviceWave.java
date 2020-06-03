@@ -5,17 +5,9 @@ import java.awt.event.*;
 import javax.swing.table.*;
 import java.util.*;
 import java.text.*;
-import jScope.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.FlavorListener;
-import java.awt.datatransfer.FlavorEvent;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.BufferedReader;
-import java.io.IOException;
-
+import java.awt.datatransfer.*;
+import java.io.*;
+import mds.wavedisplay.*;
 
 public class DeviceWave extends DeviceComponent
 {

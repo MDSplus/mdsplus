@@ -4,7 +4,7 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsobjects.jar
-DEPENDENCIES = $(JSCOPE_JAR)
+DEPENDENCIES = $(JSCOPE_JAR) $(WAVEDISPLAY_JAR)
 
 if USE_JARS_DIR
 

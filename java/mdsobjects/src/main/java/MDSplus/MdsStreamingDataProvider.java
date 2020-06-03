@@ -3,8 +3,9 @@
  * This is a template class.
  */
 package MDSplus;
-import jScope.*;
 import java.util.*;
+import mds.jscope.MdsDataProvider;
+import mds.wavedisplay.*;
 
 /**
  *

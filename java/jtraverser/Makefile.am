@@ -7,9 +7,8 @@ EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser.jar
 java_DATA = jTraverser.jar
-DEPENDENCIES = $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
+DEPENDENCIES = $(WAVEDISPLAY_JAR) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 

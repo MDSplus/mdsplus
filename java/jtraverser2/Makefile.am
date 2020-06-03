@@ -3,7 +3,6 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
-dist_java_DATA = jTraverser2.jar
 java_DATA = jTraverser2.jar
 DEPENDENCIES = $(MDSPLUS_API_JAR)
 

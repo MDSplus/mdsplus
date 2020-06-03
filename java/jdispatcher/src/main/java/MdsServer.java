@@ -2,7 +2,8 @@ import java.io.*;
 import java.net.*;
 import java.awt.*;
 import java.util.*;
-import jScope.*;
+
+import mds.wavedisplay.*;
 
 class MdsServer extends MdsConnection
 {

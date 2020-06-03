@@ -12,12 +12,11 @@
  */
 
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.text.*;
 import java.awt.event.*;
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.*;
 import javax.swing.table.*;
 
 

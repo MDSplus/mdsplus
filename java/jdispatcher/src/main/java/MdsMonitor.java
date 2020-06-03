@@ -1,7 +1,7 @@
 import java.util.*;
 import java.net.*;
 import java.io.*;
-import jScope.*;
+import mds.wavedisplay.*;
 
 class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 {

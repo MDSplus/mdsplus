@@ -1,5 +1,6 @@
 import java.util.*;
-import jScope.*;
+
+import mds.wavedisplay.MdsConnection;
 
 public class KillServer extends MdsConnection
 {

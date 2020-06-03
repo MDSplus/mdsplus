@@ -1,15 +1,6 @@
 package MDSplus;
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
-/**
- *
- * @author manduchi
- */
-import jScope.*;
+import mds.jscope.*;
 
 public class Scope
 {

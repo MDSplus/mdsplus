@@ -8,7 +8,6 @@
  * @author taliercio
  */
 import javax.swing.JButton;
-import java.awt.event.*;
 import java.io.*;
 
  public class ServerInfo

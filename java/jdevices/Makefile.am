@@ -7,7 +7,7 @@ EXTRA_DIST = *.form
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 java_DATA = jDevices.jar
-DEPENDENCIES = $(DEVICE_BEANS_JAR) $(JSCOPE_JAR) $(MDSOBJECTS_JAR) 
+DEPENDENCIES = $(DEVICEBEANS_JAR)
 
 if USE_JARS_DIR
 
@@ -17,8 +17,8 @@ $(java_DATA): @JARS_DIR@/java/jdevices/jDevices.jar
 else
 
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
-	@ echo "Creating JAR: $@ ..."; \
-	cp -f $(JAVA_RES) $(JAVAROOT)/;\
+	@ echo "Creating JAR: $@ ...";\
+	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif

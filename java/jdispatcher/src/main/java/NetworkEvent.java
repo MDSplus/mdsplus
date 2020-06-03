@@ -1,5 +1,4 @@
 import java.awt.AWTEvent;
-import java.awt.Event;
 
 public class NetworkEvent extends AWTEvent {
 

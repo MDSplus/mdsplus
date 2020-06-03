@@ -1,7 +1,7 @@
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import jScope.*;
+import mds.wavedisplay.*;
 
 class MdsIp implements Runnable
 {
