@@ -447,7 +447,7 @@ implements ServerListener
 	{
 		final String serverClass = getServerClass(action);
 		//record current timestamp
-		action.setTimestamp(timestamp);
+		//action.setTimestamp(timestamp);
 
 		//Insert action in actions hashtable
 		actions.put(action.getAction(), action);

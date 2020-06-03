@@ -25,7 +25,8 @@ import java.io.*;
 
 	public class TableButton extends JButton
 	{
-	    private ServerInfo serverInfo;
+		private static final long serialVersionUID = 1L;
+		private ServerInfo serverInfo;
 	    public TableButton(String label, ServerInfo serverInfo)
 	    {
 	        super(label);
@@ -117,8 +118,6 @@ import java.io.*;
 
 	public Object[] getAsArray()
 	{
-	    TableButton b;
-
 	    Object out[] = new Object[6];
 	    out[0] = new Boolean(active);
 	    out[1] = className;
@@ -126,7 +125,7 @@ import java.io.*;
 	    out[3] = monitorEvent;
 
 /*-----------------------------------------------------------------------------
-	    b = new TableButton ("Start", this);
+	    TableButton b = new TableButton ("Start", this);
 	    b.addMouseListener( new MouseAdapter()
 	    {
 	        public void mouseClicked(MouseEvent e)
@@ -165,8 +164,9 @@ import java.io.*;
 	    {
 	        if( si.getStartScript() != null)
 	        {
-	            Process p = r.exec(si.getStartScript());
-	            //new ServerLogger(si.className, si.address, p);
+	            //final Process p = 
+	            r.exec(si.getStartScript());
+	            // p could be logged here
 	        }
 	    }
 	    catch(IOException exc)

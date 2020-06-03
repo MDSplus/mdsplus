@@ -2,7 +2,8 @@ import java.util.*;
 
 class ServerEvent extends EventObject
 {
-    Action action;
+	private static final long serialVersionUID = 1L;
+	Action action;
     String message;
     public ServerEvent(Object obj, Action action)
     {
@@ -19,6 +20,4 @@ class ServerEvent extends EventObject
     public Action getAction() {return action; }
     public int getStatus() {return action.getStatus();}
     public String getMessage() {return message;}
-
-    //public int getTimestamp() {return action.getTimestamp();}
 }

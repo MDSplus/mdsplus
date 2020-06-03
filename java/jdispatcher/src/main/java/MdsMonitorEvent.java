@@ -3,7 +3,8 @@ import java.text.*;
 
 class MdsMonitorEvent extends MdsServerEvent
 {
-    static final int MonitorBeginSequence = 1;
+	private static final long serialVersionUID = 1L;
+	static final int MonitorBeginSequence = 1;
     static final int MonitorBuildBegin    = 2;
     static final int MonitorBuild         = 3;
     static final int MonitorBuildEnd      = 4;
