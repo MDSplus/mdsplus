@@ -26,7 +26,7 @@ public class DeviceChoice extends DeviceComponent
 	public void setChoiceItems(String choiceItems[])
 	{
 		this.choiceItems = choiceItems;
-		if (comboB == null)
+		if (comboB != null)
 		{
 			comboB.removeAllItems();
 			if(choiceItems != null)
