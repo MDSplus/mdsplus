@@ -535,11 +535,10 @@ public class TreeShr extends MdsShr{
 	 *
 	 * @return DescriptorStatus: record of node
 	 **/
-	public final Descriptor<?> treeGetRecord(final CTX ctx, final int nid) throws MdsException {
-		@SuppressWarnings("rawtypes")
-		final Request<Descriptor> request = new TreeCall<Descriptor>(Request.PROP_DO_NOT_LIST, Descriptor.class, "TreeGetRecord")//
-		.val(nid).xd("a").finV("a");
-		return this.mds.getDescriptor(ctx, request);// compressed data cannot be put in a list without decompression
+	public final DescriptorStatus treeGetRecord(final CTX ctx, final int nid) throws MdsException {
+		final Request<List> request = new TreeCall<List>(List.class, "TreeGetRecord")//
+				.val(nid).xd("x").finL("x","s");
+		return new DescriptorStatus(this.mds.getDescriptor(ctx, request));// compressed data cannot be put in a list without decompression
 	}
 
 	/**

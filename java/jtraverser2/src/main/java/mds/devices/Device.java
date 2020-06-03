@@ -20,7 +20,6 @@ import mds.data.TREE.NodeInfo;
 import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
-import mds.devices.Interface.Setup;
 import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.StringDsc;
 

@@ -685,7 +685,7 @@ public final class TREE implements ContextEventListener, CTX{
 	}
 
 	public final Descriptor<?> getRecord(final int nid) throws MdsException {
-		return this.setActive().api.treeGetRecord(this.ctx, nid);
+		return this.setActive().api.treeGetRecord(this.ctx, nid).getData();
 	}
 
 	public final RecordInfo getRecordInfo(final NODE<?> node) throws MdsException {
