@@ -1,1 +1,6 @@
-@start "" javaw -Xss10M -jar "%MDSPLUS_DIR%/java/classes/jDispatcher.jar" -Xss10M %*
+@start "" javaw -Xss10M -cp ^
+"%MDSPLUS_DIR%\java\classes\jDispatcher.jar^
+;%MDSPLUS_DIR%\java\classes\jTraverser.jar^
+;%MDSPLUS_DIR%\java\classes\mdsobjects.jar^
+;%MDSPLUS_DIR%\java\classes\WaveDisplay.jar^
+" jServer %*

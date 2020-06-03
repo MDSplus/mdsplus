@@ -1,1 +1,6 @@
-javaw -cp  "%HOMEDRIVE%%HOMEPATH%";"%MDSPLUS_DIR%\java\classes\jScope.jar";"%MDSPLUS_DIR%\java\classes\jTraverser.jar";"%MDSPLUS_DIR%/java/classes/jDispatcher.jar";"%MDSPLUS_DIR%\java\classes" jDispatchMonitor %1 %2 %3 %4
+@start "" javaw -cp ^
+"%MDSPLUS_DIR%\java\classes\jDispatcher.jar^
+;%MDSPLUS_DIR%\java\classes\jTraverser.jar^
+;%MDSPLUS_DIR%\java\classes\mdsobjects.jar^
+;%MDSPLUS_DIR%\java\classes\WaveDisplay.jar^
+" jDispatchMonitor %*

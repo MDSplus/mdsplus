@@ -1,5 +1,4 @@
-JAVASOURCE = 6
-JAVABOOTCLASSPATH = -bootclasspath $(RT6JAR)
+JAVASOURCE = 8
 include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = jDispatcher.properties
@@ -15,7 +14,7 @@ else
 
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	echo "Main-Class: jDispatcher" >> $(MANIFEST) &&\
+	echo "Main-Class: jDispatchMonitor" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar jTraverser.jar WaveDisplay.jar" >> $(MANIFEST) &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
