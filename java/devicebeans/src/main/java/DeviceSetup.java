@@ -184,7 +184,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		//collect every DeviceComponent
 		Stack<Container> search_stack = new Stack();
 		search_stack.push(this);
-		while (search_stack.isEmpty())
+		while (!search_stack.isEmpty())
 		{
 			Component[] curr_components = search_stack.pop().getComponents();
 			if (curr_components == null)
