@@ -239,16 +239,16 @@ public class Database implements Interface{
 		node.clearNciFlag(flagMask);
 
 	}
-	public void setNciFlag(int nid, int flagMask) throws Exception
+	public void setNciFlag(int nid, int flagId) throws Exception
 	{
 		MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		node.setNciFlag(flagMask);
+		node.setNciFlag(flagId);
 
 	}
-	public boolean getNciFlag(int nid, int flagMask) throws Exception
+	public boolean getNciFlag(int nid, int flagId) throws Exception
 	{
 		MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getNciFlag(flagMask);
+		return node.getNciFlag(flagId);
 	}
 	public int getNciFlags(int nid) throws Exception
 	{
