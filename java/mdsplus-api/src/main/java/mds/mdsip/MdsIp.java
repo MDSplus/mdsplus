@@ -404,14 +404,14 @@ public class MdsIp extends Mds{
 	}
 
 	/** disconnect from server and close **/
-	@Override
-	public final boolean close() {
+	public void close() {
 		this.disconnectFromServer();
-		return true;
 	}
 
-	/** re-/connects to the servers mdsip service **/
-	public final boolean connect() {
+	/** re-/connects to the servers mdsip service.
+	 * returns connected state.
+	 */
+	public boolean connect() {
 		try{
 			this.connectToServer();
 		}catch(final IOException e){
