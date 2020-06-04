@@ -3,7 +3,7 @@ include ../../Makefile.tests.am
 
 java_srcdir = $(srcdir)/../src/test/java
 
-DEPENDENCIES += $(JSCOPE_JAR) $(MDSOBJECTS_JAR)
+DEPENDENCIES += $(MDSOBJECTS_JAR)
 
 SOURCE = \
     MDSplus/*.java

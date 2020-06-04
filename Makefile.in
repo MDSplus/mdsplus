@@ -10,18 +10,19 @@ VPATH=@srcdir@
 
 
 
-JAVA_JAR = java/tests \
-	   java/mdsplus-api \
-	   java/mdsplus-api/tests \
-	   java/jscope \
-	   java/mdsobjects \
-	   java/devicebeans \
-	   java/jtraverser \
-	   java/jtraverser2 \
-	   java/jdevices \
-	   java/jdispatcher \
-	   java/mdsplus \
-	   java/mdsobjects/tests
+JAVA_JAR = \
+	java/mdsplus \
+	java/mdsplus-api \
+	java/mdsobjects \
+	java/jdispatcher \
+	java/jscope \
+	java/jtraverser \
+	java/jtraverser2 \
+	java/devicebeans \
+	java/jdevices \
+	java/tests \
+	java/mdsplus-api/tests \
+	java/mdsobjects/tests
 
 JAVA_APS = \
 	   javamds
@@ -223,20 +224,20 @@ camshr: mdsdcl
 ccl: camshr  mdsshr mdsdcl
 tcl: mdsshr treeshr tdishr mdstcpip servershr mdsdcl
 dwscope: xmdsshr
-java/devicebeans: java/jscope java/mdsobjects
+javamds: mdstcpip
+java/devicebeans: java/mdsobjects java/jscope
+java/mdsobjects: java/tests
+java/mdsplus-api/tests: java/mdsplus-api java/tests
 java/jdevices: java/devicebeans
 java/jdispatcher: java/mdsobjects
-javamds: mdstcpip
-java/jtraverser: java/jscope java/mdsobjects
+java/jtraverser: java/mdsobjects java/jscope
 java/jtraverser2: java/mdsplus-api
-java/mdsplus-api/tests: java/mdsplus-api java/tests
 math: mdsshr
 mdsdcl: mdsshr
 mdslib: mdstcpip
 mdslibidl: tdishr
 mdsmisc: tdishr xtreeshr
 mdsobjects/cpp: mdstcpip
-java/mdsobjects: java/jscope java/tests
 mdstcpip: tdishr
 mitdevices: mdsshr tdishr treeshr xmdsshr
 remcam: mdstcpip

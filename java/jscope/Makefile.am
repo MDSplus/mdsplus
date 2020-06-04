@@ -19,14 +19,14 @@ WaveDisplay.jar: @JARS_DIR@/java/jscope/WaveDisplay.jar
 
 else
 
-jScope.jar: classjava.stamp
+jScope.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jScope" >> $(MANIFEST) &&\
 	echo "Class-Path: WaveDisplay.jar mdsobjects.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) jScope.class -C $(JAVAROOT) mds/jscope
 
-WaveDisplay.jar: classjava.stamp
+WaveDisplay.jar: $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	$(JAR) cf $@ -C $(JAVAROOT) mds/wavedisplay
 

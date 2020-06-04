@@ -19,4 +19,6 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 
 endif
 
-SOURCE = MDSplus/*.java
+SOURCE =\
+ MDSplus/*.java\
+ mds/connection/*.java

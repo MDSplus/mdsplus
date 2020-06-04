@@ -12,7 +12,7 @@ $(java_DATA): @JARS_DIR@/java/jdispatcher/jDispatcher.jar
 
 else
 
-$(java_DATA): $(DEPENDENCIES) classjava.stamp
+$(java_DATA): $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: mds.jdispatcher.jDispatchMonitor" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\

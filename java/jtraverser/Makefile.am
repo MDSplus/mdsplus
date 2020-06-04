@@ -17,7 +17,7 @@ jTraverser.jar: @JARS_DIR@/java/jtraverser/jTraverser.jar
 
 else
 
-jTraverser.jar: $(DEPENDENCIES) classjava.stamp
+jTraverser.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar DeviceBeans.jar WaveDisplay.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\

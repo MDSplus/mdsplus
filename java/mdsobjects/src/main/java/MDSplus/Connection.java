@@ -250,8 +250,8 @@ public class Connection
     }
 
 ///DataStream management
-    Hashtable listenerH = new Hashtable();
-    Hashtable listenerIdH = new Hashtable();
+    Hashtable<Integer, DataStreamListener> listenerH = new Hashtable<Integer, DataStreamListener>();
+    Hashtable<DataStreamListener, Integer> listenerIdH = new Hashtable<DataStreamListener, Integer>();
     Thread listenerThread;
     public synchronized void registerStreamListener(DataStreamListener listener, java.lang.String expr, java.lang.String tree, int shot) throws MdsException
     {
