@@ -819,7 +819,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	}
 	
 	private final void doCommand(final String command) {
-		try { getDispatcher().MdsValue('@'+command);
+		try { getDispatcher().MdsValueStraight('@'+command); 
 		} catch (Exception e) {}
 	}
 	
@@ -1212,17 +1212,16 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		}
 
 		public void saveTimePhaseExecution() {
-			final String fname = "PulsesPhasesEsecutionTime.log";
-			final File f = new File(fname);
+			final File file = new File("PulsesPhasesEsecutionTime.log");
 			try {
 				if (log == null) {
-					if (f.exists()) {
-						log = new PrintStream(new FileOutputStream(fname, true));
+					if (file.exists()) {
+						log = new PrintStream(new FileOutputStream(file, true));
 						log.println();
 						return;
 					} else {
 						if (labelText.size() > 1) {
-							log = new PrintStream(new FileOutputStream(fname, true));
+							log = new PrintStream(new FileOutputStream(file, true));
 							printHeader(log);
 						} else
 							return;
@@ -1231,6 +1230,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				printValues(log);
 			} catch (final Exception exc) {
 				logMonitor("PERFORMANCE", "ERROR", exc);
+				exc.printStackTrace();
 			}
 
 		}

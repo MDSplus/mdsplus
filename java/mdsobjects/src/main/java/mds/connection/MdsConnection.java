@@ -25,12 +25,15 @@ public class MdsConnection {
 	private final Hashtable<String, EventItem> hashEventName = new Hashtable<String, EventItem>();
 	private final Hashtable<Integer, EventItem> hashEventId = new Hashtable<Integer, EventItem>();
 	private boolean busy;
+
 	public boolean isBusy() {
 		return busy;
 	}
+
 	public void setBusy(boolean busy) {
 		this.busy = busy;
 	}
+
 	public final boolean isConnected() {
 		return connected;
 	}
@@ -40,10 +43,11 @@ public class MdsConnection {
 	}
 
 	public static final void tryClose(final Object obj) {
-		if(obj != null)
+		if (obj != null)
 			try {
 				obj.getClass().getMethod("close").invoke(obj);
-			} catch (Exception ignore) {}
+			} catch (Exception ignore) {
+			}
 	}
 
 	static class EventItem {
@@ -61,8 +65,6 @@ public class MdsConnection {
 			return new String("Event name = " + name + " Event id = " + eventid);
 		}
 	}
-
-
 
 	class PMET extends Thread // Process Mds Event Thread
 	{
@@ -121,8 +123,7 @@ public class MdsConnection {
 						curr_message = null;
 					}
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				synchronized (this) {
 					killed = true;
 					notifyAll();
@@ -279,18 +280,33 @@ public class MdsConnection {
 		}
 		return out;
 	}
-
+	private final Descriptor[] DA_TMP = new Descriptor[0];
+	@Deprecated
 	public Descriptor MdsValue(String expr, Vector<Descriptor> args) {
-		return MdsValue(expr, args, true);
+		return MdsValue(expr, args.toArray(DA_TMP));
 	}
 
+	public Descriptor MdsValue(String expr, Descriptor... args) {
+		return MdsValue(expr, true, args);
+	}
+
+	@Deprecated
 	public Descriptor MdsValueStraight(String expr, Vector<Descriptor> args) {
-		return MdsValue(expr, args, false);
+		return MdsValueStraight(expr, args.toArray(DA_TMP));
 	}
 
-	public synchronized Descriptor MdsValue(String expr, Vector<Descriptor> args, boolean wait) {
+	public Descriptor MdsValueStraight(String expr, Descriptor... args) {
+		return MdsValue(expr, false, args);
+	}
+
+	@Deprecated
+	public Descriptor MdsValue(String expr, Vector<Descriptor> args, boolean wait) {
+		return MdsValue(expr, wait, args.toArray(DA_TMP));
+	}
+
+	public synchronized Descriptor MdsValue(String expr, boolean wait, Descriptor... args) {
 		StringBuffer cmd = new StringBuffer(expr);
-		int n_args = args.size();
+		int n_args = args.length;
 		byte idx = 0, totalarg = (byte) (n_args + 1);
 		Descriptor out;
 
@@ -307,11 +323,8 @@ public class MdsConnection {
 				}
 			}
 			sendArg(idx++, Descriptor.DTYPE_CSTRING, totalarg, null, cmd.toString().getBytes());
-			Descriptor p;
-			for (int i = 0; i < n_args; i++) {
-				p = (Descriptor) args.elementAt(i);
+			for (final Descriptor p : args)
 				sendArg(idx++, p.dtype, totalarg, p.dims, p.dataToByteArray());
-			}
 
 			pending_count++;
 			if (wait) {
@@ -332,24 +345,6 @@ public class MdsConnection {
 		msg.Send(dos);
 	}
 
-	// Read either a string or a float array
-	public synchronized Descriptor MdsValue(String expr) {
-		Descriptor out;
-		MdsMessage message = new MdsMessage(expr);
-
-		// System.out.println("->\n"+expr+"\n<-\n");
-
-		try {
-			pending_count++;
-			message.Send(dos);
-			out = getAnswer();
-		} catch (IOException e) {
-			out = new Descriptor("Could not get IO for " + provider + e);
-		}
-		message.body = null;
-		return out;
-	}
-
 	public int DisconnectFromMds() {
 		connection_listener.removeAllElements();
 		connected = false;
@@ -359,7 +354,7 @@ public class MdsConnection {
 	public void QuitFromMds() {
 		DisconnectFromMds();
 		tryClose(dos);
-		tryClose(dis);		
+		tryClose(dis);
 	}
 
 	public void connectToServer() throws IOException {
@@ -410,7 +405,8 @@ public class MdsConnection {
 
 	private int getEventId() {
 		int i;
-		for (i = 0; i < MAX_NUM_EVENTS && event_flags[i]; i++);
+		for (i = 0; i < MAX_NUM_EVENTS && event_flags[i]; i++)
+			;
 		if (i == MAX_NUM_EVENTS)
 			return -1;
 		event_flags[i] = true;
@@ -517,17 +513,14 @@ public class MdsConnection {
 	}
 
 	public void dispatchConnectionEvent(ConnectionEvent e) {
-		if (connection_listener != null)
-		{
+		if (connection_listener != null) {
 			final Enumeration<ConnectionListener> elements = connection_listener.elements();
-			for (;;) try
-			{
-				elements.nextElement().processConnectionEvent(e);
-			}
-			catch (NoSuchElementException done)
-			{
-				break;
-			}
+			for (;;)
+				try {
+					elements.nextElement().processConnectionEvent(e);
+				} catch (NoSuchElementException done) {
+					break;
+				}
 		}
 	}
 }

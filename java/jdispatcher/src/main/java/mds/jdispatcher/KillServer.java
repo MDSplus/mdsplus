@@ -1,7 +1,5 @@
 package mds.jdispatcher;
-import java.util.*;
 
-import mds.connection.Descriptor;
 import mds.connection.MdsConnection;
 
 public class KillServer extends MdsConnection
@@ -29,7 +27,7 @@ public class KillServer extends MdsConnection
 		try {
 			final KillServer killServer = new KillServer(serverIp + ":"+serverPort);
 			killServer.ConnectToMds(false);
-			killServer.MdsValue("kill", new Vector<Descriptor>(), false);
+			killServer.MdsValueStraight("kill");
 			killServer.DisconnectFromMds();
 		}
 		catch(final Exception exc)
