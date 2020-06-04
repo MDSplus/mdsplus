@@ -27,8 +27,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 				finally
 				{
 					for (final Socket sock : sockets)
-						try {sock.close();
-						} catch (final IOException e) {}
+						tryClose(sock);
 				}
 			}
 		}).start();

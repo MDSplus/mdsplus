@@ -1,6 +1,8 @@
 package mds.jdispatcher;
 import java.util.*;
 
+import mds.connection.MdsConnection;
+
 class InfoServer implements Server
 {
 	String tree;
@@ -54,10 +56,8 @@ class InfoServer implements Server
 	public void endSequence(final int shot)
 	{
 		if(model_database != null)
-			try {
-				model_database.close();
-				model_database = null;
-			}catch(final Exception exc) {System.out.println("Error closing " + tree + " shot " + shot + "\n" + exc);}
+			MdsConnection.tryClose(model_database);
+			model_database = null;
 	}
 
 	@Override

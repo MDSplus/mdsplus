@@ -1,6 +1,8 @@
 package mds.jdispatcher;
 import java.util.*;
 
+import MDSplus.MdsException;
+import MDSplus.Tree;
 import mds.connection.MdsMessage;
 
 class jDispatcherIp extends MdsIp {
@@ -259,30 +261,38 @@ class jDispatcherIp extends MdsIp {
 	}
 
 	void setCurrentShot(final int shot) {
-		try {
-			(new MDSplus.Tree(currTreeName, shot)).setCurrent();
+		try
+		{
+			final MDSplus.Tree tree = new MDSplus.Tree(currTreeName, shot, Tree.OPEN_READONLY);
+			try
+			{
+				tree.setCurrent();
+			}
+			finally
+			{
+				tree.close();
+			}
 		}
-		catch (final Exception exc) {}
+		catch (final Exception exc)
+		{
+			System.err.println("Error setting current shot");
+		}
 	}
 
 	void incrementCurrentShot() {
-		try {
-			final int shot = tree.getCurrent();
-			(new MDSplus.Tree(currTreeName, shot + 1)).setCurrent();
+		try
+		{
+			setCurrentShot(tree.getCurrent()+1);
 		}
-		catch (final Exception exc) {
+		catch (MdsException e)
+		{
 			System.err.println("Error incrementing current shot");
 		}
+			
 	}
 
 	public static void main(final String args[]) {
-		String treeName;
-		if (args.length >= 1)
-			treeName = args[0];
-		else
-			treeName = "test";
-
-		final Properties properties = MdsHelper.initialization(treeName);
+		final Properties properties = MdsHelper.initialization(args);
 		if( properties == null )
 			System.exit(0);
 
@@ -310,8 +320,7 @@ class jDispatcherIp extends MdsIp {
 		}
 
 		System.out.println("Start dispatcher on port " + port);
-		final jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher,
-				treeName);
+		final jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, MdsHelper.experiment);
 		dispatcherIp.start();
 
 		int i = 1;

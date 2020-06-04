@@ -75,11 +75,11 @@ public class Database implements Interface{
 	{
 		mdstree.write();
 	}
-	public  void close()throws Exception
+	public void close() throws Exception
 	{
 		mdstree.close();
 	}
-	public  void quit()throws Exception
+	public void quit() throws Exception
 	{
 		mdstree.quit();
 	}

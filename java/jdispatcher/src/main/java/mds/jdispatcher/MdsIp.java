@@ -17,16 +17,18 @@ class MdsIp implements Runnable
 	Thread listen_thread;
 	protected boolean stopRequest = false;
 	final private Vector<ReceiverThread> receivers = new Vector<ReceiverThread>();
-
+	public static final void tryClose(final AutoCloseable obj) {
+		if(obj != null)
+			try { obj.close();
+			} catch (Exception ignore) {}
+	}
 	public Thread getListenThread() { return listen_thread; }
 
 	public synchronized void stop()
 	{
 		stopRequest = true;
 		listening = false;
-		if (server_sock != null)
-			try { server_sock.close();
-			} catch (IOException e) {}
+		tryClose(server_sock);
 		notifyAll();
 		listen_thread.interrupt();
 		synchronized (receivers) {
@@ -65,9 +67,7 @@ class MdsIp implements Runnable
 				rt.start();
 			}catch(final Exception exc) {fireConnectionEvent(); break;}
 		}
-
-		try { server_sock.close();
-		}catch(final Exception exc) {}
+		tryClose(server_sock);
 	}
 
 	public synchronized void addConnectionListener(final ConnectionListener listener)
@@ -108,12 +108,9 @@ class MdsIp implements Runnable
 		}
 
 		public void close(){
-			try { this.dis.close();
-			} catch (IOException e) {}
-			try { this.dos.close();
-			} catch (IOException e) {}
-			try { this.sock.close();
-			} catch (IOException e) {}			
+			tryClose(dis);
+			tryClose(dos);
+			tryClose(sock);	
 		}
 		@Override
 		public void run()

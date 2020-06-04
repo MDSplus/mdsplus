@@ -47,14 +47,11 @@ class MdsServer extends MdsConnection
 
 	protected boolean rcv_connected = false;
 
-	transient Vector<MdsServerListener> server_event_listener = new Vector<MdsServerListener>();
-	transient Vector<Socket> curr_listen_sock = new Vector<Socket>();
-
-	boolean useJavaServer = true;
-
-
-	byte [] self_address;
-	int watchdogPort = -1;
+	private final Vector<MdsServerListener> server_event_listener = new Vector<MdsServerListener>();
+	private final Vector<Socket> curr_listen_sock = new Vector<Socket>();
+	private boolean useJavaServer = true;
+	private final byte [] self_address;
+	private int watchdogPort = -1;
 
 	class ReceiveServerMessage extends Thread
 	{
@@ -215,27 +212,23 @@ class MdsServer extends MdsConnection
 		else
 			return out.strdata;
 	}
+	
 
-	public  void shutdown()
+	public void shutdown()
 	{
-		if(server_event_listener != null && server_event_listener.size() != 0)
+		server_event_listener.removeAllElements();
+		tryClose(rcv_sock);
+		tryClose(read_sock);
+		final Enumeration<Socket> elements = curr_listen_sock.elements();
+		for (;;) try
 		{
-			server_event_listener.removeAllElements();
+			tryClose(elements.nextElement());
 		}
-		try {
-			if(rcv_sock != null)
-				rcv_sock.close();
-			if(read_sock != null)
-				read_sock.close();
-			if(curr_listen_sock.size() != 0)
-			{
-				for(int i = 0; i < curr_listen_sock.size(); i++)
-					curr_listen_sock.elementAt(i).close();
-				curr_listen_sock.removeAllElements();
-			}
-		}catch(final Exception exc){}
-
-
+		catch (NoSuchElementException done)
+		{
+			curr_listen_sock.removeAllElements();
+			break;
+		}
 		QuitFromMds();
 	}
 
@@ -397,34 +390,32 @@ class MdsServer extends MdsConnection
 		return reply;
 	}
 
-	public synchronized void addMdsServerListener(final MdsServerListener l)
+	public void addMdsServerListener(final MdsServerListener l)
 	{
-		if (l == null) {
-			return;
-		}
-		server_event_listener.addElement(l);
+		if (l != null)
+			server_event_listener.addElement(l);
 	}
 
-	public synchronized void removeMdsServerListener(final MdsServerListener l)
+	public void removeMdsServerListener(final MdsServerListener l)
 	{
-		if (l == null) {
-			return;
-		}
-		server_event_listener.removeElement(l);
+		if (l != null)
+			server_event_listener.removeElement(l);
 	}
 
 
 	protected void dispatchMdsServerEvent(final MdsServerEvent e)
 	{
-		//synchronized(server_event_listener)
+		final Enumeration<MdsServerListener> elements = server_event_listener.elements();
+		for (;;) try
 		{
-			for(int i = 0; i < server_event_listener.size(); i++)
-			{
-				final MdsServerListener curr_server = server_event_listener.elementAt(i);
-				curr_server.processMdsServerEvent(e);
-			}
+			elements.nextElement().processMdsServerEvent(e);
+		}
+		catch (NoSuchElementException done)
+		{
+			break;
 		}
 	}
+		
 
 
 	//Connection to mdsip server: if it is a Java action server the watchdog port is sent just after the connection
@@ -480,22 +471,10 @@ class MdsServer extends MdsConnection
 						public void run()
 						{
 							System.out.println("Detected server TIMEOUT");
-							try {
-								sock.close();
-							}
-							catch (final Exception exc) {}
-							try {
-								watchdogSock.close();
-							}
-							catch (final Exception exc) {}
-							try {
-								read_sock.close();
-							}
-							catch (final Exception exc) {}
-							try {
-								rcv_sock.close();
-							}
-							catch (final Exception exc) {}
+							tryClose(sock);
+							tryClose(watchdogSock);
+							tryClose(read_sock);
+							tryClose(rcv_sock);
 							final ConnectionEvent ce = new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION, "Lost connection from : "+provider);
 							dispatchConnectionEvent(ce);
 						}

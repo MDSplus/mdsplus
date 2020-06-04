@@ -1,14 +1,8 @@
 package mds.connection;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class MdsConnection {
 	public static final int DEFAULT_PORT = 8000;
@@ -24,8 +18,12 @@ public class MdsConnection {
 	protected DataOutputStream dos;
 	public String error;
 	protected MRT receiveThread;
-	public boolean connected;
-	int pending_count = 0;
+	protected boolean connected;
+	private int pending_count = 0;
+	private final Vector<ConnectionListener> connection_listener = new Vector<ConnectionListener>();
+	private final boolean event_flags[] = new boolean[MAX_NUM_EVENTS];
+	private final Hashtable<String, EventItem> hashEventName = new Hashtable<String, EventItem>();
+	private final Hashtable<Integer, EventItem> hashEventId = new Hashtable<Integer, EventItem>();
 	private boolean busy;
 	public boolean isBusy() {
 		return busy;
@@ -33,16 +31,19 @@ public class MdsConnection {
 	public void setBusy(boolean busy) {
 		this.busy = busy;
 	}
-
-	transient Vector<ConnectionListener> connection_listener = new Vector<ConnectionListener>();
-	transient Vector<EventItem> event_list = new Vector<EventItem>();
-	transient boolean event_flags[] = new boolean[MAX_NUM_EVENTS];
-
-	transient Hashtable<String, EventItem> hashEventName = new Hashtable<String, EventItem>();
-	transient Hashtable<Integer, EventItem> hashEventId = new Hashtable<Integer, EventItem>();
+	public final boolean isConnected() {
+		return connected;
+	}
 
 	public String getProvider() {
 		return provider;
+	}
+
+	public static final void tryClose(final Object obj) {
+		if(obj != null)
+			try {
+				obj.getClass().getMethod("close").invoke(obj);
+			} catch (Exception ignore) {}
 	}
 
 	static class EventItem {
@@ -356,16 +357,9 @@ public class MdsConnection {
 	}
 
 	public void QuitFromMds() {
-		try {
-			connection_listener.removeAllElements();
-			dos.close();
-			dis.close();
-
-			connected = false;
-		} catch (IOException e) {
-			error = "Could not get IO for " + provider + e;
-		}
-
+		DisconnectFromMds();
+		tryClose(dos);
+		tryClose(dis);		
 	}
 
 	public void connectToServer() throws IOException {
@@ -416,8 +410,7 @@ public class MdsConnection {
 
 	private int getEventId() {
 		int i;
-		for (i = 0; i < MAX_NUM_EVENTS && event_flags[i]; i++)
-			;
+		for (i = 0; i < MAX_NUM_EVENTS && event_flags[i]; i++);
 		if (i == MAX_NUM_EVENTS)
 			return -1;
 		event_flags[i] = true;
@@ -514,19 +507,27 @@ public class MdsConnection {
 	}
 
 	public synchronized void addConnectionListener(ConnectionListener l) {
-		if (l != null)
+		if (l != null && connection_listener != null)
 			connection_listener.addElement(l);
 	}
 
 	public synchronized void removeConnectionListener(ConnectionListener l) {
-		if (l != null)
+		if (l != null && connection_listener != null)
 			connection_listener.removeElement(l);
 	}
 
 	public void dispatchConnectionEvent(ConnectionEvent e) {
-		if (connection_listener != null) {
-			for (ConnectionListener listener : connection_listener)
-				listener.processConnectionEvent(e);
+		if (connection_listener != null)
+		{
+			final Enumeration<ConnectionListener> elements = connection_listener.elements();
+			for (;;) try
+			{
+				elements.nextElement().processConnectionEvent(e);
+			}
+			catch (NoSuchElementException done)
+			{
+				break;
+			}
 		}
 	}
 }
