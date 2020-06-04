@@ -402,8 +402,7 @@ public class jScopeMultiWave
                 StringTokenizer st = new StringTokenizer(data, ":");
 	        String experiment = st.nextToken().substring(1);
 	        String path = data;
-                System.out.println(path);
-	         if(support.getDropAction() ==  TransferHandler.MOVE)
+	        if(support.getDropAction() ==  TransferHandler.MOVE)
 	            wi.Erase();
 	        wi.setExperiment(experiment);
 	        wi.AddSignal(path);
