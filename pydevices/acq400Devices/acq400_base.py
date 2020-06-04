@@ -52,8 +52,6 @@ class _ACQ400_BASE(MDSplus.Device):
         {'path':':NODE','type':'text',            'value':'acq1001_999', 'options':('no_write_shot',)},
         {'path':':SITE','type':'numeric',         'value': 1, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text',       'value': 'role_default', 'options':('no_write_shot',)},
-        {'path':':TRIG_SRC','type':'text',        'value': 'STRIG', 'options':('no_write_shot',)},
-        {'path':':TRIG_DX','type':'text',         'value': 'd1', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text',            'value': 'master', 'options':('no_write_shot',)},
         {'path':':FREQ','type':'numeric',         'value': int(1e6), 'options':('no_write_shot',)},
         {'path':':PRESAMPLES','type':'numeric',   'value': int(1e5), 'options':('no_write_shot',)},
@@ -92,6 +90,7 @@ class _ACQ400_BASE(MDSplus.Device):
             uut.s0.transient = 'SOFT_TRIGGER=1'
 
         # If PRE samples different from zero
+        print("PRE={} POST={}".format(self.presamples.data(), self.samples.data()))
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.samples.data())
 
         #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
@@ -100,7 +99,7 @@ class _ACQ400_BASE(MDSplus.Device):
         #Set the Sampling rate in the ACQ:
         # MB Clock (WR Clock): 20MHz
         # mb_freq = uut.s0.SIG_CLK_MB_FREQ
-        mb_freq = 20000000.00 #MHz
+        mb_freq = 20000000.00 #Hz
 
         self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
         clockdiv      = mb_freq/self.freq.data()
@@ -116,20 +115,21 @@ class _ACQ400_BASE(MDSplus.Device):
         uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
         uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
-        # Setting SYNC Main Timing Highway Source Routing
-        uut.s0.SIG_SRC_TRG_0   = self.EVENT0_SRC.data()   # (hard trigger) in bus d0
-        uut.s0.SIG_SRC_TRG_1   = self.TRIG_SRC.data()     # (soft trigger) in bus d1
-        uut.s0.SIG_EVENT_SRC_0 = self.EVENT0_SRC.data()   # The source needs to be TRG to make the transition PRE->POST
+        # # Setting SYNC Main Timing Highway Source Routing
+        # uut.s0.SIG_SRC_TRG_0   = self.EVENT0_SRC.data()   # (hard trigger) in signal d0
+        # uut.s0.SIG_SRC_TRG_1   = self.TRIG_SRC.data()     # (soft trigger) in signal d1
+        # uut.s0.SIG_EVENT_SRC_0 = self.EVENT0_SRC.data()   # The source needs to be TRG to make the transition PRE->POST
 
-        #Setting the bus to use for ACQ2106 stream control
-        uut.s1.TRG       = 'enable'
-        uut.s1.TRG_DX    = self.TRIG_DX.data()
-        uut.s1.TRG_SENSE = 'rising'
+        # #Setting the signal (dX) to use for ACQ2106 stream control
+        # uut.s1.TRG       = 'enable'
+        # uut.s1.TRG_DX    = self.TRIG_DX.data()
+        # uut.s1.TRG_SENSE = 'rising'
 
-        if self.samples.data() !=0:
-            uut.s1.EVENT0       = 'enable'
-            uut.s1.EVENT0_DX    = self.EVENT0_DX.data()
-            uut.s1.EVENT0_SENSE = 'rising'
+        # #Setting the signal (dX) to use for ACQ2106 transient
+        # if self.samples.data() !=0:
+        #     uut.s1.EVENT0       = 'enable'
+        #     uut.s1.EVENT0_DX    = self.EVENT0_DX.data()
+        #     uut.s1.EVENT0_SENSE = 'rising'
 
     INIT = init
 
@@ -336,20 +336,74 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     taking a transient capture.
     """
     tr_base_parts = [
-        {'path':':RUNNING',     'type':'numeric',                      'options':('no_write_model',)},
-        {'path':':TRIG_TIME',   'type':'numeric',                      'options':('write_shot',)},
-        {'path':':EVENT0_SRC',  'type':'text',    'value': 'EXTernal', 'options':('no_write_shot',)},
-        {'path':':EVENT0_DX',   'type':'text',    'value': 'DX',       'options':('no_write_shot',)},
-        {'path':':WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')}
-        {'path':':WRTD_T0',     'type': 'text', 'value':'T0','options': ('no_write_shot')}
-        {'path':':WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'}
+        {'path':':RUNNING',     'type': 'numeric',                      'options':('no_write_model',)},
+        {'path':':TRIG_TIME',   'type': 'numeric',                      'options':('write_shot',)},
+        #Trigger sources
+        {'path':':TRIG_SRC_d0','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_SRC_d1','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_DX', 'type':'text',         'value': 'd0', 'options':('no_write_shot',)},
+        #Event sources
+        {'path':':EVENT0_SRC',  'type': 'text',    'value': 'TRG', 'options':('no_write_shot',)},
+        {'path':':EVENT0_DX',   'type': 'text',    'value': 'd0',       'options':('no_write_shot',)},
+        #WRTD tree information
+        {'path':':WR',     'type':'numeric', 'value': 0,  'options':('write_shot',)},
+            {'path':'WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
+            {'path':'WR:WRTD_T0',     'type': 'text', 'value':'T0','options': ('no_write_shot')},
+            {'path':'WR:WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
-    def get_WRTD_Tree(self):
-        tree_name    = self.wrtd_tree.data()
-        shot_number  = self.wrtd_shot.data() # the open shot, i.e 0
-        wrtd_tree   = MDSplus.Tree(tree_name, shot_number, 'NORMAL')
-        return wrtd_tree
+
+    def init(self):
+        # Needs the initialization given in the superclass:
+        super(_ACQ400_TR_BASE, self).init()
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+
+        # When WR is not being used to trigger:
+        if self.wr.data() == 0:
+            if self.presamples.data() == 0:
+                if 'STRIG' in source_of_trigger:
+                    uut.s0.SIG_SRC_TRG_1   = str(self.trig_src_d1.data())   # The only option for EXT triggering is using signal d0
+                    #Setting the signal (dX) to use for ACQ2106 stream control
+                    uut.s1.TRG       = 'enable'
+                    uut.s1.TRG_DX    = 'd1'
+                    uut.s1.TRG_SENSE = 'rising'
+                elif 'EXT' in source_of_trigger:
+                    uut.s0.SIG_SRC_TRG_0   = str(self.trig_src_d0.data())   # The only option for EXT triggering is using signal d0
+                    #Setting the signal (dX) to use for ACQ2106 stream control
+                    uut.s1.TRG       = 'enable'
+                    uut.s1.TRG_DX    = 'd0'
+                    uut.s1.TRG_SENSE = 'rising'
+            else:
+                #EVENT0:
+                uut.s0.SIG_EVENT_SRC_0 = str(self.event0_src.data())   # The source needs to be TRG to make the transition PRE->POST
+                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src_d0.data())        # The only option for EXT triggering is using signal d0
+                uut.s1.EVENT0       = 'enable'
+                uut.s1.EVENT0_DX    = 'd0'
+                uut.s1.EVENT0_SENSE = 'rising'
+                #TRG:
+                uut.s0.SIG_SRC_TRG_1 = str(self.trig_src_d1.data())
+                #Setting the signal (dX) to use for ACQ2106 stream control
+                uut.s1.TRG       = 'enable'
+                uut.s1.TRG_DX    = 'd1'
+                uut.s1.TRG_SENSE = 'rising'
+        #When WR is used to trigger, then:
+        else:
+            # D0 signal:
+            uut.s0.SIG_SRC_TRG_1   = 'NONE'
+            # D1 signal:
+            uut.s0.SIG_SRC_TRG_0   = 'NONE'
+
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_SENSE = 'rising'
+
+            uut.s1.EVENT0       = 'enable'
+            uut.s1.EVENT0_DX    = str(self.event0_dx.data())
+            uut.s1.EVENT0_SENSE = 'rising'
+            
+            
+    INIT=init
 
     def state(self):
         uut = acq400_hapi.Acq400(self.node.data())
@@ -404,8 +458,8 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
 
-        wrtd_tree = self.get_WRTD_Tree()
-        t0 = wrtd_tree.getNode(self.wrtd_t0.data()).data()
+        self.wrtd_t0.record = WRTD_T0.data()
+        print(str(self.wrtd_t0))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:

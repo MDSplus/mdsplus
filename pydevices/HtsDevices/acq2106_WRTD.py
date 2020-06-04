@@ -138,7 +138,8 @@ class ACQ2106_WRTD(MDSplus.Device):
         # # Commit the changes for WRTD TX
         # uut.cC.wrtd_commit_tx = 1
 
-        wrtdtx = '1 --tx_id=' + message
+        #wrtdtx = '1 --tx_id=' + message
+        wrtdtx = message
         uut.s0.wrtd_tx_immediate = wrtdtx
     
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
