@@ -302,7 +302,7 @@ public class MdsConnection {
 	@Deprecated
 	public Descriptor MdsValue(String expr, Vector<Descriptor> args, boolean wait) {
 		return MdsValue(expr, wait, args.toArray(DA_TMP));
-	}
+	} 
 
 	public synchronized Descriptor MdsValue(String expr, boolean wait, Descriptor... args) {
 		StringBuffer cmd = new StringBuffer(expr);

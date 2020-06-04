@@ -19,7 +19,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	private static final void logMonitor(String event, String phase, Object... more) {
 		synchronized (System.out) {
 			System.out.print(String.format("Monitor: PHASE %-7s %-12s ", event, phase));
-			for (Object e : more)
+			for (final Object e : more)
 				System.out.print(e);
 			System.out.println("");
 			System.out.flush();
@@ -30,7 +30,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
 
 	ShotsPerformance shotsPerformance = new ShotsPerformance();
-	String experiment;
+	private String experiment;
 
 	class UpdateList implements Runnable {
 		MdsMonitorEvent me;
@@ -55,6 +55,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				serversInfoPanel.updateServerState(me.server_address, true);
 				break;
 			case MdsMonitorEvent.MonitorServerDisconnected:
+				serversInfoPanel.updateServerState(me.server_address, false);
 				final ServerInfo si = serversInfo.get(me.server_address);
 				String msg;
 				if (si != null) {
@@ -66,7 +67,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					msg = "Disconnect from server class address :" + me.server_address;
 				if (msg != null)
 					JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "Alert", JOptionPane.ERROR_MESSAGE);
-				serversInfoPanel.updateServerState(me.server_address, false);
+
 				break;
 			case MdsMonitorEvent.MonitorBuildBegin:
 				resetAll(me);
@@ -202,32 +203,33 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	private JMenuItem do_redispatch;
 	private JMenuItem do_abort;
 
-	JList<MdsMonitorEvent> curr_list;
-	int item_idx;
+	private JList<MdsMonitorEvent> curr_list;
+	private int item_idx;
 
-	boolean auto_scroll = true;
-	int curr_phase = -1;
-	int show_phase = -1;
+	private boolean auto_scroll = true;
+	private int curr_phase = -1;
+	private int show_phase = -1;
 
-	String tree;
-	long shot;
-	String monitor_server;
+	private String tree;
+	private long shot;
+	private String monitor_server;
 
-	JInternalFrame build, executing, failed;
+	private JInternalFrame build, executing, failed;
 
-	JList<MdsMonitorEvent> buildList, executingList, failedList;
+	private JList<MdsMonitorEvent> buildList, executingList, failedList;
 
-	DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<MdsMonitorEvent>();
-	DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<MdsMonitorEvent>();
-	DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<MdsMonitorEvent>();
+	private final DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<MdsMonitorEvent>();
+	private final DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<MdsMonitorEvent>();
+	private final DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<MdsMonitorEvent>();
 	private int num_window = 0;
 
-	Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
 
-	ErrorMgr error_mgr;
-	int info_port;
+	private ErrorMgr error_mgr;
+	private int info_port;
+	private Process dispatcher_proc;
 
 	class ToolTipJList extends JList<MdsMonitorEvent> {
 
@@ -406,7 +408,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	public jDispatchMonitor() {
 		this(null, null);
 	}
-	
+
 	public jDispatchMonitor(final String monitor_server, final String experiment) {
 
 		this.experiment = experiment;
@@ -452,7 +454,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			System.out.println("Cannot read info port");
 		}
 
-		this.loadServersInfo(properties);
+		for (final ServerInfo srvInfo : MdsHelper.getServers())
+			serversInfo.put(srvInfo.getAddress(), srvInfo);
 
 		serversInfoPanel = new ServersInfoPanel();
 		serversInfoPanel.setServersInfo(this.serversInfo);
@@ -543,8 +546,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		info_m.add(statistics_cb);
 
 		final JMenuItem dispatch = new JMenu("Dispatch");
-		for (final MdsHelper.DispatchCmd dispcmd : MdsHelper.getDispatch())
-		{
+		for (final MdsHelper.DispatchCmd dispcmd : MdsHelper.getDispatch()) {
 			final JMenuItem item = new JMenuItem(dispcmd.name);
 			item.addActionListener(new ActionListener() {
 				@Override
@@ -554,7 +556,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			});
 			dispatch.add(item);
 		}
-		
+
 		mb.add(file);
 		mb.add(view);
 		mb.add(phase_m);
@@ -780,15 +782,17 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 			final JComboBox<?> cb = new JComboBox<Object>();
 			cb.setEditable(true);
-
-			// monitor_server = JOptionPane.showInputDialog("Dispatch monitor server");
 			monitor_server = (String) JOptionPane.showInputDialog(null, "Dispatch monitor server ip:port address",
 					"Connection", JOptionPane.QUESTION_MESSAGE, null, null, monitor_server);
 			if (monitor_server == null)
 				return;
 			openConnection(monitor_server);
 		} catch (final IOException exc) {
-			JOptionPane.showMessageDialog(jDispatchMonitor.this, exc.getMessage(), "alert", JOptionPane.ERROR_MESSAGE);
+			if (0 == JOptionPane.showConfirmDialog(jDispatchMonitor.this,
+					exc.getMessage() + "\nWe will try to spawn a local instance if that is OK?",
+					"Spawn local jDispatcherIp?", JOptionPane.OK_CANCEL_OPTION))
+				;
+			spawnDispatcherIp();
 		}
 	}
 
@@ -804,6 +808,33 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		collectServersInfo();
 	}
 
+	private final void spawnDispatcherIp() {
+		if (dispatcher_proc == null) {
+			final String sep = System.getProperty("file.separator");
+			final String classpath = System.getProperty("java.class.path");
+			final String path = System.getProperty("java.home") + sep + "bin" + sep + "java";
+			final ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath,
+					jDispatcherIp.class.getName(), experiment);
+			try {
+				dispatcher_proc = processBuilder.start();
+				Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+					dispatcher_proc.destroy();
+				}));
+				new Thread(() -> {
+					for (;;)
+						try {
+							Thread.sleep(1000);
+							openConnection(monitor_server);
+							break;
+						} catch (final Exception e) {
+							continue;
+						}
+				}).start();
+			} catch (final IOException e) {
+			}
+		}
+	}
+
 	private void abortAction(final MdsMonitorEvent me) throws IOException {
 		if (me.mode == MdsMonitorEvent.MonitorDoing)
 			doCommand("ABORT", me);
@@ -817,12 +848,16 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	private void doCommand(final String command, final MdsMonitorEvent me) throws IOException {
 		doCommand(String.format("%s %d %s", command, me.nid, MdsHelper.toPhaseName(me.phase)));
 	}
-	
+
 	private final void doCommand(final String command) {
-		try { getDispatcher().MdsValueStraight('@'+command); 
-		} catch (Exception e) {}
+		new Thread(() -> {
+			try {
+				getDispatcher().MdsValueStraight('@' + command);
+			} catch (final Exception e) {
+			}
+		}).start();
 	}
-	
+
 	private final MdsConnection getDispatcher() throws Exception {
 		if (dispatcher == null) {
 			if (monitor_server == null)
@@ -833,7 +868,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		}
 		return dispatcher;
 	}
-		
+
 	private void setWindowTitle() {
 		if (mds_server != null && mds_server.isConnected())
 			setTitle("jDispatchMonitor - Connected to " + mds_server.getProvider() + " receive on port "
@@ -931,11 +966,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		phase_failed.clear();
 		if (me != null) {
 			shotsPerformance.saveTimePhaseExecution();
-			exp_l.setText("Experiment: " + me.tree);
-			shot_l.setText("Shot: " + me.shot);
-			phase_l.setText("Phase: " + MdsHelper.toPhaseName(me.phase));
-			tree = new String(me.tree);
+			tree = me.tree;
 			shot = me.shot;
+			exp_l.setText("Experiment: " + tree);
+			shot_l.setText("Shot: " + shot);
+			phase_l.setText("Phase: " + MdsHelper.toPhaseName(me.phase));
 		}
 	}
 
@@ -1151,51 +1186,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 		System.out.println("jDispatchMonitor " + monitor_server + " " + experiment);
 
-		//MdsHelper.initialization(experiment);
+		// MdsHelper.initialization(experiment);
 
 		dm = new jDispatchMonitor(monitor_server, experiment);
 		dm.pack();
 		dm.setSize(600, 700);
 		dm.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		dm.setVisible(true);
-	}
-
-	public void loadServersInfo(final Properties properties) {
-		int i = 1;
-		while (true) {
-			final String server_class = properties.getProperty("jDispatcher.server_" + i + ".class");
-			if (server_class == null)
-				break;
-			final String server_ip = properties.getProperty("jDispatcher.server_" + i + ".address").trim();
-			if (server_ip == null)
-				break;
-			final String server_subtree = properties.getProperty("jDispatcher.server_" + i + ".subtree");
-
-			boolean useJavaServer;
-			try {
-				useJavaServer = properties.getProperty("jDispatcher.server_" + i + ".use_jserver").equals("true");
-			} catch (final Exception exc) {
-				useJavaServer = true;
-			}
-
-			int watchdogPort;
-			try {
-				watchdogPort = Integer.parseInt(properties.getProperty("jDispatcher.server_" + i + ".watchdog_port"));
-			} catch (final Exception exc) {
-				watchdogPort = -1;
-			}
-
-			final String startScript = properties.getProperty("jDispatcher.server_" + i + ".start_script");
-
-			final String stopScript = properties.getProperty("jDispatcher.server_" + i + ".stop_script");
-
-			final ServerInfo srvInfo = new ServerInfo(server_class, server_ip, server_subtree, useJavaServer,
-					watchdogPort, startScript, stopScript);
-
-			serversInfo.put(server_ip, srvInfo);
-
-			i++;
-		}
 	}
 
 	public class ShotsPerformance {

@@ -54,7 +54,7 @@ public class jServer extends MdsIp {
 	private static final void logServer(Object... elements) {
 		synchronized (System.out) {
 			System.out.print("Server:  ");
-			for (Object e : elements)
+			for (final Object e : elements)
 				System.out.print(e);
 			System.out.println("");
 			System.out.flush();
@@ -163,7 +163,7 @@ public class jServer extends MdsIp {
 			while (!jServer.this.stopRequest) {
 				try {
 					currAction = actionQueue.nextAction();
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					continue;
 				}
 				// NidData nid = currAction.getNid();
@@ -224,6 +224,7 @@ public class jServer extends MdsIp {
 		worker = new Worker();
 	}
 
+	@Override
 	public void run() {
 		worker.setName(String.format("Worker(%d)", port));
 		worker.setDaemon(true);
@@ -231,6 +232,7 @@ public class jServer extends MdsIp {
 		super.run();
 	}
 
+	@Override
 	public void stop() {
 		closeAll();
 		stopRequest = true;

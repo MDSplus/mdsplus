@@ -1,4 +1,5 @@
 package mds.jdispatcher;
+
 import java.util.*;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -7,11 +8,13 @@ class MdsHelper {
 	static final class DispatchCmd {
 		final String name;
 		final String cmd;
-		DispatchCmd(String name, String cmd){
+
+		DispatchCmd(String name, String cmd) {
 			this.name = name;
 			this.cmd = cmd;
 		}
 	}
+
 	private final static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
 	private final static Hashtable<Integer, String> id_to_name = new Hashtable<Integer, String>();
 	private final static String defaultFileName = "jDispatcher.properties";
@@ -19,7 +22,6 @@ class MdsHelper {
 	private static String dispatcher_ip = null;
 	private static int dispatcherPort = 0;
 	private static Properties properties = null;
-
 
 	private static final Properties tryOpen(final Vector<String> paths, final Vector<String> names) {
 		paths.add(null);
@@ -32,7 +34,7 @@ class MdsHelper {
 						properties.load(stream);
 					}
 					return properties;
-				} catch (IOException next) {
+				} catch (final IOException next) {
 					continue;
 				}
 			}
@@ -48,7 +50,7 @@ class MdsHelper {
 				try (final InputStream stream = new FileInputStream(args[1])) {
 					properties.load(stream);
 				}
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				System.err.println("Cannot open specified jDispatcher properties file " + args[1]);
 				return null;
 			}
@@ -94,9 +96,10 @@ class MdsHelper {
 		dispatcherPort = Integer.parseInt(properties.getProperty("jDispatcher.port"));
 		return properties;
 	}
+
 	private static final String DISPATCH_FMRT = "jDispatcher.dispatch_%d.%s";
-	static final Vector<DispatchCmd> getDispatch()
-	{
+
+	static final Vector<DispatchCmd> getDispatch() {
 		final Vector<DispatchCmd> dispatch = new Vector<DispatchCmd>();
 		for (int i = 1;; i++) {
 			final String name = properties.getProperty(String.format(DISPATCH_FMRT, i, "name"));
@@ -107,30 +110,38 @@ class MdsHelper {
 		}
 		return dispatch;
 	}
+
 	private static final String SERVER_FMRT = "jDispatcher.server_%d.%s";
-	public static Vector<Server> getServers() {		
-		final Vector<Server> servers = new Vector<Server>();
-		for (int i = 1;;i++) {
+
+	public static Vector<ServerInfo> getServers() {
+		final Vector<ServerInfo> servers = new Vector<ServerInfo>();
+		for (int i = 1;; i++) {
 			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
-			if (server_class == null) break;
+			if (server_class == null)
+				break;
 			final String server_ip = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
-			if (server_ip == null) break;
+			if (server_ip == null)
+				break;
 			final String server_subtree = properties.getProperty(String.format(SERVER_FMRT, i, "subtree"));
 			final String javasvr = properties.getProperty(String.format(SERVER_FMRT, i, "use_jserver"));
 			final boolean useJavaServer = javasvr == null || javasvr.equals("true");
 			int watchdogPort;
-			try {watchdogPort = Integer.parseInt( properties.getProperty(String.format(SERVER_FMRT, i, "watchdog_port")));
-			}catch(final Exception exc){watchdogPort = -1;}
-			final Server server = new ActionServer("", server_ip.trim(),
-					server_class.trim(),
-					server_subtree, useJavaServer, watchdogPort);
-			servers.add(server);
+			try {
+				watchdogPort = Integer.parseInt(properties.getProperty(String.format(SERVER_FMRT, i, "watchdog_port")));
+			} catch (final Exception exc) {
+				watchdogPort = -1;
+			}
+			final String startScript = properties.getProperty(String.format(SERVER_FMRT, i, "start_script"));
+			final String stopScript = properties.getProperty(String.format(SERVER_FMRT, i, "stop_script"));
+			final ServerInfo srvInfo = new ServerInfo(server_class, server_ip, server_subtree, useJavaServer,
+					watchdogPort, startScript, stopScript);
+			servers.add(srvInfo);
 		}
 		return servers;
 	}
-	
+
 	public static void generateEvent(String event, int shot) {
-		byte[] shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
+		final byte[] shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
 		MDSplus.Event.setEventRaw(event, shotBytes);
 	}
 
@@ -141,7 +152,7 @@ class MdsHelper {
 	public static int toPhaseId(String phase_name) {
 		try {
 			return (name_to_id.get(phase_name)).intValue();
-		} catch (Exception exc) {
+		} catch (final Exception exc) {
 			return -1;
 		}
 	}
