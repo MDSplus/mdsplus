@@ -1,5 +1,6 @@
 package mds.jdispatcher;
-interface Server
+
+public interface Server
 /**
 Abstracts Server functionality
 */

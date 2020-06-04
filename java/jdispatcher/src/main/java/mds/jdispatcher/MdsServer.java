@@ -4,7 +4,9 @@ import java.net.*;
 import java.awt.*;
 import java.util.*;
 
-import mds.wavedisplay.*;
+import mds.connection.ConnectionEvent;
+import mds.connection.Descriptor;
+import mds.connection.MdsConnection;
 
 class MdsServer extends MdsConnection
 {

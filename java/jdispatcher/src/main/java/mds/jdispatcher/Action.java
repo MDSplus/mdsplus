@@ -1,9 +1,12 @@
 package mds.jdispatcher;
 import java.util.*;
 
+import MDSplus.MdsException;
+
 class Action
 {
 	private final MDSplus.Action action;
+	private final MDSplus.Dispatch dispatch;
 	private String server_address;
 	private final int nid;
 	private final String name;
@@ -35,10 +38,23 @@ class Action
 		status = 0;
 		this.server_address = server_address;
 		this.essential = essential;
+		MDSplus.Data data = action.getDispatch();
+		while (data != null && !(data instanceof MDSplus.Dispatch))
+			if (data instanceof MDSplus.TreeNode)
+				try {
+					data = ((MDSplus.TreeNode)data).getData();
+				} catch (final MdsException e) {
+					data = null;
+				}
+			else
+				data.data();
+		dispatch = (MDSplus.Dispatch)data;
+
 	}
 	//public synchronized int getTimestamp() {return this.timestamp; }
 	//public synchronized void setTimestamp(final int timestamp) {this.timestamp = timestamp; }
 	public MDSplus.Action getAction() {return action; }
+	public MDSplus.Dispatch getDispatch() {return dispatch; }
 	public int getNid() {return nid; }
 	public String getName() {return name; }
 	public boolean isOn() {return on; }
@@ -63,7 +79,7 @@ class Action
 		if(verbose)
 		{
 			try {
-				server = ((MDSplus.Dispatch)action.getDispatch()).getIdent().getString();
+				server = dispatch.getIdent().getString();
 			} catch(final Exception e) {server = ""; }
 			switch(dispatch_status) {
 			case DISPATCHED : System.out.println(""+ new Date() + " Dispatching node " +

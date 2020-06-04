@@ -90,6 +90,8 @@ class InfoServer implements Server
 
 		if(model_database == null)
 		{
+			if (tree == null || shot == -1)
+				return null;
 			try {
 				model_database = new MDSplus.Tree(tree, shot);
 			}catch(final Exception exc){return null; }
@@ -130,7 +132,7 @@ class InfoServer implements Server
 		//Now nids and paths needs to be resolved by substituting them with ActionData
 		for(int i = 0; i < num_actions; i++)
 			try{
-				traverseAction(actions[i].getAction().getDispatch(), action_table);
+				traverseAction(actions[i].getDispatch(), action_table);
 			}catch(final Exception exc){}
 		//System.out.println("End collectAction()");
 

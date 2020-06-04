@@ -119,7 +119,7 @@ Ensures action dispatching to servers, keeping load balancing.
 	{
 		String server;
 		try{
-			server = ((MDSplus.Dispatch)event.getAction().getAction().getDispatch()).getIdent().getString();
+			server = event.action.getDispatch().getIdent().getString();
 		}catch(final Exception exc) {return; }
 		final Vector<Server> server_vect = servers.get(server.toUpperCase());
 		if(server_vect == null) //it is the default server

@@ -1,6 +1,8 @@
 package mds.jdispatcher;
 import java.util.*;
-import mds.wavedisplay.*;
+
+import mds.connection.Descriptor;
+import mds.connection.MdsConnection;
 
 public class KillServer extends MdsConnection
 {

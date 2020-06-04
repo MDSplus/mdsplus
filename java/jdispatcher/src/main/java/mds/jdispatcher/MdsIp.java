@@ -2,7 +2,10 @@ package mds.jdispatcher;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import mds.wavedisplay.*;
+
+import mds.connection.ConnectionEvent;
+import mds.connection.ConnectionListener;
+import mds.connection.MdsMessage;
 
 class MdsIp implements Runnable
 {

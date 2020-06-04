@@ -1,11 +1,15 @@
 package mds.jdispatcher;
 import javax.swing.*;
+
+import mds.connection.ConnectionEvent;
+import mds.connection.ConnectionListener;
+import mds.connection.MdsConnection;
+import mds.connection.MdsMessage;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
-
-import mds.wavedisplay.*;
 
 public class jDispatchMonitor extends JFrame implements MdsServerListener, ConnectionListener
 {
@@ -941,7 +945,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			throw(new IOException("Can't connect to null address"));
 		mds_server = new MdsServer(mon_srv, true, -1);
 		mds_server.addMdsServerListener(jDispatchMonitor.this);
-		mds_server.addConnectionListener(jDispatchMonitor.this);
+		//mds_server.addConnectionListener(jDispatchMonitor.this);
 		mds_server.monitorCheckin();
 		setWindowTitle();
 		dispatcher = null;

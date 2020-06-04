@@ -3,8 +3,7 @@ import java.util.*;
 import java.io.*;
 import java.net.*;
 
-class jDispatcher
-implements ServerListener
+class jDispatcher implements ServerListener
 {
 	static boolean verbose = true;
 
@@ -335,7 +334,7 @@ implements ServerListener
 
 	boolean isConditional(final Action action)
 	{
-		final MDSplus.Dispatch dispatch = (MDSplus.Dispatch) action.getAction().getDispatch();
+		final MDSplus.Dispatch dispatch = action.getDispatch();
 		if(dispatch.getOpcode() != MDSplus.Dispatch.SCHED_SEQ )
 			return true;
 		if((dispatch.getWhen() instanceof MDSplus.TreeNode) || (dispatch.getWhen() instanceof MDSplus.TreePath)
@@ -434,13 +433,14 @@ implements ServerListener
 	protected String getServerClass(final Action action)
 	{
 		try {
-			final MDSplus.Dispatch dispatch = (MDSplus.Dispatch)action.getAction().getDispatch();
+			final MDSplus.Dispatch dispatch = action.getDispatch();
 			final String serverClass = dispatch.getIdent().getString().toUpperCase();
 			if (serverClass == null || serverClass.equals(""))
 				return defaultServerName;
 			return balancer.getActServer(serverClass);
 		}catch(final Exception exc){return defaultServerName;}
 	}
+	
 
 
 	protected void insertAction(final Action action, final boolean is_first,
@@ -457,7 +457,7 @@ implements ServerListener
 		action_nids.put(new Integer(action.getNid()), action);
 
 		//Check if the Action is sequential
-		final MDSplus.Dispatch dispatch = (MDSplus.Dispatch) action.getAction().getDispatch();
+		final MDSplus.Dispatch dispatch = action.getDispatch();
 		if (dispatch == null) {
 			System.out.println("Warning: Action " + action +
 					" without dispatch info");
@@ -568,10 +568,12 @@ implements ServerListener
 			final Enumeration<MDSplus.Action> action_list = currPhase.dependencies.keys();
 			while (action_list.hasMoreElements()) {
 				final MDSplus.Action action_data = action_list.nextElement();
-				try {
-					dispatch = (MDSplus.Dispatch) action_data.getDispatch();
+				try
+				{
+					dispatch = actions.get(action_data).getDispatch();
 				}
-				catch (final Exception e) {
+				catch (final Exception e)
+				{
 					continue;
 				}
 				if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND)
@@ -933,8 +935,7 @@ implements ServerListener
 	{
 		final Action action = event.getAction();
 		try {
-			final String mdsevent = ( (MDSplus.String) ( ( (MDSplus.Dispatch) (action.
-					getAction().getDispatch())).getCompletion())).getString();
+			final String mdsevent = ((MDSplus.String) (action.getDispatch().getCompletion())).getString();
 			if (mdsevent != null && !mdsevent.equals("\"\"")) {
 				MdsHelper.generateEvent(mdsevent, 0);
 			}
@@ -992,8 +993,7 @@ implements ServerListener
 				for (int i = 0; i < depVect.size(); i++) {
 					final Action currAction = depVect.elementAt(i);
 					try {
-						final MDSplus.Data retData = tree.tdiEvaluate( ( (MDSplus.Dispatch)
-								currAction.getAction().getDispatch()).getWhen());
+						final MDSplus.Data retData = tree.tdiEvaluate(currAction.getDispatch().getWhen());
 						final int retStatus = retData.getInt();
 						if ( (retStatus & 0x00000001) != 0) { //Condition satisfied
 							dep_dispatched.addElement(currAction);

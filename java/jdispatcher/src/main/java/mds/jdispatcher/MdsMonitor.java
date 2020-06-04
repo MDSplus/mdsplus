@@ -2,7 +2,9 @@ package mds.jdispatcher;
 import java.util.*;
 import java.net.*;
 import java.io.*;
-import mds.wavedisplay.*;
+
+import mds.connection.Descriptor;
+import mds.connection.MdsMessage;
 
 class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 {
@@ -94,7 +96,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 	{
 		try {
 			MdsMonitorEvent mds_event = null;
-			if(event.getAction() == null)
+			if(event.action == null)
 				//mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(), 0, 0, "UNKNOW", 1, mode, "UNKNOW", 1);
 			{
 				int currMode = 0;
@@ -126,7 +128,7 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 				mds_event = new MdsMonitorEvent(this, event.getTree(), event.getShot(),
 						MdsHelper.toPhaseId(event.getPhase()), action.getNid(),
 						action.getName(), action.isOn()?1:0, mode,
-								((MDSplus.Dispatch)(action.getAction().getDispatch())).getIdent().getString(),
+								action.getDispatch().getIdent().getString(),
 								action.getServerAddress(),
 								action.getStatus());
 			}

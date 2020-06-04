@@ -1,6 +1,9 @@
 package mds.jdispatcher;
 import java.util.*;
-import mds.wavedisplay.*;
+
+import mds.connection.ConnectionEvent;
+import mds.connection.ConnectionListener;
+
 
 class ActionServer implements Server, MdsServerListener, ConnectionListener
 {
@@ -102,8 +105,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 					//synchronized(ActionServer.this)
 					{
 						try {
-							mds_server = new MdsServer(ip_address,
-									useJavaServer, watchdogPort);
+							mds_server = new MdsServer(ip_address, useJavaServer, watchdogPort);
 							mds_server.addMdsServerListener(ActionServer.this);
 							mds_server.addConnectionListener(ActionServer.this);
 							mds_server.dispatchCommand("TCL", "SET TREE " + tree + "/SHOT=" + shot);
@@ -170,11 +172,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
 		synchronized (enqueued_actions){
 			action.setServerAddress(ip_address);
-			//System.out.println("-- Action1 -> " + ip_address);
 			enqueued_actions.addElement(action);
 		}
 		try {
-			//        mds_server.dispatchAction(tree, shot, action.getNid(), action.getNid());
 			mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
 		}catch(final Exception exc)
 		{
@@ -186,7 +186,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 
 
 	@Override
-	public /* OCT 2008 synchronized*/ void processMdsServerEvent(final MdsServerEvent e)
+	public void processMdsServerEvent(final MdsServerEvent e)
 	{
 		final int mode = e.getFlags();
 		Action doing_action;
@@ -310,7 +310,7 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	public Action popAction()
 	{
 		if(mds_server == null) return  null;
-		Descriptor descr;
+		mds.connection.Descriptor descr;
 		try {
 			descr = mds_server.removeLast();
 		}catch(final Exception exc) {return null; }
