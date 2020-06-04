@@ -15,5 +15,5 @@ SHLIB_PATH=$SHLIB_PATH:$MDSPLUS_DIR/${lib} \
 DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 CLASSPATH=\
 $MDSPLUS_DIR/java/classes/jDispatcher.jar:\
-$MDSPLUS_DIR/java/classes/mdsobjects.jar:\
+$MDSPLUS_DIR/java/classes/mdsobjects.jar \
 java mds.jdispatcher.jDispatchMonitor "$@"
