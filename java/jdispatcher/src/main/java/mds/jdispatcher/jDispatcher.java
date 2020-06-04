@@ -965,8 +965,7 @@ class jDispatcher implements ServerListener
 				{
 					final Action curr_action = depend_actions.nextElement();
 					if (curr_action.isOn() &&
-							isEnabled( ( (MDSplus.Dispatch) curr_action.getAction().
-									getDispatch()).getWhen())) { //the dependent action is now enabled
+							isEnabled(curr_action.getDispatch().getWhen())) { //the dependent action is now enabled
 						dep_dispatched.addElement(curr_action);
 						curr_action.setStatus(Action.DISPATCHED, 0, verbose);
 						fireMonitorEvent(curr_action, MONITOR_DISPATCHED);

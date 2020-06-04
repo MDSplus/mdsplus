@@ -42,7 +42,7 @@ Ensures action dispatching to servers, keeping load balancing.
 	{
 		String server_class;
 		try{
-			server_class = ((MDSplus.Dispatch)action.getAction().getDispatch()).getIdent().getString();
+			server_class = action.getDispatch().getIdent().getString();
 		}
 		catch(final Exception exc)
 		{

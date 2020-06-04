@@ -49,7 +49,6 @@ class Action
 			else
 				data.data();
 		dispatch = (MDSplus.Dispatch)data;
-
 	}
 	//public synchronized int getTimestamp() {return this.timestamp; }
 	//public synchronized void setTimestamp(final int timestamp) {this.timestamp = timestamp; }
