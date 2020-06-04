@@ -1133,6 +1133,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		dm = new jDispatchMonitor(monitor_server, experiment);
 		dm.pack();
 		dm.setSize(600, 700);
+		dm.setDefaultCloseOperation(EXIT_ON_CLOSE);
 		dm.setVisible(true);
 	}
 
