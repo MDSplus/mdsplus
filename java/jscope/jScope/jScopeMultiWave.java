@@ -399,10 +399,10 @@ public class jScopeMultiWave
 	    try {
 
 	        String data = (String)support.getTransferable().getTransferData(DataFlavor.stringFlavor);
-	       StringTokenizer st = new StringTokenizer(data, ":");
-	        String experiment = st.nextToken();
-	        String path = data.substring(experiment.length()+1);
-	         if(support.getDropAction() ==  TransferHandler.MOVE)
+                StringTokenizer st = new StringTokenizer(data, ":");
+	        String experiment = st.nextToken().substring(1);
+	        String path = data;
+	        if(support.getDropAction() ==  TransferHandler.MOVE)
 	            wi.Erase();
 	        wi.setExperiment(experiment);
 	        wi.AddSignal(path);

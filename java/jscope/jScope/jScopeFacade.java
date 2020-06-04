@@ -2316,9 +2316,7 @@ public class jScopeFacade
 	                {
 	                    setPublicVariables(pub_var_diag.getPublicVar());
 	                    SetMainShot();
-	                    /*
 	                    wave_panel.Refresh(w, we.status_info);
-	                    */
 	                    w.RefreshOnEvent();
 	                    //??????*******
 	                }
