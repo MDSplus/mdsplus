@@ -84,7 +84,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="UNSUPARRDTYPE" value="4141" severity="Error" text="Complex data types not supported as members of arrays"/>
     <status name="WRITEFIRST" value="4139" severity="Error" text="Tree has been modified:  write or quit first"/>
     <status name="FAILURE" value="4596" severity="Error" text="Operation NOT successful"/>
-    <status name="LOCK_FAILURE" value="4598" severity="Error" text="Error locking file, perhaps NFSLOCKING not enabled on this system"/>
+    <status name="LOCK_FAILURE" value="4598" severity="Warning" text="Error locking file, perhaps NFSLOCKING not enabled on this system"/>
     <status name="FILE_NOT_FOUND" value="4597" severity="Error" text="File or Directory Not Found"/>
     <status name="CANCEL" value="4496" severity="Warning" text="User canceled operation"/>
     <status name="UNSUPTHICKOP" value="4497" severity="Warning" text="Unsupported thick client operation"/>
