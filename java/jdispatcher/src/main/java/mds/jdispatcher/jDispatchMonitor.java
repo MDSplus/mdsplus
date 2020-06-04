@@ -4,6 +4,7 @@ import javax.swing.*;
 
 import mds.connection.ConnectionEvent;
 import mds.connection.ConnectionListener;
+import mds.connection.Descriptor;
 import mds.connection.MdsConnection;
 import mds.connection.MdsMessage;
 
@@ -407,6 +408,18 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		this(null, null);
 	}
 
+	private void sendTclCmd(String cmd) {
+		final Vector<Descriptor> args = new Vector<Descriptor>();
+		try
+		{
+			getDispatcher().MdsValue(String.format("TCL\",\"%s\"", cmd.replace('"', '\'')), args, false);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
+	
 	public jDispatchMonitor(final String monitor_server, final String experiment) {
 
 		this.experiment = experiment;
@@ -433,7 +446,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 		final Properties properties = MdsHelper.initialization(experiment);
 		if (properties == null)
-			System.exit(0);
+			System.exit(1);
 
 		int error_port = -1;
 		try {
@@ -542,10 +555,25 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		});
 		info_m.add(statistics_cb);
 
+		final JMenuItem dispatch = new JMenu("Dispatch");
+		for (final MdsHelper.DispatchCmd dispcmd : MdsHelper.getDispatch())
+		{
+			final JMenuItem item = new JMenuItem(dispcmd.name);
+			item.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(final ActionEvent e) {
+					for (String cmd : dispcmd.cmd.split("\\s*;\\s*"))
+						sendTclCmd(cmd);
+				}
+			});
+			dispatch.add(item);
+		}
+		
 		mb.add(file);
 		mb.add(view);
 		mb.add(phase_m);
 		// mb.add(info_m);
+		mb.add(dispatch);
 
 		final JPanel p0 = new JPanel();
 		p0.setBorder(BorderFactory.createRaisedBevelBorder());
@@ -801,16 +829,22 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	}
 
 	private void doCommand(final String command, final MdsMonitorEvent me) throws IOException {
+		try {
+			getDispatcher().MdsValue(command + " " + me.nid + " " + MdsHelper.toPhaseName(me.phase));
+		} catch (Exception e) {}
+	}
+	
+	private final MdsConnection getDispatcher() throws Exception {
 		if (dispatcher == null) {
 			if (monitor_server == null)
-				return;
+				throw new Exception("No monitor server.");
 			final StringTokenizer st = new StringTokenizer(monitor_server, ":");
 			dispatcher = new MdsConnection(st.nextToken() + ":" + MdsHelper.getDispatcherPort());
 			dispatcher.ConnectToMds(false);
 		}
-		dispatcher.MdsValue(command + " " + me.nid + " " + MdsHelper.toPhaseName(me.phase));
+		return dispatcher;
 	}
-
+		
 	private void setWindowTitle() {
 		if (mds_server != null && mds_server.isConnected())
 			setTitle("jDispatchMonitor - Connected to " + mds_server.getProvider() + " receive on port "
@@ -1128,7 +1162,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 		System.out.println("jDispatchMonitor " + monitor_server + " " + experiment);
 
-		// MdsHelper.initialization(experiment);
+		//MdsHelper.initialization(experiment);
 
 		dm = new jDispatchMonitor(monitor_server, experiment);
 		dm.pack();

@@ -48,8 +48,7 @@ class jDispatcherIp extends MdsIp {
 		else {
 			try {
 				final StringTokenizer st = new StringTokenizer(compositeCommand, "\"");
-				while (! (st.nextToken().equals("TCL")))
-					;
+				while (! (st.nextToken().equals("TCL")));
 				st.nextToken();
 				command = st.nextToken();
 			}
@@ -294,7 +293,7 @@ class jDispatcherIp extends MdsIp {
 	public static void main(final String args[]) {
 		final Properties properties = MdsHelper.initialization(args);
 		if( properties == null )
-			System.exit(0);
+			System.exit(1);
 
 		final Balancer balancer = new Balancer();
 		final jDispatcher dispatcher = new jDispatcher(balancer);
@@ -306,7 +305,7 @@ class jDispatcherIp extends MdsIp {
 		}
 		catch (final Exception exc) {
 			System.out.println("Cannot read port");
-			System.exit(0);
+			System.exit(1);
 		}
 
 		int info_port = 0;
@@ -316,49 +315,15 @@ class jDispatcherIp extends MdsIp {
 		}
 		catch (final Exception exc) {
 			System.out.println("Cannot read info_port");
-			System.exit(0);
+			System.exit(1);
 		}
 
 		System.out.println("Start dispatcher on port " + port);
 		final jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, MdsHelper.experiment);
 		dispatcherIp.start();
-
-		int i = 1;
-		while (true) {
-			final String server_class = properties.getProperty("jDispatcher.server_" +
-					i +
-					".class");
-			if (server_class == null)
-				break;
-			final String server_ip = properties.getProperty("jDispatcher.server_" + i +
-					".address");
-			if (server_ip == null)
-				break;
-			final String server_subtree = properties.getProperty(
-					"jDispatcher.server_" +
-							i + ".subtree");
-			boolean useJavaServer;
-			try {
-				useJavaServer = properties.getProperty("jDispatcher.server_" + i +
-						".use_jserver").equals("true");
-			}catch(final Exception exc){useJavaServer = true;}
-			int watchdogPort;
-			try {
-				watchdogPort = Integer.parseInt(properties.getProperty("jDispatcher.server_" + i +
-						".watchdog_port"));
-			}catch(final Exception exc){watchdogPort = -1;}
-
-			final Server server = new ActionServer("", server_ip.trim(),
-					server_class.trim(),
-					server_subtree, useJavaServer, watchdogPort);
-
-			servers.addElement(server);
+		for (Server server : servers = MdsHelper.getServers())
 			dispatcher.addServer(server);
-			i++;
-		}
-		i = 1;
-
-		while (true) {
+		for (int i = 1;;i++) {
 			final String monitor_port = properties.getProperty("jDispatcher.monitor_" +
 					i +
 					".port");
@@ -370,25 +335,24 @@ class jDispatcherIp extends MdsIp {
 				final MdsMonitor monitor = new MdsMonitor(monitor_port_int);
 				dispatcher.addMonitorListener(monitor);
 				monitor.start();
-				i++;
 			}
 			catch (final Exception exc) {
 				break;
 			}
 		}
 		/*
-	String actionsMonitorPort = properties.getProperty("jDispatcher.actions_monitor_port");
-	if (actionsMonitorPort != null)
-	{
-	try {
-	    int actionsMonitorPortVal = Integer.parseInt(actionsMonitorPort);
-	    MdsActionsMonitor actionsMonitor = new MdsActionsMonitor(actionsMonitorPortVal);
-	    dispatcher.addMonitorListener(actionsMonitor);
-	    actionsMonitor.start();
-	    }
-	    catch (Exception exc) {}
-	    System.out.println("Start done actions monitor on port : " + actionsMonitorPort);
-	}
+		String actionsMonitorPort = properties.getProperty("jDispatcher.actions_monitor_port");
+		if (actionsMonitorPort != null)
+		{
+		try {
+		    int actionsMonitorPortVal = Integer.parseInt(actionsMonitorPort);
+		    MdsActionsMonitor actionsMonitor = new MdsActionsMonitor(actionsMonitorPortVal);
+		    dispatcher.addMonitorListener(actionsMonitor);
+		    actionsMonitor.start();
+		    }
+		    catch (Exception exc) {}
+		    System.out.println("Start done actions monitor on port : " + actionsMonitorPort);
+		}
 		 */
 		final String default_server = properties.getProperty(
 				"jDispatcher.default_server_idx");
@@ -398,14 +362,8 @@ class jDispatcherIp extends MdsIp {
 			dispatcher.setDefaultServer(server);
 		}
 		catch (final Exception exc) {}
-
-		/*
-	     jDispatcherIp dispatcherIp = new jDispatcherIp(port, dispatcher, treeName);
-	        dispatcherIp.start();
-		 */
-
-		i = 1;
-		while (true)
+		
+		for (int i = 1;;i++)
 		{
 			final String phaseName = properties.getProperty("jDispatcher.phase_" + i + ".name");
 			if (phaseName == null)
@@ -426,9 +384,9 @@ class jDispatcherIp extends MdsIp {
 				}
 				dispatcher.addSynchNumbers(phaseName, currSynchNumbers);
 			}
-			i++;
 		}
-		try {
+		try
+		{
 			dispatcherIp.getListenThread().join();
 		}
 		catch (final Exception exc) {}

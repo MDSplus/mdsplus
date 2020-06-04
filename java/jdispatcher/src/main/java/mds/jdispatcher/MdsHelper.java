@@ -1,17 +1,25 @@
 package mds.jdispatcher;
-
 import java.util.*;
 import java.io.*;
 import java.nio.ByteBuffer;
 
 class MdsHelper {
-	private static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
-	private static Hashtable<Integer, String> id_to_name = new Hashtable<Integer, String>();
+	static final class DispatchCmd {
+		final String name;
+		final String cmd;
+		DispatchCmd(String name, String cmd){
+			this.name = name;
+			this.cmd = cmd;
+		}
+	}
+	private final static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
+	private final static Hashtable<Integer, String> id_to_name = new Hashtable<Integer, String>();
+	private final static String defaultFileName = "jDispatcher.properties";
+	static String experiment = null;
 	private static String dispatcher_ip = null;
 	private static int dispatcherPort = 0;
-	static String experiment = null;
-	private static Hashtable<String, String> dispatch;
-	private static final String defaultFileName = "jDispatcher.properties";
+	private static Properties properties = null;
+
 
 	private static final Properties tryOpen(final Vector<String> paths, final Vector<String> names) {
 		paths.add(null);
@@ -34,7 +42,6 @@ class MdsHelper {
 
 	static Properties initialization(String... args) {
 		experiment = args.length > 0 ? args[0] : "test";
-		final Properties properties;
 		if (args.length > 1) {
 			properties = new Properties();
 			try {
@@ -82,23 +89,46 @@ class MdsHelper {
 			id_to_name.put(new Integer(phase_id), phase_name);
 			name_to_id.put(phase_name, new Integer(phase_id));
 		}
-		for (int i = 1;; i++) {
-			final String name = properties.getProperty("jDispatcher.dispatch_" + i + ".name");
-			final String cmd = properties.getProperty("jDispatcher.dispatch_" + i + ".cmd");
-			if (name == null || cmd == null)
-				break;
-			dispatch.put(name, cmd);
-		}
+
 		dispatcher_ip = properties.getProperty("jDispatcher.dispatcher_ip");
 		dispatcherPort = Integer.parseInt(properties.getProperty("jDispatcher.port"));
 		return properties;
 	}
-
-	public static void setExperiment(String exp) {
-		System.out.println("MdsHelper set experiment " + exp);
-		experiment = exp;
+	private static final String DISPATCH_FMRT = "jDispatcher.dispatch_%d.%s";
+	static final Vector<DispatchCmd> getDispatch()
+	{
+		final Vector<DispatchCmd> dispatch = new Vector<DispatchCmd>();
+		for (int i = 1;; i++) {
+			final String name = properties.getProperty(String.format(DISPATCH_FMRT, i, "name"));
+			final String cmd = properties.getProperty(String.format(DISPATCH_FMRT, i, "cmd"));
+			if (name == null || cmd == null)
+				break;
+			dispatch.add(new DispatchCmd(name.trim(), cmd.trim()));
+		}
+		return dispatch;
 	}
-
+	private static final String SERVER_FMRT = "jDispatcher.server_%d.%s";
+	public static Vector<Server> getServers() {		
+		final Vector<Server> servers = new Vector<Server>();
+		for (int i = 1;;i++) {
+			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
+			if (server_class == null) break;
+			final String server_ip = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
+			if (server_ip == null) break;
+			final String server_subtree = properties.getProperty(String.format(SERVER_FMRT, i, "subtree"));
+			final String javasvr = properties.getProperty(String.format(SERVER_FMRT, i, "use_jserver"));
+			final boolean useJavaServer = javasvr == null || javasvr.equals("true");
+			int watchdogPort;
+			try {watchdogPort = Integer.parseInt( properties.getProperty(String.format(SERVER_FMRT, i, "watchdog_port")));
+			}catch(final Exception exc){watchdogPort = -1;}
+			final Server server = new ActionServer("", server_ip.trim(),
+					server_class.trim(),
+					server_subtree, useJavaServer, watchdogPort);
+			servers.add(server);
+		}
+		return servers;
+	}
+	
 	public static void generateEvent(String event, int shot) {
 		byte[] shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
 		MDSplus.Event.setEventRaw(event, shotBytes);
@@ -108,8 +138,6 @@ class MdsHelper {
 		return MDSplus.Data.getMdsMsg(status);
 	}
 
-	// public static String getErrorString(int status){return "Error message not yet
-	// implemented"; }
 	public static int toPhaseId(String phase_name) {
 		try {
 			return (name_to_id.get(phase_name)).intValue();
