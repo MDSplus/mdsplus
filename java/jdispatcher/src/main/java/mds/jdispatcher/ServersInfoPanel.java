@@ -274,19 +274,12 @@ public class ServersInfoPanel extends JPanel {
 
 		for(int i = 0; i < numServer; i++)
 		{
-			//System.out.println(dis.readUTF()+" "+dis.readUTF()+" "+dis.readBoolean()+" "+dis.readInt());
-			//addString(dis.readUTF(), dis.readUTF(), dis.readBoolean());
-
 			final String serverClass = dis.readUTF();
 			final String addressSrv = dis.readUTF();
 			final boolean active = dis.readBoolean();
-			//            int aDoing = dis.readInt();
-
-			//            System.out.println("Class :"+ serverClass +"Server :"+ addressSrv  );
 
 			if( serversInfo != null && addressSrv != null && addressSrv.length() != 0 )
 			{
-				//System.out.println(serversInfo.get(addressSrv));
 				final DefaultTableModel md = ( DefaultTableModel ) this.jTable1.getModel();
 
 				final ServerInfo si = serversInfo.get(addressSrv);
@@ -329,7 +322,7 @@ public class ServersInfoPanel extends JPanel {
 		final ServerInfo si = serversInfo.get(event.server_address);
 		if(si != null)
 		{
-			System.out.println("Update server Action "+ event + " pos " + si.getPos());
+			//System.out.println("ServerInfo: Action "+ event + " pos " + si.getPos());
 			md.setValueAt(event, si.getPos(), 3);
 		}
 	}

@@ -162,8 +162,8 @@ class MdsMonitorEvent extends MdsServerEvent
 
     public synchronized String toString()
     {
-	return new String("[exp="+tree+";shot="+shot+";phase="+phase+";nid="+nid+";on="+on+";mode= "+getMode(mode)+" ;server="+server+
-	       "; ServerAddress="+ server_address+" ;status="+ret_status+"]");
+	return "[exp=" + tree + "; shot=" + shot + "; phase=" + phase + "; nid=" + nid + "; on=" + on + "; mode= " + getMode(mode) + "; server="+server +
+	       "; ServerAddress=" + server_address + "; status=" + ret_status+"]";
     }
 
 

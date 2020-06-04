@@ -40,7 +40,7 @@ class jDispatcher implements ServerListener
 
 	Vector<Integer> synchSeqNumbers = new Vector<Integer>();
 	/**
-	 * synchSeqNumbers contains the synchronization sequence numbers defined in jDispatcher.properties.
+	 * synchSeqNumbers contains the synchronisation sequence numbers defined in jDispatcher.properties.
 	 *
 	 */
 	String defaultServerName = "";

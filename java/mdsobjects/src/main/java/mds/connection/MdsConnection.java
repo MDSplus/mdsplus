@@ -350,20 +350,14 @@ public class MdsConnection {
 	}
 
 	public int DisconnectFromMds() {
-		if (connection_listener.size() > 0)
-			connection_listener.removeAllElements();
-//	    if (dos != null) dos.close();
-//      if (dis != null) dis.close();
-
-//      receiveThread.waitExited();
+		connection_listener.removeAllElements();
 		connected = false;
 		return 1;
 	}
 
 	public void QuitFromMds() {
 		try {
-			if (connection_listener.size() > 0)
-				connection_listener.removeAllElements();
+			connection_listener.removeAllElements();
 			dos.close();
 			dis.close();
 
@@ -520,26 +514,19 @@ public class MdsConnection {
 	}
 
 	public synchronized void addConnectionListener(ConnectionListener l) {
-		if (l == null) {
-			return;
-		}
-		connection_listener.addElement(l);
+		if (l != null)
+			connection_listener.addElement(l);
 	}
 
 	public synchronized void removeConnectionListener(ConnectionListener l) {
-		if (l == null) {
-			return;
-		}
-		connection_listener.removeElement(l);
+		if (l != null)
+			connection_listener.removeElement(l);
 	}
 
 	public void dispatchConnectionEvent(ConnectionEvent e) {
 		if (connection_listener != null) {
-			for (int i = 0; i < connection_listener.size(); i++) {
-				connection_listener.elementAt(i).processConnectionEvent(e);
-			}
+			for (ConnectionListener listener : connection_listener)
+				listener.processConnectionEvent(e);
 		}
-
 	}
-
 }

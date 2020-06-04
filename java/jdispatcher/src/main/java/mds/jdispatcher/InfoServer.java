@@ -113,7 +113,6 @@ class InfoServer implements Server
 				final MDSplus.Action action_data = (MDSplus.Action)nid.getData();
 				if(action_data.getDispatch() == null || action_data.getTask() == null)
 					continue;
-
 				action = new Action(action_data, nid.getNid(), nid.getFullPath(),
 						nid.isOn(), nid.isEssential(), null );
 				action_vect.addElement(action);
