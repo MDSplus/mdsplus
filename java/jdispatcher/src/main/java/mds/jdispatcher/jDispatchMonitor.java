@@ -4,7 +4,6 @@ import javax.swing.*;
 
 import mds.connection.ConnectionEvent;
 import mds.connection.ConnectionListener;
-import mds.connection.Descriptor;
 import mds.connection.MdsConnection;
 import mds.connection.MdsMessage;
 
@@ -407,18 +406,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	public jDispatchMonitor() {
 		this(null, null);
 	}
-
-	private void sendTclCmd(String cmd) {
-		final Vector<Descriptor> args = new Vector<Descriptor>();
-		try
-		{
-			getDispatcher().MdsValue(String.format("TCL\",\"%s\"", cmd.replace('"', '\'')), args, false);
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
 	
 	public jDispatchMonitor(final String monitor_server, final String experiment) {
 
@@ -562,8 +549,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			item.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(final ActionEvent e) {
-					for (String cmd : dispcmd.cmd.split("\\s*;\\s*"))
-						sendTclCmd(cmd);
+					doCommand(dispcmd.cmd);
 				}
 			});
 			dispatch.add(item);
@@ -829,8 +815,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	}
 
 	private void doCommand(final String command, final MdsMonitorEvent me) throws IOException {
-		try {
-			getDispatcher().MdsValue(command + " " + me.nid + " " + MdsHelper.toPhaseName(me.phase));
+		doCommand(String.format("%s %d %s", command, me.nid, MdsHelper.toPhaseName(me.phase)));
+	}
+	
+	private final void doCommand(final String command) {
+		try { getDispatcher().MdsValue('@'+command);
 		} catch (Exception e) {}
 	}
 	

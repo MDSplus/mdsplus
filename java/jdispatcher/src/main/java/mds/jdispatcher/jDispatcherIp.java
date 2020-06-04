@@ -41,44 +41,48 @@ class jDispatcherIp extends MdsIp {
 		compositeCommand = new String(messages[0].body);
 
 		//Handle direct commands: ABORT and DISPATCH
-		if (compositeCommand.toUpperCase().startsWith("ABORT") ||
-				compositeCommand.toUpperCase().startsWith("DISPATCH") ||
-				compositeCommand.toUpperCase().startsWith("REDISPATCH"))
-			command = compositeCommand;
-		else {
-			try {
+		if (compositeCommand.startsWith("@"))
+			command = compositeCommand.substring(1).toUpperCase();
+		else
+		{
+			try
+			{
 				final StringTokenizer st = new StringTokenizer(compositeCommand, "\"");
 				while (! (st.nextToken().equals("TCL")));
 				st.nextToken();
-				command = st.nextToken();
+				command = st.nextToken().toUpperCase();
 			}
-			catch (final Exception exc) {
+			catch (final Exception exc)
+			{
 				System.err.println(
 						"Unexpected message has been received by jDispatcherIp:" +
 								compositeCommand + " " + exc);
 			}
 		}
-		try {
-			ris = doCommand(command.toUpperCase());
+		try
+		{
+			for (final String cmd : command.split("\\s*;\\s*"))
+				ris = doCommand(cmd);
 		}
-		catch (final Exception exc) {
+		catch (final Exception exc)
+		{
 			return new MdsMessage(exc.getMessage(), null);
 		}
-		if (ris < 0) { //i.e. if any command except get current
+		if (ris < 0)
+		{ //i.e. if any command except get current
 			final MdsMessage msg = new MdsMessage( (byte) 1);
 			msg.status = 1;
 			return msg;
 		}
-		else {
+		else
+		{
 			final byte[] buf = new byte[4];
 			buf[0] = (byte) ( (ris >> 24) & 0xFF);
 			buf[1] = (byte) ( (ris >> 16) & 0xFF);
 			buf[2] = (byte) ( (ris >> 8) & 0xFF);
 			buf[3] = (byte) (ris & 0xFF);
 
-			final MdsMessage msg = new MdsMessage( (byte) 0, (byte) MDSplus.Data.DTYPE_L,
-					(byte) 0, new int[] {1}
-			, buf);
+			final MdsMessage msg = new MdsMessage( (byte) 0, (byte) MDSplus.Data.DTYPE_L, (byte) 0, new int[] {1}, buf);
 			msg.status = 1;
 			return msg;
 		}
