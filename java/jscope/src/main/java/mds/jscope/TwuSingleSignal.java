@@ -9,7 +9,7 @@ package mds.jscope;
 // -------------------------------------------------------------------------------------------------
 import java.io.IOException;
 
-import mds.wavedisplay.ConnectionEvent;
+import mds.connection.ConnectionEvent;
 import mds.wavedisplay.Waveform;
 
 public class TwuSingleSignal

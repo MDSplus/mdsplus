@@ -1,11 +1,11 @@
 package mds.jscope;
 
-/* $Id$ */
 import java.util.*;
 import java.io.IOException;
 import javax.swing.JFrame;
 
 import mds.wavedisplay.DataProvider;
+
 
 class FtuDataProvider extends MdsDataProvider
 {

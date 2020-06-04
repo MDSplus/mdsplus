@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.*;
 import javax.swing.JFrame;
 
+import mds.connection.*;
 import mds.wavedisplay.*;
 
 
@@ -569,4 +570,9 @@ class ASCIIDataProvider implements DataProvider
 	p.GetWaveData("c:\\test.txt", 0, 0, 0);
 
     }
+
+	@Override
+	public boolean isBusy() {
+		return false;
+	}
  }

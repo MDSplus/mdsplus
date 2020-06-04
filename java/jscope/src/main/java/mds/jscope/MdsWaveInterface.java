@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
+import mds.connection.UpdateEventListener;
 import mds.wavedisplay.*;
 
 class MdsWaveInterface

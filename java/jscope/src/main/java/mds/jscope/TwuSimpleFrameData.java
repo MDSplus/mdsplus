@@ -14,7 +14,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.StringTokenizer;
 
-import mds.wavedisplay.ConnectionEvent;
+import mds.connection.ConnectionEvent;
 import mds.wavedisplay.FrameData;
 import mds.wavedisplay.Frames;
 

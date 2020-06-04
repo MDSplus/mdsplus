@@ -5,7 +5,7 @@ include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 java_DATA = DeviceBeans.jar
-DEPENDENCIES = $(WAVEDISPLAY_JAR)
+DEPENDENCIES = $(MDSOBJECTS_JAR) $(WAVEDISPLAY_JAR)
 
 if USE_JARS_DIR
 

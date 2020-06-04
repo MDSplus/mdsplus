@@ -1,8 +1,9 @@
 import java.awt.Panel;
 import java.util.StringTokenizer;
 import javax.swing.JOptionPane;
-import mds.wavedisplay.Descriptor;
-import mds.wavedisplay.MdsConnection;
+
+import mds.connection.Descriptor;
+import mds.connection.MdsConnection;
 
 public class DeviceCustomizer extends Panel
 {

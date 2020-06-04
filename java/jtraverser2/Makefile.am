@@ -16,7 +16,7 @@ else
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
-	echo "Class-Path: mdsplus-api.jar DeviceBeans.jar WaveDisplay.jar jDevices.jar" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsplus-api.jar DeviceBeans.jar WaveDisplay.jar mdsobjects.jar jDevices.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 

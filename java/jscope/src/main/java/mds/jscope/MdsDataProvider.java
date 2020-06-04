@@ -5,27 +5,15 @@ import java.awt.*;
 import java.awt.image.*;
 import java.util.*;
 import java.lang.InterruptedException;
+import java.text.*;
 import javax.imageio.*;
 import javax.swing.*;
 
-import mds.wavedisplay.AsynchDataSource;
-import mds.wavedisplay.ConnectionEvent;
-import mds.wavedisplay.ConnectionListener;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.Descriptor;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.Frames;
-import mds.wavedisplay.MdsConnection;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveData;
-import mds.wavedisplay.WaveDataListener;
-import mds.wavedisplay.Waveform;
-import mds.wavedisplay.XYData;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
-import java.text.*;
 
-public class MdsDataProvider
-    implements DataProvider
+public class MdsDataProvider implements DataProvider
 {
     protected String provider;
     protected String experiment;
@@ -457,8 +445,6 @@ public class MdsDataProvider
 	    var_idx+=2;
 	    if(segmentMode == SEGMENTED_UNKNOWN)
 	    {
-	        Vector<Descriptor> args = new Vector<>();
-//	        String fixedY = in_y.replaceAll("\\\\", "\\\\\\\\");
 	        String fixedY = duplicateBackslashes(in_y);
 	        try {
                     String segExpr = "long(MdsMisc->IsSegmented(\""+fixedY+"\"))";
@@ -1108,7 +1094,6 @@ public class MdsDataProvider
 	            try
 	            {
 	               requestsV.removeElementAt(requestsV.size() - 1);
-	               int k = 0;
 	               XYData currData = currUpdate.simpleWaveData.getData(currUpdate.updateLowerBound, currUpdate.updateUpperBound, currUpdate.updatePoints, currUpdate.isXLong);
 
                        if(debug)
@@ -2246,5 +2231,10 @@ public class MdsDataProvider
     {
 	return provider;
     }
+
+	@Override
+	public boolean isBusy() {
+		return this.mds != null && this.mds.isBusy();
+	}
 
 }

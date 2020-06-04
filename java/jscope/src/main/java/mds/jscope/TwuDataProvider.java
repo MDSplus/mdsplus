@@ -23,12 +23,8 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import mds.wavedisplay.ConnectionEvent;
-import mds.wavedisplay.ConnectionListener;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveData;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
 class TwuDataProvider
     implements DataProvider
@@ -37,8 +33,8 @@ class TwuDataProvider
     protected long   shot;
     private String error_string;
     private transient Vector<ConnectionListener> connection_listener = new Vector<>();
-    private String user_agent;
     private TwuWaveData lastWaveData = null ;
+	private String user_agent;
 
 
     //DataProvider implementation
@@ -301,6 +297,10 @@ class TwuDataProvider
 	// tool.  In the log of a web-server you can, by checking the user_agent, see which
 	// machines are still running old software.
     }
+	@Override
+	public boolean isBusy() {
+		return false;
+	}
 }
 
 // -------------------------------------------------------------------------------------------------

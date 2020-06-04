@@ -9,6 +9,7 @@ import java.io.*;
 import java.net.*;
 import javax.swing.*;
 
+import mds.connection.*;
 import mds.jscope.*;
 import mds.wavedisplay.*;
 
@@ -21,7 +22,9 @@ class jScopeWaveContainer
     extends WaveformContainer
     implements Printable
 {
-    private static final int MAX_COLUMN = 4;
+	private static final long serialVersionUID = -5124185838513760056L;
+
+	private static final int MAX_COLUMN = 4;
 
     DataProvider dp;
     private jScopeDefaultValues def_vals;
@@ -1761,4 +1764,8 @@ remove 28/06/2005
     {
 	progressMonitor.close();
     }
+
+	public boolean isBusy() {
+		return this.dp.isBusy();
+	}
 }

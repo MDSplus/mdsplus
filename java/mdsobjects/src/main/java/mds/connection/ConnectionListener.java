@@ -1,4 +1,4 @@
-package mds.wavedisplay;
+package mds.connection;
 import java.util.EventListener;
 
 /**
@@ -11,12 +11,9 @@ import java.util.EventListener;
  * is called by DataProvider
  *
  * @see ConnectionEvent
- * @see DataProvider
  */
 
 public interface ConnectionListener extends EventListener
 {
-
     public void processConnectionEvent(ConnectionEvent e);
-
 }

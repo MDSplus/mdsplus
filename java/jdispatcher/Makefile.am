@@ -3,7 +3,7 @@ include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 dist_java_DATA = jDispatcher.properties
 java_DATA = jDispatcher.jar
-DEPENDENCIES = $(WAVEDISPLAY_JAR) $(MDSOBJECTS_JAR) $(JTRAVERSER_JAR)
+DEPENDENCIES = $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
@@ -15,7 +15,7 @@ else
 $(java_DATA): $(DEPENDENCIES) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: mds.jdispatcher.jDispatchMonitor" >> $(MANIFEST) &&\
-	echo "Class-Path: mdsobjects.jar jTraverser.jar WaveDisplay.jar" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\
 	$(JAR) cf $@ -C $(JAVAROOT) .
 
 endif

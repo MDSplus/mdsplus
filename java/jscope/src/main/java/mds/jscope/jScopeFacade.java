@@ -18,7 +18,7 @@ import javax.swing.event.*;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
 
-import mds.jscope.*;
+import mds.connection.*;
 import mds.wavedisplay.*;
 
 
@@ -88,10 +88,8 @@ public class jScopeFacade
     static DataServerItem[] server_ip_list;
     ServerDialog server_diag;
     static boolean not_sup_local = false;
-    private boolean executing_update = false;
 
     private static jScopeFacade win;
-    public static boolean busy(){return win.executing_update;}
 
     DocPrintJob prnJob = null;
   //  PageFormat pageFormat;
@@ -1128,7 +1126,7 @@ public class jScopeFacade
 	    {
 	        if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
 	        {
-	            if(!executing_update)
+	            if(!jScopeFacade.this.wave_panel.isBusy())
 	            {
 	                incShotValue--;
 	                ArrowsIncDecShot();
@@ -1145,7 +1143,7 @@ public class jScopeFacade
 	    {
 	        if( shot_t.getText() != null && shot_t.getText().trim().length() != 0 )
 	        {
-	            if(!executing_update)
+	            if(!jScopeFacade.this.wave_panel.isBusy())
 	            {
 	                incShotValue++;
 	                ArrowsIncDecShot();
@@ -1758,15 +1756,13 @@ public class jScopeFacade
 	if ( ( s == null || s.trim().length() == 0 ) &&
 	      ( s1 != null && s1.trim().length() !=  0 ) )
 	    shot_t.setText(s1);
-
-	executing_update = true;
 	apply_b.setText("Abort");
 	setPublicVariables(pub_var_diag.getPublicVar());
 	SetMainShot();
 	wave_panel.StartUpdate();
     }
 
-    private void ToFile(PrintWriter out) throws IOException
+	private void ToFile(PrintWriter out) throws IOException
     {
 	Rectangle r = getBounds();
 	setChange(false);
@@ -2163,7 +2159,6 @@ public class jScopeFacade
 	    case WaveContainerEvent.END_UPDATE:
 	    case WaveContainerEvent.KILL_UPDATE:
 	        apply_b.setText("Apply");
-	        executing_update = false;
 	        if (event_id == WaveContainerEvent.KILL_UPDATE)
 	        {
 /*
@@ -2372,7 +2367,7 @@ public class jScopeFacade
 	{
 	    incShotValue = 0;
 
-	    if (executing_update)
+	    if (wave_panel.isBusy())
 	    {
 	        if (ob == apply_b)
 	            wave_panel.AbortUpdate();

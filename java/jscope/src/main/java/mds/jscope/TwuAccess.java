@@ -3,10 +3,7 @@ package mds.jscope;
 import java.io.IOException;
 import java.util.StringTokenizer;
 
-import mds.wavedisplay.DataAccess;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.Signal;
+import mds.wavedisplay.*;
 
 public class TwuAccess implements DataAccess
 {

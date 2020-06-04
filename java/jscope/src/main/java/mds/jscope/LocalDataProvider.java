@@ -1,6 +1,6 @@
 package mds.jscope;
 
-import mds.wavedisplay.MdsConnection;
+import mds.connection.MdsConnection;
 
 class LocalDataProvider extends MdsDataProvider
 {

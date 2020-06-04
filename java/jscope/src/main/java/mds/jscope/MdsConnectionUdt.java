@@ -9,7 +9,7 @@ package mds.jscope;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
-import mds.wavedisplay.MdsConnection;
+import mds.connection.MdsConnection;
 
 /**
  *

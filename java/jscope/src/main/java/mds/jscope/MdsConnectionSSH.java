@@ -1,7 +1,7 @@
 package mds.jscope;
 import java.io.*;
 
-import mds.wavedisplay.MdsConnection;
+import mds.connection.MdsConnection;
 
 public class MdsConnectionSSH extends MdsConnection
 {

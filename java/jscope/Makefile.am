@@ -7,7 +7,7 @@ dist_java_DATA = jScope.properties
 java_DATA = jScope.jar WaveDisplay.jar
 MINDTERM = $(srcdir)/MindTerm.jar
 EXTRA_DIST = $(MINDTERM)
-DEPENDENCIES = $(MINDTERM)
+DEPENDENCIES = $(MINDTERM) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
@@ -22,7 +22,7 @@ else
 jScope.jar: classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jScope" >> $(MANIFEST) &&\
-	echo "Class-Path: WaveDisplay.jar" >> $(MANIFEST) &&\
+	echo "Class-Path: WaveDisplay.jar mdsobjects.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) jScope.class -C $(JAVAROOT) mds/jscope
 

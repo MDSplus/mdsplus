@@ -1,6 +1,5 @@
 package mds.jscope;
 
-/* $Id$ */
 import java.util.*;
 import java.io.IOException;
 import javax.swing.JFrame;

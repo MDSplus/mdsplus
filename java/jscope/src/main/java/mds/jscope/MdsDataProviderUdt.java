@@ -6,7 +6,7 @@
 
 package mds.jscope;
 
-import mds.wavedisplay.MdsConnection;
+import mds.connection.MdsConnection;
 
 /**
  *

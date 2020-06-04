@@ -1,30 +1,16 @@
 package mds.jscope;
 
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.geom.AffineTransform;
 import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.util.StringTokenizer;
-
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
-import mds.wavedisplay.ColorMap;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.MultiWaveform;
-import mds.wavedisplay.Signal;
-import mds.wavedisplay.UpdateEvent;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveInterface;
-import mds.wavedisplay.Waveform;
-import mds.wavedisplay.WaveformEvent;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple

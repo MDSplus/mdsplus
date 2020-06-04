@@ -1,11 +1,6 @@
 package mds.jscope;
 
 import java.util.*;
-// import java.awt.*;
-// import javax.swing.*;
-// import java.awt.event.*;
-// import java.lang.InterruptedException;
-
 import mds.wavedisplay.*;
 
 

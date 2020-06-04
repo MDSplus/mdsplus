@@ -1,4 +1,4 @@
-package mds.wavedisplay;
+package mds.connection;
 
 /* $Id$ */
 import java.io.*;
@@ -221,24 +221,4 @@ public class Descriptor
      }
      return 0;
    }
-
-    public static void main(String arg[])
-    {
-/*
-	float f[] = new float[100];
-	Descriptor dsc = new Descriptor();
-
-	dsc.dtype = Descriptor.DTYPE_FLOAT;
-	dsc.float_data = f;
-	byte b[] = dsc.dataToByteArray();
-
-
-	b = dataToByteArray(new Short((short)100));
-	System.out.println("  "+b.length);
-	b = dataToByteArray(new Float(100));
-	System.out.println("  "+b.length);
-	b = dataToByteArray(new Double(100));
-	System.out.println("  "+b.length);
-*/
-    }
 }

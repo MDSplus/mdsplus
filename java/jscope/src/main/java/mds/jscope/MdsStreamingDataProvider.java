@@ -2,9 +2,10 @@
  * Extends MdsDataProvider to display an asynchronous waveform IN ADDITION to the waveform provided by the superclass
  * This is a template class.
  */
-package MDSplus;
+package mds.jscope;
 import java.util.*;
-import mds.jscope.MdsDataProvider;
+
+import MDSplus.*;
 import mds.wavedisplay.*;
 
 /**

@@ -1,15 +1,10 @@
 package mds.jscope;
 
-/* $Id$ */
 import java.util.*;
 import java.io.IOException;
 import javax.swing.JFrame;
 
-import mds.jscope.MdsDataProvider.RealArray;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.WaveData;
-import mds.wavedisplay.WaveDataListener;
-import mds.wavedisplay.XYData;
+import mds.wavedisplay.*;
 
 class AsdexDataProvider extends MdsDataProvider
 {

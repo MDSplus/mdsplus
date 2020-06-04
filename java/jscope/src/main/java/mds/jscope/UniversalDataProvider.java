@@ -3,14 +3,10 @@ package mds.jscope;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-
 import javax.swing.JFrame;
 
-import mds.wavedisplay.ConnectionListener;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveData;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
 class UniversalDataProvider implements DataProvider
 {
@@ -231,5 +227,9 @@ class UniversalDataProvider implements DataProvider
     {
 	return null;
     }
+	@Override
+	public boolean isBusy() {
+		return false;
+	}
 
  }

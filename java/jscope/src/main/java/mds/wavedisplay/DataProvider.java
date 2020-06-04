@@ -1,10 +1,11 @@
 package mds.wavedisplay;
 
+
 import java.io.IOException;
 import javax.swing.JFrame;
 
+import mds.connection.*;
 import mds.jscope.DataServerItem;
-import mds.wavedisplay.ConnectionListener;
 
 /**
  * The DataProvider interface is used by jScope to deal with signals, regardless their origin.
@@ -17,7 +18,7 @@ import mds.wavedisplay.ConnectionListener;
  * @see WaveData
  */
 public interface DataProvider
-    {
+{
 	static final int LOGIN_OK = 1, LOGIN_ERROR = 2, LOGIN_CANCEL = 3;
 	/**
 	 * Defines the environment for data retrieval.
@@ -251,4 +252,5 @@ public interface DataProvider
 	 */
 	public long[]   GetShots(String inShots, String experiment) throws IOException;
 
-     }
+	public boolean isBusy();
+}

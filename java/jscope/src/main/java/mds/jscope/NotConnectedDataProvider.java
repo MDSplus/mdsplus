@@ -3,11 +3,8 @@ package mds.jscope;
 import java.io.*;
 import javax.swing.JFrame;
 
-import mds.wavedisplay.ConnectionListener;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveData;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
 
 class NotConnectedDataProvider implements DataProvider
@@ -108,4 +105,6 @@ class NotConnectedDataProvider implements DataProvider
     {
 	return false;
     }
+	@Override
+	public boolean isBusy() {return false;}
 }

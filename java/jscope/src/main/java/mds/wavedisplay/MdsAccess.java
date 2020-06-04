@@ -1,7 +1,6 @@
 package mds.wavedisplay;
 
 import java.util.*;
-
 import mds.jscope.MdsDataProvider;
 import mds.wavedisplay.DataAccess;
 

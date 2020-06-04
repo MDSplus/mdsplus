@@ -1,36 +1,14 @@
 package mds.jscope;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.net.*;
+import java.util.*;
+import javax.swing.*;
 
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
-import mds.wavedisplay.ConnectionEvent;
-import mds.wavedisplay.ConnectionListener;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.UpdateEventListener;
-import mds.wavedisplay.WaveData;
-import mds.wavedisplay.WaveDataListener;
-import mds.wavedisplay.XYData;
+import mds.connection.*;
+import mds.wavedisplay.*;
 
 class JetDataProvider implements DataProvider
 {
@@ -533,24 +511,30 @@ class JetDataProvider implements DataProvider
 	    for(int i = 0; i < connection_listener.size(); i++)
 	        connection_listener.elementAt(i).processConnectionEvent(e);
     }
-
-public static void main(String args[])
-{
-    System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
-    JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
-    dp.setEvaluateUrl(true);
-    float data[], y[], x[];
-    try
-    {
-    data = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.DATA);
-    x = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.X);
-    y = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL", JetDataProvider.Y);
-
-    for(int i = 0; i < x.length; i++)
-	System.out.println(x[i] + "  " +data[i]);
-
-    System.out.println("Num. points: "+data.length);
-    } catch (IOException exc){}
- }
+/*
+	public static void main(String args[])
+	{
+	    System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
+	    JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
+	    dp.setEvaluateUrl(true);
+	    float data[], y[], x[];
+	    try
+	    {
+	    data = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.DATA);
+	    x = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.X);
+	    y = dp.GetFloatArray("X:PPF/40573/MAGN/BPOL", JetDataProvider.Y);
+	
+	    for(int i = 0; i < x.length; i++)
+		System.out.println(x[i] + "  " +data[i]);
+	
+	    System.out.println("Num. points: "+data.length);
+	    } catch (IOException exc){}
+	 }
+*/
+	
+	@Override
+	public boolean isBusy() {	
+		return false;
+	}
 }
 
