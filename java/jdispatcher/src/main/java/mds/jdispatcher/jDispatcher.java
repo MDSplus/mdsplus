@@ -1,12 +1,16 @@
 package mds.jdispatcher;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.*;
-import java.io.*;
-import java.net.*;
 
-class jDispatcher implements ServerListener {
+import MDSplus.Data;
+
+class jDispatcher implements ServerListener
+{
 	static boolean verbose = true;
-
 	static final int MONITOR_BEGIN_SEQUENCE = 1;
 	static final int MONITOR_BUILD_BEGIN = 2;
 	static final int MONITOR_BUILD = 3;
@@ -18,13 +22,13 @@ class jDispatcher implements ServerListener {
 	static final int MONITOR_START_PHASE = 9;
 	static final int MONITOR_END_PHASE = 10;
 	static final int MONITOR_END_SEQUENCE = 11;
-
 	static final int TdiUNKNOWN_VAR = 0xfd380f2;
-
 	private boolean doing_phase = false;
 
-	static final private void logEvent(final String name, final String message) {
-		synchronized (System.out) {
+	static final private void logEvent(final String name, final String message)
+	{
+		synchronized (System.out)
+		{
 			if (message == null)
 				System.out.println(String.format("Event: %s", name));
 			else
@@ -35,7 +39,6 @@ class jDispatcher implements ServerListener {
 
 	Hashtable<String, Vector<Integer>> synchSeqNumberH = new Hashtable<String, Vector<Integer>>();
 	// Synch number sequence for every phase name
-
 	Vector<Integer> synchSeqNumbers = new Vector<Integer>();
 	/**
 	 * synchSeqNumbers contains the synchronisation sequence numbers defined in
@@ -43,7 +46,6 @@ class jDispatcher implements ServerListener {
 	 *
 	 */
 	String defaultServerName = "";
-
 	String tree;
 	/**
 	 * currently open tree
@@ -52,7 +54,6 @@ class jDispatcher implements ServerListener {
 	/**
 	 * current shot;
 	 */
-
 	int timestamp = 1;
 	/**
 	 * timestamp used for messages. Incremented each new seqeuence. Messages with
@@ -62,7 +63,6 @@ class jDispatcher implements ServerListener {
 	// Indexed by server class, every element of totSeqDispatched is the vector of
 	// currently dispatched
 	// action for a given server class
-
 	// OLD Vector seq_dispatched = new Vector();
 	/**
 	 * Vector of currently dispatched sequential actions
@@ -80,12 +80,10 @@ class jDispatcher implements ServerListener {
 	Hashtable<String, Boolean> phaseTerminated = new Hashtable<String, Boolean>();
 	// Indexed by server class. Keeps track of whether the curent phase has
 	// terminated for this server class
-
 	// OLD Enumeration curr_seq_numbers = null;
 	/**
 	 * Contains the sequence numbers of the current phase
 	 */
-
 	Hashtable<Integer, Vector<Action>> nidDependencies = new Hashtable<Integer, Vector<Action>>();
 
 	/**
@@ -94,7 +92,6 @@ class jDispatcher implements ServerListener {
 	 * hashCode, and therefore two actions are equal only if they refer to the same
 	 * instance. This kind of dependency is NOT restricted to the current phase.
 	 */
-
 	static class PhaseDescriptor
 	/**
 	 * PhaseDescriptor carries all the data structures required by each phase
@@ -127,45 +124,39 @@ class jDispatcher implements ServerListener {
 		 * ActionData does not override equals and hashCode, and therefore two actions
 		 * are equal only if ther refer to the same instance.
 		 */
-
 		Vector<Action> immediate_actions = new Vector<Action>();
 		/**
 		 * List of conditional actions with no dependency. These actions will be started
 		 * immediately at the beginning of the phase
 		 */
-
 		Hashtable<Integer, Action> all_actions = new Hashtable<Integer, Action>();
 
 		/**
 		 * A complete list of actions for that phase, indexed by their nid
 		 */
-
-		PhaseDescriptor(final String phase_name) {
+		PhaseDescriptor(final String phase_name)
+		{
 			this.phase_name = phase_name;
 		}
 	}
 
-	public jDispatcher() {
-	}
+	public jDispatcher()
+	{}
 
 	protected PhaseDescriptor curr_phase; // selects the current phase data structures
-
 	Hashtable<String, PhaseDescriptor> phases = new Hashtable<String, PhaseDescriptor>();
 	/**
 	 * Indexed by phase name. Associates dispatch data structures with each phase.
 	 */
-
 	Hashtable<MDSplus.Action, Action> actions = new Hashtable<MDSplus.Action, Action>();
 	/**
 	 * Indexed by ActionData, used to retrieve actions from ActionData in method
 	 * isEnabled
 	 */
-
 	Hashtable<Integer, Action> action_nids = new Hashtable<Integer, Action>();
 	/**
 	 * Indexed by nid, used to retrieve actions to be manually dispatched
 	 */
-
 	protected Vector<Server> servers = new Vector<Server>();
 	/**
 	 * server list, used for collecting dispatch information. Servers will receive
@@ -175,18 +166,18 @@ class jDispatcher implements ServerListener {
 	/**
 	 * All actions will be dispatched to balancer
 	 */
-
 	protected Vector<MonitorListener> monitors = new Vector<MonitorListener>();
 
 	/**
 	 * Registered Monitor listeners.
 	 */
-
-	public jDispatcher(final Balancer balancer) {
+	public jDispatcher(final Balancer balancer)
+	{
 		this.balancer = balancer;
 	}
 
-	public synchronized void clearTables() {
+	public synchronized void clearTables()
+	{
 		actions.clear();
 		action_nids.clear();
 		phases.clear();
@@ -198,9 +189,11 @@ class jDispatcher implements ServerListener {
 		timestamp++;
 	}
 
-	public boolean checkEssential() {
+	public boolean checkEssential()
+	{
 		final Enumeration<Action> actionsEn = curr_phase.all_actions.elements();
-		while (actionsEn.hasMoreElements()) {
+		while (actionsEn.hasMoreElements())
+		{
 			final Action action = actionsEn.nextElement();
 			if (action.isEssential() && (action.getDispatchStatus() != Action.DONE || ((action.getStatus() & 1) == 0)))
 				return false;
@@ -208,12 +201,15 @@ class jDispatcher implements ServerListener {
 		return true;
 	}
 
-	int getFirstValidSynch() {
+	int getFirstValidSynch()
+	{
 		// return the first synch number greater than or equal to any sequence number
-		for (int idx = 0; idx < synchSeqNumbers.size(); idx++) {
+		for (int idx = 0; idx < synchSeqNumbers.size(); idx++)
+		{
 			final int currSynch = synchSeqNumbers.elementAt(idx);
 			final Enumeration<String> serverClasses = curr_phase.totSeqNumbers.keys();
-			while (serverClasses.hasMoreElements()) {
+			while (serverClasses.hasMoreElements())
+			{
 				final String currServerClass = serverClasses.nextElement();
 				final Vector<Integer> currSeqVect = curr_phase.totSeqNumbers.get(currServerClass);
 				if (currSeqVect != null && currSeqVect.size() > 0 && currSeqVect.elementAt(0) <= currSynch)
@@ -225,11 +221,13 @@ class jDispatcher implements ServerListener {
 
 	// Check which servers can proceede to the next sequence number
 	// Either None, or this server or a list of server classes
-	Vector<String> canProceede(final String serverClass) {
+	Vector<String> canProceede(final String serverClass)
+	{
 		// Find the most advanced sequence number
 		final Enumeration<Integer> seqNumbers = actSeqNumbers.elements();
 		int maxSeq = -1;
-		while (seqNumbers.hasMoreElements()) {
+		while (seqNumbers.hasMoreElements())
+		{
 			final int currSeq = seqNumbers.nextElement();
 			if (currSeq > maxSeq)
 				maxSeq = currSeq;
@@ -237,9 +235,11 @@ class jDispatcher implements ServerListener {
 		// Find smallest synch number which is greater or equan to maxSeq
 		int actSynch = -1;
 		int nextSynch = -1;
-		for (int idx = 0; idx < synchSeqNumbers.size(); idx++) {
+		for (int idx = 0; idx < synchSeqNumbers.size(); idx++)
+		{
 			final int currSynch = synchSeqNumbers.elementAt(idx);
-			if (currSynch >= maxSeq) {
+			if (currSynch >= maxSeq)
+			{
 				actSynch = currSynch;
 				if (idx == synchSeqNumbers.size() - 1)
 					nextSynch = actSynch;
@@ -261,13 +261,16 @@ class jDispatcher implements ServerListener {
 		final int thisIdx = currSeqNumbers.indexOf(thisSeq);
 		// if it is the last element can trivially proceed (it does nothing)
 		final int thisSeqN = thisSeq.intValue();
-		if (thisIdx == currSeqNumbers.size() - 1 && thisSeqN != actSynch) {
+		if (thisIdx == currSeqNumbers.size() - 1 && thisSeqN != actSynch)
+		{
 			final Vector<String> retVect = new Vector<String>();
 			retVect.addElement(serverClass);
 			return retVect;
 		}
-		if (thisIdx < currSeqNumbers.size() - 1) {
-			if (currSeqNumbers.elementAt(thisIdx + 1) <= actSynch) {
+		if (thisIdx < currSeqNumbers.size() - 1)
+		{
+			if (currSeqNumbers.elementAt(thisIdx + 1) <= actSynch)
+			{
 				final Vector<String> retVect = new Vector<String>();
 				retVect.addElement(serverClass);
 				return retVect;
@@ -279,10 +282,10 @@ class jDispatcher implements ServerListener {
 		// In any case wait until all dispatched actions for any server
 		if (!allSeqDispatchedAreEmpty())
 			return new Vector<String>();
-
 		final Enumeration<String> serverClasses = curr_phase.totSeqNumbers.keys();
 		final Vector<String> serverClassesV = new Vector<String>();
-		while (serverClasses.hasMoreElements()) {
+		while (serverClasses.hasMoreElements())
+		{
 			final String currServerClass = serverClasses.nextElement();
 			final Integer currSeqNum = actSeqNumbers.get(currServerClass);
 			final Vector<Integer> currSeqVect = curr_phase.totSeqNumbers.get(currServerClass);
@@ -295,7 +298,9 @@ class jDispatcher implements ServerListener {
 					serverClassesV.addElement(currServerClass);
 				// Will start only if the first sequence number is greater than the curent synch
 				// step
-			} else {
+			}
+			else
+			{
 				final int currIdx = currSeqVect.indexOf(currSeqNum);
 				// if it is the last element can trivially proceede (it does nothing)
 				serverClassesV.addElement(currServerClass);
@@ -312,9 +317,11 @@ class jDispatcher implements ServerListener {
 		return serverClassesV; // If I arrive here, all the servers are ready to pass to the next synch step
 	}
 
-	boolean allSeqDispatchedAreEmpty() {
+	boolean allSeqDispatchedAreEmpty()
+	{
 		final Enumeration<String> serverClasses = totSeqDispatched.keys();
-		while (serverClasses.hasMoreElements()) {
+		while (serverClasses.hasMoreElements())
+		{
 			final String serverClass = serverClasses.nextElement();
 			if (serverClass != null && !totSeqDispatched.get(serverClass).isEmpty())
 				return false;
@@ -322,7 +329,8 @@ class jDispatcher implements ServerListener {
 		return true;
 	}
 
-	boolean isConditional(final Action action) {
+	boolean isConditional(final Action action)
+	{
 		final MDSplus.Dispatch dispatch = action.getDispatch();
 		if (dispatch.getOpcode() != MDSplus.Dispatch.SCHED_SEQ)
 			return true;
@@ -330,12 +338,13 @@ class jDispatcher implements ServerListener {
 				|| (dispatch.getWhen() instanceof MDSplus.Ident))
 			return true;
 		return false;
-
 	}
 
-	boolean allTerminatedInPhase() {
+	boolean allTerminatedInPhase()
+	{
 		final Enumeration<String> serverClasses = phaseTerminated.keys();
-		while (serverClasses.hasMoreElements()) {
+		while (serverClasses.hasMoreElements())
+		{
 			final String serverClass = serverClasses.nextElement();
 			if (serverClass != null && !(phaseTerminated.get(serverClass)).booleanValue())
 				return false;
@@ -343,26 +352,33 @@ class jDispatcher implements ServerListener {
 		return true;
 	}
 
-	public synchronized void addSynchNumbers(final String phase, final Vector<Integer> synchNumbers) {
+	public synchronized void addSynchNumbers(final String phase, final Vector<Integer> synchNumbers)
+	{
 		synchSeqNumberH.put(phase, synchNumbers);
 	}
 
-	public synchronized void addServer(final Server server) {
+	public synchronized void addServer(final Server server)
+	{
 		servers.addElement(server);
 		server.addServerListener(this);
 		balancer.addServer(server);
 	}
 
-	public void setTree(final String tree) {
+	public void setTree(final String tree)
+	{
 		this.tree = tree;
 		for (final Server server : servers)
 			server.setTree(tree);
 	}
 
-	public void setTree(final String tree, final int shot) {
-		try { // check if we could open
+	public void setTree(final String tree, final int shot)
+	{
+		try
+		{ // check if we could open
 			new MDSplus.Tree(tree, shot, MDSplus.Tree.OPEN_READONLY).close();
-		} catch (final Exception exc) {
+		}
+		catch (final Exception exc)
+		{
 			System.err.println("Cannot open tree " + tree + " " + shot);
 			return;
 		}
@@ -379,9 +395,11 @@ class jDispatcher implements ServerListener {
 	{
 		clearTables();
 		// fireMonitorEvent(null, MONITOR_BUILD_BEGIN);
-		for (final Server server : servers) {
+		for (final Server server : servers)
+		{
 			final Action[] curr_actions = server.collectActions();
-			if (curr_actions != null) {
+			if (curr_actions != null)
+			{
 				for (int i = 0; i < curr_actions.length; i++)
 					insertAction(curr_actions[i], i == 0, i == curr_actions.length - 1);
 			}
@@ -397,9 +415,11 @@ class jDispatcher implements ServerListener {
 	{
 		clearTables();
 		// fireMonitorEvent(null, MONITOR_BUILD_BEGIN);
-		for (final Server server : servers) {
+		for (final Server server : servers)
+		{
 			final Action[] curr_actions = server.collectActions(rootPath);
-			if (curr_actions != null) {
+			if (curr_actions != null)
+			{
 				for (int i = 0; i < curr_actions.length; i++)
 					insertAction(curr_actions[i], i == 0, i == curr_actions.length - 1);
 			}
@@ -408,92 +428,110 @@ class jDispatcher implements ServerListener {
 		// fireMonitorEvent(null, MONITOR_BUILD_END);
 	}
 
-	protected String getServerClass(final Action action) {
-		try {
+	protected String getServerClass(final Action action)
+	{
+		try
+		{
 			final MDSplus.Dispatch dispatch = action.getDispatch();
 			final String serverClass = dispatch.getIdent().getString().toUpperCase();
 			if (serverClass == null || serverClass.equals(""))
 				return defaultServerName;
 			return balancer.getActServer(serverClass);
-		} catch (final Exception exc) {
+		}
+		catch (final Exception exc)
+		{
 			return defaultServerName;
 		}
 	}
 
-	protected void insertAction(final Action action, final boolean is_first, final boolean is_last) {
+	protected void insertAction(final Action action, final boolean is_first, final boolean is_last)
+	{
 		final String serverClass = getServerClass(action);
 		// record current timestamp
 		// action.setTimestamp(timestamp);
-
 		// Insert action in actions hashtable
 		actions.put(action.getAction(), action);
-
 		// Insert action in action_nids hashtable
 		action_nids.put(new Integer(action.getNid()), action);
-
 		// Check if the Action is sequential
 		final MDSplus.Dispatch dispatch = action.getDispatch();
-		if (dispatch == null) {
+		if (dispatch == null)
+		{
 			System.out.println("Warning: Action " + action + " without dispatch info");
 			return;
-		} else {
+		}
+		else
+		{
 			String phase_name;
-
-			try {
+			try
+			{
 				phase_name = dispatch.getPhase().getString().toUpperCase();
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				System.out.println("Warning: Action " + action + " does not contain a phase string");
 				return;
 			}
-			try { // just check if ident is available
+			try
+			{ // just check if ident is available
 				dispatch.getIdent().getString();
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				System.out.println("Warning: Action " + action + " does not containg a server class string");
 				return;
 			}
-
 			curr_phase = phases.get(phase_name);
-			if (curr_phase == null) {
+			if (curr_phase == null)
+			{
 				curr_phase = new PhaseDescriptor(phase_name);
 				phases.put(phase_name, curr_phase);
 			}
 			curr_phase.all_actions.put(new Integer(action.getNid()), action);
 			boolean isSequenceNumber = true;
-			if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_SEQ) {
+			if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_SEQ)
+			{
 				int seq_number = 0;
 				if (dispatch.getWhen() instanceof MDSplus.TreeNode)
 					isSequenceNumber = false;
-				else {
-					try {
+				else
+				{
+					try
+					{
 						seq_number = dispatch.getWhen().getInt();
-					} catch (final Exception exc) {
+					}
+					catch (final Exception exc)
+					{
 						isSequenceNumber = false;
 						// System.out.println("Warning: expression used for sequence number");
 					}
 				}
 				if (!isSequenceNumber)
 					dispatch.setWhen(traverseSeqExpression(action.getAction(), dispatch.getWhen()));
-
 				Hashtable<Integer, Vector<Action>> seqActions = curr_phase.totSeqActions.get(serverClass);
 				if (seqActions == null)
 					curr_phase.totSeqActions.put(serverClass, seqActions = new Hashtable<Integer, Vector<Action>>());
 				Vector<Integer> seqNumbers = curr_phase.totSeqNumbers.get(serverClass);
 				if (seqNumbers == null)
 					curr_phase.totSeqNumbers.put(serverClass, seqNumbers = new Vector<Integer>());
-				if (isSequenceNumber) {
+				if (isSequenceNumber)
+				{
 					final Integer seq_obj = new Integer(seq_number);
 					if (seqActions.containsKey(seq_obj))
 						seqActions.get(seq_obj).addElement(action);
-					else {
+					else
+					{
 						// it is the first time such a sequence number is referenced
 						final Vector<Action> curr_vector = new Vector<Action>();
 						curr_vector.add(action);
 						seqActions.put(seq_obj, curr_vector);
 						if (seqNumbers.size() == 0)
 							seqNumbers.addElement(seq_obj);
-						else {
+						else
+						{
 							int idx, currNum = -1;
-							for (idx = 0; idx < seqNumbers.size(); idx++) {
+							for (idx = 0; idx < seqNumbers.size(); idx++)
+							{
 								currNum = seqNumbers.elementAt(idx);
 								if (currNum >= seq_number)
 									break;
@@ -506,10 +544,10 @@ class jDispatcher implements ServerListener {
 			}
 			// Handle Conditional actions with no dependencies
 			// these will be dispatched asynchronously at the beginning of the phase
-			if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND && dispatch.getWhen() == null) {
+			if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND && dispatch.getWhen() == null)
+			{
 				curr_phase.immediate_actions.addElement(action);
 			}
-
 			curr_phase.dependencies.put(action.getAction(), new Vector<Action>()); // Insert every new action in
 																					// dependencies hashtable
 			if (is_first)
@@ -521,88 +559,107 @@ class jDispatcher implements ServerListener {
 		}
 	}
 
-	protected void buildDependencies() {
+	protected void buildDependencies()
+	{
 		MDSplus.Dispatch dispatch;
-
 		final Enumeration<String> phaseNames = phases.keys();
-		while (phaseNames.hasMoreElements()) {
+		while (phaseNames.hasMoreElements())
+		{
 			final PhaseDescriptor currPhase = phases.get(phaseNames.nextElement());
 			if (currPhase == null)
 				continue;
 			final Enumeration<MDSplus.Action> action_list = currPhase.dependencies.keys();
-			while (action_list.hasMoreElements()) {
+			while (action_list.hasMoreElements())
+			{
 				final MDSplus.Action action_data = action_list.nextElement();
-				try {
+				try
+				{
 					dispatch = actions.get(action_data).getDispatch();
-				} catch (final Exception e) {
+				}
+				catch (final Exception e)
+				{
 					continue;
 				}
 				if (dispatch.getOpcode() == MDSplus.Dispatch.SCHED_COND)
 					traverseDispatch(action_data, dispatch.getWhen(), currPhase);
-
 			}
 		}
 	}
 
 	protected void traverseDispatch(final MDSplus.Action action_data, final MDSplus.Data when,
-			final PhaseDescriptor currPhase) {
+			final PhaseDescriptor currPhase)
+	{
 		Action action;
 		if (when == null)
 			return;
-		if (when instanceof MDSplus.Condition) {
+		if (when instanceof MDSplus.Condition)
+		{
 			final Vector<Action> act_vector = currPhase.dependencies.get(((MDSplus.Condition) when).getArg());
 			if (act_vector != null && (action = actions.get(action_data)) != null)
 				act_vector.addElement(action);
 			else
 				System.out.println("Warning: condition does not refer to a known action");
-		} else if (when instanceof MDSplus.Action) {
+		}
+		else if (when instanceof MDSplus.Action)
+		{
 			final Vector<Action> act_vector = currPhase.dependencies.get(when);
 			if (act_vector != null && (action = actions.get(action_data)) != null)
 				act_vector.addElement(action);
 			else
 				System.out.println("Warning: condition does not refer to a known action");
-		} else if (when instanceof MDSplus.Dependency) {
+		}
+		else if (when instanceof MDSplus.Dependency)
+		{
 			final MDSplus.Data[] args = ((MDSplus.Dependency) when).getDescs();
-			for (int i = 0; i < args.length; i++)
-				traverseDispatch(action_data, args[i], currPhase);
+			for (final Data arg : args)
+				traverseDispatch(action_data, arg, currPhase);
 		}
 	}
 
-	protected MDSplus.Data traverseSeqExpression(final MDSplus.Action action_data, final MDSplus.Data seq) {
+	protected MDSplus.Data traverseSeqExpression(final MDSplus.Action action_data, final MDSplus.Data seq)
+	{
 		final Action action = actions.get(action_data);
-		if (action == null) {
+		if (action == null)
+		{
 			System.err.println("Internal error in traverseSeqExpression: no action for action_data");
 			return null;
 		}
 		final MDSplus.Tree tree = InfoServer.getDatabase();
 		if (seq == null)
 			return null;
-		if (seq instanceof MDSplus.TreePath || seq instanceof MDSplus.TreeNode) {
+		if (seq instanceof MDSplus.TreePath || seq instanceof MDSplus.TreeNode)
+		{
 			int nid;
-			try {
-
+			try
+			{
 				if (seq instanceof MDSplus.TreePath)
 					nid = (tree.getNode((MDSplus.TreePath) seq)).getNid();
 				else
 					nid = ((MDSplus.TreeNode) seq).getNid();
 				Vector<Action> actVect = nidDependencies.get(new Integer(nid));
-				if (actVect == null) {
+				if (actVect == null)
+				{
 					actVect = new Vector<Action>();
 					nidDependencies.put(new Integer(nid), actVect);
 				}
 				actVect.addElement(action);
 				final String expr = "PUBLIC _ACTION_" + Integer.toHexString(nid) + " = COMPILE('$_UNDEFINED')";
-				try {
+				try
+				{
 					tree.tdiExecute(expr);
-				} catch (final Exception exc) {
-				} // Will always generate an exception since the variable is undefined
+				}
+				catch (final Exception exc)
+				{} // Will always generate an exception since the variable is undefined
 				return new MDSplus.Ident("_ACTION_" + Integer.toHexString(nid));
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				System.err.println("Error in resolving path names in sequential action: " + exc);
 				return null;
 			}
 		}
-		if (seq instanceof MDSplus.Compound) {
+		if (seq instanceof MDSplus.Compound)
+		{
 			final MDSplus.Data[] descs = ((MDSplus.Compound) seq).getDescs();
 			for (int i = 0; i < descs.length; i++)
 				descs[i] = traverseSeqExpression(action_data, descs[i]);
@@ -610,20 +667,25 @@ class jDispatcher implements ServerListener {
 		return seq;
 	}
 
-	public synchronized void addMonitorListener(final MonitorListener monitor) {
+	public synchronized void addMonitorListener(final MonitorListener monitor)
+	{
 		monitors.addElement(monitor);
 	}
 
 	int last_shot = -2;
 
-	protected void fireMonitorEvent(final Action action, final int mode) {
+	protected void fireMonitorEvent(final Action action, final int mode)
+	{
 		if (shot != last_shot)
 			logEvent("SHOT", String.valueOf(last_shot = shot));
 		final MonitorEvent event = new MonitorEvent(this, tree, shot,
 				(curr_phase == null) ? "NONE" : curr_phase.phase_name, action);
-		synchronized (monitors) {
-			for (final MonitorListener curr_listener : monitors) {
-				switch (mode) {
+		synchronized (monitors)
+		{
+			for (final MonitorListener curr_listener : monitors)
+			{
+				switch (mode)
+				{
 				case MONITOR_BEGIN_SEQUENCE:
 					curr_listener.beginSequence(event);
 					break;
@@ -656,19 +718,19 @@ class jDispatcher implements ServerListener {
 					event.eventId = MonitorEvent.END_PHASE_EVENT;
 					curr_listener.endPhase(event);
 					break;
-
 				}
 			}
 		}
 	}
 
-	void discardAction(final Action action) {
+	void discardAction(final Action action)
+	{
 		action.setStatus(Action.ABORTED, 0, verbose);
 		reportDone(action);
 	}
 
-	Vector<Integer> getValidSynchSeq(final String phaseName,
-			final Hashtable<String, Vector<Integer>> currTotSeqNumbers) {
+	Vector<Integer> getValidSynchSeq(final String phaseName, final Hashtable<String, Vector<Integer>> currTotSeqNumbers)
+	{
 		final Vector<Integer> currSynchSeqNumbers = synchSeqNumberH.get(phaseName);
 		if (currSynchSeqNumbers == null)
 			return new Vector<Integer>();
@@ -677,10 +739,12 @@ class jDispatcher implements ServerListener {
 		final Enumeration<String> serverNames = currTotSeqNumbers.keys();
 		int minSeq = 0x7fffffff;
 		int maxSeq = -1;
-		while (serverNames.hasMoreElements()) {
+		while (serverNames.hasMoreElements())
+		{
 			final String currServerName = serverNames.nextElement();
 			final Vector<Integer> currSeqNumbers = currTotSeqNumbers.get(currServerName);
-			if (currSeqNumbers.size() > 0) {
+			if (currSeqNumbers.size() > 0)
+			{
 				final int currMin = currSeqNumbers.elementAt(0);
 				final int currMax = currSeqNumbers.elementAt(currSeqNumbers.size() - 1);
 				if (minSeq > currMin)
@@ -691,7 +755,8 @@ class jDispatcher implements ServerListener {
 		}
 		if (maxSeq == -1)
 			return new Vector<Integer>();// No sequential actions in this phase
-		for (int i = 0; i < currSynchSeqNumbers.size(); i++) {
+		for (int i = 0; i < currSynchSeqNumbers.size(); i++)
+		{
 			final int currSynch = currSynchSeqNumbers.elementAt(i);
 			if (currSynch >= minSeq && currSynch < maxSeq)
 				actSynchSeqNumbers.addElement(new Integer(currSynch));
@@ -699,21 +764,23 @@ class jDispatcher implements ServerListener {
 		return actSynchSeqNumbers;
 	}
 
-	public synchronized boolean startPhase(final String phase_name) {
+	public synchronized boolean startPhase(final String phase_name)
+	{
 		doing_phase = false;
 		// increment timestamp. Incoming messages with older timestamp will be ignored
 		curr_phase = phases.get(phase_name); // select data structures for the current phase
-		if (curr_phase == null) {// Phase name does not correspond to any known phase.
+		if (curr_phase == null)
+		{// Phase name does not correspond to any known phase.
 			curr_phase = new PhaseDescriptor(phase_name);
 		}
-
 		synchSeqNumbers = getValidSynchSeq(phase_name, curr_phase.totSeqNumbers);
-
 		logEvent("PHASE BEGIN", phase_name);
 		if (!synchSeqNumbers.isEmpty())
-			synchronized (System.out) {
+			synchronized (System.out)
+			{
 				System.out.print("SYNCHRONOUS SEQUENCE NUMBERS: ");
-				for (final Integer seq : synchSeqNumbers) {
+				for (final Integer seq : synchSeqNumbers)
+				{
 					System.out.print(" ");
 					System.out.print(seq);
 				}
@@ -722,10 +789,13 @@ class jDispatcher implements ServerListener {
 			}
 		fireMonitorEvent((Action) null, MONITOR_START_PHASE);
 		// dispatch immediate actions, if any
-		if (curr_phase.immediate_actions.size() > 0) {
-			for (int i = 0; i < curr_phase.immediate_actions.size(); i++) {
+		if (curr_phase.immediate_actions.size() > 0)
+		{
+			for (int i = 0; i < curr_phase.immediate_actions.size(); i++)
+			{
 				final Action action = curr_phase.immediate_actions.elementAt(i);
-				if (action.isOn()) {
+				if (action.isOn())
+				{
 					doing_phase = true;
 					dep_dispatched.addElement(action);
 					action.setStatus(Action.DISPATCHED, 0, verbose);
@@ -734,44 +804,50 @@ class jDispatcher implements ServerListener {
 						discardAction(action);
 				}
 			}
-
 		}
-
 		// For every server class
 		phaseTerminated = new Hashtable<String, Boolean>();
 		boolean anyDispatched = false;
 		final int firstSynch = getFirstValidSynch();
 		final Enumeration<String> serverClasses = curr_phase.totSeqNumbers.keys();
-		while (serverClasses.hasMoreElements()) {
+		while (serverClasses.hasMoreElements())
+		{
 			final String serverClass = serverClasses.nextElement();
 			final Vector<Integer> seqNumbers = curr_phase.totSeqNumbers.get(serverClass);
 			if (seqNumbers == null)
 				continue;
 			int firstSeq;
-			try {
+			try
+			{
 				firstSeq = seqNumbers.elementAt(0);
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				firstSeq = -1;
 			}
 			final Enumeration<Integer> currSeqNumbers = seqNumbers.elements();
 			totSeqNumbers.put(serverClass, currSeqNumbers);
 			// currSeqNumbers contains the sequence number for the selected phase and for
 			// the selected server class
-			if (currSeqNumbers.hasMoreElements()) {
+			if (currSeqNumbers.hasMoreElements())
+			{
 				phaseTerminated.put(serverClass, new Boolean(false));
-
 				if (firstSynch >= 0 && firstSeq > firstSynch) // Can't start yet
 				{
 					actSeqNumbers.put(serverClass, new Integer(-1));
 					totSeqDispatched.put(serverClass, new Vector<Action>());
-				} else {
+				}
+				else
+				{
 					final Integer curr_int = currSeqNumbers.nextElement();
 					actSeqNumbers.put(serverClass, curr_int);
 					final Enumeration<Action> first_actions = curr_phase.totSeqActions.get(serverClass).get(curr_int)
 							.elements();
-					while (first_actions.hasMoreElements()) {
+					while (first_actions.hasMoreElements())
+					{
 						final Action action = first_actions.nextElement();
-						if (action.isOn()) {
+						if (action.isOn())
+						{
 							doing_phase = true;
 							Vector<Action> currSeqDispatched = totSeqDispatched.get(serverClass);
 							if (currSeqDispatched == null)
@@ -794,19 +870,24 @@ class jDispatcher implements ServerListener {
 		return false; // no actions to be executed in this phase
 	}
 
-	public void dispatchAction(final String actionPath) {
+	public void dispatchAction(final String actionPath)
+	{
 		final MDSplus.Tree currTree = InfoServer.getDatabase();
 		MDSplus.TreeNode nid;
-		try {
+		try
+		{
 			nid = currTree.getNode(actionPath);
 			dispatchAction(nid.getNid());
-		} catch (final Exception exc) {
+		}
+		catch (final Exception exc)
+		{
 			System.err.println("Cannot resolve " + actionPath);
 			return;
 		}
 	}
 
-	public synchronized boolean dispatchAction(final int nid) {
+	public synchronized boolean dispatchAction(final int nid)
+	{
 		if (action_nids == null)
 			return false;
 		final Action action = action_nids.get(new Integer(nid));
@@ -820,7 +901,8 @@ class jDispatcher implements ServerListener {
 		return true;
 	}
 
-	public /* OCT 2008 synchronized */ void abortAction(final int nid) {
+	public /* OCT 2008 synchronized */ void abortAction(final int nid)
+	{
 		if (action_nids == null)
 			return;
 		final Action action = action_nids.get(new Integer(nid));
@@ -829,12 +911,15 @@ class jDispatcher implements ServerListener {
 		balancer.abortAction(action);
 	}
 
-	public synchronized void waitPhase() {
-		try {
+	public synchronized void waitPhase()
+	{
+		try
+		{
 			while (doing_phase)
 				wait();
-		} catch (final InterruptedException exc) {
 		}
+		catch (final InterruptedException exc)
+		{}
 	}
 
 	@Override
@@ -846,7 +931,6 @@ class jDispatcher implements ServerListener {
 	{
 		event.getAction().setStatus(Action.DOING, 0, verbose);
 		fireMonitorEvent(event.getAction(), MONITOR_DOING);
-
 	}
 
 	@Override
@@ -856,7 +940,6 @@ class jDispatcher implements ServerListener {
 	 * Simply reports the fact
 	 */
 	{
-
 		event.getAction().setStatus(Action.ABORTED, 0, verbose);
 		fireMonitorEvent(event.getAction(), MONITOR_DONE);
 		reportDone(event.getAction());
@@ -869,34 +952,41 @@ class jDispatcher implements ServerListener {
 	 */
 	{
 		final Action action = event.getAction();
-		try {
+		try
+		{
 			final String mdsevent = ((MDSplus.String) (action.getDispatch().getCompletion())).getString();
-			if (mdsevent != null && !mdsevent.equals("\"\"")) {
+			if (mdsevent != null && !mdsevent.equals("\"\""))
+			{
 				MdsHelper.generateEvent(mdsevent, 0);
 			}
-		} catch (final Exception exc) {
 		}
-
+		catch (final Exception exc)
+		{}
 		action.setStatus(Action.DONE, event.getStatus(), verbose);
 		fireMonitorEvent(action, MONITOR_DONE);
 		reportDone(action);
 	}
 
-	protected void reportDone(final Action action) {
+	protected void reportDone(final Action action)
+	{
 		// remove action from dispatched
 		final String serverClass = getServerClass(action);
 		Vector<Action> currSeqDispatched = totSeqDispatched.get(serverClass);
 		if ((currSeqDispatched == null) || !currSeqDispatched.removeElement(action))
 			dep_dispatched.removeElement(action); // The action belongs only to one of the two
-		if (!action.isManual()) {
+		if (!action.isManual())
+		{
 			// check dependent actions
 			final Vector<Action> currDepV = curr_phase.dependencies.get(action.getAction());
-			if (currDepV != null && currDepV.size() > 0) {
+			if (currDepV != null && currDepV.size() > 0)
+			{
 				final Enumeration<Action> depend_actions = currDepV.elements();
-				while (depend_actions.hasMoreElements()) {
+				while (depend_actions.hasMoreElements())
+				{
 					final Action curr_action = depend_actions.nextElement();
-					if (curr_action.isOn() && isEnabled(curr_action.getDispatch().getWhen())) { // the dependent action
-																								// is now enabled
+					if (curr_action.isOn() && isEnabled(curr_action.getDispatch().getWhen()))
+					{ // the dependent action
+						// is now enabled
 						dep_dispatched.addElement(curr_action);
 						curr_action.setStatus(Action.DISPATCHED, 0, verbose);
 						fireMonitorEvent(curr_action, MONITOR_DISPATCHED);
@@ -907,51 +997,65 @@ class jDispatcher implements ServerListener {
 			}
 			// Handle now possible dependencies based on sequence expression
 			final Vector<Action> depVect = nidDependencies.get(new Integer(action.getNid()));
-			if (depVect != null && depVect.size() > 0) {
+			if (depVect != null && depVect.size() > 0)
+			{
 				final MDSplus.Tree tree = InfoServer.getDatabase();
 				final String doneExpr = "PUBLIC _ACTION_" + Integer.toHexString(action.getNid()) + " = "
 						+ action.getStatus();
-				try {
+				try
+				{
 					tree.tdiExecute(doneExpr);
-				} catch (final Exception exc) {
+				}
+				catch (final Exception exc)
+				{
 					System.err.println("Error setting completion TDI variable: " + exc);
 				}
-
-				for (int i = 0; i < depVect.size(); i++) {
+				for (int i = 0; i < depVect.size(); i++)
+				{
 					final Action currAction = depVect.elementAt(i);
-					try {
+					try
+					{
 						final MDSplus.Data retData = tree.tdiEvaluate(currAction.getDispatch().getWhen());
 						final int retStatus = retData.getInt();
-						if ((retStatus & 0x00000001) != 0) { // Condition satisfied
+						if ((retStatus & 0x00000001) != 0)
+						{ // Condition satisfied
 							dep_dispatched.addElement(currAction);
 							currAction.setStatus(Action.DISPATCHED, 0, verbose);
 							fireMonitorEvent(currAction, MONITOR_DISPATCHED);
 							if (!balancer.enqueueAction(currAction))
 								discardAction(action);
-						} else { // The action is removed from dep_dispatched since it has not to be executed
+						}
+						else
+						{ // The action is removed from dep_dispatched since it has not to be executed
 							action.setStatus(Action.ABORTED, Action.ServerNOT_DISPATCHED, verbose);
 							fireMonitorEvent(action, MONITOR_DONE);
 						}
-					} catch (final Exception exc) {
 					}
+					catch (final Exception exc)
+					{}
 				}
 			}
 		}
-		if (!isConditional(action)) {
-			if (currSeqDispatched.isEmpty()) { // No more sequential actions for this sequence number for all server
-												// classes
-												// Get the list of servers which can advance their sequence number
+		if (!isConditional(action))
+		{
+			if (currSeqDispatched.isEmpty())
+			{ // No more sequential actions for this sequence number for all server
+				// classes
+				// Get the list of servers which can advance their sequence number
 				final Vector<String> serverClassesV = canProceede(serverClass);
-				for (int i = 0; i < serverClassesV.size(); i++) {
+				for (int i = 0; i < serverClassesV.size(); i++)
+				{
 					final String currServerClass = serverClassesV.elementAt(i);
 					final Enumeration<Integer> currSeqNumbers = totSeqNumbers.get(currServerClass);
 					currSeqDispatched = totSeqDispatched.get(currServerClass);
-					if (currSeqNumbers.hasMoreElements()) { // Still further sequence numbers
+					if (currSeqNumbers.hasMoreElements())
+					{ // Still further sequence numbers
 						final Integer curr_int = currSeqNumbers.nextElement();
 						actSeqNumbers.put(currServerClass, curr_int);
 						final Enumeration<Action> actions = curr_phase.totSeqActions.get(currServerClass).get(curr_int)
 								.elements();
-						while (actions.hasMoreElements()) {
+						while (actions.hasMoreElements())
+						{
 							final Action curr_action = actions.nextElement();
 							currSeqDispatched.addElement(curr_action);
 							curr_action.setStatus(Action.DISPATCHED, 0, verbose);
@@ -959,24 +1063,31 @@ class jDispatcher implements ServerListener {
 							if (!balancer.enqueueAction(curr_action))
 								discardAction(action);
 						}
-					} else {
+					}
+					else
+					{
 						phaseTerminated.put(currServerClass, new Boolean(true));
-						if (allTerminatedInPhase()) {
-							if (dep_dispatched.isEmpty()) { // No more actions at all for this phase
+						if (allTerminatedInPhase())
+						{
+							if (dep_dispatched.isEmpty())
+							{ // No more actions at all for this phase
 								doing_phase = false;
 								// Report those (dependent) actions which have not been dispatched
 								final Enumeration<Action> allActionsEn = curr_phase.all_actions.elements();
-								while (allActionsEn.hasMoreElements()) {
+								while (allActionsEn.hasMoreElements())
+								{
 									final Action currAction = allActionsEn.nextElement();
 									final int currDispatchStatus = currAction.getDispatchStatus();
-									if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE) {
+									if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE)
+									{
 										currAction.setStatus(Action.ABORTED, Action.ServerCANT_HAPPEN, verbose);
 										fireMonitorEvent(currAction, MONITOR_DONE);
 									}
 								}
 								logEvent("PHASE END", curr_phase.phase_name);
 								fireMonitorEvent((Action) null, MONITOR_END_PHASE);
-								synchronized (this) {
+								synchronized (this)
+								{
 									notify();
 								}
 								return;
@@ -985,24 +1096,30 @@ class jDispatcher implements ServerListener {
 					}
 				}
 			}
-		} else // End of conditional action
+		}
+		else // End of conditional action
 		{
-			if (allTerminatedInPhase()) {
-				if (dep_dispatched.isEmpty()) { // No more actions at all for this phase
+			if (allTerminatedInPhase())
+			{
+				if (dep_dispatched.isEmpty())
+				{ // No more actions at all for this phase
 					doing_phase = false;
 					// Report those (dependent) actions which have not been dispatched
 					final Enumeration<Action> allActionsEn = curr_phase.all_actions.elements();
-					while (allActionsEn.hasMoreElements()) {
+					while (allActionsEn.hasMoreElements())
+					{
 						final Action currAction = allActionsEn.nextElement();
 						final int currDispatchStatus = currAction.getDispatchStatus();
-						if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE) {
+						if (currDispatchStatus != Action.ABORTED && currDispatchStatus != Action.DONE)
+						{
 							currAction.setStatus(Action.ABORTED, Action.ServerCANT_HAPPEN, verbose);
 							fireMonitorEvent(currAction, MONITOR_DONE);
 						}
 					}
 					logEvent("PHASE END", curr_phase.phase_name);
 					fireMonitorEvent((Action) null, MONITOR_END_PHASE);
-					synchronized (this) {
+					synchronized (this)
+					{
 						notify();
 					}
 					return;
@@ -1018,7 +1135,8 @@ class jDispatcher implements ServerListener {
 	 * Java. In a derived class it may be performed by evaluating a TDI expression.
 	 */
 	{
-		if (when instanceof MDSplus.Condition) {
+		if (when instanceof MDSplus.Condition)
+		{
 			final int modifier = ((MDSplus.Condition) when).getOpcode();
 			final Action action = actions.get(((MDSplus.Condition) when).getArg());
 			if (action == null) // Action not present, maybe not enabled
@@ -1027,7 +1145,8 @@ class jDispatcher implements ServerListener {
 			final int status = action.getStatus();
 			if (dispatch_status != Action.DONE)
 				return false;
-			switch (modifier) {
+			switch (modifier)
+			{
 			case 0:
 				if ((status & 1) != 0)
 					return true;
@@ -1041,19 +1160,23 @@ class jDispatcher implements ServerListener {
 				return false;
 			}
 		}
-		if (when instanceof MDSplus.Action) {
+		if (when instanceof MDSplus.Action)
+		{
 			final Action action = actions.get(when);
 			if (action.getDispatchStatus() != Action.DONE)
 				return false;
 		}
-		if (when instanceof MDSplus.Dependency) {
+		if (when instanceof MDSplus.Dependency)
+		{
 			final MDSplus.Data args[] = ((MDSplus.Dependency) when).getDescs();
-			if (args.length != 2) {
+			if (args.length != 2)
+			{
 				System.out.println("Error: dependency needs 2 arguments. Ignored");
 				return false;
 			}
 			final int opcode = ((MDSplus.Dependency) when).getOpcode();
-			switch (opcode) {
+			switch (opcode)
+			{
 			case MDSplus.Dependency.TreeDEPENDENCY_AND:
 				return isEnabled(args[0]) && isEnabled(args[1]);
 			case MDSplus.Dependency.TreeDEPENDENCY_OR:
@@ -1063,45 +1186,53 @@ class jDispatcher implements ServerListener {
 		return true;
 	}
 
-	public synchronized void beginSequence(final int shot) {
+	public synchronized void beginSequence(final int shot)
+	{
 		this.shot = shot;
 		for (final Server server : servers)
 			server.beginSequence(shot);
 		fireMonitorEvent((Action) null, MONITOR_BEGIN_SEQUENCE);
 	}
 
-	public synchronized void endSequence(final int shot) {
+	public synchronized void endSequence(final int shot)
+	{
 		for (final Server server : servers)
 			server.endSequence(shot);
 		clearTables();
 		fireMonitorEvent((Action) null, MONITOR_END_SEQUENCE);
 	}
 
-	public synchronized void abortPhase() {
+	public synchronized void abortPhase()
+	{
 		Action action;
 		balancer.abort();
 		final Enumeration<String> serverClasses = totSeqDispatched.keys();
-		while (serverClasses.hasMoreElements()) {
+		while (serverClasses.hasMoreElements())
+		{
 			final String serverClass = serverClasses.nextElement();
 			final Vector<Action> seqDispatched = totSeqDispatched.get(serverClass);
-			while (seqDispatched != null && !seqDispatched.isEmpty()) {
+			while (seqDispatched != null && !seqDispatched.isEmpty())
+			{
 				action = seqDispatched.elementAt(0);
 				action.setStatus(Action.ABORTED, 0, verbose);
 				seqDispatched.removeElementAt(0);
 			}
 		}
-		while (!dep_dispatched.isEmpty()) {
+		while (!dep_dispatched.isEmpty())
+		{
 			action = dep_dispatched.elementAt(0); // not pop?
 			action.setStatus(Action.ABORTED, 0, verbose);
 		}
 	}
 
-	public void redispatchAction(final int nid, final String phaseName) {
+	public void redispatchAction(final int nid, final String phaseName)
+	{
 		final PhaseDescriptor phase = phases.get(phaseName);
 		if (doing_phase) // Redispatch not allowed during sequence
 			return;
 		final Action action = phase.all_actions.get(new Integer(nid));
-		if (action == null) {
+		if (action == null)
+		{
 			System.err.println("Redispatched a non existent action");
 			return;
 		}
@@ -1113,11 +1244,13 @@ class jDispatcher implements ServerListener {
 			discardAction(action);
 	}
 
-	public void redispatchAction(final int nid) {
+	public void redispatchAction(final int nid)
+	{
 		if (doing_phase) // Redispatch not allowed during sequence
 			return;
 		final Action action = curr_phase.all_actions.get(new Integer(nid));
-		if (action == null) {
+		if (action == null)
+		{
 			System.err.println("Redispatched a non existent action");
 			return;
 		}
@@ -1129,43 +1262,54 @@ class jDispatcher implements ServerListener {
 			discardAction(action);
 	}
 
-	public void setDefaultServer(final Server server) {
+	public void setDefaultServer(final Server server)
+	{
 		balancer.setDefaultServer(server);
 	}
 
-	public void setDefaultServerName(final String serverName) {
-		this.defaultServerName = serverName;
-	}
+	public void setDefaultServerName(final String serverName)
+	{ this.defaultServerName = serverName; }
 
-	public void startInfoServer(final int port) {
+	public void startInfoServer(final int port)
+	{
 		System.out.println("Start info server on port " + port);
 		(new jDispatcherInfo(port)).start();
 	}
 
 	// Inner classes jDispatcherInfo and jDispatcherInfoHandler are used to handle
 	// request for information
-	class jDispatcherInfoHandler extends Thread {
+	class jDispatcherInfoHandler extends Thread
+	{
 		DataInputStream dis;
 		DataOutputStream dos;
 
-		jDispatcherInfoHandler(final Socket sock) {
-			try {
+		jDispatcherInfoHandler(final Socket sock)
+		{
+			try
+			{
 				dis = new DataInputStream(sock.getInputStream());
 				dos = new DataOutputStream(sock.getOutputStream());
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				dis = null;
 				dos = null;
 			}
 		}
 
 		@Override
-		public void run() {
-			try {
-				while (true) {
+		public void run()
+		{
+			try
+			{
+				while (true)
+				{
 					final String command = dis.readUTF();
-					if (command.toLowerCase().equals("servers")) {
+					if (command.toLowerCase().equals("servers"))
+					{
 						dos.writeInt(servers.size());
-						for (int i = 0; i < servers.size(); i++) {
+						for (int i = 0; i < servers.size(); i++)
+						{
 							final Server currServer = servers.elementAt(i);
 							final String serverClass = currServer.getServerClass();
 							String address = "";
@@ -1180,53 +1324,67 @@ class jDispatcher implements ServerListener {
 						}
 					}
 				}
-			} catch (final Exception exc) {
 			}
+			catch (final Exception exc)
+			{}
 		}
 	}
 
-	class jDispatcherInfo extends Thread {
+	class jDispatcherInfo extends Thread
+	{
 		ServerSocket serverSock;
 
-		jDispatcherInfo(final int port) {
-			try {
+		jDispatcherInfo(final int port)
+		{
+			try
+			{
 				serverSock = new ServerSocket(port);
-			} catch (final Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				System.err.println("Error starting jDispatcher info server: " + exc);
 				serverSock = null;
 			}
 		}
 
 		@Override
-		public void run() {
-			try {
-				while (true) {
+		public void run()
+		{
+			try
+			{
+				while (true)
+				{
 					final Socket sock = serverSock.accept();
 					(new jDispatcherInfoHandler(sock)).start();
-
 				}
-			} catch (final Exception exc) {
 			}
+			catch (final Exception exc)
+			{}
 		}
 	}
 
 	@Override
-	public void disconnected(final ServerEvent event) {
+	public void disconnected(final ServerEvent event)
+	{
 		logEvent("DISCONNECTED", event.getMessage());
 		fireMonitorEvent(event.getMessage(), MonitorEvent.DISCONNECT_EVENT);
 	}
 
 	@Override
-	public void connected(final ServerEvent event) {
+	public void connected(final ServerEvent event)
+	{
 		logEvent("RECONNECTED", event.getMessage());
 		event.getAction();
 		fireMonitorEvent(event.getMessage(), MonitorEvent.CONNECT_EVENT);
 	}
 
-	protected void fireMonitorEvent(final String message, final int mode) {
+	protected void fireMonitorEvent(final String message, final int mode)
+	{
 		final MonitorEvent event = new MonitorEvent(this, mode, message);
-		for (final MonitorListener monitor : monitors) {
-			switch (mode) {
+		for (final MonitorListener monitor : monitors)
+		{
+			switch (mode)
+			{
 			case MonitorEvent.CONNECT_EVENT:
 				monitor.connect(event);
 				break;
