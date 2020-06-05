@@ -124,9 +124,9 @@ public class TdiShr extends TreeShr
 		return this.tdiExecute(ctx, "Decompile(`(" + exec + ";))", dsc).getData().toString();
 	}
 
-	public final int tdiDoTask(final CTX ctx, final Descriptor<?> task) throws MdsException
+	public final Descriptor<?> tdiDoTask(final CTX ctx, final Descriptor<?> task) throws MdsException
 	{
-		return this.tdiIntrinsic(ctx, OPC.OpcDoTask, task).getData().toInt();
+		return this.tdiIntrinsic(ctx, OPC.OpcDoTask, task).getData();
 	}
 
 	public final DescriptorStatus tdiEvaluate(final CTX ctx, final Descriptor<?> dsc) throws MdsException

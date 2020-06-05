@@ -376,17 +376,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 	public final TREE doAction(final int nid) throws MdsException
 	{
-		new Thread(() ->
-		{
-			try
-			{
-				MdsException.handleStatus(this.mds.getAPI().tdiDoTask(this.ctx, this.getNode(nid)));
-			}
-			catch (final MdsException e)
-			{
-				e.printStackTrace();
-			}
-		}).start();
+		this.getNode(nid).doAsTask();
 		return this;
 	}
 
