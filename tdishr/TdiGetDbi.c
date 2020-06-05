@@ -165,7 +165,8 @@ int Tdi1GetDbi(opcode_t opcode __attribute__ ((unused)),
 	Note that DEFAULT may be NID/PATH and will not be data at same.
 */
 static int fixup_nid(int *pin, /* NID pointer */
-			     int arg __attribute__ ((unused)),
+			     void* arg1 __attribute__ ((unused)),
+			     void* arg2 __attribute__ ((unused)),
 			     struct descriptor_d *pout)
 {
   char *path = TreeGetPath(*pin);
