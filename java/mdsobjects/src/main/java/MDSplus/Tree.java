@@ -8,7 +8,6 @@ package MDSplus;
  */
 public class Tree {
 
-
 	static final int  DbiNAME = 1,
 			DbiSHOTID = 2,
 			DbiMODIFIED = 3,

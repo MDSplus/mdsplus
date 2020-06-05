@@ -1,1 +1,1 @@
-@start "" javaw -cp "%MDSPLUS_DIR%\java\classes\jScope.jar" -Xmx2G jScope %*
+@start "" javaw -Xmx2G -jar "%MDSPLUS_DIR%\java\classes\jScope.jar" %*

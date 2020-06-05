@@ -593,28 +593,28 @@ public class TreeNode extends Data
 	public int getNciFlags() throws MdsException
 	{
 		resolveNid();
-		return this.getNciFlags(nid, ctxTree.getCtx());
+		return getNciFlags(nid, ctxTree.getCtx());
 	}
 	public void setNciFlags(int flags) throws MdsException
 	{
 		resolveNid();
-		this.setNciFlags(nid, ctxTree.getCtx(),flags);
+		setNciFlags(nid, ctxTree.getCtx(),flags);
 	}
 	public boolean getNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		return this.getNciFlag(nid, ctxTree.getCtx(), 1<<flagId);
+		return getNciFlag(nid, ctxTree.getCtx(), 1<<flagId);
 	}
 	public void setNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		this.setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, true);
 	}
 
 	public void clearNciFlag(int flagId) throws MdsException
 	{
 		resolveNid();
-		this.setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
+		setNciFlag(nid, ctxTree.getCtx(), 1 << flagId, false);
 	}
 
 

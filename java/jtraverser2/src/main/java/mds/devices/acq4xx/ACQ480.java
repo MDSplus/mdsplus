@@ -4,10 +4,11 @@ import java.awt.Frame;
 import java.awt.GridLayout;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import jtraverser.editor.Editor;
-import jtraverser.editor.EnumEditor;
+
 import mds.MdsException;
 import mds.data.descriptor_s.NODE;
+import mds.jtraverser.editor.Editor;
+import mds.jtraverser.editor.EnumEditor;
 
 public class ACQ480 extends ACQ4xx{
 	public class Channel extends ACQ4xx.Channel{

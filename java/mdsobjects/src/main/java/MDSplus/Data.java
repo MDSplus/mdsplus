@@ -149,7 +149,7 @@ public class Data {
 		return compile(expr, new Data[0]);
 	}
 	//MDSplus time support
-	public Data executeWithContext(java.lang.String expr, Data[] args)
+	public Data executeWithContext(java.lang.String expr, Data... args)
 	{
 		if(ctxTree != null && ctxTree.isOpen())
 		{
@@ -161,8 +161,8 @@ public class Data {
 
 	protected static native java.lang.String convertToDate(long time);
 	public static native long getTime();
-	public static native Data compile(java.lang.String expr, Data[] args);
-	public static native Data execute(java.lang.String expr, Data[] args);
+	public static native Data compile(java.lang.String expr, Data... args);
+	public static native Data execute(java.lang.String expr, Data... data);
 	public static native Data deserialize(byte[] serialized);
 	public native byte[] serialize();
 	private native java.lang.String decompile(long ctx);
@@ -217,7 +217,7 @@ public class Data {
 	 */
 	public  byte getByte() throws MdsException
 	{
-		Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("BYTE(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to byte");
 		return data.getByte();
@@ -230,7 +230,7 @@ public class Data {
 	 */
 	public  short getShort() throws MdsException
 	{
-		Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("WORD(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to byte");
 		return data.getShort();
@@ -243,7 +243,7 @@ public class Data {
 	 */
 	public  int getInt() throws MdsException
 	{
-		Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("LONG(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to int");
 		return data.getInt();
@@ -257,7 +257,7 @@ public class Data {
 	 */
 	public  long getLong() throws MdsException
 	{
-		Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("QUADWORD(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to long");
 		return data.getLong();
@@ -270,7 +270,7 @@ public class Data {
 	 */
 	public  float getFloat()throws MdsException
 	{
-		Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("FLOAT(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to float");
 		return data.getFloat();
@@ -283,7 +283,7 @@ public class Data {
 	 */
 	public  double getDouble()throws MdsException
 	{
-		Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("FT_FLOAT(DATA($1))", this);
 		if(!(data instanceof Scalar))
 			throw new MdsException("Cannot convert Data to double");
 		return data.getDouble();
@@ -296,7 +296,7 @@ public class Data {
 	 */
 	public  int[] getShape() throws MdsException
 	{
-		Data data = executeWithContext("SHAPE($1)", new Data[]{this});
+		Data data = executeWithContext("SHAPE($1)", this);
 		if(!(data instanceof Array))
 			throw new MdsException("Cannot get data shape");
 		return data.getIntArray();
@@ -311,7 +311,7 @@ public class Data {
 	 */
 	public  byte[] getByteArray() throws MdsException
 	{
-		Data data = executeWithContext("BYTE(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("BYTE(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to byte array");
 		return data.getByteArray();
@@ -326,7 +326,7 @@ public class Data {
 	 */
 	public  short[] getShortArray()throws MdsException
 	{
-		Data data = executeWithContext("WORD(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("WORD(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to short array");
 		return data.getShortArray();
@@ -341,7 +341,7 @@ public class Data {
 	 */
 	public  int[] getIntArray()throws MdsException
 	{
-		Data data = executeWithContext("LONG(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("LONG(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to int array");
 		return data.getIntArray();
@@ -355,7 +355,7 @@ public class Data {
 	 */
 	public  long[] getLongArray()throws MdsException
 	{
-		Data data = executeWithContext("QUADWORD(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("QUADWORD(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to long array");
 		return data.getLongArray();
@@ -369,7 +369,7 @@ public class Data {
 	 */
 	public  float[] getFloatArray()throws MdsException
 	{
-		Data data = executeWithContext("FLOAT(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("FLOAT(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to float array");
 		return data.getFloatArray();
@@ -383,7 +383,7 @@ public class Data {
 	 */
 	public  double[] getDoubleArray()throws MdsException
 	{
-		Data data = executeWithContext("FT_FLOAT(DATA($1))", new Data[]{this});
+		Data data = executeWithContext("FT_FLOAT(DATA($1))", this);
 		if(!(data instanceof Scalar) && !(data instanceof Array))
 			throw new MdsException("Cannot convert Data to double array");
 		return data.getDoubleArray();
@@ -493,7 +493,7 @@ public class Data {
 
 	public Data getDimensionAt(int idx)
 	{
-		return executeWithContext("DIM_OF($)", new Data[]{this});
+		return executeWithContext("DIM_OF($)", this);
 	}
 	public void plot()
 	{

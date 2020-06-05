@@ -10,9 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
-import jtraverser.editor.Editor;
-import jtraverser.editor.EnumEditor;
-import jtraverser.editor.ExprEditor;
+
 import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
@@ -20,6 +18,9 @@ import mds.data.TREE.NodeInfo;
 import mds.data.descriptor_r.Conglom;
 import mds.data.descriptor_s.NODE;
 import mds.data.descriptor_s.NODE.Flags;
+import mds.jtraverser.editor.Editor;
+import mds.jtraverser.editor.EnumEditor;
+import mds.jtraverser.editor.ExprEditor;
 import mds.data.descriptor_s.Nid;
 import mds.data.descriptor_s.StringDsc;
 
@@ -53,11 +54,11 @@ public class Device implements Interface {
 		{
 			final int nidnum = nid.getNidNumber();
 			final Class<?> devicesetup = Class.forName("DeviceSetup");
-			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class) //
-					.invoke(null, nidnum);
+			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class, boolean.class) //
+					.invoke(null, nidnum, !editable);
 			if (setup == null)
-				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class) //
-					.invoke(null, nidnum, model, new Device(nid), frame);
+				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class, boolean.class) //
+					.invoke(null, nidnum, model, new Device(nid), frame, !editable);
 		}
 		catch (Exception e)
 		{

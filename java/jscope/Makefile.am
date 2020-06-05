@@ -1,42 +1,16 @@
 JAVASOURCE = 8
-JAVAROOT = $(builddir)
-EXTRA_DIST = $(MINDTERM)
-CLEANFILES = $(java_DATA)
+include ../Makefile.inc.am
 
-MINDTERM = $(srcdir)/MindTerm.jar
-CLASSPATH_ENV = CLASSPATH=$(MINDTERM)
-
-# Create the shell script that runs the program
-if MINGW
-bin_SCRIPTS = jScope.bat
-else
-bin_SCRIPTS = scripts/jScope
-EXTRA_DIST += jScope.template
-CLEANFILES += $(bin_SCRIPTS)
-
-$(bin_SCRIPTS): jScope.template
-	@ $(INSTALL) -d scripts; \
-	  $(INSTALL) $< $@
-
-
-clean-local:
-	-rm -rf scripts
-
-endif
-
-
-# Documentation
-dist_docs_DATA = $(DOCS)
-docsdir = $(exec_prefix)/java/classes/jdocs
-
-dist_java_DATA = jScope.properties MindTerm.jar
-
+java_srcdir = $(srcdir)/src/main/java
+java_resdir = $(srcdir)/src/main/resources
+dist_java_DATA = jScope.properties
 java_DATA = jScope.jar WaveDisplay.jar
-javadir = $(exec_prefix)/java/classes
-$(java_DATA): classjava.stamp
+MINDTERM = $(srcdir)/MindTerm.jar
+EXTRA_DIST = $(MINDTERM)
+DEPENDENCIES = $(MINDTERM) $(MDSOBJECTS_JAR)
 
-EXTRA_DIST += colors1.tbl
 if USE_JARS_DIR
+
 jScope.jar: @JARS_DIR@/java/jscope/jScope.jar
 	cp $< $@
 
@@ -44,23 +18,40 @@ WaveDisplay.jar: @JARS_DIR@/java/jscope/WaveDisplay.jar
 	cp $< $@
 
 else
-jScope.jar: colors1.tbl
-	@ echo "Creating JAR: $@ ..."; \
-	  $(MKDIR_P) $(builddir)/jdocs; \
-	  cp $(addprefix $(srcdir)/,$(DOCS)) $(builddir)/jdocs; \
-	  $(JAR) cf $@ $(JSCOPE_CLASS) $(builddir)/jdocs \
-		     -C $(srcdir) colors1.tbl; \
-	  rm -Rf $(builddir)/jdocs;
 
-WaveDisplay.jar:
-	@ echo "Creating JAR: $@ ..."; \
-	  $(JAR) cf $@ $(WAVEDISPLAY_CLASS)
+jScope.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
+	@ echo "Creating JAR: $@ ...";\
+	echo "Main-Class: jScope" >> $(MANIFEST) &&\
+	echo "Class-Path: WaveDisplay.jar mdsobjects.jar" >> $(MANIFEST) &&\
+	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) jScope.class -C $(JAVAROOT) mds/jscope
 
-dist_java_JAVA = $(JSCOPE_SRC) $(WAVEDISPLAY_SRC) $(COMMON_SRC)
-COMMON_CLASS = $(COMMON_SRC:.java=*.class)
-JSCOPE_CLASS = $(COMMON_CLASS) $(JSCOPE_SRC:.java=*.class) $(EXTRA_CLASS)
-WAVEDISPLAY_CLASS = $(COMMON_CLASS) $(WAVEDISPLAY_SRC:.java=*.class)
-CLEANFILES += $(JSCOPE_CLASS) $(WAVEDISPLAY_CLASS) $(EXTRA_CLASS)
+WaveDisplay.jar: $(DEPENDENCIES) classjava.stamp
+	@ echo "Creating JAR: $@ ...";\
+	$(JAR) cf $@ -C $(JAVAROOT) mds/wavedisplay
+
+
+SCOPE_CLS = $(SCOPE_SRC:.java=*.class)
+WAVED_CLS = $(WAVED_SRC:.java=*.class)
 endif
 
-include Makefile.common
+jScope.properties: $(java_resdir)/mds/jscope/jScope.properties
+	cp $< $@
+
+if MINGW
+bin_SCRIPTS += jScope.bat
+else
+bin_SCRIPTS += jScope
+EXTRA_DIST += jScope.template
+jScope: $(srcdir)/jScope.template
+	cp $< $@
+endif
+
+SOURCE =\
+ jScope.java\
+ mds/wavedisplay/*.java\
+ mds/jscope/*.java
+RESOURCES =\
+ mds/jscope/about.jpg\
+ mds/jscope/colors1.tbl\
+ mds/jscope/jScope.properties

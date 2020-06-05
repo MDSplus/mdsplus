@@ -1,8 +1,5 @@
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics;
-
-import jScope.Waveform;
+import java.awt.*;
+import mds.wavedisplay.*;
 
 public class DeviceWaveDisplay extends DeviceComponent
 {

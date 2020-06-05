@@ -9,7 +9,6 @@ import org.junit.Test;
 
 @SuppressWarnings("static-method")
 public class MdsExpressionCompileTest{
-	private static MDSplus.Data data;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {}

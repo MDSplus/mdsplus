@@ -1,6 +1,7 @@
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import jtraverser.jTraverserFacade;
+
+import mds.jtraverser.jTraverserFacade;
 
 public class jTraverser{
 	static Pattern pattern = Pattern.compile("(.*)[\\\\/]([^\\\\/]+)_((model|[0-9]+))\\.tree");

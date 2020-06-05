@@ -4,7 +4,7 @@ include ../Makefile.inc.am
 
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsobjects.jar
-DEPENDENCIES = $(JSCOPE_JAR)
+DEPENDENCIES =
 
 if USE_JARS_DIR
 
@@ -19,4 +19,6 @@ $(java_DATA): $(DEPENDENCIES) classjava.stamp
 
 endif
 
-SOURCE = MDSplus/*.java
+SOURCE =\
+ MDSplus/*.java\
+ mds/connection/*.java

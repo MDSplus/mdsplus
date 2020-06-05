@@ -30,7 +30,7 @@ import mds.data.descriptor_s.Pointer;
 import mds.data.descriptor_s.StringDsc;
 import mds.mdsip.MdsIp;
 
-public final class TREE implements ContextEventListener, CTX{
+public final class TREE implements ContextEventListener, CTX, AutoCloseable {
 	public final static class NodeInfo{
 		public static final String	members			= "IF_ERROR(GETNCI(GETNCI(_n,'MEMBER_NIDS'),'NID_NUMBER'),[])";
 		public static final String	children		= "IF_ERROR(GETNCI(GETNCI(_n,'CHILDREN_NIDS'),'NID_NUMBER'),[])";
@@ -297,10 +297,9 @@ public final class TREE implements ContextEventListener, CTX{
 		return this;
 	}
 
-	public final TREE close() throws MdsException {
+	public final void close() throws MdsException {
 		MdsException.handleStatus(this.api.treeClose(this.ctx, null, 0));
 		this.updateListener(false);
-		return this;
 	}
 
 	public final TREE createTreeFiles(final int newshot) throws MdsException {

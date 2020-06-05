@@ -4,7 +4,6 @@ include ../Makefile.inc.am
 JSCH = $(abs_srcdir)/jsch-0.1.54.jar
 
 java_srcdir = $(srcdir)/src/main/java
-dist_java_DATA = mdsplus-api.jar
 java_DATA = mdsplus-api.jar
 DEPENDENCIES = $(JSCH)
 

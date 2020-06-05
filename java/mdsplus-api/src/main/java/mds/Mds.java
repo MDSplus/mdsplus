@@ -19,7 +19,7 @@ import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.StringDsc;
 import mds.mdsip.MdsIp;
 
-public abstract class Mds{
+public abstract class Mds implements AutoCloseable{
 	public static class EventItem{
 		public final int							eventid;
 		public final Vector<UpdateEventListener>	listener	= new Vector<UpdateEventListener>();
@@ -121,9 +121,7 @@ public abstract class Mds{
 		}
 	}
 
-	public boolean close() {
-		return true;
-	}
+	public void close() {}
 
 	public final int deallocateAll() throws MdsException {
 		return this.getInteger(null, "DEALLOCATE('*')");
