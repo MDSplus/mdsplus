@@ -795,7 +795,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				{
 					final Object[] options =
 					{ "DISCONNECT", "CANCEL" };
-					final int val = JOptionPane.showOptionDialog(null,
+					final int val = JOptionPane.showOptionDialog(this,
 							"Dispatch monitor is already connected to " + mds_server.getProvider(), "Warning",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 					if (val == 0)
