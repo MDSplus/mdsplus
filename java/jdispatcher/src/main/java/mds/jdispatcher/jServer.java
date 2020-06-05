@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import MDSplus.Data;
 import MDSplus.MdsException;
 import mds.connection.Descriptor;
 import mds.connection.MdsMessage;
@@ -567,9 +566,7 @@ public class jServer extends MdsIp
 			logServer(new Date(), ", Doing ", name, " in ", tree, " shot ", shot);
 			try
 			{
-				status = MDSplus.Data
-						.execute("USING(tcl('do '//$),,$,$)", Data.toData(name), Data.toData(shot), Data.toData(tree))
-						.getInt();
+				status = node.doAction();
 			}
 			catch (final MdsException exc)
 			{
@@ -582,10 +579,17 @@ public class jServer extends MdsIp
 			}
 			else
 			{
-				final String errDevMsg = MDSplus.Data.execute("DEBUG()").getString();
-				final String errMsg = MDSplus.Data.execute("getmsg($)", new MDSplus.Int32(status)).getString();
-				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, " ",
-						(errDevMsg == null ? "" : errDevMsg));
+				String errDevMsg;
+				try
+				{
+					errDevMsg = MDSplus.Data.execute("getLastError()").getString();
+				}
+				catch (final MdsException unknown)
+				{
+					errDevMsg = "";
+				}
+				final String errMsg = MDSplus.Data.getMdsMsg(status);
+				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, " ", errDevMsg);
 			}
 		}
 		catch (final Exception exc)
