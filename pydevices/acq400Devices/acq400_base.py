@@ -115,22 +115,6 @@ class _ACQ400_BASE(MDSplus.Device):
         uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
         uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
-        # # Setting SYNC Main Timing Highway Source Routing
-        # uut.s0.SIG_SRC_TRG_0   = self.EVENT0_SRC.data()   # (hard trigger) in signal d0
-        # uut.s0.SIG_SRC_TRG_1   = self.TRIG_SRC.data()     # (soft trigger) in signal d1
-        # uut.s0.SIG_EVENT_SRC_0 = self.EVENT0_SRC.data()   # The source needs to be TRG to make the transition PRE->POST
-
-        # #Setting the signal (dX) to use for ACQ2106 stream control
-        # uut.s1.TRG       = 'enable'
-        # uut.s1.TRG_DX    = self.TRIG_DX.data()
-        # uut.s1.TRG_SENSE = 'rising'
-
-        # #Setting the signal (dX) to use for ACQ2106 transient
-        # if self.samples.data() !=0:
-        #     uut.s1.EVENT0       = 'enable'
-        #     uut.s1.EVENT0_DX    = self.EVENT0_DX.data()
-        #     uut.s1.EVENT0_SENSE = 'rising'
-
     INIT = init
 
 
@@ -347,9 +331,9 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         {'path':':EVENT0_DX',   'type': 'text',    'value': 'd0',       'options':('no_write_shot',)},
         #WRTD tree information
         {'path':':WR',     'type':'numeric', 'value': 0,  'options':('write_shot',)},
-            {'path':'WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
-            {'path':'WR:WRTD_T0',     'type': 'text', 'value':'T0','options': ('no_write_shot')},
-            {'path':'WR:WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
+            {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
+            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('no_write_shot')},
+            {'path':':WR:WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
 
@@ -458,8 +442,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
 
-        self.wrtd_t0.record = WRTD_T0.data()
-        print(str(self.wrtd_t0))
+        print('T0 {}'.format(str(self.wr_wrtd_t0.data())))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
