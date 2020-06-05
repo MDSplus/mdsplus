@@ -139,7 +139,7 @@ static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out)
   }
   return B_FALSE;
 }
-static int fixup_nid_patch(int *nid, int *idx, void *dbid, struct descriptor_d *path_out)
+static int fixup_nid_patch(int *nid, int *idx, void* dbid __attribute__ ((unused)), struct descriptor_d *path_out)
 {
   return fixup_nid(nid, *idx, path_out);
 }
