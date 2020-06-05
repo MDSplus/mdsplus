@@ -84,7 +84,7 @@ int tdi_yacc_ARG(struct marker *mark_ptr, TDITHREADSTATIC_ARG) {
 	/*******************************
 	Size it and copy it to our zone.
 	*******************************/
-  status = MdsCopyDxXdZ(ptr, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL);
+  status = MdsCopyDxXdZ(ptr, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL, NULL);
   if STATUS_OK
     mark_ptr->rptr = (mdsdsc_r_t *)junk.pointer;
   return status;
@@ -180,7 +180,7 @@ int tdi_yacc_IMMEDIATE(mdsdsc_xd_t **dsc_ptr_ptr, TDITHREADSTATIC_ARG) {
 	Copy it to our zone.
 	*******************/
   if STATUS_OK
-    status = MdsCopyDxXdZ(xd.pointer, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL);
+    status = MdsCopyDxXdZ(xd.pointer, &junk, &TDI_REFZONE.l_zone, NULL, NULL, NULL, NULL, NULL);
   if STATUS_OK
     *dsc_ptr_ptr = (mdsdsc_xd_t *)junk.pointer;
   MdsFree1Dx(&xd, NULL);

@@ -1871,7 +1871,7 @@ int TreePutDsc(TREE_INFO *tinfo, int nid_in, mdsdsc_t *dsc, int64_t *offset,
   int data_in_altbuf;
   NID *nid = (NID *)&nid_in;
   unsigned char tree = nid->tree;
-  int status = MdsSerializeDscOutZ(dsc, &xd, TreeFixupNid, &tree, 0, 0,
+  int status = MdsSerializeDscOutZ(dsc, &xd, TreeFixupNid, &tree, 0, 0, 0,
                                    compress, &compressible, &ddlen, &reclen,
                                    &dtype, &class, 0, 0, &data_in_altbuf);
   if (STATUS_OK && xd.pointer && xd.pointer->class == CLASS_A &&

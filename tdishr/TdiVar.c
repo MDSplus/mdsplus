@@ -383,7 +383,7 @@ static inline int put_ident_inner(const mdsdsc_r_t *const ident_ptr, mdsdsc_xd_t
     if (data_ptr)
       status =
 	  MdsCopyDxXdZ(data_ptr->pointer, &node_ptr->xd,
-		       &block_ptr->data_zone, NULL, NULL, NULL, NULL);
+		       &block_ptr->data_zone, NULL, NULL, NULL, NULL, NULL);
     else {
       MdsFree1Dx(&node_ptr->xd, &block_ptr->data_zone);
       node_ptr->xd = NULL_XD;

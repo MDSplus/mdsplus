@@ -302,7 +302,7 @@ int Tdi1Using(opcode_t opcode __attribute__ ((unused)),
     status = _TdiEvaluate(ctx, list[0], &tmp MDS_END_ARG);
     if STATUS_OK
       status = MdsCopyDxXdZ((struct descriptor *)&tmp, out_ptr, NULL,
-			    fixup_nid, NULL, fixup_path, NULL);
+			    fixup_nid, NULL, NULL, fixup_path, NULL);
     MdsFree1Dx(&tmp, NULL);
   }
   if (dbid)

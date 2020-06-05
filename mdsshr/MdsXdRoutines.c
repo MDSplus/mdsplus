@@ -121,7 +121,7 @@ void MdsFixDscLength(mdsdsc_t *const in);
 static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 		   mdsdsc_xd_t *const out_dsc_ptr,
 		   uint32_t *const bytes_used_ptr,
-		   int (*const fixup_nid)(),  void *const fixup_nid_arg,
+		   int (*const fixup_nid)(),  void *const fixup_nid_arg1,void *const fixup_nid_arg2,
 		   int (*const fixup_path)(), void *const fixup_path_arg, int *const compressible)
 { int status = 1;
   uint32_t bytes = 0, j, size;
@@ -139,7 +139,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	mdsdsc_d_t path = { 0, DTYPE_T, CLASS_D, 0 };
 	in = *(mdsdsc_t *)in_ptr;
 	in.class = CLASS_S;
-	if (in.dtype == DTYPE_NID && fixup_nid && (*fixup_nid) (in.pointer, fixup_nid_arg, &path)) {
+	if (in.dtype == DTYPE_NID && fixup_nid && (*fixup_nid) (in.pointer, fixup_nid_arg1, fixup_nid_arg2, &path)) {
 	  in.length = path.length;
 	  in.dtype = DTYPE_PATH;
 	  in.pointer = path.pointer;
@@ -171,7 +171,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	mdsdsc_xs_t *po = (mdsdsc_xs_t *)out_dsc_ptr;
 	mdsdsc_d_t path = { 0, DTYPE_T, CLASS_D, 0 };
 	in = *(mdsdsc_xs_t *)in_ptr;
-	if (in.dtype == DTYPE_NID && fixup_nid && (*fixup_nid) (in.pointer, fixup_nid_arg, &path)) {
+	if (in.dtype == DTYPE_NID && fixup_nid && (*fixup_nid) (in.pointer, fixup_nid_arg1, fixup_nid_arg2, &path)) {
 	  in.l_length = path.length;
 	  in.dtype = DTYPE_PATH;
 	  in.pointer = (mdsdsc_t *)path.pointer;
@@ -212,7 +212,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	  if (pi->dscptrs[j]) {
 	    status = copy_dx((mdsdsc_xd_t *)pi->dscptrs[j],
 			     po ? (mdsdsc_xd_t *)((char *)po + bytes) : 0,
-			     &size, fixup_nid, fixup_nid_arg,
+			     &size, fixup_nid, fixup_nid_arg1, fixup_nid_arg2,
 			     fixup_path, fixup_path_arg, compressible);
 	    if (po)
 	      po->dscptrs[j] = size ? (mdsdsc_t *)((char *)po + bytes) : 0;
@@ -292,7 +292,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	for (j = 0; j < num_dsc && STATUS_OK; ++j) {
 	  status = copy_dx((mdsdsc_xd_t *)*pdi++,
 			   po ? (mdsdsc_xd_t *)((char *)po + bytes) : 0,
-			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
+			   &size, fixup_nid, fixup_nid_arg1, fixup_nid_arg2, fixup_path, fixup_path_arg,
 			   compressible);
 	  if (po)
 	    *pdo++ = size ? (mdsdsc_t *)((char *)po + bytes) : 0;
@@ -322,7 +322,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 	if (pi->pointer) {
 	  status = copy_dx((mdsdsc_xd_t *)pi->pointer,
 			   po ? (mdsdsc_xd_t *)(po->pointer) : 0,
-			   &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg,
+			   &size, fixup_nid, fixup_nid_arg1, fixup_nid_arg2, fixup_path, fixup_path_arg,
 			   compressible);
 	  bytes = (uint32_t)_sizeAligned(bytes + size);
 	}
@@ -346,7 +346,7 @@ static int copy_dx(const mdsdsc_xd_t *const in_dsc_ptr,
 */
 
 EXPORT int MdsCopyDxXdZ(const mdsdsc_t *const in_dsc_ptr, mdsdsc_xd_t *const out_dsc_ptr, void **const zone,
-	int (*const fixup_nid)(), void *const fixup_nid_arg,
+	int (*const fixup_nid)(), void *const fixup_nid_arg1, void *const fixup_nid_arg2,
 	int (*const fixup_path)(),void *const fixup_path_arg)
 {
   uint32_t size;
@@ -358,14 +358,14 @@ EXPORT int MdsCopyDxXdZ(const mdsdsc_t *const in_dsc_ptr, mdsdsc_xd_t *const out
 ************************************************/
   int compressible = 0;
   int status =
-      copy_dx((mdsdsc_xd_t *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg, fixup_path,
+      copy_dx((mdsdsc_xd_t *)in_dsc_ptr, 0, &size, fixup_nid, fixup_nid_arg1, fixup_nid_arg2, fixup_path,
 	      fixup_path_arg, &compressible);
   if (STATUS_OK && size) {
     status = MdsGet1Dx(&size, &dsc_dtype, out_dsc_ptr, zone);
     if STATUS_OK
       status = copy_dx((mdsdsc_xd_t *)in_dsc_ptr,
 		       (mdsdsc_xd_t *)out_dsc_ptr->pointer,
-		       &size, fixup_nid, fixup_nid_arg, fixup_path, fixup_path_arg, &compressible);
+		       &size, fixup_nid, fixup_nid_arg1, fixup_nid_arg2, fixup_path, fixup_path_arg, &compressible);
     if (STATUS_OK && compressible)
       status = MdsCOMPRESSIBLE;
   } else
@@ -392,7 +392,7 @@ static mdsdsc_t *FixedArray(const mdsdsc_t *const in)
 }
 
 EXPORT int MdsCopyDxXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out){
-  return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL);
+  return MdsCopyDxXdZ(in, out, NULL, NULL, NULL, NULL, NULL, NULL);
 }
 
 void MdsFixDscLength(mdsdsc_t *const in){

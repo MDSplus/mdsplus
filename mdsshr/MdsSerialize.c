@@ -904,7 +904,8 @@ STATIC_CONSTANT int PointerToOffset(mdsdsc_t *dsc_ptr, l_length_t *length){
 EXPORT int MdsSerializeDscOutZ(mdsdsc_t const *in,
 			mdsdsc_xd_t *out,
 			int (*fixupNid) (),
-			void *fixupNidArg,
+			void *fixupNidArg1,
+			void *fixupNidArg2,
 			int (*fixupPath) (),
 			void *fixupPathArg,
 			int compress,
@@ -924,7 +925,7 @@ EXPORT int MdsSerializeDscOutZ(mdsdsc_t const *in,
   dtype_t dtype = 0;
   class_t class = 0;
   int data_in_altbuf = 0;
-  status = MdsCopyDxXdZ(in, out, 0, fixupNid, fixupNidArg, fixupPath, fixupPathArg);
+  status = MdsCopyDxXdZ(in, out, 0, fixupNid, fixupNidArg1, fixupNidArg2, fixupPath, fixupPathArg);
   if (status == MdsCOMPRESSIBLE) {
     if (compress) {
       tempxd = *out;
@@ -1003,5 +1004,5 @@ EXPORT int MdsSerializeDscOutZ(mdsdsc_t const *in,
 
 EXPORT int MdsSerializeDscOut(mdsdsc_t const *in, mdsdsc_xd_t *out)
 {
-  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
+  return MdsSerializeDscOutZ(in, out, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 }

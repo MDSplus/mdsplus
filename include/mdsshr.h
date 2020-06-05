@@ -72,7 +72,7 @@ extern int MdsCompareXd(const mdsdsc_t *const dsc1_ptr, const mdsdsc_t *const ds
 extern int MdsDecompress(const mdsdsc_r_t *const rec_ptr, mdsdsc_xd_t *const out_ptr);
 extern int MdsCopyDxXd(const mdsdsc_t *const in, mdsdsc_xd_t *const out);
 extern int MdsCopyDxXdZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out, void **const zone,
-	int (*const fixup_nid)(), void *const fixup_nid_arg,
+	int (*const fixup_nid)(), void *const fixup_nid_arg1,void *const fixup_nid_arg2,
 	int (*const fixup_path)(),void *const fixup_path_arg);
 extern char *MdsDescrToCstring(const mdsdsc_t *const string_dsc);
 extern void MdsEnableSandbox();
@@ -91,10 +91,11 @@ extern int MDSGetEventQueue(const int eventid, const int timeout, int *const dat
 extern int MdsSandboxEnabled();
 extern int MdsSerializeDscIn(const char *const in, mdsdsc_xd_t *const out);
 extern int MdsSerializeDscOutZ(const mdsdsc_t *const in, mdsdsc_xd_t *const out,
-	int (*const fixupNid) (),void *const fixupNidArg,
+	int (*const fixupNid) (),void *const fixupNidArg1,void *const fixupNidArg2,
 	int (*const fixupPath)(),void *const fixupPathArg,
 	const int compress, int *const compressible, l_length_t *const length, l_length_t *const reclen,
-	dtype_t *const dtype, class_t *const classType, const int altbuflen, void *const altbuf, int *const data_in_altbuf);
+	dtype_t *const dtype, class_t *const classType, const int altbuflen, void *const altbuf, 
+	int *const data_in_altbuf);
 extern int MdsSerializeDscOut(const mdsdsc_t *const in, mdsdsc_xd_t *const out);
 extern int MDSSetEventTimeout(const int seconds);
 extern int MDSEvent(const char *eventName, int num_bytes, char *data);

@@ -139,6 +139,10 @@ static int fixup_nid(int *nid, int idx, struct descriptor_d *path_out)
   }
   return B_FALSE;
 }
+static int fixup_nid_patch(int *nid, int *idx, void *dbid, struct descriptor_d *path_out)
+{
+  return fixup_nid(nid, *idx, path_out);
+}
 
 static int fixup_path(struct descriptor *path_in, int idx, struct descriptor_d *path_out)
 {
@@ -165,8 +169,8 @@ static void LinkConditions()
   for (i = 0; i < num_actions; i++) {
     if (actions[i].condition) {
       EMPTYXD(xd);
-      MdsCopyDxXdZ(actions[i].condition, &xd, 0, fixup_nid, i + (char *)0, fixup_path, i + (char *)0);
-      MdsCopyDxXdZ((struct descriptor *)&xd, (struct descriptor_xd *)actions[i].condition, 0, 0, 0, make_idents, i + (char *)0);
+      MdsCopyDxXdZ(actions[i].condition, &xd, 0, fixup_nid_patch, &i, NULL, fixup_path, i + (char *)0);
+      MdsCopyDxXdZ((struct descriptor *)&xd, (struct descriptor_xd *)actions[i].condition, 0, 0, 0, 0, make_idents, i + (char *)0);
       MdsFree1Dx(&xd, 0);
     }
   }

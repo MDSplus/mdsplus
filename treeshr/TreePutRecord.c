@@ -87,7 +87,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci);
-int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path);
+int TreeFixupNid(NID * nid, unsigned char *tree, void *dbid, struct descriptor *path);
 static int FixupPath();
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr, NCI * previous_nci);
@@ -213,7 +213,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  TREE_NIDREF = TREE_PATHREF = FALSE;
 	  status =
 	      MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data, TreeFixupNid, &tree,
-				  FixupPath, 0, (compress_utility
+				  dbid, FixupPath, 0, (compress_utility
 						 || (nci->flags & NciM_COMPRESS_ON_PUT))
 				  && !(nci->flags & NciM_DO_NOT_COMPRESS), &compressible,
 				  &nci->length, &nci->DATA_INFO.DATA_LOCATION.record_length,
@@ -353,11 +353,15 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
   return status;
 }
 
-int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
+int TreeFixupNid(NID * nid, unsigned char *tree, void *dbid, struct descriptor *path)
 {
   TREETHREADSTATIC_INIT;
   if (nid->tree != *tree) {
-    char *path_c = TreeGetPath(*(int *)nid);
+    char *path_c;
+    if(dbid)
+      path_c = _TreeGetPath(dbid, *(int *)nid);
+    else
+      path_c = TreeGetPath(*(int *)nid);
     if (path_c) {
       struct descriptor path_d = { 0, DTYPE_T, CLASS_S, 0 };
       path_d.length = (unsigned short)strlen(path_c);
