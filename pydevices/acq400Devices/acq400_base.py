@@ -323,17 +323,16 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         {'path':':RUNNING',     'type': 'numeric',                      'options':('no_write_model',)},
         {'path':':TRIG_TIME',   'type': 'numeric',                      'options':('write_shot',)},
         #Trigger sources
-        {'path':':TRIG_SRC_d0','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
-        {'path':':TRIG_SRC_d1','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
-        {'path':':TRIG_DX', 'type':'text',         'value': 'd0', 'options':('no_write_shot',)},
+        {'path':':TRIG_SRC','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_DX', 'type':'text',         'value': 'dx', 'options':('no_write_shot',)},
         #Event sources
-        {'path':':EVENT0_SRC',  'type': 'text',    'value': 'TRG', 'options':('no_write_shot',)},
-        {'path':':EVENT0_DX',   'type': 'text',    'value': 'd0',       'options':('no_write_shot',)},
+        {'path':':EVENT0_SRC',  'type': 'text',    'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':EVENT0_DX',   'type': 'text',    'value': 'dx',       'options':('no_write_shot',)},
         #WRTD tree information
         {'path':':WR',     'type':'numeric', 'value': 0,  'options':('write_shot',)},
             {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
-            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('no_write_shot')},
-            {'path':':WR:WRTD_SHOT',   'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
+            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
+            {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
 
@@ -346,27 +345,27 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         # When WR is not being used to trigger:
         if self.wr.data() == 0:
             if self.presamples.data() == 0:
-                if 'STRIG' in source_of_trigger:
-                    uut.s0.SIG_SRC_TRG_1   = str(self.trig_src_d1.data())   # The only option for EXT triggering is using signal d0
+                if 'STRIG' in str(self.trig_src.data()):
+                    uut.s0.SIG_SRC_TRG_1   = 'STRIG'   # The only option for EXT triggering is using signal d0
                     #Setting the signal (dX) to use for ACQ2106 stream control
                     uut.s1.TRG       = 'enable'
                     uut.s1.TRG_DX    = 'd1'
                     uut.s1.TRG_SENSE = 'rising'
-                elif 'EXT' in source_of_trigger:
-                    uut.s0.SIG_SRC_TRG_0   = str(self.trig_src_d0.data())   # The only option for EXT triggering is using signal d0
+                elif 'EXT' in str(self.trig_src.data()):
+                    uut.s0.SIG_SRC_TRG_0   = 'EXT'   # The only option for EXT triggering is using signal d0
                     #Setting the signal (dX) to use for ACQ2106 stream control
                     uut.s1.TRG       = 'enable'
                     uut.s1.TRG_DX    = 'd0'
                     uut.s1.TRG_SENSE = 'rising'
             else:
                 #EVENT0:
-                uut.s0.SIG_EVENT_SRC_0 = str(self.event0_src.data())   # The source needs to be TRG to make the transition PRE->POST
-                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src_d0.data())        # The only option for EXT triggering is using signal d0
+                uut.s0.SIG_EVENT_SRC_0 = str(self.event0_src.data()) # Int he EVENT bus, the source needs to be TRG to make the transition PRE->POST
+                uut.s0.SIG_SRC_TRG_0   = 'EXT'
                 uut.s1.EVENT0       = 'enable'
-                uut.s1.EVENT0_DX    = 'd0'
+                uut.s1.EVENT0_DX    = 'd0'  # This is choosen because EVENT0 needs to be TRG to make the transition from PRE->POST
                 uut.s1.EVENT0_SENSE = 'rising'
-                #TRG:
-                uut.s0.SIG_SRC_TRG_1 = str(self.trig_src_d1.data())
+                #TRG: For PRE samples we want software trigger (STRIG):
+                uut.s0.SIG_SRC_TRG_1 = 'STRIG'
                 #Setting the signal (dX) to use for ACQ2106 stream control
                 uut.s1.TRG       = 'enable'
                 uut.s1.TRG_DX    = 'd1'
@@ -442,7 +441,8 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
 
-        print('T0 {}'.format(str(self.wr_wrtd_t0.data())))
+        print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
+        print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
