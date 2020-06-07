@@ -40,6 +40,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
     parts=[
         {'path':':NODE',        'type':'text',    'options':('no_write_shot',)},
+        {'path':':HOSTNAME',    'type':'text',    'options':('no_write_shot',)},
         {'path':':COMMENT',     'type':'text',    'options':('no_write_shot',)},
         {'path':':TRIG_MSG',    'type':'text',    'options':('write_shot',)},
         {'path':':TRIG_SRC',    'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
@@ -132,12 +133,11 @@ class ACQ2106_WRTD(MDSplus.Device):
         else:
             print('Message does not match either of the WRTTs available')
 
-
         uut.cC.WRTD_ID = message
         time.sleep(1)
 
         #wrtdtx = '1 --tx_id=' + message
-        wrtdtx = 1
+        wrtdtx = message
         uut.s0.wrtd_tx_immediate = wrtdtx
     
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
