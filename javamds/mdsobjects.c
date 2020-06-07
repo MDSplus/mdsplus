@@ -67,7 +67,7 @@ static int doAction(void *ctx, int nid) {
   int rstatus = 0;
   DESCRIPTOR_NID(nid_d, &nid);
   DESCRIPTOR_LONG(status_d, &rstatus);
-  int status = CTXCALLN(TdiDoTask, &nid_d, &status_d MDS_END_ARG);
+  int status = CTXCALLR(TdiDoTask, &nid_d, &status_d MDS_END_ARG);
   if STATUS_OK
     return rstatus;
   return status;
