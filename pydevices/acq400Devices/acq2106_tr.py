@@ -23,6 +23,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import threading
 import importlib
 
 acq400_base = importlib.import_module('acq400_base')
@@ -126,6 +127,42 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
         print("PRE {}, POST {} and ELAPSED {}".format(uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
         uut.s0.set_abort=1
     STOP = stop
+
+    def pull(self):
+        thread = threading.Thread(target = self._store)
+        thread.start()
+        return None
+    PULL=pull
+
+    def _pull(self):
+
+        uut = acq400_hapi.Acq400(self.node.data())
+        while uut.statmon.get_state() != 0: continue
+        self.chans = []
+        nchans = uut.nchan()
+        for ii in range(nchans):
+            self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
+
+        uut.fetch_all_calibration()
+        eslo = uut.cal_eslo[1:]
+        eoff = uut.cal_eoff[1:]
+        channel_data = uut.read_channels()
+
+        print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
+        print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
+
+        for ic, ch in enumerate(self.chans):
+            if ch.on:
+                ch.putData(channel_data[ic])
+                ch.EOFF.putData(float(eoff[ic]))
+                ch.ESLO.putData(float(eslo[ic]))
+
+                #Expression to calculate the calibrarted inputs:
+                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+
+                ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
+
+    _PULL=_pull
 
 
 
