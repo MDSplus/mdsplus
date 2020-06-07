@@ -87,7 +87,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define min(a,b) (((a) < (b)) ? (a) : (b))
 
 static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci);
-int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path);
+int tree_fixup_nid(NID * nid, void **dbid_tree, struct descriptor *path);
 static int FixupPath();
 static int PutDatafile(TREE_INFO * info, int nodenum, NCI * nci_ptr,
 		       struct descriptor_xd *data_dsc_ptr, NCI * previous_nci);
@@ -210,9 +210,9 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  int compressible;
 	  int data_in_altbuf;
           TREETHREADSTATIC_INIT;
+          void* dbid_tree[2] = {(void*)dbid, (void*)&tree};
 	  TREE_NIDREF = TREE_PATHREF = FALSE;
-	  status =
-	      MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data, TreeFixupNid, &tree,
+	  status = MdsSerializeDscOutZ(descriptor_ptr, info_ptr->data_file->data, tree_fixup_nid, dbid_tree,
 				  FixupPath, 0, (compress_utility
 						 || (nci->flags & NciM_COMPRESS_ON_PUT))
 				  && !(nci->flags & NciM_DO_NOT_COMPRESS), &compressible,
@@ -235,7 +235,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	  } else {
 	    if (extended) {
 	      status =
-		  TreePutDsc(info_ptr, nid, descriptor_ptr,
+		  tree_put_dsc(dblist, info_ptr, nid, descriptor_ptr,
 			     &attributes.facility_offset[STANDARD_RECORD_FACILITY],
 			     &attributes.facility_length[STANDARD_RECORD_FACILITY], (compress_utility
 						 || (nci->flags & NciM_COMPRESS_ON_PUT))
@@ -353,11 +353,12 @@ static int CheckUsage(PINO_DATABASE * dblist, NID * nid_ptr, NCI * nci)
   return status;
 }
 
-int TreeFixupNid(NID * nid, unsigned char *tree, struct descriptor *path)
+int tree_fixup_nid(NID * nid, void **dbid_tree, struct descriptor *path)
 {
+  unsigned char *tree = (unsigned char *)dbid_tree[1];
   TREETHREADSTATIC_INIT;
   if (nid->tree != *tree) {
-    char *path_c = TreeGetPath(*(int *)nid);
+    char *path_c = _TreeGetPath(dbid_tree[0], *(int *)nid);
     if (path_c) {
       struct descriptor path_d = { 0, DTYPE_T, CLASS_S, 0 };
       path_d.length = (unsigned short)strlen(path_c);

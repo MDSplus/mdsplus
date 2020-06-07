@@ -771,10 +771,7 @@ extern void _TreeDeleteNodesDiscard(void *dbid);
 extern int TreeGetDatafile(TREE_INFO * info_ptr, uint8_t*rfa, int *buffer_size, char *record,
 			   int *retsize, int *nodenum, unsigned char flags);
 extern int TreeEstablishRundownEvent(TREE_INFO * info);
-extern int TreeGetDsc(TREE_INFO * info, const int nid, const int64_t offset, const int length,
-		      struct descriptor_xd *dsc);
-extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset,
-				     EXTENDED_ATTRIBUTES * att);
+extern int TreeGetExtendedAttributes(TREE_INFO * info_ptr, int64_t offset, EXTENDED_ATTRIBUTES * att);
 extern int _TreeGetSegmentedRecord(void *dbid, int nid, struct descriptor_xd *data);
 extern int TreeGetVersionNci(TREE_INFO * info, NCI * nci, NCI * v_nci);
 extern DATA_FILE *TreeGetVmDatafile();
@@ -788,10 +785,7 @@ extern int TreeOpenDatafileR(TREE_INFO * info);
 extern int TreeOpenNciR(TREE_INFO * info);
 extern int TreeOpenNciW(TREE_INFO * info, int tmpfile);
 extern int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile);
-extern int TreePutDsc(TREE_INFO * info_ptr, int nid, struct descriptor *dsc, int64_t * offset,
-		      int *length, int compress);
-extern int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att,
-				     int64_t * offset);
+extern int TreePutExtendedAttributes(TREE_INFO * info_ptr, EXTENDED_ATTRIBUTES * att, int64_t * offset);
 extern void TreeSerializeNciIn(const char *in, NCI *out);
 extern void TreeSerializeNciOut(const NCI *in, char *out);
 extern int64_t TreeTimeInserted();
@@ -800,6 +794,10 @@ extern int TreeLockNci(TREE_INFO * info, int readonly, int nodenum, int *deleted
 extern int TreeUnLockNci(TREE_INFO * info, int readonly, int nodenum);
 extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);
+
+extern int tree_get_dsc(TREE_INFO * info, const int nid, const int64_t offset, const int length, struct descriptor_xd *dsc);
+extern int tree_put_dsc(PINO_DATABASE * dbid, TREE_INFO * info, int nid, struct descriptor *dsc, int64_t * offset, int *length, int compress);
+
 extern int MDS_IO_ID(int fd);
 extern int MDS_IO_FD(int fd);
 #ifdef _WIN32
