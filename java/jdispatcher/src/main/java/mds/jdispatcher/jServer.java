@@ -533,7 +533,6 @@ public class jServer extends MdsIp
 				if (mdsTree != null)
 					mdsTree.close();
 				mdsTree = new MDSplus.Tree(tree, shot);
-				// mdsTree.open();
 				lastTree = tree;
 				lastShot = shot;
 			}
