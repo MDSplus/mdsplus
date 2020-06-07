@@ -23,7 +23,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
 import importlib
 
 acq400_base = importlib.import_module('acq400_base')
@@ -35,9 +34,104 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     """
 
 
+    """
+    A child class of _ACQ400_BASE that contains the specific methods for
+    taking a transient capture.
+    """
+    tr_base_parts = [
+        {'path':':RUNNING',     'type': 'numeric',                      'options':('no_write_model',)},
+        {'path':':TRIG_TIME',   'type': 'numeric',                      'options':('write_shot',)},
+        #Trigger sources
+        {'path':':TRIG_SRC','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_DX', 'type':'text',         'value': 'dx', 'options':('no_write_shot',)},
+        #Event sources
+        {'path':':EVENT0_SRC',  'type': 'text',    'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':EVENT0_DX',   'type': 'text',    'value': 'dx',       'options':('no_write_shot',)},
+        #WRTD tree information
+        {'path':':WR',     'type':'numeric', 'value': 0,  'options':('write_shot',)},
+            {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
+            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
+            {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
+        ]
+
+
+    def init(self):
+        import acq400_hapi
+        # Needs the initialization given in the superclass:
+        super(_ACQ2106_TR, self).init()
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+
+        # When WR is not being used to trigger:
+        if self.wr.data() == 0:
+            if self.presamples.data() == 0:
+                if 'STRIG' in str(self.trig_src.data()):
+                    uut.s0.SIG_SRC_TRG_1   = 'STRIG'   # The only option for EXT triggering is using signal d0
+                    #Setting the signal (dX) to use for ACQ2106 stream control
+                    uut.s1.TRG       = 'enable'
+                    uut.s1.TRG_DX    = 'd1'
+                    uut.s1.TRG_SENSE = 'rising'
+                elif 'EXT' in str(self.trig_src.data()):
+                    uut.s0.SIG_SRC_TRG_0   = 'EXT'   # The only option for EXT triggering is using signal d0
+                    #Setting the signal (dX) to use for ACQ2106 stream control
+                    uut.s1.TRG       = 'enable'
+                    uut.s1.TRG_DX    = 'd0'
+                    uut.s1.TRG_SENSE = 'rising'
+            else:
+                #EVENT0:
+                uut.s0.SIG_EVENT_SRC_0 = str(self.event0_src.data()) # Int he EVENT bus, the source needs to be TRG to make the transition PRE->POST
+                uut.s0.SIG_SRC_TRG_0   = 'EXT'
+                uut.s1.EVENT0       = 'enable'
+                uut.s1.EVENT0_DX    = 'd0'  # This is choosen because EVENT0 needs to be TRG to make the transition from PRE->POST
+                uut.s1.EVENT0_SENSE = 'rising'
+                #TRG: For PRE samples we want software trigger (STRIG):
+                uut.s0.SIG_SRC_TRG_1 = 'STRIG'
+                #Setting the signal (dX) to use for ACQ2106 stream control
+                uut.s1.TRG       = 'enable'
+                uut.s1.TRG_DX    = 'd1'
+                uut.s1.TRG_SENSE = 'rising'
+        #When WR is used to trigger, then:
+        else:
+            # D0 signal:
+            uut.s0.SIG_SRC_TRG_1   = 'NONE'
+            # D1 signal:
+            uut.s0.SIG_SRC_TRG_0   = 'NONE'
+
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_SENSE = 'rising'
+
+            uut.s1.EVENT0       = 'enable'
+            uut.s1.EVENT0_DX    = str(self.event0_dx.data())
+            uut.s1.EVENT0_SENSE = 'rising'
+    INIT=init
+
+    def state(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data())
+        _status = [int(x) for x in uut.s0.state.split(" ")]
+
+        #statemon = acq400_hapi.acq400.Statusmonitor(self.node.data(), _status)
+        #istate   = int(statemon.get_state())
+
+        trstate = acq400_hapi.acq400.STATE.str(_status[0])
+        
+        print("TR state: {}".format(trstate))
+        print("TR status: {}".format(_status))
+    STATE=state
+
+    def stop(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data())
+        print("PRE {}, POST {} and ELAPSED {}".format(uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
+        uut.s0.set_abort=1
+    STOP = stop
+
+
+
 class_ch_dict = acq400_base.create_classes(
     _ACQ2106_TR, "ACQ2106_TR",
-    list(_ACQ2106_TR.base_parts) + list(_ACQ2106_TR.tr_base_parts),
+    list(_ACQ2106_TR.tr_base_parts) + list(_ACQ2106_TR.base_parts),
     acq400_base.ACQ2106_CHANNEL_CHOICES
 )
 
