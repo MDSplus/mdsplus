@@ -144,13 +144,6 @@ public class TdiShr extends TreeShr
 		return this.tdiIntrinsic(ctx, OPC.OpcExecute, Descriptor.valueOf(expr), args);
 	}
 
-	public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg)
-			throws MdsException
-	{
-		return this.tdiIntrinsic(ctx, opcode, new Descriptor[]
-		{ arg });
-	}
-
 	public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?>... args)
 			throws MdsException
 	{
@@ -161,13 +154,12 @@ public class TdiShr extends TreeShr
 		return new DescriptorStatus(this.mds.getDescriptor(ctx, request));
 	}
 
-	public final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg0,
-			final Descriptor<?>... args1) throws MdsException
+	private final DescriptorStatus tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?> arg0,
+			final Descriptor<?>[] args1) throws MdsException
 	{
 		final Descriptor<?>[] args = new Descriptor<?>[args1.length + 1];
 		args[0] = arg0;
-		for (int i = 0; i < args1.length; i++)
-			args[i + 1] = args1[i];
+		System.arraycopy(args, 1, args1, 0, args1.length);
 		return this.tdiIntrinsic(ctx, opcode, args);
 	}
 }
