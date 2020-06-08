@@ -101,11 +101,7 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
                 uut.s1.TRG_SENSE = 'rising'
         #When WR is used to trigger, then:
         else:
-            # D1 signal:
-            uut.s0.SIG_SRC_TRG_1   = 'NONE'
-            # D0 signal:
-            uut.s0.SIG_SRC_TRG_0   = 'NONE'
-
+            
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = str(self.trig_dx.data())
             uut.s1.TRG_SENSE = 'rising'
@@ -116,6 +112,7 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     INIT=init
 
     def state(self):
+        # State of the Transient recorder NOW (when this method was run)
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         _status = [int(x) for x in uut.s0.state.split(" ")]
