@@ -106,7 +106,7 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
 					      &attributes);
 		if (STATUS_OK && attributes.facility_offset[STANDARD_RECORD_FACILITY] != -1) {
 		  status =
-		      TreeGetDsc(info, nid->tree,
+		      tree_get_dsc(info, nid->tree,
 				 attributes.facility_offset[STANDARD_RECORD_FACILITY],
 				 attributes.facility_length[STANDARD_RECORD_FACILITY], dsc);
 		} else if (STATUS_OK
