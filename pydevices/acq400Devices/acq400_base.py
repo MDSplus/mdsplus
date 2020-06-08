@@ -353,9 +353,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
 
-        print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
-        print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
-
         for ic, ch in enumerate(self.chans):
             if ch.on:
                 ch.putData(channel_data[ic])
