@@ -563,6 +563,9 @@ public class jServer extends MdsIp
 				return 0x80000000;
 			}
 			logServer(new Date(), ", Doing ", name, " in ", tree, " shot ", shot);
+			final MDSplus.Data[] last_error_args =
+			{ MDSplus.Data.toData(tree), MDSplus.Data.toData(shot), MDSplus.Data.toData(name) };
+			MDSplus.Data.execute("DevClearLastError($,$,$)", last_error_args);
 			try
 			{
 				status = node.doAction();
@@ -578,17 +581,9 @@ public class jServer extends MdsIp
 			}
 			else
 			{
-				String errDevMsg;
-				try
-				{
-					errDevMsg = MDSplus.Data.execute("getLastError()").getString();
-				}
-				catch (final MdsException unknown)
-				{
-					errDevMsg = "";
-				}
+				final String errDevMsg = MDSplus.Data.execute("DevGetLastError($,$,$)", last_error_args).getString();
 				final String errMsg = MDSplus.Data.getMdsMsg(status);
-				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, " ", errDevMsg);
+				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, "; ", errDevMsg);
 			}
 		}
 		catch (final Exception exc)

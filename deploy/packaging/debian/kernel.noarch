@@ -40,6 +40,8 @@
 ./usr/local/mdsplus/tdi/dev_support/DevAddPythonDevice.py
 ./usr/local/mdsplus/tdi/dev_support/DevAddStart.fun
 ./usr/local/mdsplus/tdi/dev_support/DevCamChk.fun
+./usr/local/mdsplus/tdi/dev_support/DevClearLastError.fun
+./usr/local/mdsplus/tdi/dev_support/DevGetLastError.fun
 ./usr/local/mdsplus/tdi/dev_support/DevHead.fun
 ./usr/local/mdsplus/tdi/dev_support/DevHelp.py
 ./usr/local/mdsplus/tdi/dev_support/DevIsOn.fun
