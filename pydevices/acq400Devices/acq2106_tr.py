@@ -64,44 +64,55 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
         
         # Initializing Sources to NONE:
-        # D1 signal:
-        uut.s0.SIG_SRC_TRG_1   = 'NONE'
         # D0 signal:
         uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
+
+
+        #Trigger sources choices:
+        # d0:
+        srcs_0 = ['EXT','HDMI','HOSTB','GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
+        # d1:
+        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
         # When WR is not being used to trigger:
         if self.wr.data() == 0:
-            if self.presamples.data() == 0:
-                # No PRE samples --> EVENT0 doesn't need to be set.
-                # TRIGGER setting
-                if 'STRIG' in str(self.trig_src.data()):
-                    uut.s0.SIG_SRC_TRG_1   = 'STRIG'   # The only option for EXT triggering is using signal d0
-                    #Setting the signal (dX) to use for ACQ2106 stream control
-                    uut.s1.TRG       = 'enable'
-                    uut.s1.TRG_DX    = 'd1'
-                    uut.s1.TRG_SENSE = 'rising'
-                elif 'EXT' in str(self.trig_src.data()):
-                    uut.s0.SIG_SRC_TRG_0   = 'EXT'   # The only option for EXT triggering is using signal d0
-                    #Setting the signal (dX) to use for ACQ2106 stream control
-                    uut.s1.TRG       = 'enable'
-                    uut.s1.TRG_DX    = 'd0'
-                    uut.s1.TRG_SENSE = 'rising'                
-            else:
-                #EVENT0 setting:
-                uut.s0.SIG_EVENT_SRC_0 = str(self.event0_src.data()) # Int he EVENT bus, the source needs to be TRG to make the transition PRE->POST
-                uut.s0.SIG_SRC_TRG_0   = 'EXT'
-                uut.s1.EVENT0       = 'enable'
-                uut.s1.EVENT0_DX    = 'd0'  # This is choosen because EVENT0 needs to be TRG to make the transition from PRE->POST
-                uut.s1.EVENT0_SENSE = 'rising'
-                #TRG: For PRE samples we want software trigger (STRIG):
-                uut.s0.SIG_SRC_TRG_1 = 'STRIG'
+            # No PRE samples --> EVENT0 doesn't need to be set.
+            # TRIGGER setting
+            if str(self.trig_src.data()) in srcs_1:
+                # uut.s0.SIG_SRC_TRG_1   = 'STRIG'
+                uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
                 #Setting the signal (dX) to use for ACQ2106 stream control
                 uut.s1.TRG       = 'enable'
                 uut.s1.TRG_DX    = 'd1'
                 uut.s1.TRG_SENSE = 'rising'
-        #When WR is used to trigger, then:
+
+                #EVENT0 setting in d0:
+                uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
+                uut.s1.EVENT0       = 'enable'
+                uut.s1.EVENT0_DX    = 'd0'
+                uut.s1.EVENT0_SENSE = 'rising'
+                uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
+
+            elif str(self.trig_src.data()) in srcs_0:
+                # uut.s0.SIG_SRC_TRG_0   = 'EXT'
+                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+                #Setting the signal (dX) to use for ACQ2106 stream control
+                uut.s1.TRG       = 'enable'
+                uut.s1.TRG_DX    = 'd0'
+                uut.s1.TRG_SENSE = 'rising'
+
+                #EVENT0 setting in d1:
+                uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
+                uut.s1.EVENT0       = 'enable'
+                uut.s1.EVENT0_DX    = 'd1'
+                uut.s1.EVENT0_SENSE = 'rising'
+                uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
+
+        #If WR is used to trigger, then:
         else:
-            
+
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = str(self.trig_dx.data())
             uut.s1.TRG_SENSE = 'rising'
