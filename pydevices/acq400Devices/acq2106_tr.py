@@ -40,16 +40,16 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     taking a transient capture.
     """
     tr_base_parts = [
-        {'path':':RUNNING',     'type': 'numeric',                      'options':('no_write_model',)},
-        {'path':':TRIG_TIME',   'type': 'numeric',                      'options':('write_shot',)},
+        {'path':':RUNNING',    'type': 'numeric',  'options':('no_write_model',)},
+        {'path':':TRIG_TIME',  'type': 'numeric',  'options':('write_shot',)},
         #Trigger sources
-        {'path':':TRIG_SRC','type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
-        {'path':':TRIG_DX', 'type':'text',         'value': 'dx', 'options':('no_write_shot',)},
+        {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':TRIG_DX',    'type':'text',      'value': 'dx', 'options':('no_write_shot',)},
         #Event sources
-        {'path':':EVENT0_SRC',  'type': 'text',    'value': 'NONE', 'options':('no_write_shot',)},
-        {'path':':EVENT0_DX',   'type': 'text',    'value': 'dx',       'options':('no_write_shot',)},
+        {'path':':EVENT0_SRC', 'type': 'text',     'value': 'NONE', 'options':('no_write_shot',)},
+        {'path':':EVENT0_DX',  'type': 'text',     'value': 'dx',    'options':('no_write_shot',)},
         #WRTD tree information
-        {'path':':WR',     'type':'numeric', 'value': 0,  'options':('write_shot',)},
+        {'path':':WR',         'type':'numeric',   'value': 0,  'options':('write_shot',)},
             {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
             {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
             {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
