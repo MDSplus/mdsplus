@@ -1646,7 +1646,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         """
         arglist=[self.ctx]
         xd=_dsc.Descriptor_xd()
-        argsobj = [_scr.Int32(self.nid),_scr.String(method)]
+        argsobj = [self,_scr.String(method)]
         arglist+=list(map(_dat.Data.byref,argsobj))
         arglist.append(len(args))
         if len(args)>0:
