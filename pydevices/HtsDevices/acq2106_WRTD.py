@@ -98,6 +98,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         # Define RX matches:
         uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
         uut.cC.WRTD_RX_MATCHES1 = str(wrmgs[1])
+        
         #Commit the changes for WRTD RX
         uut.cC.wrtd_commit_rx = 1
 
@@ -106,7 +107,6 @@ class ACQ2106_WRTD(MDSplus.Device):
     def trig(self, msg=''):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
-        # uut = acq400_hapi.Acq400(self.node.data())
 
         message = str(msg)
 
@@ -117,6 +117,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             uut.s0.SIG_SRC_TRG_0   = 'WRTT0'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
+
             # Save choices in tree node:
             self.trig_src.record   = 'WRTT0'
             self.event0_src.record = 'WRTT0'
@@ -125,6 +126,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'
+            
             # Save choices in tree node:
             self.trig_src.record   = 'WRTT1'
             self.event0_src.record = 'WRTT1'
