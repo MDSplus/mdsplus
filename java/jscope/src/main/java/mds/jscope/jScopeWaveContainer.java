@@ -1223,7 +1223,7 @@ remove 28/06/2005
 	        if(server_item.class_name.contains("."))
 	            cl = Class.forName(server_item.class_name);
 	        else
-	            cl = Class.forName("jScope."+server_item.class_name);
+	            cl = Class.forName("mds.jscope."+server_item.class_name);
 	        new_dp = (DataProvider) cl.newInstance();
 	    }
 	    catch (Exception e)
@@ -1286,7 +1286,7 @@ remove 28/06/2005
 	    {
 	        try
 	        {
-	            Class cl = Class.forName("jScope."+server_item.browse_class);
+	            Class cl = Class.forName("mds.jscope."+server_item.browse_class);
 	            browse_sig = (jScopeBrowseSignals) cl.newInstance();
 	            browse_sig.setWaveContainer(this);
 	        }
