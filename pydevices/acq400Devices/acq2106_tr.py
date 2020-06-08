@@ -93,9 +93,9 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
                 uut.s1.TRG_SENSE = 'rising'
         #When WR is used to trigger, then:
         else:
-            # D0 signal:
-            uut.s0.SIG_SRC_TRG_1   = 'NONE'
             # D1 signal:
+            uut.s0.SIG_SRC_TRG_1   = 'NONE'
+            # D0 signal:
             uut.s0.SIG_SRC_TRG_0   = 'NONE'
 
             uut.s1.TRG       = 'enable'
