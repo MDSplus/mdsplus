@@ -4,7 +4,6 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
-import MDSplus.Data;
 import MDSplus.MdsException;
 import mds.connection.Descriptor;
 import mds.connection.MdsMessage;
@@ -534,7 +533,6 @@ public class jServer extends MdsIp
 				if (mdsTree != null)
 					mdsTree.close();
 				mdsTree = new MDSplus.Tree(tree, shot);
-				// mdsTree.open();
 				lastTree = tree;
 				lastShot = shot;
 			}
@@ -565,11 +563,12 @@ public class jServer extends MdsIp
 				return 0x80000000;
 			}
 			logServer(new Date(), ", Doing ", name, " in ", tree, " shot ", shot);
+			final MDSplus.Data[] last_error_args =
+			{ MDSplus.Data.toData(tree), MDSplus.Data.toData(shot), MDSplus.Data.toData(name) };
+			MDSplus.Data.execute("DevClearLastError($,$,$)", last_error_args);
 			try
 			{
-				status = MDSplus.Data
-						.execute("USING(tcl('do '//$),,$,$)", Data.toData(name), Data.toData(shot), Data.toData(tree))
-						.getInt();
+				status = node.doAction();
 			}
 			catch (final MdsException exc)
 			{
@@ -582,10 +581,9 @@ public class jServer extends MdsIp
 			}
 			else
 			{
-				final String errDevMsg = MDSplus.Data.execute("DEBUG()").getString();
-				final String errMsg = MDSplus.Data.execute("getmsg($)", new MDSplus.Int32(status)).getString();
-				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, " ",
-						(errDevMsg == null ? "" : errDevMsg));
+				final String errDevMsg = MDSplus.Data.execute("DevGetLastError($,$,$)", last_error_args).getString();
+				final String errMsg = MDSplus.Data.getMdsMsg(status);
+				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, "; ", errDevMsg);
 			}
 		}
 		catch (final Exception exc)

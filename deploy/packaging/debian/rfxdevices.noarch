@@ -754,7 +754,6 @@
 ./usr/local/mdsplus/tdi/RfxDevices/generic_pert.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getBradErrorSignal.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getBradErrorSignalName.fun
-./usr/local/mdsplus/tdi/RfxDevices/getLastError.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getMembersName.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getSpiderShotTime.fun
 ./usr/local/mdsplus/tdi/RfxDevices/getSpiderStateTime.fun
