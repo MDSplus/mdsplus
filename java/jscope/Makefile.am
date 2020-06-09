@@ -48,9 +48,16 @@ jScope: $(srcdir)/jScope.template
 endif
 
 SOURCE =\
- jScope.java\
+ mds/connection/*.java\
+ mds/jscope/*.java\
+ mds/provider/*.java\
+ mds/provider/access/*.java\
+ mds/provider/browser/*.java\
+ mds/provider/jet/*.java\
+ mds/provider/mds/*.java\
+ mds/provider/twu/*.java\
  mds/wavedisplay/*.java\
- mds/jscope/*.java
+ jScope.java
 RESOURCES =\
  mds/jscope/about.jpg\
  mds/jscope/colors1.tbl\
