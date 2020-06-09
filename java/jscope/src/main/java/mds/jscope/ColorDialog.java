@@ -7,7 +7,7 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
-import mds.wavedisplay.Waveform;
+import mds.wave.Waveform;
 
 class ColorDialog
     extends JDialog

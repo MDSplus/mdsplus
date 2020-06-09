@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.lang.Integer;
 import javax.swing.*;
 
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 
 public class SetupDefaults extends JDialog implements ActionListener
