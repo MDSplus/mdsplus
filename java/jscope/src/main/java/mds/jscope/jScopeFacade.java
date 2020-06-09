@@ -446,7 +446,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 
 	public jScopeFacade(int spos_x, int spos_y, String propFile)
 	{
-		this.propertiesFile = propFile;
+		this.propertiesFile = propFile == null ? JSCOPE_PROPERTIES : propFile;
 		if (num_scope == 0)
 		{
 			createAboutScreen();
@@ -691,7 +691,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				final PropertiesEditor pe = new PropertiesEditor(jScopeFacade.this, propertiesFile);
+				final PropertiesEditor pe = new PropertiesEditor(jScopeFacade.this, jScopeFacade.this.propertiesFile);
 				pe.setVisible(true);
 			}
 		});
@@ -1115,7 +1115,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 
 	public void InitProperties()
 	{
-		String f_name = propertiesFile == null ? JSCOPE_PROPERTIES : propertiesFile;
 		try
 		{
 			if (jScopeFacade.is_debug)
@@ -1123,7 +1122,10 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 				System.out.println("jScope.properties " + System.getProperty("jScope.properties"));
 				System.out.println("jScope.config_directory " + System.getProperty("jScope.config_directory"));
 			}
-			if (((new File(f_name)).exists()) || (f_name = System.getProperty("jScope.properties")) != null)
+			String f_name;
+			if (((new File(f_name = propertiesFile)).exists())//
+					|| (f_name = System.getProperty("jScope.properties")) != null//
+					|| ((new File(f_name = JSCOPE_PROPERTIES)).exists()))
 			{
 				js_prop = new Properties();
 				js_prop.load(new FileInputStream(f_name));
@@ -1135,22 +1137,18 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 					jScopeUserDir.mkdirs();
 				js_prop = new Properties();
 				final String res = "mds/jscope/jScope.properties";
-				InputStream pis = getClass().getClassLoader().getResourceAsStream(res);
-				if (pis != null)
+				try (final InputStream is = jScopeFacade.class.getClassLoader().getResourceAsStream(res))
 				{
-					js_prop.load(pis);
-					pis.close();
-					pis = getClass().getClassLoader().getResourceAsStream(res);
-					final FileOutputStream fos = new FileOutputStream(JSCOPE_PROPERTIES);
-					final byte b[] = new byte[1024];
-					for (int len = pis.read(b); len > 0; len = pis.read(b))
-						fos.write(b, 0, len);
-					fos.close();
-					pis.close();
+					js_prop.load(is);
 				}
-				else
+				try (final InputStream is = jScopeFacade.class.getClassLoader().getResourceAsStream(res))
 				{
-					System.out.println("Not found jScope.properties file");
+					try (final OutputStream os = new FileOutputStream(JSCOPE_PROPERTIES))
+					{
+						final byte b[] = new byte[1024];
+						for (int len = is.read(b); len > 0; len = is.read(b))
+							os.write(b, 0, len);
+					}
 				}
 			}
 			if (!(new File(JSCOPE_SERVERS)).exists())
