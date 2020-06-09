@@ -27,9 +27,9 @@ public class JetMdsDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public synchronized int[] GetIntArray(String in) throws IOException
+	public synchronized int[] getIntArray(String in) throws IOException
 	{
-		return super.GetIntArray(ParseExpression(in));
+		return super.getIntArray(ParseExpression(in));
 	}
 
 	// Syntax: ppf/<signal> or jpf/<signal>
@@ -114,25 +114,9 @@ public class JetMdsDataProvider extends MdsDataProvider
 	public void SetCompression(boolean state)
 	{}
 
-	public boolean SupportsContinuous()
-	{
-		return false;
-	}
-
-	public boolean DataPending()
-	{
-		return false;
-	}
-
 	@Override
 	public int InquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
-	}
-
-	@Override
-	public boolean SupportsFastNetwork()
-	{
-		return true;
 	}
 }

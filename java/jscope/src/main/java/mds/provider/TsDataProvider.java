@@ -34,42 +34,21 @@ public class TsDataProvider extends MdsDataProvider
 		shot = (int) s;
 	}
 
-	protected String ParseExpression(String in)
+	private String parseExpression(String in)
 	{
-		// if(in.startsWith("DIM_OF("))
-		// return in;
-		final String res = MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
-		/*
-		 * StringTokenizer st = new StringTokenizer(in, ":"); String res =
-		 * "GetTSData(\""; try{ String name = st.nextToken();
-		 */
-		/*
-		 * String rang0 = st.nextToken(); String rang1 = st.nextToken(); res =
-		 * "GetTSData(\"" + name + "\", " + shot + ", " + rang0 + ", " + rang1 + ")";
-		 */
-		// res = "GetTsBase(" + shot + ", \"" + name + "\")";
-		/*
-		 * }catch(Exception e) { error =
-		 * "Wrong signal format: must be <signal_name>:<rangs[0]>:<rangs[1]>"; return
-		 * null; }
-		 */
-		// System.out.println(res);
-		return res;
+		return MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
 	}
 
 	@Override
-	public synchronized int[] GetIntArray(String in) throws IOException
+	public synchronized int[] getIntArray(String in) throws IOException
 	{
-		final String parsed = ParseExpression(in);
-		if (parsed == null)
-			return null;
-		return super.GetIntArray(parsed);
+		return super.getIntArray(parseExpression(in));
 	}
 
 	@Override
 	public synchronized float[] GetFloatArray(String in) throws IOException
 	{
-		final String parsed = ParseExpression(in);
+		final String parsed = parseExpression(in);
 		if (parsed == null)
 			return null;
 		error = null;
@@ -84,18 +63,6 @@ public class TsDataProvider extends MdsDataProvider
 		return out_array;
 	}
 
-	protected String GetDefaultXLabel(String in_y) throws IOException
-	{
-		error = null;
-		return GetString("GetTSUnit(0)", -1, -1, -1);
-	}
-
-	protected String GetDefaultYLabel() throws IOException
-	{
-		error = null;
-		return GetString("GetTSUnit(1)", -1, -1, -1);
-	}
-
 	@Override
 	public boolean SupportsCompression()
 	{
@@ -106,16 +73,6 @@ public class TsDataProvider extends MdsDataProvider
 	public void SetCompression(boolean state)
 	{}
 
-	public boolean SupportsContinuous()
-	{
-		return false;
-	}
-
-	public boolean DataPending()
-	{
-		return false;
-	}
-
 	@Override
 	public int InquireCredentials(JFrame f, DataServerItem server_item)
 	{
@@ -123,13 +80,7 @@ public class TsDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public boolean SupportsFastNetwork()
-	{
-		return false;
-	}
-
-	@Override
-	public int[] GetNumDimensions(String spec)
+	public int[] getNumDimensions(String spec)
 	{
 		return new int[]
 		{ 1 };

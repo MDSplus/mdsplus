@@ -12,11 +12,11 @@ import mds.wave.*;
 
 public class UniversalDataProvider implements DataProvider
 {
-	String error;
-	MdsDataProvider defaultProvider;
-	Hashtable<String, MdsDataProvider> dataProviderH = new Hashtable<>();
+	private String error;
+	private MdsDataProvider defaultProvider;
+	private final Hashtable<String, MdsDataProvider> dataProviderH = new Hashtable<>();
 
-	MdsDataProvider getProvider(String ip)
+	private MdsDataProvider getProvider(String ip)
 	{
 		if (!ip.startsWith("//"))
 			return defaultProvider;
@@ -39,12 +39,12 @@ public class UniversalDataProvider implements DataProvider
 		return provider;
 	}
 
-	boolean isDefault(String in)
+	private boolean isDefault(String in)
 	{
 		return (!in.startsWith("//"));
 	}
 
-	String getExperiment(String in)
+	private String getExperiment(String in)
 	{
 		final String subStr1 = in.trim().substring(2);
 		final int pos1 = subStr1.indexOf("/");
@@ -53,7 +53,7 @@ public class UniversalDataProvider implements DataProvider
 		return subStr2.substring(0, pos2);
 	}
 
-	int getShot(String in) throws Exception
+	private int getShot(String in) throws Exception
 	{
 		final String subStr1 = in.trim().substring(2);
 		final int pos1 = subStr1.indexOf("/");
@@ -83,14 +83,7 @@ public class UniversalDataProvider implements DataProvider
 		}
 	}
 
-	public void enableAsyncUpdate(boolean enable)
-	{
-		final Enumeration<MdsDataProvider> en = dataProviderH.elements();
-		while (en.hasMoreElements())
-			en.nextElement().enableAsyncUpdate(enable);
-	}
-
-	String getExpr(String spec)
+	private String getExpr(String spec)
 	{
 		if (!spec.startsWith("//"))
 			return spec;
@@ -278,21 +271,6 @@ public class UniversalDataProvider implements DataProvider
 
 	@Override
 	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
-	{
-		return null;
-	}
-
-	public float[] GetFrameTimes(String in_expr)
-	{
-		return null;
-	}
-
-	public byte[] GetAllFrames(String in_frame)
-	{
-		return null;
-	}
-
-	public byte[] GetFrameAt(String in_expr, int frame_idx)
 	{
 		return null;
 	}
