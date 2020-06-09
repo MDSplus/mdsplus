@@ -1,7 +1,5 @@
 # common makefile for java packages
 
-RT6JAR = $(top_srcdir)/java/rt6.jar
-
 JSCH = $(top_srcdir)/java/jsch-0.1.54.jar
 $(JSCH):
         wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
