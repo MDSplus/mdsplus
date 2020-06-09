@@ -8,15 +8,6 @@ import mds.wave.*;
 
 public class MdsAccess implements DataAccess
 {
-	String ip_addr = null;
-	String shot_str = null;
-	String signal = null;
-	String experiment = null;
-	MdsDataProvider np = null;
-	String error = null;
-	String encoded_credentials = null;
-	String prevUrl = null;
-
 	public static void main(String[] args) throws IOException
 	{ // TODO: could this be unittest
 		final MdsAccess localMdsAccess = new MdsAccess();
@@ -26,6 +17,15 @@ public class MdsAccess implements DataAccess
 		localMdsAccess.getSignal(str);
 		localMdsAccess.getX(str);
 	}
+
+	String ip_addr = null;
+	String shot_str = null;
+	String signal = null;
+	String experiment = null;
+	MdsDataProvider np = null;
+	String error = null;
+	String encoded_credentials = null;
+	String prevUrl = null;
 
 	@Override
 	public boolean supports(String url)
@@ -74,7 +74,7 @@ public class MdsAccess implements DataAccess
 			final int shot = Integer.parseInt(this.shot_str);
 			if (region != null)
 			{
-				final int out[] = np.GetIntArray("treeSetSource('" + this.experiment + "','" + region + "')");
+				final int out[] = np.getIntArray("treeSetSource('" + this.experiment + "','" + region + "')");
 				if (out == null)
 					return;
 			}
@@ -166,7 +166,7 @@ public class MdsAccess implements DataAccess
 		setProvider(paramString);
 		if (this.signal == null)
 			return null;
-		return this.np.GetStringValue(this.signal);
+		return this.np.getStringValue(this.signal);
 	}
 
 	@Override

@@ -6,13 +6,13 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.StringTokenizer;
-import java.util.Vector;
+import java.util.*;
 
 import javax.swing.*;
 
 import mds.connection.*;
 import mds.provider.jet.*;
+import mds.provider.jet.Base64;
 import mds.wave.*;
 
 public class JetDataProvider implements DataProvider
@@ -21,7 +21,7 @@ public class JetDataProvider implements DataProvider
 	{
 		System.out.println("\nStart readout PPF/40573/MAGN/IPLA");
 		final JetDataProvider dp = new JetDataProvider("obarana", "clublatino");
-		dp.setEvaluateUrl(true);
+		dp.evaluate_url = true;
 		float data[], x[];
 		data = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.DATA);
 		x = dp.GetFloatArray("PPF/40573/MAGN/BPOL", JetDataProvider.X);
@@ -50,7 +50,7 @@ public class JetDataProvider implements DataProvider
 	JFrame owner_f;
 	private int login_status;
 	private boolean evaluate_url = false;
-	private String url_source = "http://data.jet.uk/";
+	private final String url_source = "http://data.jet.uk/";
 	private final Vector<ConnectionListener> connection_listener = new Vector<>();
 	JTextField user_text;
 	JPasswordField passwd_text;
@@ -77,9 +77,6 @@ public class JetDataProvider implements DataProvider
 	{
 		throw (new IOException("Frames visualization on JetDataProvider not implemented"));
 	}
-
-	public void enableAsyncUpdate(boolean enable)
-	{}
 
 	@Override
 	public void SetEnvironment(String s)
@@ -114,21 +111,6 @@ public class JetDataProvider implements DataProvider
 	@Override
 	public void RemoveUpdateEventListener(UpdateEventListener l, String event)
 	{}
-
-	public boolean SupportsContinuous()
-	{
-		return false;
-	}
-
-	public boolean DataPending()
-	{
-		return false;
-	}
-
-	public boolean SupportsFastNetwork()
-	{
-		return false;
-	}
 
 	@Override
 	public void SetArgument(String arg)
@@ -168,32 +150,14 @@ public class JetDataProvider implements DataProvider
 			return dimension;
 		}
 
-		public float[] GetFloatData() throws IOException
+		private float[] GetFloatData() throws IOException
 		{
 			return GetFloatArray(in_y, DATA);
 		}
 
-		public double[] GetXDoubleData()
+		private double[] GetXDoubleData()
 		{
 			return null;
-		}
-
-		public long[] GetXLongData()
-		{
-			return null;
-		}
-
-		public float[] GetXData() throws IOException
-		{
-			if (in_x != null)
-				return GetFloatArray(in_x, X);
-			else
-				return GetFloatArray(in_y, X);
-		}
-
-		public float[] GetYData() throws IOException
-		{
-			return GetFloatArray(in_y, Y);
 		}
 
 		@Override
@@ -272,18 +236,6 @@ public class JetDataProvider implements DataProvider
 			return null;
 		}
 
-		public double[] getXLimits()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		public long[] getXLong()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
 		@Override
 		public boolean isXLong()
 		{ return false; }
@@ -312,38 +264,6 @@ public class JetDataProvider implements DataProvider
 	{
 		return new SimpleWaveData(in_y, in_x);
 	}
-
-	public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
-	{
-		return null;
-	}
-
-	public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
-	{
-		return null;
-	}
-
-	public int GetLoginStatus()
-	{
-		return login_status;
-	}
-
-	public void setEvaluateUrl(boolean state)
-	{ evaluate_url = state; }
-
-	public void setUrlSource(String url_source)
-	{
-		this.url_source = url_source;
-		// System.out.println(url_source);
-	}
-
-	public boolean SupportsCompression()
-	{
-		return false;
-	}
-
-	public void SetCompression(boolean state)
-	{}
 
 	@Override
 	public int InquireCredentials(JFrame f, DataServerItem server_item)
@@ -431,7 +351,7 @@ public class JetDataProvider implements DataProvider
 		return login_status;
 	}
 
-	public boolean CheckPasswd(String encoded_credentials)
+	private boolean CheckPasswd(String encoded_credentials)
 	{
 		this.encoded_credentials = encoded_credentials;
 		// System.out.println(encoded_credentials);
@@ -466,7 +386,7 @@ public class JetDataProvider implements DataProvider
 		return true;
 	}
 
-	boolean CheckPasswd(String username, String passwd)
+	private boolean CheckPasswd(String username, String passwd)
 	{
 		final String credentials = username + ":" + passwd;
 		encoded_credentials = translator.encode(credentials);
@@ -481,7 +401,7 @@ public class JetDataProvider implements DataProvider
 		error_string = null;
 	}
 
-	public float[] GetFloatArray(String in, int type) throws IOException
+	private float[] GetFloatArray(String in, int type) throws IOException
 	{
 		error_string = null;
 		final boolean is_time = (type == X);
@@ -671,9 +591,14 @@ public class JetDataProvider implements DataProvider
 
 	protected void dispatchConnectionEvent(ConnectionEvent e)
 	{
-		if (connection_listener != null)
-			for (int i = 0; i < connection_listener.size(); i++)
-				connection_listener.elementAt(i).processConnectionEvent(e);
+		try
+		{
+			if (connection_listener != null)
+				for (final Enumeration<ConnectionListener> enumerator = connection_listener.elements();;)
+					enumerator.nextElement().processConnectionEvent(e);
+		}
+		catch (final NoSuchElementException done)
+		{}
 	}
 
 	@Override

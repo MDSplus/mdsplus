@@ -45,7 +45,6 @@ SOURCE =\
  mds/provider/browser/*.java\
  mds/provider/jet/*.java\
  mds/provider/mds/*.java\
- mds/provider/twu/*.java\
  mds/wave/*.java\
  jScope.java
 RESOURCES =\

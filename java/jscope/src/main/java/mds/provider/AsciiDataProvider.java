@@ -12,8 +12,14 @@ import mds.wave.*;
 
 public class AsciiDataProvider implements DataProvider
 {
+	public static void main(String args[])
+	{
+		final AsciiDataProvider p = new AsciiDataProvider();
+		p.GetWaveData("c:\\test.txt", 0, 0, 0);
+	}
+
 	private boolean xPropertiesFile = false;
-	private boolean yPropertiesFile = false;
+	// private boolean yPropertiesFile = false;
 	String error = null;
 	String path_exp = null;
 	long curr_shot = -1;
@@ -21,8 +27,8 @@ public class AsciiDataProvider implements DataProvider
 	float x[];
 
 	/*
-	 * File structure estensione prop Title= Signal= XLabel= YLabel= ZLabel=
-	 * Dimension= Time=t_start:t_end:dt;....;t_start:t_end:dt or t1,t2,...,tn
+	 * File structure is prop Title= Signal= XLabel= YLabel= ZLabel= Dimension=
+	 * Time=t_start:t_end:dt;....;t_start:t_end:dt or t1,t2,...,tn
 	 * Data=y1,y2,y3....,yn X=x1,x2,x3....,xn
 	 */
 	class SimpleWaveData implements WaveData
@@ -41,7 +47,8 @@ public class AsciiDataProvider implements DataProvider
 		public SimpleWaveData(String in_y)
 		{
 			file_y = getPathValue(in_y);
-			xPropertiesFile = yPropertiesFile = setPropValues(file_y, y_prop);
+			// yPropertiesFile =
+			xPropertiesFile = setPropValues(file_y, y_prop);
 			x_prop = y_prop;
 			file_x = null;
 		}
@@ -49,7 +56,7 @@ public class AsciiDataProvider implements DataProvider
 		public SimpleWaveData(String in_y, String in_x)
 		{
 			file_y = getPathValue(in_y);
-			yPropertiesFile = setPropValues(file_y, y_prop);
+			// yPropertiesFile = setPropValues(file_y, y_prop);
 			file_x = getPathValue(in_x);
 			xPropertiesFile = setPropValues(file_x, x_prop);
 		}
@@ -159,7 +166,7 @@ public class AsciiDataProvider implements DataProvider
 			}
 		}
 
-		public float[] GetFloatData() throws IOException
+		private float[] GetFloatData() throws IOException
 		{
 			if (xPropertiesFile)
 				return decodeValues(x_prop.getProperty("Data"));
@@ -171,74 +178,9 @@ public class AsciiDataProvider implements DataProvider
 			}
 		}
 
-		public double[] GetXDoubleData()
+		private double[] GetXDoubleData()
 		{
 			return null;
-		}
-
-		public long[] GetXLongData()
-		{
-			return null;
-		}
-
-		public float[] GetXData() throws IOException
-		{
-			if (file_x == null)
-				if (yPropertiesFile)
-					return decodeTimes(y_prop.getProperty("Time"));
-				else
-				{
-					if (x == null)
-						throw (new IOException(error));
-					return x;
-				}
-			else if (xPropertiesFile)
-				return decodeValues(x_prop.getProperty("Data"));
-			else
-			{
-				if (y == null)
-					throw (new IOException(error));
-				return y;
-			}
-		}
-
-		public float[] GetYData() throws IOException
-		{
-			if (xPropertiesFile)
-				return decodeValues(x_prop.getProperty("X"));
-			else
-			{
-				error = "2D signal in column ASCII file format not yet supported";
-				return null;
-				// throw( new IOException(error) );
-			}
-		}
-
-		@Override
-		public String GetTitle() throws IOException
-		{
-			return y_prop.getProperty("Title");
-		}
-
-		@Override
-		public String GetXLabel() throws IOException
-		{
-			if (file_x == null)
-				return y_prop.getProperty("XLabel");
-			else
-				return x_prop.getProperty("YLabel");
-		}
-
-		@Override
-		public String GetYLabel() throws IOException
-		{
-			return y_prop.getProperty("YLabel");
-		}
-
-		@Override
-		public String GetZLabel() throws IOException
-		{
-			return y_prop.getProperty("ZLabel");
 		}
 
 		private float[] decodeValues(String val)
@@ -269,69 +211,32 @@ public class AsciiDataProvider implements DataProvider
 			return out;
 		}
 
-		private float[] decodeTimes(String val)
+		@Override
+		public String GetTitle() throws IOException
 		{
-			float out[] = null;
-			StringTokenizer st;
-			try
-			{
-				if (val == null)
-				{
-					error = "File syntax error";
-					return null;
-				}
-				st = new StringTokenizer(val, ":");
-				if (st.countTokens() > 1)
-				{
-					st = new StringTokenizer(val, ";");
-					final int num_base = st.countTokens();
-					final ByteArrayOutputStream aos = new ByteArrayOutputStream();
-					final DataOutputStream dos = new DataOutputStream(aos);
-					String time_st;
-					for (int i = 0; i < num_base; i++)
-					{
-						time_st = st.nextToken();
-						final StringTokenizer st1 = new StringTokenizer(time_st, ":");
-						final float start = Float.parseFloat(st1.nextToken().trim());
-						final float end = Float.parseFloat(st1.nextToken().trim());
-						final float dt = Float.parseFloat(st1.nextToken().trim());
-						for (float t = start; t <= end; t += dt)
-							dos.writeFloat(t);
-					}
-					out = byteArrayToFloat(aos.toByteArray());
-				}
-				else
-				{
-					out = decodeValues(val);
-				}
-			}
-			catch (final Exception exc)
-			{
-				error = "File sintax error : " + exc.getMessage();
-				out = null;
-			}
-			return out;
+			return y_prop.getProperty("Title");
 		}
 
-		private float[] byteArrayToFloat(byte a[])
+		@Override
+		public String GetXLabel() throws IOException
 		{
-			final int size = a.length / 4;
-			float out[] = new float[size];
-			final DataInputStream dis = new DataInputStream(new ByteArrayInputStream(a));
-			try
-			{
-				for (int i = 0; i < size; i++)
-					out[i] = dis.readFloat();
-				dis.close();
-			}
-			catch (final Exception exc)
-			{
-				error = "File sintax error : " + exc.getMessage();
-				out = null;
-			}
-			return out;
+			if (file_x == null)
+				return y_prop.getProperty("XLabel");
+			else
+				return x_prop.getProperty("YLabel");
 		}
-		// GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
+
+		@Override
+		public String GetYLabel() throws IOException
+		{
+			return y_prop.getProperty("YLabel");
+		}
+
+		@Override
+		public String GetZLabel() throws IOException
+		{
+			return y_prop.getProperty("ZLabel");
+		}
 
 		@Override
 		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
@@ -385,18 +290,6 @@ public class AsciiDataProvider implements DataProvider
 			return null;
 		}
 
-		public double[] getXLimits()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		public long[] getXLong()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
 		@Override
 		public boolean isXLong()
 		{ return false; }
@@ -426,42 +319,14 @@ public class AsciiDataProvider implements DataProvider
 		return new SimpleWaveData(in_y, in_x);
 	}
 
-	public WaveData GetResampledWaveData(String in, double start, double end, int n_points)
-	{
-		return null;
-	}
-
-	public WaveData GetResampledWaveData(String in_y, String in_x, double start, double end, int n_points)
-	{
-		return null;
-	}
-
 	@Override
 	public void Dispose()
 	{}
-
-	public boolean SupportsCompression()
-	{
-		return false;
-	}
-
-	public void SetCompression(boolean state)
-	{}
-
-	public boolean SupportsContinuous()
-	{
-		return false;
-	}
 
 	@Override
 	public int InquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
-	}
-
-	public boolean SupportsFastNetwork()
-	{
-		return false;
 	}
 
 	@Override
@@ -470,11 +335,6 @@ public class AsciiDataProvider implements DataProvider
 
 	@Override
 	public boolean SupportsTunneling()
-	{
-		return false;
-	}
-
-	public boolean DataPending()
 	{
 		return false;
 	}
@@ -596,87 +456,6 @@ public class AsciiDataProvider implements DataProvider
 	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		throw (new IOException("Frames visualization on DemoDataProvider not implemented"));
-	}
-
-	public float[] GetFrameTimes(String in_expr)
-	{
-		int cnt = 0;
-		String n;
-		File f;
-		float[] out = null;
-		String in, ext;
-		in = in_expr.substring(0, in_expr.indexOf("."));
-		ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-		for (int i = 0; i < 100; i++)
-		{
-			if (i < 10)
-				n = in + "_00" + (i) + ext;
-			else
-				n = in + "_0" + (i) + ext;
-			f = new File(n);
-			if (f.exists())
-				cnt++;
-		}
-		if (cnt != 0)
-		{
-			out = new float[cnt];
-			for (int i = 1; i < out.length; i++)
-				out[i] += out[i - 1] + 1;
-		}
-		return out;
-	}
-
-	public byte[] GetAllFrames(String in_frame)
-	{
-		return null;
-	}
-
-	public byte[] GetFrameAt(String in_expr, int frame_idx)
-	{
-		String n;
-		byte buf[] = null;
-		long size = 0;
-		final int i = frame_idx;
-		String in, ext;
-		in = in_expr.substring(0, in_expr.indexOf("."));
-		ext = in_expr.substring(in_expr.indexOf("."), in_expr.length());
-		if (i < 10)
-			n = in + "_00" + (i) + ext;
-		else
-			n = in + "_0" + (i) + ext;
-		final File f = new File(n);
-		if (f.exists())
-		{
-			System.out.println("Esiste " + n);
-			try
-			{
-				final FileInputStream bin = new FileInputStream(n);
-				size = f.length();
-				buf = new byte[(int) size];
-				if (buf != null)
-					bin.read(buf);
-				bin.close();
-			}
-			catch (final IOException e)
-			{}
-		}
-		else
-		{
-			System.out.println("Non Esiste " + n);
-		}
-		return buf;
-	}
-
-	public void enableAsyncUpdate(boolean enable)
-	{}
-
-	public void getDataAsync(double lowerBound, double upperBound, double resolution)
-	{}
-
-	public static void main(String args[])
-	{
-		final AsciiDataProvider p = new AsciiDataProvider();
-		p.GetWaveData("c:\\test.txt", 0, 0, 0);
 	}
 
 	@Override

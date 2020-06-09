@@ -70,7 +70,7 @@ public class AsdexDataProvider extends MdsDataProvider
 				expr = "( _jscope_" + v_idx + " = (" + in_y + "), shape(_jscope_" + v_idx + "))";
 				var_idx++;
 			}
-			final int shape[] = GetNumDimensions(expr);
+			final int shape[] = getNumDimensions(expr);
 			if (error != null)
 			{
 				_jscope_set = false;
@@ -113,8 +113,8 @@ public class AsdexDataProvider extends MdsDataProvider
 		{
 			try
 			{
-				final int startIdx[] = GetIntArray("begin_of(window_of(dim_of(" + expr + ")))");
-				final int endIdx[] = GetIntArray("end_of(window_of(dim_of(" + expr + ")))");
+				final int startIdx[] = getIntArray("begin_of(window_of(dim_of(" + expr + ")))");
+				final int endIdx[] = getIntArray("end_of(window_of(dim_of(" + expr + ")))");
 				if (startIdx.length != 1 || endIdx.length != 1)
 					return null;
 				final int numPoint = endIdx[0] - startIdx[0] + 1;
@@ -283,7 +283,7 @@ public class AsdexDataProvider extends MdsDataProvider
 				expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
 				var_idx++;
 			}
-			final String out = GetStringValue(expr);
+			final String out = getStringValue(expr);
 			if (out == null)
 				_jscope_set = false;
 			return out;
@@ -305,7 +305,7 @@ public class AsdexDataProvider extends MdsDataProvider
 					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
 					var_idx++;
 				}
-				out = GetStringValue(expr);
+				out = getStringValue(expr);
 				// return GetDefaultXLabel(in_y);
 			}
 			else
@@ -316,7 +316,7 @@ public class AsdexDataProvider extends MdsDataProvider
 				 * "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")"; var_idx++; }
 				 * return GetDefaultYLabel(expr);
 				 */
-				out = GetStringValue("Units(" + in_x + ")");
+				out = getStringValue("Units(" + in_x + ")");
 			}
 			if (out == null)
 				_jscope_set = false;
@@ -335,7 +335,7 @@ public class AsdexDataProvider extends MdsDataProvider
 				expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
 				var_idx++;
 			}
-			final String out = GetStringValue(expr);
+			final String out = getStringValue(expr);
 			if (out == null)
 				_jscope_set = false;
 			return out;
@@ -354,7 +354,7 @@ public class AsdexDataProvider extends MdsDataProvider
 				expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
 				var_idx++;
 			}
-			final String out = GetStringValue(expr);
+			final String out = getStringValue(expr);
 			if (out == null)
 				_jscope_set = false;
 			return out;
@@ -466,7 +466,7 @@ public class AsdexDataProvider extends MdsDataProvider
 		shot = s;
 	}
 
-	protected String ParseExpression(String in)
+	private String ParseExpression(String in)
 	{
 		if (in.startsWith("DIM_OF("))
 			return in;
@@ -488,12 +488,9 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public synchronized int[] GetIntArray(String in) throws IOException
+	public synchronized int[] getIntArray(String in) throws IOException
 	{
-		final String parsed = ParseExpression(in);
-		if (parsed == null)
-			return null;
-		return super.GetIntArray(parsed);
+		return super.getIntArray(ParseExpression(in));
 	}
 
 	public WaveData GetWaveData(String in)
@@ -530,16 +527,6 @@ public class AsdexDataProvider extends MdsDataProvider
 	public void SetCompression(boolean state)
 	{}
 
-	public boolean SupportsContinuous()
-	{
-		return false;
-	}
-
-	public boolean DataPending()
-	{
-		return false;
-	}
-
 	@Override
 	public int InquireCredentials(JFrame f, DataServerItem server_item)
 	{
@@ -547,13 +534,7 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public boolean SupportsFastNetwork()
-	{
-		return false;
-	}
-
-	@Override
-	public int[] GetNumDimensions(String spec)
+	public int[] getNumDimensions(String spec)
 	{
 		return new int[]
 		{ 1 };

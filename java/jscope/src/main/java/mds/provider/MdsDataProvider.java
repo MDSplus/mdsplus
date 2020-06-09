@@ -107,7 +107,7 @@ public class MdsDataProvider implements DataProvider
 			}
 			actSegments = endSegment - startSegment;
 //Get Frame Dimension and frames per segment
-			final int dims[] = GetIntArray("shape(GetSegment(" + inY + ", 0))");
+			final int dims[] = getIntArray("shape(GetSegment(" + inY + ", 0))");
 			if (dims.length != 3 && dims.length != 1) // The former refers to usual raster image, the latter to AWT
 														// images (jpg, gif...)
 				throw new IOException("Invalid number of segment dimensions: " + dims.length);
@@ -116,7 +116,7 @@ public class MdsDataProvider implements DataProvider
 				dim = new Dimension(dims[0], dims[1]);
 				framesPerSegment = dims[2];
 //Get Frame element length in bytes
-				final int len[] = GetIntArray("len(GetSegment(" + inY + ", 0))");
+				final int len[] = getIntArray("len(GetSegment(" + inY + ", 0))");
 				bytesPerPixel = len[0];
 				switch (len[0])
 				{
@@ -443,13 +443,13 @@ public class MdsDataProvider implements DataProvider
 				try
 				{
 					final String segExpr = "long(MdsMisc->IsSegmented(\"" + fixedY + "\"))";
-					final int[] retData = GetIntArray(segExpr);
+					final int[] retData = getIntArray(segExpr);
 					if (debug)
 						System.out.println(segExpr + " " + retData[0]);
 					if (retData[0] != 0)
 					{
 						segmentMode = SEGMENTED_YES;
-						segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
+						segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
 						if (debug)
 							System.out.println("Segmented Node: " + segmentNodeName);
 					}
@@ -491,7 +491,7 @@ public class MdsDataProvider implements DataProvider
 					final byte[] retData = GetByteArray("byte(MdsMisc->IsSegmented($))", args);
 					if (retData[0] > 0)
 					{
-						segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
+						segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
 						if (debug)
 							System.out.println("Segmented Node: " + segmentNodeName);
 						segmentMode = SEGMENTED_YES;
@@ -544,7 +544,7 @@ public class MdsDataProvider implements DataProvider
 				}
 			}
 			error = null;
-			final int shape[] = GetNumDimensions(expr);
+			final int shape[] = getNumDimensions(expr);
 			if (error != null || shape == null)
 			{
 				_jscope_set = false;
@@ -565,7 +565,7 @@ public class MdsDataProvider implements DataProvider
 				if (_jscope_set)
 				{
 					expr = "help_of(_jscope_" + v_idx + ")";
-					title = GetStringValue(expr);
+					title = getStringValue(expr);
 				}
 				else
 				{
@@ -578,7 +578,7 @@ public class MdsDataProvider implements DataProvider
 						_jscope_set = true;
 						expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
 					}
-					title = GetStringValue(expr);
+					title = getStringValue(expr);
 				}
 			}
 			return title;
@@ -596,7 +596,7 @@ public class MdsDataProvider implements DataProvider
 					if (_jscope_set)
 					{
 						expr = "Units(dim_of(_jscope_" + v_idx + "))";
-						xLabel = GetStringValue(expr);
+						xLabel = getStringValue(expr);
 					}
 					else
 					{
@@ -604,19 +604,19 @@ public class MdsDataProvider implements DataProvider
 						{
 //	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
 							expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
-							xLabel = GetStringValue(expr);
+							xLabel = getStringValue(expr);
 						}
 						else
 						{
 							_jscope_set = true;
 							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
-							xLabel = GetStringValue(expr);
+							xLabel = getStringValue(expr);
 						}
 					}
 				}
 				else
 				{
-					xLabel = GetStringValue("Units(" + in_x + ")");
+					xLabel = getStringValue("Units(" + in_x + ")");
 				}
 			}
 			return xLabel;
@@ -633,22 +633,21 @@ public class MdsDataProvider implements DataProvider
 				{
 					if (segmentMode == SEGMENTED_YES)
 					{
-//	                expr = "Units(dim_of(GetSegment(" + in_y + ", 1)))";
 						expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 1)))";
-						yLabel = GetStringValue(expr);
+						yLabel = getStringValue(expr);
 					}
 					else
 					{
 						if (_jscope_set)
 						{
 							expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
-							yLabel = GetStringValue(expr);
+							yLabel = getStringValue(expr);
 						}
 						else
 						{
 							_jscope_set = true;
 							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-							yLabel = GetStringValue(expr);
+							yLabel = getStringValue(expr);
 						}
 					}
 				}
@@ -656,22 +655,21 @@ public class MdsDataProvider implements DataProvider
 			}
 			if (segmentMode == SEGMENTED_YES)
 			{
-//	        expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
 				expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
-				yLabel = GetStringValue(expr);
+				yLabel = getStringValue(expr);
 			}
 			else
 			{
 				if (_jscope_set)
 				{
 					expr = "Units(_jscope_" + v_idx + ")";
-					yLabel = GetStringValue(expr);
+					yLabel = getStringValue(expr);
 				}
 				else
 				{
 					_jscope_set = true;
 					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
-					yLabel = GetStringValue(expr);
+					yLabel = getStringValue(expr);
 				}
 			}
 			return yLabel;
@@ -688,13 +686,12 @@ public class MdsDataProvider implements DataProvider
 				_jscope_set = true;
 				expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
 			}
-			final String out = GetStringValue(expr);
+			final String out = getStringValue(expr);
 			if (out == null)
 				_jscope_set = false;
 			return out;
 		}
 
-		// GAB JULY 2014 NEW WAVEDATA INTERFACE RAFFAZZONATA
 		@Override
 		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 		{
@@ -725,7 +722,7 @@ public class MdsDataProvider implements DataProvider
 					if (retData[0] > 0)
 					{
 						segmentMode = SEGMENTED_YES;
-						segmentNodeName = GetStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
+						segmentNodeName = getStringValue("MdsMisc->GetPathOf:DSC(" + retData[0] + ")");
 						if (debug)
 							System.out.println("Segmented Node: " + segmentNodeName);
 					}
@@ -1277,7 +1274,7 @@ public class MdsDataProvider implements DataProvider
 		int[] numSegments = null;
 		try
 		{
-			numSegments = GetIntArray("GetNumSegments(" + in_y + ")");
+			numSegments = getIntArray("GetNumSegments(" + in_y + ")");
 		}
 		catch (final Exception exc)
 		{
@@ -1319,7 +1316,7 @@ public class MdsDataProvider implements DataProvider
 		}
 //      in = "eshape(data(" + in_frame + "))";
 		in = "eshape(data( _jScope_img ))";
-		shape = GetIntArray(in);
+		shape = getIntArray(in);
 		if (shape == null)
 			return null;
 		// in = in_frame;
@@ -1732,7 +1729,7 @@ public class MdsDataProvider implements DataProvider
 			System.out.println("GetRealArray " + in);
 		RealArray out;
 		final ConnectionEvent e = new ConnectionEvent(this, 1, 0);
-		DispatchConnectionEvent(e);
+		dispatchConnectionEvent(e);
 		if (!CheckOpen())
 			return null;
 		final Descriptor desc = mds.MdsValue(in);
@@ -1830,61 +1827,56 @@ public class MdsDataProvider implements DataProvider
 		// To shot evaluation don't execute check
 		// if a pulse file is open
 		CheckConnection();
-		// try
+		synchronized (this)
 		{
-			return GetLongArray(in);
+			long out_data[];
+			final Descriptor desc = mds.MdsValue(in);
+			switch (desc.dtype)
+			{
+			case Descriptor.DTYPE_ULONGLONG:
+			case Descriptor.DTYPE_LONGLONG:
+				return desc.long_data;
+			case Descriptor.DTYPE_LONG:
+				out_data = new long[desc.int_data.length];
+				for (int i = 0; i < desc.int_data.length; i++)
+				{
+					out_data[i] = (desc.int_data[i]);
+				}
+				return out_data;
+			case Descriptor.DTYPE_FLOAT:
+				out_data = new long[desc.float_data.length];
+				for (int i = 0; i < desc.float_data.length; i++)
+					out_data[i] = (long) (desc.float_data[i] + 0.5);
+				return out_data;
+			case Descriptor.DTYPE_BYTE:
+			case Descriptor.DTYPE_UBYTE:
+				out_data = new long[desc.byte_data.length];
+				for (int i = 0; i < desc.byte_data.length; i++)
+					out_data[i] = (long) (desc.byte_data[i] + 0.5);
+				return out_data;
+			case Descriptor.DTYPE_CSTRING:
+				if ((desc.status & 1) == 0)
+					error = desc.error;
+				throw new IOException(error);
+			default:
+				error = "Data type code : " + desc.dtype + " not yet supported ";
+			}
+			throw new IOException(error);
 		}
 	}
 
-	public int[] GetIntArray(String in) throws IOException
-	{
+	public int[] getIntArray(String in) throws IOException
+	{ // public because its used by MdsAccess
 		if (debug)
 			System.out.println("GetIntArray " + in);
+		if (in == null)
+			return null;
 		if (!CheckOpen())
 			throw new IOException("Tree not open");
-		return GetIntegerArray(in);
+		return getIntegerArray(in);
 	}
 
-	private synchronized long[] GetLongArray(String in) throws IOException
-	{
-		if (debug)
-			System.out.println("GetLongArray " + in);
-		long out_data[];
-		final Descriptor desc = mds.MdsValue(in);
-		switch (desc.dtype)
-		{
-		case Descriptor.DTYPE_ULONGLONG:
-		case Descriptor.DTYPE_LONGLONG:
-			return desc.long_data;
-		case Descriptor.DTYPE_LONG:
-			out_data = new long[desc.int_data.length];
-			for (int i = 0; i < desc.int_data.length; i++)
-			{
-				out_data[i] = (desc.int_data[i]);
-			}
-			return out_data;
-		case Descriptor.DTYPE_FLOAT:
-			out_data = new long[desc.float_data.length];
-			for (int i = 0; i < desc.float_data.length; i++)
-				out_data[i] = (long) (desc.float_data[i] + 0.5);
-			return out_data;
-		case Descriptor.DTYPE_BYTE:
-		case Descriptor.DTYPE_UBYTE:
-			out_data = new long[desc.byte_data.length];
-			for (int i = 0; i < desc.byte_data.length; i++)
-				out_data[i] = (long) (desc.byte_data[i] + 0.5);
-			return out_data;
-		case Descriptor.DTYPE_CSTRING:
-			if ((desc.status & 1) == 0)
-				error = desc.error;
-			throw new IOException(error);
-		default:
-			error = "Data type code : " + desc.dtype + " not yet supported ";
-		}
-		throw new IOException(error);
-	}
-
-	private synchronized int[] GetIntegerArray(String in) throws IOException
+	private synchronized int[] getIntegerArray(String in) throws IOException
 	{
 		if (debug)
 			System.out.println("GetIntegerArray " + in);
@@ -2103,7 +2095,7 @@ public class MdsDataProvider implements DataProvider
 			mds.removeConnectionListener(l);
 	}
 
-	protected void DispatchConnectionEvent(ConnectionEvent e)
+	protected void dispatchConnectionEvent(ConnectionEvent e)
 	{
 		if (mds != null)
 			mds.dispatchConnectionEvent(e);
@@ -2150,15 +2142,10 @@ public class MdsDataProvider implements DataProvider
 		return DataProvider.LOGIN_OK;
 	}
 
-	public boolean SupportsFastNetwork()
-	{
-		return true;
-	}
-
-	public String GetStringValue(String expr) throws IOException
-	{
+	public String getStringValue(String expr) throws IOException
+	{ // public as used by MdsAccess
 		if (debug)
-			System.out.println("GeStringValue " + expr);
+			System.out.println("getStringValue " + expr);
 		String out = GetString(expr, -1, -1, -1);
 		if (out == null || out.length() == 0 || error != null)
 		{
@@ -2170,11 +2157,9 @@ public class MdsDataProvider implements DataProvider
 		return out;
 	}
 
-	protected int[] GetNumDimensions(String in_y) throws IOException
+	protected int[] getNumDimensions(String in_y) throws IOException
 	{
-		// return GetIntArray(in_y);
-		// Gabriele June 2013: reduce dimension if one component is 1
-		final int[] fullDims = GetIntArray(in_y);
+		final int[] fullDims = getIntArray(in_y);
 		if (fullDims == null)
 			return null;
 		if (fullDims.length == 1)
@@ -2267,7 +2252,7 @@ public class MdsDataProvider implements DataProvider
 		}
 	}
 
-	public String getProvider()
+	protected String getProvider()
 	{ return provider; }
 
 	@Override

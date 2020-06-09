@@ -8,11 +8,6 @@ import mds.wave.*;
 
 public class TwuAccess implements DataAccess
 {
-	String ip_addr = null;
-	String shot_str = null;
-	String signal = null;
-	TwuDataProvider tw = null;
-
 	public static void main(String args[])
 	{
 		final TwuAccess access = new TwuAccess();
@@ -28,6 +23,11 @@ public class TwuAccess implements DataAccess
 		catch (final IOException exc)
 		{}
 	}
+
+	String ip_addr = null;
+	String shot_str = null;
+	String signal = null;
+	TwuDataProvider tw = null;
 
 	@Override
 	public boolean supports(String url)
