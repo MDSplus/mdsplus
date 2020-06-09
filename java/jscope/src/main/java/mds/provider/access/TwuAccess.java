@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 import mds.provider.TwuDataProvider;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class TwuAccess implements DataAccess
 {

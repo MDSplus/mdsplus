@@ -7,7 +7,7 @@ import java.io.*;
 import javax.swing.*;
 
 import mds.jscope.*;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 class jScopeWavePopup
     extends MultiWavePopup

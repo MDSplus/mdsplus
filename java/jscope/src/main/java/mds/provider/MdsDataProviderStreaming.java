@@ -6,7 +6,7 @@ package mds.provider;
 import java.util.*;
 
 import MDSplus.*;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 /**
  *

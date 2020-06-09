@@ -13,7 +13,7 @@ import com.mindbright.ssh2.*;
 import com.mindbright.util.RandomSeed;
 import com.mindbright.util.SecureRandomAndPad;
 
-import mds.wavedisplay.DataProvider;
+import mds.wave.DataProvider;
 
 public class SshTunneling extends Thread
 {

@@ -23,7 +23,7 @@ import javax.swing.JFrame;
 
 import mds.connection.*;
 import mds.provider.twu.*;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class TwuDataProvider implements DataProvider
 {

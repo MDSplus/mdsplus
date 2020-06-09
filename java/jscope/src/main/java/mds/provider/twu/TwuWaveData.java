@@ -10,7 +10,7 @@ package mds.provider.twu;
 import java.io.IOException;
 
 import mds.provider.TwuDataProvider;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class TwuWaveData implements WaveData
 {

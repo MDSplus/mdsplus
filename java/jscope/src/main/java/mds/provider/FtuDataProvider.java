@@ -5,8 +5,8 @@ import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.DataServerItem;
+import mds.wave.DataProvider;
+import mds.wave.DataServerItem;
 
 public class FtuDataProvider extends MdsDataProvider
 {

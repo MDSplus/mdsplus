@@ -8,7 +8,7 @@ import javax.swing.JFrame;
 
 import mds.connection.ConnectionListener;
 import mds.connection.UpdateEventListener;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class UniversalDataProvider implements DataProvider
 {

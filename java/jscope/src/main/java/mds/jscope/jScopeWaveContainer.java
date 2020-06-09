@@ -12,11 +12,12 @@ import javax.swing.*;
 
 import mds.connection.ConnectionListener;
 import mds.connection.UpdateEventListener;
-import mds.wavedisplay.*;
+import mds.provider.MdsDataProvider;
+import mds.wave.*;
 
 class jScopeWaveContainer extends WaveformContainer implements Printable
 {
-	private static final long serialVersionUID = -5124185838513760056L;
+	private static final long serialVersionUID = 1L;
 	private static final int MAX_COLUMN = 4;
 	DataProvider dp;
 	private final jScopeDefaultValues def_vals;
@@ -93,8 +94,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
 	public jScopeWaveContainer(int rows[], jScopeDefaultValues def_vals)
 	{
-		this(rows, new NotConnectedDataProvider(), def_vals);
-		server_item = new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null, null, null);
+		this(rows, DataServerItem.NotConnected, def_vals);
+		server_item = new DataServerItem();
 	}
 
 	public jScopeWaveContainer(int rows[], DataProvider dp, jScopeDefaultValues def_vals)
@@ -245,7 +246,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	public DataServerItem GetServerItem()
 	{
 		if (server_item == null)
-			server_item = new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null, null, null);
+			server_item = new DataServerItem();
 		return server_item;
 	}
 
@@ -749,9 +750,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		{
 			final InetAddress localaddr = InetAddress.getLocalHost();
 			final String localIpAdddress = localaddr.getHostAddress();
-			final String f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator
-					+ "jScope_servers.conf";
-			if (dataServerIn != null && !dataServerIn.getClassName().equals("MdsDataProvider"))
+			if (dataServerIn != null && !dataServerIn.getClassName().equals(MdsDataProvider.class.getName()))
 				return null;
 			if (dataServerIn != null)
 			{
@@ -762,10 +761,10 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 				if (!checkIpMask(disIpAdddress, clientMask))
 					return dataServerIn;
 			}
-			if ((new File(f_name)).exists())
+			if ((new File(jScopeFacade.JSCOPE_SERVERS)).exists())
 			{
 				final Properties srvFromClientProp = new Properties();
-				final FileInputStream fis = new FileInputStream(f_name);
+				final FileInputStream fis = new FileInputStream(jScopeFacade.JSCOPE_SERVERS);
 				srvFromClientProp.load(fis);
 				fis.close();
 				while (!found)
@@ -1029,29 +1028,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 
 	public void SetDataServer(DataServerItem server_item, UpdateEventListener l) throws Exception
 	{
-		DataProvider new_dp = null;
 		if (server_item == null || server_item.getName() == null)
 			throw (new Exception("Defined null or empty data server name"));
-		if (server_item.getClassName() != null)
-		{
-			try
-			{
-				Class<?> cl;
-				if (server_item.getClassName().contains("."))
-					cl = Class.forName(server_item.getClassName());
-				else
-					cl = Class.forName("mds.provider." + server_item.getClassName());
-				new_dp = (DataProvider) cl.newInstance();
-			}
-			catch (final Exception e)
-			{
-				throw (new Exception("Can't load data provider class : " + server_item.getClassName() + "\n" + e));
-			}
-		}
-		else
-		{
-			throw (new Exception("Undefine data provider class for " + server_item.getName()));
-		}
+		final DataProvider new_dp = server_item.getProvider();
 		if (browse_sig != null && browse_sig.isShowing())
 			browse_sig.setVisible(false);
 		try
@@ -1072,13 +1051,12 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 				break;
 			case DataProvider.LOGIN_ERROR:
 			case DataProvider.LOGIN_CANCEL:
-				server_item = new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null, null,
-						null);
-				dp = new NotConnectedDataProvider();
+				server_item = new DataServerItem();
+				dp = DataServerItem.NotConnected;
 			}
 			if (dp != null)
 				dp.AddConnectionListener((ConnectionListener) l);
-			if (!server_item.getClassName().equals("NotConnectedDataProvider"))
+			if (server_item.isNotConnected())
 			{
 				// Check data server connection
 				if (dp.GetShots("0", "xx") == null)
@@ -1111,9 +1089,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		}
 		catch (final IOException e)
 		{
-			this.server_item = new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null, null,
-					null);
-			dp = new NotConnectedDataProvider();
+			this.server_item = new DataServerItem();
+			this.dp = DataServerItem.NotConnected;
 			ChangeDataProvider(dp);
 			throw (new Exception(e.getMessage()));
 		}

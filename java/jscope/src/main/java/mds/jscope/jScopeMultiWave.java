@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
 import mds.connection.*;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 /**
  Class MultiWaveform extends the capability of class Waveform to deal with multiple

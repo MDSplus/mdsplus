@@ -7,7 +7,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.*;
 
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class WaveDisplay extends JApplet implements WaveformListener
 {

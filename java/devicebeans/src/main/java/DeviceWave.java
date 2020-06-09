@@ -3,11 +3,13 @@ import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.table.*;
+
+import mds.wave.*;
+
 import java.util.*;
 import java.text.*;
 import java.awt.datatransfer.*;
 import java.io.*;
-import mds.wavedisplay.*;
 
 public class DeviceWave extends DeviceComponent
 {

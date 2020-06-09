@@ -6,8 +6,8 @@ package mds.provider;
 
 import java.util.Vector;
 
-import mds.wavedisplay.AsynchDataSource;
-import mds.wavedisplay.WaveDataListener;
+import mds.wave.AsynchDataSource;
+import mds.wave.WaveDataListener;
 
 /**
  *

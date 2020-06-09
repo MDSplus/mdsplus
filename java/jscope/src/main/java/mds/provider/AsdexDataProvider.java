@@ -5,7 +5,7 @@ import java.util.StringTokenizer;
 
 import javax.swing.JFrame;
 
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class AsdexDataProvider extends MdsDataProvider
 {

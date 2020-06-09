@@ -14,7 +14,7 @@ import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
-import mds.wavedisplay.WaveInterface;
+import mds.wave.WaveInterface;
 
 public class SignalsBoxDialog extends JDialog
 {

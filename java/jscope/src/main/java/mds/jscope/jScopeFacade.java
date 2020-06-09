@@ -19,14 +19,25 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.basic.BasicArrowButton;
 
 import mds.connection.*;
-import mds.wavedisplay.*;
+import mds.provider.*;
+import mds.wave.*;
 
 public class jScopeFacade extends JFrame implements ActionListener, ItemListener, WindowListener, WaveContainerListener,
 		UpdateEventListener, ConnectionListener, Printable
 {
-	/**
-	 *
-	 */
+	final static String JSCOPE_PROFILE;
+	static
+	{ // handle case jScope vs.jscope
+		String profile = System.getProperty("user.home") + File.separator + "jscope";
+		final String upper = System.getProperty("user.home") + File.separator + "jscope";
+		if (!new File(profile).exists() && new File(upper).exists())
+			profile = upper;
+		JSCOPE_PROFILE = profile;
+	}
+	final static String JSCOPE_SERVERS = JSCOPE_PROFILE + File.separator + "jScope_servers.conf";
+	final static String JSCOPE_CONFIGURATIONS = JSCOPE_PROFILE + File.separator + "configurations";
+	final static String JSCOPE_PROPERTIES = JSCOPE_PROFILE + File.separator + "jScope.properties";
+	final static String JSCOPE_PALETTE = JSCOPE_PROFILE + File.separator + "colors.tbl";
 	private static final long serialVersionUID = 1L;
 	static final String VERSION = "jScope (version 7.107.2)";
 	static public boolean is_debug = false;
@@ -56,7 +67,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	/** Menu item on menu autoscale_m */
 	private JMenuItem all_i, allY_i;
 	private JMenuItem print_i, properties_i;
-	private String propertiesFilePath = null;
 	private JPanel panel, panel1;
 	private final ButtonGroup pointer_mode = new ButtonGroup();
 	private JRadioButton zoom, point, copy, pan;
@@ -111,6 +121,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	static int T_messageType;
 	BasicArrowButton incShot, decShot;
 	int incShotValue = 0;
+	private final String propertiesFile;
 
 	static public void ShowMessage(Component parentComponent, Object message, String title, int messageType)
 	{
@@ -435,6 +446,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 
 	public jScopeFacade(int spos_x, int spos_y, String propFile)
 	{
+		this.propertiesFile = propFile;
 		if (num_scope == 0)
 		{
 			createAboutScreen();
@@ -448,7 +460,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 				}
 			});
 		}
-		this.setPropertiesFile(propFile);
 		jScopeCreate(spos_x, spos_y);
 	}
 
@@ -503,7 +514,8 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		font_dialog = new FontSelection(this, "Waveform Font Selection");
 		setup_default = new SetupDefaults(this, "Default Setup", def_values);
 		color_dialog = new ColorDialog(this, "Color Configuration Dialog");
-		colorMapDialog = new ColorMapDialog(this, js_prop.getProperty("jScope.color_palette_file"));
+		final String palette = js_prop.getProperty("jScope.color_palette_file");
+		colorMapDialog = new ColorMapDialog(this, palette == null ? JSCOPE_PALETTE : palette);
 		pub_var_diag = new PubVarDialog(this);
 		getContentPane().setLayout(new BorderLayout());
 		setBackground(Color.lightGray);
@@ -667,7 +679,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				final PropertiesEditor pe = new PropertiesEditor(jScopeFacade.this, propertiesFilePath);
+				final PropertiesEditor pe = new PropertiesEditor(jScopeFacade.this, propertiesFile);
 				pe.setVisible(true);
 			}
 		});
@@ -1089,16 +1101,9 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		return null;
 	}
 
-	public void setPropertiesFile(String propFile)
-	{ propertiesFilePath = propFile; }
-
 	public void InitProperties()
 	{
-		String f_name = propertiesFilePath;
-		if (f_name == null)
-		{
-			f_name = System.getProperty("user.home") + File.separator + "jscope" + File.separator + "jScope.properties";
-		}
+		String f_name = propertiesFile == null ? JSCOPE_PROPERTIES : propertiesFile;
 		try
 		{
 			if (jScopeFacade.is_debug)
@@ -1113,11 +1118,9 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			}
 			else
 			{
-				f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator;
-				final File jScopeUserDir = new File(f_name);
+				final File jScopeUserDir = new File(JSCOPE_PROFILE);
 				if (!jScopeUserDir.exists())
 					jScopeUserDir.mkdirs();
-				f_name = f_name + "jScope.properties";
 				js_prop = new Properties();
 				final String res = "mds/jscope/jScope.properties";
 				InputStream pis = getClass().getClassLoader().getResourceAsStream(res);
@@ -1126,9 +1129,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 					js_prop.load(pis);
 					pis.close();
 					pis = getClass().getClassLoader().getResourceAsStream(res);
-					f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator
-							+ "jScope.properties";
-					final FileOutputStream fos = new FileOutputStream(f_name);
+					final FileOutputStream fos = new FileOutputStream(JSCOPE_PROPERTIES);
 					final byte b[] = new byte[1024];
 					for (int len = pis.read(b); len > 0; len = pis.read(b))
 						fos.write(b, 0, len);
@@ -1140,10 +1141,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 					System.out.println("Not found jScope.properties file");
 				}
 			}
-			propertiesFilePath = new String(f_name);
-			f_name = System.getProperty("user.home") + File.separator + "jScope" + File.separator
-					+ "jScope_servers.conf";
-			if (!(new File(f_name)).exists())
+			if (!(new File(JSCOPE_SERVERS)).exists())
 			{
 				final InputStream pis = getClass().getClassLoader().getResourceAsStream("jScope_servers.conf");
 				if (pis != null)
@@ -1171,14 +1169,14 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	{
 		if (js_prop == null)
 			return;
-		// jScope configurations file directory can be defined
+		// jscope configurations file directory can be defined
 		// with decrease priority order:
-		// 1) by system property jScope.config_directory;
-		// in this case jScope must be started with
+		// 1) by system property jscope.config_directory;
+		// in this case jscope must be started with
 		// -DjScope.config_directory=<directory> option.
 		// 2) in jScope.properties using jScope.directory property
-		// If the previous properties are not defined jScope create
-		// configuration folder in <home directory>/jScope/configurations, if
+		// If the previous properties are not defined jscope create
+		// configuration folder in <home directory>/jscope/configurations, if
 		// for same abnormal reason the directory creation failed
 		// <home directory> is used as configuration directory
 		curr_directory = System.getProperty("jScope.config_directory");
@@ -1187,38 +1185,11 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			curr_directory = js_prop.getProperty("jScope.directory");
 			if (curr_directory == null || curr_directory.trim().length() == 0)
 			{
-				// Store default jScope configuration file in local
-				// directory <home directory>/jScope/configurations.
-				// Default configuration are stored in jScope jar file.
-				// If configuration directory already exist the configurations
-				// copy is not performed.
-				try
+				curr_directory = JSCOPE_CONFIGURATIONS;
+				final File jScopeUserDir = new File(curr_directory);
+				if (!jScopeUserDir.exists())
 				{
-					curr_directory = System.getProperty("user.home") + File.separator + "jScope" + File.separator
-							+ "configurations" + File.separator;
-					final File jScopeUserDir = new File(curr_directory);
-					if (!jScopeUserDir.exists())
-					{
-						final byte b[] = new byte[1024];
-						jScopeUserDir.mkdirs();
-						final String configList[] =
-						{ "FTU_plasma_current.jscp", "fusion.jscp", "JET_plasma_current.jscp",
-								"RFX_plasma_current.jscp", "TS_plasma_current.jscp", "TWU_plasma_current.jscp" };
-						for (final String element : configList)
-						{
-							final InputStream fis = getClass().getClassLoader()
-									.getResourceAsStream("configurations/" + element);
-							final FileOutputStream fos = new FileOutputStream(curr_directory + element);
-							for (int len = fis.read(b); len > 0; len = fis.read(b))
-								fos.write(b, 0, len);
-							fos.close();
-							fis.close();
-						}
-					}
-				}
-				catch (final Exception exc)
-				{
-					curr_directory = System.getProperty("user.home");
+					jScopeUserDir.mkdirs();
 				}
 			}
 		}
@@ -1865,20 +1836,12 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 				if (JOptionPane.showConfirmDialog(this, e.info + "  Reconnect To Data Server?",
 						"alert processConnectionEvent", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
 					System.exit(0);
-				if (mdsDataServer != null)
-					SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", "MdsDataProvider",
-							null, null, null));
-				else if (sshDataServer != null)
-					SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", "SSHDataProvider",
-							null, null, null));
-				else
-					SetDataServer(new DataServerItem("local access", "", "", "LocalDataProvider", null, null, null));
+				jScopeFacade.this.connectDefault();
 			}
 			else
 			{
 				JOptionPane.showMessageDialog(this, e.info, "alert processConnectionEvent", JOptionPane.ERROR_MESSAGE);
-				SetDataServer(
-						new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null, null, null));
+				SetDataServer(new DataServerItem());
 			}
 			return;
 		}
@@ -1896,6 +1859,19 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			progress_bar.setValue(v);
 			progress_bar.setString((e.info != null ? e.info : "") + v + "%");
 		}
+	}
+
+	private void connectDefault()
+	{
+		if (mdsDataServer != null)
+			SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", //
+					MdsDataProvider.class.getName(), null, null, null));
+		else if (sshDataServer != null)
+			SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", //
+					MdsDataProviderSsh.class.getName(), null, null, null));
+		else
+			SetDataServer(new DataServerItem("local access", null, null, //
+					MdsDataProviderLocal.class.getName(), null, null, null));
 	}
 
 	private boolean EventUpdateEnabled()
@@ -2338,8 +2314,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 										// command line
 			{
 				if (!SetDataServer(dsi))
-					SetDataServer(new DataServerItem("Not Connected", null, null, "NotConnectedDataProvider", null,
-							null, null));
+					SetDataServer(new DataServerItem());
 			}
 			UpdateAllWaves();
 		}
@@ -2355,7 +2330,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 
 	protected jScopeFacade buildNewScope(int x, int y)
 	{
-		return new jScopeFacade(x, y, propertiesFilePath);
+		return new jScopeFacade(x, y, propertiesFile);
 	}
 
 	public void startScope(String file)
@@ -2367,14 +2342,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		}
 		if (!enableNetworkSelection) // Creation of DataProvider based on command line
 		{
-			if (mdsDataServer != null)
-				SetDataServer(new DataServerItem("mdsip connection", mdsDataServer, "JAVA_USER", "MdsDataProvider",
-						null, null, null));
-			else if (sshDataServer != null)
-				SetDataServer(new DataServerItem("mdsip connection", sshDataServer, "JAVA_USER", "SSHDataProvider",
-						null, null, null));
-			else
-				SetDataServer(new DataServerItem("local access", "", "", "LocalDataProvider", null, null, null));
+			connectDefault();
 		}
 		SetWindowTitle("");
 		setVisible(true);
@@ -2794,10 +2762,6 @@ class ServerDialog extends JDialog implements ActionListener
 	JCheckBox tunneling;
 	JTextField tunnel_port;
 	jScopeFacade dw;
-	private static String know_provider[] =
-	{ "MdsDataProvider", "MdsDataProviderUdt", "MdsDataProviderAsync", "MdsDataProviderStreaming", "MdsDataProviderSsh",
-			"MdsDataProviderLocal", "AsciiDataProvider", "AsdexDataProvider", "FtuDataProvider", "JetDataProvider",
-			"JetMdsDataProvider", "JetDataProvider", "TsDataProvider", "TwuDataProvider", "UniversalDataProvider" };
 
 	ServerDialog(JFrame dw, String title)
 	{
@@ -3096,7 +3060,7 @@ class ServerDialog extends JDialog implements ActionListener
 
 	private void addKnowProvider()
 	{
-		for (final String element : know_provider)
+		for (final String element : DataServerItem.knownProviders)
 		{
 			data_server_class.put(element, element);
 			data_provider_list.addItem(element);

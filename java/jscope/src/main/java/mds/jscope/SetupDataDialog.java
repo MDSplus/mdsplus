@@ -9,11 +9,7 @@ import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
-import mds.wavedisplay.Signal;
-import mds.wavedisplay.WaveInterface;
-import mds.wavedisplay.Waveform;
-import mds.wavedisplay.WaveformEvent;
-import mds.wavedisplay.WaveformListener;
+import mds.wave.*;
 
  class SetupDataDialog extends JDialog implements ActionListener,
 	                                          ItemListener,

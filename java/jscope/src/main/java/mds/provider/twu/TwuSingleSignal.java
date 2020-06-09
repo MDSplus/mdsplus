@@ -11,7 +11,7 @@ import java.io.IOException;
 
 import mds.connection.ConnectionEvent;
 import mds.provider.TwuDataProvider;
-import mds.wavedisplay.Waveform;
+import mds.wave.Waveform;
 
 public class TwuSingleSignal
 {

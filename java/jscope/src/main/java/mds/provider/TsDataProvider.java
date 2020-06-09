@@ -5,8 +5,8 @@ import java.io.IOException;
 import javax.swing.JFrame;
 
 import mds.provider.mds.MdsplusParser;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.DataServerItem;
+import mds.wave.DataProvider;
+import mds.wave.DataServerItem;
 
 public class TsDataProvider extends MdsDataProvider
 {

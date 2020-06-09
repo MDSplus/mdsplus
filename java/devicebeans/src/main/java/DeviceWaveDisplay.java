@@ -1,5 +1,6 @@
 import java.awt.*;
-import mds.wavedisplay.*;
+
+import mds.wave.*;
 
 public class DeviceWaveDisplay extends DeviceComponent
 {

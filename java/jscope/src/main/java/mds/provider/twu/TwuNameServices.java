@@ -3,8 +3,8 @@ package mds.provider.twu;
 import java.util.StringTokenizer;
 
 import mds.provider.TwuDataProvider;
-import mds.wavedisplay.DataProvider;
-import mds.wavedisplay.WaveInterface;
+import mds.wave.DataProvider;
+import mds.wave.WaveInterface;
 
 // -----------------------------------------------------------------------------
 public class TwuNameServices

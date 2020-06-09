@@ -6,7 +6,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import mds.connection.UpdateEventListener;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 class MdsWaveInterface
     extends WaveInterface

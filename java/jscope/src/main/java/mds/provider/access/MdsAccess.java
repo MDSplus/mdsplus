@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.StringTokenizer;
 
 import mds.provider.MdsDataProvider;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class MdsAccess implements DataAccess
 {

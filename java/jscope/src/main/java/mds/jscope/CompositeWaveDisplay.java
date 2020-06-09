@@ -13,7 +13,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import mds.provider.access.MdsAccess;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class CompositeWaveDisplay extends JApplet implements WaveContainerListener
 {

@@ -13,7 +13,7 @@ import javax.swing.JOptionPane;
 
 import mds.connection.*;
 import mds.provider.mds.SshTunneling;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class MdsDataProvider implements DataProvider
 {
@@ -1226,7 +1226,7 @@ public class MdsDataProvider implements DataProvider
 
 	// To be overridden by any DataProvider implementation with added dynamic
 	// generation
-	public mds.wavedisplay.AsynchDataSource getAsynchSource()
+	public mds.wave.AsynchDataSource getAsynchSource()
 	{ return null; }
 
 	@Override

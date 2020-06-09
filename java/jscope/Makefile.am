@@ -4,7 +4,7 @@ include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jScope.properties
-java_DATA = jScope.jar WaveDisplay.jar
+java_DATA = jScope.jar
 MINDTERM = $(srcdir)/MindTerm.jar
 EXTRA_DIST = $(MINDTERM)
 DEPENDENCIES = $(MINDTERM) $(MDSOBJECTS_JAR)
@@ -14,25 +14,15 @@ if USE_JARS_DIR
 jScope.jar: @JARS_DIR@/java/jscope/jScope.jar
 	cp $< $@
 
-WaveDisplay.jar: @JARS_DIR@/java/jscope/WaveDisplay.jar
-	cp $< $@
-
 else
 
 jScope.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jScope" >> $(MANIFEST) &&\
-	echo "Class-Path: WaveDisplay.jar mdsobjects.jar" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
-	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) jScope.class -C $(JAVAROOT) mds/jscope
+	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 
-WaveDisplay.jar: $(DEPENDENCIES) classjava.stamp
-	@ echo "Creating JAR: $@ ...";\
-	$(JAR) cf $@ -C $(JAVAROOT) mds/wavedisplay
-
-
-SCOPE_CLS = $(SCOPE_SRC:.java=*.class)
-WAVED_CLS = $(WAVED_SRC:.java=*.class)
 endif
 
 jScope.properties: $(java_resdir)/mds/jscope/jScope.properties
@@ -56,9 +46,10 @@ SOURCE =\
  mds/provider/jet/*.java\
  mds/provider/mds/*.java\
  mds/provider/twu/*.java\
- mds/wavedisplay/*.java\
+ mds/wave/*.java\
  jScope.java
 RESOURCES =\
  mds/jscope/about.jpg\
- mds/jscope/colors1.tbl\
- mds/jscope/jScope.properties
+ mds/jscope/jScope.properties\
+ mds/wave/colors1.tbl
+

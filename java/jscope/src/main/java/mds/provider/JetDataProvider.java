@@ -13,7 +13,7 @@ import javax.swing.*;
 
 import mds.connection.*;
 import mds.provider.jet.*;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 public class JetDataProvider implements DataProvider
 {

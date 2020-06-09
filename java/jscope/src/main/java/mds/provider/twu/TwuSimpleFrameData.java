@@ -16,8 +16,8 @@ import java.util.StringTokenizer;
 
 import mds.connection.ConnectionEvent;
 import mds.provider.TwuDataProvider;
-import mds.wavedisplay.FrameData;
-import mds.wavedisplay.Frames;
+import mds.wave.FrameData;
+import mds.wave.Frames;
 
 public class TwuSimpleFrameData implements FrameData
 {

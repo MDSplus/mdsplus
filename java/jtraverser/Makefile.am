@@ -8,7 +8,7 @@ EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
 java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 java_DATA = jTraverser.jar
-DEPENDENCIES = $(WAVEDISPLAY_JAR) $(MDSOBJECTS_JAR)
+DEPENDENCIES = $(MDSOBJECTS_JAR) $(JSCOPE_JAR)
 
 if USE_JARS_DIR
 
@@ -20,7 +20,7 @@ else
 jTraverser.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
 	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
-	echo "Class-Path: mdsobjects.jar DeviceBeans.jar WaveDisplay.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\
+	echo "Class-Path: mdsobjects.jar DeviceBeans.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
 

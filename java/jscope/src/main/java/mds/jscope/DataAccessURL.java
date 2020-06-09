@@ -5,7 +5,7 @@ import java.util.Vector;
 
 import mds.provider.access.MdsAccess;
 import mds.provider.access.TwuAccess;
-import mds.wavedisplay.*;
+import mds.wave.*;
 
 class DataAccessURL
 {
