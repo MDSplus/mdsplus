@@ -514,8 +514,20 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		font_dialog = new FontSelection(this, "Waveform Font Selection");
 		setup_default = new SetupDefaults(this, "Default Setup", def_values);
 		color_dialog = new ColorDialog(this, "Color Configuration Dialog");
-		final String palette = js_prop.getProperty("jScope.color_palette_file");
-		colorMapDialog = new ColorMapDialog(this, palette == null ? JSCOPE_PALETTE : palette);
+		String palette = js_prop.getProperty("jScope.color_palette_file");
+		if (palette == null)
+		{
+			palette = JSCOPE_PALETTE;
+			try
+			{
+				ColorMapDialog.exportPalette(new File(JSCOPE_PALETTE));
+			}
+			catch (final IOException e1)
+			{
+				e1.printStackTrace();
+			}
+		}
+		colorMapDialog = new ColorMapDialog(this, palette);
 		pub_var_diag = new PubVarDialog(this);
 		getContentPane().setLayout(new BorderLayout());
 		setBackground(Color.lightGray);

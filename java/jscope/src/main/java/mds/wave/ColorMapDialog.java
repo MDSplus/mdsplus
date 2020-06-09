@@ -28,6 +28,7 @@ public class ColorMapDialog extends JDialog
 	Waveform wave = null;
 	String nameColorTables[];
 	byte colorTables[];
+	private static String lastMap = null;
 
 	public class ColorPalette extends JPanel
 	{
@@ -325,20 +326,37 @@ public class ColorMapDialog extends JDialog
 			colorMapListener.elementAt(i).actionPerformed(avtionEvent);
 	}
 
+	private static final InputStream getResourcePalette()
+	{ return ColorMapDialog.class.getClassLoader().getResourceAsStream("mds/wave/colors.tbl"); }
+
+	public static void exportPalette(final File file) throws IOException
+	{
+		try (final InputStream is = getResourcePalette())
+		{
+			try (final OutputStream os = new FileOutputStream(file))
+			{
+				final byte[] buffer = new byte[1024];
+				int length;
+				while ((length = is.read(buffer)) > 0)
+					os.write(buffer, 0, length);
+			}
+		}
+	}
+
 	public void readColorPalette(String cmap)
 	{
+		if (cmap == null)
+			cmap = lastMap;
 		DataInputStream dis = null;
 		try
 		{
 			try
 			{
-				final FileInputStream bin = new FileInputStream(new File(cmap));
-				dis = new DataInputStream(bin);
+				dis = new DataInputStream(new FileInputStream(new File(cmap)));
 			}
 			catch (final IOException exc)
 			{
-				final InputStream pis = getClass().getClassLoader().getResourceAsStream("mds/wavedisplay/colors.tbl");
-				dis = new DataInputStream(pis);
+				dis = new DataInputStream(getResourcePalette());
 			}
 			final byte nColorTables = dis.readByte();
 			nameColorTables = new String[nColorTables];
@@ -350,6 +368,7 @@ public class ColorMapDialog extends JDialog
 				dis.readFully(name);
 				nameColorTables[i] = (new String(name)).trim();
 			}
+			lastMap = cmap;
 			MdsConnection.tryClose(dis);
 		}
 		catch (final Exception exc)
