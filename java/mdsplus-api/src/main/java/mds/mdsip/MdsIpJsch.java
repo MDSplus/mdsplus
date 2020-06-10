@@ -1,7 +1,8 @@
 package mds.mdsip;
 
 import java.awt.Window;
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.ConnectException;
 import java.util.HashMap;
 import java.util.Vector;
@@ -327,8 +328,6 @@ public final class MdsIpJsch extends MdsIpIOStream
 	}
 	private final Channel channel;
 	private final Vector<Session> sessions;
-	protected final InputStream dis;
-	protected final OutputStream dos;
 
 	public MdsIpJsch(String user, String host, int port) throws IOException
 	{

@@ -1,14 +1,12 @@
 package mds.mdsip;
 
-import java.io.*;
+import java.io.IOException;
 
 import mds.mdsip.MdsIp.MdsIpIOStream;
 
 public class MdsIpTunnel extends MdsIpIOStream
 {
 	private final Process process;
-	protected final InputStream dis;
-	protected final OutputStream dos;
 
 	public MdsIpTunnel() throws IOException
 	{

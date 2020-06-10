@@ -261,6 +261,7 @@ public class MdsIp extends Mds
 
 	public final static class Provider
 	{
+		// Must ensure host field is never null
 		private static final String DEFAULT_LOCAL = "local";
 		private static final int DEFAULT_PORT = 8000;
 		private static final String DEFAULT_USER = System.getProperty("user.name");
@@ -279,29 +280,29 @@ public class MdsIp extends Mds
 
 		public Provider(String provider, final boolean use_ssh)
 		{
-			if (provider == null || provider.length() == 0)
+			if (provider == null || provider.isEmpty())
 			{
-				this.user = Provider.DEFAULT_USER;
-				this.host = Provider.DEFAULT_LOCAL;
+				this.use_local = true;
+				this.user = null;
+				this.host = null;
 				this.port = 0;
 				this.use_ssh = false;
+			}
+			else if (provider.toLowerCase().startsWith(PREFIX_LOCAL))
+			{
 				this.use_local = true;
+				this.user = null;
+				this.host = provider.substring(PREFIX_LOCAL.length());
+				this.port = 0;
+				this.use_ssh = false;
 			}
 			else
 			{
-				this.use_local = provider.toLowerCase().startsWith(PREFIX_LOCAL);
-				if (this.use_local)
-				{
-					provider = provider.substring(8);
-					this.use_ssh = false;
-				}
-				else
-				{
-					final boolean sshstr = provider.toLowerCase().startsWith(PREFIX_SSH);
-					if (sshstr)
-						provider = provider.substring(6);
-					this.use_ssh = sshstr || use_ssh;
-				}
+				this.use_local = false;
+				final boolean sshstr = provider.toLowerCase().startsWith(PREFIX_SSH);
+				if (sshstr)
+					provider = provider.substring(PREFIX_SSH.length());
+				this.use_ssh = sshstr || use_ssh;
 				final int at = provider.indexOf("@");
 				final int cn = provider.indexOf(":");
 				this.user = at < 0 ? null : provider.substring(0, at);
@@ -323,35 +324,38 @@ public class MdsIp extends Mds
 
 		public Provider(String host, final int port, final String user, final boolean use_ssh)
 		{
-			this.user = user;
 			if (host == null)
 			{
-				this.use_ssh = false;
 				this.use_local = true;
+				this.user = null;
+				this.host = null;
+				this.port = 0;
+				this.use_ssh = false;
 			}
 			else
 			{
+				this.user = user;
 				host = host.toLowerCase();
 				this.use_local = host.startsWith(PREFIX_LOCAL);
 				if (this.use_local)
 				{
 					this.use_ssh = false;
-					host = host.substring(8);
+					host = host.substring(PREFIX_LOCAL.length());
 				}
 				else
 				{
 					final boolean sshstr = host.startsWith(PREFIX_SSH);
 					if (sshstr)
 					{
-						host = host.substring(6);
+						host = host.substring(PREFIX_SSH.length());
 						this.use_ssh = true;
 					}
 					else
 						this.use_ssh = use_ssh;
 				}
+				this.host = host;
+				this.port = port;
 			}
-			this.host = host;
-			this.port = port;
 		}
 
 		public Provider()
@@ -367,31 +371,35 @@ public class MdsIp extends Mds
 			if (obj == null || !(obj instanceof Provider))
 				return false;
 			final Provider provider = (Provider) obj;
-			return this.host.equals(provider.host) && this.port == provider.port && this.user.equals(provider.user)
-					&& this.use_ssh == provider.use_ssh;
+			return use_ssh == provider.use_ssh && use_local == provider.use_local
+					&& this.getHost().equals(provider.getHost()) && this.getPort() == provider.getPort()
+					&& this.getUser().equals(provider.getUser());
 		}
 
 		public final MdsIp getConnection()
 		{ return new MdsIp(this); }
 
 		public int getPort()
-		{ return this.port != 0 ? this.port : (this.use_ssh ? 0 : Provider.DEFAULT_PORT); }
+		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
+
+		public String getHost()
+		{ return host == null || host.isEmpty() ? DEFAULT_LOCAL : host; }
 
 		public final String getUser()
-		{ return this.user == null ? Provider.DEFAULT_USER : this.user; }
+		{ return user == null || user.isEmpty() ? Provider.DEFAULT_USER : user; }
 
 		@Override
 		public final String toString()
 		{
-			if (this.use_local)
-				return this.host;
 			final StringBuilder sb = new StringBuilder();
-			if (this.use_ssh)
+			if (use_local)
+				sb.append(PREFIX_LOCAL);
+			else if (use_ssh)
 				sb.append(PREFIX_SSH);
-			if (this.user != null)
-				sb.append(this.user).append('@');
-			sb.append(this.host);
-			if (this.port != 0)
+			if (user != null)
+				sb.append(user).append('@');
+			sb.append(getHost());
+			if (port != 0)
 				sb.append(':').append(this.port);
 			return sb.toString();
 		}
@@ -901,9 +909,7 @@ public class MdsIp extends Mds
 	public final String toString()
 	{
 		if (this.provider.use_local)
-		{
-			return provider.host;
-		}
+			return this.provider.getHost();
 		final String provider_str = this.provider.toString();
 		return new StringBuilder(provider_str.length() + 12).append("MdsIp(").append(provider_str).append(")")
 				.toString();
