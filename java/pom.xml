@@ -226,5 +226,6 @@
 		<module>mdsplus-api</module>
 		<module>jtraverser2</module>
 		<module>mdsobjects</module>
+		<module>jdispatcher</module>
 	</modules>
 </project>
