@@ -228,5 +228,6 @@
 		<module>jdispatcher</module>
 		<module>jtraverser</module>
 		<module>jtraverser2</module>
+		<module>jscope</module>
 	</modules>
 </project>
