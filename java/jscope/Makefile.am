@@ -5,9 +5,7 @@ java_srcdir = $(srcdir)/src/main/java
 java_resdir = $(srcdir)/src/main/resources
 dist_java_DATA = jScope.properties
 java_DATA = jScope.jar
-MINDTERM = $(srcdir)/MindTerm.jar
-EXTRA_DIST = $(MINDTERM)
-DEPENDENCIES = $(MINDTERM) $(MDSOBJECTS_JAR)
+DEPENDENCIES = $(JSCH) $(MDSOBJECTS_JAR)
 
 if USE_JARS_DIR
 
@@ -21,7 +19,8 @@ jScope.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	echo "Main-Class: jScope" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
-	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
+	cp -f $(JSCH) $@ &&\
+	$(JAR) umf $(MANIFEST) $@ -C $(JAVAROOT) .
 
 endif
 
@@ -32,7 +31,7 @@ if MINGW
 bin_SCRIPTS += jScope.bat
 else
 bin_SCRIPTS += jScope
-EXTRA_DIST += jScope.template
+EXTRA_DIST = jScope.template
 jScope: $(srcdir)/jScope.template
 	cp $< $@
 endif

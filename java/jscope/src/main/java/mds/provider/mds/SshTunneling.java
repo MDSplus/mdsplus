@@ -1,204 +1,292 @@
 package mds.provider.mds;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Window;
+import java.io.File;
 import java.io.IOException;
-import java.net.Socket;
+import java.util.HashMap;
 
 import javax.swing.*;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
-import com.mindbright.jca.security.SecureRandom;
-import com.mindbright.ssh2.*;
-import com.mindbright.util.RandomSeed;
-import com.mindbright.util.SecureRandomAndPad;
+import com.jcraft.jsch.*;
+import com.jcraft.jsch.ConfigRepository.Config;
 
-import mds.wave.DataProvider;
-
-public class SshTunneling extends Thread
+public final class SshTunneling implements AutoCloseable
 {
-	String server;
-	String remotePort;
-	String localPort;
-	SSH2SimpleClient client;
-	SSH2Listener sshListener;
-	SSH2Transport transport;
-	DataProvider da;
-	JDialog inquiry_dialog;
-	JTextField user_text;
-	JPasswordField passwd_text;
-	int login_status;
-	String username;
-	String passwd;
-	String error_string = null;
-	JFrame f;
+	private static final UserInfo userinfo;
+	private static final File dotssh = new File(System.getProperty("user.home"), ".ssh");
+	static private JSch jsch;
 
-	public static SecureRandomAndPad createSecureRandom()
+	private static final ConfigRepository getConfigRepository()
 	{
-		/*
-		 * NOTE, this is how it should be done if you want good randomness, however good
-		 * randomness takes time so we settle with just some low-entropy garbage here.
-		 *
-		 * RandomSeed seed = new RandomSeed("/dev/random", "/dev/urandom"); byte[] s =
-		 * seed.getBytesBlocking(20); return new SecureRandomAndPad(new
-		 * SecureRandom(s));
-		 *
-		 */
-		final byte[] seed = RandomSeed.getSystemStateHash();
-		return new SecureRandomAndPad(new SecureRandom(seed));
+		final File config = new File(dotssh, "config");
+		if (config.exists())
+			try
+			{
+				return OpenSSHConfig.parseFile(config.getAbsolutePath());
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+		return OpenSSHConfig.nullConfig;
 	}
 
-	boolean CheckPasswd(String server, String username, String passwd)
+	static
 	{
+		JSch _jsch;
 		try
 		{
-			final Socket serverSocket = new Socket(server, 22);
-			transport = new SSH2Transport(serverSocket, createSecureRandom());
-			client = new SSH2SimpleClient(transport, username, passwd);
-			return true;
-		}
-		catch (final Exception exc)
-		{
-			error_string = exc.getMessage();
-			return false;
-		}
-	}
-
-	private int credentialsDialog(JFrame f, String user)
-	{
-		login_status = DataProvider.LOGIN_OK;
-		inquiry_dialog = new JDialog(f, "SSH login on node : " + server, true);
-		inquiry_dialog.getContentPane().setLayout(new BorderLayout());
-		JPanel p = new JPanel();
-		p.add(new JLabel("Username: "));
-		user_text = new JTextField(15);
-		p.add(user_text);
-		if (user != null)
-			user_text.setText(user);
-		inquiry_dialog.getContentPane().add(p, "North");
-		p = new JPanel();
-		p.add(new JLabel("Password: "));
-		passwd_text = new JPasswordField(15);
-		passwd_text.setEchoChar('*');
-		p.add(passwd_text);
-		inquiry_dialog.getContentPane().add(p, "Center");
-		p = new JPanel();
-		final JButton ok_b = new JButton("Ok");
-		ok_b.setDefaultCapable(true);
-		ok_b.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				username = user_text.getText();
-				passwd = new String(passwd_text.getPassword());
-				if (!CheckPasswd(server, username, passwd))
+			_jsch = new JSch();
+			final File known_hosts = new File(dotssh, "known_hosts");
+			final File id_rsa = new File(dotssh, "id_rsa");
+			if (!dotssh.exists())
+				dotssh.mkdirs();
+			if (known_hosts.exists())
+				try
 				{
-					JOptionPane.showMessageDialog(inquiry_dialog,
-							"Login ERROR : " + ((error_string != null) ? error_string : "no further information"),
-							"alert", JOptionPane.ERROR_MESSAGE);
-					login_status = DataProvider.LOGIN_ERROR;
+					_jsch.setKnownHosts(known_hosts.getAbsolutePath());
 				}
-				else
+				catch (final JSchException e)
 				{
-					inquiry_dialog.setVisible(false);
-					login_status = DataProvider.LOGIN_OK;
+					e.printStackTrace();
 				}
-			}
-		});
-		p.add(ok_b);
-		final JButton clear_b = new JButton("Clear");
-		clear_b.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				user_text.setText("");
-				passwd_text.setText("");
-			}
-		});
-		p.add(clear_b);
-		final JButton cancel_b = new JButton("Cancel");
-		cancel_b.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				login_status = DataProvider.LOGIN_CANCEL;
-				inquiry_dialog.setVisible(false);
-			}
-		});
-		p.add(cancel_b);
-		inquiry_dialog.getContentPane().add(p, "South");
-		inquiry_dialog.pack();
-		if (f != null)
-		{
-			final Rectangle r = f.getBounds();
-			inquiry_dialog.setLocation(r.x + r.width / 2 - inquiry_dialog.getBounds().width / 2,
-					r.y + r.height / 2 - inquiry_dialog.getBounds().height / 2);
-		}
-		else
-		{
-			final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-			inquiry_dialog.setLocation(screenSize.width / 2 - inquiry_dialog.getSize().width / 2,
-					screenSize.height / 2 - inquiry_dialog.getSize().height / 2);
-		}
-		inquiry_dialog.setVisible(true);
-		return login_status;
-	}
-
-	public SshTunneling(JFrame f, DataProvider da, String ip, String remotePort, String user, String localPort)
-			throws IOException
-	{
-		this.da = da;
-		this.server = ip;
-		this.remotePort = remotePort;
-		this.localPort = localPort;
-		this.f = f;
-		final int status = credentialsDialog(f, user);
-		if (status != DataProvider.LOGIN_OK)
-			throw (new IOException("Login not successful"));
-	}
-
-	public void Dispose()
-	{
-		/*
-		 * Disconnect the transport layer gracefully
-		 */
-		transport.normalDisconnect("User disconnects");
-		sshListener.stop();
-	}
-
-	@Override
-	protected void finalize()
-	{}
-
-	@Override
-	public void run()
-	{
-		try
-		{
-			final SSH2Connection con = client.getConnection();
-			/*
-			 * System.out.println("127.0.0.1:" + Integer.parseInt(localPort)+
-			 * " "+server+":"+ Integer.parseInt(remotePort));
-			 */
-			sshListener = con.newLocalForward("127.0.0.1", Integer.parseInt(localPort), server,
-					Integer.parseInt(remotePort));
-			con.setEventHandler(new SSH2ConnectionEventAdapter()
-			{
-				@Override
-				public void remoteSessionConnect(SSH2Connection connection, String remoteAddr, int remotePort,
-						SSH2Channel channel)
+			else
+				try
 				{
-					System.out.println("OK " + remoteAddr + " " + remotePort);
+					known_hosts.createNewFile();
 				}
-			});
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			if (id_rsa.exists())
+				try
+				{
+					_jsch.addIdentity(id_rsa.getAbsolutePath());
+				}
+				catch (final JSchException e)
+				{
+					e.printStackTrace();
+				}
 		}
 		catch (final Exception e)
 		{
-			JOptionPane.showMessageDialog(f, "Exception starting ssh port forward process! " + e, "alert",
-					JOptionPane.ERROR_MESSAGE);
+			System.err.println("Error loading JSch, no ssh support!");
+			_jsch = null;
 		}
+		jsch = _jsch;
+		UserInfo _userinfo = null;
+		try
+		{
+			_userinfo = new UserInfo();
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+		userinfo = _userinfo;
+	}
+
+	public static final class UserInfo implements com.jcraft.jsch.UserInfo, UIKeyboardInteractive
+	{
+		static HashMap<String, String[]> keyboard_ans = new HashMap<String, String[]>();
+		static HashMap<String, UserInfo> keyboard_this = new HashMap<String, UserInfo>();
+		private final JTextField passphraseField = new JPasswordField(20);
+		private final JTextField passwordField = new JPasswordField(20);
+		private final AncestorListener RequestFocusListener = new AncestorListener()
+		{
+			@Override
+			public void ancestorAdded(final AncestorEvent e)
+			{
+				final JComponent component = ((JComponent) e.getSource());
+				component.grabFocus();
+				final Window win = (Window) component.getTopLevelAncestor();
+				win.setAlwaysOnTop(true);
+			}
+
+			@Override
+			public void ancestorMoved(final AncestorEvent arg0)
+			{}
+
+			@Override
+			public void ancestorRemoved(final AncestorEvent arg0)
+			{}
+		};
+		public boolean tried_pw = false;
+		{
+			this.passphraseField.addAncestorListener(this.RequestFocusListener);
+			this.passwordField.addAncestorListener(this.RequestFocusListener);
+		}
+
+		@Override
+		public final String getPassphrase()
+		{ return this.passphraseField.getText(); }
+
+		@Override
+		public final String getPassword()
+		{ return this.passwordField.getText(); }
+
+		@Override
+		public String[] promptKeyboardInteractive(final String destination, final String name, final String instruction,
+				final String[] prompt, final boolean[] echo)
+		{
+			final UserInfo old = UserInfo.keyboard_this.putIfAbsent(destination, this);
+			if (old != null && !this.equals(old))
+				return UserInfo.keyboard_ans.get(destination).clone();
+			final Object[] ob = new Object[prompt.length * 2 + 2];
+			ob[0] = name;
+			ob[1] = instruction;
+			for (int i = 0; i < prompt.length; i++)
+			{
+				ob[i * 2 + 2] = prompt[i];
+				ob[i * 2 + 3] = echo[i] ? new JTextField(20) : new JPasswordField(20);
+			}
+			if (prompt.length > 0)
+				((JTextField) ob[3]).addAncestorListener(this.RequestFocusListener);
+			final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, destination,
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			if (result != JOptionPane.OK_OPTION)
+				return null;
+			final String[] ans = new String[prompt.length];
+			for (int i = 0; i < prompt.length; i++)
+				ans[i] = ((JTextField) ob[i * 2 + 3]).getText();
+			UserInfo.keyboard_ans.put(destination, ans.clone());
+			UserInfo.keyboard_this.put(destination, this);
+			return ans;
+		}
+
+		@Override
+		public final boolean promptPassphrase(final String message)
+		{
+			if (!this.passphraseField.getText().isEmpty() && !this.tried_pw)
+			{
+				this.tried_pw = true;
+				return true;
+			}
+			final Object[] ob =
+			{ message, this.passphraseField };
+			final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, message,
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			if (result == JOptionPane.OK_OPTION)
+				return true;
+			this.passphraseField.setText(null);
+			return false;
+		}
+
+		@Override
+		public final boolean promptPassword(final String message)
+		{
+			if (!this.passwordField.getText().isEmpty() && !this.tried_pw)
+			{
+				this.tried_pw = true;
+				return true;
+			}
+			final Object[] ob =
+			{ message, this.passwordField };
+			final int result = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), ob, message,
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+			if (result == JOptionPane.OK_OPTION)
+				return true;
+			this.passwordField.setText(null);
+			return false;
+		}
+
+		@Override
+		public final boolean promptYesNo(final String str)
+		{
+			final Object[] options =
+			{ "yes", "no" };
+			final int foo = JOptionPane.showOptionDialog(JOptionPane.getRootFrame(), str, "Warning",
+					JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+			return foo == 0;
+		}
+
+		@Override
+		public final void showMessage(final String message)
+		{
+			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), message);
+		}
+	}
+
+	final Session session;
+	final SshTunneling proxy;
+	final String proxyjump;
+	final String user;
+	final String hostname;
+	final Config config;
+	final int port;
+
+	static private SshTunneling parse(final String serverstring, ConfigRepository cr) throws JSchException
+	{
+		final int at = serverstring.indexOf("@");
+		final int cn = serverstring.indexOf(":");
+		final String user = at < 0 ? null : serverstring.substring(0, at);
+		final String host = cn < 0 ? serverstring.substring(at + 1).toLowerCase()
+				: serverstring.substring(at + 1, cn).toLowerCase();
+		final int port = cn < 0 ? 0 : Integer.parseInt(serverstring.substring(cn + 1));
+		return new SshTunneling(user, host, port, cr);
+	}
+
+	private SshTunneling(final String user, final String host, final int port, final ConfigRepository cr)
+			throws JSchException
+	{
+		config = cr.getConfig(host);
+		final String hostname = config.getHostname();
+		this.hostname = hostname != null ? hostname : host;
+		if (user != null)
+			this.user = user;
+		else
+		{
+			final String cuser = config.getUser();
+			this.user = cuser != null ? cuser : System.getProperty("user.name");
+		}
+		if (port != 0)
+			this.port = port;
+		else
+		{
+			final int pport = config.getPort();
+			this.port = pport > 0 ? pport : 22;
+		}
+		this.proxyjump = config.getValue("ProxyJump");
+		this.proxy = this.proxyjump == null ? null : parse(this.proxyjump, cr);
+		session = this.connect(10_000); // timeout in ms
+	}
+
+	public SshTunneling(final String user, final String host, final int lport, final int rport) throws JSchException
+	{
+		this(user, host, 22, getConfigRepository());
+		session.setPortForwardingL(lport, "127.0.0.1", rport);
+	}
+
+	private Session connect(int timeout) throws JSchException
+	{
+		Session session;
+		if (this.proxy != null)
+		{
+			session = this.proxy.connect(timeout);
+			final int pport = session.setPortForwardingL(0, this.hostname, this.port);
+			session = jsch.getSession(this.user, "127.0.0.1", pport);
+		}
+		else
+		{
+			session = jsch.getSession(this.user, this.hostname, 22);
+		}
+		final String strictHostKeyChecking = config.getValue("StrictHostKeyChecking");
+		if (strictHostKeyChecking != null)
+			session.setConfig("StrictHostKeyChecking", strictHostKeyChecking);
+		session.setUserInfo(userinfo);
+		userinfo.tried_pw = false;
+		session.connect(timeout);
+		return session;
+	}
+
+	@Override
+	public void close()
+	{
+		session.disconnect();
+		if (proxy != null)
+			this.proxy.close();
 	}
 }
