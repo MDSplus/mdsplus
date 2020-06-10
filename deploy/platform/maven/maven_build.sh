@@ -43,6 +43,8 @@ then
  fi
  MVNGOAL="$MVNGOAL package"
 else
+ RELEASEDIR=$WORKSPACE/tests
+ mkdir -p $RELEASEDIR
  MVNGOAL="$MVNGOAL test"
 fi
 
