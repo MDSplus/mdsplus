@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 
 import mds.connection.ConnectionListener;
 import mds.connection.UpdateEventListener;
+import mds.provider.*;
 
 public class DataServerItem
 {
@@ -113,9 +114,11 @@ public class DataServerItem
 	private String tunnel_port;
 	public static final DataProvider NotConnected = new NotConnectedDataProvider();
 	public static String knownProviders[] =
-	{ "MdsDataProvider", "MdsDataProviderUdt", "MdsDataProviderAsync", "MdsDataProviderStreaming", "MdsDataProviderSsh",
-			"MdsDataProviderLocal", "AsciiDataProvider", "AsdexDataProvider", "FtuDataProvider", "JetDataProvider",
-			"JetMdsDataProvider", "JetDataProvider", "TsDataProvider", "TwuDataProvider", "UniversalDataProvider" };
+	{ MdsDataProvider.class.getName(), MdsDataProviderUdt.class.getName(), MdsDataProviderAsync.class.getName(),
+			MdsDataProviderStream.class.getName(), MdsDataProviderSsh.class.getName(),
+			MdsDataProviderLocal.class.getName(), AsciiDataProvider.class.getName(), AsdexDataProvider.class.getName(),
+			FtuDataProvider.class.getName(), JetDataProvider.class.getName(), TsDataProvider.class.getName(),
+			TwuDataProvider.class.getName(), UniversalDataProvider.class.getName() };
 
 	public boolean isNotConnected()
 	{ return this.class_name == null; }

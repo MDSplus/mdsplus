@@ -1475,8 +1475,8 @@ public class MdsDataProvider implements DataProvider
 		}
 	}
 
-	public void resetPrevious() // Will be used by subclass MdsSreaminDataProvider to close previous connections
-	{}
+	protected void resetPrevious()
+	{}// Used by subclass MdsDataProviderStream to close previous connections
 
 	@Override
 	public synchronized String GetString(String _in, int row, int col, int index) throws IOException

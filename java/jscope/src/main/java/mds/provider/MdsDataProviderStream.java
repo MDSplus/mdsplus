@@ -14,7 +14,7 @@ import mds.wave.WaveDataListener;
  *
  * @author manduchi
  */
-public class MdsDataProviderStreaming extends MdsDataProvider
+public class MdsDataProviderStream extends MdsDataProvider
 {
 	final private Vector<Connection> activeConnections = new Vector<Connection>();
 	// Inner class MdsStreamingDataProvider handles data streaming in jScope
