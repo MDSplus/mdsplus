@@ -14,8 +14,8 @@
 		MDSplus jDispatcherIp, jServer, and jDispatchMonitor apps for managing shots.
 	</description>
 	<build>
-		<sourceDirectory>${sourceDirectory}/jscope/src/main/java</sourceDirectory>
-		<testSourceDirectory>${sourceDirectory}/jscope/src/test/java</testSourceDirectory>
+		<sourceDirectory>${sourceDirectory}/jdispatcher/src/main/java</sourceDirectory>
+		<testSourceDirectory>${sourceDirectory}/jdispatcher/src/test/java</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
