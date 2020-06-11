@@ -133,11 +133,11 @@ class ACQ2106_WRTD(MDSplus.Device):
         
         else:
             print('Message does not match either of the WRTTs available')
+            self.running.on = False
 
         uut.cC.WRTD_ID = message
         time.sleep(1)
 
-        #wrtdtx = '1 --tx_id=' + message
         wrtdtx = message
         uut.s0.wrtd_tx_immediate = wrtdtx
     

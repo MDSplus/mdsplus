@@ -180,11 +180,11 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
 
                 clock_period = 1./self.freq.data()
 
-                # self.wr_wrtd_t0 is the reference to the node in the WRTD device.
-                # self.trig_time  is the reference to the node in WRTD device.
+                # self.wr_wrtd_t0 is the reference to the node in the WRTD device. (secs)
+                # self.trig_time  is the reference to the node in WRTD device. (TAI time)
 
-                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)
-                mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
+                mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)
+                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
                 mdsrange  = MDSplus.Range(None, None, clock_period)
                 dim       = MDSplus.Dimension(mdswindow, mdsrange)
 
