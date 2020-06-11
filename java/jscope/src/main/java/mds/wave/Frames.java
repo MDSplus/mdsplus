@@ -119,7 +119,7 @@ public class Frames extends Canvas
 	{
 	    this.fd = fd;
 	    try {
-	        numFrames = fd.GetNumFrames();
+	        numFrames = fd.getNumFrames();
 	    }catch(Exception exc){numFrames = 0;}
 	}
         
@@ -140,10 +140,10 @@ public class Frames extends Canvas
 	void loadFrame(int idx) throws Exception
 	{
             ColorModel colorModel;
-	    frameType = fd.GetFrameType();
-	    frameDim = fd.GetFrameDimension();
-	    numFrames = fd.GetNumFrames();
-	    byte []buf = fd.GetFrameAt(idx);
+	    frameType = fd.getFrameType();
+	    frameDim = fd.getFrameDimension();
+	    numFrames = fd.getNumFrames();
+	    byte []buf = fd.getFrameAt(idx);
 	    if(buf == null)
 	        return;
 	    Image img;
@@ -630,7 +630,7 @@ public class Frames extends Canvas
     {
 	cache.setFrameData(fd);
 	curr_frame_idx = 0;
-	float t[] = fd.GetFrameTimes();
+	float t[] = fd.getFrameTimes();
 	for(int i = 0; i < t.length; i++)
             frame_time.addElement(new Float(t[i]));
     }

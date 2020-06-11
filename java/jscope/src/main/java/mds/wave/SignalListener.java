@@ -4,11 +4,7 @@
  */
 package mds.wave;
 
-/**
- *
- * @author manduchi
- */
 public interface SignalListener
 {
-    void signalUpdated(boolean changeLimits);
+	void signalUpdated(boolean changeLimits);
 }

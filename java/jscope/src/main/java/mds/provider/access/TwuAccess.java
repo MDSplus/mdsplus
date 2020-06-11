@@ -118,7 +118,7 @@ public class TwuAccess implements DataAccess
 	{
 		if (tw == null)
 			return ("Cannot create TwuDataProvider");
-		return tw.ErrorString();
+		return tw.getError();
 	}
 
 	@Override

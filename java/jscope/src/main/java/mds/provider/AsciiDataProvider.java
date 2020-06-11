@@ -15,7 +15,7 @@ public class AsciiDataProvider implements DataProvider
 	public static void main(String args[])
 	{
 		final AsciiDataProvider p = new AsciiDataProvider();
-		p.GetWaveData("c:\\test.txt", 0, 0, 0);
+		p.getWaveData("c:\\test.txt", 0, 0, 0);
 	}
 
 	private boolean xPropertiesFile = false;
@@ -308,45 +308,43 @@ public class AsciiDataProvider implements DataProvider
 	}
 
 	@Override
-	public WaveData GetWaveData(String in, int row, int col, int index)
+	public WaveData getWaveData(String in, int row, int col, int index)
 	{
 		return new SimpleWaveData(in);
 	}
 
 	@Override
-	public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
+	public WaveData getWaveData(String in_y, String in_x, int row, int col, int index)
 	{
 		return new SimpleWaveData(in_y, in_x);
 	}
 
 	@Override
-	public void Dispose()
+	public void close()
 	{}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
 	}
 
 	@Override
-	public void SetArgument(String arg)
+	public void setArgument(String arg)
 	{}
 
 	@Override
-	public boolean SupportsTunneling()
+	public boolean supportsTunneling()
 	{
 		return false;
 	}
 
 	@Override
-	public void SetEnvironment(String exp)
-	{
-		error = null;
-	}
+	public void setEnvironment(String exp)
+	{ error = null; }
 
 	@Override
-	public void Update(String exp, long s)
+	public void update(String exp, long s)
 	{
 		error = null;
 		path_exp = exp;
@@ -354,21 +352,21 @@ public class AsciiDataProvider implements DataProvider
 	}
 
 	@Override
-	public String GetString(String in, int row, int col, int index)
+	public String getString(String in, int row, int col, int index)
 	{
 		error = null;
 		return new String(in);
 	}
 
 	@Override
-	public double GetFloat(String in, int row, int col, int index)
+	public double getFloat(String in, int row, int col, int index)
 	{
 		error = null;
 		return Double.parseDouble(in);
 	}
 
 	@Override
-	public long[] GetShots(String in, String experiment) throws IOException
+	public long[] getShots(String in, String experiment) throws IOException
 	{
 		error = null;
 		long[] result;
@@ -431,29 +429,27 @@ public class AsciiDataProvider implements DataProvider
 	}
 
 	@Override
-	public String ErrorString()
-	{
-		return error;
-	}
+	public String getError()
+	{ return error; }
 
 	@Override
-	public void AddUpdateEventListener(UpdateEventListener l, String event)
+	public void addUpdateEventListener(UpdateEventListener l, String event)
 	{}
 
 	@Override
-	public void RemoveUpdateEventListener(UpdateEventListener l, String event)
+	public void removeUpdateEventListener(UpdateEventListener l, String event)
 	{}
 
 	@Override
-	public void AddConnectionListener(ConnectionListener l)
+	public void addConnectionListener(ConnectionListener l)
 	{}
 
 	@Override
-	public void RemoveConnectionListener(ConnectionListener l)
+	public void removeConnectionListener(ConnectionListener l)
 	{}
 
 	@Override
-	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		throw (new IOException("Frames visualization on DemoDataProvider not implemented"));
 	}

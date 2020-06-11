@@ -20,8 +20,73 @@ import java.io.IOException;
  * DataProvider (method getDataProvider), and use this implementation directly
  * to retrieve signals and frame sequences for that experiment and shot.
  */
-public interface DataAccess
+public interface DataAccess extends AutoCloseable
 {
+	/**
+	 * Releases all allocated resources.
+	 */
+	@Override
+	public void close();
+
+	/**
+	 * Returns the DataProvider implementation carrying out data access for the
+	 * experiment and shot specified in the URL passed to method setProvider.
+	 *
+	 * @return The DataProvider implementation.
+	 */
+	DataProvider getDataProvider();
+
+	/**
+	 * Last error message
+	 *
+	 * @return The last error message string. If no errors returns null.
+	 */
+	String getError();
+
+	/**
+	 * Return the experiment name of the last accessed signal
+	 *
+	 * @return The experiment name
+	 */
+	String getExperiment();
+
+	/**
+	 * Retrieves the sequence of frames (specified by an instance of FrameData)
+	 * specified by the passed URL. See the specification of FrameData interface for
+	 * details.
+	 *
+	 * @param url The URL of the frame sequence
+	 * @return The frame sequence
+	 * @exception java.io.IOException
+	 */
+	FrameData getFrameData(String url) throws IOException;
+
+	/**
+	 * Return the shot number of the last accessed signal
+	 *
+	 * @return The shot number specified as a string
+	 */
+	String getShot();
+
+	/**
+	 * Retrieve the signal specified by the URL as a whole. Its usual implementation
+	 * is based on methods getX() and getY() as follows:
+	 *
+	 * Signal getSignal(String url) { return new Signal(getX(url), getY(url)); }
+	 *
+	 * @param url The signal URL
+	 * @return The signal specified by the URL
+	 * @exception java.io.IOException
+	 */
+	Signal getSignal(String url) throws IOException;
+
+	/**
+	 * Returns the name of the last accessed signal.
+	 *
+	 * @return The anme of the last accessed signal
+	 */
+	String getSignalName();
+
 	/**
 	 * Retrieve the X axis of the signal specified by the URL.
 	 *
@@ -41,74 +106,14 @@ public interface DataAccess
 	float[] getY(String url) throws IOException;
 
 	/**
-	 * Retrieve the signal specified by the URL as a whole. Its usual implementation
-	 * is based on methods getX() and getY() as follows:
+	 * Used to communicate a password for data access autentication. If no
+	 * authentication mechanism is defined in the DataAccess implementation, the
+	 * method is void. This method is called by the WaveDisplay applet when the HTML
+	 * paramenter AUTENTICATION is defined.
 	 *
-	 * Signal getSignal(String url) { return new Signal(getX(url), getY(url)); }
-	 *
-	 * @param url The signal URL
-	 * @return The signal specified by the URL
-	 * @exception java.io.IOException
+	 * @param encoded_credentials The Password, expressed as a string.
 	 */
-	Signal getSignal(String url) throws IOException;
-
-	/**
-	 * Retrieves the sequence of frames (specified by an instance of FrameData)
-	 * specified by the passed URL. See the specification of FrameData interface for
-	 * details.
-	 *
-	 * @param url The URL of the frame sequence
-	 * @return The frame sequence
-	 * @exception java.io.IOException
-	 */
-	FrameData getFrameData(String url) throws IOException;
-
-	/**
-	 * Test if the specified protocol is supported. It is used by WaveDisplay to
-	 * find out which DataAccess implementation (if any) is able to manage the
-	 * specified protocol.
-	 *
-	 * @param url the signal URL. The protocol is specified in the first patrt of
-	 *            the URL.
-	 * @return True if the protocol is supported, false otherwise.
-	 */
-	boolean supports(String url);
-
-	/**
-	 * Last error message
-	 *
-	 * @return The last error message string. If no errors returns null.
-	 */
-	String getError();
-
-	/**
-	 * Returns the name of the last accessed signal.
-	 *
-	 * @return The anme of the last accessed signal
-	 */
-	String getSignalName();
-
-	/**
-	 * Return the shot number of the last accessed signal
-	 *
-	 * @return The shot number specified as a string
-	 */
-	String getShot();
-
-	/**
-	 * Return the experiment name of the last accessed signal
-	 *
-	 * @return The experiment name
-	 */
-	String getExperiment();
-
-	/**
-	 * Returns the DataProvider implementation carrying out data access for the
-	 * experiment and shot specified in the URL passed to method setProvider.
-	 *
-	 * @return The DataProvider implementation.
-	 */
-	DataProvider getDataProvider();
+	void setPassword(String encoded_credentials);
 
 	/**
 	 * Specifies experiment name and shot by means of an URL. The DataAccess
@@ -120,17 +125,13 @@ public interface DataAccess
 	public void setProvider(String url) throws IOException;
 
 	/**
-	 * Used to communicate a password for data access autentication. If no
-	 * authentication mechanism is defined in the DataAccess implementation, the
-	 * method is void. This method is called by the WaveDisplay applet when the HTML
-	 * paramenter AUTENTICATION is defined.
+	 * Test if the specified protocol is supported. It is used by WaveDisplay to
+	 * find out which DataAccess implementation (if any) is able to manage the
+	 * specified protocol.
 	 *
-	 * @param encoded_credentials The Password, expressed as a string.
+	 * @param url the signal URL. The protocol is specified in the first patrt of
+	 *            the URL.
+	 * @return True if the protocol is supported, false otherwise.
 	 */
-	void setPassword(String encoded_credentials);
-
-	/**
-	 * Releases all allocated resources.
-	 */
-	void close();
+	boolean supports(String url);
 }

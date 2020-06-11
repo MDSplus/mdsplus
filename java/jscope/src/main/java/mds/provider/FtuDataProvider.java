@@ -18,18 +18,18 @@ public class FtuDataProvider extends MdsDataProvider
 	public FtuDataProvider(String provider) throws IOException
 	{
 		super(provider);
-		SetEnvironment("public _IMODE = 0;");
+		setEnvironment("public _IMODE = 0;");
 	}
 
 	@Override
-	public void SetArgument(String arg) throws IOException
+	public void setArgument(String arg) throws IOException
 	{
 		mds.setProvider(arg);
-		SetEnvironment("public _IMODE = 0;");
+		setEnvironment("public _IMODE = 0;");
 	}
 
 	@Override
-	public synchronized void Update(String exp, long s)
+	public synchronized void update(String exp, long s)
 	{
 		error = null;
 		shot = s;
@@ -67,7 +67,7 @@ public class FtuDataProvider extends MdsDataProvider
 	{}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
 	}
