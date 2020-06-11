@@ -1,4 +1,4 @@
-JAVASOURCE = 6
+JAVASOURCE = 8
 include ../Makefile.inc.am
 
 EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
