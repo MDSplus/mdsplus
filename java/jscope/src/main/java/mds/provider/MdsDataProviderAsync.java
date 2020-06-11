@@ -6,7 +6,7 @@ package mds.provider;
 
 import java.util.Vector;
 
-import mds.wave.AsynchDataSource;
+import mds.provider.mds.AsynchDataSource;
 import mds.wave.WaveDataListener;
 
 /**
@@ -69,7 +69,7 @@ public class MdsDataProviderAsync extends MdsDataProvider
 		{
 			listeners.addElement(listener);
 		}
-	} // End inner class AsynchWaveData
+	}
 
 	boolean asynchEnabled = true;
 

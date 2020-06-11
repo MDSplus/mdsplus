@@ -33,11 +33,11 @@ class jScopeWavePopup
 	    public void actionPerformed(ActionEvent e)
 	    {
 	        if (wave !=
-	            ( (WaveformManager) jScopeWavePopup.this.parent).GetSelected())
-	            ( (WaveformManager) jScopeWavePopup.this.parent).Select(
+	            ( (WaveformManager) jScopeWavePopup.this.parent).gGetSelected())
+	            ( (WaveformManager) jScopeWavePopup.this.parent).select(
 	                wave);
 	        else
-	            ( (WaveformManager) jScopeWavePopup.this.parent).Deselect();
+	            ( (WaveformManager) jScopeWavePopup.this.parent).deselect();
 	    }
 	}
 	);

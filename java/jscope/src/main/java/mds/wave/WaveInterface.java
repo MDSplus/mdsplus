@@ -788,27 +788,27 @@ public class WaveInterface
 	    int i = 0;
 	    do
 	    {
-	        dp.Update(experiment, shots[i]);
+	        dp.update(experiment, shots[i]);
 	        i++;
 	    }
-	    while (i < shots.length && dp.ErrorString() != null);
+	    while (i < shots.length && dp.getError() != null);
 	}
 	else
-	    dp.Update(null, 0);
+	    dp.update(null, 0);
 
-	if (dp.ErrorString() != null)
+	if (dp.getError() != null)
 	{
-	    error = dp.ErrorString();
+	    error = dp.getError();
 	    return 0;
 	}
 
 	//Compute title
 	if (in_title != null && (in_title.trim()).length() != 0)
 	{
-	    title = dp.GetString(in_title, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    title = dp.getString(in_title, wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if (title == null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	}
@@ -818,10 +818,10 @@ public class WaveInterface
 	    (in_xmin.trim()).length() != 0 &&
 	    in_upd_limits)
 	{
-	    xmin = dp.GetFloat(in_xmin, wave.getRow(), wave.getColumn(), wave.getIndex());
-	    if (dp.ErrorString() != null)
+	    xmin = dp.getFloat(in_xmin, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    if (dp.getError() != null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	    long timeLong = getDate(in_xmin);
@@ -838,10 +838,10 @@ public class WaveInterface
 	    (in_xmax.trim()).length() != 0 &&
 	    in_upd_limits)
 	{
-	    xmax = dp.GetFloat(in_xmax, wave.getRow(), wave.getColumn(), wave.getIndex());
-	    if (dp.ErrorString() != null)
+	    xmax = dp.getFloat(in_xmax, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    if (dp.getError() != null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	    long timeLong = getDate(in_xmax);
@@ -858,10 +858,10 @@ public class WaveInterface
 	    (in_ymax.trim()).length() != 0 &&
 	    in_upd_limits)
 	{
-	    ymax = dp.GetFloat(in_ymax, wave.getRow(), wave.getColumn(), wave.getIndex());
-	    if (dp.ErrorString() != null)
+	    ymax = dp.getFloat(in_ymax, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    if (dp.getError() != null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	}
@@ -872,10 +872,10 @@ public class WaveInterface
 	    (in_ymin.trim()).length() != 0 &&
 	    in_upd_limits)
 	{
-	    ymin = dp.GetFloat(in_ymin, wave.getRow(), wave.getColumn(), wave.getIndex());
-	    if (dp.ErrorString() != null)
+	    ymin = dp.getFloat(in_ymin, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    if (dp.getError() != null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	}
@@ -886,10 +886,10 @@ public class WaveInterface
 	{
 	    if (in_timemax != null && (in_timemax.trim()).length() != 0)
 	    {
-	        timemax = dp.GetFloat(in_timemax, wave.getRow(), wave.getColumn(), wave.getIndex());
-	        if (dp.ErrorString() != null)
+	        timemax = dp.getFloat(in_timemax, wave.getRow(), wave.getColumn(), wave.getIndex());
+	        if (dp.getError() != null)
 	        {
-	            error = dp.ErrorString();
+	            error = dp.getError();
 	            return 0;
 	        }
 	    }
@@ -898,10 +898,10 @@ public class WaveInterface
 
 	    if (in_timemin != null && (in_timemin.trim()).length() != 0)
 	    {
-	        timemin = dp.GetFloat(in_timemin, wave.getRow(), wave.getColumn(), wave.getIndex());
-	        if (dp.ErrorString() != null)
+	        timemin = dp.getFloat(in_timemin, wave.getRow(), wave.getColumn(), wave.getIndex());
+	        if (dp.getError() != null)
 	        {
-	            error = dp.ErrorString();
+	            error = dp.getError();
 	            return 0;
 	        }
 	    }
@@ -913,19 +913,19 @@ public class WaveInterface
 
 	if (in_xlabel != null && (in_xlabel.trim()).length() != 0)
 	{
-	    xlabel = dp.GetString(in_xlabel, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    xlabel = dp.getString(in_xlabel, wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if (xlabel == null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	}
 	if (in_ylabel != null && (in_ylabel.trim()).length() != 0)
 	{
-	    ylabel = dp.GetString(in_ylabel, wave.getRow(), wave.getColumn(), wave.getIndex());
+	    ylabel = dp.getString(in_ylabel, wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if (ylabel == null)
 	    {
-	        error = dp.ErrorString();
+	        error = dp.getError();
 	        return 0;
 	    }
 	}
@@ -1101,18 +1101,18 @@ public class WaveInterface
 	}
 
 	if (shots != null && shots.length != 0)
-	    dp.Update(experiment, shots[0]);
+	    dp.update(experiment, shots[0]);
 	else
-	    dp.Update(null, 0);
+	    dp.update(null, 0);
 
 	try
 	{
 	    we = new WaveformEvent(wave, "Loading single or multi frame image");
 	    wave.dispatchWaveformEvent(we);
-	    FrameData fd = dp.GetFrameData(in_y[0], in_x[0], (float)timemin, (float)timemax);
+	    FrameData fd = dp.getFrameData(in_y[0], in_x[0], (float)timemin, (float)timemax);
 	    if (fd != null)
 	    {
-	        CreateNewFramesClass(fd.GetFrameType());
+	        CreateNewFramesClass(fd.getFrameType());
 	        /*
 	        frames.setHorizontalFlip(horizontal_flip);
 	        frames.setVerticalFlip(vertical_flip);
@@ -1128,7 +1128,7 @@ public class WaveInterface
 	    else
 	    {
 	        frames = null;
-	        curr_error = dp.ErrorString();
+	        curr_error = dp.getError();
 	        evaluated[0] = false;
 	    }
 	    //frames.WaitLoadFrame();
@@ -1203,7 +1203,7 @@ public class WaveInterface
 	String shotExpr = in_shots;
 	if( exp != null )
 	    shotExpr = processShotExpression(in_shots, exp);
-	shot_list = dp.GetShots( shotExpr, exp );
+	shot_list = dp.getShots( shotExpr, exp );
 	if (shot_list == null || shot_list.length == 0 ||
 	    shot_list.length > MAX_NUM_SHOT)
 	{
@@ -1212,9 +1212,9 @@ public class WaveInterface
 	            MAX_NUM_SHOT + "\n";
 	    else
 	    {
-	        if (dp.ErrorString() != null)
+	        if (dp.getError() != null)
 	        {
-	            error = dp.ErrorString();
+	            error = dp.getError();
 	            if (error.indexOf("_jScopeMainShots") != -1)
 	                error = "Undefined main shot value";
 
@@ -1293,34 +1293,34 @@ public class WaveInterface
 	String xlabel = null, ylabel = null, title = null;
 
 	if (shots != null && shots.length != 0)
-	    dp.Update(experiment, shots[curr_wave]);
+	    dp.update(experiment, shots[curr_wave]);
 	else
-	    dp.Update(null, 0);
+	    dp.update(null, 0);
 
-	if (dp.ErrorString() != null)
+	if (dp.getError() != null)
 	{
-	    error = dp.ErrorString();
+	    error = dp.getError();
 	    return null;
 	}
 
 	if( in_def_node != null && in_def_node.length() > 0 )
 	{
-	    dp.SetEnvironment("__default_node = " + in_def_node);
+	    dp.setEnvironment("__default_node = " + in_def_node);
 	}
 	else
 	{
-	    dp.SetEnvironment("__default_node = " + experiment + "::TOP");
+	    dp.setEnvironment("__default_node = " + experiment + "::TOP");
 	}
 
-	if (dp.ErrorString() != null)
+	if (dp.getError() != null)
 	{
-	    error = dp.ErrorString();
+	    error = dp.getError();
 	    return null;
 	}
 
 	if ( in_x[curr_wave] != null && (in_x[curr_wave].trim()).length() != 0 )
 	{
-	    wd = dp.GetWaveData(in_y[curr_wave], in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	    wd = dp.getWaveData(in_y[curr_wave], in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if (wd != null)
 	    {
 	        xlabel = wd.GetXLabel();
@@ -1331,46 +1331,46 @@ public class WaveInterface
 	        in_up_err[curr_wave] != null &&
 	        (in_up_err[curr_wave].trim()).length() != 0)
 	    {
-	        up_err = dp.GetWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	        up_err = dp.getWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	    }
 
 	    if (in_low_err != null &&
 	        in_low_err[curr_wave] != null &&
 	        (in_low_err[curr_wave].trim()).length() != 0)
 	    {
-	        low_err = dp.GetWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	        low_err = dp.getWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	    }
 	}
 	else // X field not defined
 	{
 	    if (wd == null)
-	        wd = dp.GetWaveData(in_y[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	        wd = dp.getWaveData(in_y[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if (yDimension == 1)
 	    {
 	        if (in_up_err != null &&
 	            in_up_err[curr_wave] != null
 	            && (in_up_err[curr_wave].trim()).length() != 0)
 	        {
-	            up_err = dp.GetWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	            up_err = dp.getWaveData(in_up_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	        }
 
 	        if (in_low_err != null &&
 	            in_low_err[curr_wave] != null &&
 	            (in_low_err[curr_wave].trim()).length() != 0)
 	        {
-	            low_err = dp.GetWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	            low_err = dp.getWaveData(in_low_err[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	        }
 	    }
 	}
 	if(wd == null)
 	{
-	    curr_error = dp.ErrorString();
+	    curr_error = dp.getError();
 	    return null;
 	}
 	//Check for bidimensional X axis
 	if(in_x[curr_wave] != null)
 	{
-	    xwd = dp.GetWaveData(in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
+	    xwd = dp.getWaveData(in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
 	    if(xwd.getNumDimension() == 1)
 	        xwd = null; //xwd is different from null ONLY for bidimensional X axis
 	}

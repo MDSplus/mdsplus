@@ -12,6 +12,7 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import mds.connection.*;
+import mds.provider.mds.AsynchDataSource;
 import mds.provider.mds.SshTunneling;
 import mds.wave.*;
 
@@ -167,31 +168,23 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public int GetFrameType() throws IOException
-		{
-			return mode;
-		}
+		public int getFrameType() throws IOException
+		{ return mode; }
 
 		@Override
-		public int GetNumFrames()
-		{
-			return actSegments * framesPerSegment;
-		}
+		public int getNumFrames()
+		{ return actSegments * framesPerSegment; }
 
 		@Override
-		public Dimension GetFrameDimension()
-		{
-			return dim;
-		}
+		public Dimension getFrameDimension()
+		{ return dim; }
 
 		@Override
-		public float[] GetFrameTimes()
-		{
-			return times;
-		}
+		public float[] getFrameTimes()
+		{ return times; }
 
 		@Override
-		public byte[] GetFrameAt(int idx) throws IOException
+		public byte[] getFrameAt(int idx) throws IOException
 		{
 			if (debug)
 				System.out.println("GetFrameAt " + idx);
@@ -252,7 +245,7 @@ public class MdsDataProvider implements DataProvider
 				else
 				{
 					// all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
-					all_times = MdsDataProvider.this.GetWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
+					all_times = MdsDataProvider.this.getWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
 				}
 				header_size = 16 + 4 * n_frame;
 				switch (pixel_size)
@@ -270,12 +263,12 @@ public class MdsDataProvider implements DataProvider
 			}
 			else
 			{
-				final String mframe_error = ErrorString();
+				final String mframe_error = getError();
 				if (in_x == null || in_x.length() == 0)
 					all_times = MdsDataProvider.this.GetFrameTimes(in_y);
 				else
 					// all_times = MdsDataProvider.this.GetWaveData(in_x).GetFloatData();
-					all_times = MdsDataProvider.this.GetWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
+					all_times = MdsDataProvider.this.getWaveData(in_x, 0, 0, 0).getData(MAX_PIXELS).y;
 				if (all_times == null)
 				{
 					if (mframe_error != null)
@@ -283,8 +276,8 @@ public class MdsDataProvider implements DataProvider
 								+ "\nFrame times read error";
 					else
 						error = " Image file not found ";
-					if (ErrorString() != null)
-						error = error + "\n" + ErrorString();
+					if (getError() != null)
+						error = error + "\n" + getError();
 					throw (new IOException(error));
 				}
 			}
@@ -310,14 +303,14 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public int GetFrameType() throws IOException
+		public int getFrameType() throws IOException
 		{
 			if (mode != -1)
 				return mode;
 			int i;
 			for (i = 0; i < n_frames; i++)
 			{
-				buf = GetFrameAt(i);
+				buf = getFrameAt(i);
 				if (buf != null)
 					break;
 			}
@@ -327,25 +320,19 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public int GetNumFrames()
-		{
-			return n_frames;
-		}
+		public int getNumFrames()
+		{ return n_frames; }
 
 		@Override
-		public Dimension GetFrameDimension()
-		{
-			return dim;
-		}
+		public Dimension getFrameDimension()
+		{ return dim; }
 
 		@Override
-		public float[] GetFrameTimes()
-		{
-			return times;
-		}
+		public float[] getFrameTimes()
+		{ return times; }
 
 		@Override
-		public byte[] GetFrameAt(int idx) throws IOException
+		public byte[] getFrameAt(int idx) throws IOException
 		{
 			if (debug)
 				System.out.println("GetFrameAt " + idx);
@@ -1223,11 +1210,11 @@ public class MdsDataProvider implements DataProvider
 
 	// To be overridden by any DataProvider implementation with added dynamic
 	// generation
-	public mds.wave.AsynchDataSource getAsynchSource()
+	public AsynchDataSource getAsynchSource()
 	{ return null; }
 
 	@Override
-	public void SetArgument(String arg) throws IOException
+	public void setArgument(String arg) throws IOException
 	{
 		setProvider(arg);
 		mds.setProvider(provider);
@@ -1249,7 +1236,7 @@ public class MdsDataProvider implements DataProvider
 	public void SetCompression(boolean state)
 	{
 		if (connected)
-			Dispose();
+			close();
 		use_compression = state;
 	}
 
@@ -1269,7 +1256,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		int[] numSegments = null;
 		try
@@ -1446,13 +1433,11 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized String ErrorString()
-	{
-		return error;
-	}
+	public synchronized String getError()
+	{ return error; }
 
 	@Override
-	public synchronized void Update(String experiment, long shot)
+	public synchronized void update(String experiment, long shot)
 	{
 		Update(experiment, shot, false);
 	}
@@ -1479,7 +1464,7 @@ public class MdsDataProvider implements DataProvider
 	{}// Used by subclass MdsDataProviderStream to close previous connections
 
 	@Override
-	public synchronized String GetString(String _in, int row, int col, int index) throws IOException
+	public synchronized String getString(String _in, int row, int col, int index) throws IOException
 	{
 		if (_in == null)
 			return null;
@@ -1517,7 +1502,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized void SetEnvironment(String in) throws IOException
+	public synchronized void setEnvironment(String in) throws IOException
 	{
 		if (in == null || in.length() == 0)
 			return;
@@ -1621,7 +1606,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized double GetFloat(String in, int row, int col, int index) throws IOException
+	public synchronized double getFloat(String in, int row, int col, int index) throws IOException
 	{
 		error = null;
 		if (debug)
@@ -1689,14 +1674,14 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public WaveData GetWaveData(String in, int row, int col, int index)
+	public WaveData getWaveData(String in, int row, int col, int index)
 	{
 		return new SimpleWaveData("( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in + " ; )",
 				experiment, shot, default_node);
 	}
 
 	@Override
-	public WaveData GetWaveData(String in_y, String in_x, int col, int row, int index)
+	public WaveData getWaveData(String in_y, String in_x, int col, int row, int index)
 	{
 		return new SimpleWaveData(
 				"( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in_y + " ; )", in_x,
@@ -1820,7 +1805,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public long[] GetShots(String in, String experiment) throws IOException
+	public long[] getShots(String in, String experiment) throws IOException
 	{
 		if (debug)
 			System.out.println("GetShots " + in + "  " + experiment);
@@ -1908,7 +1893,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized void Dispose()
+	public synchronized void close()
 	{
 		if (is_tunneling && ssh_tunneling != null)
 			ssh_tunneling.close();
@@ -2062,7 +2047,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized void AddUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
+	public synchronized void addUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
 	{
 		if (event_name == null || event_name.trim().length() == 0)
 			return;
@@ -2071,7 +2056,7 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized void RemoveUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
+	public synchronized void removeUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
 	{
 		if (event_name == null || event_name.trim().length() == 0)
 			return;
@@ -2080,14 +2065,14 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public synchronized void AddConnectionListener(ConnectionListener l)
+	public synchronized void addConnectionListener(ConnectionListener l)
 	{
 		if (mds != null)
 			mds.addConnectionListener(l);
 	}
 
 	@Override
-	public synchronized void RemoveConnectionListener(ConnectionListener l)
+	public synchronized void removeConnectionListener(ConnectionListener l)
 	{
 		if (mds != null)
 			mds.removeConnectionListener(l);
@@ -2100,13 +2085,13 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
-	public boolean SupportsTunneling()
+	public boolean supportsTunneling()
 	{
 		return true;
 	}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		mds.setUser(server_item.getUser());
 		is_tunneling = false;
@@ -2145,7 +2130,7 @@ public class MdsDataProvider implements DataProvider
 	{ // public as used by MdsAccess
 		if (debug)
 			System.out.println("getStringValue " + expr);
-		String out = GetString(expr, -1, -1, -1);
+		String out = getString(expr, -1, -1, -1);
 		if (out == null || out.length() == 0 || error != null)
 		{
 			error = null;

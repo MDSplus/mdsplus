@@ -28,7 +28,7 @@ public class UniversalDataProvider implements DataProvider
 			provider = new MdsDataProvider();
 			try
 			{
-				provider.SetArgument(currIp);
+				provider.setArgument(currIp);
 				dataProviderH.put(currIp, provider);
 			}
 			catch (final Exception exc)
@@ -71,11 +71,11 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public void SetArgument(String arg)
+	public void setArgument(String arg)
 	{
 		try
 		{
-			defaultProvider.SetArgument(arg);
+			defaultProvider.setArgument(arg);
 		}
 		catch (final Exception exc)
 		{
@@ -97,7 +97,7 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public WaveData GetWaveData(String in, int row, int col, int index)
+	public WaveData getWaveData(String in, int row, int col, int index)
 	{
 		final MdsDataProvider currProvider = getProvider(in);
 		if (currProvider == null)
@@ -109,7 +109,7 @@ public class UniversalDataProvider implements DataProvider
 		{
 			try
 			{
-				currProvider.Update(getExperiment(in), getShot(in));
+				currProvider.update(getExperiment(in), getShot(in));
 			}
 			catch (final Exception exc)
 			{
@@ -118,7 +118,7 @@ public class UniversalDataProvider implements DataProvider
 		}
 		try
 		{
-			return currProvider.GetWaveData(getExpr(in), row, col, index);
+			return currProvider.getWaveData(getExpr(in), row, col, index);
 		}
 		catch (final Exception exc)
 		{
@@ -127,7 +127,7 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
+	public WaveData getWaveData(String in_y, String in_x, int row, int col, int index)
 	{
 		final MdsDataProvider currProvider = getProvider(in_y);
 		if (currProvider == null)
@@ -139,7 +139,7 @@ public class UniversalDataProvider implements DataProvider
 		{
 			try
 			{
-				currProvider.Update(getExperiment(in_y), getShot(in_y));
+				currProvider.update(getExperiment(in_y), getShot(in_y));
 			}
 			catch (final Exception exc)
 			{
@@ -148,7 +148,7 @@ public class UniversalDataProvider implements DataProvider
 		}
 		try
 		{
-			return currProvider.GetWaveData(getExpr(in_y), getExpr(in_x), row, col, index);
+			return currProvider.getWaveData(getExpr(in_y), getExpr(in_x), row, col, index);
 		}
 		catch (final Exception exc)
 		{
@@ -158,34 +158,34 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public void Dispose()
+	public void close()
 	{
 		final Enumeration<MdsDataProvider> en = dataProviderH.elements();
 		while (en.hasMoreElements())
-			en.nextElement().Dispose();
+			en.nextElement().close();
 	}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return 1;
 	}
 
 	@Override
-	public boolean SupportsTunneling()
+	public boolean supportsTunneling()
 	{
 		return false;
 	}
 
 	@Override
-	public void SetEnvironment(String exp)
+	public void setEnvironment(String exp)
 	{
 		final Enumeration<MdsDataProvider> en = dataProviderH.elements();
 		while (en.hasMoreElements())
 		{
 			try
 			{
-				en.nextElement().SetEnvironment(exp);
+				en.nextElement().setEnvironment(exp);
 			}
 			catch (final Exception exc)
 			{}
@@ -193,17 +193,17 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public void Update(String exp, long s)
+	public void update(String exp, long s)
 	{
-		defaultProvider.Update(exp, s);
+		defaultProvider.update(exp, s);
 	}
 
 	@Override
-	public String GetString(String in, int row, int col, int index)
+	public String getString(String in, int row, int col, int index)
 	{
 		try
 		{
-			return defaultProvider.GetString(in, row, col, index);
+			return defaultProvider.getString(in, row, col, index);
 		}
 		catch (final Exception exc)
 		{
@@ -212,11 +212,11 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public double GetFloat(String in, int row, int col, int index)
+	public double getFloat(String in, int row, int col, int index)
 	{
 		try
 		{
-			return defaultProvider.GetFloat(in, row, col, index);
+			return defaultProvider.getFloat(in, row, col, index);
 		}
 		catch (final Exception exc)
 		{
@@ -226,11 +226,11 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public long[] GetShots(String in, String experiment)
+	public long[] getShots(String in, String experiment)
 	{
 		try
 		{
-			return defaultProvider.GetShots(in, experiment);
+			return defaultProvider.getShots(in, experiment);
 		}
 		catch (final Exception exc)
 		{
@@ -240,37 +240,35 @@ public class UniversalDataProvider implements DataProvider
 	}
 
 	@Override
-	public String ErrorString()
+	public String getError()
+	{ return error; }
+
+	@Override
+	public void addUpdateEventListener(UpdateEventListener l, String event) throws IOException
 	{
-		return error;
+		defaultProvider.addUpdateEventListener(l, event);
 	}
 
 	@Override
-	public void AddUpdateEventListener(UpdateEventListener l, String event) throws IOException
+	public void removeUpdateEventListener(UpdateEventListener l, String event) throws IOException
 	{
-		defaultProvider.AddUpdateEventListener(l, event);
+		defaultProvider.removeUpdateEventListener(l, event);
 	}
 
 	@Override
-	public void RemoveUpdateEventListener(UpdateEventListener l, String event) throws IOException
+	public void addConnectionListener(ConnectionListener l)
 	{
-		defaultProvider.RemoveUpdateEventListener(l, event);
+		defaultProvider.addConnectionListener(l);
 	}
 
 	@Override
-	public void AddConnectionListener(ConnectionListener l)
+	public void removeConnectionListener(ConnectionListener l)
 	{
-		defaultProvider.AddConnectionListener(l);
+		defaultProvider.removeConnectionListener(l);
 	}
 
 	@Override
-	public void RemoveConnectionListener(ConnectionListener l)
-	{
-		defaultProvider.RemoveConnectionListener(l);
-	}
-
-	@Override
-	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		return null;
 	}

@@ -596,7 +596,7 @@ public class TwuDataProvider implements DataProvider
 		}
 
 		@Override
-		public byte[] GetFrameAt(int idx) throws IOException
+		public byte[] getFrameAt(int idx) throws IOException
 		{
 			if (idx == first_frame_idx && buf != null)
 				return buf;
@@ -636,26 +636,22 @@ public class TwuDataProvider implements DataProvider
 		}
 
 		@Override
-		public Dimension GetFrameDimension()
-		{
-			return null;
-		}
+		public Dimension getFrameDimension()
+		{ return null; }
 
 		@Override
-		public float[] GetFrameTimes()
-		{
-			return times;
-		}
+		public float[] getFrameTimes()
+		{ return times; }
 
 		@Override
-		public int GetFrameType() throws IOException
+		public int getFrameType() throws IOException
 		{
 			if (mode != -1)
 				return mode;
 			int i;
 			for (i = 0; i < n_frames; i++)
 			{
-				buf = GetFrameAt(i);
+				buf = getFrameAt(i);
 				if (buf != null)
 					break;
 			}
@@ -665,10 +661,8 @@ public class TwuDataProvider implements DataProvider
 		}
 
 		@Override
-		public int GetNumFrames()
-		{
-			return n_frames;
-		}
+		public int getNumFrames()
+		{ return n_frames; }
 	}
 
 	static private class TwuSingleSignal
@@ -678,6 +672,7 @@ public class TwuDataProvider implements DataProvider
 			if (sig != null && sig.error())
 				throw ((Exception) sig.errorSource.fillInStackTrace());
 		}
+
 		static private int FindIndex(final float target, final TwuSingleSignal xsig, final int start, final int step,
 				final int maxpts, final int upperlimit)
 		{
@@ -703,6 +698,7 @@ public class TwuDataProvider implements DataProvider
 			final boolean closer = (Math.abs(data[ix] - target) <= Math.abs(data[ix + 1] - target));
 			return closer ? bestGuess : bestGuess + 1;
 		}
+
 		static private int findIndexInSubset(final float[] subsetData, final float target)
 		{
 			if (subsetData == null)
@@ -726,17 +722,15 @@ public class TwuDataProvider implements DataProvider
 				ix--; // correct the overshoot from the 'break'.
 			return ix;
 		}
+
 		private float[] data = null;
 		private Exception errorSource = null;
 		private TwuFetchOptions fetchOptions = null;
 		private boolean isAbscissa = false;
 		private TwuSingleSignal mainSignal = null;
 		private TwuProperties properties = null;
-
 		private TwuDataProvider provider = null;
-
 		private long shotOfTheProperties = 0;
-
 		private String source = null;
 
 		public TwuSingleSignal(TwuDataProvider dp, String src)
@@ -1316,7 +1310,7 @@ public class TwuDataProvider implements DataProvider
 	// connection handling methods ....
 	// -------------------------------------------
 	@Override
-	public synchronized void AddConnectionListener(ConnectionListener l)
+	public synchronized void addConnectionListener(ConnectionListener l)
 	{
 		if (l == null)
 			return;
@@ -1324,7 +1318,7 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public void AddUpdateEventListener(UpdateEventListener l, String event)
+	public void addUpdateEventListener(UpdateEventListener l, String event)
 	{}
 
 	public void dispatchConnectionEvent(ConnectionEvent e)
@@ -1335,14 +1329,12 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public void Dispose()
+	public void close()
 	{}
 
 	@Override
-	public String ErrorString()
-	{
-		return error_string;
-	}
+	public String getError()
+	{ return error_string; }
 
 	public synchronized TwuWaveData FindWaveData(String in_y, String in_x)
 	{
@@ -1367,7 +1359,7 @@ public class TwuDataProvider implements DataProvider
 	{ return experiment; }
 
 	@Override
-	public double GetFloat(String in, int row, int col, int index)
+	public double getFloat(String in, int row, int col, int index)
 	{
 		return Double.parseDouble(in);
 	}
@@ -1378,7 +1370,7 @@ public class TwuDataProvider implements DataProvider
 		resetErrorstring(null);
 		if (in.startsWith("TIME:", 0))
 			in = in.substring(5);
-		final TwuWaveData wd = (TwuWaveData) GetWaveData(in, 0, 0, 0);
+		final TwuWaveData wd = (TwuWaveData) getWaveData(in, 0, 0, 0);
 		float[] data = null;
 		try
 		{
@@ -1398,12 +1390,12 @@ public class TwuDataProvider implements DataProvider
 	// ----------------------------------------------------
 	public synchronized float[] GetFloatArray(String in, boolean is_time) throws IOException
 	{
-		final TwuWaveData wd = (TwuWaveData) GetWaveData(in, 0, 0, 0); // TwuAccess wants to get the full signal data .
+		final TwuWaveData wd = (TwuWaveData) getWaveData(in, 0, 0, 0); // TwuAccess wants to get the full signal data .
 		return is_time ? wd.getXData() : wd.getYData();
 	}
 
 	@Override
-	public FrameData GetFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
 	{
 		return (new TwuSimpleFrameData(this, in_y, in_x, time_min, time_max));
 	}
@@ -1424,7 +1416,7 @@ public class TwuDataProvider implements DataProvider
 	// parsing of / extraction from input signal string
 	// -------------------------------------------------------
 	@Override
-	public long[] GetShots(String in, String experiment)
+	public long[] getShots(String in, String experiment)
 	{
 		resetErrorstring(null);
 		long[] result;
@@ -1488,25 +1480,25 @@ public class TwuDataProvider implements DataProvider
 
 	public synchronized String GetSignalProperty(String prop, String in) throws IOException
 	{
-		final TwuWaveData wd = (TwuWaveData) GetWaveData(in, 0, 0, 0);
+		final TwuWaveData wd = (TwuWaveData) getWaveData(in, 0, 0, 0);
 		return wd.getTwuProperties().getProperty(prop);
 	}
 
 	@Override
-	public String GetString(String in, int row, int col, int index)
+	public String getString(String in, int row, int col, int index)
 	{
 		return in;
 	}
 
 	// ---------------------------------------------------
 	@Override
-	public synchronized WaveData GetWaveData(String in, int row, int col, int index)
+	public synchronized WaveData getWaveData(String in, int row, int col, int index)
 	{
-		return GetWaveData(in, null, 0, 0, 0);
+		return getWaveData(in, null, 0, 0, 0);
 	}
 
 	@Override
-	public synchronized WaveData GetWaveData(String in_y, String in_x, int row, int col, int index)
+	public synchronized WaveData getWaveData(String in_y, String in_x, int row, int col, int index)
 	{
 		final TwuWaveData find = FindWaveData(in_y, in_x);
 		find.setFullFetch();
@@ -1514,7 +1506,7 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
 	}
@@ -1524,7 +1516,7 @@ public class TwuDataProvider implements DataProvider
 	{ return false; }
 
 	@Override
-	public synchronized void RemoveConnectionListener(ConnectionListener l)
+	public synchronized void removeConnectionListener(ConnectionListener l)
 	{
 		if (l == null)
 			return;
@@ -1532,7 +1524,7 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public void RemoveUpdateEventListener(UpdateEventListener l, String event)
+	public void removeUpdateEventListener(UpdateEventListener l, String event)
 	{}
 
 	protected synchronized void resetErrorstring(String newErrStr)
@@ -1541,11 +1533,11 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public void SetArgument(String arg)
+	public void setArgument(String arg)
 	{}
 
 	@Override
-	public void SetEnvironment(String s)
+	public void setEnvironment(String s)
 	{}
 
 	public synchronized void setErrorstring(String newErrStr)
@@ -1555,7 +1547,7 @@ public class TwuDataProvider implements DataProvider
 	}
 
 	@Override
-	public boolean SupportsTunneling()
+	public boolean supportsTunneling()
 	{
 		return false;
 	}
@@ -1564,7 +1556,7 @@ public class TwuDataProvider implements DataProvider
 	// Constructor, other small stuff ...
 	// -------------------------------------------
 	@Override
-	public synchronized void Update(String experiment, long shot)
+	public synchronized void update(String experiment, long shot)
 	{
 		this.experiment = experiment;
 		this.shot = shot;

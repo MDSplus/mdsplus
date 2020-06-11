@@ -2113,16 +2113,16 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			final Rectangle r = getBounds();
 			// jScope new_scope = new jScope(r.x+5, r.y+40);
 			final jScopeFacade new_scope = buildNewScope(r.x + 5, r.y + 40);
-			new_scope.wave_panel.SetCopySource(wave_panel.GetCopySource());
+			new_scope.wave_panel.setCopySource(wave_panel.getCopySource());
 			new_scope.startScope(null);
 		}
 		if (ob == all_i)
 		{
-			wave_panel.AutoscaleAll();
+			wave_panel.autoscaleAll();
 		}
 		if (ob == allY_i)
 		{
-			wave_panel.AutoscaleAllY();
+			wave_panel.autoscaleAllY();
 		}
 		if (ob == copy_i)
 		{
@@ -2928,7 +2928,7 @@ class ServerDialog extends JDialog implements ActionListener
 						{
 							final Class<?> cl = Class.forName("mds.provider." + srv);
 							final DataProvider dp = ((DataProvider) cl.newInstance());
-							final boolean state = dp.SupportsTunneling();
+							final boolean state = dp.supportsTunneling();
 							tunneling.setEnabled(state);
 							tunnel_port.setEnabled(state);
 						}

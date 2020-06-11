@@ -230,9 +230,9 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			public void actionPerformed(ActionEvent e)
 			{
 				if (wave.IsImage())
-					((WaveformManager) WavePopup.this.parent).AutoscaleAllImages();
+					((WaveformManager) WavePopup.this.parent).autoscaleAllImages();
 				else
-					((WaveformManager) WavePopup.this.parent).AutoscaleAll();
+					((WaveformManager) WavePopup.this.parent).autoscaleAll();
 			}
 		});
 		autoscaleAllY = new JMenuItem("Autoscale all Y");
@@ -242,7 +242,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).AutoscaleAllY();
+				((WaveformManager) WavePopup.this.parent).autoscaleAllY();
 			}
 		});
 		allSameScale = new JMenuItem("All same scale");
@@ -251,7 +251,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).AllSameScale(wave);
+				((WaveformManager) WavePopup.this.parent).allSameScale(wave);
 			}
 		});
 		allSameXScale = new JMenuItem("All same X scale");
@@ -260,7 +260,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).AllSameXScale(wave);
+				((WaveformManager) WavePopup.this.parent).allSameXScale(wave);
 			}
 		});
 		allSameXScaleAutoY = new JMenuItem("All same X scale (auto Y)");
@@ -269,7 +269,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).AllSameXScaleAutoY(wave);
+				((WaveformManager) WavePopup.this.parent).allSameXScaleAutoY(wave);
 			}
 		});
 		allSameYScale = new JMenuItem("All same Y scale");
@@ -278,7 +278,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).AllSameYScale(wave);
+				((WaveformManager) WavePopup.this.parent).allSameYScale(wave);
 			}
 		});
 		resetScales = new JMenuItem("Reset scales");
@@ -296,7 +296,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-				((WaveformManager) WavePopup.this.parent).ResetAllScales();
+				((WaveformManager) WavePopup.this.parent).resetAllScales();
 			}
 		});
 		undo_zoom = new JMenuItem("Undo Zoom");
@@ -447,7 +447,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 			{
 				autoscaleAll.setText("Autoscale all images");
 				add(autoscaleAll);
-				maximize.setEnabled(((WaveformManager) parent).GetWaveformCount() > 1);
+				maximize.setEnabled(((WaveformManager) parent).getWaveformCount() > 1);
 			}
 			set_point.setEnabled((wave.mode == Waveform.MODE_POINT));
 		}
@@ -519,7 +519,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 				add(allSameXScaleAutoY);
 				add(allSameYScale);
 				add(resetAllScales);
-				maximize.setEnabled(((WaveformManager) parent).GetWaveformCount() > 1);
+				maximize.setEnabled(((WaveformManager) parent).getWaveformCount() > 1);
 			}
 			add(resetScales);
 			add(undo_zoom);
@@ -666,7 +666,7 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		else
 			SetSignalMenu();
 		if (parent != null && parent instanceof WaveformManager)
-			remove_panel.setEnabled(((WaveformManager) parent).GetWaveformCount() > 1);
+			remove_panel.setEnabled(((WaveformManager) parent).getWaveformCount() > 1);
 	}
 
 	protected void SetMode1D(int mode)
@@ -705,13 +705,13 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		if (w.ShowMeasure())
 		{
 			if (parent != null && parent instanceof WaveformManager)
-				((WaveformManager) parent).SetShowMeasure(false);
+				((WaveformManager) parent).setShowMeasure(false);
 			w.SetShowMeasure(false);
 		}
 		else
 		{
 			if (parent != null && parent instanceof WaveformManager)
-				((WaveformManager) parent).SetShowMeasure(true);
+				((WaveformManager) parent).setShowMeasure(true);
 			w.SetShowMeasure(true);
 			w.SetPointMeasure();
 		}

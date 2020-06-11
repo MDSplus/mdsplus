@@ -177,7 +177,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 	}
 
 	@Override
-	public void NotifyChange(Waveform dest, Waveform source)
+	public void notifyChange(Waveform dest, Waveform source)
 	{
 		final jScopeMultiWave w = ((jScopeMultiWave) source);
 		final MdsWaveInterface mwi = new MdsWaveInterface(((MdsWaveInterface) w.wi));
@@ -204,8 +204,8 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 			return "";
 		try
 		{
-			final String t = dp.GetString(title, -1, -1, -1);
-			final String err = dp.ErrorString();
+			final String t = dp.getString(title, -1, -1, -1);
+			final String err = dp.getError();
 			if (err == null || err.length() == 0)
 				return t;
 			else
@@ -488,9 +488,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		if (dp == null)
 			return;
 		if (event != null && event.length() != 0)
-			dp.RemoveUpdateEventListener(l, event);
+			dp.removeUpdateEventListener(l, event);
 		if (print_event != null && print_event.length() != 0)
-			dp.RemoveUpdateEventListener(l, print_event);
+			dp.removeUpdateEventListener(l, print_event);
 		for (int i = 0, k = 0; i < 4; i++)
 		{
 			for (int j = 0; j < getComponentsInColumn(i); j++, k++)
@@ -507,9 +507,9 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		if (dp == null)
 			return;
 		if (event != null && event.length() != 0)
-			dp.AddUpdateEventListener(l, event);
+			dp.addUpdateEventListener(l, event);
 		if (print_event != null && print_event.length() != 0)
-			dp.AddUpdateEventListener(l, print_event);
+			dp.addUpdateEventListener(l, print_event);
 		for (int i = 0, k = 0; i < 4; i++)
 		{
 			for (int j = 0; j < getComponentsInColumn(i); j++, k++)
@@ -577,7 +577,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 				abort = false;
 			if (def_vals != null && !def_vals.getIsEvaluated())
 			{
-				dp.SetEnvironment(def_vals.getPublicVariables());
+				dp.setEnvironment(def_vals.getPublicVariables());
 				def_vals.setIsEvaluated(true);
 			}
 			for (int i = 0, k = 0; i < 4 && !abort; i++)
@@ -708,15 +708,15 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		{
 			if (event == null || event.length() == 0)
 			{
-				dp.RemoveUpdateEventListener(l, curr_event);
+				dp.removeUpdateEventListener(l, curr_event);
 				return null;
 			}
 			else
 			{
 				if (!curr_event.equals(event))
 				{
-					dp.RemoveUpdateEventListener(l, curr_event);
-					dp.AddUpdateEventListener(l, event);
+					dp.removeUpdateEventListener(l, curr_event);
+					dp.addUpdateEventListener(l, event);
 				}
 				return event;
 			}
@@ -724,7 +724,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 		else
 		{
 			if (event != null && event.length() != 0)
-				dp.AddUpdateEventListener(l, event);
+				dp.addUpdateEventListener(l, event);
 			return event;
 		}
 	}
@@ -1039,15 +1039,15 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 			RemoveAllEvents(l);
 			if (dp != null)
 			{
-				dp.RemoveConnectionListener((ConnectionListener) l);
-				dp.Dispose();
+				dp.removeConnectionListener((ConnectionListener) l);
+				dp.close();
 			}
 			dp = new_dp;
-			final int option = dp.InquireCredentials(GetFrameParent(), server_item);
+			final int option = dp.inquireCredentials(GetFrameParent(), server_item);
 			switch (option)
 			{
 			case DataProvider.LOGIN_OK:
-				dp.SetArgument(server_item.getArgument());
+				dp.setArgument(server_item.getArgument());
 				break;
 			case DataProvider.LOGIN_ERROR:
 			case DataProvider.LOGIN_CANCEL:
@@ -1055,11 +1055,11 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 				dp = DataServerItem.NotConnected;
 			}
 			if (dp != null)
-				dp.AddConnectionListener((ConnectionListener) l);
+				dp.addConnectionListener((ConnectionListener) l);
 			if (server_item.isNotConnected())
 			{
 				// Check data server connection
-				if (dp.GetShots("0", "xx") == null)
+				if (dp.getShots("0", "xx") == null)
 					throw (new Exception("Cannot connect to " + server_item.getClassName() + " data server"));
 			}
 			ChangeDataProvider(dp);
@@ -1304,7 +1304,7 @@ class jScopeWaveContainer extends WaveformContainer implements Printable
 				save_as_txt_directory = new String(txtsig_file);
 				if (all)
 				{
-					for (int i = 0; i < GetWaveformCount(); i++)
+					for (int i = 0; i < getWaveformCount(); i++)
 						panel.addElement(GetWavePanel(i));
 				}
 				else

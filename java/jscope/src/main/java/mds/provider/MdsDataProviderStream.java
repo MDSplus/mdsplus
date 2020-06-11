@@ -7,7 +7,7 @@ package mds.provider;
 import java.util.Vector;
 
 import MDSplus.*;
-import mds.wave.AsynchDataSource;
+import mds.provider.mds.AsynchDataSource;
 import mds.wave.WaveDataListener;
 
 /**
@@ -17,9 +17,9 @@ import mds.wave.WaveDataListener;
 public class MdsDataProviderStream extends MdsDataProvider
 {
 	final private Vector<Connection> activeConnections = new Vector<Connection>();
-	// Inner class MdsStreamingDataProvider handles data streaming in jScope
 	Connection conn = null;
 
+	/** Handles data streaming in jScope */
 	class AsynchWaveData implements AsynchDataSource, DataStreamListener
 	{
 		boolean listenerReady = false;

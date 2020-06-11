@@ -112,7 +112,7 @@ public class MdsAccess implements DataAccess
 			// String shot_str = st2.nextToken();
 			shot_str = st2.nextToken();
 			final int shot = Integer.parseInt(shot_str);
-			np.Update(experiment, shot);
+			np.update(experiment, shot);
 		}
 		signal = st2.nextToken();
 	}
@@ -137,7 +137,7 @@ public class MdsAccess implements DataAccess
 	public void close()
 	{
 		if (np != null)
-			np.Dispose();
+			np.close();
 		np = null;
 		ip_addr = null;
 	}
@@ -179,7 +179,7 @@ public class MdsAccess implements DataAccess
 		System.out.println("URL = " + url);
 		if (x == null || y == null)
 		{
-			error = np.ErrorString();
+			error = np.getError();
 			return null;
 		}
 		s = new Signal(x, y);
@@ -190,7 +190,7 @@ public class MdsAccess implements DataAccess
 	public FrameData getFrameData(String url) throws IOException
 	{
 		setProvider(url);
-		return np.GetFrameData(signal, null, (float) -1E8, (float) 1E8);
+		return np.getFrameData(signal, null, (float) -1E8, (float) 1E8);
 	}
 
 	@Override
@@ -204,6 +204,6 @@ public class MdsAccess implements DataAccess
 			return ("Cannot create MdsDataProvider");
 		if (error != null)
 			return error;
-		return np.ErrorString();
+		return np.getError();
 	}
 }

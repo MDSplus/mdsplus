@@ -453,14 +453,14 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public void SetArgument(String arg) throws IOException
+	public void setArgument(String arg) throws IOException
 	{
 		mds.setProvider(arg);
 		mds.setUser("mdsplus");
 	}
 
 	@Override
-	public synchronized void Update(String exp, long s)
+	public synchronized void update(String exp, long s)
 	{
 		error = null;
 		shot = s;
@@ -528,7 +528,7 @@ public class AsdexDataProvider extends MdsDataProvider
 	{}
 
 	@Override
-	public int InquireCredentials(JFrame f, DataServerItem server_item)
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
 	{
 		return DataProvider.LOGIN_OK;
 	}

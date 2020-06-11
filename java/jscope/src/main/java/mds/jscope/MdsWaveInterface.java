@@ -733,7 +733,7 @@ class MdsWaveInterface
     {
 	if (in_upd_event != null)
 	{
-	    dp.RemoveUpdateEventListener(w, in_upd_event);
+	    dp.removeUpdateEventListener(w, in_upd_event);
 	    in_upd_event = null;
 	}
     }
@@ -741,7 +741,7 @@ class MdsWaveInterface
     public void RemoveEvent(UpdateEventListener w, String event) throws
 	IOException
     {
-	dp.RemoveUpdateEventListener(w, event);
+	dp.removeUpdateEventListener(w, event);
     }
 
     public void AddEvent(UpdateEventListener w, String event) throws
@@ -751,15 +751,15 @@ class MdsWaveInterface
 	{
 	    if (event == null || event.length() == 0)
 	    {
-	        dp.RemoveUpdateEventListener(w, in_upd_event);
+	        dp.removeUpdateEventListener(w, in_upd_event);
 	        in_upd_event = null;
 	    }
 	    else
 	    {
 	        if (!in_upd_event.equals(event))
 	        {
-	            dp.RemoveUpdateEventListener(w, in_upd_event);
-	            dp.AddUpdateEventListener(w, event);
+	            dp.removeUpdateEventListener(w, in_upd_event);
+	            dp.addUpdateEventListener(w, event);
 	            in_upd_event = event;
 	        }
 	    }
@@ -768,7 +768,7 @@ class MdsWaveInterface
 	if (event != null && event.length() != 0)
 	{
 
-	    dp.AddUpdateEventListener(w, event);
+	    dp.addUpdateEventListener(w, event);
 	    in_upd_event = event;
 	}
     }
