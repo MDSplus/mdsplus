@@ -12,12 +12,18 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
 import mds.connection.*;
-import mds.provider.mds.AsynchDataSource;
 import mds.provider.mds.SshTunneling;
 import mds.wave.*;
 
 public class MdsDataProvider implements DataProvider
 {
+	public interface AsyncDataSource
+	{
+		void startGeneration(String expression);
+
+		void addDataListener(WaveDataListener l);
+	}
+
 	protected String provider;
 	protected String experiment;
 	private String prev_default_node = null;
@@ -386,7 +392,7 @@ public class MdsDataProvider implements DataProvider
 		boolean yLabelEvaluated = false;
 		String wd_experiment;
 		long wd_shot;
-		AsynchDataSource asynchSource = null;
+		AsyncDataSource asynchSource = null;
 
 		@Override
 		public boolean supportsStreaming()
@@ -1210,7 +1216,7 @@ public class MdsDataProvider implements DataProvider
 
 	// To be overridden by any DataProvider implementation with added dynamic
 	// generation
-	public AsynchDataSource getAsynchSource()
+	public AsyncDataSource getAsynchSource()
 	{ return null; }
 
 	@Override

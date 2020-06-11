@@ -6,7 +6,6 @@ package mds.provider;
 
 import java.util.Vector;
 
-import mds.provider.mds.AsynchDataSource;
 import mds.wave.WaveDataListener;
 
 /**
@@ -16,7 +15,7 @@ import mds.wave.WaveDataListener;
 public class MdsDataProviderAsync extends MdsDataProvider
 {
 	// Inner class AsynchWaevdata handles the generation of the waveform
-	class AsynchWaveData implements AsynchDataSource
+	class AsynchWaveData implements AsyncDataSource
 	{
 		double sinePeriod = 1;
 		Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
@@ -80,6 +79,6 @@ public class MdsDataProviderAsync extends MdsDataProvider
 	}
 
 	@Override
-	public AsynchDataSource getAsynchSource()
+	public AsyncDataSource getAsynchSource()
 	{ return new AsynchWaveData(); }
 }

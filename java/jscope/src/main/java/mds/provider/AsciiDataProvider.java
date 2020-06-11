@@ -14,8 +14,10 @@ public class AsciiDataProvider implements DataProvider
 {
 	public static void main(String args[])
 	{
-		final AsciiDataProvider p = new AsciiDataProvider();
-		p.getWaveData("c:\\test.txt", 0, 0, 0);
+		try (final AsciiDataProvider p = new AsciiDataProvider())
+		{
+			p.getWaveData("c:\\test.txt", 0, 0, 0);
+		}
 	}
 
 	private boolean xPropertiesFile = false;
