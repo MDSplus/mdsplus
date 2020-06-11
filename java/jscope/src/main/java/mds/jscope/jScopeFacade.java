@@ -39,7 +39,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	final static String JSCOPE_PROPERTIES = JSCOPE_PROFILE + File.separator + "jScope.properties";
 	final static String JSCOPE_PALETTE = JSCOPE_PROFILE + File.separator + "colors.tbl";
 	private static final long serialVersionUID = 1L;
-	static final String VERSION = "jScope (version 7.107.2)";
 	static public boolean is_debug = false;
 	public static final int MAX_NUM_SHOT = 30;
 	public static final int MAX_VARIABLE = 10;
@@ -121,6 +120,12 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	BasicArrowButton incShot, decShot;
 	int incShotValue = 0;
 	private final String propertiesFile;
+	public static final String VERSION;
+	static
+	{
+		final String version = AboutWindow.class.getPackage().getImplementationVersion();
+		VERSION = version == null ? "unknown" : version;
+	}
 
 	static public void ShowMessage(Component parentComponent, Object message, String title, int messageType)
 	{
