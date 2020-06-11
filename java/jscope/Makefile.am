@@ -40,9 +40,7 @@ SOURCE =\
  mds/connection/*.java\
  mds/jscope/*.java\
  mds/provider/*.java\
- mds/provider/access/*.java\
  mds/provider/browser/*.java\
- mds/provider/jet/*.java\
  mds/provider/mds/*.java\
  mds/wave/*.java\
  jScope.java

@@ -39,18 +39,16 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	final static String JSCOPE_PROPERTIES = JSCOPE_PROFILE + File.separator + "jScope.properties";
 	final static String JSCOPE_PALETTE = JSCOPE_PROFILE + File.separator + "colors.tbl";
 	private static final long serialVersionUID = 1L;
-	static final String VERSION = "jScope (version 7.107.2)";
 	static public boolean is_debug = false;
 	public static final int MAX_NUM_SHOT = 30;
 	public static final int MAX_VARIABLE = 10;
 	static long refreshPeriod = -1;
 	JWindow aboutScreen;
-	static boolean enableNetworkSelection = true;
+	static boolean enableNetworkSelection = true;// If enableNetworkSelection == false and mdsDataServer null and
+													// sshDataServer
 	static String mdsDataServer = null; // If enableNetworkSelection == false, mdsDataServer contains the mdsip address.
 	static String sshDataServer = null; // If enableNetworkSelection == false, either mdsDataServer or sshDataServer
 										// contains the mdsio address.
-	// If enableNetworkSelection == false and mdsDataServer null and sshDataServer
-	// == null, LocalDataProvider is selected instead
 	/** Main menu bar */
 	protected JMenuBar mb;
 	/** Menus on menu bar */
@@ -122,6 +120,12 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	BasicArrowButton incShot, decShot;
 	int incShotValue = 0;
 	private final String propertiesFile;
+	public static final String VERSION;
+	static
+	{
+		final String version = AboutWindow.class.getPackage().getImplementationVersion();
+		VERSION = version == null ? "unknown" : version;
+	}
 
 	static public void ShowMessage(Component parentComponent, Object message, String title, int messageType)
 	{
@@ -2761,7 +2765,6 @@ class WindowDialog extends JDialog implements ActionListener
 class ServerDialog extends JDialog implements ActionListener
 {
 	private static final long serialVersionUID = 1L;
-	private final Hashtable<String, String> data_server_class = new Hashtable<>();
 	static private JList<DataServerItem> server_list;
 	private final DefaultListModel<DataServerItem> list_model = new DefaultListModel<>();
 	private final JButton add_b, remove_b, exit_b, connect_b, modify_b;
@@ -2772,6 +2775,7 @@ class ServerDialog extends JDialog implements ActionListener
 	JCheckBox tunneling;
 	JTextField tunnel_port;
 	jScopeFacade dw;
+	private final Set<String> data_server_class = new HashSet<String>();
 
 	ServerDialog(JFrame dw, String title)
 	{
@@ -2959,11 +2963,25 @@ class ServerDialog extends JDialog implements ActionListener
 		c.gridwidth = GridBagConstraints.REMAINDER;
 		gridbag.setConstraints(p, c);
 		getContentPane().add(p);
-		addKnowProvider();
+		// add Provider Names
+		final ArrayList<String> names = new ArrayList<String>(DataServerItem.knownProviders.size());
+		DataServerItem.knownProviders.forEach((e) ->
+		{ names.add(e.getSimpleName()); });
+		names.sort(Comparator.comparing(String::toString));
+		names.forEach(this::addProviderName);
+		//
 		if (jScopeFacade.server_ip_list == null)
 			GetPropertiesValue();
 		else
 			addServerIpList(jScopeFacade.server_ip_list);
+	}
+
+	private final void addProviderName(final String name)
+	{
+		if (name == null || data_server_class.contains(name))
+			return;
+		data_server_class.add(name);
+		data_provider_list.addItem(name);
 	}
 
 	private void GetPropertiesValue()
@@ -3006,7 +3024,7 @@ class ServerDialog extends JDialog implements ActionListener
 		server_a.setText("");
 		server_u.setText("");
 		tunnel_port.setText("");
-		data_provider_list.setSelectedIndex(0);
+		data_provider_list.setSelectedIndex(data_provider_list.getItemCount() > 0 ? 0 : -1);
 	}
 
 	private DataServerItem findServer(DataServerItem dsi)
@@ -3034,11 +3052,7 @@ class ServerDialog extends JDialog implements ActionListener
 		found_dsi = findServer(dsi);
 		if (found_dsi != null)
 			return found_dsi;
-		if (dsi.getClassName() != null && !data_server_class.containsValue(dsi.getClassName()))
-		{
-			data_server_class.put(dsi.getClassName(), dsi.getClassName());
-			data_provider_list.addItem(dsi.getClassName());
-		}
+		addProviderName(dsi.getClassName());
 		// if (!found && dsi.class_name == null)
 		if (dsi.getClassName() == null)
 		{
@@ -3066,15 +3080,6 @@ class ServerDialog extends JDialog implements ActionListener
 		 * found_dsi.tunnel_port; } }
 		 */
 		return dsi;
-	}
-
-	private void addKnowProvider()
-	{
-		for (final String element : DataServerItem.knownProviders)
-		{
-			data_server_class.put(element, element);
-			data_provider_list.addItem(element);
-		}
 	}
 
 	public void addServerIpList(DataServerItem[] dsi_list)
