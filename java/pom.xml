@@ -223,10 +223,13 @@
 		</snapshotRepository>
 	</distributionManagement>
 	<modules>
+		<module>devicebeans</module>
 		<module>mdsobjects</module>
 		<module>mdsplus-api</module>
 		<module>jdispatcher</module>
+		<module>jdevices</module>
 		<module>jtraverser</module>
 		<module>jtraverser2</module>
+		<module>jscope</module>
 	</modules>
 </project>

@@ -19,18 +19,18 @@ public class MdsDataProvider implements DataProvider
 {
 	protected String provider;
 	protected String experiment;
-	String prev_default_node = null;
-	String default_node = null;
-	String environment_vars;
+	private String prev_default_node = null;
+	private String default_node = null;
+	private String environment_vars;
 	protected long shot;
-	boolean open, connected;
-	MdsConnection mds;
-	String error;
-	private boolean use_compression = false;
-	int var_idx = 0;
-	boolean is_tunneling = false;
-	String tunnel_provider = "127.0.0.1:8000";
-	SshTunneling ssh_tunneling;
+	protected boolean open, connected;
+	protected final MdsConnection mds;
+	protected String error;
+	protected boolean use_compression = false;
+	protected int var_idx = 0;
+	private boolean is_tunneling = false;
+	private String tunnel_provider = "127.0.0.1:8000";
+	private SshTunneling ssh_tunneling = null;
 	static final long RESAMPLE_TRESHOLD = 1000000000;
 	static final int MAX_PIXELS = 20000;
 	static boolean debug = false;
@@ -1911,9 +1911,7 @@ public class MdsDataProvider implements DataProvider
 	public synchronized void Dispose()
 	{
 		if (is_tunneling && ssh_tunneling != null)
-		{
-			ssh_tunneling.Dispose();
-		}
+			ssh_tunneling.close();
 		if (connected)
 		{
 			connected = false;
@@ -2117,16 +2115,17 @@ public class MdsDataProvider implements DataProvider
 		{
 			final StringTokenizer st = new StringTokenizer(server_item.getArgument(), ":");
 			String ip;
-			String remote_port = "" + MdsConnection.DEFAULT_PORT;
 			ip = st.nextToken();
+			final int rport;
 			if (st.hasMoreTokens())
-				remote_port = st.nextToken();
+				rport = Integer.valueOf(st.nextToken());
+			else
+				rport = MdsConnection.DEFAULT_PORT;
 			is_tunneling = true;
 			try
 			{
-				ssh_tunneling = new SshTunneling(f, this, ip, remote_port, server_item.getUser(),
-						server_item.getTunnelPort());
-				ssh_tunneling.start();
+				final int lport = Integer.valueOf(server_item.getTunnelPort());
+				ssh_tunneling = new SshTunneling(server_item.getUser(), ip, lport, rport);
 				tunnel_provider = "127.0.0.1:" + server_item.getTunnelPort();
 			}
 			catch (final Throwable exc)

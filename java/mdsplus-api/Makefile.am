@@ -1,14 +1,9 @@
 JAVASOURCE = 8
 include ../Makefile.inc.am
 
-JSCH = $(abs_srcdir)/jsch-0.1.54.jar
-
 java_srcdir = $(srcdir)/src/main/java
 java_DATA = mdsplus-api.jar
 DEPENDENCIES = $(JSCH)
-
-$(JSCH):
-	wget -O $@ http://sourceforge.net/projects/jsch/files/jsch.jar/0.1.54/jsch-0.1.54.jar/download
 
 if USE_JARS_DIR
 
