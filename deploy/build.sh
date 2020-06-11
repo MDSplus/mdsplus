@@ -673,6 +673,6 @@ EOF
 	# The previous version is captured in *_old
 	# This is supposed to make it easier to fixup repos while keeping the number of files low
 	[ -r ${LAST_RELEASE_INFO} ]&&cp ${LAST_RELEASE_INFO} ${LAST_RELEASE_INFO}_old
-	echo "${RELEASE_VERSION}" > ${LAST_RELEASE_INFO}
+	[ -z "${PUBLISHDIR}" -o -z "${DISTNAME}" ]||echo "${RELEASE_VERSION}" > ${LAST_RELEASE_INFO}
     fi
 fi
