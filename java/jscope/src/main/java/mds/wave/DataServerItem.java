@@ -1,16 +1,18 @@
 package mds.wave;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.util.*;
 
 import javax.swing.JFrame;
 
 import mds.connection.ConnectionListener;
 import mds.connection.UpdateEventListener;
-import mds.provider.*;
 
 public class DataServerItem
 {
-	private static class NotConnectedDataProvider implements DataProvider
+	public static final DataProvider NotConnected = new DataProvider()
 	{
 		@Override
 		public void addConnectionListener(ConnectionListener l)
@@ -101,15 +103,45 @@ public class DataServerItem
 		@Override
 		public void update(String exp, long s)
 		{}
+	};
+
+	public static final Set<Class<?>> getClasses(String packageName, Class<?> type)
+	{
+		final Set<Class<?>> classes = new HashSet<Class<?>>();
+		try
+		{
+			final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			assert classLoader != null;
+			final Enumeration<URL> resources = classLoader.getResources(packageName.replace('.', '/'));
+			final File directory = new File(resources.nextElement().getFile());
+			if (directory.exists())
+			{
+				final File[] files = directory.listFiles();
+				for (final File file : files)
+				{
+					final String name = file.getName();
+					if (!name.endsWith(".class") || name.contains("$"))
+						continue;
+					try
+					{
+						classes.add(Class
+								.forName(packageName + '.' + file.getName().substring(0, file.getName().length() - 6))
+								.asSubclass(type));
+					}
+					catch (final Exception ignore)
+					{}
+				}
+			}
+		}
+		catch (final IOException e)
+		{
+			e.printStackTrace();
+		}
+		return classes;
 	}
 
-	public static String knownProviders[] =
-	{ MdsDataProvider.class.getName(), MdsDataProviderUdt.class.getName(), MdsDataProviderAsync.class.getName(),
-			MdsDataProviderStream.class.getName(), MdsDataProviderSsh.class.getName(),
-			MdsDataProviderLocal.class.getName(), AsciiDataProvider.class.getName(), AsdexDataProvider.class.getName(),
-			FtuDataProvider.class.getName(), JetDataProvider.class.getName(), TsDataProvider.class.getName(),
-			TwuDataProvider.class.getName(), UniversalDataProvider.class.getName() };
-	public static final DataProvider NotConnected = new NotConnectedDataProvider();
+	public static final Set<Class<?>> knownProviders = getClasses("mds.provider", DataProvider.class);
+
 	private static final String trimArg(final String arg)
 	{
 		if (arg == null)
@@ -117,13 +149,13 @@ public class DataServerItem
 		final String trimmed = arg.trim();
 		return trimmed.isEmpty() ? null : trimmed;
 	}
+
 	private String argument;
 	private final String browse_class;
 	private final String browse_url;
 	private String class_name;
 	private String name;
 	private String tunnel_port;
-
 	private String user;
 
 	public DataServerItem()
