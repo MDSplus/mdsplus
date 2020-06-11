@@ -104,6 +104,7 @@ class _ACQ400_BASE(MDSplus.Device):
         self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
         clockdiv      = mb_freq/self.freq.data()
 
+        #The following will set the sample rate, by setting the clock div.
         uut.s1.CLKDIV = "{}".format(clockdiv)
 
         acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ

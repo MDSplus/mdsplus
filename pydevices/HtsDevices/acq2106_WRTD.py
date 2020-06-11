@@ -46,7 +46,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_SRC',    'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
         {'path':':EVENT0_SRC',  'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
-        {'path':':T0',          'type':'numeric', 'value': 4.,       'options':('write_shot',)},
+        {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':WRTT0_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WRTT1_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
@@ -126,7 +126,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-            
+
             # Save choices in tree node:
             self.trig_src.record   = 'WRTT1'
             self.event0_src.record = 'WRTT1'

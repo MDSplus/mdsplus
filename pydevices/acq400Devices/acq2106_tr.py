@@ -23,6 +23,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import MDSplus
 import threading
 import importlib
 
@@ -32,12 +33,6 @@ acq400_base = importlib.import_module('acq400_base')
 class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     """
     D-Tacq ACQ2106 transient support.
-    """
-
-
-    """
-    A child class of _ACQ400_BASE that contains the specific methods for
-    taking a transient capture.
     """
     tr_base_parts = [
         {'path':':RUNNING',    'type': 'numeric',  'options':('no_write_model',)},
@@ -72,7 +67,7 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
 
         #Trigger sources choices:
         # d0:
-        srcs_0 = ['EXT','HDMI','HOSTB','GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
         # d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
@@ -145,15 +140,16 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     STOP = stop
 
     def pull(self):
-        thread = threading.Thread(target = self._store)
+        thread = threading.Thread(target = self._pull)
         thread.start()
         return None
     PULL=pull
 
     def _pull(self):
-
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         while uut.statmon.get_state() != 0: continue
+        
         self.chans = []
         nchans = uut.nchan()
         for ii in range(nchans):
@@ -169,14 +165,34 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
+                
                 ch.putData(channel_data[ic])
                 ch.EOFF.putData(float(eoff[ic]))
                 ch.ESLO.putData(float(eslo[ic]))
 
+                start_idx     = - self.presamples.data() + 1
+                end_idx       = self.samples.data()
+                total_samples = uut.elapsed_samples()
+
+                # If I need to find the elements of the data that corresponce to the window
+                # start_sample = int(total_samples - self.samples.data() + start_idx)
+                # end_sample   = int(total_samples - self.samples.data() + end_idx)
+
+                clock_period = 1./self.freq.data()
+
+                # self.wr_wrtd_t0 is the reference to the node in the WRTD device.
+                # self.trig_time  is the reference to the node in WRTD device.
+
+                # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)
+                mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
+                mdsrange  = MDSplus.Range(None, None, clock_period)
+                dim       = MDSplus.Dimension(mdswindow, mdsrange)
+
                 #Expression to calculate the calibrarted inputs:
                 expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
 
-                ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
+                signal = MDSplus.Signal(MDSplus.Data.compile(expr), None, dim)
+                ch.CAL_INPUT.putData(signal)
 
     _PULL=_pull
 
