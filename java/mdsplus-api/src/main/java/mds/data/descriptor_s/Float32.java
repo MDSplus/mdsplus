@@ -25,14 +25,14 @@ public final class Float32 extends FLOAT<Float>
 		super(b);
 	}
 
-	public Float32(final float value)
-	{
-		this(DTYPE.FLOAT, value);
-	}
-
 	Float32(final DTYPE dtype, final float value)
 	{
 		super(dtype, value);
+	}
+
+	public Float32(final float value)
+	{
+		this(DTYPE.FLOAT, value);
 	}
 
 	@Override
@@ -73,6 +73,10 @@ public final class Float32 extends FLOAT<Float>
 	public final Float getAtomic()
 	{ return new Float(this.p.getFloat(0)); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
 	public final float getValue()
 	{ return this.getBuffer().getFloat(0); }
 
@@ -104,8 +108,4 @@ public final class Float32 extends FLOAT<Float>
 	{
 		return new StringDsc(String.format("%16.5E", this.getAtomic()).replace("E", this.getSuffix()));
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
 }

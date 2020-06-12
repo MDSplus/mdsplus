@@ -12,6 +12,15 @@ class jScopeDefaultValues
 	private String public_variables = null;
 	boolean upd_limits = true;
 
+	public boolean getIsEvaluated()
+	{ return is_evaluated || public_variables == null || public_variables.length() == 0; }
+
+	public String getPublicVariables()
+	{ return public_variables; }
+
+	public boolean isSet()
+	{ return (public_variables != null && public_variables.length() > 0); }
+
 	public void Reset()
 	{
 		shots = null;
@@ -22,9 +31,6 @@ class jScopeDefaultValues
 		is_evaluated = false;
 		upd_limits = true;
 	}
-
-	public boolean getIsEvaluated()
-	{ return is_evaluated || public_variables == null || public_variables.length() == 0; }
 
 	public void setIsEvaluated(boolean evaluated)
 	{ is_evaluated = evaluated; }
@@ -38,10 +44,4 @@ class jScopeDefaultValues
 			this.public_variables = public_variables.trim();
 		}
 	}
-
-	public String getPublicVariables()
-	{ return public_variables; }
-
-	public boolean isSet()
-	{ return (public_variables != null && public_variables.length() > 0); }
 }

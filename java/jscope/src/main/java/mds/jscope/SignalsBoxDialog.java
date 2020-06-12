@@ -42,6 +42,19 @@ public class SignalsBoxDialog extends JDialog
 			{ return 2; }
 
 			@Override
+			public String getColumnName(int col)
+			{
+				switch (col)
+				{
+				case 0:
+					return "Y expression";
+				case 1:
+					return "X expression";
+				}
+				return null;
+			}
+
+			@Override
 			public int getRowCount()
 			{ return WaveInterface.sig_box.signals_name.size(); }
 
@@ -54,19 +67,6 @@ public class SignalsBoxDialog extends JDialog
 					return WaveInterface.sig_box.getYexpr(row);
 				case 1:
 					return WaveInterface.sig_box.getXexpr(row);
-				}
-				return null;
-			}
-
-			@Override
-			public String getColumnName(int col)
-			{
-				switch (col)
-				{
-				case 0:
-					return "Y expression";
-				case 1:
-					return "X expression";
 				}
 				return null;
 			}

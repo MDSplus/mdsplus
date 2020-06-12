@@ -72,6 +72,12 @@ public final class StringArray extends Descriptor_A<String> implements DATA<Stri
 	}
 
 	@Override
+	protected StringBuilder decompile(final StringBuilder pout, final String t)
+	{
+		return pout.append('\"').append(t).append('\"');
+	}
+
+	@Override
 	public Descriptor<?> divide(final Descriptor<?> X, final Descriptor<?> Y) throws MdsException
 	{
 		throw DATA.tdierror;
@@ -105,6 +111,16 @@ public final class StringArray extends Descriptor_A<String> implements DATA<Stri
 	public StringDsc getScalar(final int idx)
 	{
 		return new StringDsc(this.getElement(idx));
+	}
+
+	@Override
+	protected final String getSuffix()
+	{ return ""; }
+
+	@Override
+	protected final String[] initArray(final int size)
+	{
+		return new String[size];
 	}
 
 	@Override
@@ -151,6 +167,13 @@ public final class StringArray extends Descriptor_A<String> implements DATA<Stri
 	public Descriptor<?> power(final Descriptor<?> X, final Descriptor<?> Y) throws MdsException
 	{
 		throw DATA.tdierror;
+	}
+
+	@Override
+	protected final void setElement(final ByteBuffer b, final String value)
+	{
+		final int maxlength = this.length() < b.remaining() ? this.length() : b.remaining();
+		b.put((maxlength < value.length() ? value.substring(0, maxlength) : value).getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Override
@@ -228,29 +251,6 @@ public final class StringArray extends Descriptor_A<String> implements DATA<Stri
 	public final short toShort(final String t)
 	{
 		return Short.parseShort(t);
-	}
-
-	@Override
-	protected StringBuilder decompile(final StringBuilder pout, final String t)
-	{
-		return pout.append('\"').append(t).append('\"');
-	}
-
-	@Override
-	protected final String getSuffix()
-	{ return ""; }
-
-	@Override
-	protected final String[] initArray(final int size)
-	{
-		return new String[size];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final String value)
-	{
-		final int maxlength = this.length() < b.remaining() ? this.length() : b.remaining();
-		b.put((maxlength < value.length() ? value.substring(0, maxlength) : value).getBytes(StandardCharsets.UTF_8));
 	}
 
 	@Override

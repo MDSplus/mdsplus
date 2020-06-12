@@ -77,6 +77,10 @@ public abstract class FLOAT<T extends Number> extends NUMBER<T>
 	}
 
 	@Override
+	protected final byte getRankClass()
+	{ return 0x30; }
+
+	@Override
 	public final FLOAT<?> multiply(final Descriptor<?> X, final Descriptor<?> Y)
 	{
 		return (FLOAT<?>) this.newType(X.toDouble() * Y.toDouble());
@@ -99,8 +103,4 @@ public abstract class FLOAT<T extends Number> extends NUMBER<T>
 	{
 		return (FLOAT<?>) this.newType(X.toDouble() - Y.toDouble());
 	}
-
-	@Override
-	protected final byte getRankClass()
-	{ return 0x30; }
 }

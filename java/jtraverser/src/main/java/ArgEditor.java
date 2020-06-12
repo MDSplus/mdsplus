@@ -13,14 +13,14 @@ public class ArgEditor extends JScrollPane
 	Dimension preferred;
 	ExprEditor[] args;
 
-	public ArgEditor(MDSplus.Data[] data)
-	{
-		this(data, 9, new Dimension(220, 89));
-	}
-
 	public ArgEditor()
 	{
 		this(null, 9, new Dimension(220, 89));
+	}
+
+	public ArgEditor(MDSplus.Data[] data)
+	{
+		this(data, 9, new Dimension(220, 89));
 	}
 
 	public ArgEditor(MDSplus.Data[] data, int num_args, Dimension preferred)
@@ -48,18 +48,6 @@ public class ArgEditor extends JScrollPane
 		getVerticalScrollBar().setUnitIncrement(43);
 	}
 
-	public void reset()
-	{
-		for (int i = 0; i < num_args; i++)
-			args[i].reset();
-	}
-
-	public void setEditable(boolean editable)
-	{
-		for (int i = 0; i < num_args; i++)
-			args[i].setEditable(editable);
-	}
-
 	public MDSplus.Data[] getData()
 	{
 		int actArgs = 0;
@@ -78,6 +66,12 @@ public class ArgEditor extends JScrollPane
 		return data;
 	}
 
+	public void reset()
+	{
+		for (int i = 0; i < num_args; i++)
+			args[i].reset();
+	}
+
 	public void setData(MDSplus.Data[] data)
 	{
 		int min_len, i;
@@ -91,5 +85,11 @@ public class ArgEditor extends JScrollPane
 			args[i].setData(data[i]);
 		for (; i < num_args; i++)
 			args[i].setData(null);
+	}
+
+	public void setEditable(boolean editable)
+	{
+		for (int i = 0; i < num_args; i++)
+			args[i].setEditable(editable);
 	}
 }

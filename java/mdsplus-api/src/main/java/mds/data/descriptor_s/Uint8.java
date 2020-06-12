@@ -104,6 +104,10 @@ public final class Uint8 extends INTEGER_UNSIGNED<UByte>
 	{ return UByte.fromBuffer(this.p, 0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x00; }
+
+	@Override
 	public final Uint8 inot()
 	{
 		return new Uint8(~this.getAtomic().value);
@@ -125,8 +129,4 @@ public final class Uint8 extends INTEGER_UNSIGNED<UByte>
 	{
 		this.b.put(this.pointer(), value);
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x00; }
 }

@@ -9,6 +9,11 @@ import mds.connection.MdsMessage;
 
 class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 {
+	private static final short toShort(final byte b)
+	{
+		return (short) (b & 0xff);
+	}
+
 	final private Vector<BufferedOutputStream> streams = new Vector<BufferedOutputStream>();
 	final private Vector<Socket> sockets = new Vector<Socket>();
 	final private Queue<MdsMonitorEvent> msgs = new LinkedList<MdsMonitorEvent>();
@@ -35,68 +40,27 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 	}
 
 	@Override
-	public MdsMessage handleMessage(final MdsMessage[] messages)
+	public synchronized void beginSequence(final MonitorEvent event)
 	{
-		if (messages.length < 6 || messages[2].dtype != Descriptor.DTYPE_SHORT
-				|| messages[1].dtype != Descriptor.DTYPE_BYTE)
-		{
-			System.err.println("Unexpected message has been received by MdsMonitor");
-		}
-		else
-		{
-			try
-			{
-				final short port = (messages[2].ToShortArray())[0];
-				final String addr = "" + toShort(messages[1].body[0]) + "." + toShort(messages[1].body[1]) + "."
-						+ toShort(messages[1].body[2]) + "." + toShort(messages[1].body[3]);
-				final Socket sock = new Socket(addr, port);
-				sockets.add(sock);
-				streams.add(new BufferedOutputStream(sock.getOutputStream()));
-			}
-			catch (final Exception exc)
-			{}
-		}
-		final MdsMessage msg = new MdsMessage((byte) 0, Descriptor.DTYPE_LONG, (byte) 0, null,
-				Descriptor.dataToByteArray(new Integer(1)));
-		msg.status = 1;
-		return msg;
+		communicate(event, jDispatcher.MONITOR_BEGIN_SEQUENCE);
 	}
 
-	private static final short toShort(final byte b)
+	@Override
+	public void build(final MonitorEvent event)
 	{
-		return (short) (b & 0xff);
+		communicate(event, jDispatcher.MONITOR_BUILD);
 	}
 
-	public void sendMessages()
+	@Override
+	public void buildBegin(final MonitorEvent event)
 	{
-		while (true)
-		{
-			while (!msgs.isEmpty())
-			{
-				final byte[] msg = msgs.remove().toBytes();
-				for (final BufferedOutputStream stream : streams)
-				{
-					try
-					{
-						stream.write(msg);
-						stream.flush();
-					}
-					catch (final Exception exc)
-					{}
-				}
-			}
-			try
-			{
-				synchronized (MdsMonitor.this)
-				{
-					wait();
-				}
-			}
-			catch (final InterruptedException exc)
-			{
-				return;
-			}
-		}
+		communicate(event, jDispatcher.MONITOR_BUILD_BEGIN);
+	}
+
+	@Override
+	public void buildEnd(final MonitorEvent event)
+	{
+		communicate(event, jDispatcher.MONITOR_BUILD_END);
 	}
 
 	protected synchronized void communicate(final MonitorEvent event, final int mode)
@@ -157,27 +121,15 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 	}
 
 	@Override
-	public synchronized void beginSequence(final MonitorEvent event)
+	public void connect(final MonitorEvent event)
 	{
-		communicate(event, jDispatcher.MONITOR_BEGIN_SEQUENCE);
+		communicate(event, MonitorEvent.CONNECT_EVENT);
 	}
 
 	@Override
-	public void buildBegin(final MonitorEvent event)
+	public void disconnect(final MonitorEvent event)
 	{
-		communicate(event, jDispatcher.MONITOR_BUILD_BEGIN);
-	}
-
-	@Override
-	public void build(final MonitorEvent event)
-	{
-		communicate(event, jDispatcher.MONITOR_BUILD);
-	}
-
-	@Override
-	public void buildEnd(final MonitorEvent event)
-	{
-		communicate(event, jDispatcher.MONITOR_BUILD_END);
+		communicate(event, MonitorEvent.DISCONNECT_EVENT);
 	}
 
 	@Override
@@ -199,27 +151,75 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 	}
 
 	@Override
+	public void endPhase(final MonitorEvent event)
+	{
+		communicate(event, MonitorEvent.END_PHASE_EVENT);
+	}
+
+	@Override
 	public synchronized void endSequence(final MonitorEvent event)
 	{
 		communicate(event, jDispatcher.MONITOR_END_SEQUENCE);
 	}
 
 	@Override
-	public void disconnect(final MonitorEvent event)
+	public MdsMessage handleMessage(final MdsMessage[] messages)
 	{
-		communicate(event, MonitorEvent.DISCONNECT_EVENT);
+		if (messages.length < 6 || messages[2].dtype != Descriptor.DTYPE_SHORT
+				|| messages[1].dtype != Descriptor.DTYPE_BYTE)
+		{
+			System.err.println("Unexpected message has been received by MdsMonitor");
+		}
+		else
+		{
+			try
+			{
+				final short port = (messages[2].ToShortArray())[0];
+				final String addr = "" + toShort(messages[1].body[0]) + "." + toShort(messages[1].body[1]) + "."
+						+ toShort(messages[1].body[2]) + "." + toShort(messages[1].body[3]);
+				final Socket sock = new Socket(addr, port);
+				sockets.add(sock);
+				streams.add(new BufferedOutputStream(sock.getOutputStream()));
+			}
+			catch (final Exception exc)
+			{}
+		}
+		final MdsMessage msg = new MdsMessage((byte) 0, Descriptor.DTYPE_LONG, (byte) 0, null,
+				Descriptor.dataToByteArray(new Integer(1)));
+		msg.status = 1;
+		return msg;
 	}
 
-	@Override
-	public void connect(final MonitorEvent event)
+	public void sendMessages()
 	{
-		communicate(event, MonitorEvent.CONNECT_EVENT);
-	}
-
-	@Override
-	public void endPhase(final MonitorEvent event)
-	{
-		communicate(event, MonitorEvent.END_PHASE_EVENT);
+		while (true)
+		{
+			while (!msgs.isEmpty())
+			{
+				final byte[] msg = msgs.remove().toBytes();
+				for (final BufferedOutputStream stream : streams)
+				{
+					try
+					{
+						stream.write(msg);
+						stream.flush();
+					}
+					catch (final Exception exc)
+					{}
+				}
+			}
+			try
+			{
+				synchronized (MdsMonitor.this)
+				{
+					wait();
+				}
+			}
+			catch (final InterruptedException exc)
+			{
+				return;
+			}
+		}
 	}
 
 	@Override

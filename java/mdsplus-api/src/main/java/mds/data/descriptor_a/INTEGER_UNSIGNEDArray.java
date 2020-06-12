@@ -6,11 +6,6 @@ import mds.data.DTYPE;
 
 public abstract class INTEGER_UNSIGNEDArray<T extends Number> extends INTEGERArray<T>
 {
-	public INTEGER_UNSIGNEDArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
-	{
-		super(dtype, data, shape);
-	}
-
 	protected INTEGER_UNSIGNEDArray(final ByteBuffer b)
 	{
 		super(b);
@@ -24,6 +19,11 @@ public abstract class INTEGER_UNSIGNEDArray<T extends Number> extends INTEGERArr
 	protected INTEGER_UNSIGNEDArray(final DTYPE dtype, final byte[] values, final int... shape)
 	{
 		super(dtype, values, shape);
+	}
+
+	public INTEGER_UNSIGNEDArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
+	{
+		super(dtype, data, shape);
 	}
 
 	protected INTEGER_UNSIGNEDArray(final DTYPE dtype, final int[] values, final int... shape)

@@ -52,6 +52,18 @@ public class ContourSignal
 	private boolean xflag[][];
 	private boolean equalZ2;
 
+	ContourSignal(double x[], float y[], float z[][])
+	{
+		if (x.length != z.length || y.length != z[0].length)
+		{
+			throw (new IllegalArgumentException("Z colum must be equals to x element end Z row to y elements"));
+		}
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		computeMinMax();
+	}
+
 	ContourSignal(Signal s)
 	{
 		if (s.getType() == Signal.TYPE_2D)
@@ -65,23 +77,52 @@ public class ContourSignal
 		}
 	}
 
-	ContourSignal(double x[], float y[], float z[][])
-	{
-		if (x.length != z.length || y.length != z[0].length)
-		{
-			throw (new IllegalArgumentException("Z colum must be equals to x element end Z row to y elements"));
-		}
-		this.x = x;
-		this.y = y;
-		this.z = z;
-		computeMinMax();
-	}
-
 	private final boolean checkIntersection(double level, double z1, double z2)
 	{
 		boolean out;
 		out = (z1 < level && level < z2) || (z2 < level && level < z1) || (equalZ2 = (level == z2));
 		return out;
+	}
+
+	private void computeMinMax()
+	{
+		xmin = xmax = x[0];
+		ymin = ymax = y[0];
+		zmin = zmax = z[0][0];
+		for (int i = 0; i < x.length; i++)
+		{
+			if (x[i] < xmin)
+			{
+				xmin = x[i];
+			}
+			if (x[i] > xmax)
+			{
+				xmax = x[i];
+			}
+			for (int j = 0; j < z[0].length; j++)
+			{
+				if (z[i][j] < zmin)
+				{
+					zmin = z[i][j];
+				}
+				if (z[i][j] > zmax)
+				{
+					zmax = z[i][j];
+				}
+			}
+		}
+		for (int i = 0; i < y.length; i++)
+		{
+			if (y[i] < ymin)
+			{
+				ymin = y[i];
+			}
+			if (y[i] > ymax)
+			{
+				ymax = y[i];
+			}
+		}
+		equalCases();
 	}
 
 	public Vector<Vector<Point2D.Double>> contour(double level)
@@ -424,6 +465,25 @@ public class ContourSignal
 		return contours;
 	}
 
+	private void equalCases()
+	{
+		if (xmax == xmin)
+		{
+			xmin -= xmax / 10.f;
+			xmax += xmax / 10.f;
+		}
+		if (ymax == ymin)
+		{
+			ymin -= ymax / 10.f;
+			ymax += ymax / 10.f;
+		}
+		if (zmax == zmin)
+		{
+			zmin -= zmax / 10.f;
+			zmax += zmax / 10.f;
+		}
+	}
+
 	public void setMinMax(float xmin, float xmax, float ymin, float ymax, float zmin, float zmax)
 	{
 		setMinMaxX(xmin, xmax);
@@ -447,65 +507,5 @@ public class ContourSignal
 	{
 		this.zmin = zmin;
 		this.zmax = zmax;
-	}
-
-	private void computeMinMax()
-	{
-		xmin = xmax = x[0];
-		ymin = ymax = y[0];
-		zmin = zmax = z[0][0];
-		for (int i = 0; i < x.length; i++)
-		{
-			if (x[i] < xmin)
-			{
-				xmin = x[i];
-			}
-			if (x[i] > xmax)
-			{
-				xmax = x[i];
-			}
-			for (int j = 0; j < z[0].length; j++)
-			{
-				if (z[i][j] < zmin)
-				{
-					zmin = z[i][j];
-				}
-				if (z[i][j] > zmax)
-				{
-					zmax = z[i][j];
-				}
-			}
-		}
-		for (int i = 0; i < y.length; i++)
-		{
-			if (y[i] < ymin)
-			{
-				ymin = y[i];
-			}
-			if (y[i] > ymax)
-			{
-				ymax = y[i];
-			}
-		}
-		equalCases();
-	}
-
-	private void equalCases()
-	{
-		if (xmax == xmin)
-		{
-			xmin -= xmax / 10.f;
-			xmax += xmax / 10.f;
-		}
-		if (ymax == ymin)
-		{
-			ymin -= ymax / 10.f;
-			ymax += ymax / 10.f;
-		}
-		if (zmax == zmin)
-		{
-			zmin -= zmax / 10.f;
-			zmax += zmax / 10.f;
-		}
 	}
 }

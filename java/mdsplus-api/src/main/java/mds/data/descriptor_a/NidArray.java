@@ -43,6 +43,12 @@ public final class NidArray extends Descriptor_A<Nid>
 	}
 
 	@Override
+	protected final Descriptor<?> getData_(final DTYPE... omits)
+	{
+		return this.evaluate().getData(omits);
+	}
+
+	@Override
 	public final Nid getElement(final ByteBuffer b_in)
 	{
 		return new Nid(b_in.getInt(), this.tree);
@@ -58,6 +64,28 @@ public final class NidArray extends Descriptor_A<Nid>
 	public final Nid getScalar(final int idx)
 	{
 		return this.getElement(idx);
+	}
+
+	@Override
+	protected final String getSuffix()
+	{ return ""; }
+
+	@Override
+	protected final Nid[] initArray(final int size)
+	{
+		return new Nid[size];
+	}
+
+	@Override
+	protected final void setElement(final ByteBuffer b, final Nid value)
+	{
+		b.putInt(value.getNidNumber());
+	}
+
+	@Override
+	protected final void setElement(final int i, final Nid value)
+	{
+		this.p.putInt(i * Integer.BYTES, value.getNidNumber());
 	}
 
 	public final Nid[] toArray()
@@ -111,34 +139,6 @@ public final class NidArray extends Descriptor_A<Nid>
 	public final short toShort(final Nid t)
 	{
 		return t.toShort();
-	}
-
-	@Override
-	protected final Descriptor<?> getData_(final DTYPE... omits)
-	{
-		return this.evaluate().getData(omits);
-	}
-
-	@Override
-	protected final String getSuffix()
-	{ return ""; }
-
-	@Override
-	protected final Nid[] initArray(final int size)
-	{
-		return new Nid[size];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final Nid value)
-	{
-		b.putInt(value.getNidNumber());
-	}
-
-	@Override
-	protected final void setElement(final int i, final Nid value)
-	{
-		this.p.putInt(i * Integer.BYTES, value.getNidNumber());
 	}
 
 	@Override

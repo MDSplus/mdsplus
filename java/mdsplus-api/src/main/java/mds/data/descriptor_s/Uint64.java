@@ -117,6 +117,10 @@ public final class Uint64 extends INTEGER_UNSIGNED<ULong>
 	{ return ULong.fromBuffer(this.p, 0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public final Uint64 inot()
 	{
 		return new Uint64(~this.getAtomic().value);
@@ -168,8 +172,4 @@ public final class Uint64 extends INTEGER_UNSIGNED<ULong>
 	{
 		return new Uint64(X.toLong() - Y.toLong());
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
 }

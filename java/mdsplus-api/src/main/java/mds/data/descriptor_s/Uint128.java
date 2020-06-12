@@ -80,6 +80,10 @@ public final class Uint128 extends INTEGER_UNSIGNED<BigInteger>
 	public final BigInteger getAtomic()
 	{ return Uint128.getBigInteger(this.p, 0); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x0F; }
+
 	public final BigInteger getValue()
 	{ return this.getAtomic(); }
 
@@ -160,8 +164,4 @@ public final class Uint128 extends INTEGER_UNSIGNED<BigInteger>
 	{
 		return this.getAtomic();
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x0F; }
 }

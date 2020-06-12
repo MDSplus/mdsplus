@@ -59,10 +59,6 @@ public class ACQ480 extends ACQ4xx
 		this.pane = sp;
 	}
 
-	@Override
-	public Master getMaster()
-	{ return new Master(this.head); }
-
 	private void addChannel(final int i)
 	{
 		final String path = String.format("CHANNEL%02d", Integer.valueOf(this.index * this.channel.length + i + 1));
@@ -78,4 +74,8 @@ public class ACQ480 extends ACQ4xx
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public Master getMaster()
+	{ return new Master(this.head); }
 }

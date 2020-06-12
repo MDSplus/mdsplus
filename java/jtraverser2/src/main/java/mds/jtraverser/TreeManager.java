@@ -21,26 +21,8 @@ import mds.mdsip.MdsIp.Provider;
 
 public class TreeManager extends JPanel
 {
-	private static final long serialVersionUID = 1L;
-
 	public static final class AddNodeMenu extends Menu
 	{
-		public final class AddNodeAL implements ActionListener
-		{
-			private final byte lusage;
-
-			public AddNodeAL(final byte usage_in)
-			{
-				this.lusage = usage_in;
-			}
-
-			@Override
-			public final void actionPerformed(final ActionEvent e)
-			{
-				AddNodeMenu.this.treeman.dialogs.addNode.open(AddNodeMenu.this.treeman.getCurrentNode(), this.lusage);
-			}
-		}
-
 		private final class AddDevice implements ActionListener
 		{
 			@Override
@@ -65,6 +47,22 @@ public class TreeManager extends JPanel
 					{
 						MdsException.stderr("AddDevice", me);
 					}
+			}
+		}
+
+		public final class AddNodeAL implements ActionListener
+		{
+			private final byte lusage;
+
+			public AddNodeAL(final byte usage_in)
+			{
+				this.lusage = usage_in;
+			}
+
+			@Override
+			public final void actionPerformed(final ActionEvent e)
+			{
+				AddNodeMenu.this.treeman.dialogs.addNode.open(AddNodeMenu.this.treeman.getCurrentNode(), this.lusage);
 			}
 		}
 
@@ -456,6 +454,24 @@ public class TreeManager extends JPanel
 
 	public static final class EditMenu extends Menu
 	{
+		private final class CopyNode implements ActionListener
+		{
+			@Override
+			public final void actionPerformed(final ActionEvent e)
+			{
+				EditMenu.this.treeman.getCurrentNode().copy();
+			}
+		}
+
+		private final class DeleteNode implements ActionListener
+		{
+			@Override
+			public final void actionPerformed(final ActionEvent e)
+			{
+				EditMenu.this.treeman.getCurrentTreeView().deleteNode();
+			}
+		}
+
 		public final class EditTags implements ActionListener
 		{
 			@Override
@@ -483,24 +499,6 @@ public class TreeManager extends JPanel
 			public final void actionPerformed(final ActionEvent e)
 			{
 				EditMenu.this.treeman.rename();
-			}
-		}
-
-		private final class CopyNode implements ActionListener
-		{
-			@Override
-			public final void actionPerformed(final ActionEvent e)
-			{
-				EditMenu.this.treeman.getCurrentNode().copy();
-			}
-		}
-
-		private final class DeleteNode implements ActionListener
-		{
-			@Override
-			public final void actionPerformed(final ActionEvent e)
-			{
-				EditMenu.this.treeman.getCurrentTreeView().deleteNode();
 			}
 		}
 
@@ -915,9 +913,6 @@ public class TreeManager extends JPanel
 			}
 		}
 
-		public void checkSupport()
-		{/* stub */}
-
 		protected final JMenuItem addMenuItem(final JMenuItem item, final ActionListener l)
 		{
 			this.items.add(item);
@@ -939,6 +934,9 @@ public class TreeManager extends JPanel
 			if (this.gbc == null)
 				this.menu.add(new JSeparator());
 		}
+
+		public void checkSupport()
+		{/* stub */}
 	}
 
 	public static final class ModifyMenu extends Menu
@@ -1059,6 +1057,7 @@ public class TreeManager extends JPanel
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	static
 	{
 		ToolTipManager.sharedInstance().setDismissDelay(60000);
@@ -1253,6 +1252,11 @@ public class TreeManager extends JPanel
 		return mdsview.getMds();
 	}
 
+	private final MdsView getMdsViewAt(final int index)
+	{
+		return (MdsView) this.tabs.getComponentAt(index);
+	}
+
 	public final MdsView openMds(final Provider provider)
 	{
 		FileMenu.prev_provider = provider.toString();
@@ -1351,10 +1355,5 @@ public class TreeManager extends JPanel
 	public final void writeTree()
 	{
 		this.getCurrentTreeView().writeTree();
-	}
-
-	private final MdsView getMdsViewAt(final int index)
-	{
-		return (MdsView) this.tabs.getComponentAt(index);
 	}
 }

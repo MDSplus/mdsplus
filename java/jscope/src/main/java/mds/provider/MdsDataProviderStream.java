@@ -15,9 +15,6 @@ import mds.wave.WaveDataListener;
  */
 public class MdsDataProviderStream extends MdsDataProvider
 {
-	final private Vector<Connection> activeConnections = new Vector<Connection>();
-	Connection conn = null;
-
 	/** Handles data streaming in jScope */
 	class AsynchWaveData implements AsyncDataSource, DataStreamListener
 	{
@@ -28,22 +25,12 @@ public class MdsDataProviderStream extends MdsDataProvider
 		Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
 
 		@Override
-		public void startGeneration(java.lang.String expression)
+		public void addDataListener(WaveDataListener listener)
 		{
-			try
-			{
-				final Connection conn = new Connection(getProvider());
-				synchronized (activeConnections)
-				{
-					activeConnections.addElement(conn);
-				}
-				conn.registerStreamListener(this, expression, experiment, (int) shot);
-				conn.startStreaming();
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Cannot connect to " + getProvider());
-			}
+			listeners.addElement(listener);
+			for (int i = 0; i < samplesV.size(); i++)
+				handleDataReceived(samplesV.elementAt(i), timesV.elementAt(i));
+			listenerReady = true;
 		}
 
 		@Override
@@ -100,14 +87,27 @@ public class MdsDataProviderStream extends MdsDataProvider
 		}
 
 		@Override
-		public void addDataListener(WaveDataListener listener)
+		public void startGeneration(java.lang.String expression)
 		{
-			listeners.addElement(listener);
-			for (int i = 0; i < samplesV.size(); i++)
-				handleDataReceived(samplesV.elementAt(i), timesV.elementAt(i));
-			listenerReady = true;
+			try
+			{
+				final Connection conn = new Connection(getProvider());
+				synchronized (activeConnections)
+				{
+					activeConnections.addElement(conn);
+				}
+				conn.registerStreamListener(this, expression, experiment, (int) shot);
+				conn.startStreaming();
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Cannot connect to " + getProvider());
+			}
 		}
 	} // End inner class AsynchWaveData
+	final private Vector<Connection> activeConnections = new Vector<Connection>();
+
+	Connection conn = null;
 
 	@Override
 	public AsyncDataSource getAsynchSource()

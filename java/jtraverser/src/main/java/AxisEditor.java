@@ -59,27 +59,6 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 	}
 
-	private void addEditor()
-	{
-		switch (curr_mode_idx)
-		{
-		case 0:
-			return;
-		case 1:
-			range_edit = new RangeEditor(range);
-			units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
-			mode_panel.add(units_edit);
-			add(range_edit, "Center");
-			break;
-		case 2:
-			expr_edit = new LabeledExprEditor(data);
-			units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
-			mode_panel.add(units_edit);
-			add(expr_edit, "Center");
-			break;
-		}
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -108,27 +87,25 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 		dialog.repack();
 	}
 
-	@Override
-	public void reset()
+	private void addEditor()
 	{
 		switch (curr_mode_idx)
 		{
+		case 0:
+			return;
 		case 1:
-			mode_panel.remove(units_edit);
-			units_edit = null;
-			remove(range_edit);
-			range_edit = null;
+			range_edit = new RangeEditor(range);
+			units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
+			mode_panel.add(units_edit);
+			add(range_edit, "Center");
 			break;
 		case 2:
-			mode_panel.remove(units_edit);
-			remove(expr_edit);
-			expr_edit = null;
+			expr_edit = new LabeledExprEditor(data);
+			units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
+			mode_panel.add(units_edit);
+			add(expr_edit, "Center");
 			break;
 		}
-		curr_mode_idx = mode_idx;
-		addEditor();
-		validate();
-		repaint();
 	}
 
 	@Override
@@ -156,6 +133,29 @@ public class AxisEditor extends JPanel implements ActionListener, Editor
 		}
 		}
 		return null;
+	}
+
+	@Override
+	public void reset()
+	{
+		switch (curr_mode_idx)
+		{
+		case 1:
+			mode_panel.remove(units_edit);
+			units_edit = null;
+			remove(range_edit);
+			range_edit = null;
+			break;
+		case 2:
+			mode_panel.remove(units_edit);
+			remove(expr_edit);
+			expr_edit = null;
+			break;
+		}
+		curr_mode_idx = mode_idx;
+		addEditor();
+		validate();
+		repaint();
 	}
 
 	public void setData(MDSplus.Data data)

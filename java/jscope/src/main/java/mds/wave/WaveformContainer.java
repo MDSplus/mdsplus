@@ -23,16 +23,34 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	private static Waveform copy_waveform = null;
+	public static void disableDoubleBuffering(Component c)
+	{
+		final RepaintManager currentManager = RepaintManager.currentManager(c);
+		currentManager.setDoubleBufferingEnabled(false);
+	}
+	public static void enableDoubleBuffering(Component c)
+	{
+		final RepaintManager currentManager = RepaintManager.currentManager(c);
+		currentManager.setDoubleBufferingEnabled(true);
+	}
 	private Waveform sel_wave;
 	int mode = Waveform.MODE_ZOOM, grid_mode = Grid.IS_DOTTED, x_grid_lines = 5, y_grid_lines = 5;
 	protected boolean reversed = false;
-	private static Waveform copy_waveform = null;
 	protected Font font = new Font("Helvetica", Font.PLAIN, 12);
 	protected WavePopup wave_popup;
 	private final Vector<WaveContainerListener> wave_container_listener = new Vector<>();
 	protected boolean print_with_legend = false;
+
 	protected boolean print_bw = false;
+
 	protected String save_as_txt_directory = null;
+
+	public WaveformContainer()
+	{
+		super();
+		CreateWaveformContainer(true);
+	}
 
 	/**
 	 * Constructs a new WaveformContainer with a number of column and component in
@@ -46,10 +64,161 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		CreateWaveformContainer(add_component);
 	}
 
-	public WaveformContainer()
+	/**
+	 * Add MultiWaveform to the container
+	 *
+	 * @param c an array of MultiWaveform to add
+	 */
+	public void AddComponents(Component c[])
 	{
-		super();
-		CreateWaveformContainer(true);
+		super.add(c);
+		/*
+		 * for(int i = 0; i < c.length; i++) if(c[i] instanceof Waveform) {
+		 * ((Waveform)c[i]).addWaveformListener(this); }
+		 */
+	}
+
+	/**
+	 * Adds the specified waveform container listener to receive WaveContainerEvent
+	 * events from this WaveformContainer.
+	 *
+	 * @param l the waveform container listener
+	 */
+	public synchronized void addWaveContainerListener(WaveContainerListener l)
+	{
+		if (l == null)
+		{
+			return;
+		}
+		wave_container_listener.addElement(l);
+	}
+
+	@Override
+	public void allSameScale(Waveform curr_w)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				if (w != curr_w)
+					w.SetScale(curr_w);
+		}
+	}
+
+	@Override
+	public void allSameXScale(Waveform curr_w)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null && w != curr_w)
+				w.SetXScale(curr_w);
+		}
+	}
+
+	@Override
+	public void allSameXScaleAutoY(Waveform curr_w)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.SetXScaleAutoY(curr_w);
+		}
+	}
+
+	@Override
+	public void allSameYScale(Waveform curr_w)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				if (w != curr_w)
+					w.SetYScale(curr_w);
+		}
+	}
+
+	synchronized public void appendUpdateWaveforms()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.appendUpdate();
+		}
+	}
+
+	@Override
+	public void autoscaleAll()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.Autoscale();
+		}
+	}
+
+	@Override
+	public void autoscaleAllImages()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null && w.IsImage())
+				w.Autoscale();
+		}
+	}
+
+	@Override
+	public void autoscaleAllY()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.AutoscaleY();
+		}
+	}
+
+	/**
+	 * Return a new MultiWaveform component
+	 *
+	 * @return a MulitiWaveform components
+	 */
+	public Component CreateWaveComponent()
+	{
+		final Component[] c = CreateWaveComponents(1);
+		return c[0];
+	}
+
+	/**
+	 * Create an array of MultiWaveform
+	 *
+	 * @param num dimension of return array
+	 * @return an array of MultiWaveform
+	 */
+	protected Component[] CreateWaveComponents(int num)
+	{
+		final Component c[] = new Component[num];
+		MultiWaveform wave;
+		for (int i = 0; i < c.length; i++)
+		{
+			wave = new MultiWaveform();
+			wave.addWaveformListener(this);
+			SetWaveParams(wave);
+			c[i] = wave;
+		}
+		return c;
 	}
 
 	/**
@@ -100,78 +269,17 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	}
 
 	/**
-	 * Return a new MultiWaveform component
+	 * Deselect waveform.
 	 *
-	 * @return a MulitiWaveform components
+	 * @see Waveform
+	 * @see MultiWaveform
 	 */
-	public Component CreateWaveComponent()
+	@Override
+	public void deselect()
 	{
-		final Component[] c = CreateWaveComponents(1);
-		return c[0];
-	}
-
-	/**
-	 * Create an array of MultiWaveform
-	 *
-	 * @param num dimension of return array
-	 * @return an array of MultiWaveform
-	 */
-	protected Component[] CreateWaveComponents(int num)
-	{
-		final Component c[] = new Component[num];
-		MultiWaveform wave;
-		for (int i = 0; i < c.length; i++)
-		{
-			wave = new MultiWaveform();
-			wave.addWaveformListener(this);
-			SetWaveParams(wave);
-			c[i] = wave;
-		}
-		return c;
-	}
-
-	/**
-	 * Add MultiWaveform to the container
-	 *
-	 * @param c an array of MultiWaveform to add
-	 */
-	public void AddComponents(Component c[])
-	{
-		super.add(c);
-		/*
-		 * for(int i = 0; i < c.length; i++) if(c[i] instanceof Waveform) {
-		 * ((Waveform)c[i]).addWaveformListener(this); }
-		 */
-	}
-
-	/**
-	 * Adds the specified waveform container listener to receive WaveContainerEvent
-	 * events from this WaveformContainer.
-	 *
-	 * @param l the waveform container listener
-	 */
-	public synchronized void addWaveContainerListener(WaveContainerListener l)
-	{
-		if (l == null)
-		{
-			return;
-		}
-		wave_container_listener.addElement(l);
-	}
-
-	/**
-	 * Removes the specified waveform container listener so that it no longer
-	 * receives WaveContainerEvent events from this WaveformContainer.
-	 *
-	 * @param l the waveform container listener
-	 */
-	public synchronized void removeContainerListener(ActionListener l)
-	{
-		if (l == null)
-		{
-			return;
-		}
-		wave_container_listener.removeElement(l);
+		if (sel_wave != null)
+			sel_wave.DeselectWave();
+		sel_wave = null;
 	}
 
 	/**
@@ -192,436 +300,42 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	}
 
 	/**
-	 * process waveform event on this container
+	 * Get current waveform selected as copy source
 	 *
-	 * @param e the waveform event
+	 * @return copy source waveform
 	 */
 	@Override
-	public void processWaveformEvent(WaveformEvent e)
+	public Waveform getCopySource()
+	{ return copy_waveform; }
+
+	private String getFileName(Waveform w)
 	{
-		final Waveform w = (Waveform) e.getSource();
-		switch (e.getID())
+		String out;
+		final Properties prop = new Properties();
+		final String pr = w.getProperties();
+		try
 		{
-		case WaveformEvent.BROADCAST_SCALE:
-			allSameScale(w);
-			return;
-		case WaveformEvent.COPY_PASTE:
-			if (copy_waveform != null)
-				notifyChange(w, copy_waveform);
-			return;
-		case WaveformEvent.COPY_CUT:
-			setCopySource(w);
-			return;
-		case WaveformEvent.PROFILE_UPDATE:
-			return;
-		case WaveformEvent.POINT_UPDATE:
-		case WaveformEvent.MEASURE_UPDATE:
-			if (w.GetMode() == Waveform.MODE_POINT)
-			{
-				double x = e.point_x;
-				final double y = e.point_y;
-				if (w.IsImage())
-					x = e.delta_x;
-				else if (e.is_mb2)
-					allSameXScaleAutoY(w);
-				// Set x to time_value allows pannels synchronization from 2D
-				// signal viewed in MODE_YX
-				if (!Double.isNaN(e.time_value))
-					x = e.time_value;
-				UpdatePoints(x, y, (Waveform) e.getSource());
-			}
-			/*
-			 * if(!w.IsImage() && show_measure) { e = new WaveformEvent(e.getSource(),
-			 * WaveformEvent.MEASURE_UPDATE, e.point_x, e.point_y, e.delta_x, e.delta_y, 0,
-			 * e.signal_idx); }
-			 */
-			break;
-		case WaveformEvent.POINT_IMAGE_UPDATE:
-			break;
+			prop.load(new StringReader(pr));
+			out = w.GetTitle();
+			out = out + "_" + prop.getProperty("x_pix");
+			out = out + "_" + prop.getProperty("y_pix");
+			out = out + "_" + prop.getProperty("time");
+			out = out.replace('.', '-') + ".txt";
 		}
-		final WaveContainerEvent we = new WaveContainerEvent(this, e);
-		dispatchWaveContainerEvent(we);
-	}
-
-	/**
-	 * Set popup menu to this container
-	 *
-	 * @param wave_popup the popup menu
-	 */
-	public void setPopupMenu(WavePopup wave_popup)
-	{
-		this.wave_popup = wave_popup;
-		wave_popup.setParent(this);
-	}
-
-	public Waveform GetWavePanel(int idx)
-	{
-		final Component c = getGridComponent(idx);
-		if (c instanceof MultiWaveform || c instanceof Waveform)
-			return (Waveform) c;
-		else
-			return null;
-	}
-
-	/**
-	 * Set current MultiWaveform parameters
-	 *
-	 * @param w the MultiWaveform to set params
-	 */
-	public void SetWaveParams(Waveform w)
-	{
-		final boolean int_label = (grid_mode == 2 ? false : true);
-		w.SetMode(mode);
-		w.SetReversed(reversed);
-		w.SetGridMode(grid_mode, int_label, int_label);
-		w.SetGridSteps(x_grid_lines, y_grid_lines);
-	}
-
-	/**
-	 * Return indexn of an added MultiWaveform
-	 *
-	 * @param w The MultiWaveform
-	 * @return the MultiWaveform index
-	 */
-	public int GetWaveIndex(Waveform w)
-	{
-		int idx;
-		for (idx = 0; idx < getGridComponentCount() && GetWavePanel(idx) != w; idx++);
-		if (idx < getGridComponentCount())
-			return idx;
-		else
-			return -1;
+		catch (final Exception e)
+		{
+			out = null;
+		}
+		return out;
 	}
 
 	@Override
-	public Point getWavePosition(Waveform w)
-	{
-		return getComponentPosition(w);
-	}
-
-	/**
-	 * Remove current MultiWaveform selected
-	 */
-	public void RemoveSelection()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount() && copy_waveform != null; i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-			{
-				if (w.IsCopySelected())
-				{
-					copy_waveform = null;
-					w.SetCopySelected(false);
-					break;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Enable / disable show measurament
-	 *
-	 * @param state shoe measurament state
-	 */
-	@Override
-	public void setShowMeasure(boolean state)
-	{
-		if (state)
-		{
-			Waveform w;
-			for (int i = 0; i < getGridComponentCount(); i++)
-			{
-				w = GetWavePanel(i);
-				if (w != null)
-					w.show_measure = false;
-			}
-		}
-	}
-
-	/* synchronized */@Override
-	public void updatePoints(double x, Waveform curr_w)
-	{
-		UpdatePoints(x, Double.NaN, curr_w);
-	}
-
-	/**
-	 * Update crosshair position
-	 *
-	 * @param curr_x x axis position
-	 * @param w      a waveform to update cross
-	 * @see Waveform
-	 * @see MultiWaveform
-	 */
-	/* synchronized */public void UpdatePoints(double x, double y, Waveform curr_w)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null && w != curr_w)
-				w.UpdatePoint(x, y);
-		}
-	}
-
-	synchronized public void appendUpdateWaveforms()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.appendUpdate();
-		}
-	}
-
-	synchronized public void updateWaveforms()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.Update();
-		}
-	}
-
-	@Override
-	public void autoscaleAll()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.Autoscale();
-		}
-	}
-
-	@Override
-	public void autoscaleAllImages()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null && w.IsImage())
-				w.Autoscale();
-		}
-	}
-
-	@Override
-	public void autoscaleAllY()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.AutoscaleY();
-		}
-	}
-
-	@Override
-	public void allSameScale(Waveform curr_w)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				if (w != curr_w)
-					w.SetScale(curr_w);
-		}
-	}
-
-	@Override
-	public void allSameXScaleAutoY(Waveform curr_w)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.SetXScaleAutoY(curr_w);
-		}
-	}
-
-	@Override
-	public void allSameYScale(Waveform curr_w)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				if (w != curr_w)
-					w.SetYScale(curr_w);
-		}
-	}
-
-	@Override
-	public void allSameXScale(Waveform curr_w)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null && w != curr_w)
-				w.SetXScale(curr_w);
-		}
-	}
-
-	@Override
-	public void resetAllScales()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.ResetScales();
-		}
-	}
-
-	@Override
-	public void notifyChange(Waveform dest, Waveform source)
-	{
-		dest.Copy(source);
-	}
-
-	@Override
-	public void removePanel(Waveform w)
-	{
-		if (w == sel_wave)
-			sel_wave = null;
-		if (w.IsCopySelected())
-		{
-			copy_waveform = null;
-			w.SetCopySelected(false);
-		}
-		super.removeComponent(w);
-	}
+	public Component getMaximizeComponent()
+	{ return super.getMaximizeComponent(); }
 
 	public int GetMode()
 	{
 		return mode;
-	}
-
-	@Override
-	public int getWaveformCount()
-	{ return this.getGridComponentCount(); }
-
-	public void SetFont(Font font)
-	{
-		Waveform.SetFont(font);
-	}
-
-	public void setLegendMode(int legend_mode)
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null && w instanceof MultiWaveform)
-				((MultiWaveform) w).setLegendMode(legend_mode);
-		}
-	}
-
-	public void setPrintWithLegend(boolean print_with_legend)
-	{ this.print_with_legend = print_with_legend; }
-
-	public void setPrintBW(boolean print_bw)
-	{ this.print_bw = print_bw; }
-
-	public void SetColors(Color colors[], String colors_name[])
-	{
-		for (int i = 0, k = 0; i < rows.length; i++)
-			for (int j = 0; j < rows[i]; j++, k++)
-			{
-				final Waveform w = GetWavePanel(k);
-				if (w != null)
-					Waveform.SetColors(colors, colors_name);
-			}
-	}
-
-	public void SetParams(int mode, int grid_mode, int legend_mode, int x_grid_lines, int y_grid_lines,
-			boolean reversed)
-	{
-		SetReversed(reversed);
-		SetMode(mode);
-		SetGridMode(grid_mode);
-		SetGridStep(x_grid_lines, y_grid_lines);
-		setLegendMode(legend_mode);
-	}
-
-	public void SetReversed(boolean reversed)
-	{
-		Waveform w;
-		this.reversed = reversed;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.SetReversed(reversed);
-		}
-	}
-
-	public void stopPlaying()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.StopFrame();
-		}
-	}
-
-	public void SetMode(int mode)
-	{
-		Waveform w;
-		this.mode = mode;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-			{
-				if (copy_waveform == w && w.mode == Waveform.MODE_COPY && mode != Waveform.MODE_COPY)
-				{
-					RemoveSelection();
-					copy_waveform = null;
-				}
-				w.SetMode(mode);
-			}
-		}
-	}
-
-	public void SetGridMode(int grid_mode)
-	{
-		Waveform w;
-		this.grid_mode = grid_mode;
-		final boolean int_label = (grid_mode == 2 ? false : true);
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.SetGridMode(grid_mode, int_label, int_label);
-		}
-	}
-
-	public void SetGridStep(int x_grid_lines, int y_grid_lines)
-	{
-		Waveform w;
-		this.x_grid_lines = x_grid_lines;
-		this.y_grid_lines = y_grid_lines;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.SetGridSteps(x_grid_lines, y_grid_lines);
-		}
 	}
 
 	public Waveform GetSelectPanel()
@@ -647,67 +361,39 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		return w;
 	}
 
-	public void ResetDrawPanel(int _row[])
-	{
-		int n_wave = 0;
-		int num = 0;
-		for (int i = 0; i < _row.length; i++)
-		{
-			n_wave = (_row[i] - rows[i]);
-			if (n_wave > 0)
-				num += n_wave;
-		}
-		Component c[] = null;
-		if (num > 0)
-			c = CreateWaveComponents(num);
-		update(_row, c);
-		if (sel_wave != null)
-			sel_wave.SelectWave();
-		// System.gc();
-	}
+	@Override
+	public int getWaveformCount()
+	{ return this.getGridComponentCount(); }
 
 	/**
-	 * Deselect waveform.
+	 * Return indexn of an added MultiWaveform
 	 *
-	 * @see Waveform
-	 * @see MultiWaveform
+	 * @param w The MultiWaveform
+	 * @return the MultiWaveform index
 	 */
-	@Override
-	public void deselect()
+	public int GetWaveIndex(Waveform w)
 	{
-		if (sel_wave != null)
-			sel_wave.DeselectWave();
-		sel_wave = null;
+		int idx;
+		for (idx = 0; idx < getGridComponentCount() && GetWavePanel(idx) != w; idx++);
+		if (idx < getGridComponentCount())
+			return idx;
+		else
+			return -1;
+	}
+
+	public Waveform GetWavePanel(int idx)
+	{
+		final Component c = getGridComponent(idx);
+		if (c instanceof MultiWaveform || c instanceof Waveform)
+			return (Waveform) c;
+		else
+			return null;
 	}
 
 	@Override
-	public void maximizeComponent(Waveform w)
+	public Point getWavePosition(Waveform w)
 	{
-		super.maximizeComponent(w);
-	}
-
-	@Override
-	public Component getMaximizeComponent()
-	{ return super.getMaximizeComponent(); }
-
-	public boolean isMaximize(Waveform w)
-	{
-		return super.isMaximize();
-	}
-
-	/**
-	 * Select a waveform
-	 *
-	 * @param w waveform to select
-	 * @see Waveform
-	 * @see MultiWaveform
-	 */
-	@Override
-	public void select(Waveform w)
-	{
-		deselect();
-		sel_wave = w;
-		sel_wave.SelectWave();
+		return getComponentPosition(w);
 	}
 
 	/**
@@ -721,6 +407,26 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	public Waveform gGetSelected()
 	{
 		return sel_wave;
+	}
+
+	public boolean isMaximize(Waveform w)
+	{
+		return super.isMaximize();
+	}
+
+	public void LoadFileConfiguration()
+	{}
+
+	@Override
+	public void maximizeComponent(Waveform w)
+	{
+		super.maximizeComponent(w);
+	}
+
+	@Override
+	public void notifyChange(Waveform dest, Waveform source)
+	{
+		dest.Copy(source);
 	}
 
 	@Override
@@ -757,71 +463,6 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		else
 			return Printable.NO_SUCH_PAGE;
 	}
-
-	/**
-	 * Set copy source waveform
-	 *
-	 * @param w copy source waveform
-	 * @see Waveform
-	 * @see MultiWaveform
-	 */
-	@Override
-	public void setCopySource(Waveform w)
-	{
-		/*
-		 * if(w != null) w.SetCopySelected(true); else if(copy_waveform != null)
-		 * copy_waveform.SetCopySelected(false);
-		 */
-		if (w != null)
-		{
-			if (w == copy_waveform)
-			{
-				w.SetCopySelected(false);
-				copy_waveform = null;
-				return;
-			}
-			else
-				w.SetCopySelected(true);
-		}
-		if (copy_waveform != null)
-			copy_waveform.SetCopySelected(false);
-		copy_waveform = w;
-	}
-
-	/**
-	 * Get current waveform selected as copy source
-	 *
-	 * @return copy source waveform
-	 */
-	@Override
-	public Waveform getCopySource()
-	{ return copy_waveform; }
-
-	public void RepaintAllWaves()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.repaint();
-		}
-	}
-
-	public void RemoveAllSignals()
-	{
-		Waveform w;
-		for (int i = 0; i < getGridComponentCount(); i++)
-		{
-			w = GetWavePanel(i);
-			if (w != null)
-				w.Erase();
-		}
-		System.gc();
-	}
-
-	public void LoadFileConfiguration()
-	{}
 
 	public void PrintAll(Graphics g, int st_x, int st_y, int height, int width)
 	{
@@ -879,37 +520,159 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 		}
 	}
 
-	public static void disableDoubleBuffering(Component c)
+	/**
+	 * process waveform event on this container
+	 *
+	 * @param e the waveform event
+	 */
+	@Override
+	public void processWaveformEvent(WaveformEvent e)
 	{
-		final RepaintManager currentManager = RepaintManager.currentManager(c);
-		currentManager.setDoubleBufferingEnabled(false);
+		final Waveform w = (Waveform) e.getSource();
+		switch (e.getID())
+		{
+		case WaveformEvent.BROADCAST_SCALE:
+			allSameScale(w);
+			return;
+		case WaveformEvent.COPY_PASTE:
+			if (copy_waveform != null)
+				notifyChange(w, copy_waveform);
+			return;
+		case WaveformEvent.COPY_CUT:
+			setCopySource(w);
+			return;
+		case WaveformEvent.PROFILE_UPDATE:
+			return;
+		case WaveformEvent.POINT_UPDATE:
+		case WaveformEvent.MEASURE_UPDATE:
+			if (w.GetMode() == Waveform.MODE_POINT)
+			{
+				double x = e.point_x;
+				final double y = e.point_y;
+				if (w.IsImage())
+					x = e.delta_x;
+				else if (e.is_mb2)
+					allSameXScaleAutoY(w);
+				// Set x to time_value allows pannels synchronization from 2D
+				// signal viewed in MODE_YX
+				if (!Double.isNaN(e.time_value))
+					x = e.time_value;
+				UpdatePoints(x, y, (Waveform) e.getSource());
+			}
+			/*
+			 * if(!w.IsImage() && show_measure) { e = new WaveformEvent(e.getSource(),
+			 * WaveformEvent.MEASURE_UPDATE, e.point_x, e.point_y, e.delta_x, e.delta_y, 0,
+			 * e.signal_idx); }
+			 */
+			break;
+		case WaveformEvent.POINT_IMAGE_UPDATE:
+			break;
+		}
+		final WaveContainerEvent we = new WaveContainerEvent(this, e);
+		dispatchWaveContainerEvent(we);
 	}
 
-	public static void enableDoubleBuffering(Component c)
+	public void RemoveAllSignals()
 	{
-		final RepaintManager currentManager = RepaintManager.currentManager(c);
-		currentManager.setDoubleBufferingEnabled(true);
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.Erase();
+		}
+		System.gc();
 	}
 
-	private String getFileName(Waveform w)
+	/**
+	 * Removes the specified waveform container listener so that it no longer
+	 * receives WaveContainerEvent events from this WaveformContainer.
+	 *
+	 * @param l the waveform container listener
+	 */
+	public synchronized void removeContainerListener(ActionListener l)
 	{
-		String out;
-		final Properties prop = new Properties();
-		final String pr = w.getProperties();
-		try
+		if (l == null)
 		{
-			prop.load(new StringReader(pr));
-			out = w.GetTitle();
-			out = out + "_" + prop.getProperty("x_pix");
-			out = out + "_" + prop.getProperty("y_pix");
-			out = out + "_" + prop.getProperty("time");
-			out = out.replace('.', '-') + ".txt";
+			return;
 		}
-		catch (final Exception e)
+		wave_container_listener.removeElement(l);
+	}
+
+	@Override
+	public void removePanel(Waveform w)
+	{
+		if (w == sel_wave)
+			sel_wave = null;
+		if (w.IsCopySelected())
 		{
-			out = null;
+			copy_waveform = null;
+			w.SetCopySelected(false);
 		}
-		return out;
+		super.removeComponent(w);
+	}
+
+	/**
+	 * Remove current MultiWaveform selected
+	 */
+	public void RemoveSelection()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount() && copy_waveform != null; i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+			{
+				if (w.IsCopySelected())
+				{
+					copy_waveform = null;
+					w.SetCopySelected(false);
+					break;
+				}
+			}
+		}
+	}
+
+	public void RepaintAllWaves()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.repaint();
+		}
+	}
+
+	@Override
+	public void resetAllScales()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.ResetScales();
+		}
+	}
+
+	public void ResetDrawPanel(int _row[])
+	{
+		int n_wave = 0;
+		int num = 0;
+		for (int i = 0; i < _row.length; i++)
+		{
+			n_wave = (_row[i] - rows[i]);
+			if (n_wave > 0)
+				num += n_wave;
+		}
+		Component c[] = null;
+		if (num > 0)
+			c = CreateWaveComponents(num);
+		update(_row, c);
+		if (sel_wave != null)
+			sel_wave.SelectWave();
+		// System.gc();
 	}
 
 	public void SaveAsText(Waveform w, boolean all)
@@ -1018,6 +781,243 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 					System.out.println(e);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Select a waveform
+	 *
+	 * @param w waveform to select
+	 * @see Waveform
+	 * @see MultiWaveform
+	 */
+	@Override
+	public void select(Waveform w)
+	{
+		deselect();
+		sel_wave = w;
+		sel_wave.SelectWave();
+	}
+
+	public void SetColors(Color colors[], String colors_name[])
+	{
+		for (int i = 0, k = 0; i < rows.length; i++)
+			for (int j = 0; j < rows[i]; j++, k++)
+			{
+				final Waveform w = GetWavePanel(k);
+				if (w != null)
+					Waveform.SetColors(colors, colors_name);
+			}
+	}
+
+	/**
+	 * Set copy source waveform
+	 *
+	 * @param w copy source waveform
+	 * @see Waveform
+	 * @see MultiWaveform
+	 */
+	@Override
+	public void setCopySource(Waveform w)
+	{
+		/*
+		 * if(w != null) w.SetCopySelected(true); else if(copy_waveform != null)
+		 * copy_waveform.SetCopySelected(false);
+		 */
+		if (w != null)
+		{
+			if (w == copy_waveform)
+			{
+				w.SetCopySelected(false);
+				copy_waveform = null;
+				return;
+			}
+			else
+				w.SetCopySelected(true);
+		}
+		if (copy_waveform != null)
+			copy_waveform.SetCopySelected(false);
+		copy_waveform = w;
+	}
+
+	public void SetFont(Font font)
+	{
+		Waveform.SetFont(font);
+	}
+
+	public void SetGridMode(int grid_mode)
+	{
+		Waveform w;
+		this.grid_mode = grid_mode;
+		final boolean int_label = (grid_mode == 2 ? false : true);
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.SetGridMode(grid_mode, int_label, int_label);
+		}
+	}
+
+	public void SetGridStep(int x_grid_lines, int y_grid_lines)
+	{
+		Waveform w;
+		this.x_grid_lines = x_grid_lines;
+		this.y_grid_lines = y_grid_lines;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.SetGridSteps(x_grid_lines, y_grid_lines);
+		}
+	}
+
+	public void setLegendMode(int legend_mode)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null && w instanceof MultiWaveform)
+				((MultiWaveform) w).setLegendMode(legend_mode);
+		}
+	}
+
+	public void SetMode(int mode)
+	{
+		Waveform w;
+		this.mode = mode;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+			{
+				if (copy_waveform == w && w.mode == Waveform.MODE_COPY && mode != Waveform.MODE_COPY)
+				{
+					RemoveSelection();
+					copy_waveform = null;
+				}
+				w.SetMode(mode);
+			}
+		}
+	}
+
+	public void SetParams(int mode, int grid_mode, int legend_mode, int x_grid_lines, int y_grid_lines,
+			boolean reversed)
+	{
+		SetReversed(reversed);
+		SetMode(mode);
+		SetGridMode(grid_mode);
+		SetGridStep(x_grid_lines, y_grid_lines);
+		setLegendMode(legend_mode);
+	}
+
+	/**
+	 * Set popup menu to this container
+	 *
+	 * @param wave_popup the popup menu
+	 */
+	public void setPopupMenu(WavePopup wave_popup)
+	{
+		this.wave_popup = wave_popup;
+		wave_popup.setParent(this);
+	}
+
+	public void setPrintBW(boolean print_bw)
+	{ this.print_bw = print_bw; }
+
+	public void setPrintWithLegend(boolean print_with_legend)
+	{ this.print_with_legend = print_with_legend; }
+
+	public void SetReversed(boolean reversed)
+	{
+		Waveform w;
+		this.reversed = reversed;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.SetReversed(reversed);
+		}
+	}
+
+	/**
+	 * Enable / disable show measurament
+	 *
+	 * @param state shoe measurament state
+	 */
+	@Override
+	public void setShowMeasure(boolean state)
+	{
+		if (state)
+		{
+			Waveform w;
+			for (int i = 0; i < getGridComponentCount(); i++)
+			{
+				w = GetWavePanel(i);
+				if (w != null)
+					w.show_measure = false;
+			}
+		}
+	}
+
+	/**
+	 * Set current MultiWaveform parameters
+	 *
+	 * @param w the MultiWaveform to set params
+	 */
+	public void SetWaveParams(Waveform w)
+	{
+		final boolean int_label = (grid_mode == 2 ? false : true);
+		w.SetMode(mode);
+		w.SetReversed(reversed);
+		w.SetGridMode(grid_mode, int_label, int_label);
+		w.SetGridSteps(x_grid_lines, y_grid_lines);
+	}
+
+	public void stopPlaying()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.StopFrame();
+		}
+	}
+
+	/* synchronized */@Override
+	public void updatePoints(double x, Waveform curr_w)
+	{
+		UpdatePoints(x, Double.NaN, curr_w);
+	}
+
+	/**
+	 * Update crosshair position
+	 *
+	 * @param curr_x x axis position
+	 * @param w      a waveform to update cross
+	 * @see Waveform
+	 * @see MultiWaveform
+	 */
+	/* synchronized */public void UpdatePoints(double x, double y, Waveform curr_w)
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null && w != curr_w)
+				w.UpdatePoint(x, y);
+		}
+	}
+
+	synchronized public void updateWaveforms()
+	{
+		Waveform w;
+		for (int i = 0; i < getGridComponentCount(); i++)
+		{
+			w = GetWavePanel(i);
+			if (w != null)
+				w.Update();
 		}
 	}
 }

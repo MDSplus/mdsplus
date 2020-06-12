@@ -27,14 +27,14 @@ public class DeviceExprEditor extends JPanel implements ActionListener
 	boolean quotes_added;
 	boolean editable = true;
 
-	public DeviceExprEditor(String data, boolean default_to_string)
-	{
-		this(data, default_to_string, 1, 20);
-	}
-
 	public DeviceExprEditor(boolean default_to_string)
 	{
 		this(null, default_to_string, 1, 20);
+	}
+
+	public DeviceExprEditor(String data, boolean default_to_string)
+	{
+		this(data, default_to_string, 1, 20);
 	}
 
 	public DeviceExprEditor(String data, boolean default_to_string, int rows, int columns)
@@ -133,6 +133,18 @@ public class DeviceExprEditor extends JPanel implements ActionListener
 		repaint();
 	}
 
+	public String getData()
+	{
+		if (default_scroll)
+			expr = text_area.getText();
+		else
+			expr = text_field.getText();
+		if (quotes_added)
+			return "\"" + expr + "\"";
+		else
+			return expr;
+	}
+
 	public void reset()
 	{
 		if (data == null)
@@ -149,18 +161,6 @@ public class DeviceExprEditor extends JPanel implements ActionListener
 			text_area.setText(expr);
 		else
 			text_field.setText(expr);
-	}
-
-	public String getData()
-	{
-		if (default_scroll)
-			expr = text_area.getText();
-		else
-			expr = text_field.getText();
-		if (quotes_added)
-			return "\"" + expr + "\"";
-		else
-			return expr;
 	}
 
 	public void setData(String data)

@@ -48,14 +48,14 @@ public abstract class COMPLEXArray<T extends Number> extends NUMBERArray<Complex
 		return b;
 	}
 
-	public COMPLEXArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
-	{
-		super(dtype, data, shape);
-	}
-
 	protected COMPLEXArray(final ByteBuffer b)
 	{
 		super(b);
+	}
+
+	public COMPLEXArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
+	{
+		super(dtype, data, shape);
 	}
 
 	protected COMPLEXArray(final DTYPE dtype, final Complex<Number>[] values, final int... shape)
@@ -88,23 +88,23 @@ public abstract class COMPLEXArray<T extends Number> extends NUMBERArray<Complex
 		{ values.length } : shape);
 	}
 
-	public final T getImag(final int idx)
-	{
-		return this.getElement(idx).imag;
-	}
-
-	public final T getReal(final int idx)
-	{
-		return this.getElement(idx).real;
-	}
-
 	@Override
 	protected final StringBuilder decompile(final StringBuilder pout, final Complex<T> t)
 	{
 		return COMPLEX.decompile(pout, t, this.dtype(), Descriptor.DECO_NRM);
 	}
 
+	public final T getImag(final int idx)
+	{
+		return this.getElement(idx).imag;
+	}
+
 	@Override
 	protected final byte getRankClass()
 	{ return 0x70; }
+
+	public final T getReal(final int idx)
+	{
+		return this.getElement(idx).real;
+	}
 }

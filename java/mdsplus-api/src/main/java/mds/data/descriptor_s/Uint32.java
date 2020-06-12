@@ -93,6 +93,10 @@ public final class Uint32 extends INTEGER_UNSIGNED<UInteger>
 	{ return UInteger.fromBuffer(this.p, 0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public final Uint32 inot()
 	{
 		return new Uint32(~this.getAtomic().value);
@@ -120,8 +124,4 @@ public final class Uint32 extends INTEGER_UNSIGNED<UInteger>
 	{
 		this.b.putInt(this.pointer(), value);
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
 }

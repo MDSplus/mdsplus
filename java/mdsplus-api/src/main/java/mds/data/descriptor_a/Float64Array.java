@@ -107,6 +107,10 @@ public final class Float64Array extends FLOATArray<Double>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public Float64 getScalar(final int idx)
 	{
 		return new Float64(this.getElement(idx).doubleValue());
@@ -118,6 +122,12 @@ public final class Float64Array extends FLOATArray<Double>
 		if (this.dtype() == DTYPE.G)
 			return this;
 		return new Float64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.G.toByte()));
+	}
+
+	@Override
+	protected final Double[] initArray(final int size)
+	{
+		return new Double[size];
 	}
 
 	@Override
@@ -145,23 +155,6 @@ public final class Float64Array extends FLOATArray<Double>
 		return Double.valueOf(in);
 	}
 
-	public final double[] toArray()
-	{
-		final double[] values = new double[this.arsize() / Double.BYTES];
-		this.getBuffer().asDoubleBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
-
-	@Override
-	protected final Double[] initArray(final int size)
-	{
-		return new Double[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final Double value)
 	{
@@ -172,5 +165,12 @@ public final class Float64Array extends FLOATArray<Double>
 	protected final void setElement(final int i, final Double value)
 	{
 		this.p.putDouble(i * Double.BYTES, value.doubleValue());
+	}
+
+	public final double[] toArray()
+	{
+		final double[] values = new double[this.arsize() / Double.BYTES];
+		this.getBuffer().asDoubleBuffer().get(values);
+		return values;
 	}
 }

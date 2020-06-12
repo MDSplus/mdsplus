@@ -12,22 +12,6 @@ import mds.wave.*;
 
 public class AsciiDataProvider implements DataProvider
 {
-	public static void main(String args[])
-	{
-		try (final AsciiDataProvider p = new AsciiDataProvider())
-		{
-			p.getWaveData("c:\\test.txt", 0, 0, 0);
-		}
-	}
-
-	private boolean xPropertiesFile = false;
-	// private boolean yPropertiesFile = false;
-	String error = null;
-	String path_exp = null;
-	long curr_shot = -1;
-	float y[];
-	float x[];
-
 	/*
 	 * File structure is prop Title= Signal= XLabel= YLabel= ZLabel= Dimension=
 	 * Time=t_start:t_end:dt;....;t_start:t_end:dt or t1,t2,...,tn
@@ -39,12 +23,6 @@ public class AsciiDataProvider implements DataProvider
 		int dimension;
 		Properties x_prop = new Properties();
 		Properties y_prop = new Properties();
-
-		@Override
-		public boolean supportsStreaming()
-		{
-			return false;
-		}
 
 		public SimpleWaveData(String in_y)
 		{
@@ -63,6 +41,92 @@ public class AsciiDataProvider implements DataProvider
 			xPropertiesFile = setPropValues(file_x, x_prop);
 		}
 
+		@Override
+		public void addWaveDataListener(WaveDataListener listener)
+		{}
+
+		private float[] decodeValues(String val)
+		{
+			if (val == null)
+			{
+				error = "File syntax error";
+				return null;
+			}
+			final StringTokenizer st = new StringTokenizer(val, ",");
+			final int num = st.countTokens();
+			float out[] = new float[num];
+			String d_st;
+			int i = 0;
+			try
+			{
+				while (st.hasMoreElements())
+				{
+					d_st = st.nextToken().trim();
+					out[i++] = Float.parseFloat(d_st);
+				}
+			}
+			catch (final NumberFormatException exc)
+			{
+				error = "File syntax error : " + exc.getMessage();
+				out = null;
+			}
+			return out;
+		}
+
+		@Override
+		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public XYData getData(int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+		{}
+
+		private float[] GetFloatData() throws IOException
+		{
+			if (xPropertiesFile)
+				return decodeValues(x_prop.getProperty("Data"));
+			else
+			{
+				if (y == null)
+					throw (new IOException(error));
+				return y;
+			}
+		}
+
+		@Override
+		public int getNumDimension() throws IOException
+		{
+			try
+			{
+				dimension = Integer.parseInt(y_prop.getProperty("Dimension"));
+				return dimension;
+			}
+			catch (final NumberFormatException exc)
+			{
+				return (dimension = 1);
+			}
+		}
+
 		private String getPathValue(String in)
 		{
 			String out = "";
@@ -77,10 +141,64 @@ public class AsciiDataProvider implements DataProvider
 			return out;
 		}
 
-		private int numElement(String val, String separator)
+		@Override
+		public String GetTitle() throws IOException
 		{
-			final StringTokenizer st = new StringTokenizer(val, separator);
-			return (st.countTokens());
+			return y_prop.getProperty("Title");
+		}
+
+		@Override
+		public double[] getX2D()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		@Override
+		public long[] getX2DLong()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		private double[] GetXDoubleData()
+		{
+			return null;
+		}
+
+		@Override
+		public String GetXLabel() throws IOException
+		{
+			if (file_x == null)
+				return y_prop.getProperty("XLabel");
+			else
+				return x_prop.getProperty("YLabel");
+		}
+
+		@Override
+		public float[] getY2D()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		@Override
+		public String GetYLabel() throws IOException
+		{
+			return y_prop.getProperty("YLabel");
+		}
+
+		@Override
+		public float[] getZ()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		@Override
+		public String GetZLabel() throws IOException
+		{
+			return y_prop.getProperty("ZLabel");
 		}
 
 		private boolean isPropertiesFile(Properties prop)
@@ -91,12 +209,9 @@ public class AsciiDataProvider implements DataProvider
 			return true;
 		}
 
-		private float[] resizeBuffer(float[] b, int size)
-		{
-			final float[] newB = new float[size];
-			System.arraycopy(b, 0, newB, 0, size);
-			return newB;
-		}
+		@Override
+		public boolean isXLong()
+		{ return false; }
 
 		private void loadSignalValues(String in) throws Exception
 		{
@@ -135,6 +250,23 @@ public class AsciiDataProvider implements DataProvider
 				throw (new Exception("No data in file or file syntax error"));
 		}
 
+		private int numElement(String val, String separator)
+		{
+			final StringTokenizer st = new StringTokenizer(val, separator);
+			return (st.countTokens());
+		}
+
+		@Override
+		public void removeWaveDataListener(WaveDataListener listener)
+		{}
+
+		private float[] resizeBuffer(float[] b, int size)
+		{
+			final float[] newB = new float[size];
+			System.arraycopy(b, 0, newB, 0, size);
+			return newB;
+		}
+
 		private boolean setPropValues(String in, Properties prop)
 		{
 			boolean propertiesFile = false;
@@ -155,216 +287,55 @@ public class AsciiDataProvider implements DataProvider
 		}
 
 		@Override
-		public int getNumDimension() throws IOException
+		public boolean supportsStreaming()
 		{
-			try
-			{
-				dimension = Integer.parseInt(y_prop.getProperty("Dimension"));
-				return dimension;
-			}
-			catch (final NumberFormatException exc)
-			{
-				return (dimension = 1);
-			}
+			return false;
 		}
-
-		private float[] GetFloatData() throws IOException
-		{
-			if (xPropertiesFile)
-				return decodeValues(x_prop.getProperty("Data"));
-			else
-			{
-				if (y == null)
-					throw (new IOException(error));
-				return y;
-			}
-		}
-
-		private double[] GetXDoubleData()
-		{
-			return null;
-		}
-
-		private float[] decodeValues(String val)
-		{
-			if (val == null)
-			{
-				error = "File syntax error";
-				return null;
-			}
-			final StringTokenizer st = new StringTokenizer(val, ",");
-			final int num = st.countTokens();
-			float out[] = new float[num];
-			String d_st;
-			int i = 0;
-			try
-			{
-				while (st.hasMoreElements())
-				{
-					d_st = st.nextToken().trim();
-					out[i++] = Float.parseFloat(d_st);
-				}
-			}
-			catch (final NumberFormatException exc)
-			{
-				error = "File syntax error : " + exc.getMessage();
-				out = null;
-			}
-			return out;
-		}
-
-		@Override
-		public String GetTitle() throws IOException
-		{
-			return y_prop.getProperty("Title");
-		}
-
-		@Override
-		public String GetXLabel() throws IOException
-		{
-			if (file_x == null)
-				return y_prop.getProperty("XLabel");
-			else
-				return x_prop.getProperty("YLabel");
-		}
-
-		@Override
-		public String GetYLabel() throws IOException
-		{
-			return y_prop.getProperty("YLabel");
-		}
-
-		@Override
-		public String GetZLabel() throws IOException
-		{
-			return y_prop.getProperty("ZLabel");
-		}
-
-		@Override
-		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public XYData getData(int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public float[] getZ()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public double[] getX2D()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public long[] getX2DLong()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public float[] getY2D()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public boolean isXLong()
-		{ return false; }
-
-		@Override
-		public void addWaveDataListener(WaveDataListener listener)
-		{}
-
-		@Override
-		public void removeWaveDataListener(WaveDataListener listener)
-		{}
-
-		@Override
-		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
-		{}
 	}
+
+	public static void main(String args[])
+	{
+		try (final AsciiDataProvider p = new AsciiDataProvider())
+		{
+			p.getWaveData("c:\\test.txt", 0, 0, 0);
+		}
+	}
+	private boolean xPropertiesFile = false;
+	// private boolean yPropertiesFile = false;
+	String error = null;
+	String path_exp = null;
+	long curr_shot = -1;
+	float y[];
+
+	float x[];
 
 	@Override
-	public WaveData getWaveData(String in, int row, int col, int index)
-	{
-		return new SimpleWaveData(in);
-	}
+	public void addConnectionListener(ConnectionListener l)
+	{}
 
 	@Override
-	public WaveData getWaveData(String in_y, String in_x, int row, int col, int index)
-	{
-		return new SimpleWaveData(in_y, in_x);
-	}
+	public void addUpdateEventListener(UpdateEventListener l, String event)
+	{}
 
 	@Override
 	public void close()
 	{}
 
 	@Override
-	public int inquireCredentials(JFrame f, DataServerItem server_item)
-	{
-		return DataProvider.LOGIN_OK;
-	}
-
-	@Override
-	public void setArgument(String arg)
-	{}
-
-	@Override
-	public boolean supportsTunneling()
-	{
-		return false;
-	}
-
-	@Override
-	public void setEnvironment(String exp)
-	{ error = null; }
-
-	@Override
-	public void update(String exp, long s)
-	{
-		error = null;
-		path_exp = exp;
-		curr_shot = s;
-	}
-
-	@Override
-	public String getString(String in, int row, int col, int index)
-	{
-		error = null;
-		return new String(in);
-	}
+	public String getError()
+	{ return error; }
 
 	@Override
 	public double getFloat(String in, int row, int col, int index)
 	{
 		error = null;
 		return Double.parseDouble(in);
+	}
+
+	@Override
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	{
+		throw (new IOException("Frames visualization on DemoDataProvider not implemented"));
 	}
 
 	@Override
@@ -431,11 +402,36 @@ public class AsciiDataProvider implements DataProvider
 	}
 
 	@Override
-	public String getError()
-	{ return error; }
+	public String getString(String in, int row, int col, int index)
+	{
+		error = null;
+		return new String(in);
+	}
 
 	@Override
-	public void addUpdateEventListener(UpdateEventListener l, String event)
+	public WaveData getWaveData(String in, int row, int col, int index)
+	{
+		return new SimpleWaveData(in);
+	}
+
+	@Override
+	public WaveData getWaveData(String in_y, String in_x, int row, int col, int index)
+	{
+		return new SimpleWaveData(in_y, in_x);
+	}
+
+	@Override
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
+	{
+		return DataProvider.LOGIN_OK;
+	}
+
+	@Override
+	public boolean isBusy()
+	{ return false; }
+
+	@Override
+	public void removeConnectionListener(ConnectionListener l)
 	{}
 
 	@Override
@@ -443,20 +439,24 @@ public class AsciiDataProvider implements DataProvider
 	{}
 
 	@Override
-	public void addConnectionListener(ConnectionListener l)
+	public void setArgument(String arg)
 	{}
 
 	@Override
-	public void removeConnectionListener(ConnectionListener l)
-	{}
+	public void setEnvironment(String exp)
+	{ error = null; }
 
 	@Override
-	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	public boolean supportsTunneling()
 	{
-		throw (new IOException("Frames visualization on DemoDataProvider not implemented"));
+		return false;
 	}
 
 	@Override
-	public boolean isBusy()
-	{ return false; }
+	public void update(String exp, long s)
+	{
+		error = null;
+		path_exp = exp;
+		curr_shot = s;
+	}
 }

@@ -7,16 +7,6 @@ import mds.data.descriptor.Descriptor;
 
 public abstract class INTEGER<T extends Number> extends NUMBER<T>
 {
-	static final ByteBuffer toByteBuffer(final int value)
-	{
-		return ByteBuffer.allocateDirect(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(0, value);
-	}
-
-	static final ByteBuffer toByteBuffer(final short value)
-	{
-		return ByteBuffer.allocateDirect(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, value);
-	}
-
 	private static ByteBuffer toByteBuffer(final BigInteger value)
 	{
 		final byte[] ba = value.or(NUMBER.max128).toByteArray();
@@ -32,9 +22,19 @@ public abstract class INTEGER<T extends Number> extends NUMBER<T>
 		return ByteBuffer.allocateDirect(Byte.BYTES).order(Descriptor.BYTEORDER).put(0, value);
 	}
 
+	static final ByteBuffer toByteBuffer(final int value)
+	{
+		return ByteBuffer.allocateDirect(Integer.BYTES).order(Descriptor.BYTEORDER).putInt(0, value);
+	}
+
 	private static final ByteBuffer toByteBuffer(final long value)
 	{
 		return ByteBuffer.allocateDirect(Long.BYTES).order(Descriptor.BYTEORDER).putLong(0, value);
+	}
+
+	static final ByteBuffer toByteBuffer(final short value)
+	{
+		return ByteBuffer.allocateDirect(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, value);
 	}
 
 	protected INTEGER(final ByteBuffer b)
@@ -80,6 +80,10 @@ public abstract class INTEGER<T extends Number> extends NUMBER<T>
 	}
 
 	@Override
+	protected byte getRankClass()
+	{ return 0x10; }
+
+	@Override
 	public NUMBER<?> multiply(final Descriptor<?> X, final Descriptor<?> Y)
 	{
 		return this.newType(X.toInt() * Y.toInt());
@@ -102,8 +106,4 @@ public abstract class INTEGER<T extends Number> extends NUMBER<T>
 	{
 		return this.newType(X.toInt() - Y.toInt());
 	}
-
-	@Override
-	protected byte getRankClass()
-	{ return 0x10; }
 }

@@ -107,6 +107,11 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 		return b;
 	}
 
+	protected Descriptor_APD(final ByteBuffer b)
+	{
+		super(b);
+	}
+
 	public Descriptor_APD(final DTYPE dtype, final Descriptor<?>[] descs, final int... shape)
 	{
 		super(Descriptor_APD.makeBuffer(dtype, descs, shape));
@@ -119,11 +124,6 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 			}
 		if (local)
 			this.setLocal();
-	}
-
-	protected Descriptor_APD(final ByteBuffer b)
-	{
-		super(b);
 	}
 
 	@Override
@@ -141,6 +141,12 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 			new AStringBuilder(pout).deco();
 		pout.append(')');
 		return pout;
+	}
+
+	@Override
+	protected final StringBuilder decompile(final StringBuilder pout, final Descriptor<?> t)
+	{
+		return t == null ? pout.append("*") : t.decompile(Descriptor.P_STMT, pout, Descriptor.DECO_NRM);
 	}
 
 	@Override
@@ -198,6 +204,8 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 		}
 	}
 
+	protected abstract String getPrefix();
+
 	@Override
 	public Descriptor<?> getScalar(final int idx)
 	{
@@ -205,8 +213,30 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 	}
 
 	@Override
+	protected final String getSuffix()
+	{ return ""; }
+
+	@Override
+	protected final Descriptor<?>[] initArray(final int size)
+	{
+		return new Descriptor<?>[size];
+	}
+
+	@Override
 	public boolean isAtomic()
 	{ return false; }
+
+	@Override
+	protected final void setElement(final ByteBuffer b, final Descriptor<?> value)
+	{
+		assert (false);
+	}
+
+	@Override
+	protected void setElement(final int i, final Descriptor<?> value)
+	{
+		assert (false);
+	}
 
 	@Override
 	public final BigInteger toBigInteger(final Descriptor<?> t)
@@ -294,35 +324,5 @@ public abstract class Descriptor_APD extends Descriptor_A<Descriptor<?>>
 	public final String[] toStringArray(final int idx)
 	{
 		return this.getElement(idx).toStringArray();
-	}
-
-	@Override
-	protected final StringBuilder decompile(final StringBuilder pout, final Descriptor<?> t)
-	{
-		return t == null ? pout.append("*") : t.decompile(Descriptor.P_STMT, pout, Descriptor.DECO_NRM);
-	}
-
-	protected abstract String getPrefix();
-
-	@Override
-	protected final String getSuffix()
-	{ return ""; }
-
-	@Override
-	protected final Descriptor<?>[] initArray(final int size)
-	{
-		return new Descriptor<?>[size];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final Descriptor<?> value)
-	{
-		assert (false);
-	}
-
-	@Override
-	protected void setElement(final int i, final Descriptor<?> value)
-	{
-		assert (false);
 	}
 }

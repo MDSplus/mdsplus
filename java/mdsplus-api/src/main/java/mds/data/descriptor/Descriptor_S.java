@@ -150,6 +150,12 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 	}
 
 	@Override
+	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		return this;
+	}
+
+	@Override
 	public int[] getShape()
 	{ return new int[0]; }
 
@@ -379,11 +385,5 @@ public abstract class Descriptor_S<T> extends Descriptor<T>
 	public Uint16 wordu()
 	{
 		return new Uint16(this.toShort());
-	}
-
-	@Override
-	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		return this;
 	}
 }

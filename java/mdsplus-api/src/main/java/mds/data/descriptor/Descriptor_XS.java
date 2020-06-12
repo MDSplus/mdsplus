@@ -51,6 +51,12 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>
 	{ return this.payload(); }
 
 	@Override
+	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		return this.pointer() == 0 ? Missing.NEW : this.payload().getData(omits);
+	}
+
+	@Override
 	public final Descriptor<?> getHelp()
 	{ return null; }
 
@@ -145,11 +151,5 @@ public class Descriptor_XS extends Descriptor<Descriptor<?>>
 	public final String[] toStringArray()
 	{
 		return this.pointer() == 0 ? null : this.payload().toStringArray();
-	}
-
-	@Override
-	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		return this.pointer() == 0 ? Missing.NEW : this.payload().getData(omits);
 	}
 }

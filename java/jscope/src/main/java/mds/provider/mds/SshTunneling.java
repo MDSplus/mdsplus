@@ -14,81 +14,6 @@ import com.jcraft.jsch.ConfigRepository.Config;
 
 public final class SshTunneling implements AutoCloseable
 {
-	private static final UserInfo userinfo;
-	private static final File dotssh = new File(System.getProperty("user.home"), ".ssh");
-	static private JSch jsch;
-
-	private static final ConfigRepository getConfigRepository()
-	{
-		final File config = new File(dotssh, "config");
-		if (config.exists())
-			try
-			{
-				return OpenSSHConfig.parseFile(config.getAbsolutePath());
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		return ConfigRepository.nullConfig;
-	}
-
-	static
-	{
-		JSch _jsch;
-		try
-		{
-			_jsch = new JSch();
-			final File known_hosts = new File(dotssh, "known_hosts");
-			final File id_rsa = new File(dotssh, "id_rsa");
-			if (!dotssh.exists())
-				dotssh.mkdirs();
-			if (known_hosts.exists())
-				try
-				{
-					_jsch.setKnownHosts(known_hosts.getAbsolutePath());
-				}
-				catch (final JSchException e)
-				{
-					e.printStackTrace();
-				}
-			else
-				try
-				{
-					known_hosts.createNewFile();
-				}
-				catch (final IOException e)
-				{
-					e.printStackTrace();
-				}
-			if (id_rsa.exists())
-				try
-				{
-					_jsch.addIdentity(id_rsa.getAbsolutePath());
-				}
-				catch (final JSchException e)
-				{
-					e.printStackTrace();
-				}
-		}
-		catch (final Exception e)
-		{
-			System.err.println("Error loading JSch, no ssh support!");
-			_jsch = null;
-		}
-		jsch = _jsch;
-		UserInfo _userinfo = null;
-		try
-		{
-			_userinfo = new UserInfo();
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-		}
-		userinfo = _userinfo;
-	}
-
 	public static final class UserInfo implements com.jcraft.jsch.UserInfo, UIKeyboardInteractive
 	{
 		static HashMap<String, String[]> keyboard_ans = new HashMap<String, String[]>();
@@ -209,14 +134,81 @@ public final class SshTunneling implements AutoCloseable
 			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), message);
 		}
 	}
+	private static final UserInfo userinfo;
+	private static final File dotssh = new File(System.getProperty("user.home"), ".ssh");
 
-	final Session session;
-	final SshTunneling proxy;
-	final String proxyjump;
-	final String user;
-	final String hostname;
-	final Config config;
-	final int port;
+	static private JSch jsch;
+
+	static
+	{
+		JSch _jsch;
+		try
+		{
+			_jsch = new JSch();
+			final File known_hosts = new File(dotssh, "known_hosts");
+			final File id_rsa = new File(dotssh, "id_rsa");
+			if (!dotssh.exists())
+				dotssh.mkdirs();
+			if (known_hosts.exists())
+				try
+				{
+					_jsch.setKnownHosts(known_hosts.getAbsolutePath());
+				}
+				catch (final JSchException e)
+				{
+					e.printStackTrace();
+				}
+			else
+				try
+				{
+					known_hosts.createNewFile();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			if (id_rsa.exists())
+				try
+				{
+					_jsch.addIdentity(id_rsa.getAbsolutePath());
+				}
+				catch (final JSchException e)
+				{
+					e.printStackTrace();
+				}
+		}
+		catch (final Exception e)
+		{
+			System.err.println("Error loading JSch, no ssh support!");
+			_jsch = null;
+		}
+		jsch = _jsch;
+		UserInfo _userinfo = null;
+		try
+		{
+			_userinfo = new UserInfo();
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+		}
+		userinfo = _userinfo;
+	}
+
+	private static final ConfigRepository getConfigRepository()
+	{
+		final File config = new File(dotssh, "config");
+		if (config.exists())
+			try
+			{
+				return OpenSSHConfig.parseFile(config.getAbsolutePath());
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+		return ConfigRepository.nullConfig;
+	}
 
 	static private SshTunneling parse(final String serverstring, ConfigRepository cr) throws JSchException
 	{
@@ -228,6 +220,14 @@ public final class SshTunneling implements AutoCloseable
 		final int port = cn < 0 ? 0 : Integer.parseInt(serverstring.substring(cn + 1));
 		return new SshTunneling(user, host, port, cr);
 	}
+	final Session session;
+	final SshTunneling proxy;
+	final String proxyjump;
+	final String user;
+	final String hostname;
+	final Config config;
+
+	final int port;
 
 	private SshTunneling(final String user, final String host, final int port, final ConfigRepository cr)
 			throws JSchException
@@ -260,6 +260,14 @@ public final class SshTunneling implements AutoCloseable
 		session.setPortForwardingL(lport, "127.0.0.1", rport);
 	}
 
+	@Override
+	public void close()
+	{
+		session.disconnect();
+		if (proxy != null)
+			this.proxy.close();
+	}
+
 	private Session connect(int timeout) throws JSchException
 	{
 		Session session;
@@ -280,13 +288,5 @@ public final class SshTunneling implements AutoCloseable
 		userinfo.tried_pw = false;
 		session.connect(timeout);
 		return session;
-	}
-
-	@Override
-	public void close()
-	{
-		session.disconnect();
-		if (proxy != null)
-			this.proxy.close();
 	}
 }

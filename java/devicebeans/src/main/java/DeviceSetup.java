@@ -8,6 +8,59 @@ import mds.devices.Interface.Setup;
 public class DeviceSetup extends JDialog implements Interface.Setup
 {
 	private static final long serialVersionUID = 1L;
+	// public int width = 400, height = 200;
+	protected static Hashtable<Integer, DeviceSetup> activeNidHash = new Hashtable();
+	static Vector<DeviceSetup> openDevicesV = new Vector();
+	static void closeSetups()
+	{
+		for (final DeviceSetup setup : openDevicesV)
+			setup.cancel();
+	}
+	public final static Setup getSetup(final int nid, final boolean readOnly)
+	{
+		final DeviceSetup ds = activeNidHash.get(new Integer(nid));
+		if (ds != null)
+		{
+			ds.setReadOnly(readOnly);
+			ds.setVisible(true);
+		}
+		return ds;
+	}
+	public static Setup newSetup(final int nid, final String model, final Interface iface,
+			final Object pointOrComponent, final boolean readOnly) throws Exception
+	{
+		Point point = null;
+		Component parent = null;
+		if (pointOrComponent instanceof Component)
+		{
+			parent = (Component) pointOrComponent;
+		}
+		else
+		{
+			point = (Point) pointOrComponent;
+		}
+		final String deviceClassName = model + "Setup";
+		final Class<?> deviceClass = Class.forName(deviceClassName);
+		final DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
+		final Dimension prevDim = ds.getSize();
+		ds.configure(iface, nid);
+		ds.setReadOnly(readOnly);
+		if (ds.getContentPane().getLayout() != null)
+			ds.pack();
+		ds.setSize(prevDim);
+		if (parent != null)
+		{
+			ds.setLocationRelativeTo(parent);
+		}
+		else if (point != null)
+		{
+			ds.setLocation(point);
+		}
+		else
+			ds.setLocationByPlatform(true);
+		ds.setVisible(true);
+		return ds;
+	}
 	protected String deviceType;
 	protected String deviceTitle;
 	protected String deviceProvider;
@@ -20,77 +73,14 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	JMenuItem pop_items[];
 	JPopupMenu pop_methods = null;
 	Hashtable<String, Vector<DeviceComponent>> updateHash = new Hashtable();
-	// public int width = 400, height = 200;
-	protected static Hashtable<Integer, DeviceSetup> activeNidHash = new Hashtable();
 	Vector<DeviceCloseListener> deviceCloseListenerV = new Vector();
 	Vector<DeviceUpdateListener> deviceUpdateListenerV = new Vector();
+
 	boolean readOnly = false;
+
 	boolean justApplied = false;
-	static Vector<DeviceSetup> openDevicesV = new Vector();
+
 	protected String updateEvent = null;
-
-	public void setWidth(int width)
-	{
-		final int height = super.getHeight();
-		setSize(width, height);
-	}
-
-	public void setHeight(int height)
-	{
-		final int width = super.getWidth();
-		setSize(width, height);
-	}
-
-	public void setReadOnly(final boolean readOnly)
-	{
-		this.readOnly = readOnly;
-		if (buttons != null)
-			buttons.setReadOnly(readOnly);
-		for (final DeviceControl comp : device_controls)
-			comp.setReadOnly(readOnly);
-	}
-
-	public boolean isReadOnly()
-	{ return readOnly; }
-
-	public void setDeviceType(String deviceType)
-	{
-		this.deviceType = deviceType;
-		DeviceSetupBeanInfo.beanDeviceType = deviceType;
-	}
-
-	public String getDeviceType()
-	{
-		DeviceSetupBeanInfo.beanDeviceType = deviceType;
-		return deviceType;
-	}
-
-	public void setDeviceProvider(String deviceProvider)
-	{
-		this.deviceProvider = deviceProvider;
-		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
-	}
-
-	public String getDeviceProvider()
-	{
-		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
-		return deviceProvider;
-	}
-
-	public void setUpdateEvent(String updateEvent)
-	{ this.updateEvent = updateEvent; }
-
-	public String getUpdateEvent()
-	{ return updateEvent; }
-
-	public void setDeviceTitle(String deviceTitle)
-	{
-		this.deviceTitle = deviceTitle;
-		// setTitle(deviceTitle);
-	}
-
-	public String getDeviceTitle()
-	{ return deviceTitle; }
 
 	/*
 	 * public DeviceSetup(boolean readOnly) { this(FrameRepository.frame, readOnly);
@@ -127,36 +117,116 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		});
 	}
 
-	public void resetNidHash()
+	void addButton(JButton button)
+	{
+		if (buttons != null)
+			buttons.add(button);
+	}
+
+	void addDeviceCloseListener(DeviceCloseListener listener)
+	{
+		deviceCloseListenerV.addElement(listener);
+	}
+
+	void addDeviceUpdateListener(DeviceUpdateListener listener)
+	{
+		deviceUpdateListenerV.addElement(listener);
+	}
+
+	public void apply()
+	{
+		final int oldDef = this.pushDefault();
+		for (final DeviceComponent comp : device_components)
+			try
+			{
+				comp.apply();
+			}
+			catch (final Exception exc)
+			{
+				exc.printStackTrace();
+				JOptionPane.showMessageDialog(this, exc.toString(),
+						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
+			}
+		for (final DeviceComponent comp : device_components)
+			comp.postApply();
+		popDefault(oldDef);
+		if (isChanged())
+			for (final DeviceUpdateListener dul : deviceUpdateListenerV)
+				dul.deviceUpdated();
+		justApplied = true;
+	}
+
+	public void apply(int currBaseNid)
+	{
+		final int oldDef = this.pushDefault();
+		for (final DeviceComponent comp : device_components)
+			try
+			{
+				comp.apply(currBaseNid);
+			}
+			catch (final Exception exc)
+			{
+				exc.printStackTrace();
+				JOptionPane.showMessageDialog(this, exc.toString(),
+						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
+			}
+		popDefault(oldDef);
+		justApplied = true;
+	}
+
+	void cancel()
 	{
 		activeNidHash.remove(new Integer(baseNid));
+		openDevicesV.removeElement(this);
+		dispose();
+		for (final DeviceCloseListener dcl : deviceCloseListenerV)
+			dcl.deviceClosed(isChanged(), justApplied);
+		justApplied = false;
 	}
 
-	private final int pushDefault()
+	public boolean check()
 	{
-		int oldDef = 0;
-		try
-		{
-			oldDef = subtree.getDefault();
-			subtree.setDefault(baseNid);
-		}
-		catch (final Exception exc)
-		{
-			System.out.println("Error setting default: " + exc);
-		}
-		return oldDef;
+		if (buttons != null)
+			return buttons.check();
+		return true;
 	}
 
-	private final void popDefault(final int oldDef)
+	public boolean check(String expressions[], String[] messages)
 	{
-		try
+		if (expressions == null || messages == null)
+			return true;
+		final int num_expr = Math.min(expressions.length, messages.length);
+		final StringBuffer varExpr = new StringBuffer();
+		for (final DeviceComponent comp : device_components)
 		{
-			subtree.setDefault(oldDef);
+			final String currId = comp.getIdentifier();
+			if (currId != null && !currId.trim().equals(""))
+			{
+				final String currData = comp.getData();
+				if (currData != null)
+					varExpr.append("_" + currId + " = " + currData + ";");
+				if (comp.getState())
+					varExpr.append("_" + currId + "_state = 1; ");
+				else
+					varExpr.append("_" + currId + "_state = 0; ");
+			}
 		}
-		catch (final Exception exc)
+		for (int i = 0; i < num_expr; i++)
 		{
-			System.out.println("Error resetting default: " + exc);
+			try
+			{
+				if (subtree.getInt(varExpr + expressions[i]) == 0)
+					JOptionPane.showMessageDialog(this, messages[i], "Error in device configuration",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			catch (final Exception exc)
+			{
+				JOptionPane.showMessageDialog(this, exc.toString(), "Error in device configuration",
+						JOptionPane.WARNING_MESSAGE);
+				return false;
+			}
 		}
+		return true;
 	}
 
 	public void configure(Interface subtree, int baseNid)
@@ -295,67 +365,63 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		popDefault(oldDef);
 	}
 
-	public void apply()
-	{
-		final int oldDef = this.pushDefault();
-		for (final DeviceComponent comp : device_components)
-			try
-			{
-				comp.apply();
-			}
-			catch (final Exception exc)
-			{
-				exc.printStackTrace();
-				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
-			}
-		for (final DeviceComponent comp : device_components)
-			comp.postApply();
-		popDefault(oldDef);
-		if (isChanged())
-			for (final DeviceUpdateListener dul : deviceUpdateListenerV)
-				dul.deviceUpdated();
-		justApplied = true;
-	}
-
-	public void apply(int currBaseNid)
-	{
-		final int oldDef = this.pushDefault();
-		for (final DeviceComponent comp : device_components)
-			try
-			{
-				comp.apply(currBaseNid);
-			}
-			catch (final Exception exc)
-			{
-				exc.printStackTrace();
-				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
-			}
-		popDefault(oldDef);
-		justApplied = true;
-	}
-
-	public void reset()
-	{
-		final int oldDef = pushDefault();
-		for (final DeviceComponent comp : device_components)
-			comp.reset();
-		popDefault(oldDef);
-	}
-
-	public void update()
-	{
-		final int oldDef = pushDefault();
-		for (final DeviceComponent comp : device_components)
-			comp.update();
-		popDefault(oldDef);
-	}
-
 	@Override
 	public void dataChanged(int... nids)
 	{
 		this.update();
+	}
+
+	public void fireUpdate(String id, String val)
+	{
+		final Vector<DeviceComponent> components = updateHash.get(id);
+		if (components != null)
+			for (final DeviceComponent comp : components)
+				comp.fireUpdate(id, val);
+	}
+
+	public String getDeviceProvider()
+	{
+		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
+		return deviceProvider;
+	}
+
+	public String getDeviceTitle()
+	{ return deviceTitle; }
+
+	public String getDeviceType()
+	{
+		DeviceSetupBeanInfo.beanDeviceType = deviceType;
+		return deviceType;
+	}
+
+	public String getUpdateEvent()
+	{ return updateEvent; }
+
+	boolean isChanged()
+	{
+		for (final DeviceComponent comp : device_components)
+		{
+			if (comp.isChanged())
+				return true;
+			if (comp.isStateChanged())
+				return true;
+		}
+		return false;
+	}
+
+	public boolean isReadOnly()
+	{ return readOnly; }
+
+	private final void popDefault(final int oldDef)
+	{
+		try
+		{
+			subtree.setDefault(oldDef);
+		}
+		catch (final Exception exc)
+		{
+			System.out.println("Error resetting default: " + exc);
+		}
 	}
 
 	public void propagateData(int offsetNid, Object data)
@@ -368,6 +434,104 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	{
 		for (final DeviceComponent comp : device_components)
 			comp.stateChanged(offsetNid, state);
+	}
+
+	private final int pushDefault()
+	{
+		int oldDef = 0;
+		try
+		{
+			oldDef = subtree.getDefault();
+			subtree.setDefault(baseNid);
+		}
+		catch (final Exception exc)
+		{
+			System.out.println("Error setting default: " + exc);
+		}
+		return oldDef;
+	}
+
+	public void reset()
+	{
+		final int oldDef = pushDefault();
+		for (final DeviceComponent comp : device_components)
+			comp.reset();
+		popDefault(oldDef);
+	}
+
+	public void resetNidHash()
+	{
+		activeNidHash.remove(new Integer(baseNid));
+	}
+
+	public void setCancelText(String cancelText)
+	{
+		if (buttons != null)
+			buttons.setCancelText(cancelText);
+	}
+
+	public void setDeviceProvider(String deviceProvider)
+	{
+		this.deviceProvider = deviceProvider;
+		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
+	}
+
+	public void setDeviceTitle(String deviceTitle)
+	{
+		this.deviceTitle = deviceTitle;
+		// setTitle(deviceTitle);
+	}
+
+	public void setDeviceType(String deviceType)
+	{
+		this.deviceType = deviceType;
+		DeviceSetupBeanInfo.beanDeviceType = deviceType;
+	}
+
+	public void setHeight(int height)
+	{
+		final int width = super.getWidth();
+		setSize(width, height);
+	}
+
+	void setHighlight(boolean isHighlighted, int[] nids)
+	{
+		for (final DeviceComponent comp : device_components)
+		{
+			final int nid = comp.getBaseNid() + comp.getOffsetNid();
+			for (int j = 0; j < nids.length; j++)
+				if (nids[j] == nid)
+				{
+					comp.setHighlight(isHighlighted);
+					break;
+				}
+		}
+	}
+
+	public void setReadOnly(final boolean readOnly)
+	{
+		this.readOnly = readOnly;
+		if (buttons != null)
+			buttons.setReadOnly(readOnly);
+		for (final DeviceControl comp : device_controls)
+			comp.setReadOnly(readOnly);
+	}
+
+	public void setUpdateEvent(String updateEvent)
+	{ this.updateEvent = updateEvent; }
+
+	public void setWidth(int width)
+	{
+		final int height = super.getHeight();
+		setSize(width, height);
+	}
+
+	public void update()
+	{
+		final int oldDef = pushDefault();
+		for (final DeviceComponent comp : device_components)
+			comp.update();
+		popDefault(oldDef);
 	}
 
 	public void updateIdentifiers()
@@ -396,169 +560,5 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			catch (final Exception exc)
 			{}
 		}
-	}
-
-	public boolean check()
-	{
-		if (buttons != null)
-			return buttons.check();
-		return true;
-	}
-
-	public void setCancelText(String cancelText)
-	{
-		if (buttons != null)
-			buttons.setCancelText(cancelText);
-	}
-
-	public boolean check(String expressions[], String[] messages)
-	{
-		if (expressions == null || messages == null)
-			return true;
-		final int num_expr = Math.min(expressions.length, messages.length);
-		final StringBuffer varExpr = new StringBuffer();
-		for (final DeviceComponent comp : device_components)
-		{
-			final String currId = comp.getIdentifier();
-			if (currId != null && !currId.trim().equals(""))
-			{
-				final String currData = comp.getData();
-				if (currData != null)
-					varExpr.append("_" + currId + " = " + currData + ";");
-				if (comp.getState())
-					varExpr.append("_" + currId + "_state = 1; ");
-				else
-					varExpr.append("_" + currId + "_state = 0; ");
-			}
-		}
-		for (int i = 0; i < num_expr; i++)
-		{
-			try
-			{
-				if (subtree.getInt(varExpr + expressions[i]) == 0)
-					JOptionPane.showMessageDialog(this, messages[i], "Error in device configuration",
-							JOptionPane.WARNING_MESSAGE);
-			}
-			catch (final Exception exc)
-			{
-				JOptionPane.showMessageDialog(this, exc.toString(), "Error in device configuration",
-						JOptionPane.WARNING_MESSAGE);
-				return false;
-			}
-		}
-		return true;
-	}
-
-	public void fireUpdate(String id, String val)
-	{
-		final Vector<DeviceComponent> components = updateHash.get(id);
-		if (components != null)
-			for (final DeviceComponent comp : components)
-				comp.fireUpdate(id, val);
-	}
-
-	void cancel()
-	{
-		activeNidHash.remove(new Integer(baseNid));
-		openDevicesV.removeElement(this);
-		dispose();
-		for (final DeviceCloseListener dcl : deviceCloseListenerV)
-			dcl.deviceClosed(isChanged(), justApplied);
-		justApplied = false;
-	}
-
-	public final static Setup getSetup(final int nid, final boolean readOnly)
-	{
-		final DeviceSetup ds = activeNidHash.get(new Integer(nid));
-		if (ds != null)
-		{
-			ds.setReadOnly(readOnly);
-			ds.setVisible(true);
-		}
-		return ds;
-	}
-
-	public static Setup newSetup(final int nid, final String model, final Interface iface,
-			final Object pointOrComponent, final boolean readOnly) throws Exception
-	{
-		Point point = null;
-		Component parent = null;
-		if (pointOrComponent instanceof Component)
-		{
-			parent = (Component) pointOrComponent;
-		}
-		else
-		{
-			point = (Point) pointOrComponent;
-		}
-		final String deviceClassName = model + "Setup";
-		final Class<?> deviceClass = Class.forName(deviceClassName);
-		final DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
-		final Dimension prevDim = ds.getSize();
-		ds.configure(iface, nid);
-		ds.setReadOnly(readOnly);
-		if (ds.getContentPane().getLayout() != null)
-			ds.pack();
-		ds.setSize(prevDim);
-		if (parent != null)
-		{
-			ds.setLocationRelativeTo(parent);
-		}
-		else if (point != null)
-		{
-			ds.setLocation(point);
-		}
-		else
-			ds.setLocationByPlatform(true);
-		ds.setVisible(true);
-		return ds;
-	}
-
-	boolean isChanged()
-	{
-		for (final DeviceComponent comp : device_components)
-		{
-			if (comp.isChanged())
-				return true;
-			if (comp.isStateChanged())
-				return true;
-		}
-		return false;
-	}
-
-	void addDeviceCloseListener(DeviceCloseListener listener)
-	{
-		deviceCloseListenerV.addElement(listener);
-	}
-
-	void addDeviceUpdateListener(DeviceUpdateListener listener)
-	{
-		deviceUpdateListenerV.addElement(listener);
-	}
-
-	void addButton(JButton button)
-	{
-		if (buttons != null)
-			buttons.add(button);
-	}
-
-	void setHighlight(boolean isHighlighted, int[] nids)
-	{
-		for (final DeviceComponent comp : device_components)
-		{
-			final int nid = comp.getBaseNid() + comp.getOffsetNid();
-			for (int j = 0; j < nids.length; j++)
-				if (nids[j] == nid)
-				{
-					comp.setHighlight(isHighlighted);
-					break;
-				}
-		}
-	}
-
-	static void closeSetups()
-	{
-		for (final DeviceSetup setup : openDevicesV)
-			setup.cancel();
 	}
 }

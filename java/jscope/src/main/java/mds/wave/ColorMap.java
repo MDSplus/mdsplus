@@ -37,26 +37,6 @@ public class ColorMap
 		}
 	}
 
-	@Override
-	public String toString()
-	{
-		return name;
-	}
-
-	ColorMap(String name, int r[], int g[], int b[])
-	{
-		this.name = name;
-		numColors = 256;
-		this.colors = new Color[256];
-		for (int i = 0; i < numColors; i++)
-		{
-			this.r[i] = (byte) (0xFF & r[i]);
-			this.g[i] = (byte) (0xFF & g[i]);
-			this.b[i] = (byte) (0xFF & b[i]);
-			colors[i] = new Color(r[i], g[i], b[i]);
-		}
-	}
-
 	ColorMap(int numColors, float min, float max)
 	{
 		/*
@@ -79,6 +59,33 @@ public class ColorMap
 		 *
 		 * computeColorMap();
 		 */
+	}
+
+	ColorMap(String name, int r[], int g[], int b[])
+	{
+		this.name = name;
+		numColors = 256;
+		this.colors = new Color[256];
+		for (int i = 0; i < numColors; i++)
+		{
+			this.r[i] = (byte) (0xFF & r[i]);
+			this.g[i] = (byte) (0xFF & g[i]);
+			this.b[i] = (byte) (0xFF & b[i]);
+			colors[i] = new Color(r[i], g[i], b[i]);
+		}
+	}
+
+	public void computeColorMap()
+	{
+		int r[], g[], b[];
+		colors = new Color[numColors];
+		r = getValues(numColors, pR, vR);
+		g = getValues(numColors, pG, vG);
+		b = getValues(numColors, pB, vB);
+		for (int i = 0; i < numColors; i++)
+		{
+			colors[i] = new Color(r[i], g[i], b[i]);
+		}
 	}
 
 	public void createColorMap(int numColors, int numPoints, float min, float max)
@@ -124,103 +131,6 @@ public class ColorMap
 		computeColorMap();
 	}
 
-	public float[] getRedValues()
-	{ return vR; }
-
-	public float[] getRedPoints()
-	{ return pR; }
-
-	public float[] getGreenValues()
-	{ return vG; }
-
-	public float[] getGreenPoints()
-	{ return pG; }
-
-	public float[] getBlueValues()
-	{ return vB; }
-
-	public float[] getBluePoints()
-	{ return pB; }
-
-	public float getMin()
-	{ return min; }
-
-	public float getMax()
-	{ return max; }
-
-	public void setMin(float min)
-	{ this.min = min; }
-
-	public void setMax(float max)
-	{ this.max = max; }
-
-	public void setRedParam(float p[], float v[])
-	{
-		this.pR = p;
-		this.vR = v;
-		int r[];
-		r = getValues(numColors, p, v);
-		for (int i = 0; i < numColors; i++)
-		{
-			colors[i] = new Color(r[i], colors[i].getGreen(), colors[i].getBlue());
-		}
-	}
-
-	public void setGreenParam(float p[], float v[])
-	{
-		this.pG = p;
-		this.vG = v;
-		int g[];
-		g = getValues(numColors, p, v);
-		for (int i = 0; i < numColors; i++)
-		{
-			colors[i] = new Color(colors[i].getRed(), g[i], colors[i].getBlue());
-		}
-	}
-
-	public void setBlueParam(float p[], float v[])
-	{
-		this.pB = p;
-		this.vB = v;
-		int b[];
-		b = getValues(numColors, p, v);
-		for (int i = 0; i < numColors; i++)
-		{
-			colors[i] = new Color(colors[i].getRed(), colors[i].getGreen(), b[i]);
-		}
-	}
-
-	public void computeColorMap()
-	{
-		int r[], g[], b[];
-		colors = new Color[numColors];
-		r = getValues(numColors, pR, vR);
-		g = getValues(numColors, pG, vG);
-		b = getValues(numColors, pB, vB);
-		for (int i = 0; i < numColors; i++)
-		{
-			colors[i] = new Color(r[i], g[i], b[i]);
-		}
-	}
-
-	public byte[] getRedIntValues()
-	{
-		int c[];
-		final byte b[] = new byte[numColors];
-		c = getValues(numColors, pR, vR);
-		for (int i = 0; i < numColors; b[i] = (byte) c[i], i++);
-		return b;
-	}
-
-	public byte[] getGreenIntValues()
-	{
-		int c[];
-		final byte b[] = new byte[numColors];
-		c = getValues(numColors, pG, vG);
-		for (int i = 0; i < numColors; b[i] = (byte) c[i], i++);
-		return b;
-	}
-
 	public byte[] getBlueIntValues()
 	{
 		int c[];
@@ -230,11 +140,11 @@ public class ColorMap
 		return b;
 	}
 
-	public Color getColor(float val, float min, float max)
-	{
-		final int idx = (int) ((val - min) / (max - min) * (numColors - 1));
-		return colors[idx];
-	}
+	public float[] getBluePoints()
+	{ return pB; }
+
+	public float[] getBlueValues()
+	{ return vB; }
 
 	public Color getColor(float val)
 	{
@@ -246,14 +156,56 @@ public class ColorMap
 		return colors[idx];
 	}
 
+	public Color getColor(float val, float min, float max)
+	{
+		final int idx = (int) ((val - min) / (max - min) * (numColors - 1));
+		return colors[idx];
+	}
+
 	public Color[] getColors()
 	{ return colors; }
+
+	public byte[] getGreenIntValues()
+	{
+		int c[];
+		final byte b[] = new byte[numColors];
+		c = getValues(numColors, pG, vG);
+		for (int i = 0; i < numColors; b[i] = (byte) c[i], i++);
+		return b;
+	}
+
+	public float[] getGreenPoints()
+	{ return pG; }
+
+	public float[] getGreenValues()
+	{ return vG; }
 
 	public IndexColorModel getIndexColorModel(int numBit)
 	{
 		indexColorModel = new IndexColorModel(numBit, numColors, r, g, b);
 		return indexColorModel;
 	}
+
+	public float getMax()
+	{ return max; }
+
+	public float getMin()
+	{ return min; }
+
+	public byte[] getRedIntValues()
+	{
+		int c[];
+		final byte b[] = new byte[numColors];
+		c = getValues(numColors, pR, vR);
+		for (int i = 0; i < numColors; b[i] = (byte) c[i], i++);
+		return b;
+	}
+
+	public float[] getRedPoints()
+	{ return pR; }
+
+	public float[] getRedValues()
+	{ return vR; }
 
 	private int[] getValues(int nVal, float p[], float v[])
 	{
@@ -288,5 +240,53 @@ public class ColorMap
 			}
 		}
 		return out;
+	}
+
+	public void setBlueParam(float p[], float v[])
+	{
+		this.pB = p;
+		this.vB = v;
+		int b[];
+		b = getValues(numColors, p, v);
+		for (int i = 0; i < numColors; i++)
+		{
+			colors[i] = new Color(colors[i].getRed(), colors[i].getGreen(), b[i]);
+		}
+	}
+
+	public void setGreenParam(float p[], float v[])
+	{
+		this.pG = p;
+		this.vG = v;
+		int g[];
+		g = getValues(numColors, p, v);
+		for (int i = 0; i < numColors; i++)
+		{
+			colors[i] = new Color(colors[i].getRed(), g[i], colors[i].getBlue());
+		}
+	}
+
+	public void setMax(float max)
+	{ this.max = max; }
+
+	public void setMin(float min)
+	{ this.min = min; }
+
+	public void setRedParam(float p[], float v[])
+	{
+		this.pR = p;
+		this.vR = v;
+		int r[];
+		r = getValues(numColors, p, v);
+		for (int i = 0; i < numColors; i++)
+		{
+			colors[i] = new Color(r[i], colors[i].getGreen(), colors[i].getBlue());
+		}
+	}
+
+	@Override
+	public String toString()
+	{
+		return name;
 	}
 }

@@ -22,6 +22,21 @@ public class Grid implements Serializable
 	 */
 	private static final long serialVersionUID = 1L;
 	static final long dayMilliSeconds = 86400000; // 24 * 60 * 60 * 1000;
+	final static int IS_X = 0, IS_Y = 1;
+	public final static int IS_DOTTED = 0;
+	public static final int IS_GRAY = 1;
+	public static final int IS_NONE = 2;
+	public static final int MAX_GRID = 10;
+	public final static String GRID_MODE[] =
+	{ "Dotted", "Gray", "None" };
+	static public double evalStep(double min, double max, int numStep)
+	{
+		final double delta = Math.abs(max - min);
+		final int pow = (int) Math.log10(delta) - 1;
+		return 2. * Math.pow(10, pow);
+	}
+	public static void main(String args[])
+	{}
 	WaveformMetrics wm;
 	boolean reversed = false;
 	int x_dim, y_dim;
@@ -32,14 +47,9 @@ public class Grid implements Serializable
 	Font font;
 	int label_width, label_height, label_descent, num_x_steps, num_y_steps;
 	String x_label, y_label, title, error;
-	final static int IS_X = 0, IS_Y = 1;
-	public final static int IS_DOTTED = 0;
-	public static final int IS_GRAY = 1;
-	public static final int IS_NONE = 2;
-	public static final int MAX_GRID = 10;
-	public final static String GRID_MODE[] =
-	{ "Dotted", "Gray", "None" };
+
 	double xmax;
+
 	boolean xAxisHMS = false;
 
 	public Grid(double xmax, double ymax, double xmin, double ymin, boolean xlog, boolean ylog, int mode,
@@ -62,100 +72,6 @@ public class Grid implements Serializable
 		this.xmax = xmax;
 		x_dim = BuildGrid(x_values, IS_X, xmax, ymax, xmin, ymin, xlog, ylog);
 		y_dim = BuildGrid(y_values, IS_Y, xmax, ymax, xmin, ymin, xlog, ylog);
-	}
-
-	void SetReversed(boolean reversed)
-	{
-		this.reversed = reversed;
-	}
-
-	static public double evalStep(double min, double max, int numStep)
-	{
-		final double delta = Math.abs(max - min);
-		final int pow = (int) Math.log10(delta) - 1;
-		return 2. * Math.pow(10, pow);
-	}
-
-	private int BuildGridNew(double val[], int mode, double xmax, double ymax, double xmin, double ymin, boolean xlog,
-			boolean ylog)
-	{
-		if (ymax < ymin)
-			ymax = ymin + 1E-10;
-		if (xmax < xmin)
-			xmax = xmin + 1E-10;
-		double step, curr, curr_max, curr_min, xrange = xmax - xmin, yrange = ymax - ymin;
-		boolean greater = false;
-		int grid_step;
-		int count = 0, i, num_steps;
-		if (xrange <= 0)
-			xrange = 1E-3;
-		if (yrange <= 0)
-			yrange = 1E-3;
-		if (mode == IS_X)
-		{
-			grid_step = grid_step_x;
-			curr_max = xmax + 0.1 * xrange;
-			curr_min = xmin - 0.1 * xrange;
-			step = (xmax - xmin) / grid_step;
-			step = evalStep(xmin, xmax, grid_step);
-		}
-		else
-		{
-			grid_step = grid_step_y;
-			curr_max = ymax + 0.1 * yrange;
-			curr_min = ymin - 0.1 * yrange;
-			step = (ymax - ymin) / grid_step;
-		}
-		if (step > 1)
-		{
-			greater = true;
-			while (step / 10. > 1.)
-			{
-				step /= 10;
-				count++;
-			}
-		}
-		else
-		{
-			greater = false;
-			while (step < 1 && step > 0)
-			{
-				step *= 10;
-				count++;
-			}
-		}
-		step = ((int) step);
-		num_steps = (int) step;
-		if (greater)
-			for (i = 0; i < count; i++)
-				step *= 10;
-		else
-			for (i = 0; i < count; i++)
-				step /= 10;
-		curr = (long) (curr_min / step) * step;
-		if (curr > curr_min)
-			curr -= (long) ((curr - curr_min) / step) * step;
-		while (curr >= curr_min)
-			curr -= step;
-		for (i = 0; i < 50 && curr < curr_max + step; i++)
-		{
-			val[i] = (long) (curr / step + 0.5) * step;
-//Fix per la stampa dello 0
-			if (val[i] < step / 100 && val[i] > -step / 100)
-				val[i] = 0;
-			curr += step;
-		}
-		if (mode == IS_X)
-		{
-			x_step = step / num_steps;
-			num_x_steps = num_steps;
-		}
-		else
-		{
-			y_step = step / num_steps;
-			num_y_steps = num_steps;
-		}
-		return i;
 	}
 
 	private int BuildGrid(double val[], int mode, double xmax, double ymax, double xmin, double ymin, boolean xlog,
@@ -241,8 +157,108 @@ public class Grid implements Serializable
 		return i;
 	}
 
-	public void setXaxisHMS(boolean xAxisHMS)
-	{ this.xAxisHMS = xAxisHMS; }
+	private int BuildGridNew(double val[], int mode, double xmax, double ymax, double xmin, double ymin, boolean xlog,
+			boolean ylog)
+	{
+		if (ymax < ymin)
+			ymax = ymin + 1E-10;
+		if (xmax < xmin)
+			xmax = xmin + 1E-10;
+		double step, curr, curr_max, curr_min, xrange = xmax - xmin, yrange = ymax - ymin;
+		boolean greater = false;
+		int grid_step;
+		int count = 0, i, num_steps;
+		if (xrange <= 0)
+			xrange = 1E-3;
+		if (yrange <= 0)
+			yrange = 1E-3;
+		if (mode == IS_X)
+		{
+			grid_step = grid_step_x;
+			curr_max = xmax + 0.1 * xrange;
+			curr_min = xmin - 0.1 * xrange;
+			step = (xmax - xmin) / grid_step;
+			step = evalStep(xmin, xmax, grid_step);
+		}
+		else
+		{
+			grid_step = grid_step_y;
+			curr_max = ymax + 0.1 * yrange;
+			curr_min = ymin - 0.1 * yrange;
+			step = (ymax - ymin) / grid_step;
+		}
+		if (step > 1)
+		{
+			greater = true;
+			while (step / 10. > 1.)
+			{
+				step /= 10;
+				count++;
+			}
+		}
+		else
+		{
+			greater = false;
+			while (step < 1 && step > 0)
+			{
+				step *= 10;
+				count++;
+			}
+		}
+		step = ((int) step);
+		num_steps = (int) step;
+		if (greater)
+			for (i = 0; i < count; i++)
+				step *= 10;
+		else
+			for (i = 0; i < count; i++)
+				step /= 10;
+		curr = (long) (curr_min / step) * step;
+		if (curr > curr_min)
+			curr -= (long) ((curr - curr_min) / step) * step;
+		while (curr >= curr_min)
+			curr -= step;
+		for (i = 0; i < 50 && curr < curr_max + step; i++)
+		{
+			val[i] = (long) (curr / step + 0.5) * step;
+//Fix per la stampa dello 0
+			if (val[i] < step / 100 && val[i] > -step / 100)
+				val[i] = 0;
+			curr += step;
+		}
+		if (mode == IS_X)
+		{
+			x_step = step / num_steps;
+			num_x_steps = num_steps;
+		}
+		else
+		{
+			y_step = step / num_steps;
+			num_y_steps = num_steps;
+		}
+		return i;
+	}
+
+	public long calculateDifference(Date a, Date b)
+	{
+		final Calendar cal1 = Calendar.getInstance();
+		// GABcal1.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+		cal1.setTime(a);
+		cal1.set(cal1.get(Calendar.YEAR), cal1.get(Calendar.MONTH), cal1.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
+		final Calendar cal2 = Calendar.getInstance();
+		// GABcal2.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+		cal2.setTime(b);
+		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
+		final long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();
+		if (diffMillis < 0)
+			return 0;
+		return 1 + diffMillis / dayMilliSeconds;
+	}
+
+	public Rectangle GetBoundingBox(Dimension d)
+	{
+		return new Rectangle(label_width, 0, d.width - label_width + 1, d.height - label_height + 1);
+	}
 
 	public void GetLimits(Graphics g, Rectangle lim_rect, boolean ylog)
 	{
@@ -272,28 +288,6 @@ public class Grid implements Serializable
 		}
 		lim_rect.width = label_width;
 		lim_rect.height = label_height;
-	}
-
-	public void updateValues(String x_label, String y_label, String title, String error, int grid_step_x,
-			int grid_step_y, boolean int_xlabels, boolean int_ylabels, boolean reversed)
-	{
-		this.reversed = reversed;
-		this.x_label = x_label;
-		this.y_label = y_label;
-		this.title = title;
-		this.error = error;
-		this.grid_step_x = grid_step_x;
-		this.grid_step_y = grid_step_y;
-		this.int_xlabels = int_xlabels;
-		this.int_ylabels = int_ylabels;
-	}
-
-	private long toMillis(double xin)
-	/* converts ns into ms if necessary */
-	{
-		if (xin > 2E13)
-			xin = xin / 1E6;
-		return (long) xin;
 	}
 
 	public void paint(Graphics g, Dimension d, Waveform w, WaveformMetrics wm)
@@ -551,11 +545,6 @@ public class Grid implements Serializable
 		}
 	}
 
-	public Rectangle GetBoundingBox(Dimension d)
-	{
-		return new Rectangle(label_width, 0, d.width - label_width + 1, d.height - label_height + 1);
-	}
-
 	public void setLabels(String title, String x_label, String y_label)
 	{
 		this.title = title;
@@ -563,22 +552,33 @@ public class Grid implements Serializable
 		this.y_label = y_label;
 	}
 
-	public long calculateDifference(Date a, Date b)
+	void SetReversed(boolean reversed)
 	{
-		final Calendar cal1 = Calendar.getInstance();
-		// GABcal1.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-		cal1.setTime(a);
-		cal1.set(cal1.get(Calendar.YEAR), cal1.get(Calendar.MONTH), cal1.get(Calendar.DAY_OF_MONTH), 23, 59, 59);
-		final Calendar cal2 = Calendar.getInstance();
-		// GABcal2.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-		cal2.setTime(b);
-		cal2.set(cal2.get(Calendar.YEAR), cal2.get(Calendar.MONTH), cal2.get(Calendar.DAY_OF_MONTH), 0, 0, 0);
-		final long diffMillis = cal2.getTimeInMillis() - cal1.getTimeInMillis();
-		if (diffMillis < 0)
-			return 0;
-		return 1 + diffMillis / dayMilliSeconds;
+		this.reversed = reversed;
 	}
 
-	public static void main(String args[])
-	{}
+	public void setXaxisHMS(boolean xAxisHMS)
+	{ this.xAxisHMS = xAxisHMS; }
+
+	private long toMillis(double xin)
+	/* converts ns into ms if necessary */
+	{
+		if (xin > 2E13)
+			xin = xin / 1E6;
+		return (long) xin;
+	}
+
+	public void updateValues(String x_label, String y_label, String title, String error, int grid_step_x,
+			int grid_step_y, boolean int_xlabels, boolean int_ylabels, boolean reversed)
+	{
+		this.reversed = reversed;
+		this.x_label = x_label;
+		this.y_label = y_label;
+		this.title = title;
+		this.error = error;
+		this.grid_step_x = grid_step_x;
+		this.grid_step_y = grid_step_y;
+		this.int_xlabels = int_xlabels;
+		this.int_ylabels = int_ylabels;
+	}
 }

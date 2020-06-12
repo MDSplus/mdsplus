@@ -4,12 +4,6 @@ import java.awt.*;
 public class DeviceChannelBeanInfo extends SimpleBeanInfo
 {
 	@Override
-	public Image getIcon(int kind)
-	{
-		return loadImage("DeviceChannel.gif");
-	}
-
-	@Override
 	public BeanDescriptor getBeanDescriptor()
 	{
 		final BeanDescriptor desc = new BeanDescriptor(DeviceChannel.class, DeviceChannelCustomizer.class);
@@ -21,11 +15,10 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
 		return desc;
 	}
 
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	@Override
+	public Image getIcon(int kind)
 	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceChannel.class);
-		p.setShortDescription(description);
-		return p;
+		return loadImage("DeviceChannel.gif");
 	}
 
 	@Override
@@ -46,5 +39,12 @@ public class DeviceChannelBeanInfo extends SimpleBeanInfo
 			System.out.println("DeviceChannel: property exception " + e);
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceChannel.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

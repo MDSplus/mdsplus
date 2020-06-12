@@ -54,21 +54,9 @@ public class WaveformEvent extends AWTEvent
 	int x_pixel;
 	int y_pixel;
 
-	public WaveformEvent(Object source, int event_id, String status_info)
-	{
-		super(source, event_id);
-		this.status_info = status_info;
-	}
-
 	public WaveformEvent(Object source, int event_id)
 	{
 		super(source, event_id);
-	}
-
-	public WaveformEvent(Object source, String status_info)
-	{
-		super(source, STATUS_INFO);
-		this.status_info = status_info;
 	}
 
 	public WaveformEvent(Object source, int event_id, double point_x, double point_y, double delta_x, double delta_y,
@@ -81,38 +69,6 @@ public class WaveformEvent extends AWTEvent
 		this.delta_x = delta_x;
 		this.delta_y = delta_y;
 		this.pixel_value = pixel_value;
-	}
-
-	public void setPointValue(float val)
-	{ point_value = val; }
-
-	public void setDateValue(long date)
-	{
-		final long dayMilliSeconds = 24 * 60 * 60 * 1000;
-		dateValue = date - (date % dayMilliSeconds);
-		showXasDate = true;
-	}
-
-	public float getPointValue()
-	{ return point_value; }
-
-	public void setFrameType(int frame_type)
-	{ this.frame_type = frame_type; }
-
-	public WaveformEvent(Object source, int x_pixel, int y_pixel, float frame_time, String name, int pixels_x[],
-			int start_pixel_x, int pixels_y[], int start_pixel_y)
-	{
-		super(source, PROFILE_UPDATE);
-		this.x_pixel = x_pixel;
-		this.y_pixel = y_pixel;
-		this.time_value = frame_time;
-		this.name = name;
-		this.pixels_x = pixels_x;
-		this.pixels_y = pixels_y;
-		this.pixels_signal = pixels_signal;
-		this.frames_time = frames_time;
-		this.start_pixel_x = start_pixel_x;
-		this.start_pixel_y = start_pixel_y;
 	}
 
 	public WaveformEvent(Object source, int x_pixel, int y_pixel, float frame_time, String name, float values_x[],
@@ -131,34 +87,32 @@ public class WaveformEvent extends AWTEvent
 		this.start_pixel_y = start_pixel_y;
 	}
 
-	public void setIsMB2(boolean is_mb2)
-	{ this.is_mb2 = is_mb2; }
-
-	public void setPixelsLine(int p_line[])
-	{ pixels_line = p_line; }
-
-	public void setValuesLine(float v_line[])
-	{ values_line = v_line; }
-
-	public void setXValue(float x_value)
-	{ this.x_value = x_value; }
-
-	public void setTimeValue(double time_value)
-	{ this.time_value = time_value; }
-
-	public void setDataValue(double data_value)
-	{ this.data_value = data_value; }
-
-	private String SetStrSize(String s, int size)
+	public WaveformEvent(Object source, int x_pixel, int y_pixel, float frame_time, String name, int pixels_x[],
+			int start_pixel_x, int pixels_y[], int start_pixel_y)
 	{
-		final StringBuffer sb = new StringBuffer(size);
-		sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
-		if (sb.length() < size)
-		{
-			for (int i = sb.length(); i < size; i++)
-				sb.append(" ");
-		}
-		return (new String(sb));
+		super(source, PROFILE_UPDATE);
+		this.x_pixel = x_pixel;
+		this.y_pixel = y_pixel;
+		this.time_value = frame_time;
+		this.name = name;
+		this.pixels_x = pixels_x;
+		this.pixels_y = pixels_y;
+		this.pixels_signal = pixels_signal;
+		this.frames_time = frames_time;
+		this.start_pixel_x = start_pixel_x;
+		this.start_pixel_y = start_pixel_y;
+	}
+
+	public WaveformEvent(Object source, int event_id, String status_info)
+	{
+		super(source, event_id);
+		this.status_info = status_info;
+	}
+
+	public WaveformEvent(Object source, String status_info)
+	{
+		super(source, STATUS_INFO);
+		this.status_info = status_info;
 	}
 
 	private String getFormattedDate(long d, String format)
@@ -177,6 +131,52 @@ public class WaveformEvent extends AWTEvent
 		}
 		return dateFormat.format(date).toString();
 	}
+
+	public float getPointValue()
+	{ return point_value; }
+
+	public void setDataValue(double data_value)
+	{ this.data_value = data_value; }
+
+	public void setDateValue(long date)
+	{
+		final long dayMilliSeconds = 24 * 60 * 60 * 1000;
+		dateValue = date - (date % dayMilliSeconds);
+		showXasDate = true;
+	}
+
+	public void setFrameType(int frame_type)
+	{ this.frame_type = frame_type; }
+
+	public void setIsMB2(boolean is_mb2)
+	{ this.is_mb2 = is_mb2; }
+
+	public void setPixelsLine(int p_line[])
+	{ pixels_line = p_line; }
+
+	public void setPointValue(float val)
+	{ point_value = val; }
+
+	private String SetStrSize(String s, int size)
+	{
+		final StringBuffer sb = new StringBuffer(size);
+		sb.append(s.substring(0, ((s.length() < size) ? s.length() : size)));
+		if (sb.length() < size)
+		{
+			for (int i = sb.length(); i < size; i++)
+				sb.append(" ");
+		}
+		return (new String(sb));
+	}
+
+	public void setTimeValue(double time_value)
+	{ this.time_value = time_value; }
+
+	public void setValuesLine(float v_line[])
+	{ values_line = v_line; }
+
+	public void setXValue(float x_value)
+	{ this.x_value = x_value; }
 
 	@Override
 	public String toString()

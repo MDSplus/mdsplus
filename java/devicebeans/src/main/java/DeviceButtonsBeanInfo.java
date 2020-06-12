@@ -4,20 +4,13 @@ import java.awt.*;
 public class DeviceButtonsBeanInfo extends SimpleBeanInfo
 {
 	@Override
-	public Image getIcon(int kind)
-	{
-		return loadImage("DeviceButtons.gif");
-	}
-
-	@Override
 	public BeanDescriptor getBeanDescriptor()
 	{ return new BeanDescriptor(DeviceButtons.class, DeviceButtonsCustomizer.class); }
 
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	@Override
+	public Image getIcon(int kind)
 	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceButtons.class);
-		p.setShortDescription(description);
-		return p;
+		return loadImage("DeviceButtons.gif");
 	}
 
 	@Override
@@ -35,5 +28,12 @@ public class DeviceButtonsBeanInfo extends SimpleBeanInfo
 			System.out.println("DeviceButtons: property exception " + e);
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceButtons.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

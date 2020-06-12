@@ -57,6 +57,10 @@ public final class Int64 extends INTEGER<Long>
 	{ return this.p.getLong(0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public Uint64 inot()
 	{
 		return new Uint64(~this.getPrimitive());
@@ -108,8 +112,4 @@ public final class Int64 extends INTEGER<Long>
 	{
 		return new Int64(X.toLong() - Y.toLong());
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
 }

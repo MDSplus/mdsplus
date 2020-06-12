@@ -13,23 +13,6 @@ import mds.connection.MdsConnection;
 
 public class ColorMapDialog extends JDialog
 {
-	private static final long serialVersionUID = 1L;
-	private final Vector<ActionListener> colorMapListener = new Vector<>();
-	ColorMap colorMap;
-	ColorPalette cp;
-	JComboBox<ColorMap> cmComboBox;
-	JTextField minVal, maxVal;
-	JButton ok, apply, cancel;
-	JSlider shiftSlider;
-	JCheckBox bitClip;
-	JPanel bitOptionPanel;
-	boolean is16BitImage = false;
-//WaveformEditor weR, weG, weB;
-	Waveform wave = null;
-	String nameColorTables[];
-	byte colorTables[];
-	private static String lastMap = null;
-
 	public class ColorPalette extends JPanel
 	{
 		private static final long serialVersionUID = 1L;
@@ -39,12 +22,6 @@ public class ColorMapDialog extends JDialog
 		{
 			this.setBorder(BorderFactory.createLoweredBevelBorder());
 			setColormap(colors);
-		}
-
-		public void setColormap(Color colors[])
-		{
-			this.colors = colors;
-			repaint();
 		}
 
 		@Override
@@ -63,7 +40,47 @@ public class ColorMapDialog extends JDialog
 			}
 			super.paintBorder(g);
 		}
+
+		public void setColormap(Color colors[])
+		{
+			this.colors = colors;
+			repaint();
+		}
 	}
+	private static final long serialVersionUID = 1L;
+	private static String lastMap = null;
+	public static void exportPalette(final File file) throws IOException
+	{
+		try (final InputStream is = getResourcePalette())
+		{
+			try (final OutputStream os = new FileOutputStream(file))
+			{
+				final byte[] buffer = new byte[1024];
+				int length;
+				while ((length = is.read(buffer)) > 0)
+					os.write(buffer, 0, length);
+			}
+		}
+	}
+	private static final InputStream getResourcePalette()
+	{ return ColorMapDialog.class.getClassLoader().getResourceAsStream("mds/wave/colors.tbl"); }
+	private final Vector<ActionListener> colorMapListener = new Vector<>();
+	ColorMap colorMap;
+	ColorPalette cp;
+	JComboBox<ColorMap> cmComboBox;
+	JTextField minVal, maxVal;
+	JButton ok, apply, cancel;
+JSlider shiftSlider;
+	JCheckBox bitClip;
+	JPanel bitOptionPanel;
+	boolean is16BitImage = false;
+
+	//WaveformEditor weR, weG, weB;
+	Waveform wave = null;
+
+	String nameColorTables[];
+
+	byte colorTables[];
 
 	/*
 	 * ColorMapDialog(Frame f, Waveform wave) { // this(f, wave.getColorMap());
@@ -268,6 +285,11 @@ public class ColorMapDialog extends JDialog
 		setSize(330, 380);
 	}
 
+	public void addColorMapListener(ActionListener l)
+	{
+		colorMapListener.addElement(l);
+	}
+
 	public ColorMap getColorMap(String name)
 	{
 		for (int i = 0; i < cmComboBox.getItemCount(); i++)
@@ -279,68 +301,10 @@ public class ColorMapDialog extends JDialog
 		return new ColorMap();
 	}
 
-	@SuppressWarnings("unused")
-	public void setWave(Waveform wave)
-	{
-		this.wave = wave;
-		colorMap = wave.getColorMap();
-		minVal.setText("" + colorMap.getMin());
-		maxVal.setText("" + colorMap.getMax());
-		cmComboBox.setSelectedItem(colorMap);
-		// shiftSlider and bitClip to be remove
-		// color scaled on min max value
-		if (false)
-		{
-			if (!is16BitImage)
-			{
-				getContentPane().setLayout(new GridLayout(4, 1));
-				getContentPane().add(bitOptionPanel, 2);
-				setSize(380, 350);
-			}
-			is16BitImage = true;
-			shiftSlider.setValue(colorMap.bitShift);
-			bitClip.setSelected(colorMap.bitClip);
-		}
-		else
-		{
-			is16BitImage = false;
-			getContentPane().remove(bitOptionPanel);
-			getContentPane().setLayout(new GridLayout(3, 1));
-			setSize(380, 250);
-		}
-	}
-
-	public void addColorMapListener(ActionListener l)
-	{
-		colorMapListener.addElement(l);
-	}
-
-	public void removeMapListener(ActionListener l)
-	{
-		colorMapListener.remove(l);
-	}
-
 	public void processActionEvents(ActionEvent avtionEvent)
 	{
 		for (int i = 0; i < colorMapListener.size(); i++)
 			colorMapListener.elementAt(i).actionPerformed(avtionEvent);
-	}
-
-	private static final InputStream getResourcePalette()
-	{ return ColorMapDialog.class.getClassLoader().getResourceAsStream("mds/wave/colors.tbl"); }
-
-	public static void exportPalette(final File file) throws IOException
-	{
-		try (final InputStream is = getResourcePalette())
-		{
-			try (final OutputStream os = new FileOutputStream(file))
-			{
-				final byte[] buffer = new byte[1024];
-				int length;
-				while ((length = is.read(buffer)) > 0)
-					os.write(buffer, 0, length);
-			}
-		}
 	}
 
 	public void readColorPalette(String cmap)
@@ -376,6 +340,42 @@ public class ColorMapDialog extends JDialog
 			nameColorTables = new String[0];
 			colorTables = new byte[0];
 			MdsConnection.tryClose(dis);
+		}
+	}
+
+	public void removeMapListener(ActionListener l)
+	{
+		colorMapListener.remove(l);
+	}
+
+	@SuppressWarnings("unused")
+	public void setWave(Waveform wave)
+	{
+		this.wave = wave;
+		colorMap = wave.getColorMap();
+		minVal.setText("" + colorMap.getMin());
+		maxVal.setText("" + colorMap.getMax());
+		cmComboBox.setSelectedItem(colorMap);
+		// shiftSlider and bitClip to be remove
+		// color scaled on min max value
+		if (false)
+		{
+			if (!is16BitImage)
+			{
+				getContentPane().setLayout(new GridLayout(4, 1));
+				getContentPane().add(bitOptionPanel, 2);
+				setSize(380, 350);
+			}
+			is16BitImage = true;
+			shiftSlider.setValue(colorMap.bitShift);
+			bitClip.setSelected(colorMap.bitClip);
+		}
+		else
+		{
+			is16BitImage = false;
+			getContentPane().remove(bitOptionPanel);
+			getContentPane().setLayout(new GridLayout(3, 1));
+			setSize(380, 250);
 		}
 	}
 }

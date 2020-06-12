@@ -78,6 +78,10 @@ public final class Float64 extends FLOAT<Double>
 	public final Double getAtomic()
 	{ return new Double(this.p.getDouble(0)); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
 	public final double getValue()
 	{ return this.getBuffer().getDouble(0); }
 
@@ -117,8 +121,4 @@ public final class Float64 extends FLOAT<Double>
 	{
 		return new StringDsc(String.format("%32.15E", this.getAtomic()).replace("E", this.getSuffix()));
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
 }

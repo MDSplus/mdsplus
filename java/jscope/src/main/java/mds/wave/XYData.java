@@ -32,6 +32,37 @@ public class XYData
 	double xMin, xMax;
 
 	/**
+	 * XYData Constructor with automatic derivation of increasingX flag
+	 *
+	 * @param x:          x (times) array
+	 * @param y:          y (values) array
+	 * @param resolution: declared resolution
+	 */
+	public XYData(double x[], float y[], double resolution)
+	{
+		this.resolution = resolution;
+		this.x = x;
+		this.y = y;
+		increasingX = true;
+		nSamples = (x.length < y.length) ? x.length : y.length;
+		if (nSamples > 0)
+		{
+			xMin = xMax = x[0];
+			for (int i = 1; i < x.length; i++)
+			{
+				if (x[i - 1] > x[i])
+				{
+					increasingX = false;
+				}
+				if (x[i] > xMax)
+					xMax = x[i];
+				if (x[i] < xMin)
+					xMin = x[i];
+			}
+		}
+	}
+
+	/**
 	 * XYData Constructor
 	 *
 	 * @param x:           x (times) array
@@ -63,37 +94,6 @@ public class XYData
 		this.xMin = xMin;
 		this.xMax = xMax;
 		nSamples = (x.length < y.length) ? x.length : y.length;
-	}
-
-	/**
-	 * XYData Constructor with automatic derivation of increasingX flag
-	 *
-	 * @param x:          x (times) array
-	 * @param y:          y (values) array
-	 * @param resolution: declared resolution
-	 */
-	public XYData(double x[], float y[], double resolution)
-	{
-		this.resolution = resolution;
-		this.x = x;
-		this.y = y;
-		increasingX = true;
-		nSamples = (x.length < y.length) ? x.length : y.length;
-		if (nSamples > 0)
-		{
-			xMin = xMax = x[0];
-			for (int i = 1; i < x.length; i++)
-			{
-				if (x[i - 1] > x[i])
-				{
-					increasingX = false;
-				}
-				if (x[i] > xMax)
-					xMax = x[i];
-				if (x[i] < xMin)
-					xMin = x[i];
-			}
-		}
 	}
 
 	/**

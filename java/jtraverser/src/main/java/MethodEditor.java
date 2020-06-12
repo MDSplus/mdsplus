@@ -41,21 +41,21 @@ public class MethodEditor extends JPanel implements Editor
 	}
 
 	@Override
-	public void reset()
-	{
-		device_edit.reset();
-		method_edit.reset();
-		arg_edit.reset();
-		timeout_edit.reset();
-	}
-
-	@Override
 	public MDSplus.Data getData()
 	{
 		final MDSplus.Method m = new MDSplus.Method(timeout_edit.getData(), method_edit.getData(),
 				device_edit.getData(), arg_edit.getData());
 		m.setCtxTree(Tree.curr_experiment);
 		return m;
+	}
+
+	@Override
+	public void reset()
+	{
+		device_edit.reset();
+		method_edit.reset();
+		arg_edit.reset();
+		timeout_edit.reset();
 	}
 
 	public void setData(MDSplus.Data data)

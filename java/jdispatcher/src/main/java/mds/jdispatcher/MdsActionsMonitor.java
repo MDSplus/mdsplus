@@ -13,15 +13,23 @@ class MdsActionsMonitor extends MdsMonitor
 	{}
 
 	@Override
-	public void buildBegin(MonitorEvent event)
-	{}
-
-	@Override
 	public void build(MonitorEvent event)
 	{}
 
 	@Override
+	public void buildBegin(MonitorEvent event)
+	{}
+
+	@Override
 	public void buildEnd(MonitorEvent event)
+	{}
+
+	@Override
+	public void connect(MonitorEvent event)
+	{}
+
+	@Override
+	public void disconnect(MonitorEvent event)
 	{}
 
 	@Override
@@ -33,19 +41,11 @@ class MdsActionsMonitor extends MdsMonitor
 	{}
 
 	@Override
-	public void disconnect(MonitorEvent event)
-	{}
-
-	@Override
-	public void connect(MonitorEvent event)
+	public void endPhase(MonitorEvent event)
 	{}
 
 	@Override
 	public void endSequence(MonitorEvent event)
-	{}
-
-	@Override
-	public void endPhase(MonitorEvent event)
 	{}
 
 	@Override

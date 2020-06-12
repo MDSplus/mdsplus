@@ -14,7 +14,6 @@ public class TreeNode extends JLabel
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	Node node;
 	static Node copied;
 	static boolean cut;
 	static Font plain_f, bold_f;
@@ -23,6 +22,86 @@ public class TreeNode extends JLabel
 		plain_f = new Font("Serif", Font.PLAIN, 12);
 		bold_f = new Font("Serif", Font.BOLD, 12);
 	}
+
+	public static void copy()
+	{
+		final Node currnode = Tree.getCurrentNode();
+		if (currnode == null)
+			return;
+		cut = false;
+		copied = currnode;
+		jTraverser.stdout("copy: " + copied + " from " + copied.parent);
+	}
+
+	public static void copyToClipboard()
+	{
+		final Node currnode = Tree.getCurrentNode();
+		if (currnode == null)
+			return;
+		try
+		{
+			final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
+			StringSelection content;
+			final String path = currnode.getFullPath();
+			content = new StringSelection(path);
+			cb.setContents(content, null);
+		}
+		catch (final Exception exc)
+		{
+			jTraverser.stderr("Cannot copy fullPath to Clipboard", exc);
+		}
+	}
+
+	public static void cut()
+	{
+		final Node currnode = Tree.getCurrentNode();
+		if (currnode == null)
+			return;
+		if (jTraverser.isEditable())
+		{
+			cut = true;
+			copied = currnode;
+			jTraverser.stdout("cut: " + copied + " from " + copied.parent);
+		}
+		else
+			copy();
+	}
+
+	public static void delete()
+	{
+		final Node currnode = Tree.getCurrentNode();
+		if (currnode == null)
+			return;
+		if (jTraverser.isEditable())
+			Tree.deleteNode(currnode);
+		else
+			jTraverser.stdout("Cannot delete " + currnode + ". Tree not in edit mode.");
+	}
+
+	public static void paste()
+	{
+		final Node currnode = Tree.getCurrentNode();
+		if (currnode == null)
+			return;
+		if (jTraverser.isEditable())
+		{
+			jTraverser.stdout((cut ? "moved: " : "copied: ") + copied + " from " + copied.parent + " to " + currnode);
+			if (copied != null && copied != currnode)
+			{
+				if (cut)
+				{
+					if (copied.move(currnode))
+						copied = null;
+				}
+				else
+					Node.pasteSubtree(copied, currnode, true);
+			}
+		}
+		else
+			jTraverser.stdout("Cannot paste " + copied + ". Tree not in edit mode.");
+	}
+
+	Node node;
 	final Color CWrite = new Color(0, 128, 0);
 	final Color CWriteO = new Color(96, 64, 0);
 	final Color CNoWrite = new Color(128, 0, 0);
@@ -78,83 +157,5 @@ public class TreeNode extends JLabel
 			return tagsStr;
 		}
 		return null;
-	}
-
-	public static void copyToClipboard()
-	{
-		final Node currnode = Tree.getCurrentNode();
-		if (currnode == null)
-			return;
-		try
-		{
-			final Clipboard cb = Toolkit.getDefaultToolkit().getSystemClipboard();
-			StringSelection content;
-			final String path = currnode.getFullPath();
-			content = new StringSelection(path);
-			cb.setContents(content, null);
-		}
-		catch (final Exception exc)
-		{
-			jTraverser.stderr("Cannot copy fullPath to Clipboard", exc);
-		}
-	}
-
-	public static void copy()
-	{
-		final Node currnode = Tree.getCurrentNode();
-		if (currnode == null)
-			return;
-		cut = false;
-		copied = currnode;
-		jTraverser.stdout("copy: " + copied + " from " + copied.parent);
-	}
-
-	public static void cut()
-	{
-		final Node currnode = Tree.getCurrentNode();
-		if (currnode == null)
-			return;
-		if (jTraverser.isEditable())
-		{
-			cut = true;
-			copied = currnode;
-			jTraverser.stdout("cut: " + copied + " from " + copied.parent);
-		}
-		else
-			copy();
-	}
-
-	public static void paste()
-	{
-		final Node currnode = Tree.getCurrentNode();
-		if (currnode == null)
-			return;
-		if (jTraverser.isEditable())
-		{
-			jTraverser.stdout((cut ? "moved: " : "copied: ") + copied + " from " + copied.parent + " to " + currnode);
-			if (copied != null && copied != currnode)
-			{
-				if (cut)
-				{
-					if (copied.move(currnode))
-						copied = null;
-				}
-				else
-					Node.pasteSubtree(copied, currnode, true);
-			}
-		}
-		else
-			jTraverser.stdout("Cannot paste " + copied + ". Tree not in edit mode.");
-	}
-
-	public static void delete()
-	{
-		final Node currnode = Tree.getCurrentNode();
-		if (currnode == null)
-			return;
-		if (jTraverser.isEditable())
-			Tree.deleteNode(currnode);
-		else
-			jTraverser.stdout("Cannot delete " + currnode + ". Tree not in edit mode.");
 	}
 }

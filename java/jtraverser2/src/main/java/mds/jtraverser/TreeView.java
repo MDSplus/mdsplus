@@ -36,8 +36,6 @@ import mds.jtraverser.TreeManager.Job;
 
 public final class TreeView extends JTree implements TreeSelectionListener, DataChangeListener, TreeWillExpandListener
 {
-	private static final long serialVersionUID = 1L;
-
 	// Inner class FromTranferHandler managed drag operation
 	private static final class FromTransferHandler extends TransferHandler
 	{
@@ -102,6 +100,8 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 			return node.getIcon(is_selected);
 		}
 	}
+
+	private static final long serialVersionUID = 1L;
 
 	public static Node addNode(final byte usage, final String name, final Node toNode)
 	{
@@ -258,6 +258,14 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 		TreeView.this.treeDidChange();
 	}
 
+	private final DefaultMutableTreeNode addTreeNode(final DefaultMutableTreeNode treenode, final Node node)
+	{
+		final DefaultMutableTreeNode new_node = new DefaultMutableTreeNode(node);
+		node.setTreeNode(new_node);
+		((DefaultTreeModel) TreeView.this.getModel()).insertNodeInto(new_node, treenode, treenode.getChildCount());
+		return new_node;
+	}
+
 	public final TreeView close(final boolean quit)
 	{
 		try
@@ -374,34 +382,6 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 		return row;
 	}
 
-	public final DefaultMutableTreeNode findNid(final Nid nid)
-	{
-		try
-		{
-			return this.findPath(nid.getNciFullPath());
-		}
-		catch (final MdsException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	public final DefaultMutableTreeNode findPath(final String path)
-	{
-		final String[] treepath = path.split("::", 2);
-		return this.findPath(treepath[treepath.length - 1].split("[\\.:]"));
-	}
-
-	public final DefaultMutableTreeNode findPath(String[] path)
-	{
-		if (path == null || path.length == 0)
-			return this.top;
-		if (path[0].equalsIgnoreCase("TOP"))
-			path = Arrays.copyOfRange(path, 1, path.length);
-		return this.findSubPath(path, this.top);
-	}
-
 	@Override
 	public final void expandPath(TreePath path)
 	{
@@ -434,6 +414,49 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 				}
 			}
 		super.expandPath(path);
+	}
+
+	public final DefaultMutableTreeNode findNid(final Nid nid)
+	{
+		try
+		{
+			return this.findPath(nid.getNciFullPath());
+		}
+		catch (final MdsException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public final DefaultMutableTreeNode findPath(final String path)
+	{
+		final String[] treepath = path.split("::", 2);
+		return this.findPath(treepath[treepath.length - 1].split("[\\.:]"));
+	}
+
+	public final DefaultMutableTreeNode findPath(String[] path)
+	{
+		if (path == null || path.length == 0)
+			return this.top;
+		if (path[0].equalsIgnoreCase("TOP"))
+			path = Arrays.copyOfRange(path, 1, path.length);
+		return this.findSubPath(path, this.top);
+	}
+
+	private final DefaultMutableTreeNode findSubPath(final String[] path, final DefaultMutableTreeNode root)
+	{
+		if (path == null || path.length == 0)
+			return root;
+		final Enumeration<?> children = root.children();
+		while (children.hasMoreElements())
+		{
+			final DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
+			final Node node = (Node) child.getUserObject();
+			if (node.getName().equalsIgnoreCase(path[0]))
+				return this.findSubPath(Arrays.copyOfRange(path, 1, path.length), child);
+		}
+		return null;
 	}
 
 	public final Node getCurrentNode()
@@ -582,6 +605,15 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 		this.setCurrentNode(new_curr_node);
 	}
 
+	private final void setCurrentNode(final int row)
+	{
+		this.setSelectionRow(row);
+		final DefaultMutableTreeNode DMN = (DefaultMutableTreeNode) this.getLastSelectedPathComponent();
+		if (DMN == null)
+			return;
+		this.setCurrentNode(DMN);
+	}
+
 	public final void setCurrentNode(final Node curr_node)
 	{
 		this.setSelectionPath(new TreePath(curr_node.getTreeNode().getPath()));
@@ -641,37 +673,5 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Error writing tree", exc.getMessage(),
 					JOptionPane.WARNING_MESSAGE);
 		}
-	}
-
-	private final DefaultMutableTreeNode addTreeNode(final DefaultMutableTreeNode treenode, final Node node)
-	{
-		final DefaultMutableTreeNode new_node = new DefaultMutableTreeNode(node);
-		node.setTreeNode(new_node);
-		((DefaultTreeModel) TreeView.this.getModel()).insertNodeInto(new_node, treenode, treenode.getChildCount());
-		return new_node;
-	}
-
-	private final DefaultMutableTreeNode findSubPath(final String[] path, final DefaultMutableTreeNode root)
-	{
-		if (path == null || path.length == 0)
-			return root;
-		final Enumeration<?> children = root.children();
-		while (children.hasMoreElements())
-		{
-			final DefaultMutableTreeNode child = (DefaultMutableTreeNode) children.nextElement();
-			final Node node = (Node) child.getUserObject();
-			if (node.getName().equalsIgnoreCase(path[0]))
-				return this.findSubPath(Arrays.copyOfRange(path, 1, path.length), child);
-		}
-		return null;
-	}
-
-	private final void setCurrentNode(final int row)
-	{
-		this.setSelectionRow(row);
-		final DefaultMutableTreeNode DMN = (DefaultMutableTreeNode) this.getLastSelectedPathComponent();
-		if (DMN == null)
-			return;
-		this.setCurrentNode(DMN);
 	}
 }

@@ -52,13 +52,29 @@ public abstract class jScopeBrowseSignals extends jScopeBrowseUrl
 		setSize(p.getPreferredSize().width + 50, Toolkit.getDefaultToolkit().getScreenSize().height - 80);
 	}
 
-	abstract protected String getSignal(String url);
+	public void addSignal(boolean with_shot)
+	{
+		if (wave_panel != null)
+		{
+			final URL u = url_list.elementAt(curr_url);
+			final String url_name = (u.toString());
+			final String sig_path = getSignal(url_name);
+			final String shot = (with_shot) ? getShot() : null;
+			if (sig_path != null)
+			{
+				final boolean is_image = (mime_type != null && mime_type.indexOf("image") != -1);
+				wave_panel.AddSignal(getTree(), shot, "", sig_path, true, is_image);
+			}
+		}
+	}
+
+	abstract protected String getServerAddr();
 
 	abstract protected String getShot();
 
-	abstract protected String getTree();
+	abstract protected String getSignal(String url);
 
-	abstract protected String getServerAddr();
+	abstract protected String getTree();
 
 	@Override
 	protected void setPage(URL url) throws IOException
@@ -81,22 +97,6 @@ public abstract class jScopeBrowseSignals extends jScopeBrowseUrl
 			add_sig.setText("Add frames");
 			add_sig.setEnabled(false);
 			add_sig_shot.setText("Add frames & shot");
-		}
-	}
-
-	public void addSignal(boolean with_shot)
-	{
-		if (wave_panel != null)
-		{
-			final URL u = url_list.elementAt(curr_url);
-			final String url_name = (u.toString());
-			final String sig_path = getSignal(url_name);
-			final String shot = (with_shot) ? getShot() : null;
-			if (sig_path != null)
-			{
-				final boolean is_image = (mime_type != null && mime_type.indexOf("image") != -1);
-				wave_panel.AddSignal(getTree(), shot, "", sig_path, true, is_image);
-			}
 		}
 	}
 

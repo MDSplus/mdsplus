@@ -28,22 +28,6 @@ public class ParameterEditor extends JPanel implements Editor
 	}
 
 	@Override
-	public void reset()
-	{
-		expr.reset();
-		help.reset();
-		validity.reset();
-	}
-
-	@Override
-	public void setEditable(boolean editable)
-	{
-		expr.setEditable(editable);
-		help.setEditable(editable);
-		validity.setEditable(editable);
-	}
-
-	@Override
 	public MDSplus.Data getData()
 	{
 		final MDSplus.Data retData = expr.getData();
@@ -52,10 +36,26 @@ public class ParameterEditor extends JPanel implements Editor
 		return retData;
 	}
 
+	@Override
+	public void reset()
+	{
+		expr.reset();
+		help.reset();
+		validity.reset();
+	}
+
 	public void setData(MDSplus.Data data)
 	{
 		expr.setData(data);
 		help.setData(data.getHelp());
 		validity.setData(data.getValidation());
+	}
+
+	@Override
+	public void setEditable(boolean editable)
+	{
+		expr.setEditable(editable);
+		help.setEditable(editable);
+		validity.setEditable(editable);
 	}
 }

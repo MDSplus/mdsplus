@@ -13,22 +13,6 @@ import mds.jtraverser.editor.EnumEditor;
 
 public class ACQ425 extends ACQ4xx
 {
-	public static class ACQ425_4CH extends ACQ425
-	{
-		public ACQ425_4CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
-		{
-			super(frame, node, editable, index, 4);
-		}
-	}
-
-	public static class ACQ425_8CH extends ACQ425
-	{
-		public ACQ425_8CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
-		{
-			super(frame, node, editable, index, 8);
-		}
-	}
-
 	public static class ACQ425_12CH extends ACQ425
 	{
 		public ACQ425_12CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
@@ -42,6 +26,22 @@ public class ACQ425 extends ACQ4xx
 		public ACQ425_16CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
 		{
 			super(frame, node, editable, index, 16);
+		}
+	}
+
+	public static class ACQ425_4CH extends ACQ425
+	{
+		public ACQ425_4CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
+		{
+			super(frame, node, editable, index, 4);
+		}
+	}
+
+	public static class ACQ425_8CH extends ACQ425
+	{
+		public ACQ425_8CH(final Frame frame, final NODE<?> node, final boolean editable, final int index)
+		{
+			super(frame, node, editable, index, 8);
 		}
 	}
 

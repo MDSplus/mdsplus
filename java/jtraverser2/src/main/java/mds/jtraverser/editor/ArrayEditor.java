@@ -41,12 +41,8 @@ import mds.jtraverser.dialogs.GraphPanel;
 
 public class ArrayEditor extends Editor implements ChangeListener
 {
-	private static final long serialVersionUID = 1L;
-
 	public class RowNumberTable extends JTable implements ChangeListener, PropertyChangeListener
 	{
-		private static final long serialVersionUID = 1L;
-
 		private class RowNumberRenderer extends DefaultTableCellRenderer
 		{
 			private static final long serialVersionUID = 1L;
@@ -78,6 +74,7 @@ public class ArrayEditor extends Editor implements ChangeListener
 			}
 		}
 
+		private static final long serialVersionUID = 1L;
 		private final JTable main;
 
 		public RowNumberTable(final JTable table)
@@ -166,6 +163,8 @@ public class ArrayEditor extends Editor implements ChangeListener
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
+
 	public static final boolean checkData(final Descriptor<?> data)
 	{
 		return (data instanceof NUMBERArray || data instanceof Descriptor_CA);
@@ -226,6 +225,23 @@ public class ArrayEditor extends Editor implements ChangeListener
 		for (final Entry<Integer, Number> entry : this.changes.entrySet())
 			new_data.setAtomic(entry.getKey().intValue(), entry.getValue());
 		return this.data = new_data;
+	}
+
+	private final String getTitle()
+	{
+		if (this.dimcontrol == null)
+			return "Array";
+		final StringBuilder sb = new StringBuilder(256).append("Slice( ");
+		for (int i = 0; i < this.coord_edit.length; i++)
+		{
+			if (i > 0)
+				sb.append(" , ");
+			if (this.slider.getValue() == i)
+				sb.append(':');
+			else
+				sb.append(this.coord_edit[i].getValue());
+		}
+		return sb.append(" )").toString();
 	}
 
 	public final boolean hasChanged()
@@ -401,22 +417,5 @@ public class ArrayEditor extends Editor implements ChangeListener
 				this.coord_edit[i].setEnabled(i != dim);
 		}
 		this.reset(false);
-	}
-
-	private final String getTitle()
-	{
-		if (this.dimcontrol == null)
-			return "Array";
-		final StringBuilder sb = new StringBuilder(256).append("Slice( ");
-		for (int i = 0; i < this.coord_edit.length; i++)
-		{
-			if (i > 0)
-				sb.append(" , ");
-			if (this.slider.getValue() == i)
-				sb.append(':');
-			else
-				sb.append(this.coord_edit[i].getValue());
-		}
-		return sb.append(" )").toString();
 	}
 }

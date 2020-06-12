@@ -17,61 +17,6 @@ import mds.data.descriptor_s.Uint8;
 
 public abstract class CONST extends Function
 {
-	static final With_Units CONST_EU32(double data, float error, String unit)
-	{
-		return new With_Units(new With_Error(new Float32((float) data), new Float32(error)), new StringDsc(unit));
-	}
-
-	static final With_Error CONST_E32(double data, float error)
-	{
-		return new With_Error(new Float32((float) data), new Float32(error));
-	}
-
-	static final With_Units CONST_U32(double data, String unit)
-	{
-		return new With_Units(new Float32((float) data), new StringDsc(unit));
-	}
-
-	static final With_Units CONST_U64(double data, String unit)
-	{
-		return new With_Units(new Float64((float) data), new StringDsc(unit));
-	}
-
-	static final float ERROR(double ddata)
-	{
-		final float fdata = (float) ddata;
-		final float ferror = (float) (ddata - fdata);
-		return ferror < 0 ? -ferror : ferror;
-	}
-
-	static final double PI_DATA = Math.PI;
-	static final double MU0_DATA = 4e-7 * Math.PI;
-	static final double C_DATA = 299792458.;
-	static final double E_DATA = 1.602176634e-19;
-	static final double GAS_DATA = 8.31446261815324;
-	static final double GN_DATA = 9.80665;
-	static final double H_DATA = 6.62607015e-34;
-	static final double K_DATA = 1.3806505e-23;
-	static final double NA_DATA = 6.02214076e23;
-	static final double P0_DATA = 101325;
-	static final double T0_DATA = 273.15;
-	static final double ALPHA_DATA = (MU0_DATA * C_DATA * E_DATA * E_DATA) / (2 * H_DATA);
-	static final double EPS0_DATA = 1. / (MU0_DATA * C_DATA * C_DATA);
-	static final double HBAR_DATA = H_DATA / (2 * PI_DATA);
-	static final double FARADAY_DATA = E_DATA * NA_DATA;
-	static final double N0_DATA = P0_DATA / (K_DATA * T0_DATA);
-	static final double TORR_DATA = P0_DATA / 760.;
-	static final double CAL_DATA = 4.1868f;
-	static final double G_DATA = 6.67430e-11;
-	static final float G_ERROR = 15e-16f;
-	static final double MU_DATA = 1.66053906660e-27;
-	static final double ME_DATA = 9.1093837015e-31;
-	static final double MP_DATA = 1.67262192369e-27;
-	static final double A0_DATA = (EPS0_DATA * H_DATA * H_DATA) / (PI_DATA * E_DATA * E_DATA * ME_DATA);
-	static final double RE_DATA = (MU0_DATA * C_DATA * C_DATA * E_DATA * E_DATA)
-			/ (4 * PI_DATA * ME_DATA * C_DATA * C_DATA);
-	static final double RYDBERG_DATA = (ALPHA_DATA * ALPHA_DATA * ME_DATA * C_DATA) / (2 * H_DATA);
-
 	public static final class d2Pi extends CONST
 	{
 		public d2Pi()
@@ -861,6 +806,33 @@ public abstract class CONST extends Function
 		}
 	}
 
+	static final double PI_DATA = Math.PI;
+	static final double MU0_DATA = 4e-7 * Math.PI;
+	static final double C_DATA = 299792458.;
+	static final double E_DATA = 1.602176634e-19;
+	static final double GAS_DATA = 8.31446261815324;
+	static final double GN_DATA = 9.80665;
+	static final double H_DATA = 6.62607015e-34;
+	static final double K_DATA = 1.3806505e-23;
+	static final double NA_DATA = 6.02214076e23;
+	static final double P0_DATA = 101325;
+	static final double T0_DATA = 273.15;
+	static final double ALPHA_DATA = (MU0_DATA * C_DATA * E_DATA * E_DATA) / (2 * H_DATA);
+	static final double EPS0_DATA = 1. / (MU0_DATA * C_DATA * C_DATA);
+	static final double HBAR_DATA = H_DATA / (2 * PI_DATA);
+	static final double FARADAY_DATA = E_DATA * NA_DATA;
+	static final double N0_DATA = P0_DATA / (K_DATA * T0_DATA);
+	static final double TORR_DATA = P0_DATA / 760.;
+	static final double CAL_DATA = 4.1868f;
+	static final double G_DATA = 6.67430e-11;
+	static final float G_ERROR = 15e-16f;
+	static final double MU_DATA = 1.66053906660e-27;
+	static final double ME_DATA = 9.1093837015e-31;
+	static final double MP_DATA = 1.67262192369e-27;
+	static final double A0_DATA = (EPS0_DATA * H_DATA * H_DATA) / (PI_DATA * E_DATA * E_DATA * ME_DATA);
+	static final double RE_DATA = (MU0_DATA * C_DATA * C_DATA * E_DATA * E_DATA)
+			/ (4 * PI_DATA * ME_DATA * C_DATA * C_DATA);
+	static final double RYDBERG_DATA = (ALPHA_DATA * ALPHA_DATA * ME_DATA * C_DATA) / (2 * H_DATA);
 	public static final Float32 ROPRAND = Float32.F(ByteBuffer.wrap(new byte[]
 	{ 0, 0, -128, 0 }).getFloat());
 	public final static Function $VALUE = new dValue();
@@ -891,6 +863,26 @@ public abstract class CONST extends Function
 	public static final dPi $PI = new dPi();
 	public static final dQe $QE = new dQe();
 	public static final dRe $RE = new dRe();
+
+	static final With_Error CONST_E32(double data, float error)
+	{
+		return new With_Error(new Float32((float) data), new Float32(error));
+	}
+
+	static final With_Units CONST_EU32(double data, float error, String unit)
+	{
+		return new With_Units(new With_Error(new Float32((float) data), new Float32(error)), new StringDsc(unit));
+	}
+
+	static final With_Units CONST_U32(double data, String unit)
+	{
+		return new With_Units(new Float32((float) data), new StringDsc(unit));
+	}
+
+	static final With_Units CONST_U64(double data, String unit)
+	{
+		return new With_Units(new Float64((float) data), new StringDsc(unit));
+	}
 
 	public static final boolean coversOpCode(final OPC opcode)
 	{
@@ -1033,6 +1025,13 @@ public abstract class CONST extends Function
 		default:
 			throw new MdsException(MdsException.TdiINV_OPC);
 		}
+	}
+
+	static final float ERROR(double ddata)
+	{
+		final float fdata = (float) ddata;
+		final float ferror = (float) (ddata - fdata);
+		return ferror < 0 ? -ferror : ferror;
 	}
 
 	public CONST(final ByteBuffer b)

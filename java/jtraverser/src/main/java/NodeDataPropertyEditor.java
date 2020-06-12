@@ -7,26 +7,10 @@ public abstract class NodeDataPropertyEditor implements PropertyEditor
 {
 	protected MDSplus.Data data;
 
+	// event notification not used here
 	@Override
-	public void setValue(Object o)
-	{ data = (MDSplus.Data) o; }
-
-	@Override
-	public Object getValue()
-	{ return data; }
-
-	@Override
-	public void setAsText(String s)
-	{
-		try
-		{
-			data = Tree.dataFromExpr(s);
-		}
-		catch (final Exception e)
-		{
-			data = null;
-		}
-	}
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{}
 
 	@Override
 	public String getAsText()
@@ -42,17 +26,19 @@ public abstract class NodeDataPropertyEditor implements PropertyEditor
 	}
 
 	@Override
+	public abstract Component getCustomEditor(); // to be subclassed
+
+	@Override
+	public String getJavaInitializationString()
+	{ return null; }
+
+	@Override
 	public String[] getTags()
 	{ return null; }
 
 	@Override
-	public boolean supportsCustomEditor()
-	{
-		return true;
-	}
-
-	@Override
-	public abstract Component getCustomEditor(); // to be subclassed
+	public Object getValue()
+	{ return data; }
 
 	@Override
 	public boolean isPaintable()
@@ -63,15 +49,29 @@ public abstract class NodeDataPropertyEditor implements PropertyEditor
 	{}
 
 	@Override
-	public String getJavaInitializationString()
-	{ return null; }
-
-	// event notification not used here
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{}
-
-	@Override
 	public void removePropertyChangeListener(PropertyChangeListener l)
 	{}
+
+	@Override
+	public void setAsText(String s)
+	{
+		try
+		{
+			data = Tree.dataFromExpr(s);
+		}
+		catch (final Exception e)
+		{
+			data = null;
+		}
+	}
+
+	@Override
+	public void setValue(Object o)
+	{ data = (MDSplus.Data) o; }
+
+	@Override
+	public boolean supportsCustomEditor()
+	{
+		return true;
+	}
 }

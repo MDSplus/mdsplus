@@ -3,7 +3,7 @@ interface Editor
 {
 	MDSplus.Data getData();
 
-	void setEditable(boolean editable);
-
 	void reset();
+
+	void setEditable(boolean editable);
 }

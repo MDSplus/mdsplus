@@ -43,19 +43,19 @@ public class ProcedureEditor extends JPanel implements Editor
 	}
 
 	@Override
+	public MDSplus.Data getData()
+	{
+		return new MDSplus.Procedure(timeout_edit.getData(), language_edit.getData(), procedure_edit.getData(),
+				arg_edit.getData());
+	}
+
+	@Override
 	public void reset()
 	{
 		procedure_edit.reset();
 		language_edit.reset();
 		arg_edit.reset();
 		timeout_edit.reset();
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{
-		return new MDSplus.Procedure(timeout_edit.getData(), language_edit.getData(), procedure_edit.getData(),
-				arg_edit.getData());
 	}
 
 	public void setData(MDSplus.Data data)

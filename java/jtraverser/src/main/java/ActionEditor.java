@@ -49,6 +49,38 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		if (!editable)
+		{
+			combo.setSelectedIndex(curr_mode_idx);
+			return;
+		}
+		final int idx = combo.getSelectedIndex();
+		if (idx == curr_mode_idx)
+			return;
+		switch (curr_mode_idx)
+		{
+		case 1:
+			remove(action_panel);
+			action_panel = null;
+			task_edit = null;
+			dispatch_edit = null;
+			remove(notify_edit);
+			notify_edit = null;
+			break;
+		case 2:
+			remove(expr_edit);
+			expr_edit = null;
+			break;
+		}
+		curr_mode_idx = idx;
+		addEditor();
+		validate();
+		dialog.repack();
+	}
+
 	private void addEditor()
 	{
 		switch (curr_mode_idx)
@@ -84,35 +116,20 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
+	public MDSplus.Data getData()
 	{
-		if (!editable)
-		{
-			combo.setSelectedIndex(curr_mode_idx);
-			return;
-		}
-		final int idx = combo.getSelectedIndex();
-		if (idx == curr_mode_idx)
-			return;
 		switch (curr_mode_idx)
 		{
+		case 0:
+			return null;
 		case 1:
-			remove(action_panel);
-			action_panel = null;
-			task_edit = null;
-			dispatch_edit = null;
-			remove(notify_edit);
-			notify_edit = null;
-			break;
+			final MDSplus.Data a = new MDSplus.Action(dispatch_edit.getData(), task_edit.getData(), null, null, null);
+			a.setCtxTree(Tree.curr_experiment);
+			return a;
 		case 2:
-			remove(expr_edit);
-			expr_edit = null;
-			break;
+			return expr_edit.getData();
 		}
-		curr_mode_idx = idx;
-		addEditor();
-		validate();
-		dialog.repack();
+		return null;
 	}
 
 	@Override
@@ -133,23 +150,6 @@ public class ActionEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 		validate();
 		repaint();
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{
-		switch (curr_mode_idx)
-		{
-		case 0:
-			return null;
-		case 1:
-			final MDSplus.Data a = new MDSplus.Action(dispatch_edit.getData(), task_edit.getData(), null, null, null);
-			a.setCtxTree(Tree.curr_experiment);
-			return a;
-		case 2:
-			return expr_edit.getData();
-		}
-		return null;
 	}
 
 	public void setData(MDSplus.Data data)

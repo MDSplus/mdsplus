@@ -58,9 +58,19 @@ public final class Uint128Array extends INTEGER_UNSIGNEDArray<BigInteger>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x0F; }
+
+	@Override
 	public Uint128 getScalar(final int idx)
 	{
 		return new Uint128(this.getElement(idx));
+	}
+
+	@Override
+	protected final BigInteger[] initArray(final int size)
+	{
+		return new BigInteger[size];
 	}
 
 	@Override
@@ -97,16 +107,6 @@ public final class Uint128Array extends INTEGER_UNSIGNEDArray<BigInteger>
 	public final BigInteger parse(final String in)
 	{
 		return new BigInteger(in).abs().setBit(128);
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x0F; }
-
-	@Override
-	protected final BigInteger[] initArray(final int size)
-	{
-		return new BigInteger[size];
 	}
 
 	@Override

@@ -196,13 +196,53 @@ public class SetupDefaults extends JDialog implements ActionListener
 		getContentPane().add(p1);
 	}
 
-	private int IsGridMode(String mode)
+	@Override
+	public void actionPerformed(ActionEvent e)
 	{
-		for (int i = 0; i < Grid.GRID_MODE.length; i++)
-			if (Grid.GRID_MODE[i].equals(mode))
-				return i;
-		return -1;
+		final Object ob = e.getSource();
+		if (ob == erase)
+			eraseForm();
+		if (ob == cancel)
+			setVisible(false);
+		if (ob == apply || ob == ok)
+		{
+			if (ob == ok)
+				setVisible(false);
+			main_scope.UpdateDefaultValues();
+		}
+		if (ob == reset)
+		{
+			initialize();
+		}
 	}
+
+	public void eraseForm()
+	{
+		title.setText("");
+		x_label.setText("");
+		x_max.setText("");
+		x_min.setText("");
+		y_max.setText("");
+		y_min.setText("");
+		y_label.setText("");
+		experiment.setText("");
+		shot.setText("");
+		upd_event.setText("");
+		def_node.setText("");
+		grid_mode.setSelectedIndex(0);
+		x_grid_lines.setText("3");
+		y_grid_lines.setText("3");
+		horizontal_offset.setText("0");
+		vertical_offset.setText("0");
+		reversed_b.setSelected(false);
+		upd_limits.setSelected(true);
+	}
+
+	public int getGridMode()
+	{ return curr_grid_mode; }
+
+	public int getLegendMode()
+	{ return curr_legend_mode; }
 
 	private void GetPropertiesValue()
 	{
@@ -245,50 +285,14 @@ public class SetupDefaults extends JDialog implements ActionListener
 		}
 	}
 
-	public int getLegendMode()
-	{ return curr_legend_mode; }
-
-	public int getGridMode()
-	{ return curr_grid_mode; }
+	public boolean getReversed()
+	{ return reversed; }
 
 	public int getXLines()
 	{ return x_curr_lines_grid; }
 
 	public int getYLines()
 	{ return y_curr_lines_grid; }
-
-	public boolean getReversed()
-	{ return reversed; }
-
-	public void eraseForm()
-	{
-		title.setText("");
-		x_label.setText("");
-		x_max.setText("");
-		x_min.setText("");
-		y_max.setText("");
-		y_min.setText("");
-		y_label.setText("");
-		experiment.setText("");
-		shot.setText("");
-		upd_event.setText("");
-		def_node.setText("");
-		grid_mode.setSelectedIndex(0);
-		x_grid_lines.setText("3");
-		y_grid_lines.setText("3");
-		horizontal_offset.setText("0");
-		vertical_offset.setText("0");
-		reversed_b.setSelected(false);
-		upd_limits.setSelected(true);
-	}
-
-	private void setTextValue(JTextField t, String val)
-	{
-		if (val != null)
-		{
-			t.setText(val);
-		}
-	}
 
 	private void initialize()
 	{
@@ -312,6 +316,43 @@ public class SetupDefaults extends JDialog implements ActionListener
 		reversed_b.setSelected(reversed);
 		horizontal_offset.setText("" + Waveform.GetHorizontalOffset());
 		vertical_offset.setText("" + Waveform.GetVerticalOffset());
+	}
+
+	public boolean IsChanged(jScopeDefaultValues def_vals)
+	{
+		if (!main_scope.equalsString(shot.getText(), def_vals.shot_str))
+			return true;
+		if (!main_scope.equalsString(experiment.getText(), def_vals.experiment_str))
+			return true;
+		if (!main_scope.equalsString(upd_event.getText(), def_vals.upd_event_str))
+			return true;
+		if (!main_scope.equalsString(def_node.getText(), def_vals.def_node_str))
+			return true;
+		if (!main_scope.equalsString(title.getText(), def_vals.title_str))
+			return true;
+		if (!main_scope.equalsString(x_max.getText(), def_vals.xmax))
+			return true;
+		if (!main_scope.equalsString(x_min.getText(), def_vals.xmin))
+			return true;
+		if (!main_scope.equalsString(x_label.getText(), def_vals.xlabel))
+			return true;
+		if (!main_scope.equalsString(y_max.getText(), def_vals.ymax))
+			return true;
+		if (!main_scope.equalsString(y_min.getText(), def_vals.ymin))
+			return true;
+		if (!main_scope.equalsString(y_label.getText(), def_vals.ylabel))
+			return true;
+		if (upd_limits.isSelected() != def_vals.upd_limits)
+			return true;
+		return false;
+	}
+
+	private int IsGridMode(String mode)
+	{
+		for (int i = 0; i < Grid.GRID_MODE.length; i++)
+			if (Grid.GRID_MODE[i].equals(mode))
+				return i;
+		return -1;
 	}
 
 	public void SaveDefaultConfiguration(jScopeDefaultValues def_vals)
@@ -381,6 +422,14 @@ public class SetupDefaults extends JDialog implements ActionListener
 		def_vals.setIsEvaluated(false);
 	}
 
+	private void setTextValue(JTextField t, String val)
+	{
+		if (val != null)
+		{
+			t.setText(val);
+		}
+	}
+
 	public void Show(Frame f, jScopeDefaultValues def_vals)
 	{
 		this.def_vals = def_vals;
@@ -388,54 +437,5 @@ public class SetupDefaults extends JDialog implements ActionListener
 		pack();
 		setLocationRelativeTo(f);
 		setVisible(true);
-	}
-
-	public boolean IsChanged(jScopeDefaultValues def_vals)
-	{
-		if (!main_scope.equalsString(shot.getText(), def_vals.shot_str))
-			return true;
-		if (!main_scope.equalsString(experiment.getText(), def_vals.experiment_str))
-			return true;
-		if (!main_scope.equalsString(upd_event.getText(), def_vals.upd_event_str))
-			return true;
-		if (!main_scope.equalsString(def_node.getText(), def_vals.def_node_str))
-			return true;
-		if (!main_scope.equalsString(title.getText(), def_vals.title_str))
-			return true;
-		if (!main_scope.equalsString(x_max.getText(), def_vals.xmax))
-			return true;
-		if (!main_scope.equalsString(x_min.getText(), def_vals.xmin))
-			return true;
-		if (!main_scope.equalsString(x_label.getText(), def_vals.xlabel))
-			return true;
-		if (!main_scope.equalsString(y_max.getText(), def_vals.ymax))
-			return true;
-		if (!main_scope.equalsString(y_min.getText(), def_vals.ymin))
-			return true;
-		if (!main_scope.equalsString(y_label.getText(), def_vals.ylabel))
-			return true;
-		if (upd_limits.isSelected() != def_vals.upd_limits)
-			return true;
-		return false;
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		final Object ob = e.getSource();
-		if (ob == erase)
-			eraseForm();
-		if (ob == cancel)
-			setVisible(false);
-		if (ob == apply || ob == ok)
-		{
-			if (ob == ok)
-				setVisible(false);
-			main_scope.UpdateDefaultValues();
-		}
-		if (ob == reset)
-		{
-			initialize();
-		}
 	}
 }

@@ -48,18 +48,6 @@ public class CONST_Test
 {
 	private static Mds mds;
 
-	@BeforeClass
-	public static final void setUpBeforeClass() throws Exception
-	{
-		CONST_Test.mds = AllTests.setUpBeforeClass();
-	}
-
-	@AfterClass
-	public static final void tearDownAfterClass() throws Exception
-	{
-		AllTests.tearDownAfterClass(CONST_Test.mds);
-	}
-
 	private static void check(Descriptor<?> java, Descriptor<?> mdsip, float reldelta) throws MdsException
 	{
 		Assert.assertEquals(java.getUnits(), mdsip.getUnits());
@@ -79,6 +67,18 @@ public class CONST_Test
 		}
 		final float data = mdsip.toFloat();
 		Assert.assertEquals(java.toFloat(), data, data * reldelta);
+	}
+
+	@BeforeClass
+	public static final void setUpBeforeClass() throws Exception
+	{
+		CONST_Test.mds = AllTests.setUpBeforeClass();
+	}
+
+	@AfterClass
+	public static final void tearDownAfterClass() throws Exception
+	{
+		AllTests.tearDownAfterClass(CONST_Test.mds);
 	}
 
 	@Test

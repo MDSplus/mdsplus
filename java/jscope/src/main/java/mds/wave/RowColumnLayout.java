@@ -95,6 +95,18 @@ import java.awt.Rectangle;
 public class RowColumnLayout implements LayoutManager
 {
 	/**
+	 * None mode item
+	 */
+	static final int NONE = 3;
+	/**
+	 * Vertical mode item
+	 */
+	static final int VERTICAL = 2;
+	/**
+	 * Horizontal mode item
+	 */
+	static final int HORIZONTAL = 1;
+	/**
 	 * Vertical component space in pixel
 	 */
 	private final int vgap = 0;
@@ -172,18 +184,6 @@ public class RowColumnLayout implements LayoutManager
 	 */
 	private Container main_p;
 	/**
-	 * None mode item
-	 */
-	static final int NONE = 3;
-	/**
-	 * Vertical mode item
-	 */
-	static final int VERTICAL = 2;
-	/**
-	 * Horizontal mode item
-	 */
-	static final int HORIZONTAL = 1;
-	/**
 	 * Minimum component height size
 	 */
 	private int MIN_SIZE_H = 10;
@@ -239,122 +239,6 @@ public class RowColumnLayout implements LayoutManager
 	}
 
 	/**
-	 * Set normalize size of column width and component height
-	 *
-	 * @param ph Vector of normalize height of component. The sum of ph[x] for objet
-	 *           in a column must be 1.
-	 * @param pw Vector of normalize width of the culomn. Sum of pw[x] must be 1
-	 */
-	public void SetPanelSize(float ph[], float pw[])
-	{
-		if (ph != null && pw != null)
-		{
-			if (ph.length < b_comp + 1 || pw.length < row.length)// column)
-				return; // definire exception
-			percent_height = new float[b_comp + 1];
-			percent_width = new float[row.length];
-			for (int i = 0; i < b_comp + 1; i++)
-				percent_height[i] = ph[i];
-			for (int i = 0; i < row.length; i++)
-			{
-				/*
-				 * if(MaxWidth * pw[i] > currMaxWidth - MIN_SIZE_W * (column - i)) pw[i] =
-				 * ((float)currMaxWidth - MIN_SIZE_W * (column - i)) / MaxWidth; currMaxWidth -=
-				 * MaxWidth * pw[i];
-				 */
-				percent_width[i] = pw[i];
-			}
-			sizeUnknown = false;
-		}
-	}
-
-	/**
-	 * Method used to update number of column end number of componet for column
-	 *
-	 * @param row row[i] define number of component in column i
-	 * @param ph  Vector of normalize height of component. The sum of ph[x] for
-	 *            objet in a column must be 1.
-	 * @param pw  Vector of normalize width of the culomn. Sum of pw[x] must be 1
-	 */
-	public void SetRowColumn(int[] row, float ph[], float pw[])
-	{
-		SetRowColumn(row);
-		SetPanelSize(ph, pw);
-	}
-
-	/**
-	 * Set number of column an number of component for column
-	 *
-	 * @param row row[i] define number of component in column i
-	 */
-	public void SetRowColumn(int[] row)
-	{
-		// if(row.length < column)
-		// return; //exception
-		b_comp = 0;
-		column = 0;
-		this.row = new int[row.length];
-		for (int i = 0; i < row.length; i++)
-		{
-			this.row[i] = row[i];
-			b_comp += row[i];
-			if (row[i] != 0)
-				column++;
-		}
-		b_comp--;
-//        setSize(main_p);
-		sizeUnknown = true;
-	}
-
-	/**
-	 * Return normalize height of ith componet
-	 *
-	 * @param i index of component
-	 * @return Normalize Height
-	 */
-	public float getPercentHeight(int i)
-	{
-		if (i < percent_height.length)
-			return percent_height[i];
-		else
-			return 0;
-	}
-
-	/**
-	 * Return width of ith column
-	 *
-	 * @param i index of column
-	 * @return Normalize column width
-	 */
-	public float getPercentWidth(int i)
-	{
-		if (i < row.length)// column)
-			return percent_width[i];
-		else
-			return 0;
-	}
-
-	/**
-	 * Return number of column
-	 *
-	 * @return Integer number of column
-	 */
-	public int GetColumns()
-	{
-		return column;
-	}
-
-	/**
-	 * Return integer vector of number of component in each column
-	 *
-	 * @return Integer vector where ith value is number of component in ith column
-	 */
-	public int[] GetRows()
-	{
-		return row;
-	}
-
-	/**
 	 * Do nothing Required by LayoutManager.
 	 *
 	 * @param name Component name
@@ -364,133 +248,6 @@ public class RowColumnLayout implements LayoutManager
 	public void addLayoutComponent(String name, Component comp)
 	{
 //        System.out.println("Add cmp");
-	}
-
-	/**
-	 * Do nothing Required by LayoutManager.
-	 *
-	 * @param comp component
-	 */
-	@Override
-	public void removeLayoutComponent(Component comp)
-	{
-//        System.out.println("remove cmp");
-	}
-
-	/**
-	 * Initialize component size
-	 *
-	 * @param parent parent component
-	 */
-	private void setSizes(Container parent)
-	{
-		final int nComps = parent.getComponentCount();
-		Dimension d = null;
-		int totW, totH, k, maxW[];
-		// Reset preferred/minimum width and height.
-		preferredWidth = 0;
-		preferredHeight = 0;
-		minWidth = 0;
-		minHeight = 0;
-		if (2 * b_comp + 1 != nComps)
-		{
-			throw new IllegalArgumentException("Invalid number of component in RowColumnLayout");
-		}
-		percent_height = new float[b_comp + 1];
-		percent_width = new float[row.length];// column];
-		final Dimension min_d = parent.getComponent(b_comp + 0).getMinimumSize();
-		MIN_SIZE_W = min_d.width;
-		MIN_SIZE_H = min_d.height;
-		k = 0;
-		totW = 0;
-		maxW = new int[row.length];// column];
-		for (int i = 0; i < row.length; i++)
-		{// column; i++) {
-			if (row[i] == 0)
-				continue;
-			maxW[i] = 0;
-			totH = 0;
-			for (int j = 0; j < row[i]; j++)
-			{
-				final Component c = parent.getComponent(b_comp + k++);
-//			if(!(c instanceof RowColumnComponent))
-//			    return; //definire exception
-				if (c.isVisible())
-				{
-					d = c.getPreferredSize();
-					if (d.height < MIN_SIZE_H)
-						d.height = MIN_SIZE_H;
-					if (d.width < MIN_SIZE_W)
-						d.width = MIN_SIZE_W;
-					if (maxW[i] < d.width)
-						maxW[i] = d.width;
-					totH += d.height;
-				}
-			}
-			if (totH > preferredHeight)
-				preferredHeight = totH;
-			totW += maxW[i];
-		}
-		preferredWidth = totW;
-		minWidth = preferredWidth;
-		minHeight = preferredHeight;
-		k = 0;
-		for (int i = 0; i < row.length; i++)
-		{// column; i++) {
-			if (row[i] == 0)
-				continue;
-			for (int j = 0; j < row[i]; j++)
-			{
-				final Component c = parent.getComponent(b_comp + k);
-				if (c.isVisible())
-				{
-					percent_height[k] = (float) 1. / row[i];
-				}
-				k++;
-			}
-			percent_width[i] = (float) 1. / column;
-		}
-//	    resetPercentHW(parent);
-	}
-
-	/**
-	 * Set componet to a columns all with the same height, componet portion of the
-	 * parent width
-	 *
-	 * @param col Integer index of column
-	 */
-	private void ResetHeight(int col)
-	{
-		if (row != null && col < row.length)
-		{
-			int k = 0;
-			for (int i = 0; i < col; i++)
-				k += row[i];
-			if (percent_height != null && k + row[col] <= percent_height.length)
-			{
-				for (int j = 0; j < row[col]; j++)
-				{
-					percent_height[k] = (float) 1. / row[col];
-					k++;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Set to all column to the same width, column portion of the parent width
-	 */
-	private void ResetWidth()
-	{
-		if (row != null && percent_width != null && percent_width.length >= row.length)
-		{
-			for (int i = 0; i < row.length; i++)
-			{// column; i++)
-				if (row[i] == 0)
-					continue;
-				percent_width[i] = (float) 1. / column;
-			}
-		}
 	}
 
 	/**
@@ -671,6 +428,331 @@ public class RowColumnLayout implements LayoutManager
 	}
 
 	/**
+	 * Draw vertical line at x position on component
+	 *
+	 * @param x vertical line position
+	 * @param c Component on which draw line/s
+	 */
+	private void DrawXResize(Component c, int x)
+	{
+		// if(System.getProperty("java.version").indexOf("1.2") != -1 &&
+		// !c.isDoubleBuffered())
+		// return;
+		// else
+		if (!(c instanceof Waveform || c instanceof MultiWaveform))
+			return;
+		final Dimension d = c.getSize();
+		final Graphics g = c.getGraphics();
+		c.paint(g);
+		g.drawLine(x, 0, x, d.height);
+		g.dispose();
+	}
+
+	/**
+	 * Draw horizontal n_lines lines firt at y position next at y+ith*space on
+	 * component where ith came form 1 to n_lines. Multi horizontal line must be
+	 * draw when more than 1 component is resized.
+	 *
+	 * @param y      start y horizontal lines
+	 * @param n_line number of line to draw
+	 * @param space  number of pixel between line
+	 * @param c      component on which draw line/s
+	 */
+	private void DrawYResize(Component c, int y, int n_line, int space)
+	{
+		// if(System.getProperty("java.version").indexOf("1.2") != -1 &&
+		// !c.isDoubleBuffered())
+		// return;
+		// else
+		if (!(c instanceof Waveform || c instanceof MultiWaveform))
+			return;
+		final Dimension d = c.getSize();
+		final Graphics g = c.getGraphics();
+		c.paint(g);
+		for (int i = 0; i < n_line; i++)
+		{
+			g.drawLine(0, y + i * space, d.width, y + i * space);
+		}
+		g.dispose();
+	}
+
+	/**
+	 * Return number of column
+	 *
+	 * @return Integer number of column
+	 */
+	public int GetColumns()
+	{
+		return column;
+	}
+
+	public float[] getPercentHeight()
+	{ return percent_height; }
+
+	/**
+	 * Return normalize height of ith componet
+	 *
+	 * @param i index of component
+	 * @return Normalize Height
+	 */
+	public float getPercentHeight(int i)
+	{
+		if (i < percent_height.length)
+			return percent_height[i];
+		else
+			return 0;
+	}
+
+	public float[] getPercentWidth()
+	{ return percent_width; }
+
+	/**
+	 * Return width of ith column
+	 *
+	 * @param i index of column
+	 * @return Normalize column width
+	 */
+	public float getPercentWidth(int i)
+	{
+		if (i < row.length)// column)
+			return percent_width[i];
+		else
+			return 0;
+	}
+
+	/**
+	 * Return integer vector of number of component in each column
+	 *
+	 * @return Integer vector where ith value is number of component in ith column
+	 */
+	public int[] GetRows()
+	{
+		return row;
+	}
+
+	/**
+	 * Required by LayoutManager. This is called when the panel is first displayed,
+	 * and every time its size changes. Note: You CAN'T assume preferredLayoutSize()
+	 * or minimumLayoutSize() will be called -- in the case of applets, at least,
+	 * they probably won't be.
+	 *
+	 * @param parent component container
+	 */
+	@Override
+	public void layoutContainer(Container parent)
+	{
+		final Insets insets = parent.getInsets();
+		maxWidth = parent.getSize().width - (insets.left + insets.right);
+		maxHeight = parent.getSize().height - (insets.top + insets.bottom);
+		main_p = parent;
+		if (maxWidth <= 0 || maxHeight <= 0)
+			return;
+		// Go through the components' sizes, if neither preferredLayoutSize()
+		// nor minimumLayoutSize() has been called.
+		if (sizeUnknown)
+		{
+			setSizes(parent);
+			sizeUnknown = false;
+		}
+		this.ResizeColumns(parent);
+		for (int i = 0; i < row.length; i++)// column; i++)
+			this.ResizeColumn(parent, i);
+	}
+
+	/**
+	 * Required by LayoutManager
+	 *
+	 * @param parent component container
+	 * @return component container dimension
+	 */
+	@Override
+	public Dimension minimumLayoutSize(Container parent)
+	{
+		final Dimension dim = new Dimension(0, 0);
+		// Always add the container's insets!
+		final Insets insets = parent.getInsets();
+		dim.width = minWidth + insets.left + insets.right;
+		dim.height = minHeight + insets.top + insets.bottom;
+		sizeUnknown = false;
+		return dim;
+	}
+
+	private int nextColumn(int idx)
+	{
+		for (int i = idx + 1; i < row.length; i++)
+			if (row[i] != 0)
+				return i;
+		return -1;
+	}
+
+	/**
+	 * Required by LayoutManager
+	 *
+	 * @param parent component container
+	 * @return component container dimension
+	 */
+	@Override
+	public Dimension preferredLayoutSize(Container parent)
+	{
+		final Dimension dim = new Dimension(0, 0);
+		setSizes(parent);
+		// Always add the container's insets!
+		final Insets insets = parent.getInsets();
+		dim.width = preferredWidth + insets.left + insets.right;
+		dim.height = preferredHeight + insets.top + insets.bottom;
+		sizeUnknown = false;
+		return dim;
+	}
+
+	/**
+	 * Do nothing Required by LayoutManager.
+	 *
+	 * @param comp component
+	 */
+	@Override
+	public void removeLayoutComponent(Component comp)
+	{
+//        System.out.println("remove cmp");
+	}
+
+	/**
+	 * Set componet to a columns all with the same height, componet portion of the
+	 * parent width
+	 *
+	 * @param col Integer index of column
+	 */
+	private void ResetHeight(int col)
+	{
+		if (row != null && col < row.length)
+		{
+			int k = 0;
+			for (int i = 0; i < col; i++)
+				k += row[i];
+			if (percent_height != null && k + row[col] <= percent_height.length)
+			{
+				for (int j = 0; j < row[col]; j++)
+				{
+					percent_height[k] = (float) 1. / row[col];
+					k++;
+				}
+			}
+		}
+	}
+
+	/**
+	 * Set to all column to the same width, column portion of the parent width
+	 */
+	private void ResetWidth()
+	{
+		if (row != null && percent_width != null && percent_width.length >= row.length)
+		{
+			for (int i = 0; i < row.length; i++)
+			{// column; i++)
+				if (row[i] == 0)
+					continue;
+				percent_width[i] = (float) 1. / column;
+			}
+		}
+	}
+
+	/**
+	 * Resize column height component
+	 *
+	 * @param parent  component container
+	 * @param col_idx column index
+	 */
+	private void ResizeColumn(Container parent, int col_idx)
+	{
+		int k = 0, y = 0;
+		int previousHeight = 0, currMaxHeight;
+		for (int i = 0; i < col_idx; i++)
+			k += row[i];
+		currMaxHeight = maxHeight - (row[col_idx] - 1) * vgap;
+		for (int j = 0; j < row[col_idx]; j++)
+		{
+			final Component c = parent.getComponent(b_comp + k);
+			if (c.isVisible())
+			{
+				final Dimension d = c.getSize();// c.getPreferredSize();
+				y += previousHeight;
+				d.height = (int) (currMaxHeight * percent_height[k]);
+				if (j != row[col_idx] - 1)
+					d.height = (int) (currMaxHeight * percent_height[k]);
+				else
+					d.height = maxHeight - y;
+				c.setBounds(c.getBounds().x, y, c.getBounds().width, d.height);
+				previousHeight = d.height + vgap;
+				if (k < b_comp)
+				{
+					final Component b = parent.getComponent(k);
+					if (j == row[col_idx] - 1)
+						b.setBounds(c.getBounds().x + c.getBounds().width - hgap - 2, maxHeight - bx_pos, 4, 8);
+					else
+					{
+						int p = by_pos;
+						if (d.width < by_pos + 8)
+							p = d.width - 1;
+						b.setBounds(c.getBounds().x + c.getBounds().width - p, y + d.height - 2, 8, 4);
+					}
+				}
+			}
+			k++;
+		}
+	}
+
+	/**
+	 * Resize component width in colums
+	 *
+	 * @param parent component container
+	 */
+	private void ResizeColumns(Container parent)
+	{
+		int k = 0, x = 0;
+		int previousWidth = 0, currMaxWidth, currWidth;
+		currMaxWidth = maxWidth - (column - 1) * hgap;
+		int curr_col = 0;
+		for (int i = 0; i < row.length; i++)// column; i++)
+		{
+			if (row[i] == 0)
+				continue;
+			currWidth = (int) (currMaxWidth * percent_width[i]);
+			for (int j = 0; j < row[i]; j++)
+			{
+				final Component c = parent.getComponent(b_comp + k);
+				if (c.isVisible())
+				{
+					final Dimension d = c.getSize();// c.getPreferredSize();
+					x = previousWidth;
+					d.width = currWidth;
+					// if(i != column - 1)
+					if (curr_col != column - 1)
+						d.width = (int) (currMaxWidth * percent_width[i]);
+					else
+						d.width = maxWidth - x;
+					c.setBounds(x, c.getBounds().y, d.width, c.getBounds().height);
+					if (k < b_comp)
+					{
+						final Component b = parent.getComponent(k);
+						if (j == row[i] - 1)
+							b.setBounds(x + d.width - hgap - 2, maxHeight - bx_pos, 4, 8);
+						else
+						{
+							int p = by_pos;
+							if (d.width < by_pos + 8)
+								p = d.width - 1;
+							b.setBounds(x + d.width - p, c.getBounds().y + c.getBounds().height - 2, 8, 4);
+						}
+						b.invalidate();
+					}
+				}
+				k++;
+			}
+			previousWidth += currWidth + hgap;
+			curr_col++;
+		}
+	}
+
+	/**
 	 * Calculate equal space of column and equal width of component in column
 	 *
 	 * @param _b Canvas object used to interact with mouse if _b is column resize
@@ -709,14 +791,6 @@ public class RowColumnLayout implements LayoutManager
 			ResetWidth();
 			ResizeColumns(main_p);
 		}
-	}
-
-	private int nextColumn(int idx)
-	{
-		for (int i = idx + 1; i < row.length; i++)
-			if (row[i] != 0)
-				return i;
-		return -1;
 	}
 
 	/**
@@ -827,215 +901,147 @@ public class RowColumnLayout implements LayoutManager
 	}
 
 	/**
-	 * Resize component width in colums
+	 * Set normalize size of column width and component height
 	 *
-	 * @param parent component container
+	 * @param ph Vector of normalize height of component. The sum of ph[x] for objet
+	 *           in a column must be 1.
+	 * @param pw Vector of normalize width of the culomn. Sum of pw[x] must be 1
 	 */
-	private void ResizeColumns(Container parent)
+	public void SetPanelSize(float ph[], float pw[])
 	{
-		int k = 0, x = 0;
-		int previousWidth = 0, currMaxWidth, currWidth;
-		currMaxWidth = maxWidth - (column - 1) * hgap;
-		int curr_col = 0;
-		for (int i = 0; i < row.length; i++)// column; i++)
+		if (ph != null && pw != null)
 		{
+			if (ph.length < b_comp + 1 || pw.length < row.length)// column)
+				return; // definire exception
+			percent_height = new float[b_comp + 1];
+			percent_width = new float[row.length];
+			for (int i = 0; i < b_comp + 1; i++)
+				percent_height[i] = ph[i];
+			for (int i = 0; i < row.length; i++)
+			{
+				/*
+				 * if(MaxWidth * pw[i] > currMaxWidth - MIN_SIZE_W * (column - i)) pw[i] =
+				 * ((float)currMaxWidth - MIN_SIZE_W * (column - i)) / MaxWidth; currMaxWidth -=
+				 * MaxWidth * pw[i];
+				 */
+				percent_width[i] = pw[i];
+			}
+			sizeUnknown = false;
+		}
+	}
+
+	/**
+	 * Set number of column an number of component for column
+	 *
+	 * @param row row[i] define number of component in column i
+	 */
+	public void SetRowColumn(int[] row)
+	{
+		// if(row.length < column)
+		// return; //exception
+		b_comp = 0;
+		column = 0;
+		this.row = new int[row.length];
+		for (int i = 0; i < row.length; i++)
+		{
+			this.row[i] = row[i];
+			b_comp += row[i];
+			if (row[i] != 0)
+				column++;
+		}
+		b_comp--;
+//        setSize(main_p);
+		sizeUnknown = true;
+	}
+
+	/**
+	 * Method used to update number of column end number of componet for column
+	 *
+	 * @param row row[i] define number of component in column i
+	 * @param ph  Vector of normalize height of component. The sum of ph[x] for
+	 *            objet in a column must be 1.
+	 * @param pw  Vector of normalize width of the culomn. Sum of pw[x] must be 1
+	 */
+	public void SetRowColumn(int[] row, float ph[], float pw[])
+	{
+		SetRowColumn(row);
+		SetPanelSize(ph, pw);
+	}
+
+	/**
+	 * Initialize component size
+	 *
+	 * @param parent parent component
+	 */
+	private void setSizes(Container parent)
+	{
+		final int nComps = parent.getComponentCount();
+		Dimension d = null;
+		int totW, totH, k, maxW[];
+		// Reset preferred/minimum width and height.
+		preferredWidth = 0;
+		preferredHeight = 0;
+		minWidth = 0;
+		minHeight = 0;
+		if (2 * b_comp + 1 != nComps)
+		{
+			throw new IllegalArgumentException("Invalid number of component in RowColumnLayout");
+		}
+		percent_height = new float[b_comp + 1];
+		percent_width = new float[row.length];// column];
+		final Dimension min_d = parent.getComponent(b_comp + 0).getMinimumSize();
+		MIN_SIZE_W = min_d.width;
+		MIN_SIZE_H = min_d.height;
+		k = 0;
+		totW = 0;
+		maxW = new int[row.length];// column];
+		for (int i = 0; i < row.length; i++)
+		{// column; i++) {
 			if (row[i] == 0)
 				continue;
-			currWidth = (int) (currMaxWidth * percent_width[i]);
+			maxW[i] = 0;
+			totH = 0;
+			for (int j = 0; j < row[i]; j++)
+			{
+				final Component c = parent.getComponent(b_comp + k++);
+//			if(!(c instanceof RowColumnComponent))
+//			    return; //definire exception
+				if (c.isVisible())
+				{
+					d = c.getPreferredSize();
+					if (d.height < MIN_SIZE_H)
+						d.height = MIN_SIZE_H;
+					if (d.width < MIN_SIZE_W)
+						d.width = MIN_SIZE_W;
+					if (maxW[i] < d.width)
+						maxW[i] = d.width;
+					totH += d.height;
+				}
+			}
+			if (totH > preferredHeight)
+				preferredHeight = totH;
+			totW += maxW[i];
+		}
+		preferredWidth = totW;
+		minWidth = preferredWidth;
+		minHeight = preferredHeight;
+		k = 0;
+		for (int i = 0; i < row.length; i++)
+		{// column; i++) {
+			if (row[i] == 0)
+				continue;
 			for (int j = 0; j < row[i]; j++)
 			{
 				final Component c = parent.getComponent(b_comp + k);
 				if (c.isVisible())
 				{
-					final Dimension d = c.getSize();// c.getPreferredSize();
-					x = previousWidth;
-					d.width = currWidth;
-					// if(i != column - 1)
-					if (curr_col != column - 1)
-						d.width = (int) (currMaxWidth * percent_width[i]);
-					else
-						d.width = maxWidth - x;
-					c.setBounds(x, c.getBounds().y, d.width, c.getBounds().height);
-					if (k < b_comp)
-					{
-						final Component b = parent.getComponent(k);
-						if (j == row[i] - 1)
-							b.setBounds(x + d.width - hgap - 2, maxHeight - bx_pos, 4, 8);
-						else
-						{
-							int p = by_pos;
-							if (d.width < by_pos + 8)
-								p = d.width - 1;
-							b.setBounds(x + d.width - p, c.getBounds().y + c.getBounds().height - 2, 8, 4);
-						}
-						b.invalidate();
-					}
+					percent_height[k] = (float) 1. / row[i];
 				}
 				k++;
 			}
-			previousWidth += currWidth + hgap;
-			curr_col++;
+			percent_width[i] = (float) 1. / column;
 		}
-	}
-
-	/**
-	 * Resize column height component
-	 *
-	 * @param parent  component container
-	 * @param col_idx column index
-	 */
-	private void ResizeColumn(Container parent, int col_idx)
-	{
-		int k = 0, y = 0;
-		int previousHeight = 0, currMaxHeight;
-		for (int i = 0; i < col_idx; i++)
-			k += row[i];
-		currMaxHeight = maxHeight - (row[col_idx] - 1) * vgap;
-		for (int j = 0; j < row[col_idx]; j++)
-		{
-			final Component c = parent.getComponent(b_comp + k);
-			if (c.isVisible())
-			{
-				final Dimension d = c.getSize();// c.getPreferredSize();
-				y += previousHeight;
-				d.height = (int) (currMaxHeight * percent_height[k]);
-				if (j != row[col_idx] - 1)
-					d.height = (int) (currMaxHeight * percent_height[k]);
-				else
-					d.height = maxHeight - y;
-				c.setBounds(c.getBounds().x, y, c.getBounds().width, d.height);
-				previousHeight = d.height + vgap;
-				if (k < b_comp)
-				{
-					final Component b = parent.getComponent(k);
-					if (j == row[col_idx] - 1)
-						b.setBounds(c.getBounds().x + c.getBounds().width - hgap - 2, maxHeight - bx_pos, 4, 8);
-					else
-					{
-						int p = by_pos;
-						if (d.width < by_pos + 8)
-							p = d.width - 1;
-						b.setBounds(c.getBounds().x + c.getBounds().width - p, y + d.height - 2, 8, 4);
-					}
-				}
-			}
-			k++;
-		}
-	}
-
-	/**
-	 * Required by LayoutManager
-	 *
-	 * @param parent component container
-	 * @return component container dimension
-	 */
-	@Override
-	public Dimension preferredLayoutSize(Container parent)
-	{
-		final Dimension dim = new Dimension(0, 0);
-		setSizes(parent);
-		// Always add the container's insets!
-		final Insets insets = parent.getInsets();
-		dim.width = preferredWidth + insets.left + insets.right;
-		dim.height = preferredHeight + insets.top + insets.bottom;
-		sizeUnknown = false;
-		return dim;
-	}
-
-	/**
-	 * Required by LayoutManager
-	 *
-	 * @param parent component container
-	 * @return component container dimension
-	 */
-	@Override
-	public Dimension minimumLayoutSize(Container parent)
-	{
-		final Dimension dim = new Dimension(0, 0);
-		// Always add the container's insets!
-		final Insets insets = parent.getInsets();
-		dim.width = minWidth + insets.left + insets.right;
-		dim.height = minHeight + insets.top + insets.bottom;
-		sizeUnknown = false;
-		return dim;
-	}
-
-	/**
-	 * Required by LayoutManager. This is called when the panel is first displayed,
-	 * and every time its size changes. Note: You CAN'T assume preferredLayoutSize()
-	 * or minimumLayoutSize() will be called -- in the case of applets, at least,
-	 * they probably won't be.
-	 *
-	 * @param parent component container
-	 */
-	@Override
-	public void layoutContainer(Container parent)
-	{
-		final Insets insets = parent.getInsets();
-		maxWidth = parent.getSize().width - (insets.left + insets.right);
-		maxHeight = parent.getSize().height - (insets.top + insets.bottom);
-		main_p = parent;
-		if (maxWidth <= 0 || maxHeight <= 0)
-			return;
-		// Go through the components' sizes, if neither preferredLayoutSize()
-		// nor minimumLayoutSize() has been called.
-		if (sizeUnknown)
-		{
-			setSizes(parent);
-			sizeUnknown = false;
-		}
-		this.ResizeColumns(parent);
-		for (int i = 0; i < row.length; i++)// column; i++)
-			this.ResizeColumn(parent, i);
-	}
-
-	/**
-	 * Draw vertical line at x position on component
-	 *
-	 * @param x vertical line position
-	 * @param c Component on which draw line/s
-	 */
-	private void DrawXResize(Component c, int x)
-	{
-		// if(System.getProperty("java.version").indexOf("1.2") != -1 &&
-		// !c.isDoubleBuffered())
-		// return;
-		// else
-		if (!(c instanceof Waveform || c instanceof MultiWaveform))
-			return;
-		final Dimension d = c.getSize();
-		final Graphics g = c.getGraphics();
-		c.paint(g);
-		g.drawLine(x, 0, x, d.height);
-		g.dispose();
-	}
-
-	/**
-	 * Draw horizontal n_lines lines firt at y position next at y+ith*space on
-	 * component where ith came form 1 to n_lines. Multi horizontal line must be
-	 * draw when more than 1 component is resized.
-	 *
-	 * @param y      start y horizontal lines
-	 * @param n_line number of line to draw
-	 * @param space  number of pixel between line
-	 * @param c      component on which draw line/s
-	 */
-	private void DrawYResize(Component c, int y, int n_line, int space)
-	{
-		// if(System.getProperty("java.version").indexOf("1.2") != -1 &&
-		// !c.isDoubleBuffered())
-		// return;
-		// else
-		if (!(c instanceof Waveform || c instanceof MultiWaveform))
-			return;
-		final Dimension d = c.getSize();
-		final Graphics g = c.getGraphics();
-		c.paint(g);
-		for (int i = 0; i < n_line; i++)
-		{
-			g.drawLine(0, y + i * space, d.width, y + i * space);
-		}
-		g.dispose();
+//	    resetPercentHW(parent);
 	}
 
 	/**
@@ -1049,10 +1055,4 @@ public class RowColumnLayout implements LayoutManager
 		final String str = "";
 		return getClass().getName() + "[vgap=" + vgap + str + "]";
 	}
-
-	public float[] getPercentHeight()
-	{ return percent_height; }
-
-	public float[] getPercentWidth()
-	{ return percent_width; }
 }

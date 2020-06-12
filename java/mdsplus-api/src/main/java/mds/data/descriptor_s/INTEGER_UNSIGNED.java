@@ -6,6 +6,11 @@ import mds.data.DTYPE;
 
 public abstract class INTEGER_UNSIGNED<T extends Number> extends INTEGER<T>
 {
+	protected INTEGER_UNSIGNED(final ByteBuffer b)
+	{
+		super(b);
+	}
+
 	public INTEGER_UNSIGNED(final DTYPE ou, final BigInteger value)
 	{
 		super(ou, value);
@@ -29,11 +34,6 @@ public abstract class INTEGER_UNSIGNED<T extends Number> extends INTEGER<T>
 	public INTEGER_UNSIGNED(final DTYPE wu, final short value)
 	{
 		super(wu, value);
-	}
-
-	protected INTEGER_UNSIGNED(final ByteBuffer b)
-	{
-		super(b);
 	}
 
 	@Override

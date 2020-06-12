@@ -76,9 +76,19 @@ public final class Complex32Array extends COMPLEXArray<Float>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public Complex32 getScalar(final int idx)
 	{
 		return new Complex32(this.getElement(idx));
+	}
+
+	@Override
+	protected final ComplexFloat[] initArray(final int size)
+	{
+		return new ComplexFloat[size];
 	}
 
 	@Override
@@ -105,16 +115,6 @@ public final class Complex32Array extends COMPLEXArray<Float>
 	public final ComplexFloat parse(final String in)
 	{
 		return ComplexFloat.decode(in);
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
-
-	@Override
-	protected final ComplexFloat[] initArray(final int size)
-	{
-		return new ComplexFloat[size];
 	}
 
 	@Override

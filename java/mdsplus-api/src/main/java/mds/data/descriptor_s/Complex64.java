@@ -84,6 +84,10 @@ public final class Complex64 extends COMPLEX<Double>
 	{ return ComplexDouble.fromBuffer(this.p, 0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public final Uint64 inot()
 	{
 		return new Uint64(~this.getBuffer().getLong());
@@ -121,8 +125,4 @@ public final class Complex64 extends COMPLEX<Double>
 	{
 		this.setValue(value.real.doubleValue(), value.imag.doubleValue());
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
 }

@@ -24,17 +24,12 @@ public class jTraverser extends JFrame implements ActionListener
 	static boolean editable, readonly, model;
 	static Tree tree;
 	static JLabel status = new JLabel("jTaverser started");
-	JMenu file_m, edit_m, data_m, customize_m;
-	JMenuItem open, close, quit;
-	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b, add_window_b,
-			add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b, rename_node_b,
-			turn_on_b, turn_off_b, display_data_b, display_nci_b, display_tags_b, modify_data_b, set_default_b,
-			setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
-	TreeDialog display_data_d, modify_data_d, display_nci_d, display_tags_d;
-	DisplayData display_data;
-	DisplayNci display_nci;
-	DisplayTags display_tags;
-	ModifyData modify_data;
+
+	public static String getExperimentName()
+	{ return exp_name; }
+
+	public static boolean isEditable()
+	{ return editable; }
 
 	/**
 	 * Constructor.
@@ -59,16 +54,28 @@ public class jTraverser extends JFrame implements ActionListener
 			FrameRepository.frame = new jTraverser(null, null, null);
 	}
 
-	public static void stdout(String line)
-	{
-		status.setText(line);
-	}
-
 	public static void stderr(String line, Exception exc)
 	{
 		jTraverser.status.setText("ERROR: " + line + " (" + exc.getMessage() + ")");
 		System.err.println(line + "\n" + exc);
 	}
+
+	public static void stdout(String line)
+	{
+		status.setText(line);
+	}
+
+	JMenu file_m, edit_m, data_m, customize_m;
+	JMenuItem open, close, quit;
+	JMenuItem add_action_b, add_dispatch_b, add_numeric_b, add_signal_b, add_task_b, add_text_b, add_window_b,
+			add_axis_b, add_device_b, add_child_b, add_subtree_b, delete_node_b, modify_tags_b, rename_node_b,
+			turn_on_b, turn_off_b, display_data_b, display_nci_b, display_tags_b, modify_data_b, set_default_b,
+			setup_device_b, do_action_b, outline_b, tree_b, copy_b, paste_b;
+	TreeDialog display_data_d, modify_data_d, display_nci_d, display_tags_d;
+	DisplayData display_data;
+	DisplayNci display_nci;
+	DisplayTags display_tags;
+	ModifyData modify_data;
 
 	public jTraverser(String exp_name, String shot_name, String access)
 	{
@@ -176,17 +183,6 @@ public class jTraverser extends JFrame implements ActionListener
 		});
 		pack();
 		show();
-	}
-
-	public static String getExperimentName()
-	{ return exp_name; }
-
-	public static boolean isEditable()
-	{ return editable; }
-
-	public Point dialogLocation()
-	{
-		return new Point(getLocation().x + 32, getLocation().y + 32);
 	}
 
 	@Override
@@ -313,6 +309,17 @@ public class jTraverser extends JFrame implements ActionListener
 			currnode.setupDevice();
 	}
 
+	@Override
+	public Component add(Component component)
+	{
+		return getContentPane().add(component);
+	}
+
+	public Point dialogLocation()
+	{
+		return new Point(getLocation().x + 32, getLocation().y + 32);
+	}
+
 	void reportChange(String exp, int shot, boolean editable, boolean readonly)
 	{
 		jTraverser.model = shot < 0;
@@ -361,11 +368,5 @@ public class jTraverser extends JFrame implements ActionListener
 			turn_on_b.setEnabled(true);
 			turn_off_b.setEnabled(true);
 		}
-	}
-
-	@Override
-	public Component add(Component component)
-	{
-		return getContentPane().add(component);
 	}
 }

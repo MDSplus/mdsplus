@@ -51,11 +51,6 @@ public abstract class INTEGERArray<T extends Number> extends NUMBERArray<T>
 		return b;
 	}
 
-	public INTEGERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
-	{
-		super(dtype, data, shape);
-	}
-
 	protected INTEGERArray(final ByteBuffer b)
 	{
 		super(b);
@@ -71,6 +66,11 @@ public abstract class INTEGERArray<T extends Number> extends NUMBERArray<T>
 	{
 		super(dtype, ByteBuffer.wrap(values).order(Descriptor.BYTEORDER), shape.length == 0 ? new int[]
 		{ values.length } : shape);
+	}
+
+	public INTEGERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
+	{
+		super(dtype, data, shape);
 	}
 
 	protected INTEGERArray(final DTYPE dtype, final int[] values, final int... shape)
@@ -112,6 +112,10 @@ public abstract class INTEGERArray<T extends Number> extends NUMBERArray<T>
 	}
 
 	@Override
+	protected byte getRankClass()
+	{ return 0x10; }
+
+	@Override
 	public Descriptor<?> multiply(final Descriptor<?> X, final Descriptor<?> Y) throws MdsException
 	{
 		return this.long_binary(X, Y, new long_multiply());
@@ -122,8 +126,4 @@ public abstract class INTEGERArray<T extends Number> extends NUMBERArray<T>
 	{
 		return this.long_binary(X, Y, new long_subtract());
 	}
-
-	@Override
-	protected byte getRankClass()
-	{ return 0x10; }
 }

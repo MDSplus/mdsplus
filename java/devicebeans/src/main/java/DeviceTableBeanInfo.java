@@ -3,22 +3,15 @@ import java.awt.*;
 
 public class DeviceTableBeanInfo extends SimpleBeanInfo
 {
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
-	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceTable.class);
-		p.setShortDescription(description);
-		return p;
-	}
+	@Override
+	public BeanDescriptor getBeanDescriptor()
+	{ return new BeanDescriptor(DeviceTable.class, DeviceTableCustomizer.class); }
 
 	@Override
 	public Image getIcon(int kind)
 	{
 		return loadImage("DeviceTable.gif");
 	}
-
-	@Override
-	public BeanDescriptor getBeanDescriptor()
-	{ return new BeanDescriptor(DeviceTable.class, DeviceTableCustomizer.class); }
 
 	@Override
 	public PropertyDescriptor[] getPropertyDescriptors()
@@ -41,5 +34,12 @@ public class DeviceTableBeanInfo extends SimpleBeanInfo
 			System.out.println("DeviceTable: property exception " + e);
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceTable.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

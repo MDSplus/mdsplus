@@ -16,6 +16,7 @@ public class PythonEditor extends JPanel implements Editor
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	static final int OPC_FUN = 162;
 	String retVar;
 	String program;
 	int rows = 7, columns = 20;
@@ -23,7 +24,6 @@ public class PythonEditor extends JPanel implements Editor
 	JTextField text_field;
 	boolean default_scroll;
 	boolean editable = true;
-	static final int OPC_FUN = 162;
 
 	public PythonEditor(MDSplus.Data[] dataArgs)
 	{
@@ -62,50 +62,6 @@ public class PythonEditor extends JPanel implements Editor
 		jp.add(jp2, "Center");
 		setLayout(new BorderLayout());
 		add(jp, "Center");
-	}
-
-	@Override
-	public void reset()
-	{
-		text_area.setText(program);
-		text_field = new JTextField(retVar);
-	}
-
-	void getProgram(MDSplus.Data[] dataArgs)
-	{
-		if (dataArgs.length <= 3)
-			retVar = "";
-		else
-		{
-			try
-			{
-				retVar = dataArgs[3].getString();
-			}
-			catch (final Exception exc)
-			{
-				retVar = "";
-			}
-		}
-		String[] lines;
-		try
-		{
-			if (dataArgs[2] instanceof MDSplus.String)
-				lines = dataArgs[2].getStringArray();
-			else
-			{
-				lines = new String[1];
-				lines[0] = dataArgs[1].getString();
-			}
-			program = "";
-			for (int i = 0; i < lines.length; i++)
-			{
-				program += lines[i] + "\n";
-			}
-		}
-		catch (final Exception exc)
-		{
-			program = "";
-		}
 	}
 
 	@Override
@@ -152,6 +108,50 @@ public class PythonEditor extends JPanel implements Editor
 		final MDSplus.Data f = new MDSplus.Function(OPC_FUN, retArgs);
 		f.setCtxTree(Tree.curr_experiment);
 		return f;
+	}
+
+	void getProgram(MDSplus.Data[] dataArgs)
+	{
+		if (dataArgs.length <= 3)
+			retVar = "";
+		else
+		{
+			try
+			{
+				retVar = dataArgs[3].getString();
+			}
+			catch (final Exception exc)
+			{
+				retVar = "";
+			}
+		}
+		String[] lines;
+		try
+		{
+			if (dataArgs[2] instanceof MDSplus.String)
+				lines = dataArgs[2].getStringArray();
+			else
+			{
+				lines = new String[1];
+				lines[0] = dataArgs[1].getString();
+			}
+			program = "";
+			for (int i = 0; i < lines.length; i++)
+			{
+				program += lines[i] + "\n";
+			}
+		}
+		catch (final Exception exc)
+		{
+			program = "";
+		}
+	}
+
+	@Override
+	public void reset()
+	{
+		text_area.setText(program);
+		text_field = new JTextField(retVar);
 	}
 
 	@Override

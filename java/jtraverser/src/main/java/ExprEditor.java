@@ -24,14 +24,14 @@ public class ExprEditor extends JPanel implements ActionListener, Editor
 	boolean quotes_added;
 	boolean editable = true;
 
-	public ExprEditor(MDSplus.Data data, boolean default_to_string)
-	{
-		this(data, default_to_string, 1, 20);
-	}
-
 	public ExprEditor(boolean default_to_string)
 	{
 		this(null, default_to_string, 1, 20);
+	}
+
+	public ExprEditor(MDSplus.Data data, boolean default_to_string)
+	{
+		this(data, default_to_string, 1, 20);
 	}
 
 	public ExprEditor(MDSplus.Data data, boolean default_to_string, int rows, int columns)
@@ -131,6 +131,21 @@ public class ExprEditor extends JPanel implements ActionListener, Editor
 	}
 
 	@Override
+	public MDSplus.Data getData()
+	{
+		if (default_scroll)
+			expr = text_area.getText();
+		else
+			expr = text_field.getText();
+		if (expr == null || expr.trim().length() == 0)
+			return null;
+		if (quotes_added)
+			return Tree.curr_experiment.tdiCompile("\"" + expr + "\"");
+		else
+			return Tree.curr_experiment.tdiCompile(expr);
+	}
+
+	@Override
 	public void reset()
 	{
 		if (data == null)
@@ -147,21 +162,6 @@ public class ExprEditor extends JPanel implements ActionListener, Editor
 			text_area.setText(expr);
 		else
 			text_field.setText(expr);
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{
-		if (default_scroll)
-			expr = text_area.getText();
-		else
-			expr = text_field.getText();
-		if (expr == null || expr.trim().length() == 0)
-			return null;
-		if (quotes_added)
-			return Tree.curr_experiment.tdiCompile("\"" + expr + "\"");
-		else
-			return Tree.curr_experiment.tdiCompile(expr);
 	}
 
 	public void setData(MDSplus.Data data)

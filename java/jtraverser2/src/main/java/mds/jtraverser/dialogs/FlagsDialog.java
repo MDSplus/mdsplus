@@ -137,11 +137,50 @@ public final class FlagsDialog extends JDialog
 		this.dispose();
 	}
 
+	private final void editFlag(final byte idx)
+	{
+		final Node currnode = FlagsDialog.this.treeman.getCurrentTreeView().getCurrentNode();
+		if (currnode == null)
+			return;
+		if (this.flag[idx].isSelected())
+			try
+			{
+				currnode.setFlag(idx);
+			}
+			catch (final Exception exc)
+			{
+				JOptionPane.showMessageDialog(this, exc.getMessage(), "Error setting flag" + idx,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		else
+			try
+			{
+				currnode.clearFlag(idx);
+			}
+			catch (final Exception exc)
+			{
+				JOptionPane.showMessageDialog(this, exc.getMessage(), "Error clearing flag " + idx,
+						JOptionPane.WARNING_MESSAGE);
+			}
+		this.update();
+	}
+
 	public final void open()
 	{
 		Dialogs.setLocation(this);
 		this.setVisible(true);
 		this.update();
+	}
+
+	private Flags readFlags() throws Exception
+	{
+		final Node currnode = FlagsDialog.this.treeman.getCurrentTreeView().getCurrentNode();
+		if (currnode == null)
+			return new Flags();
+		final Flags flags = currnode.getFlags();
+		if (flags.isError())
+			MdsException.stderr("Error getting Flags", null);
+		return flags;
 	}
 
 	public final void update()
@@ -172,44 +211,5 @@ public final class FlagsDialog extends JDialog
 		else
 			this.setTitle(new StringBuilder(128).append("Flags of ").append(currnode.getFullPath())//
 					.append(" (0x").append(Integer.toHexString(iflags)).append(')').toString());
-	}
-
-	private final void editFlag(final byte idx)
-	{
-		final Node currnode = FlagsDialog.this.treeman.getCurrentTreeView().getCurrentNode();
-		if (currnode == null)
-			return;
-		if (this.flag[idx].isSelected())
-			try
-			{
-				currnode.setFlag(idx);
-			}
-			catch (final Exception exc)
-			{
-				JOptionPane.showMessageDialog(this, exc.getMessage(), "Error setting flag" + idx,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		else
-			try
-			{
-				currnode.clearFlag(idx);
-			}
-			catch (final Exception exc)
-			{
-				JOptionPane.showMessageDialog(this, exc.getMessage(), "Error clearing flag " + idx,
-						JOptionPane.WARNING_MESSAGE);
-			}
-		this.update();
-	}
-
-	private Flags readFlags() throws Exception
-	{
-		final Node currnode = FlagsDialog.this.treeman.getCurrentTreeView().getCurrentNode();
-		if (currnode == null)
-			return new Flags();
-		final Flags flags = currnode.getFlags();
-		if (flags.isError())
-			MdsException.stderr("Error getting Flags", null);
-		return flags;
 	}
 }

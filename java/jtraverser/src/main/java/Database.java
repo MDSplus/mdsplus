@@ -3,6 +3,18 @@ import mds.devices.Interface;
 
 public class Database implements Interface
 {
+	static long VMS_OFFSET = 0x7c95674beb4000L;
+
+	static public void closeSetups()
+	{
+		try
+		{
+			Class.forName("DeviceSetup").getMethod("closeSetups").invoke(null);
+		}
+		catch (final Exception e)
+		{}
+	}
+
 	static public Setup showSetup(int nid, String model, Tree tree) throws Exception
 	{
 		final boolean readOnly = Tree.curr_experiment.isReadOnly();
@@ -16,17 +28,6 @@ public class Database implements Interface
 				.invoke(null, nid, model, new Database(tree), FrameRepository.frame, readOnly);
 	}
 
-	static public void closeSetups()
-	{
-		try
-		{
-			Class.forName("DeviceSetup").getMethod("closeSetups").invoke(null);
-		}
-		catch (final Exception e)
-		{}
-	}
-
-	static long VMS_OFFSET = 0x7c95674beb4000L;
 	String name;
 	int shot;
 	boolean is_open = false;
@@ -43,25 +44,272 @@ public class Database implements Interface
 		this.shot = this.mdstree.getShot();
 	}
 
-	public void setEditable(boolean editable)
-	{ this.is_editable = editable; }
+	public int addDevice(String path, String model) throws Exception
+	{
+		mdstree.addDevice(path, model);
+		return mdstree.getNode(path).getNid();
+	}
 
-	public void setReadonly(boolean readonly)
-	{ this.is_readonly = readonly; }
+	public int addNode(String name, String usage) throws Exception
+	{
+		return mdstree.addNode(name, usage).getNid();
+	}
+
+	public void clearNciFlag(int nid, int flagMask) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		node.clearNciFlag(flagMask);
+	}
+
+	public void close() throws Exception
+	{
+		mdstree.close();
+	}
+
+	@Override
+	public void dataChanged(int... nids)
+	{
+		this.tree.dataChanged();
+	}
+
+	public void deleteNode(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		mdstree.deleteNode(node.getFullPath());
+	}
+
+	public int doAction(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.doAction();
+	}
+
+	@Override
+	public void doDeviceMethod(int nid, String method) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		node.doMethod(method);
+	}
+
+	@Override
+	public String execute(String expr) throws Exception
+	{
+		return mdstree.tdiExecute(expr).toString();
+	}
+
+	public MDSplus.Data getData(int nid) throws Exception
+	{
+		return new MDSplus.TreeNode(nid, mdstree).getData();
+	}
+
+	@Override
+	public String getDataExpr(int nid) throws Exception
+	{
+		return new MDSplus.TreeNode(nid, mdstree).getData().toString();
+	}
+
+	@Override
+	public int getDefault() throws Exception
+	{ return mdstree.getDefault().getNid(); }
+
+	@Override
+	public double getDouble(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getDouble();
+	}
+
+	public float getFloat(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getFloat();
+	}
+
+	@Override
+	public float getFloat(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getFloat();
+	}
+
+	public float[] getFloatArray(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getFloatArray();
+	}
+
+	@Override
+	public float[] getFloatArray(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getFloatArray();
+	}
+
+	@Override
+	public String getFullPath(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getFullPath();
+	}
+
+	public NodeInfo getInfo(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		long time = node.getTimeInserted();
+		time = (time - VMS_OFFSET) / 10000L;
+		final java.util.Calendar cal = java.util.Calendar.getInstance();
+		cal.setTimeInMillis(time);
+		final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
+		final String dateStr = sdf.format(cal);
+		return new NodeInfo(node.getDclass(), node.getDtype(), node.getUsage(), node.getFlags(), node.getOwnerId(),
+				node.getLength(), node.getConglomerateNodes().size(), node.getConglomerateElt(), dateStr,
+				node.getNodeName(), node.getFullPath(), node.getMinPath(), node.getPath(), node.getNumSegments());
+	}
+
+	public int getInt(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getInt();
+	}
+
+	@Override
+	public int getInt(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getInt();
+	}
+
+	public int[] getIntArray(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getIntArray();
+	}
+
+	@Override
+	public int[] getIntArray(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getIntArray();
+	}
+
+	public int[] getMembers(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		final MDSplus.TreeNodeArray members = node.getMembers();
+		final int[] memberNids = new int[members.size()];
+		for (int i = 0; i < members.size(); i++)
+			memberNids[i] = members.getElementAt(i).getNid();
+		return memberNids;
+	}
 
 	@Override
 	final public String getName()
 	{ return name; }
 
+	public boolean getNciFlag(int nid, int flagId) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getNciFlag(flagId);
+	}
+
+	public int getNciFlags(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getNciFlags();
+	}
+
+	@Override
+	public int getNode(String path) throws Exception
+	{
+		return mdstree.getNode(path).getNid();
+	}
+
+	@Override
+	public String getNodeName(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getNodeName();
+	}
+
+	@Override
+	public int getNumConglomerateNids(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.getConglomerateNodes().size();
+	}
+
 	@Override
 	final public int getShot()
 	{ return shot; }
 
-	public boolean isOpen()
-	{ return is_open; }
+	public int[] getSons(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		final MDSplus.TreeNodeArray sons = node.getChildren();
+		final int[] sonNids = new int[sons.size()];
+		for (int i = 0; i < sons.size(); i++)
+			sonNids[i] = sons.getElementAt(i).getNid();
+		return sonNids;
+	}
+
+	@Override
+	public String getString(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getString();
+	}
+
+	@Override
+	public String[] getStringArray(String expr) throws Exception
+	{
+		return mdstree.tdiCompile(expr).getStringArray();
+	}
+
+	public String[] getTags(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.findTags();
+	}
+
+	@Override
+	public String getUsage(int nid)
+	{
+		try
+		{
+			final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+			return node.getUsage();
+		}
+		catch (final Exception exc)
+		{
+			return "NONE";
+		}
+	}
+
+	public int[] getWild(int usage_mask) throws Exception
+	{
+		final MDSplus.TreeNodeArray nodes = mdstree.getNodeWild("***", usage_mask);
+		final int[] nids = new int[nodes.size()];
+		for (int i = 0; i < nodes.size(); i++)
+			nids[i] = nodes.getElementAt(i).getNid();
+		return nids;
+	}
+
+	public int[] getWild(int nid, int usage_mask) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		final MDSplus.TreeNodeArray nodes = mdstree.getNodeWild(node.getFullPath() + "***", usage_mask);
+		final int[] nids = new int[nodes.size()];
+		for (int i = 0; i < nodes.size(); i++)
+			nids[i] = nodes.getElementAt(i).getNid();
+		return nids;
+	}
 
 	public boolean isEditable()
 	{ return is_editable; }
+
+	@Override
+	public boolean isOn(int nid) throws Exception
+	{
+		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
+		return node.isOn();
+	}
+
+	public boolean isOpen()
+	{ return is_open; }
 
 	public boolean isReadonly()
 	{ return is_readonly; }
@@ -91,25 +339,9 @@ public class Database implements Interface
 		}
 	}
 
-	public void write() throws Exception
+	public void putData(int nid, MDSplus.Data data) throws Exception
 	{
-		mdstree.write();
-	}
-
-	public void close() throws Exception
-	{
-		mdstree.close();
-	}
-
-	public void quit() throws Exception
-	{
-		mdstree.quit();
-	}
-
-	@Override
-	public String getDataExpr(int nid) throws Exception
-	{
-		return new MDSplus.TreeNode(nid, mdstree).getData().toString();
+		new MDSplus.TreeNode(nid, mdstree).putData(data);
 	}
 
 	@Override
@@ -125,104 +357,15 @@ public class Database implements Interface
 		}
 	}
 
-	public MDSplus.Data getData(int nid) throws Exception
+	public void quit() throws Exception
 	{
-		return new MDSplus.TreeNode(nid, mdstree).getData();
-	}
-
-	public void putData(int nid, MDSplus.Data data) throws Exception
-	{
-		new MDSplus.TreeNode(nid, mdstree).putData(data);
-	}
-
-	public NodeInfo getInfo(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		long time = node.getTimeInserted();
-		time = (time - VMS_OFFSET) / 10000L;
-		final java.util.Calendar cal = java.util.Calendar.getInstance();
-		cal.setTimeInMillis(time);
-		final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy hh:mm:ss");
-		final String dateStr = sdf.format(cal);
-		return new NodeInfo(node.getDclass(), node.getDtype(), node.getUsage(), node.getFlags(), node.getOwnerId(),
-				node.getLength(), node.getConglomerateNodes().size(), node.getConglomerateElt(), dateStr,
-				node.getNodeName(), node.getFullPath(), node.getMinPath(), node.getPath(), node.getNumSegments());
-	}
-
-	public void setTags(int nid, String tags[]) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		for (int i = 0; i < tags.length; i++)
-			node.addTag(tags[i]);
-	}
-
-	public String[] getTags(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.findTags();
+		mdstree.quit();
 	}
 
 	public void renameNode(int nid, String name) throws Exception
 	{
 		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
 		node.rename(name);
-	}
-
-	public int addNode(String name, String usage) throws Exception
-	{
-		return mdstree.addNode(name, usage).getNid();
-	}
-
-	public void setSubtree(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		node.setSubtree(true);
-	}
-
-	public void deleteNode(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		mdstree.deleteNode(node.getFullPath());
-	}
-
-	public int[] getSons(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		final MDSplus.TreeNodeArray sons = node.getChildren();
-		final int[] sonNids = new int[sons.size()];
-		for (int i = 0; i < sons.size(); i++)
-			sonNids[i] = sons.getElementAt(i).getNid();
-		return sonNids;
-	}
-
-	public int[] getMembers(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		final MDSplus.TreeNodeArray members = node.getMembers();
-		final int[] memberNids = new int[members.size()];
-		for (int i = 0; i < members.size(); i++)
-			memberNids[i] = members.getElementAt(i).getNid();
-		return memberNids;
-	}
-
-	@Override
-	public boolean isOn(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.isOn();
-	}
-
-	@Override
-	public void setOn(int nid, boolean on) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		node.setOn(on);
-	}
-
-	@Override
-	public int getNode(String path) throws Exception
-	{
-		return mdstree.getNode(path).getNid();
 	}
 
 	@Override
@@ -232,53 +375,8 @@ public class Database implements Interface
 		mdstree.setDefault(node);
 	}
 
-	@Override
-	public int getDefault() throws Exception
-	{ return mdstree.getDefault().getNid(); }
-
-	public int addDevice(String path, String model) throws Exception
-	{
-		mdstree.addDevice(path, model);
-		return mdstree.getNode(path).getNid();
-	}
-
-	public int doAction(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.doAction();
-	}
-
-	@Override
-	public void doDeviceMethod(int nid, String method) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		node.doMethod(method);
-	}
-
-	public int[] getWild(int usage_mask) throws Exception
-	{
-		final MDSplus.TreeNodeArray nodes = mdstree.getNodeWild("***", usage_mask);
-		final int[] nids = new int[nodes.size()];
-		for (int i = 0; i < nodes.size(); i++)
-			nids[i] = nodes.getElementAt(i).getNid();
-		return nids;
-	}
-
-	public int[] getWild(int nid, int usage_mask) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		final MDSplus.TreeNodeArray nodes = mdstree.getNodeWild(node.getFullPath() + "***", usage_mask);
-		final int[] nids = new int[nodes.size()];
-		for (int i = 0; i < nodes.size(); i++)
-			nids[i] = nodes.getElementAt(i).getNid();
-		return nids;
-	}
-
-	public void clearNciFlag(int nid, int flagMask) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		node.clearNciFlag(flagMask);
-	}
+	public void setEditable(boolean editable)
+	{ this.is_editable = editable; }
 
 	public void setNciFlag(int nid, int flagId) throws Exception
 	{
@@ -286,128 +384,31 @@ public class Database implements Interface
 		node.setNciFlag(flagId);
 	}
 
-	public boolean getNciFlag(int nid, int flagId) throws Exception
+	@Override
+	public void setOn(int nid, boolean on) throws Exception
 	{
 		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getNciFlag(flagId);
+		node.setOn(on);
 	}
 
-	public int getNciFlags(int nid) throws Exception
+	public void setReadonly(boolean readonly)
+	{ this.is_readonly = readonly; }
+
+	public void setSubtree(int nid) throws Exception
 	{
 		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getNciFlags();
+		node.setSubtree(true);
 	}
 
-	public int getInt(int nid) throws Exception
+	public void setTags(int nid, String tags[]) throws Exception
 	{
 		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getInt();
+		for (int i = 0; i < tags.length; i++)
+			node.addTag(tags[i]);
 	}
 
-	public float getFloat(int nid) throws Exception
+	public void write() throws Exception
 	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getFloat();
-	}
-
-	public int[] getIntArray(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getIntArray();
-	}
-
-	public float[] getFloatArray(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getFloatArray();
-	}
-
-	@Override
-	public String getFullPath(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getFullPath();
-	}
-
-	@Override
-	public int[] getIntArray(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getIntArray();
-	}
-
-	@Override
-	public float[] getFloatArray(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getFloatArray();
-	}
-
-	@Override
-	public double getDouble(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getDouble();
-	}
-
-	@Override
-	public float getFloat(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getFloat();
-	}
-
-	@Override
-	public int getInt(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getInt();
-	}
-
-	@Override
-	public String getString(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getString();
-	}
-
-	@Override
-	public String[] getStringArray(String expr) throws Exception
-	{
-		return mdstree.tdiCompile(expr).getStringArray();
-	}
-
-	@Override
-	public String execute(String expr) throws Exception
-	{
-		return mdstree.tdiExecute(expr).toString();
-	}
-
-	@Override
-	public String getUsage(int nid)
-	{
-		try
-		{
-			final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-			return node.getUsage();
-		}
-		catch (final Exception exc)
-		{
-			return "NONE";
-		}
-	}
-
-	@Override
-	public int getNumConglomerateNids(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getConglomerateNodes().size();
-	}
-
-	@Override
-	public String getNodeName(int nid) throws Exception
-	{
-		final MDSplus.TreeNode node = new MDSplus.TreeNode(nid, mdstree);
-		return node.getNodeName();
-	}
-
-	@Override
-	public void dataChanged(int... nids)
-	{
-		this.tree.dataChanged();
+		mdstree.write();
 	}
 }

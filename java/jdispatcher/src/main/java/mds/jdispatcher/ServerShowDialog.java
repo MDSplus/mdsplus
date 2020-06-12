@@ -9,20 +9,150 @@ package mds.jdispatcher;
  *
  * @author  taliercio
  */
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.Socket;
+import java.util.Hashtable;
+import java.util.Iterator;
+
 import javax.swing.*;
-import java.awt.event.*;
-import java.net.*;
-import java.io.*;
-import java.util.*;
 import javax.swing.table.*;
 
 public class ServerShowDialog extends JPanel
 {
+	public class ButtonRenderer implements TableCellRenderer
+	{
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column)
+		{
+			/*
+			 * if (isSelected) { setForeground(table.getSelectionForeground());
+			 * setBackground(table.getSelectionBackground()); } else{
+			 * setForeground(table.getForeground());
+			 * setBackground(UIManager.getColor("Button.background")); }
+			 */
+			// command = value.toString();
+			// setText( (value == null) ? "" : value.toString() );
+			// return this;
+			return (Component) value;
+		}
+	}
+
+	class JTableButtonMouseListener implements MouseListener
+	{
+		private final JTable table;
+
+		public JTableButtonMouseListener(JTable table)
+		{
+			this.table = table;
+		}
+
+		private void forwardEventToButton(MouseEvent e)
+		{
+			final TableColumnModel columnModel = table.getColumnModel();
+			final int column = columnModel.getColumnIndexAtX(e.getX());
+			final int row = e.getY() / table.getRowHeight();
+			Object value;
+			JButton button;
+			MouseEvent buttonEvent;
+			if (row >= table.getRowCount() || row < 0 || column >= table.getColumnCount() || column < 0)
+				return;
+			value = table.getValueAt(row, column);
+			if (!(value instanceof JButton))
+				return;
+			button = (JButton) value;
+			buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
+			button.dispatchEvent(buttonEvent);
+			// This is necessary so that when a button is pressed and released
+			// it gets rendered properly. Otherwise, the button may still appear
+			// pressed down when it has been released.
+			table.repaint();
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+	}
+
+	class ShowMessage implements Runnable
+	{
+		String msg;
+
+		public ShowMessage(String msg)
+		{
+			this.msg = msg;
+		}
+
+		@Override
+		public void run()
+		{
+			JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	public class StateRenderer extends JPanel implements TableCellRenderer
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column)
+		{
+			if (value instanceof Boolean)
+			{
+				final Boolean b = (Boolean) value;
+				if (b.booleanValue())
+					setBackground(Color.GREEN);
+				else
+					setBackground(Color.RED);
+			}
+			return this;
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 	private String address;
 	private int info_port;
 	private Hashtable<String, ServerInfo> serversInfo = null;
+	private javax.swing.JButton jButton1;
+	private javax.swing.JButton jButton2;
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanel2;
+	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JTable jTable1;
+	private javax.swing.JButton killAllServer;
+	private javax.swing.JButton startAllServer;
 
 	/** Creates new form ServerShowDialog */
 	public ServerShowDialog(java.awt.Frame parent, boolean modal)
@@ -113,19 +243,16 @@ public class ServerShowDialog extends JPanel
 		jTable1.getColumnModel().getColumn(3).setCellRenderer(new ButtonRenderer());
 		jTable1.getColumnModel().getColumn(4).setCellRenderer(new ButtonRenderer());
 		jPanel2.add(jScrollPane1, java.awt.BorderLayout.CENTER);
-		// getContentPane().add(jPanel2, java.awt.BorderLayout.CENTER);
 		add(jPanel2, java.awt.BorderLayout.CENTER);
 	}
 
 	private void jButton1ActionPerformed(java.awt.event.ActionEvent evt)
 	{// GEN-FIRST:event_jButton1ActionPerformed
-// TODO add your handling code here:
 		this.updateServerState();
 	}
 
 	private void jButton2ActionPerformed(java.awt.event.ActionEvent evt)
 	{// GEN-FIRST:event_jButton2ActionPerformed
-// TODO add your handling code here:
 		setVisible(false);
 	}
 
@@ -135,49 +262,6 @@ public class ServerShowDialog extends JPanel
 		while (i.hasNext())
 			i.next().stopServer();
 	}
-
-	private void startAllServerActionPerformed(java.awt.event.ActionEvent evt)
-	{
-		final Iterator<ServerInfo> i = serversInfo.values().iterator();
-		while (i.hasNext())
-			i.next().startServer();
-	}
-
-	/**
-	 * @param args the command line arguments
-	 */
-	/*
-	 * public static void main(String args[]) { java.awt.EventQueue.invokeLater(new
-	 * Runnable() { public void run() { ServerShowDialog dialog = new
-	 * ServerShowDialog(new javax.swing.JFrame(), true);
-	 * dialog.addWindowListener(new java.awt.event.WindowAdapter() { public void
-	 * windowClosing(java.awt.event.WindowEvent e) { System.exit(0); } });
-	 * dialog.setVisible(true); } }); }
-	 */
-	private javax.swing.JButton jButton1;
-	private javax.swing.JButton jButton2;
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel2;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JTable jTable1;
-	private javax.swing.JButton killAllServer;
-	private javax.swing.JButton startAllServer;
-
-	public void updateServerState()
-	{
-		try
-		{
-			loadServerState(address, info_port);
-		}
-		catch (final Exception exc)
-		{
-			final ShowMessage alert = new ShowMessage(exc.getMessage());
-			SwingUtilities.invokeLater(alert);
-		}
-	}
-
-	public void setServersInfo(Hashtable<String, ServerInfo> serversInfo)
-	{ this.serversInfo = serversInfo; }
 
 	public void loadServerState(String address, int info_port) throws Exception
 	{
@@ -223,120 +307,26 @@ public class ServerShowDialog extends JPanel
 		s.close();
 	}
 
-	public class StateRenderer extends JPanel implements TableCellRenderer
-	{
-		private static final long serialVersionUID = 1L;
+	public void setServersInfo(Hashtable<String, ServerInfo> serversInfo)
+	{ this.serversInfo = serversInfo; }
 
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column)
-		{
-			if (value instanceof Boolean)
-			{
-				final Boolean b = (Boolean) value;
-				if (b.booleanValue())
-					setBackground(Color.GREEN);
-				else
-					setBackground(Color.RED);
-			}
-			return this;
-		}
+	private void startAllServerActionPerformed(java.awt.event.ActionEvent evt)
+	{
+		final Iterator<ServerInfo> i = serversInfo.values().iterator();
+		while (i.hasNext())
+			i.next().startServer();
 	}
 
-	public class ButtonRenderer implements TableCellRenderer
+	public void updateServerState()
 	{
-		@Override
-		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-				int row, int column)
+		try
 		{
-			/*
-			 * if (isSelected) { setForeground(table.getSelectionForeground());
-			 * setBackground(table.getSelectionBackground()); } else{
-			 * setForeground(table.getForeground());
-			 * setBackground(UIManager.getColor("Button.background")); }
-			 */
-			// command = value.toString();
-			// setText( (value == null) ? "" : value.toString() );
-			// return this;
-			return (Component) value;
+			loadServerState(address, info_port);
 		}
-	}
-
-	class JTableButtonMouseListener implements MouseListener
-	{
-		private final JTable table;
-
-		private void forwardEventToButton(MouseEvent e)
+		catch (final Exception exc)
 		{
-			final TableColumnModel columnModel = table.getColumnModel();
-			final int column = columnModel.getColumnIndexAtX(e.getX());
-			final int row = e.getY() / table.getRowHeight();
-			Object value;
-			JButton button;
-			MouseEvent buttonEvent;
-			if (row >= table.getRowCount() || row < 0 || column >= table.getColumnCount() || column < 0)
-				return;
-			value = table.getValueAt(row, column);
-			if (!(value instanceof JButton))
-				return;
-			button = (JButton) value;
-			buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
-			button.dispatchEvent(buttonEvent);
-			// This is necessary so that when a button is pressed and released
-			// it gets rendered properly. Otherwise, the button may still appear
-			// pressed down when it has been released.
-			table.repaint();
-		}
-
-		public JTableButtonMouseListener(JTable table)
-		{
-			this.table = table;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-	}
-
-	class ShowMessage implements Runnable
-	{
-		String msg;
-
-		public ShowMessage(String msg)
-		{
-			this.msg = msg;
-		}
-
-		@Override
-		public void run()
-		{
-			JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
+			final ShowMessage alert = new ShowMessage(exc.getMessage());
+			SwingUtilities.invokeLater(alert);
 		}
 	}
 }

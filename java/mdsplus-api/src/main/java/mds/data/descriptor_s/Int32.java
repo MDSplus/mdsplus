@@ -20,14 +20,14 @@ public class Int32 extends INTEGER<Integer>
 		this((int) value);
 	}
 
-	public Int32(final int value)
-	{
-		super(DTYPE.L, value);
-	}
-
 	protected Int32(final DTYPE dtype, final int value)
 	{
 		super(dtype, value);
+	}
+
+	public Int32(final int value)
+	{
+		super(DTYPE.L, value);
 	}
 
 	@Override
@@ -45,6 +45,10 @@ public class Int32 extends INTEGER<Integer>
 	@Override
 	public final Integer getAtomic()
 	{ return new Integer(this.p.getInt(0)); }
+
+	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
 
 	public final int getValue()
 	{ return this.getBuffer().getInt(0); }
@@ -77,8 +81,4 @@ public class Int32 extends INTEGER<Integer>
 	{
 		this.b.putInt(this.pointer(), value);
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
 }

@@ -128,6 +128,12 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>
 		return this;
 	}
 
+	private final StringBuilder substitute(final StringBuilder pout)
+	{
+		return pout.append("ZERO(").append(this.arsize() / this.length()).append(", 0").append(this.dtype().suffix)
+				.append(')');
+	}
+
 	@Override
 	public final BigInteger[] toBigIntegerArray()
 	{
@@ -197,11 +203,5 @@ public class Descriptor_CA extends ARRAY<ByteBuffer>
 			e.printStackTrace();
 			return EmptyArray.NEW;
 		}
-	}
-
-	private final StringBuilder substitute(final StringBuilder pout)
-	{
-		return pout.append("ZERO(").append(this.arsize() / this.length()).append(", 0").append(this.dtype().suffix)
-				.append(')');
 	}
 }

@@ -19,16 +19,156 @@ import javax.swing.table.*;
 
 public class ServersInfoPanel extends JPanel
 {
+	public class ActionRenderer extends JLabel implements TableCellRenderer
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column)
+		{
+			if (value instanceof MdsMonitorEvent)
+			{
+				final MdsMonitorEvent e = (MdsMonitorEvent) value;
+				switch (e.mode)
+				{
+				case MdsMonitorEvent.MonitorDoing:
+					setForeground(Color.BLUE);
+					break;
+				case MdsMonitorEvent.MonitorDone:
+					if ((e.status & 1) != 0)
+						setForeground(Color.GREEN);
+					else
+						setForeground(Color.RED);
+					break;
+				}
+				this.setText(e.node_path);
+			}
+			else
+				this.setText("");
+			return this;
+		}
+	}
+
+	public class ButtonRenderer implements TableCellRenderer
+	{
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column)
+		{
+			return (Component) value;
+		}
+	}
+
+	class JTableButtonMouseListener implements MouseListener
+	{
+		private final JTable table;
+
+		public JTableButtonMouseListener(final JTable table)
+		{
+			this.table = table;
+		}
+
+		private void forwardEventToButton(final MouseEvent e)
+		{
+			final TableColumnModel columnModel = table.getColumnModel();
+			final int column = columnModel.getColumnIndexAtX(e.getX());
+			final int row = e.getY() / table.getRowHeight();
+			Object value;
+			JButton button;
+			MouseEvent buttonEvent;
+			if (row >= table.getRowCount() || row < 0 || column >= table.getColumnCount() || column < 0)
+				return;
+			value = table.getValueAt(row, column);
+			if (!(value instanceof JButton))
+				return;
+			button = (JButton) value;
+			buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
+			button.dispatchEvent(buttonEvent);
+			// This is necessary so that when a button is pressed and released
+			// it gets rendered properly. Otherwise, the button may still appear
+			// pressed down when it has been released.
+			table.repaint();
+		}
+
+		@Override
+		public void mouseClicked(final MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseEntered(final MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseExited(final MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mousePressed(final MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+
+		@Override
+		public void mouseReleased(final MouseEvent e)
+		{
+			forwardEventToButton(e);
+		}
+	}
+
+	public class StateRenderer extends JPanel implements TableCellRenderer
+	{
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
+				final boolean hasFocus, final int row, final int column)
+		{
+			if (value instanceof Boolean)
+			{
+				final Boolean b = (Boolean) value;
+				if (b.booleanValue())
+					setBackground(Color.GREEN);
+				else
+					setBackground(Color.RED);
+			}
+			return this;
+		}
+	}
+
 	private static final long serialVersionUID = 1L;
 	private String address;
 	private int info_port;
 	private Hashtable<String, ServerInfo> serversInfo = null;
+	// Variables declaration - do not modify
+	private javax.swing.JPanel jPanel1;
+	private javax.swing.JPanel jPanel2;
+	private javax.swing.JScrollPane jScrollPane1;
+	private javax.swing.JTable jTable1;
+	private javax.swing.JButton killAllServer;
+	private javax.swing.JPopupMenu serverActionPopup;
+	private javax.swing.JButton startAllServer;
+	private javax.swing.JMenuItem startServer;
+	private javax.swing.JMenuItem stopServer;
+	private javax.swing.JButton update;
+	// End of variables declaration
 
 	/** Creates new form ServerShowDialog */
 	public ServersInfoPanel()
 	{
 		initComponents();
 		this.jTable1.setComponentPopupMenu(this.serverActionPopup);
+	}
+
+	public boolean checkInfoServer(final String address, final int info_port)
+	{
+		return this.address != null && address.equals(this.address) && info_port == this.info_port;
 	}
 
 	/**
@@ -151,83 +291,6 @@ public class ServersInfoPanel extends JPanel
 		add(jPanel2, BorderLayout.CENTER);
 	}
 
-	// Variables declaration - do not modify
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel2;
-	private javax.swing.JScrollPane jScrollPane1;
-	private javax.swing.JTable jTable1;
-	private javax.swing.JButton killAllServer;
-	private javax.swing.JPopupMenu serverActionPopup;
-	private javax.swing.JButton startAllServer;
-	private javax.swing.JMenuItem startServer;
-	private javax.swing.JMenuItem stopServer;
-	private javax.swing.JButton update;
-	// End of variables declaration
-
-	public void updateServerState(final String serverAddress, final boolean state)
-	{
-		try
-		{
-			final DefaultTableModel md = (DefaultTableModel) this.jTable1.getModel();
-			final ServerInfo si = serversInfo.get(serverAddress);
-			if (si != null)
-				md.setValueAt(new Boolean(state), si.getPos(), 0);
-		}
-		catch (final Exception exc)
-		{
-			exc.printStackTrace();
-			System.out.println("Error : " + exc);
-		}
-	}
-
-	public void setServersInfo(final Hashtable<String, ServerInfo> serversInfo)
-	{ this.serversInfo = serversInfo; }
-
-	public boolean checkInfoServer(final String address, final int info_port)
-	{
-		return this.address != null && address.equals(this.address) && info_port == this.info_port;
-	}
-
-	public void updateServersState() throws Exception
-	{
-		final Socket s = new Socket(address, info_port);
-		s.setSoTimeout(5000);
-		final DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-		final DataInputStream dis = new DataInputStream(s.getInputStream());
-		dos.writeUTF("servers");
-		final int numServer = dis.readInt();
-		for (int i = 0; i < numServer; i++)
-		{
-			final String serverClass = dis.readUTF();
-			final String addressSrv = dis.readUTF();
-			final boolean active = dis.readBoolean();
-			if (serversInfo != null && addressSrv != null && addressSrv.length() != 0)
-			{
-				final DefaultTableModel md = (DefaultTableModel) this.jTable1.getModel();
-				final ServerInfo si = serversInfo.get(addressSrv);
-				if (si == null)
-				{
-					System.out.println(
-							"ERROR : Server Address " + addressSrv + " for server class " + serverClass + " not found");
-					continue;
-				}
-				si.setActive(active);
-				final int numRow = md.getRowCount();
-				int j;
-				for (j = 0; j < numRow; j++)
-				{
-					final Object o = md.getValueAt(j, 2);
-					if (o != null && o.equals(addressSrv))
-					{
-						md.setValueAt(new Boolean(active), j, 0);
-						break;
-					}
-				}
-			}
-		}
-		s.close();
-	}
-
 	public void loadServerState(final String address, final int info_port) throws Exception
 	{
 		this.address = address;
@@ -275,6 +338,9 @@ public class ServersInfoPanel extends JPanel
 		s.close();
 	}
 
+	public void setServersInfo(final Hashtable<String, ServerInfo> serversInfo)
+	{ this.serversInfo = serversInfo; }
+
 	public void updateServersInfoAction(final MdsMonitorEvent event)
 	{
 		final DefaultTableModel md = (DefaultTableModel) this.jTable1.getModel();
@@ -283,126 +349,59 @@ public class ServersInfoPanel extends JPanel
 			md.setValueAt(event, si.getPos(), 3);
 	}
 
-	public class ActionRenderer extends JLabel implements TableCellRenderer
+	public void updateServersState() throws Exception
 	{
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
-				final boolean hasFocus, final int row, final int column)
+		final Socket s = new Socket(address, info_port);
+		s.setSoTimeout(5000);
+		final DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+		final DataInputStream dis = new DataInputStream(s.getInputStream());
+		dos.writeUTF("servers");
+		final int numServer = dis.readInt();
+		for (int i = 0; i < numServer; i++)
 		{
-			if (value instanceof MdsMonitorEvent)
+			final String serverClass = dis.readUTF();
+			final String addressSrv = dis.readUTF();
+			final boolean active = dis.readBoolean();
+			if (serversInfo != null && addressSrv != null && addressSrv.length() != 0)
 			{
-				final MdsMonitorEvent e = (MdsMonitorEvent) value;
-				switch (e.mode)
+				final DefaultTableModel md = (DefaultTableModel) this.jTable1.getModel();
+				final ServerInfo si = serversInfo.get(addressSrv);
+				if (si == null)
 				{
-				case MdsMonitorEvent.MonitorDoing:
-					setForeground(Color.BLUE);
-					break;
-				case MdsMonitorEvent.MonitorDone:
-					if ((e.status & 1) != 0)
-						setForeground(Color.GREEN);
-					else
-						setForeground(Color.RED);
-					break;
+					System.out.println(
+							"ERROR : Server Address " + addressSrv + " for server class " + serverClass + " not found");
+					continue;
 				}
-				this.setText(e.node_path);
+				si.setActive(active);
+				final int numRow = md.getRowCount();
+				int j;
+				for (j = 0; j < numRow; j++)
+				{
+					final Object o = md.getValueAt(j, 2);
+					if (o != null && o.equals(addressSrv))
+					{
+						md.setValueAt(new Boolean(active), j, 0);
+						break;
+					}
+				}
 			}
-			else
-				this.setText("");
-			return this;
 		}
+		s.close();
 	}
 
-	public class StateRenderer extends JPanel implements TableCellRenderer
+	public void updateServerState(final String serverAddress, final boolean state)
 	{
-		private static final long serialVersionUID = 1L;
-
-		@Override
-		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
-				final boolean hasFocus, final int row, final int column)
+		try
 		{
-			if (value instanceof Boolean)
-			{
-				final Boolean b = (Boolean) value;
-				if (b.booleanValue())
-					setBackground(Color.GREEN);
-				else
-					setBackground(Color.RED);
-			}
-			return this;
+			final DefaultTableModel md = (DefaultTableModel) this.jTable1.getModel();
+			final ServerInfo si = serversInfo.get(serverAddress);
+			if (si != null)
+				md.setValueAt(new Boolean(state), si.getPos(), 0);
 		}
-	}
-
-	public class ButtonRenderer implements TableCellRenderer
-	{
-		@Override
-		public Component getTableCellRendererComponent(final JTable table, final Object value, final boolean isSelected,
-				final boolean hasFocus, final int row, final int column)
+		catch (final Exception exc)
 		{
-			return (Component) value;
-		}
-	}
-
-	class JTableButtonMouseListener implements MouseListener
-	{
-		private final JTable table;
-
-		private void forwardEventToButton(final MouseEvent e)
-		{
-			final TableColumnModel columnModel = table.getColumnModel();
-			final int column = columnModel.getColumnIndexAtX(e.getX());
-			final int row = e.getY() / table.getRowHeight();
-			Object value;
-			JButton button;
-			MouseEvent buttonEvent;
-			if (row >= table.getRowCount() || row < 0 || column >= table.getColumnCount() || column < 0)
-				return;
-			value = table.getValueAt(row, column);
-			if (!(value instanceof JButton))
-				return;
-			button = (JButton) value;
-			buttonEvent = SwingUtilities.convertMouseEvent(table, e, button);
-			button.dispatchEvent(buttonEvent);
-			// This is necessary so that when a button is pressed and released
-			// it gets rendered properly. Otherwise, the button may still appear
-			// pressed down when it has been released.
-			table.repaint();
-		}
-
-		public JTableButtonMouseListener(final JTable table)
-		{
-			this.table = table;
-		}
-
-		@Override
-		public void mouseClicked(final MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseEntered(final MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseExited(final MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mousePressed(final MouseEvent e)
-		{
-			forwardEventToButton(e);
-		}
-
-		@Override
-		public void mouseReleased(final MouseEvent e)
-		{
-			forwardEventToButton(e);
+			exc.printStackTrace();
+			System.out.println("Error : " + exc);
 		}
 	}
 }

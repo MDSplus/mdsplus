@@ -50,6 +50,10 @@ public final class Int8 extends INTEGER<Byte>
 	{ return this.p.get(0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x00; }
+
+	@Override
 	public final Uint8 inot()
 	{
 		return new Uint8((byte) (~this.getPrimitive() & 0xFF));
@@ -71,8 +75,4 @@ public final class Int8 extends INTEGER<Byte>
 	{
 		this.b.put(this.pointer(), value);
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x00; }
 }

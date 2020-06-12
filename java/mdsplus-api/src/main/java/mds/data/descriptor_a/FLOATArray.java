@@ -21,14 +21,14 @@ public abstract class FLOATArray<T extends Number> extends NUMBERArray<T>
 		return b;
 	}
 
-	public FLOATArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
-	{
-		super(dtype, data, shape);
-	}
-
 	protected FLOATArray(final ByteBuffer b)
 	{
 		super(b);
+	}
+
+	public FLOATArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
+	{
+		super(dtype, data, shape);
 	}
 
 	protected FLOATArray(final DTYPE dtype, final double[] values, final int... shape)
@@ -50,12 +50,12 @@ public abstract class FLOATArray<T extends Number> extends NUMBERArray<T>
 	}
 
 	@Override
+	protected final byte getRankClass()
+	{ return 0x30; }
+
+	@Override
 	public final String toString(final T value)
 	{
 		return FLOAT.decompile(value, this.dtype(), Descriptor.DECO_STR);
 	}
-
-	@Override
-	protected final byte getRankClass()
-	{ return 0x30; }
 }

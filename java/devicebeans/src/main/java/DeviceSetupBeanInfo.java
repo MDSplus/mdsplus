@@ -6,13 +6,6 @@ public class DeviceSetupBeanInfo extends SimpleBeanInfo
 	static String beanDeviceType = null;
 	static String beanDeviceProvider = null;
 
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
-	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceSetup.class);
-		p.setShortDescription(description);
-		return p;
-	}
-
 	@Override
 	public Image getIcon(int kind)
 	{
@@ -36,5 +29,12 @@ public class DeviceSetupBeanInfo extends SimpleBeanInfo
 		{
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceSetup.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

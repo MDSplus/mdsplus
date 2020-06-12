@@ -32,8 +32,6 @@ import mds.jtraverser.TreeView;
 
 public abstract class CheckBoxList extends JDialog
 {
-	private static final long serialVersionUID = 1L;
-
 	public final class CheckBoxListener implements ActionListener
 	{
 		@Override
@@ -43,8 +41,6 @@ public abstract class CheckBoxList extends JDialog
 
 	public final class JCheckList extends JList<JCheckBox>
 	{
-		private static final long serialVersionUID = 1L;
-
 		protected class CellRenderer implements ListCellRenderer<JCheckBox>
 		{
 			@Override
@@ -63,6 +59,7 @@ public abstract class CheckBoxList extends JDialog
 			}
 		}
 
+		private static final long serialVersionUID = 1L;
 		private boolean readonly = true;
 
 		public JCheckList(final ListModel<JCheckBox> model)
@@ -119,6 +116,7 @@ public abstract class CheckBoxList extends JDialog
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	protected static final String PROP_FULLPATH = "fullpath";
 	protected static final String PROP_NID = "nid";
 	protected static final String PROP_OLD = "old";
@@ -172,6 +170,38 @@ public abstract class CheckBoxList extends JDialog
 		this.pack();
 	}
 
+	private void addCheckBox(final Nid nid, final String fullpath)
+	{
+		final JCheckBox cb = new JCheckBox(fullpath);
+		cb.putClientProperty(CheckBoxList.PROP_NID, nid);
+		cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fullpath);
+		cb.addActionListener(new CheckBoxListener());
+		cb.addMouseListener(new MouseAdapter()
+		{
+			@Override
+			public void mouseEntered(final MouseEvent e)
+			{
+				cb.setText(cb.getToolTipText());
+			}
+
+			@Override
+			public void mouseExited(final MouseEvent e)
+			{
+				cb.setText(cb.getName());
+			}
+		});
+		this.checkboxes.addElement(cb);
+	}
+
+	protected abstract void apply();
+
+	protected void checkReadOnly()
+	{
+		final boolean readonly = this.treeview != null && this.treeview.isReadOnly();
+		this.checklist.readonly = readonly;
+		this.apply_b.setEnabled(!readonly);
+	}
+
 	public final void open()
 	{
 		this.setLocationRelativeTo(JOptionPane.getRootFrame());
@@ -192,15 +222,6 @@ public abstract class CheckBoxList extends JDialog
 		this.checkReadOnly();
 		if (this.default_nid != this.treeview.getDefault().getNidNumber())
 			this.updatelist();
-	}
-
-	protected abstract void apply();
-
-	protected void checkReadOnly()
-	{
-		final boolean readonly = this.treeview != null && this.treeview.isReadOnly();
-		this.checklist.readonly = readonly;
-		this.apply_b.setEnabled(!readonly);
 	}
 
 	protected abstract void updatelist();
@@ -256,28 +277,5 @@ public abstract class CheckBoxList extends JDialog
 				this.checklist.removeAll();
 			}
 		this.update();
-	}
-
-	private void addCheckBox(final Nid nid, final String fullpath)
-	{
-		final JCheckBox cb = new JCheckBox(fullpath);
-		cb.putClientProperty(CheckBoxList.PROP_NID, nid);
-		cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fullpath);
-		cb.addActionListener(new CheckBoxListener());
-		cb.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseEntered(final MouseEvent e)
-			{
-				cb.setText(cb.getToolTipText());
-			}
-
-			@Override
-			public void mouseExited(final MouseEvent e)
-			{
-				cb.setText(cb.getName());
-			}
-		});
-		this.checkboxes.addElement(cb);
 	}
 }

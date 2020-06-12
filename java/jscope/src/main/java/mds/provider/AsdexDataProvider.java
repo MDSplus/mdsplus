@@ -18,22 +18,11 @@ public class AsdexDataProvider extends MdsDataProvider
 		boolean _jscope_set = false;
 		int v_idx;
 
-		@Override
-		public boolean supportsStreaming()
-		{
-			return false;
-		}
+		RealArray currXData = null;
 
 		public SimpleWaveData(String in_y)
 		{
 			this.in_y = in_y;
-			v_idx = var_idx;
-		}
-
-		public SimpleWaveData(String in_y, String in_x)
-		{
-			this.in_y = in_y;
-			this.in_x = in_x;
 			v_idx = var_idx;
 		}
 
@@ -44,6 +33,13 @@ public class AsdexDataProvider extends MdsDataProvider
 			this.xmin = xmin;
 			this.xmax = xmax;
 			this.n_points = n_points;
+			v_idx = var_idx;
+		}
+
+		public SimpleWaveData(String in_y, String in_x)
+		{
+			this.in_y = in_y;
+			this.in_x = in_x;
 			v_idx = var_idx;
 		}
 
@@ -59,55 +55,8 @@ public class AsdexDataProvider extends MdsDataProvider
 		}
 
 		@Override
-		public int getNumDimension() throws IOException
-		{
-			String expr;
-			if (_jscope_set)
-				expr = "shape(_jscope_" + v_idx + ")";
-			else
-			{
-				_jscope_set = true;
-				expr = "( _jscope_" + v_idx + " = (" + in_y + "), shape(_jscope_" + v_idx + "))";
-				var_idx++;
-			}
-			final int shape[] = getNumDimensions(expr);
-			if (error != null)
-			{
-				_jscope_set = false;
-				error = null;
-				return 1;
-			}
-			return shape.length;
-		}
-
-		public float[] GetFloatData() throws IOException
-		{
-			String in_y;
-			in_y = ParseExpression(this.in_y);
-			// _jscope_set = true;
-			final String in_y_expr = "_jscope_" + v_idx;
-			String set_tdivar = "";
-			if (!_jscope_set)
-			{
-				_jscope_set = true;
-				set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
-				var_idx++;
-			}
-			if (resample && in_x == null)
-			{
-				final String limits = "FLOAT(" + xmin + "), " + "FLOAT(" + xmax + ")";
-				// String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
-				// "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
-				final String resampledExpr = "JavaResample(" + "FLOAT(" + in_y_expr + "), " + "FLOAT(DIM_OF("
-						+ in_y_expr + ")), " + limits + ")";
-				set_tdivar = "_jscope_" + v_idx + " = (" + resampledExpr + "), ";
-				// String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
-				final String expr = set_tdivar + "fs_float(_jscope_" + v_idx + ")";
-				return GetFloatArray(expr);
-			}
-			else
-				return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
-		}
+		public void addWaveDataListener(WaveDataListener listener)
+		{}
 
 		private double[] encodeTimeBase(String expr)
 		{
@@ -161,7 +110,131 @@ public class AsdexDataProvider extends MdsDataProvider
 			return null;
 		}
 
-		RealArray currXData = null;
+		@Override
+		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public XYData getData(int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
+		{
+			final double x[] = GetXDoubleData();
+			final float y[] = GetFloatData();
+			return new XYData(x, y, Double.MAX_VALUE);
+		}
+
+		@Override
+		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+		{}
+
+		public float[] GetFloatData() throws IOException
+		{
+			String in_y;
+			in_y = ParseExpression(this.in_y);
+			// _jscope_set = true;
+			final String in_y_expr = "_jscope_" + v_idx;
+			String set_tdivar = "";
+			if (!_jscope_set)
+			{
+				_jscope_set = true;
+				set_tdivar = "_jscope_" + v_idx + " = (" + in_y + "), ";
+				var_idx++;
+			}
+			if (resample && in_x == null)
+			{
+				final String limits = "FLOAT(" + xmin + "), " + "FLOAT(" + xmax + ")";
+				// String expr = "JavaResample("+ "FLOAT("+in_y+ "), "+
+				// "FLOAT(DIM_OF("+in_y+")), "+ limits + ")";
+				final String resampledExpr = "JavaResample(" + "FLOAT(" + in_y_expr + "), " + "FLOAT(DIM_OF("
+						+ in_y_expr + ")), " + limits + ")";
+				set_tdivar = "_jscope_" + v_idx + " = (" + resampledExpr + "), ";
+				// String expr = set_tdivar + "fs_float("+resampledExpr+ ")";
+				final String expr = set_tdivar + "fs_float(_jscope_" + v_idx + ")";
+				return GetFloatArray(expr);
+			}
+			else
+				return GetFloatArray(set_tdivar + "fs_float(" + in_y_expr + ")");
+		}
+
+		@Override
+		public int getNumDimension() throws IOException
+		{
+			String expr;
+			if (_jscope_set)
+				expr = "shape(_jscope_" + v_idx + ")";
+			else
+			{
+				_jscope_set = true;
+				expr = "( _jscope_" + v_idx + " = (" + in_y + "), shape(_jscope_" + v_idx + "))";
+				var_idx++;
+			}
+			final int shape[] = getNumDimensions(expr);
+			if (error != null)
+			{
+				_jscope_set = false;
+				error = null;
+				return 1;
+			}
+			return shape.length;
+		}
+
+		@Override
+		public String GetTitle() throws IOException
+		{
+			String expr;
+			if (_jscope_set)
+				expr = "help_of(_jscope_" + v_idx + ")";
+			else
+			{
+				_jscope_set = true;
+				expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
+				var_idx++;
+			}
+			final String out = getStringValue(expr);
+			if (out == null)
+				_jscope_set = false;
+			return out;
+			// return GetDefaultTitle(in_y);
+		}
+
+		@Override
+		public double[] getX2D()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		@Override
+		public long[] getX2DLong()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		public float[] GetXData()
+		{
+			try
+			{
+				if (currXData == null)
+					currXData = GetXRealData();
+				return currXData.getFloatArray();
+			}
+			catch (final Exception exc)
+			{
+				return null;
+			}
+		}
 
 		public double[] GetXDoubleData()
 		{
@@ -179,6 +252,51 @@ public class AsdexDataProvider extends MdsDataProvider
 			}
 		}
 
+		@Override
+		public String GetXLabel() throws IOException
+		{
+			String out = null;
+			if (in_x == null || in_x.length() == 0)
+			{
+				String expr;
+				if (_jscope_set)
+					expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+				else
+				{
+					_jscope_set = true;
+					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+					var_idx++;
+				}
+				out = getStringValue(expr);
+				// return GetDefaultXLabel(in_y);
+			}
+			else
+			{
+				/*
+				 * String expr; if(_jscope_set) expr = "Units(_jscope_"+v_idx+")"; else {
+				 * _jscope_set = true; expr =
+				 * "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")"; var_idx++; }
+				 * return GetDefaultYLabel(expr);
+				 */
+				out = getStringValue("Units(" + in_x + ")");
+			}
+			if (out == null)
+				_jscope_set = false;
+			return out;
+		}
+
+		public double[] getXLimits()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		public long[] getXLong()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
 		public long[] GetXLongData()
 		{
 			try
@@ -188,20 +306,6 @@ public class AsdexDataProvider extends MdsDataProvider
 				if (!currXData.isLong())
 					return null;
 				return currXData.getLongArray();
-			}
-			catch (final Exception exc)
-			{
-				return null;
-			}
-		}
-
-		public float[] GetXData()
-		{
-			try
-			{
-				if (currXData == null)
-					currXData = GetXRealData();
-				return currXData.getFloatArray();
 			}
 			catch (final Exception exc)
 			{
@@ -256,6 +360,13 @@ public class AsdexDataProvider extends MdsDataProvider
 				return GetRealArray(in_x);
 		}
 
+		@Override
+		public float[] getY2D()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
 		public float[] GetYData() throws IOException
 		{
 			String expr;
@@ -269,58 +380,6 @@ public class AsdexDataProvider extends MdsDataProvider
 			}
 			return GetFloatArray(expr);
 			// return GetFloatArray("DIM_OF("+in_y+", 1)");
-		}
-
-		@Override
-		public String GetTitle() throws IOException
-		{
-			String expr;
-			if (_jscope_set)
-				expr = "help_of(_jscope_" + v_idx + ")";
-			else
-			{
-				_jscope_set = true;
-				expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
-				var_idx++;
-			}
-			final String out = getStringValue(expr);
-			if (out == null)
-				_jscope_set = false;
-			return out;
-			// return GetDefaultTitle(in_y);
-		}
-
-		@Override
-		public String GetXLabel() throws IOException
-		{
-			String out = null;
-			if (in_x == null || in_x.length() == 0)
-			{
-				String expr;
-				if (_jscope_set)
-					expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
-				else
-				{
-					_jscope_set = true;
-					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-					var_idx++;
-				}
-				out = getStringValue(expr);
-				// return GetDefaultXLabel(in_y);
-			}
-			else
-			{
-				/*
-				 * String expr; if(_jscope_set) expr = "Units(_jscope_"+v_idx+")"; else {
-				 * _jscope_set = true; expr =
-				 * "( _jscope_"+v_idx+" = ("+in_x+"), Units(_jscope_"+v_idx+")"; var_idx++; }
-				 * return GetDefaultYLabel(expr);
-				 */
-				out = getStringValue("Units(" + in_x + ")");
-			}
-			if (out == null)
-				_jscope_set = false;
-			return out;
 		}
 
 		@Override
@@ -343,6 +402,13 @@ public class AsdexDataProvider extends MdsDataProvider
 		}
 
 		@Override
+		public float[] getZ()
+		{
+			System.out.println("BADABUM!!");
+			return null;
+		}
+
+		@Override
 		public String GetZLabel() throws IOException
 		{
 			String expr;
@@ -362,84 +428,18 @@ public class AsdexDataProvider extends MdsDataProvider
 		}
 
 		@Override
-		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public XYData getData(int numPoints) throws IOException
-		{
-			final double x[] = GetXDoubleData();
-			final float y[] = GetFloatData();
-			return new XYData(x, y, Double.MAX_VALUE);
-		}
-
-		@Override
-		public float[] getZ()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public double[] getX2D()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public long[] getX2DLong()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
-		public float[] getY2D()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		public double[] getXLimits()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		public long[] getXLong()
-		{
-			System.out.println("BADABUM!!");
-			return null;
-		}
-
-		@Override
 		public boolean isXLong()
 		{ return false; }
-
-		@Override
-		public void addWaveDataListener(WaveDataListener listener)
-		{}
 
 		@Override
 		public void removeWaveDataListener(WaveDataListener listener)
 		{}
 
 		@Override
-		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
-		{}
+		public boolean supportsStreaming()
+		{
+			return false;
+		}
 	}
 
 	public AsdexDataProvider()
@@ -453,17 +453,46 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public void setArgument(String arg) throws IOException
+	public synchronized float[] GetFloatArray(String in) throws IOException
 	{
-		mds.setProvider(arg);
-		mds.setUser("mdsplus");
+//        String parsed = ParseExpression(in);
+		final String parsed = in;
+		if (parsed == null)
+			return null;
+		error = null;
+		final float[] out_array = super.GetFloatArray(parsed);
+		if (out_array == null && error == null)
+			error = "Cannot evaluate " + in + " for shot " + shot;
+		if (out_array != null && out_array.length <= 1)
+		{
+			error = "Cannot evaluate " + in + " for shot " + shot;
+			return null;
+		}
+		return out_array;
 	}
 
 	@Override
-	public synchronized void update(String exp, long s)
+	public synchronized int[] getIntArray(String in) throws IOException
 	{
-		error = null;
-		shot = s;
+		return super.getIntArray(ParseExpression(in));
+	}
+
+	@Override
+	public int[] getNumDimensions(String spec)
+	{
+		return new int[]
+		{ 1 };
+	}
+
+	public WaveData GetWaveData(String in)
+	{
+		return new SimpleWaveData(in);
+	}
+
+	@Override
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
+	{
+		return DataProvider.LOGIN_OK;
 	}
 
 	private String ParseExpression(String in)
@@ -488,34 +517,15 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public synchronized int[] getIntArray(String in) throws IOException
+	public void setArgument(String arg) throws IOException
 	{
-		return super.getIntArray(ParseExpression(in));
-	}
-
-	public WaveData GetWaveData(String in)
-	{
-		return new SimpleWaveData(in);
+		mds.setProvider(arg);
+		mds.setUser("mdsplus");
 	}
 
 	@Override
-	public synchronized float[] GetFloatArray(String in) throws IOException
-	{
-//        String parsed = ParseExpression(in);
-		final String parsed = in;
-		if (parsed == null)
-			return null;
-		error = null;
-		final float[] out_array = super.GetFloatArray(parsed);
-		if (out_array == null && error == null)
-			error = "Cannot evaluate " + in + " for shot " + shot;
-		if (out_array != null && out_array.length <= 1)
-		{
-			error = "Cannot evaluate " + in + " for shot " + shot;
-			return null;
-		}
-		return out_array;
-	}
+	public void SetCompression(boolean state)
+	{}
 
 	@Override
 	public boolean SupportsCompression()
@@ -524,19 +534,9 @@ public class AsdexDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public void SetCompression(boolean state)
-	{}
-
-	@Override
-	public int inquireCredentials(JFrame f, DataServerItem server_item)
+	public synchronized void update(String exp, long s)
 	{
-		return DataProvider.LOGIN_OK;
-	}
-
-	@Override
-	public int[] getNumDimensions(String spec)
-	{
-		return new int[]
-		{ 1 };
+		error = null;
+		shot = s;
 	}
 }

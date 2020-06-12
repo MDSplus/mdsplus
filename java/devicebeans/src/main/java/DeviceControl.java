@@ -25,6 +25,15 @@ public abstract class DeviceControl extends JButton
 		});
 	}
 
+	protected boolean check()
+	{
+		if (deviceSetup == null)
+			discoverDevice();
+		if (deviceSetup != null && checkExpressions != null && checkMessages != null)
+			return deviceSetup.check(checkExpressions, checkMessages);
+		return true;
+	}
+
 	protected void discoverDevice()
 	{
 		Container curr_container;
@@ -41,29 +50,20 @@ public abstract class DeviceControl extends JButton
 		}
 	}
 
-	public void setCheckExpressions(String[] checkExpressions)
-	{ this.checkExpressions = checkExpressions; }
+	protected abstract void doOperation(DeviceSetup deviceSetup);
 
 	public String[] getCheckExpressions()
 	{ return checkExpressions; }
 
-	public void setCheckMessages(String[] checkMessages)
-	{ this.checkMessages = checkMessages; }
-
 	public String[] getCheckMessages()
 	{ return checkMessages; }
 
-	protected boolean check()
-	{
-		if (deviceSetup == null)
-			discoverDevice();
-		if (deviceSetup != null && checkExpressions != null && checkMessages != null)
-			return deviceSetup.check(checkExpressions, checkMessages);
-		return true;
-	}
+	public void setCheckExpressions(String[] checkExpressions)
+	{ this.checkExpressions = checkExpressions; }
+
+	public void setCheckMessages(String[] checkMessages)
+	{ this.checkMessages = checkMessages; }
 
 	void setReadOnly(boolean readOnly)
 	{}
-
-	protected abstract void doOperation(DeviceSetup deviceSetup);
 }

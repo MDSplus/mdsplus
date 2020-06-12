@@ -41,6 +41,12 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>
 	}
 
 	@Override
+	protected final boolean format()
+	{
+		return true;
+	}
+
+	@Override
 	public final UInteger getElement(final ByteBuffer b_in)
 	{
 		return UInteger.fromBuffer(b_in);
@@ -53,9 +59,19 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public Uint32 getScalar(final int idx)
 	{
 		return new Uint32(this.getElement(idx));
+	}
+
+	@Override
+	protected final UInteger[] initArray(final int size)
+	{
+		return new UInteger[size];
 	}
 
 	@Override
@@ -94,29 +110,6 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>
 		return UInteger.decode(in);
 	}
 
-	public final int[] toArray()
-	{
-		final int[] values = new int[this.arsize() / Integer.BYTES];
-		this.getBuffer().asIntBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final boolean format()
-	{
-		return true;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
-
-	@Override
-	protected final UInteger[] initArray(final int size)
-	{
-		return new UInteger[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final UInteger value)
 	{
@@ -127,5 +120,12 @@ public final class Uint32Array extends INTEGER_UNSIGNEDArray<UInteger>
 	protected void setElement(final int i, final UInteger value)
 	{
 		this.p.putInt(i * Integer.BYTES, value.intValue());
+	}
+
+	public final int[] toArray()
+	{
+		final int[] values = new int[this.arsize() / Integer.BYTES];
+		this.getBuffer().asIntBuffer().get(values);
+		return values;
 	}
 }

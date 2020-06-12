@@ -6,22 +6,15 @@ import java.beans.SimpleBeanInfo;
 
 public class DeviceFieldBeanInfo extends SimpleBeanInfo
 {
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
-	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceField.class);
-		p.setShortDescription(description);
-		return p;
-	}
+	@Override
+	public BeanDescriptor getBeanDescriptor()
+	{ return new BeanDescriptor(DeviceField.class, DeviceFieldCustomizer.class); }
 
 	@Override
 	public Image getIcon(int kind)
 	{
 		return loadImage("DeviceField.gif");
 	}
-
-	@Override
-	public BeanDescriptor getBeanDescriptor()
-	{ return new BeanDescriptor(DeviceField.class, DeviceFieldCustomizer.class); }
 
 	@Override
 	public PropertyDescriptor[] getPropertyDescriptors()
@@ -41,5 +34,12 @@ public class DeviceFieldBeanInfo extends SimpleBeanInfo
 			System.out.println("DeviceField: property exception " + e);
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceField.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

@@ -36,18 +36,18 @@ public class ProgramEditor extends JPanel implements Editor
 	}
 
 	@Override
-	public void reset()
-	{
-		program_edit.reset();
-		timeout_edit.reset();
-	}
-
-	@Override
 	public MDSplus.Data getData()
 	{
 		final MDSplus.Data p = new MDSplus.Program(timeout_edit.getData(), program_edit.getData());
 		p.setCtxTree(Tree.curr_experiment);
 		return p;
+	}
+
+	@Override
+	public void reset()
+	{
+		program_edit.reset();
+		timeout_edit.reset();
 	}
 
 	public void setData(MDSplus.Data data)

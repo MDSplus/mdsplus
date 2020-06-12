@@ -63,6 +63,12 @@ public final class Int32Array extends INTEGERArray<Integer>
 	}
 
 	@Override
+	protected final StringBuilder decompile(final StringBuilder pout, final Integer value)
+	{
+		return pout.append(value);
+	}
+
+	@Override
 	public final Integer getElement(final ByteBuffer b_in)
 	{
 		return new Integer(b_in.getInt());
@@ -75,9 +81,19 @@ public final class Int32Array extends INTEGERArray<Integer>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public Int32 getScalar(final int idx)
 	{
 		return new Int32(this.getElement(idx).intValue());
+	}
+
+	@Override
+	protected final Integer[] initArray(final int size)
+	{
+		return new Integer[size];
 	}
 
 	@Override
@@ -116,29 +132,6 @@ public final class Int32Array extends INTEGERArray<Integer>
 		return Integer.decode(in);
 	}
 
-	public final int[] toArray()
-	{
-		final int[] values = new int[this.arsize() / Integer.BYTES];
-		this.getBuffer().asIntBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final StringBuilder decompile(final StringBuilder pout, final Integer value)
-	{
-		return pout.append(value);
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
-
-	@Override
-	protected final Integer[] initArray(final int size)
-	{
-		return new Integer[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final Integer value)
 	{
@@ -149,5 +142,12 @@ public final class Int32Array extends INTEGERArray<Integer>
 	protected final void setElement(final int i, final Integer value)
 	{
 		this.p.putInt(i * Integer.BYTES, value.intValue());
+	}
+
+	public final int[] toArray()
+	{
+		final int[] values = new int[this.arsize() / Integer.BYTES];
+		this.getBuffer().asIntBuffer().get(values);
+		return values;
 	}
 }

@@ -14,13 +14,33 @@ public class WaveformEditor extends Waveform
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	public static final float MIN_STEP = 1E-6F;
+	static float[] copyX, copyY;
+
+	public static void main(String args[])
+	{
+		final float x[] = new float[10];
+		final float y[] = new float[10];
+		for (int i = 0; i < 10; i++)
+		{
+			x[i] = (float) (i / 10.);
+			y[i] = 0;
+		}
+		final WaveformEditor we = new WaveformEditor();
+		// WaveformEditor we = new WaveformEditor(x,y, -10F, 20F);
+		we.setWaveform(x, y, -10F, 20F);
+		final JFrame frame = new JFrame("Test WaveformEditor");
+		frame.setSize(400, 300);
+		frame.getContentPane().add(we);
+		frame.pack();
+		frame.setVisible(true);
+	}
+
 	float[] currentX, currentY;
 	float minY, maxY;
 	int closestIdx = -1;
-	public static final float MIN_STEP = 1E-6F;
 	Vector<WaveformEditorListener> listeners = new Vector<>();
 	protected boolean editable = false;
-	static float[] copyX, copyY;
 
 	public WaveformEditor()
 	{
@@ -39,77 +59,9 @@ public class WaveformEditor extends Waveform
 		setupCopyPaste();
 	}
 
-	public void setWaveform(float[] x, float[] y, float minY, float maxY)
+	public synchronized void addWaveformEditorListener(WaveformEditorListener listener)
 	{
-		final Signal sig = new Signal(x, y, x.length, x[0], x[x.length - 1], minY, maxY);
-		sig.setMarker(1);
-		currentX = new float[x.length];
-		currentY = new float[y.length];
-		for (int i = 0; i < x.length; i++)
-		{
-			currentX[i] = x[i];
-			currentY[i] = y[i];
-		}
-		this.minY = minY;
-		this.maxY = maxY;
-		Update(sig);
-	}
-
-	protected void setupCopyPaste()
-	{
-		// enableEvents(AWTEvent.KEY_EVENT_MASK);
-		addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mousePressed(MouseEvent e)
-			{
-				requestFocus();
-			}
-		});
-		addKeyListener(new KeyListener()
-		{
-			@Override
-			public void keyPressed(KeyEvent ke)
-			{
-				if ((ke.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0 && (ke.getKeyCode() == KeyEvent.VK_C))
-				{
-					copyX = new float[currentX.length];
-					copyY = new float[currentY.length];
-					for (int i = 0; i < currentX.length; i++)
-					{
-						if (i >= currentY.length)
-							break;
-						copyX[i] = currentX[i];
-						copyY[i] = currentY[i];
-					}
-				}
-				if ((ke.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0 && (ke.getKeyCode() == KeyEvent.VK_V))
-				{
-					if (copyX == null)
-						return;
-					final Signal sig = new Signal(copyX, copyY, copyX.length, copyX[0], copyX[copyX.length - 1], minY,
-							maxY);
-					sig.setMarker(1);
-					currentX = new float[copyX.length];
-					currentY = new float[copyY.length];
-					for (int i = 0; i < copyX.length; i++)
-					{
-						currentX[i] = copyX[i];
-						currentY[i] = copyY[i];
-					}
-					Update(sig);
-					notifyUpdate(currentX, currentY, currentX.length - 1);
-				}
-			}
-
-			@Override
-			public void keyReleased(KeyEvent ke)
-			{}
-
-			@Override
-			public void keyTyped(KeyEvent ke)
-			{}
-		});
+		listeners.add(listener);
 	}
 
 	int convertXPix(float x)
@@ -121,6 +73,27 @@ public class WaveformEditor extends Waveform
 	{
 		return wm.YPixel(y, getWaveSize());
 	}
+
+	public synchronized void notifyUpdate(float[] waveX, float[] waveY, int newIdx)
+	{
+		for (final WaveformEditorListener l : listeners)
+			l.waveformUpdated(waveX, waveY, newIdx);
+	}
+
+	@Override
+	public void print(Graphics g)
+	{
+		System.out.println("WAVE PRINT");
+		paint(g, getSize(), 1);
+	}
+
+	public synchronized void removeWaveformEditorListener(WaveformEditorListener listener)
+	{
+		listeners.remove(listener);
+	}
+
+	public void setEditable(boolean editable)
+	{ this.editable = editable; }
 
 	@Override
 	protected void setMouse()
@@ -261,48 +234,76 @@ public class WaveformEditor extends Waveform
 		});
 	}
 
-	public synchronized void addWaveformEditorListener(WaveformEditorListener listener)
+	protected void setupCopyPaste()
 	{
-		listeners.add(listener);
-	}
-
-	public synchronized void removeWaveformEditorListener(WaveformEditorListener listener)
-	{
-		listeners.remove(listener);
-	}
-
-	public synchronized void notifyUpdate(float[] waveX, float[] waveY, int newIdx)
-	{
-		for (final WaveformEditorListener l : listeners)
-			l.waveformUpdated(waveX, waveY, newIdx);
-	}
-
-	public void setEditable(boolean editable)
-	{ this.editable = editable; }
-
-	@Override
-	public void print(Graphics g)
-	{
-		System.out.println("WAVE PRINT");
-		paint(g, getSize(), 1);
-	}
-
-	public static void main(String args[])
-	{
-		final float x[] = new float[10];
-		final float y[] = new float[10];
-		for (int i = 0; i < 10; i++)
+		// enableEvents(AWTEvent.KEY_EVENT_MASK);
+		addMouseListener(new MouseAdapter()
 		{
-			x[i] = (float) (i / 10.);
-			y[i] = 0;
+			@Override
+			public void mousePressed(MouseEvent e)
+			{
+				requestFocus();
+			}
+		});
+		addKeyListener(new KeyListener()
+		{
+			@Override
+			public void keyPressed(KeyEvent ke)
+			{
+				if ((ke.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0 && (ke.getKeyCode() == KeyEvent.VK_C))
+				{
+					copyX = new float[currentX.length];
+					copyY = new float[currentY.length];
+					for (int i = 0; i < currentX.length; i++)
+					{
+						if (i >= currentY.length)
+							break;
+						copyX[i] = currentX[i];
+						copyY[i] = currentY[i];
+					}
+				}
+				if ((ke.getModifiersEx() & InputEvent.CTRL_DOWN_MASK) != 0 && (ke.getKeyCode() == KeyEvent.VK_V))
+				{
+					if (copyX == null)
+						return;
+					final Signal sig = new Signal(copyX, copyY, copyX.length, copyX[0], copyX[copyX.length - 1], minY,
+							maxY);
+					sig.setMarker(1);
+					currentX = new float[copyX.length];
+					currentY = new float[copyY.length];
+					for (int i = 0; i < copyX.length; i++)
+					{
+						currentX[i] = copyX[i];
+						currentY[i] = copyY[i];
+					}
+					Update(sig);
+					notifyUpdate(currentX, currentY, currentX.length - 1);
+				}
+			}
+
+			@Override
+			public void keyReleased(KeyEvent ke)
+			{}
+
+			@Override
+			public void keyTyped(KeyEvent ke)
+			{}
+		});
+	}
+
+	public void setWaveform(float[] x, float[] y, float minY, float maxY)
+	{
+		final Signal sig = new Signal(x, y, x.length, x[0], x[x.length - 1], minY, maxY);
+		sig.setMarker(1);
+		currentX = new float[x.length];
+		currentY = new float[y.length];
+		for (int i = 0; i < x.length; i++)
+		{
+			currentX[i] = x[i];
+			currentY[i] = y[i];
 		}
-		final WaveformEditor we = new WaveformEditor();
-		// WaveformEditor we = new WaveformEditor(x,y, -10F, 20F);
-		we.setWaveform(x, y, -10F, 20F);
-		final JFrame frame = new JFrame("Test WaveformEditor");
-		frame.setSize(400, 300);
-		frame.getContentPane().add(we);
-		frame.pack();
-		frame.setVisible(true);
+		this.minY = minY;
+		this.maxY = maxY;
+		Update(sig);
 	}
 }

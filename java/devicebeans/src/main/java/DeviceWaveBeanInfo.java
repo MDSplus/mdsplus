@@ -6,22 +6,15 @@ import java.beans.SimpleBeanInfo;
 
 public class DeviceWaveBeanInfo extends SimpleBeanInfo
 {
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
-	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceWave.class);
-		p.setShortDescription(description);
-		return p;
-	}
+	@Override
+	public BeanDescriptor getBeanDescriptor()
+	{ return new BeanDescriptor(DeviceWave.class, DeviceWaveCustomizer.class); }
 
 	@Override
 	public Image getIcon(int kind)
 	{
 		return loadImage("DeviceWave.gif");
 	}
-
-	@Override
-	public BeanDescriptor getBeanDescriptor()
-	{ return new BeanDescriptor(DeviceWave.class, DeviceWaveCustomizer.class); }
 
 	@Override
 	public PropertyDescriptor[] getPropertyDescriptors()
@@ -41,5 +34,12 @@ public class DeviceWaveBeanInfo extends SimpleBeanInfo
 			System.out.println("DeviceWave: property exception " + e);
 			return super.getPropertyDescriptors();
 		}
+	}
+
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceWave.class);
+		p.setShortDescription(description);
+		return p;
 	}
 }

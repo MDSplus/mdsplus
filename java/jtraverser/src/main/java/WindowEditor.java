@@ -6,6 +6,65 @@ import java.awt.event.*;
 
 public class WindowEditor extends JPanel implements ActionListener, Editor
 {
+	static class WindowEdt extends JPanel
+	{
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+		MDSplus.Window window;
+		LabeledExprEditor startidx_edit, endidx_edit, value0_edit;
+
+		public WindowEdt()
+		{
+			this(null);
+		}
+
+		public WindowEdt(MDSplus.Window window)
+		{
+			this.window = window;
+			if (this.window == null)
+			{
+				this.window = new MDSplus.Window(null, null, null);
+			}
+			this.window.setCtxTree(Tree.curr_experiment);
+			final GridLayout gl = new GridLayout(3, 1);
+			gl.setVgap(0);
+			setLayout(gl);
+			startidx_edit = new LabeledExprEditor("Start Idx", new ExprEditor(this.window.getStartIdx(), false));
+			add(startidx_edit);
+			endidx_edit = new LabeledExprEditor("End Idx", new ExprEditor(this.window.getEndIdx(), false));
+			add(endidx_edit);
+			value0_edit = new LabeledExprEditor("Time of Zero", new ExprEditor(this.window.getValueAt0(), false));
+			add(value0_edit);
+		}
+
+		public MDSplus.Data getData()
+		{
+			final MDSplus.Data w = new MDSplus.Window(startidx_edit.getData(), endidx_edit.getData(),
+					value0_edit.getData());
+			w.setCtxTree(Tree.curr_experiment);
+			return w;
+		}
+
+		public void reset()
+		{
+			startidx_edit.reset();
+			endidx_edit.reset();
+			value0_edit.reset();
+		}
+
+		public void setEditable(boolean editable)
+		{
+			if (startidx_edit != null)
+				startidx_edit.setEditable(editable);
+			if (endidx_edit != null)
+				endidx_edit.setEditable(editable);
+			if (value0_edit != null)
+				value0_edit.setEditable(editable);
+		}
+	}
+
 	/**
 	 *
 	 */
@@ -42,29 +101,6 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 	}
 
-	private void addEditor()
-	{
-		switch (curr_mode_idx)
-		{
-		case 0:
-			return;
-		case 1:
-			if (mode_idx == 1)
-				window_edit = new WindowEdt((MDSplus.Window) data);
-			else
-				window_edit = new WindowEdt(null);
-			add(window_edit, "Center");
-			break;
-		case 2:
-			if (mode_idx == 2)
-				expr_edit = new ExprEditor(data, false, 8, 30);
-			else
-				expr_edit = new ExprEditor(null, false, 8, 30);
-			add(expr_edit, "Center");
-			break;
-		}
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -91,6 +127,44 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 		dialog.repack();
 	}
 
+	private void addEditor()
+	{
+		switch (curr_mode_idx)
+		{
+		case 0:
+			return;
+		case 1:
+			if (mode_idx == 1)
+				window_edit = new WindowEdt((MDSplus.Window) data);
+			else
+				window_edit = new WindowEdt(null);
+			add(window_edit, "Center");
+			break;
+		case 2:
+			if (mode_idx == 2)
+				expr_edit = new ExprEditor(data, false, 8, 30);
+			else
+				expr_edit = new ExprEditor(null, false, 8, 30);
+			add(expr_edit, "Center");
+			break;
+		}
+	}
+
+	@Override
+	public MDSplus.Data getData()
+	{
+		switch (curr_mode_idx)
+		{
+		case 0:
+			return null;
+		case 1:
+			return window_edit.getData();
+		case 2:
+			return expr_edit.getData();
+		}
+		return null;
+	}
+
 	@Override
 	public void reset()
 	{
@@ -107,21 +181,6 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 		validate();
 		repaint();
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{
-		switch (curr_mode_idx)
-		{
-		case 0:
-			return null;
-		case 1:
-			return window_edit.getData();
-		case 2:
-			return expr_edit.getData();
-		}
-		return null;
 	}
 
 	public void setData(MDSplus.Data data)
@@ -144,64 +203,5 @@ public class WindowEditor extends JPanel implements ActionListener, Editor
 			expr_edit.setEditable(editable);
 		if (window_edit != null)
 			window_edit.setEditable(editable);
-	}
-
-	static class WindowEdt extends JPanel
-	{
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-		MDSplus.Window window;
-		LabeledExprEditor startidx_edit, endidx_edit, value0_edit;
-
-		public WindowEdt()
-		{
-			this(null);
-		}
-
-		public WindowEdt(MDSplus.Window window)
-		{
-			this.window = window;
-			if (this.window == null)
-			{
-				this.window = new MDSplus.Window(null, null, null);
-			}
-			this.window.setCtxTree(Tree.curr_experiment);
-			final GridLayout gl = new GridLayout(3, 1);
-			gl.setVgap(0);
-			setLayout(gl);
-			startidx_edit = new LabeledExprEditor("Start Idx", new ExprEditor(this.window.getStartIdx(), false));
-			add(startidx_edit);
-			endidx_edit = new LabeledExprEditor("End Idx", new ExprEditor(this.window.getEndIdx(), false));
-			add(endidx_edit);
-			value0_edit = new LabeledExprEditor("Time of Zero", new ExprEditor(this.window.getValueAt0(), false));
-			add(value0_edit);
-		}
-
-		public void reset()
-		{
-			startidx_edit.reset();
-			endidx_edit.reset();
-			value0_edit.reset();
-		}
-
-		public MDSplus.Data getData()
-		{
-			final MDSplus.Data w = new MDSplus.Window(startidx_edit.getData(), endidx_edit.getData(),
-					value0_edit.getData());
-			w.setCtxTree(Tree.curr_experiment);
-			return w;
-		}
-
-		public void setEditable(boolean editable)
-		{
-			if (startidx_edit != null)
-				startidx_edit.setEditable(editable);
-			if (endidx_edit != null)
-				endidx_edit.setEditable(editable);
-			if (value0_edit != null)
-				value0_edit.setEditable(editable);
-		}
 	}
 }

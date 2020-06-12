@@ -23,6 +23,33 @@ public class ActionList extends CheckBoxList
 	}
 
 	@Override
+	protected void apply()
+	{
+		for (int i = 0; i < this.checkboxes.size(); i++)
+		{
+			final JCheckBox cb = this.checkboxes.getElementAt(i);
+			if (cb.isSelected() != ((Boolean) cb.getClientProperty(CheckBoxList.PROP_OLD)).booleanValue())
+			{
+				final Nid nid = (Nid) cb.getClientProperty(CheckBoxList.PROP_NID);
+				final DefaultMutableTreeNode treenode = this.treeview
+						.findPath((String) cb.getClientProperty(CheckBoxList.PROP_FULLPATH));
+				try
+				{
+					nid.setOn(cb.isSelected());
+					if (treenode != null)
+						((Node) treenode.getUserObject()).setOnUnchecked();
+				}
+				catch (final MdsException me)
+				{
+					MdsException.stderr("ActionList.apply", me);
+				}
+			}
+		}
+		this.treeview.reportChange();
+		this.update();
+	}
+
+	@Override
 	public final void update()
 	{
 		super.update();
@@ -58,33 +85,6 @@ public class ActionList extends CheckBoxList
 			}
 		}
 		this.repaint();
-	}
-
-	@Override
-	protected void apply()
-	{
-		for (int i = 0; i < this.checkboxes.size(); i++)
-		{
-			final JCheckBox cb = this.checkboxes.getElementAt(i);
-			if (cb.isSelected() != ((Boolean) cb.getClientProperty(CheckBoxList.PROP_OLD)).booleanValue())
-			{
-				final Nid nid = (Nid) cb.getClientProperty(CheckBoxList.PROP_NID);
-				final DefaultMutableTreeNode treenode = this.treeview
-						.findPath((String) cb.getClientProperty(CheckBoxList.PROP_FULLPATH));
-				try
-				{
-					nid.setOn(cb.isSelected());
-					if (treenode != null)
-						((Node) treenode.getUserObject()).setOnUnchecked();
-				}
-				catch (final MdsException me)
-				{
-					MdsException.stderr("ActionList.apply", me);
-				}
-			}
-		}
-		this.treeview.reportChange();
-		this.update();
 	}
 
 	@Override

@@ -10,6 +10,18 @@ public class JetDataProvider extends MdsDataProvider
 		super("mdsplus.jet.efda.org");
 	}
 
+	@Override
+	public synchronized int[] getIntArray(String in) throws IOException
+	{
+		return super.getIntArray(parseExpression(in));
+	}
+
+	@Override
+	public synchronized RealArray GetRealArray(String in) throws IOException
+	{
+		return super.GetRealArray(parseExpression(in));
+	}
+
 	private String parseExpression(String in)
 	{
 		// Syntax: ppf/<signal> or jpf/<signal>
@@ -63,17 +75,5 @@ public class JetDataProvider extends MdsDataProvider
 			System.out.println(e);
 		}
 		return parsed;
-	}
-
-	@Override
-	public synchronized int[] getIntArray(String in) throws IOException
-	{
-		return super.getIntArray(parseExpression(in));
-	}
-
-	@Override
-	public synchronized RealArray GetRealArray(String in) throws IOException
-	{
-		return super.GetRealArray(parseExpression(in));
 	}
 }

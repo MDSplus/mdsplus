@@ -128,13 +128,6 @@ public final class PythonEditor extends Editor
 		return new Fun(Args);
 	}
 
-	@Override
-	public final void reset(final boolean hard)
-	{
-		this.text_area.setText(this.program);
-		this.text_field = new JTextField(this.retVar);
-	}
-
 	private final void getProgram(final Function function)
 	{
 		final Descriptor<?>[] args = function.getArguments();
@@ -148,5 +141,12 @@ public final class PythonEditor extends Editor
 			this.program = ((StringArray) args[2]).join_by("\n");
 		else
 			this.program = args[1].toString();
+	}
+
+	@Override
+	public final void reset(final boolean hard)
+	{
+		this.text_area.setText(this.program);
+		this.text_field = new JTextField(this.retVar);
 	}
 }

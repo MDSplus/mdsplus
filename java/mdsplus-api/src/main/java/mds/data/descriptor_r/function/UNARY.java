@@ -283,6 +283,8 @@ public abstract class UNARY extends Function
 		}
 	}
 
+	protected abstract Descriptor<?> evaluate(final DATA<?> data) throws MdsException;
+
 	@Override
 	public Descriptor<?> getLocal_(final FLAG local)
 	{
@@ -300,6 +302,4 @@ public abstract class UNARY extends Function
 			return Missing.NEW;
 		}
 	}
-
-	protected abstract Descriptor<?> evaluate(final DATA<?> data) throws MdsException;
 }

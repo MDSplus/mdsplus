@@ -15,8 +15,6 @@ import mds.jtraverser.editor.ExprEditor;
 
 public class DispatchEditor extends TextEditor
 {
-	private static final long serialVersionUID = 1L;
-
 	public final class DispatchEdt extends Editor
 	{
 		private static final long serialVersionUID = 1L;
@@ -59,6 +57,7 @@ public class DispatchEditor extends TextEditor
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	private static final String server_tip = "The server part specifies the server that should execute the action. For tcpip based action servers this field should contain a string such as host:port where host is the tcpip hostname of the computer where the action server is running and the port is the port number on which the action server is listening for actions to perform. For DECNET based action servers (OpenVMS only), this should be a string such as host::object where the host is the DECNET node name and the object is the DECNET object name of the action server.";
 	private static final String phase_tip = "The phase part of a dispatch item is either the name or number corresponding to the phase of the experiment cycle. These would normally be phases such as 'store', 'init','analysis' etc. but the names and numbers of the phases can be customized by the MDSplus system administrator by modifying the TDI function phase_table()";
 	private static final String when_tip = "The when part normally contains either an integer value or an expression which evaluates to an integer value representing a sequence number. When the dispatcher (implemented by a set of mdstcl dispatch commands) builds a dispatching table, it finds all the actions defined in a tree and then sorts these actions first by phase and then by sequence number. Actions are then dispatched to servers during a phase in order of their sequence numbers (except for actions with sequence numbers less than or equal to zero which are not dispatched). There is a special case for the when part which enables you to set up dependencies on other actions. If instead of specifying a sequence number for the when part, you specify an expression which references other action nodes in the tree, this action will not be dispatched until all action nodes referenced in the expression have completed. When all the actions referenced in the expression have completed, the expression is then evaluated substituting the completion status of the referenced actions instead of the action node itself. If the result of the evaluation yields an odd number (low bit set) then this action will be dispatched. If the result is an even value then this action is not dispatched but instead assigned a failure completion status in case other actions have when expressions refering to it. Using this mechanism you can configure fairly complex conditional dispatching.";

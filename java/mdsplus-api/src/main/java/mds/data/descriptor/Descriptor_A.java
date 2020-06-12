@@ -53,12 +53,6 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 			}
 		}
 
-		@Override
-		public final String toString()
-		{
-			return this.pout.toString();
-		}
-
 		private final void level(final int l)
 		{
 			if (l == 0)
@@ -78,6 +72,12 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 				this.level(l - 1);
 			}
 			this.pout.append(']');
+		}
+
+		@Override
+		public final String toString()
+		{
+			return this.pout.toString();
 		}
 	}
 
@@ -165,14 +165,14 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return Descriptor_A.deserialize(b);
 	}
 
-	public Descriptor_A(final DTYPE dtype, final ByteBuffer byteBuffer, final int... shape)
-	{
-		super(dtype, Descriptor_A.CLASS, byteBuffer, shape);
-	}
-
 	protected Descriptor_A(final ByteBuffer b)
 	{
 		super(b);
+	}
+
+	public Descriptor_A(final DTYPE dtype, final ByteBuffer byteBuffer, final int... shape)
+	{
+		super(dtype, Descriptor_A.CLASS, byteBuffer, shape);
 	}
 
 	public final byte[] asByteArray()
@@ -246,9 +246,44 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return pout;
 	}
 
+	protected StringBuilder decompile(final StringBuilder pout, final T t)
+	{
+		return pout.append(this.toString(t));
+	}
+
+	protected final String decompile(final T t)
+	{
+		return this.decompile(new StringBuilder(32), t).toString();
+	}
+
+	protected boolean format()
+	{
+		return false;
+	}
+
 	@Override
 	public final T[] getAtomic()
 	{ return this.getAtomic(0, this.getLength()); }
+
+	protected final T[] getAtomic(int begin, int count)
+	{
+		if (begin < 0 || count <= 0)
+			return this.initArray(0);
+		final int arrlength = this.getLength();
+		if (begin >= arrlength)
+			return this.initArray(0);
+		if (begin < 0)
+		{
+			count += begin;
+			begin = 0;
+		}
+		if (begin + count > arrlength)
+			count = arrlength - begin;
+		final T[] bi = this.initArray(count);
+		for (int i = 0; i < count; i++)
+			bi[i] = this.getElement(i + begin);
+		return bi;
+	}
 
 	@Override
 	public final ByteBuffer getBuffer()
@@ -256,6 +291,12 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		final ByteBuffer bo = super.getBuffer();
 		bo.limit(bo.capacity() < this.arsize() ? bo.capacity() : this.arsize());
 		return bo;
+	}
+
+	@Override
+	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		return this;
 	}
 
 	/*
@@ -276,6 +317,10 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	 * returns the i-th element as Descriptor
 	 */
 	public abstract Descriptor<?> getScalar(int i);
+
+	protected abstract String getSuffix();
+
+	protected abstract T[] initArray(int size);
 
 	@Override
 	public boolean isAtomic()
@@ -319,6 +364,16 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 			this.setElement(buf, value);
 	}
 
+	/*
+	 * sets the next element
+	 */
+	protected abstract void setElement(ByteBuffer b, T value);
+
+	/*
+	 * sets the i-th element
+	 */
+	protected abstract void setElement(int i, T value);
+
 	public abstract BigInteger toBigInteger(T t);
 
 	@Override
@@ -336,6 +391,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.toByte(this.getElement(idx));
 	}
 
+	protected abstract byte toByte(T t);
+
 	@Override
 	public byte[] toByteArray()
 	{
@@ -350,6 +407,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	{
 		return this.toDouble(this.getElement(idx));
 	}
+
+	protected abstract double toDouble(T t);
 
 	@Override
 	public double[] toDoubleArray()
@@ -366,6 +425,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.toFloat(this.getElement(idx));
 	}
 
+	protected abstract float toFloat(T t);
+
 	@Override
 	public float[] toFloatArray()
 	{
@@ -380,6 +441,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	{
 		return this.toInt(this.getElement(idx));
 	}
+
+	protected abstract int toInt(T t);
 
 	@Override
 	public int[] toIntArray()
@@ -396,6 +459,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.toLong(this.getElement(idx));
 	}
 
+	protected abstract long toLong(T t);
+
 	@Override
 	public long[] toLongArray()
 	{
@@ -411,6 +476,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 		return this.toShort(this.getElement(idx));
 	}
 
+	protected abstract short toShort(T t);
+
 	@Override
 	public short[] toShortArray()
 	{
@@ -425,6 +492,8 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	{
 		return this.toString(this.getElement(idx));
 	}
+
+	protected abstract String toString(T t);
 
 	@Override
 	public String[] toStringArray()
@@ -445,73 +514,4 @@ public abstract class Descriptor_A<T> extends ARRAY<T[]> implements Iterable<T>
 	{
 		return new Uint16Array(this.toShortArray());
 	}
-
-	protected StringBuilder decompile(final StringBuilder pout, final T t)
-	{
-		return pout.append(this.toString(t));
-	}
-
-	protected final String decompile(final T t)
-	{
-		return this.decompile(new StringBuilder(32), t).toString();
-	}
-
-	protected boolean format()
-	{
-		return false;
-	}
-
-	protected final T[] getAtomic(int begin, int count)
-	{
-		if (begin < 0 || count <= 0)
-			return this.initArray(0);
-		final int arrlength = this.getLength();
-		if (begin >= arrlength)
-			return this.initArray(0);
-		if (begin < 0)
-		{
-			count += begin;
-			begin = 0;
-		}
-		if (begin + count > arrlength)
-			count = arrlength - begin;
-		final T[] bi = this.initArray(count);
-		for (int i = 0; i < count; i++)
-			bi[i] = this.getElement(i + begin);
-		return bi;
-	}
-
-	@Override
-	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		return this;
-	}
-
-	protected abstract String getSuffix();
-
-	protected abstract T[] initArray(int size);
-
-	/*
-	 * sets the next element
-	 */
-	protected abstract void setElement(ByteBuffer b, T value);
-
-	/*
-	 * sets the i-th element
-	 */
-	protected abstract void setElement(int i, T value);
-
-	protected abstract byte toByte(T t);
-
-	protected abstract double toDouble(T t);
-
-	protected abstract float toFloat(T t);
-
-	protected abstract int toInt(T t);
-
-	protected abstract long toLong(T t);
-
-	protected abstract short toShort(T t);
-
-	protected abstract String toString(T t);
 }

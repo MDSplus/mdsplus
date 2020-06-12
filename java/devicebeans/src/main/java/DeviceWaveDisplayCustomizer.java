@@ -25,6 +25,18 @@ public class DeviceWaveDisplayCustomizer extends DeviceCustomizer implements Cus
 	{}
 
 	@Override
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.addPropertyChangeListener(l);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.removePropertyChangeListener(l);
+	}
+
+	@Override
 	public void setObject(Object o)
 	{
 		bean = (DeviceWaveDisplay) o;
@@ -57,17 +69,5 @@ public class DeviceWaveDisplayCustomizer extends DeviceCustomizer implements Cus
 			}
 		});
 		add(jp, "South");
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.addPropertyChangeListener(l);
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.removePropertyChangeListener(l);
 	}
 }

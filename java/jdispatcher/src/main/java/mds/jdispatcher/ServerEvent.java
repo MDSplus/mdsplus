@@ -23,9 +23,9 @@ class ServerEvent extends EventObject
 	public Action getAction()
 	{ return action; }
 
-	public int getStatus()
-	{ return action.getStatus(); }
-
 	public String getMessage()
 	{ return message; }
+
+	public int getStatus()
+	{ return action.getStatus(); }
 }

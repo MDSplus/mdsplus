@@ -13,14 +13,14 @@ public abstract class NUMBER<T extends Number> extends Descriptor_S<T> implement
 {
 	public static final BigInteger max128 = BigInteger.ONE.shiftLeft(128);
 
-	public NUMBER(final DTYPE dtype, final ByteBuffer b)
-	{
-		super(dtype, b);
-	}
-
 	protected NUMBER(final ByteBuffer b)
 	{
 		super(b);
+	}
+
+	public NUMBER(final DTYPE dtype, final ByteBuffer b)
+	{
+		super(dtype, b);
 	}
 
 	@Override
@@ -42,6 +42,13 @@ public abstract class NUMBER<T extends Number> extends Descriptor_S<T> implement
 	public final byte getRank()
 	{ return (byte) (this.getRankClass() | this.getRankBits()); }
 
+	protected abstract byte getRankBits();
+
+	protected abstract byte getRankClass();
+
+	protected final String getSuffix()
+	{ return this.dtype().suffix; }
+
 	@Override
 	public abstract NUMBER<?> inot();
 
@@ -51,6 +58,30 @@ public abstract class NUMBER<T extends Number> extends Descriptor_S<T> implement
 
 	@Override
 	public abstract NUMBER<?> neg();
+
+	protected final NUMBER<?> newType(final double value)
+	{
+		try
+		{
+			return this.getClass().getConstructor(double.class).newInstance(Double.valueOf(value));
+		}
+		catch (final Exception e)
+		{
+			return CONST.ROPRAND;
+		}
+	}
+
+	protected final NUMBER<?> newType(final int value)
+	{
+		try
+		{
+			return this.getClass().getConstructor(int.class).newInstance(Integer.valueOf(value));
+		}
+		catch (final Exception e)
+		{
+			return CONST.ROPRAND;
+		}
+	}
 
 	public abstract T parse(final String in);
 
@@ -149,36 +180,5 @@ public abstract class NUMBER<T extends Number> extends Descriptor_S<T> implement
 	{
 		return new String[]
 		{ this.toString() };
-	}
-
-	protected abstract byte getRankBits();
-
-	protected abstract byte getRankClass();
-
-	protected final String getSuffix()
-	{ return this.dtype().suffix; }
-
-	protected final NUMBER<?> newType(final double value)
-	{
-		try
-		{
-			return this.getClass().getConstructor(double.class).newInstance(Double.valueOf(value));
-		}
-		catch (final Exception e)
-		{
-			return CONST.ROPRAND;
-		}
-	}
-
-	protected final NUMBER<?> newType(final int value)
-	{
-		try
-		{
-			return this.getClass().getConstructor(int.class).newInstance(Integer.valueOf(value));
-		}
-		catch (final Exception e)
-		{
-			return CONST.ROPRAND;
-		}
 	}
 }

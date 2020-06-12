@@ -22,6 +22,225 @@ import java.io.*;
  */
 public class Signal implements WaveDataListener
 {
+	static class RegionDescriptor
+	{
+		double lowerBound, upperBound;
+		double resolution;
+
+		RegionDescriptor(double lowerBound, double upperBound, double resolution)
+		{
+			this.lowerBound = lowerBound;
+			this.upperBound = upperBound;
+			this.resolution = resolution; // Number of points for this region / (upperBound - lowerBound)
+		}
+	}
+	class ResolutionManager
+	{
+		Vector<RegionDescriptor> lowResRegions = new Vector<RegionDescriptor>();
+
+		ResolutionManager()
+		{}
+
+		ResolutionManager(ResolutionManager rm)
+		{
+			for (int i = 0; i < rm.lowResRegions.size(); i++)
+				lowResRegions.addElement(rm.lowResRegions.elementAt(i));
+		}
+
+		void addRegion(RegionDescriptor newReg)
+		{
+			// New regions can only have increased resolution in case they intersect
+			// previous regions
+			// Skip disjoint regions with lower bounds
+			if (newReg.upperBound < newReg.lowerBound)
+			{
+				System.err.println("INTERNAL ERROR: LOWER BOUND > UPPER BOUND!!!!!");
+			}
+			int idx;
+			RegionDescriptor currRegion;
+			for (idx = 0; idx < lowResRegions.size(); idx++)
+			{
+				currRegion = lowResRegions.elementAt(idx);
+				if (currRegion.upperBound > newReg.lowerBound)
+					break;
+			}
+			if (idx == lowResRegions.size()) // All regions with lower bounds
+			{
+				if (debug)
+					System.out.println("Added region (" + newReg.lowerBound + "," + newReg.upperBound + ","
+							+ newReg.resolution + ") at bottom");
+				lowResRegions.addElement(newReg);
+				return;
+			}
+			// Check if the first region which is not all before this region has any
+			// intersection
+			currRegion = lowResRegions.elementAt(idx);
+			if (currRegion.lowerBound < newReg.lowerBound)
+			{
+				if (currRegion.upperBound <= newReg.upperBound)
+				{
+					currRegion.upperBound = newReg.lowerBound;
+					if (debug)
+						System.out.println(
+								"updated region (" + currRegion.lowerBound + "," + currRegion.upperBound + ") ");
+					idx++;
+				}
+				else // The new region is completely contained in currRegion
+				{
+					final double prevUpper = currRegion.upperBound;
+					currRegion.upperBound = newReg.lowerBound;
+					if (debug)
+						System.out.println(
+								"Updated region (" + currRegion.lowerBound + "," + currRegion.upperBound + ") ");
+					idx++;
+					lowResRegions.insertElementAt(newReg, idx);
+					if (debug)
+						System.out.println("Added region (" + newReg.lowerBound + "," + newReg.upperBound + ","
+								+ newReg.resolution + ")");
+					idx++;
+					lowResRegions.insertElementAt(
+							new RegionDescriptor(newReg.upperBound, prevUpper, currRegion.resolution), idx);
+					if (debug)
+						System.out.println("Added region (" + newReg.upperBound + "," + prevUpper + ","
+								+ currRegion.resolution + ")");
+					return; // done in this case
+				}
+			}
+			// Remove regions completely contained in the new one
+			while (idx < lowResRegions.size() && lowResRegions.elementAt(idx).upperBound <= newReg.upperBound)
+			{
+				if (debug)
+					System.out.println("Removed region (" + lowResRegions.elementAt(idx).lowerBound + ","
+							+ lowResRegions.elementAt(idx).upperBound + ")");
+				lowResRegions.removeElementAt(idx);
+			}
+			// In case there is a overlapped region, adjust its lower bound
+			if (idx < lowResRegions.size() && lowResRegions.elementAt(idx).lowerBound < newReg.upperBound)
+			{
+				lowResRegions.elementAt(idx).lowerBound = newReg.upperBound;
+				if (debug)
+					System.out.println("Updated region (" + lowResRegions.elementAt(idx).lowerBound + ","
+							+ lowResRegions.elementAt(idx).upperBound + ")");
+			}
+			lowResRegions.insertElementAt(newReg, idx);
+			if (debug)
+				System.out.println(
+						"Added region (" + newReg.lowerBound + "," + newReg.upperBound + "," + newReg.resolution + ")");
+//Merge adjacent regions with same resolution (may happens due to the inteval enlargements which occur in zooms)
+			idx = 1;
+			while (idx < lowResRegions.size())
+			{
+				final RegionDescriptor currReg = lowResRegions.elementAt(idx);
+				final RegionDescriptor prevReg = lowResRegions.elementAt(idx - 1);
+				if (prevReg.upperBound == currReg.lowerBound && prevReg.resolution == currReg.resolution)
+				{
+					if (debug)
+						System.out.println("Regions at (" + prevReg.lowerBound + "," + prevReg.upperBound + ")  ("
+								+ currReg.lowerBound + "," + currReg.upperBound + ") merged");
+					prevReg.upperBound = currReg.upperBound;
+					lowResRegions.removeElementAt(idx);
+				}
+				else
+					idx++;
+			}
+		}
+
+		void appendRegion(RegionDescriptor newReg)
+		{
+			if (newReg.upperBound < newReg.lowerBound)
+			{
+				System.err.println("INTERNAL ERROR IN APPEND: LOWER BOUND > UPPER BOUND!!!!!");
+			}
+			if (lowResRegions.size() == 0)
+			{
+				lowResRegions.addElement(newReg);
+				return;
+			}
+			final RegionDescriptor lastReg = lowResRegions.elementAt(lowResRegions.size() - 1);
+			if (lastReg.resolution == newReg.resolution)
+				lastReg.upperBound = newReg.upperBound;
+			else
+			{
+				if (lastReg.upperBound > newReg.lowerBound)
+				{
+					// System.err.println("Warning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND <
+					// LAST.UPPERBOUND");
+					newReg.lowerBound = lastReg.upperBound;
+				}
+				lowResRegions.addElement(newReg);
+			}
+		}
+
+		// Check if the passed interval intersects any low resolution region
+		Vector<RegionDescriptor> getLowerResRegions(double lowerInt, double upperInt, double resolution)
+		{
+			final Vector<RegionDescriptor> retRegions = new Vector<RegionDescriptor>();
+			for (int i = 0; i < lowResRegions.size(); i++)
+			{
+				// 3 cases to be handled
+				final RegionDescriptor currReg = lowResRegions.elementAt(i);
+				// 1) Lower bound is within interval
+				if (currReg.lowerBound < upperInt && currReg.lowerBound > lowerInt)
+				{
+					if (debug)
+						System.out.println("CASE 1: Lower bound is within interval for region " + i
+								+ "  its resolution: " + currReg.resolution + " in resolution: " + resolution);
+					if (currReg.resolution < resolution)
+					{
+						// Adjust upper bound
+						double currUpper = currReg.upperBound;
+						if (currUpper > upperInt)
+							currUpper = upperInt;
+						if (debug)
+							System.out.println("Added Region lower: " + currReg.lowerBound + "  upper: " + currUpper
+									+ " resoluton: " + resolution);
+						retRegions.addElement(new RegionDescriptor(currReg.lowerBound, currUpper, resolution));
+					}
+				}
+				// 2) Upper bound is within interval
+				else if (currReg.upperBound < upperInt && currReg.upperBound > lowerInt)
+				{
+					if (debug)
+						System.out.println("CASE 2: Upper bound is within interval for region " + i);
+					if (currReg.resolution < resolution)
+					{
+						// Adjust lower bound
+						double currLower = currReg.lowerBound;
+						if (currLower < lowerInt)
+							currLower = lowerInt;
+						retRegions.addElement(new RegionDescriptor(currLower, currReg.upperBound, resolution));
+					}
+				}
+				// 3) The interval is fully within the current region
+				else if (currReg.lowerBound < lowerInt && currReg.upperBound > upperInt)
+				{
+					if (debug)
+						System.out.println("CASE 3: UThe interval is fully within the current region for region " + i);
+					if (currReg.resolution < resolution)
+					{
+						retRegions.addElement(new RegionDescriptor(lowerInt, upperInt, resolution));
+					}
+				}
+			}
+			return retRegions;
+		}
+
+		double[] getMinMaxX()
+		{
+			final double limits[] = new double[2];
+			limits[0] = lowResRegions.elementAt(0).lowerBound;
+			limits[1] = lowResRegions.elementAt(lowResRegions.size() - 1).upperBound;
+			return limits;
+		}
+
+		boolean isEmpty()
+		{ return lowResRegions.size() == 0; }
+
+		void resetRegions()
+		{
+			lowResRegions.clear();
+		}
+	} // End inner class ResolutionManager
 	public static final int TYPE_1D = 0;
 	public static final int TYPE_2D = 1;
 	public static final int MODE_XZ = 0;
@@ -35,7 +254,6 @@ public class Signal implements WaveDataListener
 	public static final int MODE_STEP = 3;
 	public static final int DEFAULT_CONTOUR_LEVEL = 20;
 	public static final int FUSO = 0;
-	boolean debug = false;
 	/**
 	 * String vector of markers name.
 	 */
@@ -70,6 +288,18 @@ public class Signal implements WaveDataListener
 	 * Point marker
 	 */
 	public static final int POINT = 5;
+	static final int NUM_POINTS = 2000;
+	public final static int SIMPLE = 0;
+	public final static int AT_CREATION = 1;
+	public final static int FIXED_LIMIT = 2;
+	public final static int DO_NOT_UPDATE = 4;
+	private static final int DEFAULT_INC_SIZE = 10000;
+	static String toStringTime(long time)
+	{
+		final DateFormat df = new SimpleDateFormat("HH:mm:sss");
+		return df.format(new Date(time));
+	}
+	boolean debug = false;
 	/**
 	 * data object
 	 */
@@ -238,347 +468,78 @@ public class Signal implements WaveDataListener
 	float y2D[];
 	float z[];
 	double xY2D[];
+
 	float yY2D[];
+
 	float zY2D[];
+
 	// 1D management
 	double x[] = null;
+
 	float y[] = null;
+
 	long xLong[] = null;
+
 	float upError[];
+
 	float lowError[];
+
 	boolean upToDate = false;
-	static final int NUM_POINTS = 2000;
-
-	static class RegionDescriptor
-	{
-		double lowerBound, upperBound;
-		double resolution;
-
-		RegionDescriptor(double lowerBound, double upperBound, double resolution)
-		{
-			this.lowerBound = lowerBound;
-			this.upperBound = upperBound;
-			this.resolution = resolution; // Number of points for this region / (upperBound - lowerBound)
-		}
-	}
-
-	class ResolutionManager
-	{
-		Vector<RegionDescriptor> lowResRegions = new Vector<RegionDescriptor>();
-
-		ResolutionManager()
-		{}
-
-		ResolutionManager(ResolutionManager rm)
-		{
-			for (int i = 0; i < rm.lowResRegions.size(); i++)
-				lowResRegions.addElement(rm.lowResRegions.elementAt(i));
-		}
-
-		// Check if the passed interval intersects any low resolution region
-		Vector<RegionDescriptor> getLowerResRegions(double lowerInt, double upperInt, double resolution)
-		{
-			final Vector<RegionDescriptor> retRegions = new Vector<RegionDescriptor>();
-			for (int i = 0; i < lowResRegions.size(); i++)
-			{
-				// 3 cases to be handled
-				final RegionDescriptor currReg = lowResRegions.elementAt(i);
-				// 1) Lower bound is within interval
-				if (currReg.lowerBound < upperInt && currReg.lowerBound > lowerInt)
-				{
-					if (debug)
-						System.out.println("CASE 1: Lower bound is within interval for region " + i
-								+ "  its resolution: " + currReg.resolution + " in resolution: " + resolution);
-					if (currReg.resolution < resolution)
-					{
-						// Adjust upper bound
-						double currUpper = currReg.upperBound;
-						if (currUpper > upperInt)
-							currUpper = upperInt;
-						if (debug)
-							System.out.println("Added Region lower: " + currReg.lowerBound + "  upper: " + currUpper
-									+ " resoluton: " + resolution);
-						retRegions.addElement(new RegionDescriptor(currReg.lowerBound, currUpper, resolution));
-					}
-				}
-				// 2) Upper bound is within interval
-				else if (currReg.upperBound < upperInt && currReg.upperBound > lowerInt)
-				{
-					if (debug)
-						System.out.println("CASE 2: Upper bound is within interval for region " + i);
-					if (currReg.resolution < resolution)
-					{
-						// Adjust lower bound
-						double currLower = currReg.lowerBound;
-						if (currLower < lowerInt)
-							currLower = lowerInt;
-						retRegions.addElement(new RegionDescriptor(currLower, currReg.upperBound, resolution));
-					}
-				}
-				// 3) The interval is fully within the current region
-				else if (currReg.lowerBound < lowerInt && currReg.upperBound > upperInt)
-				{
-					if (debug)
-						System.out.println("CASE 3: UThe interval is fully within the current region for region " + i);
-					if (currReg.resolution < resolution)
-					{
-						retRegions.addElement(new RegionDescriptor(lowerInt, upperInt, resolution));
-					}
-				}
-			}
-			return retRegions;
-		}
-
-		void addRegion(RegionDescriptor newReg)
-		{
-			// New regions can only have increased resolution in case they intersect
-			// previous regions
-			// Skip disjoint regions with lower bounds
-			if (newReg.upperBound < newReg.lowerBound)
-			{
-				System.err.println("INTERNAL ERROR: LOWER BOUND > UPPER BOUND!!!!!");
-			}
-			int idx;
-			RegionDescriptor currRegion;
-			for (idx = 0; idx < lowResRegions.size(); idx++)
-			{
-				currRegion = lowResRegions.elementAt(idx);
-				if (currRegion.upperBound > newReg.lowerBound)
-					break;
-			}
-			if (idx == lowResRegions.size()) // All regions with lower bounds
-			{
-				if (debug)
-					System.out.println("Added region (" + newReg.lowerBound + "," + newReg.upperBound + ","
-							+ newReg.resolution + ") at bottom");
-				lowResRegions.addElement(newReg);
-				return;
-			}
-			// Check if the first region which is not all before this region has any
-			// intersection
-			currRegion = lowResRegions.elementAt(idx);
-			if (currRegion.lowerBound < newReg.lowerBound)
-			{
-				if (currRegion.upperBound <= newReg.upperBound)
-				{
-					currRegion.upperBound = newReg.lowerBound;
-					if (debug)
-						System.out.println(
-								"updated region (" + currRegion.lowerBound + "," + currRegion.upperBound + ") ");
-					idx++;
-				}
-				else // The new region is completely contained in currRegion
-				{
-					final double prevUpper = currRegion.upperBound;
-					currRegion.upperBound = newReg.lowerBound;
-					if (debug)
-						System.out.println(
-								"Updated region (" + currRegion.lowerBound + "," + currRegion.upperBound + ") ");
-					idx++;
-					lowResRegions.insertElementAt(newReg, idx);
-					if (debug)
-						System.out.println("Added region (" + newReg.lowerBound + "," + newReg.upperBound + ","
-								+ newReg.resolution + ")");
-					idx++;
-					lowResRegions.insertElementAt(
-							new RegionDescriptor(newReg.upperBound, prevUpper, currRegion.resolution), idx);
-					if (debug)
-						System.out.println("Added region (" + newReg.upperBound + "," + prevUpper + ","
-								+ currRegion.resolution + ")");
-					return; // done in this case
-				}
-			}
-			// Remove regions completely contained in the new one
-			while (idx < lowResRegions.size() && lowResRegions.elementAt(idx).upperBound <= newReg.upperBound)
-			{
-				if (debug)
-					System.out.println("Removed region (" + lowResRegions.elementAt(idx).lowerBound + ","
-							+ lowResRegions.elementAt(idx).upperBound + ")");
-				lowResRegions.removeElementAt(idx);
-			}
-			// In case there is a overlapped region, adjust its lower bound
-			if (idx < lowResRegions.size() && lowResRegions.elementAt(idx).lowerBound < newReg.upperBound)
-			{
-				lowResRegions.elementAt(idx).lowerBound = newReg.upperBound;
-				if (debug)
-					System.out.println("Updated region (" + lowResRegions.elementAt(idx).lowerBound + ","
-							+ lowResRegions.elementAt(idx).upperBound + ")");
-			}
-			lowResRegions.insertElementAt(newReg, idx);
-			if (debug)
-				System.out.println(
-						"Added region (" + newReg.lowerBound + "," + newReg.upperBound + "," + newReg.resolution + ")");
-//Merge adjacent regions with same resolution (may happens due to the inteval enlargements which occur in zooms)
-			idx = 1;
-			while (idx < lowResRegions.size())
-			{
-				final RegionDescriptor currReg = lowResRegions.elementAt(idx);
-				final RegionDescriptor prevReg = lowResRegions.elementAt(idx - 1);
-				if (prevReg.upperBound == currReg.lowerBound && prevReg.resolution == currReg.resolution)
-				{
-					if (debug)
-						System.out.println("Regions at (" + prevReg.lowerBound + "," + prevReg.upperBound + ")  ("
-								+ currReg.lowerBound + "," + currReg.upperBound + ") merged");
-					prevReg.upperBound = currReg.upperBound;
-					lowResRegions.removeElementAt(idx);
-				}
-				else
-					idx++;
-			}
-		}
-
-		void appendRegion(RegionDescriptor newReg)
-		{
-			if (newReg.upperBound < newReg.lowerBound)
-			{
-				System.err.println("INTERNAL ERROR IN APPEND: LOWER BOUND > UPPER BOUND!!!!!");
-			}
-			if (lowResRegions.size() == 0)
-			{
-				lowResRegions.addElement(newReg);
-				return;
-			}
-			final RegionDescriptor lastReg = lowResRegions.elementAt(lowResRegions.size() - 1);
-			if (lastReg.resolution == newReg.resolution)
-				lastReg.upperBound = newReg.upperBound;
-			else
-			{
-				if (lastReg.upperBound > newReg.lowerBound)
-				{
-					// System.err.println("Warning: INTERNAL ERROR IN APPEND: NEW.LOWERBOUND <
-					// LAST.UPPERBOUND");
-					newReg.lowerBound = lastReg.upperBound;
-				}
-				lowResRegions.addElement(newReg);
-			}
-		}
-
-		void resetRegions()
-		{
-			lowResRegions.clear();
-		}
-
-		double[] getMinMaxX()
-		{
-			final double limits[] = new double[2];
-			limits[0] = lowResRegions.elementAt(0).lowerBound;
-			limits[1] = lowResRegions.elementAt(lowResRegions.size() - 1).upperBound;
-			return limits;
-		}
-
-		boolean isEmpty()
-		{ return lowResRegions.size() == 0; }
-	} // End inner class ResolutionManager
 
 	ResolutionManager resolutionManager = new ResolutionManager();
 
+	private double z_value = Double.NaN;
+
+	private boolean find_NaN = false;
+
 	/**
-	 * Constructs and initializes a Signal from the specified parameters.
+	 * Return index of nearest signal point to argument (curr_x, curr_y) point.
 	 *
-	 * @param _x        an array of x coordinates
-	 * @param _y        an array of x coordinates
-	 * @param _n_points the total number of points in the Signal
+	 * @param curr_x value
+	 * @param curr_y value
+	 * @return index of signal point
 	 */
-	public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal) throws IOException
-	{
-		this(data, x_data, xminVal, xmaxVal, null, null);
-	}
+	private int img_xprev = 0;
 
-	public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal) throws IOException
-	{
-		this(data, x_data, xminVal, xmaxVal, null, null);
-	}
+	private int img_yprev = 0;
 
-	public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData,
-			WaveData upErrData) throws IOException
-	{
-		error = (lowErrData != null || upErrData != null);
-		asym_error = (lowErrData != null && upErrData != null);
-		up_errorData = upErrData;
-		low_errorData = lowErrData;
-		if (xminVal != -Double.MAX_VALUE)
-		{
-			xLimitsInitialized = true;
-			saved_xmin = this.xmin = curr_xmin = xminVal;
-		}
-		if (xmaxVal != Double.MAX_VALUE)
-		{
-			saved_xmax = this.xmax = curr_xmax = xmaxVal;
-		}
-		this.data = data;
-		this.x_data = x_data;
-		data.addWaveDataListener(this);
-		checkData(saved_xmin, saved_xmax);
-		if (saved_xmin == -Double.MAX_VALUE)
-			saved_xmin = this.xmin;
-		if (saved_xmax == Double.MAX_VALUE)
-			saved_xmax = this.xmax;
-	}
+	boolean fix_xmin = false;
 
-	public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData)
-			throws IOException
-	{
-		xMinLong = xminVal;
-		xMaxLong = xmaxVal;
-		longXLimits = true;
-		error = (lowErrData != null || upErrData != null);
-		asym_error = (lowErrData != null && upErrData != null);
-		up_errorData = upErrData;
-		low_errorData = lowErrData;
-		if (xminVal != -Double.MAX_VALUE)
-		{
-			xLimitsInitialized = true;
-			saved_xmin = this.xmin = curr_xmin = xminVal;
-		}
-		if (xmaxVal != Double.MAX_VALUE)
-		{
-			saved_xmax = this.xmax = curr_xmax = xmaxVal;
-		}
-		this.data = data;
-		this.x_data = x_data;
-		try
-		{
-			checkData(saved_xmin, saved_xmax);
-			if (saved_xmin == -Double.MAX_VALUE)
-				saved_xmin = this.xmin;
-			if (saved_xmax == Double.MAX_VALUE)
-				saved_xmax = this.xmax;
-		}
-		catch (final Exception exc)
-		{
-			System.out.println("Signal exception: " + exc);
-		}
-		data.addWaveDataListener(this);
-	}
+	boolean fix_xmax = false;
 
-	public Signal(WaveData data, double xmin, double xmax) throws IOException
-	{
-		this(data, null, xmin, xmax);
-	}
+	boolean fix_ymin = false;
 
-	public Signal(float _x[], float _y[], int _n_points) throws IOException
+	boolean fix_ymax = false;
+
+	private int updSignalSizeInc;
+
+	public int startIndexToUpdate = 0;
+
+	public boolean needFullUpdate = true;
+
+	private int x2D_points = 0;
+
+	private int y2D_points = 0;
+
+	private int z2D_points = 0;
+
+	/**
+	 * Constructs a zero Signal with 100 points.
+	 */
+	public Signal()
 	{
 		error = asym_error = false;
-		data = new XYWaveData(_x, _y, _n_points);
-		setAxis();
-		xLimitsInitialized = true;
-		saved_xmin = curr_xmin = xmin;
-		saved_xmax = curr_xmax = xmax;
-		saved_ymin = ymin;
-		saved_ymax = ymax;
-		checkIncreasingX();
-	}
-
-	public Signal(double _x[], float _y[], int _n_points) throws IOException
-	{
-		error = asym_error = false;
-		data = new XYWaveData(_x, _y, _n_points);
+		final double x[] = new double[]
+		{ 0., 1. };
+		final float y[] = new float[]
+		{ 0, 0 };
+		data = new XYWaveData(x, y);
 		setAxis();
 		saved_xmin = curr_xmin = xmin;
 		saved_xmax = curr_xmax = xmax;
-		saved_ymin = ymin;
-		saved_ymax = ymax;
-		checkIncreasingX();
+		saved_ymin = ymin = 0;
+		saved_ymax = ymax = 0;
+		increasing_x = true;
 	}
 
 	public Signal(double _x[], float _y[])
@@ -593,10 +554,10 @@ public class Signal implements WaveDataListener
 		checkIncreasingX();
 	}
 
-	public Signal(long _x[], float _y[], int _n_points)
+	public Signal(double _x[], float _y[], int _n_points) throws IOException
 	{
 		error = asym_error = false;
-		data = new XYWaveData(_x, _y);
+		data = new XYWaveData(_x, _y, _n_points);
 		setAxis();
 		saved_xmin = curr_xmin = xmin;
 		saved_xmax = curr_xmax = xmax;
@@ -623,17 +584,17 @@ public class Signal implements WaveDataListener
 		checkIncreasingX();
 	}
 
-	/**
-	 * Constructs a Signal with x and y array and name.
-	 *
-	 * @param _x   an array of x coordinates
-	 * @param _y   an array of y coordinates
-	 * @param name signal name
-	 */
-	public Signal(float _x[], float _y[], String name)
+	public Signal(float _x[], float _y[], int _n_points) throws IOException
 	{
-		this(_x, _y);
-		setName(new String(name));
+		error = asym_error = false;
+		data = new XYWaveData(_x, _y, _n_points);
+		setAxis();
+		xLimitsInitialized = true;
+		saved_xmin = curr_xmin = xmin;
+		saved_xmax = curr_xmax = xmax;
+		saved_ymin = ymin;
+		saved_ymax = ymax;
+		checkIncreasingX();
 	}
 
 	/**
@@ -681,31 +642,28 @@ public class Signal implements WaveDataListener
 	}
 
 	/**
-	 * Constructs a zero Signal with 100 points.
+	 * Constructs a Signal with x and y array and name.
+	 *
+	 * @param _x   an array of x coordinates
+	 * @param _y   an array of y coordinates
+	 * @param name signal name
 	 */
-	public Signal()
+	public Signal(float _x[], float _y[], String name)
+	{
+		this(_x, _y);
+		setName(new String(name));
+	}
+
+	public Signal(long _x[], float _y[], int _n_points)
 	{
 		error = asym_error = false;
-		final double x[] = new double[]
-		{ 0., 1. };
-		final float y[] = new float[]
-		{ 0, 0 };
-		data = new XYWaveData(x, y);
+		data = new XYWaveData(_x, _y);
 		setAxis();
 		saved_xmin = curr_xmin = xmin;
 		saved_xmax = curr_xmax = xmax;
-		saved_ymin = ymin = 0;
-		saved_ymax = ymax = 0;
-		increasing_x = true;
-	}
-
-	/**
-	 * Constructs a zero Signal with name.
-	 */
-	public Signal(String name)
-	{
-		this();
-		this.name = name;
+		saved_ymin = ymin;
+		saved_ymax = ymax;
+		checkIncreasingX();
 	}
 
 	/**
@@ -878,536 +836,110 @@ public class Signal implements WaveDataListener
 		name = s.name;
 	}
 
-	void dispose()
+	/**
+	 * Constructs a zero Signal with name.
+	 */
+	public Signal(String name)
 	{
-		if (data != null)
-			data.removeWaveDataListener(this);
+		this();
+		this.name = name;
 	}
 
-	boolean hasError()
+	public Signal(WaveData data, double xmin, double xmax) throws IOException
 	{
-		return error;
+		this(data, null, xmin, xmax);
 	}
 
-	boolean hasAsymError()
+	/**
+	 * Constructs and initializes a Signal from the specified parameters.
+	 *
+	 * @param _x        an array of x coordinates
+	 * @param _y        an array of x coordinates
+	 * @param _n_points the total number of points in the Signal
+	 */
+	public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal) throws IOException
 	{
-		return asym_error;
+		this(data, x_data, xminVal, xmaxVal, null, null);
 	}
 
-	public final boolean hasX()
+	public Signal(WaveData data, WaveData x_data, double xminVal, double xmaxVal, WaveData lowErrData,
+			WaveData upErrData) throws IOException
 	{
-		return true;
-		// return data.hasX();
+		error = (lowErrData != null || upErrData != null);
+		asym_error = (lowErrData != null && upErrData != null);
+		up_errorData = upErrData;
+		low_errorData = lowErrData;
+		if (xminVal != -Double.MAX_VALUE)
+		{
+			xLimitsInitialized = true;
+			saved_xmin = this.xmin = curr_xmin = xminVal;
+		}
+		if (xmaxVal != Double.MAX_VALUE)
+		{
+			saved_xmax = this.xmax = curr_xmax = xmaxVal;
+		}
+		this.data = data;
+		this.x_data = x_data;
+		data.addWaveDataListener(this);
+		checkData(saved_xmin, saved_xmax);
+		if (saved_xmin == -Double.MAX_VALUE)
+			saved_xmin = this.xmin;
+		if (saved_xmax == Double.MAX_VALUE)
+			saved_xmax = this.xmax;
 	}
 
-	public int getNumNaNs()
-	{ return n_nans; }
-
-	public int[] getNaNs()
-	{ return nans; }
-
-	public double getX(int idx)
+	public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal) throws IOException
 	{
+		this(data, x_data, xminVal, xmaxVal, null, null);
+	}
+
+	public Signal(WaveData data, WaveData x_data, long xminVal, long xmaxVal, WaveData lowErrData, WaveData upErrData)
+			throws IOException
+	{
+		xMinLong = xminVal;
+		xMaxLong = xmaxVal;
+		longXLimits = true;
+		error = (lowErrData != null || upErrData != null);
+		asym_error = (lowErrData != null && upErrData != null);
+		up_errorData = upErrData;
+		low_errorData = lowErrData;
+		if (xminVal != -Double.MAX_VALUE)
+		{
+			xLimitsInitialized = true;
+			saved_xmin = this.xmin = curr_xmin = xminVal;
+		}
+		if (xmaxVal != Double.MAX_VALUE)
+		{
+			saved_xmax = this.xmax = curr_xmax = xmaxVal;
+		}
+		this.data = data;
+		this.x_data = x_data;
 		try
 		{
-			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
-				return sliceX[idx];
-			return x[idx];
-		}
-		catch (final Exception exc)
-		{
-			return 0;
-		}
-	}
-
-	public float getY(int idx)
-	{
-		try
-		{
-			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
-				return sliceY[idx];
-			return y[idx];
-		}
-		catch (final Exception exc)
-		{
-			return 0;
-		}
-	}
-
-	public float getZ(int idx)
-	{
-		if (z == null)
-			z = data.getZ();
-		return z[idx];
-	}
-
-	public double[] getX() throws IOException
-	{
-		if (type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
-			return sliceX;
-		return x;
-	}
-
-	public float[] getY() throws IOException
-	{
-		if (type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
-			return sliceY;
-		return y;
-	}
-
-	public float[] getZ()
-	{
-		if (z == null)
-			z = data.getZ();
-		return z;
-	}
-
-	public double[] getX2D()
-	{
-		if (x2D == null)
-			x2D = data.getX2D();
-		return x2D;
-	}
-
-	public float[] getY2D()
-	{
-		if (y2D == null)
-			y2D = data.getY2D();
-		return y2D;
-	}
-
-	Vector<Vector> getContourSignals()
-	{ return contourSignals; }
-
-	Vector<Double> getContourLevelValues()
-	{ return contourLevelValues; }
-
-	public boolean isFullLoad()
-	{ return full_load; }
-
-	public void setFullLoad(boolean full_load)
-	{ this.full_load = full_load; }
-
-	static String toStringTime(long time)
-	{
-		final DateFormat df = new SimpleDateFormat("HH:mm:sss");
-		return df.format(new Date(time));
-	}
-
-	public String getStringOfXinYZplot()
-	{
-		if (this.isLongX())
-			return toStringTime((long) curr_x_yz_plot);
-		else
-			return "" + curr_x_yz_plot;
-	}
-
-	public double getXinYZplot()
-	{ return curr_x_yz_plot; }
-
-	public float getYinXZplot()
-	{ return curr_y_xz_plot; }
-
-	public int getNumPoints()
-	{
-		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ) && sliceX != null)
-			return sliceX.length;
-		if (data != null)
-		{
-			try
-			{
-				return (x.length < y.length) ? x.length : y.length;
-			}
-			catch (final Exception exc)
-			{}
-		}
-		return 0;
-	}
-
-	public void setXinYZplot(float curr_x_yz_plot)
-	{ this.curr_x_yz_plot = curr_x_yz_plot; }
-
-	public void setYinXZplot(float curr_y_xz_plot)
-	{ this.curr_y_xz_plot = curr_y_xz_plot; }
-
-	private double z_value = Double.NaN;
-
-	public double getZValue()
-	{
-		if (this.type == Signal.TYPE_2D)
-		{
-			switch (mode2D)
-			{
-			case Signal.MODE_IMAGE:
-				final float y[] = y2D;
-				final int idx = img_xprev * y.length + img_yprev;
-				if (z != null && idx < z.length)
-				{
-					return z[idx];
-				}
-			case Signal.MODE_CONTOUR:
-				return z_value;
-			}
-		}
-		return Float.NaN;
-	}
-
-	private int getArrayIndex(double arr[], double d)
-	{
-		int i = -1;
-		if (i == -1)
-		{
-			for (i = 0; i < arr.length - 1; i++)
-			{
-				if ((d > arr[i] && d < arr[i + 1]) || d == arr[i])
-					break;
-			}
-		}
-		return i;
-	}
-
-	private int getArrayIndex(float arr[], double d)
-	{
-		int i = -1;
-		if (i == -1)
-		{
-			for (i = 0; i < arr.length - 1; i++)
-			{
-				if ((d > arr[i] && d < arr[i + 1]) || d == arr[i])
-					break;
-			}
-		}
-		return i;
-	}
-
-	public void showYZ(double t)
-	{
-		if (curr_x_yz_plot == t && mode2D == MODE_YZ)
-			return;
-		final int i = getArrayIndex(x2D, t);
-		showYZ(i);
-	}
-
-	public void showYZ(int idx)
-	{
-		final float[] y2d = y2D;
-		final double[] x2d = x2D;
-		if ((idx >= x2d.length || idx == curr_x_yz_idx) && mode2D == MODE_YZ)
-			return;
-		prev_idx = 0;
-		curr_x_yz_plot = x2d[idx];
-		curr_x_yz_idx = idx;
-		curr_y_xz_plot = Float.NaN;
-		curr_y_xz_idx = -1;
-		if (zY2D != null && idx < zY2D.length)
-		{
-			ymin = ymax = zY2D[idx];
-			for (int j = 0; j < y2d.length; j++)
-			{
-				final int k = x2d.length * j + idx;
-				y2d[j] = zY2D[k];
-				if (ymin > y2d[j])
-					ymin = y2d[j];
-				if (ymax < y2d[j])
-					ymax = y2d[j];
-			}
-		}
-		sliceX = new double[y2d.length];
-		sliceY = new float[y2d.length];
-		final int zLen = z.length;
-		if (idx >= zLen)
-			return;
-		float sliceMin, sliceMax;
-		sliceMin = sliceMax = z[idx];
-		for (int j = 0; j < y2d.length; j++)
-		{
-			final int k = x2d.length * j + idx;
-			sliceX[j] = y2d[j];
-			if (k >= zLen)
-				break;
-			sliceY[j] = z[k];
-			if (sliceMin > z[k])
-				sliceMin = z[k];
-			if (sliceMax < z[k])
-				sliceMax = z[k];
-		}
-		error = asym_error = false;
-		mode2D = Signal.MODE_YZ;
-		if (!fix_xmin)
-			saved_xmin = curr_xmin = xmin = y2D_min;
-		// saved_xmin = curr_xmin = ymin;
-		if (!fix_xmax)
-			saved_xmax = curr_xmax = xmax = y2D_max;
-		// saved_xmax = curr_xmax = ymax;
-		if (!fix_ymin)
-			saved_ymin = ymin = sliceMin;
-		if (!fix_ymax)
-			saved_ymax = ymax = sliceMax;
-		// Assumed that for 2D data, dimensions are increasing
-		increasing_x = true;
-	}
-
-	public void incShow()
-	{
-		if (type == TYPE_2D)
-		{
-			switch (mode2D)
-			{
-			case Signal.MODE_XZ:
-				incShowXZ();
-				break;
-			case Signal.MODE_YZ:
-				incShowYZ();
-				break;
-			case Signal.MODE_PROFILE:
-				// incShowProfile();
-				break;
-			}
-		}
-	}
-
-	public void decShow()
-	{
-		if (type == TYPE_2D)
-		{
-			switch (mode2D)
-			{
-			case Signal.MODE_XZ:
-				decShowXZ();
-				break;
-			case Signal.MODE_YZ:
-				decShowYZ();
-				break;
-			case Signal.MODE_PROFILE:
-				// decShowProfile();
-				break;
-			}
-		}
-	}
-
-	public void incShowXZ()
-	{
-		if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
-			showXZ((curr_y_xz_idx + 1) % y2D.length);
-	}
-
-	public void decShowXZ()
-	{
-		if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
-		{
-			int idx = curr_y_xz_idx - 1;
-			if (idx < 0)
-				idx = y2D.length - 1;
-			showXZ(idx);
-		}
-	}
-
-	public void incShowYZ()
-	{
-		if (type == TYPE_2D && mode2D == Signal.MODE_YZ)
-			showYZ((curr_x_yz_idx + 1) % x2D.length);
-	}
-
-	public void decShowYZ()
-	{
-		if (type == TYPE_2D && mode2D == Signal.MODE_YZ)
-		{
-			int idx = curr_x_yz_idx - 1;
-			if (idx < 0)
-				idx = x2D.length - 1;
-			showYZ(idx);
-		}
-	}
-
-	public void showXZ(double xd)
-	{
-		if (curr_y_xz_plot == xd)
-			return;
-		final int i = getArrayIndex(y2D, xd);
-		showXZ(i);
-	}
-
-	public void showXZ(int idx)
-	{
-		final float[] y2d = y2D;
-		double[] x2d = x2D;
-		// if ( (idx >= x2d.length || idx == curr_y_xz_idx) &&
-		if ((idx >= y2d.length || idx == curr_y_xz_idx) && mode2D == MODE_XZ)
-			return;
-		prev_idx = 0;
-		curr_y_xz_plot = y2d[idx];
-		curr_y_xz_idx = idx;
-		curr_x_yz_plot = Float.NaN;
-		curr_x_yz_idx = -1;
-		if (zY2D != null)
-		{
-			x2d = new double[x2D.length];
-			curr_xmin = curr_xmax = zY2D[x2D.length * idx];
-			for (int j = 0; j < x2D.length; j++)
-			{
-				x2d[j] = zY2D[x2D.length * idx + j];
-				if (x2d[j] > curr_xmax)
-					curr_xmax = x2d[j];
-				else if (x2d[j] < curr_xmin)
-					curr_xmin = x2d[j];
-			}
-		}
-		sliceX = new double[x2d.length];
-		sliceY = new float[x2d.length];
-		final int zLen = z.length;
-		float sliceMin, sliceMax;
-		// sliceMin = sliceMax = z[ y2d.length * idx];
-		sliceMin = sliceMax = z[x2d.length * idx];
-		for (int j = 0; j < x2d.length; j++)
-		{
-			sliceX[j] = x2d[j];
-			// int k = y2d.length * idx + j;
-			final int k = x2d.length * idx + j;
-			if (k >= zLen)
-				break;
-			sliceY[j] = z[k];
-			if (sliceMin > z[k])
-				sliceMin = z[k];
-			if (sliceMax < z[k])
-				sliceMax = z[k];
-		}
-		error = asym_error = false;
-		mode2D = Signal.MODE_XZ;
-		if (!fix_xmin)
-			saved_xmin = curr_xmin = xmin = x2D_min;
-		// saved_xmin = curr_xmin;
-		if (!fix_xmax)
-			saved_xmax = curr_xmax = xmax = x2D_max;
-		// saved_xmax = curr_xmax;
-		if (!fix_ymin)
-			saved_ymin = ymin = sliceMin;
-		if (!fix_ymax)
-			saved_ymax = ymax = sliceMax;
-		// Assumed that for 2D data, dimensions are increasing
-		increasing_x = true;
-	}
-
-	public void setMode1D(int mode)
-	{
-		this.mode1D = mode;
-		switch (mode)
-		{
-		case MODE_LINE:
-			this.interpolate = true;
-			break;
-		case MODE_NOLINE:
-			this.interpolate = false;
-			break;
-		case MODE_STEP:
-			this.interpolate = true;
-			break;
-		}
-	}
-
-	public void setMode2D(int mode)
-	{
-		if (this.type == Signal.TYPE_1D)
-			return;
-		switch (mode)
-		{
-		case MODE_IMAGE:
-			setMode2D(mode, 0);
-			break;
-		case MODE_XZ:
-			if (y2D != null && y2D.length > 0)
-				setMode2D(mode, y2D[0]);
-			break;
-		case MODE_YZ:
-			double v = x2D[0];
-			if (!Double.isNaN(curr_x_yz_plot))
-				v = curr_x_yz_plot;
-			setMode2D(mode, v);
-			break;
-		case MODE_CONTOUR:
-			setMode2D(mode, 0);
-			break;
-		case MODE_PROFILE:
-			/*
-			 * if(z2D != null && z2D.length > 0) { float v1 = z2D[0]; if
-			 * (!Float.isNaN(curr_x_yz_plot)) v1 = curr_x_yz_plot; setMode2D(mode, v1); }
-			 */
-			break;
-		}
-	}
-
-	public void setMode2D(int mode, double value)
-	{
-		if (this.type == Signal.TYPE_1D)
-			return;
-		curr_x_yz_plot = Float.NaN;
-		curr_y_xz_plot = Float.NaN;
-		curr_x_yz_idx = -1;
-		curr_y_xz_idx = -1;
-		switch (mode)
-		{
-		case MODE_IMAGE:
-			/*
-			 * saved_ymin = ymin = y2D_min; saved_ymax = ymax = y2D_max; saved_xmin = xmin =
-			 * x2D_min; saved_xmax = xmax = x2D_max;
-			 */
-			if (saved_ymin == -Double.MAX_VALUE)
-				saved_ymin = ymin = y2D_min;
-			else
-				ymin = saved_ymin;
-			if (saved_ymax == Double.MAX_VALUE)
-				saved_ymax = ymax = y2D_max;
-			else
-				ymax = saved_ymax;
+			checkData(saved_xmin, saved_xmax);
 			if (saved_xmin == -Double.MAX_VALUE)
-				saved_xmin = xmin = x2D_min;
-			else
-				xmin = saved_xmin;
+				saved_xmin = this.xmin;
 			if (saved_xmax == Double.MAX_VALUE)
-				saved_xmax = xmax = x2D_max;
-			else
-				xmax = saved_xmax;
-			break;
-		case MODE_XZ:
-			showXZ((float) value);
-			break;
-		case MODE_YZ:
-			prev_idx = 0;
-			showYZ((float) value);
-			break;
-		case MODE_CONTOUR:
-			initContour();
-			break;
-		case MODE_PROFILE:
-			/*
-			 * prev_idx = 0; showProfile(mode, value);
-			 */
-			break;
+				saved_xmax = this.xmax;
 		}
-		this.mode2D = mode;
+		catch (final Exception exc)
+		{
+			System.out.println("Signal exception: " + exc);
+		}
+		data.addWaveDataListener(this);
 	}
 
-	public void initContour()
+	/**
+	 * Add a asymmetric error bar.
+	 *
+	 * @param _up_error  an array of y up measure error
+	 * @param _low_error an array of y low measure error
+	 */
+	public void AddAsymError(WaveData up_error, WaveData low_error)
 	{
-		saved_ymin = ymin = y2D_min;
-		saved_ymax = ymax = y2D_max;
-		saved_xmin = xmin = x2D_min;
-		saved_xmax = xmax = x2D_max;
-		// x = x2D;
-		// y = y2D;
-		cs = new ContourSignal(this);
-		if (contourLevels == null || contourLevels.length == 0)
-		{
-			contourLevels = new double[DEFAULT_CONTOUR_LEVEL];
-			final double dz = (z2D_max - z2D_min) / (DEFAULT_CONTOUR_LEVEL + 1);
-			for (int i = 0; i < contourLevels.length; i++)
-			{
-				contourLevels[i] = z2D_min + dz * (i + 1);
-			}
-		}
-		for (int k = 0; k < contourLevels.length; k++)
-		{
-			addContourLevel(contourLevels[k]);
-		}
+		error = asym_error = true;
+		up_errorData = up_error;
+		low_errorData = low_error;
 	}
 
 	public Vector<Vector<Point2D.Double>> addContourLevel(double level)
@@ -1426,232 +958,6 @@ public class Signal implements WaveDataListener
 	}
 
 	/**
-	 * Sets all signal attributes.
-	 *
-	 * @param name        signal name
-	 * @param color_idx   color index from an external color table
-	 * @param marker      marker type
-	 * @param marker_step marker step
-	 * @param interpolate interpolate flag
-	 */
-	public void setAttributes(String name, int color_idx, int marker, int marker_step, boolean interpolate)
-	{
-		this.marker = marker;
-		this.marker_step = marker_step;
-		this.interpolate = interpolate;
-		this.color_idx = color_idx;
-		this.name = new String(name);
-	}
-
-	/**
-	 * Set market type.
-	 *
-	 * @param marker marker type
-	 */
-	public void setMarker(int marker)
-	{ this.marker = marker; }
-
-	/**
-	 * Set market type by name.
-	 *
-	 * @param marker marker type name
-	 */
-	public void setMarker(String name)
-	{
-		if (name == null)
-			return;
-		for (int i = 0; i < markerList.length; i++)
-			if (name.toLowerCase().equals(markerList[i].toLowerCase()))
-			{
-				setMarker(i);
-				return;
-			}
-		setMarker(0);
-	}
-
-	public void setType(int type)
-	{ this.type = type; }
-
-	/**
-	 * Set marker step.
-	 *
-	 * @param marker_step number of signal points between two marker
-	 */
-	public void setMarkerStep(int marker_step)
-	{ this.marker_step = marker_step; }
-
-	/**
-	 * Set interpolate flag.
-	 *
-	 * @param interpolate define if is a point or line signal
-	 */
-	public void setInterpolate(boolean interpolate)
-	{ this.interpolate = interpolate; }
-
-	/**
-	 * Set color index. Index color is a reference to an external color palette
-	 *
-	 * @param color_idx index of the color
-	 */
-	public void setColorIdx(int color_idx)
-	{
-		color = null;
-		this.color_idx = color_idx;
-	}
-
-	/**
-	 * Set color value
-	 *
-	 * @param color color value
-	 */
-	public void setColor(Color color)
-	{ this.color = color; }
-
-	/**
-	 * Set Signal name.
-	 *
-	 * @param name signal name
-	 */
-	public void setName(String name)
-	{
-		if (name != null && name.length() != 0)
-			this.name = new String(name);
-	}
-
-	/**
-	 * Get marker type.
-	 *
-	 * @return marker type
-	 */
-	public int getMarker()
-	{ return marker; }
-
-	/**
-	 * Get marker step.
-	 *
-	 * @return marker step
-	 */
-	public int getMarkerStep()
-	{
-		if (marker == POINT)
-			return 1;
-		return marker_step;
-	}
-
-	/**
-	 * Get interpolate flag
-	 *
-	 * @return Interpolate flag
-	 */
-	public boolean getInterpolate()
-	{ return interpolate; }
-
-	/**
-	 * Get color index.
-	 *
-	 * @return Color index
-	 */
-	public int getColorIdx()
-	{ return color_idx; }
-
-	/**
-	 * Get color.
-	 *
-	 * @return Color the color
-	 */
-	public Color getColor()
-	{ return color; }
-
-	/**
-	 * Get signal name.
-	 *
-	 * @return Signal name
-	 */
-	public String getName()
-	{ return name; }
-
-	public void setCalibrate(float gain, float offset)
-	{
-		this.gain = gain;
-		this.offset = offset;
-		setAxis();
-	}
-
-	public int getType()
-	{ return type; }
-
-	public int getMode1D()
-	{ return mode1D; }
-
-	public int getMode2D()
-	{ return mode2D; }
-
-	/**
-	 * Get gain parameter.
-	 */
-	public float getGain()
-	{ return gain; }
-
-	/**
-	 * Get offset parameter
-	 */
-	public float getOffset()
-	{ return offset; }
-
-	public double getCurrentXmin()
-	{ return curr_xmin; }
-
-	public double getCurrentXmax()
-	{ return curr_xmax; }
-
-	public double getOriginalYmin()
-	{ return saved_ymin; }
-
-	public double getOriginalYmax()
-	{ return saved_ymax; }
-
-	public float[] getLowError()
-	{ return lowError; }
-
-	public float[] getUpError()
-	{ return upError; }
-
-	/**
-	 * Check if x array coordinates are increasing.
-	 */
-	void checkIncreasingX()
-	{
-		if (type == TYPE_2D)
-		{
-			checkIncreasingX2D();
-			return;
-		}
-		increasing_x = true;
-		for (int i = 1; i < x.length; i++)
-		{
-			if (x[i] < x[i - 1])
-			{
-				increasing_x = false;
-				return;
-			}
-		}
-	}
-
-	void checkIncreasingX2D()
-	{
-		increasing_x = true;
-		final double x[] = x2D;
-		for (int i = 1; i < x.length; i++)
-		{
-			if (x[i] < x[i - 1])
-			{
-				increasing_x = false;
-				return;
-			}
-		}
-	}
-
-	/**
 	 * Add a symmetric error bar.
 	 *
 	 * @param _error an array of y measure error
@@ -1662,85 +968,155 @@ public class Signal implements WaveDataListener
 		up_errorData = low_errorData = in_error;
 	}
 
-	public void setAttributes(Signal s)
+	void adjustArraySizes()
 	{
-		this.color = s.getColor();
-		this.color_idx = s.getColorIdx();
-		this.gain = s.getGain();
-		this.interpolate = s.getInterpolate();
-		this.marker = s.getMarker();
-		this.marker_step = s.getMarkerStep();
-		this.offset = s.getOffset();
-		this.name = s.getName();
-	}
-
-	/**
-	 * Add a asymmetric error bar.
-	 *
-	 * @param _up_error  an array of y up measure error
-	 * @param _low_error an array of y low measure error
-	 */
-	public void AddAsymError(WaveData up_error, WaveData low_error)
-	{
-		error = asym_error = true;
-		up_errorData = up_error;
-		low_errorData = low_error;
-	}
-
-	/**
-	 * Set y minimum and maximum of two-dimensional region.
-	 *
-	 * @param ymin y minimum
-	 * @param ymax y maximum
-	 */
-	public void setYlimits(double ymin, double ymax)
-	{
-		if (ymax != Double.MAX_VALUE)
+		if (x.length < y.length)
 		{
-			this.ymax = ymax;
-			// this.ymax = saved_ymax = ymax;
-			this.fix_ymax = true;
+			final float[] newY = new float[x.length];
+			System.arraycopy(y, 0, newY, 0, x.length);
+			y = newY;
+		}
+		if (y.length < x.length)
+		{
+			final double[] newX = new double[y.length];
+			System.arraycopy(x, 0, newX, 0, y.length);
+			x = newX;
+		}
+	}
+
+	private double[] appendArray(double arr1[], int sizeUsed, double arr2[], int incSize)
+	{
+		/*
+		 * float arr[] = new float[arr1.length]; for(int i = 0; i < arr1.length; i++)
+		 * arr[i] = (float)arr1[i]; return appendArray(arr, sizeUsed, arr2, incSize);
+		 */
+		if (arr1 == null)
+			return arr2.clone();
+		if (arr2 == null)
+			return arr1.clone();
+		double val[];
+		if (arr1.length < sizeUsed + arr2.length)
+		{
+			val = new double[arr1.length + arr2.length + incSize];
+			System.arraycopy(arr1, 0, val, 0, sizeUsed);
 		}
 		else
-			this.fix_ymax = false;
-		if (ymin != -Double.MAX_VALUE)
+			val = arr1;
+		System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
+		return val;
+	}
+
+	private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
+	{
+		if (arr1 == null)
+			return arr2.clone();
+		if (arr2 == null)
+			return arr1.clone();
+		float val[];
+		if (arr1.length < sizeUsed + arr2.length)
 		{
-//            this.ymin = saved_ymin = ymin;
-			this.ymin = ymin;
-			this.fix_ymin = true;
+			val = new float[arr1.length + arr2.length + incSize];
+			System.arraycopy(arr1, 0, val, 0, sizeUsed);
 		}
 		else
-			this.fix_ymin = false;
+			val = arr1;
+		System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
+		return val;
+	}
+
+	public void appendValues(double x[], float y[], int numPoints[], float time[])
+	{
+		if (type != TYPE_2D || x.length != y.length || time == null || numPoints == null)
+			return;
+		int numProfile = 0;
+		int xIdx, zIdx, yIdx;
+		double x2D[] = data.getX2D();
+		float y2D[] = data.getY2D();
+		float z2D[] = data.getZ();
+		xIdx = (x2D == null) ? 0 : x2D_points;
+		yIdx = (y2D == null) ? 0 : y2D_points;
+		zIdx = (z2D == null) ? 0 : z2D_points;
+		if (numPoints.length == time.length)
+		{
+			numProfile = time.length * 2;
+		}
+		else if (numPoints.length > time.length)
+		{
+			numProfile = numPoints.length * 2;
+		}
+		else if (numPoints.length < time.length)
+		{
+			numProfile = time.length * 2;
+		}
+		final float t[] = new float[numProfile];
+		for (int i = 0, j = 0; i < numProfile; i += 2)
+		{
+			t[i] = (time.length == 1) ? time[0] : time[j];
+			t[i + 1] = (numPoints.length == 1) ? numPoints[0] : numPoints[j];
+			j++;
+		}
+		x2D = appendArray(x2D, x2D_points, x, updSignalSizeInc);
+		x2D_points += x.length;
+		y2D = appendArray(y2D, y2D_points, y, updSignalSizeInc);
+		y2D_points += y.length;
+		z2D = appendArray(z2D, z2D_points, t, updSignalSizeInc);
+		z2D_points += t.length;
+		data = new XYWaveData(x2D, y2D, z2D);
+		setAxis(x2D, z2D, y2D, xIdx, zIdx, yIdx);
+		if (xmin > x2D_min)
+			xmin = x2D_min;
+		if (ymin > y2D_min)
+			ymin = y2D_min;
+		if (xmax < x2D_max)
+			xmax = x2D_max;
+		if (ymax < y2D_max)
+			ymax = y2D_max;
+		curr_x_yz_plot = t[t.length - 2];
+	}
+
+	// NOTE trhis is called only by CompositeWaveDisplay and not by jScope
+	public void appendValues(float inX[], float inY[])
+	{
+		if (x == null || y == null)
+			return;
+		if (type == TYPE_1D)
+		{
+			final int len = (inX.length < inY.length) ? inX.length : inY.length;
+			final double newX[] = new double[x.length + len];
+			final float newY[] = new float[x.length + len];
+			for (int i = 0; i < x.length; i++)
+			{
+				newX[i] = x[i];
+				newY[i] = y[i];
+			}
+			for (int i = 0; i < len; i++)
+			{
+				newX[x.length + i] = inX[i];
+				newY[x.length + i] = inY[i];
+			}
+			data = new XYWaveData(newX, newY);
+			try
+			{
+				final XYData xyData = data.getData(NUM_POINTS);
+				x = xyData.x;
+				y = xyData.y;
+				adjustArraySizes();
+				xmax = x[x.length - 1];
+			}
+			catch (final Exception exc)
+			{}
+		}
 	}
 
 	/**
-	 * Reset x scale, return to original x range two dimensional region
+	 * Autoscale Signal.
 	 */
-	public void ResetXScale()
+	public void Autoscale()
 	{
-		xmax = freezedXMax = curr_xmax = saved_xmax;
-		xmin = freezedXMin = curr_xmin = saved_xmin;
-	}
-
-	/**
-	 * Reset x scale, return to the initial y range two dimensional region
-	 */
-	public void ResetYScale()
-	{
-		ymax = saved_ymax;
-		ymin = saved_ymin;
-	}
-
-	/**
-	 * Reset scale, return to the initial two dimensional region
-	 */
-	public void ResetScales()
-	{
-		xmax = freezedXMax = curr_xmax = saved_xmax;
-		xmin = freezedXMin = curr_xmin = saved_xmin;
-		ymax = saved_ymax;
-		ymin = saved_ymin;
-		unfreeze();
+		freezeMode = NOT_FREEZED;
+		setAxis();
+		AutoscaleX();
+		AutoscaleY();
 	}
 
 	/**
@@ -2061,825 +1437,38 @@ public class Signal implements WaveDataListener
 	}
 
 	/**
-	 * Autoscale Signal.
+	 * Check if x array coordinates are increasing.
 	 */
-	public void Autoscale()
+	void checkIncreasingX()
 	{
-		freezeMode = NOT_FREEZED;
-		setAxis();
-		AutoscaleX();
-		AutoscaleY();
-	}
-
-	private boolean find_NaN = false;
-
-	public boolean findNaN()
-	{
-		return find_NaN;
-	}
-
-	public float getClosestX(double x)
-	{
-		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+		if (type == TYPE_2D)
 		{
-			img_xprev = FindIndex(x2D, x, img_xprev);
-			return (float) x2D[img_xprev];
-		}
-		return 0;
-	}
-
-	public float getClosestY(double y)
-	{
-		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
-		{
-			img_yprev = FindIndex(y2D, y, img_yprev);
-			return y2D[img_yprev];
-		}
-		return 0;
-	}
-
-	private int FindIndex(float d[], double v, int pIdx)
-	{
-		final double[] o = new double[d.length];
-		for (int i = 0; i < d.length; i++)
-		{
-			o[i] = d[i];
-		}
-		return FindIndex(o, v, pIdx);
-	}
-
-	private int FindIndex(double d[], double v, int pIdx)
-	{
-		int i;
-		if (v > d[pIdx])
-		{
-			for (i = pIdx; i < d.length && d[i] < v; i++);
-			if (i > 0)
-				i--;
-			return i;
-		}
-		if (v < d[pIdx])
-		{
-			for (i = pIdx; i > 0 && d[i] > v; i--);
-			return i;
-		}
-		return pIdx;
-	}
-
-	/**
-	 * Return index of nearest signal point to argument (curr_x, curr_y) point.
-	 *
-	 * @param curr_x value
-	 * @param curr_y value
-	 * @return index of signal point
-	 */
-	private int img_xprev = 0;
-	private int img_yprev = 0;
-
-	public int FindClosestIdx(double curr_x, double curr_y)
-	{
-		double min_dist, curr_dist;
-		int min_idx;
-		int i = 0;
-		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
-		{
-			img_xprev = FindIndex(x2D, curr_x, img_xprev);
-			img_yprev = FindIndex(y2D, curr_y, img_yprev);
-			if (img_xprev > y2D.length)
-				return img_xprev - 6;
-			return img_xprev;
-		}
-		double currX[];
-		if (type == Signal.TYPE_1D)
-			currX = x;
-		else
-		{
-			if (mode2D == MODE_XZ || mode2D == MODE_YZ)
-				currX = sliceX;
-			else
-			{
-				final double xf[] = x2D;
-				currX = new double[xf.length];
-				for (int idx = 0; idx < xf.length; idx++)
-					currX[idx] = xf[idx];
-			}
-		}
-		if (increasing_x || type == Signal.TYPE_2D)
-		{
-			if (currX == null || currX.length == 0)
-				return -1;
-			if (prev_idx >= currX.length)
-				prev_idx = currX.length - 1;
-			if (curr_x > currX[prev_idx])
-			{
-				for (i = prev_idx; i < currX.length && currX[i] < curr_x; i++);
-				if (i > 0)
-					i--;
-				prev_idx = i;
-				return i;
-			}
-			if (curr_x < currX[prev_idx])
-			{
-				for (i = prev_idx; i > 0 && currX[i] > curr_x; i--);
-				prev_idx = i;
-				return i;
-			}
-			return prev_idx;
-		}
-		// Handle below x values not in ascending order
-		if (curr_x > curr_xmax)
-		{
-			for (min_idx = 0; min_idx < currX.length && currX[min_idx] != curr_xmax; min_idx++);
-			if (min_idx == currX.length)
-				min_idx--;
-			return min_idx;
-		}
-		if (curr_x < curr_xmin)
-		{
-			for (min_idx = 0; min_idx < currX.length && currX[min_idx] != curr_xmin; min_idx++);
-			if (min_idx == currX.length)
-				min_idx--;
-			return min_idx;
-		}
-		min_idx = 0;
-		min_dist = Double.MAX_VALUE;
-		find_NaN = false;
-		for (i = 0; i < x.length - 1; i++)
-		{
-			if (Float.isNaN(y[i]))
-			{
-				find_NaN = true;
-				continue;
-			}
-			if (curr_x > currX[i] && curr_x < currX[i + 1] || curr_x < currX[i] && curr_x > currX[i + 1]
-					|| currX[i] == currX[i + 1])
-			{
-				curr_dist = (curr_x - currX[i]) * (curr_x - currX[i]) + (curr_y - y[i]) * (curr_y - y[i]);
-				// Patch to elaborate strange RFX signal (roprand bar error signal)
-				if (currX[i] != currX[i + 1] && !Float.isNaN(y[i + 1]))
-					curr_dist += (curr_x - currX[i + 1]) * (curr_x - currX[i + 1])
-							+ (curr_y - y[i + 1]) * (curr_y - y[i + 1]);
-				if (curr_dist < min_dist)
-				{
-					min_dist = curr_dist;
-					min_idx = i;
-				}
-			}
-		}
-		return min_idx;
-	}
-
-	/**
-	 * Metod to call before execute a Traslate method.
-	 */
-	public void StartTraslate()
-	{
-		t_xmax = xmax;
-		t_xmin = xmin;
-		t_ymax = ymax;
-		t_ymin = ymin;
-	}
-
-	/**
-	 * Traslate signal of delta_x and delta_y
-	 *
-	 * @param delta_x x traslation factor
-	 * @param delta_y y traslation factor
-	 * @param x_log   logaritm scale flag, if is logaritm scale true
-	 * @param y_log   logaritm scale flag, if is logaritm scale true
-	 */
-	public void Traslate(double delta_x, double delta_y, boolean x_log, boolean y_log)
-	{
-		if (x_log)
-		{
-			xmax = t_xmax * delta_x;
-			xmin = t_xmin * delta_x;
-		}
-		else
-		{
-			xmax = t_xmax + delta_x;
-			xmin = t_xmin + delta_x;
-		}
-		if (y_log)
-		{
-			ymax = t_ymax * delta_y;
-			ymin = t_ymin * delta_y;
-		}
-		else
-		{
-			ymax = t_ymax + delta_y;
-			ymin = t_ymin + delta_y;
-		}
-	}
-
-	final public boolean isIncreasingX()
-	{ return increasing_x; }
-
-	public void setLabels(String title, String xlabel, String ylabel, String zlabel)
-	{
-		this.title = title;
-		this.xlabel = xlabel;
-		this.ylabel = ylabel;
-		this.zlabel = zlabel;
-	}
-
-	public String getXlabel()
-	{ return xlabel; }
-
-	public String getYlabel()
-	{ return ylabel; }
-
-	public String getZlabel()
-	{ return zlabel; }
-
-	public String getTitlelabel()
-	{ return title; }
-
-	public boolean isLongX()
-	{
-		if (type == TYPE_1D || type == TYPE_2D && (mode2D == Signal.MODE_XZ || mode2D == Signal.MODE_IMAGE))
-		{
-			// return data.isXLong(); //Gabriele Dec 2015
-			return xLong != null;
-		}
-		else
-			return false;
-	}
-
-	public boolean isLongXForLabel()
-	{
-		if (type == TYPE_1D || type == TYPE_2D
-				&& (mode2D == Signal.MODE_XZ || mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_IMAGE))
-			return data.isXLong();
-		else
-			return false;
-	}
-
-	public final static int SIMPLE = 0;
-	public final static int AT_CREATION = 1;
-	public final static int FIXED_LIMIT = 2;
-	public final static int DO_NOT_UPDATE = 4;
-	boolean fix_xmin = false;
-	boolean fix_xmax = false;
-	boolean fix_ymin = false;
-	boolean fix_ymax = false;
-
-	public boolean xLimitsInitialized()
-	{
-		return xLimitsInitialized;
-	}
-
-	public void setXLimits(double xmin, double xmax, int mode)
-	{
-		xLimitsInitialized = true;
-		if (xmin != -Double.MAX_VALUE)
-		{
-			this.xmin = xmin;
-			if ((mode & AT_CREATION) != 0)
-			{
-				saved_xmin = xmin;
-			}
-			if ((mode & FIXED_LIMIT) != 0)
-				fix_xmin = true;
-		}
-		if (xmax != Double.MAX_VALUE)
-		{
-			this.xmax = xmax;
-			if ((mode & AT_CREATION) != 0)
-				this.saved_xmax = xmax;
-			if ((mode & FIXED_LIMIT) != 0)
-				fix_xmax = true;
-		}
-		double actXMin = xmin;
-		if (actXMin == -Double.MAX_VALUE)
-			actXMin = this.xmin;
-		double actXMax = xmax;
-		if (actXMax == Double.MAX_VALUE)
-			actXMax = this.xmax;
-		/* Enlarge by 1/20 */
-//        double enlargeFactor = 40;
-		final double enlargeFactor = 3;
-		actXMax += (actXMax - actXMin) / enlargeFactor;
-		actXMin -= (actXMax - actXMin) / enlargeFactor;
-		final double actResolution = NUM_POINTS / (actXMax - actXMin);
-		if (!increasing_x)
-			return; // Dynamic resampling only for "classical" signas
-		if (up_errorData != null || low_errorData != null)
-			return; // Dynamic resampling only without error bars
-		final Vector<RegionDescriptor> lowResRegions = resolutionManager.getLowerResRegions(actXMin, actXMax,
-				actResolution);
-		for (int i = 0; i < lowResRegions.size(); i++)
-		{
-			final RegionDescriptor currReg = lowResRegions.elementAt(i);
-			final double currLower = currReg.lowerBound;
-			double currUpper = currReg.upperBound;
-			// Try to merge adjacent regions
-			while (i < lowResRegions.size() - 1 && lowResRegions.elementAt(i + 1).lowerBound <= currUpper)
-			{
-				currUpper = lowResRegions.elementAt(i + 1).upperBound;
-				i++;
-			}
-			if (((mode & DO_NOT_UPDATE) == 0)
-					&& (currLower != saved_xmin || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
-				data.getDataAsync(currLower, currUpper, NUM_POINTS);
-		}
-		// fireSignalUpdated();
-	}
-
-	public boolean supportsStreaming()
-	{
-		return data.supportsStreaming();
-	}
-
-	public void setYmin(double ymin, int mode)
-	{
-		if (ymin == -Double.MAX_VALUE)
+			checkIncreasingX2D();
 			return;
-		this.ymin = ymin;
-		if ((mode & AT_CREATION) != 0)
-			this.saved_ymin = ymin;
-		if ((mode & FIXED_LIMIT) != 0)
-			fix_ymin = true;
-	}
-
-	public void setYmax(double ymax, int mode)
-	{
-		if (ymax == Double.MAX_VALUE)
-			return;
-		this.ymax = ymax;
-		if ((mode & AT_CREATION) != 0)
-			this.saved_ymax = ymax;
-		if ((mode & FIXED_LIMIT) != 0)
-			fix_ymax = true;
-	}
-
-	public double getXmin()
-	{
-		// if(!xLimitsInitialized)
-		// return Double.MAX_VALUE;
-		return xmin;
-	}
-
-	public double getXmax()
-	{
-		// if(!xLimitsInitialized)
-		// return -Double.MAX_VALUE;
-		return xmax;
-	}
-
-	public double getYmin()
-	{ return ymin; }
-
-	public double getYmax()
-	{ return ymax; }
-
-	public double getX2Dmin()
-	{ return x2D_min; }
-
-	public double getX2Dmax()
-	{ return x2D_max; }
-
-	public double getY2Dmin()
-	{ return y2D_min; }
-
-	public double getY2Dmax()
-	{ return y2D_max; }
-
-	public float[][] getZ2D()
-	{
-		final float zOut[][] = new float[x2D.length][y2D.length];
-		int k;
-		for (int i = 0; i < x2D.length; i++)
+		}
+		increasing_x = true;
+		for (int i = 1; i < x.length; i++)
 		{
-			for (int j = 0; j < y2D.length; j++)
+			if (x[i] < x[i - 1])
 			{
-				k = j * x2D.length + i;
-				if (k < z.length)
-					zOut[i][j] = z[k];
-			}
-		}
-		return zOut;
-	}
-
-	public double getZ2Dmin()
-	{ return z2D_min; }
-
-	public double getZ2Dmax()
-	{ return z2D_max; }
-
-	void setAxis(double x2D[], float z2D[], float y2D[])
-	{
-		x2D_max = x2D_min = x2D[0];
-		z2D_max = z2D_min = z2D[0];
-		y2D_max = y2D_min = y2D[0];
-		setAxis(x2D, z2D, y2D, 0, 0, 0);
-	}
-
-	void setAxis(double x2D[], float z2D[], float y2D[], int xIdx, int zIdx, int yIdx)
-	{
-		int i;
-		for (i = xIdx; i < x2D.length; i++)
-		{
-			if (x2D[i] > x2D_max)
-				x2D_max = x2D[i];
-			if (x2D_min > x2D[i])
-				x2D_min = x2D[i];
-		}
-		for (i = zIdx; i < z2D.length; i++)
-		{
-			if (z2D[i] > z2D_max)
-				z2D_max = z2D[i];
-			if (z2D_min > z2D[i])
-				z2D_min = z2D[i];
-		}
-		for (i = yIdx; i < y2D.length; i++)
-		{
-			if (y2D[i] > y2D_max)
-				y2D_max = y2D[i];
-			if (y2D_min > y2D[i])
-				y2D_min = y2D[i];
-		}
-	}
-
-	void setAxis()
-	{
-		int i;
-		// If the signal dimension is 2 or the x axis are not increasing, the signal is
-		// assumed to be completely in memory
-		// and no further readout from data is performed
-		if (type != TYPE_1D || !increasing_x)
-			return;
-		// Check if the signal is fully available (i.e. has already been read without X
-		// limits)
-		if (!resolutionManager.isEmpty())
-		{
-			final double minMax[] = resolutionManager.getMinMaxX();
-			if (minMax[0] == -Double.MAX_VALUE && minMax[1] == Double.MAX_VALUE)
-			{
-				xLimitsInitialized = true;
-				xmin = x[0];
-				xmax = x[x.length - 1];
+				increasing_x = false;
 				return;
 			}
 		}
-		// resolutionManager.resetRegions();
-		try
+	}
+
+	void checkIncreasingX2D()
+	{
+		increasing_x = true;
+		final double x[] = x2D;
+		for (int i = 1; i < x.length; i++)
 		{
-			final XYData xyData = data.getData(NUM_POINTS);
-			if (xyData == null)
+			if (x[i] < x[i - 1])
+			{
+				increasing_x = false;
 				return;
-			x = xyData.x;
-			y = xyData.y;
-			if (x == null || x.length == 0)
-				return;
-			adjustArraySizes();
-			increasing_x = xyData.increasingX;
-			if (increasing_x)
-			{
-				resolutionManager.addRegion(new RegionDescriptor(-Double.MAX_VALUE, Double.MAX_VALUE,
-						NUM_POINTS / (x[x.length - 1] - x[0])));
-			}
-			if (data.isXLong())
-				xLong = xyData.xLong;
-			xmax = xyData.xMax;
-			xmin = xyData.xMin;
-			ymax = ymin = y[0];
-			for (i = 0; i < x.length; i++)
-			{
-				if (Float.isNaN(y[i]) && n_nans < 100)
-					nans[n_nans++] = i;
-				if (y[i] > ymax)
-					ymax = y[i];
-				if (ymin > y[i])
-					ymin = y[i];
-			}
-			curr_xmin = xmin;
-			curr_xmax = xmax;
-		}
-		catch (final Exception exc)
-		{
-			System.out.println("Set Axis Exception: " + exc);
-		}
-	}
-
-	public double surfaceValue(double x0, double y0)
-	{
-		double zOut = 0;
-		final float z2D[] = z;
-		try
-		{
-			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
-			{
-				img_yprev = findIndex(y2D, y0, img_yprev);
-				img_xprev = findIndex(x2D, x0, img_xprev);
-				double xn, yn;
-				double x1 = 0, y1 = 0, z1 = 0;
-				double x2 = 0, y2 = 0, z2 = 0;
-				double x3 = 0, y3 = 0, z3 = 0;
-				double x4 = 0, y4 = 0, z4 = 0;
-				xn = x2D[img_xprev];
-				yn = y2D[img_yprev];
-				if (x0 > xn && y0 > yn)
-				{
-					x1 = xn;
-					y1 = yn;
-					z1 = z2D[img_xprev * y2D.length + img_yprev];
-					x2 = x2D[img_xprev + 1];
-					y2 = y2D[img_yprev];
-					z2 = z2D[(img_xprev + 1) * y2D.length + img_yprev];
-					x3 = x2D[img_xprev];
-					y3 = y2D[img_yprev + 1];
-					z3 = z2D[img_xprev * y2D.length + img_yprev + 1];
-					x4 = x2D[img_xprev + 1];
-					y4 = y2D[img_yprev + 1];
-					z4 = z2D[(img_xprev + 1) * y2D.length + img_yprev + 1];
-				}
-				else
-				{
-					if (x0 > xn && y0 < yn)
-					{
-						x1 = x2D[img_xprev - 1];
-						y1 = y2D[img_yprev];
-						z1 = z2D[(img_xprev - 1) * y2D.length + img_yprev];
-						x2 = xn;
-						y2 = yn;
-						z2 = z2D[img_xprev * y2D.length + img_yprev];
-						x3 = x2D[img_xprev - 1];
-						y3 = y2D[img_yprev + 1];
-						z3 = z2D[(img_xprev - 1) * y2D.length + img_yprev + 1];
-						x4 = x2D[img_xprev];
-						y4 = y2D[img_yprev + 1];
-						z4 = z2D[img_xprev * y2D.length + img_yprev + 1];
-					}
-					else
-					{
-						if (x0 < xn && y0 > yn)
-						{
-							x1 = x2D[img_xprev];
-							y1 = y2D[img_yprev - 1];
-							z3 = z2D[img_xprev * y2D.length + img_yprev - 1];
-							x2 = x2D[img_xprev - 1];
-							y2 = y2D[img_yprev - 1];
-							z2 = z2D[(img_xprev - 1) * y2D.length + img_yprev - 1];
-							x3 = xn;
-							y3 = yn;
-							z3 = z2D[img_xprev * y2D.length + img_yprev];
-							x4 = x2D[img_xprev + 1];
-							y4 = y2D[img_yprev];
-							z4 = z2D[(img_xprev + 1) * y2D.length + img_yprev];
-						}
-						else
-						{
-							if (x0 < xn && y0 < yn)
-							{
-								x1 = x2D[img_xprev - 1];
-								y1 = y2D[img_yprev - 1];
-								z1 = z2D[(img_xprev - 1) * y2D.length + img_yprev - 1];
-								x2 = x2D[img_xprev];
-								y2 = y2D[img_yprev - 1];
-								z2 = z2D[img_xprev * y2D.length + img_yprev - 1];
-								x3 = x2D[img_xprev - 1];
-								y3 = y2D[img_yprev];
-								z3 = z2D[(img_xprev - 1) * y2D.length + img_yprev];
-								x4 = xn;
-								y4 = yn;
-								z4 = z2D[img_xprev * y2D.length + img_yprev];
-							}
-						}
-					}
-				}
-				final double yc = ((float) x0 - x1) * (y4 - y1) / (x4 - x1) + y1;
-				if (yc > y0)
-				{
-					zOut = ((float) y0 - y1) * ((x2 - x1) * (z4 - z1) - (z2 - z1) * (x4 - x1))
-							/ ((x2 - x1) * (y4 - y1) - (y2 - y1) * (x4 - x1))
-							- ((float) x0 - x1) * ((y2 - y1) * (z4 - z1) - (z2 - z1) * (y4 - y1))
-									/ ((x2 - x1) * (y4 - y1) - (y2 - y1) * (x4 - x1))
-							+ z1;
-				}
-				else
-				{
-					zOut = ((float) y0 - y1) * ((x3 - x1) * (z4 - z1) - (z3 - z1) * (x4 - x1))
-							/ ((x3 - x1) * (y4 - y1) - (y3 - y1) * (x4 - x1))
-							- ((float) x0 - x1) * ((y3 - y1) * (z4 - z1) - (z3 - z1) * (y4 - y1))
-									/ ((x3 - x1) * (y4 - y1) - (y3 - y1) * (x4 - x1))
-							+ z1;
-				}
 			}
 		}
-		catch (final Exception exc)
-		{
-			zOut = z2D[img_xprev * x2D.length + img_yprev];
-		}
-		z_value = zOut;
-		return zOut;
-	}
-
-	private int findIndex(float d[], double v, int pIdx)
-	{
-		final double[] o = new double[d.length];
-		for (int i = 0; i < d.length; i++)
-		{
-			o[i] = d[i];
-		}
-		return findIndex(o, v, pIdx);
-	}
-
-	private int findIndex(double d[], double v, int pIdx)
-	{
-		int i;
-		if (v > d[pIdx])
-		{
-			for (i = pIdx; i < d.length && d[i] < v; i++)
-			{}
-			if (i > 0)
-			{
-				i--;
-			}
-			return i;
-		}
-		if (v < d[pIdx])
-		{
-			for (i = pIdx; i > 0 && d[i] > v; i--)
-			{}
-			return i;
-		}
-		return pIdx;
-	}
-
-	private static final int DEFAULT_INC_SIZE = 10000;
-	private int updSignalSizeInc;
-	public int startIndexToUpdate = 0;
-	public boolean needFullUpdate = true;
-
-	public boolean fullPaint()
-	{
-		return true;
-	}
-
-	public void setUpdSignalSizeInc(int updSignalSizeInc)
-	{
-		if (updSignalSizeInc <= 0)
-			updSignalSizeInc = DEFAULT_INC_SIZE;
-		this.updSignalSizeInc = updSignalSizeInc;
-	}
-
-	public int getUpdSignalSizeInc()
-	{ return updSignalSizeInc; }
-
-	public void setStartIndexToUpdate()
-	{
-		if (x != null)
-			startIndexToUpdate = x.length;
-	}
-
-	// NOTE trhis is called only by CompositeWaveDisplay and not by jScope
-	public void appendValues(float inX[], float inY[])
-	{
-		if (x == null || y == null)
-			return;
-		if (type == TYPE_1D)
-		{
-			final int len = (inX.length < inY.length) ? inX.length : inY.length;
-			final double newX[] = new double[x.length + len];
-			final float newY[] = new float[x.length + len];
-			for (int i = 0; i < x.length; i++)
-			{
-				newX[i] = x[i];
-				newY[i] = y[i];
-			}
-			for (int i = 0; i < len; i++)
-			{
-				newX[x.length + i] = inX[i];
-				newY[x.length + i] = inY[i];
-			}
-			data = new XYWaveData(newX, newY);
-			try
-			{
-				final XYData xyData = data.getData(NUM_POINTS);
-				x = xyData.x;
-				y = xyData.y;
-				adjustArraySizes();
-				xmax = x[x.length - 1];
-			}
-			catch (final Exception exc)
-			{}
-		}
-	}
-
-	private double[] appendArray(double arr1[], int sizeUsed, double arr2[], int incSize)
-	{
-		/*
-		 * float arr[] = new float[arr1.length]; for(int i = 0; i < arr1.length; i++)
-		 * arr[i] = (float)arr1[i]; return appendArray(arr, sizeUsed, arr2, incSize);
-		 */
-		if (arr1 == null)
-			return arr2.clone();
-		if (arr2 == null)
-			return arr1.clone();
-		double val[];
-		if (arr1.length < sizeUsed + arr2.length)
-		{
-			val = new double[arr1.length + arr2.length + incSize];
-			System.arraycopy(arr1, 0, val, 0, sizeUsed);
-		}
-		else
-			val = arr1;
-		System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
-		return val;
-	}
-
-	private float[] appendArray(float arr1[], int sizeUsed, float arr2[], int incSize)
-	{
-		if (arr1 == null)
-			return arr2.clone();
-		if (arr2 == null)
-			return arr1.clone();
-		float val[];
-		if (arr1.length < sizeUsed + arr2.length)
-		{
-			val = new float[arr1.length + arr2.length + incSize];
-			System.arraycopy(arr1, 0, val, 0, sizeUsed);
-		}
-		else
-			val = arr1;
-		System.arraycopy(arr2, 0, val, sizeUsed, arr2.length);
-		return val;
-	}
-
-	private int x2D_points = 0;
-	private int y2D_points = 0;
-	private int z2D_points = 0;
-
-	public void appendValues(double x[], float y[], int numPoints[], float time[])
-	{
-		if (type != TYPE_2D || x.length != y.length || time == null || numPoints == null)
-			return;
-		int numProfile = 0;
-		int xIdx, zIdx, yIdx;
-		double x2D[] = data.getX2D();
-		float y2D[] = data.getY2D();
-		float z2D[] = data.getZ();
-		xIdx = (x2D == null) ? 0 : x2D_points;
-		yIdx = (y2D == null) ? 0 : y2D_points;
-		zIdx = (z2D == null) ? 0 : z2D_points;
-		if (numPoints.length == time.length)
-		{
-			numProfile = time.length * 2;
-		}
-		else if (numPoints.length > time.length)
-		{
-			numProfile = numPoints.length * 2;
-		}
-		else if (numPoints.length < time.length)
-		{
-			numProfile = time.length * 2;
-		}
-		final float t[] = new float[numProfile];
-		for (int i = 0, j = 0; i < numProfile; i += 2)
-		{
-			t[i] = (time.length == 1) ? time[0] : time[j];
-			t[i + 1] = (numPoints.length == 1) ? numPoints[0] : numPoints[j];
-			j++;
-		}
-		x2D = appendArray(x2D, x2D_points, x, updSignalSizeInc);
-		x2D_points += x.length;
-		y2D = appendArray(y2D, y2D_points, y, updSignalSizeInc);
-		y2D_points += y.length;
-		z2D = appendArray(z2D, z2D_points, t, updSignalSizeInc);
-		z2D_points += t.length;
-		data = new XYWaveData(x2D, y2D, z2D);
-		setAxis(x2D, z2D, y2D, xIdx, zIdx, yIdx);
-		if (xmin > x2D_min)
-			xmin = x2D_min;
-		if (ymin > y2D_min)
-			ymin = y2D_min;
-		if (xmax < x2D_max)
-			xmax = x2D_max;
-		if (ymax < y2D_max)
-			ymax = y2D_max;
-		curr_x_yz_plot = t[t.length - 2];
-	}
-
-	public void resetSignalData()
-	{
-		x2D_points = 0;
-		y2D_points = 0;
-		z2D_points = 0;
-		final double x[] = new double[]
-		{ 0., 1. };
-		final float y[] = new float[]
-		{ 0, 0 };
-		data = new XYWaveData(x, y);
-		this.low_errorData = null;
-		this.up_errorData = null;
-		startIndexToUpdate = 0;
-	}
-
-	@Override
-	public void legendUpdated(String name)
-	{
-		setLegend(name);
 	}
 
 	@Override
@@ -3041,25 +1630,217 @@ public class Signal implements WaveDataListener
 		}
 	}
 
-	void registerSignalListener(SignalListener listener)
+	public void decShow()
 	{
-		signalListeners.addElement(listener);
+		if (type == TYPE_2D)
+		{
+			switch (mode2D)
+			{
+			case Signal.MODE_XZ:
+				decShowXZ();
+				break;
+			case Signal.MODE_YZ:
+				decShowYZ();
+				break;
+			case Signal.MODE_PROFILE:
+				// decShowProfile();
+				break;
+			}
+		}
 	}
 
-	void adjustArraySizes()
+	public void decShowXZ()
 	{
-		if (x.length < y.length)
+		if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
 		{
-			final float[] newY = new float[x.length];
-			System.arraycopy(y, 0, newY, 0, x.length);
-			y = newY;
+			int idx = curr_y_xz_idx - 1;
+			if (idx < 0)
+				idx = y2D.length - 1;
+			showXZ(idx);
 		}
-		if (y.length < x.length)
+	}
+
+	public void decShowYZ()
+	{
+		if (type == TYPE_2D && mode2D == Signal.MODE_YZ)
 		{
-			final double[] newX = new double[y.length];
-			System.arraycopy(x, 0, newX, 0, y.length);
-			x = newX;
+			int idx = curr_x_yz_idx - 1;
+			if (idx < 0)
+				idx = x2D.length - 1;
+			showYZ(idx);
 		}
+	}
+
+	void dispose()
+	{
+		if (data != null)
+			data.removeWaveDataListener(this);
+	}
+
+	public int FindClosestIdx(double curr_x, double curr_y)
+	{
+		double min_dist, curr_dist;
+		int min_idx;
+		int i = 0;
+		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+		{
+			img_xprev = FindIndex(x2D, curr_x, img_xprev);
+			img_yprev = FindIndex(y2D, curr_y, img_yprev);
+			if (img_xprev > y2D.length)
+				return img_xprev - 6;
+			return img_xprev;
+		}
+		double currX[];
+		if (type == Signal.TYPE_1D)
+			currX = x;
+		else
+		{
+			if (mode2D == MODE_XZ || mode2D == MODE_YZ)
+				currX = sliceX;
+			else
+			{
+				final double xf[] = x2D;
+				currX = new double[xf.length];
+				for (int idx = 0; idx < xf.length; idx++)
+					currX[idx] = xf[idx];
+			}
+		}
+		if (increasing_x || type == Signal.TYPE_2D)
+		{
+			if (currX == null || currX.length == 0)
+				return -1;
+			if (prev_idx >= currX.length)
+				prev_idx = currX.length - 1;
+			if (curr_x > currX[prev_idx])
+			{
+				for (i = prev_idx; i < currX.length && currX[i] < curr_x; i++);
+				if (i > 0)
+					i--;
+				prev_idx = i;
+				return i;
+			}
+			if (curr_x < currX[prev_idx])
+			{
+				for (i = prev_idx; i > 0 && currX[i] > curr_x; i--);
+				prev_idx = i;
+				return i;
+			}
+			return prev_idx;
+		}
+		// Handle below x values not in ascending order
+		if (curr_x > curr_xmax)
+		{
+			for (min_idx = 0; min_idx < currX.length && currX[min_idx] != curr_xmax; min_idx++);
+			if (min_idx == currX.length)
+				min_idx--;
+			return min_idx;
+		}
+		if (curr_x < curr_xmin)
+		{
+			for (min_idx = 0; min_idx < currX.length && currX[min_idx] != curr_xmin; min_idx++);
+			if (min_idx == currX.length)
+				min_idx--;
+			return min_idx;
+		}
+		min_idx = 0;
+		min_dist = Double.MAX_VALUE;
+		find_NaN = false;
+		for (i = 0; i < x.length - 1; i++)
+		{
+			if (Float.isNaN(y[i]))
+			{
+				find_NaN = true;
+				continue;
+			}
+			if (curr_x > currX[i] && curr_x < currX[i + 1] || curr_x < currX[i] && curr_x > currX[i + 1]
+					|| currX[i] == currX[i + 1])
+			{
+				curr_dist = (curr_x - currX[i]) * (curr_x - currX[i]) + (curr_y - y[i]) * (curr_y - y[i]);
+				// Patch to elaborate strange RFX signal (roprand bar error signal)
+				if (currX[i] != currX[i + 1] && !Float.isNaN(y[i + 1]))
+					curr_dist += (curr_x - currX[i + 1]) * (curr_x - currX[i + 1])
+							+ (curr_y - y[i + 1]) * (curr_y - y[i + 1]);
+				if (curr_dist < min_dist)
+				{
+					min_dist = curr_dist;
+					min_idx = i;
+				}
+			}
+		}
+		return min_idx;
+	}
+
+	private int findIndex(double d[], double v, int pIdx)
+	{
+		int i;
+		if (v > d[pIdx])
+		{
+			for (i = pIdx; i < d.length && d[i] < v; i++)
+			{}
+			if (i > 0)
+			{
+				i--;
+			}
+			return i;
+		}
+		if (v < d[pIdx])
+		{
+			for (i = pIdx; i > 0 && d[i] > v; i--)
+			{}
+			return i;
+		}
+		return pIdx;
+	}
+
+	private int findIndex(float d[], double v, int pIdx)
+	{
+		final double[] o = new double[d.length];
+		for (int i = 0; i < d.length; i++)
+		{
+			o[i] = d[i];
+		}
+		return findIndex(o, v, pIdx);
+	}
+
+	private int FindIndex(double d[], double v, int pIdx)
+	{
+		int i;
+		if (v > d[pIdx])
+		{
+			for (i = pIdx; i < d.length && d[i] < v; i++);
+			if (i > 0)
+				i--;
+			return i;
+		}
+		if (v < d[pIdx])
+		{
+			for (i = pIdx; i > 0 && d[i] > v; i--);
+			return i;
+		}
+		return pIdx;
+	}
+
+	private int FindIndex(float d[], double v, int pIdx)
+	{
+		final double[] o = new double[d.length];
+		for (int i = 0; i < d.length; i++)
+		{
+			o[i] = d[i];
+		}
+		return FindIndex(o, v, pIdx);
+	}
+
+	public boolean findNaN()
+	{
+		return find_NaN;
+	}
+
+	void fireSignalUpdated(boolean changeLimits)
+	{
+		if (debug)
+			System.out.println("FIRE SIGNAL UPDATE " + signalListeners.size());
+		for (int i = 0; i < signalListeners.size(); i++)
+			signalListeners.elementAt(i).signalUpdated(changeLimits);
 	}
 
 	void freeze()
@@ -3072,64 +1853,450 @@ public class Signal implements WaveDataListener
 		freezedXMax = xmax;
 	}
 
-	void unblock()
+	public boolean fullPaint()
 	{
-		freezeMode = NOT_FREEZED;
+		return true;
 	}
 
-	void unfreeze()
+	private int getArrayIndex(double arr[], double d)
 	{
-		freezeMode = NOT_FREEZED;
-		xmin = freezedXMin;
-		xmax = freezedXMax;
-		for (int i = 0; i < pendingUpdatesV.size(); i++)
+		int i = -1;
+		if (i == -1)
 		{
-			if (pendingUpdatesV.elementAt(i).xLong != null)
+			for (i = 0; i < arr.length - 1; i++)
 			{
-				dataRegionUpdated(pendingUpdatesV.elementAt(i).xLong, pendingUpdatesV.elementAt(i).y,
-						pendingUpdatesV.elementAt(i).resolution);
-			}
-			else
-			{
-				dataRegionUpdated(pendingUpdatesV.elementAt(i).x, pendingUpdatesV.elementAt(i).y,
-						pendingUpdatesV.elementAt(i).resolution);
+				if ((d > arr[i] && d < arr[i + 1]) || d == arr[i])
+					break;
 			}
 		}
-		pendingUpdatesV.clear();
+		return i;
 	}
 
-	public void setLegend(String legend)
-	{ this.legend = legend; }
-
-	public String getLegend()
-	{ return legend; }
-
-	void fireSignalUpdated(boolean changeLimits)
+	private int getArrayIndex(float arr[], double d)
 	{
-		if (debug)
-			System.out.println("FIRE SIGNAL UPDATE " + signalListeners.size());
-		for (int i = 0; i < signalListeners.size(); i++)
-			signalListeners.elementAt(i).signalUpdated(changeLimits);
+		int i = -1;
+		if (i == -1)
+		{
+			for (i = 0; i < arr.length - 1; i++)
+			{
+				if ((d > arr[i] && d < arr[i + 1]) || d == arr[i])
+					break;
+			}
+		}
+		return i;
 	}
+
+	public float getClosestX(double x)
+	{
+		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+		{
+			img_xprev = FindIndex(x2D, x, img_xprev);
+			return (float) x2D[img_xprev];
+		}
+		return 0;
+	}
+
+	public float getClosestY(double y)
+	{
+		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+		{
+			img_yprev = FindIndex(y2D, y, img_yprev);
+			return y2D[img_yprev];
+		}
+		return 0;
+	}
+
+	/**
+	 * Get color.
+	 *
+	 * @return Color the color
+	 */
+	public Color getColor()
+	{ return color; }
+
+	/**
+	 * Get color index.
+	 *
+	 * @return Color index
+	 */
+	public int getColorIdx()
+	{ return color_idx; }
+
+	Vector<Double> getContourLevelValues()
+	{ return contourLevelValues; }
+
+	Vector<Vector> getContourSignals()
+	{ return contourSignals; }
+
+	public double getCurrentXmax()
+	{ return curr_xmax; }
+
+	public double getCurrentXmin()
+	{ return curr_xmin; }
 
 	int getFreezeMode()
 	{ return freezeMode; }
 
-	void setFreezeMode(int freezeMode)
-	{ this.freezeMode = freezeMode; }
+	/**
+	 * Get gain parameter.
+	 */
+	public float getGain()
+	{ return gain; }
 
-	// Gabriele Sept 2019: more efficient update on event for growing signals
-	public boolean updateSignal()
+	/**
+	 * Get interpolate flag
+	 *
+	 * @return Interpolate flag
+	 */
+	public boolean getInterpolate()
+	{ return interpolate; }
+
+	public String getLegend()
+	{ return legend; }
+
+	public float[] getLowError()
+	{ return lowError; }
+
+	/**
+	 * Get marker type.
+	 *
+	 * @return marker type
+	 */
+	public int getMarker()
+	{ return marker; }
+
+	/**
+	 * Get marker step.
+	 *
+	 * @return marker step
+	 */
+	public int getMarkerStep()
 	{
-		if (longXLimits)
-			return false; // For the moment use only relative times
-		double currXMax;
-		if (x != null && x.length > 0)
-			currXMax = x[x.length - 1];
+		if (marker == POINT)
+			return 1;
+		return marker_step;
+	}
+
+	public int getMode1D()
+	{ return mode1D; }
+
+	public int getMode2D()
+	{ return mode2D; }
+
+	/**
+	 * Get signal name.
+	 *
+	 * @return Signal name
+	 */
+	public String getName()
+	{ return name; }
+
+	public int[] getNaNs()
+	{ return nans; }
+
+	public int getNumNaNs()
+	{ return n_nans; }
+
+	public int getNumPoints()
+	{
+		if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ) && sliceX != null)
+			return sliceX.length;
+		if (data != null)
+		{
+			try
+			{
+				return (x.length < y.length) ? x.length : y.length;
+			}
+			catch (final Exception exc)
+			{}
+		}
+		return 0;
+	}
+
+	/**
+	 * Get offset parameter
+	 */
+	public float getOffset()
+	{ return offset; }
+
+	public double getOriginalYmax()
+	{ return saved_ymax; }
+
+	public double getOriginalYmin()
+	{ return saved_ymin; }
+
+	public String getStringOfXinYZplot()
+	{
+		if (this.isLongX())
+			return toStringTime((long) curr_x_yz_plot);
 		else
-			currXMax = xmin;
-		data.getDataAsync(currXMax, Double.MAX_VALUE, NUM_POINTS);
+			return "" + curr_x_yz_plot;
+	}
+
+	public String getTitlelabel()
+	{ return title; }
+
+	public int getType()
+	{ return type; }
+
+	public int getUpdSignalSizeInc()
+	{ return updSignalSizeInc; }
+
+	public float[] getUpError()
+	{ return upError; }
+
+	public double[] getX() throws IOException
+	{
+		if (type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+			return sliceX;
+		return x;
+	}
+
+	public double getX(int idx)
+	{
+		try
+		{
+			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+				return sliceX[idx];
+			return x[idx];
+		}
+		catch (final Exception exc)
+		{
+			return 0;
+		}
+	}
+
+	public double[] getX2D()
+	{
+		if (x2D == null)
+			x2D = data.getX2D();
+		return x2D;
+	}
+
+	public double getX2Dmax()
+	{ return x2D_max; }
+
+	public double getX2Dmin()
+	{ return x2D_min; }
+
+	public double getXinYZplot()
+	{ return curr_x_yz_plot; }
+
+	public String getXlabel()
+	{ return xlabel; }
+
+	public double getXmax()
+	{
+		// if(!xLimitsInitialized)
+		// return -Double.MAX_VALUE;
+		return xmax;
+	}
+
+	public double getXmin()
+	{
+		// if(!xLimitsInitialized)
+		// return Double.MAX_VALUE;
+		return xmin;
+	}
+
+	public float[] getY() throws IOException
+	{
+		if (type == TYPE_2D && (mode2D == MODE_XZ || mode2D == MODE_YZ))
+			return sliceY;
+		return y;
+	}
+
+	public float getY(int idx)
+	{
+		try
+		{
+			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_XZ))
+				return sliceY[idx];
+			return y[idx];
+		}
+		catch (final Exception exc)
+		{
+			return 0;
+		}
+	}
+	public float[] getY2D()
+	{
+		if (y2D == null)
+			y2D = data.getY2D();
+		return y2D;
+	}
+
+	public double getY2Dmax()
+	{ return y2D_max; }
+
+	public double getY2Dmin()
+	{ return y2D_min; }
+
+	public float getYinXZplot()
+	{ return curr_y_xz_plot; }
+
+	public String getYlabel()
+	{ return ylabel; }
+
+	public double getYmax()
+	{ return ymax; }
+
+	public double getYmin()
+	{ return ymin; }
+
+	public float[] getZ()
+	{
+		if (z == null)
+			z = data.getZ();
+		return z;
+	}
+
+	public float getZ(int idx)
+	{
+		if (z == null)
+			z = data.getZ();
+		return z[idx];
+	}
+
+	public float[][] getZ2D()
+	{
+		final float zOut[][] = new float[x2D.length][y2D.length];
+		int k;
+		for (int i = 0; i < x2D.length; i++)
+		{
+			for (int j = 0; j < y2D.length; j++)
+			{
+				k = j * x2D.length + i;
+				if (k < z.length)
+					zOut[i][j] = z[k];
+			}
+		}
+		return zOut;
+	}
+
+	public double getZ2Dmax()
+	{ return z2D_max; }
+
+	public double getZ2Dmin()
+	{ return z2D_min; }
+
+	public String getZlabel()
+	{ return zlabel; }
+	public double getZValue()
+	{
+		if (this.type == Signal.TYPE_2D)
+		{
+			switch (mode2D)
+			{
+			case Signal.MODE_IMAGE:
+				final float y[] = y2D;
+				final int idx = img_xprev * y.length + img_yprev;
+				if (z != null && idx < z.length)
+				{
+					return z[idx];
+				}
+			case Signal.MODE_CONTOUR:
+				return z_value;
+			}
+		}
+		return Float.NaN;
+	}
+	boolean hasAsymError()
+	{
+		return asym_error;
+	}
+	boolean hasError()
+	{
+		return error;
+	}
+	public final boolean hasX()
+	{
 		return true;
+		// return data.hasX();
+	}
+	public void incShow()
+	{
+		if (type == TYPE_2D)
+		{
+			switch (mode2D)
+			{
+			case Signal.MODE_XZ:
+				incShowXZ();
+				break;
+			case Signal.MODE_YZ:
+				incShowYZ();
+				break;
+			case Signal.MODE_PROFILE:
+				// incShowProfile();
+				break;
+			}
+		}
+	}
+	public void incShowXZ()
+	{
+		if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
+			showXZ((curr_y_xz_idx + 1) % y2D.length);
+	}
+	public void incShowYZ()
+	{
+		if (type == TYPE_2D && mode2D == Signal.MODE_YZ)
+			showYZ((curr_x_yz_idx + 1) % x2D.length);
+	}
+
+	public void initContour()
+	{
+		saved_ymin = ymin = y2D_min;
+		saved_ymax = ymax = y2D_max;
+		saved_xmin = xmin = x2D_min;
+		saved_xmax = xmax = x2D_max;
+		// x = x2D;
+		// y = y2D;
+		cs = new ContourSignal(this);
+		if (contourLevels == null || contourLevels.length == 0)
+		{
+			contourLevels = new double[DEFAULT_CONTOUR_LEVEL];
+			final double dz = (z2D_max - z2D_min) / (DEFAULT_CONTOUR_LEVEL + 1);
+			for (int i = 0; i < contourLevels.length; i++)
+			{
+				contourLevels[i] = z2D_min + dz * (i + 1);
+			}
+		}
+		for (int k = 0; k < contourLevels.length; k++)
+		{
+			addContourLevel(contourLevels[k]);
+		}
+	}
+
+	public boolean isFullLoad()
+	{ return full_load; }
+
+	final public boolean isIncreasingX()
+	{ return increasing_x; }
+
+	public boolean isLongX()
+	{
+		if (type == TYPE_1D || type == TYPE_2D && (mode2D == Signal.MODE_XZ || mode2D == Signal.MODE_IMAGE))
+		{
+			// return data.isXLong(); //Gabriele Dec 2015
+			return xLong != null;
+		}
+		else
+			return false;
+	}
+
+	public boolean isLongXForLabel()
+	{
+		if (type == TYPE_1D || type == TYPE_2D
+				&& (mode2D == Signal.MODE_XZ || mode2D == Signal.MODE_YZ || mode2D == Signal.MODE_IMAGE))
+			return data.isXLong();
+		else
+			return false;
+	}
+
+	@Override
+	public void legendUpdated(String name)
+	{
+		setLegend(name);
 	}
 
 	// reset all region info building a single region with
@@ -3215,5 +2382,838 @@ public class Signal implements WaveDataListener
 		y = newY;
 		resolutionManager.resetRegions();
 		resolutionManager.appendRegion(new RegionDescriptor(currXMin, currXMax, currResolution));
+	}
+
+	void registerSignalListener(SignalListener listener)
+	{
+		signalListeners.addElement(listener);
+	}
+
+	/**
+	 * Reset scale, return to the initial two dimensional region
+	 */
+	public void ResetScales()
+	{
+		xmax = freezedXMax = curr_xmax = saved_xmax;
+		xmin = freezedXMin = curr_xmin = saved_xmin;
+		ymax = saved_ymax;
+		ymin = saved_ymin;
+		unfreeze();
+	}
+
+	public void resetSignalData()
+	{
+		x2D_points = 0;
+		y2D_points = 0;
+		z2D_points = 0;
+		final double x[] = new double[]
+		{ 0., 1. };
+		final float y[] = new float[]
+		{ 0, 0 };
+		data = new XYWaveData(x, y);
+		this.low_errorData = null;
+		this.up_errorData = null;
+		startIndexToUpdate = 0;
+	}
+
+	/**
+	 * Reset x scale, return to original x range two dimensional region
+	 */
+	public void ResetXScale()
+	{
+		xmax = freezedXMax = curr_xmax = saved_xmax;
+		xmin = freezedXMin = curr_xmin = saved_xmin;
+	}
+
+	/**
+	 * Reset x scale, return to the initial y range two dimensional region
+	 */
+	public void ResetYScale()
+	{
+		ymax = saved_ymax;
+		ymin = saved_ymin;
+	}
+
+	public void setAttributes(Signal s)
+	{
+		this.color = s.getColor();
+		this.color_idx = s.getColorIdx();
+		this.gain = s.getGain();
+		this.interpolate = s.getInterpolate();
+		this.marker = s.getMarker();
+		this.marker_step = s.getMarkerStep();
+		this.offset = s.getOffset();
+		this.name = s.getName();
+	}
+
+	/**
+	 * Sets all signal attributes.
+	 *
+	 * @param name        signal name
+	 * @param color_idx   color index from an external color table
+	 * @param marker      marker type
+	 * @param marker_step marker step
+	 * @param interpolate interpolate flag
+	 */
+	public void setAttributes(String name, int color_idx, int marker, int marker_step, boolean interpolate)
+	{
+		this.marker = marker;
+		this.marker_step = marker_step;
+		this.interpolate = interpolate;
+		this.color_idx = color_idx;
+		this.name = new String(name);
+	}
+
+	void setAxis()
+	{
+		int i;
+		// If the signal dimension is 2 or the x axis are not increasing, the signal is
+		// assumed to be completely in memory
+		// and no further readout from data is performed
+		if (type != TYPE_1D || !increasing_x)
+			return;
+		// Check if the signal is fully available (i.e. has already been read without X
+		// limits)
+		if (!resolutionManager.isEmpty())
+		{
+			final double minMax[] = resolutionManager.getMinMaxX();
+			if (minMax[0] == -Double.MAX_VALUE && minMax[1] == Double.MAX_VALUE)
+			{
+				xLimitsInitialized = true;
+				xmin = x[0];
+				xmax = x[x.length - 1];
+				return;
+			}
+		}
+		// resolutionManager.resetRegions();
+		try
+		{
+			final XYData xyData = data.getData(NUM_POINTS);
+			if (xyData == null)
+				return;
+			x = xyData.x;
+			y = xyData.y;
+			if (x == null || x.length == 0)
+				return;
+			adjustArraySizes();
+			increasing_x = xyData.increasingX;
+			if (increasing_x)
+			{
+				resolutionManager.addRegion(new RegionDescriptor(-Double.MAX_VALUE, Double.MAX_VALUE,
+						NUM_POINTS / (x[x.length - 1] - x[0])));
+			}
+			if (data.isXLong())
+				xLong = xyData.xLong;
+			xmax = xyData.xMax;
+			xmin = xyData.xMin;
+			ymax = ymin = y[0];
+			for (i = 0; i < x.length; i++)
+			{
+				if (Float.isNaN(y[i]) && n_nans < 100)
+					nans[n_nans++] = i;
+				if (y[i] > ymax)
+					ymax = y[i];
+				if (ymin > y[i])
+					ymin = y[i];
+			}
+			curr_xmin = xmin;
+			curr_xmax = xmax;
+		}
+		catch (final Exception exc)
+		{
+			System.out.println("Set Axis Exception: " + exc);
+		}
+	}
+
+	void setAxis(double x2D[], float z2D[], float y2D[])
+	{
+		x2D_max = x2D_min = x2D[0];
+		z2D_max = z2D_min = z2D[0];
+		y2D_max = y2D_min = y2D[0];
+		setAxis(x2D, z2D, y2D, 0, 0, 0);
+	}
+
+	void setAxis(double x2D[], float z2D[], float y2D[], int xIdx, int zIdx, int yIdx)
+	{
+		int i;
+		for (i = xIdx; i < x2D.length; i++)
+		{
+			if (x2D[i] > x2D_max)
+				x2D_max = x2D[i];
+			if (x2D_min > x2D[i])
+				x2D_min = x2D[i];
+		}
+		for (i = zIdx; i < z2D.length; i++)
+		{
+			if (z2D[i] > z2D_max)
+				z2D_max = z2D[i];
+			if (z2D_min > z2D[i])
+				z2D_min = z2D[i];
+		}
+		for (i = yIdx; i < y2D.length; i++)
+		{
+			if (y2D[i] > y2D_max)
+				y2D_max = y2D[i];
+			if (y2D_min > y2D[i])
+				y2D_min = y2D[i];
+		}
+	}
+
+	public void setCalibrate(float gain, float offset)
+	{
+		this.gain = gain;
+		this.offset = offset;
+		setAxis();
+	}
+
+	/**
+	 * Set color value
+	 *
+	 * @param color color value
+	 */
+	public void setColor(Color color)
+	{ this.color = color; }
+
+	/**
+	 * Set color index. Index color is a reference to an external color palette
+	 *
+	 * @param color_idx index of the color
+	 */
+	public void setColorIdx(int color_idx)
+	{
+		color = null;
+		this.color_idx = color_idx;
+	}
+
+	void setFreezeMode(int freezeMode)
+	{ this.freezeMode = freezeMode; }
+
+	public void setFullLoad(boolean full_load)
+	{ this.full_load = full_load; }
+
+	/**
+	 * Set interpolate flag.
+	 *
+	 * @param interpolate define if is a point or line signal
+	 */
+	public void setInterpolate(boolean interpolate)
+	{ this.interpolate = interpolate; }
+	public void setLabels(String title, String xlabel, String ylabel, String zlabel)
+	{
+		this.title = title;
+		this.xlabel = xlabel;
+		this.ylabel = ylabel;
+		this.zlabel = zlabel;
+	}
+	public void setLegend(String legend)
+	{ this.legend = legend; }
+	/**
+	 * Set market type.
+	 *
+	 * @param marker marker type
+	 */
+	public void setMarker(int marker)
+	{ this.marker = marker; }
+
+	/**
+	 * Set market type by name.
+	 *
+	 * @param marker marker type name
+	 */
+	public void setMarker(String name)
+	{
+		if (name == null)
+			return;
+		for (int i = 0; i < markerList.length; i++)
+			if (name.toLowerCase().equals(markerList[i].toLowerCase()))
+			{
+				setMarker(i);
+				return;
+			}
+		setMarker(0);
+	}
+
+	/**
+	 * Set marker step.
+	 *
+	 * @param marker_step number of signal points between two marker
+	 */
+	public void setMarkerStep(int marker_step)
+	{ this.marker_step = marker_step; }
+
+	public void setMode1D(int mode)
+	{
+		this.mode1D = mode;
+		switch (mode)
+		{
+		case MODE_LINE:
+			this.interpolate = true;
+			break;
+		case MODE_NOLINE:
+			this.interpolate = false;
+			break;
+		case MODE_STEP:
+			this.interpolate = true;
+			break;
+		}
+	}
+
+	public void setMode2D(int mode)
+	{
+		if (this.type == Signal.TYPE_1D)
+			return;
+		switch (mode)
+		{
+		case MODE_IMAGE:
+			setMode2D(mode, 0);
+			break;
+		case MODE_XZ:
+			if (y2D != null && y2D.length > 0)
+				setMode2D(mode, y2D[0]);
+			break;
+		case MODE_YZ:
+			double v = x2D[0];
+			if (!Double.isNaN(curr_x_yz_plot))
+				v = curr_x_yz_plot;
+			setMode2D(mode, v);
+			break;
+		case MODE_CONTOUR:
+			setMode2D(mode, 0);
+			break;
+		case MODE_PROFILE:
+			/*
+			 * if(z2D != null && z2D.length > 0) { float v1 = z2D[0]; if
+			 * (!Float.isNaN(curr_x_yz_plot)) v1 = curr_x_yz_plot; setMode2D(mode, v1); }
+			 */
+			break;
+		}
+	}
+
+	public void setMode2D(int mode, double value)
+	{
+		if (this.type == Signal.TYPE_1D)
+			return;
+		curr_x_yz_plot = Float.NaN;
+		curr_y_xz_plot = Float.NaN;
+		curr_x_yz_idx = -1;
+		curr_y_xz_idx = -1;
+		switch (mode)
+		{
+		case MODE_IMAGE:
+			/*
+			 * saved_ymin = ymin = y2D_min; saved_ymax = ymax = y2D_max; saved_xmin = xmin =
+			 * x2D_min; saved_xmax = xmax = x2D_max;
+			 */
+			if (saved_ymin == -Double.MAX_VALUE)
+				saved_ymin = ymin = y2D_min;
+			else
+				ymin = saved_ymin;
+			if (saved_ymax == Double.MAX_VALUE)
+				saved_ymax = ymax = y2D_max;
+			else
+				ymax = saved_ymax;
+			if (saved_xmin == -Double.MAX_VALUE)
+				saved_xmin = xmin = x2D_min;
+			else
+				xmin = saved_xmin;
+			if (saved_xmax == Double.MAX_VALUE)
+				saved_xmax = xmax = x2D_max;
+			else
+				xmax = saved_xmax;
+			break;
+		case MODE_XZ:
+			showXZ((float) value);
+			break;
+		case MODE_YZ:
+			prev_idx = 0;
+			showYZ((float) value);
+			break;
+		case MODE_CONTOUR:
+			initContour();
+			break;
+		case MODE_PROFILE:
+			/*
+			 * prev_idx = 0; showProfile(mode, value);
+			 */
+			break;
+		}
+		this.mode2D = mode;
+	}
+
+	/**
+	 * Set Signal name.
+	 *
+	 * @param name signal name
+	 */
+	public void setName(String name)
+	{
+		if (name != null && name.length() != 0)
+			this.name = new String(name);
+	}
+
+	public void setStartIndexToUpdate()
+	{
+		if (x != null)
+			startIndexToUpdate = x.length;
+	}
+
+	public void setType(int type)
+	{ this.type = type; }
+	public void setUpdSignalSizeInc(int updSignalSizeInc)
+	{
+		if (updSignalSizeInc <= 0)
+			updSignalSizeInc = DEFAULT_INC_SIZE;
+		this.updSignalSizeInc = updSignalSizeInc;
+	}
+	public void setXinYZplot(float curr_x_yz_plot)
+	{ this.curr_x_yz_plot = curr_x_yz_plot; }
+
+	public void setXLimits(double xmin, double xmax, int mode)
+	{
+		xLimitsInitialized = true;
+		if (xmin != -Double.MAX_VALUE)
+		{
+			this.xmin = xmin;
+			if ((mode & AT_CREATION) != 0)
+			{
+				saved_xmin = xmin;
+			}
+			if ((mode & FIXED_LIMIT) != 0)
+				fix_xmin = true;
+		}
+		if (xmax != Double.MAX_VALUE)
+		{
+			this.xmax = xmax;
+			if ((mode & AT_CREATION) != 0)
+				this.saved_xmax = xmax;
+			if ((mode & FIXED_LIMIT) != 0)
+				fix_xmax = true;
+		}
+		double actXMin = xmin;
+		if (actXMin == -Double.MAX_VALUE)
+			actXMin = this.xmin;
+		double actXMax = xmax;
+		if (actXMax == Double.MAX_VALUE)
+			actXMax = this.xmax;
+		/* Enlarge by 1/20 */
+//        double enlargeFactor = 40;
+		final double enlargeFactor = 3;
+		actXMax += (actXMax - actXMin) / enlargeFactor;
+		actXMin -= (actXMax - actXMin) / enlargeFactor;
+		final double actResolution = NUM_POINTS / (actXMax - actXMin);
+		if (!increasing_x)
+			return; // Dynamic resampling only for "classical" signas
+		if (up_errorData != null || low_errorData != null)
+			return; // Dynamic resampling only without error bars
+		final Vector<RegionDescriptor> lowResRegions = resolutionManager.getLowerResRegions(actXMin, actXMax,
+				actResolution);
+		for (int i = 0; i < lowResRegions.size(); i++)
+		{
+			final RegionDescriptor currReg = lowResRegions.elementAt(i);
+			final double currLower = currReg.lowerBound;
+			double currUpper = currReg.upperBound;
+			// Try to merge adjacent regions
+			while (i < lowResRegions.size() - 1 && lowResRegions.elementAt(i + 1).lowerBound <= currUpper)
+			{
+				currUpper = lowResRegions.elementAt(i + 1).upperBound;
+				i++;
+			}
+			if (((mode & DO_NOT_UPDATE) == 0)
+					&& (currLower != saved_xmin || currUpper != saved_xmax || (mode & AT_CREATION) == 0))
+				data.getDataAsync(currLower, currUpper, NUM_POINTS);
+		}
+		// fireSignalUpdated();
+	}
+
+	public void setYinXZplot(float curr_y_xz_plot)
+	{ this.curr_y_xz_plot = curr_y_xz_plot; }
+
+	/**
+	 * Set y minimum and maximum of two-dimensional region.
+	 *
+	 * @param ymin y minimum
+	 * @param ymax y maximum
+	 */
+	public void setYlimits(double ymin, double ymax)
+	{
+		if (ymax != Double.MAX_VALUE)
+		{
+			this.ymax = ymax;
+			// this.ymax = saved_ymax = ymax;
+			this.fix_ymax = true;
+		}
+		else
+			this.fix_ymax = false;
+		if (ymin != -Double.MAX_VALUE)
+		{
+//            this.ymin = saved_ymin = ymin;
+			this.ymin = ymin;
+			this.fix_ymin = true;
+		}
+		else
+			this.fix_ymin = false;
+	}
+
+	public void setYmax(double ymax, int mode)
+	{
+		if (ymax == Double.MAX_VALUE)
+			return;
+		this.ymax = ymax;
+		if ((mode & AT_CREATION) != 0)
+			this.saved_ymax = ymax;
+		if ((mode & FIXED_LIMIT) != 0)
+			fix_ymax = true;
+	}
+
+	public void setYmin(double ymin, int mode)
+	{
+		if (ymin == -Double.MAX_VALUE)
+			return;
+		this.ymin = ymin;
+		if ((mode & AT_CREATION) != 0)
+			this.saved_ymin = ymin;
+		if ((mode & FIXED_LIMIT) != 0)
+			fix_ymin = true;
+	}
+
+	public void showXZ(double xd)
+	{
+		if (curr_y_xz_plot == xd)
+			return;
+		final int i = getArrayIndex(y2D, xd);
+		showXZ(i);
+	}
+
+	public void showXZ(int idx)
+	{
+		final float[] y2d = y2D;
+		double[] x2d = x2D;
+		// if ( (idx >= x2d.length || idx == curr_y_xz_idx) &&
+		if ((idx >= y2d.length || idx == curr_y_xz_idx) && mode2D == MODE_XZ)
+			return;
+		prev_idx = 0;
+		curr_y_xz_plot = y2d[idx];
+		curr_y_xz_idx = idx;
+		curr_x_yz_plot = Float.NaN;
+		curr_x_yz_idx = -1;
+		if (zY2D != null)
+		{
+			x2d = new double[x2D.length];
+			curr_xmin = curr_xmax = zY2D[x2D.length * idx];
+			for (int j = 0; j < x2D.length; j++)
+			{
+				x2d[j] = zY2D[x2D.length * idx + j];
+				if (x2d[j] > curr_xmax)
+					curr_xmax = x2d[j];
+				else if (x2d[j] < curr_xmin)
+					curr_xmin = x2d[j];
+			}
+		}
+		sliceX = new double[x2d.length];
+		sliceY = new float[x2d.length];
+		final int zLen = z.length;
+		float sliceMin, sliceMax;
+		// sliceMin = sliceMax = z[ y2d.length * idx];
+		sliceMin = sliceMax = z[x2d.length * idx];
+		for (int j = 0; j < x2d.length; j++)
+		{
+			sliceX[j] = x2d[j];
+			// int k = y2d.length * idx + j;
+			final int k = x2d.length * idx + j;
+			if (k >= zLen)
+				break;
+			sliceY[j] = z[k];
+			if (sliceMin > z[k])
+				sliceMin = z[k];
+			if (sliceMax < z[k])
+				sliceMax = z[k];
+		}
+		error = asym_error = false;
+		mode2D = Signal.MODE_XZ;
+		if (!fix_xmin)
+			saved_xmin = curr_xmin = xmin = x2D_min;
+		// saved_xmin = curr_xmin;
+		if (!fix_xmax)
+			saved_xmax = curr_xmax = xmax = x2D_max;
+		// saved_xmax = curr_xmax;
+		if (!fix_ymin)
+			saved_ymin = ymin = sliceMin;
+		if (!fix_ymax)
+			saved_ymax = ymax = sliceMax;
+		// Assumed that for 2D data, dimensions are increasing
+		increasing_x = true;
+	}
+
+	public void showYZ(double t)
+	{
+		if (curr_x_yz_plot == t && mode2D == MODE_YZ)
+			return;
+		final int i = getArrayIndex(x2D, t);
+		showYZ(i);
+	}
+
+	public void showYZ(int idx)
+	{
+		final float[] y2d = y2D;
+		final double[] x2d = x2D;
+		if ((idx >= x2d.length || idx == curr_x_yz_idx) && mode2D == MODE_YZ)
+			return;
+		prev_idx = 0;
+		curr_x_yz_plot = x2d[idx];
+		curr_x_yz_idx = idx;
+		curr_y_xz_plot = Float.NaN;
+		curr_y_xz_idx = -1;
+		if (zY2D != null && idx < zY2D.length)
+		{
+			ymin = ymax = zY2D[idx];
+			for (int j = 0; j < y2d.length; j++)
+			{
+				final int k = x2d.length * j + idx;
+				y2d[j] = zY2D[k];
+				if (ymin > y2d[j])
+					ymin = y2d[j];
+				if (ymax < y2d[j])
+					ymax = y2d[j];
+			}
+		}
+		sliceX = new double[y2d.length];
+		sliceY = new float[y2d.length];
+		final int zLen = z.length;
+		if (idx >= zLen)
+			return;
+		float sliceMin, sliceMax;
+		sliceMin = sliceMax = z[idx];
+		for (int j = 0; j < y2d.length; j++)
+		{
+			final int k = x2d.length * j + idx;
+			sliceX[j] = y2d[j];
+			if (k >= zLen)
+				break;
+			sliceY[j] = z[k];
+			if (sliceMin > z[k])
+				sliceMin = z[k];
+			if (sliceMax < z[k])
+				sliceMax = z[k];
+		}
+		error = asym_error = false;
+		mode2D = Signal.MODE_YZ;
+		if (!fix_xmin)
+			saved_xmin = curr_xmin = xmin = y2D_min;
+		// saved_xmin = curr_xmin = ymin;
+		if (!fix_xmax)
+			saved_xmax = curr_xmax = xmax = y2D_max;
+		// saved_xmax = curr_xmax = ymax;
+		if (!fix_ymin)
+			saved_ymin = ymin = sliceMin;
+		if (!fix_ymax)
+			saved_ymax = ymax = sliceMax;
+		// Assumed that for 2D data, dimensions are increasing
+		increasing_x = true;
+	}
+
+	/**
+	 * Metod to call before execute a Traslate method.
+	 */
+	public void StartTraslate()
+	{
+		t_xmax = xmax;
+		t_xmin = xmin;
+		t_ymax = ymax;
+		t_ymin = ymin;
+	}
+
+	public boolean supportsStreaming()
+	{
+		return data.supportsStreaming();
+	}
+
+	public double surfaceValue(double x0, double y0)
+	{
+		double zOut = 0;
+		final float z2D[] = z;
+		try
+		{
+			if (this.type == Signal.TYPE_2D && (mode2D == Signal.MODE_IMAGE || mode2D == Signal.MODE_CONTOUR))
+			{
+				img_yprev = findIndex(y2D, y0, img_yprev);
+				img_xprev = findIndex(x2D, x0, img_xprev);
+				double xn, yn;
+				double x1 = 0, y1 = 0, z1 = 0;
+				double x2 = 0, y2 = 0, z2 = 0;
+				double x3 = 0, y3 = 0, z3 = 0;
+				double x4 = 0, y4 = 0, z4 = 0;
+				xn = x2D[img_xprev];
+				yn = y2D[img_yprev];
+				if (x0 > xn && y0 > yn)
+				{
+					x1 = xn;
+					y1 = yn;
+					z1 = z2D[img_xprev * y2D.length + img_yprev];
+					x2 = x2D[img_xprev + 1];
+					y2 = y2D[img_yprev];
+					z2 = z2D[(img_xprev + 1) * y2D.length + img_yprev];
+					x3 = x2D[img_xprev];
+					y3 = y2D[img_yprev + 1];
+					z3 = z2D[img_xprev * y2D.length + img_yprev + 1];
+					x4 = x2D[img_xprev + 1];
+					y4 = y2D[img_yprev + 1];
+					z4 = z2D[(img_xprev + 1) * y2D.length + img_yprev + 1];
+				}
+				else
+				{
+					if (x0 > xn && y0 < yn)
+					{
+						x1 = x2D[img_xprev - 1];
+						y1 = y2D[img_yprev];
+						z1 = z2D[(img_xprev - 1) * y2D.length + img_yprev];
+						x2 = xn;
+						y2 = yn;
+						z2 = z2D[img_xprev * y2D.length + img_yprev];
+						x3 = x2D[img_xprev - 1];
+						y3 = y2D[img_yprev + 1];
+						z3 = z2D[(img_xprev - 1) * y2D.length + img_yprev + 1];
+						x4 = x2D[img_xprev];
+						y4 = y2D[img_yprev + 1];
+						z4 = z2D[img_xprev * y2D.length + img_yprev + 1];
+					}
+					else
+					{
+						if (x0 < xn && y0 > yn)
+						{
+							x1 = x2D[img_xprev];
+							y1 = y2D[img_yprev - 1];
+							z3 = z2D[img_xprev * y2D.length + img_yprev - 1];
+							x2 = x2D[img_xprev - 1];
+							y2 = y2D[img_yprev - 1];
+							z2 = z2D[(img_xprev - 1) * y2D.length + img_yprev - 1];
+							x3 = xn;
+							y3 = yn;
+							z3 = z2D[img_xprev * y2D.length + img_yprev];
+							x4 = x2D[img_xprev + 1];
+							y4 = y2D[img_yprev];
+							z4 = z2D[(img_xprev + 1) * y2D.length + img_yprev];
+						}
+						else
+						{
+							if (x0 < xn && y0 < yn)
+							{
+								x1 = x2D[img_xprev - 1];
+								y1 = y2D[img_yprev - 1];
+								z1 = z2D[(img_xprev - 1) * y2D.length + img_yprev - 1];
+								x2 = x2D[img_xprev];
+								y2 = y2D[img_yprev - 1];
+								z2 = z2D[img_xprev * y2D.length + img_yprev - 1];
+								x3 = x2D[img_xprev - 1];
+								y3 = y2D[img_yprev];
+								z3 = z2D[(img_xprev - 1) * y2D.length + img_yprev];
+								x4 = xn;
+								y4 = yn;
+								z4 = z2D[img_xprev * y2D.length + img_yprev];
+							}
+						}
+					}
+				}
+				final double yc = ((float) x0 - x1) * (y4 - y1) / (x4 - x1) + y1;
+				if (yc > y0)
+				{
+					zOut = ((float) y0 - y1) * ((x2 - x1) * (z4 - z1) - (z2 - z1) * (x4 - x1))
+							/ ((x2 - x1) * (y4 - y1) - (y2 - y1) * (x4 - x1))
+							- ((float) x0 - x1) * ((y2 - y1) * (z4 - z1) - (z2 - z1) * (y4 - y1))
+									/ ((x2 - x1) * (y4 - y1) - (y2 - y1) * (x4 - x1))
+							+ z1;
+				}
+				else
+				{
+					zOut = ((float) y0 - y1) * ((x3 - x1) * (z4 - z1) - (z3 - z1) * (x4 - x1))
+							/ ((x3 - x1) * (y4 - y1) - (y3 - y1) * (x4 - x1))
+							- ((float) x0 - x1) * ((y3 - y1) * (z4 - z1) - (z3 - z1) * (y4 - y1))
+									/ ((x3 - x1) * (y4 - y1) - (y3 - y1) * (x4 - x1))
+							+ z1;
+				}
+			}
+		}
+		catch (final Exception exc)
+		{
+			zOut = z2D[img_xprev * x2D.length + img_yprev];
+		}
+		z_value = zOut;
+		return zOut;
+	}
+
+	/**
+	 * Traslate signal of delta_x and delta_y
+	 *
+	 * @param delta_x x traslation factor
+	 * @param delta_y y traslation factor
+	 * @param x_log   logaritm scale flag, if is logaritm scale true
+	 * @param y_log   logaritm scale flag, if is logaritm scale true
+	 */
+	public void Traslate(double delta_x, double delta_y, boolean x_log, boolean y_log)
+	{
+		if (x_log)
+		{
+			xmax = t_xmax * delta_x;
+			xmin = t_xmin * delta_x;
+		}
+		else
+		{
+			xmax = t_xmax + delta_x;
+			xmin = t_xmin + delta_x;
+		}
+		if (y_log)
+		{
+			ymax = t_ymax * delta_y;
+			ymin = t_ymin * delta_y;
+		}
+		else
+		{
+			ymax = t_ymax + delta_y;
+			ymin = t_ymin + delta_y;
+		}
+	}
+
+	void unblock()
+	{
+		freezeMode = NOT_FREEZED;
+	}
+
+	void unfreeze()
+	{
+		freezeMode = NOT_FREEZED;
+		xmin = freezedXMin;
+		xmax = freezedXMax;
+		for (int i = 0; i < pendingUpdatesV.size(); i++)
+		{
+			if (pendingUpdatesV.elementAt(i).xLong != null)
+			{
+				dataRegionUpdated(pendingUpdatesV.elementAt(i).xLong, pendingUpdatesV.elementAt(i).y,
+						pendingUpdatesV.elementAt(i).resolution);
+			}
+			else
+			{
+				dataRegionUpdated(pendingUpdatesV.elementAt(i).x, pendingUpdatesV.elementAt(i).y,
+						pendingUpdatesV.elementAt(i).resolution);
+			}
+		}
+		pendingUpdatesV.clear();
+	}
+
+	// Gabriele Sept 2019: more efficient update on event for growing signals
+	public boolean updateSignal()
+	{
+		if (longXLimits)
+			return false; // For the moment use only relative times
+		double currXMax;
+		if (x != null && x.length > 0)
+			currXMax = x[x.length - 1];
+		else
+			currXMax = xmin;
+		data.getDataAsync(currXMax, Double.MAX_VALUE, NUM_POINTS);
+		return true;
+	}
+
+	public boolean xLimitsInitialized()
+	{
+		return xLimitsInitialized;
 	}
 }

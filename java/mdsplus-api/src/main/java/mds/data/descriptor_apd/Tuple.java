@@ -25,12 +25,12 @@ public class Tuple extends Descriptor_APD
 		return this.getScalar(idx);
 	}
 
+	@Override
+	protected final String getPrefix()
+	{ return Tuple.prefix; }
+
 	public final Descriptor<?>[] toArray()
 	{
 		return this.getAtomic();
 	}
-
-	@Override
-	protected final String getPrefix()
-	{ return Tuple.prefix; }
 }

@@ -82,6 +82,10 @@ public final class Int128 extends INTEGER<BigInteger>
 	public final BigInteger getAtomic()
 	{ return Int128.getBigInteger(this.p, 0); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x0F; }
+
 	public final BigInteger getValue()
 	{ return this.getAtomic(); }
 
@@ -162,8 +166,4 @@ public final class Int128 extends INTEGER<BigInteger>
 	{
 		return this.getAtomic();
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x0F; }
 }

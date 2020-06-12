@@ -77,8 +77,14 @@ public class NodeInfo implements Serializable
 		this.numSegments = numSegments;
 	}
 
-	public final void setFlags(int flags)
-	{ this.flags = flags; }
+	public final int getConglomerateElt()
+	{ return conglomerate_elt; }
+
+	public final int getConglomerateNids()
+	{ return conglomerate_nids; }
+
+	public final String getDate()
+	{ return date_inserted; }
 
 	public final String getDClass()
 	{ return dclass; }
@@ -86,77 +92,56 @@ public class NodeInfo implements Serializable
 	public final String getDType()
 	{ return dtype; }
 
-	public final String getUsage()
-	{ return usage; }
-
 	public final int getFlags()
 	{ return flags; }
-
-	public final int getOwner()
-	{ return owner; }
-
-	public final int getLength()
-	{ return length; }
-
-	public final int getConglomerateNids()
-	{ return conglomerate_nids; }
-
-	public final int getConglomerateElt()
-	{ return conglomerate_elt; }
-
-	public final String getDate()
-	{ return date_inserted; }
-
-	public final String getName()
-	{ return name; }
 
 	public final String getFullPath()
 	{ return fullpath; }
 
+	public final int getLength()
+	{ return length; }
+
 	public final String getMinPath()
 	{ return minpath; }
+
+	public final String getName()
+	{ return name; }
+
+	public final int getNumSegments()
+	{ return numSegments; }
+
+	public final int getOwner()
+	{ return owner; }
 
 	public final String getPath()
 	{ return path; }
 
-	public final boolean isOn()
-	{ return !isState(); }
-
-	public final boolean isParentOn()
-	{ return !isParentState(); }
-
-	public final boolean isState()
-	{ return (flags & STATE) != 0; }
-
-	public final boolean isParentState()
-	{ return (flags & PARENT_STATE) != 0; }
-
-	public final boolean isEssential()
-	{ return (flags & ESSENTIAL) != 0; }
+	public final String getUsage()
+	{ return usage; }
 
 	public final boolean isCached()
 	{ return (flags & CACHED) != 0; }
 
-	public final boolean isVersion()
-	{ return (flags & VERSION) != 0; }
-
-	public final boolean isSegmented()
-	{ return (flags & SEGMENTED) != 0; }
-
-	public final boolean isSetup()
-	{ return (flags & SETUP) != 0; }
-
-	public final boolean isWriteOnce()
-	{ return (flags & WRITE_ONCE) != 0; }
-
 	public final boolean isCompressible()
 	{ return (flags & COMPRESSIBLE) != 0; }
+
+	public final boolean isCompressOnPut()
+	{ return (flags & COMPRESS_ON_PUT) != 0; }
+
+	public final boolean isCompressSegments()
+	{ return (flags & COMPRESS_SEGMENTS) != 0; }
 
 	public final boolean isDoNotCompress()
 	{ return (flags & DO_NOT_COMPRESS) != 0; }
 
-	public final boolean isCompressOnPut()
-	{ return (flags & COMPRESS_ON_PUT) != 0; }
+	public final boolean isEssential()
+	{ return (flags & ESSENTIAL) != 0; }
+
+	public final boolean isIncludeInPulse()
+	{ return (flags & INCLUDE_IN_PULSE) != 0; }
+
+	public final boolean isNidReference()
+	{ return (flags & NID_REFERENCE) != 0; }
 
 	public final boolean isNoWriteModel()
 	{ return (flags & NO_WRITE_MODEL) != 0; }
@@ -164,18 +149,33 @@ public class NodeInfo implements Serializable
 	public final boolean isNoWriteShot()
 	{ return (flags & NO_WRITE_SHOT) != 0; }
 
+	public final boolean isOn()
+	{ return !isState(); }
+
+	public final boolean isParentOn()
+	{ return !isParentState(); }
+
+	public final boolean isParentState()
+	{ return (flags & PARENT_STATE) != 0; }
+
 	public final boolean isPathReference()
 	{ return (flags & PATH_REFERENCE) != 0; }
 
-	public final boolean isNidReference()
-	{ return (flags & NID_REFERENCE) != 0; }
+	public final boolean isSegmented()
+	{ return (flags & SEGMENTED) != 0; }
 
-	public final boolean isCompressSegments()
-	{ return (flags & COMPRESS_SEGMENTS) != 0; }
+	public final boolean isSetup()
+	{ return (flags & SETUP) != 0; }
 
-	public final boolean isIncludeInPulse()
-	{ return (flags & INCLUDE_IN_PULSE) != 0; }
+	public final boolean isState()
+	{ return (flags & STATE) != 0; }
 
-	public final int getNumSegments()
-	{ return numSegments; }
+	public final boolean isVersion()
+	{ return (flags & VERSION) != 0; }
+
+	public final boolean isWriteOnce()
+	{ return (flags & WRITE_ONCE) != 0; }
+
+	public final void setFlags(int flags)
+	{ this.flags = flags; }
 }

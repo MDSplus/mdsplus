@@ -76,9 +76,19 @@ public final class Complex64Array extends COMPLEXArray<Double>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public Complex64 getScalar(final int idx)
 	{
 		return new Complex64(this.getElement(idx));
+	}
+
+	@Override
+	protected final ComplexDouble[] initArray(final int size)
+	{
+		return new ComplexDouble[size];
 	}
 
 	@Override
@@ -102,16 +112,6 @@ public final class Complex64Array extends COMPLEXArray<Double>
 	public final ComplexDouble parse(final String in)
 	{
 		return ComplexDouble.decode(in);
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
-
-	@Override
-	protected final ComplexDouble[] initArray(final int size)
-	{
-		return new ComplexDouble[size];
 	}
 
 	@Override

@@ -37,17 +37,8 @@ import mds.jtraverser.dialogs.GraphPanel;
 
 public abstract class Editor extends JPanel
 {
-	private static final long serialVersionUID = 1L;
-
-	public static enum POPUP_MODE
-	{
-		CONTEXT, CLICK;
-	}
-
 	protected final class EvalPopupMenu extends JPopupMenu implements MouseListener
 	{
-		private static final long serialVersionUID = 1L;
-
 		public final class DisplaySignal implements ActionListener
 		{
 			@Override
@@ -107,6 +98,7 @@ public abstract class Editor extends JPanel
 			}
 		}
 
+		private static final long serialVersionUID = 1L;
 		final POPUP_MODE mode;
 
 		public EvalPopupMenu(final POPUP_MODE mode)
@@ -126,6 +118,24 @@ public abstract class Editor extends JPanel
 			item.addActionListener(new EvalActionListener(Editor.this, "DIM_OF($)"));
 			this.add(item = new JMenuItem("Plot DATA($)"));
 			item.addActionListener(new DisplaySignal());
+		}
+
+		String escapeHTML(final String s)
+		{
+			final StringBuilder out = new StringBuilder(Math.max(16, s.length()));
+			for (int i = 0; i < s.length(); i++)
+			{
+				final char c = s.charAt(i);
+				if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&')
+				{
+					out.append("&#");
+					out.append((int) c);
+					out.append(';');
+				}
+				else
+					out.append(c);
+			}
+			return out.toString();
 		}
 
 		@Override
@@ -155,24 +165,11 @@ public abstract class Editor extends JPanel
 		{
 			this.mousePressed(e);
 		}
+	}
 
-		String escapeHTML(final String s)
-		{
-			final StringBuilder out = new StringBuilder(Math.max(16, s.length()));
-			for (int i = 0; i < s.length(); i++)
-			{
-				final char c = s.charAt(i);
-				if (c > 127 || c == '"' || c == '<' || c == '>' || c == '&')
-				{
-					out.append("&#");
-					out.append((int) c);
-					out.append(';');
-				}
-				else
-					out.append(c);
-			}
-			return out.toString();
-		}
+	public static enum POPUP_MODE
+	{
+		CONTEXT, CLICK;
 	}
 
 	private static class SelectAll extends TextAction
@@ -194,6 +191,8 @@ public abstract class Editor extends JPanel
 			component.selectAll();
 		}
 	}
+
+	private static final long serialVersionUID = 1L;
 
 	public static JPanel addButtons(final Editor editor, final NODE<?> node)
 	{
@@ -305,14 +304,14 @@ public abstract class Editor extends JPanel
 		return menu;
 	}
 
-	static public JPopupMenu newTextEditorPopup(final boolean editable)
-	{
-		return Editor.addTextEditorActions(new JPopupMenu(), editable);
-	}
-
 	protected static final boolean isNoData(final Descriptor<?> data)
 	{
 		return data == null || data.dtype() == DTYPE.Z;
+	}
+
+	static public JPopupMenu newTextEditorPopup(final boolean editable)
+	{
+		return Editor.addTextEditorActions(new JPopupMenu(), editable);
 	}
 
 	protected final boolean editable;
@@ -330,6 +329,22 @@ public abstract class Editor extends JPanel
 	}
 
 	public abstract Descriptor<?> getData() throws MdsException;
+
+	protected Mds getMds()
+	{
+		final Mds mds = this.ctx.getMds();
+		if (mds != null)
+			return mds;
+		return Mds.getActiveMds();
+	}
+
+	protected NUMBER<?> getNumber() throws MdsException
+	{
+		final Descriptor<?> num = this.getData().getDataD();
+		if (num instanceof NUMBER<?>)
+			return (NUMBER<?>) num;
+		throw new MdsException(MdsException.TdiNOT_NUMBER);
+	}
 
 	public void interrupt()
 	{/* stub */}
@@ -350,28 +365,6 @@ public abstract class Editor extends JPanel
 		this.reset(false);
 	}
 
-	/*
-	 * setValue(Descriptor<?> value) sets $VALUE PTR for evaluation
-	 */
-	public final void setValue(final Descriptor<?> value)
-	{ this.value = value; }
-
-	protected Mds getMds()
-	{
-		final Mds mds = this.ctx.getMds();
-		if (mds != null)
-			return mds;
-		return Mds.getActiveMds();
-	}
-
-	protected NUMBER<?> getNumber() throws MdsException
-	{
-		final Descriptor<?> num = this.getData().getDataD();
-		if (num instanceof NUMBER<?>)
-			return (NUMBER<?>) num;
-		throw new MdsException(MdsException.TdiNOT_NUMBER);
-	}
-
 	protected final void setDescR()
 	{
 		if (this.data instanceof Descriptor_R<?>)
@@ -384,4 +377,10 @@ public abstract class Editor extends JPanel
 			for (final Editor element : this.edit)
 				element.setData(null);
 	}
+
+	/*
+	 * setValue(Descriptor<?> value) sets $VALUE PTR for evaluation
+	 */
+	public final void setValue(final Descriptor<?> value)
+	{ this.value = value; }
 }

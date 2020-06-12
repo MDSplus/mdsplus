@@ -10,8 +10,6 @@ import org.junit.Test;
 @SuppressWarnings("static-method")
 public class MdsEventTest
 {
-	static boolean eventReceived = false;
-
 	class EventReceiver extends MDSplus.Event
 	{
 		EventReceiver(java.lang.String name) throws Exception
@@ -26,6 +24,8 @@ public class MdsEventTest
 			eventReceived = true;
 		}
 	}
+
+	static boolean eventReceived = false;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception

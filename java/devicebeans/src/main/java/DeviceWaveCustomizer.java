@@ -33,6 +33,18 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
 	{}
 
 	@Override
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.addPropertyChangeListener(l);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.removePropertyChangeListener(l);
+	}
+
+	@Override
 	public void setObject(Object o)
 	{
 		bean = (DeviceWave) o;
@@ -101,17 +113,5 @@ public class DeviceWaveCustomizer extends DeviceCustomizer implements Customizer
 			}
 		});
 		add(jp, "South");
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.addPropertyChangeListener(l);
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.removePropertyChangeListener(l);
 	}
 }

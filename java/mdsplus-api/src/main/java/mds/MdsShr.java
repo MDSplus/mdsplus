@@ -99,6 +99,13 @@ public class MdsShr extends Shr
 		return this.mds.getDescriptor(null, request).toString();
 	}
 
+	protected final int mdsPutEnv(final Null NULL, final String expr) throws MdsException
+	{
+		final Request<Int32> request = new MdsCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "MdsPutEnv")//
+				.ref(Descriptor.valueOf(expr)).fin();
+		return this.mds.getDescriptor(null, request).toInt();
+	}
+
 	public final Descriptor<?> mdsSerializeDscIn(final Null NULL, final Int8Array serial) throws MdsException
 	{
 		@SuppressWarnings("rawtypes")
@@ -127,13 +134,6 @@ public class MdsShr extends Shr
 	public final void setenv(final String name, final String value) throws MdsException
 	{
 		this.setenv(String.join("=", name, value));
-	}
-
-	protected final int mdsPutEnv(final Null NULL, final String expr) throws MdsException
-	{
-		final Request<Int32> request = new MdsCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "MdsPutEnv")//
-				.ref(Descriptor.valueOf(expr)).fin();
-		return this.mds.getDescriptor(null, request).toInt();
 	}
 
 	protected final StringStatus translateLogicalXd(final Null NULL, final String name) throws MdsException

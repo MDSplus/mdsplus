@@ -25,31 +25,70 @@ class MdsHelper
 	private static String dispatcher_ip = null;
 	private static int dispatcherPort = 0;
 	private static Properties properties = null;
+	private static final String DISPATCH_FMRT = "jDispatcher.dispatch_%d.%s";
+	private static final String SERVER_FMRT = "jDispatcher.server_%d.%s";
 
-	private static final Properties tryOpen(final Vector<String> paths, final Vector<String> names)
+	public static void generateEvent(String event, int shot)
 	{
-		paths.add(null);
-		names.add(defaultFileName);
-		final Properties properties = new Properties();
-		for (final String name : names)
+		final byte[] shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
+		MDSplus.Event.setEventRaw(event, shotBytes);
+	}
+
+	static final Vector<DispatchCmd> getDispatch()
+	{
+		final Vector<DispatchCmd> dispatch = new Vector<DispatchCmd>();
+		for (int i = 1;; i++)
 		{
-			for (final String path : paths)
-			{
-				try
-				{
-					try (final InputStream stream = new FileInputStream(new File(path, name)))
-					{
-						properties.load(stream);
-					}
-					return properties;
-				}
-				catch (final IOException next)
-				{
-					continue;
-				}
-			}
+			final String name = properties.getProperty(String.format(DISPATCH_FMRT, i, "name"));
+			final String cmd = properties.getProperty(String.format(DISPATCH_FMRT, i, "cmd"));
+			if (name == null || cmd == null)
+				break;
+			dispatch.add(new DispatchCmd(name.trim(), cmd.trim()));
 		}
-		return null;
+		return dispatch;
+	}
+
+	public static String getDispatcher()
+	{ return dispatcher_ip; }
+
+	public static int getDispatcherPort()
+	{ return dispatcherPort; }
+
+	public static String getErrorString(int status)
+	{
+		return MDSplus.Data.getMdsMsg(status);
+	}
+
+	public static Vector<ServerInfo> getServers()
+	{
+		final Vector<ServerInfo> servers = new Vector<ServerInfo>();
+		for (int i = 1;; i++)
+		{
+			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
+			if (server_class == null)
+				break;
+			final String server_ip = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
+			if (server_ip == null)
+				break;
+			final String server_subtree = properties.getProperty(String.format(SERVER_FMRT, i, "subtree"));
+			final String javasvr = properties.getProperty(String.format(SERVER_FMRT, i, "use_jserver"));
+			final boolean useJavaServer = javasvr == null || javasvr.equals("true");
+			int watchdogPort;
+			try
+			{
+				watchdogPort = Integer.parseInt(properties.getProperty(String.format(SERVER_FMRT, i, "watchdog_port")));
+			}
+			catch (final Exception exc)
+			{
+				watchdogPort = -1;
+			}
+			final String startScript = properties.getProperty(String.format(SERVER_FMRT, i, "start_script"));
+			final String stopScript = properties.getProperty(String.format(SERVER_FMRT, i, "stop_script"));
+			final ServerInfo srvInfo = new ServerInfo(server_class, server_ip, server_subtree, useJavaServer,
+					watchdogPort, startScript, stopScript);
+			servers.add(srvInfo);
+		}
+		return servers;
 	}
 
 	static Properties initialization(String... args)
@@ -117,67 +156,6 @@ class MdsHelper
 		return properties;
 	}
 
-	private static final String DISPATCH_FMRT = "jDispatcher.dispatch_%d.%s";
-
-	static final Vector<DispatchCmd> getDispatch()
-	{
-		final Vector<DispatchCmd> dispatch = new Vector<DispatchCmd>();
-		for (int i = 1;; i++)
-		{
-			final String name = properties.getProperty(String.format(DISPATCH_FMRT, i, "name"));
-			final String cmd = properties.getProperty(String.format(DISPATCH_FMRT, i, "cmd"));
-			if (name == null || cmd == null)
-				break;
-			dispatch.add(new DispatchCmd(name.trim(), cmd.trim()));
-		}
-		return dispatch;
-	}
-
-	private static final String SERVER_FMRT = "jDispatcher.server_%d.%s";
-
-	public static Vector<ServerInfo> getServers()
-	{
-		final Vector<ServerInfo> servers = new Vector<ServerInfo>();
-		for (int i = 1;; i++)
-		{
-			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
-			if (server_class == null)
-				break;
-			final String server_ip = properties.getProperty(String.format(SERVER_FMRT, i, "address"));
-			if (server_ip == null)
-				break;
-			final String server_subtree = properties.getProperty(String.format(SERVER_FMRT, i, "subtree"));
-			final String javasvr = properties.getProperty(String.format(SERVER_FMRT, i, "use_jserver"));
-			final boolean useJavaServer = javasvr == null || javasvr.equals("true");
-			int watchdogPort;
-			try
-			{
-				watchdogPort = Integer.parseInt(properties.getProperty(String.format(SERVER_FMRT, i, "watchdog_port")));
-			}
-			catch (final Exception exc)
-			{
-				watchdogPort = -1;
-			}
-			final String startScript = properties.getProperty(String.format(SERVER_FMRT, i, "start_script"));
-			final String stopScript = properties.getProperty(String.format(SERVER_FMRT, i, "stop_script"));
-			final ServerInfo srvInfo = new ServerInfo(server_class, server_ip, server_subtree, useJavaServer,
-					watchdogPort, startScript, stopScript);
-			servers.add(srvInfo);
-		}
-		return servers;
-	}
-
-	public static void generateEvent(String event, int shot)
-	{
-		final byte[] shotBytes = ByteBuffer.allocate(4).putInt(shot).array();
-		MDSplus.Event.setEventRaw(event, shotBytes);
-	}
-
-	public static String getErrorString(int status)
-	{
-		return MDSplus.Data.getMdsMsg(status);
-	}
-
 	public static int toPhaseId(String phase_name)
 	{
 		try
@@ -195,9 +173,29 @@ class MdsHelper
 		return id_to_name.get(new Integer(phase_id));
 	}
 
-	public static String getDispatcher()
-	{ return dispatcher_ip; }
-
-	public static int getDispatcherPort()
-	{ return dispatcherPort; }
+	private static final Properties tryOpen(final Vector<String> paths, final Vector<String> names)
+	{
+		paths.add(null);
+		names.add(defaultFileName);
+		final Properties properties = new Properties();
+		for (final String name : names)
+		{
+			for (final String path : paths)
+			{
+				try
+				{
+					try (final InputStream stream = new FileInputStream(new File(path, name)))
+					{
+						properties.load(stream);
+					}
+					return properties;
+				}
+				catch (final IOException next)
+				{
+					continue;
+				}
+			}
+		}
+		return null;
+	}
 }

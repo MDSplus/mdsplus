@@ -82,16 +82,6 @@ public abstract class COMPLEX<T extends Number> extends NUMBER<Complex<T>>
 				: new Complex(Double.valueOf(X.toDouble()), Double.valueOf(0.));
 	}
 
-	public COMPLEX(final DTYPE dtype, final double real, final double imag)
-	{
-		super(dtype, COMPLEX.toByteBuffer(real, imag));
-	}
-
-	public COMPLEX(final DTYPE dtype, final float real, final float imag)
-	{
-		super(dtype, COMPLEX.toByteBuffer(real, imag));
-	}
-
 	protected COMPLEX(final ByteBuffer b)
 	{
 		super(b);
@@ -100,6 +90,16 @@ public abstract class COMPLEX<T extends Number> extends NUMBER<Complex<T>>
 	protected COMPLEX(final DTYPE dtype, final Complex<?> value)
 	{
 		super(dtype, COMPLEX.toByteBuffer(value));
+	}
+
+	public COMPLEX(final DTYPE dtype, final double real, final double imag)
+	{
+		super(dtype, COMPLEX.toByteBuffer(real, imag));
+	}
+
+	public COMPLEX(final DTYPE dtype, final float real, final float imag)
+	{
+		super(dtype, COMPLEX.toByteBuffer(real, imag));
 	}
 
 	@Override
@@ -128,6 +128,10 @@ public abstract class COMPLEX<T extends Number> extends NUMBER<Complex<T>>
 	public final T getImag()
 	{ return this.getAtomic().imag; }
 
+	@Override
+	protected byte getRankClass()
+	{ return 0x70; }
+
 	public final T getReal()
 	{ return this.getAtomic().real; }
 
@@ -137,6 +141,11 @@ public abstract class COMPLEX<T extends Number> extends NUMBER<Complex<T>>
 		final Complex<Number> x = COMPLEX.toComplex(X), y = COMPLEX.toComplex(Y);
 		return this.newType(x.real.doubleValue() * y.real.doubleValue() - x.imag.doubleValue() * y.imag.doubleValue(),
 				x.real.doubleValue() * y.imag.doubleValue() + x.imag.doubleValue() * y.real.doubleValue());
+	}
+
+	private final COMPLEX<?> newType(final double real, final double imag)
+	{
+		return (this instanceof Complex32) ? new Complex32(real, imag) : new Complex64(real, imag);
 	}
 
 	@Override
@@ -162,14 +171,5 @@ public abstract class COMPLEX<T extends Number> extends NUMBER<Complex<T>>
 	{
 		final Complex<Number> x = COMPLEX.toComplex(X), y = COMPLEX.toComplex(Y);
 		return this.newType(x.real.doubleValue() - y.real.doubleValue(), x.imag.doubleValue() - y.imag.doubleValue());
-	}
-
-	@Override
-	protected byte getRankClass()
-	{ return 0x70; }
-
-	private final COMPLEX<?> newType(final double real, final double imag)
-	{
-		return (this instanceof Complex32) ? new Complex32(real, imag) : new Complex64(real, imag);
 	}
 }

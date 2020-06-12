@@ -25,12 +25,12 @@ public class List extends Descriptor_APD
 		return this.getScalar(idx);
 	}
 
+	@Override
+	protected final String getPrefix()
+	{ return List.prefix; }
+
 	public final Descriptor<?>[] toArray()
 	{
 		return this.getAtomic();
 	}
-
-	@Override
-	protected final String getPrefix()
-	{ return List.prefix; }
 }

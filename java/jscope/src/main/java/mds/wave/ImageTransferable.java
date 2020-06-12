@@ -14,6 +14,18 @@ public class ImageTransferable implements Transferable, ClipboardOwner
 	}
 
 	@Override
+	public Object getTransferData(DataFlavor flavor) throws IOException, UnsupportedFlavorException
+	{
+		if (ri == null)
+			return null;
+		if (!isDataFlavorSupported(flavor))
+		{
+			throw new UnsupportedFlavorException(flavor);
+		}
+		return ri;
+	}
+
+	@Override
 	public DataFlavor[] getTransferDataFlavors()
 	{
 		return new DataFlavor[]
@@ -24,18 +36,6 @@ public class ImageTransferable implements Transferable, ClipboardOwner
 	public boolean isDataFlavorSupported(DataFlavor flavor)
 	{
 		return DataFlavor.imageFlavor.equals(flavor);
-	}
-
-	@Override
-	public Object getTransferData(DataFlavor flavor) throws IOException, UnsupportedFlavorException
-	{
-		if (ri == null)
-			return null;
-		if (!isDataFlavorSupported(flavor))
-		{
-			throw new UnsupportedFlavorException(flavor);
-		}
-		return ri;
 	}
 
 	@Override

@@ -25,26 +25,6 @@ import java.util.*;
 
 public class DeviceField extends DeviceComponent
 {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	String data;
-	public boolean textOnly = false;
-	public boolean showState = false;
-	public boolean displayEvaluated = false;
-	public String labelString = "";
-	public int numCols = 10;
-	private boolean initial_state;
-	protected boolean initializing = false;
-	GridBagLayout gridbag;
-	protected int preferredWidth = -1;
-	JPanel jp;
-	protected boolean isGridBag = false;
-	protected String initialField;
-	private boolean reportingChange = false;
-	private final TransferHandler origTH;
-
 	// Inner class ToTransferHandler to handle drag and drop
 	class ToTransferHandler extends TransferHandler
 	{
@@ -54,9 +34,11 @@ public class DeviceField extends DeviceComponent
 		private static final long serialVersionUID = 1L;
 
 		@Override
-		public int getSourceActions(JComponent comp)
+		public boolean canImport(TransferHandler.TransferSupport support)
 		{
-			return COPY_OR_MOVE;
+			if (support.isDrop() && support.isDataFlavorSupported(DataFlavor.stringFlavor))
+				return true;
+			return false;
 		}
 
 		@Override
@@ -66,11 +48,9 @@ public class DeviceField extends DeviceComponent
 		}
 
 		@Override
-		public boolean canImport(TransferHandler.TransferSupport support)
+		public int getSourceActions(JComponent comp)
 		{
-			if (support.isDrop() && support.isDataFlavorSupported(DataFlavor.stringFlavor))
-				return true;
-			return false;
+			return COPY_OR_MOVE;
 		}
 
 		@Override
@@ -100,66 +80,31 @@ public class DeviceField extends DeviceComponent
 			return true;
 		}
 	} // End Inner class ToTransferHandler
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	String data;
+	public boolean textOnly = false;
+	public boolean showState = false;
+	public boolean displayEvaluated = false;
+	public String labelString = "";
+	public int numCols = 10;
+	private boolean initial_state;
+	protected boolean initializing = false;
+	GridBagLayout gridbag;
+	protected int preferredWidth = -1;
+	JPanel jp;
+	protected boolean isGridBag = false;
+	protected String initialField;
+	private boolean reportingChange = false;
 
-	public void setNumCols(int numCols)
-	{
-		this.numCols = numCols;
-		textF.setColumns(numCols);
-		// redisplay();
-	}
-
-	public int getNumCols()
-	{ return numCols; }
-
-	public void setEditable(boolean editable)
-	{ this.editable = editable; }
-
-	public boolean getEditable()
-	{ return editable; }
-
-	public boolean getDisplayEvaluated()
-	{ return displayEvaluated; }
-
-	public void setDisplayEvaluated(boolean displayEvaluated)
-	{ this.displayEvaluated = displayEvaluated; }
-
-	public void setPreferredWidth(int preferredWidth)
-	{ this.preferredWidth = preferredWidth; }
-
-	public int getPreferredWidth()
-	{ return preferredWidth; }
-
-	public void setLabelString(String labelString)
-	{
-		this.labelString = labelString;
-		label.setText(labelString);
-		// redisplay();
-	}
-
-	public String getLabelString()
-	{ return labelString; }
-
-	public void setShowState(boolean showState)
-	{
-		this.showState = showState;
-		if (showState)
-			checkB.setVisible(true);
-		else
-			checkB.setVisible(false);
-		// redisplay();
-	}
-
-	public boolean getShowState()
-	{ return showState; }
-
-	public void setTextOnly(boolean textOnly)
-	{ this.textOnly = textOnly; }
-
-	public boolean getTextOnly()
-	{ return textOnly; }
+	private final TransferHandler origTH;
 
 	protected JCheckBox checkB;
+
 	protected JLabel label;
+
 	protected JTextField textF;
 
 	public DeviceField()
@@ -178,6 +123,135 @@ public class DeviceField extends DeviceComponent
 		// setLayout(gridbag = new GridBagLayout());
 		initializing = false;
 	}
+
+	@Override
+	public Component add(Component c)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Field. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+
+	@Override
+	public Component add(Component c, int intex)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Field. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+
+	@Override
+	public Component add(String name, Component c)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Field. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+
+	protected void dataChanged(int offsetNid, String data)
+	{
+		if (reportingChange || this.offsetNid != offsetNid)
+			return;
+		textF.setText(data);
+	}
+
+	@Override
+	protected void displayData(String data, boolean is_on)
+	{
+		this.data = data;
+		initial_state = is_on;
+		if (showState)
+			checkB.setSelected(is_on);
+		if (data != null)
+		{
+			String textString;
+			if (displayEvaluated)
+			{
+				try
+				{
+					initialField = textString = subtree.execute(data);
+				}
+				catch (final Exception exc)
+				{
+					initialField = textString = data;
+				}
+			}
+			else
+				initialField = textString = data;
+			if (textString != null)
+			{
+				if (textOnly && textString.charAt(0) == '"')
+					textF.setText(textString.substring(1, textString.length() - 1));
+				else
+					textF.setText(textString);
+			}
+		}
+		else
+			textF.setText("");
+		label.setEnabled(is_on);
+		textF.setEnabled(is_on & editable);
+		textF.setEditable(is_on & editable);
+	}
+
+	@Override
+	protected String getData()
+	{
+		final String dataString = textF.getText();
+		if (dataString == null || dataString.length() == 0)
+			return null;
+		if (textOnly)
+		{
+			if (dataString.trim().startsWith("[")) // If it begins with a [ it is assumed to be an array of strings
+				return dataString;
+			else
+				return "\"" + dataString + "\"";
+		}
+		else
+			return dataString;
+	}
+
+	public boolean getDisplayEvaluated()
+	{ return displayEvaluated; }
+
+	public boolean getEditable()
+	{ return editable; }
+
+	public String getLabelString()
+	{ return labelString; }
+
+	public int getNumCols()
+	{ return numCols; }
+
+	public int getPreferredWidth()
+	{ return preferredWidth; }
+	public boolean getShowState()
+	{ return showState; }
+	@Override
+	protected boolean getState()
+	{
+		if (!showState)
+			return initial_state;
+		else
+			return checkB.isSelected();
+	}
+
+	public boolean getTextOnly()
+	{ return textOnly; }
 
 	@Override
 	protected void initializeData(String data, boolean is_on)
@@ -277,11 +351,21 @@ public class DeviceField extends DeviceComponent
 		initializing = false;
 	}
 
-	protected void dataChanged(int offsetNid, String data)
+	@Override
+	protected boolean isChanged()
 	{
-		if (reportingChange || this.offsetNid != offsetNid)
-			return;
-		textF.setText(data);
+		if (displayEvaluated)
+			return false;
+		return super.isChanged();
+	}
+
+	@Override
+	protected boolean isDataChanged()
+	{
+		if (displayEvaluated && initialField != null)
+			return !(textF.getText().equals(initialField));
+		else
+			return true;
 	}
 
 	@Override
@@ -309,156 +393,6 @@ public class DeviceField extends DeviceComponent
 	}
 
 	@Override
-	protected void displayData(String data, boolean is_on)
-	{
-		this.data = data;
-		initial_state = is_on;
-		if (showState)
-			checkB.setSelected(is_on);
-		if (data != null)
-		{
-			String textString;
-			if (displayEvaluated)
-			{
-				try
-				{
-					initialField = textString = subtree.execute(data);
-				}
-				catch (final Exception exc)
-				{
-					initialField = textString = data;
-				}
-			}
-			else
-				initialField = textString = data;
-			if (textString != null)
-			{
-				if (textOnly && textString.charAt(0) == '"')
-					textF.setText(textString.substring(1, textString.length() - 1));
-				else
-					textF.setText(textString);
-			}
-		}
-		else
-			textF.setText("");
-		label.setEnabled(is_on);
-		textF.setEnabled(is_on & editable);
-		textF.setEditable(is_on & editable);
-	}
-
-	@Override
-	protected String getData()
-	{
-		final String dataString = textF.getText();
-		if (dataString == null || dataString.length() == 0)
-			return null;
-		if (textOnly)
-		{
-			if (dataString.trim().startsWith("[")) // If it begins with a [ it is assumed to be an array of strings
-				return dataString;
-			else
-				return "\"" + dataString + "\"";
-		}
-		else
-			return dataString;
-	}
-
-	@Override
-	protected boolean getState()
-	{
-		if (!showState)
-			return initial_state;
-		else
-			return checkB.isSelected();
-	}
-
-	@Override
-	public void setEnabled(boolean state)
-	{
-		if (!editable && state)
-			return; // Do not set enabled if not editable
-		// if(checkB != null) checkB.setEnabled(state);
-		if (textF != null)
-		{
-			textF.setEnabled(state);
-			textF.setEditable(state);
-		}
-		if (label != null)
-			label.setEnabled(state);
-		// if(checkB != null) checkB.setSelected(state);
-		// initial_state = state;
-	}
-
-	@Override
-	public Component add(Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Field. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(String name, Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Field. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(Component c, int intex)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Field. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public boolean supportsState()
-	{
-		return showState;
-	}
-
-	@Override
-	public void setBounds(int x, int y, int width, int height)
-	{
-		super.setBounds(x, y, width, height);
-		setPreferredSize(new Dimension(width, height));
-	}
-
-	@Override
-	protected boolean isDataChanged()
-	{
-		if (displayEvaluated && initialField != null)
-			return !(textF.getText().equals(initialField));
-		else
-			return true;
-	}
-
-	@Override
-	protected boolean isChanged()
-	{
-		if (displayEvaluated)
-			return false;
-		return super.isChanged();
-	}
-
-	@Override
 	public void print(Graphics g)
 	{
 		Font prevLabelFont = null;
@@ -481,6 +415,36 @@ public class DeviceField extends DeviceComponent
 	}
 
 	@Override
+	public void setBounds(int x, int y, int width, int height)
+	{
+		super.setBounds(x, y, width, height);
+		setPreferredSize(new Dimension(width, height));
+	}
+
+	public void setDisplayEvaluated(boolean displayEvaluated)
+	{ this.displayEvaluated = displayEvaluated; }
+
+	public void setEditable(boolean editable)
+	{ this.editable = editable; }
+
+	@Override
+	public void setEnabled(boolean state)
+	{
+		if (!editable && state)
+			return; // Do not set enabled if not editable
+		// if(checkB != null) checkB.setEnabled(state);
+		if (textF != null)
+		{
+			textF.setEnabled(state);
+			textF.setEditable(state);
+		}
+		if (label != null)
+			label.setEnabled(state);
+		// if(checkB != null) checkB.setSelected(state);
+		// initial_state = state;
+	}
+
+	@Override
 	public void setHighlight(boolean highlighted)
 	{
 		if (highlighted)
@@ -500,5 +464,41 @@ public class DeviceField extends DeviceComponent
 			}
 		}
 		super.setHighlight(highlighted);
+	}
+
+	public void setLabelString(String labelString)
+	{
+		this.labelString = labelString;
+		label.setText(labelString);
+		// redisplay();
+	}
+
+	public void setNumCols(int numCols)
+	{
+		this.numCols = numCols;
+		textF.setColumns(numCols);
+		// redisplay();
+	}
+
+	public void setPreferredWidth(int preferredWidth)
+	{ this.preferredWidth = preferredWidth; }
+
+	public void setShowState(boolean showState)
+	{
+		this.showState = showState;
+		if (showState)
+			checkB.setVisible(true);
+		else
+			checkB.setVisible(false);
+		// redisplay();
+	}
+
+	public void setTextOnly(boolean textOnly)
+	{ this.textOnly = textOnly; }
+
+	@Override
+	public boolean supportsState()
+	{
+		return showState;
 	}
 }

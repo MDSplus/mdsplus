@@ -20,8 +20,6 @@ import mds.mdsip.MdsIp.Provider;
 
 public final class jTraverserFacade extends JFrame
 {
-	private static final long serialVersionUID = 1L;
-
 	private class MenuChecker implements MenuListener
 	{
 		private final JMenu jmenu;
@@ -49,6 +47,7 @@ public final class jTraverserFacade extends JFrame
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	private static final String TitleNoTree = "jTraverser - no tree open";
 	private final List<JMenuItem> jmenus = new ArrayList<JMenuItem>(5);
 	private final TreeManager treeman;

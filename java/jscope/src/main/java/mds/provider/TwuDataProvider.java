@@ -1321,20 +1321,16 @@ public class TwuDataProvider implements DataProvider
 	public void addUpdateEventListener(UpdateEventListener l, String event)
 	{}
 
+	@Override
+	public void close()
+	{}
+
 	public void dispatchConnectionEvent(ConnectionEvent e)
 	{
 		if (connection_listener != null)
 			for (int i = 0; i < connection_listener.size(); i++)
 				connection_listener.elementAt(i).processConnectionEvent(e);
 	}
-
-	@Override
-	public void close()
-	{}
-
-	@Override
-	public String getError()
-	{ return error_string; }
 
 	public synchronized TwuWaveData FindWaveData(String in_y, String in_x)
 	{
@@ -1354,6 +1350,10 @@ public class TwuDataProvider implements DataProvider
 		}
 		return lastWaveData;
 	}
+
+	@Override
+	public String getError()
+	{ return error_string; }
 
 	public synchronized String getExperiment()
 	{ return experiment; }

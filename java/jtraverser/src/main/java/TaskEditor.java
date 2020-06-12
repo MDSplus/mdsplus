@@ -54,6 +54,42 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		if (!editable)
+		{
+			combo.setSelectedIndex(curr_dtype_idx);
+			return;
+		}
+		final int idx = combo.getSelectedIndex();
+		if (idx == curr_dtype_idx)
+			return;
+		switch (curr_dtype_idx)
+		{
+		case 1:
+			remove(method_edit);
+			break;
+		case 2:
+			remove(routine_edit);
+			break;
+		case 3:
+			remove(procedure_edit);
+			break;
+		case 4:
+			remove(program_edit);
+			break;
+		case 5:
+			remove(expr_edit);
+			break;
+		}
+		curr_dtype_idx = idx;
+		addEditor();
+		validate();
+		dialog.repack();
+		repaint();
+	}
+
 	private void addEditor()
 	{
 		switch (curr_dtype_idx)
@@ -96,39 +132,24 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e)
+	public MDSplus.Data getData()
 	{
-		if (!editable)
-		{
-			combo.setSelectedIndex(curr_dtype_idx);
-			return;
-		}
-		final int idx = combo.getSelectedIndex();
-		if (idx == curr_dtype_idx)
-			return;
 		switch (curr_dtype_idx)
 		{
+		case 0:
+			return null;
 		case 1:
-			remove(method_edit);
-			break;
+			return method_edit.getData();
 		case 2:
-			remove(routine_edit);
-			break;
+			return routine_edit.getData();
 		case 3:
-			remove(procedure_edit);
-			break;
+			return procedure_edit.getData();
 		case 4:
-			remove(program_edit);
-			break;
+			return program_edit.getData();
 		case 5:
-			remove(expr_edit);
-			break;
+			return expr_edit.getData();
 		}
-		curr_dtype_idx = idx;
-		addEditor();
-		validate();
-		dialog.repack();
-		repaint();
+		return null;
 	}
 
 	@Override
@@ -156,27 +177,6 @@ public class TaskEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 		validate();
 		repaint();
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{
-		switch (curr_dtype_idx)
-		{
-		case 0:
-			return null;
-		case 1:
-			return method_edit.getData();
-		case 2:
-			return routine_edit.getData();
-		case 3:
-			return procedure_edit.getData();
-		case 4:
-			return program_edit.getData();
-		case 5:
-			return expr_edit.getData();
-		}
-		return null;
 	}
 
 	public void setData(MDSplus.Data data)

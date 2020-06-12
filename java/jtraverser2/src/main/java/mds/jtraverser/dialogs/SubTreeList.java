@@ -21,6 +21,37 @@ public class SubTreeList extends CheckBoxList
 	}
 
 	@Override
+	protected void apply()
+	{
+		final TreeView tree = SubTreeList.this.treeman.getCurrentTreeView();
+		for (int i = 0; i < this.checkboxes.size(); i++)
+		{
+			final JCheckBox cb = this.checkboxes.getElementAt(i);
+			if (cb.isSelected() != ((Boolean) cb.getClientProperty(CheckBoxList.PROP_OLD)).booleanValue())
+			{
+				final Nid nid = (Nid) cb.getClientProperty(CheckBoxList.PROP_NID);
+				final DefaultMutableTreeNode treenode = tree
+						.findPath((String) cb.getClientProperty(CheckBoxList.PROP_FULLPATH));
+				try
+				{
+					if (cb.isSelected())
+						nid.setFlags(NODE.Flags.INCLUDE_IN_PULSE);
+					else
+						nid.clearFlags(NODE.Flags.INCLUDE_IN_PULSE);
+					if (treenode != null)
+						((Node) treenode.getUserObject()).readFlags();
+				}
+				catch (final MdsException me)
+				{
+					MdsException.stderr("SubTreeList.apply", me);
+				}
+			}
+		}
+		tree.reportChange();
+		this.update();
+	}
+
+	@Override
 	public final void update()
 	{
 		super.update();
@@ -58,37 +89,6 @@ public class SubTreeList extends CheckBoxList
 			this.checkboxes.getElementAt(i).putClientProperty(CheckBoxList.PROP_OLD,
 					Boolean.valueOf(this.checkboxes.getElementAt(i).isSelected()));
 		this.repaint();
-	}
-
-	@Override
-	protected void apply()
-	{
-		final TreeView tree = SubTreeList.this.treeman.getCurrentTreeView();
-		for (int i = 0; i < this.checkboxes.size(); i++)
-		{
-			final JCheckBox cb = this.checkboxes.getElementAt(i);
-			if (cb.isSelected() != ((Boolean) cb.getClientProperty(CheckBoxList.PROP_OLD)).booleanValue())
-			{
-				final Nid nid = (Nid) cb.getClientProperty(CheckBoxList.PROP_NID);
-				final DefaultMutableTreeNode treenode = tree
-						.findPath((String) cb.getClientProperty(CheckBoxList.PROP_FULLPATH));
-				try
-				{
-					if (cb.isSelected())
-						nid.setFlags(NODE.Flags.INCLUDE_IN_PULSE);
-					else
-						nid.clearFlags(NODE.Flags.INCLUDE_IN_PULSE);
-					if (treenode != null)
-						((Node) treenode.getUserObject()).readFlags();
-				}
-				catch (final MdsException me)
-				{
-					MdsException.stderr("SubTreeList.apply", me);
-				}
-			}
-		}
-		tree.reportChange();
-		this.update();
 	}
 
 	@Override

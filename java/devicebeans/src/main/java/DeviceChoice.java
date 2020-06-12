@@ -21,69 +21,12 @@ public class DeviceChoice extends DeviceComponent
 	protected boolean convert = false;
 	private boolean reportingChange = false;
 
-	public void setConvert(boolean convert)
-	{ this.convert = convert; }
-
-	public boolean getConvert()
-	{ return convert; }
-
-	public void setChoiceItems(String choiceItems[])
-	{
-		this.choiceItems = choiceItems;
-		if (comboB != null)
-		{
-			comboB.removeAllItems();
-			if (choiceItems != null)
-				for (final String item : choiceItems)
-					comboB.addItem(item);
-		}
-	}
-
-	public String[] getChoiceItems()
-	{ return choiceItems; }
-
-	public void setChoiceIntValues(int choiceIntValues[])
-	{ this.choiceIntValues = choiceIntValues; }
-
-	public int[] getChoiceIntValues()
-	{ return choiceIntValues; }
-
-	public void setChoiceFloatValues(float choiceFloatValues[])
-	{ this.choiceFloatValues = choiceFloatValues; }
-
-	public float[] getChoiceFloatValues()
-	{ return choiceFloatValues; }
-
-	public void setChoiceDoubleValues(double choiceDoubleValues[])
-	{ this.choiceDoubleValues = choiceDoubleValues; }
-
-	public double[] getChoiceDoubleValues()
-	{ return choiceDoubleValues; }
-
-	public void setLabelString(String labelString)
-	{
-		this.labelString = labelString;
-		label.setText(labelString);
-		redisplay();
-	}
-
-	public String getLabelString()
-	{ return labelString; }
-
-	public void setShowState(boolean showState)
-	{
-		this.showState = showState;
-		if (showState)
-			checkB.setVisible(true);
-		redisplay();
-	}
-
-	public boolean getShowState()
-	{ return showState; }
-
 	protected JCheckBox checkB;
+
 	protected JComboBox comboB;
+
 	protected JLabel label;
+
 	protected boolean initializing = false;
 
 	public DeviceChoice()
@@ -98,28 +41,42 @@ public class DeviceChoice extends DeviceComponent
 	}
 
 	@Override
-	protected void initializeData(String data, boolean is_on)
+	public Component add(Component c)
 	{
-		initial_state = is_on;
-		initializing = true;
-		displayData(data, is_on);
-		comboB.addActionListener(new ActionListener()
+		if (!initializing)
 		{
-			@Override
-			public void actionPerformed(ActionEvent e)
-			{
-				if (initializing)
-					return;
-				reportingChange = true;
-				reportDataChanged(new Integer(comboB.getSelectedIndex()));
-				reportingChange = false;
-				if (updateIdentifier == null || updateIdentifier.equals(""))
-					return;
-				final String currItem = (String) comboB.getSelectedItem();
-				master.fireUpdate(updateIdentifier, currItem);
-			}
-		});
-		initializing = false;
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Choice. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+
+	@Override
+	public Component add(Component c, int intex)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Choice. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+
+	@Override
+	public Component add(String name, Component c)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Choice. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
 	}
 
 	@Override
@@ -136,14 +93,6 @@ public class DeviceChoice extends DeviceComponent
 		{
 			System.err.println("DeviceChoice.dataChanged: " + exc);
 		}
-	}
-
-	@Override
-	public void postConfigure()
-	{
-		final String currItem = (String) comboB.getSelectedItem();
-		if (master != null && updateIdentifier != null)
-			master.fireUpdate(updateIdentifier, currItem);
 	}
 
 	@Override
@@ -237,6 +186,20 @@ public class DeviceChoice extends DeviceComponent
 		setEnabled(is_on);
 	}
 
+	public double[] getChoiceDoubleValues()
+	{ return choiceDoubleValues; }
+
+	public float[] getChoiceFloatValues()
+	{ return choiceFloatValues; }
+
+	public int[] getChoiceIntValues()
+	{ return choiceIntValues; }
+
+	public String[] getChoiceItems()
+	{ return choiceItems; }
+
+	public boolean getConvert()
+	{ return convert; }
 	@Override
 	protected String getData()
 	{
@@ -258,6 +221,10 @@ public class DeviceChoice extends DeviceComponent
 			return choiceItems[curr_idx];
 		}
 	}
+	public String getLabelString()
+	{ return labelString; }
+	public boolean getShowState()
+	{ return showState; }
 
 	@Override
 	protected boolean getState()
@@ -269,6 +236,63 @@ public class DeviceChoice extends DeviceComponent
 	}
 
 	@Override
+	protected void initializeData(String data, boolean is_on)
+	{
+		initial_state = is_on;
+		initializing = true;
+		displayData(data, is_on);
+		comboB.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				if (initializing)
+					return;
+				reportingChange = true;
+				reportDataChanged(new Integer(comboB.getSelectedIndex()));
+				reportingChange = false;
+				if (updateIdentifier == null || updateIdentifier.equals(""))
+					return;
+				final String currItem = (String) comboB.getSelectedItem();
+				master.fireUpdate(updateIdentifier, currItem);
+			}
+		});
+		initializing = false;
+	}
+
+	@Override
+	public void postConfigure()
+	{
+		final String currItem = (String) comboB.getSelectedItem();
+		if (master != null && updateIdentifier != null)
+			master.fireUpdate(updateIdentifier, currItem);
+	}
+
+	public void setChoiceDoubleValues(double choiceDoubleValues[])
+	{ this.choiceDoubleValues = choiceDoubleValues; }
+
+	public void setChoiceFloatValues(float choiceFloatValues[])
+	{ this.choiceFloatValues = choiceFloatValues; }
+
+	public void setChoiceIntValues(int choiceIntValues[])
+	{ this.choiceIntValues = choiceIntValues; }
+
+	public void setChoiceItems(String choiceItems[])
+	{
+		this.choiceItems = choiceItems;
+		if (comboB != null)
+		{
+			comboB.removeAllItems();
+			if (choiceItems != null)
+				for (final String item : choiceItems)
+					comboB.addItem(item);
+		}
+	}
+
+	public void setConvert(boolean convert)
+	{ this.convert = convert; }
+
+	@Override
 	public void setEnabled(boolean state)
 	{
 		// if(checkB != null) checkB.setEnabled(state);
@@ -276,45 +300,6 @@ public class DeviceChoice extends DeviceComponent
 			comboB.setEnabled(state);
 		if (label != null)
 			label.setEnabled(state);
-	}
-
-	@Override
-	public Component add(Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Choice. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(String name, Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Choice. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(Component c, int intex)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Choice. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
 	}
 
 	@Override
@@ -331,5 +316,20 @@ public class DeviceChoice extends DeviceComponent
 				label.setForeground(Color.black);
 		}
 		super.setHighlight(highlighted);
+	}
+
+	public void setLabelString(String labelString)
+	{
+		this.labelString = labelString;
+		label.setText(labelString);
+		redisplay();
+	}
+
+	public void setShowState(boolean showState)
+	{
+		this.showState = showState;
+		if (showState)
+			checkB.setVisible(true);
+		redisplay();
 	}
 }

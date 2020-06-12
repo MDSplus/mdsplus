@@ -176,9 +176,6 @@ public class Node
 	public static final boolean isCopied()
 	{ return Node.copied != null; }
 
-	public static final void updateCell()
-	{/* stub */}
-
 	private static final ImageIcon loadIcon(final String gifname)
 	{
 		final String base = System.getProperty("icon_base");
@@ -186,6 +183,9 @@ public class Node
 			return new ImageIcon(Node.class.getClassLoader().getResource(gifname));
 		return new ImageIcon(base + "/" + gifname);
 	}
+
+	public static final void updateCell()
+	{/* stub */}
 
 	private TreeNodeLabel label;
 	private Node[] members;
@@ -271,6 +271,31 @@ public class Node
 		return this.addNode(new_nid, NODE.USAGE_DEVICE);
 	}
 
+	private final Node addNode(final Nid new_nid, final int new_usage)
+	{
+		final boolean ismember = new_usage != NODE.USAGE_STRUCTURE || new_usage != NODE.USAGE_SUBTREE;
+		final Node newNode = new Node(this.treeview, new_nid, this, null);
+		this.expand();
+		if (ismember)
+		{
+			final Node[] newNodes = new Node[this.members.length + 1];
+			System.arraycopy(this.members, 0, newNodes, 0, this.members.length);
+			newNodes[this.members.length] = newNode;
+			this.members = newNodes;
+		}
+		else
+		{
+			final Node[] newNodes = new Node[this.children.length + 1];
+			System.arraycopy(this.children, 0, newNodes, 0, this.children.length);
+			newNodes[this.children.length] = newNode;
+			this.children = newNodes;
+		}
+		newNode.setTreeNode(new DefaultMutableTreeNode(newNode));
+		this.treeview.addNodeToParent(newNode.getTreeNode(), this.getTreeNode());
+		this.treeview.setCurrentNode(newNode);
+		return newNode;
+	}
+
 	public final Node addNode(final String new_name, final byte new_usage) throws MdsException
 	{
 		Nid new_nid;
@@ -285,6 +310,47 @@ public class Node
 			prev_default.setDefault();
 		}
 		return this.addNode(new_nid, new_usage);
+	}
+
+	private final boolean changePath(final Node newParent, final String newName)
+	{
+		if ((newParent == this.parent) && (newName == this.getName()))
+			return false; // nothing to do
+		if (newName.length() > 12 || newName.length() == 0)
+		{
+			JOptionPane.showMessageDialog(this.treeview, "Node name lengh must be between 1 and 12 characters",
+					"Error renaming node: " + newName.length(), JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		try
+		{
+			final Nid prev_default = this.nid.getTree().getDefaultNid();
+			this.parent.setDefault();
+			try
+			{
+				this.nid.setPath(newName);
+			}
+			finally
+			{
+				prev_default.setDefault();
+			}
+		}
+		catch (final Exception exc)
+		{
+			JOptionPane.showMessageDialog(this.treeview, "Error changing node path: " + exc, "Error changing node path",
+					JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		if (newParent != this.parent)
+		{
+			this.parent = newParent;
+			final DefaultTreeModel tree_model = (DefaultTreeModel) this.treeview.getModel();
+			tree_model.removeNodeFromParent(this.getTreeNode());
+			this.treeview.addNodeToParent(this.getTreeNode(), this.parent.getTreeNode());
+		}
+		this.name = this.minpath = this.path = this.fullpath = null;
+		this.treeview.reportChange();
+		return true;
 	}
 
 	public final void clearFlag(final byte idx) throws MdsException
@@ -303,6 +369,18 @@ public class Node
 		Node.cut = false;
 		Node.copied = this;
 		MdsException.stdout("copy: " + Node.copied + " from " + Node.copied.parent);
+	}
+
+	private final void copyNodeInfo(final NodeInfo info)
+	{
+		this.usage = info.usage;
+		this.flags = new Flags(info.get_flags);
+		this.status = info.status;
+		this.is_leaf = info.num_descendants == 0;
+		this.name = info.node_name;
+		this.minpath = info.minpath;
+		this.path = info.path;
+		this.fullpath = info.fullpath;
 	}
 
 	public final void copyToClipboard()
@@ -410,13 +488,6 @@ public class Node
 		if (this.isSegmented())//
 			return (DATA<?>) this.nid.getSegmentData(0);
 		return this.nid.getDATA();
-	}
-
-	public final Descriptor<?> getRecord() throws MdsException
-	{
-		if (this.isSegmented())//
-			return this.nid.getSegment(0);
-		return this.nid.getRecord();
 	}
 
 	public final String getDate()
@@ -562,6 +633,13 @@ public class Node
 		return this.path;
 	}
 
+	public final Descriptor<?> getRecord() throws MdsException
+	{
+		if (this.isSegmented())//
+			return this.nid.getSegment(0);
+		return this.nid.getRecord();
+	}
+
 	public int getRLength()
 	{
 		if (this.rlength == -1)
@@ -671,6 +749,11 @@ public class Node
 
 	public final boolean isSubTree()
 	{ return this.getUsage() == NODE.USAGE_SUBTREE; }
+
+	final boolean move(final Node newParent)
+	{
+		return this.changePath(newParent, this.getName());
+	}
 
 	public final void paste()
 	{
@@ -1051,88 +1134,5 @@ public class Node
 		this.tooltip_text = this.name = this.minpath = this.path = this.fullpath = this.timeinserted = null;
 		this.usage = this.dtype = this.dclass = -1;
 		this.flags = null;
-	}
-
-	final boolean move(final Node newParent)
-	{
-		return this.changePath(newParent, this.getName());
-	}
-
-	private final Node addNode(final Nid new_nid, final int new_usage)
-	{
-		final boolean ismember = new_usage != NODE.USAGE_STRUCTURE || new_usage != NODE.USAGE_SUBTREE;
-		final Node newNode = new Node(this.treeview, new_nid, this, null);
-		this.expand();
-		if (ismember)
-		{
-			final Node[] newNodes = new Node[this.members.length + 1];
-			System.arraycopy(this.members, 0, newNodes, 0, this.members.length);
-			newNodes[this.members.length] = newNode;
-			this.members = newNodes;
-		}
-		else
-		{
-			final Node[] newNodes = new Node[this.children.length + 1];
-			System.arraycopy(this.children, 0, newNodes, 0, this.children.length);
-			newNodes[this.children.length] = newNode;
-			this.children = newNodes;
-		}
-		newNode.setTreeNode(new DefaultMutableTreeNode(newNode));
-		this.treeview.addNodeToParent(newNode.getTreeNode(), this.getTreeNode());
-		this.treeview.setCurrentNode(newNode);
-		return newNode;
-	}
-
-	private final boolean changePath(final Node newParent, final String newName)
-	{
-		if ((newParent == this.parent) && (newName == this.getName()))
-			return false; // nothing to do
-		if (newName.length() > 12 || newName.length() == 0)
-		{
-			JOptionPane.showMessageDialog(this.treeview, "Node name lengh must be between 1 and 12 characters",
-					"Error renaming node: " + newName.length(), JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		try
-		{
-			final Nid prev_default = this.nid.getTree().getDefaultNid();
-			this.parent.setDefault();
-			try
-			{
-				this.nid.setPath(newName);
-			}
-			finally
-			{
-				prev_default.setDefault();
-			}
-		}
-		catch (final Exception exc)
-		{
-			JOptionPane.showMessageDialog(this.treeview, "Error changing node path: " + exc, "Error changing node path",
-					JOptionPane.WARNING_MESSAGE);
-			return false;
-		}
-		if (newParent != this.parent)
-		{
-			this.parent = newParent;
-			final DefaultTreeModel tree_model = (DefaultTreeModel) this.treeview.getModel();
-			tree_model.removeNodeFromParent(this.getTreeNode());
-			this.treeview.addNodeToParent(this.getTreeNode(), this.parent.getTreeNode());
-		}
-		this.name = this.minpath = this.path = this.fullpath = null;
-		this.treeview.reportChange();
-		return true;
-	}
-
-	private final void copyNodeInfo(final NodeInfo info)
-	{
-		this.usage = info.usage;
-		this.flags = new Flags(info.get_flags);
-		this.status = info.status;
-		this.is_leaf = info.num_descendants == 0;
-		this.name = info.node_name;
-		this.minpath = info.minpath;
-		this.path = info.path;
-		this.fullpath = info.fullpath;
 	}
 }

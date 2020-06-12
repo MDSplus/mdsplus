@@ -19,93 +19,140 @@ public class DeviceWave extends DeviceComponent
 	private static final long serialVersionUID = 1L;
 	static final int MAX_POINTS = 500;
 	static final double MIN_STEP = 1E-5;
+	protected static float savedMinX, savedMinY, savedMaxX, savedMaxY;
+	protected static float savedWaveX[] = null, savedWaveY[] = null;
+	public static void main(String args[])
+	{
+		new DeviceWave();
+		System.out.println("Istanziato");
+	}
 	public boolean maxXVisible = false;
 	public boolean minXVisible = false;
 	public boolean maxYVisible = true;
 	public boolean minYVisible = false;
+
 	public boolean waveEditable = false;
+
 	public String updateExpression = null;
+
 	protected int prefHeight = 200;
 
-	public void setPrefHeight(int prefHeight)
-	{ this.prefHeight = prefHeight; }
-
-	public int getPrefHeight()
-	{ return prefHeight; }
-
-	public void setMaxXVisible(boolean visible)
-	{ maxXVisible = visible; }
-
-	public void setMinXVisible(boolean visible)
-	{ minXVisible = visible; }
-
-	public void setMaxYVisible(boolean visible)
-	{ maxYVisible = visible; }
-
-	public void setMinYVisible(boolean visible)
-	{ minYVisible = visible; }
-
-	public boolean getMaxXVisible()
-	{ return maxXVisible; }
-
-	public boolean getMinXVisible()
-	{ return minXVisible; }
-
-	public boolean getMaxYVisible()
-	{ return maxYVisible; }
-
-	public boolean getMinYVisible()
-	{ return minYVisible; }
-
-	public void setWaveEditable(boolean editable)
-	{ waveEditable = editable; }
-
-	public boolean getWaveEditable()
-	{ return waveEditable; }
-
-	public void setUpdateExpression(String updateExpression)
-	{ this.updateExpression = updateExpression; }
-
-	public String getUpdateExpression()
-	{ return updateExpression; }
-
 	protected boolean initializing = false;
+
 	protected WaveformEditor waveEditor;
+
 	protected JTable table;
+
 	protected JTextField maxXField = null, minXField = null, maxYField = null, minYField = null;
+
 	protected JCheckBox editCB;
+
 	protected JScrollPane scroll;
+
 	protected int numPoints;
+
 	protected float[] waveX = null, waveY = null;
+
 	protected float[] waveXOld = null, waveYOld = null;
+
 	protected float maxX, minX, maxY, minY;
+
 	protected float maxXOld, minXOld, maxYOld, minYOld;
+
 	private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
-	protected static float savedMinX, savedMinY, savedMaxX, savedMaxY;
-	protected static float savedWaveX[] = null, savedWaveY[] = null;
 	JPopupMenu copyPastePopup;
 	JMenuItem copyI, copyC, pasteI, pasteC;
-
 	public DeviceWave()
 	{}
-
-	private boolean isClipboardText(Clipboard clip)
+	@Override
+	public Component add(Component c)
 	{
-		final Transferable contents = clip.getContents(null);
-		final DataFlavor[] flavors = contents.getTransferDataFlavors();
-		// System.out.println("isClipboardText: " + flavors);
-		boolean isText = false;
-		for (int k = 0; k < flavors.length; k++)
+		if (!initializing)
 		{
-			// System.out.println( flavors[k].getHumanPresentableName());
-			if (!flavors[k].getHumanPresentableName().equals("Unicode String"))
-				continue;
-			isText = true;
-			break;
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Wave. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
 		}
-		return isText;
+		return super.add(c);
 	}
-
+	@Override
+	public Component add(Component c, int intex)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Wave. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+	@Override
+	public Component add(String name, Component c)
+	{
+		if (!initializing)
+		{
+			JOptionPane.showMessageDialog(null,
+					"You cannot add a component to a Device Wave. Please remove the component.",
+					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
+			return null;
+		}
+		return super.add(c);
+	}
+	@Override
+	public void apply() throws Exception
+	{
+		final CellEditor ce = table.getCellEditor();
+		if (ce != null)
+			ce.stopCellEditing();
+		super.apply();
+		updateLimits();
+		if (minXVisible)
+		{
+			try
+			{
+				subtree.putDataExpr(nidData + 1, "" + minX);
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Error storing min X value: " + exc);
+			}
+		}
+		if (maxXVisible)
+		{
+			try
+			{
+				subtree.putDataExpr(nidData + 2, "" + maxX);
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Error storing max X value: " + exc);
+			}
+		}
+		if (minYVisible)
+		{
+			try
+			{
+				subtree.putDataExpr(nidData + 3, "" + minY);
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Error storing min Y value: " + exc);
+			}
+		}
+		if (maxYVisible)
+		{
+			try
+			{
+				subtree.putDataExpr(nidData + 4, "" + maxY);
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Error storing max Y value: " + exc);
+			}
+		}
+	}
 	private void create()
 	{
 		savedWaveX = null;
@@ -176,10 +223,6 @@ public class DeviceWave extends DeviceComponent
 			{ return 2; }
 
 			@Override
-			public int getRowCount()
-			{ return MAX_POINTS; }
-
-			@Override
 			public String getColumnName(int col)
 			{
 				if (col == 0)
@@ -187,6 +230,10 @@ public class DeviceWave extends DeviceComponent
 				else
 					return "Value";
 			}
+
+			@Override
+			public int getRowCount()
+			{ return MAX_POINTS; }
 
 			@Override
 			public Object getValueAt(int row, int col)
@@ -684,6 +731,153 @@ public class DeviceWave extends DeviceComponent
 			}
 		});
 	}
+	@Override
+	protected void dataChanged(int offsetNid, Object data)
+	{
+		if (offsetNid != getOffsetNid())
+			return;
+		Vector inVect;
+		try
+		{
+			inVect = (Vector) data;
+		}
+		catch (final Exception exc)
+		{
+			System.err.println("Internal error: wrong data passed to DeviceWave.dataChanged");
+			return;
+		}
+		minX = ((Float) inVect.elementAt(0)).floatValue();
+		maxX = ((Float) inVect.elementAt(1)).floatValue();
+		minY = ((Float) inVect.elementAt(2)).floatValue();
+		maxY = ((Float) inVect.elementAt(3)).floatValue();
+		final float[] currX = (float[]) inVect.elementAt(4);
+		final float[] currY = (float[]) inVect.elementAt(5);
+		try
+		{
+			waveX = new float[currX.length];
+			waveY = new float[currY.length];
+			for (int i = 0; i < currX.length; i++)
+			{
+				waveX[i] = currX[i];
+				waveY[i] = currY[i];
+			}
+		}
+		catch (final Exception exc)
+		{}
+		displayData(null, true);
+	}
+	@Override
+	protected void displayData(String data, boolean is_on)
+	{
+		waveEditor.setWaveform(waveX, waveY, minY, maxY);
+		if (maxXVisible)
+		{
+			maxXField.setText("" + maxX);
+		}
+		if (minXVisible)
+		{
+			minXField.setText("" + minX);
+		}
+		if (maxYVisible)
+		{
+			maxYField.setText("" + maxY);
+		}
+		if (minYVisible)
+		{
+			minYField.setText("" + minY);
+		}
+		table.repaint();
+	}
+	@Override
+	public void fireUpdate(String updateId, String newExpr)
+	{
+		if (updateIdentifier != null && updateExpression != null && updateIdentifier.equals(updateId))
+		{
+			// Substitute $ in expression with the new value
+			final StringTokenizer st = new StringTokenizer(updateExpression, "$");
+			String newExprStr = "";
+			try
+			{
+				final String newVal = newExpr.toString();
+				while (st.hasMoreTokens())
+				{
+					newExprStr += st.nextToken();
+					if (st.hasMoreTokens())
+						newExprStr += newVal;
+				}
+				// System.out.println(newExprStr);
+				// Update first current id TDI variables
+				master.updateIdentifiers();
+				// Compute new Max
+				final String newData = subtree.execute(newExprStr);
+				maxY = subtree.getFloat(newData);
+				// System.out.println(""+maxY);
+				if (maxYVisible)
+					maxYField.setText("" + maxY);
+				waveEditor.setWaveform(waveX, waveY, minY, maxY);
+			}
+			catch (final Exception exc)
+			{
+				System.err.println("Error updating Max Y: " + exc);
+			}
+		}
+	}
+	protected String getArrayExpr(float[] vals)
+	{
+		String retExpr = "";
+		for (int i = 0; i < vals.length; i++)
+		{
+			if (i < vals.length - 1)
+				retExpr += vals[i] + ",";
+			else
+				retExpr += vals[i];
+		}
+		return retExpr + "]";
+	}
+	@Override
+	protected String getData()
+	{
+//System.out.println("waveY length " + waveY.length);
+		final String dims = getArrayExpr(waveX);
+		final String values = getArrayExpr(waveY);
+		return "BUIILD_SIGNAL(" + values + ",," + dims + ")";
+	}
+	@Override
+	protected Object getFullData()
+	{
+		final Vector res = new Vector();
+		res.add(new Float(minX));
+		res.add(new Float(maxX));
+		res.add(new Float(minY));
+		res.add(new Float(maxY));
+		res.add(waveX);
+		res.add(waveY);
+		return res;
+	}
+	public boolean getMaxXVisible()
+	{ return maxXVisible; }
+
+	public boolean getMaxYVisible()
+	{ return maxYVisible; }
+
+	public boolean getMinXVisible()
+	{ return minXVisible; }
+
+	public boolean getMinYVisible()
+	{ return minYVisible; }
+
+	public int getPrefHeight()
+	{ return prefHeight; }
+
+	@Override
+	protected boolean getState()
+	{ return true; }
+
+	public String getUpdateExpression()
+	{ return updateExpression; }
+
+	public boolean getWaveEditable()
+	{ return waveEditable; }
 
 	@Override
 	protected void initializeData(String data, boolean is_on)
@@ -809,111 +1003,21 @@ public class DeviceWave extends DeviceComponent
 		initializing = false;
 	}
 
-	@Override
-	protected void displayData(String data, boolean is_on)
+	private boolean isClipboardText(Clipboard clip)
 	{
-		waveEditor.setWaveform(waveX, waveY, minY, maxY);
-		if (maxXVisible)
+		final Transferable contents = clip.getContents(null);
+		final DataFlavor[] flavors = contents.getTransferDataFlavors();
+		// System.out.println("isClipboardText: " + flavors);
+		boolean isText = false;
+		for (int k = 0; k < flavors.length; k++)
 		{
-			maxXField.setText("" + maxX);
+			// System.out.println( flavors[k].getHumanPresentableName());
+			if (!flavors[k].getHumanPresentableName().equals("Unicode String"))
+				continue;
+			isText = true;
+			break;
 		}
-		if (minXVisible)
-		{
-			minXField.setText("" + minX);
-		}
-		if (maxYVisible)
-		{
-			maxYField.setText("" + maxY);
-		}
-		if (minYVisible)
-		{
-			minYField.setText("" + minY);
-		}
-		table.repaint();
-	}
-
-	@Override
-	protected String getData()
-	{
-//System.out.println("waveY length " + waveY.length);
-		final String dims = getArrayExpr(waveX);
-		final String values = getArrayExpr(waveY);
-		return "BUIILD_SIGNAL(" + values + ",," + dims + ")";
-	}
-
-	protected String getArrayExpr(float[] vals)
-	{
-		String retExpr = "";
-		for (int i = 0; i < vals.length; i++)
-		{
-			if (i < vals.length - 1)
-				retExpr += vals[i] + ",";
-			else
-				retExpr += vals[i];
-		}
-		return retExpr + "]";
-	}
-
-	@Override
-	protected boolean getState()
-	{ return true; }
-
-	@Override
-	public void setEnabled(boolean state)
-	{}
-
-	@Override
-	public void apply() throws Exception
-	{
-		final CellEditor ce = table.getCellEditor();
-		if (ce != null)
-			ce.stopCellEditing();
-		super.apply();
-		updateLimits();
-		if (minXVisible)
-		{
-			try
-			{
-				subtree.putDataExpr(nidData + 1, "" + minX);
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Error storing min X value: " + exc);
-			}
-		}
-		if (maxXVisible)
-		{
-			try
-			{
-				subtree.putDataExpr(nidData + 2, "" + maxX);
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Error storing max X value: " + exc);
-			}
-		}
-		if (minYVisible)
-		{
-			try
-			{
-				subtree.putDataExpr(nidData + 3, "" + minY);
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Error storing min Y value: " + exc);
-			}
-		}
-		if (maxYVisible)
-		{
-			try
-			{
-				subtree.putDataExpr(nidData + 4, "" + maxY);
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Error storing max Y value: " + exc);
-			}
-		}
+		return isText;
 	}
 
 	@Override
@@ -932,6 +1036,49 @@ public class DeviceWave extends DeviceComponent
 		}
 		super.reset();
 	}
+
+	@Override
+	public void setEnabled(boolean state)
+	{}
+
+	@Override
+	public void setHighlight(boolean highlighted)
+	{
+		if (highlighted)
+		{
+			Waveform.SetColors(new Color[]
+			{ Color.red }, new String[]
+			{ "Red" });
+		}
+		else
+		{
+			Waveform.SetColors(new Color[]
+			{ Color.black }, new String[]
+			{ "Black" });
+		}
+		super.setHighlight(highlighted);
+	}
+
+	public void setMaxXVisible(boolean visible)
+	{ maxXVisible = visible; }
+
+	public void setMaxYVisible(boolean visible)
+	{ maxYVisible = visible; }
+
+	public void setMinXVisible(boolean visible)
+	{ minXVisible = visible; }
+
+	public void setMinYVisible(boolean visible)
+	{ minYVisible = visible; }
+
+	public void setPrefHeight(int prefHeight)
+	{ this.prefHeight = prefHeight; }
+
+	public void setUpdateExpression(String updateExpression)
+	{ this.updateExpression = updateExpression; }
+
+	public void setWaveEditable(boolean editable)
+	{ waveEditable = editable; }
 
 	protected void updateLimits()
 	{
@@ -1005,152 +1152,5 @@ public class DeviceWave extends DeviceComponent
 			}
 			repaint();
 		}
-	}
-
-	@Override
-	public Component add(Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Wave. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(String name, Component c)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Wave. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public Component add(Component c, int intex)
-	{
-		if (!initializing)
-		{
-			JOptionPane.showMessageDialog(null,
-					"You cannot add a component to a Device Wave. Please remove the component.",
-					"Error adding Device field", JOptionPane.WARNING_MESSAGE);
-			return null;
-		}
-		return super.add(c);
-	}
-
-	@Override
-	public void fireUpdate(String updateId, String newExpr)
-	{
-		if (updateIdentifier != null && updateExpression != null && updateIdentifier.equals(updateId))
-		{
-			// Substitute $ in expression with the new value
-			final StringTokenizer st = new StringTokenizer(updateExpression, "$");
-			String newExprStr = "";
-			try
-			{
-				final String newVal = newExpr.toString();
-				while (st.hasMoreTokens())
-				{
-					newExprStr += st.nextToken();
-					if (st.hasMoreTokens())
-						newExprStr += newVal;
-				}
-				// System.out.println(newExprStr);
-				// Update first current id TDI variables
-				master.updateIdentifiers();
-				// Compute new Max
-				final String newData = subtree.execute(newExprStr);
-				maxY = subtree.getFloat(newData);
-				// System.out.println(""+maxY);
-				if (maxYVisible)
-					maxYField.setText("" + maxY);
-				waveEditor.setWaveform(waveX, waveY, minY, maxY);
-			}
-			catch (final Exception exc)
-			{
-				System.err.println("Error updating Max Y: " + exc);
-			}
-		}
-	}
-
-	@Override
-	protected Object getFullData()
-	{
-		final Vector res = new Vector();
-		res.add(new Float(minX));
-		res.add(new Float(maxX));
-		res.add(new Float(minY));
-		res.add(new Float(maxY));
-		res.add(waveX);
-		res.add(waveY);
-		return res;
-	}
-
-	@Override
-	protected void dataChanged(int offsetNid, Object data)
-	{
-		if (offsetNid != getOffsetNid())
-			return;
-		Vector inVect;
-		try
-		{
-			inVect = (Vector) data;
-		}
-		catch (final Exception exc)
-		{
-			System.err.println("Internal error: wrong data passed to DeviceWave.dataChanged");
-			return;
-		}
-		minX = ((Float) inVect.elementAt(0)).floatValue();
-		maxX = ((Float) inVect.elementAt(1)).floatValue();
-		minY = ((Float) inVect.elementAt(2)).floatValue();
-		maxY = ((Float) inVect.elementAt(3)).floatValue();
-		final float[] currX = (float[]) inVect.elementAt(4);
-		final float[] currY = (float[]) inVect.elementAt(5);
-		try
-		{
-			waveX = new float[currX.length];
-			waveY = new float[currY.length];
-			for (int i = 0; i < currX.length; i++)
-			{
-				waveX[i] = currX[i];
-				waveY[i] = currY[i];
-			}
-		}
-		catch (final Exception exc)
-		{}
-		displayData(null, true);
-	}
-
-	@Override
-	public void setHighlight(boolean highlighted)
-	{
-		if (highlighted)
-		{
-			Waveform.SetColors(new Color[]
-			{ Color.red }, new String[]
-			{ "Red" });
-		}
-		else
-		{
-			Waveform.SetColors(new Color[]
-			{ Color.black }, new String[]
-			{ "Black" });
-		}
-		super.setHighlight(highlighted);
-	}
-
-	public static void main(String args[])
-	{
-		new DeviceWave();
-		System.out.println("Istanziato");
 	}
 }

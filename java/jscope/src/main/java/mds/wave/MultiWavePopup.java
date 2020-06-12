@@ -58,51 +58,6 @@ public class MultiWavePopup extends WavePopup
 	protected Waveform getWave()
 	{ return super.wave; }
 
-	protected void RemoveLegend()
-	{
-		wave.RemoveLegend();
-	}
-
-	protected void PositionLegend(Point p)
-	{
-		wave.SetLegend(p);
-	}
-
-	@Override
-	protected void SetMenuItem(boolean is_image)
-	{
-		int start = 0;
-		super.SetMenuItem(is_image);
-		if (!is_image)
-		{
-			if (parent instanceof WaveformManager)
-				start += 2;
-			insert(legend, start + 1);
-			if (wave.isFixedLegend())
-			{
-				insert(signalList, start + 4);
-				legend.setText("Show Legend");
-			}
-			else
-			{
-				insert(remove_legend, start + 2);
-				insert(signalList, start + 5);
-			}
-		}
-	}
-
-	@Override
-	protected void SetSignalMenu()
-	{
-		super.SetSignalMenu();
-		if (wave.GetShowSignalCount() == 0)
-		{
-			legend.setEnabled(false);
-			remove_legend.setEnabled(false);
-			signalList.setEnabled(false);
-		}
-	}
-
 	@Override
 	protected void InitOptionMenu()
 	{
@@ -176,27 +131,26 @@ public class MultiWavePopup extends WavePopup
 		}
 	}
 
-	@Override
-	protected void SetMenu()
+	protected void PositionLegend(Point p)
 	{
-		this.wave = (MultiWaveform) super.wave;
-		super.SetMenu();
+		wave.SetLegend(p);
+	}
+
+	protected void RemoveLegend()
+	{
+		wave.RemoveLegend();
+	}
+
+	@Override
+	public void SetColor(int idx)
+	{
+		if (wave.GetColorIdx(wave.GetSelectedSignal()) != idx)
+			wave.SetColorIdx(wave.GetSelectedSignal(), idx);
 	}
 
 	protected void SetInterpolate(boolean state)
 	{
 		wave.SetInterpolate(wave.GetSelectedSignal(), state);
-	}
-
-	@Override
-	protected void SetMode2D(int mode)
-	{
-		wave.setSignalMode(wave.GetSelectedSignal(), mode);
-	}
-
-	public void SetSignalState(String label, boolean state)
-	{
-		wave.SetSignalState(label, state);
 	}
 
 	@Override
@@ -214,9 +168,55 @@ public class MultiWavePopup extends WavePopup
 	}
 
 	@Override
-	public void SetColor(int idx)
+	protected void SetMenu()
 	{
-		if (wave.GetColorIdx(wave.GetSelectedSignal()) != idx)
-			wave.SetColorIdx(wave.GetSelectedSignal(), idx);
+		this.wave = (MultiWaveform) super.wave;
+		super.SetMenu();
+	}
+
+	@Override
+	protected void SetMenuItem(boolean is_image)
+	{
+		int start = 0;
+		super.SetMenuItem(is_image);
+		if (!is_image)
+		{
+			if (parent instanceof WaveformManager)
+				start += 2;
+			insert(legend, start + 1);
+			if (wave.isFixedLegend())
+			{
+				insert(signalList, start + 4);
+				legend.setText("Show Legend");
+			}
+			else
+			{
+				insert(remove_legend, start + 2);
+				insert(signalList, start + 5);
+			}
+		}
+	}
+
+	@Override
+	protected void SetMode2D(int mode)
+	{
+		wave.setSignalMode(wave.GetSelectedSignal(), mode);
+	}
+
+	@Override
+	protected void SetSignalMenu()
+	{
+		super.SetSignalMenu();
+		if (wave.GetShowSignalCount() == 0)
+		{
+			legend.setEnabled(false);
+			remove_legend.setEnabled(false);
+			signalList.setEnabled(false);
+		}
+	}
+
+	public void SetSignalState(String label, boolean state)
+	{
+		wave.SetSignalState(label, state);
 	}
 }

@@ -20,14 +20,14 @@ import mds.data.descriptor_s.Missing;
 
 public abstract class NUMBERArray<T extends Number> extends Descriptor_A<T> implements DATA<T[]>
 {
-	public NUMBERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
-	{
-		super(dtype, data, shape);
-	}
-
 	protected NUMBERArray(final ByteBuffer b)
 	{
 		super(b);
+	}
+
+	public NUMBERArray(final DTYPE dtype, final ByteBuffer data, final int[] shape)
+	{
+		super(dtype, data, shape);
 	}
 
 	@Override
@@ -37,6 +37,15 @@ public abstract class NUMBERArray<T extends Number> extends Descriptor_A<T> impl
 	}
 
 	public abstract ByteBuffer buildBuffer(final ByteBuffer buf, final double value);
+
+	@Override
+	protected StringBuilder decompile(final StringBuilder pout, final T value)
+	{
+		pout.append(value);
+		if (!this.format())
+			pout.append(this.getSuffix());
+		return pout;
+	}
 
 	@Override
 	public Descriptor<?> divide(final Descriptor<?> X, final Descriptor<?> Y) throws MdsException
@@ -91,6 +100,14 @@ public abstract class NUMBERArray<T extends Number> extends Descriptor_A<T> impl
 	public final byte getRank()
 	{ return (byte) (0x80 | this.getRankClass() | this.getRankBits()); }
 
+	protected abstract byte getRankBits();
+
+	protected abstract byte getRankClass();
+
+	@Override
+	protected final String getSuffix()
+	{ return this.dtype().suffix; }
+
 	@Override
 	public final boolean isLocal()
 	{ return true; }
@@ -131,6 +148,20 @@ public abstract class NUMBERArray<T extends Number> extends Descriptor_A<T> impl
 	public Descriptor<?> multiply(final Descriptor<?> X, final Descriptor<?> Y) throws MdsException
 	{
 		return this.double_binary(X, Y, new double_multiply());
+	}
+
+	protected final Descriptor<?> newType(final DTYPE dtype, final ByteBuffer buf, final int[] shape)
+	{
+		try
+		{
+			return this.getClass().getConstructor(DTYPE.class, ByteBuffer.class, int[].class).newInstance(dtype,
+					buf.rewind(), shape);
+		}
+		catch (final Exception e)
+		{
+			e.printStackTrace();
+			return Missing.NEW;
+		}
 	}
 
 	public abstract T parse(String in);
@@ -220,36 +251,5 @@ public abstract class NUMBERArray<T extends Number> extends Descriptor_A<T> impl
 	public String toString(final T t)
 	{
 		return t.toString();
-	}
-
-	@Override
-	protected StringBuilder decompile(final StringBuilder pout, final T value)
-	{
-		pout.append(value);
-		if (!this.format())
-			pout.append(this.getSuffix());
-		return pout;
-	}
-
-	protected abstract byte getRankBits();
-
-	protected abstract byte getRankClass();
-
-	@Override
-	protected final String getSuffix()
-	{ return this.dtype().suffix; }
-
-	protected final Descriptor<?> newType(final DTYPE dtype, final ByteBuffer buf, final int[] shape)
-	{
-		try
-		{
-			return this.getClass().getConstructor(DTYPE.class, ByteBuffer.class, int[].class).newInstance(dtype,
-					buf.rewind(), shape);
-		}
-		catch (final Exception e)
-		{
-			e.printStackTrace();
-			return Missing.NEW;
-		}
 	}
 }

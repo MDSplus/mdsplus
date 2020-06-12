@@ -93,18 +93,6 @@ public abstract class Mds implements AutoCloseable
 	private static Mds active;
 	private static MdsIp shared_tunnel = null;
 
-	public final static MdsIp getLocal()
-	{
-		if (shared_tunnel == null)
-			shared_tunnel = new MdsIp();
-		if (shared_tunnel.isReady() == null)
-			return shared_tunnel;
-		return null;
-	}
-
-	public final static Mds getActiveMds()
-	{ return Mds.active; }
-
 	@SuppressWarnings(
 	{ "unchecked", "rawtypes" })
 	protected static <D extends Descriptor> D bufferToClass(final ByteBuffer b, final Class<D> cls) throws MdsException
@@ -131,6 +119,18 @@ public abstract class Mds implements AutoCloseable
 		}
 	}
 
+	public final static Mds getActiveMds()
+	{ return Mds.active; }
+
+	public final static MdsIp getLocal()
+	{
+		if (shared_tunnel == null)
+			shared_tunnel = new MdsIp();
+		if (shared_tunnel.isReady() == null)
+			return shared_tunnel;
+		return null;
+	}
+
 	protected transient HashSet<TransferEventListener> translisteners = new HashSet<TransferEventListener>();
 	protected transient HashSet<ContextEventListener> ctxlisteners = new HashSet<ContextEventListener>();
 	protected transient boolean[] event_flags = new boolean[Mds.MAX_NUM_EVENTS];
@@ -139,14 +139,18 @@ public abstract class Mds implements AutoCloseable
 	protected transient HashSet<String> defined_funs = new HashSet<String>();
 	private int mds_end_arg = 0;
 
-	public final void addTransferEventListener(final TransferEventListener l)
-	{
-		if (l != null)
-			synchronized (this.translisteners)
-			{
-				this.translisteners.add(l);
-			}
-	}
+	/**
+	 * getDescriptor evaluates a Request and returns the deserialized Descriptor
+	 * expected by the Request
+	 *
+	 * @param ctx
+	 * @param request
+	 * @return Descriptor
+	 * @throws MdsException
+	 */
+	@SuppressWarnings("rawtypes")
+	protected abstract <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> request)
+			throws MdsException;
 
 	public final void addContextEventListener(final ContextEventListener l)
 	{
@@ -154,6 +158,35 @@ public abstract class Mds implements AutoCloseable
 			synchronized (this.ctxlisteners)
 			{
 				this.ctxlisteners.add(l);
+			}
+	}
+
+	synchronized private final int addEvent(final UpdateEventListener l, final String eventName)
+	{
+		int eventid = -1;
+		EventItem eventItem;
+		if (this.hashEventName.containsKey(eventName))
+		{
+			eventItem = this.hashEventName.get(eventName);
+			if (!eventItem.listener.contains(l))
+				eventItem.listener.addElement(l);
+		}
+		else
+		{
+			eventid = this.getEventId();
+			eventItem = new EventItem(eventName, eventid, l);
+			this.hashEventName.put(eventName, eventItem);
+			this.hashEventId.put(new Integer(eventid), eventItem);
+		}
+		return eventid;
+	}
+
+	public final void addTransferEventListener(final TransferEventListener l)
+	{
+		if (l != null)
+			synchronized (this.translisteners)
+			{
+				this.translisteners.add(l);
 			}
 	}
 
@@ -174,6 +207,28 @@ public abstract class Mds implements AutoCloseable
 		this.execute(String.join(";", funs));
 		this.defined_funs.addAll(col);
 		return this.defined_funs.addAll(col);
+	}
+
+	private final void dispatchUpdateEvent(final EventItem eventItem)
+	{
+		synchronized (eventItem.listener)
+		{
+			for (final UpdateEventListener el : eventItem.listener)
+				el.handleUpdateEvent(this, eventItem.name);
+		}
+	}
+
+	protected final void dispatchUpdateEvent(final int eventid)
+	{
+		final Integer eventid_obj = new Integer(eventid);
+		if (this.hashEventId.containsKey(eventid_obj))
+			this.dispatchUpdateEvent(this.hashEventId.get(eventid_obj));
+	}
+
+	protected final void dispatchUpdateEvent(final String eventName)
+	{
+		if (this.hashEventName.containsKey(eventName))
+			this.dispatchUpdateEvent(this.hashEventName.get(eventName));
 	}
 
 	public abstract void execute(final String expr, final Descriptor<?>... args) throws MdsException;
@@ -209,6 +264,25 @@ public abstract class Mds implements AutoCloseable
 	public final byte[] getByteArray(final String expr, final Descriptor<?>... args) throws MdsException
 	{
 		return this.getByteArray(null, expr, args);
+	}
+
+	private final Descriptor<?> getDataArray(final CTX ctx, final String expr, final Descriptor<?>... args)
+			throws MdsException
+	{
+		final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
+		if (desc instanceof StringDsc)
+		{
+			if (desc.length() < 8)
+				return Missing.NEW;
+			final ByteBuffer bb = desc.getBuffer();
+			final int line = bb.getInt();
+			final int len = bb.getInt();
+			if (bb.remaining() < len)
+				return Missing.NEW;
+			throw new MdsException(new StringBuilder(desc.length()).append(line).append(':')
+					.append(desc.toString().substring(8, 8 + len)).toString(), 0);
+		}
+		return desc;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -283,6 +357,17 @@ public abstract class Mds implements AutoCloseable
 	public final double[] getDoubleArray(final String expr, final Descriptor<?>... args) throws MdsException
 	{
 		return this.getDoubleArray(null, expr, args);
+	}
+
+	private final int getEventId()
+	{
+		int i;
+		for (i = 0; i < Mds.MAX_NUM_EVENTS && this.event_flags[i]; i++)
+			continue;
+		if (i == Mds.MAX_NUM_EVENTS)
+			return -1;
+		this.event_flags[i] = true;
+		return i;
 	}
 
 	public final float getFloat(final CTX ctx, final Request<Descriptor<?>> req) throws MdsException
@@ -445,6 +530,9 @@ public abstract class Mds implements AutoCloseable
 	public final TCL getTCL()
 	{ return new TCL(this); }
 
+	public final boolean isLocal()
+	{ return this == Mds.shared_tunnel; }
+
 	/**
 	 * returns true if the interface features a low latency This will allow more
 	 * atomic operations without significant performance issues
@@ -460,6 +548,41 @@ public abstract class Mds implements AutoCloseable
 	 * @return String
 	 */
 	public abstract String isReady();
+
+	protected final int MdsEND_ARG()
+	{
+		if (this.mds_end_arg == 0)
+			try
+			{
+				if (this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
+					this.mds_end_arg = 1;
+				else
+					this.mds_end_arg = -1;
+			}
+			catch (final MdsException e)
+			{
+				this.mds_end_arg = -1;
+			}
+		return this.mds_end_arg;
+	}
+
+	/**
+	 * registers an Event Listener
+	 *
+	 * @param event
+	 * @param eventid
+	 */
+	protected abstract void mdsSetEvent(final String event, final int eventid);
+
+	public final void removeContextEventListener(final ContextEventListener l)
+	{
+		if (l == null)
+			return;
+		synchronized (this.ctxlisteners)
+		{
+			this.ctxlisteners.remove(l);
+		}
+	}
 
 	synchronized public final int removeEvent(final UpdateEventListener l, final String event)
 	{
@@ -477,16 +600,6 @@ public abstract class Mds implements AutoCloseable
 			}
 		}
 		return eventid;
-	}
-
-	public final void removeContextEventListener(final ContextEventListener l)
-	{
-		if (l == null)
-			return;
-		synchronized (this.ctxlisteners)
-		{
-			this.ctxlisteners.remove(l);
-		}
 	}
 
 	public final void removeTransferEventListener(final TransferEventListener l)
@@ -522,117 +635,4 @@ public abstract class Mds implements AutoCloseable
 			throw new Mdsdcl.DclException(err);
 		return res.getOutString();
 	}
-
-	/**
-	 * getDescriptor evaluates a Request and returns the deserialized Descriptor
-	 * expected by the Request
-	 *
-	 * @param ctx
-	 * @param request
-	 * @return Descriptor
-	 * @throws MdsException
-	 */
-	@SuppressWarnings("rawtypes")
-	protected abstract <T extends Descriptor> T _getDescriptor(final CTX ctx, final Request<T> request)
-			throws MdsException;
-
-	protected final void dispatchUpdateEvent(final int eventid)
-	{
-		final Integer eventid_obj = new Integer(eventid);
-		if (this.hashEventId.containsKey(eventid_obj))
-			this.dispatchUpdateEvent(this.hashEventId.get(eventid_obj));
-	}
-
-	protected final void dispatchUpdateEvent(final String eventName)
-	{
-		if (this.hashEventName.containsKey(eventName))
-			this.dispatchUpdateEvent(this.hashEventName.get(eventName));
-	}
-
-	protected final int MdsEND_ARG()
-	{
-		if (this.mds_end_arg == 0)
-			try
-			{
-				if (this.getDescriptor("TdiShr->TdiPi(val(0),val(1))").toLong() == 1) //
-					this.mds_end_arg = 1;
-				else
-					this.mds_end_arg = -1;
-			}
-			catch (final MdsException e)
-			{
-				this.mds_end_arg = -1;
-			}
-		return this.mds_end_arg;
-	}
-
-	/**
-	 * registers an Event Listener
-	 *
-	 * @param event
-	 * @param eventid
-	 */
-	protected abstract void mdsSetEvent(final String event, final int eventid);
-
-	synchronized private final int addEvent(final UpdateEventListener l, final String eventName)
-	{
-		int eventid = -1;
-		EventItem eventItem;
-		if (this.hashEventName.containsKey(eventName))
-		{
-			eventItem = this.hashEventName.get(eventName);
-			if (!eventItem.listener.contains(l))
-				eventItem.listener.addElement(l);
-		}
-		else
-		{
-			eventid = this.getEventId();
-			eventItem = new EventItem(eventName, eventid, l);
-			this.hashEventName.put(eventName, eventItem);
-			this.hashEventId.put(new Integer(eventid), eventItem);
-		}
-		return eventid;
-	}
-
-	private final void dispatchUpdateEvent(final EventItem eventItem)
-	{
-		synchronized (eventItem.listener)
-		{
-			for (final UpdateEventListener el : eventItem.listener)
-				el.handleUpdateEvent(this, eventItem.name);
-		}
-	}
-
-	private final Descriptor<?> getDataArray(final CTX ctx, final String expr, final Descriptor<?>... args)
-			throws MdsException
-	{
-		final Descriptor<?> desc = this.getDescriptor(ctx, expr, args);
-		if (desc instanceof StringDsc)
-		{
-			if (desc.length() < 8)
-				return Missing.NEW;
-			final ByteBuffer bb = desc.getBuffer();
-			final int line = bb.getInt();
-			final int len = bb.getInt();
-			if (bb.remaining() < len)
-				return Missing.NEW;
-			throw new MdsException(new StringBuilder(desc.length()).append(line).append(':')
-					.append(desc.toString().substring(8, 8 + len)).toString(), 0);
-		}
-		return desc;
-	}
-
-	private final int getEventId()
-	{
-		int i;
-		for (i = 0; i < Mds.MAX_NUM_EVENTS && this.event_flags[i]; i++)
-			continue;
-		if (i == Mds.MAX_NUM_EVENTS)
-			return -1;
-		this.event_flags[i] = true;
-		return i;
-	}
-
-	public final boolean isLocal()
-	{ return this == Mds.shared_tunnel; }
 }

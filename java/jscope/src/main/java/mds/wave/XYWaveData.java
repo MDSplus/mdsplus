@@ -13,6 +13,32 @@ import java.util.*;
  */
 public class XYWaveData implements WaveData
 {
+	// Inner class AsyncUpdater
+	class AsyncUpdater extends Thread
+	{
+		double lowerBound;
+		double upperBound;
+		double resolution;
+
+		AsyncUpdater(double lowerBound, double upperBound, double resolution)
+		{
+			this.lowerBound = lowerBound;
+			this.upperBound = upperBound;
+			this.resolution = resolution;
+		}
+
+		@Override
+		public void run()
+		{
+			// System.out.println("GET DATA ASYNC "+lowerBound+" "+upperBound+"
+			// "+resolution);
+			final XYData newData = getData(lowerBound, upperBound, 1000);
+			if (isLong)
+				fireListeners(newData.xLong, newData.y, newData.resolution);
+			else
+				fireListeners(newData.x, newData.y, newData.resolution);
+		}
+	}
 	int type;
 	boolean isLong = false;
 	boolean increasingX = true;
@@ -24,25 +50,29 @@ public class XYWaveData implements WaveData
 	float z[];
 	long xLong[];
 	Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
+
 	// For test
 	boolean liveUpdateStarted = false;
 
-	XYWaveData(float x[], float y[], int numPoints)
+	XYWaveData(double x[], float y[])
 	{
-		type = Signal.TYPE_1D;
-		int len = numPoints;
-		if (x.length < len)
-			len = x.length;
-		if (y.length < len)
-			len = y.length;
-		this.x = new double[len];
-		this.y = new float[len];
-		for (int i = 0; i < len; i++)
-		{
-			this.x[i] = x[i];
-			this.y[i] = y[i];
-		}
-		checkIncreasingX();
+		this(x, y, x.length);
+	}
+
+	XYWaveData(double x[], float y[], float z[])
+	{
+		type = Signal.TYPE_2D;
+		this.x2D = new double[x.length];
+		this.y2D = new float[y.length];
+		this.z = new float[z.length];
+		for (int i = 0; i < x.length; i++)
+			this.x2D[i] = (float) x[i];
+		for (int i = 0; i < y.length; i++)
+			this.y2D[i] = y[i];
+		for (int i = 0; i < z.length; i++)
+			this.z[i] = z[i];
+		if (z.length != x.length * y.length)
+			System.out.println("INTERNAL ERROR: WRONG DIMENSIONS FOR 2D SIGNAL");
 	}
 
 	XYWaveData(double x[], float y[], int numPoints)
@@ -68,9 +98,38 @@ public class XYWaveData implements WaveData
 		this(x, y, x.length);
 	}
 
-	XYWaveData(double x[], float y[])
+	XYWaveData(float x[], float y[], float z[])
 	{
-		this(x, y, x.length);
+		type = Signal.TYPE_2D;
+		this.x2D = new double[x.length];
+		this.y2D = new float[y.length];
+		this.z = new float[z.length];
+		for (int i = 0; i < x.length; i++)
+			this.x2D[i] = x[i];
+		for (int i = 0; i < y.length; i++)
+			this.y2D[i] = y[i];
+		for (int i = 0; i < z.length; i++)
+			this.z[i] = z[i];
+		if (z.length != x.length * y.length)
+			System.out.println("INTERNAL ERROR: WRONG DIMENSIONS FOR 2D SIGNAL");
+	}
+
+	XYWaveData(float x[], float y[], int numPoints)
+	{
+		type = Signal.TYPE_1D;
+		int len = numPoints;
+		if (x.length < len)
+			len = x.length;
+		if (y.length < len)
+			len = y.length;
+		this.x = new double[len];
+		this.y = new float[len];
+		for (int i = 0; i < len; i++)
+		{
+			this.x[i] = x[i];
+			this.y[i] = y[i];
+		}
+		checkIncreasingX();
 	}
 
 	XYWaveData(long x[], float y[])
@@ -92,38 +151,6 @@ public class XYWaveData implements WaveData
 		checkIncreasingX();
 	}
 
-	XYWaveData(float x[], float y[], float z[])
-	{
-		type = Signal.TYPE_2D;
-		this.x2D = new double[x.length];
-		this.y2D = new float[y.length];
-		this.z = new float[z.length];
-		for (int i = 0; i < x.length; i++)
-			this.x2D[i] = x[i];
-		for (int i = 0; i < y.length; i++)
-			this.y2D[i] = y[i];
-		for (int i = 0; i < z.length; i++)
-			this.z[i] = z[i];
-		if (z.length != x.length * y.length)
-			System.out.println("INTERNAL ERROR: WRONG DIMENSIONS FOR 2D SIGNAL");
-	}
-
-	XYWaveData(double x[], float y[], float z[])
-	{
-		type = Signal.TYPE_2D;
-		this.x2D = new double[x.length];
-		this.y2D = new float[y.length];
-		this.z = new float[z.length];
-		for (int i = 0; i < x.length; i++)
-			this.x2D[i] = (float) x[i];
-		for (int i = 0; i < y.length; i++)
-			this.y2D[i] = y[i];
-		for (int i = 0; i < z.length; i++)
-			this.z[i] = z[i];
-		if (z.length != x.length * y.length)
-			System.out.println("INTERNAL ERROR: WRONG DIMENSIONS FOR 2D SIGNAL");
-	}
-
 	XYWaveData(long x[], float y[], float z[])
 	{
 		type = Signal.TYPE_2D;
@@ -141,20 +168,35 @@ public class XYWaveData implements WaveData
 		isLong = true;
 	}
 
-	/*
-	 * Read data within specified interval. either Xmin or xmax cna specify no limit
-	 * (-Float.MAX_VALUE, Float.MAX_VALUE)
-	 */
 	@Override
-	public boolean supportsStreaming()
+	public void addWaveDataListener(WaveDataListener listener)
 	{
-		return false;
+		listeners.addElement(listener);
 	}
 
-	@Override
-	public XYData getData(long xmin, long xmax, int numPoints)
+	void checkIncreasingX()
 	{
-		return getData((double) xmin, (double) xmax, numPoints);
+		increasingX = true;
+		for (int i = 1; i < x.length; i++)
+		{
+			if (x[i - 1] > x[i])
+			{
+				increasingX = false;
+				return;
+			}
+		}
+	}
+
+	void fireListeners(double[] x, float[] y, double resolution)
+	{
+		for (int i = 0; i < listeners.size(); i++)
+			listeners.elementAt(i).dataRegionUpdated(x, y, resolution);
+	}
+
+	void fireListeners(long[] x, float[] y, double resolution)
+	{
+		for (int i = 0; i < listeners.size(); i++)
+			listeners.elementAt(i).dataRegionUpdated(x, y, resolution);
 	}
 
 	@Override
@@ -264,12 +306,26 @@ public class XYWaveData implements WaveData
 	}
 
 	@Override
-	public float[] getZ()
+	public XYData getData(long xmin, long xmax, int numPoints)
 	{
-		if (type == Signal.TYPE_2D)
-			return z;
-		System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
-		return null;
+		return getData((double) xmin, (double) xmax, numPoints);
+	}
+
+	@Override
+	public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+	{
+		// (new AsyncUpdater(lowerBound, upperBound, numPoints/(upperBound -
+		// lowerBound))).start();
+	}
+
+	@Override
+	public int getNumDimension()
+	{ return 1; }
+
+	@Override
+	public String GetTitle()
+	{
+		return "Title";
 	}
 
 	@Override
@@ -290,13 +346,17 @@ public class XYWaveData implements WaveData
 		return null;
 	}
 
+	/**
+	 * Get the associated label for X axis. It is displayed if no X axis label is
+	 * defined in the setup data definition.
+	 *
+	 * @return The X label string.
+	 * @exception java.io.IOException
+	 */
 	@Override
-	public float[] getY2D()
+	public String GetXLabel()
 	{
-		if (type == Signal.TYPE_2D)
-			return y2D;
-		System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
-		return null;
+		return "XLabel";
 	}
 
 	public double[] getXLimits()
@@ -325,26 +385,12 @@ public class XYWaveData implements WaveData
 	}
 
 	@Override
-	public boolean isXLong()
-	{ return isLong; }
-
-	@Override
-	public String GetTitle()
+	public float[] getY2D()
 	{
-		return "Title";
-	}
-
-	/**
-	 * Get the associated label for X axis. It is displayed if no X axis label is
-	 * defined in the setup data definition.
-	 *
-	 * @return The X label string.
-	 * @exception java.io.IOException
-	 */
-	@Override
-	public String GetXLabel()
-	{
-		return "XLabel";
+		if (type == Signal.TYPE_2D)
+			return y2D;
+		System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
+		return null;
 	}
 
 	/**
@@ -358,6 +404,15 @@ public class XYWaveData implements WaveData
 	public String GetYLabel()
 	{
 		return "YLabel";
+	}
+
+	@Override
+	public float[] getZ()
+	{
+		if (type == Signal.TYPE_2D)
+			return z;
+		System.out.println("INTERNAL ERROR SimpleWave.getZ for 1D signal");
+		return null;
 	}
 
 	/**
@@ -374,10 +429,8 @@ public class XYWaveData implements WaveData
 	}
 
 	@Override
-	public void addWaveDataListener(WaveDataListener listener)
-	{
-		listeners.addElement(listener);
-	}
+	public boolean isXLong()
+	{ return isLong; }
 
 	@Override
 	public void removeWaveDataListener(WaveDataListener listener)
@@ -385,66 +438,13 @@ public class XYWaveData implements WaveData
 		listeners.remove(listener);
 	}
 
-	void fireListeners(double[] x, float[] y, double resolution)
-	{
-		for (int i = 0; i < listeners.size(); i++)
-			listeners.elementAt(i).dataRegionUpdated(x, y, resolution);
-	}
-
-	void fireListeners(long[] x, float[] y, double resolution)
-	{
-		for (int i = 0; i < listeners.size(); i++)
-			listeners.elementAt(i).dataRegionUpdated(x, y, resolution);
-	}
-
+	/*
+	 * Read data within specified interval. either Xmin or xmax cna specify no limit
+	 * (-Float.MAX_VALUE, Float.MAX_VALUE)
+	 */
 	@Override
-	public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+	public boolean supportsStreaming()
 	{
-		// (new AsyncUpdater(lowerBound, upperBound, numPoints/(upperBound -
-		// lowerBound))).start();
-	}
-
-	@Override
-	public int getNumDimension()
-	{ return 1; }
-
-	void checkIncreasingX()
-	{
-		increasingX = true;
-		for (int i = 1; i < x.length; i++)
-		{
-			if (x[i - 1] > x[i])
-			{
-				increasingX = false;
-				return;
-			}
-		}
-	}
-
-	// Inner class AsyncUpdater
-	class AsyncUpdater extends Thread
-	{
-		double lowerBound;
-		double upperBound;
-		double resolution;
-
-		AsyncUpdater(double lowerBound, double upperBound, double resolution)
-		{
-			this.lowerBound = lowerBound;
-			this.upperBound = upperBound;
-			this.resolution = resolution;
-		}
-
-		@Override
-		public void run()
-		{
-			// System.out.println("GET DATA ASYNC "+lowerBound+" "+upperBound+"
-			// "+resolution);
-			final XYData newData = getData(lowerBound, upperBound, 1000);
-			if (isLong)
-				fireListeners(newData.xLong, newData.y, newData.resolution);
-			else
-				fireListeners(newData.x, newData.y, newData.resolution);
-		}
+		return false;
 	}
 }

@@ -55,14 +55,6 @@ public class ProfileDialog extends JDialog implements WaveformListener
 		this.setAlwaysOnTop(true);
 	}
 
-	public void setWaveSource(Waveform source_profile)
-	{
-		if (this.source_profile != null)
-			(this.source_profile).removeWaveformListener(this);
-		this.source_profile = source_profile;
-		source_profile.addWaveformListener(this);
-	}
-
 	public void addProfileLine()
 	{
 		w_profile_line = new Waveform();
@@ -72,6 +64,43 @@ public class ProfileDialog extends JDialog implements WaveformListener
 		profile_container.update();
 	}
 
+	@Override
+	public void processWaveformEvent(WaveformEvent e)
+	{
+		final WaveformEvent we = e;
+		final int we_id = we.getID();
+		switch (we_id)
+		{
+		case WaveformEvent.PROFILE_UPDATE:
+			if (isShowing())
+			{
+				if (e.frame_type == FrameData.BITMAP_IMAGE_32 || e.frame_type == FrameData.BITMAP_IMAGE_16
+						|| e.frame_type == FrameData.BITMAP_IMAGE_U32 || e.frame_type == FrameData.BITMAP_IMAGE_U16
+						|| e.frame_type == FrameData.BITMAP_IMAGE_F32)
+				{
+					updateProfiles(e.name, e.x_pixel, e.y_pixel, e.time_value, e.values_x, e.start_pixel_x, e.values_y,
+							e.start_pixel_y);
+					// e.values_signal, e.frames_time);
+					if (e.values_line != null)
+						updateProfileLine(e.values_line);
+					else
+						removeProfileLine();
+				}
+				else
+				{
+					updateProfiles(e.name, e.x_pixel, e.y_pixel, e.time_value, e.pixels_x, e.start_pixel_x, e.pixels_y,
+							e.start_pixel_y);
+					// e.pixels_signal, e.frames_time);
+					if (e.pixels_line != null)
+						updateProfileLine(e.pixels_line);
+					else
+						removeProfileLine();
+				}
+			}
+			break;
+		}
+	}
+
 	public void removeProfileLine()
 	{
 		if (w_profile_line == null)
@@ -79,6 +108,26 @@ public class ProfileDialog extends JDialog implements WaveformListener
 		profile_container.removeComponent(w_profile_line);
 		w_profile_line = null;
 		profile_container.update();
+	}
+
+	public void setWaveSource(Waveform source_profile)
+	{
+		if (this.source_profile != null)
+			(this.source_profile).removeWaveformListener(this);
+		this.source_profile = source_profile;
+		source_profile.addWaveformListener(this);
+	}
+
+	public synchronized void updateProfileLine(float values_line[])
+	{
+		final float xt[] = new float[values_line.length];
+		if (w_profile_line == null)
+			addProfileLine();
+		for (int i = 0; i < values_line.length; i++)
+		{
+			xt[i] = i;
+		}
+		w_profile_line.Update(xt, values_line);
 	}
 
 	public synchronized void updateProfileLine(int pixels_line[])
@@ -95,17 +144,37 @@ public class ProfileDialog extends JDialog implements WaveformListener
 		w_profile_line.Update(xt, x);
 	}
 
-	public synchronized void updateProfileLine(float values_line[])
+	public synchronized void updateProfiles(String name, int x_pixel, int y_pixel, double time, float values_x[],
+			int start_pixel_x, float values_y[], int start_pixel_y)
+	// float values_signal[], float frames_time[])
 	{
-		final float xt[] = new float[values_line.length];
-		if (w_profile_line == null)
-			addProfileLine();
-		for (int i = 0; i < values_line.length; i++)
+		// if(!name.equals(this.name))
 		{
-			xt[i] = i;
+			// this.name = new String(name);
+			setTitle("Profile Dialog - " + name + " x_pix : " + x_pixel + " y_pix : " + y_pixel + " time : " + time);
 		}
-		w_profile_line.Update(xt, values_line);
-	}
+		if (values_x != null && values_x.length > 0)
+		{
+			final float xt[] = new float[values_x.length];
+			for (int i = 0; i < values_x.length; i++)
+				xt[i] = (float) start_pixel_x + i;
+			wave[0].setProperties(
+					"expr=" + name + "\nx_pix=" + x_pixel + "\ny_pix=" + y_pixel + "\ntime=" + time + "\n");
+			wave[0].Update(xt, values_x);
+		}
+		if (values_y != null && values_y.length > 0)
+		{
+			final float yt[] = new float[values_y.length];
+			for (int i = 0; i < values_y.length; i++)
+				yt[i] = (float) start_pixel_y + i;
+			wave[1].setProperties(
+					"expr=" + name + "\nx_pix=" + x_pixel + "\ny_pix=" + y_pixel + "\ntime=" + time + "\n");
+			wave[1].Update(yt, values_y);
+		}
+		/*
+		 * if(values_signal != null && values_signal.length > 0 && frames_time != null
+		 * && frames_time.length > 0) { wave[2].Update(frames_time, values_signal); }
+		 */ }
 
 	public synchronized void updateProfiles(String name, int x_pixel, int y_pixel, double time, int pixels_x[],
 			int start_pixel_x, int pixels_y[], int start_pixel_y)
@@ -148,73 +217,4 @@ public class ProfileDialog extends JDialog implements WaveformListener
 		 * for(int i = 0; i < pixels_signal.length; i++) { s[i] =
 		 * (float)(pixels_signal[i] & 0xff); } wave[2].Update(frames_time, s); }
 		 */ }
-
-	public synchronized void updateProfiles(String name, int x_pixel, int y_pixel, double time, float values_x[],
-			int start_pixel_x, float values_y[], int start_pixel_y)
-	// float values_signal[], float frames_time[])
-	{
-		// if(!name.equals(this.name))
-		{
-			// this.name = new String(name);
-			setTitle("Profile Dialog - " + name + " x_pix : " + x_pixel + " y_pix : " + y_pixel + " time : " + time);
-		}
-		if (values_x != null && values_x.length > 0)
-		{
-			final float xt[] = new float[values_x.length];
-			for (int i = 0; i < values_x.length; i++)
-				xt[i] = (float) start_pixel_x + i;
-			wave[0].setProperties(
-					"expr=" + name + "\nx_pix=" + x_pixel + "\ny_pix=" + y_pixel + "\ntime=" + time + "\n");
-			wave[0].Update(xt, values_x);
-		}
-		if (values_y != null && values_y.length > 0)
-		{
-			final float yt[] = new float[values_y.length];
-			for (int i = 0; i < values_y.length; i++)
-				yt[i] = (float) start_pixel_y + i;
-			wave[1].setProperties(
-					"expr=" + name + "\nx_pix=" + x_pixel + "\ny_pix=" + y_pixel + "\ntime=" + time + "\n");
-			wave[1].Update(yt, values_y);
-		}
-		/*
-		 * if(values_signal != null && values_signal.length > 0 && frames_time != null
-		 * && frames_time.length > 0) { wave[2].Update(frames_time, values_signal); }
-		 */ }
-
-	@Override
-	public void processWaveformEvent(WaveformEvent e)
-	{
-		final WaveformEvent we = e;
-		final int we_id = we.getID();
-		switch (we_id)
-		{
-		case WaveformEvent.PROFILE_UPDATE:
-			if (isShowing())
-			{
-				if (e.frame_type == FrameData.BITMAP_IMAGE_32 || e.frame_type == FrameData.BITMAP_IMAGE_16
-						|| e.frame_type == FrameData.BITMAP_IMAGE_U32 || e.frame_type == FrameData.BITMAP_IMAGE_U16
-						|| e.frame_type == FrameData.BITMAP_IMAGE_F32)
-				{
-					updateProfiles(e.name, e.x_pixel, e.y_pixel, e.time_value, e.values_x, e.start_pixel_x, e.values_y,
-							e.start_pixel_y);
-					// e.values_signal, e.frames_time);
-					if (e.values_line != null)
-						updateProfileLine(e.values_line);
-					else
-						removeProfileLine();
-				}
-				else
-				{
-					updateProfiles(e.name, e.x_pixel, e.y_pixel, e.time_value, e.pixels_x, e.start_pixel_x, e.pixels_y,
-							e.start_pixel_y);
-					// e.pixels_signal, e.frames_time);
-					if (e.pixels_line != null)
-						updateProfileLine(e.pixels_line);
-					else
-						removeProfileLine();
-				}
-			}
-			break;
-		}
-	}
 }

@@ -8,20 +8,6 @@ import java.io.*;
  */
 public class MdsIpProtocolWrapper
 {
-	static
-	{
-		try
-		{
-			System.loadLibrary("JavaMds");
-		}
-		catch (final UnsatisfiedLinkError e)
-		{
-			javax.swing.JOptionPane.showMessageDialog(null, "Can't load data provider class LocalDataProvider : " + e,
-					"Alert LocalDataProvider", javax.swing.JOptionPane.ERROR_MESSAGE);
-		}
-	}
-	int connectionIdx = -1;
-
 	class MdsIpInputStream extends InputStream
 	{
 		@Override
@@ -59,33 +45,8 @@ public class MdsIpProtocolWrapper
 			return readBuf.length;
 		}
 	}
-
-	InputStream getInputStream()
-	{ return new MdsIpInputStream(); }
-
 	class MdsIpOutputStream extends OutputStream
 	{
-		@Override
-		public void write(int b) throws IOException
-		{
-			if (connectionIdx == -1)
-				throw new IOException("Not Connected");
-			final int numSent = send(connectionIdx, new byte[]
-			{ (byte) b }, false);
-			if (numSent == -1)
-				throw new IOException("Cannot Write Data");
-		}
-
-		@Override
-		public void write(byte[] b) throws IOException
-		{
-			if (connectionIdx == -1)
-				throw new IOException("Not Connected");
-			final int numSent = send(connectionIdx, b, false);
-			if (numSent == b.length)
-				throw new IOException("Incomplete write");
-		}
-
 		/*
 		 * public void flush() throws IOException { System.out.println("FLUSH..");
 		 * if(connectionIdx == -1) throw new IOException("Not Connected");
@@ -100,24 +61,40 @@ public class MdsIpProtocolWrapper
 				connectionIdx = -1;
 			}
 		}
+
+		@Override
+		public void write(byte[] b) throws IOException
+		{
+			if (connectionIdx == -1)
+				throw new IOException("Not Connected");
+			final int numSent = send(connectionIdx, b, false);
+			if (numSent == b.length)
+				throw new IOException("Incomplete write");
+		}
+
+		@Override
+		public void write(int b) throws IOException
+		{
+			if (connectionIdx == -1)
+				throw new IOException("Not Connected");
+			final int numSent = send(connectionIdx, new byte[]
+			{ (byte) b }, false);
+			if (numSent == -1)
+				throw new IOException("Cannot Write Data");
+		}
 	}
 
-	OutputStream getOutputStream()
-	{ return new MdsIpOutputStream(); }
-
-	public native int connectToMds(String url);
-
-	public native int send(int connectionId, byte[] sendBuf, boolean nowait);
-
-	public native byte[] recv(int connectionId, int len);
-
-	public native void flush(int connectionId);
-
-	public native void disconnect(int connectionId);
-
-	public MdsIpProtocolWrapper(String url)
+	static
 	{
-		connectionIdx = connectToMds(url);
+		try
+		{
+			System.loadLibrary("JavaMds");
+		}
+		catch (final UnsatisfiedLinkError e)
+		{
+			javax.swing.JOptionPane.showMessageDialog(null, "Can't load data provider class LocalDataProvider : " + e,
+					"Alert LocalDataProvider", javax.swing.JOptionPane.ERROR_MESSAGE);
+		}
 	}
 
 	public static void main(String args[])
@@ -126,4 +103,27 @@ public class MdsIpProtocolWrapper
 		final int idx = mpw.connectToMds("tcp://ra22.igi.cnr.it:8100");
 		System.out.println("Connected: " + idx);
 	}
+
+	int connectionIdx = -1;
+
+	public MdsIpProtocolWrapper(String url)
+	{
+		connectionIdx = connectToMds(url);
+	}
+
+	public native int connectToMds(String url);
+
+	public native void disconnect(int connectionId);
+
+	public native void flush(int connectionId);
+
+	InputStream getInputStream()
+	{ return new MdsIpInputStream(); }
+
+	OutputStream getOutputStream()
+	{ return new MdsIpOutputStream(); }
+
+	public native byte[] recv(int connectionId, int len);
+
+	public native int send(int connectionId, byte[] sendBuf, boolean nowait);
 }

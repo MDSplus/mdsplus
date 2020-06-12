@@ -9,6 +9,21 @@ import java.lang.reflect.Method;
 
 public class NodeBeanInfo extends SimpleBeanInfo
 {
+	static MethodDescriptor method(String name, String description) throws NoSuchMethodException, SecurityException
+	{
+		final Method m = Node.class.getMethod(name, new Class[] {});
+		final MethodDescriptor md = new MethodDescriptor(m);
+		md.setShortDescription(description);
+		return md;
+	}
+
+	static PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, Node.class);
+		p.setShortDescription(description);
+		return p;
+	}
+
 	String usage;
 	MDSplus.Tree experiment;
 	String name;
@@ -46,11 +61,40 @@ public class NodeBeanInfo extends SimpleBeanInfo
 		return new BeanDescriptor(Node.class, null);
 	}
 
-	static PropertyDescriptor property(String name, String description) throws IntrospectionException
+	@Override
+	public MethodDescriptor[] getMethodDescriptors()
 	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, Node.class);
-		p.setShortDescription(description);
-		return p;
+		try
+		{
+			final MethodDescriptor[] methods =
+			{ method("setupDevice", "Setup Device"), method("toggle", "Toggle On/Off"),
+					method("setDefault", "Set Default"), method("doAction", "Do Action") };
+			return methods;
+		}
+		catch (final Exception e)
+		{
+			return super.getMethodDescriptors();
+		}
+	}
+
+	@Override
+	public PropertyDescriptor[] getPropertyDescriptors()
+	{
+		try
+		{
+			final PropertyDescriptor[] props =
+			{ property("data", "Display Data"), property("info", "Display Nci"), property("info", "Display Tags"),
+					property("data", "Modify Data") };
+			props[0].setPropertyEditorClass(NodeDisplayData.class);
+			props[1].setPropertyEditorClass(NodeDisplayNci.class);
+			props[2].setPropertyEditorClass(NodeDisplayTags.class);
+			props[3].setPropertyEditorClass(NodeModifyData.class);
+			return props;
+		}
+		catch (final IntrospectionException e)
+		{
+			return super.getPropertyDescriptors();
+		}
 	}
 
 	boolean isSupported(String short_descr)
@@ -88,49 +132,5 @@ public class NodeBeanInfo extends SimpleBeanInfo
 			return false;
 		}
 		return true;
-	}
-
-	@Override
-	public PropertyDescriptor[] getPropertyDescriptors()
-	{
-		try
-		{
-			final PropertyDescriptor[] props =
-			{ property("data", "Display Data"), property("info", "Display Nci"), property("info", "Display Tags"),
-					property("data", "Modify Data") };
-			props[0].setPropertyEditorClass(NodeDisplayData.class);
-			props[1].setPropertyEditorClass(NodeDisplayNci.class);
-			props[2].setPropertyEditorClass(NodeDisplayTags.class);
-			props[3].setPropertyEditorClass(NodeModifyData.class);
-			return props;
-		}
-		catch (final IntrospectionException e)
-		{
-			return super.getPropertyDescriptors();
-		}
-	}
-
-	static MethodDescriptor method(String name, String description) throws NoSuchMethodException, SecurityException
-	{
-		final Method m = Node.class.getMethod(name, new Class[] {});
-		final MethodDescriptor md = new MethodDescriptor(m);
-		md.setShortDescription(description);
-		return md;
-	}
-
-	@Override
-	public MethodDescriptor[] getMethodDescriptors()
-	{
-		try
-		{
-			final MethodDescriptor[] methods =
-			{ method("setupDevice", "Setup Device"), method("toggle", "Toggle On/Off"),
-					method("setDefault", "Set Default"), method("doAction", "Do Action") };
-			return methods;
-		}
-		catch (final Exception e)
-		{
-			return super.getMethodDescriptors();
-		}
 	}
 }

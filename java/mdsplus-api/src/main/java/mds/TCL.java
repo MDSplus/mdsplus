@@ -24,6 +24,9 @@ import mds.mdsip.MdsIp;
 
 public final class TCL
 {
+	private static abstract class Listener extends KeyAdapter implements ActionListener
+	{/**/}
+
 	private static class SelectAll extends TextAction
 	{
 		private static final long serialVersionUID = 1L;
@@ -44,35 +47,7 @@ public final class TCL
 		}
 	}
 
-	private static abstract class Listener extends KeyAdapter implements ActionListener
-	{/**/}
-
 	final static Vector<String> hist = new Vector<String>();
-
-	static public JPopupMenu newTextEditorPopup(final boolean editable)
-	{
-		final JPopupMenu menu = new JPopupMenu();
-		if (editable)
-		{
-			final Action cut = new DefaultEditorKit.CutAction();
-			cut.putValue(Action.NAME, "Cut");
-			cut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control X"));
-			menu.add(cut);
-		}
-		final Action copy = new DefaultEditorKit.CopyAction();
-		copy.putValue(Action.NAME, "Copy");
-		copy.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control C"));
-		menu.add(copy);
-		if (editable)
-		{
-			final Action paste = new DefaultEditorKit.PasteAction();
-			paste.putValue(Action.NAME, "Paste");
-			paste.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control V"));
-			menu.add(paste);
-		}
-		menu.add(new SelectAll());
-		return menu;
-	}
 
 	public final static JPanel getComponent(final Mds mds)
 	{
@@ -151,6 +126,31 @@ public final class TCL
 	public static void main(final String... args)
 	{
 		TCL.getPrompt(new MdsIp()).setVisible(true);
+	}
+
+	static public JPopupMenu newTextEditorPopup(final boolean editable)
+	{
+		final JPopupMenu menu = new JPopupMenu();
+		if (editable)
+		{
+			final Action cut = new DefaultEditorKit.CutAction();
+			cut.putValue(Action.NAME, "Cut");
+			cut.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control X"));
+			menu.add(cut);
+		}
+		final Action copy = new DefaultEditorKit.CopyAction();
+		copy.putValue(Action.NAME, "Copy");
+		copy.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control C"));
+		menu.add(copy);
+		if (editable)
+		{
+			final Action paste = new DefaultEditorKit.PasteAction();
+			paste.putValue(Action.NAME, "Paste");
+			paste.putValue(Action.ACCELERATOR_KEY, KeyStroke.getKeyStroke("control V"));
+			menu.add(paste);
+		}
+		menu.add(new SelectAll());
+		return menu;
 	}
 
 	private final Mds mds;

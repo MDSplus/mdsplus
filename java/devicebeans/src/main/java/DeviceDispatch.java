@@ -5,11 +5,42 @@ import javax.swing.border.*;
 
 public class DeviceDispatch extends DeviceComponent
 {
+	class DispatchComboEditor implements ComboBoxEditor
+	{
+		JLabel label = new JLabel("  Dispatch");
+		int idx;
+		String name;
+
+		@Override
+		public void addActionListener(ActionListener l)
+		{}
+
+		@Override
+		public Component getEditorComponent()
+		{ return label; }
+
+		@Override
+		public Object getItem()
+		{ return label; }
+
+		@Override
+		public void removeActionListener(ActionListener l)
+		{}
+
+		@Override
+		public void selectAll()
+		{}
+
+		@Override
+		public void setItem(Object obj)
+		{}
+	}
 	private static final long serialVersionUID = 1L;
 	private DeviceDispatchField dispatch_fields[], active_field;
 	private String actions[];
 	private JDialog dialog = null;
 	private final JComboBox menu;
+
 	protected boolean initializing = false;
 
 	public DeviceDispatch()
@@ -20,6 +51,65 @@ public class DeviceDispatch extends DeviceComponent
 		menu.setBorder(new LineBorder(Color.black, 1));
 		add(menu);
 	}
+
+	protected void activateForm(DeviceDispatchField field, String name)
+	{
+		if (dialog == null)
+		{
+			dialog = new JDialog(master);
+			dialog.getContentPane().setLayout(new BorderLayout());
+			dialog.getContentPane().add(field, "Center");
+			final JPanel jp = new JPanel();
+			final JButton button = new JButton("Done");
+			button.addActionListener(new ActionListener()
+			{
+				@Override
+				public void actionPerformed(ActionEvent e)
+				{
+					dialog.dispose();
+				}
+			});
+			jp.add(button);
+			dialog.getContentPane().add(jp, "South");
+			active_field = field;
+		}
+		else
+		{
+			dialog.getContentPane().remove(active_field);
+			dialog.getContentPane().add(field, "Center");
+			active_field = field;
+		}
+		dialog.setTitle("Dispatch info for " + name);
+		dialog.pack();
+		dialog.repaint();
+		dialog.setLocation(master.getLocationOnScreen());
+		dialog.setVisible(true);
+	}
+
+	@Override
+	public void apply() throws Exception
+	{
+		if (dispatch_fields == null)
+			return;
+		for (int i = 0; i < dispatch_fields.length; i++)
+			dispatch_fields[i].apply();
+	}
+
+	@Override
+	public void apply(int currBaseNid)
+	{}
+
+	@Override
+	protected void displayData(String data, boolean is_on)
+	{}
+
+	@Override
+	protected String getData()
+	{ return null; }
+
+	@Override
+	protected boolean getState()
+	{ return true; }
 
 	@Override
 	protected void initializeData(String data, boolean is_on)
@@ -92,61 +182,6 @@ public class DeviceDispatch extends DeviceComponent
 		initializing = false;
 	}
 
-	protected void activateForm(DeviceDispatchField field, String name)
-	{
-		if (dialog == null)
-		{
-			dialog = new JDialog(master);
-			dialog.getContentPane().setLayout(new BorderLayout());
-			dialog.getContentPane().add(field, "Center");
-			final JPanel jp = new JPanel();
-			final JButton button = new JButton("Done");
-			button.addActionListener(new ActionListener()
-			{
-				@Override
-				public void actionPerformed(ActionEvent e)
-				{
-					dialog.dispose();
-				}
-			});
-			jp.add(button);
-			dialog.getContentPane().add(jp, "South");
-			active_field = field;
-		}
-		else
-		{
-			dialog.getContentPane().remove(active_field);
-			dialog.getContentPane().add(field, "Center");
-			active_field = field;
-		}
-		dialog.setTitle("Dispatch info for " + name);
-		dialog.pack();
-		dialog.repaint();
-		dialog.setLocation(master.getLocationOnScreen());
-		dialog.setVisible(true);
-	}
-
-	@Override
-	protected void displayData(String data, boolean is_on)
-	{}
-
-	@Override
-	protected String getData()
-	{ return null; }
-
-	@Override
-	protected boolean getState()
-	{ return true; }
-
-	@Override
-	public void apply() throws Exception
-	{
-		if (dispatch_fields == null)
-			return;
-		for (int i = 0; i < dispatch_fields.length; i++)
-			dispatch_fields[i].apply();
-	}
-
 	@Override
 	public void reset()
 	{
@@ -154,40 +189,5 @@ public class DeviceDispatch extends DeviceComponent
 			return;
 		for (int i = 0; i < dispatch_fields.length; i++)
 			dispatch_fields[i].reset();
-	}
-
-	@Override
-	public void apply(int currBaseNid)
-	{}
-
-	class DispatchComboEditor implements ComboBoxEditor
-	{
-		JLabel label = new JLabel("  Dispatch");
-		int idx;
-		String name;
-
-		@Override
-		public void addActionListener(ActionListener l)
-		{}
-
-		@Override
-		public void removeActionListener(ActionListener l)
-		{}
-
-		@Override
-		public Component getEditorComponent()
-		{ return label; }
-
-		@Override
-		public Object getItem()
-		{ return label; }
-
-		@Override
-		public void selectAll()
-		{}
-
-		@Override
-		public void setItem(Object obj)
-		{}
 	}
 }

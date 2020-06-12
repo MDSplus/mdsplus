@@ -36,6 +36,46 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
 	{}
 
 	@Override
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.addPropertyChangeListener(l);
+	}
+
+	protected float[] convertFloat(String inText)
+	{
+		final String[] items = convertText(inText);
+		final float out[] = new float[items.length];
+		for (int i = 0; i < items.length; i++)
+			out[i] = (new Float(items[i])).floatValue();
+		return out;
+	}
+
+	protected int[] convertInt(String inText)
+	{
+		final String[] items = convertText(inText);
+		final int out[] = new int[items.length];
+		for (int i = 0; i < items.length; i++)
+			out[i] = (new Integer(items[i])).intValue();
+		return out;
+	}
+
+	protected String[] convertText(String inText)
+	{
+		int i = 0;
+		final StringTokenizer st = new StringTokenizer(inText, "\n\r");
+		final String[] items = new String[st.countTokens()];
+		while (st.hasMoreTokens())
+			items[i++] = st.nextToken();
+		return items;
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.removePropertyChangeListener(l);
+	}
+
+	@Override
 	public void setObject(Object o)
 	{
 		bean = (DeviceChoice) o;
@@ -187,45 +227,5 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
 			}
 		});
 		add(jp, "South");
-	}
-
-	protected String[] convertText(String inText)
-	{
-		int i = 0;
-		final StringTokenizer st = new StringTokenizer(inText, "\n\r");
-		final String[] items = new String[st.countTokens()];
-		while (st.hasMoreTokens())
-			items[i++] = st.nextToken();
-		return items;
-	}
-
-	protected int[] convertInt(String inText)
-	{
-		final String[] items = convertText(inText);
-		final int out[] = new int[items.length];
-		for (int i = 0; i < items.length; i++)
-			out[i] = (new Integer(items[i])).intValue();
-		return out;
-	}
-
-	protected float[] convertFloat(String inText)
-	{
-		final String[] items = convertText(inText);
-		final float out[] = new float[items.length];
-		for (int i = 0; i < items.length; i++)
-			out[i] = (new Float(items[i])).floatValue();
-		return out;
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.addPropertyChangeListener(l);
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.removePropertyChangeListener(l);
 	}
 }

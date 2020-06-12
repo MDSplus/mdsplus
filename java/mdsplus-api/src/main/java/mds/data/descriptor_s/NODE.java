@@ -316,6 +316,14 @@ public abstract class NODE<T> extends Descriptor_S<T>
 		}
 	}
 
+	@Override
+	protected final Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		if (omits.length > 0)
+			return this.getNciRecord().getData(omits);
+		return this.getMds().getDescriptor(this.tree, "DATA($)", this).getData();
+	}
+
 	public final Descriptor<?> getNci(final String name) throws MdsException
 	{
 		if (DEBUG.D)
@@ -760,13 +768,5 @@ public abstract class NODE<T> extends Descriptor_S<T>
 	{
 		this.tree.updateSegment(this.getNidNumber(), start, end, dim, idx);
 		return this;
-	}
-
-	@Override
-	protected final Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		if (omits.length > 0)
-			return this.getNciRecord().getData(omits);
-		return this.getMds().getDescriptor(this.tree, "DATA($)", this).getData();
 	}
 }

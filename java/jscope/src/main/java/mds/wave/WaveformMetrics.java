@@ -21,6 +21,8 @@ public class WaveformMetrics implements Serializable
 	static double MIN_VALUE = -10000.; // (double)Integer.MIN_VALUE;
 	static int INT_MAX_VALUE = (int) MAX_VALUE;
 	static int INT_MIN_VALUE = (int) MIN_VALUE;
+	//    static IndexColorModel cm = null;
+	static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100;
 	double xmax, xmin, ymax, ymin;
 	double xrange, // xmax - xmin
 			yrange; // ymax - ymin
@@ -30,9 +32,7 @@ public class WaveformMetrics implements Serializable
 	double x_range;
 	int start_x;
 	double FACT_X, FACT_Y, OFS_X, OFS_Y;
-	int horizontal_offset, vertical_offset;
-//    static IndexColorModel cm = null;
-	static final double LOG10 = 2.302585092994, MIN_LOG = 10E-100;
+int horizontal_offset, vertical_offset;
 
 	public WaveformMetrics(double _xmax, double _xmin, double _ymax, double _ymin, Rectangle limits, Dimension d,
 			boolean _x_log, boolean _y_log, int horizontal_offset, int vertical_offset)
@@ -102,46 +102,6 @@ public class WaveformMetrics implements Serializable
 		}
 	}
 
-	final public double XMax()
-	{
-		return xmax;
-	}
-
-	final public double YMax()
-	{
-		return ymax;
-	}
-
-	final public double XMin()
-	{
-		return xmin;
-	}
-
-	final public double YMin()
-	{
-		return ymin;
-	}
-
-	final public double XRange()
-	{
-		return xmax - xmin;
-	}
-
-	final public double YRange()
-	{
-		return ymax - ymin;
-	}
-
-	final public boolean XLog()
-	{
-		return x_log;
-	}
-
-	final public boolean YLog()
-	{
-		return y_log;
-	}
-
 	final public void ComputeFactors(Dimension d)
 	{
 //	OFS_X = x_offset * d.width - xmin*x_range*d.width/xrange + 0.5;
@@ -150,83 +110,6 @@ public class WaveformMetrics implements Serializable
 //	OFS_Y = y_range * ymax*d.height/yrange + 0.5;
 		OFS_Y = y_range * ymax * d.height / yrange + vertical_offset + 0.5;
 		FACT_Y = -y_range * d.height / yrange;
-	}
-
-	final public int XPixel(double x)
-	{
-		final double xpix = x * FACT_X + OFS_X;
-		if (xpix >= MAX_VALUE)
-			return INT_MAX_VALUE;
-		if (xpix <= MIN_VALUE)
-			return INT_MIN_VALUE;
-		return (int) xpix;
-	}
-
-	final public int YPixel(double y)
-	{
-		if (y_log)
-		{
-			if (y < MIN_LOG)
-				y = MIN_LOG;
-			y = Math.log(y) / LOG10;
-		}
-		final double ypix = y * FACT_Y + OFS_Y;
-		if (ypix >= MAX_VALUE)
-			return INT_MAX_VALUE;
-		if (ypix <= MIN_VALUE)
-			return INT_MIN_VALUE;
-		return (int) ypix;
-	}
-
-	final public int XPixel(double x, Dimension d)
-	{
-		double ris;
-		if (x_log)
-		{
-			if (x < MIN_LOG)
-				x = MIN_LOG;
-			x = Math.log(x) / LOG10;
-		}
-		ris = (x_offset + x_range * (x - xmin) / xrange) * d.width + 0.5;
-		if (ris > 20000)
-			ris = 20000;
-		if (ris < -20000)
-			ris = -20000;
-		return (int) ris;
-	}
-
-	final public int YPixel(double y, Dimension d)
-	{
-		if (y_log)
-		{
-			if (y < MIN_LOG)
-				y = MIN_LOG;
-			y = Math.log(y) / LOG10;
-		}
-		double ris = (y_range * (ymax - y) / yrange) * d.height + 0.5;
-		if (ris > 20000)
-			ris = 20000;
-		if (ris < -20000)
-			ris = -20000;
-		return (int) ris;
-	}
-
-	final public double XValue(int x, Dimension d)
-	{
-		final double ris = ((x - 0.5) / d.width - x_offset) * xrange / x_range + xmin;
-		if (x_log)
-			return Math.exp(LOG10 * ris);
-		else
-			return ris;
-	}
-
-	final public double YValue(int y, Dimension d)
-	{
-		final double ris = ymax - ((y - 0.5) / d.height) * yrange / y_range;
-		if (y_log)
-			return Math.exp(LOG10 * ris);
-		else
-			return ris;
 	}
 
 	private void drawRectagle(Graphics g, IndexColorModel cm, int x, int y, int w, int h, int cIdx)
@@ -331,6 +214,25 @@ public class WaveformMetrics implements Serializable
 		}
 		catch (final Exception exc)
 		{}
+	}
+
+	public Vector<Polygon> ToPolygons(Signal sig, Dimension d)
+	{
+		return ToPolygons(sig, d, false);
+	}
+
+	public Vector<Polygon> ToPolygons(Signal sig, Dimension d, boolean appendMode)
+	{
+		try
+		{
+			// System.out.println("ToPolygons "+sig.name+" "+appendMode);
+			return ToPolygonsDoubleX(sig, d);
+		}
+		catch (final Exception exc)
+		{
+			exc.printStackTrace();
+		}
+		return null;
 	}
 
 	public Vector<Polygon> ToPolygonsDoubleX(Signal sig, Dimension d)
@@ -516,22 +418,120 @@ public class WaveformMetrics implements Serializable
 		return curr_vect;
 	}
 
-	public Vector<Polygon> ToPolygons(Signal sig, Dimension d)
+	final public boolean XLog()
 	{
-		return ToPolygons(sig, d, false);
+		return x_log;
 	}
 
-	public Vector<Polygon> ToPolygons(Signal sig, Dimension d, boolean appendMode)
+	final public double XMax()
 	{
-		try
+		return xmax;
+	}
+
+	final public double XMin()
+	{
+		return xmin;
+	}
+
+	final public int XPixel(double x)
+	{
+		final double xpix = x * FACT_X + OFS_X;
+		if (xpix >= MAX_VALUE)
+			return INT_MAX_VALUE;
+		if (xpix <= MIN_VALUE)
+			return INT_MIN_VALUE;
+		return (int) xpix;
+	}
+
+	final public int XPixel(double x, Dimension d)
+	{
+		double ris;
+		if (x_log)
 		{
-			// System.out.println("ToPolygons "+sig.name+" "+appendMode);
-			return ToPolygonsDoubleX(sig, d);
+			if (x < MIN_LOG)
+				x = MIN_LOG;
+			x = Math.log(x) / LOG10;
 		}
-		catch (final Exception exc)
+		ris = (x_offset + x_range * (x - xmin) / xrange) * d.width + 0.5;
+		if (ris > 20000)
+			ris = 20000;
+		if (ris < -20000)
+			ris = -20000;
+		return (int) ris;
+	}
+
+	final public double XRange()
+	{
+		return xmax - xmin;
+	}
+
+	final public double XValue(int x, Dimension d)
+	{
+		final double ris = ((x - 0.5) / d.width - x_offset) * xrange / x_range + xmin;
+		if (x_log)
+			return Math.exp(LOG10 * ris);
+		else
+			return ris;
+	}
+
+	final public boolean YLog()
+	{
+		return y_log;
+	}
+
+	final public double YMax()
+	{
+		return ymax;
+	}
+
+	final public double YMin()
+	{
+		return ymin;
+	}
+
+	final public int YPixel(double y)
+	{
+		if (y_log)
 		{
-			exc.printStackTrace();
+			if (y < MIN_LOG)
+				y = MIN_LOG;
+			y = Math.log(y) / LOG10;
 		}
-		return null;
+		final double ypix = y * FACT_Y + OFS_Y;
+		if (ypix >= MAX_VALUE)
+			return INT_MAX_VALUE;
+		if (ypix <= MIN_VALUE)
+			return INT_MIN_VALUE;
+		return (int) ypix;
+	}
+
+	final public int YPixel(double y, Dimension d)
+	{
+		if (y_log)
+		{
+			if (y < MIN_LOG)
+				y = MIN_LOG;
+			y = Math.log(y) / LOG10;
+		}
+		double ris = (y_range * (ymax - y) / yrange) * d.height + 0.5;
+		if (ris > 20000)
+			ris = 20000;
+		if (ris < -20000)
+			ris = -20000;
+		return (int) ris;
+	}
+
+	final public double YRange()
+	{
+		return ymax - ymin;
+	}
+
+	final public double YValue(int y, Dimension d)
+	{
+		final double ris = ymax - ((y - 0.5) / d.height) * yrange / y_range;
+		if (y_log)
+			return Math.exp(LOG10 * ris);
+		else
+			return ris;
 	}
 }

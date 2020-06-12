@@ -11,16 +11,16 @@ public class DeviceOk extends DeviceControl
 	}
 
 	@Override
-	void setReadOnly(boolean readOnly)
-	{
-		setEnabled(!readOnly);
-	}
-
-	@Override
 	protected void doOperation(DeviceSetup deviceSetup)
 	{
 		check();
 		deviceSetup.apply();
 		deviceSetup.cancel();
+	}
+
+	@Override
+	void setReadOnly(boolean readOnly)
+	{
+		setEnabled(!readOnly);
 	}
 }

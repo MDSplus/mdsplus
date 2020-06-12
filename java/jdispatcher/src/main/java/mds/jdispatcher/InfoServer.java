@@ -6,9 +6,13 @@ import mds.connection.MdsConnection;
 
 class InfoServer implements Server
 {
+	static MDSplus.Tree model_database;
+
+	public static MDSplus.Tree getDatabase()
+	{ return model_database; }
+
 	String tree;
 	int shot = -1;
-	static MDSplus.Tree model_database;
 
 	public InfoServer()
 	{
@@ -21,32 +25,6 @@ class InfoServer implements Server
 	}
 
 	@Override
-	public void pushAction(final Action action)
-	{}
-
-	@Override
-	public Action popAction()
-	{
-		return null;
-	}
-
-	@Override
-	public void addServerListener(final ServerListener listener)
-	{}
-
-	@Override
-	public String getServerClass()
-	{ return "INFO_PROVIDER"; }
-
-	@Override
-	public int getQueueLength()
-	{ return 0; }
-
-	@Override
-	public int getDoingAction()
-	{ return 0; }
-
-	@Override
 	public void abort(final boolean flush)
 	{}
 
@@ -56,19 +34,9 @@ class InfoServer implements Server
 		return false;
 	}
 
-	public static MDSplus.Tree getDatabase()
-	{ return model_database; }
-
 	@Override
-	public void setTree(final String tree)
-	{ this.tree = tree; }
-
-	@Override
-	public void setTree(final String tree, final int shot)
-	{
-		this.tree = tree;
-		this.shot = shot;
-	}
+	public void addServerListener(final ServerListener listener)
+	{}
 
 	@Override
 	public void beginSequence(final int shot)
@@ -85,43 +53,6 @@ class InfoServer implements Server
 			System.out.println("Error opening " + tree + " shot " + shot + ": " + exc);
 		}
 		System.out.println("InfoServer: beginSequence terminated");
-	}
-
-	@Override
-	public void endSequence(final int shot)
-	{
-		if (model_database != null)
-			MdsConnection.tryClose(model_database);
-		model_database = null;
-	}
-
-	@Override
-	public Action[] collectActions(final String rootPath)
-	{
-		if (model_database == null)
-		{
-			try
-			{
-				model_database = new MDSplus.Tree(tree, shot);
-			}
-			catch (final Exception exc)
-			{
-				return null;
-			}
-		}
-		try
-		{
-			final MDSplus.TreeNode rootNid = model_database.getNode(rootPath);
-			final MDSplus.TreeNode prevDef = model_database.getDefault();
-			model_database.setDefault(rootNid);
-			final Action[] actions = collectActions();
-			model_database.setDefault(prevDef);
-			return actions;
-		}
-		catch (final Exception exc)
-		{
-			return null;
-		}
 	}
 
 	@Override
@@ -194,6 +125,84 @@ class InfoServer implements Server
 		return actions;
 	}
 
+	@Override
+	public Action[] collectActions(final String rootPath)
+	{
+		if (model_database == null)
+		{
+			try
+			{
+				model_database = new MDSplus.Tree(tree, shot);
+			}
+			catch (final Exception exc)
+			{
+				return null;
+			}
+		}
+		try
+		{
+			final MDSplus.TreeNode rootNid = model_database.getNode(rootPath);
+			final MDSplus.TreeNode prevDef = model_database.getDefault();
+			model_database.setDefault(rootNid);
+			final Action[] actions = collectActions();
+			model_database.setDefault(prevDef);
+			return actions;
+		}
+		catch (final Exception exc)
+		{
+			return null;
+		}
+	}
+
+	@Override
+	public void endSequence(final int shot)
+	{
+		if (model_database != null)
+			MdsConnection.tryClose(model_database);
+		model_database = null;
+	}
+
+	@Override
+	public int getDoingAction()
+	{ return 0; }
+
+	@Override
+	public int getQueueLength()
+	{ return 0; }
+
+	@Override
+	public String getServerClass()
+	{ return "INFO_PROVIDER"; }
+
+	@Override
+	public boolean isActive()
+	{ return true; }
+
+	@Override
+	public boolean isReady()
+	{ return true; }
+
+	@Override
+	public Action popAction()
+	{
+		return null;
+	}
+
+	@Override
+	public void pushAction(final Action action)
+	{}
+
+	@Override
+	public void setTree(final String tree)
+	{ this.tree = tree; }
+
+	@Override
+	public void setTree(final String tree, final int shot)
+	{
+		this.tree = tree;
+		this.shot = shot;
+	}
+
 	protected MDSplus.Data traverseAction(final MDSplus.Data data,
 			final Hashtable<Integer, MDSplus.Action> action_table)
 	{
@@ -249,12 +258,4 @@ class InfoServer implements Server
 		}
 		return data;
 	}
-
-	@Override
-	public boolean isActive()
-	{ return true; }
-
-	@Override
-	public boolean isReady()
-	{ return true; }
 }

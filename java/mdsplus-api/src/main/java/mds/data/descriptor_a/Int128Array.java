@@ -62,9 +62,19 @@ public final class Int128Array extends INTEGERArray<BigInteger>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x0F; }
+
+	@Override
 	public Int128 getScalar(final int idx)
 	{
 		return new Int128(this.getElement(idx));
+	}
+
+	@Override
+	protected final BigInteger[] initArray(final int size)
+	{
+		return new BigInteger[size];
 	}
 
 	@Override
@@ -101,16 +111,6 @@ public final class Int128Array extends INTEGERArray<BigInteger>
 	public final BigInteger parse(final String in)
 	{
 		return new BigInteger(in).setBit(128);
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x0F; }
-
-	@Override
-	protected final BigInteger[] initArray(final int size)
-	{
-		return new BigInteger[size];
 	}
 
 	@Override

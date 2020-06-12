@@ -25,6 +25,12 @@ public final class Signal extends Descriptor_R<Number>
 	}
 
 	@Override
+	protected final Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		return this.getValue().getData(omits);
+	}
+
+	@Override
 	public final Descriptor<?> getDimension()
 	{ return this.getDimension(0); }
 
@@ -61,11 +67,5 @@ public final class Signal extends Descriptor_R<Number>
 	public final Descriptor<?> VALUE()
 	{
 		return this.getRaw();
-	}
-
-	@Override
-	protected final Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		return this.getValue().getData(omits);
 	}
 }

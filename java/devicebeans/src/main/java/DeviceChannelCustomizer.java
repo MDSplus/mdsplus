@@ -30,6 +30,18 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
 	{}
 
 	@Override
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.addPropertyChangeListener(l);
+	}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{
+		listeners.removePropertyChangeListener(l);
+	}
+
+	@Override
 	public void setObject(Object o)
 	{
 		bean = (DeviceChannel) o;
@@ -110,17 +122,5 @@ public class DeviceChannelCustomizer extends DeviceCustomizer implements Customi
 			}
 		});
 		add(jp, "South");
-	}
-
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.addPropertyChangeListener(l);
-	}
-
-	@Override
-	public void removePropertyChangeListener(PropertyChangeListener l)
-	{
-		listeners.removePropertyChangeListener(l);
 	}
 }

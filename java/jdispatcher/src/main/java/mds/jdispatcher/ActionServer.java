@@ -9,6 +9,17 @@ import mds.connection.ConnectionListener;
 class ActionServer implements Server, MdsServerListener, ConnectionListener
 {
 	static final int RECONNECT_TIME = 5;
+
+	static final void logAction(String msg)
+	{
+		synchronized (System.out)
+		{
+			System.out.print("ActionServer: ");
+			System.out.println(msg);
+			System.out.flush();
+		}
+	}
+
 	private final Queue<Action> enqueued_actions = new LinkedList<Action>();
 	private final Hashtable<Integer, Action> doing_actions = new Hashtable<Integer, Action>();
 	private final Vector<ServerListener> server_listeners = new Vector<ServerListener>();
@@ -24,25 +35,15 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 	private boolean useJavaServer = true;
 	private int watchdogPort = -1;
 
-	static final void logAction(String msg)
+	public ActionServer(final String tree, final String ip_address, final String server_class)
 	{
-		synchronized (System.out)
-		{
-			System.out.print("ActionServer: ");
-			System.out.println(msg);
-			System.out.flush();
-		}
+		this(tree, ip_address, server_class, null, true, -1);
 	}
 
 	public ActionServer(final String tree, final String ip_address, final String server_class,
 			final boolean useJavaServer, final int watchdogPort)
 	{
 		this(tree, ip_address, server_class, null, useJavaServer, watchdogPort);
-	}
-
-	public ActionServer(final String tree, final String ip_address, final String server_class)
-	{
-		this(tree, ip_address, server_class, null, true, -1);
 	}
 
 	public ActionServer(final String tree, final String ip_address, final String server_class, final String subtree,
@@ -69,35 +70,122 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		}
 	}
 
-	private final boolean shutdown()
+	@Override
+	public void abort(final boolean flush)
 	{
-		ready = active = false;
-		if (mds_server != null)
+		synchronized (enqueued_actions)
 		{
-			mds_server.shutdown();
-			mds_server = null;
-			return true;
+			enqueued_actions.clear();
 		}
-		return false;
+		if (mds_server == null)
+			return;
+		try
+		{
+			mds_server.abort(flush);
+		}
+		catch (final IOException exc)
+		{}
 	}
 
 	@Override
-	public void setTree(final String tree)
-	{ this.tree = tree; }
+	public boolean abortAction(final Action action)
+	{
+		if ((doing_actions.get(new Integer(action.getNid())) == null) && !enqueued_actions.contains(action))
+			return false;
+		synchronized (enqueued_actions)
+		{
+			// now we are sure that no other action gets aborted
+			try
+			{
+				mds_server.abort(false);
+			}
+			catch (final IOException exc)
+			{}
+		}
+		return true;
+	}
 
 	@Override
-	public void setTree(final String tree, final int shot)
+	public synchronized void addServerListener(final ServerListener listener)
 	{
-		this.tree = tree;
+		server_listeners.addElement(listener);
+	}
+
+	@Override
+	public void beginSequence(final int shot)
+	{
 		this.shot = shot;
+		if (mds_server == null || subtree == null || subtree.trim().equals(""))
+			return;
+		try
+		{
+			mds_server.createPulse(subtree, shot);
+		}
+		catch (final Exception exc)
+		{}
+	}
+
+	final private synchronized void cancelTimer()
+	{
+		try
+		{
+			timer.cancel();
+			timer = null;
+		}
+		catch (final Exception exc)
+		{}
+	}
+
+	@Override
+	public synchronized Action[] collectActions()
+	{
+		return null;
+	}
+
+	@Override
+	public Action[] collectActions(final String rootPath)
+	{
+		return null;
+	}
+
+	@Override
+	public synchronized void endSequence(final int shot)
+	{
+		if (mds_server == null)
+			return;
+		try
+		{
+			mds_server.closeTrees();
+		}
+		catch (final Exception exc)
+		{}
+	}
+
+	public String getAddress()
+	{ return ip_address; }
+
+	@Override
+	public int getDoingAction()
+	{ return this.doing_actions.size(); }
+
+	@Override
+	public int getQueueLength()
+	{ return enqueued_actions.size(); }
+
+	@Override
+	public synchronized String getServerClass()
+	{ return server_class; }
+
+	final private synchronized Timer getTimer()
+	{
+		if (timer == null)
+			timer = new Timer(ip_address, true);
+		return timer;
 	}
 
 	@Override
 	public boolean isActive()
 	{ return ready && active; }
-
-	public String getAddress()
-	{ return ip_address; }
 
 	@Override
 	public boolean isReady()
@@ -105,6 +193,52 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		if (ready)
 			active = true;
 		return ready;
+	}
+
+	@Override
+	public Action popAction()
+	{
+		if (mds_server == null)
+			return null;
+		mds.connection.Descriptor descr;
+		try
+		{
+			descr = mds_server.removeLast();
+		}
+		catch (final Exception exc)
+		{
+			return null;
+		}
+		if (descr.getInt() != 0) // there was a pending job in the mds server
+		{
+			final Action removed;
+			synchronized (enqueued_actions)
+			{
+				removed = enqueued_actions.remove();
+			}
+			removed.setServerAddress(null);
+			return removed;
+		}
+		return null;
+	}
+
+	protected synchronized void processAborted(final Action action)
+	{
+		processAbortedNoSynch(action);
+		notify();
+	}
+
+	protected void processAbortedNoSynch(final Action action)
+	{
+		action.setServerAddress(this.ip_address);
+		for (final ServerListener listener : server_listeners)
+			listener.actionAborted(new ServerEvent(this, action));
+	}
+
+	protected void processConnected(final String msg)
+	{
+		for (final ServerListener listener : server_listeners)
+			listener.connected(new ServerEvent(this, msg));
 	}
 
 	@Override
@@ -193,32 +327,27 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		}
 	}
 
-	@Override
-	public synchronized void addServerListener(final ServerListener listener)
+	protected void processDisconnected(final String msg)
 	{
-		server_listeners.addElement(listener);
+		final Enumeration<ServerListener> listeners = server_listeners.elements();
+		while (listeners.hasMoreElements())
+		{
+			final ServerListener listener = listeners.nextElement();
+			listener.disconnected(new ServerEvent(this, msg));
+		}
 	}
 
-	@Override
-	public void pushAction(final Action action)
+	protected void processDoing(final Action action)
 	{
-		synchronized (enqueued_actions)
-		{
-			action.setServerAddress(ip_address);
-			enqueued_actions.add(action);
-		}
-		try
-		{
-			mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
-		}
-		catch (final Exception exc)
-		{
-			synchronized (enqueued_actions)
-			{
-				enqueued_actions.remove(action);
-			}
-			processAborted(action);
-		}
+		action.setServerAddress(this.ip_address);
+		for (final ServerListener listener : server_listeners)
+			listener.actionStarting(new ServerEvent(this, action));
+	}
+
+	protected void processFinished(final Action action)
+	{
+		for (final ServerListener listener : server_listeners)
+			listener.actionFinished(new ServerEvent(this, action));
 	}
 
 	@Override
@@ -303,177 +432,49 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		}
 	}
 
-	final private synchronized Timer getTimer()
-	{
-		if (timer == null)
-			timer = new Timer(ip_address, true);
-		return timer;
-	}
-
-	final private synchronized void cancelTimer()
-	{
-		try
-		{
-			timer.cancel();
-			timer = null;
-		}
-		catch (final Exception exc)
-		{}
-	}
-
-	protected void processFinished(final Action action)
-	{
-		for (final ServerListener listener : server_listeners)
-			listener.actionFinished(new ServerEvent(this, action));
-	}
-
-	protected void processDoing(final Action action)
-	{
-		action.setServerAddress(this.ip_address);
-		for (final ServerListener listener : server_listeners)
-			listener.actionStarting(new ServerEvent(this, action));
-	}
-
-	protected void processAbortedNoSynch(final Action action)
-	{
-		action.setServerAddress(this.ip_address);
-		for (final ServerListener listener : server_listeners)
-			listener.actionAborted(new ServerEvent(this, action));
-	}
-
-	protected synchronized void processAborted(final Action action)
-	{
-		processAbortedNoSynch(action);
-		notify();
-	}
-
-	protected void processDisconnected(final String msg)
-	{
-		final Enumeration<ServerListener> listeners = server_listeners.elements();
-		while (listeners.hasMoreElements())
-		{
-			final ServerListener listener = listeners.nextElement();
-			listener.disconnected(new ServerEvent(this, msg));
-		}
-	}
-
-	protected void processConnected(final String msg)
-	{
-		for (final ServerListener listener : server_listeners)
-			listener.connected(new ServerEvent(this, msg));
-	}
-
 	@Override
-	public Action popAction()
+	public void pushAction(final Action action)
 	{
-		if (mds_server == null)
-			return null;
-		mds.connection.Descriptor descr;
+		synchronized (enqueued_actions)
+		{
+			action.setServerAddress(ip_address);
+			enqueued_actions.add(action);
+		}
 		try
 		{
-			descr = mds_server.removeLast();
+			mds_server.dispatchAction(tree, shot, action.getName(), action.getNid());
 		}
 		catch (final Exception exc)
 		{
-			return null;
-		}
-		if (descr.getInt() != 0) // there was a pending job in the mds server
-		{
-			final Action removed;
 			synchronized (enqueued_actions)
 			{
-				removed = enqueued_actions.remove();
+				enqueued_actions.remove(action);
 			}
-			removed.setServerAddress(null);
-			return removed;
+			processAborted(action);
 		}
-		return null;
 	}
 
 	@Override
-	public Action[] collectActions(final String rootPath)
-	{
-		return null;
-	}
+	public void setTree(final String tree)
+	{ this.tree = tree; }
 
 	@Override
-	public synchronized Action[] collectActions()
+	public void setTree(final String tree, final int shot)
 	{
-		return null;
-	}
-
-	@Override
-	public void beginSequence(final int shot)
-	{
+		this.tree = tree;
 		this.shot = shot;
-		if (mds_server == null || subtree == null || subtree.trim().equals(""))
-			return;
-		try
-		{
-			mds_server.createPulse(subtree, shot);
-		}
-		catch (final Exception exc)
-		{}
 	}
 
-	@Override
-	public synchronized void endSequence(final int shot)
+	private final boolean shutdown()
 	{
-		if (mds_server == null)
-			return;
-		try
+		ready = active = false;
+		if (mds_server != null)
 		{
-			mds_server.closeTrees();
+			mds_server.shutdown();
+			mds_server = null;
+			return true;
 		}
-		catch (final Exception exc)
-		{}
-	}
-
-	@Override
-	public synchronized String getServerClass()
-	{ return server_class; }
-
-	@Override
-	public int getQueueLength()
-	{ return enqueued_actions.size(); }
-
-	@Override
-	public int getDoingAction()
-	{ return this.doing_actions.size(); }
-
-	@Override
-	public void abort(final boolean flush)
-	{
-		synchronized (enqueued_actions)
-		{
-			enqueued_actions.clear();
-		}
-		if (mds_server == null)
-			return;
-		try
-		{
-			mds_server.abort(flush);
-		}
-		catch (final IOException exc)
-		{}
-	}
-
-	@Override
-	public boolean abortAction(final Action action)
-	{
-		if ((doing_actions.get(new Integer(action.getNid())) == null) && !enqueued_actions.contains(action))
-			return false;
-		synchronized (enqueued_actions)
-		{
-			// now we are sure that no other action gets aborted
-			try
-			{
-				mds_server.abort(false);
-			}
-			catch (final IOException exc)
-			{}
-		}
-		return true;
+		return false;
 	}
 
 	void startServerPoll()

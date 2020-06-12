@@ -105,6 +105,8 @@ public class DataServerItem
 		{}
 	};
 
+	public static final Set<Class<?>> knownProviders = getClasses("mds.provider", DataProvider.class);
+
 	public static final Set<Class<?>> getClasses(String packageName, Class<?> type)
 	{
 		final Set<Class<?>> classes = new HashSet<Class<?>>();
@@ -139,8 +141,6 @@ public class DataServerItem
 		}
 		return classes;
 	}
-
-	public static final Set<Class<?>> knownProviders = getClasses("mds.provider", DataProvider.class);
 
 	private static final String trimArg(final String arg)
 	{

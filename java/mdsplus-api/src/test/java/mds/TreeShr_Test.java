@@ -20,7 +20,6 @@ public class TreeShr_Test
 	private static final String EXPT = AllTests.tree.toUpperCase();
 	private static final int model = -1, shot = 7357;
 	private static Mds mds;
-	private Pointer ctx = Pointer.NULL();
 
 	@BeforeClass
 	public static final void setUpBeforeClass() throws Exception
@@ -34,6 +33,8 @@ public class TreeShr_Test
 	{
 		AllTests.tearDownAfterClass(TreeShr_Test.mds);
 	}
+
+	private Pointer ctx = Pointer.NULL();
 
 	@Before
 	public void setUp() throws Exception

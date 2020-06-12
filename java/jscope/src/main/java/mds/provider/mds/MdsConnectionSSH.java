@@ -40,10 +40,6 @@ public class MdsConnectionSSH extends MdsConnection
 	}
 
 	@Override
-	public String getProvider()
-	{ return "ssh"; }
-
-	@Override
 	public int DisconnectFromMds()
 	{
 		// Closing pipes crashes JVM!!!
@@ -52,4 +48,8 @@ public class MdsConnectionSSH extends MdsConnection
 		p.destroy();
 		return super.DisconnectFromMds();
 	}
+
+	@Override
+	public String getProvider()
+	{ return "ssh"; }
 }

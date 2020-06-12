@@ -62,6 +62,12 @@ public final class Int8Array extends INTEGERArray<Byte>
 	}
 
 	@Override
+	protected final boolean format()
+	{
+		return true;
+	}
+
+	@Override
 	public final Byte getElement(final ByteBuffer b_in)
 	{
 		return new Byte(b_in.get());
@@ -74,9 +80,19 @@ public final class Int8Array extends INTEGERArray<Byte>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x00; }
+
+	@Override
 	public Int8 getScalar(final int idx)
 	{
 		return new Int8(this.getElement(idx).byteValue());
+	}
+
+	@Override
+	protected final Byte[] initArray(final int size)
+	{
+		return new Byte[size];
 	}
 
 	@Override
@@ -103,29 +119,6 @@ public final class Int8Array extends INTEGERArray<Byte>
 		return Byte.decode(in);
 	}
 
-	public final byte[] toArray()
-	{
-		final byte[] values = new byte[this.arsize() / Byte.BYTES];
-		this.getBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final boolean format()
-	{
-		return true;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x00; }
-
-	@Override
-	protected final Byte[] initArray(final int size)
-	{
-		return new Byte[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final Byte value)
 	{
@@ -136,5 +129,12 @@ public final class Int8Array extends INTEGERArray<Byte>
 	protected final void setElement(final int i, final Byte value)
 	{
 		this.p.put(i, value.byteValue());
+	}
+
+	public final byte[] toArray()
+	{
+		final byte[] values = new byte[this.arsize() / Byte.BYTES];
+		this.getBuffer().get(values);
+		return values;
 	}
 }

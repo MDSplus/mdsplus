@@ -17,6 +17,13 @@ class MonitorEvent extends EventObject
 	Action action;
 	String message;
 
+	public MonitorEvent(final Object obj, final int eventId, final String message)
+	{
+		super(obj);
+		this.eventId = eventId;
+		this.message = message;
+	}
+
 	public MonitorEvent(final Object obj, final String tree, final int shot, final String phase, final Action action)
 	{
 		super(obj);
@@ -27,25 +34,18 @@ class MonitorEvent extends EventObject
 		this.action = action;
 	}
 
-	public MonitorEvent(final Object obj, final int eventId, final String message)
-	{
-		super(obj);
-		this.eventId = eventId;
-		this.message = message;
-	}
-
-	String getTree()
-	{ return tree; }
-
-	int getShot()
-	{ return shot; }
-
-	String getPhase()
-	{ return phase; }
-
 	Action getAction()
 	{ return action; }
 
 	String getMessage()
 	{ return message; }
+
+	String getPhase()
+	{ return phase; }
+
+	int getShot()
+	{ return shot; }
+
+	String getTree()
+	{ return tree; }
 }

@@ -44,6 +44,12 @@ public final class Int16Array extends INTEGERArray<Short>
 	}
 
 	@Override
+	protected final boolean format()
+	{
+		return true;
+	}
+
+	@Override
 	public final Short getElement(final ByteBuffer b_in)
 	{
 		return new Short(b_in.getShort());
@@ -56,9 +62,19 @@ public final class Int16Array extends INTEGERArray<Short>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x01; }
+
+	@Override
 	public Int16 getScalar(final int idx)
 	{
 		return new Int16(this.getElement(idx).shortValue());
+	}
+
+	@Override
+	protected final Short[] initArray(final int size)
+	{
+		return new Short[size];
 	}
 
 	@Override
@@ -85,6 +101,18 @@ public final class Int16Array extends INTEGERArray<Short>
 		return Short.decode(in);
 	}
 
+	@Override
+	protected final void setElement(final ByteBuffer b, final Short value)
+	{
+		b.putShort(value.shortValue());
+	}
+
+	@Override
+	protected void setElement(final int i, final Short value)
+	{
+		this.p.putShort(i * Short.BYTES, value.shortValue());
+	}
+
 	public final short[] toArray()
 	{
 		final short[] values = new short[this.arsize() / Short.BYTES];
@@ -102,33 +130,5 @@ public final class Int16Array extends INTEGERArray<Short>
 	public final Uint16Array wordu()
 	{
 		return new Uint16Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.WU.toByte()));
-	}
-
-	@Override
-	protected final boolean format()
-	{
-		return true;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x01; }
-
-	@Override
-	protected final Short[] initArray(final int size)
-	{
-		return new Short[size];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final Short value)
-	{
-		b.putShort(value.shortValue());
-	}
-
-	@Override
-	protected void setElement(final int i, final Short value)
-	{
-		this.p.putShort(i * Short.BYTES, value.shortValue());
 	}
 }

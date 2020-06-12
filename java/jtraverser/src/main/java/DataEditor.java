@@ -78,6 +78,24 @@ public class DataEditor extends JPanel implements ActionListener, Editor
 		addEditor();
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		if (!editable)
+		{
+			combo.setSelectedIndex(curr_mode_idx);
+			return;
+		}
+		final int idx = combo.getSelectedIndex();
+		if (idx == curr_mode_idx)
+			return;
+		remove(panel);
+		curr_mode_idx = idx;
+		addEditor();
+		validate();
+		dialog.repack();
+	}
+
 	private void addEditor()
 	{
 		panel = new JPanel();
@@ -118,36 +136,6 @@ public class DataEditor extends JPanel implements ActionListener, Editor
 		units_edit = new LabeledExprEditor("Units", new ExprEditor(units, true));
 		panel.add(units_edit, BorderLayout.NORTH);
 		add(panel, BorderLayout.CENTER);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		if (!editable)
-		{
-			combo.setSelectedIndex(curr_mode_idx);
-			return;
-		}
-		final int idx = combo.getSelectedIndex();
-		if (idx == curr_mode_idx)
-			return;
-		remove(panel);
-		curr_mode_idx = idx;
-		addEditor();
-		validate();
-		dialog.repack();
-	}
-
-	@Override
-	public void reset()
-	{
-		if (curr_mode_idx > 0)
-			remove(panel);
-		curr_mode_idx = mode_idx;
-		combo.setSelectedIndex(mode_idx);
-		addEditor();
-		validate();
-		dialog.repack();
 	}
 
 	@Override
@@ -205,6 +193,18 @@ public class DataEditor extends JPanel implements ActionListener, Editor
 				return python_edit.getData();
 		}
 		return null;
+	}
+
+	@Override
+	public void reset()
+	{
+		if (curr_mode_idx > 0)
+			remove(panel);
+		curr_mode_idx = mode_idx;
+		combo.setSelectedIndex(mode_idx);
+		addEditor();
+		validate();
+		dialog.repack();
 	}
 
 	public void setData(MDSplus.Data data)

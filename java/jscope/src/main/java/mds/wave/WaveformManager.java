@@ -88,15 +88,6 @@ public interface WaveformManager
 	public Waveform getCopySource();
 
 	/**
-	 * Get current selected waveform.
-	 *
-	 * @return current selected waveform or null
-	 * @see Waveform
-	 * @see MultiWaveform
-	 */
-	public Waveform gGetSelected();
-
-	/**
 	 * Get the number of waveform in the container
 	 *
 	 * @return number of waveform in the container
@@ -109,6 +100,15 @@ public interface WaveformManager
 	 * @param w a waveform
 	 */
 	public Point getWavePosition(Waveform w);
+
+	/**
+	 * Get current selected waveform.
+	 *
+	 * @return current selected waveform or null
+	 * @see Waveform
+	 * @see MultiWaveform
+	 */
+	public Waveform gGetSelected();
 
 	public boolean isMaximize();
 

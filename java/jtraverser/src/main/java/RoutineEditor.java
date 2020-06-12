@@ -43,15 +43,6 @@ public class RoutineEditor extends JPanel implements Editor
 	}
 
 	@Override
-	public void reset()
-	{
-		image_edit.reset();
-		routine_edit.reset();
-		arg_edit.reset();
-		timeout_edit.reset();
-	}
-
-	@Override
 	public MDSplus.Data getData()
 	{
 		timeout_edit.getData();
@@ -62,6 +53,15 @@ public class RoutineEditor extends JPanel implements Editor
 				arg_edit.getData());
 		r.setCtxTree(Tree.curr_experiment);
 		return r;
+	}
+
+	@Override
+	public void reset()
+	{
+		image_edit.reset();
+		routine_edit.reset();
+		arg_edit.reset();
+		timeout_edit.reset();
 	}
 
 	public void setData(MDSplus.Data data)

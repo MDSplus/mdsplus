@@ -237,38 +237,6 @@ public class OpenTreeDialog extends JDialog
 		this.setResizable(false);
 	}
 
-	public final void open()
-	{
-		this.readonly.setSelected(true);
-		TreeView treeview = null;
-		if (this.treeman != null)
-		{
-			Dialogs.setLocation(this);
-			final MdsView mdsview = this.treeman.getCurrentMdsView();
-			if (mdsview != null)
-				treeview = this.treeman.getCurrentTreeView();
-		}
-		if (treeview != null)
-			this.setFields(treeview.getExpt(), treeview.getShot());
-		else
-		{
-			final TREE tree = TREE.getActiveTree();
-			if (tree != null)
-				this.setFields(tree.expt, tree.shot);
-		}
-		if (this.expt.getText().length() > 0)
-			this.shot_list.grabFocus();
-		else
-			this.expt.grabFocus();
-		this.setVisible(true);
-	}
-
-	public final void setFields(final String expt, final int shot)
-	{
-		this.expt.setText(expt);
-		this.shot_list.setSelectedItem(shot == -1 ? "model" : Integer.toString(shot));
-	}
-
 	void ok()
 	{
 		final String exp = this.expt.getText().trim();
@@ -308,6 +276,38 @@ public class OpenTreeDialog extends JDialog
 			this.setTreePath(exp);
 			this.treeman.openTree(exp, shot, mode);
 		}
+	}
+
+	public final void open()
+	{
+		this.readonly.setSelected(true);
+		TreeView treeview = null;
+		if (this.treeman != null)
+		{
+			Dialogs.setLocation(this);
+			final MdsView mdsview = this.treeman.getCurrentMdsView();
+			if (mdsview != null)
+				treeview = this.treeman.getCurrentTreeView();
+		}
+		if (treeview != null)
+			this.setFields(treeview.getExpt(), treeview.getShot());
+		else
+		{
+			final TREE tree = TREE.getActiveTree();
+			if (tree != null)
+				this.setFields(tree.expt, tree.shot);
+		}
+		if (this.expt.getText().length() > 0)
+			this.shot_list.grabFocus();
+		else
+			this.expt.grabFocus();
+		this.setVisible(true);
+	}
+
+	public final void setFields(final String expt, final int shot)
+	{
+		this.expt.setText(expt);
+		this.shot_list.setSelectedItem(shot == -1 ? "model" : Integer.toString(shot));
 	}
 
 	private final void setTreePath(final String exp)

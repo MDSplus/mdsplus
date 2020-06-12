@@ -161,6 +161,36 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 		pack();
 	}
 
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		final Object ob = e.getSource();
+		if (ob == erase)
+			eraseForm();
+		if (ob == cancel)
+			setVisible(false);
+		if (ob == apply || ob == ok)
+		{
+			SaveParameters();
+			if (ob == ok)
+				setVisible(false);
+		}
+		if (ob == reset)
+		{}
+	}
+
+	private float convertToFloat(String s, boolean min)
+	{
+		try
+		{
+			return Float.parseFloat(s);
+		}
+		catch (final Exception exc)
+		{
+			return min ? Float.MIN_VALUE : Float.MAX_VALUE;
+		}
+	}
+
 	public void eraseForm()
 	{
 		title.setText("");
@@ -176,14 +206,6 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 		horizontal_offset.setText("0");
 		vertical_offset.setText("0");
 		reversed_b.setSelected(false);
-	}
-
-	private void setTextValue(JTextField t, String val)
-	{
-		if (val != null)
-		{
-			t.setText(val);
-		}
 	}
 
 	private void initialize()
@@ -309,15 +331,11 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 		wave.Update();
 	}
 
-	private float convertToFloat(String s, boolean min)
+	private void setTextValue(JTextField t, String val)
 	{
-		try
+		if (val != null)
 		{
-			return Float.parseFloat(s);
-		}
-		catch (final Exception exc)
-		{
-			return min ? Float.MIN_VALUE : Float.MAX_VALUE;
+			t.setText(val);
 		}
 	}
 
@@ -334,23 +352,5 @@ public class SetupWaveformParams extends JDialog implements ActionListener
 		initialize();
 		setLocationRelativeTo(wave.getParent());
 		setVisible(true);
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		final Object ob = e.getSource();
-		if (ob == erase)
-			eraseForm();
-		if (ob == cancel)
-			setVisible(false);
-		if (ob == apply || ob == ok)
-		{
-			SaveParameters();
-			if (ob == ok)
-				setVisible(false);
-		}
-		if (ob == reset)
-		{}
 	}
 }

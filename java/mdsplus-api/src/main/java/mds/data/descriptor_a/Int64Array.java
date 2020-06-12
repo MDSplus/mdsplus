@@ -67,9 +67,19 @@ public final class Int64Array extends INTEGERArray<Long>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public final Int64 getScalar(final int idx)
 	{
 		return new Int64(this.getElement(idx).longValue());
+	}
+
+	@Override
+	protected final Long[] initArray(final int size)
+	{
+		return new Long[size];
 	}
 
 	@Override
@@ -108,23 +118,6 @@ public final class Int64Array extends INTEGERArray<Long>
 		return new Uint64Array(ByteBuffer.wrap(this.serializeArray_copy()).put(Descriptor._typB, DTYPE.QU.toByte()));
 	}
 
-	public final long[] toArray()
-	{
-		final long[] values = new long[this.arsize() / Long.BYTES];
-		this.getBuffer().asLongBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
-
-	@Override
-	protected final Long[] initArray(final int size)
-	{
-		return new Long[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final Long value)
 	{
@@ -135,5 +128,12 @@ public final class Int64Array extends INTEGERArray<Long>
 	protected final void setElement(final int i, final Long value)
 	{
 		this.p.putLong(i * Long.BYTES, value.longValue());
+	}
+
+	public final long[] toArray()
+	{
+		final long[] values = new long[this.arsize() / Long.BYTES];
+		this.getBuffer().asLongBuffer().get(values);
+		return values;
 	}
 }

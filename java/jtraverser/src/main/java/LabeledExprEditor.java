@@ -30,23 +30,23 @@ public class LabeledExprEditor extends JPanel implements Editor
 	}
 
 	@Override
+	public MDSplus.Data getData()
+	{ return expr.getData(); }
+
+	@Override
 	public void reset()
 	{
 		expr.reset();
+	}
+
+	public void setData(MDSplus.Data data)
+	{
+		expr.setData(data);
 	}
 
 	@Override
 	public void setEditable(boolean editable)
 	{
 		expr.setEditable(editable);
-	}
-
-	@Override
-	public MDSplus.Data getData()
-	{ return expr.getData(); }
-
-	public void setData(MDSplus.Data data)
-	{
-		expr.setData(data);
 	}
 }

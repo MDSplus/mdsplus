@@ -37,19 +37,19 @@ public class RangeEditor extends JPanel implements Editor
 	}
 
 	@Override
-	public void reset()
-	{
-		begin_edit.reset();
-		end_edit.reset();
-		delta_edit.reset();
-	}
-
-	@Override
 	public MDSplus.Data getData()
 	{
 		final MDSplus.Data r = new MDSplus.Range(begin_edit.getData(), end_edit.getData(), delta_edit.getData());
 		r.setCtxTree(Tree.curr_experiment);
 		return r;
+	}
+
+	@Override
+	public void reset()
+	{
+		begin_edit.reset();
+		end_edit.reset();
+		delta_edit.reset();
 	}
 
 	public void setData(MDSplus.Data data)

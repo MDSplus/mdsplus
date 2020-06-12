@@ -7,16 +7,9 @@ public class NodeInfoPropertyEditor implements PropertyEditor
 {
 	protected MDSplus.Data data;
 
+	// event notification not used here
 	@Override
-	public void setValue(Object o)
-	{ data = (MDSplus.Data) o; }
-
-	@Override
-	public Object getValue()
-	{ return data; }
-
-	@Override
-	public void setAsText(String s)
+	public void addPropertyChangeListener(PropertyChangeListener l)
 	{}
 
 	@Override
@@ -24,18 +17,20 @@ public class NodeInfoPropertyEditor implements PropertyEditor
 	{ return null; }
 
 	@Override
+	public Component getCustomEditor()
+	{ return new NodeEditor(); }
+
+	@Override
+	public String getJavaInitializationString()
+	{ return null; }
+
+	@Override
 	public String[] getTags()
 	{ return null; }
 
 	@Override
-	public boolean supportsCustomEditor()
-	{
-		return true;
-	}
-
-	@Override
-	public Component getCustomEditor()
-	{ return new NodeEditor(); }
+	public Object getValue()
+	{ return data; }
 
 	@Override
 	public boolean isPaintable()
@@ -46,15 +41,20 @@ public class NodeInfoPropertyEditor implements PropertyEditor
 	{}
 
 	@Override
-	public String getJavaInitializationString()
-	{ return null; }
-
-	// event notification not used here
-	@Override
-	public void addPropertyChangeListener(PropertyChangeListener l)
-	{}
-
-	@Override
 	public void removePropertyChangeListener(PropertyChangeListener l)
 	{}
+
+	@Override
+	public void setAsText(String s)
+	{}
+
+	@Override
+	public void setValue(Object o)
+	{ data = (MDSplus.Data) o; }
+
+	@Override
+	public boolean supportsCustomEditor()
+	{
+		return true;
+	}
 }

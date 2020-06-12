@@ -18,6 +18,27 @@ public class jScopeProperties extends Properties
 	private static final String specialSaveChars = "=: \t\r\n\f#!";
 	private static final String whiteSpaceChars = " \t\r\n\f";
 
+	/*
+	 * Returns true if the given line is a line that must be appended to the next
+	 * line
+	 */
+	/*
+	 * private boolean continueLine (String line) { int slashCount = 0; int index =
+	 * line.length() - 1; while((index >= 0) && (line.charAt(index--) == '\\'))
+	 * slashCount++; return (slashCount % 2 == 1); }
+	 */
+	@Override
+	public String getProperty(String key)
+	{
+		String p = super.getProperty(key);
+		if (p == null)
+			return null;
+		p = p.trim();
+		if (p.length() == 0)
+			return null;
+		return p;
+	}
+
 	@Override
 	public synchronized void load(InputStream inStream) throws IOException
 	{
@@ -86,26 +107,5 @@ public class jScopeProperties extends Properties
 				}
 			}
 		}
-	}
-
-	/*
-	 * Returns true if the given line is a line that must be appended to the next
-	 * line
-	 */
-	/*
-	 * private boolean continueLine (String line) { int slashCount = 0; int index =
-	 * line.length() - 1; while((index >= 0) && (line.charAt(index--) == '\\'))
-	 * slashCount++; return (slashCount % 2 == 1); }
-	 */
-	@Override
-	public String getProperty(String key)
-	{
-		String p = super.getProperty(key);
-		if (p == null)
-			return null;
-		p = p.trim();
-		if (p.length() == 0)
-			return null;
-		return p;
 	}
 }

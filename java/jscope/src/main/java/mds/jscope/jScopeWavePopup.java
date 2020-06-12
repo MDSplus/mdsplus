@@ -65,9 +65,98 @@ class jScopeWavePopup extends MultiWavePopup
 	}
 
 	@Override
-	protected void ShowDialog()
+	protected void PositionLegend(Point p)
 	{
-		jScopeWavePopup.this.ShowSetupDialog();
+		super.PositionLegend(p);
+		((jScopeMultiWave) wave).wi.ShowLegend(true);
+		((jScopeMultiWave) wave).wi.SetLegendPosition(((jScopeMultiWave) wave).GetLegendXPosition(),
+				((jScopeMultiWave) wave).GetLegendYPosition());
+	}
+
+	@Override
+	protected void RemoveLegend()
+	{
+		super.RemoveLegend();
+		((jScopeMultiWave) wave).wi.ShowLegend(false);
+	}
+
+	@Override
+	public void SetColor(int idx)
+	{
+		super.SetColor(idx);
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		final int sigIdx = w.GetSelectedSignal();
+		if (sigIdx != -1 && w.wi.colors_idx[sigIdx] != idx)
+		{
+			w.wi.colors_idx[w.GetSelectedSignal()] = idx % Waveform.getColors().length;
+			w.SetCrosshairColor(idx);
+		}
+	}
+
+	@Override
+	public void SetDeselectPoint(Waveform w)
+	{
+		final String f_name = System.getProperty("jScope.save_selected_points");
+		if (w.ShowMeasure() && f_name != null && f_name.length() != 0)
+		{
+			long shot = 0;
+			final jScopeMultiWave mw = (jScopeMultiWave) w;
+			if (mw.wi.shots != null)
+				shot = mw.wi.shots[mw.GetSelectedSignal()];
+			try
+			{
+				boolean exist = false;
+				final File f = new File(f_name);
+				if (f.exists())
+					exist = true;
+				final BufferedWriter out = new BufferedWriter(new FileWriter(f_name, true));
+				if (!exist)
+				{
+					out.write(" Shot X1 Y1 X2 Y2");
+					out.newLine();
+				}
+				out.write(" " + shot + w.getIntervalPoints());
+				out.newLine();
+				out.close();
+			}
+			catch (final IOException e)
+			{}
+		}
+		super.SetDeselectPoint(w);
+	}
+
+	@Override
+	protected void SetInterpolate(boolean state)
+	{
+		super.SetInterpolate(state);
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		w.wi.interpolates[w.GetSelectedSignal()] = state;
+	}
+
+	@Override
+	public void SetMarker(int idx)
+	{
+		super.SetMarker(idx);
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		if (w.wi.markers[w.GetSelectedSignal()] != idx)
+			w.wi.markers[w.GetSelectedSignal()] = idx;
+	}
+
+	@Override
+	public void SetMarkerStep(int step)
+	{
+		super.SetMarkerStep(step);
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		if (w.wi.markers_step[w.GetSelectedSignal()] != step)
+			w.wi.markers_step[w.GetSelectedSignal()] = step;
+	}
+
+	@Override
+	protected void SetMenu()
+	{
+		super.SetMenu();
+		// remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
+		jScopeFacade.jScopeSetUI(this);
 	}
 
 	@Override
@@ -109,11 +198,33 @@ class jScopeWavePopup extends MultiWavePopup
 	}
 
 	@Override
-	protected void SetMenu()
+	protected void SetMode1D(int mode)
 	{
-		super.SetMenu();
-		// remove_panel.setEnabled(((WaveformManager)parent).GetWaveformCount() > 1);
-		jScopeFacade.jScopeSetUI(this);
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		w.wi.mode1D[w.GetSelectedSignal()] = mode;
+		super.SetMode1D(mode);
+	}
+
+	@Override
+	protected void SetMode2D(int mode)
+	{
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		w.wi.mode2D[w.GetSelectedSignal()] = mode;
+		super.SetMode2D(mode);
+//        w.Refresh();
+	}
+
+	@Override
+	public void SetSignalState(String label, boolean state)
+	{
+		final jScopeMultiWave w = (jScopeMultiWave) wave;
+		w.SetSignalState(label, state);
+	}
+
+	@Override
+	protected void ShowDialog()
+	{
+		jScopeWavePopup.this.ShowSetupDialog();
 	}
 
 	protected void ShowSetupDialog()
@@ -136,116 +247,5 @@ class jScopeWavePopup extends MultiWavePopup
 		});
 		t.setRepeats(false);
 		t.start();
-	}
-
-	@Override
-	protected void RemoveLegend()
-	{
-		super.RemoveLegend();
-		((jScopeMultiWave) wave).wi.ShowLegend(false);
-	}
-
-	@Override
-	protected void PositionLegend(Point p)
-	{
-		super.PositionLegend(p);
-		((jScopeMultiWave) wave).wi.ShowLegend(true);
-		((jScopeMultiWave) wave).wi.SetLegendPosition(((jScopeMultiWave) wave).GetLegendXPosition(),
-				((jScopeMultiWave) wave).GetLegendYPosition());
-	}
-
-	@Override
-	protected void SetInterpolate(boolean state)
-	{
-		super.SetInterpolate(state);
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		w.wi.interpolates[w.GetSelectedSignal()] = state;
-	}
-
-	@Override
-	protected void SetMode1D(int mode)
-	{
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		w.wi.mode1D[w.GetSelectedSignal()] = mode;
-		super.SetMode1D(mode);
-	}
-
-	@Override
-	protected void SetMode2D(int mode)
-	{
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		w.wi.mode2D[w.GetSelectedSignal()] = mode;
-		super.SetMode2D(mode);
-//        w.Refresh();
-	}
-
-	@Override
-	public void SetDeselectPoint(Waveform w)
-	{
-		final String f_name = System.getProperty("jScope.save_selected_points");
-		if (w.ShowMeasure() && f_name != null && f_name.length() != 0)
-		{
-			long shot = 0;
-			final jScopeMultiWave mw = (jScopeMultiWave) w;
-			if (mw.wi.shots != null)
-				shot = mw.wi.shots[mw.GetSelectedSignal()];
-			try
-			{
-				boolean exist = false;
-				final File f = new File(f_name);
-				if (f.exists())
-					exist = true;
-				final BufferedWriter out = new BufferedWriter(new FileWriter(f_name, true));
-				if (!exist)
-				{
-					out.write(" Shot X1 Y1 X2 Y2");
-					out.newLine();
-				}
-				out.write(" " + shot + w.getIntervalPoints());
-				out.newLine();
-				out.close();
-			}
-			catch (final IOException e)
-			{}
-		}
-		super.SetDeselectPoint(w);
-	}
-
-	@Override
-	public void SetSignalState(String label, boolean state)
-	{
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		w.SetSignalState(label, state);
-	}
-
-	@Override
-	public void SetMarker(int idx)
-	{
-		super.SetMarker(idx);
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		if (w.wi.markers[w.GetSelectedSignal()] != idx)
-			w.wi.markers[w.GetSelectedSignal()] = idx;
-	}
-
-	@Override
-	public void SetMarkerStep(int step)
-	{
-		super.SetMarkerStep(step);
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		if (w.wi.markers_step[w.GetSelectedSignal()] != step)
-			w.wi.markers_step[w.GetSelectedSignal()] = step;
-	}
-
-	@Override
-	public void SetColor(int idx)
-	{
-		super.SetColor(idx);
-		final jScopeMultiWave w = (jScopeMultiWave) wave;
-		final int sigIdx = w.GetSelectedSignal();
-		if (sigIdx != -1 && w.wi.colors_idx[sigIdx] != idx)
-		{
-			w.wi.colors_idx[w.GetSelectedSignal()] = idx % Waveform.getColors().length;
-			w.SetCrosshairColor(idx);
-		}
 	}
 }

@@ -25,21 +25,21 @@ public class DeviceLabeledExprEditor extends JPanel
 		add(expr, "Center");
 	}
 
+	public String getData()
+	{ return expr.getData(); }
+
 	public void reset()
 	{
 		expr.reset();
 	}
 
-	public void setEditable(boolean editable)
-	{
-		expr.setEditable(editable);
-	}
-
-	public String getData()
-	{ return expr.getData(); }
-
 	public void setData(String data)
 	{
 		expr.setData(data);
+	}
+
+	public void setEditable(boolean editable)
+	{
+		expr.setEditable(editable);
 	}
 }

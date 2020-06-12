@@ -40,6 +40,10 @@ public final class Int16 extends INTEGER<Short>
 	public final Short getAtomic()
 	{ return new Short(this.p.getShort(0)); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x01; }
+
 	public final short getValue()
 	{ return this.getBuffer().getShort(0); }
 
@@ -71,8 +75,4 @@ public final class Int16 extends INTEGER<Short>
 	{
 		return this;
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x01; }
 }

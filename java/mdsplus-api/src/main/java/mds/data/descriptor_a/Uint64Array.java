@@ -64,9 +64,19 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x07; }
+
+	@Override
 	public final Uint64 getScalar(final int idx)
 	{
 		return new Uint64(this.getElement(idx));
+	}
+
+	@Override
+	protected final ULong[] initArray(final int size)
+	{
+		return new ULong[size];
 	}
 
 	@Override
@@ -105,23 +115,6 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>
 		return this;
 	}
 
-	public final long[] toArray()
-	{
-		final long[] values = new long[this.arsize() / Long.BYTES];
-		this.getBuffer().asLongBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x07; }
-
-	@Override
-	protected final ULong[] initArray(final int size)
-	{
-		return new ULong[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final ULong value)
 	{
@@ -132,5 +125,12 @@ public final class Uint64Array extends INTEGER_UNSIGNEDArray<ULong>
 	protected void setElement(final int i, final ULong value)
 	{
 		this.p.putLong(i * Long.BYTES, value.longValue());
+	}
+
+	public final long[] toArray()
+	{
+		final long[] values = new long[this.arsize() / Long.BYTES];
+		this.getBuffer().asLongBuffer().get(values);
+		return values;
 	}
 }

@@ -43,12 +43,6 @@ public class TextEditor extends Editor implements ActionListener
 		this(data, editable, ctx, window, "Text");
 	}
 
-	public TextEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window,
-			final String name, final String... modes)
-	{
-		this(data, editable, ctx, window, name, true, modes);
-	}
-
 	protected TextEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window,
 			final String name, final boolean allowparams, final String... modes)
 	{
@@ -78,6 +72,12 @@ public class TextEditor extends Editor implements ActionListener
 			this.setData(data);
 	}
 
+	public TextEditor(final Descriptor<?> data, final boolean editable, final CTX ctx, final Window window,
+			final String name, final String... modes)
+	{
+		this(data, editable, ctx, window, name, true, modes);
+	}
+
 	@Override
 	public void actionPerformed(final ActionEvent e)
 	{
@@ -85,52 +85,6 @@ public class TextEditor extends Editor implements ActionListener
 		if (idx == this.curr_mode_idx)
 			return;
 		this.setMode(idx);
-	}
-
-	@Override
-	public final Descriptor<?> getData() throws MdsException
-	{
-		if (this.curr_mode_idx == 0)
-			return null;
-		if (this.curr_mode_idx < this.mode_idx_usr)
-			return this.data_edit.getData();
-		return this.getUsrData();
-	}
-
-	@Override
-	public void interrupt()
-	{
-		for (final Component component : this.editor.getComponents())
-			if (component instanceof Editor)
-				((Editor) component).interrupt();
-	}
-
-	@Override
-	public final boolean isNull()
-	{ return this.curr_mode_idx == 0; }
-
-	@Override
-	public final void reset(final boolean hard)
-	{
-		super.reset(hard);
-		this.combo.setSelectedIndex(this.mode_idx);
-		if (hard)
-			this.setMode(this.mode_idx);
-	}
-
-	@Override
-	public final void setData(final Descriptor<?> data)
-	{
-		this.data = data;
-		this.combo.setEnabled(this.editable || !Editor.isNoData(data));
-		this.checkData();
-		if (this.curr_mode_idx != this.mode_idx)
-			this.setMode(this.mode_idx);
-		else if (this.curr_mode_idx > 0)
-			if (this.curr_mode_idx < this.mode_idx_usr)
-				this.data_edit.setData(data);
-			else
-				this.setUsrData();
 	}
 
 	protected final void addEditor()
@@ -175,8 +129,30 @@ public class TextEditor extends Editor implements ActionListener
 		return false;
 	}
 
+	@Override
+	public final Descriptor<?> getData() throws MdsException
+	{
+		if (this.curr_mode_idx == 0)
+			return null;
+		if (this.curr_mode_idx < this.mode_idx_usr)
+			return this.data_edit.getData();
+		return this.getUsrData();
+	}
+
 	protected Descriptor<?> getUsrData() throws MdsException
 	{ return this.data_edit.getData(); }
+
+	@Override
+	public void interrupt()
+	{
+		for (final Component component : this.editor.getComponents())
+			if (component instanceof Editor)
+				((Editor) component).interrupt();
+	}
+
+	@Override
+	public final boolean isNull()
+	{ return this.curr_mode_idx == 0; }
 
 	protected final void refresh()
 	{
@@ -188,6 +164,30 @@ public class TextEditor extends Editor implements ActionListener
 		}
 		this.window.pack();
 		this.window.repaint();
+	}
+
+	@Override
+	public final void reset(final boolean hard)
+	{
+		super.reset(hard);
+		this.combo.setSelectedIndex(this.mode_idx);
+		if (hard)
+			this.setMode(this.mode_idx);
+	}
+
+	@Override
+	public final void setData(final Descriptor<?> data)
+	{
+		this.data = data;
+		this.combo.setEnabled(this.editable || !Editor.isNoData(data));
+		this.checkData();
+		if (this.curr_mode_idx != this.mode_idx)
+			this.setMode(this.mode_idx);
+		else if (this.curr_mode_idx > 0)
+			if (this.curr_mode_idx < this.mode_idx_usr)
+				this.data_edit.setData(data);
+			else
+				this.setUsrData();
 	}
 
 	protected final void setMode(final int idx)

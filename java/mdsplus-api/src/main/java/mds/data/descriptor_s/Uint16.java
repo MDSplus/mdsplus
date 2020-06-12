@@ -97,6 +97,10 @@ public final class Uint16 extends INTEGER_UNSIGNED<UShort>
 	public final UShort getAtomic()
 	{ return UShort.fromBuffer(this.p, 0); }
 
+	@Override
+	protected final byte getRankBits()
+	{ return 0x01; }
+
 	public final UShort getValue()
 	{ return this.getAtomic(); }
 
@@ -128,8 +132,4 @@ public final class Uint16 extends INTEGER_UNSIGNED<UShort>
 	{
 		return this;
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x01; }
 }

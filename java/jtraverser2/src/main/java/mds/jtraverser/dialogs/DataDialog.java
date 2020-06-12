@@ -32,12 +32,12 @@ import mds.jtraverser.editor.usage.WindowEditor;
 
 public class DataDialog extends JDialog
 {
-	private static final long serialVersionUID = 1L;
-
 	public interface UpdateListener
 	{
 		public abstract void update(Descriptor<?> data);
 	}
+
+	private static final long serialVersionUID = 1L;
 
 	public static final DataDialog open(final NODE<?> node, final boolean editable) throws MdsException
 	{

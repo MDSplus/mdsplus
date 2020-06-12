@@ -11,15 +11,15 @@ public class DeviceApply extends DeviceControl
 	}
 
 	@Override
-	void setReadOnly(boolean readOnly)
-	{
-		setEnabled(!readOnly);
-	}
-
-	@Override
 	protected void doOperation(DeviceSetup deviceSetup)
 	{
 		if (check())
 			deviceSetup.apply();
+	}
+
+	@Override
+	void setReadOnly(boolean readOnly)
+	{
+		setEnabled(!readOnly);
 	}
 }

@@ -41,6 +41,12 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>
 	}
 
 	@Override
+	protected final boolean format()
+	{
+		return true;
+	}
+
+	@Override
 	public final UShort getElement(final ByteBuffer b_in)
 	{
 		return UShort.fromBuffer(b_in);
@@ -53,9 +59,19 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x01; }
+
+	@Override
 	public Uint16 getScalar(final int idx)
 	{
 		return new Uint16(this.getElement(idx));
+	}
+
+	@Override
+	protected final UShort[] initArray(final int size)
+	{
+		return new UShort[size];
 	}
 
 	@Override
@@ -82,6 +98,18 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>
 		return UShort.decode(in);
 	}
 
+	@Override
+	protected final void setElement(final ByteBuffer b, final UShort value)
+	{
+		b.putShort(value.shortValue());
+	}
+
+	@Override
+	protected void setElement(final int i, final UShort value)
+	{
+		this.p.putShort(i * Short.BYTES, value.shortValue());
+	}
+
 	public final short[] toArray()
 	{
 		final short[] values = new short[this.arsize() / Short.BYTES];
@@ -99,33 +127,5 @@ public final class Uint16Array extends INTEGER_UNSIGNEDArray<UShort>
 	public final Uint16Array wordu()
 	{
 		return this;
-	}
-
-	@Override
-	protected final boolean format()
-	{
-		return true;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x01; }
-
-	@Override
-	protected final UShort[] initArray(final int size)
-	{
-		return new UShort[size];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final UShort value)
-	{
-		b.putShort(value.shortValue());
-	}
-
-	@Override
-	protected void setElement(final int i, final UShort value)
-	{
-		this.p.putShort(i * Short.BYTES, value.shortValue());
 	}
 }

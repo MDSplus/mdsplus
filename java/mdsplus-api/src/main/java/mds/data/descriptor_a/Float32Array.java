@@ -38,6 +38,11 @@ public final class Float32Array extends FLOATArray<Float>
 		super(dtype, data, shape);
 	}
 
+	private Float32Array(final DTYPE dtype, final float[] values, final int... shape)
+	{
+		super(dtype, values, shape);
+	}
+
 	public Float32Array(final float... values)
 	{
 		super(DTYPE.FLOAT, values);
@@ -46,11 +51,6 @@ public final class Float32Array extends FLOATArray<Float>
 	public Float32Array(final int shape[], final float... values)
 	{
 		super(DTYPE.FLOAT, values, shape);
-	}
-
-	private Float32Array(final DTYPE dtype, final float[] values, final int... shape)
-	{
-		super(dtype, values, shape);
 	}
 
 	@Override
@@ -97,9 +97,19 @@ public final class Float32Array extends FLOATArray<Float>
 	}
 
 	@Override
+	protected byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public Float32 getScalar(final int idx)
 	{
 		return new Float32(this.getElement(idx).floatValue());
+	}
+
+	@Override
+	protected final Float[] initArray(final int size)
+	{
+		return new Float[size];
 	}
 
 	@Override
@@ -127,23 +137,6 @@ public final class Float32Array extends FLOATArray<Float>
 		return Float.valueOf(in);
 	}
 
-	public final float[] toArray()
-	{
-		final float[] values = new float[this.arsize() / Float.BYTES];
-		this.getBuffer().asFloatBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected byte getRankBits()
-	{ return 0x03; }
-
-	@Override
-	protected final Float[] initArray(final int size)
-	{
-		return new Float[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final Float value)
 	{
@@ -154,5 +147,12 @@ public final class Float32Array extends FLOATArray<Float>
 	protected final void setElement(final int i, final Float value)
 	{
 		this.p.putFloat(i * Float.BYTES, value.floatValue());
+	}
+
+	public final float[] toArray()
+	{
+		final float[] values = new float[this.arsize() / Float.BYTES];
+		this.getBuffer().asFloatBuffer().get(values);
+		return values;
 	}
 }

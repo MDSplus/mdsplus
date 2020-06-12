@@ -9,6 +9,56 @@ import javax.swing.*;
 
 import java.io.*;
 
+class FontPanel extends JPanel
+{
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	Font thisFont;
+
+	public FontPanel()
+	{
+		thisFont = new Font("Arial", Font.PLAIN, 10);
+	}
+
+	public void changeFont(Font font)
+	{
+		thisFont = font;
+		repaint();
+	}
+
+	@Override
+	public Dimension getPreferredSize()
+	{ return new Dimension(100, 50); }
+
+	// Check if the font is visible on
+	// this platform
+	public boolean isFontAvailable(Font font)
+	{
+		int height;
+		final Graphics g = this.getGraphics();
+		final FontMetrics fm = g.getFontMetrics(font);
+		height = fm.getHeight();
+		return (height > 9 && height < 100);
+	}
+
+	@Override
+	public void paint(Graphics g)
+	{
+		final int w = getSize().width;// getWidth();
+		final int h = getSize().height;// getHeight();
+		g.setColor(Color.darkGray);
+		g.setFont(thisFont);
+		final String change = "Pick a font, size, and style to change me";
+		final FontMetrics metrics = g.getFontMetrics();
+		final int width = metrics.stringWidth(change);
+		final int height = metrics.getHeight();
+//        System.out.println(thisFont.toString());
+		g.drawString(change, w / 2 - width / 2, h / 2 - height / 2);
+	}
+}
+
 public class FontSelection extends JDialog implements ActionListener, ItemListener
 {
 	/**
@@ -112,17 +162,55 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 		GetPropertiesValue();
 	}
 
-	private void setFontChoice()
+	@Override
+	public void actionPerformed(ActionEvent e)
 	{
-		fonts.removeItemListener(this);
-		styles.removeItemListener(this);
-		sizes.removeItemListener(this);
-		fonts.setSelectedItem(fontchoice);
-		styles.setSelectedIndex(stChoice);
-		sizes.setSelectedItem(siChoice);
-		fonts.addItemListener(this);
-		styles.addItemListener(this);
-		sizes.addItemListener(this);
+		final Object ob = e.getSource();
+		if (ob == ok || ob == apply)
+		{
+			if (waveform_i.isSelected())
+			{
+				font = GetFont();
+				main_scope.UpdateFont();
+				main_scope.RepaintAllWaves();
+				main_scope.setChange(true);
+			}
+			if (application_i.isSelected())
+			{
+				main_scope.SetApplicationFonts(GetFont());
+				// SwingUtilities.updateComponentTreeUI(main_scope);
+			}
+			if (ob == ok)
+				setVisible(false);
+		}
+		if (ob == cancel)
+		{
+			setVisible(false);
+		}
+	}
+
+	public void fromFile(Properties pr, String prompt) throws IOException
+	{
+		String prop;
+		if ((prop = pr.getProperty(prompt)) != null)
+		{
+			font = StringToFont(prop);
+		}
+		if (font != null)
+		{
+			setFontChoice();
+			fontC.changeFont(font);
+		}
+	}
+
+	public Font GetFont()
+	{
+		fontchoice = (String) fonts.getSelectedItem();
+		stChoice = styles.getSelectedIndex();
+		siChoice = (String) sizes.getSelectedItem();
+		Font f = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
+		f = StringToFont(f.toString());
+		return f;
 	}
 
 	private void GetPropertiesValue()
@@ -143,6 +231,27 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 			setFontChoice();
 			fontC.changeFont(font);
 		}
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e)
+	{
+		if (e.getStateChange() != ItemEvent.SELECTED)
+			return;
+		fontC.changeFont(GetFont());
+	}
+
+	private void setFontChoice()
+	{
+		fonts.removeItemListener(this);
+		styles.removeItemListener(this);
+		sizes.removeItemListener(this);
+		fonts.setSelectedItem(fontchoice);
+		styles.setSelectedIndex(stChoice);
+		sizes.setSelectedItem(siChoice);
+		fonts.addItemListener(this);
+		styles.addItemListener(this);
+		sizes.addItemListener(this);
 	}
 
 	public Font StringToFont(String f)
@@ -180,119 +289,10 @@ public class FontSelection extends JDialog implements ActionListener, ItemListen
 		return font;
 	}
 
-	public void fromFile(Properties pr, String prompt) throws IOException
-	{
-		String prop;
-		if ((prop = pr.getProperty(prompt)) != null)
-		{
-			font = StringToFont(prop);
-		}
-		if (font != null)
-		{
-			setFontChoice();
-			fontC.changeFont(font);
-		}
-	}
-
 	public void toFile(PrintWriter out, String prompt)
 	{
 		if (font != null)
 			out.println(prompt + ": " + font.toString());
 		out.println("");
-	}
-
-	public Font GetFont()
-	{
-		fontchoice = (String) fonts.getSelectedItem();
-		stChoice = styles.getSelectedIndex();
-		siChoice = (String) sizes.getSelectedItem();
-		Font f = new Font(fontchoice, stChoice, Integer.parseInt(siChoice));
-		f = StringToFont(f.toString());
-		return f;
-	}
-
-	@Override
-	public void itemStateChanged(ItemEvent e)
-	{
-		if (e.getStateChange() != ItemEvent.SELECTED)
-			return;
-		fontC.changeFont(GetFont());
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e)
-	{
-		final Object ob = e.getSource();
-		if (ob == ok || ob == apply)
-		{
-			if (waveform_i.isSelected())
-			{
-				font = GetFont();
-				main_scope.UpdateFont();
-				main_scope.RepaintAllWaves();
-				main_scope.setChange(true);
-			}
-			if (application_i.isSelected())
-			{
-				main_scope.SetApplicationFonts(GetFont());
-				// SwingUtilities.updateComponentTreeUI(main_scope);
-			}
-			if (ob == ok)
-				setVisible(false);
-		}
-		if (ob == cancel)
-		{
-			setVisible(false);
-		}
-	}
-}
-
-class FontPanel extends JPanel
-{
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	Font thisFont;
-
-	public FontPanel()
-	{
-		thisFont = new Font("Arial", Font.PLAIN, 10);
-	}
-
-	@Override
-	public Dimension getPreferredSize()
-	{ return new Dimension(100, 50); }
-
-	// Check if the font is visible on
-	// this platform
-	public boolean isFontAvailable(Font font)
-	{
-		int height;
-		final Graphics g = this.getGraphics();
-		final FontMetrics fm = g.getFontMetrics(font);
-		height = fm.getHeight();
-		return (height > 9 && height < 100);
-	}
-
-	public void changeFont(Font font)
-	{
-		thisFont = font;
-		repaint();
-	}
-
-	@Override
-	public void paint(Graphics g)
-	{
-		final int w = getSize().width;// getWidth();
-		final int h = getSize().height;// getHeight();
-		g.setColor(Color.darkGray);
-		g.setFont(thisFont);
-		final String change = "Pick a font, size, and style to change me";
-		final FontMetrics metrics = g.getFontMetrics();
-		final int width = metrics.stringWidth(change);
-		final int height = metrics.getHeight();
-//        System.out.println(thisFont.toString());
-		g.drawString(change, w / 2 - width / 2, h / 2 - height / 2);
 	}
 }

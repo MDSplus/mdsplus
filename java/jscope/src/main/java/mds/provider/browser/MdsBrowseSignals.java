@@ -14,6 +14,14 @@ public class MdsBrowseSignals extends jScopeBrowseSignals
 	String server_url;
 
 	@Override
+	protected String getServerAddr()
+	{ return server_url; }
+
+	@Override
+	protected String getShot()
+	{ return shot; }
+
+	@Override
 	protected String getSignal(String url_name)
 	{
 		String sig_path = null;
@@ -54,12 +62,4 @@ public class MdsBrowseSignals extends jScopeBrowseSignals
 	@Override
 	protected String getTree()
 	{ return tree; }
-
-	@Override
-	protected String getShot()
-	{ return shot; }
-
-	@Override
-	protected String getServerAddr()
-	{ return server_url; }
 }

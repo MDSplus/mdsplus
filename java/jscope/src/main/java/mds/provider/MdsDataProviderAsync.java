@@ -21,6 +21,12 @@ public class MdsDataProviderAsync extends MdsDataProvider
 		Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
 
 		@Override
+		public void addDataListener(WaveDataListener listener)
+		{
+			listeners.addElement(listener);
+		}
+
+		@Override
 		public void startGeneration(String expression)
 		{
 			// JUST A SAMPLE SINE GENERATION...TO BE REPLACED BY REAL WAVEFORMS
@@ -61,12 +67,6 @@ public class MdsDataProviderAsync extends MdsDataProvider
 					}
 				}
 			}).start();
-		}
-
-		@Override
-		public void addDataListener(WaveDataListener listener)
-		{
-			listeners.addElement(listener);
 		}
 	}
 

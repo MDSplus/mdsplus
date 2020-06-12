@@ -94,6 +94,31 @@ public class ModifyData extends NodeEditor
 		jp.add(cancel_b);
 	}
 
+	private boolean apply()
+	{
+		try
+		{
+			node.setData(curr_edit.getData());
+		}
+		catch (final Exception e)
+		{
+			JOptionPane.showMessageDialog(frame, e.getMessage(), "Error writing datafile", JOptionPane.ERROR_MESSAGE);
+			return false;
+		}
+		return true;
+	}
+
+	private void cancel()
+	{
+		frame.dispose();
+	}
+
+	private void ok()
+	{
+		if (apply())
+			cancel();
+	}
+
 	private void replace(Editor edit)
 	{
 		if (curr_edit != null && curr_edit != edit)
@@ -101,6 +126,13 @@ public class ModifyData extends NodeEditor
 		curr_edit = edit;
 		add((Component) edit, "Center");
 		// add(edit);
+	}
+
+	private void reset()
+	{
+		curr_edit.reset();
+		validate();
+		repaint();
 	}
 
 	@Override
@@ -189,38 +221,6 @@ public class ModifyData extends NodeEditor
 		{}
 		tags.setText(tagList(node.getTags()));
 		this.node = node;
-	}
-
-	private void cancel()
-	{
-		frame.dispose();
-	}
-
-	private boolean apply()
-	{
-		try
-		{
-			node.setData(curr_edit.getData());
-		}
-		catch (final Exception e)
-		{
-			JOptionPane.showMessageDialog(frame, e.getMessage(), "Error writing datafile", JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-		return true;
-	}
-
-	private void reset()
-	{
-		curr_edit.reset();
-		validate();
-		repaint();
-	}
-
-	private void ok()
-	{
-		if (apply())
-			cancel();
 	}
 
 	private String tagList(String[] tags)

@@ -47,6 +47,12 @@ public final class Ident extends Descriptor_S<String>
 		return new String(buf);
 	}
 
+	@Override
+	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		return this.evaluate().getData(omits);
+	}
+
 	public final String getName()
 	{ return this.getAtomic(); }
 
@@ -59,11 +65,5 @@ public final class Ident extends Descriptor_S<String>
 	public Message toMessage(final byte descr_idx, final byte n_args, final byte mid) throws MdsException
 	{
 		return new Message(descr_idx, this.dtype(), n_args, this.getShape(), this.getBuffer(), mid);
-	}
-
-	@Override
-	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		return this.evaluate().getData(omits);
 	}
 }

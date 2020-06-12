@@ -12,12 +12,12 @@ public class NodeEditor extends JPanel
 	Tree tree;
 	TreeDialog frame;
 
-	public void setTree(Tree tree)
-	{ this.tree = tree; }
+	public void setFrame(TreeDialog frame)
+	{ this.frame = frame; }
 
 	public void setNode(Node node)
 	{ this.node = node; }
 
-	public void setFrame(TreeDialog frame)
-	{ this.frame = frame; }
+	public void setTree(Tree tree)
+	{ this.tree = tree; }
 }

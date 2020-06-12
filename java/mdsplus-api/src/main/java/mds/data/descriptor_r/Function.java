@@ -51,40 +51,6 @@ public class Function extends Descriptor_R<Short>
 		return new Function(OPC.OpcAbs, dscptrs);
 	}
 
-	public static final Function AS_IS(final Descriptor<?> dscptrs)
-	{
-		return new Function(OPC.OpcAsIs, dscptrs);
-	}
-
-	public static Function deserialize(final ByteBuffer b) throws MdsException
-	{
-		final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
-		if (BUILD.coversOpCode(opcode))
-			return BUILD.deserialize(b);
-		if (CAST.coversOpCode(opcode))
-			return CAST.deserialize(b);
-		if (COMPRESSION.coversOpCode(opcode))
-			return COMPRESSION.deserialize(b);
-		if (CONST.coversOpCode(opcode))
-			return CONST.deserialize(b);
-		if (UNARY.coversOpCode(opcode))
-			return UNARY.deserialize(b);
-		if (BINARY.coversOpCode(opcode))
-			return BINARY.deserialize(b);
-		if (MODIFIER.coversOpCode(opcode))
-			return MODIFIER.deserialize(b);
-		switch (opcode)
-		{
-		default:
-			return new Function(b);
-		case OpcFun:
-			return new Fun(b);
-		}
-	}
-
-	public static final void setWindowsLineEnding(final boolean win_in)
-	{ Function.newline = win_in ? LINEENDING_WIN : LINEENDING_UNIX; }
-
 	protected static final void addCompoundStatement(final int nstmt, final Function pin, final int offset,
 			final StringBuilder pout, final int mode)
 	{
@@ -140,6 +106,11 @@ public class Function extends Descriptor_R<Short>
 		Function.addIndent(0, pout);
 	}
 
+	public static final Function AS_IS(final Descriptor<?> dscptrs)
+	{
+		return new Function(OPC.OpcAsIs, dscptrs);
+	}
+
 	private final static void deIndent(final StringBuilder pout)
 	{
 		int fin;
@@ -152,180 +123,49 @@ public class Function extends Descriptor_R<Short>
 		pout.setLength(fin + 1);
 	}
 
-	public Function(final Descriptor<?>... arguments)
+	public static Function deserialize(final ByteBuffer b) throws MdsException
 	{
-		super(DTYPE.FUNCTION, null, arguments);
+		final OPC opcode = OPC.get(b.getShort(b.getInt(Descriptor._ptrI)));
+		if (BUILD.coversOpCode(opcode))
+			return BUILD.deserialize(b);
+		if (CAST.coversOpCode(opcode))
+			return CAST.deserialize(b);
+		if (COMPRESSION.coversOpCode(opcode))
+			return COMPRESSION.deserialize(b);
+		if (CONST.coversOpCode(opcode))
+			return CONST.deserialize(b);
+		if (UNARY.coversOpCode(opcode))
+			return UNARY.deserialize(b);
+		if (BINARY.coversOpCode(opcode))
+			return BINARY.deserialize(b);
+		if (MODIFIER.coversOpCode(opcode))
+			return MODIFIER.deserialize(b);
+		switch (opcode)
+		{
+		default:
+			return new Function(b);
+		case OpcFun:
+			return new Fun(b);
+		}
 	}
+
+	public static final void setWindowsLineEnding(final boolean win_in)
+	{ Function.newline = win_in ? LINEENDING_WIN : LINEENDING_UNIX; }
 
 	protected Function(final ByteBuffer b)
 	{
 		super(b);
 	}
 
+	public Function(final Descriptor<?>... arguments)
+	{
+		super(DTYPE.FUNCTION, null, arguments);
+	}
+
 	protected Function(final OPC mode, final Descriptor<?>... args)
 	{
 		super(DTYPE.FUNCTION,
 				ByteBuffer.allocateDirect(Short.BYTES).order(Descriptor.BYTEORDER).putShort(0, mode.toShort()), args);
-	}
-
-	@Override
-	public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode)
-	{
-		final OPC opcode = this.getOpCode();
-		if (DEBUG.D)
-			System.out.println(opcode.label);
-		try
-		{
-			if (CAST.coversOpCode(opcode))
-				return CAST.deserialize(this.b).decompile(prec, pout, mode);
-			if (CONST.coversOpCode(opcode))
-				return CONST.deserialize(this.b).decompile(prec, pout, mode);
-			if (UNARY.coversOpCode(opcode))
-				return UNARY.deserialize(this.b).decompile(prec, pout, mode);
-			if (BINARY.coversOpCode(opcode))
-				return BINARY.deserialize(this.b).decompile(prec, pout, mode);
-			if (MODIFIER.coversOpCode(opcode))
-				return MODIFIER.deserialize(this.b).decompile(prec, pout, mode);
-		}
-		catch (final MdsException e)
-		{
-			e.printStackTrace();
-			pout.append("/***error<").append(e.getMessage()).append(">***/");
-		}
-		switch (opcode)
-		{
-		default:
-		{/* intrinsic(arg, ...) */
-			final String name = this.getName();
-			pout.append(name);
-			this.addArguments(0, "(", ")", pout, mode);
-			return pout;
-		}
-		case OpcExtFunction: /* _label(arg, ...) */
-			return this.deco_extfunction(prec, pout, mode);
-		case OpcSubscript: /* postfix[subscript, ...] */
-			return this.deco_subscript(prec, pout, mode);
-		case OpcVector: /* [elem, ...] */
-			return this.deco_vector(prec, pout, mode);
-		case OpcBreak: /* break; */
-		case OpcContinue: /* continue; */
-			return this.deco_loop(prec, pout, mode);
-		case OpcCase: /* case (xxx) stmt ... */
-			return this.deco_case(prec, pout, mode);
-		case OpcDefault: /* case default stmt ... */
-			return this.deco_default(prec, pout, mode);
-		case OpcDo: /* do {stmt} while (exp); Note argument order is (exp,stmt,...) */
-			return this.deco_do(prec, pout, mode);
-		case OpcFor:/* for (init;test;step) stmt */
-			return this.deco_for(prec, pout, mode);
-		case OpcGoto: /* goto xxx; */
-			return this.deco_goto(prec, pout, mode);
-		case OpcSwitch: /* switch (exp) stmt */
-		case OpcWhile: /* while (exp) stmt */
-		case OpcIf: /* if (exp) stmt else stmt */
-		case OpcWhere: /* where (exp) stmt elsewhere stmt */
-			return this.deco_exp_stmt(prec, pout, mode);
-		case OpcLabel: /* xxx : stmt ... */
-			return this.deco_label(prec, pout, mode);
-		case OpcReturn: /* return (optional-exp); */
-			return this.deco_return(prec, pout, mode);
-		case OpcStatement: /* {stmt ...} */
-			return this.deco_stmt(prec, pout, mode);
-		}
-	}
-
-	public final Descriptor<?> getArgument(final int idx)
-	{
-		return this.getDescriptor(idx);
-	}
-
-	public final Descriptor<?>[] getArguments()
-	{
-		final Descriptor<?>[] desc = new Descriptor[this.ndesc()];
-		for (int i = 0; i < this.ndesc(); i++)
-			desc[i] = this.getDescriptor(i);
-		return desc;
-	}
-
-	@Override
-	public final Short getAtomic()
-	{
-		switch (this.length())
-		{
-		case 1:
-			return Short.valueOf(this.p.get(0));
-		case 2:
-			return Short.valueOf(this.p.getShort(0));
-		case 4:
-			return Short.valueOf((short) this.p.getInt(0));
-		default:
-			return Short.valueOf((short) 0);
-		}
-	}
-
-	@Override
-	public Descriptor<?> getLocal_(final FLAG local)
-	{
-		final OPC opc = this.getOpCode();
-		if (!FLAG.and(local,
-				opc != OPC.OpcExtFunction && opc != OPC.OpcDefault && opc != OPC.OpcShot && opc != OPC.OpcExpt))
-			return this.evaluate().setLocal();
-		final FLAG mylocal = new FLAG();
-		final Descriptor<?>[] args = Descriptor.getLocals(mylocal, this.getArguments());
-		if (FLAG.and(local, mylocal.flag))
-			return this.setLocal();
-		return new Function(opc, args).setLocal();
-	}
-
-	public final OPC getOpCode()
-	{ return OPC.get(this.getAtomic().shortValue()); }
-
-	@Override
-	public final double toDouble()
-	{
-		return this.evaluate().toDouble();
-	}
-
-	@Override
-	public final double[] toDoubleArray()
-	{
-		return this.evaluate().toDoubleArray();
-	}
-
-	@Override
-	public final float toFloat()
-	{
-		return this.evaluate().toFloat();
-	}
-
-	@Override
-	public final float[] toFloatArray()
-	{
-		return this.evaluate().toFloatArray();
-	}
-
-	@Override
-	public final int toInt()
-	{
-		return this.evaluate().toInt();
-	}
-
-	@Override
-	public final int[] toIntArray()
-	{
-		return this.evaluate().toIntArray();
-	}
-
-	@Override
-	public final long toLong()
-	{
-		return this.evaluate().toLong();
-	}
-
-	@Override
-	public final long[] toLongArray()
-	{
-		return this.evaluate().toLongArray();
 	}
 
 	protected final StringBuilder deco_case(final int prec, final StringBuilder pout, final int mode)
@@ -494,11 +334,171 @@ public class Function extends Descriptor_R<Short>
 	}
 
 	@Override
+	public StringBuilder decompile(final int prec, final StringBuilder pout, final int mode)
+	{
+		final OPC opcode = this.getOpCode();
+		if (DEBUG.D)
+			System.out.println(opcode.label);
+		try
+		{
+			if (CAST.coversOpCode(opcode))
+				return CAST.deserialize(this.b).decompile(prec, pout, mode);
+			if (CONST.coversOpCode(opcode))
+				return CONST.deserialize(this.b).decompile(prec, pout, mode);
+			if (UNARY.coversOpCode(opcode))
+				return UNARY.deserialize(this.b).decompile(prec, pout, mode);
+			if (BINARY.coversOpCode(opcode))
+				return BINARY.deserialize(this.b).decompile(prec, pout, mode);
+			if (MODIFIER.coversOpCode(opcode))
+				return MODIFIER.deserialize(this.b).decompile(prec, pout, mode);
+		}
+		catch (final MdsException e)
+		{
+			e.printStackTrace();
+			pout.append("/***error<").append(e.getMessage()).append(">***/");
+		}
+		switch (opcode)
+		{
+		default:
+		{/* intrinsic(arg, ...) */
+			final String name = this.getName();
+			pout.append(name);
+			this.addArguments(0, "(", ")", pout, mode);
+			return pout;
+		}
+		case OpcExtFunction: /* _label(arg, ...) */
+			return this.deco_extfunction(prec, pout, mode);
+		case OpcSubscript: /* postfix[subscript, ...] */
+			return this.deco_subscript(prec, pout, mode);
+		case OpcVector: /* [elem, ...] */
+			return this.deco_vector(prec, pout, mode);
+		case OpcBreak: /* break; */
+		case OpcContinue: /* continue; */
+			return this.deco_loop(prec, pout, mode);
+		case OpcCase: /* case (xxx) stmt ... */
+			return this.deco_case(prec, pout, mode);
+		case OpcDefault: /* case default stmt ... */
+			return this.deco_default(prec, pout, mode);
+		case OpcDo: /* do {stmt} while (exp); Note argument order is (exp,stmt,...) */
+			return this.deco_do(prec, pout, mode);
+		case OpcFor:/* for (init;test;step) stmt */
+			return this.deco_for(prec, pout, mode);
+		case OpcGoto: /* goto xxx; */
+			return this.deco_goto(prec, pout, mode);
+		case OpcSwitch: /* switch (exp) stmt */
+		case OpcWhile: /* while (exp) stmt */
+		case OpcIf: /* if (exp) stmt else stmt */
+		case OpcWhere: /* where (exp) stmt elsewhere stmt */
+			return this.deco_exp_stmt(prec, pout, mode);
+		case OpcLabel: /* xxx : stmt ... */
+			return this.deco_label(prec, pout, mode);
+		case OpcReturn: /* return (optional-exp); */
+			return this.deco_return(prec, pout, mode);
+		case OpcStatement: /* {stmt ...} */
+			return this.deco_stmt(prec, pout, mode);
+		}
+	}
+
+	public final Descriptor<?> getArgument(final int idx)
+	{
+		return this.getDescriptor(idx);
+	}
+
+	public final Descriptor<?>[] getArguments()
+	{
+		final Descriptor<?>[] desc = new Descriptor[this.ndesc()];
+		for (int i = 0; i < this.ndesc(); i++)
+			desc[i] = this.getDescriptor(i);
+		return desc;
+	}
+
+	@Override
+	public final Short getAtomic()
+	{
+		switch (this.length())
+		{
+		case 1:
+			return Short.valueOf(this.p.get(0));
+		case 2:
+			return Short.valueOf(this.p.getShort(0));
+		case 4:
+			return Short.valueOf((short) this.p.getInt(0));
+		default:
+			return Short.valueOf((short) 0);
+		}
+	}
+
+	@Override
 	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
 	{
 		return this.evaluate().getData(omits);
 	}
 
+	@Override
+	public Descriptor<?> getLocal_(final FLAG local)
+	{
+		final OPC opc = this.getOpCode();
+		if (!FLAG.and(local,
+				opc != OPC.OpcExtFunction && opc != OPC.OpcDefault && opc != OPC.OpcShot && opc != OPC.OpcExpt))
+			return this.evaluate().setLocal();
+		final FLAG mylocal = new FLAG();
+		final Descriptor<?>[] args = Descriptor.getLocals(mylocal, this.getArguments());
+		if (FLAG.and(local, mylocal.flag))
+			return this.setLocal();
+		return new Function(opc, args).setLocal();
+	}
+
 	protected final String getName()
 	{ return this.getOpCode().label; }
+
+	public final OPC getOpCode()
+	{ return OPC.get(this.getAtomic().shortValue()); }
+
+	@Override
+	public final double toDouble()
+	{
+		return this.evaluate().toDouble();
+	}
+
+	@Override
+	public final double[] toDoubleArray()
+	{
+		return this.evaluate().toDoubleArray();
+	}
+
+	@Override
+	public final float toFloat()
+	{
+		return this.evaluate().toFloat();
+	}
+
+	@Override
+	public final float[] toFloatArray()
+	{
+		return this.evaluate().toFloatArray();
+	}
+
+	@Override
+	public final int toInt()
+	{
+		return this.evaluate().toInt();
+	}
+
+	@Override
+	public final int[] toIntArray()
+	{
+		return this.evaluate().toIntArray();
+	}
+
+	@Override
+	public final long toLong()
+	{
+		return this.evaluate().toLong();
+	}
+
+	@Override
+	public final long[] toLongArray()
+	{
+		return this.evaluate().toLongArray();
+	}
 }

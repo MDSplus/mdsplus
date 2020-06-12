@@ -43,11 +43,6 @@ public final class StringDsc extends Descriptor_S<String> implements DATA<String
 						.getBytes(StandardCharsets.UTF_8));
 	}
 
-	public StringDsc(final String value)
-	{
-		super(DTYPE.T, StandardCharsets.UTF_8.encode(value));
-	}
-
 	public StringDsc(final ByteBuffer b)
 	{
 		super(b);
@@ -56,6 +51,11 @@ public final class StringDsc extends Descriptor_S<String> implements DATA<String
 	public StringDsc(final int len, final String value)
 	{
 		super(DTYPE.T, StringDsc.pad(len, StandardCharsets.UTF_8.encode(value), (byte) ' '));
+	}
+
+	public StringDsc(final String value)
+	{
+		super(DTYPE.T, StandardCharsets.UTF_8.encode(value));
 	}
 
 	@Override

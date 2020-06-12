@@ -17,13 +17,12 @@ import mds.data.descriptor_s.StringDsc;
 
 public class EnumEditor extends Editor
 {
-	private static final long serialVersionUID = 1L;
-
 	public enum MODE
 	{
 		INDEX, STRING, ASIS;
 	}
 
+	private static final long serialVersionUID = 1L;
 	private final JComboBox<String> combo;
 	private String expr;
 	private final JButton left, right;

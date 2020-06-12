@@ -3,12 +3,9 @@ import java.awt.*;
 
 public class DeviceChoiceBeanInfo extends SimpleBeanInfo
 {
-	public PropertyDescriptor property(String name, String description) throws IntrospectionException
-	{
-		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceChoice.class);
-		p.setShortDescription(description);
-		return p;
-	}
+	@Override
+	public BeanDescriptor getBeanDescriptor()
+	{ return new BeanDescriptor(DeviceChoice.class, DeviceChoiceCustomizer.class); }
 
 	@Override
 	public Image getIcon(int kind)
@@ -39,7 +36,10 @@ public class DeviceChoiceBeanInfo extends SimpleBeanInfo
 		}
 	}
 
-	@Override
-	public BeanDescriptor getBeanDescriptor()
-	{ return new BeanDescriptor(DeviceChoice.class, DeviceChoiceCustomizer.class); }
+	public PropertyDescriptor property(String name, String description) throws IntrospectionException
+	{
+		final PropertyDescriptor p = new PropertyDescriptor(name, DeviceChoice.class);
+		p.setShortDescription(description);
+		return p;
+	}
 }

@@ -26,17 +26,6 @@ import mds.data.descriptor_s.StringDsc;
 
 public class Device implements Interface
 {
-	private static final String getModel(Nid nid) throws Exception
-	{
-		final Conglom conglom = (Conglom) nid.getRecord();
-		if (conglom == null)
-			throw new Exception("Record not a Conglom");
-		final StringDsc model = (StringDsc) conglom.getModel().getDataS();
-		if (model == null)
-			throw new Exception("No model string");
-		return model.toString();
-	}
-
 	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable) throws Exception
 	{
 		return Device.getEditor(frame, nid, editable, getModel(nid));
@@ -56,6 +45,17 @@ public class Device implements Interface
 		}
 		return (Device) device_cls.getConstructor(Frame.class, NODE.class, boolean.class).newInstance(frame, nid,
 				Boolean.valueOf(editable));
+	}
+
+	private static final String getModel(Nid nid) throws Exception
+	{
+		final Conglom conglom = (Conglom) nid.getRecord();
+		if (conglom == null)
+			throw new Exception("Record not a Conglom");
+		final StringDsc model = (StringDsc) conglom.getModel().getDataS();
+		if (model == null)
+			throw new Exception("No model string");
+		return model.toString();
 	}
 
 	public static void showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception
@@ -205,29 +205,6 @@ public class Device implements Interface
 		this.editable = false;
 	}
 
-	public JComponent getPane()
-	{ return this.pane; }
-
-	public final JDialog showDialog()
-	{
-		String path;
-		try
-		{
-			path = this.head.getNciPath();
-		}
-		catch (final MdsException e)
-		{
-			path = this.head.toString();
-		}
-		final String title = new StringBuilder().append(this.getClass().getSimpleName()).append(": ").append(path)
-				.toString();
-		final JDialog dialog = new JDialog(this.frame, title);
-		dialog.add(this.pane);
-		dialog.pack();
-		dialog.setVisible(true);
-		return dialog;
-	}
-
 	protected final void addEnum(final int idx, final String path, final String tooltip, final EnumEditor.MODE mode,
 			final String... items)
 	{
@@ -269,27 +246,9 @@ public class Device implements Interface
 	}
 
 	@Override
-	public final String getName()
-	{ return tree.expt; }
-
-	@Override
-	public final int getShot()
-	{ return tree.shot; }
-
-	@Override
-	public final void setDefault(int nid) throws Exception
+	public void dataChanged(int... nids)
 	{
-		tree.setDefault(nid);
-	}
-
-	@Override
-	public final int getDefault() throws Exception
-	{ return tree.getDefault(); }
-
-	@Override
-	public final String getFullPath(int nid) throws Exception
-	{
-		return tree.getNciFullPath(nid);
+		// NOP
 	}
 
 	@Override
@@ -299,15 +258,25 @@ public class Device implements Interface
 	}
 
 	@Override
+	public String execute(String expr) throws Exception
+	{
+		return mds.getDescriptor(tree, expr).decompile();
+	}
+
+	@Override
 	public final String getDataExpr(int nid) throws Exception
 	{
 		return tree.getRecord(nid).decompile();
 	}
 
 	@Override
-	public int getInt(String expr) throws Exception
+	public final int getDefault() throws Exception
+	{ return tree.getDefault(); }
+
+	@Override
+	public double getDouble(String expr) throws Exception
 	{
-		return mds.getInteger(tree, expr);
+		return mds.getDouble(tree, expr);
 	}
 
 	@Override
@@ -317,22 +286,57 @@ public class Device implements Interface
 	}
 
 	@Override
-	public int[] getIntArray(String expr) throws Exception
-	{
-		return mds.getIntegerArray(tree, expr);
-	}
-
-	@Override
 	public float[] getFloatArray(String expr) throws Exception
 	{
 		return mds.getFloatArray(tree, expr);
 	}
 
 	@Override
-	public double getDouble(String expr) throws Exception
+	public final String getFullPath(int nid) throws Exception
 	{
-		return mds.getDouble(tree, expr);
+		return tree.getNciFullPath(nid);
 	}
+
+	@Override
+	public int getInt(String expr) throws Exception
+	{
+		return mds.getInteger(tree, expr);
+	}
+
+	@Override
+	public int[] getIntArray(String expr) throws Exception
+	{
+		return mds.getIntegerArray(tree, expr);
+	}
+
+	@Override
+	public final String getName()
+	{ return tree.expt; }
+
+	@Override
+	public int getNode(String path) throws Exception
+	{
+		return tree.getNode(path).getNciNidNumber();
+	}
+
+	@Override
+	public String getNodeName(int nid) throws Exception
+	{
+		return tree.getNciNodeName(nid);
+	}
+
+	@Override
+	public int getNumConglomerateNids(int nid) throws Exception
+	{
+		return tree.getNciNumberOfElts(nid);
+	}
+
+	public JComponent getPane()
+	{ return this.pane; }
+
+	@Override
+	public final int getShot()
+	{ return tree.shot; }
 
 	@Override
 	public String getString(String expr) throws Exception
@@ -344,24 +348,6 @@ public class Device implements Interface
 	public String[] getStringArray(String expr) throws Exception
 	{
 		return mds.getStringArray(tree, expr);
-	}
-
-	@Override
-	public String getNodeName(int nid) throws Exception
-	{
-		return tree.getNciNodeName(nid);
-	}
-
-	@Override
-	public String execute(String expr) throws Exception
-	{
-		return mds.getDescriptor(tree, expr).decompile();
-	}
-
-	@Override
-	public void putDataExpr(int nid, String expr) throws Exception
-	{
-		tree.putRecord(nid, mds.getAPI().tdiCompile(tree, expr).getData());
 	}
 
 	@Override
@@ -377,26 +363,40 @@ public class Device implements Interface
 	}
 
 	@Override
+	public void putDataExpr(int nid, String expr) throws Exception
+	{
+		tree.putRecord(nid, mds.getAPI().tdiCompile(tree, expr).getData());
+	}
+
+	@Override
+	public final void setDefault(int nid) throws Exception
+	{
+		tree.setDefault(nid);
+	}
+
+	@Override
 	public void setOn(int nid, boolean on) throws Exception
 	{
 		tree.getNode(nid).setOn(on);
 	}
 
-	@Override
-	public int getNumConglomerateNids(int nid) throws Exception
+	public final JDialog showDialog()
 	{
-		return tree.getNciNumberOfElts(nid);
-	}
-
-	@Override
-	public int getNode(String path) throws Exception
-	{
-		return tree.getNode(path).getNciNidNumber();
-	}
-
-	@Override
-	public void dataChanged(int... nids)
-	{
-		// NOP
+		String path;
+		try
+		{
+			path = this.head.getNciPath();
+		}
+		catch (final MdsException e)
+		{
+			path = this.head.toString();
+		}
+		final String title = new StringBuilder().append(this.getClass().getSimpleName()).append(": ").append(path)
+				.toString();
+		final JDialog dialog = new JDialog(this.frame, title);
+		dialog.add(this.pane);
+		dialog.pack();
+		dialog.setVisible(true);
+		return dialog;
 	}
 }

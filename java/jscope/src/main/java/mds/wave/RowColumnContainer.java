@@ -20,37 +20,6 @@ import javax.swing.JComponent;
  */
 public class RowColumnContainer extends JComponent
 {
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = 1L;
-	/**
-	 * RowColumnLayout
-	 *
-	 * @see RowColumnLayout
-	 */
-	protected RowColumnLayout row_col_layout;
-	/**
-	 * number of component in column
-	 */
-	protected int rows[] =
-	{ 1, 0, 0, 0 };
-	/**
-	 * Normalize height of the components in column.
-	 *
-	 * @see RowColumnLayout
-	 */
-	protected float ph[];
-	/**
-	 * Normalized width of the columns.
-	 *
-	 * @see RowColumnLayout
-	 */
-	protected float pw[];
-	private final Vector<Point> real_position = new Vector<>();
-	private Point split_pos = null;
-	private Component maximizeC = null;
-
 	class Btm extends Component
 	{
 		/**
@@ -82,6 +51,37 @@ public class RowColumnContainer extends JComponent
 		public void printAll(Graphics g)
 		{}
 	}
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
+	 * RowColumnLayout
+	 *
+	 * @see RowColumnLayout
+	 */
+	protected RowColumnLayout row_col_layout;
+	/**
+	 * number of component in column
+	 */
+	protected int rows[] =
+	{ 1, 0, 0, 0 };
+	/**
+	 * Normalize height of the components in column.
+	 *
+	 * @see RowColumnLayout
+	 */
+	protected float ph[];
+	/**
+	 * Normalized width of the columns.
+	 *
+	 * @see RowColumnLayout
+	 */
+	protected float pw[];
+	private final Vector<Point> real_position = new Vector<>();
+	private Point split_pos = null;
+
+	private Component maximizeC = null;
 
 	/**
 	 * Constructs a new RowColumnContainer with one row an column.
@@ -130,45 +130,6 @@ public class RowColumnContainer extends JComponent
 	}
 
 	/**
-	 * Enable event capability on resize button
-	 *
-	 * @param b a resize button
-	 */
-	private void setListener(Component b)
-	{
-		b.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseReleased(MouseEvent e)
-			{
-				final Component ob = e.getComponent();
-				if (ob instanceof Btm)
-					if (!((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK))
-						row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);
-			}
-
-			@Override
-			public void mouseClicked(MouseEvent e)
-			{
-				final Component ob = e.getComponent();
-				if (ob instanceof Btm)
-					if ((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK)
-						row_col_layout.ResizeRowColumn(ob);
-			}
-		});
-		b.addMouseMotionListener(new MouseMotionAdapter()
-		{
-			@Override
-			public void mouseDragged(MouseEvent e)
-			{
-				final Component ob = e.getComponent();
-				if (!((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK))
-					row_col_layout.DrawResize(ob, e.getPoint().x, e.getPoint().y);
-			}
-		});
-	}
-
-	/**
 	 * Add componets to the container. The array componet length must be equals to
 	 * the componet needed on the row column grid.
 	 *
@@ -187,56 +148,6 @@ public class RowColumnContainer extends JComponent
 				k++;
 			}
 		}
-	}
-
-	/*
-	 *
-	 * private void upadateRealPosition(Point p) { for(int j = 1; j <
-	 * real_position.size(); j+=2) { Point real_pos =
-	 * (Point)real_position.elementAt(j); if(rrow <= real_pos.y && rcol ==
-	 * real_pos.x) { real_position.setElementAt(new Point(real_pos.x, real_pos.y++),
-	 * j); } } }
-	 */
-	private boolean positionOverwrite(Point pos)
-	{
-		for (int i = 1; i < real_position.size(); i += 2)
-		{
-			final Point real_pos = real_position.elementAt(i);
-			if (pos.x == real_pos.x && pos.y == real_pos.y)
-			{
-				// real_pos.y++;
-				// Point in_pos = (Point)real_position.elementAt(i - 1);
-				// if(in_pos.x == real_pos.x && in_pos.y == real_pos.y)
-				// {
-				// real_position.removeElementAt(i);
-				// real_position.removeElementAt(i-1);
-				// }
-				return true;
-			}
-		}
-		return false;
-	}
-
-	private void setRealPosition(Point in_pos, Point real_pos)
-	{
-		if (in_pos == null || real_pos == null)
-			return;
-		if (in_pos.x != real_pos.x || in_pos.y != real_pos.y)
-		{
-			real_position.addElement(in_pos); // added position i
-			real_position.addElement(real_pos); // real position i+1
-		}
-	}
-
-	private Point getRealPosition(Point in_pos)
-	{
-		for (int i = 0; i < real_position.size(); i += 2)
-		{
-			final Point p = real_position.elementAt(i);
-			if (in_pos.x == p.x && in_pos.y == p.y)
-				return real_position.elementAt(i + 1);
-		}
-		return null;
 	}
 
 	/**
@@ -313,107 +224,111 @@ public class RowColumnContainer extends JComponent
 	}
 
 	/**
-	 * Update RowColumnLayout.
+	 * Get number of columns.
 	 *
-	 * @see RowColumnLayout
+	 * @return number of columns
 	 */
-	public void update()
+	public int getColumns()
 	{
-		row_col_layout.SetRowColumn(rows, ph, pw);
-		invalidate();
-		validate();
+		int col = 0;
+		for (int c = 0; c < rows.length; c++)
+			if (rows[c] != 0)
+				col++;
+		return col;
 	}
 
 	/**
-	 * Update RowColumnLayout with defined row component height and column width.
+	 * Gets the index of the component in this container.
 	 *
-	 * @param ph Vector of normalize height of component. The sum of ph[x] of the
-	 *           objects in a column must be 1.
-	 * @param pw Vector of normalize width of the culomn. The sum of pw[x] must be 1
-	 *
-	 * @see RowColumnLayout
+	 * @param c component
+	 * @return index of the component in the container or -1 if not presentt
 	 */
-	public void update(float ph[], float pw[])
+	public int getComponentIndex(Component c)
 	{
-		this.ph = ph;
-		this.pw = pw;
-		update();
+		int idx;
+		for (idx = 0; idx < getGridComponentCount() && getGridComponent(idx) != c; idx++);
+		if (idx < getGridComponentCount())
+			return idx + 1;
+		else
+			return -1;
 	}
 
-	public Component getMaximizeComponent()
-	{ return maximizeC; }
-
-	public void resetMaximizeComponent()
+	/**
+	 * Gets the (row, col) component index in this container.
+	 *
+	 * @param row component index in the column
+	 * @param col column index of the component
+	 * @return the index component in this container, -1 if the (row, col) value
+	 *         does not exist. .
+	 */
+	public int getComponentIndex(int row, int col)
 	{
-		maximizeC = null;
+		int cmp_idx = 0;
+		if (col > rows.length || row > rows[col - 1])
+			return -1;
+		for (int i = 0; i < col - 1; i++)
+			cmp_idx += rows[i];
+		return (cmp_idx + row + getGridComponentCount() - 2);
 	}
 
-	public boolean isMaximize()
-	{ return (maximizeC != null); }
-
-	public void maximizeComponent(Component c)
+	/**
+	 * Returns the number of componet to add to this container.
+	 *
+	 * @return number of componet to add to this container
+	 */
+	public int getComponentNumber()
 	{
-		maximizeC = c;
+		int num = 0;
+		for (int i = 0; i < rows.length && rows[i] != 0; i++)
+			num += rows[i];
+		return num;
+	}
+
+	/**
+	 * Get (row , col) position of the component in the container
+	 *
+	 * @param c componet
+	 * @return (row, col) position of the component or null if component not
+	 *         presente in the container
+	 */
+	public Point getComponentPosition(Component c)
+	{
+		int col = 0, row = 0;
 		if (c == null)
+			return null;
+		int idx = getComponentIndex(c);
+		for (col = 0; col < rows.length; col++)
 		{
-			update();
-			return;
+			for (row = 0; row < rows[col] && idx != 0; row++)
+				idx--;
+			if (idx == 0)
+				break;
 		}
-		final int n_com = getGridComponentCount();
-		if (n_com == 1)
-			return;
-		int i, j, k;
-		final float m_ph[] = new float[n_com];
-		final float m_pw[] = new float[rows.length];
-		ph = new float[n_com];
-		pw = new float[rows.length];
-		final Point p = this.getComponentPosition(c);
-		for (i = 0, k = 0; i < rows.length; i++)
-		{
-			if (rows[i] == 0)
-				continue;
-			pw[i] = row_col_layout.getPercentWidth(i);
-			if (i == p.x - 1)
-				m_pw[i] = 1;
-			else
-				m_pw[i] = 0;
-			for (j = 0; j < rows[i]; j++)
-			{
-				if (i == p.x - 1 && j == p.y - 1)
-					m_ph[k] = 1;
-				else
-					m_ph[k] = 0;
-				ph[k] = row_col_layout.getPercentHeight(k);
-				k++;
-			}
-		}
-		row_col_layout.SetRowColumn(rows, m_ph, m_pw);
-		invalidate();
-		validate();
+		final Point p = new Point(col + 1, row);
+		return p;
 	}
 
 	/**
-	 * Set new grid configuration.
+	 * Get defined number of component in column col.
 	 *
-	 * @param rows an array of number of component in column
+	 * @param col number of column
+	 * @return number of component in column ith.
 	 */
-	public void setRowColumn(int rows[])
+	public int getComponentsInColumn(int col)
 	{
-		this.rows = rows;
-		row_col_layout.SetRowColumn(rows);
+		return rows[col];
 	}
 
 	/**
-	 * Gets the number of components, added by user, in this panel.
+	 * Get defined number of component in columns
 	 *
-	 * @return the number of components in this panel.
+	 * @return an integer array ith element is number of component in columns ith
 	 */
-	public int getGridComponentCount()
-	{
-		// NOTE: return only the number of user added componet and not
-		// internal resize button component.
-		return (super.getComponentCount() + 1) / 2;
-	}
+	public int[] getComponentsInColumns()
+	{ return rows; }
+
+	public int[] getComponetNumInColumns()
+	{ return rows; }
 
 	/**
 	 * Gets the nth user added component in this container.
@@ -467,61 +382,322 @@ public class RowColumnContainer extends JComponent
 	}
 
 	/**
-	 * Gets the (row, col) component index in this container.
+	 * Gets the number of components, added by user, in this panel.
+	 *
+	 * @return the number of components in this panel.
+	 */
+	public int getGridComponentCount()
+	{
+		// NOTE: return only the number of user added componet and not
+		// internal resize button component.
+		return (super.getComponentCount() + 1) / 2;
+	}
+
+	public Component getMaximizeComponent()
+	{ return maximizeC; }
+
+	public float[] getNormalizedHeight()
+	{
+		if (isMaximize())
+			return ph;
+		return row_col_layout.getPercentHeight();
+	}
+
+	public float[] getNormalizedWidth()
+	{
+		if (isMaximize())
+			return ph;
+		return row_col_layout.getPercentWidth();
+	}
+
+	private Point getRealPosition(Point in_pos)
+	{
+		for (int i = 0; i < real_position.size(); i += 2)
+		{
+			final Point p = real_position.elementAt(i);
+			if (in_pos.x == p.x && in_pos.y == p.y)
+				return real_position.elementAt(i + 1);
+		}
+		return null;
+	}
+
+	public Point getSplitPosition()
+	{ return split_pos; }
+
+	public boolean isMaximize()
+	{ return (maximizeC != null); }
+
+	public void maximizeComponent(Component c)
+	{
+		maximizeC = c;
+		if (c == null)
+		{
+			update();
+			return;
+		}
+		final int n_com = getGridComponentCount();
+		if (n_com == 1)
+			return;
+		int i, j, k;
+		final float m_ph[] = new float[n_com];
+		final float m_pw[] = new float[rows.length];
+		ph = new float[n_com];
+		pw = new float[rows.length];
+		final Point p = this.getComponentPosition(c);
+		for (i = 0, k = 0; i < rows.length; i++)
+		{
+			if (rows[i] == 0)
+				continue;
+			pw[i] = row_col_layout.getPercentWidth(i);
+			if (i == p.x - 1)
+				m_pw[i] = 1;
+			else
+				m_pw[i] = 0;
+			for (j = 0; j < rows[i]; j++)
+			{
+				if (i == p.x - 1 && j == p.y - 1)
+					m_ph[k] = 1;
+				else
+					m_ph[k] = 0;
+				ph[k] = row_col_layout.getPercentHeight(k);
+				k++;
+			}
+		}
+		row_col_layout.SetRowColumn(rows, m_ph, m_pw);
+		invalidate();
+		validate();
+	}
+
+	/*
+	 *
+	 * private void upadateRealPosition(Point p) { for(int j = 1; j <
+	 * real_position.size(); j+=2) { Point real_pos =
+	 * (Point)real_position.elementAt(j); if(rrow <= real_pos.y && rcol ==
+	 * real_pos.x) { real_position.setElementAt(new Point(real_pos.x, real_pos.y++),
+	 * j); } } }
+	 */
+	private boolean positionOverwrite(Point pos)
+	{
+		for (int i = 1; i < real_position.size(); i += 2)
+		{
+			final Point real_pos = real_position.elementAt(i);
+			if (pos.x == real_pos.x && pos.y == real_pos.y)
+			{
+				// real_pos.y++;
+				// Point in_pos = (Point)real_position.elementAt(i - 1);
+				// if(in_pos.x == real_pos.x && in_pos.y == real_pos.y)
+				// {
+				// real_position.removeElementAt(i);
+				// real_position.removeElementAt(i-1);
+				// }
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Removes the specified component from this container.
+	 *
+	 * @param c the component to be removed
+	 */
+	public void removeComponent(Component c)
+	{
+		if (c == null)
+			return;
+		final Point p = getComponentPosition(c);
+		if (p == null)
+			return;
+		removeComponent(p.y, p.x);
+	}
+
+	/**
+	 * Removes component in (row, col) position from this container.
 	 *
 	 * @param row component index in the column
 	 * @param col column index of the component
-	 * @return the index component in this container, -1 if the (row, col) value
-	 *         does not exist. .
 	 */
-	public int getComponentIndex(int row, int col)
+	public void removeComponent(int row, int col)
 	{
-		int cmp_idx = 0;
-		if (col > rows.length || row > rows[col - 1])
-			return -1;
-		for (int i = 0; i < col - 1; i++)
-			cmp_idx += rows[i];
-		return (cmp_idx + row + getGridComponentCount() - 2);
-	}
-
-	/**
-	 * Gets the index of the component in this container.
-	 *
-	 * @param c component
-	 * @return index of the component in the container or -1 if not presentt
-	 */
-	public int getComponentIndex(Component c)
-	{
-		int idx;
-		for (idx = 0; idx < getGridComponentCount() && getGridComponent(idx) != c; idx++);
-		if (idx < getGridComponentCount())
-			return idx + 1;
+		final int idx = getComponentIndex(row, col);
+		final int b_idx = idx - getGridComponentCount();
+		// remove component
+		remove(idx);
+		// remove resize button
+		if (b_idx >= 0)
+			this.remove(b_idx);
 		else
-			return -1;
+			this.remove(b_idx + 1);
+		int size = real_position.size();
+		for (int j = 0; j < size; j += 2)
+		{
+			final Point real_p = real_position.elementAt(j + 1);
+			if (row == real_p.y && col == real_p.x)
+			{
+				real_position.removeElementAt(j);
+				real_position.removeElementAt(j);
+				break;
+			}
+		}
+		size = real_position.size();
+		boolean found;
+		for (int i = row + 1; i <= rows[col - 1]; i++)
+		{
+			found = false;
+			for (int j = 0; j < size; j += 2)
+			{
+				final Point real_p = real_position.elementAt(j + 1);
+				if (i == real_p.y && col == real_p.x)
+				{
+					found = true;
+					real_p.y--;
+					real_position.setElementAt(new Point(real_p.x, real_p.y), j + 1);
+					break;
+				}
+			}
+			if (!found)
+				setRealPosition(new Point(col, i + 1), new Point(col, i));
+		}
+		rows[col - 1]--;
+		this.ph = this.pw = null;
+		update();
 	}
 
 	/**
-	 * Get (row , col) position of the component in the container
-	 *
-	 * @param c componet
-	 * @return (row, col) position of the component or null if component not
-	 *         presente in the container
+	 * Repaint all added component.
 	 */
-	public Point getComponentPosition(Component c)
+	public void repaintAll()
 	{
-		int col = 0, row = 0;
-		if (c == null)
-			return null;
-		int idx = getComponentIndex(c);
-		for (col = 0; col < rows.length; col++)
+		for (int i = 0; i < getGridComponentCount(); i++)
+			getGridComponent(i).repaint();
+	}
+
+	public void resetMaximizeComponent()
+	{
+		maximizeC = null;
+	}
+
+	public void resetSplitPosition()
+	{
+		split_pos = null;
+	}
+
+	/**
+	 * Enable event capability on resize button
+	 *
+	 * @param b a resize button
+	 */
+	private void setListener(Component b)
+	{
+		b.addMouseListener(new MouseAdapter()
 		{
-			for (row = 0; row < rows[col] && idx != 0; row++)
-				idx--;
-			if (idx == 0)
-				break;
+			@Override
+			public void mouseClicked(MouseEvent e)
+			{
+				final Component ob = e.getComponent();
+				if (ob instanceof Btm)
+					if ((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK)
+						row_col_layout.ResizeRowColumn(ob);
+			}
+
+			@Override
+			public void mouseReleased(MouseEvent e)
+			{
+				final Component ob = e.getComponent();
+				if (ob instanceof Btm)
+					if (!((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK))
+						row_col_layout.ResizeRowColumn(ob, e.getPoint().x, e.getPoint().y);
+			}
+		});
+		b.addMouseMotionListener(new MouseMotionAdapter()
+		{
+			@Override
+			public void mouseDragged(MouseEvent e)
+			{
+				final Component ob = e.getComponent();
+				if (!((e.getModifiersEx() & InputEvent.BUTTON2_DOWN_MASK) == InputEvent.BUTTON2_DOWN_MASK))
+					row_col_layout.DrawResize(ob, e.getPoint().x, e.getPoint().y);
+			}
+		});
+	}
+
+	private void setRealPosition(Point in_pos, Point real_pos)
+	{
+		if (in_pos == null || real_pos == null)
+			return;
+		if (in_pos.x != real_pos.x || in_pos.y != real_pos.y)
+		{
+			real_position.addElement(in_pos); // added position i
+			real_position.addElement(real_pos); // real position i+1
 		}
-		final Point p = new Point(col + 1, row);
-		return p;
+	}
+
+	/**
+	 * Set new grid configuration.
+	 *
+	 * @param rows an array of number of component in column
+	 */
+	public void setRowColumn(int rows[])
+	{
+		this.rows = rows;
+		row_col_layout.SetRowColumn(rows);
+	}
+
+	/**
+	 * Add component to the container. (row, col) position is automatic evaluated.
+	 *
+	 * @param c component to add
+	 * @return index of the added component
+	 */
+	public int splitContainer(Component c)
+	{
+		int i, j, idx = 1, col = 0, row = 0;
+		boolean not_add = true;
+		for (j = rows.length; j <= rows.length * 4 && not_add; j++)
+		{
+			for (i = 0, idx = 0; i < rows.length; i++)
+			{
+				if (rows[i] < j && not_add)
+				{
+					row = rows[i] + 1;
+					col = i + 1;
+					not_add = false;
+				}
+				idx += rows[i];
+			}
+		}
+		add(c, row, col);
+		split_pos = new Point(col, row);
+		update();
+		return idx - 1;
+	}
+
+	/**
+	 * Update RowColumnLayout.
+	 *
+	 * @see RowColumnLayout
+	 */
+	public void update()
+	{
+		row_col_layout.SetRowColumn(rows, ph, pw);
+		invalidate();
+		validate();
+	}
+
+	/**
+	 * Update RowColumnLayout with defined row component height and column width.
+	 *
+	 * @param ph Vector of normalize height of component. The sum of ph[x] of the
+	 *           objects in a column must be 1.
+	 * @param pw Vector of normalize width of the culomn. The sum of pw[x] must be 1
+	 *
+	 * @see RowColumnLayout
+	 */
+	public void update(float ph[], float pw[])
+	{
+		this.ph = ph;
+		this.pw = pw;
+		update();
 	}
 
 	/**
@@ -602,181 +778,5 @@ public class RowColumnContainer extends JComponent
 		row_col_layout.SetRowColumn(rows);
 		invalidate();
 		validate();
-	}
-
-	/**
-	 * Removes component in (row, col) position from this container.
-	 *
-	 * @param row component index in the column
-	 * @param col column index of the component
-	 */
-	public void removeComponent(int row, int col)
-	{
-		final int idx = getComponentIndex(row, col);
-		final int b_idx = idx - getGridComponentCount();
-		// remove component
-		remove(idx);
-		// remove resize button
-		if (b_idx >= 0)
-			this.remove(b_idx);
-		else
-			this.remove(b_idx + 1);
-		int size = real_position.size();
-		for (int j = 0; j < size; j += 2)
-		{
-			final Point real_p = real_position.elementAt(j + 1);
-			if (row == real_p.y && col == real_p.x)
-			{
-				real_position.removeElementAt(j);
-				real_position.removeElementAt(j);
-				break;
-			}
-		}
-		size = real_position.size();
-		boolean found;
-		for (int i = row + 1; i <= rows[col - 1]; i++)
-		{
-			found = false;
-			for (int j = 0; j < size; j += 2)
-			{
-				final Point real_p = real_position.elementAt(j + 1);
-				if (i == real_p.y && col == real_p.x)
-				{
-					found = true;
-					real_p.y--;
-					real_position.setElementAt(new Point(real_p.x, real_p.y), j + 1);
-					break;
-				}
-			}
-			if (!found)
-				setRealPosition(new Point(col, i + 1), new Point(col, i));
-		}
-		rows[col - 1]--;
-		this.ph = this.pw = null;
-		update();
-	}
-
-	/**
-	 * Removes the specified component from this container.
-	 *
-	 * @param c the component to be removed
-	 */
-	public void removeComponent(Component c)
-	{
-		if (c == null)
-			return;
-		final Point p = getComponentPosition(c);
-		if (p == null)
-			return;
-		removeComponent(p.y, p.x);
-	}
-
-	/**
-	 * Returns the number of componet to add to this container.
-	 *
-	 * @return number of componet to add to this container
-	 */
-	public int getComponentNumber()
-	{
-		int num = 0;
-		for (int i = 0; i < rows.length && rows[i] != 0; i++)
-			num += rows[i];
-		return num;
-	}
-
-	/**
-	 * Get number of columns.
-	 *
-	 * @return number of columns
-	 */
-	public int getColumns()
-	{
-		int col = 0;
-		for (int c = 0; c < rows.length; c++)
-			if (rows[c] != 0)
-				col++;
-		return col;
-	}
-
-	/**
-	 * Get defined number of component in column col.
-	 *
-	 * @param col number of column
-	 * @return number of component in column ith.
-	 */
-	public int getComponentsInColumn(int col)
-	{
-		return rows[col];
-	}
-
-	/**
-	 * Get defined number of component in columns
-	 *
-	 * @return an integer array ith element is number of component in columns ith
-	 */
-	public int[] getComponentsInColumns()
-	{ return rows; }
-
-	/**
-	 * Add component to the container. (row, col) position is automatic evaluated.
-	 *
-	 * @param c component to add
-	 * @return index of the added component
-	 */
-	public int splitContainer(Component c)
-	{
-		int i, j, idx = 1, col = 0, row = 0;
-		boolean not_add = true;
-		for (j = rows.length; j <= rows.length * 4 && not_add; j++)
-		{
-			for (i = 0, idx = 0; i < rows.length; i++)
-			{
-				if (rows[i] < j && not_add)
-				{
-					row = rows[i] + 1;
-					col = i + 1;
-					not_add = false;
-				}
-				idx += rows[i];
-			}
-		}
-		add(c, row, col);
-		split_pos = new Point(col, row);
-		update();
-		return idx - 1;
-	}
-
-	public Point getSplitPosition()
-	{ return split_pos; }
-
-	public void resetSplitPosition()
-	{
-		split_pos = null;
-	}
-
-	public float[] getNormalizedHeight()
-	{
-		if (isMaximize())
-			return ph;
-		return row_col_layout.getPercentHeight();
-	}
-
-	public float[] getNormalizedWidth()
-	{
-		if (isMaximize())
-			return ph;
-		return row_col_layout.getPercentWidth();
-	}
-
-	public int[] getComponetNumInColumns()
-	{ return rows; }
-
-	/**
-	 * Repaint all added component.
-	 */
-	public void repaintAll()
-	{
-		for (int i = 0; i < getGridComponentCount(); i++)
-			getGridComponent(i).repaint();
 	}
 }

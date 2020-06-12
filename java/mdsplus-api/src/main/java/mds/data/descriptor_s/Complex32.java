@@ -89,6 +89,10 @@ public final class Complex32 extends COMPLEX<Float>
 	{ return ComplexFloat.fromBuffer(this.p, 0); }
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x03; }
+
+	@Override
 	public final Uint32 inot()
 	{
 		return new Uint32(~this.getBuffer().getInt());
@@ -126,8 +130,4 @@ public final class Complex32 extends COMPLEX<Float>
 	{
 		this.setValue(value.real.floatValue(), value.imag.floatValue());
 	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x03; }
 }

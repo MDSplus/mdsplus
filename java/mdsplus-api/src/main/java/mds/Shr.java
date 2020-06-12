@@ -144,6 +144,8 @@ public abstract class Shr
 			return this.fin("__", var);
 		}
 
+		protected abstract String getImage();
+
 		public final LibCall<T> MdsEND_ARG(final Mds mds)
 		{
 			return this.val(mds.MdsEND_ARG());
@@ -152,6 +154,19 @@ public abstract class Shr
 		public final LibCall<T> miss()
 		{
 			this.sep().append('*');
+			this.nargs++;
+			return this;
+		}
+
+		final LibCall<T> obj(final String mod, final String... ex)
+		{
+			this.sep().append(mod).append('(');
+			if (ex.length == 0)
+				this.sb.append("($;)");
+			else
+				for (final String e : ex)
+					this.sb.append(e);
+			this.sb.append(')');
 			this.nargs++;
 			return this;
 		}
@@ -188,6 +203,13 @@ public abstract class Shr
 		{
 			this.ref.append("__").append(var).append('=').append(init).append(';');
 			return this.obj("ref", "__", var);
+		}
+
+		private final StringBuilder sep()
+		{
+			if (this.nargs == 0)
+				return this.sb;
+			return this.sb.append(',');
 		}
 
 		public final LibCall<T> val(final Descriptor<?> d)
@@ -229,28 +251,6 @@ public abstract class Shr
 		{
 			this.xd.append("__").append(var).append('=');
 			return this.obj("xd", "__", var);
-		}
-
-		final LibCall<T> obj(final String mod, final String... ex)
-		{
-			this.sep().append(mod).append('(');
-			if (ex.length == 0)
-				this.sb.append("($;)");
-			else
-				for (final String e : ex)
-					this.sb.append(e);
-			this.sb.append(')');
-			this.nargs++;
-			return this;
-		}
-
-		protected abstract String getImage();
-
-		private final StringBuilder sep()
-		{
-			if (this.nargs == 0)
-				return this.sb;
-			return this.sb.append(',');
 		}
 	}
 

@@ -221,6 +221,24 @@ public class MdsMisc extends Mdsdcl
 		super(mds);
 	}
 
+	private final byte[] _miscGetXYSignal(final CTX ctx, final String ydata, final String xdata, final float xmin,
+			final float xmax, final int num_samples) throws MdsException
+	{
+		final Request<Uint8Array> request = new MiscCall<Uint8Array>(Uint8Array.class, "GetXYSignal:DSC")//
+				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Float32(xmin))
+				.ref(new Float32(xmax)).ref(new Int32(num_samples)).fin();
+		return this.mds.getByteArray(ctx, request);
+	}
+
+	private final byte[] _miscGetXYSignalLongTimes(final CTX ctx, final String ydata, final String xdata,
+			final long xmin, final long xmax, final int num_samples) throws MdsException
+	{
+		final Request<Uint8Array> request = new MiscCall<Uint8Array>(Uint8Array.class, "GetXYSignalLongTimes:DSC")//
+				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Int64(xmin)).ref(new Int64(xmax))
+				.ref(new Int32(num_samples)).fin();
+		return this.mds.getByteArray(ctx, request);
+	}
+
 	public final DataStruct miscGetXYSignal(final CTX ctx, final String ydata, final String xdata, final float xmin,
 			final float xmax, final int num_samples) throws MdsException
 	{
@@ -241,23 +259,5 @@ public class MdsMisc extends Mdsdcl
 				.xd(ydata).xd(xdata).descr(xmin).descr(xmax).val(num_samples).xd("x").fin("__x");
 		// request uses xd instead of descr in order to avoid evaluation in TdiCall
 		return this.mds.getDescriptor(ctx, request);
-	}
-
-	private final byte[] _miscGetXYSignal(final CTX ctx, final String ydata, final String xdata, final float xmin,
-			final float xmax, final int num_samples) throws MdsException
-	{
-		final Request<Uint8Array> request = new MiscCall<Uint8Array>(Uint8Array.class, "GetXYSignal:DSC")//
-				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Float32(xmin))
-				.ref(new Float32(xmax)).ref(new Int32(num_samples)).fin();
-		return this.mds.getByteArray(ctx, request);
-	}
-
-	private final byte[] _miscGetXYSignalLongTimes(final CTX ctx, final String ydata, final String xdata,
-			final long xmin, final long xmax, final int num_samples) throws MdsException
-	{
-		final Request<Uint8Array> request = new MiscCall<Uint8Array>(Uint8Array.class, "GetXYSignalLongTimes:DSC")//
-				.ref(Descriptor.valueOf(ydata)).ref(Descriptor.valueOf(xdata)).ref(new Int64(xmin)).ref(new Int64(xmax))
-				.ref(new Int32(num_samples)).fin();
-		return this.mds.getByteArray(ctx, request);
 	}
 }

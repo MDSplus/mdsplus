@@ -27,6 +27,12 @@ public final class EmptyArray extends Descriptor_A<Object>
 	}
 
 	@Override
+	protected final Descriptor_A<?> getData_(final DTYPE... omits)
+	{
+		return new Uint8Array(new byte[] {});
+	}
+
+	@Override
 	public final Object getElement(final ByteBuffer b_in)
 	{
 		return null;
@@ -43,6 +49,24 @@ public final class EmptyArray extends Descriptor_A<Object>
 	{
 		return null;
 	}
+
+	@Override
+	protected final String getSuffix()
+	{ return ""; }
+
+	@Override
+	protected final Object[] initArray(final int size)
+	{
+		return new Object[0];
+	}
+
+	@Override
+	protected final void setElement(final ByteBuffer b, final Object value)
+	{/* stub */}
+
+	@Override
+	protected void setElement(final int i, final Object value)
+	{/* stub */}
 
 	@Override
 	public BigInteger toBigInteger(final Object t)
@@ -85,30 +109,6 @@ public final class EmptyArray extends Descriptor_A<Object>
 	{
 		return 0;
 	}
-
-	@Override
-	protected final Descriptor_A<?> getData_(final DTYPE... omits)
-	{
-		return new Uint8Array(new byte[] {});
-	}
-
-	@Override
-	protected final String getSuffix()
-	{ return ""; }
-
-	@Override
-	protected final Object[] initArray(final int size)
-	{
-		return new Object[0];
-	}
-
-	@Override
-	protected final void setElement(final ByteBuffer b, final Object value)
-	{/* stub */}
-
-	@Override
-	protected void setElement(final int i, final Object value)
-	{/* stub */}
 
 	@Override
 	protected final String toString(final Object t)

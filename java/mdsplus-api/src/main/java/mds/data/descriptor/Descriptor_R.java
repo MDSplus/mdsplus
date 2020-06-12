@@ -161,6 +161,69 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 		this(dtype, data, Descriptor_R.joinArrays(args0, args1));
 	}
 
+	protected void addArguments(final int first, final String left, final String right, final StringBuilder pout,
+			final int mode)
+	{
+		int j;
+		final boolean indent = (mode & Descriptor.DECO_X) > 0;
+		final String sep = indent ? ",\n\t" : ", ";
+		final int last = this.getNArgs() - 1;
+		if (left != null)
+		{
+			pout.append(left);
+			if (indent)
+				pout.append("\n\t");
+		}
+		for (j = first; j <= last; j++)
+		{
+			this.dscptrs(j).decompile(Descriptor.P_ARG, pout, (mode & ~Descriptor.DECO_X));
+			if (j < last)
+				pout.append(sep);
+		}
+		if (right != null)
+		{
+			if (indent)
+				pout.append("\n");
+			pout.append(right);
+		}
+	}
+
+	private final int desc_ptr(final int idx)
+	{
+		if (this.getNArgs() <= idx || idx < 0)
+			throw new IndexOutOfBoundsException();
+		return this.b.getInt(Descriptor_R._dscoffIa + idx * Integer.BYTES);
+	}
+
+	private final Descriptor<?> dscptrs(final int idx)
+	{
+		final int dscptr = this.desc_ptr(idx);
+		if (dscptr == 0)
+			return Missing.NEW;
+		int next = this.getSize();
+		for (int i = idx + 1; i < this.getNArgs(); i++)
+		{
+			final int desc_ptr = this.desc_ptr(i);
+			if (desc_ptr == 0)
+				continue;
+			next = desc_ptr;
+			break;
+		}
+		Descriptor<?> dscptrs;
+		try
+		{
+			dscptrs = Descriptor.deserialize(
+					((ByteBuffer) this.b.duplicate().position(dscptr).limit(next)).slice().order(this.b.order()))
+					.setTree(this.tree).VALUE(this);
+			return this.isLocal() ? dscptrs.setLocal() : dscptrs;
+		}
+		catch (final MdsException e)
+		{
+			e.printStackTrace();
+			return Missing.NEW;
+		}
+	}
+
 	@Override
 	public final boolean equals(final Object obj)
 	{
@@ -204,6 +267,11 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 	@Override
 	public int[] getShape()
 	{ return new int[0]; }
+
+	protected final byte ndesc()
+	{
+		return this.b.get(Descriptor_R._ndesc);
+	}
 
 	@Override
 	public BigInteger[] toBigIntegerArray()
@@ -251,73 +319,5 @@ public abstract class Descriptor_R<T extends Number> extends Descriptor<T>
 	public String[] toStringArray()
 	{
 		return this.getData().toStringArray();
-	}
-
-	protected void addArguments(final int first, final String left, final String right, final StringBuilder pout,
-			final int mode)
-	{
-		int j;
-		final boolean indent = (mode & Descriptor.DECO_X) > 0;
-		final String sep = indent ? ",\n\t" : ", ";
-		final int last = this.getNArgs() - 1;
-		if (left != null)
-		{
-			pout.append(left);
-			if (indent)
-				pout.append("\n\t");
-		}
-		for (j = first; j <= last; j++)
-		{
-			this.dscptrs(j).decompile(Descriptor.P_ARG, pout, (mode & ~Descriptor.DECO_X));
-			if (j < last)
-				pout.append(sep);
-		}
-		if (right != null)
-		{
-			if (indent)
-				pout.append("\n");
-			pout.append(right);
-		}
-	}
-
-	protected final byte ndesc()
-	{
-		return this.b.get(Descriptor_R._ndesc);
-	}
-
-	private final int desc_ptr(final int idx)
-	{
-		if (this.getNArgs() <= idx || idx < 0)
-			throw new IndexOutOfBoundsException();
-		return this.b.getInt(Descriptor_R._dscoffIa + idx * Integer.BYTES);
-	}
-
-	private final Descriptor<?> dscptrs(final int idx)
-	{
-		final int dscptr = this.desc_ptr(idx);
-		if (dscptr == 0)
-			return Missing.NEW;
-		int next = this.getSize();
-		for (int i = idx + 1; i < this.getNArgs(); i++)
-		{
-			final int desc_ptr = this.desc_ptr(i);
-			if (desc_ptr == 0)
-				continue;
-			next = desc_ptr;
-			break;
-		}
-		Descriptor<?> dscptrs;
-		try
-		{
-			dscptrs = Descriptor.deserialize(
-					((ByteBuffer) this.b.duplicate().position(dscptr).limit(next)).slice().order(this.b.order()))
-					.setTree(this.tree).VALUE(this);
-			return this.isLocal() ? dscptrs.setLocal() : dscptrs;
-		}
-		catch (final MdsException e)
-		{
-			e.printStackTrace();
-			return Missing.NEW;
-		}
 	}
 }

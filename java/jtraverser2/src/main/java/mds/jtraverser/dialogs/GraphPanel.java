@@ -28,8 +28,6 @@ import mds.data.descriptor_s.NODE;
  */
 public class GraphPanel extends JPanel
 {
-	private static final long serialVersionUID = 1L;
-
 	private static final class Params
 	{
 		public final float min, delta;
@@ -60,6 +58,7 @@ public class GraphPanel extends JPanel
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	private static final boolean yaxis = false;
 	private static final boolean xaxis = true;
 	private static final Stroke GRAPH_STROKE = new BasicStroke(2f);
@@ -71,6 +70,66 @@ public class GraphPanel extends JPanel
 	private static final int pointWidth = 4;
 	private static final int padding_total = 2 * GraphPanel.padding + GraphPanel.labelPadding;
 	private static final boolean use_new_misc = false;
+
+	private final static void drawGraph(final Graphics2D g2, final List<Point> curve)
+	{
+		final Stroke oldStroke = g2.getStroke();
+		g2.setColor(GraphPanel.lineColor);
+		g2.setStroke(GraphPanel.GRAPH_STROKE);
+		for (int i = 0; i < curve.size() - 1; i++)
+			g2.drawLine(curve.get(i).x, curve.get(i).y, curve.get(i + 1).x, curve.get(i + 1).y);
+		g2.setStroke(oldStroke);
+	}
+
+	private static final List<XY> getScores(final float[] x, final float[] y, final int imax)
+	{
+		if (y == null)
+			return null;
+		final int len_in = x == null ? y.length : x.length;
+		final double p = (x == null ? len_in - 1 : (x[x.length - 1] - x[0])) / (imax * 2.);
+		double v = p - Double.MIN_VALUE + (x == null ? 0 : x[0]);
+		if (y.length / imax > 5)
+		{
+			final List<XY> new_scores = new ArrayList<XY>(imax * 2);
+			float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
+			int th = 0;
+			for (int i = 0; i < len_in; i++)
+			{
+				if (min > y[i])
+					min = y[i];
+				if (max < y[i])
+					max = y[i];
+				th++;
+				if (i + 1 >= len_in || (x == null ? i + 1 : x[i + 1]) >= v)
+				{
+					if (th > 2)
+					{
+						new_scores.add(new XY((float) (v - p / 2), max));
+						new_scores.add(new XY((float) (v - p / 2), min));
+					}
+					else
+						for (; th-- > 0;)
+							new_scores.add(new XY(x == null ? i - th : x[i - th], y[i - th]));
+					max = Float.NEGATIVE_INFINITY;
+					min = Float.POSITIVE_INFINITY;
+					v += p;
+					th = 0;
+				}
+			}
+			return new_scores;
+		}
+		if (x == null)
+		{
+			final List<XY> new_scores = new ArrayList<XY>(y.length);
+			for (int i = 0; i < y.length; i++)
+				new_scores.add(new XY(i, y[i]));
+			return new_scores;
+		}
+		final List<XY> new_scores = new ArrayList<XY>(x.length);
+		for (int i = 0; i < x.length; i++)
+			new_scores.add(new XY(x[i], y[i]));
+		return new_scores;
+	}
 
 	public static final JDialog newPlot(Descriptor<?> sig, final Frame frame, final String title)
 	{
@@ -151,66 +210,6 @@ public class GraphPanel extends JPanel
 		}
 	}
 
-	private final static void drawGraph(final Graphics2D g2, final List<Point> curve)
-	{
-		final Stroke oldStroke = g2.getStroke();
-		g2.setColor(GraphPanel.lineColor);
-		g2.setStroke(GraphPanel.GRAPH_STROKE);
-		for (int i = 0; i < curve.size() - 1; i++)
-			g2.drawLine(curve.get(i).x, curve.get(i).y, curve.get(i + 1).x, curve.get(i + 1).y);
-		g2.setStroke(oldStroke);
-	}
-
-	private static final List<XY> getScores(final float[] x, final float[] y, final int imax)
-	{
-		if (y == null)
-			return null;
-		final int len_in = x == null ? y.length : x.length;
-		final double p = (x == null ? len_in - 1 : (x[x.length - 1] - x[0])) / (imax * 2.);
-		double v = p - Double.MIN_VALUE + (x == null ? 0 : x[0]);
-		if (y.length / imax > 5)
-		{
-			final List<XY> new_scores = new ArrayList<XY>(imax * 2);
-			float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
-			int th = 0;
-			for (int i = 0; i < len_in; i++)
-			{
-				if (min > y[i])
-					min = y[i];
-				if (max < y[i])
-					max = y[i];
-				th++;
-				if (i + 1 >= len_in || (x == null ? i + 1 : x[i + 1]) >= v)
-				{
-					if (th > 2)
-					{
-						new_scores.add(new XY((float) (v - p / 2), max));
-						new_scores.add(new XY((float) (v - p / 2), min));
-					}
-					else
-						for (; th-- > 0;)
-							new_scores.add(new XY(x == null ? i - th : x[i - th], y[i - th]));
-					max = Float.NEGATIVE_INFINITY;
-					min = Float.POSITIVE_INFINITY;
-					v += p;
-					th = 0;
-				}
-			}
-			return new_scores;
-		}
-		if (x == null)
-		{
-			final List<XY> new_scores = new ArrayList<XY>(y.length);
-			for (int i = 0; i < y.length; i++)
-				new_scores.add(new XY(i, y[i]));
-			return new_scores;
-		}
-		final List<XY> new_scores = new ArrayList<XY>(x.length);
-		for (int i = 0; i < x.length; i++)
-			new_scores.add(new XY(x[i], y[i]));
-		return new_scores;
-	}
-
 	private List<XY> scores;
 
 	public GraphPanel()
@@ -222,33 +221,6 @@ public class GraphPanel extends JPanel
 	{
 		this.setPreferredSize(new Dimension(800, 400));
 		this.scores = scores;
-	}
-
-	public final List<XY> getScores()
-	{ return this.scores; }
-
-	public final void setScores(final float[] x, final float[] y)
-	{
-		this.setScores(GraphPanel.getScores(x, y, this.getWidth()));
-	}
-
-	public final void setScores(final List<XY> scores)
-	{
-		this.scores = scores;
-		this.invalidate();
-		this.repaint();
-	}
-
-	@Override
-	protected final void paintComponent(final Graphics g)
-	{
-		super.paintComponent(g);
-		if (this.scores == null || this.scores.size() == 0)
-			g.drawString("no data", this.getWidth() / 2, this.getHeight() / 2);
-		else if (this.scores.size() == 1)
-			g.drawString(this.scores.get(0).toString(), this.getWidth() / 2, this.getHeight() / 2);
-		else
-			this.drawAxes((Graphics2D) g);
 	}
 
 	private final void drawAxes(final Graphics2D g2)
@@ -344,8 +316,35 @@ public class GraphPanel extends JPanel
 		return new Point(this.getPoint(idx, paramsX), this.getPoint(idx, paramsY));
 	}
 
+	public final List<XY> getScores()
+	{ return this.scores; }
+
 	private final int getSize(final boolean isX)
 	{
 		return isX ? this.getWidth() - GraphPanel.padding_total : GraphPanel.padding_total - this.getHeight();
+	}
+
+	@Override
+	protected final void paintComponent(final Graphics g)
+	{
+		super.paintComponent(g);
+		if (this.scores == null || this.scores.size() == 0)
+			g.drawString("no data", this.getWidth() / 2, this.getHeight() / 2);
+		else if (this.scores.size() == 1)
+			g.drawString(this.scores.get(0).toString(), this.getWidth() / 2, this.getHeight() / 2);
+		else
+			this.drawAxes((Graphics2D) g);
+	}
+
+	public final void setScores(final float[] x, final float[] y)
+	{
+		this.setScores(GraphPanel.getScores(x, y, this.getWidth()));
+	}
+
+	public final void setScores(final List<XY> scores)
+	{
+		this.scores = scores;
+		this.invalidate();
+		this.repaint();
 	}
 }

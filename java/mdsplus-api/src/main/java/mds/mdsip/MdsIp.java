@@ -31,26 +31,6 @@ public class MdsIp extends Mds
 		protected InputStream dis;
 		protected OutputStream dos;
 
-		private final int wait_available() throws IOException
-		{
-			int i = 1, tot = 0;
-			int avail = 0;
-			synchronized (dis)
-			{
-				try
-				{
-					while ((avail = dis.available()) == 0 && tot < internal_timeout)
-					{
-						dis.wait(i);
-						tot += i++;
-					}
-				}
-				catch (final InterruptedException e)
-				{}
-			}
-			return avail;
-		}
-
 		@Override
 		public int read(ByteBuffer b) throws IOException
 		{
@@ -91,6 +71,26 @@ public class MdsIp extends Mds
 				}
 				return rem - b.remaining();
 			}
+		}
+
+		private final int wait_available() throws IOException
+		{
+			int i = 1, tot = 0;
+			int avail = 0;
+			synchronized (dis)
+			{
+				try
+				{
+					while ((avail = dis.available()) == 0 && tot < internal_timeout)
+					{
+						dis.wait(i);
+						tot += i++;
+					}
+				}
+				catch (final InterruptedException e)
+				{}
+			}
+			return avail;
 		}
 
 		@Override
@@ -273,6 +273,11 @@ public class MdsIp extends Mds
 		private boolean use_ssh;
 		private final String user;
 
+		public Provider()
+		{
+			this(null);// local
+		}
+
 		public Provider(final String provider)
 		{
 			this(provider, false);
@@ -358,11 +363,6 @@ public class MdsIp extends Mds
 			}
 		}
 
-		public Provider()
-		{
-			this(null);// local
-		}
-
 		@Override
 		public final boolean equals(final Object obj)
 		{
@@ -379,11 +379,11 @@ public class MdsIp extends Mds
 		public final MdsIp getConnection()
 		{ return new MdsIp(this); }
 
-		public int getPort()
-		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
-
 		public String getHost()
 		{ return host == null || host.isEmpty() ? DEFAULT_LOCAL : host; }
+
+		public int getPort()
+		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
 
 		public final String getUser()
 		{ return user == null || user.isEmpty() ? Provider.DEFAULT_USER : user; }

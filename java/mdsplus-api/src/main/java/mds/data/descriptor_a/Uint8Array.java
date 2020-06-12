@@ -53,6 +53,12 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>
 	}
 
 	@Override
+	protected final boolean format()
+	{
+		return true;
+	}
+
+	@Override
 	public final UByte getElement(final ByteBuffer b_in)
 	{
 		return UByte.fromBuffer(b_in);
@@ -65,9 +71,19 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>
 	}
 
 	@Override
+	protected final byte getRankBits()
+	{ return 0x00; }
+
+	@Override
 	public final Uint8 getScalar(final int idx)
 	{
 		return new Uint8(this.getElement(idx));
+	}
+
+	@Override
+	protected final UByte[] initArray(final int size)
+	{
+		return new UByte[size];
 	}
 
 	@Override
@@ -94,29 +110,6 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>
 		return UByte.decode(in);
 	}
 
-	public final byte[] toArray()
-	{
-		final byte[] values = new byte[this.arsize() / Byte.BYTES];
-		this.getBuffer().get(values);
-		return values;
-	}
-
-	@Override
-	protected final boolean format()
-	{
-		return true;
-	}
-
-	@Override
-	protected final byte getRankBits()
-	{ return 0x00; }
-
-	@Override
-	protected final UByte[] initArray(final int size)
-	{
-		return new UByte[size];
-	}
-
 	@Override
 	protected final void setElement(final ByteBuffer b, final UByte value)
 	{
@@ -127,5 +120,12 @@ public final class Uint8Array extends INTEGER_UNSIGNEDArray<UByte>
 	protected final void setElement(final int i, final UByte value)
 	{
 		this.p.put(i, value.byteValue());
+	}
+
+	public final byte[] toArray()
+	{
+		final byte[] values = new byte[this.arsize() / Byte.BYTES];
+		this.getBuffer().get(values);
+		return values;
 	}
 }

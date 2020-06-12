@@ -13,25 +13,8 @@ public class DeviceWaveDisplay extends DeviceComponent
 	float x[] = null, y[] = null;
 	protected int prefHeight = 200;
 
-	public void setPrefHeight(int prefHeight)
-	{ this.prefHeight = prefHeight; }
-
-	public int getPrefHeight()
-	{ return prefHeight; }
-
 	public DeviceWaveDisplay()
 	{}
-
-	@Override
-	protected void initializeData(String data, boolean is_on)
-	{
-		oldData = data;
-		setLayout(new BorderLayout());
-		wave = new Waveform();
-		wave.setPreferredSize(new Dimension(300, 200));
-		add(wave, "Center");
-		displayData(data, is_on);
-	}
 
 	@Override
 	protected void displayData(String data, boolean is_on)
@@ -52,13 +35,23 @@ public class DeviceWaveDisplay extends DeviceComponent
 	protected String getData()
 	{ return oldData; }
 
+	public int getPrefHeight()
+	{ return prefHeight; }
+
 	@Override
 	protected boolean getState()
 	{ return true; }
 
 	@Override
-	public void setEnabled(boolean state)
-	{}
+	protected void initializeData(String data, boolean is_on)
+	{
+		oldData = data;
+		setLayout(new BorderLayout());
+		wave = new Waveform();
+		wave.setPreferredSize(new Dimension(300, 200));
+		add(wave, "Center");
+		displayData(data, is_on);
+	}
 
 	@Override
 	public boolean isDataChanged()
@@ -71,12 +64,19 @@ public class DeviceWaveDisplay extends DeviceComponent
 	}
 
 	@Override
-	public void reset()
-	{}
-
-	@Override
 	public void print(Graphics g)
 	{
 		wave.paintComponent(g);
 	}
+
+	@Override
+	public void reset()
+	{}
+
+	@Override
+	public void setEnabled(boolean state)
+	{}
+
+	public void setPrefHeight(int prefHeight)
+	{ this.prefHeight = prefHeight; }
 }

@@ -11,10 +11,31 @@ import mds.jscope.jScopeBrowseSignals;
 public class TwuBrowseSignals extends jScopeBrowseSignals
 {
 	private static final long serialVersionUID = 3L;
+	static private boolean reasonableShotNr(String shot)
+	{
+		try
+		{
+			Integer.parseInt(shot);
+			return true;
+		}
+		catch (final NumberFormatException e)
+		{
+			return false;
+		}
+	}
 	String path;
 	String shot = null;
 	String tree = null;
+
 	String server_url;
+
+	@Override
+	protected String getServerAddr()
+	{ return server_url; }
+
+	@Override
+	protected String getShot()
+	{ return shot == null ? "0" : shot; }
 
 	@Override
 	protected String getSignal(String url_name)
@@ -80,25 +101,4 @@ public class TwuBrowseSignals extends jScopeBrowseSignals
 	@Override
 	protected String getTree()
 	{ return tree == null ? "" : tree; }
-
-	@Override
-	protected String getShot()
-	{ return shot == null ? "0" : shot; }
-
-	@Override
-	protected String getServerAddr()
-	{ return server_url; }
-
-	static private boolean reasonableShotNr(String shot)
-	{
-		try
-		{
-			Integer.parseInt(shot);
-			return true;
-		}
-		catch (final NumberFormatException e)
-		{
-			return false;
-		}
-	}
 }

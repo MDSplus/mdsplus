@@ -31,12 +31,8 @@ import mds.mdsip.MdsIp;
 
 public class MdsView extends JTabbedPane implements TransferEventListener
 {
-	private static final long serialVersionUID = 1L;
-
 	class ClosableTab extends JPanel
 	{
-		private static final long serialVersionUID = 1L;
-
 		class CloseButton extends JButton implements MouseListener
 		{
 			private static final long serialVersionUID = 1L;
@@ -87,10 +83,6 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 			{/**/}
 
 			@Override
-			public void updateUI()
-			{/**/}
-
-			@Override
 			protected void paintComponent(final Graphics g)
 			{
 				super.paintComponent(g);
@@ -105,7 +97,13 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 				g2.drawLine(this.getWidth() - 2, CloseButton.top + 1, CloseButton.left + 1, this.getHeight() - 2);
 				g2.dispose();
 			}
+
+			@Override
+			public void updateUI()
+			{/**/}
 		}
+
+		private static final long serialVersionUID = 1L;
 
 		public ClosableTab()
 		{
@@ -130,6 +128,7 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 		}
 	}
 
+	private static final long serialVersionUID = 1L;
 	final TreeManager treeman;
 	private final Mds mds;
 	private final Stack<TreeView> trees = new Stack<TreeView>();
@@ -192,6 +191,16 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 		this.closeTree(this.getSelectedIndex(), quit);
 	}
 
+	private void closeTree(final int idx, final boolean quit)
+	{
+		if (idx >= this.getTabCount() || idx < 0)
+			return;
+		this.trees.remove(this.getTreeAt(idx).close(quit));
+		this.removeTabAt(idx);
+		if (this.getTabCount() == 0)
+			this.treeman.reportChange();
+	}
+
 	public void dispatchChangeReportListener()
 	{
 		for (final Job job : this.change_report_listeners)
@@ -223,6 +232,26 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 
 	public final Mds getMds()
 	{ return this.mds; }
+
+	private final TreeView getTreeAt(final int index)
+	{
+		return (TreeView) ((JScrollPane) this.getComponentAt(index)).getViewport().getView();
+	}
+
+	@Override
+	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read)
+	{
+		if (to_read == 0)
+		{
+			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			this.treeman.setProgress(this, 0, 1);
+		}
+		else
+		{
+			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+			this.treeman.setProgress(this, read, to_read);
+		}
+	}
 
 	public final void openTree(final String expt, int shot, final int mode)
 	{
@@ -273,21 +302,6 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 		this.setSelectedIndex(index);
 	}
 
-	@Override
-	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read)
-	{
-		if (to_read == 0)
-		{
-			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			this.treeman.setProgress(this, 0, 1);
-		}
-		else
-		{
-			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
-			this.treeman.setProgress(this, read, to_read);
-		}
-	}
-
 	public void removeChangeReportListener(final Job job)
 	{
 		this.change_report_listeners.remove(job);
@@ -308,20 +322,5 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 	public final String toString()
 	{
 		return this.mds.toString();
-	}
-
-	private void closeTree(final int idx, final boolean quit)
-	{
-		if (idx >= this.getTabCount() || idx < 0)
-			return;
-		this.trees.remove(this.getTreeAt(idx).close(quit));
-		this.removeTabAt(idx);
-		if (this.getTabCount() == 0)
-			this.treeman.reportChange();
-	}
-
-	private final TreeView getTreeAt(final int index)
-	{
-		return (TreeView) ((JScrollPane) this.getComponentAt(index)).getViewport().getView();
 	}
 }
