@@ -44,39 +44,46 @@ import mds.data.descriptor_r.function.CONST.dTorr;
 import mds.data.descriptor_r.function.CONST.dTrue;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
-public class CONST_Test {
+public class CONST_Test
+{
 	private static Mds mds;
 
 	@BeforeClass
-	public static final void setUpBeforeClass() throws Exception {
+	public static final void setUpBeforeClass() throws Exception
+	{
 		CONST_Test.mds = AllTests.setUpBeforeClass();
 	}
 
 	@AfterClass
-	public static final void tearDownAfterClass() throws Exception {
+	public static final void tearDownAfterClass() throws Exception
+	{
 		AllTests.tearDownAfterClass(CONST_Test.mds);
 	}
 
-	private static void check(Descriptor<?> java, Descriptor<?> mdsip, float reldelta) throws MdsException {
+	private static void check(Descriptor<?> java, Descriptor<?> mdsip, float reldelta) throws MdsException
+	{
 		Assert.assertEquals(java.getUnits(), mdsip.getUnits());
-		if (mdsip instanceof With_Units) {
+		if (mdsip instanceof With_Units)
+		{
 			Assert.assertTrue(java instanceof With_Units);
-			java = ((With_Units)java).getValue();
-			mdsip = ((With_Units)mdsip).getValue();
+			java = ((With_Units) java).getValue();
+			mdsip = ((With_Units) mdsip).getValue();
 		}
-		if (mdsip instanceof With_Error) {
+		if (mdsip instanceof With_Error)
+		{
 			Assert.assertTrue(java instanceof With_Error);
-			Assert.assertSame(((With_Error)java).getError().getClass(), ((With_Error)mdsip).getError().getClass());
-			java = ((With_Error)java).getValue();
-			mdsip = ((With_Error)mdsip).getValue();
+			Assert.assertSame(((With_Error) java).getError().getClass(), ((With_Error) mdsip).getError().getClass());
+			java = ((With_Error) java).getValue();
+			mdsip = ((With_Error) mdsip).getValue();
 			Assert.assertEquals(java.getClass(), mdsip.getClass());
-		}		
+		}
 		final float data = mdsip.toFloat();
 		Assert.assertEquals(java.toFloat(), data, data * reldelta);
 	}
 
 	@Test
-	public void compare() throws Exception {
+	public void compare() throws Exception
+	{
 		// exact
 		Assert.assertEquals(new dMissing().evaluate(), CONST_Test.mds.getDescriptor("$Missing", Descriptor.class));
 		Assert.assertEquals(new dRoprand().evaluate(), CONST_Test.mds.getDescriptor("$Roprand", Descriptor.class));
@@ -110,10 +117,12 @@ public class CONST_Test {
 	}
 
 	@Before
-	public void setUp() throws Exception {
+	public void setUp() throws Exception
+	{
 		/* stub */}
 
 	@After
-	public void tearDown() throws Exception {
+	public void tearDown() throws Exception
+	{
 		/* stub */}
 }

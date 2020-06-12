@@ -5,8 +5,8 @@ package MDSplus;
  * @version 1.0
  * @created 30-mar-2009 13.40.29
  */
-public interface DataStreamConsumer {
-
+public interface DataStreamConsumer
+{
 	/**
 	 *
 	 * @param seg
@@ -20,5 +20,4 @@ public interface DataStreamConsumer {
 	 * @param time
 	 */
 	public void acceptRow(Data row, long time);
-
 }

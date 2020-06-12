@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import mds.devices.Interface;
 import mds.devices.Interface.Setup;
+
 public class DeviceSetup extends JDialog implements Interface.Setup
 {
 	private static final long serialVersionUID = 1L;
@@ -18,50 +19,44 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	protected DeviceButtons buttons = null;
 	JMenuItem pop_items[];
 	JPopupMenu pop_methods = null;
-	Hashtable<String,Vector<DeviceComponent>> updateHash = new Hashtable();
-	//public int width = 400, height = 200;
-
+	Hashtable<String, Vector<DeviceComponent>> updateHash = new Hashtable();
+	// public int width = 400, height = 200;
 	protected static Hashtable<Integer, DeviceSetup> activeNidHash = new Hashtable();
 	Vector<DeviceCloseListener> deviceCloseListenerV = new Vector();
 	Vector<DeviceUpdateListener> deviceUpdateListenerV = new Vector();
 	boolean readOnly = false;
 	boolean justApplied = false;
-
 	static Vector<DeviceSetup> openDevicesV = new Vector();
-
 	protected String updateEvent = null;
 
 	public void setWidth(int width)
 	{
-		int height = super.getHeight();
+		final int height = super.getHeight();
 		setSize(width, height);
 	}
-
 
 	public void setHeight(int height)
 	{
-		int width = super.getWidth();
+		final int width = super.getWidth();
 		setSize(width, height);
 	}
+
 	public void setReadOnly(final boolean readOnly)
 	{
 		this.readOnly = readOnly;
 		if (buttons != null)
 			buttons.setReadOnly(readOnly);
-		for (DeviceControl comp : device_controls)
+		for (final DeviceControl comp : device_controls)
 			comp.setReadOnly(readOnly);
 	}
 
 	public boolean isReadOnly()
-	{
-		return readOnly;
-	}
+	{ return readOnly; }
 
 	public void setDeviceType(String deviceType)
 	{
 		this.deviceType = deviceType;
 		DeviceSetupBeanInfo.beanDeviceType = deviceType;
-
 	}
 
 	public String getDeviceType()
@@ -74,7 +69,6 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	{
 		this.deviceProvider = deviceProvider;
 		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
-
 	}
 
 	public String getDeviceProvider()
@@ -82,44 +76,34 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		DeviceSetupBeanInfo.beanDeviceProvider = deviceProvider;
 		return deviceProvider;
 	}
+
 	public void setUpdateEvent(String updateEvent)
-	{
-		this.updateEvent = updateEvent;
-	}
+	{ this.updateEvent = updateEvent; }
 
 	public String getUpdateEvent()
-	{
-		return updateEvent;
-	}
+	{ return updateEvent; }
 
 	public void setDeviceTitle(String deviceTitle)
 	{
 		this.deviceTitle = deviceTitle;
-		//setTitle(deviceTitle);
-
+		// setTitle(deviceTitle);
 	}
 
 	public String getDeviceTitle()
-	{
-		return deviceTitle;
-	}
+	{ return deviceTitle; }
 
-	/*    public DeviceSetup(boolean readOnly)
-    {
-	this(FrameRepository.frame, readOnly);
-	setTitle(deviceTitle);
-//        getContentPane().setLayout(new BorderLayout());
-	DeviceSetupBeanInfo.beanDeviceType = deviceType;
-    }
+	/*
+	 * public DeviceSetup(boolean readOnly) { this(FrameRepository.frame, readOnly);
+	 * setTitle(deviceTitle); // getContentPane().setLayout(new BorderLayout());
+	 * DeviceSetupBeanInfo.beanDeviceType = deviceType; }
 	 */
 	public DeviceSetup()
 	{
 		this(null, false);
 		setTitle(deviceTitle);
-		//        getContentPane().setLayout(new BorderLayout());
+		// getContentPane().setLayout(new BorderLayout());
 		DeviceSetupBeanInfo.beanDeviceType = deviceType;
 		openDevicesV.addElement(this);
-
 	}
 
 	public DeviceSetup(Frame f)
@@ -133,7 +117,8 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		super(f);
 		this.readOnly = readOnly;
 		setTitle(deviceTitle);
-		addWindowListener(new WindowAdapter(){
+		addWindowListener(new WindowAdapter()
+		{
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
@@ -141,40 +126,51 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			}
 		});
 	}
+
 	public void resetNidHash()
 	{
 		activeNidHash.remove(new Integer(baseNid));
 	}
-	private final int pushDefault() {
+
+	private final int pushDefault()
+	{
 		int oldDef = 0;
-		try {
+		try
+		{
 			oldDef = subtree.getDefault();
 			subtree.setDefault(baseNid);
-		} catch (Exception exc) {
+		}
+		catch (final Exception exc)
+		{
 			System.out.println("Error setting default: " + exc);
 		}
 		return oldDef;
 	}
-	private final void popDefault(final int oldDef) {
-		try {
+
+	private final void popDefault(final int oldDef)
+	{
+		try
+		{
 			subtree.setDefault(oldDef);
-		} catch (Exception exc) {
+		}
+		catch (final Exception exc)
+		{
 			System.out.println("Error resetting default: " + exc);
 		}
 	}
+
 	public void configure(Interface subtree, int baseNid)
 	{
 		this.baseNid = baseNid;
 		this.subtree = subtree;
 		activeNidHash.put(new Integer(baseNid), this);
-
 		final int oldDef = pushDefault();
 		String path = null;
 		try
 		{
 			path = subtree.getFullPath(baseNid);
 		}
-		catch (Exception exc)
+		catch (final Exception exc)
 		{
 			System.out.println(exc);
 		}
@@ -182,37 +178,37 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			setTitle(deviceTitle);
 		else
 			setTitle(deviceTitle + " -- " + path);
-
-		//collect every DeviceComponent
-		Stack<Container> search_stack = new Stack();
+		// collect every DeviceComponent
+		final Stack<Container> search_stack = new Stack();
 		search_stack.push(this);
 		while (!search_stack.isEmpty())
 		{
-			Component[] curr_components = search_stack.pop().getComponents();
+			final Component[] curr_components = search_stack.pop().getComponents();
 			if (curr_components == null)
 				continue;
-			for (Component comp : curr_components)
+			for (final Component comp : curr_components)
 			{
-				if (comp instanceof DeviceButtons) {
-					buttons = (DeviceButtons)comp;
-					methods = ((DeviceButtons)comp).getMethods();
+				if (comp instanceof DeviceButtons)
+				{
+					buttons = (DeviceButtons) comp;
+					methods = ((DeviceButtons) comp).getMethods();
 					buttons.setReadOnly(readOnly);
 				}
 				else if (comp instanceof DeviceComponent)
-					device_components.addElement((DeviceComponent)comp);
+					device_components.addElement((DeviceComponent) comp);
 				else if (comp instanceof DeviceControl)
-					device_controls.addElement((DeviceControl)comp);
+					device_controls.addElement((DeviceControl) comp);
 				if (comp instanceof Container)
-					search_stack.push((Container)comp);
+					search_stack.push((Container) comp);
 			}
 		}
-		//done
+		// done
 		num_components = device_components.size();
 		for (final DeviceComponent comp : device_components)
 		{
 			comp.setSubtree(subtree);
 			comp.configure(baseNid, readOnly);
-			String currUpdateId = comp.getUpdateId(this);
+			final String currUpdateId = comp.getUpdateId(this);
 			if (currUpdateId != null && !currUpdateId.equals(""))
 			{
 				Vector<DeviceComponent> components = updateHash.get(currUpdateId);
@@ -226,19 +222,18 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		}
 		try
 		{
-			//A second turn in order to carry out actions which need inter-component info
+			// A second turn in order to carry out actions which need inter-component info
 			for (final DeviceComponent comp : device_components)
 				comp.postConfigure();
 		}
-		catch (Throwable exc)
+		catch (final Throwable exc)
 		{
 			System.out.println(exc);
 		}
-
 		if (methods != null && methods.length > 0)
 		{
 			pop_methods = new JPopupMenu("Methods");
-			//pop_methods = new JPopupMenu();
+			// pop_methods = new JPopupMenu();
 			pop_items = new JMenuItem[methods.length];
 			for (int i = 0; i < methods.length; i++)
 			{
@@ -251,39 +246,29 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 						boolean success = true;
 						String errmsg = "";
 						int j;
-						for (j = 0;
-								j < pop_items.length &&
-								( (JMenuItem) e.getSource()) != pop_items[j]; j++);
-						if (j == pop_items.length)return;
-						if (JOptionPane.showConfirmDialog(DeviceSetup.this,
-								"Execute " + methods[j] + "?",
-								"Execute a device method",
-								JOptionPane.YES_NO_OPTION,
-								JOptionPane.QUESTION_MESSAGE) ==
-								JOptionPane.YES_OPTION)
+						for (j = 0; j < pop_items.length && ((JMenuItem) e.getSource()) != pop_items[j]; j++);
+						if (j == pop_items.length)
+							return;
+						if (JOptionPane.showConfirmDialog(DeviceSetup.this, "Execute " + methods[j] + "?",
+								"Execute a device method", JOptionPane.YES_NO_OPTION,
+								JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION)
 						{
 							try
 							{
-								DeviceSetup.this.subtree.doDeviceMethod(
-										DeviceSetup.this.baseNid,
-										methods[j]);
+								DeviceSetup.this.subtree.doDeviceMethod(DeviceSetup.this.baseNid, methods[j]);
 							}
-							catch (Exception exc)
+							catch (final Exception exc)
 							{
 								errmsg = exc.toString();
 								success = false;
 							}
 							if (!success)
 								JOptionPane.showMessageDialog(DeviceSetup.this,
-										"Error executing method " + methods[j] +
-										": " + errmsg,
-										"Method execution report",
-										JOptionPane.WARNING_MESSAGE);
+										"Error executing method " + methods[j] + ": " + errmsg,
+										"Method execution report", JOptionPane.WARNING_MESSAGE);
 							else
 								JOptionPane.showMessageDialog(DeviceSetup.this,
-										"Method " + methods[j] +
-										" succesfully executed",
-										"Method execution report",
+										"Method " + methods[j] + " succesfully executed", "Method execution report",
 										JOptionPane.INFORMATION_MESSAGE);
 						}
 					}
@@ -295,17 +280,16 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 				@Override
 				public void mousePressed(MouseEvent e)
 				{
-					if ( (e.getModifiers() & Event.META_MASK) != 0)
+					if ((e.getModifiers() & Event.META_MASK) != 0)
 					{
 						pop_methods.setInvoker(DeviceSetup.this);
 						pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
 					}
 				}
-				/*public void mouseReleased(MouseEvent e)
-	                         {
-	            if(e.isPopupTrigger())
-	                pop_methods.show(DeviceSetup.this, e.getX(), e.getY());
-	                         }*/
+				/*
+				 * public void mouseReleased(MouseEvent e) { if(e.isPopupTrigger())
+				 * pop_methods.show(DeviceSetup.this, e.getX(), e.getY()); }
+				 */
 			});
 		}
 		popDefault(oldDef);
@@ -314,42 +298,44 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	public void apply()
 	{
 		final int oldDef = this.pushDefault();
-
 		for (final DeviceComponent comp : device_components)
-			try {
+			try
+			{
 				comp.apply();
-			} catch (Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				exc.printStackTrace();
 				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error writing data at offset nid " +
-								comp.getOffsetNid(),
-								JOptionPane.WARNING_MESSAGE);
+						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
 			}
 		for (final DeviceComponent comp : device_components)
 			comp.postApply();
 		popDefault(oldDef);
-		if(isChanged())
+		if (isChanged())
 			for (final DeviceUpdateListener dul : deviceUpdateListenerV)
 				dul.deviceUpdated();
 		justApplied = true;
 	}
+
 	public void apply(int currBaseNid)
 	{
 		final int oldDef = this.pushDefault();
-
 		for (final DeviceComponent comp : device_components)
-			try {
+			try
+			{
 				comp.apply(currBaseNid);
-			} catch (Exception exc) {
+			}
+			catch (final Exception exc)
+			{
 				exc.printStackTrace();
 				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error writing data at offset nid " +
-								comp.getOffsetNid(),
-								JOptionPane.WARNING_MESSAGE);
+						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
 			}
 		popDefault(oldDef);
 		justApplied = true;
 	}
+
 	public void reset()
 	{
 		final int oldDef = pushDefault();
@@ -357,17 +343,18 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			comp.reset();
 		popDefault(oldDef);
 	}
+
 	public void update()
 	{
 		final int oldDef = pushDefault();
 		for (final DeviceComponent comp : device_components)
 			comp.update();
-
 		popDefault(oldDef);
 	}
 
 	@Override
-	public void dataChanged(int... nids) {
+	public void dataChanged(int... nids)
+	{
 		this.update();
 	}
 
@@ -402,22 +389,25 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		}
 		if (!device_components.isEmpty())
 		{
-			try {
+			try
+			{
 				subtree.getInt(varExpr.toString());
-			}catch(Exception exc){}
+			}
+			catch (final Exception exc)
+			{}
 		}
 	}
 
 	public boolean check()
 	{
-		if(buttons != null)
+		if (buttons != null)
 			return buttons.check();
 		return true;
 	}
 
 	public void setCancelText(String cancelText)
 	{
-		if(buttons != null)
+		if (buttons != null)
 			buttons.setCancelText(cancelText);
 	}
 
@@ -443,16 +433,15 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		}
 		for (int i = 0; i < num_expr; i++)
 		{
-
-			try {
-				if(subtree.getInt(varExpr + expressions[i]) == 0)
-					JOptionPane.showMessageDialog(this, messages[i],
-							"Error in device configuration",
-							JOptionPane.WARNING_MESSAGE);
-			}catch(Exception exc)
+			try
 			{
-				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error in device configuration",
+				if (subtree.getInt(varExpr + expressions[i]) == 0)
+					JOptionPane.showMessageDialog(this, messages[i], "Error in device configuration",
+							JOptionPane.WARNING_MESSAGE);
+			}
+			catch (final Exception exc)
+			{
+				JOptionPane.showMessageDialog(this, exc.toString(), "Error in device configuration",
 						JOptionPane.WARNING_MESSAGE);
 				return false;
 			}
@@ -467,6 +456,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			for (final DeviceComponent comp : components)
 				comp.fireUpdate(id, val);
 	}
+
 	void cancel()
 	{
 		activeNidHash.remove(new Integer(baseNid));
@@ -479,35 +469,46 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 
 	public final static Setup getSetup(final int nid, final boolean readOnly)
 	{
-		DeviceSetup ds = activeNidHash.get(new Integer(nid));
-		if (ds != null) {
+		final DeviceSetup ds = activeNidHash.get(new Integer(nid));
+		if (ds != null)
+		{
 			ds.setReadOnly(readOnly);
 			ds.setVisible(true);
 		}
 		return ds;
 	}
-	public static Setup newSetup(final int nid, final String model, final Interface iface, final Object pointOrComponent, final boolean readOnly) throws Exception {
+
+	public static Setup newSetup(final int nid, final String model, final Interface iface,
+			final Object pointOrComponent, final boolean readOnly) throws Exception
+	{
 		Point point = null;
 		Component parent = null;
-		if (pointOrComponent instanceof Component) {
-			parent = (Component)pointOrComponent;
-		} else {
-			point = (Point)pointOrComponent;
+		if (pointOrComponent instanceof Component)
+		{
+			parent = (Component) pointOrComponent;
+		}
+		else
+		{
+			point = (Point) pointOrComponent;
 		}
 		final String deviceClassName = model + "Setup";
-		Class<?> deviceClass = Class.forName(deviceClassName);
-		DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
-		Dimension prevDim = ds.getSize();
+		final Class<?> deviceClass = Class.forName(deviceClassName);
+		final DeviceSetup ds = (DeviceSetup) deviceClass.newInstance();
+		final Dimension prevDim = ds.getSize();
 		ds.configure(iface, nid);
 		ds.setReadOnly(readOnly);
 		if (ds.getContentPane().getLayout() != null)
 			ds.pack();
 		ds.setSize(prevDim);
-		if (parent != null) {
+		if (parent != null)
+		{
 			ds.setLocationRelativeTo(parent);
-		} else if (point != null) {
+		}
+		else if (point != null)
+		{
 			ds.setLocation(point);
-		} else
+		}
+		else
 			ds.setLocationByPlatform(true);
 		ds.setVisible(true);
 		return ds;
@@ -529,11 +530,11 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 	{
 		deviceCloseListenerV.addElement(listener);
 	}
+
 	void addDeviceUpdateListener(DeviceUpdateListener listener)
 	{
 		deviceUpdateListenerV.addElement(listener);
 	}
-
 
 	void addButton(JButton button)
 	{
@@ -541,24 +542,23 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			buttons.add(button);
 	}
 
-	void setHighlight(boolean isHighlighted, int [] nids)
+	void setHighlight(boolean isHighlighted, int[] nids)
 	{
-		for(final DeviceComponent comp : device_components)
+		for (final DeviceComponent comp : device_components)
 		{
 			final int nid = comp.getBaseNid() + comp.getOffsetNid();
-			for(int j = 0; j < nids.length; j++)
-				if(nids[j] == nid) {
+			for (int j = 0; j < nids.length; j++)
+				if (nids[j] == nid)
+				{
 					comp.setHighlight(isHighlighted);
 					break;
 				}
 		}
-
 	}
 
 	static void closeSetups()
 	{
-		for(final DeviceSetup setup : openDevicesV)
+		for (final DeviceSetup setup : openDevicesV)
 			setup.cancel();
 	}
 }
-

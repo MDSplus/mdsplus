@@ -11,6 +11,10 @@ import javax.swing.*;
 
 public class WavePopup extends JPopupMenu implements ItemListener
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Waveform wave = null;
 	protected SetupWaveformParams setup_params;
 	protected JSeparator sep1, sep2, sep3;

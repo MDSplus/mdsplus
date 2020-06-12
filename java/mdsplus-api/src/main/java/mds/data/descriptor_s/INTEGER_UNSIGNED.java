@@ -4,38 +4,45 @@ import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import mds.data.DTYPE;
 
-public abstract class INTEGER_UNSIGNED<T extends Number>extends INTEGER<T>{
-	public INTEGER_UNSIGNED(final DTYPE ou, final BigInteger value){
+public abstract class INTEGER_UNSIGNED<T extends Number> extends INTEGER<T>
+{
+	public INTEGER_UNSIGNED(final DTYPE ou, final BigInteger value)
+	{
 		super(ou, value);
 	}
 
-	public INTEGER_UNSIGNED(final DTYPE bu, final byte value){
+	public INTEGER_UNSIGNED(final DTYPE bu, final byte value)
+	{
 		super(bu, value);
 	}
 
-	public INTEGER_UNSIGNED(final DTYPE lu, final int value){
+	public INTEGER_UNSIGNED(final DTYPE lu, final int value)
+	{
 		super(lu, value);
 	}
 
-	public INTEGER_UNSIGNED(final DTYPE qu, final long value){
+	public INTEGER_UNSIGNED(final DTYPE qu, final long value)
+	{
 		super(qu, value);
 	}
 
-	public INTEGER_UNSIGNED(final DTYPE wu, final short value){
+	public INTEGER_UNSIGNED(final DTYPE wu, final short value)
+	{
 		super(wu, value);
 	}
 
-	protected INTEGER_UNSIGNED(final ByteBuffer b){
+	protected INTEGER_UNSIGNED(final ByteBuffer b)
+	{
 		super(b);
 	}
 
 	@Override
-	public final INTEGER_UNSIGNED<?> abs() {
+	public final INTEGER_UNSIGNED<?> abs()
+	{
 		return this;
 	}
 
 	@Override
-	protected final byte getRankClass() {
-		return 0x00;
-	}
+	protected final byte getRankClass()
+	{ return 0x00; }
 }

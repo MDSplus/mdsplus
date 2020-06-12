@@ -11,6 +11,7 @@ package mds;
  */
 import java.util.EventListener;
 
-public interface ContextEventListener extends EventListener{
+public interface ContextEventListener extends EventListener
+{
 	public void handleContextEvent(Mds source, String msg, boolean ok);
 }

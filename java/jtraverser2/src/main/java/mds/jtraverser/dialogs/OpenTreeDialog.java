@@ -31,25 +31,30 @@ import mds.jtraverser.MdsView;
 import mds.jtraverser.TreeManager;
 import mds.jtraverser.TreeView;
 
-public class OpenTreeDialog extends JDialog{
-	private static final long	serialVersionUID	= 1L;
-	private final JRadioButton	readonly, edit, normal;
-	private final JTextField	expt_path			= new JTextField(16);
-	private final JTextField	expt				= new JTextField(16);
-	JComboBox<String>			shot_list			= new JComboBox<String>();
-	private final TreeManager	treeman;
+public class OpenTreeDialog extends JDialog
+{
+	private static final long serialVersionUID = 1L;
+	private final JRadioButton readonly, edit, normal;
+	private final JTextField expt_path = new JTextField(16);
+	private final JTextField expt = new JTextField(16);
+	JComboBox<String> shot_list = new JComboBox<String>();
+	private final TreeManager treeman;
 
 	/**
 	 * Create the dialog.
 	 */
-	public OpenTreeDialog(final TreeManager treeman){
+	public OpenTreeDialog(final TreeManager treeman)
+	{
 		super(JOptionPane.getRootFrame());
 		this.setModal(true);
 		this.treeman = treeman;
-		final KeyAdapter keyadapter = new KeyAdapter(){
+		final KeyAdapter keyadapter = new KeyAdapter()
+		{
 			@Override
-			public void keyPressed(final KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) OpenTreeDialog.this.ok();
+			public void keyPressed(final KeyEvent e)
+			{
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					OpenTreeDialog.this.ok();
 			}
 		};
 		this.setTitle("Open new tree");
@@ -57,19 +62,25 @@ public class OpenTreeDialog extends JDialog{
 		mjp.setLayout(new BorderLayout());
 		final JPanel grid = new JPanel();
 		grid.setBorder(new EmptyBorder(5, 5, 5, 5));
-		grid.setLayout(new GridLayout(3, 2){
+		grid.setLayout(new GridLayout(3, 2)
+		{
 			private static final long serialVersionUID = 1L;
 
 			@Override
-			public void layoutContainer(final Container parent) {
-				synchronized(parent.getTreeLock()){
+			public void layoutContainer(final Container parent)
+			{
+				synchronized (parent.getTreeLock())
+				{
 					final Insets insets = parent.getInsets();
 					final int ncomponents = parent.getComponentCount();
 					int nrows = this.getRows();
 					int ncols = this.getColumns();
-					if(ncomponents == 0) return;
-					if(nrows > 0) ncols = (ncomponents + nrows - 1) / nrows;
-					else nrows = (ncomponents + ncols - 1) / ncols;
+					if (ncomponents == 0)
+						return;
+					if (nrows > 0)
+						ncols = (ncomponents + nrows - 1) / nrows;
+					else
+						nrows = (ncomponents + ncols - 1) / ncols;
 					final int hgap = this.getHgap();
 					final int vgap = this.getVgap();
 					// scaling factors
@@ -79,20 +90,26 @@ public class OpenTreeDialog extends JDialog{
 					// scale
 					final int[] w = new int[ncols];
 					final int[] h = new int[nrows];
-					for(int i = 0; i < ncomponents; i++){
+					for (int i = 0; i < ncomponents; i++)
+					{
 						final int r = i / ncols;
 						final int c = i % ncols;
 						final Component comp = parent.getComponent(i);
 						final Dimension d = comp.getPreferredSize();
-						d.width = (int)(sw * d.width);
-						d.height = (int)(sh * d.height);
-						if(w[c] < d.width) w[c] = d.width;
-						if(h[r] < d.height) h[r] = d.height;
+						d.width = (int) (sw * d.width);
+						d.height = (int) (sh * d.height);
+						if (w[c] < d.width)
+							w[c] = d.width;
+						if (h[r] < d.height)
+							h[r] = d.height;
 					}
-					for(int c = 0, x = insets.left; c < ncols; c++){
-						for(int r = 0, y = insets.top; r < nrows; r++){
+					for (int c = 0, x = insets.left; c < ncols; c++)
+					{
+						for (int r = 0, y = insets.top; r < nrows; r++)
+						{
 							final int i = r * ncols + c;
-							if(i < ncomponents) parent.getComponent(i).setBounds(x, y, w[c], h[r]);
+							if (i < ncomponents)
+								parent.getComponent(i).setBounds(x, y, w[c], h[r]);
 							y += h[r] + vgap;
 						}
 						x += w[c] + hgap;
@@ -101,31 +118,39 @@ public class OpenTreeDialog extends JDialog{
 			}
 
 			@Override
-			public Dimension preferredLayoutSize(final Container parent) {
-				synchronized(parent.getTreeLock()){
+			public Dimension preferredLayoutSize(final Container parent)
+			{
+				synchronized (parent.getTreeLock())
+				{
 					final Insets insets = parent.getInsets();
 					final int ncomponents = parent.getComponentCount();
 					int nrows = this.getRows();
 					int ncols = this.getColumns();
-					if(nrows > 0) ncols = (ncomponents + nrows - 1) / nrows;
-					else nrows = (ncomponents + ncols - 1) / ncols;
+					if (nrows > 0)
+						ncols = (ncomponents + nrows - 1) / nrows;
+					else
+						nrows = (ncomponents + ncols - 1) / ncols;
 					final int[] w = new int[ncols];
 					final int[] h = new int[nrows];
-					for(int i = 0; i < ncomponents; i++){
+					for (int i = 0; i < ncomponents; i++)
+					{
 						final int r = i / ncols;
 						final int c = i % ncols;
 						final Component comp = parent.getComponent(i);
 						final Dimension d = comp.getPreferredSize();
-						if(w[c] < d.width) w[c] = d.width;
-						if(h[r] < d.height) h[r] = d.height;
+						if (w[c] < d.width)
+							w[c] = d.width;
+						if (h[r] < d.height)
+							h[r] = d.height;
 					}
 					int nw = 0;
-					for(int j = 0; j < ncols; j++)
+					for (int j = 0; j < ncols; j++)
 						nw += w[j];
 					int nh = 0;
-					for(int i = 0; i < nrows; i++)
+					for (int i = 0; i < nrows; i++)
 						nh += h[i];
-					return new Dimension(insets.left + insets.right + nw + (ncols - 1) * this.getHgap(), insets.top + insets.bottom + nh + (nrows - 1) * this.getVgap());
+					return new Dimension(insets.left + insets.right + nw + (ncols - 1) * this.getHgap(),
+							insets.top + insets.bottom + nh + (nrows - 1) * this.getVgap());
 				}
 			}
 		});
@@ -138,28 +163,35 @@ public class OpenTreeDialog extends JDialog{
 		grid.add(new JLabel("shot: "));
 		grid.add(this.shot_list);
 		this.shot_list.setEditable(true);
-		this.shot_list.addPopupMenuListener(new PopupMenuListener(){
+		this.shot_list.addPopupMenuListener(new PopupMenuListener()
+		{
 			@Override
-			public void popupMenuCanceled(final PopupMenuEvent e) {/*stub*/}
+			public void popupMenuCanceled(final PopupMenuEvent e)
+			{/* stub */}
 
 			@Override
-			public void popupMenuWillBecomeInvisible(final PopupMenuEvent e) {/*stub*/}
+			public void popupMenuWillBecomeInvisible(final PopupMenuEvent e)
+			{/* stub */}
 
 			@Override
-			public void popupMenuWillBecomeVisible(final PopupMenuEvent e) {
+			public void popupMenuWillBecomeVisible(final PopupMenuEvent e)
+			{
 				OpenTreeDialog.this.shot_list.removeAllItems();
 				OpenTreeDialog.this.shot_list.addItem("model");
 				int[] shots;
-				try{
+				try
+				{
 					final String exp = OpenTreeDialog.this.expt.getText().trim();
 					final Mds mds = OpenTreeDialog.this.treeman == null ? null : OpenTreeDialog.this.treeman.getMds();
 					OpenTreeDialog.this.setTreePath(exp);
 					shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new StringDsc(exp));
-				}catch(final MdsException exc){
+				}
+				catch (final MdsException exc)
+				{
 					MdsException.stderr("getShotDB", exc);
 					shots = new int[0];
 				}
-				for(final int shot : shots)
+				for (final int shot : shots)
 					OpenTreeDialog.this.shot_list.addItem(Integer.toString(shot));
 			}
 		});
@@ -182,16 +214,20 @@ public class OpenTreeDialog extends JDialog{
 		buttons.add(but = new JButton("Ok"));
 		this.getRootPane().setDefaultButton(but);
 		but.setSelected(true);
-		but.addActionListener(new ActionListener(){
+		but.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				OpenTreeDialog.this.ok();
 			}
 		});
 		buttons.add(but = new JButton("Cancel"));
-		but.addActionListener(new ActionListener(){
+		but.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				OpenTreeDialog.this.setVisible(false);
 			}
 		});
@@ -201,57 +237,83 @@ public class OpenTreeDialog extends JDialog{
 		this.setResizable(false);
 	}
 
-	public final void open() {
+	public final void open()
+	{
 		this.readonly.setSelected(true);
 		TreeView treeview = null;
-		if(this.treeman != null){
+		if (this.treeman != null)
+		{
 			Dialogs.setLocation(this);
 			final MdsView mdsview = this.treeman.getCurrentMdsView();
-			if(mdsview != null) treeview = this.treeman.getCurrentTreeView();
+			if (mdsview != null)
+				treeview = this.treeman.getCurrentTreeView();
 		}
-		if(treeview != null) this.setFields(treeview.getExpt(), treeview.getShot());
-		else{
+		if (treeview != null)
+			this.setFields(treeview.getExpt(), treeview.getShot());
+		else
+		{
 			final TREE tree = TREE.getActiveTree();
-			if(tree != null) this.setFields(tree.expt, tree.shot);
+			if (tree != null)
+				this.setFields(tree.expt, tree.shot);
 		}
-		if(this.expt.getText().length() > 0) this.shot_list.grabFocus();
-		else this.expt.grabFocus();
+		if (this.expt.getText().length() > 0)
+			this.shot_list.grabFocus();
+		else
+			this.expt.grabFocus();
 		this.setVisible(true);
 	}
 
-	public final void setFields(final String expt, final int shot) {
+	public final void setFields(final String expt, final int shot)
+	{
 		this.expt.setText(expt);
 		this.shot_list.setSelectedItem(shot == -1 ? "model" : Integer.toString(shot));
 	}
 
-	void ok() {
+	void ok()
+	{
 		final String exp = this.expt.getText().trim();
-		if(exp == null || exp.length() == 0){
-			JOptionPane.showMessageDialog(this, "Missing experiment name", "Error opening tree", JOptionPane.WARNING_MESSAGE);
+		if (exp == null || exp.length() == 0)
+		{
+			JOptionPane.showMessageDialog(this, "Missing experiment name", "Error opening tree",
+					JOptionPane.WARNING_MESSAGE);
 			return;
 		}
 		int shot;
-		final String shot_str = (this.shot_list.getSelectedItem() instanceof String) ? ((String)this.shot_list.getSelectedItem()).trim() : "";
-		if(shot_str.length() == 0 || shot_str.trim().equalsIgnoreCase("model")) shot = -1;
-		else try{
-			shot = Integer.parseInt(shot_str);
-		}catch(final Exception e){
-			JOptionPane.showMessageDialog(this, "Wrong shot number", "Error opening tree", JOptionPane.WARNING_MESSAGE);
-			return;
-		}
+		final String shot_str = (this.shot_list.getSelectedItem() instanceof String)
+				? ((String) this.shot_list.getSelectedItem()).trim()
+				: "";
+		if (shot_str.length() == 0 || shot_str.trim().equalsIgnoreCase("model"))
+			shot = -1;
+		else
+			try
+			{
+				shot = Integer.parseInt(shot_str);
+			}
+			catch (final Exception e)
+			{
+				JOptionPane.showMessageDialog(this, "Wrong shot number", "Error opening tree",
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 		this.setVisible(false);
 		final int mode;
-		if(this.edit.isSelected()) mode = TREE.EDITABLE;
-		else if(this.readonly.isSelected()) mode = TREE.READONLY;
-		else mode = TREE.NORMAL;
-		if(this.treeman != null){
+		if (this.edit.isSelected())
+			mode = TREE.EDITABLE;
+		else if (this.readonly.isSelected())
+			mode = TREE.READONLY;
+		else
+			mode = TREE.NORMAL;
+		if (this.treeman != null)
+		{
 			this.setTreePath(exp);
 			this.treeman.openTree(exp, shot, mode);
 		}
 	}
 
-	private final void setTreePath(final String exp) {
+	private final void setTreePath(final String exp)
+	{
 		final String path = this.expt_path.getText().trim();
-		if(this.treeman != null) this.treeman.setTreePathEnv(exp, path);
+		if (this.treeman != null)
+			this.treeman.setTreePathEnv(exp, path);
 	}
 }

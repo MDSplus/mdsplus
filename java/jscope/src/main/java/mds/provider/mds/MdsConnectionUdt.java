@@ -3,7 +3,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package mds.provider.mds;
 
 import java.io.DataOutputStream;
@@ -17,19 +16,19 @@ import mds.connection.MdsConnection;
  */
 public class MdsConnectionUdt extends MdsConnection
 {
-   public void connectToServer() throws IOException
-   {
-	if(provider != null)
+	@Override
+	public void connectToServer() throws IOException
 	{
-	    host = getProviderHost();
-	    port = getProviderPort();
-	    user = getProviderUser();
-
-	    MdsIpProtocolWrapper mipw = new MdsIpProtocolWrapper("udt://"+host+":"+port);
+		if (provider != null)
+		{
+			host = getProviderHost();
+			port = getProviderPort();
+			user = getProviderUser();
+			final MdsIpProtocolWrapper mipw = new MdsIpProtocolWrapper("udt://" + host + ":" + port);
 //            MdsIpProtocolWrapper mipw = new MdsIpProtocolWrapper("tcp://"+host+":"+port);
 //            dis = new DataInputStream(new BufferedInputStream(mipw.getInputStream()));
-	    dis = mipw.getInputStream();
-	    dos = new DataOutputStream(mipw.getOutputStream());
+			dis = mipw.getInputStream();
+			dos = new DataOutputStream(mipw.getOutputStream());
+		}
 	}
-    }
 }

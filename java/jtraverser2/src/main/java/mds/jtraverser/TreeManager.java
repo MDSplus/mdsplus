@@ -1123,7 +1123,7 @@ public class TreeManager extends JPanel
 				new StringBuilder(64).append("jTaverser started (Version: ").append(version).append(")").toString());
 		this.progress.setLayout(new BorderLayout(0, 0));
 		this.progress.add(this.status, BorderLayout.CENTER);
-		final Mds mdslocal = MdsIp.getLocal();
+		final Mds mdslocal = Mds.getLocal();
 		if (mdslocal != null)
 			this.addMds(mdslocal.setActive());
 		MdsException.setStatusLabel(this.status);

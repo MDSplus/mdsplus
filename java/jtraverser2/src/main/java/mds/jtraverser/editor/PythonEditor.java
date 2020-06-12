@@ -17,38 +17,52 @@ import mds.data.descriptor_r.Function;
 import mds.data.descriptor_r.function.Fun;
 import mds.data.descriptor_s.StringDsc;
 
-public final class PythonEditor extends Editor{
-	private static final long	serialVersionUID	= 1L;
-	static final short			OPC_FUN				= 162;
+public final class PythonEditor extends Editor
+{
+	private static final long serialVersionUID = 1L;
+	static final short OPC_FUN = 162;
 
-	public static final boolean checkData(final Descriptor<?> data) {
-		if(data instanceof Function && ((Function)data).getOpCode() == OPC.OpcFun){
-			final Descriptor<?>[] args = ((Function)data).getArguments();
-			try{
-				if(args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringDsc) && ((StringDsc)args[1]).toString() != null && ((StringDsc)args[1]).toString().toUpperCase().equals("PY")) return true;
-			}catch(final Exception exc){
+	public static final boolean checkData(final Descriptor<?> data)
+	{
+		if (data instanceof Function && ((Function) data).getOpCode() == OPC.OpcFun)
+		{
+			final Descriptor<?>[] args = ((Function) data).getArguments();
+			try
+			{
+				if (args != null && args.length > 2 && args[1] != null && (args[1] instanceof StringDsc)
+						&& ((StringDsc) args[1]).toString() != null
+						&& ((StringDsc) args[1]).toString().toUpperCase().equals("PY"))
+					return true;
+			}
+			catch (final Exception exc)
+			{
 				MdsException.stderr("DataEditor.checkUsrData", exc);
 			}
 		}
 		return false;
 	}
-	boolean		default_scroll;
-	String		program;
-	String		retVar;
-	int			rows	= 7, columns = 20;
-	JTextArea	text_area;
-	JTextField	text_field;
 
-	public PythonEditor(final boolean editable, final CTX ctx){
+	boolean default_scroll;
+	String program;
+	String retVar;
+	int rows = 7, columns = 20;
+	JTextArea text_area;
+	JTextField text_field;
+
+	public PythonEditor(final boolean editable, final CTX ctx)
+	{
 		this(null, editable, ctx);
 	}
 
-	public PythonEditor(final Function function, final boolean editable, final CTX ctx){
+	public PythonEditor(final Function function, final boolean editable, final CTX ctx)
+	{
 		super(function, editable, ctx, 0);
 		JScrollPane scroll_pane;
 		this.default_scroll = true;
-		if(function != null) this.getProgram(function);
-		else{
+		if (function != null)
+			this.getProgram(function);
+		else
+		{
 			this.program = "";
 			this.retVar = "";
 		}
@@ -80,43 +94,59 @@ public final class PythonEditor extends Editor{
 	}
 
 	@Override
-	public final Descriptor<?> getData() {
+	public final Descriptor<?> getData()
+	{
 		final String programTxt = this.text_area.getText();
-		if(programTxt == null || programTxt.equals("")) return null;
+		if (programTxt == null || programTxt.equals(""))
+			return null;
 		final StringTokenizer st = new StringTokenizer(programTxt, "\n");
 		final String[] lines = new String[st.countTokens()];
 		int idx = 0;
 		int maxLen = 0;
-		while(st.hasMoreTokens()){
+		while (st.hasMoreTokens())
+		{
 			lines[idx] = st.nextToken();
-			if(maxLen < lines[idx].length()) maxLen = lines[idx].length();
+			if (maxLen < lines[idx].length())
+				maxLen = lines[idx].length();
 			idx++;
 		}
-		for(int i = 0; i < lines.length; i++){
+		for (int i = 0; i < lines.length; i++)
+		{
 			final int len = lines[i].length();
-			for(int j = 0; j < maxLen - len; j++)
+			for (int j = 0; j < maxLen - len; j++)
 				lines[i] += " ";
 		}
 		final StringArray stArr = new StringArray(lines);
 		final String retVarTxt = this.text_field.getText();
 		Descriptor<?> Args[];
-		if(retVarTxt == null || retVarTxt.equals("")) Args = new Descriptor[]{null, new StringDsc("Py"), stArr};
-		else Args = new Descriptor[]{null, new StringDsc("Py"), stArr, new StringDsc(retVarTxt)};
+		if (retVarTxt == null || retVarTxt.equals(""))
+			Args = new Descriptor[]
+			{ null, new StringDsc("Py"), stArr };
+		else
+			Args = new Descriptor[]
+			{ null, new StringDsc("Py"), stArr, new StringDsc(retVarTxt) };
 		return new Fun(Args);
 	}
 
 	@Override
-	public final void reset(final boolean hard) {
+	public final void reset(final boolean hard)
+	{
 		this.text_area.setText(this.program);
 		this.text_field = new JTextField(this.retVar);
 	}
 
-	private final void getProgram(final Function function) {
+	private final void getProgram(final Function function)
+	{
 		final Descriptor<?>[] args = function.getArguments();
-		if(args.length <= 2 || args[2] == null) this.retVar = "";
-		else this.retVar = args[2].toString();
-		if(args.length <= 1 || args[1] == null) this.program = "";
-		else if(args[1] instanceof StringArray) this.program = ((StringArray)args[2]).join_by("\n");
-		else this.program = args[1].toString();
+		if (args.length <= 2 || args[2] == null)
+			this.retVar = "";
+		else
+			this.retVar = args[2].toString();
+		if (args.length <= 1 || args[1] == null)
+			this.program = "";
+		else if (args[1] instanceof StringArray)
+			this.program = ((StringArray) args[2]).join_by("\n");
+		else
+			this.program = args[1].toString();
 	}
 }

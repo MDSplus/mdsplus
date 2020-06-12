@@ -19,6 +19,10 @@ import javax.swing.*;
  */
 public class WaveformContainer extends RowColumnContainer implements WaveformManager, WaveformListener, Printable
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	private Waveform sel_wave;
 	int mode = Waveform.MODE_ZOOM, grid_mode = Grid.IS_DOTTED, x_grid_lines = 5, y_grid_lines = 5;
 	protected boolean reversed = false;
@@ -507,9 +511,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 
 	@Override
 	public int getWaveformCount()
-	{
-		return this.getGridComponentCount();
-	}
+	{ return this.getGridComponentCount(); }
 
 	public void SetFont(Font font)
 	{
@@ -793,9 +795,7 @@ public class WaveformContainer extends RowColumnContainer implements WaveformMan
 	 */
 	@Override
 	public Waveform getCopySource()
-	{
-		return copy_waveform;
-	}
+	{ return copy_waveform; }
 
 	public void RepaintAllWaves()
 	{

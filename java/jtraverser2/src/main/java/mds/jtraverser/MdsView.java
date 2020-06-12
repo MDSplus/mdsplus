@@ -29,18 +29,25 @@ import mds.data.TREE;
 import mds.jtraverser.TreeManager.Job;
 import mds.mdsip.MdsIp;
 
-public class MdsView extends JTabbedPane implements TransferEventListener{
+public class MdsView extends JTabbedPane implements TransferEventListener
+{
 	private static final long serialVersionUID = 1L;
-	class ClosableTab extends JPanel{
-		private static final long serialVersionUID = 1L;
-		class CloseButton extends JButton implements MouseListener{
-			private static final long	serialVersionUID	= 1L;
-			final static int			size				= 8;
-			final static int			top					= 3;
-			final static int			left				= 2;
 
-			public CloseButton(){
-				this.setPreferredSize(new Dimension(CloseButton.size + CloseButton.left, CloseButton.size + CloseButton.top));
+	class ClosableTab extends JPanel
+	{
+		private static final long serialVersionUID = 1L;
+
+		class CloseButton extends JButton implements MouseListener
+		{
+			private static final long serialVersionUID = 1L;
+			final static int size = 8;
+			final static int top = 3;
+			final static int left = 2;
+
+			public CloseButton()
+			{
+				this.setPreferredSize(
+						new Dimension(CloseButton.size + CloseButton.left, CloseButton.size + CloseButton.top));
 				this.setToolTipText("close Tree");
 				this.setContentAreaFilled(false);
 				this.setBorderPainted(false);
@@ -52,55 +59,69 @@ public class MdsView extends JTabbedPane implements TransferEventListener{
 
 			/** when click button, tab will close */
 			@Override
-			public void mouseClicked(final MouseEvent e) {
+			public void mouseClicked(final MouseEvent e)
+			{
 				final int index = MdsView.this.indexOfTabComponent(ClosableTab.this);
-				if(index != -1) MdsView.this.closeTree(index, false);
+				if (index != -1)
+					MdsView.this.closeTree(index, false);
 			}
 
 			@Override
-			public void mouseEntered(final MouseEvent e) {
+			public void mouseEntered(final MouseEvent e)
+			{
 				this.setForeground(Color.RED);
 			}
 
 			@Override
-			public void mouseExited(final MouseEvent e) {
+			public void mouseExited(final MouseEvent e)
+			{
 				this.setForeground(Color.BLACK);
 			}
 
 			@Override
-			public void mousePressed(final MouseEvent e) {/**/}
+			public void mousePressed(final MouseEvent e)
+			{/**/}
 
 			@Override
-			public void mouseReleased(final MouseEvent e) {/**/}
+			public void mouseReleased(final MouseEvent e)
+			{/**/}
 
 			@Override
-			public void updateUI() {/**/}
+			public void updateUI()
+			{/**/}
 
 			@Override
-			protected void paintComponent(final Graphics g) {
+			protected void paintComponent(final Graphics g)
+			{
 				super.paintComponent(g);
-				final Graphics2D g2 = (Graphics2D)g.create();
-				if(this.getModel().isPressed()) g2.translate(1, 1);
+				final Graphics2D g2 = (Graphics2D) g.create();
+				if (this.getModel().isPressed())
+					g2.translate(1, 1);
 				g2.setStroke(new BasicStroke(2));
 				g2.setColor(new Color(126, 118, 91));
-				if(this.getModel().isRollover()) g2.setColor(Color.RED);
+				if (this.getModel().isRollover())
+					g2.setColor(Color.RED);
 				g2.drawLine(CloseButton.left + 1, CloseButton.top + 1, this.getWidth() - 2, this.getHeight() - 2);
 				g2.drawLine(this.getWidth() - 2, CloseButton.top + 1, CloseButton.left + 1, this.getHeight() - 2);
 				g2.dispose();
 			}
 		}
 
-		public ClosableTab(){
+		public ClosableTab()
+		{
 			this.setLayout(new FlowLayout(FlowLayout.LEFT, 0, 0));
 			this.setOpaque(false);
-			final JLabel label = new JLabel(){
+			final JLabel label = new JLabel()
+			{
 				private static final long serialVersionUID = 1L;
 
 				/** set text for JLabel, it will title of tab */
 				@Override
-				public String getText() {
+				public String getText()
+				{
 					final int index = MdsView.this.indexOfTabComponent(ClosableTab.this);
-					if(index != -1) return MdsView.this.getTitleAt(index);
+					if (index != -1)
+						return MdsView.this.getTitleAt(index);
 					return null;
 				}
 			};
@@ -108,104 +129,141 @@ public class MdsView extends JTabbedPane implements TransferEventListener{
 			this.add(new CloseButton());
 		}
 	}
-	final TreeManager				treeman;
-	private final Mds				mds;
-	private final Stack<TreeView>	trees					= new Stack<TreeView>();
-	Vector<Job>						change_report_listeners	= new Vector<Job>();
 
-	public MdsView(final TreeManager treeman, final Mds mds){
+	final TreeManager treeman;
+	private final Mds mds;
+	private final Stack<TreeView> trees = new Stack<TreeView>();
+	Vector<Job> change_report_listeners = new Vector<Job>();
+
+	public MdsView(final TreeManager treeman, final Mds mds)
+	{
 		this.treeman = treeman;
 		this.mds = mds;
-		try {
-			mds.getAPI().setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE","MinMax");
-		} catch (MdsException e) {
-			MdsException.stderr("MDSPLUS_DEFAULT_RESAMPLE_MODE not set!",e);
+		try
+		{
+			mds.getAPI().setenv("MDSPLUS_DEFAULT_RESAMPLE_MODE", "MinMax");
+		}
+		catch (final MdsException e)
+		{
+			MdsException.stderr("MDSPLUS_DEFAULT_RESAMPLE_MODE not set!", e);
 		}
 		mds.addTransferEventListener(this);
 		this.setPreferredSize(new Dimension(300, 400));
 		this.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-		this.addChangeListener(new ChangeListener(){
+		this.addChangeListener(new ChangeListener()
+		{
 			@Override
-			public void stateChanged(final ChangeEvent ce) {
+			public void stateChanged(final ChangeEvent ce)
+			{
 				final TREE tree = MdsView.this.getCurrentTree();
-				if(tree == null) return;
-				try{
+				if (tree == null)
+					return;
+				try
+				{
 					tree.setActive();
-				}catch(final MdsException e){/**/}
+				}
+				catch (final MdsException e)
+				{/**/}
 				MdsView.this.reportChange();
 			}
 		});
 	}
 
-	public void addChangeReportListener(final Job job) {
+	public void addChangeReportListener(final Job job)
+	{
 		this.change_report_listeners.add(job);
 	}
 
-	public final MdsView close(final boolean quit) {
-		while(!this.trees.empty())
+	public final MdsView close(final boolean quit)
+	{
+		while (!this.trees.empty())
 			this.trees.pop().close(quit);
 		this.mds.close();
-		if(this.mds instanceof MdsIp) MdsIp.removeSharedConnection((MdsIp)this.mds);
+		if (this.mds instanceof MdsIp)
+			MdsIp.removeSharedConnection((MdsIp) this.mds);
 		return this;
 	}
 
-	public final void closeTree(final boolean quit) {
+	public final void closeTree(final boolean quit)
+	{
 		final TreeView treeview = this.getCurrentTreeView();
-		if(treeview == null) return;
+		if (treeview == null)
+			return;
 		this.closeTree(this.getSelectedIndex(), quit);
 	}
 
-	public void dispatchChangeReportListener() {
-		for(final Job job : this.change_report_listeners)
+	public void dispatchChangeReportListener()
+	{
+		for (final Job job : this.change_report_listeners)
 			job.program();
 	}
 
-	public final Node getCurrentNode() {
+	public final Node getCurrentNode()
+	{
 		final TreeView tree = this.getCurrentTreeView();
-		if(tree == null) return null;
+		if (tree == null)
+			return null;
 		return tree.getCurrentNode();
 	}
 
-	public final TREE getCurrentTree() {
+	public final TREE getCurrentTree()
+	{
 		final TreeView tree = this.getCurrentTreeView();
-		if(tree == null) return null;
+		if (tree == null)
+			return null;
 		return tree.getTree();
 	}
 
-	public final TreeView getCurrentTreeView() {
-		if(this.getTabCount() == 0) return null;
-		return (TreeView)((JScrollPane)this.getSelectedComponent()).getViewport().getView();
+	public final TreeView getCurrentTreeView()
+	{
+		if (this.getTabCount() == 0)
+			return null;
+		return (TreeView) ((JScrollPane) this.getSelectedComponent()).getViewport().getView();
 	}
 
-	public final Mds getMds() {
-		return this.mds;
-	}
+	public final Mds getMds()
+	{ return this.mds; }
 
-	public final void openTree(final String expt, int shot, final int mode) {
+	public final void openTree(final String expt, int shot, final int mode)
+	{
 		// first we need to check if the tree is already open
-		if(shot == 0) try{
-			shot = this.mds.getAPI().treeGetCurrentShotId(null, expt);
-		}catch(final MdsException e){/**/}
+		if (shot == 0)
+			try
+			{
+				shot = this.mds.getAPI().treeGetCurrentShotId(null, expt);
+			}
+			catch (final MdsException e)
+			{/**/}
 		int index = -1;
-		for(int i = this.getTabCount(); i-- > 0;){
+		for (int i = this.getTabCount(); i-- > 0;)
+		{
 			final TreeView tree = this.getTreeAt(i);
-			if(!tree.getExpt().equalsIgnoreCase(expt)) continue;
-			if(tree.getShot() != shot) continue;
+			if (!tree.getExpt().equalsIgnoreCase(expt))
+				continue;
+			if (tree.getShot() != shot)
+				continue;
 			tree.close(false);
 			this.remove(i);
 			index = i;
 		}
-		if(index < 0) index = this.getTabCount();
+		if (index < 0)
+			index = this.getTabCount();
 		TreeView tree;
-		try{
+		try
+		{
 			tree = new TreeView(this, expt, shot, mode);
-		}catch(final MdsException e){
-			JOptionPane.showMessageDialog(this.treeman, e.getMessage(), "Error opening tree " + expt, JOptionPane.ERROR_MESSAGE);
+		}
+		catch (final MdsException e)
+		{
+			JOptionPane.showMessageDialog(this.treeman, e.getMessage(), "Error opening tree " + expt,
+					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
-		tree.addChangeReportListener(new Job(){
+		tree.addChangeReportListener(new Job()
+		{
 			@Override
-			public void program() {
+			public void program()
+			{
 				MdsView.this.reportChange();
 			}
 		});
@@ -216,42 +274,54 @@ public class MdsView extends JTabbedPane implements TransferEventListener{
 	}
 
 	@Override
-	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read) {
-		if (to_read==0) {
+	public void handleTransferEvent(final ReadableByteChannel is, String info, int read, int to_read)
+	{
+		if (to_read == 0)
+		{
 			this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 			this.treeman.setProgress(this, 0, 1);
-		} else {
+		}
+		else
+		{
 			this.setCursor(new Cursor(Cursor.WAIT_CURSOR));
 			this.treeman.setProgress(this, read, to_read);
 		}
 	}
 
-	public void removeChangeReportListener(final Job job) {
+	public void removeChangeReportListener(final Job job)
+	{
 		this.change_report_listeners.remove(job);
 	}
 
-	synchronized public final void reportChange() {
+	synchronized public final void reportChange()
+	{
 		this.treeman.reportChange();
 	}
 
-	public void set_copy_format(final int format) {
-		for(final TreeView tree : this.trees)
+	public void set_copy_format(final int format)
+	{
+		for (final TreeView tree : this.trees)
 			tree.set_copy_format(format);
 	}
 
 	@Override
-	public final String toString() {
+	public final String toString()
+	{
 		return this.mds.toString();
 	}
 
-	private void closeTree(final int idx, final boolean quit) {
-		if(idx >= this.getTabCount() || idx < 0) return;
+	private void closeTree(final int idx, final boolean quit)
+	{
+		if (idx >= this.getTabCount() || idx < 0)
+			return;
 		this.trees.remove(this.getTreeAt(idx).close(quit));
 		this.removeTabAt(idx);
-		if(this.getTabCount() == 0) this.treeman.reportChange();
+		if (this.getTabCount() == 0)
+			this.treeman.reportChange();
 	}
 
-	private final TreeView getTreeAt(final int index) {
-		return (TreeView)((JScrollPane)this.getComponentAt(index)).getViewport().getView();
+	private final TreeView getTreeAt(final int index)
+	{
+		return (TreeView) ((JScrollPane) this.getComponentAt(index)).getViewport().getView();
 	}
 }

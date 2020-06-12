@@ -20,19 +20,23 @@ import mds.jtraverser.editor.EnumEditor;
 import mds.jtraverser.editor.EnumEditor.MODE;
 import mds.mdsip.MdsIp;
 
-public class ACQ1001 extends Device{
-	public static void main(final String... args) throws MdsException {
+public class ACQ1001 extends Device
+{
+	public static void main(final String... args) throws MdsException
+	{
 		final Mds mds = new MdsIp();
 		final TREE tree = new TREE(mds, "test", 1, TREE.NEW);
 		tree.open();
 		final Nid dev = tree.getTop().addConglom("DEVICE", "ACQ2106_ACQ480x4");
 		new ACQ1001(null, dev, true, ACQ480.class).showDialog();
 	}
-	final ACQ4xx		module;
-	final ACQ4xx.Master	master;
-	final Class<?>		module_class;
 
-	public ACQ1001(final Frame frame, final NODE<?> head, final boolean editable, final Class<?> module_class){
+	final ACQ4xx module;
+	final ACQ4xx.Master master;
+	final Class<?> module_class;
+
+	public ACQ1001(final Frame frame, final NODE<?> head, final boolean editable, final Class<?> module_class)
+	{
 		super(frame, head, editable, 8);
 		this.module_class = module_class;
 		final JComponent main = this.pane;
@@ -41,9 +45,12 @@ public class ACQ1001 extends Device{
 		this.addExpr(0, "CLOCK", "sampling clock", false, false);
 		this.addExpr(1, "HOST", "hostname/ip of acq", true, false);
 		this.addExpr(2, "COMMENT", "a comment", true, false);
-		try{
+		try
+		{
 			this.addEnum(3, "CLOCK:SRC", "master clock in", MODE.ASIS, head.getNode("CLOCK:SRC:ZCLK").decompile());
-		}catch(final MdsException e){
+		}
+		catch (final MdsException e)
+		{
 			this.addExpr(3, "CLOCK:SRC", "master clock in", false, false);
 		}
 		this.addExpr(4, "TRIGGER", "time offset of first trigger", false, false);
@@ -55,19 +62,28 @@ public class ACQ1001 extends Device{
 		this.pane.add(main, "Master");
 		final String path = "MODULE1";
 		ACQ4xx mod;
-		try{
-			final Constructor<?> modconst = this.module_class.getConstructor(Frame.class, NODE.class, boolean.class, int.class);
-			mod = (ACQ4xx)modconst.newInstance(this.frame, this.head == null ? null : this.head.getNode(path), Boolean.valueOf(this.editable), Integer.valueOf(0));
-		}catch(final Exception e){
+		try
+		{
+			final Constructor<?> modconst = this.module_class.getConstructor(Frame.class, NODE.class, boolean.class,
+					int.class);
+			mod = (ACQ4xx) modconst.newInstance(this.frame, this.head == null ? null : this.head.getNode(path),
+					Boolean.valueOf(this.editable), Integer.valueOf(0));
+		}
+		catch (final Exception e)
+		{
 			mod = null;
-			JOptionPane.showMessageDialog(null, e.getMessage(), String.format("MODULE1 (%s)", module_class.getName()), JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, e.getMessage(), String.format("MODULE1 (%s)", module_class.getName()),
+					JOptionPane.ERROR_MESSAGE);
 		}
 		this.module = mod;
-		if(mod == null) this.master = null;
-		else{
+		if (mod == null)
+			this.master = null;
+		else
+		{
 			this.pane.add(this.module.getPane(), path);
 			this.master = this.module.getMaster();
-			if(this.master != null) main.add(Editor.addLabel("MASTER", this.master.getPane()), BorderLayout.SOUTH);
+			if (this.master != null)
+				main.add(Editor.addLabel("MASTER", this.master.getPane()), BorderLayout.SOUTH);
 		}
 	}
 }

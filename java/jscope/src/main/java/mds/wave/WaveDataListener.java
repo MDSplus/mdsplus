@@ -6,13 +6,15 @@ package mds.wave;
 
 /**
  *
- * @author manduchi
- * Defines the methods called by WaveData to report regions of increased resolution or new data available
-
-*/
+ * @author manduchi Defines the methods called by WaveData to report regions of
+ *         increased resolution or new data available
+ *
+ */
 public interface WaveDataListener
 {
-    void dataRegionUpdated(double []x, float []y, double resolution);
-    void dataRegionUpdated(long []x, float []y, double resolution);
-    void legendUpdated(String name);
+	void dataRegionUpdated(double[] x, float[] y, double resolution);
+
+	void dataRegionUpdated(long[] x, float[] y, double resolution);
+
+	void legendUpdated(String name);
 }

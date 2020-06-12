@@ -6,27 +6,31 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_APD;
 
 /** Tuple (215 : -41) **/
-public class Tuple extends Descriptor_APD{
+public class Tuple extends Descriptor_APD
+{
 	public static final String prefix = "Tupel";
 
-	public Tuple(final ByteBuffer b){
+	public Tuple(final ByteBuffer b)
+	{
 		super(b);
 	}
 
-	public Tuple(final Descriptor<?>... descs){
+	public Tuple(final Descriptor<?>... descs)
+	{
 		super(DTYPE.TUPLE, descs);
 	}
 
-	public final Descriptor<?> get(final int idx) {
+	public final Descriptor<?> get(final int idx)
+	{
 		return this.getScalar(idx);
 	}
 
-	public final Descriptor<?>[] toArray() {
+	public final Descriptor<?>[] toArray()
+	{
 		return this.getAtomic();
 	}
 
 	@Override
-	protected final String getPrefix() {
-		return Tuple.prefix;
-	}
+	protected final String getPrefix()
+	{ return Tuple.prefix; }
 }

@@ -10,7 +10,8 @@ import java.nio.ByteOrder;
 import java.util.Vector;
 import java.util.zip.InflaterInputStream;
 
-public class MdsMessage extends Object {
+public class MdsMessage extends Object
+{
 	public static final int HEADER_SIZE = 48;
 	public static final int SUPPORTS_COMPRESSION = 0x8000;
 	public static final byte SENDCAPABILITIES = (byte) 0xF;
@@ -20,7 +21,6 @@ public class MdsMessage extends Object {
 	public static final byte JAVA_CLIENT = (byte) ((byte) 3 | BIG_ENDIAN_MASK | SWAP_ENDIAN_ON_SERVER_MASK);
 	public static final String EVENTASTREQUEST = "---EVENTAST---REQUEST---";
 	public static final String EVENTCANREQUEST = "---EVENTCAN---REQUEST---";
-
 	static byte msgid = 1;
 	int msglen;
 	public int status;
@@ -29,53 +29,56 @@ public class MdsMessage extends Object {
 	public byte descr_idx;
 	public byte message_id;
 	public byte dtype;
-
 	public byte client_type;
 	public byte ndims;
 	public int dims[];
 	public byte body[];
 	protected boolean swap = false;
 	protected boolean compressed = false;
-
 	private Vector<ConnectionListener> connectionListeners = null;
 
-	public MdsMessage() {
+	public MdsMessage()
+	{
 		this((byte) 0, (byte) 0, (byte) 0, null, new byte[1]);
 		status = 1;
 	}
 
-	public MdsMessage(String s) {
+	public MdsMessage(String s)
+	{
 		this(s, null);
 	}
 
-	public MdsMessage(byte c) {
+	public MdsMessage(byte c)
+	{
 		this(c, null);
 	}
 
-	public MdsMessage(String s, Vector<ConnectionListener> v) {
+	public MdsMessage(String s, Vector<ConnectionListener> v)
+	{
 		connectionListeners = v;
 		BuildMdsMessage((byte) 0, Descriptor.DTYPE_CSTRING, (byte) 1, null, s.getBytes());
 	}
 
-	public MdsMessage(byte c, Vector<ConnectionListener> v) {
+	public MdsMessage(byte c, Vector<ConnectionListener> v)
+	{
 		connectionListeners = v;
-		byte buf[] = new byte[1];
+		final byte buf[] = new byte[1];
 		buf[0] = c;
 		BuildMdsMessage((byte) 0, Descriptor.DTYPE_CSTRING, (byte) 1, null, buf);
 	}
 
-	public MdsMessage(byte descr_idx, byte dtype, byte nargs, int dims[], byte body[]) {
+	public MdsMessage(byte descr_idx, byte dtype, byte nargs, int dims[], byte body[])
+	{
 		BuildMdsMessage(descr_idx, dtype, nargs, dims, body);
 	}
 
-	public void BuildMdsMessage(byte descr_idx, byte dtype, byte nargs, int dims[], byte body[]) {
-		int body_size = (body != null ? body.length : 0);
+	public void BuildMdsMessage(byte descr_idx, byte dtype, byte nargs, int dims[], byte body[])
+	{
+		final int body_size = (body != null ? body.length : 0);
 		msglen = HEADER_SIZE + body_size;
 		status = 0;
 		message_id = msgid;
-
 		this.length = Descriptor.getDataSize(dtype, body);
-
 		this.nargs = nargs;
 		this.descr_idx = descr_idx;
 		if (dims != null)
@@ -90,7 +93,8 @@ public class MdsMessage extends Object {
 		this.body = body;
 	}
 
-	public void useCompression(boolean use_cmp) {
+	public void useCompression(boolean use_cmp)
+	{
 		status = (use_cmp ? SUPPORTS_COMPRESSION | 5 : 0);
 	}
 
@@ -98,57 +102,60 @@ public class MdsMessage extends Object {
 //    protected synchronized byte[] ReadCompressedBuf(DataInputStream dis) throws IOException
 	{
 		int bytes_to_read, read_bytes = 0, curr_offset = 0;
-		byte out[], b4[] = new byte[4];
-
+		byte out[];
+		final byte b4[] = new byte[4];
 		ReadBuf(b4, dis);
 		bytes_to_read = ToInt(b4) - HEADER_SIZE;
-
 		out = new byte[bytes_to_read];
-
-		InflaterInputStream zis = new InflaterInputStream(dis);
-		while (bytes_to_read > 0) {
+		final InflaterInputStream zis = new InflaterInputStream(dis);
+		while (bytes_to_read > 0)
+		{
 			read_bytes = zis.read(out, curr_offset, bytes_to_read);
 			curr_offset += read_bytes;
 			bytes_to_read -= read_bytes;
 		}
 		// remove EOF
-		byte pp[] = new byte[1];
-		while (zis.available() == 1) {
+		final byte pp[] = new byte[1];
+		while (zis.available() == 1)
+		{
 			zis.read(pp);
 		}
-
 		return out;
 	}
 
 	// protected /*synchronized */void ReadBuf(byte buf[], DataInputStream dis)
 	// throws IOException
-	protected synchronized void ReadBuf(byte buf[], InputStream dis) throws IOException {
+	protected synchronized void ReadBuf(byte buf[], InputStream dis) throws IOException
+	{
 		ConnectionEvent e;
 		int bytes_to_read = buf.length, read_bytes = 0, curr_offset = 0;
 		boolean send = false;
-		if (bytes_to_read > 2000) {
+		if (bytes_to_read > 2000)
+		{
 			send = true;
 			e = new ConnectionEvent(this, buf.length, curr_offset);
 			dispatchConnectionEvent(e);
 		}
-
-		while (bytes_to_read > 0) {
+		while (bytes_to_read > 0)
+		{
 			read_bytes = dis.read(buf, curr_offset, bytes_to_read);
 			if (read_bytes < 0)
 				throw new IOException("Read Operation Failed");
 			curr_offset += read_bytes;
 			bytes_to_read -= read_bytes;
-			if (send) {
+			if (send)
+			{
 				e = new ConnectionEvent(this, buf.length, curr_offset);
 				dispatchConnectionEvent(e);
 			}
 		}
 	}
 
-	public synchronized void Send(DataOutputStream dos) throws IOException {
+	public synchronized void Send(DataOutputStream dos) throws IOException
+	{
 		dos.writeInt(msglen);
 		dos.writeInt(status);
-		dos.writeShort((int) length);
+		dos.writeShort(length);
 		dos.writeByte(nargs);
 		dos.writeByte(descr_idx);
 		dos.writeByte(message_id);
@@ -159,14 +166,14 @@ public class MdsMessage extends Object {
 			dos.writeInt(dims[i]);
 		dos.write(body, 0, body.length);
 		dos.flush();
-
 		if (descr_idx == (nargs - 1))
 			msgid++;
 		if (msgid == 0)
 			msgid = 1;
 	}
 
-	protected int ByteToIntSwap(byte b[], int idx) {
+	protected int ByteToIntSwap(byte b[], int idx)
+	{
 		int ch1, ch2, ch3, ch4;
 		ch1 = (b[idx + 3] & 0xff) << 24;
 		ch2 = (b[idx + 2] & 0xff) << 16;
@@ -175,7 +182,8 @@ public class MdsMessage extends Object {
 		return ((ch1) + (ch2) + (ch3) + (ch4));
 	}
 
-	protected int ByteToInt(byte b[], int idx) {
+	protected int ByteToInt(byte b[], int idx)
+	{
 		int ch1, ch2, ch3, ch4;
 		ch1 = (b[idx + 0] & 0xff) << 24;
 		ch2 = (b[idx + 1] & 0xff) << 16;
@@ -184,14 +192,16 @@ public class MdsMessage extends Object {
 		return ((ch1) + (ch2) + (ch3) + (ch4));
 	}
 
-	protected short ByteToShortSwap(byte b[], int idx) {
+	protected short ByteToShortSwap(byte b[], int idx)
+	{
 		short ch1, ch2;
 		ch1 = (short) ((b[idx + 1] & 0xff) << 8);
 		ch2 = (short) ((b[idx + 0] & 0xff) << 0);
 		return (short) ((ch1) + (ch2));
 	}
 
-	protected short ByteToShort(byte b[], int idx) {
+	protected short ByteToShort(byte b[], int idx)
+	{
 		short ch1, ch2;
 		ch1 = (short) ((b[idx + 0] & 0xff) << 8);
 		ch2 = (short) ((b[idx + 1] & 0xff) << 0);
@@ -199,40 +209,38 @@ public class MdsMessage extends Object {
 	}
 
 //    public /*synchronized */ void Receive(DataInputStream dis)throws IOException
-	public synchronized void Receive(InputStream dis) throws IOException {
-		byte header_b[] = new byte[16 + Descriptor.MAX_DIM * 4];
+	public synchronized void Receive(InputStream dis) throws IOException
+	{
+		final byte header_b[] = new byte[16 + Descriptor.MAX_DIM * 4];
 		int c_type = 0;
 		int idx = 0;
-
 //        ReadBuf(header_b, dis);
-
 		/*
 		 * if(dis.read(header_b) == -1) throw(new
 		 * IOException("Broken connection with mdsip server"));
 		 */
 //        dis.readFully(header_b);
 //        dis.read(header_b);
-
 		ReadBuf(header_b, dis);
 		c_type = header_b[14];
 		swap = ((c_type & BIG_ENDIAN_MASK) != BIG_ENDIAN_MASK);
 		compressed = ((c_type & COMPRESSED) == COMPRESSED);
-
-		if (swap) {
+		if (swap)
+		{
 			msglen = ByteToIntSwap(header_b, 0);
 			idx = 4;
 			status = ByteToIntSwap(header_b, idx);
 			idx += 4;
 			length = ByteToShortSwap(header_b, idx);
-			;
 			idx += 2;
-		} else {
+		}
+		else
+		{
 			msglen = ByteToInt(header_b, 0);
 			idx = 4;
 			status = ByteToInt(header_b, idx);
 			idx += 4;
 			length = ByteToShort(header_b, idx);
-			;
 			idx += 2;
 		}
 		nargs = header_b[idx++];
@@ -241,36 +249,50 @@ public class MdsMessage extends Object {
 		dtype = header_b[idx++];
 		c_type = header_b[idx++];
 		ndims = header_b[idx++];
-		if (swap) {
-			for (int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4) {
+		if (swap)
+		{
+			for (int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
+			{
 				dims[i] = ByteToIntSwap(header_b, j);
 			}
-		} else {
-			for (int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4) {
+		}
+		else
+		{
+			for (int i = 0, j = idx; i < Descriptor.MAX_DIM; i++, j += 4)
+			{
 				dims[i] = ByteToInt(header_b, j);
 			}
 		}
-
-		if (msglen > HEADER_SIZE) {
-			if (compressed) {
+		if (msglen > HEADER_SIZE)
+		{
+			if (compressed)
+			{
 				body = ReadCompressedBuf(dis);
-			} else {
+			}
+			else
+			{
 				body = new byte[msglen - HEADER_SIZE];
 				ReadBuf(body, dis);
 			}
-		} else
+		}
+		else
 			body = new byte[0];
 	}
 
-	protected void Flip(byte bytes[], int size) {
+	protected void Flip(byte bytes[], int size)
+	{
 		int i;
 		byte b;
-		for (i = 0; i < bytes.length; i += size) {
-			if (size == 2) {
+		for (i = 0; i < bytes.length; i += size)
+		{
+			if (size == 2)
+			{
 				b = bytes[i];
 				bytes[i] = bytes[i + 1];
 				bytes[i + 1] = b;
-			} else if (size == 4) {
+			}
+			else if (size == 4)
+			{
 				b = bytes[i];
 				bytes[i] = bytes[i + 3];
 				bytes[i + 3] = b;
@@ -281,93 +303,109 @@ public class MdsMessage extends Object {
 		}
 	}
 
-	protected int ToInt(byte bytes[]) throws IOException {
+	protected int ToInt(byte bytes[]) throws IOException
+	{
 		if (swap)
 			Flip(bytes, 4);
-		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bis);
+		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bis);
 		return dis.readInt();
 	}
 
-	protected short ToShort(byte bytes[]) throws IOException {
+	protected short ToShort(byte bytes[]) throws IOException
+	{
 		if (swap)
 			Flip(bytes, 2);
-		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bis);
+		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bis);
 		return dis.readShort();
 	}
 
-	protected float ToFloat(byte bytes[]) throws IOException {
+	protected float ToFloat(byte bytes[]) throws IOException
+	{
 		if (swap)
 			Flip(bytes, 4);
-		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-		DataInputStream dis = new DataInputStream(bis);
+		final ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		final DataInputStream dis = new DataInputStream(bis);
 		return dis.readFloat();
 	}
 
-	private ByteBuffer getWrappedBody() {
+	private ByteBuffer getWrappedBody()
+	{
 		return ByteBuffer.wrap(body).order(swap ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
 //       return ByteBuffer.wrap(body).order(swap ? ByteOrder.BIG_ENDIAN : ByteOrder.LITTLE_ENDIAN);
 	}
 
-	public long[] ToLongArray() throws IOException {
-		long out[] = new long[body.length / 8];
+	public long[] ToLongArray() throws IOException
+	{
+		final long out[] = new long[body.length / 8];
 		getWrappedBody().asLongBuffer().get(out);
 		return out;
 	}
 
-	public int[] ToIntArray() throws IOException {
-		int out[] = new int[body.length / 4];
+	public int[] ToIntArray() throws IOException
+	{
+		final int out[] = new int[body.length / 4];
 		getWrappedBody().asIntBuffer().get(out);
 		return out;
 	}
 
-	public long[] ToUIntArray() throws IOException {
-		int[] signed = ToIntArray();
-		long[] unsigned = new long[signed.length];
+	public long[] ToUIntArray() throws IOException
+	{
+		final int[] signed = ToIntArray();
+		final long[] unsigned = new long[signed.length];
 		for (int i = 0; i < signed.length; i++)
-			unsigned[i] = ((long) signed[i]) & 0xffffffffL;
+			unsigned[i] = (signed[i]) & 0xffffffffL;
 		return unsigned;
 	}
 
-	public short[] ToShortArray() throws IOException {
-		short out[] = new short[body.length / 2];
+	public short[] ToShortArray() throws IOException
+	{
+		final short out[] = new short[body.length / 2];
 		getWrappedBody().asShortBuffer().get(out);
 		return out;
 	}
 
-	public int[] ToUShortArray() throws IOException {
-		short[] shorts = ToShortArray();
-		int[] unsigned = new int[shorts.length];
+	public int[] ToUShortArray() throws IOException
+	{
+		final short[] shorts = ToShortArray();
+		final int[] unsigned = new int[shorts.length];
 		for (int i = 0; i < shorts.length; i++)
 			unsigned[i] = shorts[i] & 0xffff;
 		return unsigned;
 	}
 
-	public float[] ToFloatArray() throws IOException {
-		float out[] = new float[body.length / 4];
+	public float[] ToFloatArray() throws IOException
+	{
+		final float out[] = new float[body.length / 4];
 		getWrappedBody().asFloatBuffer().get(out);
 		return out;
 	}
 
-	public double[] ToDoubleArray() throws IOException {
-		double out[] = new double[body.length / 8];
+	public double[] ToDoubleArray() throws IOException
+	{
+		final double out[] = new double[body.length / 8];
 		getWrappedBody().asDoubleBuffer().get(out);
 		return out;
 	}
 
-	public String ToString() {
+	public String ToString()
+	{
 		return new String(body);
 	}
 
-	protected final boolean IsRoprand(byte arr[], int idx) {
+	protected final boolean IsRoprand(byte arr[], int idx)
+	{
 		return (arr[idx] == 0 && arr[idx + 1] == 0 && arr[idx + 2] == -128 && arr[idx + 3] == 0);
 	}
 
-	synchronized protected void dispatchConnectionEvent(ConnectionEvent e) {
-		if (connectionListeners != null) {
-			for (int i = 0; i < connectionListeners.size(); i++) {
-				((ConnectionListener) connectionListeners.elementAt(i)).processConnectionEvent(e);
+	synchronized protected void dispatchConnectionEvent(ConnectionEvent e)
+	{
+		if (connectionListeners != null)
+		{
+			for (int i = 0; i < connectionListeners.size(); i++)
+			{
+				connectionListeners.elementAt(i).processConnectionEvent(e);
 			}
 		}
 	}

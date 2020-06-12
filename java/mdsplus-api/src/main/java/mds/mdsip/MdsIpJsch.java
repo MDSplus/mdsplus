@@ -268,7 +268,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 			{
 				e.printStackTrace();
 			}
-		return OpenSSHConfig.nullConfig;
+		return ConfigRepository.nullConfig;
 	}
 
 	static

@@ -6,18 +6,22 @@ import mds.data.CTX;
 import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Range;
 
-public class RangeEditor extends Editor{
+public class RangeEditor extends Editor
+{
 	private static final long serialVersionUID = 1L;
 
-	public RangeEditor(final boolean editable, final CTX ctx){
+	public RangeEditor(final boolean editable, final CTX ctx)
+	{
 		this(null, editable, ctx);
 	}
 
-	public RangeEditor(final CTX ctx){
+	public RangeEditor(final CTX ctx)
+	{
 		this(null, true, ctx);
 	}
 
-	public RangeEditor(final Range data, final boolean editable, final CTX ctx){
+	public RangeEditor(final Range data, final boolean editable, final CTX ctx)
+	{
 		super(data, editable, ctx, 3);
 		this.setLayout(new GridLayout(3, 1, 0, 0));
 		this.add(this.edit[0] = Editor.addLabel("Start", new ExprEditor(editable, ctx, false, false)));
@@ -26,12 +30,12 @@ public class RangeEditor extends Editor{
 	}
 
 	@Override
-	public final Range getData() throws MdsException {
-		return new Range(this.edit[0].getData(), this.edit[1].getData(), this.edit[2].getData());
-	}
+	public final Range getData() throws MdsException
+	{ return new Range(this.edit[0].getData(), this.edit[1].getData(), this.edit[2].getData()); }
 
 	@Override
-	public final void setData(final Descriptor<?> data) {
+	public final void setData(final Descriptor<?> data)
+	{
 		this.data = data;
 		this.setDescR();
 	}

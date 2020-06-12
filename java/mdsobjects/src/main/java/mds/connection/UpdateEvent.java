@@ -7,12 +7,13 @@ package mds.connection;
  *
  * @see UpdateEventListener
  */
-public class UpdateEvent extends java.awt.AWTEvent {
+public class UpdateEvent extends java.awt.AWTEvent
+{
 	private static final long serialVersionUID = 1L;
-
 	String name;
 
-	public UpdateEvent(final Object source, final String event) {
+	public UpdateEvent(final Object source, final String event)
+	{
 		super(source, 0);
 		name = event;
 	}
@@ -20,7 +21,6 @@ public class UpdateEvent extends java.awt.AWTEvent {
 	/**
 	 * The name of the event just received.
 	 */
-	public String getName() {
-		return name;
-	}
+	public String getName()
+	{ return name; }
 }

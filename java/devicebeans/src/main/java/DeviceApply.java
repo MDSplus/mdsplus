@@ -1,17 +1,25 @@
 public class DeviceApply extends DeviceControl
 {
-    public DeviceApply()
-    {
-	setText("Apply");
-    }
-    void setReadOnly(boolean readOnly)
-    {
-	   setEnabled(!readOnly);
-    }
-    protected void doOperation(DeviceSetup deviceSetup)
-    {
-	if(check())
-	    deviceSetup.apply();
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
+	public DeviceApply()
+	{
+		setText("Apply");
+	}
+
+	@Override
+	void setReadOnly(boolean readOnly)
+	{
+		setEnabled(!readOnly);
+	}
+
+	@Override
+	protected void doOperation(DeviceSetup deviceSetup)
+	{
+		if (check())
+			deviceSetup.apply();
+	}
 }

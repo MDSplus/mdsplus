@@ -30,7 +30,7 @@ public final class SshTunneling implements AutoCloseable
 			{
 				e.printStackTrace();
 			}
-		return OpenSSHConfig.nullConfig;
+		return ConfigRepository.nullConfig;
 	}
 
 	static

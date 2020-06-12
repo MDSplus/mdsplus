@@ -9,22 +9,27 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor_r.Program;
 
 @SuppressWarnings("deprecation")
-public final class ProgramEditor extends Editor{
+public final class ProgramEditor extends Editor
+{
 	private static final long serialVersionUID = 1L;
 
-	public static final boolean checkData(final Descriptor<?> data) {
+	public static final boolean checkData(final Descriptor<?> data)
+	{
 		return data instanceof Program;
 	}
 
-	public ProgramEditor(final boolean editable, final CTX ctx){
+	public ProgramEditor(final boolean editable, final CTX ctx)
+	{
 		this(null, editable, ctx);
 	}
 
-	public ProgramEditor(final CTX ctx){
+	public ProgramEditor(final CTX ctx)
+	{
 		this(null, true, ctx);
 	}
 
-	public ProgramEditor(final Program data, final boolean editable, final CTX ctx){
+	public ProgramEditor(final Program data, final boolean editable, final CTX ctx)
+	{
 		super(data, editable, ctx, 2);
 		final JPanel jp = new JPanel();
 		jp.setLayout(new GridLayout(2, 1));
@@ -35,12 +40,12 @@ public final class ProgramEditor extends Editor{
 	}
 
 	@Override
-	public final Descriptor<?> getData() throws MdsException {
-		return new Program(this.edit[0].getData(), this.edit[1].getData());
-	}
+	public final Descriptor<?> getData() throws MdsException
+	{ return new Program(this.edit[0].getData(), this.edit[1].getData()); }
 
 	@Override
-	public final void setData(final Descriptor<?> data) {
+	public final void setData(final Descriptor<?> data)
+	{
 		this.data = data;
 		this.setDescR();
 	}

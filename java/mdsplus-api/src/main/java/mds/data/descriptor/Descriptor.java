@@ -223,7 +223,7 @@ public abstract class Descriptor<T>
 		if (obj instanceof String)
 			return new StringDsc((String) obj);
 		if (obj instanceof Number)
-			return NUMBER.NEW(obj);
+			return Descriptor.NEW(obj);
 		throw new MdsException("Conversion form " + obj.getClass().getName() + " not yet implemented.");
 	}
 
@@ -262,7 +262,7 @@ public abstract class Descriptor<T>
 
 	public static final NUMBER<? extends Number> valueOf(final Number value)
 	{
-		return NUMBER.valueOf(value, true);
+		return Descriptor.valueOf(value, true);
 	}
 
 	public static final NUMBER<? extends Number> valueOf(final Number value, final boolean signed)

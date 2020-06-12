@@ -19,7 +19,7 @@ public interface WaveData
 	 * format for handling absolute or relative times, respectively). DataProvider
 	 * implementations that do not handle dynamic data display will implement this
 	 * method as void.
-	 * 
+	 *
 	 * @param listener: The passed WaveDataListener instance.
 	 * @see WaveDataListener
 	 */

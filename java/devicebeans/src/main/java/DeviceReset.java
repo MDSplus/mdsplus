@@ -1,11 +1,18 @@
 public class DeviceReset extends DeviceControl
 {
-    public DeviceReset()
-    {
-	setText("Reset");
-    }
-    protected void doOperation(DeviceSetup deviceSetup)
-    {
-	deviceSetup.reset();
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public DeviceReset()
+	{
+		setText("Reset");
+	}
+
+	@Override
+	protected void doOperation(DeviceSetup deviceSetup)
+	{
+		deviceSetup.reset();
+	}
 }

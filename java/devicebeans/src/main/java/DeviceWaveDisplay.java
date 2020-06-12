@@ -4,64 +4,79 @@ import mds.wave.*;
 
 public class DeviceWaveDisplay extends DeviceComponent
 {
-    protected Waveform wave;
-    protected String oldData;
-    float x[] = null,y[] = null;
-    protected int prefHeight = 200;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Waveform wave;
+	protected String oldData;
+	float x[] = null, y[] = null;
+	protected int prefHeight = 200;
 
-    public void setPrefHeight(int prefHeight)
-    {
-	this.prefHeight = prefHeight;
-    }
+	public void setPrefHeight(int prefHeight)
+	{ this.prefHeight = prefHeight; }
 
-    public int getPrefHeight(){return prefHeight;}
-    public DeviceWaveDisplay()
-    {}
+	public int getPrefHeight()
+	{ return prefHeight; }
 
+	public DeviceWaveDisplay()
+	{}
 
-    protected void initializeData(String data, boolean is_on)
-    {
-	oldData = data;
-	setLayout(new BorderLayout());
-	wave = new Waveform();
-	wave.setPreferredSize(new Dimension(300, 200));
-	add(wave, "Center");
-	displayData(data, is_on);
-    }
+	@Override
+	protected void initializeData(String data, boolean is_on)
+	{
+		oldData = data;
+		setLayout(new BorderLayout());
+		wave = new Waveform();
+		wave.setPreferredSize(new Dimension(300, 200));
+		add(wave, "Center");
+		displayData(data, is_on);
+	}
 
+	@Override
+	protected void displayData(String data, boolean is_on)
+	{
+		try
+		{
+			final String xData = "DIM_OF(" + data + ")";
+			final String yData = data;
+			x = subtree.getFloatArray(xData);
+			y = subtree.getFloatArray(yData);
+			wave.Update(x, y);
+		}
+		catch (final Exception exc)
+		{}
+	}
 
-    protected void displayData(String data, boolean is_on)
-    {
-	try {
-	    String xData = "DIM_OF(" + data + ")";
-	    String yData = data;
-	    x = subtree.getFloatArray(xData);
-	    y = subtree.getFloatArray(yData);
-	    wave.Update(x, y);
-	}catch(Exception exc){}
-    }
+	@Override
+	protected String getData()
+	{ return oldData; }
 
-     protected String getData()
-    {
-	return oldData;
-    }
+	@Override
+	protected boolean getState()
+	{ return true; }
 
-    protected boolean getState(){return true;}
-    public void setEnabled(boolean state) {}
-    public boolean isDataChanged() {return false;}
+	@Override
+	public void setEnabled(boolean state)
+	{}
 
-    void postApply()
-    {
-	displayData(oldData, true);
-    }
+	@Override
+	public boolean isDataChanged()
+	{ return false; }
 
-    public void reset()
-    {
-    }
+	@Override
+	void postApply()
+	{
+		displayData(oldData, true);
+	}
 
-    public void print(Graphics g)
-    {
-	wave.paintComponent(g);
-    }
+	@Override
+	public void reset()
+	{}
+
+	@Override
+	public void print(Graphics g)
+	{
+		wave.paintComponent(g);
+	}
 }
-

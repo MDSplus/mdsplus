@@ -1,30 +1,77 @@
+
 //package jTraverser;
 import java.beans.*;
 import java.awt.*;
 
-public abstract class NodeDataPropertyEditor implements PropertyEditor {
-    protected MDSplus.Data data;
+public abstract class NodeDataPropertyEditor implements PropertyEditor
+{
+	protected MDSplus.Data data;
 
-    public void setValue(Object o){data = (MDSplus.Data)o;}
-    public Object getValue() {return data;}
-    public void setAsText(String s)
-    {
-	try {
-	    data = Tree.dataFromExpr(s);
-	    } catch (Exception e) {data = null; }
-    }
-    public String getAsText() {
-	try {
-	    return ""+data;
-	    } catch (Exception e) {return null; }
-    }
-    public String []getTags() {return null;}
-    public boolean  supportsCustomEditor() {return true;}
-    public abstract Component getCustomEditor(); //to be subclassed
-    public boolean isPaintable() {return false; }
-    public void paintValue(Graphics g, Rectangle r){}
-    public String getJavaInitializationString() {return null; }
-    // event notification not used here
-    public void addPropertyChangeListener(PropertyChangeListener l){}
-    public void removePropertyChangeListener(PropertyChangeListener l){}
+	@Override
+	public void setValue(Object o)
+	{ data = (MDSplus.Data) o; }
+
+	@Override
+	public Object getValue()
+	{ return data; }
+
+	@Override
+	public void setAsText(String s)
+	{
+		try
+		{
+			data = Tree.dataFromExpr(s);
+		}
+		catch (final Exception e)
+		{
+			data = null;
+		}
+	}
+
+	@Override
+	public String getAsText()
+	{
+		try
+		{
+			return "" + data;
+		}
+		catch (final Exception e)
+		{
+			return null;
+		}
+	}
+
+	@Override
+	public String[] getTags()
+	{ return null; }
+
+	@Override
+	public boolean supportsCustomEditor()
+	{
+		return true;
+	}
+
+	@Override
+	public abstract Component getCustomEditor(); // to be subclassed
+
+	@Override
+	public boolean isPaintable()
+	{ return false; }
+
+	@Override
+	public void paintValue(Graphics g, Rectangle r)
+	{}
+
+	@Override
+	public String getJavaInitializationString()
+	{ return null; }
+
+	// event notification not used here
+	@Override
+	public void addPropertyChangeListener(PropertyChangeListener l)
+	{}
+
+	@Override
+	public void removePropertyChangeListener(PropertyChangeListener l)
+	{}
 }

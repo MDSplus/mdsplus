@@ -1,18 +1,26 @@
 public class DeviceOk extends DeviceControl
 {
-    public DeviceOk()
-    {
-	setText("Ok");
-    }
-    void setReadOnly(boolean readOnly)
-    {
-	   setEnabled(!readOnly);
-    }
-    protected void doOperation(DeviceSetup deviceSetup)
-    {
-	check();
-	deviceSetup.apply();
-	deviceSetup.cancel();
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 
+	public DeviceOk()
+	{
+		setText("Ok");
+	}
+
+	@Override
+	void setReadOnly(boolean readOnly)
+	{
+		setEnabled(!readOnly);
+	}
+
+	@Override
+	protected void doOperation(DeviceSetup deviceSetup)
+	{
+		check();
+		deviceSetup.apply();
+		deviceSetup.cancel();
+	}
 }

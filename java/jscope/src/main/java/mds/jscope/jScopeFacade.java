@@ -10,8 +10,7 @@ import java.net.URL;
 import java.util.*;
 
 import javax.print.*;
-import javax.print.attribute.HashPrintRequestAttributeSet;
-import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.*;
 import javax.print.attribute.standard.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -472,11 +471,11 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		printersServices = PrintServiceLookup.lookupPrintServices(null, null);
 		printerSelection = PrintServiceLookup.lookupDefaultPrintService();
 		attrs = new HashPrintRequestAttributeSet();
-		final PrinterResolution res = new PrinterResolution(600, 600, PrinterResolution.DPI);
+		final PrinterResolution res = new PrinterResolution(600, 600, ResolutionSyntax.DPI);
 		attrs.add(MediaSizeName.ISO_A4);
 		attrs.add(OrientationRequested.LANDSCAPE);
-		attrs.add(new MediaPrintableArea(5, 5, MediaSize.ISO.A4.getX(MediaSize.MM) - 5,
-				MediaSize.ISO.A4.getY(MediaSize.MM) - 5, MediaPrintableArea.MM));
+		attrs.add(new MediaPrintableArea(5, 5, MediaSize.ISO.A4.getX(Size2DSyntax.MM) - 5,
+				MediaSize.ISO.A4.getY(Size2DSyntax.MM) - 5, MediaPrintableArea.MM));
 		attrs.add(res);
 		if (printerSelection != null)
 			prnJob = printerSelection.createPrintJob();
@@ -916,9 +915,9 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		panel.add(pan);
 		panel.add(copy);
 		panel.add(shot_l);
-		panel.add(decShot = new BasicArrowButton(BasicArrowButton.WEST));
+		panel.add(decShot = new BasicArrowButton(SwingConstants.WEST));
 		panel.add(shot_t);
-		panel.add(incShot = new BasicArrowButton(BasicArrowButton.EAST));
+		panel.add(incShot = new BasicArrowButton(SwingConstants.EAST));
 		decShot.addActionListener(new ActionListener()
 		{
 			@Override
@@ -1895,7 +1894,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			SetStatusLabel("Disable event update");
 			return false;
 		}
-		if (getExtendedState() == JFrame.ICONIFIED && update_when_icon_i.getState())
+		if (getExtendedState() == Frame.ICONIFIED && update_when_icon_i.getState())
 		{
 			this.SetStatusLabel("Event update is disabled when iconified");
 			return false;
@@ -2624,7 +2623,7 @@ class WindowDialog extends JDialog implements ActionListener
 		final JPanel p = new JPanel();
 		p.setLayout(new FlowLayout(FlowLayout.LEFT));
 		c.gridwidth = GridBagConstraints.BOTH;
-		row_1 = new JSlider(JSlider.VERTICAL, 1, 16, 1);
+		row_1 = new JSlider(SwingConstants.VERTICAL, 1, 16, 1);
 		// row_1.setMajorTickSpacing(4);
 		row_1.setMinorTickSpacing(1);
 		row_1.setPaintTicks(true);
@@ -2637,19 +2636,19 @@ class WindowDialog extends JDialog implements ActionListener
 		labelTable.put(Integer.valueOf(16), new JLabel("16"));
 		row_1.setLabelTable(labelTable);
 		row_1.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
-		row_2 = new JSlider(JSlider.VERTICAL, 0, 16, 0);
+		row_2 = new JSlider(SwingConstants.VERTICAL, 0, 16, 0);
 		row_2.setMajorTickSpacing(4);
 		row_2.setMinorTickSpacing(1);
 		row_2.setPaintTicks(true);
 		row_2.setPaintLabels(true);
 		row_2.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
-		row_3 = new JSlider(JSlider.VERTICAL, 0, 16, 0);
+		row_3 = new JSlider(SwingConstants.VERTICAL, 0, 16, 0);
 		row_3.setMajorTickSpacing(4);
 		row_3.setMinorTickSpacing(1);
 		row_3.setPaintTicks(true);
 		row_3.setPaintLabels(true);
 		row_3.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 20));
-		row_4 = new JSlider(JSlider.VERTICAL, 0, 16, 0);
+		row_4 = new JSlider(SwingConstants.VERTICAL, 0, 16, 0);
 		row_4.setMajorTickSpacing(4);
 		row_4.setMinorTickSpacing(1);
 		row_4.setPaintTicks(true);

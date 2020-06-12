@@ -207,7 +207,7 @@ public interface DataProvider extends AutoCloseable
 
 	/**
 	 * Can be used to check if provider is busy (helps scheduling).
-	 * 
+	 *
 	 * @return true is busy.
 	 */
 	public boolean isBusy();
