@@ -31,10 +31,9 @@ public class jScopeBrowseUrl extends JDialog
 	JButton forward;
 	JButton home;
 	int curr_url = 0;
-
 	JPanel p;
-
 	boolean connected = false;
+
 	public jScopeBrowseUrl(JFrame owner)
 	{
 		super(owner);

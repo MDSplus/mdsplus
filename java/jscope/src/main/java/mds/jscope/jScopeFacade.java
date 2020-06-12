@@ -373,6 +373,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	public static final String VERSION;
 	private static jScopeFacade win;
 	static String windowsClassName = "com.sun.java.swing.plaf.windows.WindowsLookAndFeel";
+	private static final JWindow splashScreen = new JWindow();
 	static
 	{ // handle case jScope vs.jscope
 		String profile = System.getProperty("user.home") + File.separator + "jscope";
@@ -552,7 +553,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		win.startScope(file);
 	}
 
-	JWindow aboutScreen;
 	/** Menu item on menu autoscale_m */
 	private JMenuItem all_i, allY_i;
 	private JButton apply_b;
@@ -616,18 +616,29 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	public jScopeFacade(int spos_x, int spos_y, String propFile)
 	{
 		this.propertiesFile = propFile == null ? JSCOPE_PROPERTIES : propFile;
-		if (num_scope == 0)
+		if (num_scope == 0 && splashScreen.getContentPane().getComponentCount() == 0)
 		{
-			createAboutScreen();
-			// do the following on the gui thread
-			SwingUtilities.invokeLater(new Runnable()
+			try
 			{
-				@Override
-				public void run()
+				splashScreen.addMouseListener(new MouseAdapter()
 				{
-					showAboutScreen();
-				}
-			});
+					@Override
+					public void mouseClicked(MouseEvent e)
+					{
+						splashScreen.dispose();
+					}
+				});
+				splashScreen.getContentPane().add(new SplashScreen());
+				splashScreen.pack();
+				final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+				splashScreen.setLocation(screenSize.width / 2 - splashScreen.getSize().width / 2,
+						screenSize.height / 2 - splashScreen.getSize().height / 2);
+				splashScreen.setVisible(true);
+			}
+			catch (final Exception exc)
+			{
+				exc.printStackTrace();
+			}
 		}
 		jScopeCreate(spos_x, spos_y);
 	}
@@ -983,28 +994,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		f.renameTo(fr);
 	}
 
-	/**
-	 * Show the spash screen while the rest of the demo loads
-	 */
-	public void createAboutScreen()
-	{
-		final JLabel aboutLabel = new AboutWindow();
-		aboutScreen = new JWindow();
-		aboutScreen.addMouseListener(new MouseAdapter()
-		{
-			@Override
-			public void mouseClicked(MouseEvent e)
-			{
-				hideAbout();
-			}
-		});
-		aboutScreen.getContentPane().add(aboutLabel);
-		aboutScreen.pack();
-		final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-		aboutScreen.setLocation(screenSize.width / 2 - aboutScreen.getSize().width / 2,
-				screenSize.height / 2 - aboutScreen.getSize().height / 2);
-	}
-
 	public boolean equalsString(String s1, String s2)
 	{
 		boolean res = false;
@@ -1200,16 +1189,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			if (element.equals(server))
 				return element;
 		return null;
-	}
-
-	/**
-	 * pop down the spash screen
-	 */
-	public void hideAbout()
-	{
-		aboutScreen.setVisible(false);
-		aboutScreen.dispose();
-		aboutScreen = null;
 	}
 
 	private void InitDataServer()
@@ -2473,11 +2452,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			setTitle("- Scope - " + f_name + (IsChange() ? " (changed)" : "") + " " + info);
 	}
 
-	public void showAboutScreen()
-	{
-		aboutScreen.setVisible(true);
-	}
-
 	public void startScope(String file)
 	{
 		if (file != null)
@@ -2593,8 +2567,7 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 	@Override
 	public void windowOpened(WindowEvent e)
 	{
-		if (this.aboutScreen != null)
-			hideAbout();
+		splashScreen.dispose();
 	}
 }
 
