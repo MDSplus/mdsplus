@@ -121,7 +121,7 @@ public abstract class CheckBoxList extends JDialog
 	protected static final String PROP_NID = "nid";
 	protected static final String PROP_OLD = "old";
 	protected final JButton discard_b = new JButton("Discard");
-	protected final DefaultListModel<JCheckBox> checkboxes = new DefaultListModel<JCheckBox>();
+	protected final DefaultListModel<JCheckBox> checkboxes = new DefaultListModel<>();
 	protected final JCheckList checklist = new JCheckList(this.checkboxes);
 	protected final TreeManager treeman;
 	protected final TreeView treeview;

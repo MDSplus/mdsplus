@@ -86,7 +86,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				actions = phase_failed.get(new Integer(curr_phase));
 			else
 			{
-				actions = new Hashtable<Integer, MdsMonitorEvent>();
+				actions = new Hashtable<>();
 				phase_failed.put(new Integer(curr_phase), actions);
 			}
 			if (actions == null)
@@ -187,8 +187,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	public class ShotsPerformance
 	{
 		PrintStream log;
-		Vector<String> labelText = new Vector<String>();
-		Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<Long, Vector<String>>();
+		Vector<String> labelText = new Vector<>();
+		Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<>();
 		Vector<String> phaseDuration;
 
 		public ShotsPerformance()
@@ -205,7 +205,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				labelText.add(phase);
 			if (!shotsInfo.containsKey(key))
 			{
-				phaseDuration = new Vector<String>();
+				phaseDuration = new Vector<>();
 				shotsInfo.put(key, phaseDuration);
 			}
 			else
@@ -548,7 +548,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	}
 
 	ServersInfoPanel serversInfoPanel = null;
-	Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
+	Hashtable<String, ServerInfo> serversInfo = new Hashtable<>();
 	ShotsPerformance shotsPerformance = new ShotsPerformance();
 	private String experiment;
 	// private final static Font done_failed_font = new Font("Platino Linotype",
@@ -573,13 +573,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	private String monitor_server;
 	private JInternalFrame build, executing, failed;
 	private JList<MdsMonitorEvent> buildList, executingList, failedList;
-	private final DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<MdsMonitorEvent>();
-	private final DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<MdsMonitorEvent>();
-	private final DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<MdsMonitorEvent>();
+	private final DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<>();
+	private final DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<>();
+	private final DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<>();
 	private int num_window = 0;
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<>();
 	private ErrorMgr error_mgr;
 	private int info_port;
 	private Process dispatcher_proc;
@@ -814,7 +814,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				positionWindow();
 			}
 		};
-		buildList = new JList<MdsMonitorEvent>(build_list);
+		buildList = new JList<>(build_list);
 		buildList.setCellRenderer(new BuildCellRenderer());
 		final JScrollPane sp_build = new JScrollPane();
 		sp_build.getViewport().setView(buildList);
@@ -1092,7 +1092,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			 * executing_list.removeAllElements(); phase_l.setText("Phase: "+phase_st);
 			 * curr_phase = show_phase = me.phase;
 			 */
-			actions = new Hashtable<Integer, MdsMonitorEvent>();
+			actions = new Hashtable<>();
 			phase_hash.put(new Integer(me.phase), actions);
 			idx = 0;
 		}
@@ -1170,7 +1170,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				else
 					mds_server.shutdown();
 			}
-			final JComboBox<?> cb = new JComboBox<Object>();
+			final JComboBox<?> cb = new JComboBox<>();
 			cb.setEditable(true);
 			monitor_server = (String) JOptionPane.showInputDialog(null, "Dispatch monitor server ip:port address",
 					"Connection", JOptionPane.QUESTION_MESSAGE, null, null, monitor_server);

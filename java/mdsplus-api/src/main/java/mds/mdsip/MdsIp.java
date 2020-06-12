@@ -578,11 +578,11 @@ public class MdsIp extends Mds
 		IntStream.range(0, req.args.length).forEach((i) ->
 		{ sb.append(",($;)"); });
 		sb.append("),__$sw(`_$c_=__$sw(($;))))");
-		final Vector<Descriptor<?>> vec = new Vector<Descriptor<?>>();
+		final Vector<Descriptor<?>> vec = new Vector<>();
 		vec.add(Descriptor.valueOf(req.expr));
 		vec.addAll(Arrays.asList(req.args));
 		vec.add(ctx.getDbid());
-		final Request<List> nreq = new Request<List>(List.class, sb.toString(), vec.toArray(req.args));
+		final Request<List> nreq = new Request<>(List.class, sb.toString(), vec.toArray(req.args));
 		if (DEBUG.N)
 			System.err.println(">>> " + nreq);
 		long tictoc;
@@ -596,7 +596,7 @@ public class MdsIp extends Mds
 		{
 			if (DEBUG.N)
 				System.err.println("<<< Exc: " + msg.toString());
-			final Message ans = this.getMessage(new Request<Pointer>(Pointer.class, "__$sw(_$c_)"), false);
+			final Message ans = this.getMessage(new Request<>(Pointer.class, "__$sw(_$c_)"), false);
 			ctx.getDbid().setAddress(ans.getBody());
 			throw new MdsException(msg.toString());
 		}
@@ -713,7 +713,7 @@ public class MdsIp extends Mds
 	@Override
 	public final void execute(final String expr, final Descriptor<?>... args) throws MdsException
 	{
-		this.getMessage(new Request<Int32>(Int32.class, expr + ";1", args), false);
+		this.getMessage(new Request<>(Int32.class, expr + ";1", args), false);
 	}
 
 	@Override

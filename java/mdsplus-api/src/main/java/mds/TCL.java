@@ -47,7 +47,7 @@ public final class TCL
 		}
 	}
 
-	final static Vector<String> hist = new Vector<String>();
+	final static Vector<String> hist = new Vector<>();
 
 	public final static JPanel getComponent(final Mds mds)
 	{

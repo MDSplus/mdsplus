@@ -38,7 +38,7 @@ public class EnumEditor extends Editor
 		this.mode = mode;
 		this.items = items;
 		this.setLayout(new BorderLayout());
-		this.combo = new JComboBox<String>();
+		this.combo = new JComboBox<>();
 		this.combo.setEditable(editable);
 		this.defaultbg = this.combo.getBackground();
 		this.defaultfg = this.combo.getForeground();

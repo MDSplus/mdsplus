@@ -486,8 +486,8 @@ public class DeviceWave extends DeviceComponent
 													&& st.nextToken().equalsIgnoreCase("xc"))))
 									{
 										int i = 0;
-										final Vector<Float> vectX = new Vector<Float>();
-										final Vector<Float> vectY = new Vector<Float>();
+										final Vector<Float> vectX = new Vector<>();
+										final Vector<Float> vectY = new Vector<>();
 										float fv1, fv2;
 										// numPoint = st.countTokens();
 										// savedWaveY = new float[numPoint];
@@ -565,8 +565,8 @@ public class DeviceWave extends DeviceComponent
 						maxX = savedMaxX;
 					if (maxYVisible && setMaxY)
 						maxY = savedMaxY;
-					final Vector<Float> vectX = new Vector<Float>();
-					final Vector<Float> vectY = new Vector<Float>();
+					final Vector<Float> vectX = new Vector<>();
+					final Vector<Float> vectY = new Vector<>();
 					final String warningMessage = "";
 					float valX;
 					float valY;

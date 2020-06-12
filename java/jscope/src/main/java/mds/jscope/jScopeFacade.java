@@ -2800,7 +2800,7 @@ class ServerDialog extends JDialog implements ActionListener
 		gridbag.setConstraints(p, c);
 		getContentPane().add(p);
 		// add Provider Names
-		final ArrayList<String> names = new ArrayList<String>(DataServerItem.knownProviders.size());
+		final ArrayList<String> names = new ArrayList<>(DataServerItem.knownProviders.size());
 		DataServerItem.knownProviders.forEach((e) ->
 		{ names.add(e.getSimpleName()); });
 		names.sort(Comparator.comparing(String::toString));

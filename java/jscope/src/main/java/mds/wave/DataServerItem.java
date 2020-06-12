@@ -109,7 +109,7 @@ public class DataServerItem
 
 	public static final Set<Class<?>> getClasses(String packageName, Class<?> type)
 	{
-		final Set<Class<?>> classes = new HashSet<Class<?>>();
+		final Set<Class<?>> classes = new HashSet<>();
 		try
 		{
 			final ClassLoader classLoader = Thread.currentThread().getContextClassLoader();

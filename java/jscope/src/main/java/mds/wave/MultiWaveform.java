@@ -28,7 +28,7 @@ public class MultiWaveform extends Waveform
 	public static final int LEGEND_IN_GRAPHICS = 0;
 	public static final int LEGEND_BOTTOM = 1;
 	public static final int LEGEND_RIGHT = 2;
-	protected Vector<Signal> signals = new Vector<Signal>();
+	protected Vector<Signal> signals = new Vector<>();
 	protected Vector<Signal> orig_signals = null;
 	protected double orig_xmin, orig_xmax;
 	protected int curr_point_sig_idx = -1;

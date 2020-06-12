@@ -20,9 +20,9 @@ class ActionServer implements Server, MdsServerListener, ConnectionListener
 		}
 	}
 
-	private final Queue<Action> enqueued_actions = new LinkedList<Action>();
-	private final Hashtable<Integer, Action> doing_actions = new Hashtable<Integer, Action>();
-	private final Vector<ServerListener> server_listeners = new Vector<ServerListener>();
+	private final Queue<Action> enqueued_actions = new LinkedList<>();
+	private final Hashtable<Integer, Action> doing_actions = new Hashtable<>();
+	private final Vector<ServerListener> server_listeners = new Vector<>();
 	private MdsServer mds_server = null;
 	private String tree;
 	private final String server_class;

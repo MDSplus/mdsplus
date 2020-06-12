@@ -214,7 +214,7 @@ public class DecompileTree
 					catch (final MdsException exc)
 					{/**/}
 				// Handle Possible non-device subtree. Never, never do that!!.....
-				final Vector<Nid> subtreeNodes = new Vector<Nid>();
+				final Vector<Nid> subtreeNodes = new Vector<>();
 				try
 				{
 					final Nid[] sons = nid.getNciChildrenNids().toArray();
@@ -229,7 +229,7 @@ public class DecompileTree
 				}
 				catch (final MdsException exc)
 				{/**/}
-				final Vector<Nid> subtreeMembers = new Vector<Nid>();
+				final Vector<Nid> subtreeMembers = new Vector<>();
 				try
 				{
 					final Nid[] members = nid.getNciMemberNids().toArray();

@@ -59,7 +59,7 @@ public class MdsShr extends Shr
 			final Descriptor_A<?> input) throws MdsException
 	{
 		@SuppressWarnings("rawtypes")
-		final Request<ARRAY> request = new MdsCall<ARRAY>(ARRAY.class, "MdsCompress")//
+		final Request<ARRAY> request = new MdsCall<>(ARRAY.class, "MdsCompress")//
 				.ref(Descriptor.valueOf(image)).ref(Descriptor.valueOf(entry)).xd(input).xd("a").finV("a");
 		final ARRAY<?> result = this.mds.getDescriptor(null, request);
 		return (result == null || result == EmptyArray.NEW) ? input : result;
@@ -73,35 +73,35 @@ public class MdsShr extends Shr
 	public final Descriptor<?> mdsDecompress(final Null NULL, final Descriptor_R<?> input) throws MdsException
 	{
 		@SuppressWarnings("rawtypes")
-		final Request<Descriptor_A> request = new MdsCall<Descriptor_A>(Descriptor_A.class, "MdsDecompress")//
+		final Request<Descriptor_A> request = new MdsCall<>(Descriptor_A.class, "MdsDecompress")//
 				.xd(input).xd("a").finV("a");
 		return this.mds.getDescriptor(null, request);
 	}
 
 	public final int mdsEvent(final Null NULL, final String event) throws MdsException
 	{
-		final Request<Int32> request = new MdsCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "MDSEvent")//
+		final Request<Int32> request = new MdsCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "MDSEvent")//
 				.ref(Descriptor.valueOf(event)).val(0).val(0).fin();
 		return this.mds.getDescriptor(null, request).getValue();
 	}
 
 	public final String mdsGetMsg(final Null NULL, final int status) throws MdsException
 	{
-		final Request<StringDsc> request = new MdsCall<StringDsc>(StringDsc.class, "MdsGetMsg:T")//
+		final Request<StringDsc> request = new MdsCall<>(StringDsc.class, "MdsGetMsg:T")//
 				.val(status).fin();
 		return this.mds.getDescriptor(null, request).toString();
 	}
 
 	public final String mdsGetMsgDsc(final Null NULL, final int status) throws MdsException
 	{
-		final Request<StringDsc> request = new MdsCall<StringDsc>(StringDsc.class, "MdsGetMsgDsc")//
+		final Request<StringDsc> request = new MdsCall<>(StringDsc.class, "MdsGetMsgDsc")//
 				.val(status).descr("a", "REPEAT(' ',256)").fin("TRIM(__a)");
 		return this.mds.getDescriptor(null, request).toString();
 	}
 
 	protected final int mdsPutEnv(final Null NULL, final String expr) throws MdsException
 	{
-		final Request<Int32> request = new MdsCall<Int32>(Request.PROP_ATOMIC_RESULT, Int32.class, "MdsPutEnv")//
+		final Request<Int32> request = new MdsCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "MdsPutEnv")//
 				.ref(Descriptor.valueOf(expr)).fin();
 		return this.mds.getDescriptor(null, request).toInt();
 	}
@@ -109,7 +109,7 @@ public class MdsShr extends Shr
 	public final Descriptor<?> mdsSerializeDscIn(final Null NULL, final Int8Array serial) throws MdsException
 	{
 		@SuppressWarnings("rawtypes")
-		final Request<Descriptor> request = new MdsCall<Descriptor>(Descriptor.class, "MdsSerializeDscIn")//
+		final Request<Descriptor> request = new MdsCall<>(Descriptor.class, "MdsSerializeDscIn")//
 				.ref(serial).xd("a").finV("a");
 		return this.mds.getDescriptor(null, request);
 	}
@@ -119,7 +119,7 @@ public class MdsShr extends Shr
 	{
 		@SuppressWarnings(
 		{ "rawtypes", "unchecked" })
-		final Request<Int8Array> request = new Request<Int8Array>(Int8Array.class,
+		final Request<Int8Array> request = new Request<>(Int8Array.class,
 				new MdsCall(null, "MdsSerializeDscOut")//
 						.obj("xd", expr).xd("a").expr("__a"),
 				args);
@@ -138,7 +138,7 @@ public class MdsShr extends Shr
 
 	protected final StringStatus translateLogicalXd(final Null NULL, final String name) throws MdsException
 	{
-		final Request<List> request = new MdsCall<List>(List.class, "TranslateLogicalXd")//
+		final Request<List> request = new MdsCall<>(List.class, "TranslateLogicalXd")//
 				.descr(Descriptor.valueOf(name)).xd("a").finL("a", "s");
 		return new StringStatus(this.mds.getDescriptor(null, request));
 	}

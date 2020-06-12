@@ -90,7 +90,7 @@ public class GraphPanel extends JPanel
 		double v = p - Double.MIN_VALUE + (x == null ? 0 : x[0]);
 		if (y.length / imax > 5)
 		{
-			final List<XY> new_scores = new ArrayList<XY>(imax * 2);
+			final List<XY> new_scores = new ArrayList<>(imax * 2);
 			float max = Float.NEGATIVE_INFINITY, min = Float.POSITIVE_INFINITY;
 			int th = 0;
 			for (int i = 0; i < len_in; i++)
@@ -120,12 +120,12 @@ public class GraphPanel extends JPanel
 		}
 		if (x == null)
 		{
-			final List<XY> new_scores = new ArrayList<XY>(y.length);
+			final List<XY> new_scores = new ArrayList<>(y.length);
 			for (int i = 0; i < y.length; i++)
 				new_scores.add(new XY(i, y[i]));
 			return new_scores;
 		}
-		final List<XY> new_scores = new ArrayList<XY>(x.length);
+		final List<XY> new_scores = new ArrayList<>(x.length);
 		for (int i = 0; i < x.length; i++)
 			new_scores.add(new XY(x[i], y[i]));
 		return new_scores;
@@ -270,7 +270,7 @@ public class GraphPanel extends JPanel
 
 	private final void drawScore(final Graphics2D g2, final Params paramsX, final Params paramsY)
 	{
-		final List<Point> curve = new ArrayList<Point>();
+		final List<Point> curve = new ArrayList<>();
 		for (int i = 0; i < this.scores.size(); i++)
 			curve.add(this.getPoint(i, paramsX, paramsY));
 		GraphPanel.drawGraph(g2, curve);

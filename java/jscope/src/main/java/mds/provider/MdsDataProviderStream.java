@@ -19,10 +19,10 @@ public class MdsDataProviderStream extends MdsDataProvider
 	class AsynchWaveData implements AsyncDataSource, DataStreamListener
 	{
 		boolean listenerReady = false;
-		Vector<Data> samplesV = new Vector<Data>();
-		Vector<Data> timesV = new Vector<Data>();
+		Vector<Data> samplesV = new Vector<>();
+		Vector<Data> timesV = new Vector<>();
 		double sinePeriod = 1;
-		Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
+		Vector<WaveDataListener> listeners = new Vector<>();
 
 		@Override
 		public void addDataListener(WaveDataListener listener)
@@ -105,7 +105,7 @@ public class MdsDataProviderStream extends MdsDataProvider
 			}
 		}
 	} // End inner class AsynchWaveData
-	final private Vector<Connection> activeConnections = new Vector<Connection>();
+	final private Vector<Connection> activeConnections = new Vector<>();
 
 	Connection conn = null;
 

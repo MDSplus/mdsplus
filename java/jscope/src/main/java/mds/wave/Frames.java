@@ -42,7 +42,7 @@ public class Frames extends Canvas
 		Dimension frameDim;
 		int numFrames;
 		MediaTracker tracker;
-		Vector<Integer> recentIdxV = new Vector<Integer>();
+		Vector<Integer> recentIdxV = new Vector<>();
 		int updateCount = 0;
 
 		public FrameCache()

@@ -284,7 +284,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 				Vector<DeviceComponent> components = updateHash.get(currUpdateId);
 				if (components == null)
 				{
-					components = new Vector<DeviceComponent>();
+					components = new Vector<>();
 					updateHash.put(currUpdateId, components);
 				}
 				components.addElement(comp);

@@ -36,7 +36,7 @@ public class Signal implements WaveDataListener
 	}
 	class ResolutionManager
 	{
-		Vector<RegionDescriptor> lowResRegions = new Vector<RegionDescriptor>();
+		Vector<RegionDescriptor> lowResRegions = new Vector<>();
 
 		ResolutionManager()
 		{}
@@ -174,7 +174,7 @@ public class Signal implements WaveDataListener
 		// Check if the passed interval intersects any low resolution region
 		Vector<RegionDescriptor> getLowerResRegions(double lowerInt, double upperInt, double resolution)
 		{
-			final Vector<RegionDescriptor> retRegions = new Vector<RegionDescriptor>();
+			final Vector<RegionDescriptor> retRegions = new Vector<>();
 			for (int i = 0; i < lowResRegions.size(); i++)
 			{
 				// 3 cases to be handled

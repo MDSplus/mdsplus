@@ -239,7 +239,7 @@ int horizontal_offset, vertical_offset;
 	{
 		int i, j, curr_num_points, start_x;
 		double max_y, min_y, curr_y;
-		Vector<Polygon> curr_vect = new Vector<Polygon>(5);
+		Vector<Polygon> curr_vect = new Vector<>(5);
 		int xpoints[], ypoints[];
 		Polygon curr_polygon = null;
 		int pol_idx = 0;
@@ -391,7 +391,7 @@ int horizontal_offset, vertical_offset;
 		}
 		if (sig.getMode1D() == Signal.MODE_STEP)
 		{
-			final Vector<Polygon> v = new Vector<Polygon>();
+			final Vector<Polygon> v = new Vector<>();
 			int x[];
 			int y[];
 			for (i = 0; i < curr_vect.size(); i++)

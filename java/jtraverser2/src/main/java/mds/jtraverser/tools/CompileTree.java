@@ -48,15 +48,15 @@ public class CompileTree extends Thread
 	}
 
 	String filepath, provider, experiment;
-	Vector<String> newNames = new Vector<String>();
+	Vector<String> newNames = new Vector<>();
 	// originalNames and renamedNames keep info about nodes to be renamed
-	Vector<String> renamedDevices = new Vector<String>();
-	Vector<String> renamedFieldNids = new Vector<String>();
+	Vector<String> renamedDevices = new Vector<>();
+	Vector<String> renamedFieldNids = new Vector<>();
 	int shot;
-	Vector<Nid> subtreeNids = new Vector<Nid>();
+	Vector<Nid> subtreeNids = new Vector<>();
 	TREE tree;
-	Vector<String> unresolvedExprV = new Vector<String>();
-	Vector<Nid> unresolvedNidV = new Vector<Nid>();
+	Vector<String> unresolvedExprV = new Vector<>();
+	Vector<Nid> unresolvedNidV = new Vector<>();
 
 	CompileTree(final String filepath, final String provider, final String experiment, final int shot)
 	{

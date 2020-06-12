@@ -135,7 +135,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 		return data.toString();
 	}
 
-	Vector<Job> change_report_listeners = new Vector<Job>();
+	Vector<Job> change_report_listeners = new Vector<>();
 	private int copy_format;
 	private Node curr_node;
 	private final TREE tree;

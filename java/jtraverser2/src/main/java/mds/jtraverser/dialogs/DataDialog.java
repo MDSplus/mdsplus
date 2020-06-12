@@ -216,7 +216,7 @@ public class DataDialog extends JDialog
 	public void addUpdateListener(final UpdateListener l)
 	{
 		if (this.listener == null)
-			this.listener = new Vector<UpdateListener>(1);
+			this.listener = new Vector<>(1);
 		synchronized (this.listener)
 		{
 			this.listener.add(l);

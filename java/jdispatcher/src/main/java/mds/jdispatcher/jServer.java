@@ -57,7 +57,7 @@ public class jServer extends MdsIp
 	// synchronization
 	class ActionQueue
 	{
-		Vector<ActionDescriptor> actionV = new Vector<ActionDescriptor>();
+		Vector<ActionDescriptor> actionV = new Vector<>();
 
 		void dequeueAllActions()
 		{
@@ -311,7 +311,7 @@ public class jServer extends MdsIp
 		{}
 	}
 
-	private final Vector<Socket> retSocketsV = new Vector<Socket>();
+	private final Vector<Socket> retSocketsV = new Vector<>();
 	private MDSplus.Tree mdsTree = null;
 	private final ActionQueue actionQueue = new ActionQueue();
 	private final Worker worker;

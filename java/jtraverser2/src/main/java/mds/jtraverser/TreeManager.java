@@ -890,7 +890,7 @@ public class TreeManager extends JPanel
 			}
 		}
 
-		protected final ArrayList<JMenuItem> items = new ArrayList<JMenuItem>();
+		protected final ArrayList<JMenuItem> items = new ArrayList<>();
 		final protected TreeManager treeman;
 		protected final GridBagConstraints gbc;
 		protected final JComponent menu;
@@ -1068,9 +1068,9 @@ public class TreeManager extends JPanel
 	public final Dialogs dialogs;
 	private final jTraverserFacade frame;
 	private final OpenTreeDialog opentree_dialog;
-	private final Stack<MdsView> mdsviews = new Stack<MdsView>();
+	private final Stack<MdsView> mdsviews = new Stack<>();
 	private final JTabbedPane tabs = new JTabbedPane();
-	private final Vector<Thread> jobs = new Vector<Thread>();
+	private final Vector<Thread> jobs = new Vector<>();
 	private final JButton abort;
 
 	public TreeManager(final jTraverserFacade frame)

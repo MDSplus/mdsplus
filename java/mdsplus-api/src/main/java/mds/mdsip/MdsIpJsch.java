@@ -117,7 +117,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 			}
 			else
 			{
-				sessions = new Vector<Session>();
+				sessions = new Vector<>();
 				session = ((JSch) MdsIpJsch.jsch).getSession(this.user, this.hostname, this.port);
 			}
 			final String strictHostKeyChecking = config.getValue("StrictHostKeyChecking");
@@ -133,8 +133,8 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 	public static final class UserInfo implements com.jcraft.jsch.UserInfo, UIKeyboardInteractive
 	{
-		static HashMap<String, String[]> keyboard_ans = new HashMap<String, String[]>();
-		static HashMap<String, UserInfo> keyboard_this = new HashMap<String, UserInfo>();
+		static HashMap<String, String[]> keyboard_ans = new HashMap<>();
+		static HashMap<String, UserInfo> keyboard_this = new HashMap<>();
 		private final JTextField passphraseField = new JPasswordField(20);
 		private final JTextField passwordField = new JPasswordField(20);
 		private final AncestorListener RequestFocusListener = new AncestorListener()

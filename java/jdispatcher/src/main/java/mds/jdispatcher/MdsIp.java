@@ -107,10 +107,10 @@ class MdsIp implements Runnable
 	int port;
 	ServerSocket server_sock;
 	boolean listening = true;
-	Vector<ConnectionListener> listeners = new Vector<ConnectionListener>();
+	Vector<ConnectionListener> listeners = new Vector<>();
 	Thread listen_thread;
 	protected boolean stopRequest = false;
-	final private Vector<ReceiverThread> receivers = new Vector<ReceiverThread>();
+	final private Vector<ReceiverThread> receivers = new Vector<>();
 
 	public MdsIp(final int port)
 	{

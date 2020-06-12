@@ -77,7 +77,7 @@ public class Mdsdcl extends TdiShr
 	{
 		if (expr == null || expr.isEmpty())
 			return new DclStatus(null, null, 1);
-		final Request<List> request = new DclCall<List>(List.class, "mdsdcl_do_command_dsc")
+		final Request<List> request = new DclCall<>(List.class, "mdsdcl_do_command_dsc")
 				.ref(Descriptor.valueOf(expr)).xd("e").xd("o").finL("o", "e", "s");
 		return new DclStatus(this.mds.getDescriptor(ctx, request));
 	}

@@ -131,8 +131,8 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 	private static final long serialVersionUID = 1L;
 	final TreeManager treeman;
 	private final Mds mds;
-	private final Stack<TreeView> trees = new Stack<TreeView>();
-	Vector<Job> change_report_listeners = new Vector<Job>();
+	private final Stack<TreeView> trees = new Stack<>();
+	Vector<Job> change_report_listeners = new Vector<>();
 
 	public MdsView(final TreeManager treeman, final Mds mds)
 	{

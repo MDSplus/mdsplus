@@ -18,8 +18,8 @@ class MdsHelper
 		}
 	}
 
-	private final static Hashtable<String, Integer> name_to_id = new Hashtable<String, Integer>();
-	private final static Hashtable<Integer, String> id_to_name = new Hashtable<Integer, String>();
+	private final static Hashtable<String, Integer> name_to_id = new Hashtable<>();
+	private final static Hashtable<Integer, String> id_to_name = new Hashtable<>();
 	private final static String defaultFileName = "jDispatcher.properties";
 	static String experiment = null;
 	private static String dispatcher_ip = null;
@@ -36,7 +36,7 @@ class MdsHelper
 
 	static final Vector<DispatchCmd> getDispatch()
 	{
-		final Vector<DispatchCmd> dispatch = new Vector<DispatchCmd>();
+		final Vector<DispatchCmd> dispatch = new Vector<>();
 		for (int i = 1;; i++)
 		{
 			final String name = properties.getProperty(String.format(DISPATCH_FMRT, i, "name"));
@@ -61,7 +61,7 @@ class MdsHelper
 
 	public static Vector<ServerInfo> getServers()
 	{
-		final Vector<ServerInfo> servers = new Vector<ServerInfo>();
+		final Vector<ServerInfo> servers = new Vector<>();
 		for (int i = 1;; i++)
 		{
 			final String server_class = properties.getProperty(String.format(SERVER_FMRT, i, "class"));
@@ -112,7 +112,7 @@ class MdsHelper
 		}
 		else
 		{
-			final Vector<String> paths = new Vector<String>();
+			final Vector<String> paths = new Vector<>();
 			{// add mdsplus_dir
 				final String path = System.getenv("MDSPLUS_DIR");
 				if (path != null)
@@ -132,7 +132,7 @@ class MdsHelper
 				if (etc.exists())
 					paths.add(etc.getPath());
 			}
-			final Vector<String> names = new Vector<String>();
+			final Vector<String> names = new Vector<>();
 			if (experiment != null)
 				names.add("jDispatcher_" + experiment.toLowerCase() + ".properties");
 			properties = tryOpen(paths, names);

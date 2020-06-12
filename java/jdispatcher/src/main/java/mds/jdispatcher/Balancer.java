@@ -7,7 +7,7 @@ class Balancer implements ServerListener
  * Ensures action dispatching to servers, keeping load balancing.
  */
 {
-	Hashtable<String, Vector<Server>> servers = new Hashtable<String, Vector<Server>>();
+	Hashtable<String, Vector<Server>> servers = new Hashtable<>();
 	/**
 	 * indexed by server class. Stores the vector of servers associated with the
 	 * server class.
@@ -94,7 +94,7 @@ class Balancer implements ServerListener
 		Vector<Server> server_vect = servers.get(server.getServerClass().toUpperCase());
 		if (server_vect == null)
 		{
-			server_vect = new Vector<Server>();
+			server_vect = new Vector<>();
 			servers.put(server.getServerClass().toUpperCase(), server_vect);
 		}
 		server_vect.addElement(server);
@@ -125,7 +125,7 @@ class Balancer implements ServerListener
 			}
 			return false;
 		}
-		final Vector<Server> server_vect = new Vector<Server>();
+		final Vector<Server> server_vect = new Vector<>();
 		final Vector<Server> all_server_vect = servers.get(server_class.toUpperCase());
 		if (all_server_vect == null)
 		{

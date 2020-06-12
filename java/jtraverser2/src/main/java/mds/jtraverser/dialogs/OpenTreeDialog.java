@@ -37,7 +37,7 @@ public class OpenTreeDialog extends JDialog
 	private final JRadioButton readonly, edit, normal;
 	private final JTextField expt_path = new JTextField(16);
 	private final JTextField expt = new JTextField(16);
-	JComboBox<String> shot_list = new JComboBox<String>();
+	JComboBox<String> shot_list = new JComboBox<>();
 	private final TreeManager treeman;
 
 	/**

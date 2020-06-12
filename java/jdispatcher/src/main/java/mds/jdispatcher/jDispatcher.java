@@ -109,7 +109,7 @@ class jDispatcher implements ServerListener
 	 */
 	{
 		String phase_name;
-		Hashtable<String, Vector<Integer>> totSeqNumbers = new Hashtable<String, Vector<Integer>>();
+		Hashtable<String, Vector<Integer>> totSeqNumbers = new Hashtable<>();
 		// Indexed by server class, every element of totSeqNumbers contains the sequence
 		// number for this
 		// phase and the given server class
@@ -117,7 +117,7 @@ class jDispatcher implements ServerListener
 		/**
 		 * Active sequence numbers, in ascending order
 		 */
-		Hashtable<String, Hashtable<Integer, Vector<Action>>> totSeqActions = new Hashtable<String, Hashtable<Integer, Vector<Action>>>();
+		Hashtable<String, Hashtable<Integer, Vector<Action>>> totSeqActions = new Hashtable<>();
 		// Indexed by server class, every element of totSeqActions is in turn an
 		// Hashtable indexed by sequence
 		// number, associating a vector of actions (i.e. the actions for the given
@@ -128,19 +128,19 @@ class jDispatcher implements ServerListener
 		 * Indexed by sequence number. For each sequence number, a vector of actions is
 		 * defined.
 		 */
-		Hashtable<MDSplus.Action, Vector<Action>> dependencies = new Hashtable<MDSplus.Action, Vector<Action>>();
+		Hashtable<MDSplus.Action, Vector<Action>> dependencies = new Hashtable<>();
 		/**
 		 * Indexed by action data (not actions!). For each action, a vector of
 		 * potentially dependent actions is defined. Note that the hierarchy of
 		 * ActionData does not override equals and hashCode, and therefore two actions
 		 * are equal only if ther refer to the same instance.
 		 */
-		Vector<Action> immediate_actions = new Vector<Action>();
+		Vector<Action> immediate_actions = new Vector<>();
 		/**
 		 * List of conditional actions with no dependency. These actions will be started
 		 * immediately at the beginning of the phase
 		 */
-		Hashtable<Integer, Action> all_actions = new Hashtable<Integer, Action>();
+		Hashtable<Integer, Action> all_actions = new Hashtable<>();
 
 		/**
 		 * A complete list of actions for that phase, indexed by their nid
@@ -178,9 +178,9 @@ class jDispatcher implements ServerListener
 	}
 
 	private boolean doing_phase = false;
-	Hashtable<String, Vector<Integer>> synchSeqNumberH = new Hashtable<String, Vector<Integer>>();
+	Hashtable<String, Vector<Integer>> synchSeqNumberH = new Hashtable<>();
 	// Synch number sequence for every phase name
-	Vector<Integer> synchSeqNumbers = new Vector<Integer>();
+	Vector<Integer> synchSeqNumbers = new Vector<>();
 	/**
 	 * synchSeqNumbers contains the synchronisation sequence numbers defined in
 	 * jDispatcher.properties.
@@ -200,7 +200,7 @@ class jDispatcher implements ServerListener
 	 * timestamp used for messages. Incremented each new seqeuence. Messages with
 	 * older timestamp are discarded.
 	 */
-	Hashtable<String, Vector<Action>> totSeqDispatched = new Hashtable<String, Vector<Action>>();
+	Hashtable<String, Vector<Action>> totSeqDispatched = new Hashtable<>();
 	// Indexed by server class, every element of totSeqDispatched is the vector of
 	// currently dispatched
 	// action for a given server class
@@ -208,39 +208,39 @@ class jDispatcher implements ServerListener
 	/**
 	 * Vector of currently dispatched sequential actions
 	 */
-	Vector<Action> dep_dispatched = new Vector<Action>();
+	Vector<Action> dep_dispatched = new Vector<>();
 	/**
 	 * Vector of currently dispatched dependent actions
 	 */
-	Hashtable<String, Enumeration<Integer>> totSeqNumbers = new Hashtable<String, Enumeration<Integer>>();
+	Hashtable<String, Enumeration<Integer>> totSeqNumbers = new Hashtable<>();
 	// Indexed by server class, every element of totSeqNumber contains the
 	// enumeration
 	// of the sequence numbers for this phase and this server class
-	Hashtable<String, Integer> actSeqNumbers = new Hashtable<String, Integer>();
+	Hashtable<String, Integer> actSeqNumbers = new Hashtable<>();
 	// Indexed by server class. Keeps track of the current sequence number;
-	Hashtable<String, Boolean> phaseTerminated = new Hashtable<String, Boolean>();
+	Hashtable<String, Boolean> phaseTerminated = new Hashtable<>();
 	// Indexed by server class. Keeps track of whether the curent phase has
 	// terminated for this server class
 	// OLD Enumeration curr_seq_numbers = null;
 	/**
 	 * Contains the sequence numbers of the current phase
 	 */
-	Hashtable<Integer, Vector<Action>> nidDependencies = new Hashtable<Integer, Vector<Action>>();
+	Hashtable<Integer, Vector<Action>> nidDependencies = new Hashtable<>();
 	protected PhaseDescriptor curr_phase; // selects the current phase data structures
-	Hashtable<String, PhaseDescriptor> phases = new Hashtable<String, PhaseDescriptor>();
+	Hashtable<String, PhaseDescriptor> phases = new Hashtable<>();
 	/**
 	 * Indexed by phase name. Associates dispatch data structures with each phase.
 	 */
-	Hashtable<MDSplus.Action, Action> actions = new Hashtable<MDSplus.Action, Action>();
+	Hashtable<MDSplus.Action, Action> actions = new Hashtable<>();
 	/**
 	 * Indexed by ActionData, used to retrieve actions from ActionData in method
 	 * isEnabled
 	 */
-	Hashtable<Integer, Action> action_nids = new Hashtable<Integer, Action>();
+	Hashtable<Integer, Action> action_nids = new Hashtable<>();
 	/**
 	 * Indexed by nid, used to retrieve actions to be manually dispatched
 	 */
-	protected Vector<Server> servers = new Vector<Server>();
+	protected Vector<Server> servers = new Vector<>();
 	/**
 	 * server list, used for collecting dispatch information. Servers will receive
 	 * work by the Balancer
@@ -249,7 +249,7 @@ class jDispatcher implements ServerListener
 	/**
 	 * All actions will be dispatched to balancer
 	 */
-	protected Vector<MonitorListener> monitors = new Vector<MonitorListener>();
+	protected Vector<MonitorListener> monitors = new Vector<>();
 	int last_shot = -2;
 
 	public jDispatcher()
@@ -448,7 +448,7 @@ class jDispatcher implements ServerListener
 		}
 		if (actSynch == -1) // No more synch numbers, proceede freely
 		{
-			final Vector<String> retVect = new Vector<String>();
+			final Vector<String> retVect = new Vector<>();
 			retVect.addElement(serverClass);
 			return retVect;
 		}
@@ -461,7 +461,7 @@ class jDispatcher implements ServerListener
 		final int thisSeqN = thisSeq.intValue();
 		if (thisIdx == currSeqNumbers.size() - 1 && thisSeqN != actSynch)
 		{
-			final Vector<String> retVect = new Vector<String>();
+			final Vector<String> retVect = new Vector<>();
 			retVect.addElement(serverClass);
 			return retVect;
 		}
@@ -469,7 +469,7 @@ class jDispatcher implements ServerListener
 		{
 			if (currSeqNumbers.elementAt(thisIdx + 1) <= actSynch)
 			{
-				final Vector<String> retVect = new Vector<String>();
+				final Vector<String> retVect = new Vector<>();
 				retVect.addElement(serverClass);
 				return retVect;
 			}
@@ -479,9 +479,9 @@ class jDispatcher implements ServerListener
 		// either finished or the next sequence number is larger that actSynch
 		// In any case wait until all dispatched actions for any server
 		if (!allSeqDispatchedAreEmpty())
-			return new Vector<String>();
+			return new Vector<>();
 		final Enumeration<String> serverClasses = curr_phase.totSeqNumbers.keys();
-		final Vector<String> serverClassesV = new Vector<String>();
+		final Vector<String> serverClassesV = new Vector<>();
 		while (serverClasses.hasMoreElements())
 		{
 			final String currServerClass = serverClasses.nextElement();
@@ -505,7 +505,7 @@ class jDispatcher implements ServerListener
 				if (currIdx < currSeqVect.size() - 1) // It is the last element of the sequence, skip it
 				{
 					if (currSeqVect.elementAt(currIdx + 1) >= actSynch)
-						return new Vector<String>(); // Empty array
+						return new Vector<>(); // Empty array
 					// There is at least one server class which has not yet
 					// reached the synchronization number
 				}
@@ -533,8 +533,8 @@ class jDispatcher implements ServerListener
 		action_nids.clear();
 		phases.clear();
 		dep_dispatched.removeAllElements();
-		totSeqDispatched = new Hashtable<String, Vector<Action>>();
-		actSeqNumbers = new Hashtable<String, Integer>();
+		totSeqDispatched = new Hashtable<>();
+		actSeqNumbers = new Hashtable<>();
 		// seq_dispatched.removeAllElements();
 		nidDependencies.clear();
 		timestamp++;
@@ -767,8 +767,8 @@ class jDispatcher implements ServerListener
 	{
 		final Vector<Integer> currSynchSeqNumbers = synchSeqNumberH.get(phaseName);
 		if (currSynchSeqNumbers == null)
-			return new Vector<Integer>();
-		final Vector<Integer> actSynchSeqNumbers = new Vector<Integer>();
+			return new Vector<>();
+		final Vector<Integer> actSynchSeqNumbers = new Vector<>();
 		// Get minimum and maximum sequence number for all servers
 		final Enumeration<String> serverNames = currTotSeqNumbers.keys();
 		int minSeq = 0x7fffffff;
@@ -788,7 +788,7 @@ class jDispatcher implements ServerListener
 			}
 		}
 		if (maxSeq == -1)
-			return new Vector<Integer>();// No sequential actions in this phase
+			return new Vector<>();// No sequential actions in this phase
 		for (int i = 0; i < currSynchSeqNumbers.size(); i++)
 		{
 			final int currSynch = currSynchSeqNumbers.elementAt(i);
@@ -864,10 +864,10 @@ class jDispatcher implements ServerListener
 					dispatch.setWhen(traverseSeqExpression(action.getAction(), dispatch.getWhen()));
 				Hashtable<Integer, Vector<Action>> seqActions = curr_phase.totSeqActions.get(serverClass);
 				if (seqActions == null)
-					curr_phase.totSeqActions.put(serverClass, seqActions = new Hashtable<Integer, Vector<Action>>());
+					curr_phase.totSeqActions.put(serverClass, seqActions = new Hashtable<>());
 				Vector<Integer> seqNumbers = curr_phase.totSeqNumbers.get(serverClass);
 				if (seqNumbers == null)
-					curr_phase.totSeqNumbers.put(serverClass, seqNumbers = new Vector<Integer>());
+					curr_phase.totSeqNumbers.put(serverClass, seqNumbers = new Vector<>());
 				if (isSequenceNumber)
 				{
 					final Integer seq_obj = new Integer(seq_number);
@@ -876,7 +876,7 @@ class jDispatcher implements ServerListener
 					else
 					{
 						// it is the first time such a sequence number is referenced
-						final Vector<Action> curr_vector = new Vector<Action>();
+						final Vector<Action> curr_vector = new Vector<>();
 						curr_vector.add(action);
 						seqActions.put(seq_obj, curr_vector);
 						if (seqNumbers.size() == 0)
@@ -1260,7 +1260,7 @@ class jDispatcher implements ServerListener
 			}
 		}
 		// For every server class
-		phaseTerminated = new Hashtable<String, Boolean>();
+		phaseTerminated = new Hashtable<>();
 		boolean anyDispatched = false;
 		final int firstSynch = getFirstValidSynch();
 		final Enumeration<String> serverClasses = curr_phase.totSeqNumbers.keys();
@@ -1305,7 +1305,7 @@ class jDispatcher implements ServerListener
 							doing_phase = true;
 							Vector<Action> currSeqDispatched = totSeqDispatched.get(serverClass);
 							if (currSeqDispatched == null)
-								totSeqDispatched.put(serverClass, currSeqDispatched = new Vector<Action>());
+								totSeqDispatched.put(serverClass, currSeqDispatched = new Vector<>());
 							currSeqDispatched.addElement(action);
 							action.setStatus(Action.DISPATCHED, 0, verbose);
 							fireMonitorEvent(action, MONITOR_DISPATCHED);
@@ -1377,7 +1377,7 @@ class jDispatcher implements ServerListener
 				Vector<Action> actVect = nidDependencies.get(new Integer(nid));
 				if (actVect == null)
 				{
-					actVect = new Vector<Action>();
+					actVect = new Vector<>();
 					nidDependencies.put(new Integer(nid), actVect);
 				}
 				actVect.addElement(action);

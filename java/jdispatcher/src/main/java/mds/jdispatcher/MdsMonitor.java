@@ -14,9 +14,9 @@ class MdsMonitor extends MdsIp implements MonitorListener, Runnable
 		return (short) (b & 0xff);
 	}
 
-	final private Vector<BufferedOutputStream> streams = new Vector<BufferedOutputStream>();
-	final private Vector<Socket> sockets = new Vector<Socket>();
-	final private Queue<MdsMonitorEvent> msgs = new LinkedList<MdsMonitorEvent>();
+	final private Vector<BufferedOutputStream> streams = new Vector<>();
+	final private Vector<Socket> sockets = new Vector<>();
+	final private Queue<MdsMonitorEvent> msgs = new LinkedList<>();
 
 	public MdsMonitor(final int port)
 	{

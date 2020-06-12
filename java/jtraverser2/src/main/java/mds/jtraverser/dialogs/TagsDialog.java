@@ -46,8 +46,8 @@ public final class TagsDialog extends JDialog
 		jp.setLayout(new BorderLayout());
 		final JPanel jp1 = new JPanel();
 		jp1.setLayout(new BorderLayout());
-		this.modify_tags_list = new JList<String>();
-		this.curr_taglist_model = new DefaultListModel<String>();
+		this.modify_tags_list = new JList<>();
+		this.curr_taglist_model = new DefaultListModel<>();
 		this.modify_tags_list.addListSelectionListener(new ListSelectionListener()
 		{
 			@Override

@@ -416,7 +416,7 @@ public class ContourSignal
 								if (contour.size() >= 2)
 								{
 									contours.addElement(contour);
-									contour = new Vector<Point2D.Double>();
+									contour = new Vector<>();
 								}
 								else
 								{
@@ -450,7 +450,7 @@ public class ContourSignal
 					if (contour.size() >= 2)
 					{
 						contours.addElement(contour);
-						contour = new Vector<Point2D.Double>();
+						contour = new Vector<>();
 					}
 					else
 					{

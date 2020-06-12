@@ -51,14 +51,14 @@ public class TextEditor extends Editor implements ActionListener
 		this.name = name;
 		this.window = window;
 		this.editor = new JPanel(new BorderLayout());
-		final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<String>(new String[]
+		final DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>(new String[]
 		{ "No Data", "Expression" });
 		if (allowparams)
 			model.addElement("With Parameter");
 		this.mode_idx_usr = model.getSize();
 		for (final String mode : modes)
 			model.addElement(mode);
-		this.combo = new JComboBox<String>(model);
+		this.combo = new JComboBox<>(model);
 		final JLabel label = new JLabel(name + ":");
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		final JPanel jp = new JPanel(new FlowLayout(FlowLayout.CENTER, 8, 2));

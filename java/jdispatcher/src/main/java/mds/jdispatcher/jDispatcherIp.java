@@ -13,7 +13,7 @@ class jDispatcherIp extends MdsIp
 		private static final long serialVersionUID = 1L;
 	}
 
-	private static final Vector<Server> servers = new Vector<Server>();
+	private static final Vector<Server> servers = new Vector<>();
 
 	public static void main(final String... args)
 	{
@@ -97,7 +97,7 @@ class jDispatcherIp extends MdsIp
 			final String phaseName = properties.getProperty("jDispatcher.phase_" + i + ".name");
 			if (phaseName == null)
 				break;
-			final Vector<Integer> currSynchNumbers = new Vector<Integer>();
+			final Vector<Integer> currSynchNumbers = new Vector<>();
 			final String currSynchStr = properties.getProperty("jDispatcher.phase_" + i + ".synch_seq_numbers");
 			if (currSynchStr != null)
 			{

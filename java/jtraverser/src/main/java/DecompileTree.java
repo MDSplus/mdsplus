@@ -161,7 +161,7 @@ public class DecompileTree
 				}
 				// Handle Possible non-device subtree. Never, never do that!!.....
 				MDSplus.TreeNodeArray sons = null, members = null;
-				final Vector<MDSplus.TreeNode> subtreeNodes = new Vector<MDSplus.TreeNode>();
+				final Vector<MDSplus.TreeNode> subtreeNodes = new Vector<>();
 				try
 				{
 					sons = nid.getChildren();
@@ -178,7 +178,7 @@ public class DecompileTree
 					catch (final Exception exc)
 					{}
 				}
-				final Vector<MDSplus.TreeNode> subtreeMembers = new Vector<MDSplus.TreeNode>();
+				final Vector<MDSplus.TreeNode> subtreeMembers = new Vector<>();
 				try
 				{
 					members = nid.getMembers();

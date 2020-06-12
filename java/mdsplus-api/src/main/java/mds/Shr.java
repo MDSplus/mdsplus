@@ -14,7 +14,7 @@ public abstract class Shr
 	{
 		protected static final String finT = "__t=__s;MdsShr->StrFree1Dx(ref(__s));execute(\"deallocate('__*');`__t\")";
 		private final StringBuilder sb;
-		private final ArrayList<Descriptor<?>> args = new ArrayList<Descriptor<?>>();
+		private final ArrayList<Descriptor<?>> args = new ArrayList<>();
 		private final Class<T> rtype;
 		private final int props;
 		private int nargs = 0;
@@ -120,7 +120,7 @@ public abstract class Shr
 
 		public final Request<T> fin(final String... suffix)
 		{
-			return new Request<T>(this.rtype, this.props, this.expr(suffix), this.args.toArray(new Descriptor<?>[0]));
+			return new Request<>(this.rtype, this.props, this.expr(suffix), this.args.toArray(new Descriptor<?>[0]));
 		}
 
 		public Request<T> finA(final String... elements)
@@ -260,7 +260,7 @@ public abstract class Shr
 	public static final class RequestBuilder
 	{
 		private final StringBuilder cmds = new StringBuilder(1024);
-		private final ArrayList<Descriptor<?>> argsin = new ArrayList<Descriptor<?>>();
+		private final ArrayList<Descriptor<?>> argsin = new ArrayList<>();
 
 		public final void add(final Request<?> req)
 		{
@@ -290,7 +290,7 @@ public abstract class Shr
 
 		public final Request<List> request()
 		{
-			return new Request<List>(List.class, this.cmds.append(")").toString(),
+			return new Request<>(List.class, this.cmds.append(")").toString(),
 					this.argsin.toArray(new Descriptor[0]));
 		}
 	}

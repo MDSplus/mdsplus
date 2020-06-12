@@ -24,7 +24,7 @@ public abstract class Mds implements AutoCloseable
 	public static class EventItem
 	{
 		public final int eventid;
-		public final Vector<UpdateEventListener> listener = new Vector<UpdateEventListener>();
+		public final Vector<UpdateEventListener> listener = new Vector<>();
 		public final String name;
 
 		public EventItem(final String name, final int eventid, final UpdateEventListener l)
@@ -131,12 +131,12 @@ public abstract class Mds implements AutoCloseable
 		return null;
 	}
 
-	protected transient HashSet<TransferEventListener> translisteners = new HashSet<TransferEventListener>();
-	protected transient HashSet<ContextEventListener> ctxlisteners = new HashSet<ContextEventListener>();
+	protected transient HashSet<TransferEventListener> translisteners = new HashSet<>();
+	protected transient HashSet<ContextEventListener> ctxlisteners = new HashSet<>();
 	protected transient boolean[] event_flags = new boolean[Mds.MAX_NUM_EVENTS];
-	protected transient Hashtable<Integer, EventItem> hashEventId = new Hashtable<Integer, EventItem>();
-	protected transient Hashtable<String, EventItem> hashEventName = new Hashtable<String, EventItem>();
-	protected transient HashSet<String> defined_funs = new HashSet<String>();
+	protected transient Hashtable<Integer, EventItem> hashEventId = new Hashtable<>();
+	protected transient Hashtable<String, EventItem> hashEventName = new Hashtable<>();
+	protected transient HashSet<String> defined_funs = new HashSet<>();
 	private int mds_end_arg = 0;
 
 	/**
@@ -307,14 +307,14 @@ public abstract class Mds implements AutoCloseable
 	public final <T extends Descriptor<?>> T getDescriptor(final CTX ctx, final String expr, final Class<T> cls,
 			final Descriptor<?>... args) throws MdsException
 	{
-		return this.getDescriptor(ctx, new Request<T>(cls, expr, args));
+		return this.getDescriptor(ctx, new Request<>(cls, expr, args));
 	}
 
 	@SuppressWarnings("rawtypes")
 	public final Descriptor getDescriptor(final CTX ctx, final String expr, final Descriptor<?>... args)
 			throws MdsException
 	{
-		return this.getDescriptor(ctx, new Request<Descriptor>(Descriptor.class, expr, args));
+		return this.getDescriptor(ctx, new Request<>(Descriptor.class, expr, args));
 	}
 
 	public final <T extends Descriptor<?>> T getDescriptor(final String expr, final Class<T> cls,

@@ -59,9 +59,9 @@ class InfoServer implements Server
 	public synchronized Action[] collectActions()
 	{
 		Action action;
-		final Vector<Action> action_vect = new Vector<Action>();
+		final Vector<Action> action_vect = new Vector<>();
 		int num_actions;
-		final Hashtable<Integer, MDSplus.Action> action_table = new Hashtable<Integer, MDSplus.Action>();
+		final Hashtable<Integer, MDSplus.Action> action_table = new Hashtable<>();
 		if (model_database == null)
 		{
 			if (tree == null || shot == -1)

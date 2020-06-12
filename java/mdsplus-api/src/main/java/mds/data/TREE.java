@@ -31,7 +31,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 				throws MdsException
 		{
 			mds.defineFunctions(NodeInfo.def_nodeinfo, NodeInfo.def_nodeinfos);
-			final Request<List> request = new Request<List>(List.class,
+			final Request<List> request = new Request<>(List.class,
 					"_n=GETNCI($,'NID_NUMBER');NODEINFOS(" + NodeInfo.conglom_nids + ")", node);
 			final List list = mds.getDescriptor(ctx, request);
 			final NodeInfo[] infos = new NodeInfo[list.getLength()];
@@ -50,14 +50,14 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		{
 			mds.defineFunctions(NodeInfo.def_nodeinfo);
 			return new NodeInfo(
-					mds.getDescriptor(ctx, new Request<List>(List.class, "NODEINFO(GETNCI($,'NID_NUMBER'))", node)));
+					mds.getDescriptor(ctx, new Request<>(List.class, "NODEINFO(GETNCI($,'NID_NUMBER'))", node)));
 		}
 
 		public static final NodeInfo[] getNodeInfos(final NidArray nodes, final Mds mds, final CTX ctx)
 				throws MdsException
 		{
 			mds.defineFunctions(NodeInfo.def_nodeinfo, NodeInfo.def_nodeinfos);
-			final Request<List> request = new Request<List>(List.class, "NODEINFOS(GETNCI($,'NID_NUMBER'))", nodes);
+			final Request<List> request = new Request<>(List.class, "NODEINFOS(GETNCI($,'NID_NUMBER'))", nodes);
 			final List list = mds.getDescriptor(ctx, request);
 			final NodeInfo[] infos = new NodeInfo[list.getLength()];
 			for (int i = 0; i < infos.length; i++)
@@ -75,7 +75,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 				throws MdsException
 		{
 			mds.defineFunctions(NodeInfo.def_nodeinfo, NodeInfo.def_nodeinfos);
-			final Request<List> request = new Request<List>(List.class, "_n=GETNCI($,'NID_NUMBER');List(*,NODEINFOS("
+			final Request<List> request = new Request<>(List.class, "_n=GETNCI($,'NID_NUMBER');List(*,NODEINFOS("
 					+ NodeInfo.children + "),NODEINFOS(" + NodeInfo.members + "))", node);
 			final List list2 = mds.getDescriptor(ctx, request);
 			final NodeInfo[][] infos = new NodeInfo[2][];
@@ -119,7 +119,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 		public static final Request<List> getRequest(final NODE<?> node)
 		{
-			return new Request<List>(List.class, RecordInfo.request, node);
+			return new Request<>(List.class, RecordInfo.request, node);
 		}
 
 		public final byte dtype, dclass;
@@ -234,7 +234,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 			throws MdsException
 	{
 		mds.defineFunctions(NodeInfo.def_nodeinfo, NodeInfo.def_nodeinfos);
-		final Request<List> request = new Request<List>(List.class, "GETNCI($,'NID_NUMBER')", nodes);
+		final Request<List> request = new Request<>(List.class, "GETNCI($,'NID_NUMBER')", nodes);
 		final List list = mds.getDescriptor(ctx, request);
 		final NodeInfo[] infos = new NodeInfo[list.getLength()];
 		for (int i = 0; i < infos.length; i++)
@@ -246,8 +246,8 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 			final String name)
 	{
 		if (TREE.NCI_TIME_INSERTED_STR.equals(name))
-			return new Request<T>(cls, "DATE_TIME(GETNCI($,'TIME_INSERTED'))", node);
-		return new Request<T>(cls, "GETNCI($,$)", node, Descriptor.valueOf(name));
+			return new Request<>(cls, "DATE_TIME(GETNCI($,'TIME_INSERTED'))", node);
+		return new Request<>(cls, "GETNCI($,$)", node, Descriptor.valueOf(name));
 	}
 
 	private Pointer oldctx = null;
@@ -389,7 +389,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	{
 		synchronized (this.mds)
 		{
-			final ArrayList<Nid> nids = new ArrayList<Nid>(256);
+			final ArrayList<Nid> nids = new ArrayList<>(256);
 			int last = 0;
 			for (;;)
 			{
@@ -454,7 +454,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 	public final Nid[] findNodesWildLL(final String searchstr, final int usage_mask) throws MdsException
 	{
-		final ArrayList<Nid> nids = new ArrayList<Nid>(1024);
+		final ArrayList<Nid> nids = new ArrayList<>(1024);
 		synchronized (this.mds)
 		{
 			this.holdDbid();
@@ -929,7 +929,7 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 	public final String[] getTagsLL(final int nid) throws MdsException
 	{
-		final ArrayList<String> tags = new ArrayList<String>(255);
+		final ArrayList<String> tags = new ArrayList<>(255);
 		synchronized (this.mds)
 		{
 			this.holdDbid();

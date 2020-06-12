@@ -311,7 +311,7 @@ public class ArrayEditor extends Editor implements ChangeListener
 			return;
 		final NUMBERArray<?> narray = (NUMBERArray<?>) this.data;
 		final int[] dims = narray.getShape();
-		this.changes = new HashMap<Integer, Number>();
+		this.changes = new HashMap<>();
 		final TableColumn column = ArrayEditor.this.rows.getColumn(ArrayEditor.this.rows);
 		final JTableHeader header = ArrayEditor.this.rows.getTableHeader();
 		final DefaultTableModel model = new DefaultTableModel()

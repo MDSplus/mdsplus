@@ -49,7 +49,7 @@ public class XYWaveData implements WaveData
 	float y2D[];
 	float z[];
 	long xLong[];
-	Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
+	Vector<WaveDataListener> listeners = new Vector<>();
 
 	// For test
 	boolean liveUpdateStarted = false;
