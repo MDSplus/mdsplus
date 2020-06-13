@@ -2578,12 +2578,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @rtype: None
         """
         method = _TreeShr._TreeTurnOn if flag else _TreeShr._TreeTurnOff
-        try:
-            _exc.checkStatus(
-                method(self.ctx,
-                       self._nid))
-        except _exc.TreeLOCK_FAILURE:
-            if not _ver.iswin: raise
+        _exc.checkStatus(method(self.ctx, self._nid))
         return self
 
     def setSegmentScale(self,scale):
@@ -2623,10 +2618,7 @@ class TreeNode(_dat.TreeRef,_dat.Data): # HINT: TreeNode begin  (maybe subclass 
         @rtype: original type
         """
         method = _TreeShr._TreeSetSubtree if flag else _TreeShr._TreeSetNoSubtree
-        _exc.checkStatus(
-                method(self.ctx,
-                       self._nid),
-                ignore=(_exc.TreeLOCK_FAILURE,))
+        _exc.checkStatus(method(self.ctx, self._nid))
         return self
 
     def setUsage(self,usage):

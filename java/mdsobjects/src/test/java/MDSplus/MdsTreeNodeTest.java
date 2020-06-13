@@ -102,15 +102,7 @@ public class MdsTreeNodeTest {
 		Assert.assertEquals(true, node.isOn());
 
 		// setOn()
-		try
-		{
-			node.setOn(false);
-		}
-		catch (MdsException exc)
-		{
-			if (!exc.getMessage().contains("LOCK_FAILURE"))
-				throw exc;
-		}
+		node.setOn(false);
 		Assert.assertEquals(false, node.isOn());
 		node.setOn(true);
 		Assert.assertEquals(true, node.isOn());
