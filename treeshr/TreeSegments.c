@@ -183,6 +183,7 @@ typedef struct vars {
   _vars.nid_ptr = (NID *)&nid;              \
   _vars.xnci = xnci;                        \
   _vars.xnci_len = xnci ? strlen(xnci) : 0; \
+  _vars.nci_locked = 0;                     \
   if (_vars.xnci && (_vars.xnci_len < 1 || _vars.xnci_len > NAMED_ATTRIBUTE_NAME_SIZE)) \
     return TreeFAILURE;                     \
   int status;
@@ -311,7 +312,7 @@ inline static int open_datafile_read(vars_t *vars) {
   RETURN_IF_NOT_OK(check_segment_remote(vars));
   RETURN_IF_NOT_OK(load_info_ptr(vars));
   TreeGetViewDate(&vars->saved_viewdate);
-  RETURN_IF_NOT_OK(TreeGetNciW(vars->tinfo, vars->nidx, &vars->local_nci, 0));
+  RETURN_IF_NOT_OK(tree_get_nci(vars->tinfo, vars->nidx, &vars->local_nci, 0, &vars->nci_locked));
   if (!vars->tinfo->data_file)
     return TreeOpenDatafileR(vars->tinfo);
   return TreeSUCCESS;
@@ -327,7 +328,7 @@ static int open_datafile_write0(vars_t *vars) {
   status = TreeCallHook(PutData, vars->tinfo, *(int *)vars->nid_ptr);
   if (status && STATUS_NOT_OK) return status;
   TreeGetViewDate(&vars->saved_viewdate);
-  RETURN_IF_NOT_OK(tree_get_nci(vars->tinfo, vars->nidx, &vars->local_nci, &vars->nci_locked));
+  RETURN_IF_NOT_OK(tree_get_and_lock_nci(vars->tinfo, vars->nidx, &vars->local_nci, &vars->nci_locked));
   if (vars->dblist->shotid == -1) {
     if (vars->local_nci.flags & NciM_NO_WRITE_MODEL) return TreeNOWRITEMODEL;
   } else {
@@ -624,13 +625,9 @@ static void unlock_nci(void *vars_in) {
   vars_t *vars = (vars_t *)vars_in;
   tree_unlock_nci(vars->tinfo, 0, vars->nidx, &vars->nci_locked);
 }
-static int lock_nci(void *vars_in) {
-  vars_t *vars = (vars_t *)vars_in;
-  int deleted = TRUE;
-  return tree_lock_nci(vars->tinfo, 0, vars->nidx, &deleted, &vars->nci_locked);
-}
+
 #define CLEANUP_NCI_PUSH pthread_cleanup_push(unlock_nci, (void *)vars)
-#define CLEANUP_NCI_POP pthread_cleanup_pop(1)
+#define CLEANUP_NCI_POP pthread_cleanup_pop(vars->nci_locked)
 int _TreeGetXNci(void *dbid, int nid, const char *xnci, mdsdsc_xd_t *value) {
   if (!xnci) return TreeFAILURE;
   INIT_VARS;
@@ -850,7 +847,7 @@ inline static void begin_segment_index(vars_t *vars) {
   }
 }
 
-inline static int check_sinfo(vars_t *vars) {
+static int check_sinfo(vars_t *vars) {
   if (vars->idx < 0 || vars->idx > vars->shead.idx) return TreeFAILURE;
   for (vars->index_offset = vars->shead.index_offset;
        vars->idx < vars->sindex.first_idx &&
@@ -864,7 +861,8 @@ inline static int check_sinfo(vars_t *vars) {
   return TreeSUCCESS;
 }
 
-inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
+static int xnci_get_segment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim, const int nci_locked);
+static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
                               int checkcompress(vars_t*vars,mdsdsc_xd_t*,mdsdsc_xd_t*,mdsdsc_a_t*)) {
   int status = TreeSUCCESS;
   vars->add_length = 0;
@@ -910,11 +908,7 @@ inline static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
     EMPTYXD(xd_data);
     EMPTYXD(xd_dim);
     vars->sinfo = &vars->sindex.segment[(vars->idx % SEGMENTS_PER_INDEX) - 1];
-    unlock_nci(vars);
-    status = _TreeXNciGetSegment(vars->dblist, *(int *)vars->nid_ptr,
-                                 vars->xnci, vars->idx - 1, &xd_data, &xd_dim);
-    if STATUS_OK
-      status = lock_nci(vars);
+    status = xnci_get_segment(vars->dblist, *(int *)vars->nid_ptr, vars->xnci, vars->idx - 1, &xd_data, &xd_dim, vars->nci_locked);
     if STATUS_OK
       status = checkcompress(vars, &xd_data, &xd_dim, initialValue);
     MdsFree1Dx(&xd_data, 0);
@@ -2099,7 +2093,8 @@ int TreeCopyExtended(PINO_DATABASE *dbid_in, PINO_DATABASE *dbid_out, int nid, N
                           compress);
   RETURN_IF_NOT_OK(TreePutExtendedAttributes(tinfo_out, &attr, &offset));
   SeekToRfa(offset, nci->DATA_INFO.DATA_LOCATION.rfa);
-  RETURN_IF_NOT_OK(tree_put_nci(tinfo_out, nid, nci, NULL));
+  int locked = 0;
+  RETURN_IF_NOT_OK(tree_put_nci(tinfo_out, nid, nci, &locked));
   return TreeSetViewDate(&now);
 }
 
@@ -2237,14 +2232,18 @@ int _TreeXNciGetSegmentLimits(void *dbid, int nid, const char *xnci, int idx,
   return get_segment_limits(vars, retStart, retEnd);
 }
 
-int _TreeXNciGetSegment(void *dbid, int nid, const char *xnci, int idx,
-                        mdsdsc_xd_t *segment, mdsdsc_xd_t *dim) {
+static int xnci_get_segment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim, const int nci_locked)
+{
   INIT_VARS;
   vars->idx = idx;
+  vars->nci_locked = nci_locked;
   RETURN_IF_NOT_OK(get_segment(vars));
   return read_segment(dbid, vars->tinfo, nid, &vars->shead, vars->sinfo, vars->idx, segment, dim);
 }
 
+int _TreeXNciGetSegment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim) {
+  return xnci_get_segment(dbid, nid, xnci, idx, segment, dim, 0);
+}
 int _TreeXNciGetSegmentInfo(void *dbid, int nid, const char *xnci, int idx,
                             char *dtype, char *dimct, int *dims,
                             int *next_row) {

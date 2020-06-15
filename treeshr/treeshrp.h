@@ -753,7 +753,6 @@ extern int TreeCopyExtended(PINO_DATABASE * dbid1, PINO_DATABASE * dbid2, int ni
 extern int TreeExpandNodes(PINO_DATABASE * db_ptr, int num_fixup, NODE *** fixup_nodes);
 extern int TreeFindParent(PINO_DATABASE * dblist, char *path_ptr, NODE ** node_ptrptr,
 	                  char **namedsc_ptr, int *chid);
-extern int TreeGetNciW(TREE_INFO * info, int node_number, NCI * nci, unsigned int version);
 extern int TreeInsertChild(NODE * parent_ptr, NODE * child_ptr, int sort);
 extern int TreeInsertMember(NODE * parent_ptr, NODE * member_ptr, int sort);
 extern int TreeIsChild(PINO_DATABASE * db, NODE * node);
@@ -789,9 +788,10 @@ extern int64_t TreeTimeInserted();
 extern int TreeSetTemplateNci(NCI * nci);
 
 extern int tree_lock_nci(TREE_INFO * info, int readonly, int nodenum, int *deleted, int *locked);
-extern int tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked);
-extern int tree_get_nci(TREE_INFO * info, int node_number, NCI * nci, int *locked);
-extern int tree_put_nci(TREE_INFO * info, int node_number, NCI * nci, int *locked);
+extern void tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked);
+extern int tree_get_and_lock_nci(TREE_INFO * info, int nodenum, NCI * nci, int *locked);
+extern int tree_put_nci(TREE_INFO * info, int nodenum, NCI * nci, int *locked);
+extern int tree_get_nci(TREE_INFO * info, int nodenum, NCI * nci, unsigned int version, int *locked);
 
 extern int TreeLockDatafile(TREE_INFO * info, int readonly, int64_t where);
 extern int TreeUnLockDatafile(TREE_INFO * info, int readonly, int64_t where);

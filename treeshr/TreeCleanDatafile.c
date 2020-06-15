@@ -87,7 +87,7 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 		  NCI nci;
 		  struct nci_list *next;
 		} *list = memset(malloc(sizeof(struct nci_list)), 0, sizeof(struct nci_list));
-		TreeGetNciW(info1, i, &list->nci, 0);
+		{int locked = 0;tree_get_nci(info1, i, &list->nci, 0, &locked);}
 		while (list->nci.flags & NciM_VERSIONS) {
 		  struct nci_list *old_list = list;
 		  list = malloc(sizeof(struct nci_list));
@@ -102,7 +102,7 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 		  if (first) {
 		    oldlength = list->nci.length;
 		    list->nci.length = 0;
-		    tree_put_nci(info2, i, &list->nci, NULL);
+		    {int locked = 0;tree_put_nci(info2, i, &list->nci, &locked);}
 		    list->nci.length = oldlength;
 		    first = 0;
 		  }

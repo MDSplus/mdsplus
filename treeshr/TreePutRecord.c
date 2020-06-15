@@ -146,7 +146,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     if (status && !(status & 1))
       return status;
     TreeGetViewDate(&saved_viewdate);
-    RETURN_IF_NOT_OK(tree_get_nci(info_ptr, nidx, &local_nci, &locked_nci));
+    RETURN_IF_NOT_OK(tree_get_and_lock_nci(info_ptr, nidx, &local_nci, &locked_nci));
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci, &local_nci, sizeof(local_nci));
     if (info_ptr->data_file ? (!info_ptr->data_file->open_for_write) : 1)

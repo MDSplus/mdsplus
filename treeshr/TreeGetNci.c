@@ -52,7 +52,7 @@ static inline int minInt(int a, int b) { return a < b ? a : b; }
     TreeCallHookFun("TreeNidHook","GetNci",info->treenam, info->shot, nid, NULL); \
     status = TreeCallHook(GetNci,info,nid_in);\
     if (status && STATUS_NOT_OK) break;\
-    status = TreeGetNciW(info, node_number, &nci,version);\
+    {int locked = 0;status = tree_get_nci(info, node_number, &nci,version, &locked);}\
     if STATUS_OK nci_version = version;\
     if STATUS_NOT_OK break;\
  }
@@ -770,62 +770,76 @@ int TreeIsOn(int nid) {
   return _TreeIsOn(*TreeCtx(), nid);
 }
 
-int TreeGetNciW(TREE_INFO * info, int node_num, NCI * nci, unsigned int version)
+int tree_get_nci(TREE_INFO * info, int node_num, NCI * nci, unsigned int version, int *locked)
 {
   int status = TreeSUCCESS;
 /******************************************
 If the tree is not open for edit then
 if the characteristics file is not open
 open the characteristics file for readonly access.
-if OK so far then fill in the rab and read the record
+if OK so far then fill in the gab and read the record
 ******************************************/
 
-  if ((info->edit == 0) || (node_num < info->edit->first_in_mem)) {
-    status = TreeOpenNciR(info);
-    if STATUS_OK {
-      char nci_bytes[42];
-      unsigned int n_version = 0;
-      int64_t viewDate;
-      int deleted = 1;
-      while (STATUS_OK && deleted) {
-	status =
-	    MDS_IO_READ_X(info->nci_file->get, node_num * sizeof(nci_bytes), (void *)nci_bytes,
-			  sizeof(nci_bytes),
-			  &deleted) == sizeof(nci_bytes) ? TreeSUCCESS : TreeNCIREAD;
-	if (STATUS_OK && deleted)
-	  status = TreeReopenNci(info);
-      }
-      if (status == TreeSUCCESS)
-	TreeSerializeNciIn(nci_bytes, nci);
-      TreeGetViewDate(&viewDate);
-      if (viewDate > 0) {
-	while (STATUS_OK && nci->time_inserted > viewDate){
-	  if (nci->flags & NciM_VERSIONS)
-	    status = TreeGetVersionNci(info, nci, nci);
-	  else
-	    status = 0;
-	}
-	if STATUS_NOT_OK {
-	  memset(nci, 0, sizeof(NCI));
-	  status = TreeSUCCESS;
-	}
-      }
-      while (STATUS_OK && version > n_version) {
-	if (nci->flags & NciM_VERSIONS) {
-	  status = TreeGetVersionNci(info, nci, nci);
-	  n_version++;
-	} else
-	  status = TreeNOVERSION;
-      }
+  if ((info->edit == 0) || (node_num < info->edit->first_in_mem))
+  {
+    int deleted = TRUE;
+    char nci_bytes[42];
+    unsigned int n_version = 0;
+    int64_t viewDate;
+    RETURN_IF_NOT_OK(TreeOpenNciR(info));
+    while STATUS_OK
+    {
+      RETURN_IF_NOT_OK(tree_lock_nci(info, 1, node_num, &deleted, locked));
+      if (!deleted) break;
+      status = TreeReopenNci(info);
     }
-  } else {
-	/********************************************
+    if STATUS_OK
+    {
+      MDS_IO_LSEEK(info->nci_file->get, node_num * sizeof(nci_bytes), SEEK_SET);
+      if (MDS_IO_READ(info->nci_file->get, nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes))
+      {
+        TreeSerializeNciIn(nci_bytes, nci);
+        status = TreeSUCCESS;
+        TreeGetViewDate(&viewDate);
+        if (viewDate > 0)
+        {
+          while (STATUS_OK && nci->time_inserted > viewDate)
+          {
+            if (nci->flags & NciM_VERSIONS)
+              status = TreeGetVersionNci(info, nci, nci);
+            else
+              status = 0;
+          }
+          if STATUS_NOT_OK
+          {
+            memset(nci, 0, sizeof(NCI));
+            status = TreeSUCCESS;
+          }
+        }
+        while (STATUS_OK && version > n_version)
+        {
+          if (nci->flags & NciM_VERSIONS)
+          {
+            status = TreeGetVersionNci(info, nci, nci);
+            n_version++;
+          }
+          else
+            status = TreeNOVERSION;
+        }
+      }
+      else
+        status = TreeNCIREAD;
+    }
+    tree_unlock_nci(info, 1, node_num, locked);
+  }
+  else
+  {
+/********************************************
     Otherwise the tree is open for edit so
     the attributes are just a memory reference
     away.
-		*********************************************/
+*********************************************/
     if (version == 0)
-
       memcpy(nci, info->edit->nci + node_num - info->edit->first_in_mem, sizeof(NCI));
     else
       status = TreeNOVERSION;

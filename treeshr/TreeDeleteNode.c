@@ -301,7 +301,7 @@ void _TreeDeleteNodesWrite(void *dbid) {
       node->parent = 0;
     nidx = nid.node;
     int ncilocked = 0;
-    if IS_OK(tree_get_nci(dblist->tree_info, nidx, &old_nci, &ncilocked))
+    if IS_OK(tree_get_and_lock_nci(dblist->tree_info, nidx, &old_nci, &ncilocked))
     {
       NCI empty_nci = {0};
       tree_put_nci(dblist->tree_info, nidx, &empty_nci, &ncilocked);

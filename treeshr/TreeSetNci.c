@@ -78,7 +78,7 @@ static int set_node_parent_state(PINO_DATABASE * db, NODE * node, NCI * nci, uns
     return TreeNNF;
   node_num = (int)(node - info->node);
   int locked = 0;
-  status = tree_get_nci(info, node_num, nci, &locked);
+  status = tree_get_and_lock_nci(info, node_num, nci, &locked);
   if STATUS_OK {
     bitassign(state, nci->flags, NciM_PARENT_STATE);
     status = tree_put_nci(info, node_num, nci, &locked);
@@ -107,31 +107,24 @@ int tree_lock_nci(TREE_INFO * info, int readonly, int nodenum, int *deleted, int
   int status = TreeSUCCESS;
   if (!info->header->readonly)
   {
-    if (!locked || *locked == 0)
+    if (*locked == 0)
     {
       status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
-      if (locked && STATUS_OK && !*deleted) (*locked)++;
+      if (STATUS_OK && !*deleted) (*locked)++;
     }
-    else if (locked)
+    else
+    {
+      if (deleted) *deleted = FALSE;
       (*locked)++;
+    }
   }
   return status;
 }
 
-int tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked)
+void tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked)
 {
-  int status = TreeSUCCESS;
-  int do_unlock;
-  if (locked)
-  {
-    do_unlock = *locked == 1;
-    if (*locked>0) --(*locked);
-  }
-  else
-    do_unlock = !info->header->readonly;
-  if (do_unlock)
-    status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
-  return status;
+  if (*locked>0 && --(*locked) == 0)
+    MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
 }
 
 
@@ -183,7 +176,7 @@ int _TreeSetNci(void *dbid, int nid_in, NCI_ITM * nci_itm_ptr)
   if (status && STATUS_NOT_OK)
     return status;
   int locked = FALSE;
-  RETURN_IF_NOT_OK(tree_get_nci(tree_info, node_number, &nci, &locked));
+  RETURN_IF_NOT_OK(tree_get_and_lock_nci(tree_info, node_number, &nci, &locked));
   for (itm_ptr = nci_itm_ptr; itm_ptr->code != NciEND_OF_LIST && STATUS_OK; itm_ptr++)
   {
     switch (itm_ptr->code)
@@ -278,7 +271,7 @@ int _TreeFlushReset(void *dbid, int nid)
 
 /*------------------------------------------------------------------------------
 
-		Name: tree_get_nci
+		Name: tree_get_and_lock_nci
 
 		Type:   C function
 
@@ -293,13 +286,13 @@ int _TreeFlushReset(void *dbid, int nid)
 ------------------------------------------------------------------------------
 
 	Call sequence:
-	       STATUS = tree_get_nci(info, node_num, nci, &locked)
+	       STATUS = tree_get_and_lock_nci(info, node_num, nci, &locked)
 
 	Description:
 
 +-----------------------------------------------------------------------------*/
 
-int tree_get_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
+int tree_get_and_lock_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
 {
   if (info->header->readonly)
     return TreeREADONLY_TREE;
@@ -318,7 +311,7 @@ int tree_get_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
     int deleted = TRUE;
     char nci_bytes[42];
     if ((info->nci_file == 0) || (info->nci_file->put == 0))
-      status = TreeOpenNciW(info, 0);
+      RETURN_IF_NOT_OK(TreeOpenNciW(info, 0));
     while STATUS_OK
     {
       RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, &deleted, locked));
@@ -334,7 +327,7 @@ int tree_get_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
 	status = TreeSUCCESS;
       }
       else
-	status = TreeFAILURE;
+	status = TreeNCIREAD;
     }
     if STATUS_NOT_OK
       tree_unlock_nci(info, 0, node_num, locked);
@@ -551,7 +544,7 @@ int _TreeTurnOn(void *dbid, int nid_in)
   if (!info)
     return TreeNNF;
   int locked = 0;
-  RETURN_IF_NOT_OK(tree_get_nci(info, node_num, &nci, &locked));
+  RETURN_IF_NOT_OK(tree_get_and_lock_nci(info, node_num, &nci, &locked));
   if (nci.flags & NciM_STATE) {
     bitassign(0, nci.flags, NciM_STATE);
     RETURN_IF_NOT_OK(tree_put_nci(info, node_num, &nci, &locked));
@@ -610,7 +603,7 @@ int _TreeTurnOff(void *dbid, int nid_in)
   if (!info)
     return TreeNNF;
   int locked = 0;
-  RETURN_IF_NOT_OK(tree_get_nci(info, node_num, &nci, &locked));
+  RETURN_IF_NOT_OK(tree_get_and_lock_nci(info, node_num, &nci, &locked));
   if (!(nci.flags & NciM_STATE)) {
     bitassign(1, nci.flags, NciM_STATE);
     RETURN_IF_NOT_OK(tree_put_nci(info, node_num, &nci, &locked));

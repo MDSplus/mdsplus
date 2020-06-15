@@ -191,7 +191,7 @@ int _TreeAddNode(void *dbid, char const *name, int *nid_out, char usage)
 	  memset(&new_nci, 0, sizeof(NCI));
 	  parent_nid = node_to_nid(dblist, parent, 0);
 	  node_to_nid(dblist, new_ptr, &nid);
-	  status = tree_get_nci(dblist->tree_info, nid.node, &scratch_nci, &ncilocked);
+	  status = tree_get_and_lock_nci(dblist->tree_info, nid.node, &scratch_nci, &ncilocked);
 	  if STATUS_OK {
 	    if (_TreeIsOn(dblist, *(int *)&parent_nid) & 1)
 	      new_nci.flags &= (unsigned)~NciM_PARENT_STATE;
