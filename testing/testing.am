@@ -150,7 +150,7 @@ $(TEST_BUILD_TAP):
 	 echo "TAP version 13" > $@; \
 	 count=0; \
 	 for i in $(check_PROGRAMS); do \
-	  if ! $(MAKE) -q $$i; then \
+	  if ! $(MAKE) -s -q $$i; then \
 	    $(MAKE) -k $(AM_MAKEFLAGS) $$i || \
 	    { ((count++)); \
 	      echo "not ok $${count} - Build of $${i} failed." >> $@; \
