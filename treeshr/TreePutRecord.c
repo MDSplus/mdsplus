@@ -122,7 +122,6 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
   int extended = 0;
   int64_t extended_offset;
   int compress_utility = utility_update == 2;
-  int locked_nci = 0;
 #ifndef _WIN32
   if (!saved_uic)
     saved_uic = (getgid() << 16) | getuid();
@@ -146,6 +145,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
     if (status && !(status & 1))
       return status;
     TreeGetViewDate(&saved_viewdate);
+    int locked_nci = 0;
     RETURN_IF_NOT_OK(tree_get_and_lock_nci(info_ptr, nidx, &local_nci, &locked_nci));
     TreeSetViewDate(&saved_viewdate);
     memcpy(&old_nci, &local_nci, sizeof(local_nci));
@@ -182,8 +182,7 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	local_nci.DATA_INFO.ERROR_INFO.error_status = open_status;
 	local_nci.length = 0;
 	tree_put_nci(info_ptr, nidx, &local_nci, &locked_nci);
-	status = open_status;
-	goto done;
+	return open_status;
       } else {
 	NCI *nci = info_ptr->data_file->asy_nci->nci;
 	*nci = local_nci;
@@ -245,6 +244,8 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 		bitassign(0,nci->flags,NciM_SEGMENTED);
 		tree_put_nci(info_ptr, nidx, nci, &locked_nci);
 	      }
+	      else
+		tree_unlock_nci(info_ptr, 0, nidx, &locked_nci);
 	    } else if ((nci->DATA_INFO.DATA_LOCATION.record_length != old_record_length) ||
 		       (nci->DATA_INFO.DATA_LOCATION.record_length >= DATAF_C_MAX_RECORD_SIZE) ||
 		       utility_update ||
@@ -254,12 +255,14 @@ int _TreePutRecord(void *dbid, int nid, struct descriptor *descriptor_ptr, int u
 	      status = update_datafile(info_ptr, nidx, nci, info_ptr->data_file->data, &locked_nci);
 	  }
 	}
+	else
+	  tree_unlock_nci(info_ptr, 0, nidx, &locked_nci);
       }
     }
+    else
+      tree_unlock_nci(info_ptr, 0, nidx, &locked_nci);
   } else
     status = TreeINVTREE;
- done:
-  tree_unlock_nci(info_ptr, 0, nidx, &locked_nci);
   return status;
 }
 
@@ -526,7 +529,6 @@ static int put_datafile(
       status = TreeFAILURE;
   }
   status = tree_put_nci(info, nodenum, nci_ptr, ncilocked);
-  *ncilocked = FALSE;
   if (locked)
     TreeUnLockDatafile(info, 0, 0);
   if (buffer && (!nonvms_compatible))
@@ -575,9 +577,10 @@ static int update_datafile(
 	tree_put_nci(info, nodenum, nci_ptr, ncilocked);
       }
       TreeUnLockDatafile(info, 0, rfa_l);
-    } else
-      tree_unlock_nci(info, 0, nodenum, ncilocked);
+    }
   }
+  if (bytes_to_put)
+    tree_unlock_nci(info, 0, nodenum, ncilocked);
   return status;
 }
 
