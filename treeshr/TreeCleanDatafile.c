@@ -102,7 +102,7 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
 		  if (first) {
 		    oldlength = list->nci.length;
 		    list->nci.length = 0;
-		    TreePutNci(info2, i, &list->nci, 1);
+		    tree_put_nci(info2, i, &list->nci, NULL);
 		    list->nci.length = oldlength;
 		    first = 0;
 		  }

@@ -65,6 +65,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * child_ptr);
 
+extern int tree_set_parent_state(PINO_DATABASE * db, NODE * node, unsigned int state);
 extern void **TreeCtx();
 
 int TreeRenameNode(int nid, char const *newname)
@@ -231,7 +232,7 @@ static int FixParentState(PINO_DATABASE * dblist, NODE * parent_ptr, NODE * chil
   if (status & 1) {
     child_parent_state = ((child_flags & NciM_PARENT_STATE) == 0);
     if (child_parent_state != parent_state)
-      status = SetParentState(dblist, child_ptr, !parent_state);
+      status = tree_set_parent_state(dblist, child_ptr, !parent_state);
   }
 
   return status;

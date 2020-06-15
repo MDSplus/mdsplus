@@ -300,10 +300,12 @@ void _TreeDeleteNodesWrite(void *dbid) {
     } else
       node->parent = 0;
     nidx = nid.node;
-    TreeGetNciLw(dblist->tree_info, nidx, &old_nci);
-    NCI empty_nci = {0};
-    TreePutNci(dblist->tree_info, nidx, &empty_nci, 1);
-    TreeUnLockNci(dblist->tree_info, 0, nidx);
+    int ncilocked = 0;
+    if IS_OK(tree_get_nci(dblist->tree_info, nidx, &old_nci, &ncilocked))
+    {
+      NCI empty_nci = {0};
+      tree_put_nci(dblist->tree_info, nidx, &empty_nci, &ncilocked);
+    }
   }
 }
 
