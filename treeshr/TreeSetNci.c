@@ -105,26 +105,44 @@ int tree_set_parent_state(PINO_DATABASE * db, NODE * node, unsigned int state)
 int tree_lock_nci(TREE_INFO * info, int readonly, int nodenum, int *deleted, int *locked)
 {
   int status = TreeSUCCESS;
+  int deleted_loc, *deleted_ptr = deleted ? deleted : &deleted_loc;
   if (!info->header->readonly)
   {
     if (*locked == 0)
-    {
-      status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted);
-      if (STATUS_OK && !*deleted) (*locked)++;
+    { // acquire lock
+      status = MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, readonly ? MDS_IO_LOCK_RD : MDS_IO_LOCK_WRT, deleted_ptr);
+      if STATUS_OK
+      {
+        if (!*deleted_ptr)
+          *locked = 3; // lock acquired and increment
+        else if (!deleted)
+          *locked = 2; // lock not acquired but caller did not provide deleted; increment w/o lock
+      }
     }
     else
-    {
-      if (deleted) *deleted = FALSE;
-      (*locked)++;
+    { // increment and simulate
+      if (deleted)
+        *deleted = FALSE;
+      *locked += 2;
     }
   }
   return status;
 }
-
 void tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked)
 {
-  if (*locked>0 && --(*locked) == 0)
-    MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
+  if (!info->header->readonly)
+  {
+//#define DEBUG
+#ifdef DEBUG
+    if (*locked<2) fprintf(stderr, "ERROR: tree_unlock_nci and *locked invalid: %d\n", *locked);
+#endif
+    *locked -= 2; // decrement
+    if (*locked == 1)
+    { // last lock and lock acquired -> release lock
+      MDS_IO_LOCK(readonly ? info->nci_file->get : info->nci_file->put, nodenum * 42, 42, MDS_IO_LOCK_NONE, 0);
+      *locked = 0;
+    }
+  }
 }
 
 
@@ -467,8 +485,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 
 int tree_put_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
 {
-  int status;
-  status = TreeSUCCESS;
+  int status = TreeSUCCESS;
 /***************************************
   If the tree is not open for edit
 ****************************************/
@@ -478,18 +495,13 @@ int tree_put_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
   /**********************
    Update the NCI record
   ***********************/
-    if (!locked || !*locked)
-    {
-      int deleted = TRUE;
-      status = tree_lock_nci(info, 0, node_num, &deleted, locked);
-    }
-    if STATUS_OK {
-      char nci_bytes[42] = {0};
-      TreeSerializeNciOut(nci, nci_bytes);
-      MDS_IO_LSEEK(info->nci_file->put, sizeof(nci_bytes) * node_num, SEEK_SET);
-      status = (MDS_IO_WRITE(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes))
-             ? TreeSUCCESS : TreeFAILURE;
-    }
+    if (!*locked)
+      RETURN_IF_NOT_OK(tree_lock_nci(info, 0, node_num, NULL, locked));
+    char nci_bytes[42] = {0};
+    TreeSerializeNciOut(nci, nci_bytes);
+    MDS_IO_LSEEK(info->nci_file->put, sizeof(nci_bytes) * node_num, SEEK_SET);
+    status = (MDS_IO_WRITE(info->nci_file->put, nci_bytes, sizeof(nci_bytes)) == sizeof(nci_bytes))
+           ? TreeSUCCESS : TreeFAILURE;
     tree_unlock_nci(info, 0, node_num, locked);
   }
 
