@@ -396,7 +396,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     df_ptr = TreeGetVmDatafile();
     status = (df_ptr == NULL) ? TreeFAILURE : TreeSUCCESS;
   }
-  if (status & 1) {
+  if STATUS_OK {
     int old_get = df_ptr->get;
     size_t len = strlen(info->filespec) - 4;
     size_t const filename_length = len + 20;
@@ -415,12 +415,12 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
       df_ptr->get = old_get;
     else if (df_ptr->get > 0)
       MDS_IO_CLOSE(old_get);
-    if (status & 1) {
+    if STATUS_OK {
       df_ptr->put = MDS_IO_OPEN(filename, O_RDWR, 0);
       status = (df_ptr->put == -1) ? TreeFAILURE : TreeSUCCESS;
       if (df_ptr->put == -1)
 	df_ptr->put = 0;
-      if (status & 1)
+      if STATUS_OK
 	df_ptr->open_for_write = 1;
     }
   } else {
@@ -428,7 +428,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
     df_ptr = NULL;
   }
   info->data_file = df_ptr;
-  if (status & 1) {
+  if STATUS_OK {
     TreeCallHookFun("TreeHook","OpenDataFileWrite", info->treenam, info->shot, NULL);
     TreeCallHook(OpenDataFileWrite, info, 0);
   }
@@ -444,93 +444,94 @@ static int put_datafile(
  int *ncilocked)
 {
   int status = TreeSUCCESS;
-  unsigned int bytes_to_put =
-      data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
-  int blen =
-      bytes_to_put + (bytes_to_put + DATAF_C_MAX_RECORD_SIZE + 1) / (DATAF_C_MAX_RECORD_SIZE +
-								     2) * sizeof(RECORD_HEADER);
+  unsigned int bytes_to_put = data_dsc_ptr->l_length > 0 ? nci_ptr->DATA_INFO.DATA_LOCATION.record_length : 0;
+  int blen = bytes_to_put + (bytes_to_put + DATAF_C_MAX_RECORD_SIZE + 1) / (DATAF_C_MAX_RECORD_SIZE + 2) * sizeof(RECORD_HEADER);
   static int nonvms_compatible = -1;
-  char *buffer = 0;
+  char *buffer = NULL;
   char *bptr;
   int64_t eof;
-  int locked = 0;
   unsigned char rfa[6];
-  if (blen > 0) {
+  if (blen > 0)
+  {
     bitassign_c(1, nci_ptr->flags2, NciM_DATA_CONTIGUOUS);
     if (nonvms_compatible == -1)
       nonvms_compatible = getenv("NONVMS_COMPATIBLE") != NULL;
-    if (nonvms_compatible) {
+    if (nonvms_compatible)
+    {
       bitassign_c(1, nci_ptr->flags2, NciM_NON_VMS);
-      status = TreeLockDatafile(info, 0, 0);
-      locked = 1;
-      eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
       buffer = (char *)data_dsc_ptr->pointer->pointer;
       bptr = buffer + nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-    } else {
+      status = TreeLockDatafile(info, 0, 0);
+      eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
+    }
+    else
+    {
       buffer = (char *)malloc(blen);
       bptr = buffer;
       loadint32(&info->data_file->record_header->node_number,&nodenum);
       bitassign_c(0, nci_ptr->flags2, NciM_NON_VMS);
       memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
-      while (bytes_to_put && (status & 1)) {
-	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-	bytes_to_put -= bytes_this_time;
-	bptr += sizeof(RECORD_HEADER);
-	memcpy(bptr, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
-	       bytes_this_time);
-	bptr += bytes_this_time;
-      }
-      bptr = buffer;
       status = TreeLockDatafile(info, 0, 0);
-      locked = 1;
-      eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
-      bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
-      while (bytes_to_put && (status & 1)) {
-	int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-	unsigned short rlength = bytes_this_time + 10;
-	bytes_to_put -= bytes_this_time;
-	loadint16(&info->data_file->record_header->rlength,&rlength);
-	memcpy(bptr, (void *)info->data_file->record_header, sizeof(RECORD_HEADER));
-	bptr += sizeof(RECORD_HEADER);
-	bptr += bytes_this_time;
-	SeekToRfa(eof, rfa);
-	memcpy(&info->data_file->record_header->rfa, rfa,
-	       sizeof(info->data_file->record_header->rfa));
-	if (bytes_to_put)
-	  eof += sizeof(RECORD_HEADER) + bytes_this_time;
-      }
-    }
-    if (status & 1) {
-      status =
-	  (MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
-	  ? TreeSUCCESS : TreeFAILURE;
-      if (status & 1) {
-	bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
-	SeekToRfa(eof, rfa);
-	memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa, rfa,
-	       sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
-      } else {
-	bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
-	nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
-	nci_ptr->length = 0;
+      if STATUS_OK
+      {
+        eof = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
+        while (bytes_to_put)
+        {
+          const int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
+          bytes_to_put -= bytes_this_time;
+          uint16_t rlength = bytes_this_time + 10;
+          loadint16(&info->data_file->record_header->rlength, &rlength);
+          memcpy(bptr, (void *)info->data_file->record_header, sizeof(RECORD_HEADER));
+          bptr += sizeof(RECORD_HEADER);
+          memcpy(bptr, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time);
+          bptr += bytes_this_time;
+          SeekToRfa(eof, rfa);
+          memcpy(&info->data_file->record_header->rfa, rfa, sizeof(info->data_file->record_header->rfa));
+          if (bytes_to_put)
+            eof += sizeof(RECORD_HEADER) + bytes_this_time;
+        }
       }
     }
   }
-  if (nci_ptr->flags & NciM_VERSIONS) {
-    char nci_bytes[42];
-    int64_t seek_end;
-    TreeSerializeNciOut(old_nci_ptr, nci_bytes);
-    seek_end = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
-    if (seek_end != -1) {
-      status =
-	  (MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) ==
-	   sizeof(nci_bytes)) ? TreeSUCCESS : TreeFAILURE;
-    } else
-      status = TreeFAILURE;
+  else
+  {
+    if (nci_ptr->flags & NciM_VERSIONS)
+      status = TreeLockDatafile(info, 0, 0);
+    bptr = buffer;
+    eof = -1;
   }
-  status = tree_put_nci(info, nodenum, nci_ptr, ncilocked);
-  if (locked)
+  if STATUS_OK
+  {
+    if (bptr == buffer || MDS_IO_WRITE(info->data_file->put, (void *)buffer, bptr - buffer) == (bptr - buffer))
+    {
+      bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+      if (bptr > buffer)
+      {
+        SeekToRfa(eof, rfa);
+        memcpy(nci_ptr->DATA_INFO.DATA_LOCATION.rfa, rfa, sizeof(nci_ptr->DATA_INFO.DATA_LOCATION.rfa));
+      }
+      if (nci_ptr->flags & NciM_VERSIONS) {
+        char nci_bytes[42];
+        int64_t seek_end;
+        TreeSerializeNciOut(old_nci_ptr, nci_bytes);
+        seek_end = MDS_IO_LSEEK(info->data_file->put, 0, SEEK_END);
+        if (seek_end != -1 && MDS_IO_WRITE(info->data_file->put, nci_bytes, sizeof(nci_bytes)) != sizeof(nci_bytes))
+        {
+          fprintf(stderr, "ERROR: put_datafile writing old nci incomplete\n");
+          status = TreeFAILURE;
+        }
+      }
+    }
+    else
+    {
+      bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+      nci_ptr->DATA_INFO.ERROR_INFO.error_status = TreeFAILURE;
+      nci_ptr->length = 0;
+    }
     TreeUnLockDatafile(info, 0, 0);
+    if STATUS_OK // unless put_datafile writing old nci incomplete
+      status = tree_put_nci(info, nodenum, nci_ptr, ncilocked);
+  }
   if (buffer && (!nonvms_compatible))
     free(buffer);
   return status;
@@ -547,41 +548,38 @@ static int update_datafile(
   unsigned int bytes_to_put = nci_ptr->DATA_INFO.DATA_LOCATION.record_length;
   loadint32(&info->data_file->record_header->node_number,&nodenum);
   memset(&info->data_file->record_header->rfa, 0, sizeof(RFA));
-  while (bytes_to_put && (status & 1)) {
-    int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
-    int64_t rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+  while (bytes_to_put && STATUS_OK)
+  {
+    const int bytes_this_time = min(DATAF_C_MAX_RECORD_SIZE + 2, bytes_to_put);
+    const int64_t rfa_l = RfaToSeek(nci_ptr->DATA_INFO.DATA_LOCATION.rfa);
+    uint16_t rlength = bytes_this_time + 10;
+    loadint16(&info->data_file->record_header->rlength, &rlength);
     status = TreeLockDatafile(info, 0, rfa_l);
-    if (status & 1) {
-      bytes_to_put -= bytes_this_time;
-      uint16_t tmp = bytes_this_time + 10;
-      loadint16(&info->data_file->record_header->rlength,&tmp);
+    if STATUS_OK
+    {
       MDS_IO_LSEEK(info->data_file->put, rfa_l, SEEK_SET);
-      status =
-	  (MDS_IO_WRITE
-	   (info->data_file->put, (void *)info->data_file->record_header,
-	    sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
-	  ? TreeSUCCESS : TreeFAILURE;
-      status =
-	  (MDS_IO_WRITE
-	   (info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put),
-	    bytes_this_time) == bytes_this_time) ? TreeSUCCESS : TreeFAILURE;
-      if (!bytes_to_put) {
-	bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
-	if (status & 1) {
-	  bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
-	} else {
-	  bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
-	  nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
-	  nci_ptr->length = 0;
-	}
-	tree_put_nci(info, nodenum, nci_ptr, ncilocked);
+      if (MDS_IO_WRITE(info->data_file->put, (void *)info->data_file->record_header, sizeof(RECORD_HEADER)) == sizeof(RECORD_HEADER))
+      {
+        bytes_to_put -= bytes_this_time;
+        status = (MDS_IO_WRITE(info->data_file->put, (void *)(((char *)data_dsc_ptr->pointer->pointer) + bytes_to_put), bytes_this_time) == bytes_this_time)
+               ? TreeSUCCESS : TreeFAILURE;
       }
+      else
+        status = TreeFAILURE;
       TreeUnLockDatafile(info, 0, rfa_l);
     }
   }
-  if (bytes_to_put)
-    tree_unlock_nci(info, 0, nodenum, ncilocked);
-  return status;
+  bitassign(0,nci_ptr->flags,NciM_SEGMENTED);
+  if STATUS_OK
+    bitassign_c(0, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+  else
+  {
+    bitassign_c(1, nci_ptr->flags2, NciM_ERROR_ON_PUT);
+    nci_ptr->DATA_INFO.ERROR_INFO.error_status = status;
+    nci_ptr->length = 0;
+  }
+  const int stat = tree_put_nci(info, nodenum, nci_ptr, ncilocked);
+  return STATUS_OK ? stat : status;
 }
 
 /*-----------------------------------------------------------------
