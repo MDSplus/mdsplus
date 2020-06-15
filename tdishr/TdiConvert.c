@@ -31,12 +31,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #define MAXTYPE (DTYPE_FTC + 1)
 
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
-#endif
-
-
 extern void CvtConvertFloat();
 extern int IsRoprand();
 
@@ -621,11 +615,27 @@ typedef union {
 #define FTC_DC(lena,pa,lenb,pb,numb) COMPLEX_TO_COMPLEX(DTYPE_FT,double,pa,DTYPE_D,double,pb,numb)
 #define FTC_GC(lena,pa,lenb,pb,numb) COMPLEX_TO_COMPLEX(DTYPE_FT,double,pa,DTYPE_G,double,pb,numb)
 /************* Text *****************/
-#define TO_TEXT(pa,it,pb,numb,cvt) \
-  {it *ip = (it*)pa; char *op = (char *)pb; int i=numb; while(i-- > 0) {\
-   char text[64]; int nfill; int n=cvt;  nfill = lenb - n; \
-   strncpy((nfill <= 0) ? op : op+nfill, (nfill <= 0) ? text-nfill : text, (size_t)((nfill <= 0) ? lenb : n)); \
-   if (nfill > 0) memset(op,32,(size_t)nfill); op += lenb;} status = MDSplusSUCCESS;}
+#define MEMCPYFILL32(op,text,len,n) do{\
+  const int nfill = len - n;\
+  if (nfill <= 0)\
+    memcpy(op, text - nfill, len);\
+  else\
+  {\
+    memcpy(op + nfill, text, n);\
+    memset(op, ' ', nfill);\
+  }\
+}while(0)
+
+#define TO_TEXT(pa,it,pb,numb,cvt) do{\
+  it *ip = (it*)pa; char *op = (char *)pb; int i=numb;\
+  while(i-- > 0)\
+  {\
+    char text[64]; int n=cvt;\
+    MEMCPYFILL32(op,text,lenb,n);\
+    op += lenb;\
+  }\
+  status = MDSplusSUCCESS;\
+}while(0)
 
 /******************* CODE *********************/
 void DoubleToWideInt();
@@ -646,7 +656,6 @@ static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, cha
   int i = numb;
   while (i-- > 0) {
     char text[64];
-    int nfill;
     int n;
     if (IsRoprand(itype, ip)) {
       n = sprintf(text, "$ROPRAND");
@@ -674,11 +683,7 @@ static void FLOAT_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, cha
 	text[n - 1] = '0';
       }
     }
-    nfill = lenb - n;
-    strncpy((nfill <= 0) ? op : op + nfill,
-	    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
-    if (nfill > 0)
-      memset(op, 32, nfill);
+    MEMCPYFILL32(op,text,lenb,n);
     op += lenb;
   }
 }
@@ -690,7 +695,6 @@ static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
   int i = numb;
   while (i-- > 0) {
     char text[64];
-    int nfill;
     int n;
     if (IsRoprand(itype, ip)) {
       n = sprintf(text, "$ROPRAND");
@@ -724,11 +728,7 @@ static void DOUBLE_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
 	text[n - 1] = '0';
       }
     }
-    nfill = lenb - n;
-    strncpy((nfill <= 0) ? op : op + nfill,
-	    (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? lenb : n);
-    if (nfill > 0)
-      memset(op, 32, nfill);
+    MEMCPYFILL32(op,text,lenb,n);
     op += lenb;
   }
 }
@@ -740,7 +740,6 @@ static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
   int i = numb;
   while (i-- > 0) {
     char text[64];
-    int nfill;
     int n;
     int part;
     for (part = 0; part < 2; part++) {
@@ -775,11 +774,7 @@ static void FLOATC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, ch
 	  text[n - 1] = '0';
 	}
       }
-      nfill = len - n;
-      strncpy((nfill <= 0) ? opl : opl + nfill,
-	      (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
-      if (nfill > 0)
-	memset(opl, 32, nfill);
+      MEMCPYFILL32(opl,text,len,n);
     }
     op += lenb;
   }
@@ -792,7 +787,6 @@ static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, c
   int i = numb;
   while (i-- > 0) {
     char text[64];
-    int nfill;
     int n;
     int part;
     for (part = 0; part < 2; part++) {
@@ -827,11 +821,7 @@ static void DOUBLEC_TO_TEXT(int itype, char *pa, char *pb, int numb, int lenb, c
 	  text[n - 1] = '0';
 	}
       }
-      nfill = len - n;
-      strncpy((nfill <= 0) ? opl : opl + nfill,
-	      (nfill <= 0) ? text - nfill : text, (nfill <= 0) ? len : n);
-      if (nfill > 0)
-	memset(opl, 32, nfill);
+      MEMCPYFILL32(opl,text,len,n);
     }
     op += lenb;
   }

@@ -386,7 +386,17 @@ int tree_get_and_lock_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked
 	Description:
 
 +-----------------------------------------------------------------------------*/
-int TreeOpenNciW(TREE_INFO * info, int tmpfile){
+static char *tree_to_characteristic(const char* tree, const int tmpfile)
+{ // replace .tree with .characteristics or .characteristics# if tmpfile
+  const size_t baselen = strlen(tree) - sizeof("tree")+1;
+  const size_t namelen = baselen + (tmpfile ? sizeof("characteristics#")-1 : sizeof("characteristics")-1);
+  char *const filename = memcpy(malloc(namelen+1), tree, baselen);
+  memcpy(filename+baselen, "characteristics#", namelen-baselen);
+  filename[namelen] = '\0';
+  return filename;
+}
+int TreeOpenNciW(TREE_INFO * info, int tmpfile)
+{
   WRLOCKINFO(info);
   int status = _TreeOpenNciW(info,tmpfile);
   UNLOCKINFO(info);
@@ -406,15 +416,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
 	((info->nci_file =
 	  (struct nci_file *)malloc(sizeof(NCI_FILE))) != NULL) ? TreeSUCCESS : TreeFAILURE;
     if STATUS_OK {
-      size_t len = strlen(info->filespec) - 4;
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-      char *filename = strncpy(malloc(len + 20), info->filespec, len);
-#pragma GCC diagnostic pop
-      filename[len] = '\0';
-      strcat(filename, tmpfile ? "characteristics#" : "characteristics");
+      char *filename = tree_to_characteristic(info->filespec, tmpfile);
       memset(info->nci_file, 0, sizeof(NCI_FILE));
       info->nci_file->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL : O_RDONLY, 0664);
       status = (info->nci_file->get == -1) ? TreeFAILURE : TreeSUCCESS;
@@ -433,15 +435,7 @@ int _TreeOpenNciW(TREE_INFO * info, int tmpfile)
     Else the file was open for read access so
     open it for write access.
   *******************************************/
-    size_t len = strlen(info->filespec) - 4;
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-    char *filename = strncpy(malloc(len + 20), info->filespec, len);
-#pragma GCC diagnostic pop
-    filename[len] = '\0';
-    strcat(filename, tmpfile ? "characteristics#" : "characteristics");
+    char *filename = tree_to_characteristic(info->filespec, tmpfile);
     /********* this will never happen ***********/
     if (info->nci_file->put)
       MDS_IO_CLOSE(info->nci_file->put);

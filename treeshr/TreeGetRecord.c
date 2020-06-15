@@ -185,24 +185,25 @@ int TreeOpenDatafileR(TREE_INFO * info)
   UNLOCKINFO(info);
   return status;
 }
+static inline char *tree_to_datafile(const char* tree)
+{ // replace .tree with .characteristics
+  const size_t baselen = strlen(tree) - sizeof("tree")+1;
+  const size_t namelen0 = baselen + sizeof("datafile");
+  char *const filename = memcpy(malloc(namelen0), tree, baselen);
+  memcpy(filename+baselen, "datafile", namelen0-baselen);
+  return filename;
+}
 int _TreeOpenDatafileR(TREE_INFO * info)
 {
   INIT_STATUS_AS TreeFAILURE;
   if (!info->data_file)
     info->data_file = TreeGetVmDatafile(info);
-  if (info->data_file) {
-    if (!info->data_file->get) {
-      size_t len = strlen(info->filespec) - 4;
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-      char *filename = strncpy(malloc(len + 9), info->filespec, len);
-#pragma GCC diagnostic pop
-      int lun = -1;
-      filename[len] = '\0';
-      strcat(filename, "datafile");
-      lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
+  if (info->data_file)
+  {
+    if (!info->data_file->get)
+    {
+      char *filename = tree_to_datafile(info->filespec);
+      const int lun = MDS_IO_OPEN(filename, O_RDONLY, 0);
       free(filename);
       status = (lun == -1) ? TreeFOPENR : TreeSUCCESS;
       info->data_file->get = (lun != -1) ? lun : 0;
