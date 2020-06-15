@@ -28,6 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <treeshr.h>
 #include <ncidef.h>
 
+#define DEBUG
+
 extern void **TreeCtx();
 
 extern int SetNciRemote();
@@ -132,7 +134,6 @@ void tree_unlock_nci(TREE_INFO * info, int readonly, int nodenum, int *locked)
 {
   if (!info->header->readonly)
   {
-//#define DEBUG
 #ifdef DEBUG
     if (*locked<2) fprintf(stderr, "ERROR: tree_unlock_nci and *locked invalid: %d\n", *locked);
 #endif
@@ -357,6 +358,7 @@ int tree_get_and_lock_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked
    the characteristics are just a memory reference
    away.
   *********************************************/
+    *locked += 2; // simulate lock
     memcpy(nci, info->edit->nci + node_num - info->edit->first_in_mem, sizeof(struct nci));
   }
 
@@ -512,7 +514,10 @@ int tree_put_nci(TREE_INFO * info, int node_num, NCI * nci, int *locked)
 *****************************/
 
   else
+  {
     memcpy(info->edit->nci + (node_num - info->edit->first_in_mem), nci, sizeof(*nci));
+    if (!*locked) *locked -= 2; // simulate unlock
+  }
   return status;
 }
 
