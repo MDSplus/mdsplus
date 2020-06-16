@@ -1,7 +1,7 @@
 JAVASOURCE = 8
 include ../Makefile.inc.am
 
-EXTRA_DIST = servlet-2_3-fcs-classfiles.zip
+EXTRA_DIST =
 
 
 java_srcdir = $(srcdir)/src/main/java
