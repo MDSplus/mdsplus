@@ -18,7 +18,7 @@ else
 
 jTraverser.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
+	echo "Main-Class: mds.jtraverser.jTraverser" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar DeviceBeans.jar jScope.jar jDevices.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
@@ -42,6 +42,7 @@ DecompileTree: $(srcdir)/DecompileTree.template
 	cp $< $@
 endif
 
-SOURCE = *.java\
+SOURCE = \
+ mds/jtraverser/*.java\
  mds/devices/*.java
-RESOURCES = *.gif
+RESOURCES = mds/jtraverser/*.gif
