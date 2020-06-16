@@ -855,6 +855,14 @@ int TreeOpenNciR(TREE_INFO * info){
   UNLOCKINFO(info);
   return status;
 }
+static char *tree_to_characteristic(const char* tree)
+{ // replace .tree with .characteristics or .characteristics# if tmpfile
+  const size_t baselen = strlen(tree) - sizeof("tree")+1;
+  const size_t namelen = baselen + sizeof("characteristics");
+  char *const filename = memcpy(malloc(namelen), tree, baselen);
+  memcpy(filename+baselen, "characteristics", namelen-baselen);
+  return filename;
+}
 int _TreeOpenNciR(TREE_INFO * info)
 {
 /****************************************************
@@ -866,15 +874,7 @@ int _TreeOpenNciR(TREE_INFO * info)
   if (!info->nci_file){
     info->nci_file = calloc(1,sizeof(NCI_FILE));
     if (info->nci_file) {
-      size_t len = strlen(info->filespec) - 4;
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-      char *filename = strncpy(malloc(len + 16), info->filespec, len);
-#pragma GCC diagnostic pop
-      filename[len] = '\0';
-      strcat(filename, "characteristics");
+      char *filename = tree_to_characteristic(info->filespec);
       info->nci_file->get = MDS_IO_OPEN(filename, O_RDONLY | O_BINARY | O_RANDOM, 0);
       free(filename);
       status = (info->nci_file->get == -1) ? TreeFOPENR : TreeSUCCESS;

@@ -57,9 +57,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <string.h>
 #include <time.h>
 #include <fcntl.h>
-#ifdef HAVE_ALLOCA_H
-#include <alloca.h>
-#endif
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
@@ -378,7 +375,15 @@ static int FixupPath()
   TREE_PATHREF = 1;
   return 0;
 }
-
+static inline char *tree_to_datafile(const char* tree, const int tmpfile)
+{ // replace .tree with .characteristics or .characteristics# if tmpfile
+  const size_t baselen = strlen(tree) - sizeof("tree")+1;
+  const size_t namelen = baselen + (tmpfile ? sizeof("datafile#")-1 : sizeof("datafile")-1);
+  char *const filename = memcpy(malloc(namelen+1), tree, baselen);
+  memcpy(filename+baselen, "datafile#", namelen-baselen);
+  filename[namelen] = '\0';
+  return filename;
+}
 int TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile){
   WRLOCKINFO(info);
   int status = _TreeOpenDatafileW(info, stv_ptr, tmpfile);
@@ -398,17 +403,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
   }
   if STATUS_OK {
     int old_get = df_ptr->get;
-    size_t len = strlen(info->filespec) - 4;
-    size_t const filename_length = len + 20;
-    char *filename = (char *)alloca(filename_length);
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-#endif
-    strncpy(filename, info->filespec, len);
-#pragma GCC diagnostic pop
-    filename[len] = '\0';
-    strcat(filename, tmpfile ? "datafile#" : "datafile");
+    char *filename = tree_to_datafile(info->filespec, tmpfile);
     df_ptr->get = MDS_IO_OPEN(filename, tmpfile ? O_RDWR | O_CREAT | O_TRUNC | O_EXCL: O_RDONLY, 0664);
     status = (df_ptr->get == -1) ? TreeFAILURE : TreeSUCCESS;
     if (df_ptr->get == -1)
@@ -423,6 +418,7 @@ int _TreeOpenDatafileW(TREE_INFO * info, int *stv_ptr, int tmpfile)
       if STATUS_OK
 	df_ptr->open_for_write = 1;
     }
+    free(filename);
   } else {
     free(df_ptr);
     df_ptr = NULL;
