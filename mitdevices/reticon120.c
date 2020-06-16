@@ -84,7 +84,7 @@ EXPORT int reticon120___init(struct descriptor *niddsc_ptr __attribute__ ((unuse
     int f_nid = p_nid + 1;
     int fs_nid = f_nid + 1;
     ReturnOnError(DevFloat(&p_nid, &period), RETICON$_BAD_PERIOD);
-    for (i = 0; i < 15 && periods[i] < period; i++) ;
+    for (i = 0 ; (i < 15) && (periods[i] < period) ; i++) ;
     state[s].period = (i == 15) ? 14 : i;
     ReturnOnError(DevLong(&f_nid, &frames), RETICON$_BAD_FRAMES);
     if (frames > 2048)
@@ -93,7 +93,7 @@ EXPORT int reticon120___init(struct descriptor *niddsc_ptr __attribute__ ((unuse
     state[s].u.s.frames = frames;
     state[s].u.s.stop = s == (setup->num_states - 1);
     ReturnOnError(DevLong(&fs_nid, &frame_select), RETICON$_BAD_FRAME_SELECT);
-    for (i = 0; i < 7 && intervals[i] != frame_select; i++) ;
+    for (i = 0 ; (i < 7) && (intervals[i] != frame_select) ; i++) ;
     if (i == 7)
       return RETICON$_BAD_FRAME_SELECT;
     state[s].frame_select = i + 1;
