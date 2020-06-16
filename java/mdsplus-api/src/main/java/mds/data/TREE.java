@@ -1126,19 +1126,13 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 
 	public final TREE turnOff(final int nid) throws MdsException
 	{
-		final int status = this.setActive().api.treeTurnOff(this.ctx, nid);
-		if (status == MdsException.TreeLOCK_FAILURE)
-			return this;// ignore: it changes the state
-		MdsException.handleStatus(status);
+		MdsException.handleStatus(this.setActive().api.treeTurnOff(this.ctx, nid));
 		return this;
 	}
 
 	public final TREE turnOn(final int nid) throws MdsException
 	{
-		final int status = this.setActive().api.treeTurnOn(this.ctx, nid);
-		if (status == MdsException.TreeLOCK_FAILURE)
-			return this;// ignore: it changes the state
-		MdsException.handleStatus(status);
+		MdsException.handleStatus(this.setActive().api.treeTurnOn(this.ctx, nid));
 		return this;
 	}
 

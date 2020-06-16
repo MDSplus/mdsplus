@@ -79,7 +79,8 @@ int TreeGetRecord(int nid_in, struct descriptor_xd *dsc){
       return 0;
     status = TreeOpenDatafileR(info);
     if STATUS_OK {
-      status = TreeGetNciW(info, nidx, &nci, 0);
+      int locked = 0;
+      status = tree_get_nci(info, nidx, &nci, 0, &locked);
       if STATUS_OK {
 	if (nci.length) {
 	  TreeCallHookFun("TreeNidHook","GetData", info->treenam, info->shot, nid, NULL);

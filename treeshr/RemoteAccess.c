@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
-# define DBG(...) {}
+# define DBG(...) do{}while(0)
 #endif
 
 static inline char *replaceBackslashes(char *filename) {
@@ -1317,7 +1317,7 @@ inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size, int
 
 static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in, int *deleted) {
   int fd = fdinfo.fd;
-  int status = TreeLOCK_FAILURE;
+  int err;
   int mode = mode_in & MDS_IO_LOCK_MASK;
   int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32
@@ -1328,14 +1328,21 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   overlapped.OffsetHigh = (int)(offset >> 32);
   overlapped.hEvent = 0;
   HANDLE h = (HANDLE) _get_osfhandle(fd);
-  if (mode > 0) {
+  if (mode > 0)
+  {
     flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
-    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped); //TODO: check return value
-    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
-  } else {
-    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
+    //UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
+    err = !LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped);
   }
+  else
+  {
+    err = !UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
+  }
+  if (err)
+    DBG("LOCK_ER %d mode=%d, errorcode=%d\n", fd, mode, (int)GetLastError());
+  else
+    DBG("LOCK_OK %d mode=%d\n", fd, mode);
   if (deleted) *deleted = 0;
 #else
   struct flock flock_info;
@@ -1344,11 +1351,11 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
   flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock_info.l_len = (mode == 0) ? 0 : size;
-  status = (fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
+  err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) == -1;
   fstat(fd, &stat);
   if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
-  return status;
+  return err ? TreeLOCK_FAILURE : TreeSUCCESS;
 }
 
 EXPORT int MDS_IO_LOCK(int idx, off_t offset, size_t size, int mode_in, int *deleted){

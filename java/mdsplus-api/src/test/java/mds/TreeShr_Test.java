@@ -372,11 +372,9 @@ public class TreeShr_Test{
 		AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeOpenNew(ctx, AllTests.tree, TreeShr_Test.shot));
 		try{
 			Assert.assertEquals(1, TreeShr_Test.treeshr.treeAddNode(ctx, "A", NODE.USAGE_ANY).getData());
-			int status = TreeShr_Test.treeshr.treeTurnOff(ctx, 1);
-			Assert.assertTrue(status == MdsException.TreeSUCCESS || status == MdsException.TreeLOCK_FAILURE);
+			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeTurnOff(ctx, 1));
 			AllTests.testStatus(MdsException.TreeOFF, TreeShr_Test.treeshr.treeIsOn(ctx, 1));
-			status = TreeShr_Test.treeshr.treeTurnOn(ctx, 1);
-			Assert.assertTrue(status == MdsException.TreeSUCCESS || status == MdsException.TreeLOCK_FAILURE);
+			AllTests.testStatus(MdsException.TreeSUCCESS, TreeShr_Test.treeshr.treeTurnOn(ctx, 1));
 		}finally{
 		}
 	}
