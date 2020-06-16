@@ -8,6 +8,7 @@ import json
 import socket
 import select
 import threading
+import traceback
 
 import numpy
 
@@ -104,6 +105,7 @@ class phantom(object):
     through a network socket. All communication with the D-TACQ devices will
     require this communication layer
     """
+
     i1e9 = int(1e9)
     i1e6 = int(1e6)
     i1e3 = int(1e3)
@@ -401,11 +403,11 @@ class phantom(object):
         # return self.get('c%d.state' % i for i in range(maxcine))
         return self.Parser(self('cstats')).get_unit()
 
-    def start_data(self):  # 5.7
+    def start_data(self, port=0):  # 5.7
         server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         server.settimeout(5)
-        server.bind(("", 0))
+        server.bind(("", port))
         try:
             server.listen(1)
             port = server.getsockname()[1]
@@ -611,7 +613,7 @@ class phantom(object):
             time.sleep(.1)
 
     def read_images(self, start=0, count=-1, maxchunk=128, debug=0,
-                    cine=1, use8bit=False, trigtime=0):
+                    cine=1, use8bit=False, trigtime=0, port=0):
         def recv(sock, size):
             buf = bytearray(size)
             view = memoryview(buf)
@@ -647,7 +649,7 @@ class phantom(object):
         res = cinfo.res
         imgsize = res[0] * res[1] * fnb
         maxchunk = min((1 << 22) // imgsize, maxchunk)  # limit chunks to 4MB
-        stream = self.start_data()
+        stream = self.start_data(port)
         while count > 0:
             chunk = min(count, maxchunk)
             self.img(cine, end-count, chunk, fmt)
@@ -683,37 +685,41 @@ else:
             def run(self):
                 def time_rel(ns=1e9):
                     return MDSplus.DIVIDE(MDSplus.Int64(ns), self.frame_rate)
-                cur_frame = 0
-                rng = MDSplus.Range(None, None, time_rel())
-                while True:
-                    try:
-                        queued = self.queue.get(True, 1)
-                    except queue.Empty:
-                        if self.strm.on:
-                            continue
-                        break  # measurement done
-                    if queued is None:
-                        break
-                    trig, frames = queued
-                    if self.fsttrig is None:
-                        self.fsttrig = trig
-                    trig = MDSplus.Int64(trig-self.fsttrig)
-                    trigger = MDSplus.ADD(self.trigger, trig)
-                    first_frame = cur_frame
-                    for ic in range(frames.shape[0]):
-                        dim = MDSplus.ADD(trigger, time_rel([cur_frame*1e9]))
-                        limit = MDSplus.ADD(trigger, time_rel(cur_frame*1e9))
-                        data = frames[ic:ic+1]
-                        self.frames.makeSegment(limit, limit, dim, data)
-                        cur_frame += 1
-                    last_frame = cur_frame - 1
-                    win = MDSplus.Window(first_frame, last_frame, trigger)
-                    start = MDSplus.ADD(trigger, time_rel(first_frame*1e9))
-                    end = MDSplus.ADD(trigger, time_rel(last_frame*1e9))
-                    dim = MDSplus.Dimension(win, rng)
-                    frames = frames.reshape((frames.shape[0], -1)).max(1)
-                    self.frames_max.makeSegment(start, end, dim, frames)
-                    self.queue.task_done()
+                try:
+                    cur_frame = 0
+                    rng = MDSplus.Range(None, None, time_rel())
+                    while True:
+                        try:
+                            queued = self.queue.get(True, 1)
+                        except queue.Empty:
+                            if self.strm.on:
+                                continue
+                            break  # measurement done
+                        if queued is None:
+                            break
+                        trigger, frames = queued
+                        if self.fsttrig is None:
+                            self.fsttrig = trigger
+                        trigger = MDSplus.Int64(trigger-self.fsttrig)
+                        trg = MDSplus.ADD(self.trigger, trigger)
+                        first_frame = cur_frame
+                        for ic in range(frames.shape[0]):
+                            dim = MDSplus.ADD(trg, time_rel([cur_frame*1e9]))
+                            limit = MDSplus.ADD(trg, time_rel(cur_frame*1e9))
+                            data = frames[ic:ic+1]
+                            self.frames.makeSegment(limit, limit, dim, data)
+                            cur_frame += 1
+                        last_frame = cur_frame - 1
+                        win = MDSplus.Window(first_frame, last_frame, trg)
+                        start = MDSplus.ADD(trg, time_rel(first_frame*1e9))
+                        end = MDSplus.ADD(trg, time_rel(last_frame*1e9))
+                        dim = MDSplus.Dimension(win, rng)
+                        frames = frames.reshape((frames.shape[0], -1)).max(1)
+                        self.frames_max.makeSegment(start, end, dim, frames)
+                        self.queue.task_done()
+                except Exception as e:
+                    self.exception = e
+                    traceback.print_exc()
 
         @staticmethod
         def update(node, value):
@@ -734,44 +740,51 @@ else:
         def on(self): return not self.stopped.is_set()
 
         def run(self):
-            self.dev.tree.open()
-            while not self.lib.is_stored(1):
-                if not self.on:
-                    return
-                time.sleep(.1)
-            cinfo = self.lib.get_cinfo()
-            self.dev.store_cinfo(cinfo)
-            rate = float(cinfo['rate'])
-            self.update(self.dev.frame_rate,
-                        (MDSplus.Float64(rate).setUnits('Hz')))
-            self.update(self.dev.exposure,
-                        (MDSplus.Int32(cinfo['exp']).setUnits('ns')))
-            self.dev.frames_meta = MDSplus.Data(cinfo)
-            num_cine = len(self.lib.cstats())
-            Q = queue.Queue(30)
-            writer = self.Writer(self, Q)
-            writer.start()
             try:
-                for c in range(1, num_cine+1):
-                    while not self.lib.is_triggered(c):
-                        if not self.on:
-                            return  # end of measurement
-                        time.sleep(.1)
-                    self.lib.wait_stored(c)
-                    for trig, imgs in self.lib.read_images(
-                            0, cine=c, debug=self.dev.debug):
-                        while writer.is_alive():
-                            try:
-                                Q.put((trig, imgs), True, 1)
-                            except queue.Full:
-                                continue
+                self.dev.tree.open()
+                while not self.lib.is_stored(1):
+                    if not self.on:
+                        return
+                    time.sleep(.1)
+                cinfo = self.lib.get_cinfo()
+                self.dev.store_cinfo(cinfo)
+                rate = float(cinfo['rate'])
+                self.update(self.dev.frame_rate,
+                            (MDSplus.Float64(rate).setUnits('Hz')))
+                self.update(self.dev.exposure,
+                            (MDSplus.Int32(cinfo['exp']).setUnits('ns')))
+                self.dev.frames_meta = MDSplus.Data(cinfo)
+                num_cine = len(self.lib.cstats())
+                Q = queue.Queue(30)
+                writer = self.Writer(self, Q)
+                writer.start()
+                try:
+                    for c in range(1, num_cine+1):
+                        while not self.lib.is_triggered(c):
+                            if not self.on:
+                                return  # end of measurement
+                            time.sleep(.1)
+                        self.lib.wait_stored(c)
+                        for trig, imgs in self.lib.read_images(
+                                0, cine=c, debug=self.dev.debug,
+                                port=self.dev._host_port):
+                            while writer.is_alive():
+                                try:
+                                    Q.put((trig, imgs), True, 1)
+                                except queue.Full:
+                                    continue
+                                else:
+                                    break
                             else:
                                 break
-                        else:
-                            break
-            finally:
-                Q.put(None)  # indicate last frame to end thread
-                writer.join()
+                finally:
+                    Q.put(None)  # indicate last frame to end thread
+                    writer.join()
+                    if hasattr(writer, "exception"):
+                        self.exception = writer.exception
+            except Exception as e:
+                self.exception = e
+                traceback.print_exc()
 
     parts = [  # Prepare init action collection structure
         dict(
@@ -784,74 +797,42 @@ else:
             path=':ACTIONSERVER:INIT',
             type='ACTION',
             options=('no_write_shot', 'write_once'),
-            valueExpr='Action(node.DISPATCH, node.TASK)',
-        ),
-        dict(
-            path=':ACTIONSERVER:INIT:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.ACTIONSERVER, "INIT", 50)',
-        ),
-        dict(
-            path=':ACTIONSERVER:INIT:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None, "init", head)',
+            valueExpr=('Action('
+                       'Dispatch(head.ACTIONSERVER, "INIT", 50),'
+                       'Method(None, "init", head))'),
         ),
         dict(
             path=':ACTIONSERVER:ARM',
             type='ACTION',
             options=('no_write_shot', 'write_once'),
-            valueExpr='Action(node.DISPATCH, node.TASK)',
-        ),
-        dict(
-            path=':ACTIONSERVER:ARM:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.ACTIONSERVER, "ARM", 50)',
-        ),
-        dict(
-            path=':ACTIONSERVER:ARM:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None, "arm", head)',
+            valueExpr=('Action('
+                       'Dispatch(head.ACTIONSERVER, "ARM", 50),'
+                       'Method(None, "arm", head))'),
         ),
         dict(
             path=':ACTIONSERVER:SOFT_TRIGGER',
             type='ACTION',
             options=('no_write_shot', 'write_once', 'disabled'),
-            valueExpr='Action(node.DISPATCH, node.TASK)',
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.ACTIONSERVER, "PULSE", 1)',
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None, "soft_trigger", head)',
+            valueExpr=('Action('
+                       'Dispatch(head.ACTIONSERVER, "PULSE", 1),'
+                       'Method(None, "soft_trigger", head))'),
         ),
         # Store-phase action: save video to local tree
         dict(
             path=':ACTIONSERVER:STORE',
             type='ACTION',
             options=('no_write_shot', 'write_once'),
-            valueExpr='Action(node.DISPATCH, node.TASK)',
+            valueExpr=('Action('
+                       'Dispatch(head.ACTIONSERVER, "STORE", 50),'
+                       'Method(None, "store", head))'),
         ),
         dict(
-            path=':ACTIONSERVER:STORE:DISPATCH',
-            type='DISPATCH',
+            path=':ACTIONSERVER:DEINIT',
+            type='ACTION',
             options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.ACTIONSERVER, "STORE", 50)',
-        ),
-        dict(
-            path=':ACTIONSERVER:STORE:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None, "store", head)',
+            valueExpr=('Action('
+                       'Dispatch(head.ACTIONSERVER, "DEINIT", 50),'
+                       'Method(None, "deinit", head))'),
         ),
         # Create rest of nodes
         dict(
@@ -875,6 +856,13 @@ else:
             options=('no_write_shot', ),
             filter=MDSplus.mdsrecord.str,
             default=None,
+        ),
+        dict(
+            path=':HOST:PORT',
+            type='NUMERIC',
+            options=('no_write_shot', ),
+            filter=int,
+            default=0,
         ),
         dict(
             path=':TRIGGER',
@@ -988,6 +976,8 @@ else:
                     stream.stop()
                     while stream.is_alive():
                         stream.join(1)
+                    if hasattr(stream, "exception"):
+                        raise stream.exception
                 finally:
                     del(pers['stream'])
         except PhantomExcConnect:
@@ -1011,39 +1001,8 @@ else:
             finally:
                 self.persistent = None
 
- def testmds(expt='test', shot=1):  # analysis:ignore
-    import gc
-    gc.collect(2)
-    MDSplus.setenv('default_tree_path', os.getenv("TMP", "/tmp"))
-    # MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
-    with MDSplus.Tree(expt, -1, 'NEW') as tree:
-        dev = PHANTOM.Add(tree, 'PHANTOM')
-        dev.host.record = "192.168.44.255"
-        tree.write()
-    tree.open()
-    try:
-        tree.createPulse(shot)
-        old = MDSplus.Device.debug
-        MDSplus.Device.debug = 7
-        tree.shot = shot
-        tree.open()
-        try:
-            dev.init()
-            dev.arm()
-            dev.lib.wait_armed()
-            for i in range(5, 0, -1):
-                dev.soft_trigger()
-                if i > 0:
-                    time.sleep(1)
-            dev.store()
-        finally:
-            dev.deinit()
-    finally:
-        tree.close()
-        MDSplus.Device.debug = old
-        dprint("testmds done")
 
-if __name__ == "__main__":
+def test_single_cine():
     # print(phantom.find_cameras("192.168.44.255"))
     p = phantom("192.168.44.255")
     p.init(100, 1000, 100000, 128, 80)
@@ -1066,7 +1025,10 @@ if __name__ == "__main__":
         print("Test: No matplotlib so no imshow")
     else:
         imshow(img[0][::-1], cmap='gray', vmax=1 << 12)
-    # MULTI CINE
+
+
+def test_multi_cine():
+    p = phantom("192.168.44.255")
     p.init(1000, 100000, 100000, 1280, 800)
     num_cine = p.arm()
     trg = p.sync_time() * p.i1e9
@@ -1080,5 +1042,43 @@ if __name__ == "__main__":
             trg = p.trigtime2ns(p.get('c%d.trigtime' % c))
             print("%18d, %10d, %2d: %r" %
                   (trg, trg - tp, int(p.get("c%d.meta.name" % c)), p.cstats()))
+
+
+if MDSplus is not None:
+    def testmds(expt='test', shot=1):
+        import gc
+        gc.collect(2)
+        MDSplus.setenv('default_tree_path', os.getenv("TMP", "/tmp"))
+        # MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
+        with MDSplus.Tree(expt, -1, 'NEW') as tree:
+            dev = PHANTOM.Add(tree, 'PHANTOM')
+            dev.host.record = "192.168.44.255"
+            tree.write()
+        tree.open()
+        try:
+            tree.createPulse(shot)
+            old = MDSplus.Device.debug
+            MDSplus.Device.debug = 7
+            tree.shot = shot
+            tree.open()
+            try:
+                dev.init()
+                dev.arm()
+                dev.lib.wait_armed()
+                for i in range(5, 0, -1):
+                    dev.soft_trigger()
+                    if i > 0:
+                        time.sleep(1)
+                dev.store()
+            finally:
+                dev.deinit()
+        finally:
+            tree.close()
+            MDSplus.Device.debug = old
+            dprint("testmds done")
+
+if __name__ == "__main__":
+    test_single_cine()
+    test_multi_cine()
     if MDSplus is not None:
         testmds(expt='test', shot=1)
