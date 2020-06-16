@@ -1,7 +1,7 @@
 JAVASOURCE = 8
 include ../Makefile.inc.am
 java_srcdir = $(srcdir)/src/main/java
-dist_java_DATA = jDispatcher.properties
+dist_java_DATA = src/main/resources/mds/jdispatcher/jDispatcher.properties
 java_DATA = jDispatcher.jar
 DEPENDENCIES = $(MDSOBJECTS_JAR)
 

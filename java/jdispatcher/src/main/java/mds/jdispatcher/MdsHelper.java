@@ -1,8 +1,8 @@
 package mds.jdispatcher;
 
-import java.util.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.*;
 
 class MdsHelper
 {
@@ -20,7 +20,7 @@ class MdsHelper
 
 	private final static Hashtable<String, Integer> name_to_id = new Hashtable<>();
 	private final static Hashtable<Integer, String> id_to_name = new Hashtable<>();
-	private final static String defaultFileName = "jDispatcher.properties";
+	private final static String DEFAULT_FILENAME = "jDispatcher.properties";
 	static String experiment = null;
 	private static String dispatcher_ip = null;
 	private static int dispatcherPort = 0;
@@ -94,7 +94,7 @@ class MdsHelper
 	static Properties initialization(String... args)
 	{
 		experiment = args.length > 0 ? args[0] : "test";
-		if (args.length > 1)
+		if (args.length > 1 && !args[1].trim().isEmpty())
 		{
 			properties = new Properties();
 			try
@@ -176,7 +176,7 @@ class MdsHelper
 	private static final Properties tryOpen(final Vector<String> paths, final Vector<String> names)
 	{
 		paths.add(null);
-		names.add(defaultFileName);
+		names.add(DEFAULT_FILENAME);
 		final Properties properties = new Properties();
 		for (final String name : names)
 		{
@@ -196,6 +196,17 @@ class MdsHelper
 				}
 			}
 		}
+		try
+		{
+			try (final InputStream stream = MdsHelper.class.getClassLoader()
+					.getResourceAsStream("mds/jdispatcher/" + DEFAULT_FILENAME))
+			{
+				properties.load(stream);
+				return properties;
+			}
+		}
+		catch (final IOException next)
+		{}
 		return null;
 	}
 }

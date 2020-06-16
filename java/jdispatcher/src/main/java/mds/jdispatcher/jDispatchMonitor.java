@@ -303,7 +303,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		@Override
 		public void run()
 		{
-			JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "alert", JOptionPane.ERROR_MESSAGE);
 		}
 	}// End ShowMessage class
 
@@ -327,12 +327,13 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 						ensureIndexIsVisible(index);
 						if ((item.ret_status & 1) == 0)
 						{
-							JOptionPane.showMessageDialog(null, item.error_message, "alert", JOptionPane.ERROR_MESSAGE);
+							JOptionPane.showMessageDialog(jDispatchMonitor.this, item.error_message, "alert",
+									JOptionPane.ERROR_MESSAGE);
 						}
 						else
 						{
 							if (item.error_message != null && item.error_message.length() != 0)
-								JOptionPane.showMessageDialog(null, item.error_message, "alert",
+								JOptionPane.showMessageDialog(jDispatchMonitor.this, item.error_message, "alert",
 										JOptionPane.WARNING_MESSAGE);
 						}
 					}
@@ -470,7 +471,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					final int idx = getIndex(me, executing_list.size());
 					if (idx == ACTION_NOT_FOUND)
 					{
-						JOptionPane.showMessageDialog(null, "Invalid message received", "Alert",
+						JOptionPane.showMessageDialog(jDispatchMonitor.this, "Invalid message received", "Alert",
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
@@ -516,8 +517,8 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	public static void main(final String[] args)
 	{
 		final jDispatchMonitor dm;
-		String experiment = null;
-		String monitor_server = null;
+		String experiment = "test";
+		String monitor_server = "localhost:8800";
 		if (args != null && args.length > 3)
 		{
 			System.out.println("jDispatchMonitor [monitor_server] [-e experiment ] \n");
@@ -536,10 +537,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			else
 			{
 				monitor_server = args[0];
+				if (args.length > 1)
+					experiment = args[1];
 			}
 		}
 		System.out.println("jDispatchMonitor " + monitor_server + " " + experiment);
-		// MdsHelper.initialization(experiment);
 		dm = new jDispatchMonitor(monitor_server, experiment);
 		dm.pack();
 		dm.setSize(600, 700);
@@ -616,7 +618,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		this.monitor_server = monitor_server;
 		final Properties properties = MdsHelper.initialization(experiment);
 		if (properties == null)
+		{
+			JOptionPane.showMessageDialog(this, "Error reading properties file. Exiting.", "Alert",
+					JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
+		}
 		int error_port = -1;
 		try
 		{
@@ -836,7 +842,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				}
 				catch (final Exception exc)
 				{
-					JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Error dispatching action(s) : " + exc,
+					JOptionPane.showMessageDialog(jDispatchMonitor.this, "Error dispatching action(s) : " + exc,
 							"Alert", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -855,7 +861,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				}
 				catch (final Exception exc)
 				{
-					JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Error Aborting Action", "Alert",
+					JOptionPane.showMessageDialog(jDispatchMonitor.this, "Error Aborting Action", "Alert",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -872,8 +878,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					if (event == null)
 					{
 						if (executingList.getModel().getSize() != 0)
-							JOptionPane.showMessageDialog(null, "Please select the action(s) to re-dispatch or abort",
-									"Warning", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(jDispatchMonitor.this,
+									"Please select the action(s) to re-dispatch or abort", "Warning",
+									JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
 					if (event.mode == MdsMonitorEvent.MonitorDoing && executingList.getSelectedIndices().length == 1)
@@ -1155,7 +1162,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				{
 					final Object[] options =
 					{ "DISCONNECT", "CANCEL" };
-					final int val = JOptionPane.showOptionDialog(this,
+					final int val = JOptionPane.showOptionDialog(jDispatchMonitor.this,
 							"Dispatch monitor is already connected to " + mds_server.getProvider(), "Warning",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
 					if (val == 0)
@@ -1172,8 +1179,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			}
 			final JComboBox<?> cb = new JComboBox<>();
 			cb.setEditable(true);
-			monitor_server = (String) JOptionPane.showInputDialog(null, "Dispatch monitor server ip:port address",
-					"Connection", JOptionPane.QUESTION_MESSAGE, null, null, monitor_server);
+			monitor_server = (String) JOptionPane.showInputDialog(jDispatchMonitor.this,
+					"Dispatch monitor server ip:port address", "Connection", JOptionPane.QUESTION_MESSAGE, null, null,
+					monitor_server);
 			if (monitor_server == null)
 				return;
 			openConnection(monitor_server);
