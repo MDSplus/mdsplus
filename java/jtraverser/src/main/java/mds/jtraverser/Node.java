@@ -404,7 +404,7 @@ public class Node
 
 	private static ImageIcon ICON_LOADER(String gifname)
 	{
-		final URL url = Node.class.getClassLoader().getResource("mds.jtraverser." + gifname + ".gif");
+		final URL url = Node.class.getClassLoader().getResource("mds/jtraverser/" + gifname + ".gif");
 		if (url != null)
 			return new ImageIcon(url);
 		final ByteBuffer hash = ByteBuffer.allocate(Integer.BYTES);
@@ -416,7 +416,7 @@ public class Node
 		final byte b[] = new byte[]
 		{ (byte) (hash.get(0) ^ hash.get(3)) };
 		final IndexColorModel cm = new IndexColorModel(1, 1, r, g, b);
-		return new ImageIcon(new BufferedImage(320, 200, BufferedImage.TYPE_BYTE_BINARY, cm));
+		return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_BYTE_BINARY, cm));
 	}
 
 	private static final HashMap<String, ImageIcon> ICONS = new HashMap<>();

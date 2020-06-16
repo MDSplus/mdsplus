@@ -1,6 +1,5 @@
 package mds.jtraverser;
 
-//package jTraverser;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -22,14 +21,6 @@ public class jTraverser extends JFrame implements ActionListener
 
 	public static void main(String args[])
 	{
-		/*
-		 * the original font is either ugly or defaults to an ugly font if not found
-		 * if(System.getProperty("os.name").equals("Linux")) {
-		 * UIManager.put("Label.font", new FontUIResource(new Font("FreeSerif",
-		 * Font.BOLD, 11))); UIManager.put("ComboBox.font", new FontUIResource(new
-		 * Font("FreeSerif", Font.BOLD, 11))); UIManager.put("Button.font", new
-		 * FontUIResource(new Font("FreeSerif", Font.BOLD, 11))); }
-		 */
 		if (args.length >= 3)
 			FrameRepository.frame = new jTraverser(args[0], args[1], args[2]);
 		else if (args.length == 2)
