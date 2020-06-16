@@ -385,9 +385,6 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 		JSCOPE_PALETTE = JSCOPE_PROFILE + File.separator + "colors.tbl";
 		JSCOPE_PROPERTIES = JSCOPE_PROFILE + File.separator + "jScope.properties";
 		JSCOPE_SERVERS = JSCOPE_PROFILE + File.separator + "jScope_servers.conf";
-	}
-	static
-	{
 		final String version = jScopeFacade.class.getPackage().getImplementationVersion();
 		VERSION = version == null ? "unknown" : version;
 	}
@@ -1746,10 +1743,9 @@ public class jScopeFacade extends JFrame implements ActionListener, ItemListener
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
-//                help_dialog.setVisible(true);
 				JOptionPane.showMessageDialog(jScopeFacade.this,
-						"The jScope tutorial is available at www.mdsplus.org in \"Documentation/The MDSplus tutorial\" section",
-						"", JOptionPane.INFORMATION_MESSAGE);
+						"The jScope tutorial is available at https://www.mdsplus.org.\nhttps://www.mdsplus.org/index.php?title=Documentation:Tutorial:UsingScope",
+						"jScope version: " + VERSION, JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
 		setup_dialog = new SetupDataDialog(this, "Setup");
