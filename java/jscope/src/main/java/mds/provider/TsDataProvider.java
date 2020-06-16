@@ -21,31 +21,6 @@ public class TsDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public void setArgument(String arg) throws IOException
-	{
-		mds.setProvider(arg);
-		mds.setUser("mdsplus");
-	}
-
-	@Override
-	public synchronized void update(String exp, long s)
-	{
-		error = null;
-		shot = (int) s;
-	}
-
-	private String parseExpression(String in)
-	{
-		return MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
-	}
-
-	@Override
-	public synchronized int[] getIntArray(String in) throws IOException
-	{
-		return super.getIntArray(parseExpression(in));
-	}
-
-	@Override
 	public synchronized float[] GetFloatArray(String in) throws IOException
 	{
 		final String parsed = parseExpression(in);
@@ -64,19 +39,9 @@ public class TsDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public boolean SupportsCompression()
+	public synchronized int[] getIntArray(String in) throws IOException
 	{
-		return false;
-	}
-
-	@Override
-	public void SetCompression(boolean state)
-	{}
-
-	@Override
-	public int inquireCredentials(JFrame f, DataServerItem server_item)
-	{
-		return DataProvider.LOGIN_OK;
+		return super.getIntArray(parseExpression(in));
 	}
 
 	@Override
@@ -84,5 +49,40 @@ public class TsDataProvider extends MdsDataProvider
 	{
 		return new int[]
 		{ 1 };
+	}
+
+	@Override
+	public int inquireCredentials(JFrame f, DataServerItem server_item)
+	{
+		return DataProvider.LOGIN_OK;
+	}
+
+	private String parseExpression(String in)
+	{
+		return MdsplusParser.parseFun(in, "GetTsBase(" + shot + ", \"", "\")");
+	}
+
+	@Override
+	public void setArgument(String arg) throws IOException
+	{
+		mds.setProvider(arg);
+		mds.setUser("mdsplus");
+	}
+
+	@Override
+	public void SetCompression(boolean state)
+	{}
+
+	@Override
+	public boolean SupportsCompression()
+	{
+		return false;
+	}
+
+	@Override
+	public synchronized void update(String exp, long s)
+	{
+		error = null;
+		shot = (int) s;
 	}
 }

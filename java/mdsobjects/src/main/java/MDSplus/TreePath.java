@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package MDSplus;
 
 /**
@@ -12,6 +11,7 @@ package MDSplus;
 public class TreePath extends TreeNode
 {
 	java.lang.String path;
+
 	public TreePath(java.lang.String path, Data help, Data units, Data error, Data validation) throws MdsException
 	{
 		super(help, units, error, validation);
@@ -19,7 +19,9 @@ public class TreePath extends TreeNode
 		dtype = DTYPE_PATH;
 		this.path = path;
 	}
-	public TreePath(java.lang.String path, Tree tree, Data help, Data units, Data error, Data validation) throws MdsException
+
+	public TreePath(java.lang.String path, Tree tree, Data help, Data units, Data error, Data validation)
+			throws MdsException
 	{
 		super(help, units, error, validation);
 		clazz = CLASS_S;
@@ -32,21 +34,21 @@ public class TreePath extends TreeNode
 	{
 		this(path, tree, null, null, null, null);
 	}
+
 	public TreePath(java.lang.String path) throws MdsException
 	{
 		this(path, null, null, null, null);
 	}
 
-	public static Data getData(java.lang.String path,  Data help, Data units, Data error, Data validation) throws MdsException
+	public static Data getData(java.lang.String path, Data help, Data units, Data error, Data validation)
+			throws MdsException
 	{
-		return new TreePath(path,  help,  units, error, validation);
+		return new TreePath(path, help, units, error, validation);
 	}
 
 	@Override
 	public java.lang.String getString()
-	{
-		return path;
-	}
+	{ return path; }
 
 	@Override
 	protected void resolveNid() throws MdsException

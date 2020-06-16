@@ -31,26 +31,6 @@ public class MdsIp extends Mds
 		protected InputStream dis;
 		protected OutputStream dos;
 
-		private final int wait_available() throws IOException
-		{
-			int i = 1, tot = 0;
-			int avail = 0;
-			synchronized (dis)
-			{
-				try
-				{
-					while ((avail = dis.available()) == 0 && tot < internal_timeout)
-					{
-						dis.wait(i);
-						tot += i++;
-					}
-				}
-				catch (final InterruptedException e)
-				{}
-			}
-			return avail;
-		}
-
 		@Override
 		public int read(ByteBuffer b) throws IOException
 		{
@@ -91,6 +71,26 @@ public class MdsIp extends Mds
 				}
 				return rem - b.remaining();
 			}
+		}
+
+		private final int wait_available() throws IOException
+		{
+			int i = 1, tot = 0;
+			int avail = 0;
+			synchronized (dis)
+			{
+				try
+				{
+					while ((avail = dis.available()) == 0 && tot < internal_timeout)
+					{
+						dis.wait(i);
+						tot += i++;
+					}
+				}
+				catch (final InterruptedException e)
+				{}
+			}
+			return avail;
 		}
 
 		@Override
@@ -273,6 +273,11 @@ public class MdsIp extends Mds
 		private boolean use_ssh;
 		private final String user;
 
+		public Provider()
+		{
+			this(null);// local
+		}
+
 		public Provider(final String provider)
 		{
 			this(provider, false);
@@ -358,11 +363,6 @@ public class MdsIp extends Mds
 			}
 		}
 
-		public Provider()
-		{
-			this(null);// local
-		}
-
 		@Override
 		public final boolean equals(final Object obj)
 		{
@@ -379,11 +379,11 @@ public class MdsIp extends Mds
 		public final MdsIp getConnection()
 		{ return new MdsIp(this); }
 
-		public int getPort()
-		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
-
 		public String getHost()
 		{ return host == null || host.isEmpty() ? DEFAULT_LOCAL : host; }
+
+		public int getPort()
+		{ return port != 0 ? port : (use_ssh ? 0 : Provider.DEFAULT_PORT); }
 
 		public final String getUser()
 		{ return user == null || user.isEmpty() ? Provider.DEFAULT_USER : user; }
@@ -578,11 +578,11 @@ public class MdsIp extends Mds
 		IntStream.range(0, req.args.length).forEach((i) ->
 		{ sb.append(",($;)"); });
 		sb.append("),__$sw(`_$c_=__$sw(($;))))");
-		final Vector<Descriptor<?>> vec = new Vector<Descriptor<?>>();
+		final Vector<Descriptor<?>> vec = new Vector<>();
 		vec.add(Descriptor.valueOf(req.expr));
 		vec.addAll(Arrays.asList(req.args));
 		vec.add(ctx.getDbid());
-		final Request<List> nreq = new Request<List>(List.class, sb.toString(), vec.toArray(req.args));
+		final Request<List> nreq = new Request<>(List.class, sb.toString(), vec.toArray(req.args));
 		if (DEBUG.N)
 			System.err.println(">>> " + nreq);
 		long tictoc;
@@ -596,7 +596,7 @@ public class MdsIp extends Mds
 		{
 			if (DEBUG.N)
 				System.err.println("<<< Exc: " + msg.toString());
-			final Message ans = this.getMessage(new Request<Pointer>(Pointer.class, "__$sw(_$c_)"), false);
+			final Message ans = this.getMessage(new Request<>(Pointer.class, "__$sw(_$c_)"), false);
 			ctx.getDbid().setAddress(ans.getBody());
 			throw new MdsException(msg.toString());
 		}
@@ -713,7 +713,7 @@ public class MdsIp extends Mds
 	@Override
 	public final void execute(final String expr, final Descriptor<?>... args) throws MdsException
 	{
-		this.getMessage(new Request<Int32>(Int32.class, expr + ";1", args), false);
+		this.getMessage(new Request<>(Int32.class, expr + ";1", args), false);
 	}
 
 	@Override

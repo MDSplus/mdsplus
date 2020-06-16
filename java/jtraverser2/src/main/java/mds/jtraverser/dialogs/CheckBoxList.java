@@ -30,42 +30,62 @@ import mds.data.descriptor_s.Nid;
 import mds.jtraverser.TreeManager;
 import mds.jtraverser.TreeView;
 
-public abstract class CheckBoxList extends JDialog{
-	private static final long serialVersionUID = 1L;
-	public final class CheckBoxListener implements ActionListener{
+public abstract class CheckBoxList extends JDialog
+{
+	public final class CheckBoxListener implements ActionListener
+	{
 		@Override
-		public void actionPerformed(final ActionEvent ce) {/*stub*/}
+		public void actionPerformed(final ActionEvent ce)
+		{/* stub */}
 	}
-	public final class JCheckList extends JList<JCheckBox>{
-		private static final long serialVersionUID = 1L;
-		protected class CellRenderer implements ListCellRenderer<JCheckBox>{
+
+	public final class JCheckList extends JList<JCheckBox>
+	{
+		protected class CellRenderer implements ListCellRenderer<JCheckBox>
+		{
 			@Override
-			public Component getListCellRendererComponent(final JList<? extends JCheckBox> list, final JCheckBox value, final int index, final boolean isSelected, final boolean cellHasFocus) {
-				value.setBackground(isSelected ? JCheckList.this.getSelectionBackground() : JCheckList.this.getBackground());
+			public Component getListCellRendererComponent(final JList<? extends JCheckBox> list, final JCheckBox value,
+					final int index, final boolean isSelected, final boolean cellHasFocus)
+			{
+				value.setBackground(
+						isSelected ? JCheckList.this.getSelectionBackground() : JCheckList.this.getBackground());
 				// value.setEnabled(JCheckList.this.isEnabled());
 				value.setFont(JCheckList.this.getFont());
 				value.setFocusPainted(false);
 				value.setBorderPainted(true);
-				value.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder") : new EmptyBorder(1, 1, 1, 1));
+				value.setBorder(isSelected ? UIManager.getBorder("List.focusCellHighlightBorder")
+						: new EmptyBorder(1, 1, 1, 1));
 				return value;
 			}
 		}
+
+		private static final long serialVersionUID = 1L;
 		private boolean readonly = true;
 
-		public JCheckList(final ListModel<JCheckBox> model){
+		public JCheckList(final ListModel<JCheckBox> model)
+		{
 			this.setCellRenderer(new CellRenderer());
 			this.setVisibleRowCount(16);
-			this.addMouseListener(new MouseAdapter(){
+			this.addMouseListener(new MouseAdapter()
+			{
 				@Override
-				public void mousePressed(final MouseEvent e) {
-					if(JCheckList.this.readonly) return;
+				public void mousePressed(final MouseEvent e)
+				{
+					if (JCheckList.this.readonly)
+						return;
 					final int index = JCheckList.this.locationToIndex(e.getPoint());
-					if(index != -1){
-						if((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0){
+					if (index != -1)
+					{
+						if ((e.getModifiers() & InputEvent.BUTTON1_MASK) != 0)
+						{
 							final JCheckBox checkbox = JCheckList.this.getModel().getElementAt(index);
-							if(checkbox.isEnabled()) checkbox.setSelected(!checkbox.isSelected());
-						}else if((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0) JCheckList.this.setRange(index);
-						else return;
+							if (checkbox.isEnabled())
+								checkbox.setSelected(!checkbox.isSelected());
+						}
+						else if ((e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+							JCheckList.this.setRange(index);
+						else
+							return;
 						JCheckList.this.repaint();
 					}
 				}
@@ -74,51 +94,65 @@ public abstract class CheckBoxList extends JDialog{
 			this.setModel(model);
 		}
 
-		private void setRange(final int index) {
+		private void setRange(final int index)
+		{
 			final int selected = JCheckList.this.getSelectedIndex();
-			if(selected < 0) return;
+			if (selected < 0)
+				return;
 			final boolean state = JCheckList.this.getModel().getElementAt(selected).isSelected();
 			final int start, stop;
-			if(index < selected){
+			if (index < selected)
+			{
 				start = index;
 				stop = selected;
-			}else{
+			}
+			else
+			{
 				start = selected + 1;
 				stop = index + 1;
 			}
-			for(int i = start; i < stop; i++)
+			for (int i = start; i < stop; i++)
 				JCheckList.this.getModel().getElementAt(i).setSelected(state);
 		}
 	}
-	protected static final String				PROP_FULLPATH	= "fullpath";
-	protected static final String				PROP_NID		= "nid";
-	protected static final String				PROP_OLD		= "old";
-	protected final JButton						discard_b		= new JButton("Discard");
-	protected final DefaultListModel<JCheckBox>	checkboxes		= new DefaultListModel<JCheckBox>();
-	protected final JCheckList					checklist		= new JCheckList(this.checkboxes);
-	protected final TreeManager					treeman;
-	protected final TreeView					treeview;
-	protected final JButton						apply_b			= new JButton("Apply");
-	protected final JButton						update_b		= new JButton("Refresh");
-	protected int								default_nid		= -1;
 
-	public CheckBoxList(final TreeManager treeman, final String title){
+	private static final long serialVersionUID = 1L;
+	protected static final String PROP_FULLPATH = "fullpath";
+	protected static final String PROP_NID = "nid";
+	protected static final String PROP_OLD = "old";
+	protected final JButton discard_b = new JButton("Discard");
+	protected final DefaultListModel<JCheckBox> checkboxes = new DefaultListModel<>();
+	protected final JCheckList checklist = new JCheckList(this.checkboxes);
+	protected final TreeManager treeman;
+	protected final TreeView treeview;
+	protected final JButton apply_b = new JButton("Apply");
+	protected final JButton update_b = new JButton("Refresh");
+	protected int default_nid = -1;
+
+	public CheckBoxList(final TreeManager treeman, final String title)
+	{
 		super(JOptionPane.getRootFrame(), title);
-		this.discard_b.addActionListener(new ActionListener(){
+		this.discard_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent ae) {
+			public void actionPerformed(final ActionEvent ae)
+			{
 				CheckBoxList.this.dispose();
 			}
 		});
-		this.update_b.addActionListener(new ActionListener(){
+		this.update_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent ae) {
+			public void actionPerformed(final ActionEvent ae)
+			{
 				CheckBoxList.this.update();
 			}
 		});
-		this.apply_b.addActionListener(new ActionListener(){
+		this.apply_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent ae) {
+			public void actionPerformed(final ActionEvent ae)
+			{
 				CheckBoxList.this.apply();
 			}
 		});
@@ -136,85 +170,112 @@ public abstract class CheckBoxList extends JDialog{
 		this.pack();
 	}
 
-	public final void open() {
-		this.setLocationRelativeTo(JOptionPane.getRootFrame());
-		this.checkReadOnly();
-		this.setVisible(true);
-		new Thread(new Runnable(){
+	private void addCheckBox(final Nid nid, final String fullpath)
+	{
+		final JCheckBox cb = new JCheckBox(fullpath);
+		cb.putClientProperty(CheckBoxList.PROP_NID, nid);
+		cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fullpath);
+		cb.addActionListener(new CheckBoxListener());
+		cb.addMouseListener(new MouseAdapter()
+		{
 			@Override
-			public void run() {
-				CheckBoxList.this.updatelist();
+			public void mouseEntered(final MouseEvent e)
+			{
+				cb.setText(cb.getToolTipText());
 			}
-		}).start();
-	}
 
-	public void update() {
-		this.checkReadOnly();
-		if(this.default_nid != this.treeview.getDefault().getNidNumber()) this.updatelist();
+			@Override
+			public void mouseExited(final MouseEvent e)
+			{
+				cb.setText(cb.getName());
+			}
+		});
+		this.checkboxes.addElement(cb);
 	}
 
 	protected abstract void apply();
 
-	protected void checkReadOnly() {
+	protected void checkReadOnly()
+	{
 		final boolean readonly = this.treeview != null && this.treeview.isReadOnly();
 		this.checklist.readonly = readonly;
 		this.apply_b.setEnabled(!readonly);
 	}
 
-	protected abstract void updatelist();
-
-	protected final void updatelist(final byte usage) {
-		this.default_nid = this.treeview.getDefault().getNidNumber();
-		if(this.treeview == null) this.checklist.removeAll();
-		else try{
-			this.checkboxes.clear();
-			this.checklist.readonly = true;
-			final TREE tree = this.treeview.getTree();
-			if(tree.getMds().isLowLatency()) synchronized(tree.getMds()){
-				final int usage_mask = 1 << usage;
-				tree.holdDbid();
-				try{
-					NodeRefStatus ref = NodeRefStatus.init;
-					while((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok()){
-						final Nid nid = new Nid(ref.data, tree);
-						try{
-							this.addCheckBox(nid, nid.getNciFullPath());
-						}catch(final MdsException e){
-							System.err.println(nid.decompile());
-						}
-					}
-				}finally{
-					tree.releaseDbid();
-				}
+	public final void open()
+	{
+		this.setLocationRelativeTo(JOptionPane.getRootFrame());
+		this.checkReadOnly();
+		this.setVisible(true);
+		new Thread(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				CheckBoxList.this.updatelist();
 			}
-			else{
-				final Nid[] nid = tree.findNodesWild(usage);
-				final String[] fp = tree.getMds().getStringArray(tree.ctx, "GETNCI($,'FULLPATH')", new NidArray(nid));
-				for(int i = 0; i < nid.length; i++)
-					this.addCheckBox(nid[i], fp[i]);
-			}
-		}catch(final MdsException e){
-			this.checklist.removeAll();
-		}
-		this.update();
+		}).start();
 	}
 
-	private void addCheckBox(final Nid nid, final String fullpath) {
-		final JCheckBox cb = new JCheckBox(fullpath);
-		cb.putClientProperty(CheckBoxList.PROP_NID, nid);
-		cb.putClientProperty(CheckBoxList.PROP_FULLPATH, fullpath);
-		cb.addActionListener(new CheckBoxListener());
-		cb.addMouseListener(new MouseAdapter(){
-			@Override
-			public void mouseEntered(final MouseEvent e) {
-				cb.setText(cb.getToolTipText());
-			}
+	public void update()
+	{
+		this.checkReadOnly();
+		if (this.default_nid != this.treeview.getDefault().getNidNumber())
+			this.updatelist();
+	}
 
-			@Override
-			public void mouseExited(final MouseEvent e) {
-				cb.setText(cb.getName());
+	protected abstract void updatelist();
+
+	protected final void updatelist(final byte usage)
+	{
+		this.default_nid = this.treeview.getDefault().getNidNumber();
+		if (this.treeview == null)
+			this.checklist.removeAll();
+		else
+			try
+			{
+				this.checkboxes.clear();
+				this.checklist.readonly = true;
+				final TREE tree = this.treeview.getTree();
+				if (tree.getMds().isLowLatency())
+					synchronized (tree.getMds())
+					{
+						final int usage_mask = 1 << usage;
+						tree.holdDbid();
+						try
+						{
+							NodeRefStatus ref = NodeRefStatus.init;
+							while ((ref = tree.api.treeFindNodeWild(null, "***", usage_mask, ref)).ok())
+							{
+								final Nid nid = new Nid(ref.data, tree);
+								try
+								{
+									this.addCheckBox(nid, nid.getNciFullPath());
+								}
+								catch (final MdsException e)
+								{
+									System.err.println(nid.decompile());
+								}
+							}
+						}
+						finally
+						{
+							tree.releaseDbid();
+						}
+					}
+				else
+				{
+					final Nid[] nid = tree.findNodesWild(usage);
+					final String[] fp = tree.getMds().getStringArray(tree.ctx, "GETNCI($,'FULLPATH')",
+							new NidArray(nid));
+					for (int i = 0; i < nid.length; i++)
+						this.addCheckBox(nid[i], fp[i]);
+				}
 			}
-		});
-		this.checkboxes.addElement(cb);
+			catch (final MdsException e)
+			{
+				this.checklist.removeAll();
+			}
+		this.update();
 	}
 }

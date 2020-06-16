@@ -11,6 +11,10 @@ import javax.swing.*;
 
 public class WavePopup extends JPopupMenu implements ItemListener
 {
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Waveform wave = null;
 	protected SetupWaveformParams setup_params;
 	protected JSeparator sep1, sep2, sep3;
@@ -373,23 +377,6 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		});
 	}
 
-	protected void ShowDialog()
-	{
-		if (setup_params != null)
-			setup_params.Show(wave);
-	}
-
-	protected void SelectListItem(ButtonGroup bg, int idx)
-	{
-		int i;
-		JRadioButtonMenuItem b = null;
-		Enumeration e;
-		for (e = bg.getElements(), i = 0; e.hasMoreElements() && i <= idx; i++)
-			b = (JRadioButtonMenuItem) e.nextElement();
-		if (b != null)
-			bg.setSelected(b.getModel(), true);
-	}
-
 	protected void InitColorMenu()
 	{
 		if (!Waveform.isColorsChanged() && colorList_bg != null)
@@ -409,6 +396,139 @@ public class WavePopup extends JPopupMenu implements ItemListener
 				ob.addItemListener(this);
 			}
 		}
+	}
+
+	protected void InitOptionMenu()
+	{
+		final boolean state = (wave.GetShowSignalCount() == 1);
+		markerList.setEnabled(state);
+		colorList.setEnabled(state);
+		set_point.setEnabled(true);
+		if (state)
+		{
+			final boolean state_m = (wave.GetMarker() != Signal.NONE);
+			markerStep.setEnabled(state_m);
+			SelectListItem(markerList_bg, wave.GetMarker());
+			int st;
+			for (st = 0; st < Signal.markerStepList.length; st++)
+				if (Signal.markerStepList[st] == wave.GetMarkerStep())
+					break;
+			SelectListItem(markerStep_bg, st);
+			SelectListItem(colorList_bg, wave.GetColorIdx());
+		}
+		else
+			markerStep.setEnabled(false);
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e)
+	{
+		final Object target = e.getSource();
+		if (target instanceof JRadioButtonMenuItem && e.getStateChange() == ItemEvent.SELECTED)
+		{
+			final JRadioButtonMenuItem cb = (JRadioButtonMenuItem) target;
+			final String action_cmd = cb.getModel().getActionCommand();
+			if (action_cmd == null)
+				return;
+			final StringTokenizer act = new StringTokenizer(action_cmd);
+			final String action = act.nextToken();
+			final int idx = Integer.parseInt(act.nextToken());
+			if (action.equals("MARKER"))
+			{
+				SetMarker(idx);
+				markerStep.setEnabled(!(wave.GetMarker() == Signal.NONE || wave.GetMarker() == Signal.POINT));
+				// wave.Repaint(true);
+				wave.ReportChanges();
+				return;
+			}
+			if (action.equals("MARKER_STEP"))
+			{
+				SetMarkerStep(Signal.markerStepList[idx]);
+				// wave.Repaint(true);
+				wave.ReportChanges();
+				return;
+			}
+			if (action.equals("COLOR_LIST"))
+			{
+				SetColor(idx);
+				// wave.Repaint(true);
+				wave.ReportChanges();
+				return;
+			}
+		}
+	}
+
+	protected void SelectListItem(ButtonGroup bg, int idx)
+	{
+		if (idx >= 0 && idx < bg.getButtonCount())
+		{ // otherwise its out of range
+			AbstractButton b = null;
+			final Enumeration<AbstractButton> e = bg.getElements();
+			for (int i = 0; i <= idx; i++)
+				b = e.nextElement();
+			bg.setSelected(b.getModel(), true);
+		}
+	}
+
+	protected void SetColor(int idx)
+	{
+		if (wave.GetColorIdx() != idx)
+			wave.SetColorIdx(idx);
+	}
+
+	public void setColorMapDialog(ColorMapDialog colorMapDialog)
+	{ this.colorMapDialog = colorMapDialog; }
+
+	public void SetDeselectPoint(Waveform w)
+	{
+		if (w.ShowMeasure())
+		{
+			if (parent != null && parent instanceof WaveformManager)
+				((WaveformManager) parent).setShowMeasure(false);
+			w.SetShowMeasure(false);
+		}
+		else
+		{
+			if (parent != null && parent instanceof WaveformManager)
+				((WaveformManager) parent).setShowMeasure(true);
+			w.SetShowMeasure(true);
+			w.SetPointMeasure();
+		}
+		w.repaint();
+	}
+
+	protected void SetImageMenu()
+	{
+		SetMenuItem(true);
+		final boolean state = (wave.frames != null && wave.frames.getNumFrame() != 0);
+		colorList.setEnabled(state);
+		SelectListItem(colorList_bg, wave.GetColorIdx());
+		playFrame.setEnabled(state);
+		set_point.setEnabled(state && ((wave.mode == Waveform.MODE_POINT)));
+		profile_dialog.setEnabled(!wave.isSendProfile());
+	}
+
+	protected void SetMarker(int idx)
+	{
+		if (wave.GetMarker() != idx)
+			wave.SetMarker(idx);
+	}
+
+	protected void SetMarkerStep(int step)
+	{
+		if (wave.GetMarkerStep() != step)
+			wave.SetMarkerStep(step);
+	}
+
+	protected void SetMenu()
+	{
+		InitColorMenu();
+		if (wave.is_image)
+			SetImageMenu();
+		else
+			SetSignalMenu();
+		if (parent != null && parent instanceof WaveformManager)
+			remove_panel.setEnabled(((WaveformManager) parent).getWaveformCount() > 1);
 	}
 
 	protected void SetMenuItem(boolean is_image)
@@ -534,106 +654,6 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		}
 	}
 
-	protected void SetImageMenu()
-	{
-		SetMenuItem(true);
-		final boolean state = (wave.frames != null && wave.frames.getNumFrame() != 0);
-		colorList.setEnabled(state);
-		SelectListItem(colorList_bg, wave.GetColorIdx());
-		playFrame.setEnabled(state);
-		set_point.setEnabled(state && ((wave.mode == Waveform.MODE_POINT)));
-		profile_dialog.setEnabled(!wave.isSendProfile());
-	}
-
-	public void setColorMapDialog(ColorMapDialog colorMapDialog)
-	{ this.colorMapDialog = colorMapDialog; }
-
-	public void ShowColorMapDialog(Waveform wave)
-	{
-		if (colorMapDialog == null)
-		{
-			colorMapDialog = new ColorMapDialog(null, null);
-		}
-		else
-			colorMapDialog.setWave(wave);
-		colorMapDialog.setLocationRelativeTo(wave);
-		colorMapDialog.setVisible(true);
-	}
-
-	public void ShowProfileDialog(Waveform wave)
-	{
-		if (profDialog != null && profDialog.isVisible())
-			profDialog.dispose();
-		// profDialog = new ProfileDialog(null, wave);
-		profDialog.setWaveSource(wave);
-		profDialog.pack();
-		profDialog.setSize(200, 250);
-		if (profile_source != null)
-			profile_source.setSendProfile(false);
-		wave.setSendProfile(true);
-		profile_source = wave;
-		profDialog.setLocationRelativeTo(wave);
-		profDialog.setVisible(true);
-		wave.sendProfileEvent();
-	}
-
-	protected void SetSignalMenu()
-	{
-		SetMenuItem(false);
-		if (wave.GetShowSignalCount() != 0)
-		{
-			InitOptionMenu();
-		}
-		else
-		{
-			markerList.setEnabled(false);
-			colorList.setEnabled(false);
-			markerStep.setEnabled(false);
-			set_point.setEnabled(false);
-		}
-		// undo_zoom.setEnabled(wave.undoZoomPendig());
-		undo_zoom.setEnabled(wave.undoZoomPendig());
-	}
-
-	protected void InitOptionMenu()
-	{
-		final boolean state = (wave.GetShowSignalCount() == 1);
-		markerList.setEnabled(state);
-		colorList.setEnabled(state);
-		set_point.setEnabled(true);
-		if (state)
-		{
-			final boolean state_m = (wave.GetMarker() != Signal.NONE);
-			markerStep.setEnabled(state_m);
-			SelectListItem(markerList_bg, wave.GetMarker());
-			int st;
-			for (st = 0; st < Signal.markerStepList.length; st++)
-				if (Signal.markerStepList[st] == wave.GetMarkerStep())
-					break;
-			SelectListItem(markerStep_bg, st);
-			SelectListItem(colorList_bg, wave.GetColorIdx());
-		}
-		else
-			markerStep.setEnabled(false);
-	}
-
-	public void Show(Waveform w, int x, int y, int tran_x, int tran_y)
-	{
-		// parent = (Container)this.getParent();
-		// if(wave != w)
-		{
-			wave = w;
-			SetMenu();
-		}
-		// else
-		// if(!w.IsImage())
-		// InitOptionMenu();
-		SetMenuLabel();
-		curr_x = x;
-		curr_y = y;
-		show(w, x - tran_x, y - tran_y);
-	}
-
 	protected void SetMenuLabel()
 	{
 		if (!wave.IsImage())
@@ -658,17 +678,6 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		}
 	}
 
-	protected void SetMenu()
-	{
-		InitColorMenu();
-		if (wave.is_image)
-			SetImageMenu();
-		else
-			SetSignalMenu();
-		if (parent != null && parent instanceof WaveformManager)
-			remove_panel.setEnabled(((WaveformManager) parent).getWaveformCount() > 1);
-	}
-
 	protected void SetMode1D(int mode)
 	{
 		wave.setSignalMode1D(mode);
@@ -679,80 +688,76 @@ public class WavePopup extends JPopupMenu implements ItemListener
 		wave.setSignalMode2D(mode);
 	}
 
-	protected void SetMarker(int idx)
-	{
-		if (wave.GetMarker() != idx)
-			wave.SetMarker(idx);
-	}
-
-	protected void SetMarkerStep(int step)
-	{
-		if (wave.GetMarkerStep() != step)
-			wave.SetMarkerStep(step);
-	}
-
 	public void setParent(Container parent)
 	{ this.parent = parent; }
 
-	protected void SetColor(int idx)
+	protected void SetSignalMenu()
 	{
-		if (wave.GetColorIdx() != idx)
-			wave.SetColorIdx(idx);
-	}
-
-	public void SetDeselectPoint(Waveform w)
-	{
-		if (w.ShowMeasure())
+		SetMenuItem(false);
+		if (wave.GetShowSignalCount() != 0)
 		{
-			if (parent != null && parent instanceof WaveformManager)
-				((WaveformManager) parent).setShowMeasure(false);
-			w.SetShowMeasure(false);
+			InitOptionMenu();
 		}
 		else
 		{
-			if (parent != null && parent instanceof WaveformManager)
-				((WaveformManager) parent).setShowMeasure(true);
-			w.SetShowMeasure(true);
-			w.SetPointMeasure();
+			markerList.setEnabled(false);
+			colorList.setEnabled(false);
+			markerStep.setEnabled(false);
+			set_point.setEnabled(false);
 		}
-		w.repaint();
+		// undo_zoom.setEnabled(wave.undoZoomPendig());
+		undo_zoom.setEnabled(wave.undoZoomPendig());
 	}
 
-	@Override
-	public void itemStateChanged(ItemEvent e)
+	public void Show(Waveform w, int x, int y, int tran_x, int tran_y)
 	{
-		final Object target = e.getSource();
-		if (target instanceof JRadioButtonMenuItem && e.getStateChange() == ItemEvent.SELECTED)
+		// parent = (Container)this.getParent();
+		// if(wave != w)
 		{
-			final JRadioButtonMenuItem cb = (JRadioButtonMenuItem) target;
-			final String action_cmd = cb.getModel().getActionCommand();
-			if (action_cmd == null)
-				return;
-			final StringTokenizer act = new StringTokenizer(action_cmd);
-			final String action = act.nextToken();
-			final int idx = Integer.parseInt(act.nextToken());
-			if (action.equals("MARKER"))
-			{
-				SetMarker(idx);
-				markerStep.setEnabled(!(wave.GetMarker() == Signal.NONE || wave.GetMarker() == Signal.POINT));
-				// wave.Repaint(true);
-				wave.ReportChanges();
-				return;
-			}
-			if (action.equals("MARKER_STEP"))
-			{
-				SetMarkerStep(Signal.markerStepList[idx]);
-				// wave.Repaint(true);
-				wave.ReportChanges();
-				return;
-			}
-			if (action.equals("COLOR_LIST"))
-			{
-				SetColor(idx);
-				// wave.Repaint(true);
-				wave.ReportChanges();
-				return;
-			}
+			wave = w;
+			SetMenu();
 		}
+		// else
+		// if(!w.IsImage())
+		// InitOptionMenu();
+		SetMenuLabel();
+		curr_x = x;
+		curr_y = y;
+		show(w, x - tran_x, y - tran_y);
+	}
+
+	public void ShowColorMapDialog(Waveform wave)
+	{
+		if (colorMapDialog == null)
+		{
+			colorMapDialog = new ColorMapDialog(null, null);
+		}
+		else
+			colorMapDialog.setWave(wave);
+		colorMapDialog.setLocationRelativeTo(wave);
+		colorMapDialog.setVisible(true);
+	}
+
+	protected void ShowDialog()
+	{
+		if (setup_params != null)
+			setup_params.Show(wave);
+	}
+
+	public void ShowProfileDialog(Waveform wave)
+	{
+		if (profDialog != null && profDialog.isVisible())
+			profDialog.dispose();
+		// profDialog = new ProfileDialog(null, wave);
+		profDialog.setWaveSource(wave);
+		profDialog.pack();
+		profDialog.setSize(200, 250);
+		if (profile_source != null)
+			profile_source.setSendProfile(false);
+		wave.setSendProfile(true);
+		profile_source = wave;
+		profDialog.setLocationRelativeTo(wave);
+		profDialog.setVisible(true);
+		wave.sendProfileEvent();
 	}
 }

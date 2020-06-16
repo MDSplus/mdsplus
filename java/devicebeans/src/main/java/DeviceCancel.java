@@ -1,11 +1,18 @@
 public class DeviceCancel extends DeviceControl
 {
-    public DeviceCancel()
-    {
-	setText("Cancel");
-    }
-    protected void doOperation(DeviceSetup deviceSetup)
-    {
-	deviceSetup.cancel();
-    }
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public DeviceCancel()
+	{
+		setText("Cancel");
+	}
+
+	@Override
+	protected void doOperation(DeviceSetup deviceSetup)
+	{
+		deviceSetup.cancel();
+	}
 }

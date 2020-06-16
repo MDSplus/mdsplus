@@ -15,7 +15,7 @@ else
 
 $(java_DATA): $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	echo "Main-Class: jTraverser" >> $(MANIFEST) &&\
+	echo "Main-Class: mds.jtraverser.jTraverser" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsplus-api.jar DeviceBeans.jar WaveDisplay.jar mdsobjects.jar jDevices.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	$(JAR) cmf $(MANIFEST) $@ -C $(JAVAROOT) .
@@ -38,6 +38,5 @@ SOURCE =\
  mds/jtraverser/editor/usage/*.java\
  mds/jtraverser/tools/*.java\
  mds/devices/*.java\
- mds/devices/acq4xx/*.java\
- jTraverser.java
+ mds/devices/acq4xx/*.java
 RESOURCES = mds/jtraverser/*.gif

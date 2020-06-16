@@ -1,36 +1,34 @@
 package MDSplus;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
-@SuppressWarnings("static-method")
-public class MdsTreeTest {
-
+public class MdsTreeTest
+{
 	@BeforeClass
-	public static void setUpBeforeClass() throws Exception {
-		Data currDir = Data.toData(System.getProperty("user.dir"));
-		MDSplus.Data.execute("setenv($//$)", new MDSplus.Data[] { Data.toData("java_test0_path="), currDir });
+	public static void setUpBeforeClass() throws Exception
+	{
+		final Data currDir = Data.toData(System.getProperty("user.dir"));
+		MDSplus.Data.execute("setenv($//$)", new MDSplus.Data[]
+		{ Data.toData("java_test0_path="), currDir });
 	}
 
 	@AfterClass
-	public static void tearDownAfterClass() throws Exception {
+	public static void tearDownAfterClass() throws Exception
+	{
 		System.gc();
 	}
 
 	@Before
-	public void setUp() throws Exception {
-	}
+	public void setUp() throws Exception
+	{}
 
 	@After
-	public void tearDown() throws Exception {
-	}
+	public void tearDown() throws Exception
+	{}
 
 	@Test
-	public void testData() throws Exception {
+	public void testData() throws Exception
+	{
 		MDSplus.Tree tree = new MDSplus.Tree("java_test0", -1, "NEW");
 		tree.write();
 		tree.close();
@@ -46,7 +44,6 @@ public class MdsTreeTest {
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
 		tree.edit();
 		MDSplus.TreeNode node = tree.addNode("test_usage", "STRUCTURE");
-
 		// fill all kinds of nodes into the test_usage structure //
 		node = tree.addNode("\\java_test0::top.test_usage:ANY", "ANY");
 		node = tree.addNode("\\java_test0::top.test_usage:STRUCTURE", "STRUCTURE");
@@ -69,11 +66,9 @@ public class MdsTreeTest {
 		Assert.assertEquals("ANY", node.getNodeName());
 		node = tree.getNode("test_usage:ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
-
 		// set a default sub node //
 		tree.setDefault(tree.getNode("test_usage"));
 		Assert.assertEquals("ANY", node.getNodeName());
-
 		// test if absolute path is always available //
 		node = tree.getNode("\\top.test_usage:ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
@@ -81,7 +76,6 @@ public class MdsTreeTest {
 		Assert.assertEquals("ANY", node.getNodeName());
 		node = tree.getNode("ANY");
 		Assert.assertEquals("ANY", node.getNodeName());
-
 		// test usage and find by usage
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
 		MDSplus.TreeNodeArray array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_ANY);
@@ -90,51 +84,41 @@ public class MdsTreeTest {
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_AXIS);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("AXIS", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_COMPOUND_DATA);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("COMPOUND", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_DEVICE);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("DEVICE", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_DISPATCH);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("DISPATCH", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_NUMERIC);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("NUMERIC", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_SIGNAL);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("SIGNAL", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage.*", 1 << MDSplus.Tree.TreeUSAGE_SUBTREE);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("SUBTREE", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_TASK);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("TASK", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_TEXT);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("TEXT", array.getElementAt(0).getNodeName());
-
 		array = tree.getNodeWild("test_usage:*", 1 << MDSplus.Tree.TreeUSAGE_WINDOW);
 		Assert.assertEquals(1, array.size());
 		Assert.assertEquals("WINDOW", array.getElementAt(0).getNodeName());
-
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
-
-		try {
+		try
+		{
 			tree.addNode("save_me_not", "ANY");
 			Assert.fail("Node added for tree in non edit mode");
-		} catch (Exception exc) {
 		}
-
+		catch (final Exception exc)
+		{}
 		tree.edit();
 		Assert.assertEquals(false, tree.isModified());
 		tree.addNode("save_me_not", "ANY");
@@ -146,18 +130,18 @@ public class MdsTreeTest {
 		Assert.assertEquals(true, tree.isModified());
 		tree.write();
 		Assert.assertEquals(false, tree.isModified());
-
 		tree.addNode("save_me_not", "ANY");
 		// it does not writes here //
 		tree.quit();
 		// tests that the node has not been written
 		tree.readonly();
-		try {
+		try
+		{
 			tree.getNode("save_me_not");
 			Assert.fail("Node added in tree open in non edit mode");
-		} catch (Exception exc) {
 		}
-
+		catch (final Exception exc)
+		{}
 		// create and delete
 		tree = new MDSplus.Tree("java_test0", -1);
 		tree.createPulse(1);
@@ -168,17 +152,16 @@ public class MdsTreeTest {
 		tree.createPulse(2);
 		tree = new MDSplus.Tree("java_test0", 2);
 		tree.deletePulse(2);
-
 		// create a pulse without copying from model structure //
 		tree = new MDSplus.Tree("java_test0", 2, "NEW");
-
 		// test that the new pulse has not the model nodes //
-		try {
+		try
+		{
 			tree.getNode("test_usage:ANY");
 			Assert.fail("Unexpected node ANY");
-		} catch (Exception exc) {
 		}
-
+		catch (final Exception exc)
+		{}
 		tree = new MDSplus.Tree("java_test0", -1, "EDIT");
 		tree.setVersionsInModel(false);
 		tree.write(); // tree open in edit mode so must call write to avoid memory leak //
@@ -192,60 +175,62 @@ public class MdsTreeTest {
 		tree.close();
 		tree = new MDSplus.Tree("java_test0", 1);
 		Assert.assertEquals(true, tree.versionsInPulseEnabled());
-
 		// test version
 		node = tree.getNode("versioned");
 		node.putData(new MDSplus.Int32(5552368));
-		java.util.Date currDate = java.util.Calendar.getInstance().getTime();
+		final java.util.Date currDate = java.util.Calendar.getInstance().getTime();
 		Thread.sleep(2000);
 		node.putData(new MDSplus.Float64(555.2368));
 		node = tree.getNode("versioned");
 		node.putData(new MDSplus.Int16((short) 555));
 		tree.setViewDate(currDate);
 		// TODO fix setViewDate; Assert.assertEquals(5552368, node.getInt());
-
 		// TAGS //
 		tree.close();
 		tree = new MDSplus.Tree("java_test0", 1, "EDIT");
 		node = tree.getNode("test_usage:TEXT");
 		node.addTag("test_tag");
-
 		node = tree.getNode("\\test_tag");
 		Assert.assertEquals("TEXT", node.getNodeName());
 		node = tree.getNode("\\java_test0::test_tag");
 		Assert.assertEquals("TEXT", node.getNodeName());
 		tree.removeTag("test_tag");
-
-		try {
+		try
+		{
 			tree.getNode("\\test_tag");
 			Assert.fail("Tag test_tag found even if removed");
-		} catch (Exception exc) {
 		}
-		try {
+		catch (final Exception exc)
+		{}
+		try
+		{
 			tree.getNode("\\java_test0::test_tag");
 			Assert.fail("Tag test_tag found even if removed");
-		} catch (Exception exc) {
 		}
-		try {
+		catch (final Exception exc)
+		{}
+		try
+		{
 			// add device
 			tree = new MDSplus.Tree("java_test0", -1, "EDIT");
 			tree.addDevice("device", "DIO2");
 			tree.write();
-
 			node = tree.getNode("device");
 			Assert.assertEquals("DEVICE", node.getUsage());
-
 			tree.deleteNode("device");
 			tree.write(); // tree open in edit mode so must call write to take effect? //
-			try {
+			try
+			{
 				tree.getNode("device");
 				Assert.fail("Device found but it had been removed");
-			} catch (Exception exc) {
 			}
-		} catch (MdsException exc) {
+			catch (final Exception exc)
+			{}
+		}
+		catch (final MdsException exc)
+		{
 			if (!exc.getMessage().contains("PYDEVICE_NOT_FOUND"))
 				throw exc;
 		}
-
 	}
 }

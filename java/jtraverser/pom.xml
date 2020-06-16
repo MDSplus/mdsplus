@@ -14,13 +14,6 @@
 		MDSplus jTraverser based on mdsobjects.
 	</description>
 	<build>
-		<sourceDirectory>${sourceDirectory}/jtraverser/src/main/java</sourceDirectory>
-		<testSourceDirectory>${sourceDirectory}/jtraverser/src/test/java</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>${sourceDirectory}/jtraverser/src/main/resources</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -28,7 +21,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>jTraverser</mainClass>
+							<mainClass>mds.jtraverser.jTraverser</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

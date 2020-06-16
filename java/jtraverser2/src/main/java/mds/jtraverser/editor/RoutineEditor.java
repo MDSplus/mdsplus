@@ -9,23 +9,29 @@ import mds.data.descriptor.Descriptor;
 import mds.data.descriptor.Descriptor_R;
 import mds.data.descriptor_r.Routine;
 
-public final class RoutineEditor extends Editor{
+public final class RoutineEditor extends Editor
+{
 	private static final long serialVersionUID = 1L;
 
-	public static final boolean checkData(final Descriptor<?> data) {
+	public static final boolean checkData(final Descriptor<?> data)
+	{
 		return data instanceof Routine;
 	}
+
 	ArgEditor arg_edit;
 
-	public RoutineEditor(final boolean editable, final CTX ctx){
+	public RoutineEditor(final boolean editable, final CTX ctx)
+	{
 		this(null, editable, ctx);
 	}
 
-	public RoutineEditor(final CTX ctx){
+	public RoutineEditor(final CTX ctx)
+	{
 		this(null, true, ctx);
 	}
 
-	public RoutineEditor(final Routine data, final boolean editable, final CTX ctx){
+	public RoutineEditor(final Routine data, final boolean editable, final CTX ctx)
+	{
 		super(data, editable, ctx, 3);
 		final JPanel jp = new JPanel();
 		jp.setLayout(new GridLayout(3, 1, 0, 0));
@@ -38,18 +44,24 @@ public final class RoutineEditor extends Editor{
 	}
 
 	@Override
-	public final Routine getData() throws MdsException {
-		return new Routine(this.edit[0].getData(), this.edit[1].getData(), this.edit[2].getData(), this.arg_edit.getDataArray());
+	public final Routine getData() throws MdsException
+	{
+		return new Routine(this.edit[0].getData(), this.edit[1].getData(), this.edit[2].getData(),
+				this.arg_edit.getDataArray());
 	}
 
 	@Override
-	public final void setData(final Descriptor<?> data) {
+	public final void setData(final Descriptor<?> data)
+	{
 		this.data = data;
-		if(this.data instanceof Descriptor_R<?>){
+		if (this.data instanceof Descriptor_R<?>)
+		{
 			this.setDescR();
-			this.arg_edit.setData(((Descriptor_R<?>)data).getDescriptors(3, -1));
-		}else{
-			for(final Editor element : this.edit)
+			this.arg_edit.setData(((Descriptor_R<?>) data).getDescriptors(3, -1));
+		}
+		else
+		{
+			for (final Editor element : this.edit)
 				element.setData(null);
 			this.arg_edit.setData();
 		}

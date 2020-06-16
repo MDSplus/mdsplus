@@ -68,6 +68,14 @@ static int doAction(void *ctx, int nid) {
   DESCRIPTOR_NID(nid_d, &nid);
   DESCRIPTOR_LONG(status_d, &rstatus);
   int status = CTXCALLR(TdiDoTask, &nid_d, &status_d MDS_END_ARG);
+  if STATUS_NOT_OK
+    return status;
+  NCI_ITM setnci[] = {
+    {sizeof(int), NciSTATUS, 0, 0},
+    {0, NciEND_OF_LIST, 0, 0},
+  };
+  setnci[0].pointer = (unsigned char *)&rstatus;
+  status = _TreeSetNci(ctx, nid, setnci);
   if STATUS_OK
     return rstatus;
   return status;

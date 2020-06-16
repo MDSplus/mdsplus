@@ -7,35 +7,107 @@ class Balancer implements ServerListener
  * Ensures action dispatching to servers, keeping load balancing.
  */
 {
-	Hashtable<String, Vector<Server>> servers = new Hashtable<String, Vector<Server>>();
+	Hashtable<String, Vector<Server>> servers = new Hashtable<>();
 	/**
 	 * indexed by server class. Stores the vector of servers associated with the
 	 * server class.
 	 */
 	Server default_server = null;
 
-	public synchronized void setDefaultServer(final Server server)
-	{ default_server = server; }
+	public void abort()
+	{
+		final Enumeration<Vector<Server>> server_vects = servers.elements();
+		while (server_vects.hasMoreElements())
+		{
+			final Vector<Server> server_vect = server_vects.nextElement();
+			final Enumeration<Server> server_list = server_vect.elements();
+			while (server_list.hasMoreElements())
+				server_list.nextElement().abort(true);
+		}
+	}
+
+	public void abortAction(final Action action)
+	{
+		final Enumeration<Vector<Server>> server_vects = servers.elements();
+		while (server_vects.hasMoreElements())
+		{
+			for (final Server server : server_vects.nextElement())
+			{
+				if (server.abortAction(action))
+					return;
+			}
+		}
+	}
+
+	@Override
+	public void actionAborted(final ServerEvent event)
+	{}
+
+	@Override
+	public synchronized void actionFinished(final ServerEvent event)
+	{
+		String server;
+		try
+		{
+			server = event.action.getDispatch().getIdent().getString();
+		}
+		catch (final Exception exc)
+		{
+			return;
+		}
+		final Vector<Server> server_vect = servers.get(server.toUpperCase());
+		if (server_vect == null) // it is the default server
+			return;
+		if (!isBalanced(server_vect))
+		{
+			Server min_loaded = null, max_loaded = null;
+			int max_load = 0;
+			final Enumeration<Server> server_list = server_vect.elements();
+			while (server_list.hasMoreElements())
+			{
+				final Server curr_server = server_list.nextElement();
+				final int curr_len = curr_server.getQueueLength();
+				if (curr_len == 0)
+					min_loaded = curr_server;
+				if (curr_len > max_load)
+				{
+					max_load = curr_len;
+					max_loaded = curr_server;
+				}
+			}
+			final Action action = max_loaded.popAction();
+			if (action != null)
+			{
+				System.out.println(
+						"ACTION BALANCING: action " + action.getName() + " transferred between two equivalent servers");
+				min_loaded.pushAction(action);
+			}
+		}
+	}
+
+	@Override
+	public void actionStarting(final ServerEvent event)
+	{}
 
 	public synchronized void addServer(final Server server)
 	{
 		Vector<Server> server_vect = servers.get(server.getServerClass().toUpperCase());
 		if (server_vect == null)
 		{
-			server_vect = new Vector<Server>();
+			server_vect = new Vector<>();
 			servers.put(server.getServerClass().toUpperCase(), server_vect);
 		}
 		server_vect.addElement(server);
 		server.addServerListener(this);
 	}
 
-	public String getActServer(final String serverClass)
-	{
-		final Vector<Server> serverV = servers.get(serverClass.toUpperCase());
-		if (serverV == null || serverV.size() == 0)
-			return default_server.getServerClass();
-		return serverClass;
-	}
+	@Override
+	public void connected(final ServerEvent event)
+	{}
+
+	@Override
+	public void disconnected(final ServerEvent event)
+	{}
 
 	public boolean enqueueAction(final Action action)
 	{
@@ -53,7 +125,7 @@ class Balancer implements ServerListener
 			}
 			return false;
 		}
-		final Vector<Server> server_vect = new Vector<Server>();
+		final Vector<Server> server_vect = new Vector<>();
 		final Vector<Server> all_server_vect = servers.get(server_class.toUpperCase());
 		if (all_server_vect == null)
 		{
@@ -113,54 +185,12 @@ class Balancer implements ServerListener
 		return true;
 	}
 
-	@Override
-	public void actionStarting(final ServerEvent event)
-	{}
-
-	@Override
-	public void actionAborted(final ServerEvent event)
-	{}
-
-	@Override
-	public synchronized void actionFinished(final ServerEvent event)
+	public String getActServer(final String serverClass)
 	{
-		String server;
-		try
-		{
-			server = event.action.getDispatch().getIdent().getString();
-		}
-		catch (final Exception exc)
-		{
-			return;
-		}
-		final Vector<Server> server_vect = servers.get(server.toUpperCase());
-		if (server_vect == null) // it is the default server
-			return;
-		if (!isBalanced(server_vect))
-		{
-			Server min_loaded = null, max_loaded = null;
-			int max_load = 0;
-			final Enumeration<Server> server_list = server_vect.elements();
-			while (server_list.hasMoreElements())
-			{
-				final Server curr_server = server_list.nextElement();
-				final int curr_len = curr_server.getQueueLength();
-				if (curr_len == 0)
-					min_loaded = curr_server;
-				if (curr_len > max_load)
-				{
-					max_load = curr_len;
-					max_loaded = curr_server;
-				}
-			}
-			final Action action = max_loaded.popAction();
-			if (action != null)
-			{
-				System.out.println(
-						"ACTION BALANCING: action " + action.getName() + " transferred between two equivalent servers");
-				min_loaded.pushAction(action);
-			}
-		}
+		final Vector<Server> serverV = servers.get(serverClass.toUpperCase());
+		if (serverV == null || serverV.size() == 0)
+			return default_server.getServerClass();
+		return serverClass;
 	}
 
 	protected boolean isBalanced(final Vector<Server> server_vect)
@@ -183,36 +213,6 @@ class Balancer implements ServerListener
 		return !(min_load == 0 && max_load > 1);
 	}
 
-	public void abort()
-	{
-		final Enumeration<Vector<Server>> server_vects = servers.elements();
-		while (server_vects.hasMoreElements())
-		{
-			final Vector<Server> server_vect = server_vects.nextElement();
-			final Enumeration<Server> server_list = server_vect.elements();
-			while (server_list.hasMoreElements())
-				server_list.nextElement().abort(true);
-		}
-	}
-
-	public void abortAction(final Action action)
-	{
-		final Enumeration<Vector<Server>> server_vects = servers.elements();
-		while (server_vects.hasMoreElements())
-		{
-			for (final Server server : server_vects.nextElement())
-			{
-				if (server.abortAction(action))
-					return;
-			}
-		}
-	}
-
-	@Override
-	public void disconnected(final ServerEvent event)
-	{}
-
-	@Override
-	public void connected(final ServerEvent event)
-	{}
+	public synchronized void setDefaultServer(final Server server)
+	{ default_server = server; }
 }

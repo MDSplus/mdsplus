@@ -18,7 +18,13 @@ public class MdsDataProviderAsync extends MdsDataProvider
 	class AsynchWaveData implements AsyncDataSource
 	{
 		double sinePeriod = 1;
-		Vector<WaveDataListener> listeners = new Vector<WaveDataListener>();
+		Vector<WaveDataListener> listeners = new Vector<>();
+
+		@Override
+		public void addDataListener(WaveDataListener listener)
+		{
+			listeners.addElement(listener);
+		}
 
 		@Override
 		public void startGeneration(String expression)
@@ -61,12 +67,6 @@ public class MdsDataProviderAsync extends MdsDataProvider
 					}
 				}
 			}).start();
-		}
-
-		@Override
-		public void addDataListener(WaveDataListener listener)
-		{
-			listeners.addElement(listener);
 		}
 	}
 

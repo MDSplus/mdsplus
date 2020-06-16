@@ -3,306 +3,352 @@ import javax.swing.*;
 import mds.devices.Interface;
 
 import java.awt.*;
+
 public abstract class DeviceComponent extends JPanel
 {
-    Interface subtree;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final int DATA = 0, STATE = 1, DISPATCH = 2;
+	Interface subtree;
+	public int mode = DATA;
+	public int baseNid = 0, offsetNid = 0;
+	protected String curr_data, init_data;
+	protected boolean curr_on, init_on;
+	protected int nidData;
+	protected int baseNidData;
+	protected String identifier;
+	protected String updateIdentifier;
+	protected boolean editable = true;
+	protected boolean isHighlighted = false;
+	private boolean is_initialized = false;
+	private boolean enabled = true;
+	private int refShot = -2;
 
-    public int mode = DATA;
-    public static final int DATA = 0, STATE = 1, DISPATCH = 2;
-    public int baseNid = 0, offsetNid = 0;
-    protected String curr_data, init_data;
-    protected boolean curr_on, init_on;
-    protected int nidData;
-    protected int baseNidData;
-    protected String identifier;
-    protected String updateIdentifier;
-    protected boolean editable = true;
-    protected boolean isHighlighted = false;
-    private boolean is_initialized = false;
-    private boolean enabled = true;
-    
-    private int refShot = -2;
+	//Event handling in DW setup
+	DeviceSetup master = null;
 
-
-
-    void setSubtree(Interface subtree) {this.subtree = subtree; }
-    Interface getSubtree(){return subtree; }
-    public void setRefShot(int refShot){this.refShot = refShot;}
-    public int getRefShot(){return refShot;}
-    public void setBaseNid(int nid) {baseNid = nid; }
-    public int getBaseNid() {return baseNid; }
-    public void setOffsetNid(int nid) {offsetNid = nid; }
-    public int getOffsetNid() {return offsetNid; }
-    public void setIdentifier(String identifier)
-    {
-	this.identifier = identifier;
-    }
-    public String getIdentifier()
-    {
-	return identifier;
-    }
-    public void setUpdateIdentifier(String updateIdentifier)
-    {
-	this.updateIdentifier = updateIdentifier;
-    }
-    public String getUpdateIdentifier() {return updateIdentifier; }
-
-
-    public void configure(int baseNid, boolean readOnly)
-    {
-	configure(baseNid);
-    }
-
-    public void configure(int baseNid)
-    {
-	this.baseNid = baseNid;
-	nidData = baseNid+offsetNid;
-	baseNidData = baseNid;
-	if(mode == DATA)
+	public void apply() throws Exception
 	{
-	    try {
-	        init_data = curr_data = subtree.getDataExpr(nidData);
-	    }catch(Exception e) {init_data = curr_data = null;}
-
-
-
+		if (!enabled)
+			return;
+		if (mode == DATA)
+		{
+			curr_data = getData();
+			/*
+			 * if(curr_data instanceof PathData) { try { curr_data =
+			 * subtree.resolve((PathData)curr_data, Tree.context); }catch(Exception exc){} }
+			 */
+			if (editable && isDataChanged())
+			{
+				try
+				{
+					subtree.putDataExpr(nidData, curr_data);
+				}
+				catch (final Exception e)
+				{
+					System.out.println("Error writing device data: " + e);
+					System.out.println(curr_data);
+					throw e;
+				}
+			}
+		}
+		if (mode != DISPATCH && supportsState())
+		{
+			curr_on = getState();
+			try
+			{
+				subtree.setOn(nidData, curr_on);
+			}
+			catch (final Exception e)
+			{
+				System.out.println("Error writing device state: " + e);
+			}
+		}
+		checkRefShot();
 	}
-	else init_data = null;
-	//if(mode != DISPATCH)
+
+	public void apply(int currBaseNid) throws Exception
 	{
-	    try {
-	        init_on = curr_on = subtree.isOn(nidData);
-	    } catch(Exception e)
-	    {
-	        System.out.println("Error configuring device: " + e);
-	    }
+		final int currNidData = currBaseNid + offsetNid;
+		if (!enabled)
+			return;
+		if (mode == DATA)
+		{
+			curr_data = getData();
+			if (editable)// && isDataChanged())
+			{
+				try
+				{
+					subtree.putDataExpr(currNidData, curr_data);
+				}
+				catch (final Exception e)
+				{
+					System.out.println("Error writing device data: " + e);
+					System.out.println("at node: " + subtree.getFullPath(nidData));
+					System.out.println(curr_data);
+					throw e;
+				}
+			}
+		}
+		if (mode != DISPATCH && supportsState())
+		{
+			curr_on = getState();
+			try
+			{
+				subtree.setOn(currNidData, curr_on);
+			}
+			catch (final Exception e)
+			{
+				System.out.println("Error writing device state: " + e);
+			}
+		}
+		checkRefShot();
 	}
-	if(!is_initialized)
+
+	public void checkRefShot()
 	{
-	    initializeData(curr_data, curr_on);
-	    is_initialized = true;
+		if (refShot < -1)
+			return;
+		try
+		{
+			final String refPath = subtree.getFullPath(baseNid + offsetNid);
+			final String refExpr = "USING(" + refPath + ",," + refShot + ")";
+			System.out.println(refExpr);
+			final String refDataExpr = subtree.execute(refExpr);
+			final String currDataExpr = subtree.execute(curr_data);
+			if (!currDataExpr.equals(refDataExpr))
+				setHighlight(true);
+			else
+				setHighlight(false);
+		}
+		catch (final Exception exc)
+		{}
 	}
-	else
-	    displayData(curr_data, curr_on);
-        checkRefShot();
-    }
 
-    public void reset()
-    {
-	curr_data = init_data;
-	curr_on = init_on;
-	displayData(curr_data, curr_on);
-    }
-    
-    public void update()
-    {
-        try {
-            String updatedData = subtree.getDataExpr(baseNid+offsetNid);
-            String prevInitData = init_data;
-            init_data = updatedData;
-            reset();
-            init_data = prevInitData;
-        }
-        catch(Exception exc){}
-    }
-
-    public void apply() throws Exception
-    {
-	if(!enabled) return;
-	if(mode == DATA)
+	public void configure(int baseNid)
 	{
-	    curr_data = getData();
-/*            if(curr_data instanceof PathData)
-	    {
-	        try {
-	            curr_data = subtree.resolve((PathData)curr_data, Tree.context);
-	        }catch(Exception exc){}
-	    }
-  */
-	    if(editable && isDataChanged())
-	    {
-	        try {
-	        subtree.putDataExpr(nidData, curr_data);
-	        } catch(Exception e)
-	        {
-	            System.out.println("Error writing device data: " + e);
-	            System.out.println(curr_data);
-	            throw e;
-	        }
-	    }
+		this.baseNid = baseNid;
+		nidData = baseNid + offsetNid;
+		baseNidData = baseNid;
+		if (mode == DATA)
+		{
+			try
+			{
+				init_data = curr_data = subtree.getDataExpr(nidData);
+			}
+			catch (final Exception e)
+			{
+				init_data = curr_data = null;
+			}
+		}
+		else
+			init_data = null;
+		// if(mode != DISPATCH)
+		{
+			try
+			{
+				init_on = curr_on = subtree.isOn(nidData);
+			}
+			catch (final Exception e)
+			{
+				System.out.println("Error configuring device: " + e);
+			}
+		}
+		if (!is_initialized)
+		{
+			initializeData(curr_data, curr_on);
+			is_initialized = true;
+		}
+		else
+			displayData(curr_data, curr_on);
+		checkRefShot();
 	}
-	if(mode != DISPATCH && supportsState())
+
+	public void configure(int baseNid, boolean readOnly)
 	{
-	    curr_on = getState();
-	    try {
-	        subtree.setOn(nidData, curr_on);
-	    }catch(Exception e)
-	    {
-	        System.out.println("Error writing device state: " + e);
-	    }
+		configure(baseNid);
 	}
-        checkRefShot();
-    }
 
-    public void apply(int currBaseNid) throws Exception
-    {
-	int currNidData = currBaseNid+offsetNid;
-	if(!enabled) return;
-	if(mode == DATA)
+	// Copy-Paste management
+	protected Object copyData()
 	{
-	    curr_data = getData();
-	    if(editable)// && isDataChanged())
-	    {
-	        try {
-	        subtree.putDataExpr(currNidData, curr_data);
-	        } catch(Exception e)
-	        {
-	            System.out.println("Error writing device data: " + e);
-	            System.out.println("at node: " + subtree.getFullPath(nidData));
-	            System.out.println(curr_data);
-	            throw e;
-	        }
-	    }
+		return null;
 	}
-	if(mode != DISPATCH && supportsState())
+
+	protected void dataChanged(int offsetNid, Object data)
+	{}
+
+	protected abstract void displayData(String data, boolean is_on);
+
+	public void fireUpdate(String updateId, String newExpr)
+	{}
+
+	public int getBaseNid()
+	{ return baseNid; }
+
+	protected abstract String getData();
+
+	// Get an object incuding all related info (will be data except for
+	// DeviceWaveform
+	protected Object getFullData()
+	{ return getData(); }
+
+	public String getIdentifier()
+	{ return identifier; }
+
+	public int getOffsetNid()
+	{ return offsetNid; }
+
+	public int getRefShot()
+	{ return refShot; }
+
+	protected abstract boolean getState();
+
+	Interface getSubtree()
+	{ return subtree; }
+
+	public String getUpdateId(DeviceSetup master)
 	{
-	    curr_on = getState();
-	    try {
-	        subtree.setOn(currNidData, curr_on);
-	    }catch(Exception e)
-	    {
-	        System.out.println("Error writing device state: " + e);
-	    }
+		this.master = master;
+		return updateIdentifier;
 	}
-        checkRefShot();
-    }
 
+public String getUpdateIdentifier()
+	{ return updateIdentifier; }
 
+	// To be subclassed
+	protected abstract void initializeData(String data, boolean is_on);
 
-
-    protected void redisplay()
-    {
-	Container curr_container;
-	Component curr_component = this;
-	do {
-	    curr_container = curr_component.getParent();
-	    curr_component = curr_container;
-	}while ((curr_container != null) && !(curr_container instanceof Window));
-       /* if(curr_container != null)
+	protected boolean isChanged()
 	{
-	    ((Window)curr_container).pack();
-	    ((Window)curr_container).setVisible(true);
-	}*/
-    }
-
-//Event handling in DW setup
-    DeviceSetup master = null;
-    public String getUpdateId(DeviceSetup master)
-    {
-	this.master = master;
-	return updateIdentifier;
-    }
-    public void fireUpdate(String updateId, String newExpr){}
-    //To be subclassed
-    protected abstract void initializeData(String data, boolean is_on);
-    protected abstract void displayData(String data, boolean is_on);
-    protected abstract String getData();
-    protected abstract boolean getState();
-    //Copy-Paste management
-    protected Object copyData() {return null;}
-    protected void pasteData(Object objData){}
-
-
-
-    public void postConfigure(){}
-    void postApply(){}
-    protected boolean supportsState(){return false;}
-    public void setEnable()
-    {
-	enabled = true;
-    }
-    public void setDisable()
-    {
-	enabled = false;
-    }
-
-    public void reportDataChanged(Object data)
-    {
-      if(master == null) return;
-      master.propagateData(offsetNid, data);
-    }
-
-    public void reportStateChanged(boolean state)
-    {
-      if(master == null) return;
-      master.propagateState(offsetNid, state);
-    }
-
-    protected void dataChanged(int offsetNid, Object data){}
-    protected void stateChanged(int offsetNid, boolean state){}
-    protected boolean isDataChanged()
-    {
-	return true;
-    }
-    protected boolean isChanged()
-    {
-	try
-	{
-	    return! (init_data.equals(curr_data));
+		try
+		{
+			return !(init_data.equals(curr_data));
+		}
+		catch (final Exception exc)
+		{
+			return false;
+		}
 	}
-	catch (Exception exc)
+
+	protected boolean isDataChanged()
+	{ return true; }
+
+	protected boolean isStateChanged()
+	{ return !(init_on == curr_on); }
+
+	protected void pasteData(Object objData)
+	{}
+
+	void postApply()
+	{}
+
+	public void postConfigure()
+	{}
+
+	protected void redisplay()
 	{
-	    return false;
+		Container curr_container;
+		Component curr_component = this;
+		do
+		{
+			curr_container = curr_component.getParent();
+			curr_component = curr_container;
+		}
+		while ((curr_container != null) && !(curr_container instanceof Window));
+		/*
+		 * if(curr_container != null) { ((Window)curr_container).pack();
+		 * ((Window)curr_container).setVisible(true); }
+		 */
 	}
-    }
-    protected boolean isStateChanged()
-    {
-	return !(init_on == curr_on);
-    }
 
-    //Get an object incuding all related info (will be data except for DeviceWaveform
-    protected Object getFullData(){return getData();}
+	public void reportDataChanged(Object data)
+	{
+		if (master == null)
+			return;
+		master.propagateData(offsetNid, data);
+	}
 
-    public void checkRefShot()
-    {
-        if(refShot < -1) return;
-        try {
-            String refPath = subtree.getFullPath(baseNid + offsetNid);
-            String refExpr = "USING("+refPath+",,"+refShot+")";
-            System.out.println(refExpr);
-            String refDataExpr = subtree.execute(refExpr);
-            String currDataExpr = subtree.execute(curr_data);
-            if(!currDataExpr.equals(refDataExpr))
-                setHighlight(true);
-            else
-                setHighlight(false);
-        }
-        catch(Exception exc){}
-        
-    }
-    
-    
-    public void setHighlight(boolean isHighlighted)
-    {
-	this.isHighlighted = isHighlighted;
-	Component currParent, currGrandparent = this;
-	do {
-	    currParent = currGrandparent;
-	    currGrandparent = currParent.getParent();
-	    if(currGrandparent instanceof JTabbedPane)
-	    {
-	        int idx = ((JTabbedPane)currGrandparent).indexOfComponent(currParent);
-	        ((JTabbedPane)currGrandparent).setForegroundAt(idx, isHighlighted?Color.red:Color.black);
-	    }
-	}while(!(currGrandparent instanceof DeviceSetup));
-    }
+	public void reportStateChanged(boolean state)
+	{
+		if (master == null)
+			return;
+		master.propagateState(offsetNid, state);
+	}
 
+	public void reset()
+	{
+		curr_data = init_data;
+		curr_on = init_on;
+		displayData(curr_data, curr_on);
+	}
+
+	public void setBaseNid(int nid)
+	{ baseNid = nid; }
+
+	public void setDisable()
+	{
+		enabled = false;
+	}
+
+	public void setEnable()
+	{
+		enabled = true;
+	}
+
+	public void setHighlight(boolean isHighlighted)
+	{
+		this.isHighlighted = isHighlighted;
+		Component currParent, currGrandparent = this;
+		do
+		{
+			currParent = currGrandparent;
+			currGrandparent = currParent.getParent();
+			if (currGrandparent instanceof JTabbedPane)
+			{
+				final int idx = ((JTabbedPane) currGrandparent).indexOfComponent(currParent);
+				((JTabbedPane) currGrandparent).setForegroundAt(idx, isHighlighted ? Color.red : Color.black);
+			}
+		}
+		while (!(currGrandparent instanceof DeviceSetup));
+	}
+
+	public void setIdentifier(String identifier)
+	{ this.identifier = identifier; }
+
+	public void setOffsetNid(int nid)
+	{ offsetNid = nid; }
+
+	public void setRefShot(int refShot)
+	{ this.refShot = refShot; }
+
+	void setSubtree(Interface subtree)
+	{ this.subtree = subtree; }
+
+	public void setUpdateIdentifier(String updateIdentifier)
+	{ this.updateIdentifier = updateIdentifier; }
+
+	protected void stateChanged(int offsetNid, boolean state)
+	{}
+
+	protected boolean supportsState()
+	{
+		return false;
+	}
+
+	public void update()
+	{
+		try
+		{
+			final String updatedData = subtree.getDataExpr(baseNid + offsetNid);
+			final String prevInitData = init_data;
+			init_data = updatedData;
+			reset();
+			init_data = prevInitData;
+		}
+		catch (final Exception exc)
+		{}
+	}
 }
-
-
-
-
-
-
-
-

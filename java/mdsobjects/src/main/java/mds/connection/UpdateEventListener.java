@@ -6,7 +6,8 @@ package mds.connection;
  * DataProvider implementation when the corresponding asynchronous event is
  * received.
  */
-public interface UpdateEventListener extends java.util.EventListener {
+public interface UpdateEventListener extends java.util.EventListener
+{
 	/**
 	 * Called by the DataProvider implementation to notify jScope that an
 	 * asynchronous event has been received.
@@ -15,5 +16,4 @@ public interface UpdateEventListener extends java.util.EventListener {
 	 * @see UpdateEvent
 	 */
 	public void processUpdateEvent(UpdateEvent e);
-
 }

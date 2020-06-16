@@ -19,6 +19,18 @@ class MdsMonitorEvent extends MdsServerEvent
 	static final int MonitorEndSequence = 11;
 	static final int MonitorServerConnected = 12;
 	static final int MonitorServerDisconnected = 13;
+
+	public static String msecToString(long msec)
+	{
+		final int min = (int) (msec / 60000.);
+		msec -= min * 60000;
+		final int sec = (int) (msec / 1000.);
+		msec -= sec * 1000;
+		final DecimalFormat df = new DecimalFormat("#00");
+		final DecimalFormat df1 = new DecimalFormat("#000");
+		return df.format(min) + "." + df.format(sec) + "." + df1.format(msec);
+	}
+
 	/*
 	 * static final int MonitorServerConnected = 10; static final int
 	 * MonitorServerDisconnected = 11; static final int MonitorEndPhase = 12; static
@@ -39,41 +51,6 @@ class MdsMonitorEvent extends MdsServerEvent
 	String date_st;
 	String error_message;
 	long execution_time; // msec
-
-	public MdsMonitorEvent(Object obj, int mode, String msg)
-	{
-		super(obj, 0, 0, 1);
-		this.mode = mode;
-		this.error_message = msg;
-	}
-
-	public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
-	{
-		super(obj, 0, 0, 1);
-		this.tree = null;
-		this.shot = 0;
-		this.phase = phase;
-		this.nid = nid;
-		this.error_message = msg;
-	}
-
-	public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode,
-			String server, String server_address, int ret_status)
-	{
-		super(obj, 0, 0, 1);
-		this.tree = tree;
-		this.shot = shot;
-		this.phase = phase;
-		this.nid = nid;
-		this.name = name;
-		this.on = on;
-		this.mode = mode;
-		this.server = server;
-		this.server_address = server_address;
-		this.ret_status = ret_status;
-		this.error_message = MdsHelper.getErrorString(ret_status);
-		date_st = (new Date()).toString();
-	}
 
 	public MdsMonitorEvent(Object source, int id, int flags, int status, String data) throws Exception
 	{
@@ -117,17 +94,39 @@ class MdsMonitorEvent extends MdsServerEvent
 		}
 	}
 
-	public synchronized byte[] toBytes()
+	public MdsMonitorEvent(Object obj, int phase, int nid, String msg)
 	{
-		final String out_st = tree + " " + shot + " " + phase + " " + nid + " " + on + " " + mode + " " + server + " "
-				+ server_address + " " + ret_status + " " + name + " " + date_st + " ; " + error_message;
-		final byte[] msg = out_st.getBytes();
-		final String head_st = "" + jobid + " " + flags + " " + status + " " + msg.length;
-		final byte[] headmsg = head_st.getBytes();
-		final byte[] outmsg = new byte[60 + msg.length];
-		System.arraycopy(headmsg, 0, outmsg, 0, headmsg.length);
-		System.arraycopy(msg, 0, outmsg, 60, msg.length);
-		return outmsg;
+		super(obj, 0, 0, 1);
+		this.tree = null;
+		this.shot = 0;
+		this.phase = phase;
+		this.nid = nid;
+		this.error_message = msg;
+	}
+
+	public MdsMonitorEvent(Object obj, int mode, String msg)
+	{
+		super(obj, 0, 0, 1);
+		this.mode = mode;
+		this.error_message = msg;
+	}
+
+	public MdsMonitorEvent(Object obj, String tree, int shot, int phase, int nid, String name, int on, int mode,
+			String server, String server_address, int ret_status)
+	{
+		super(obj, 0, 0, 1);
+		this.tree = tree;
+		this.shot = shot;
+		this.phase = phase;
+		this.nid = nid;
+		this.name = name;
+		this.on = on;
+		this.mode = mode;
+		this.server = server;
+		this.server_address = server_address;
+		this.ret_status = ret_status;
+		this.error_message = MdsHelper.getErrorString(ret_status);
+		date_st = (new Date()).toString();
 	}
 
 	private String getMode(int mode_id)
@@ -164,14 +163,6 @@ class MdsMonitorEvent extends MdsServerEvent
 		return "";
 	}
 
-	@Override
-	public synchronized String toString()
-	{
-		return "[exp=" + tree + "; shot=" + shot + "; phase=" + phase + "; nid=" + nid + "; on=" + on + "; mode= "
-				+ getMode(mode) + "; server=" + server + "; ServerAddress=" + server_address + "; status=" + ret_status
-				+ "]";
-	}
-
 	public synchronized String getMonitorString()
 	{
 		final StringBuffer out = new StringBuffer();
@@ -205,14 +196,24 @@ class MdsMonitorEvent extends MdsServerEvent
 		return out.toString().trim();
 	}
 
-	public static String msecToString(long msec)
+	public synchronized byte[] toBytes()
 	{
-		final int min = (int) (msec / 60000.);
-		msec -= min * 60000;
-		final int sec = (int) (msec / 1000.);
-		msec -= sec * 1000;
-		final DecimalFormat df = new DecimalFormat("#00");
-		final DecimalFormat df1 = new DecimalFormat("#000");
-		return df.format(min) + "." + df.format(sec) + "." + df1.format(msec);
+		final String out_st = tree + " " + shot + " " + phase + " " + nid + " " + on + " " + mode + " " + server + " "
+				+ server_address + " " + ret_status + " " + name + " " + date_st + " ; " + error_message;
+		final byte[] msg = out_st.getBytes();
+		final String head_st = "" + jobid + " " + flags + " " + status + " " + msg.length;
+		final byte[] headmsg = head_st.getBytes();
+		final byte[] outmsg = new byte[60 + msg.length];
+		System.arraycopy(headmsg, 0, outmsg, 0, headmsg.length);
+		System.arraycopy(msg, 0, outmsg, 60, msg.length);
+		return outmsg;
+	}
+
+	@Override
+	public synchronized String toString()
+	{
+		return "[exp=" + tree + "; shot=" + shot + "; phase=" + phase + "; nid=" + nid + "; on=" + on + "; mode= "
+				+ getMode(mode) + "; server=" + server + "; ServerAddress=" + server_address + "; status=" + ret_status
+				+ "]";
 	}
 }

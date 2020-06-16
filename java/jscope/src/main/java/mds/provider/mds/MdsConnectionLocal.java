@@ -42,14 +42,6 @@ public class MdsConnectionLocal extends MdsConnection
 	}
 
 	@Override
-	public String getProvider()
-	{ return "local"; }
-
-	@Override
-	public void setProvider(String provider)
-	{}
-
-	@Override
 	public int DisconnectFromMds()
 	{
 		dis = null;
@@ -58,4 +50,12 @@ public class MdsConnectionLocal extends MdsConnection
 			p.destroy();
 		return super.DisconnectFromMds();
 	}
+
+	@Override
+	public String getProvider()
+	{ return "local"; }
+
+	@Override
+	public void setProvider(String provider)
+	{}
 }

@@ -61,7 +61,7 @@ public class TdiShr extends TreeShr
 	public final DescriptorStatus _tdiIntrinsic(final CTX ctx, final OPC opcode, final Descriptor<?>... args)
 			throws MdsException
 	{
-		final Request<List> request = new TdiCall<List>(List.class, "_TdiIntrinsic").ctxp(ctx.getDbid())
+		final Request<List> request = new TdiCall<>(List.class, "_TdiIntrinsic").ctxp(ctx.getDbid())
 				.val(opcode.ordinal())//
 				.val(args.length).ref(new List(args)).xd("a").finL("a", "s", "c");
 		return new DescriptorStatus(this.mds.getDescriptor(null, request));
@@ -79,7 +79,7 @@ public class TdiShr extends TreeShr
 	public final int[] getShotDB(final StringDsc expt, final Descriptor_S<?> path, final Int32 lower, final Int32 upper)
 			throws MdsException
 	{
-		final ArrayList<Descriptor<?>> args = new ArrayList<Descriptor<?>>(4);
+		final ArrayList<Descriptor<?>> args = new ArrayList<>(4);
 		final StringBuilder expr = new StringBuilder(63).append("getShotDB(($;)");
 		args.add(expt);
 		if (path != null)
@@ -149,7 +149,7 @@ public class TdiShr extends TreeShr
 	{
 		if (ctx != null && this.mds.MdsEND_ARG() > 0)
 			return this._tdiIntrinsic(ctx, opcode, args);
-		final Request<List> request = new TdiCall<List>(List.class, "TdiIntrinsic").val(opcode.ordinal())//
+		final Request<List> request = new TdiCall<>(List.class, "TdiIntrinsic").val(opcode.ordinal())//
 				.val(args.length).ref(new List(args)).xd("a").finL("a", "s");
 		return new DescriptorStatus(this.mds.getDescriptor(ctx, request));
 	}

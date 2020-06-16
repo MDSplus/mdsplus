@@ -4,64 +4,79 @@ import mds.wave.*;
 
 public class DeviceWaveDisplay extends DeviceComponent
 {
-    protected Waveform wave;
-    protected String oldData;
-    float x[] = null,y[] = null;
-    protected int prefHeight = 200;
+	/**
+	 *
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Waveform wave;
+	protected String oldData;
+	float x[] = null, y[] = null;
+	protected int prefHeight = 200;
 
-    public void setPrefHeight(int prefHeight)
-    {
-	this.prefHeight = prefHeight;
-    }
+	public DeviceWaveDisplay()
+	{}
 
-    public int getPrefHeight(){return prefHeight;}
-    public DeviceWaveDisplay()
-    {}
+	@Override
+	protected void displayData(String data, boolean is_on)
+	{
+		try
+		{
+			final String xData = "DIM_OF(" + data + ")";
+			final String yData = data;
+			x = subtree.getFloatArray(xData);
+			y = subtree.getFloatArray(yData);
+			wave.Update(x, y);
+		}
+		catch (final Exception exc)
+		{}
+	}
 
+	@Override
+	protected String getData()
+	{ return oldData; }
 
-    protected void initializeData(String data, boolean is_on)
-    {
-	oldData = data;
-	setLayout(new BorderLayout());
-	wave = new Waveform();
-	wave.setPreferredSize(new Dimension(300, 200));
-	add(wave, "Center");
-	displayData(data, is_on);
-    }
+	public int getPrefHeight()
+	{ return prefHeight; }
 
+	@Override
+	protected boolean getState()
+	{ return true; }
 
-    protected void displayData(String data, boolean is_on)
-    {
-	try {
-	    String xData = "DIM_OF(" + data + ")";
-	    String yData = data;
-	    x = subtree.getFloatArray(xData);
-	    y = subtree.getFloatArray(yData);
-	    wave.Update(x, y);
-	}catch(Exception exc){}
-    }
+	@Override
+	protected void initializeData(String data, boolean is_on)
+	{
+		oldData = data;
+		setLayout(new BorderLayout());
+		wave = new Waveform();
+		wave.setPreferredSize(new Dimension(300, 200));
+		add(wave, "Center");
+		displayData(data, is_on);
+	}
 
-     protected String getData()
-    {
-	return oldData;
-    }
+	@Override
+	public boolean isDataChanged()
+	{ return false; }
 
-    protected boolean getState(){return true;}
-    public void setEnabled(boolean state) {}
-    public boolean isDataChanged() {return false;}
+	@Override
+	void postApply()
+	{
+		displayData(oldData, true);
+	}
 
-    void postApply()
-    {
-	displayData(oldData, true);
-    }
+	@Override
+	public void print(Graphics g)
+	{
+		wave.paintComponent(g);
+	}
 
-    public void reset()
-    {
-    }
+	@Override
+	public void reset()
+	{}
 
-    public void print(Graphics g)
-    {
-	wave.paintComponent(g);
-    }
+	@Override
+	public void setEnabled(boolean state)
+	{}
+
+	public void setPrefHeight(int prefHeight)
+	{ this.prefHeight = prefHeight; }
 }
-

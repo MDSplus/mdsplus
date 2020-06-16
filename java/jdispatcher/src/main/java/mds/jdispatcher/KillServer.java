@@ -4,11 +4,6 @@ import mds.connection.MdsConnection;
 
 public class KillServer extends MdsConnection
 {
-	KillServer(final String server)
-	{
-		super(server);
-	}
-
 	public static void main(final String args[])
 	{
 		String serverIp = "";
@@ -35,5 +30,10 @@ public class KillServer extends MdsConnection
 			System.err.println("Cannot connect to server: " + serverIp + ":" + serverPort);
 		}
 		System.exit(0);
+	}
+
+	KillServer(final String server)
+	{
+		super(server);
 	}
 }

@@ -10,55 +10,6 @@ import mds.connection.MdsMessage;
 
 public class jServer extends MdsIp
 {
-	static final int SrvNoop = 0;
-	/**** Used to start server ****/
-	static final int SrvAbort = 1;
-	/**** Abort current action or mdsdcl command ***/
-	static final int SrvAction = 2;
-	/**** Execute an action nid in a tree ***/
-	static final int SrvClose = 3;
-	/**** Close open trees ***/
-	static final int SrvCreatePulse = 4;
-	/**** Create pulse files for single tree (nosubtrees) ***/
-	static final int SrvSetLogging = 5;
-	/**** Turn logging on/off ***/
-	static final int SrvCommand = 6;
-	/**** Execute MDSDCL command ***/
-	static final int SrvMonitor = 7;
-	/**** Broadcast messages to action monitors ***/
-	static final int SrvShow = 8;
-	/**** Request current status of server ***/
-	static final int SrvStop = 9;
-	/**** Stop server ***/
-	static final int SrvRemoveLast = 10;
-	/**** Remove last item in queue if action pending ***/
-	static final int SrvWatchdogPort = 11;
-	/**** Watchdog port ***/
-	static final int SrvJobBEFORE_NOTIFY = 1;
-	static final int SrvJobAFTER_NOTIFY = 2;
-	static final int SrvJobABORTED = 1;
-	static final int SrvJobSTARTING = 2;
-	static final int SrvJobFINISHED = 3;
-	static final int ServerABORT = 0xfe18032;
-	public static int doingNid;
-	private final Vector<Socket> retSocketsV = new Vector<Socket>();
-	private MDSplus.Tree mdsTree = null;
-	private final ActionQueue actionQueue = new ActionQueue();
-	private final Worker worker;
-	private boolean watchdogStarted = false;
-
-	private static final void logServer(Object... elements)
-	{
-		synchronized (System.out)
-		{
-			System.out.print("Server:  ");
-			for (final Object e : elements)
-				System.out.print(e);
-			System.out.println("");
-			System.out.flush();
-		}
-	}
-
 	// static inner class ActionDescriptor is used to keep action-related
 	// information
 	static class ActionDescriptor
@@ -82,41 +33,41 @@ public class jServer extends MdsIp
 			this.shot = shot;
 		}
 
-		// final NidData getNid(){return nid;}
-		final String getName()
-		{ return name; }
-
 		final InetAddress getAddress()
 		{ return address; }
-
-		final int getPort()
-		{ return port; }
 
 		final int getId()
 		{ return id; }
 
-		final String getTree()
-		{ return tree; }
+		// final NidData getNid(){return nid;}
+		final String getName()
+		{ return name; }
+
+		final int getPort()
+		{ return port; }
 
 		final int getShot()
 		{ return shot; }
+
+		final String getTree()
+		{ return tree; }
 	}
 
 	// Inner class ActionQueue keeps a queue of ActionDesctor objects and manages
 	// synchronization
 	class ActionQueue
 	{
-		Vector<ActionDescriptor> actionV = new Vector<ActionDescriptor>();
+		Vector<ActionDescriptor> actionV = new Vector<>();
+
+		void dequeueAllActions()
+		{
+			actionV.removeAllElements();
+		}
 
 		synchronized void enqueueAction(final ActionDescriptor actionDescr)
 		{
 			actionV.addElement(actionDescr);
 			notify();
-		}
-
-		void dequeueAllActions()
-		{
-			actionV.removeAllElements();
 		}
 
 		synchronized ActionDescriptor nextAction() throws InterruptedException
@@ -139,25 +90,93 @@ public class jServer extends MdsIp
 		}
 	}
 
-	// Inner class Worker performs assigned computation on a separate thread.
-	// It gets the nid to be executed from an instance of nidQueue, and executes
-	// he action on a separate thread until either the timeout is reached (is
-	// specified)
-	// or an abort command is received
+	// Class WatchdogHandler handles watchdog (an integer is received and sent back)
+	class WatchdogHandler extends Thread
+	{
+		int port;
+
+		WatchdogHandler(final int port)
+		{
+			this.port = port;
+		}
+
+		@Override
+		public void run()
+		{
+			try (final ServerSocket serverSock = new ServerSocket(port))
+			{
+				while (true)
+					try (final Socket sock = serverSock.accept())
+					{
+						final DataInputStream dis = new DataInputStream(sock.getInputStream());
+						final DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
+						try
+						{
+							while (true)
+							{
+								dos.writeInt(dis.readInt());
+								dos.flush();
+							}
+						}
+						catch (final Exception exc)
+						{}
+					}
+			}
+			catch (final Exception exc)
+			{
+				logServer("Error accepting watchdog: ", exc);
+			}
+		}
+	} // End class WatchdogHandler
+		// Inner class Worker performs assigned computation on a separate thread.
+		// It gets the nid to be executed from an instance of nidQueue, and executes
+		// he action on a separate thread until either the timeout is reached (is
+		// specified)
+		// or an abort command is received
+
 	class Worker extends Thread
 	{
+		// Inner class ActionMaker executes the action and records whether such action
+		// has been aborted
+		class ActionMaker extends Thread
+		{
+			boolean aborted = false;
+			ActionDescriptor action;
+
+			ActionMaker(final ActionDescriptor action)
+			{
+				this.action = action;
+			}
+
+			@Override
+			public void run()
+			{
+				final int status = doSimpleAction(action.getName(), action.getTree(), action.getShot());
+				if (!aborted)
+				{
+					retStatus = status;
+					awakeWorker();
+				}
+			}
+
+			public void setAborted()
+			{
+				aborted = true;
+			}
+		} // End ActionMaker class implementation
+
 		ActionDescriptor currAction;
 		int retStatus = 0;
 		boolean currentActionAborted = false;
 
-		public synchronized void awakeWorker()
-		{
-			notify();
-		}
-
 		public synchronized void abortCurrentAction()
 		{
 			currentActionAborted = true;
+			notify();
+		}
+
+		public synchronized void awakeWorker()
+		{
 			notify();
 		}
 
@@ -203,36 +222,102 @@ public class jServer extends MdsIp
 				}
 			}
 		}
+	} // End Worker class implementation
 
-		// Inner class ActionMaker executes the action and records whether such action
-		// has been aborted
-		class ActionMaker extends Thread
+	static final int SrvNoop = 0;
+	/**** Used to start server ****/
+	static final int SrvAbort = 1;
+	/**** Abort current action or mdsdcl command ***/
+	static final int SrvAction = 2;
+	/**** Execute an action nid in a tree ***/
+	static final int SrvClose = 3;
+	/**** Close open trees ***/
+	static final int SrvCreatePulse = 4;
+	/**** Create pulse files for single tree (nosubtrees) ***/
+	static final int SrvSetLogging = 5;
+	/**** Turn logging on/off ***/
+	static final int SrvCommand = 6;
+	/**** Execute MDSDCL command ***/
+	static final int SrvMonitor = 7;
+	/**** Broadcast messages to action monitors ***/
+	static final int SrvShow = 8;
+	/**** Request current status of server ***/
+	static final int SrvStop = 9;
+	/**** Stop server ***/
+	static final int SrvRemoveLast = 10;
+	/**** Remove last item in queue if action pending ***/
+	static final int SrvWatchdogPort = 11;
+	/**** Watchdog port ***/
+	static final int SrvJobBEFORE_NOTIFY = 1;
+	static final int SrvJobAFTER_NOTIFY = 2;
+	static final int SrvJobABORTED = 1;
+	static final int SrvJobSTARTING = 2;
+	static final int SrvJobFINISHED = 3;
+	static final int ServerABORT = 0xfe18032;
+	public static int doingNid;
+
+	private static final void logServer(Object... elements)
+	{
+		synchronized (System.out)
 		{
-			boolean aborted = false;
-			ActionDescriptor action;
+			System.out.print("Server:  ");
+			for (final Object e : elements)
+				System.out.print(e);
+			System.out.println("");
+			System.out.flush();
+		}
+	}
 
-			ActionMaker(final ActionDescriptor action)
+	public static void main(final String... args)
+	{
+		int port;
+		try
+		{
+			System.out.println(args[0]);
+			port = Integer.parseInt(args[0]);
+		}
+		catch (final Exception exc)
+		{
+			port = 8002;
+		}
+		if (args.length > 1)
+		{
+			final String tclBatch = args[1];
+			try
 			{
-				this.action = action;
+				MDSplus.Data.execute("tcl('@" + tclBatch + "')");
 			}
-
-			@Override
-			public void run()
+			catch (final Exception exc)
 			{
-				final int status = doSimpleAction(action.getName(), action.getTree(), action.getShot());
-				if (!aborted)
+				System.err.println("Error executing initial TCL batch: " + exc);
+			}
+		}
+		final jServer server = new jServer(port);
+		server.start();
+		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try
+		{
+			while (true)
+			{
+				final String command = br.readLine();
+				if (command.equals("exit"))
 				{
-					retStatus = status;
-					awakeWorker();
+					server.closeAll();
+					System.exit(0);
 				}
 			}
+		}
+		catch (final Exception exc)
+		{}
+	}
 
-			public void setAborted()
-			{
-				aborted = true;
-			}
-		} // End ActionMaker class implementation
-	} // End Worker class implementation
+	private final Vector<Socket> retSocketsV = new Vector<>();
+	private MDSplus.Tree mdsTree = null;
+	private final ActionQueue actionQueue = new ActionQueue();
+	private final Worker worker;
+	private boolean watchdogStarted = false;
+	String lastTree = null;
+	int lastShot;
 
 	///// jServer class implementation
 	jServer(final int port)
@@ -241,22 +326,94 @@ public class jServer extends MdsIp
 		worker = new Worker();
 	}
 
-	@Override
-	public void run()
+	public void closeAll()
 	{
-		worker.setName(String.format("Worker(%d)", port));
-		worker.setDaemon(true);
-		worker.start();
-		super.run();
+		for (int i = 0; i < retSocketsV.size(); i++)
+		{
+			final Socket currSock = retSocketsV.elementAt(i);
+			if (currSock != null)
+			{
+				try
+				{
+					currSock.shutdownInput();
+					currSock.shutdownOutput();
+					currSock.close();
+				}
+				catch (final Exception exc)
+				{}
+			}
+		}
 	}
 
-	@Override
-	public void stop()
+	// Execute the action. Return the action status.
+	int doSimpleAction(String name, final String tree, final int shot)
 	{
-		closeAll();
-		stopRequest = true;
-		worker.interrupt();
-		super.stop();
+		int status = 0;
+		try
+		{
+			if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot)
+			{
+				if (mdsTree != null)
+					mdsTree.close();
+				mdsTree = new MDSplus.Tree(tree, shot);
+				lastTree = tree;
+				lastShot = shot;
+			}
+			MDSplus.TreeNode node;
+			try
+			{
+				node = mdsTree.getNode(name);
+			}
+			catch (final MdsException exc)
+			{
+				logServer("Cannot Find Node ", name, " : ", exc);
+				return 0x80000000;
+			}
+			doingNid = node.getNid();
+			try
+			{
+				MDSplus.Data.execute("DevSetDoingNid(" + doingNid + ")");
+			}
+			catch (final Exception ignore)
+			{}
+			try
+			{
+				name = node.getFullPath();
+			}
+			catch (final MdsException exc)
+			{
+				logServer("Cannot resolve path of ", node);
+				return 0x80000000;
+			}
+			logServer(new Date(), ", Doing ", name, " in ", tree, " shot ", shot);
+			final MDSplus.Data[] last_error_args =
+			{ MDSplus.Data.toData(tree), MDSplus.Data.toData(shot), MDSplus.Data.toData(name) };
+			MDSplus.Data.execute("DevClearLastError($,$,$)", last_error_args);
+			try
+			{
+				status = node.doAction();
+			}
+			catch (final MdsException exc)
+			{
+				logServer("Dispatch failed ", name, " : ", exc);
+				status = 0x80000000;
+			}
+			if ((status & 1) != 0)
+			{
+				logServer(new Date(), ", Done ", name, " in ", tree, " shot ", shot);
+			}
+			else
+			{
+				final String errDevMsg = MDSplus.Data.execute("DevGetLastError($,$,$)", last_error_args).getString();
+				final String errMsg = MDSplus.Data.getMdsMsg(status);
+				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, "; ", errDevMsg);
+			}
+		}
+		catch (final Exception exc)
+		{
+			logServer(new Date() + ", Failed ", name, " in ", tree, " shot ", shot, " : ", exc);
+		}
+		return status;
 	}
 
 	synchronized Socket getRetSocket(final InetAddress ip, final int port)
@@ -279,40 +436,6 @@ public class jServer extends MdsIp
 		{
 			return null;
 		}
-	}
-
-	synchronized Socket updateRetSocket(final InetAddress ip, final int port)
-	{
-		for (int i = 0; i < retSocketsV.size(); i++)
-		{
-			final Socket currSock = retSocketsV.elementAt(i);
-			if (currSock.getInetAddress().equals(ip) && currSock.getPort() == port && !currSock.isInputShutdown())
-			{
-				retSocketsV.remove(currSock);
-				break;
-			}
-		}
-		try
-		{
-			final Socket newSock = new Socket(ip, port);
-			retSocketsV.addElement(newSock);
-			return newSock;
-		}
-		catch (final Exception exc)
-		{
-			logServer("Error creating socket for answers");
-			return null;
-		}
-	}
-
-	synchronized void removeAllRetSocket()
-	{
-		retSocketsV.removeAllElements();
-	}
-
-	synchronized void removeRetSocket(final Socket sock)
-	{
-		retSocketsV.remove(sock);
 	}
 
 	@Override
@@ -439,6 +562,66 @@ public class jServer extends MdsIp
 		return msg;
 	}
 
+	synchronized void removeAllRetSocket()
+	{
+		retSocketsV.removeAllElements();
+	}
+
+	synchronized void removeRetSocket(final Socket sock)
+	{
+		retSocketsV.remove(sock);
+	}
+
+	@Override
+	public void run()
+	{
+		worker.setName(String.format("Worker(%d)", port));
+		worker.setDaemon(true);
+		worker.start();
+		super.run();
+	}
+
+	void startWatchdog(final int watchdogPort)
+	{
+		if (watchdogStarted)
+			return;
+		(new WatchdogHandler(watchdogPort)).start();
+		watchdogStarted = true;
+	}
+
+	@Override
+	public void stop()
+	{
+		closeAll();
+		stopRequest = true;
+		worker.interrupt();
+		super.stop();
+	}
+
+	synchronized Socket updateRetSocket(final InetAddress ip, final int port)
+	{
+		for (int i = 0; i < retSocketsV.size(); i++)
+		{
+			final Socket currSock = retSocketsV.elementAt(i);
+			if (currSock.getInetAddress().equals(ip) && currSock.getPort() == port && !currSock.isInputShutdown())
+			{
+				retSocketsV.remove(currSock);
+				break;
+			}
+		}
+		try
+		{
+			final Socket newSock = new Socket(ip, port);
+			retSocketsV.addElement(newSock);
+			return newSock;
+		}
+		catch (final Exception exc)
+		{
+			logServer("Error creating socket for answers");
+			return null;
+		}
+	}
+
 	synchronized void writeAnswer(final InetAddress ip, final int port, final String answer)
 	{
 		try
@@ -475,187 +658,4 @@ public class jServer extends MdsIp
 			logServer("Error sending answer: ", exc);
 		}
 	}
-
-	public static void main(final String... args)
-	{
-		int port;
-		try
-		{
-			System.out.println(args[0]);
-			port = Integer.parseInt(args[0]);
-		}
-		catch (final Exception exc)
-		{
-			port = 8002;
-		}
-		if (args.length > 1)
-		{
-			final String tclBatch = args[1];
-			try
-			{
-				MDSplus.Data.execute("tcl('@" + tclBatch + "')");
-			}
-			catch (final Exception exc)
-			{
-				System.err.println("Error executing initial TCL batch: " + exc);
-			}
-		}
-		final jServer server = new jServer(port);
-		server.start();
-		final BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		try
-		{
-			while (true)
-			{
-				final String command = br.readLine();
-				if (command.equals("exit"))
-				{
-					server.closeAll();
-					System.exit(0);
-				}
-			}
-		}
-		catch (final Exception exc)
-		{}
-	}
-
-	String lastTree = null;
-	int lastShot;
-
-	// Execute the action. Return the action status.
-	int doSimpleAction(String name, final String tree, final int shot)
-	{
-		int status = 0;
-		try
-		{
-			if (mdsTree == null || !tree.equals(lastTree) || shot != lastShot)
-			{
-				if (mdsTree != null)
-					mdsTree.close();
-				mdsTree = new MDSplus.Tree(tree, shot);
-				lastTree = tree;
-				lastShot = shot;
-			}
-			MDSplus.TreeNode node;
-			try
-			{
-				node = mdsTree.getNode(name);
-			}
-			catch (final MdsException exc)
-			{
-				logServer("Cannot Find Node ", name, " : ", exc);
-				return 0x80000000;
-			}
-			doingNid = node.getNid();
-			try
-			{
-				MDSplus.Data.execute("DevSetDoingNid(" + doingNid + ")");
-			}
-			catch (final Exception ignore)
-			{}
-			try
-			{
-				name = node.getFullPath();
-			}
-			catch (final MdsException exc)
-			{
-				logServer("Cannot resolve path of ", node);
-				return 0x80000000;
-			}
-			logServer(new Date(), ", Doing ", name, " in ", tree, " shot ", shot);
-			final MDSplus.Data[] last_error_args =
-			{ MDSplus.Data.toData(tree), MDSplus.Data.toData(shot), MDSplus.Data.toData(name) };
-			MDSplus.Data.execute("DevClearLastError($,$,$)", last_error_args);
-			try
-			{
-				status = node.doAction();
-			}
-			catch (final MdsException exc)
-			{
-				logServer("Dispatch failed ", name, " : ", exc);
-				status = 0x80000000;
-			}
-			if ((status & 1) != 0)
-			{
-				logServer(new Date(), ", Done ", name, " in ", tree, " shot ", shot);
-			}
-			else
-			{
-				final String errDevMsg = MDSplus.Data.execute("DevGetLastError($,$,$)", last_error_args).getString();
-				final String errMsg = MDSplus.Data.getMdsMsg(status);
-				logServer(new Date(), ", Failed ", name, " in ", tree, " shot ", shot, ": ", errMsg, "; ", errDevMsg);
-			}
-		}
-		catch (final Exception exc)
-		{
-			logServer(new Date() + ", Failed ", name, " in ", tree, " shot ", shot, " : ", exc);
-		}
-		return status;
-	}
-
-	public void closeAll()
-	{
-		for (int i = 0; i < retSocketsV.size(); i++)
-		{
-			final Socket currSock = retSocketsV.elementAt(i);
-			if (currSock != null)
-			{
-				try
-				{
-					currSock.shutdownInput();
-					currSock.shutdownOutput();
-					currSock.close();
-				}
-				catch (final Exception exc)
-				{}
-			}
-		}
-	}
-
-	void startWatchdog(final int watchdogPort)
-	{
-		if (watchdogStarted)
-			return;
-		(new WatchdogHandler(watchdogPort)).start();
-		watchdogStarted = true;
-	}
-
-	// Class WatchdogHandler handles watchdog (an integer is received and sent back)
-	class WatchdogHandler extends Thread
-	{
-		int port;
-
-		WatchdogHandler(final int port)
-		{
-			this.port = port;
-		}
-
-		@Override
-		public void run()
-		{
-			try (final ServerSocket serverSock = new ServerSocket(port))
-			{
-				while (true)
-					try (final Socket sock = serverSock.accept())
-					{
-						final DataInputStream dis = new DataInputStream(sock.getInputStream());
-						final DataOutputStream dos = new DataOutputStream(sock.getOutputStream());
-						try
-						{
-							while (true)
-							{
-								dos.writeInt(dis.readInt());
-								dos.flush();
-							}
-						}
-						catch (final Exception exc)
-						{}
-					}
-			}
-			catch (final Exception exc)
-			{
-				logServer("Error accepting watchdog: ", exc);
-			}
-		}
-	} // End class WatchdogHandler
 }

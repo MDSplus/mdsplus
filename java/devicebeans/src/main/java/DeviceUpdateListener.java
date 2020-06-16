@@ -1,4 +1,4 @@
 interface DeviceUpdateListener
 {
-    public void deviceUpdated();
+	public void deviceUpdated();
 }

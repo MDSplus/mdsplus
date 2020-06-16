@@ -11,25 +11,386 @@ import mds.connection.*;
 
 public class jDispatchMonitor extends JFrame implements MdsServerListener, ConnectionListener
 {
-	private static final long serialVersionUID = 1L;
-	public static final int ACTION_NOT_FOUND = -2;
-
-	private static final void logMonitor(String event, String phase, Object... more)
+	class BuildCellRenderer extends JLabel implements ListCellRenderer<Object>
 	{
-		synchronized (System.out)
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public BuildCellRenderer()
 		{
-			System.out.print(String.format("Monitor: PHASE %-7s %-12s ", event, phase));
-			for (final Object e : more)
-				System.out.print(e);
-			System.out.println("");
-			System.out.flush();
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
+				final boolean isSelected, final boolean cellHasFocus)
+		{
+			// Setting Font
+			// for a JList item in a renderer does not work.
+			setFont(done_font);
+			final MdsMonitorEvent me = (MdsMonitorEvent) value;
+			setText(me.getMonitorString());
+			if (me.on == 0)
+				setForeground(Color.lightGray);
+			else
+				setForeground(Color.black);
+			if (isSelected)
+			{
+				setBackground(list.getSelectionBackground());
+			}
+			else
+			{
+				setBackground(list.getBackground());
+			}
+			return this;
 		}
 	}
 
-	ServersInfoPanel serversInfoPanel = null;
-	Hashtable<String, ServerInfo> serversInfo = new Hashtable<String, ServerInfo>();
-	ShotsPerformance shotsPerformance = new ShotsPerformance();
-	private String experiment;
+	// End BuildCellRenderer class
+	public class ErrorMgr extends MdsIp
+	{
+		// The constructor
+		public ErrorMgr(final int port)
+		{
+			super(port);
+		}
+
+		// The message handler: the expression and arguments are passed as a vector of
+		// MdsMessage
+		@Override
+		public MdsMessage handleMessage(final MdsMessage[] messages)
+		{
+			int nids[] = null;
+			String message = null;
+			// method MdsMessage.ToString returns the argument as a string
+			// in this as messages[0] contains the expression to be evaluated
+			// the other elements of messages contain additional arguments
+			// see the definition of MdsMessage (or ask me)
+			// if you need to handle other types of arguments
+			try
+			{
+				nids = messages[1].ToIntArray();
+				message = messages[2].ToString();
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("Error receiving error message : " + exc);
+				return new MdsMessage((byte) 1);
+			}
+			if (nids == null || message == null)
+				return new MdsMessage((byte) 1);
+			Hashtable<Integer, MdsMonitorEvent> actions = null;
+			if (phase_failed.containsKey(new Integer(curr_phase)))
+				actions = phase_failed.get(new Integer(curr_phase));
+			else
+			{
+				actions = new Hashtable<>();
+				phase_failed.put(new Integer(curr_phase), actions);
+			}
+			if (actions == null)
+				return new MdsMessage((byte) 1);
+			if (!actions.containsKey(new Integer(nids[0])))
+			{
+				final MdsMonitorEvent me = new MdsMonitorEvent(this, curr_phase, nids[0], message);
+				actions.put(new Integer(nids[0]), me);
+			}
+			// In this example the mdsip returns a string value
+			return new MdsMessage((byte) 1);
+			// if a integer number has to be returned instead,
+			// you can type return new MdsMessage((Byte)<number>)
+		}
+	}// End ErrorMgr class
+
+	class ExecutingCellRenderer extends JLabel implements ListCellRenderer<Object>
+	{
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ExecutingCellRenderer()
+		{
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
+				final boolean isSelected, final boolean cellHasFocus)
+		{
+			// Setting Font
+			// for a JList item in a renderer does not work.
+			if (value == null)
+				return this;
+			setFont(done_font);
+			final MdsMonitorEvent me = (MdsMonitorEvent) value;
+			setText(me.getMonitorString());
+			setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
+			switch (me.mode)
+			{
+			case MdsMonitorEvent.MonitorDispatched:
+				setForeground(Color.lightGray);
+				break;
+			case MdsMonitorEvent.MonitorDoing:
+				setForeground(Color.blue);
+				break;
+			case MdsMonitorEvent.MonitorDone:
+				if ((me.ret_status & 1) == 1)
+				{
+					setForeground(Color.green);
+				}
+				else
+				{
+					setForeground(Color.red);
+				}
+				break;
+			}
+			return this;
+		}
+	}// End ExecutingCellRenderer class
+
+	class FailedCellRenderer extends JLabel implements ListCellRenderer<Object>
+	{
+		/**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public FailedCellRenderer()
+		{
+			setOpaque(true);
+		}
+
+		@Override
+		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
+				final boolean isSelected, final boolean cellHasFocus)
+		{
+			// Setting Font
+			// for a JList item in a renderer does not work.
+			setFont(done_font);
+			final MdsMonitorEvent me = (MdsMonitorEvent) value;
+			setText(me.getMonitorString());
+			if (isSelected)
+			{
+				setBackground(list.getSelectionBackground());
+			}
+			else
+			{
+				setBackground(list.getBackground());
+			}
+			return this;
+		}
+	}
+
+	// End FailedCellRenderer class
+	public class ShotsPerformance
+	{
+		PrintStream log;
+		Vector<String> labelText = new Vector<>();
+		Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<>();
+		Vector<String> phaseDuration;
+
+		public ShotsPerformance()
+		{
+			labelText.add("SHOT");
+		}
+
+		public void add(final long shot, final String phase, final String duration)
+		{
+			if (phase == null)
+				return;
+			final Long key = new Long(shot);
+			if (!labelText.contains(phase))
+				labelText.add(phase);
+			if (!shotsInfo.containsKey(key))
+			{
+				phaseDuration = new Vector<>();
+				shotsInfo.put(key, phaseDuration);
+			}
+			else
+			{
+				phaseDuration = shotsInfo.get(key);
+			}
+			phaseDuration.add(duration);
+		}
+
+		public void print()
+		{
+			for (int i = 0; i < labelText.size(); i++)
+				System.out.print("\t" + labelText.elementAt(i));
+			System.out.println();
+			final Enumeration<Long> shots = shotsInfo.keys();
+			final Enumeration<Vector<String>> e = shotsInfo.elements();
+			while (e.hasMoreElements())
+			{
+				final String shotStr = "\t" + shots.nextElement();
+				final Vector<?> phDur = e.nextElement();
+				for (int i = 0; i < phDur.size(); i++)
+				{
+					if ((i % (labelText.size() - 1)) == 0)
+					{
+						System.out.println(shotStr);
+					}
+					System.out.print("\t" + phDur.elementAt(i));
+				}
+			}
+		}
+
+		public void printHeader(final PrintStream out)
+		{
+			for (int i = 0; i < labelText.size(); i++)
+				out.print("\t" + labelText.elementAt(i));
+			out.println();
+		}
+
+		public void printValues(final PrintStream out)
+		{
+			final Vector<?> phDur = shotsInfo.get(new Long(shot));
+			for (int i = 0; i < phDur.size(); i++)
+			{
+				if ((i % (labelText.size() - 1)) == 0)
+				{
+					out.println("\t" + shot);
+				}
+				out.print("\t" + phDur.elementAt(i));
+			}
+		}
+
+		public void saveTimePhaseExecution()
+		{
+			final File file = new File("PhaseExecutionTime.log");
+			try
+			{
+				if (log == null)
+				{
+					if (file.exists())
+					{
+						log = new PrintStream(new FileOutputStream(file, true));
+						log.println();
+						return;
+					}
+					else
+					{
+						if (labelText.size() > 1)
+						{
+							log = new PrintStream(new FileOutputStream(file, true));
+							printHeader(log);
+						}
+						else
+							return;
+					}
+				}
+				printValues(log);
+			}
+			catch (final Exception exc)
+			{
+				logMonitor("PERFORMANCE", "ERROR", exc);
+				exc.printStackTrace();
+			}
+		}
+	}
+
+	class ShowMessage implements Runnable
+	{
+		String msg;
+
+		public ShowMessage(final String msg)
+		{
+			this.msg = msg;
+		}
+
+		@Override
+		public void run()
+		{
+			JOptionPane.showMessageDialog(jDispatchMonitor.this, msg, "alert", JOptionPane.ERROR_MESSAGE);
+		}
+	}// End ShowMessage class
+
+	class ToolTipJList extends JList<MdsMonitorEvent>
+	{
+		private static final long serialVersionUID = 1L;
+
+		public ToolTipJList(final ListModel<MdsMonitorEvent> lm)
+		{
+			super(lm);
+			addMouseListener(new MouseAdapter()
+			{
+				@Override
+				public void mouseClicked(final MouseEvent e)
+				{
+					if (e.getClickCount() == 2)
+					{
+						final int index = locationToIndex(e.getPoint());
+						final ListModel<?> dlm = getModel();
+						final MdsMonitorEvent item = (MdsMonitorEvent) dlm.getElementAt(index);
+						ensureIndexIsVisible(index);
+						if ((item.ret_status & 1) == 0)
+						{
+							JOptionPane.showMessageDialog(jDispatchMonitor.this, item.error_message, "alert",
+									JOptionPane.ERROR_MESSAGE);
+						}
+						else
+						{
+							if (item.error_message != null && item.error_message.length() != 0)
+								JOptionPane.showMessageDialog(jDispatchMonitor.this, item.error_message, "alert",
+										JOptionPane.WARNING_MESSAGE);
+						}
+					}
+				}
+			});
+		}
+
+		@Override
+		public String getToolTipText(final MouseEvent event)
+		{
+			String out = null;
+			final int st = this.getFirstVisibleIndex();
+			int end = this.getLastVisibleIndex();
+			if (end == -1)
+				end = ((DefaultListModel<?>) this.getModel()).size() - 1;
+			if (st == -1 || end == -1)
+				return null;
+			Rectangle r;
+			for (int i = st; i <= end; i++)
+			{
+				r = this.getCellBounds(i, i);
+				if (r.contains(event.getPoint()))
+				{
+					final MdsMonitorEvent me = getModel().getElementAt(i);
+					out = me.error_message;
+					break;
+				}
+			}
+			return out;
+		}
+	} // End ToolTipJList class
+
+	class UpdateHandler implements Runnable
+	{
+		JList<MdsMonitorEvent> list;
+		int idx;
+
+		UpdateHandler(final JList<MdsMonitorEvent> list, final int idx)
+		{
+			this.list = list;
+			this.idx = idx;
+		}
+
+		@Override
+		public void run()
+		{
+			curr_list = list;
+			item_idx = idx;
+			if (auto_scroll && show_phase == curr_phase)
+			{
+				if (item_idx == -1)
+					item_idx = curr_list.getModel().getSize() - 1;
+				curr_list.ensureIndexIsVisible(item_idx);
+			}
+			list.repaint();
+		}
+	}
 
 	class UpdateList implements Runnable
 	{
@@ -110,7 +471,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					final int idx = getIndex(me, executing_list.size());
 					if (idx == ACTION_NOT_FOUND)
 					{
-						JOptionPane.showMessageDialog(null, "Invalid message received", "Alert",
+						JOptionPane.showMessageDialog(jDispatchMonitor.this, "Invalid message received", "Alert",
 								JOptionPane.ERROR_MESSAGE);
 						return;
 					}
@@ -133,65 +494,65 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		}
 	}// End UpdateList class
 
-	public class ErrorMgr extends MdsIp
-	{
-		// The constructor
-		public ErrorMgr(final int port)
-		{
-			super(port);
-		}
-
-		// The message handler: the expression and arguments are passed as a vector of
-		// MdsMessage
-		@Override
-		public MdsMessage handleMessage(final MdsMessage[] messages)
-		{
-			int nids[] = null;
-			String message = null;
-			// method MdsMessage.ToString returns the argument as a string
-			// in this as messages[0] contains the expression to be evaluated
-			// the other elements of messages contain additional arguments
-			// see the definition of MdsMessage (or ask me)
-			// if you need to handle other types of arguments
-			try
-			{
-				nids = messages[1].ToIntArray();
-				message = messages[2].ToString();
-			}
-			catch (final Exception exc)
-			{
-				System.out.println("Error receiving error message : " + exc);
-				return new MdsMessage((byte) 1);
-			}
-			if (nids == null || message == null)
-				return new MdsMessage((byte) 1);
-			Hashtable<Integer, MdsMonitorEvent> actions = null;
-			if (phase_failed.containsKey(new Integer(curr_phase)))
-				actions = phase_failed.get(new Integer(curr_phase));
-			else
-			{
-				actions = new Hashtable<Integer, MdsMonitorEvent>();
-				phase_failed.put(new Integer(curr_phase), actions);
-			}
-			if (actions == null)
-				return new MdsMessage((byte) 1);
-			if (!actions.containsKey(new Integer(nids[0])))
-			{
-				final MdsMonitorEvent me = new MdsMonitorEvent(this, curr_phase, nids[0], message);
-				actions.put(new Integer(nids[0]), me);
-			}
-			// In this example the mdsip returns a string value
-			return new MdsMessage((byte) 1);
-			// if a integer number has to be returned instead,
-			// you can type return new MdsMessage((Byte)<number>)
-		}
-	}// End ErrorMgr class
-
+	private static final long serialVersionUID = 1L;
+	public static final int ACTION_NOT_FOUND = -2;
 	// private final static Font disp_font = new Font("Platino Linotype",
 	// Font.ITALIC, 12);
 	// private final static Font doing_font = new Font("Platino Linotype",
 	// Font.ITALIC | Font.BOLD, 12);
 	private final static Font done_font = new Font("Platino Linotype", Font.PLAIN, 12);
+
+	private static final void logMonitor(String event, String phase, Object... more)
+	{
+		synchronized (System.out)
+		{
+			System.out.print(String.format("Monitor: PHASE %-7s %-12s ", event, phase));
+			for (final Object e : more)
+				System.out.print(e);
+			System.out.println("");
+			System.out.flush();
+		}
+	}
+
+	public static void main(final String[] args)
+	{
+		final jDispatchMonitor dm;
+		String experiment = "test";
+		String monitor_server = "localhost:8800";
+		if (args != null && args.length > 3)
+		{
+			System.out.println("jDispatchMonitor [monitor_server] [-e experiment ] \n");
+			System.exit(0);
+		}
+		if (args.length > 0)
+		{
+			int i;
+			for (i = 0; i < args.length && !args[i].equals("-e"); i++);
+			if (i < args.length)
+			{
+				experiment = args[i + 1];
+				if (args.length >= 3)
+					monitor_server = ((i == 0) ? args[i + 2] : args[0]);
+			}
+			else
+			{
+				monitor_server = args[0];
+				if (args.length > 1)
+					experiment = args[1];
+			}
+		}
+		System.out.println("jDispatchMonitor " + monitor_server + " " + experiment);
+		dm = new jDispatchMonitor(monitor_server, experiment);
+		dm.pack();
+		dm.setSize(600, 700);
+		dm.setDefaultCloseOperation(EXIT_ON_CLOSE);
+		dm.setVisible(true);
+	}
+
+	ServersInfoPanel serversInfoPanel = null;
+	Hashtable<String, ServerInfo> serversInfo = new Hashtable<>();
+	ShotsPerformance shotsPerformance = new ShotsPerformance();
+	private String experiment;
 	// private final static Font done_failed_font = new Font("Platino Linotype",
 	// Font.ITALIC, 12);
 	private MdsServer mds_server = null;
@@ -214,209 +575,17 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 	private String monitor_server;
 	private JInternalFrame build, executing, failed;
 	private JList<MdsMonitorEvent> buildList, executingList, failedList;
-	private final DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<MdsMonitorEvent>();
-	private final DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<MdsMonitorEvent>();
-	private final DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<MdsMonitorEvent>();
+	private final DefaultListModel<MdsMonitorEvent> build_list = new DefaultListModel<>();
+	private final DefaultListModel<MdsMonitorEvent> executing_list = new DefaultListModel<>();
+	private final DefaultListModel<MdsMonitorEvent> failed_list = new DefaultListModel<>();
 	private int num_window = 0;
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
-	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_hash = new Hashtable<>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_name = new Hashtable<>();
+	private final Hashtable<Integer, Hashtable<Integer, MdsMonitorEvent>> phase_failed = new Hashtable<>();
 	private ErrorMgr error_mgr;
 	private int info_port;
 	private Process dispatcher_proc;
-
-	class ToolTipJList extends JList<MdsMonitorEvent>
-	{
-		private static final long serialVersionUID = 1L;
-
-		public ToolTipJList(final ListModel<MdsMonitorEvent> lm)
-		{
-			super(lm);
-			addMouseListener(new MouseAdapter()
-			{
-				@Override
-				public void mouseClicked(final MouseEvent e)
-				{
-					if (e.getClickCount() == 2)
-					{
-						final int index = locationToIndex(e.getPoint());
-						final ListModel<?> dlm = getModel();
-						final MdsMonitorEvent item = (MdsMonitorEvent) dlm.getElementAt(index);
-						ensureIndexIsVisible(index);
-						if ((item.ret_status & 1) == 0)
-						{
-							JOptionPane.showMessageDialog(null, item.error_message, "alert", JOptionPane.ERROR_MESSAGE);
-						}
-						else
-						{
-							if (item.error_message != null && item.error_message.length() != 0)
-								JOptionPane.showMessageDialog(null, item.error_message, "alert",
-										JOptionPane.WARNING_MESSAGE);
-						}
-					}
-				}
-			});
-		}
-
-		@Override
-		public String getToolTipText(final MouseEvent event)
-		{
-			String out = null;
-			final int st = this.getFirstVisibleIndex();
-			int end = this.getLastVisibleIndex();
-			if (end == -1)
-				end = ((DefaultListModel<?>) this.getModel()).size() - 1;
-			if (st == -1 || end == -1)
-				return null;
-			Rectangle r;
-			for (int i = st; i <= end; i++)
-			{
-				r = this.getCellBounds(i, i);
-				if (r.contains(event.getPoint()))
-				{
-					final MdsMonitorEvent me = getModel().getElementAt(i);
-					out = me.error_message;
-					break;
-				}
-			}
-			return out;
-		}
-	} // End ToolTipJList class
-
-	class BuildCellRenderer extends JLabel implements ListCellRenderer<Object>
-	{
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public BuildCellRenderer()
-		{
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
-				final boolean isSelected, final boolean cellHasFocus)
-		{
-			// Setting Font
-			// for a JList item in a renderer does not work.
-			setFont(done_font);
-			final MdsMonitorEvent me = (MdsMonitorEvent) value;
-			setText(me.getMonitorString());
-			if (me.on == 0)
-				setForeground(Color.lightGray);
-			else
-				setForeground(Color.black);
-			if (isSelected)
-			{
-				setBackground(list.getSelectionBackground());
-			}
-			else
-			{
-				setBackground(list.getBackground());
-			}
-			return this;
-		}
-	}
-	// End BuildCellRenderer class
-
-	class FailedCellRenderer extends JLabel implements ListCellRenderer<Object>
-	{
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public FailedCellRenderer()
-		{
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
-				final boolean isSelected, final boolean cellHasFocus)
-		{
-			// Setting Font
-			// for a JList item in a renderer does not work.
-			setFont(done_font);
-			final MdsMonitorEvent me = (MdsMonitorEvent) value;
-			setText(me.getMonitorString());
-			if (isSelected)
-			{
-				setBackground(list.getSelectionBackground());
-			}
-			else
-			{
-				setBackground(list.getBackground());
-			}
-			return this;
-		}
-	}
-	// End FailedCellRenderer class
-
-	class ExecutingCellRenderer extends JLabel implements ListCellRenderer<Object>
-	{
-		/**
-		 *
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ExecutingCellRenderer()
-		{
-			setOpaque(true);
-		}
-
-		@Override
-		public Component getListCellRendererComponent(final JList<?> list, final Object value, final int index,
-				final boolean isSelected, final boolean cellHasFocus)
-		{
-			// Setting Font
-			// for a JList item in a renderer does not work.
-			if (value == null)
-				return this;
-			setFont(done_font);
-			final MdsMonitorEvent me = (MdsMonitorEvent) value;
-			setText(me.getMonitorString());
-			setBackground(isSelected ? list.getSelectionBackground() : list.getBackground());
-			switch (me.mode)
-			{
-			case MdsMonitorEvent.MonitorDispatched:
-				setForeground(Color.lightGray);
-				break;
-			case MdsMonitorEvent.MonitorDoing:
-				setForeground(Color.blue);
-				break;
-			case MdsMonitorEvent.MonitorDone:
-				if ((me.ret_status & 1) == 1)
-				{
-					setForeground(Color.green);
-				}
-				else
-				{
-					setForeground(Color.red);
-				}
-				break;
-			}
-			return this;
-		}
-	}// End ExecutingCellRenderer class
-
-	class ShowMessage implements Runnable
-	{
-		String msg;
-
-		public ShowMessage(final String msg)
-		{
-			this.msg = msg;
-		}
-
-		@Override
-		public void run()
-		{
-			JOptionPane.showMessageDialog(null, msg, "alert", JOptionPane.ERROR_MESSAGE);
-		}
-	}// End ShowMessage class
+	long startPhaseTime = 0;
 
 	public jDispatchMonitor()
 	{
@@ -449,7 +618,11 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		this.monitor_server = monitor_server;
 		final Properties properties = MdsHelper.initialization(experiment);
 		if (properties == null)
+		{
+			JOptionPane.showMessageDialog(this, "Error reading properties file. Exiting.", "Alert",
+					JOptionPane.ERROR_MESSAGE);
 			System.exit(1);
+		}
 		int error_port = -1;
 		try
 		{
@@ -617,13 +790,6 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			 */
 			private static final long serialVersionUID = 1L;
 
-			@Override
-			public void setBounds(final int x, final int y, final int width, final int height)
-			{
-				super.setBounds(x, y, width, height);
-				positionWindow();
-			}
-
 			private void positionWindow()
 			{
 				if (num_window == 0)
@@ -646,8 +812,15 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					failed.setBounds(0, y, dim.width, dim.height);
 				}
 			}
+
+			@Override
+			public void setBounds(final int x, final int y, final int width, final int height)
+			{
+				super.setBounds(x, y, width, height);
+				positionWindow();
+			}
 		};
-		buildList = new JList<MdsMonitorEvent>(build_list);
+		buildList = new JList<>(build_list);
 		buildList.setCellRenderer(new BuildCellRenderer());
 		final JScrollPane sp_build = new JScrollPane();
 		sp_build.getViewport().setView(buildList);
@@ -669,7 +842,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				}
 				catch (final Exception exc)
 				{
-					JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Error dispatching action(s) : " + exc,
+					JOptionPane.showMessageDialog(jDispatchMonitor.this, "Error dispatching action(s) : " + exc,
 							"Alert", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -688,7 +861,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 				}
 				catch (final Exception exc)
 				{
-					JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Error Aborting Action", "Alert",
+					JOptionPane.showMessageDialog(jDispatchMonitor.this, "Error Aborting Action", "Alert",
 							JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -705,8 +878,9 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 					if (event == null)
 					{
 						if (executingList.getModel().getSize() != 0)
-							JOptionPane.showMessageDialog(null, "Please select the action(s) to re-dispatch or abort",
-									"Warning", JOptionPane.INFORMATION_MESSAGE);
+							JOptionPane.showMessageDialog(jDispatchMonitor.this,
+									"Please select the action(s) to re-dispatch or abort", "Warning",
+									JOptionPane.INFORMATION_MESSAGE);
 						return;
 					}
 					if (event.mode == MdsMonitorEvent.MonitorDoing && executingList.getSelectedIndices().length == 1)
@@ -760,221 +934,54 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		this.getContentPane().add(p1, BorderLayout.SOUTH);
 	}
 
-	/**
-	 * Create an internal frame
-	 */
-	public JInternalFrame createInternalFrame(final String title, final Container panel)
-	{
-		final JInternalFrame jif = new JInternalFrame();
-		jif.setTitle(title);
-		// set properties
-		jif.setClosable(false);
-		jif.setMaximizable(true);
-		jif.setIconifiable(false);
-		jif.setResizable(true);
-		jif.setContentPane(panel);
-		desktop.add(jif, 1);
-		jif.setVisible(true);
-		num_window++;
-		return jif;
-	}
-
-	public void exitApplication()
-	{
-		shotsPerformance.saveTimePhaseExecution();
-		System.exit(0);
-	}
-
-	public void openConnection()
-	{
-		try
-		{
-			if (mds_server != null)
-			{
-				if (mds_server.isConnected())
-				{
-					final Object[] options =
-					{ "DISCONNECT", "CANCEL" };
-					final int val = JOptionPane.showOptionDialog(this,
-							"Dispatch monitor is already connected to " + mds_server.getProvider(), "Warning",
-							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
-					if (val == 0)
-					{
-						mds_server.shutdown();
-						mds_server = null;
-						setWindowTitle();
-					}
-					else
-						return;
-				}
-				else
-					mds_server.shutdown();
-			}
-			final JComboBox<?> cb = new JComboBox<Object>();
-			cb.setEditable(true);
-			monitor_server = (String) JOptionPane.showInputDialog(null, "Dispatch monitor server ip:port address",
-					"Connection", JOptionPane.QUESTION_MESSAGE, null, null, monitor_server);
-			if (monitor_server == null)
-				return;
-			openConnection(monitor_server);
-		}
-		catch (final IOException exc)
-		{
-			if (0 == JOptionPane.showConfirmDialog(jDispatchMonitor.this,
-					exc.getMessage() + "\nWe will try to spawn a local instance if that is OK?",
-					"Spawn local jDispatcherIp?", JOptionPane.OK_CANCEL_OPTION))
-				;
-			spawnDispatcherIp();
-		}
-	}
-
-	public void openConnection(final String mon_srv) throws IOException
-	{
-		if (mon_srv == null)
-			throw (new IOException("Can't connect to null address"));
-		mds_server = new MdsServer(mon_srv, true, -1);
-		mds_server.addMdsServerListener(jDispatchMonitor.this);
-		// mds_server.addConnectionListener(jDispatchMonitor.this);
-		mds_server.monitorCheckin();
-		setWindowTitle();
-		dispatcher = null;
-		collectServersInfo();
-	}
-
-	private final void spawnDispatcherIp()
-	{
-		if (dispatcher_proc == null)
-		{
-			final String sep = System.getProperty("file.separator");
-			final String classpath = System.getProperty("java.class.path");
-			final String path = System.getProperty("java.home") + sep + "bin" + sep + "java";
-			final ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath,
-					jDispatcherIp.class.getName(), experiment);
-			try
-			{
-				dispatcher_proc = processBuilder.start();
-				Runtime.getRuntime().addShutdownHook(new Thread(() ->
-				{ dispatcher_proc.destroy(); }));
-				new Thread(() ->
-				{
-					for (;;)
-						try
-						{
-							Thread.sleep(1000);
-							openConnection(monitor_server);
-							break;
-						}
-						catch (final Exception e)
-						{
-							continue;
-						}
-				}).start();
-			}
-			catch (final IOException e)
-			{}
-		}
-	}
-
 	private void abortAction(final MdsMonitorEvent me) throws IOException
 	{
 		if (me.mode == MdsMonitorEvent.MonitorDoing)
 			doCommand("ABORT", me);
 	}
 
-	private void redispatch(final MdsMonitorEvent me) throws IOException
+	private boolean addPhaseItem(final int phase, final String phase_st)
 	{
-		if (me.mode == MdsMonitorEvent.MonitorDone)
-			doCommand("REDISPATCH", me);
-	}
-
-	private void doCommand(final String command, final MdsMonitorEvent me) throws IOException
-	{
-		doCommand(String.format("%s %d %s", command, me.nid, MdsHelper.toPhaseName(me.phase)));
-	}
-
-	private final void doCommand(final String command)
-	{
-		new Thread(() ->
+		for (final Enumeration<?> e = phase_group.getElements(); e.hasMoreElements();)
 		{
-			try
-			{
-				getDispatcher().MdsValueStraight('@' + command);
-			}
-			catch (final Exception e)
-			{}
-		}).start();
-	}
-
-	private final MdsConnection getDispatcher() throws Exception
-	{
-		if (dispatcher == null)
-		{
-			if (monitor_server == null)
-				throw new Exception("No monitor server.");
-			final StringTokenizer st = new StringTokenizer(monitor_server, ":");
-			dispatcher = new MdsConnection(st.nextToken() + ":" + MdsHelper.getDispatcherPort());
-			dispatcher.ConnectToMds(false);
+			final JCheckBoxMenuItem c = (JCheckBoxMenuItem) e.nextElement();
+			if (c.getText().equals("Phase_" + phase))
+				return false;
 		}
-		return dispatcher;
-	}
-
-	private void setWindowTitle()
-	{
-		if (mds_server != null && mds_server.isConnected())
-			setTitle("jDispatchMonitor - Connected to " + mds_server.getProvider() + " receive on port "
-					+ mds_server.rcv_port);
-		else
-			setTitle("jDispatchMonitor - Not Connected");
-	}
-
-	@Override
-	public synchronized void processMdsServerEvent(final MdsServerEvent e)
-	{
-		if (e instanceof MdsMonitorEvent)
+		final JCheckBoxMenuItem phase_cb = new JCheckBoxMenuItem(phase_st);
+		phase_cb.setActionCommand("" + phase);
+		phase_cb.addActionListener(new ActionListener()
 		{
-			final MdsMonitorEvent me = (MdsMonitorEvent) e;
-			final UpdateList ul = new UpdateList(me);
-			try
+			@Override
+			public void actionPerformed(final ActionEvent e)
 			{
-				// SwingUtilities.invokeAndWait(ul);
-				SwingUtilities.invokeLater(ul);
+				final String cmd = ((JCheckBoxMenuItem) e.getSource()).getActionCommand();
+				show_phase = Integer.parseInt(cmd);
+				showPhase(cmd);
 			}
-			catch (final Exception exc)
-			{
-				System.out.println("processMdsServerEvent " + exc);
-			}
-		}
+		});
+		phase_group.add(phase_cb);
+		phase_m.add(phase_cb);
+		return true;
 	}
 
-	class UpdateHandler implements Runnable
+	private void collectServersInfo()
 	{
-		JList<MdsMonitorEvent> list;
-		int idx;
-
-		UpdateHandler(final JList<MdsMonitorEvent> list, final int idx)
+		try
 		{
-			this.list = list;
-			this.idx = idx;
-		}
-
-		@Override
-		public void run()
-		{
-			curr_list = list;
-			item_idx = idx;
-			if (auto_scroll && show_phase == curr_phase)
+			final String address = new StringTokenizer(this.monitor_server).nextToken(":");
+			if (!serversInfoPanel.checkInfoServer(address, info_port))
 			{
-				if (item_idx == -1)
-					item_idx = curr_list.getModel().getSize() - 1;
-				curr_list.ensureIndexIsVisible(item_idx);
+				serversInfoPanel.loadServerState(address, info_port);
 			}
-			list.repaint();
+			else
+				serversInfoPanel.updateServersState();
 		}
-	}
-
-	private void showUpdateAction(final JList<MdsMonitorEvent> list, final int idx)
-	{
-		SwingUtilities.invokeLater(new UpdateHandler(list, idx));
+		catch (final Exception exc)
+		{
+			final ShowMessage alert = new ShowMessage(exc.getMessage());
+			SwingUtilities.invokeLater(alert);
+		}
 	}
 
 	private void counter(final MdsMonitorEvent me)
@@ -1008,29 +1015,69 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		failed_l.setText(" " + failed_count);
 	}
 
-	private void resetAll(final MdsMonitorEvent me)
+	/**
+	 * Create an internal frame
+	 */
+	public JInternalFrame createInternalFrame(final String title, final Container panel)
 	{
-		total_count = 0;
-		doing_count = 0;
-		done_count = 0;
-		failed_count = 0;
-		disp_count = 0;
-		phase_m.removeAll();
-		build_list.removeAllElements();
-		failed_list.removeAllElements();
-		executing_list.removeAllElements();
-		phase_hash.clear();
-		phase_name.clear();
-		phase_failed.clear();
-		if (me != null)
+		final JInternalFrame jif = new JInternalFrame();
+		jif.setTitle(title);
+		// set properties
+		jif.setClosable(false);
+		jif.setMaximizable(true);
+		jif.setIconifiable(false);
+		jif.setResizable(true);
+		jif.setContentPane(panel);
+		desktop.add(jif, 1);
+		jif.setVisible(true);
+		num_window++;
+		return jif;
+	}
+
+	private final void doCommand(final String command)
+	{
+		new Thread(() ->
 		{
-			shotsPerformance.saveTimePhaseExecution();
-			tree = me.tree;
-			shot = me.shot;
-			exp_l.setText("Experiment: " + tree);
-			shot_l.setText("Shot: " + shot);
-			phase_l.setText("Phase: " + MdsHelper.toPhaseName(me.phase));
+			try
+			{
+				getDispatcher().MdsValueStraight('@' + command);
+			}
+			catch (final Exception e)
+			{}
+		}).start();
+	}
+
+	private void doCommand(final String command, final MdsMonitorEvent me) throws IOException
+	{
+		doCommand(String.format("%s %d %s", command, me.nid, MdsHelper.toPhaseName(me.phase)));
+	}
+
+	private void endPhase(final MdsMonitorEvent me)
+	{
+		final String phaseDuration = MdsMonitorEvent.msecToString(System.currentTimeMillis() - startPhaseTime);
+		final String phase_st = MdsHelper.toPhaseName(me.phase);
+		logMonitor("END", phase_st, "duration ", phaseDuration);
+		phase_m.setEnabled(true);
+		this.shotsPerformance.add(shot, phase_st, phaseDuration);
+	}
+
+	public void exitApplication()
+	{
+		shotsPerformance.saveTimePhaseExecution();
+		System.exit(0);
+	}
+
+	private final MdsConnection getDispatcher() throws Exception
+	{
+		if (dispatcher == null)
+		{
+			if (monitor_server == null)
+				throw new Exception("No monitor server.");
+			final StringTokenizer st = new StringTokenizer(monitor_server, ":");
+			dispatcher = new MdsConnection(st.nextToken() + ":" + MdsHelper.getDispatcherPort());
+			dispatcher.ConnectToMds(false);
 		}
+		return dispatcher;
 	}
 
 	private int getIndex(final MdsMonitorEvent me, int idx)
@@ -1052,7 +1099,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 			 * executing_list.removeAllElements(); phase_l.setText("Phase: "+phase_st);
 			 * curr_phase = show_phase = me.phase;
 			 */
-			actions = new Hashtable<Integer, MdsMonitorEvent>();
+			actions = new Hashtable<>();
 			phase_hash.put(new Integer(me.phase), actions);
 			idx = 0;
 		}
@@ -1105,51 +1152,145 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		}
 	}
 
-	long startPhaseTime = 0;
-
-	private void startPhase(final MdsMonitorEvent me)
+	public void openConnection()
 	{
-		startPhaseTime = System.currentTimeMillis();
-		final String phase_st = MdsHelper.toPhaseName(me.phase);
-		logMonitor("START", phase_st, " ", me);
-		executing_list.removeAllElements();
-		phase_l.setText("Phase: " + phase_st);
-		phase_m.setEnabled(false);
-		curr_phase = show_phase = me.phase;
-	}
-
-	private void endPhase(final MdsMonitorEvent me)
-	{
-		final String phaseDuration = MdsMonitorEvent.msecToString(System.currentTimeMillis() - startPhaseTime);
-		final String phase_st = MdsHelper.toPhaseName(me.phase);
-		logMonitor("END", phase_st, "duration ", phaseDuration);
-		phase_m.setEnabled(true);
-		this.shotsPerformance.add(shot, phase_st, phaseDuration);
-	}
-
-	private boolean addPhaseItem(final int phase, final String phase_st)
-	{
-		for (final Enumeration<?> e = phase_group.getElements(); e.hasMoreElements();)
+		try
 		{
-			final JCheckBoxMenuItem c = (JCheckBoxMenuItem) e.nextElement();
-			if (c.getText().equals("Phase_" + phase))
-				return false;
-		}
-		final JCheckBoxMenuItem phase_cb = new JCheckBoxMenuItem(phase_st);
-		phase_cb.setActionCommand("" + phase);
-		phase_cb.addActionListener(new ActionListener()
-		{
-			@Override
-			public void actionPerformed(final ActionEvent e)
+			if (mds_server != null)
 			{
-				final String cmd = ((JCheckBoxMenuItem) e.getSource()).getActionCommand();
-				show_phase = Integer.parseInt(cmd);
-				showPhase(cmd);
+				if (mds_server.isConnected())
+				{
+					final Object[] options =
+					{ "DISCONNECT", "CANCEL" };
+					final int val = JOptionPane.showOptionDialog(jDispatchMonitor.this,
+							"Dispatch monitor is already connected to " + mds_server.getProvider(), "Warning",
+							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[0]);
+					if (val == 0)
+					{
+						mds_server.shutdown();
+						mds_server = null;
+						setWindowTitle();
+					}
+					else
+						return;
+				}
+				else
+					mds_server.shutdown();
 			}
-		});
-		phase_group.add(phase_cb);
-		phase_m.add(phase_cb);
-		return true;
+			final JComboBox<?> cb = new JComboBox<>();
+			cb.setEditable(true);
+			monitor_server = (String) JOptionPane.showInputDialog(jDispatchMonitor.this,
+					"Dispatch monitor server ip:port address", "Connection", JOptionPane.QUESTION_MESSAGE, null, null,
+					monitor_server);
+			if (monitor_server == null)
+				return;
+			openConnection(monitor_server);
+		}
+		catch (final IOException exc)
+		{
+			if (0 == JOptionPane.showConfirmDialog(jDispatchMonitor.this,
+					exc.getMessage() + "\nWe will try to spawn a local instance if that is OK?",
+					"Spawn local jDispatcherIp?", JOptionPane.OK_CANCEL_OPTION))
+				;
+			spawnDispatcherIp();
+		}
+	}
+
+	public void openConnection(final String mon_srv) throws IOException
+	{
+		if (mon_srv == null)
+			throw (new IOException("Can't connect to null address"));
+		mds_server = new MdsServer(mon_srv, true, -1);
+		mds_server.addMdsServerListener(jDispatchMonitor.this);
+		// mds_server.addConnectionListener(jDispatchMonitor.this);
+		mds_server.monitorCheckin();
+		setWindowTitle();
+		dispatcher = null;
+		collectServersInfo();
+	}
+
+	@Override
+	public synchronized void processConnectionEvent(final ConnectionEvent e)
+	{
+		if (e.getSource() == mds_server)
+		{
+			if (e.getID() == ConnectionEvent.LOST_CONNECTION)
+			{
+				// do the following on the gui thread
+				final ShowMessage alert = new ShowMessage(e.getInfo());
+				SwingUtilities.invokeLater(alert);
+				setWindowTitle();
+				mds_server = null;
+				/*
+				 * try { if(dispatcher != null); dispatcher.shutdown(); dispatcher = null; }
+				 * catch (Exception exc) {dispatcher = null;} return;
+				 */
+			}
+		}
+		if (e.getSource() == dispatcher)
+		{
+			if (e.getID() == ConnectionEvent.LOST_CONNECTION)
+				dispatcher = null;
+		}
+	}
+
+	@Override
+	public synchronized void processMdsServerEvent(final MdsServerEvent e)
+	{
+		if (e instanceof MdsMonitorEvent)
+		{
+			final MdsMonitorEvent me = (MdsMonitorEvent) e;
+			final UpdateList ul = new UpdateList(me);
+			try
+			{
+				// SwingUtilities.invokeAndWait(ul);
+				SwingUtilities.invokeLater(ul);
+			}
+			catch (final Exception exc)
+			{
+				System.out.println("processMdsServerEvent " + exc);
+			}
+		}
+	}
+
+	private void redispatch(final MdsMonitorEvent me) throws IOException
+	{
+		if (me.mode == MdsMonitorEvent.MonitorDone)
+			doCommand("REDISPATCH", me);
+	}
+
+	private void resetAll(final MdsMonitorEvent me)
+	{
+		total_count = 0;
+		doing_count = 0;
+		done_count = 0;
+		failed_count = 0;
+		disp_count = 0;
+		phase_m.removeAll();
+		build_list.removeAllElements();
+		failed_list.removeAllElements();
+		executing_list.removeAllElements();
+		phase_hash.clear();
+		phase_name.clear();
+		phase_failed.clear();
+		if (me != null)
+		{
+			shotsPerformance.saveTimePhaseExecution();
+			tree = me.tree;
+			shot = me.shot;
+			exp_l.setText("Experiment: " + tree);
+			shot_l.setText("Shot: " + shot);
+			phase_l.setText("Phase: " + MdsHelper.toPhaseName(me.phase));
+		}
+	}
+
+	private void setWindowTitle()
+	{
+		if (mds_server != null && mds_server.isConnected())
+			setTitle("jDispatchMonitor - Connected to " + mds_server.getProvider() + " receive on port "
+					+ mds_server.rcv_port);
+		else
+			setTitle("jDispatchMonitor - Not Connected");
 	}
 
 	private void showPhase(final String phase)
@@ -1193,188 +1334,53 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 		}
 	}
 
-	@Override
-	public synchronized void processConnectionEvent(final ConnectionEvent e)
+	private void showUpdateAction(final JList<MdsMonitorEvent> list, final int idx)
 	{
-		if (e.getSource() == mds_server)
-		{
-			if (e.getID() == ConnectionEvent.LOST_CONNECTION)
-			{
-				// do the following on the gui thread
-				final ShowMessage alert = new ShowMessage(e.getInfo());
-				SwingUtilities.invokeLater(alert);
-				setWindowTitle();
-				mds_server = null;
-				/*
-				 * try { if(dispatcher != null); dispatcher.shutdown(); dispatcher = null; }
-				 * catch (Exception exc) {dispatcher = null;} return;
-				 */
-			}
-		}
-		if (e.getSource() == dispatcher)
-		{
-			if (e.getID() == ConnectionEvent.LOST_CONNECTION)
-				dispatcher = null;
-		}
+		SwingUtilities.invokeLater(new UpdateHandler(list, idx));
 	}
 
-	private void collectServersInfo()
+	private final void spawnDispatcherIp()
 	{
-		try
+		if (dispatcher_proc == null)
 		{
-			final String address = new StringTokenizer(this.monitor_server).nextToken(":");
-			if (!serversInfoPanel.checkInfoServer(address, info_port))
-			{
-				serversInfoPanel.loadServerState(address, info_port);
-			}
-			else
-				serversInfoPanel.updateServersState();
-		}
-		catch (final Exception exc)
-		{
-			final ShowMessage alert = new ShowMessage(exc.getMessage());
-			SwingUtilities.invokeLater(alert);
-		}
-	}
-
-	public static void main(final String[] args)
-	{
-		final jDispatchMonitor dm;
-		String experiment = null;
-		String monitor_server = null;
-		if (args != null && args.length > 3)
-		{
-			System.out.println("jDispatchMonitor [monitor_server] [-e experiment ] \n");
-			System.exit(0);
-		}
-		if (args.length > 0)
-		{
-			int i;
-			for (i = 0; i < args.length && !args[i].equals("-e"); i++);
-			if (i < args.length)
-			{
-				experiment = args[i + 1];
-				if (args.length >= 3)
-					monitor_server = ((i == 0) ? args[i + 2] : args[0]);
-			}
-			else
-			{
-				monitor_server = args[0];
-			}
-		}
-		System.out.println("jDispatchMonitor " + monitor_server + " " + experiment);
-		// MdsHelper.initialization(experiment);
-		dm = new jDispatchMonitor(monitor_server, experiment);
-		dm.pack();
-		dm.setSize(600, 700);
-		dm.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		dm.setVisible(true);
-	}
-
-	public class ShotsPerformance
-	{
-		PrintStream log;
-		Vector<String> labelText = new Vector<String>();
-		Hashtable<Long, Vector<String>> shotsInfo = new Hashtable<Long, Vector<String>>();
-		Vector<String> phaseDuration;
-
-		public ShotsPerformance()
-		{
-			labelText.add("SHOT");
-		}
-
-		public void saveTimePhaseExecution()
-		{
-			final File file = new File("PulsesPhasesEsecutionTime.log");
+			final String sep = System.getProperty("file.separator");
+			final String classpath = System.getProperty("java.class.path");
+			final String path = System.getProperty("java.home") + sep + "bin" + sep + "java";
+			final ProcessBuilder processBuilder = new ProcessBuilder(path, "-cp", classpath,
+					jDispatcherIp.class.getName(), experiment);
 			try
 			{
-				if (log == null)
+				dispatcher_proc = processBuilder.start();
+				Runtime.getRuntime().addShutdownHook(new Thread(() ->
+				{ dispatcher_proc.destroy(); }));
+				new Thread(() ->
 				{
-					if (file.exists())
-					{
-						log = new PrintStream(new FileOutputStream(file, true));
-						log.println();
-						return;
-					}
-					else
-					{
-						if (labelText.size() > 1)
+					for (;;)
+						try
 						{
-							log = new PrintStream(new FileOutputStream(file, true));
-							printHeader(log);
+							Thread.sleep(1000);
+							openConnection(monitor_server);
+							break;
 						}
-						else
-							return;
-					}
-				}
-				printValues(log);
+						catch (final Exception e)
+						{
+							continue;
+						}
+				}).start();
 			}
-			catch (final Exception exc)
-			{
-				logMonitor("PERFORMANCE", "ERROR", exc);
-				exc.printStackTrace();
-			}
+			catch (final IOException e)
+			{}
 		}
+	}
 
-		public void add(final long shot, final String phase, final String duration)
-		{
-			if (phase == null)
-				return;
-			final Long key = new Long(shot);
-			if (!labelText.contains(phase))
-				labelText.add(phase);
-			if (!shotsInfo.containsKey(key))
-			{
-				phaseDuration = new Vector<String>();
-				shotsInfo.put(key, phaseDuration);
-			}
-			else
-			{
-				phaseDuration = shotsInfo.get(key);
-			}
-			phaseDuration.add(duration);
-		}
-
-		public void printHeader(final PrintStream out)
-		{
-			for (int i = 0; i < labelText.size(); i++)
-				out.print("\t" + labelText.elementAt(i));
-			out.println();
-		}
-
-		public void printValues(final PrintStream out)
-		{
-			final Vector<?> phDur = shotsInfo.get(new Long(shot));
-			for (int i = 0; i < phDur.size(); i++)
-			{
-				if ((i % (labelText.size() - 1)) == 0)
-				{
-					out.println("\t" + shot);
-				}
-				out.print("\t" + phDur.elementAt(i));
-			}
-		}
-
-		public void print()
-		{
-			for (int i = 0; i < labelText.size(); i++)
-				System.out.print("\t" + labelText.elementAt(i));
-			System.out.println();
-			final Enumeration<Long> shots = shotsInfo.keys();
-			final Enumeration<Vector<String>> e = shotsInfo.elements();
-			while (e.hasMoreElements())
-			{
-				final String shotStr = "\t" + shots.nextElement();
-				final Vector<?> phDur = e.nextElement();
-				for (int i = 0; i < phDur.size(); i++)
-				{
-					if ((i % (labelText.size() - 1)) == 0)
-					{
-						System.out.println(shotStr);
-					}
-					System.out.print("\t" + phDur.elementAt(i));
-				}
-			}
-		}
+	private void startPhase(final MdsMonitorEvent me)
+	{
+		startPhaseTime = System.currentTimeMillis();
+		final String phase_st = MdsHelper.toPhaseName(me.phase);
+		logMonitor("START", phase_st, " ", me);
+		executing_list.removeAllElements();
+		phase_l.setText("Phase: " + phase_st);
+		phase_m.setEnabled(false);
+		curr_phase = show_phase = me.phase;
 	}
 }

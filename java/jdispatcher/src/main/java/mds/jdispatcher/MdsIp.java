@@ -10,109 +10,6 @@ import mds.connection.MdsMessage;
 
 class MdsIp implements Runnable
 {
-	int port;
-
-	public MdsIp(final int port)
-	{
-		this.port = port;
-	}
-
-	ServerSocket server_sock;
-	boolean listening = true;
-	Vector<ConnectionListener> listeners = new Vector<ConnectionListener>();
-	Thread listen_thread;
-	protected boolean stopRequest = false;
-	final private Vector<ReceiverThread> receivers = new Vector<ReceiverThread>();
-
-	public static final void tryClose(final AutoCloseable obj)
-	{
-		if (obj != null)
-			try
-			{
-				obj.close();
-			}
-			catch (final Exception ignore)
-			{}
-	}
-
-	public Thread getListenThread()
-	{ return listen_thread; }
-
-	public synchronized void stop()
-	{
-		stopRequest = true;
-		listening = false;
-		tryClose(server_sock);
-		notifyAll();
-		listen_thread.interrupt();
-		synchronized (receivers)
-		{
-			for (final ReceiverThread recv : receivers)
-				recv.close();
-		}
-	}
-
-	public boolean start()
-	{
-		try
-		{
-			server_sock = new ServerSocket(port);
-		}
-		catch (final Exception e)
-		{
-			System.err.println("Could not listen on port: " + port);
-			return false;
-		}
-		listen_thread = new Thread(this);
-		listen_thread.setName(String.format("Listener(%d)", port));
-		listen_thread.setDaemon(true);
-		listen_thread.start();
-		return true;
-	}
-
-	@Override
-	public void run()
-	{
-		while (listening)
-		{
-			try
-			{
-				final ReceiverThread rt = new ReceiverThread(server_sock.accept());
-				receivers.add(rt);
-				rt.setName(String.format("Receiver(%d, %d)", port, rt.sock.getPort()));
-				rt.setDaemon(true);
-				rt.start();
-			}
-			catch (final Exception exc)
-			{
-				fireConnectionEvent();
-				break;
-			}
-		}
-		tryClose(server_sock);
-	}
-
-	public synchronized void addConnectionListener(final ConnectionListener listener)
-	{
-		listeners.addElement(listener);
-	}
-
-	protected synchronized void fireConnectionEvent()
-	{
-		final Enumeration<ConnectionListener> listener_list = listeners.elements();
-		while (listener_list.hasMoreElements())
-		{
-			final ConnectionListener listener = listener_list.nextElement();
-			listener.processConnectionEvent(
-					new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION, "Lost connection to mdsip client"));
-		}
-	}
-
-	public MdsMessage handleMessage(final MdsMessage messages[])
-	{
-		return new MdsMessage();
-	}
-
 	class ReceiverThread extends Thread
 	{
 		Socket sock;
@@ -193,6 +90,108 @@ class MdsIp implements Runnable
 						receivers.notifyAll();
 				}
 			}
+		}
+	}
+
+	public static final void tryClose(final AutoCloseable obj)
+	{
+		if (obj != null)
+			try
+			{
+				obj.close();
+			}
+			catch (final Exception ignore)
+			{}
+	}
+
+	int port;
+	ServerSocket server_sock;
+	boolean listening = true;
+	Vector<ConnectionListener> listeners = new Vector<>();
+	Thread listen_thread;
+	protected boolean stopRequest = false;
+	final private Vector<ReceiverThread> receivers = new Vector<>();
+
+	public MdsIp(final int port)
+	{
+		this.port = port;
+	}
+
+	public synchronized void addConnectionListener(final ConnectionListener listener)
+	{
+		listeners.addElement(listener);
+	}
+
+	protected synchronized void fireConnectionEvent()
+	{
+		final Enumeration<ConnectionListener> listener_list = listeners.elements();
+		while (listener_list.hasMoreElements())
+		{
+			final ConnectionListener listener = listener_list.nextElement();
+			listener.processConnectionEvent(
+					new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION, "Lost connection to mdsip client"));
+		}
+	}
+
+	public Thread getListenThread()
+	{ return listen_thread; }
+
+	public MdsMessage handleMessage(final MdsMessage messages[])
+	{
+		return new MdsMessage();
+	}
+
+	@Override
+	public void run()
+	{
+		while (listening)
+		{
+			try
+			{
+				final ReceiverThread rt = new ReceiverThread(server_sock.accept());
+				receivers.add(rt);
+				rt.setName(String.format("Receiver(%d, %d)", port, rt.sock.getPort()));
+				rt.setDaemon(true);
+				rt.start();
+			}
+			catch (final Exception exc)
+			{
+				fireConnectionEvent();
+				break;
+			}
+		}
+		tryClose(server_sock);
+	}
+
+	public boolean start()
+	{
+		try
+		{
+			server_sock = new ServerSocket(port);
+		}
+		catch (final Exception e)
+		{
+			System.err.println("Could not listen on port: " + port);
+			return false;
+		}
+		listen_thread = new Thread(this);
+		listen_thread.setName(String.format("Listener(%d)", port));
+		listen_thread.setDaemon(true);
+		listen_thread.start();
+		return true;
+	}
+
+	public synchronized void stop()
+	{
+		stopRequest = true;
+		listening = false;
+		tryClose(server_sock);
+		notifyAll();
+		listen_thread.interrupt();
+		synchronized (receivers)
+		{
+			for (final ReceiverThread recv : receivers)
+				recv.close();
 		}
 	}
 }

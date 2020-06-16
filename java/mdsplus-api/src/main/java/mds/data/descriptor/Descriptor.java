@@ -67,6 +67,16 @@ public abstract class Descriptor<T>
 	protected static final byte P_STMT = 96;
 	protected static final byte P_SUBS = 0;
 
+	private static final ByteBuffer Buffer(final byte[] buf, final boolean swap_little)
+	{
+		return Descriptor.Buffer(buf, swap_little ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
+	}
+
+	private static final ByteBuffer Buffer(final byte[] buf, final ByteOrder bo)
+	{
+		return ByteBuffer.wrap(buf).asReadOnlyBuffer().order(bo);
+	}
+
 	/** null safe decompile of the given Descriptor **/
 	public static final String deco(final Descriptor<?> t)
 	{
@@ -127,6 +137,14 @@ public abstract class Descriptor<T>
 	public static final String Dsc2String(final Descriptor<?> t)
 	{
 		return t == null ? "*" : t.toString();
+	}
+
+	protected final static DATA<?>[] getDATAs(final Descriptor<?>... args) throws MdsException
+	{
+		final DATA<?>[] data_args = new DATA[args.length];
+		for (int i = 0; i < args.length; i++)
+			data_args[i] = args[i].getDATA();
+		return data_args;
 	}
 
 	/** Returns the element length of the given dtype **/
@@ -204,6 +222,14 @@ public abstract class Descriptor<T>
 		return dsc.getLocal(local);
 	}
 
+	protected final static Descriptor<?>[] getLocals(final FLAG local, final Descriptor<?>... args)
+	{
+		final Descriptor<?>[] local_args = new Descriptor<?>[args.length];
+		for (int i = 0; i < args.length; i++)
+			local_args[i] = Descriptor.getLocal(local, args[i]);
+		return local_args;
+	}
+
 	public static final boolean isLocal(final Descriptor<?> dsc)
 	{
 		if (dsc == null)
@@ -223,7 +249,7 @@ public abstract class Descriptor<T>
 		if (obj instanceof String)
 			return new StringDsc((String) obj);
 		if (obj instanceof Number)
-			return NUMBER.NEW(obj);
+			return Descriptor.NEW(obj);
 		throw new MdsException("Conversion form " + obj.getClass().getName() + " not yet implemented.");
 	}
 
@@ -262,7 +288,7 @@ public abstract class Descriptor<T>
 
 	public static final NUMBER<? extends Number> valueOf(final Number value)
 	{
-		return NUMBER.valueOf(value, true);
+		return Descriptor.valueOf(value, true);
 	}
 
 	public static final NUMBER<? extends Number> valueOf(final Number value, final boolean signed)
@@ -292,32 +318,6 @@ public abstract class Descriptor<T>
 	public static final Descriptor<?> valueOf(final String val)
 	{
 		return val == null ? Missing.NEW : new StringDsc(val);
-	}
-
-	protected final static DATA<?>[] getDATAs(final Descriptor<?>... args) throws MdsException
-	{
-		final DATA<?>[] data_args = new DATA[args.length];
-		for (int i = 0; i < args.length; i++)
-			data_args[i] = args[i].getDATA();
-		return data_args;
-	}
-
-	protected final static Descriptor<?>[] getLocals(final FLAG local, final Descriptor<?>... args)
-	{
-		final Descriptor<?>[] local_args = new Descriptor<?>[args.length];
-		for (int i = 0; i < args.length; i++)
-			local_args[i] = Descriptor.getLocal(local, args[i]);
-		return local_args;
-	}
-
-	private static final ByteBuffer Buffer(final byte[] buf, final boolean swap_little)
-	{
-		return Descriptor.Buffer(buf, swap_little ? ByteOrder.LITTLE_ENDIAN : ByteOrder.BIG_ENDIAN);
-	}
-
-	private static final ByteBuffer Buffer(final byte[] buf, final ByteOrder bo)
-	{
-		return ByteBuffer.wrap(buf).asReadOnlyBuffer().order(bo);
 	}
 
 	protected final ByteBuffer b, p;
@@ -392,15 +392,15 @@ public abstract class Descriptor<T>
 		return this.decompile(Descriptor.P_STMT, new StringBuilder(1024), Descriptor.DECO_X).toString();
 	}
 
+	public final Descriptor<?> doAsTask() throws MdsException
+	{
+		return this.mds.getAPI().tdiDoTask(this.getTree(), this);
+	}
+
 	/** (2,b) data type code **/
 	public final DTYPE dtype()
 	{
 		return Descriptor.getDtype(this.b);
-	}
-
-	public final Descriptor<?> doAsTask() throws MdsException
-	{
-		return this.mds.getAPI().tdiDoTask(this.getTree(), this);
 	}
 
 	@Override
@@ -476,6 +476,11 @@ public abstract class Descriptor<T>
 
 	public final DATA<?> getDATA()
 	{ return (DATA<?>) this.getData(); }
+
+	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
+	{
+		throw DATA.dataerror;
+	}
 
 	public Descriptor_A<?> getDataA() throws MdsException
 	{
@@ -553,6 +558,9 @@ public abstract class Descriptor<T>
 		final Descriptor<?> eval = this.evaluate();
 		return eval.getLocal();
 	}
+
+	protected Mds getMds()
+	{ return this.getTree().getMds(); }
 
 	public Descriptor<?> getRaw()
 	{
@@ -761,6 +769,11 @@ public abstract class Descriptor<T>
 		return this.decompile(Descriptor.P_STMT, new StringBuilder(1024), Descriptor.DECO_STRX).toString();
 	}
 
+	protected final boolean use_mds_local()
+	{
+		return (Descriptor.mds_local != null && Descriptor.mds_local.isReady() == null);
+	}
+
 	public Descriptor<?> VALUE()
 	{
 		return this.VALUE.VALUE();
@@ -770,18 +783,5 @@ public abstract class Descriptor<T>
 	{
 		this.VALUE = value;
 		return this;
-	}
-
-	protected Descriptor<?> getData_(final DTYPE... omits) throws MdsException
-	{
-		throw DATA.dataerror;
-	}
-
-	protected Mds getMds()
-	{ return this.getTree().getMds(); }
-
-	protected final boolean use_mds_local()
-	{
-		return (Descriptor.mds_local != null && Descriptor.mds_local.isReady() == null);
 	}
 }

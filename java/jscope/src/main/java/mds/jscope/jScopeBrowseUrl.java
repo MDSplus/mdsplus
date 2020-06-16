@@ -17,6 +17,12 @@ import javax.swing.text.html.HTMLFrameHyperlinkEvent;
 public class jScopeBrowseUrl extends JDialog
 {
 	private static final long serialVersionUID = 1L;
+	private static final String USER_AGENT;
+	static
+	{
+		final String version = jScopeBrowseUrl.class.getPackage().getImplementationVersion();
+		USER_AGENT = "jScopeBrowseUrl.java ($Revision$) for " + (version == null ? "unknown" : version);
+	}
 	protected JEditorPane html;
 	URLConnection url_con;
 	protected String mime_type;
@@ -111,37 +117,6 @@ public class jScopeBrowseUrl extends JDialog
 		setSize(680, 700);
 	}
 
-	final static String u_agent = "jScopeBrowseUrl.java ($Revision$) for " + jScopeFacade.VERSION;
-
-	protected void setPage(URL url) throws IOException
-	{
-		url_con = url.openConnection();
-		url_con.setRequestProperty("User-Agent", u_agent);
-		mime_type = url_con.getContentType();
-		// Assume (like browsers) that missing mime-type indicates text/html.
-		if (mime_type == null || mime_type.indexOf("text") != -1)
-			html.setPage(url);
-		else
-		{
-			final String path = "TWU_image_message.html";
-			final URL u = getClass().getClassLoader().getResource(path);
-			html.setPage(u);
-		}
-	}
-
-	public void connectToBrowser(URL url) throws Exception
-	{
-		if (url != null)
-		{
-			url_list.addElement(url);
-			// html.setPage(url);
-			setPage(url);
-		}
-	}
-
-	public boolean isConnected()
-	{ return connected; }
-
 	public void connectToBrowser(String url_path) throws Exception
 	{
 		try
@@ -155,6 +130,15 @@ public class jScopeBrowseUrl extends JDialog
 		{
 			connected = false;
 			throw (new IOException("Unable to locate the signal server " + url_path + " : " + e.getMessage()));
+		}
+	}
+
+	public void connectToBrowser(URL url) throws Exception
+	{
+		if (url != null)
+		{
+			url_list.addElement(url);
+			setPage(url);
 		}
 	}
 
@@ -214,5 +198,24 @@ public class jScopeBrowseUrl extends JDialog
 				}
 			}
 		};
+	}
+
+	public boolean isConnected()
+	{ return connected; }
+
+	protected void setPage(URL url) throws IOException
+	{
+		url_con = url.openConnection();
+		url_con.setRequestProperty("User-Agent", USER_AGENT);
+		mime_type = url_con.getContentType();
+		// Assume (like browsers) that missing mime-type indicates text/html.
+		if (mime_type == null || mime_type.indexOf("text") != -1)
+			html.setPage(url);
+		else
+		{
+			final String path = "TWU_image_message.html";
+			final URL u = getClass().getClassLoader().getResource(path);
+			html.setPage(u);
+		}
 	}
 }

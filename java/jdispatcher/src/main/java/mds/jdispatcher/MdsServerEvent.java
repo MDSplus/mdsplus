@@ -21,20 +21,20 @@ class MdsServerEvent extends EventObject
 		this.status = status;
 	}
 
-	public int getJobid()
-	{ return jobid; }
-
 	public int getFlags()
 	{ return flags; }
+
+	public int getJobid()
+	{ return jobid; }
 
 	public int getStatus()
 	{ return status; }
 
-	public void setJobid(final int jobid)
-	{ this.jobid = jobid; }
-
 	public void setFlags(final int flags)
 	{ this.flags = flags; }
+
+	public void setJobid(final int jobid)
+	{ this.jobid = jobid; }
 
 	public void setStatus(final int status)
 	{ this.status = status; }

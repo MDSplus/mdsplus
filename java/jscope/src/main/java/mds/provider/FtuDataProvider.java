@@ -22,26 +22,6 @@ public class FtuDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public void setArgument(String arg) throws IOException
-	{
-		mds.setProvider(arg);
-		setEnvironment("public _IMODE = 0;");
-	}
-
-	@Override
-	public synchronized void update(String exp, long s)
-	{
-		error = null;
-		shot = s;
-	}
-
-	@Override
-	public int[] getIntArray(String in) throws IOException
-	{
-		return super.getIntArray(ParseExpression(in));
-	}
-
-	@Override
 	public synchronized float[] GetFloatArray(String in) throws IOException
 	{
 		error = null;
@@ -57,14 +37,10 @@ public class FtuDataProvider extends MdsDataProvider
 	}
 
 	@Override
-	public boolean SupportsCompression()
+	public int[] getIntArray(String in) throws IOException
 	{
-		return false;
+		return super.getIntArray(ParseExpression(in));
 	}
-
-	@Override
-	public void SetCompression(boolean state)
-	{}
 
 	@Override
 	public int inquireCredentials(JFrame f, DataServerItem server_item)
@@ -163,4 +139,28 @@ public class FtuDataProvider extends MdsDataProvider
 	 * first_sig.substring(1); final String parsed = "ftuxl(" + shot + ",\"" +
 	 * first_sig + "\")"; return GetString(parsed, -1, -1, -1); }
 	 */
+
+	@Override
+	public void setArgument(String arg) throws IOException
+	{
+		mds.setProvider(arg);
+		setEnvironment("public _IMODE = 0;");
+	}
+
+	@Override
+	public void SetCompression(boolean state)
+	{}
+
+	@Override
+	public boolean SupportsCompression()
+	{
+		return false;
+	}
+
+	@Override
+	public synchronized void update(String exp, long s)
+	{
+		error = null;
+		shot = s;
+	}
 }

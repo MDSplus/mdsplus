@@ -59,13 +59,6 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 	static private final class SshServerInfo
 	{
-		final SshServerInfo proxy;
-		final String proxyjump;
-		final String user;
-		final String hostname;
-		final Config config;
-		final int port;
-
 		static public SshServerInfo parse(final String serverstring, ConfigRepository cr)
 		{
 			final int at = serverstring.indexOf("@");
@@ -76,6 +69,13 @@ public final class MdsIpJsch extends MdsIpIOStream
 			final int port = cn < 0 ? 0 : Integer.parseInt(serverstring.substring(cn + 1));
 			return new SshServerInfo(user, host, port, cr);
 		}
+
+		final SshServerInfo proxy;
+		final String proxyjump;
+		final String user;
+		final String hostname;
+		final Config config;
+		final int port;
 
 		public SshServerInfo(final String user, final String host, final int port)
 		{
@@ -117,7 +117,7 @@ public final class MdsIpJsch extends MdsIpIOStream
 			}
 			else
 			{
-				sessions = new Vector<Session>();
+				sessions = new Vector<>();
 				session = ((JSch) MdsIpJsch.jsch).getSession(this.user, this.hostname, this.port);
 			}
 			final String strictHostKeyChecking = config.getValue("StrictHostKeyChecking");
@@ -133,8 +133,8 @@ public final class MdsIpJsch extends MdsIpIOStream
 
 	public static final class UserInfo implements com.jcraft.jsch.UserInfo, UIKeyboardInteractive
 	{
-		static HashMap<String, String[]> keyboard_ans = new HashMap<String, String[]>();
-		static HashMap<String, UserInfo> keyboard_this = new HashMap<String, UserInfo>();
+		static HashMap<String, String[]> keyboard_ans = new HashMap<>();
+		static HashMap<String, UserInfo> keyboard_this = new HashMap<>();
 		private final JTextField passphraseField = new JPasswordField(20);
 		private final JTextField passwordField = new JPasswordField(20);
 		private final AncestorListener RequestFocusListener = new AncestorListener()
@@ -255,22 +255,6 @@ public final class MdsIpJsch extends MdsIpIOStream
 	private static final Object jsch;
 	private static final UserInfo userinfo;
 	private static final File dotssh = new File(System.getProperty("user.home"), ".ssh");
-
-	private static final ConfigRepository getConfigRepository()
-	{
-		final File config = new File(dotssh, "config");
-		if (config.exists())
-			try
-			{
-				return OpenSSHConfig.parseFile(config.getAbsolutePath());
-			}
-			catch (final IOException e)
-			{
-				e.printStackTrace();
-			}
-		return OpenSSHConfig.nullConfig;
-	}
-
 	static
 	{
 		JSch _jsch;
@@ -326,6 +310,22 @@ public final class MdsIpJsch extends MdsIpIOStream
 		}
 		userinfo = _userinfo;
 	}
+
+	private static final ConfigRepository getConfigRepository()
+	{
+		final File config = new File(dotssh, "config");
+		if (config.exists())
+			try
+			{
+				return OpenSSHConfig.parseFile(config.getAbsolutePath());
+			}
+			catch (final IOException e)
+			{
+				e.printStackTrace();
+			}
+		return ConfigRepository.nullConfig;
+	}
+
 	private final Channel channel;
 	private final Vector<Session> sessions;
 

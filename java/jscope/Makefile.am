@@ -16,7 +16,7 @@ else
 
 jScope.jar: $(DEPENDENCIES) $(MANIFEST) classjava.stamp
 	@ echo "Creating JAR: $@ ...";\
-	echo "Main-Class: jScope" >> $(MANIFEST) &&\
+	echo "Main-Class: mds.jscope.jScope" >> $(MANIFEST) &&\
 	echo "Class-Path: mdsobjects.jar" >> $(MANIFEST) &&\
 	rsync -r $(java_resdir)/ $(JAVAROOT) &&\
 	cp -f $(JSCH) $@ &&\
@@ -42,8 +42,7 @@ SOURCE =\
  mds/provider/*.java\
  mds/provider/browser/*.java\
  mds/provider/mds/*.java\
- mds/wave/*.java\
- jScope.java
+ mds/wave/*.java
 RESOURCES =\
  mds/jscope/about.jpg\
  mds/jscope/jScope.properties\

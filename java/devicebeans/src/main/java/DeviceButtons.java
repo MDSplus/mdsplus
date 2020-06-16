@@ -5,8 +5,7 @@ public class DeviceButtons extends JPanel
 	private static final long serialVersionUID = 1L;
 	protected DeviceControl apply, ok, cancel;
 	private String methods[];
-	public void setMethods(String methods[]) {this.methods = methods;}
-	public String[] getMethods() {return methods;}
+
 	public DeviceButtons()
 	{
 		add(ok = new DeviceOk());
@@ -20,15 +19,24 @@ public class DeviceButtons extends JPanel
 		return apply.check();
 	}
 
+	public String[] getCheckExpressions()
+	{ return apply.getCheckExpressions(); }
+
+	public String[] getCheckMessages()
+	{ return apply.getCheckMessages(); }
+
+	public String[] getMethods()
+	{ return methods; }
+
+	public void setCancelText(String cancelText)
+	{
+		cancel.setText(cancelText);
+	}
+
 	public void setCheckExpressions(String[] checkExpressions)
 	{
 		apply.setCheckExpressions(checkExpressions);
 		ok.setCheckExpressions(checkExpressions);
-	}
-
-	public String[] getCheckExpressions()
-	{
-		return apply.getCheckExpressions();
 	}
 
 	public void setCheckMessages(String[] checkMessages)
@@ -37,17 +45,11 @@ public class DeviceButtons extends JPanel
 		ok.setCheckMessages(checkMessages);
 	}
 
-	public String[] getCheckMessages()
-	{
-		return apply.getCheckMessages();
-	}
+	public void setMethods(String methods[])
+	{ this.methods = methods; }
 
-	public void setCancelText(String cancelText)
+	public void setReadOnly(boolean readOnly)
 	{
-		cancel.setText(cancelText);
-	}
-
-	public void setReadOnly(boolean readOnly) {
 		ok.setVisible(!readOnly);
 		apply.setVisible(!readOnly);
 	}

@@ -16,13 +16,15 @@ import mds.MdsException;
 import mds.data.descriptor_s.NODE;
 import mds.jtraverser.Node;
 
-public final class AddNodeDialog extends JDialog{
-	private static final long	serialVersionUID	= 1L;
-	private Node				currnode;
-	private final JTextField	e_name, e_tag;
-	private byte				usage;
+public final class AddNodeDialog extends JDialog
+{
+	private static final long serialVersionUID = 1L;
+	private Node currnode;
+	private final JTextField e_name, e_tag;
+	private byte usage;
 
-	public AddNodeDialog(){
+	public AddNodeDialog()
+	{
 		super(JOptionPane.getRootFrame());
 		final JPanel jp = new JPanel();
 		jp.setLayout(new BorderLayout());
@@ -38,50 +40,69 @@ public final class AddNodeDialog extends JDialog{
 		jp1 = new JPanel();
 		JButton b;
 		jp1.add(b = new JButton("Ok"));
-		b.addActionListener(new ActionListener(){
+		b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				AddNodeDialog.this.addNode();
 			}
 		});
 		jp1.add(b = new JButton("Cancel"));
-		b.addActionListener(new ActionListener(){
+		b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				AddNodeDialog.this.setVisible(false);
 			}
 		});
 		jp.add(jp1, BorderLayout.SOUTH);
-		this.addKeyListener(new KeyAdapter(){
+		this.addKeyListener(new KeyAdapter()
+		{
 			@Override
-			public void keyTyped(final KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) AddNodeDialog.this.addNode();
+			public void keyTyped(final KeyEvent e)
+			{
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					AddNodeDialog.this.addNode();
 			}
 		});
 		this.pack();
 	}
 
-	public final void addNode() {
-		try{
+	public final void addNode()
+	{
+		try
+		{
 			final Node newNode = this.currnode.addNode(this.e_name.getText().toUpperCase(), this.usage);
-			if(!this.e_tag.getText().trim().equals("")) try{
-				newNode.setTags(new String[]{this.e_tag.getText().trim().toUpperCase()});
-			}catch(final Exception exc){
-				MdsException.stderr("Error adding tag", exc);
-			}
-		}catch(final Exception exc){
+			if (!this.e_tag.getText().trim().equals(""))
+				try
+				{
+					newNode.setTags(new String[]
+					{ this.e_tag.getText().trim().toUpperCase() });
+				}
+				catch (final Exception exc)
+				{
+					MdsException.stderr("Error adding tag", exc);
+				}
+		}
+		catch (final Exception exc)
+		{
 			MdsException.stderr("Error adding node", exc);
 		}
 		this.close();
 	}
 
-	public final void close() {
+	public final void close()
+	{
 		this.currnode = null;
 		this.setVisible(false);
 	}
 
-	public final void open(final Node currnode_in, final byte usage_in) {
-		if(currnode_in == null) return;
+	public final void open(final Node currnode_in, final byte usage_in)
+	{
+		if (currnode_in == null)
+			return;
 		this.currnode = currnode_in;
 		this.usage = usage_in;
 		this.e_name.setText("");

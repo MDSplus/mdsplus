@@ -21,34 +21,41 @@ import javax.swing.event.ListSelectionListener;
 import mds.MdsException;
 import mds.jtraverser.Node;
 
-public final class TagsDialog extends JDialog{
+public final class TagsDialog extends JDialog
+{
 	private static final long serialVersionUID = 1L;
 
-	public static TagsDialog open(final Node node) {
+	public static TagsDialog open(final Node node)
+	{
 		final TagsDialog dialog = new TagsDialog(node);
 		dialog.setLocation(10, 10);
 		dialog.setVisible(true);
 		return dialog;
 	}
-	private final JTextField				curr_tag_selection;
-	private final DefaultListModel<String>	curr_taglist_model;
-	private Node							currnode;
-	private final JList<String>				modify_tags_list;
-	private String[]						tags;
 
-	private TagsDialog(final Node node){
+	private final JTextField curr_tag_selection;
+	private final DefaultListModel<String> curr_taglist_model;
+	private Node currnode;
+	private final JList<String> modify_tags_list;
+	private String[] tags;
+
+	private TagsDialog(final Node node)
+	{
 		super(JOptionPane.getRootFrame());
 		final JPanel jp = new JPanel();
 		jp.setLayout(new BorderLayout());
 		final JPanel jp1 = new JPanel();
 		jp1.setLayout(new BorderLayout());
-		this.modify_tags_list = new JList<String>();
-		this.curr_taglist_model = new DefaultListModel<String>();
-		this.modify_tags_list.addListSelectionListener(new ListSelectionListener(){
+		this.modify_tags_list = new JList<>();
+		this.curr_taglist_model = new DefaultListModel<>();
+		this.modify_tags_list.addListSelectionListener(new ListSelectionListener()
+		{
 			@Override
-			public void valueChanged(final ListSelectionEvent e) {
+			public void valueChanged(final ListSelectionEvent e)
+			{
 				final int idx = TagsDialog.this.modify_tags_list.getSelectedIndex();
-				if(idx != -1) TagsDialog.this.curr_tag_selection.setText(TagsDialog.this.curr_taglist_model.getElementAt(idx));
+				if (idx != -1)
+					TagsDialog.this.curr_tag_selection.setText(TagsDialog.this.curr_taglist_model.getElementAt(idx));
 			}
 		});
 		final JScrollPane scroll_list = new JScrollPane(this.modify_tags_list);
@@ -57,23 +64,30 @@ public final class TagsDialog extends JDialog{
 		final JPanel jp2 = new JPanel();
 		jp2.setLayout(new GridLayout(2, 1));
 		final JButton add_tag = new JButton("Add Tag");
-		add_tag.addActionListener(new ActionListener(){
+		add_tag.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				final String curr_tag = TagsDialog.this.curr_tag_selection.getText().toUpperCase();
-				if(curr_tag == null || curr_tag.length() == 0) return;
-				for(int i = 0; i < TagsDialog.this.curr_taglist_model.getSize(); i++)
-					if(curr_tag.equals(TagsDialog.this.curr_taglist_model.getElementAt(i))) return;
+				if (curr_tag == null || curr_tag.length() == 0)
+					return;
+				for (int i = 0; i < TagsDialog.this.curr_taglist_model.getSize(); i++)
+					if (curr_tag.equals(TagsDialog.this.curr_taglist_model.getElementAt(i)))
+						return;
 				TagsDialog.this.curr_taglist_model.addElement(curr_tag);
 			}
 		});
 		jp2.add(add_tag);
 		final JButton remove_tag = new JButton("Remove Tag");
-		remove_tag.addActionListener(new ActionListener(){
+		remove_tag.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				int idx;
-				if((idx = TagsDialog.this.modify_tags_list.getSelectedIndex()) != -1) mds.jtraverser.dialogs.TagsDialog.this.curr_taglist_model.removeElementAt(idx);
+				if ((idx = TagsDialog.this.modify_tags_list.getSelectedIndex()) != -1)
+					mds.jtraverser.dialogs.TagsDialog.this.curr_taglist_model.removeElementAt(idx);
 			}
 		});
 		jp2.add(remove_tag);
@@ -88,51 +102,64 @@ public final class TagsDialog extends JDialog{
 		jp.add(jp1, BorderLayout.CENTER);
 		final JPanel jp3 = new JPanel();
 		final JButton ok_b = new JButton("Ok");
-		ok_b.addActionListener(new ActionListener(){
+		ok_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				TagsDialog.this.ok();
 			}
 		});
 		jp3.add(ok_b);
 		final JButton reset_b = new JButton("Reset");
-		reset_b.addActionListener(new ActionListener(){
+		reset_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				TagsDialog.this.curr_taglist_model.clear();
-				for(final String tag : TagsDialog.this.tags)
+				for (final String tag : TagsDialog.this.tags)
 					TagsDialog.this.curr_taglist_model.addElement(tag);
 				TagsDialog.this.modify_tags_list.setModel(TagsDialog.this.curr_taglist_model);
 			}
 		});
 		jp3.add(reset_b);
 		final JButton cancel_b = new JButton("Cancel");
-		cancel_b.addActionListener(new ActionListener(){
+		cancel_b.addActionListener(new ActionListener()
+		{
 			@Override
-			public void actionPerformed(final ActionEvent e) {
+			public void actionPerformed(final ActionEvent e)
+			{
 				TagsDialog.this.dispose();
 			}
 		});
 		jp3.add(cancel_b);
 		jp.add(jp3, BorderLayout.SOUTH);
 		this.getContentPane().add(jp);
-		this.addKeyListener(new KeyAdapter(){
+		this.addKeyListener(new KeyAdapter()
+		{
 			@Override
-			public void keyTyped(final KeyEvent e) {
-				if(e.getKeyCode() == KeyEvent.VK_ENTER) TagsDialog.this.ok();
+			public void keyTyped(final KeyEvent e)
+			{
+				if (e.getKeyCode() == KeyEvent.VK_ENTER)
+					TagsDialog.this.ok();
 			}
 		});
-		if(node == null) return;
+		if (node == null)
+			return;
 		this.currnode = node;
 		String[] new_tags;
-		try{
+		try
+		{
 			new_tags = this.currnode.getTags();
-		}catch(final Exception exc){
+		}
+		catch (final Exception exc)
+		{
 			MdsException.stderr("Error getting tags", exc);
 			new_tags = new String[0];
 		}
 		this.curr_taglist_model.clear();
-		for(final String tag : new_tags)
+		for (final String tag : new_tags)
 			this.curr_taglist_model.addElement(tag);
 		this.setTitle("Modify tags of " + this.currnode.getFullPath());
 		this.modify_tags_list.setModel(this.curr_taglist_model);
@@ -140,14 +167,19 @@ public final class TagsDialog extends JDialog{
 		this.pack();
 	}
 
-	public final void ok() {
+	public final void ok()
+	{
 		final String[] out_tags = new String[this.curr_taglist_model.getSize()];
-		for(int i = 0; i < this.curr_taglist_model.getSize(); i++)
+		for (int i = 0; i < this.curr_taglist_model.getSize(); i++)
 			out_tags[i] = this.curr_taglist_model.getElementAt(i);
-		try{
+		try
+		{
 			this.currnode.setTags(out_tags);
-		}catch(final Exception exc){
-			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), exc.getMessage(), "Error adding tags", JOptionPane.WARNING_MESSAGE);
+		}
+		catch (final Exception exc)
+		{
+			JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), exc.getMessage(), "Error adding tags",
+					JOptionPane.WARNING_MESSAGE);
 		}
 		this.currnode = null;
 		this.dispose();

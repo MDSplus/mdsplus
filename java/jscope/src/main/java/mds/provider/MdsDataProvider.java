@@ -19,29 +19,81 @@ public class MdsDataProvider implements DataProvider
 {
 	public interface AsyncDataSource
 	{
-		void startGeneration(String expression);
-
 		void addDataListener(WaveDataListener l);
+
+		void startGeneration(String expression);
 	}
 
-	protected String provider;
-	protected String experiment;
-	private String prev_default_node = null;
-	private String default_node = null;
-	private String environment_vars;
-	protected long shot;
-	protected boolean open, connected;
-	protected final MdsConnection mds;
-	protected String error;
-	protected boolean use_compression = false;
-	protected int var_idx = 0;
-	private boolean is_tunneling = false;
-	private String tunnel_provider = "127.0.0.1:8000";
-	private SshTunneling ssh_tunneling = null;
-	static final long RESAMPLE_TRESHOLD = 1000000000;
-	static final int MAX_PIXELS = 20000;
-	static boolean debug = false;
+	static class RealArray
+	{
+		double doubleArray[] = null;
+		float floatArray[] = null;
+		long longArray[] = null;
+		boolean isDouble;
+		boolean isLong;
 
+		RealArray(double[] doubleArray)
+		{
+			this.doubleArray = doubleArray;
+			isDouble = true;
+			isLong = false;
+		}
+
+		RealArray(float[] floatArray)
+		{
+			this.floatArray = floatArray;
+			isDouble = false;
+			isLong = false;
+		}
+
+		RealArray(long[] longArray)
+		{
+			this.longArray = longArray;
+			for (int i = 0; i < longArray.length; i++)
+				longArray[i] = Waveform.convertFromSpecificTime(longArray[i]);
+			isDouble = false;
+			isLong = true;
+		}
+
+		double[] getDoubleArray()
+		{
+			if (isLong)
+				return null;
+			if (!isDouble && floatArray != null && doubleArray == null)
+			{
+				doubleArray = new double[floatArray.length];
+				for (int i = 0; i < floatArray.length; i++)
+					doubleArray[i] = floatArray[i];
+			}
+			return doubleArray;
+		}
+
+		float[] getFloatArray()
+		{
+			if (isLong)
+				return null;
+			if (isDouble && floatArray == null && doubleArray != null)
+			{
+				floatArray = new float[doubleArray.length];
+				for (int i = 0; i < doubleArray.length; i++)
+					floatArray[i] = (float) doubleArray[i];
+			}
+			return floatArray;
+		}
+
+		long[] getLongArray()
+		{
+			if (isDouble)
+				return null;
+			return longArray;
+		}
+
+		boolean isDouble()
+		{ return isDouble; }
+
+		boolean isLong()
+		{ return isLong; }
+	}
 	class SegmentedFrameData implements FrameData
 	{
 		String inX, inY;
@@ -174,22 +226,6 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public int getFrameType() throws IOException
-		{ return mode; }
-
-		@Override
-		public int getNumFrames()
-		{ return actSegments * framesPerSegment; }
-
-		@Override
-		public Dimension getFrameDimension()
-		{ return dim; }
-
-		@Override
-		public float[] getFrameTimes()
-		{ return times; }
-
-		@Override
 		public byte[] getFrameAt(int idx) throws IOException
 		{
 			if (debug)
@@ -204,8 +240,23 @@ public class MdsDataProvider implements DataProvider
 			System.arraycopy(segment, segmentOffset, outFrame, 0, dim.width * dim.height * bytesPerPixel);
 			return outFrame;
 		}
-	}
 
+		@Override
+		public Dimension getFrameDimension()
+		{ return dim; }
+
+		@Override
+		public float[] getFrameTimes()
+		{ return times; }
+
+		@Override
+		public int getFrameType() throws IOException
+		{ return mode; }
+
+		@Override
+		public int getNumFrames()
+		{ return actSegments * framesPerSegment; }
+	}
 	class SimpleFrameData implements FrameData
 	{
 		String in_x, in_y;
@@ -309,35 +360,6 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public int getFrameType() throws IOException
-		{
-			if (mode != -1)
-				return mode;
-			int i;
-			for (i = 0; i < n_frames; i++)
-			{
-				buf = getFrameAt(i);
-				if (buf != null)
-					break;
-			}
-			first_frame_idx = i;
-			mode = Frames.DecodeImageType(buf);
-			return mode;
-		}
-
-		@Override
-		public int getNumFrames()
-		{ return n_frames; }
-
-		@Override
-		public Dimension getFrameDimension()
-		{ return dim; }
-
-		@Override
-		public float[] getFrameTimes()
-		{ return times; }
-
-		@Override
 		public byte[] getFrameAt(int idx) throws IOException
 		{
 			if (debug)
@@ -369,15 +391,43 @@ public class MdsDataProvider implements DataProvider
 				return b_img;
 			}
 		}
-	}
 
+		@Override
+		public Dimension getFrameDimension()
+		{ return dim; }
+
+		@Override
+		public float[] getFrameTimes()
+		{ return times; }
+
+		@Override
+		public int getFrameType() throws IOException
+		{
+			if (mode != -1)
+				return mode;
+			int i;
+			for (i = 0; i < n_frames; i++)
+			{
+				buf = getFrameAt(i);
+				if (buf != null)
+					break;
+			}
+			first_frame_idx = i;
+			mode = Frames.DecodeImageType(buf);
+			return mode;
+		}
+
+		@Override
+		public int getNumFrames()
+		{ return n_frames; }
+	}
 	//////////////////////////////////////// GAB JULY 2014
 	class SimpleWaveData implements WaveData
 	{
-		String in_x, in_y;
-		boolean _jscope_set = false;
 		static final int SEGMENTED_YES = 1, SEGMENTED_NO = 2, SEGMENTED_UNKNOWN = 3;
 		static final int UNKNOWN = -1;
+		String in_x, in_y;
+		boolean _jscope_set = false;
 		int numDimensions = UNKNOWN;
 		int segmentMode = SEGMENTED_UNKNOWN;
 		String segmentNodeName;
@@ -394,25 +444,10 @@ public class MdsDataProvider implements DataProvider
 		long wd_shot;
 		AsyncDataSource asynchSource = null;
 
-		@Override
-		public boolean supportsStreaming()
-		{
-			return segmentMode == SEGMENTED_YES;
-		}
+		private long x2DLong[];
 
-		public String duplicateBackslashes(String inStr)
-		{
-			final StringBuffer outStr = new StringBuffer();
-			for (int i = 0; i < inStr.length(); i++)
-			{
-				if (inStr.charAt(i) == '\\')
-				{
-					outStr.append('\\');
-				}
-				outStr.append(inStr.charAt(i));
-			}
-			return outStr.toString();
-		}
+		// Async update management
+		Vector<WaveDataListener> waveDataListenersV = new Vector<>();
 
 		public SimpleWaveData(String in_y, String experiment, long shot, String defaultNode)
 		{
@@ -500,6 +535,14 @@ public class MdsDataProvider implements DataProvider
 			}
 		}
 
+		@Override
+		public void addWaveDataListener(WaveDataListener listener)
+		{
+			waveDataListenersV.addElement(listener);
+			if (asynchSource != null)
+				asynchSource.addDataListener(listener);
+		}
+
 		// Check if the passed Y expression specifies also an asynchronous part
 		// (separated by the patern &&&)
 		// in case get an implemenation of AsynchDataSource
@@ -517,184 +560,24 @@ public class MdsDataProvider implements DataProvider
 			return false;
 		}
 
-		@Override
-		public int getNumDimension() throws IOException
+		public String duplicateBackslashes(String inStr)
 		{
-			if (numDimensions != UNKNOWN)
-				return numDimensions;
-			String expr;
-			if (_jscope_set)
-				expr = "shape(_jscope_" + v_idx + ")";
-			else
+			final StringBuffer outStr = new StringBuffer();
+			for (int i = 0; i < inStr.length(); i++)
 			{
-				if (segmentMode == SEGMENTED_YES)
-					expr = "shape(GetSegment(" + segmentNodeName + ",0))";
-//	            expr = "shape(GetSegment(" + in_y +",0))";
-				else
+				if (inStr.charAt(i) == '\\')
 				{
-					_jscope_set = true;
-					expr = "( _jscope_" + v_idx + " = (" + in_y + ";), shape(_jscope_" + v_idx + "))";
+					outStr.append('\\');
 				}
+				outStr.append(inStr.charAt(i));
 			}
-			error = null;
-			final int shape[] = getNumDimensions(expr);
-			if (error != null || shape == null)
-			{
-				_jscope_set = false;
-				error = null;
-				return 1;
-			}
-			numDimensions = shape.length;
-			return shape.length;
-		}
-
-		@Override
-		public String GetTitle() throws IOException
-		{
-			String expr;
-			if (!titleEvaluated)
-			{
-				titleEvaluated = true;
-				if (_jscope_set)
-				{
-					expr = "help_of(_jscope_" + v_idx + ")";
-					title = getStringValue(expr);
-				}
-				else
-				{
-					if (segmentMode == SEGMENTED_YES)
-					{
-						expr = "help_of(" + in_y + ")";
-					}
-					else
-					{
-						_jscope_set = true;
-						expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
-					}
-					title = getStringValue(expr);
-				}
-			}
-			return title;
-		}
-
-		@Override
-		public String GetXLabel() throws IOException
-		{
-			if (!xLabelEvaluated)
-			{
-				xLabelEvaluated = true;
-				if (in_x == null || in_x.length() == 0)
-				{
-					String expr;
-					if (_jscope_set)
-					{
-						expr = "Units(dim_of(_jscope_" + v_idx + "))";
-						xLabel = getStringValue(expr);
-					}
-					else
-					{
-						if (segmentMode == SEGMENTED_YES)
-						{
-//	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
-							expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
-							xLabel = getStringValue(expr);
-						}
-						else
-						{
-							_jscope_set = true;
-							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
-							xLabel = getStringValue(expr);
-						}
-					}
-				}
-				else
-				{
-					xLabel = getStringValue("Units(" + in_x + ")");
-				}
-			}
-			return xLabel;
-		}
-
-		@Override
-		public String GetYLabel() throws IOException
-		{
-			String expr;
-			if (!yLabelEvaluated)
-			{
-				yLabelEvaluated = true;
-				if (getNumDimension() > 1)
-				{
-					if (segmentMode == SEGMENTED_YES)
-					{
-						expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 1)))";
-						yLabel = getStringValue(expr);
-					}
-					else
-					{
-						if (_jscope_set)
-						{
-							expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
-							yLabel = getStringValue(expr);
-						}
-						else
-						{
-							_jscope_set = true;
-							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
-							yLabel = getStringValue(expr);
-						}
-					}
-				}
-				return yLabel;
-			}
-			if (segmentMode == SEGMENTED_YES)
-			{
-				expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
-				yLabel = getStringValue(expr);
-			}
-			else
-			{
-				if (_jscope_set)
-				{
-					expr = "Units(_jscope_" + v_idx + ")";
-					yLabel = getStringValue(expr);
-				}
-				else
-				{
-					_jscope_set = true;
-					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
-					yLabel = getStringValue(expr);
-				}
-			}
-			return yLabel;
-		}
-
-		@Override
-		public String GetZLabel() throws IOException
-		{
-			String expr;
-			if (_jscope_set)
-				expr = "Units(_jscope_" + v_idx + ")";
-			else
-			{
-				_jscope_set = true;
-				expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
-			}
-			final String out = getStringValue(expr);
-			if (out == null)
-				_jscope_set = false;
-			return out;
+			return outStr.toString();
 		}
 
 		@Override
 		public XYData getData(double xmin, double xmax, int numPoints) throws IOException
 		{
 			return getData(xmin, xmax, numPoints, false);
-		}
-
-		@Override
-		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
-		{
-			return getData(xmin, xmax, numPoints, true);
 		}
 
 		public XYData getData(double xmin, double xmax, int numPoints, boolean isLong) throws IOException
@@ -908,11 +791,85 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public float[] getZ()
+		public XYData getData(long xmin, long xmax, int numPoints) throws IOException
 		{
+			return getData(xmin, xmax, numPoints, true);
+		}
+
+		@Override
+		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+		{
+			if (debug)
+				System.out.println("***GET DATA ASYNCH " + lowerBound + "  " + upperBound + "  " + numPoints);
+			updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
+		}
+
+		@Override
+		public int getNumDimension() throws IOException
+		{
+			if (numDimensions != UNKNOWN)
+				return numDimensions;
+			String expr;
+			if (_jscope_set)
+				expr = "shape(_jscope_" + v_idx + ")";
+			else
+			{
+				if (segmentMode == SEGMENTED_YES)
+					expr = "shape(GetSegment(" + segmentNodeName + ",0))";
+//	            expr = "shape(GetSegment(" + in_y +",0))";
+				else
+				{
+					_jscope_set = true;
+					expr = "( _jscope_" + v_idx + " = (" + in_y + ";), shape(_jscope_" + v_idx + "))";
+				}
+			}
+			error = null;
+			final int shape[] = getNumDimensions(expr);
+			if (error != null || shape == null)
+			{
+				_jscope_set = false;
+				error = null;
+				return 1;
+			}
+			numDimensions = shape.length;
+			return shape.length;
+		}
+
+		@Override
+		public String GetTitle() throws IOException
+		{
+			String expr;
+			if (!titleEvaluated)
+			{
+				titleEvaluated = true;
+				if (_jscope_set)
+				{
+					expr = "help_of(_jscope_" + v_idx + ")";
+					title = getStringValue(expr);
+				}
+				else
+				{
+					if (segmentMode == SEGMENTED_YES)
+					{
+						expr = "help_of(" + in_y + ")";
+					}
+					else
+					{
+						_jscope_set = true;
+						expr = "( _jscope_" + v_idx + " = (" + in_y + "), help_of(_jscope_" + v_idx + "))";
+					}
+					title = getStringValue(expr);
+				}
+			}
+			return title;
+		}
+
+		public float[] getX_X2D()
+		{
+			final String in = "DIM_OF( " + in_x + ", 0);";
 			try
 			{
-				return GetFloatArray(in_y);
+				return GetFloatArray(in);
 			}
 			catch (final Exception exc)
 			{
@@ -920,7 +877,32 @@ public class MdsDataProvider implements DataProvider
 			}
 		}
 
-		private long x2DLong[];
+		public float[] getX_Y2D()
+		{
+			final String in = "DIM_OF( " + in_x + ", 1);";
+			try
+			{
+				return GetFloatArray(in);
+			}
+			catch (final Exception exc)
+			{
+				return null;
+			}
+		}
+		// End
+
+		// Cesare Mar 2015
+		public float[] getX_Z()
+		{
+			try
+			{
+				return GetFloatArray(in_x);
+			}
+			catch (final Exception exc)
+			{
+				return null;
+			}
+		}
 
 		@Override
 		public double[] getX2D()
@@ -953,6 +935,44 @@ public class MdsDataProvider implements DataProvider
 		{ return x2DLong; }
 
 		@Override
+		public String GetXLabel() throws IOException
+		{
+			if (!xLabelEvaluated)
+			{
+				xLabelEvaluated = true;
+				if (in_x == null || in_x.length() == 0)
+				{
+					String expr;
+					if (_jscope_set)
+					{
+						expr = "Units(dim_of(_jscope_" + v_idx + "))";
+						xLabel = getStringValue(expr);
+					}
+					else
+					{
+						if (segmentMode == SEGMENTED_YES)
+						{
+//	                    expr = "Units(dim_of(GetSegment(" + in_y + ", 0)))";
+							expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
+							xLabel = getStringValue(expr);
+						}
+						else
+						{
+							_jscope_set = true;
+							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ")))";
+							xLabel = getStringValue(expr);
+						}
+					}
+				}
+				else
+				{
+					xLabel = getStringValue("Units(" + in_x + ")");
+				}
+			}
+			return xLabel;
+		}
+
+		@Override
 		public float[] getY2D()
 		{
 			final String in = "DIM_OF( " + in_y + ", 1);";
@@ -966,12 +986,65 @@ public class MdsDataProvider implements DataProvider
 			}
 		}
 
-		// Cesare Mar 2015
-		public float[] getX_Z()
+		@Override
+		public String GetYLabel() throws IOException
+		{
+			String expr;
+			if (!yLabelEvaluated)
+			{
+				yLabelEvaluated = true;
+				if (getNumDimension() > 1)
+				{
+					if (segmentMode == SEGMENTED_YES)
+					{
+						expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 1)))";
+						yLabel = getStringValue(expr);
+					}
+					else
+					{
+						if (_jscope_set)
+						{
+							expr = "Units(dim_of(_jscope_" + v_idx + ", 1))";
+							yLabel = getStringValue(expr);
+						}
+						else
+						{
+							_jscope_set = true;
+							expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(dim_of(_jscope_" + v_idx + ", 1)))";
+							yLabel = getStringValue(expr);
+						}
+					}
+				}
+				return yLabel;
+			}
+			if (segmentMode == SEGMENTED_YES)
+			{
+				expr = "Units(dim_of(GetSegment(" + segmentNodeName + ", 0)))";
+				yLabel = getStringValue(expr);
+			}
+			else
+			{
+				if (_jscope_set)
+				{
+					expr = "Units(_jscope_" + v_idx + ")";
+					yLabel = getStringValue(expr);
+				}
+				else
+				{
+					_jscope_set = true;
+					expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
+					yLabel = getStringValue(expr);
+				}
+			}
+			return yLabel;
+		}
+
+		@Override
+		public float[] getZ()
 		{
 			try
 			{
-				return GetFloatArray(in_x);
+				return GetFloatArray(in_y);
 			}
 			catch (final Exception exc)
 			{
@@ -979,49 +1052,28 @@ public class MdsDataProvider implements DataProvider
 			}
 		}
 
-		public float[] getX_X2D()
+		@Override
+		public String GetZLabel() throws IOException
 		{
-			final String in = "DIM_OF( " + in_x + ", 0);";
-			try
+			String expr;
+			if (_jscope_set)
+				expr = "Units(_jscope_" + v_idx + ")";
+			else
 			{
-				return GetFloatArray(in);
+				_jscope_set = true;
+				expr = "( _jscope_" + v_idx + " = (" + in_y + "), Units(_jscope_" + v_idx + "))";
 			}
-			catch (final Exception exc)
-			{
-				return null;
-			}
+			final String out = getStringValue(expr);
+			if (out == null)
+				_jscope_set = false;
+			return out;
 		}
-
-		public float[] getX_Y2D()
-		{
-			final String in = "DIM_OF( " + in_x + ", 1);";
-			try
-			{
-				return GetFloatArray(in);
-			}
-			catch (final Exception exc)
-			{
-				return null;
-			}
-		}
-		// End
 
 		// public double[] getXLimits(){System.out.println("BADABUM!!"); return null;}
 		// public long []getXLong(){System.out.println("BADABUM!!"); return null;}
 		@Override
 		public boolean isXLong()
 		{ return isXLong; }
-
-		// Async update management
-		Vector<WaveDataListener> waveDataListenersV = new Vector<>();
-
-		@Override
-		public void addWaveDataListener(WaveDataListener listener)
-		{
-			waveDataListenersV.addElement(listener);
-			if (asynchSource != null)
-				asynchSource.addDataListener(listener);
-		}
 
 		@Override
 		public void removeWaveDataListener(WaveDataListener listener)
@@ -1030,14 +1082,11 @@ public class MdsDataProvider implements DataProvider
 		}
 
 		@Override
-		public void getDataAsync(double lowerBound, double upperBound, int numPoints)
+		public boolean supportsStreaming()
 		{
-			if (debug)
-				System.out.println("***GET DATA ASYNCH " + lowerBound + "  " + upperBound + "  " + numPoints);
-			updateWorker.updateInfo(lowerBound, upperBound, numPoints, waveDataListenersV, this, isXLong);
+			return segmentMode == SEGMENTED_YES;
 		}
 	} // END Inner Class SimpleWaveData
-
 	// Inner class UpdateWorker handler asynchronous requests for getting (portions
 	// of) data
 	class UpdateWorker extends Thread
@@ -1069,24 +1118,7 @@ public class MdsDataProvider implements DataProvider
 		boolean enabled = true;
 		Vector<UpdateDescriptor> requestsV = new Vector<>();
 
-		void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
-				Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong)
-		{
-			// intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints,
-			// waveDataListenersV, simpleWaveData, isXLong,
-			// Calendar.getInstance().getTimeInMillis());
-			intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
-					-1);
-		}
-
-		synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
-				Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong,
-				long updateTime)
-		{
-			requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV,
-					simpleWaveData, isXLong, updateTime));
-			notify();
-		}
+		boolean stopWorker = false;
 
 		synchronized void enableAsyncUpdate(boolean enabled)
 		{
@@ -1095,11 +1127,12 @@ public class MdsDataProvider implements DataProvider
 				notify();
 		}
 
-		boolean stopWorker = false;
-
-		synchronized void stopUpdateWorker()
+		synchronized void intUpdateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
+				Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong,
+				long updateTime)
 		{
-			stopWorker = true;
+			requestsV.add(new UpdateDescriptor(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV,
+					simpleWaveData, isXLong, updateTime));
 			notify();
 		}
 
@@ -1157,7 +1190,45 @@ public class MdsDataProvider implements DataProvider
 				}
 			}
 		}
+
+		synchronized void stopUpdateWorker()
+		{
+			stopWorker = true;
+			notify();
+		}
+
+		void updateInfo(double updateLowerBound, double updateUpperBound, int updatePoints,
+				Vector<WaveDataListener> waveDataListenersV, SimpleWaveData simpleWaveData, boolean isXLong)
+		{
+			// intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints,
+			// waveDataListenersV, simpleWaveData, isXLong,
+			// Calendar.getInstance().getTimeInMillis());
+			intUpdateInfo(updateLowerBound, updateUpperBound, updatePoints, waveDataListenersV, simpleWaveData, isXLong,
+					-1);
+		}
 	} // End Inner class UpdateWorker
+	static final long RESAMPLE_TRESHOLD = 1000000000;
+	static final int MAX_PIXELS = 20000;
+	static boolean debug = false;
+	protected String provider;
+	protected String experiment;
+	private String prev_default_node = null;
+	private String default_node = null;
+	private String environment_vars;
+	protected long shot;
+	protected boolean open, connected;
+	protected final MdsConnection mds;
+	protected String error;
+
+	protected boolean use_compression = false;
+
+	protected int var_idx = 0;
+
+	private boolean is_tunneling = false;
+
+	private String tunnel_provider = "127.0.0.1:8000";
+
+	private SshTunneling ssh_tunneling = null;
 
 	UpdateWorker updateWorker;
 
@@ -1170,14 +1241,6 @@ public class MdsDataProvider implements DataProvider
 		error = null;
 		// updateWorker = new UpdateWorker();
 		// updateWorker.start();
-	}
-
-	protected MdsConnection getConnection()
-	{ return new MdsConnection(); }
-
-	protected MdsConnection getConnection(String arg)
-	{
-		return new MdsConnection(arg);
 	}
 
 	public MdsDataProvider(String provider)
@@ -1206,86 +1269,167 @@ public class MdsDataProvider implements DataProvider
 	}
 
 	@Override
+	public synchronized void addConnectionListener(ConnectionListener l)
+	{
+		if (mds != null)
+			mds.addConnectionListener(l);
+	}
+
+	@Override
+	public synchronized void addUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
+	{
+		if (event_name == null || event_name.trim().length() == 0)
+			return;
+		CheckConnection();
+		mds.MdsSetEvent(l, event_name);
+	}
+
+	protected synchronized void CheckConnection() throws IOException
+	{
+		if (!connected)
+		{
+			if (mds.ConnectToMds(use_compression) == 0)
+			{
+				if (mds.error != null)
+					throw new IOException(mds.error);
+				else
+					throw new IOException("Could not get IO for " + provider);
+			}
+			else
+			{
+				connected = true;
+				updateWorker = new UpdateWorker();
+				updateWorker.start();
+			}
+		}
+	}
+
+	protected synchronized boolean CheckOpen() throws IOException
+	{
+		return CheckOpen(this.experiment, this.shot, null);
+	}
+
+	protected synchronized boolean CheckOpen(String experiment, long shot, String defaultNode) throws IOException
+	{
+		int status;
+		if (!connected)
+		{
+			status = mds.ConnectToMds(use_compression);
+			if (status == 0)
+			{
+				if (mds.error != null)
+					throw new IOException("Cannot connect to data server : " + mds.error);
+				else
+					error = "Cannot connect to data server";
+				return false;
+			}
+			connected = true;
+			updateWorker = new UpdateWorker();
+			updateWorker.start();
+		}
+		if (!open && experiment != null || this.shot != shot
+				|| experiment != null && !experiment.equalsIgnoreCase(this.experiment))
+		{
+			// System.out.println("\n-->\nOpen tree "+experiment+ " shot "+ shot
+			// +"\n<--\n");
+			final Descriptor descr = mds.MdsValue("JavaOpen(\"" + experiment + "\"," + shot + ")");
+			if (descr.dtype != Descriptor.DTYPE_CSTRING && descr.dtype == Descriptor.DTYPE_LONG
+					&& descr.int_data != null && descr.int_data.length > 0 && (descr.int_data[0] % 2 == 1))
+			{
+				open = true;
+				this.shot = shot;
+				this.experiment = experiment;
+				final Descriptor descr1 = mds.MdsValue("setenv(\'MDSPLUS_DEFAULT_RESAMPLE_MODE=MinMax\')");
+				switch (descr1.dtype)
+				{
+				case Descriptor.DTYPE_CSTRING:
+					if ((descr1.status & 1) == 0)
+					{
+						error = descr1.error;
+						return false;
+					}
+				}
+				if (environment_vars != null && environment_vars.length() > 0)
+				{
+					this.SetEnvironmentSpecific(environment_vars);
+					if (error != null)
+					{
+						error = "Public variable evaluation error " + experiment + " shot " + shot + " : " + error;
+						return false;
+					}
+				}
+			}
+			else
+			{
+				if (mds.error != null)
+					error = "Cannot open experiment " + experiment + " shot " + shot + " : " + mds.error;
+				else
+					error = "Cannot open experiment " + experiment + " shot " + shot;
+				return false;
+			}
+		}
+		if (open)
+		{
+			if (defaultNode != null && (prev_default_node == null || !defaultNode.equals(prev_default_node)))
+			{
+				Descriptor descr;
+				if (default_node.trim().charAt(0) == '\\')
+					descr = mds.MdsValue("TreeSetDefault(\"\\" + defaultNode + "\")");
+				else
+					descr = mds.MdsValue("TreeSetDefault(\"\\\\" + defaultNode + "\")");
+				prev_default_node = defaultNode;
+				if ((descr.int_data[0] & 1) == 0)
+				{
+					mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+					prev_default_node = null;
+				}
+			}
+			else if (defaultNode == null && prev_default_node != null)
+			{
+				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
+				prev_default_node = null;
+			}
+		}
+		return true;
+	}
+
+	@Override
+	public synchronized void close()
+	{
+		if (is_tunneling && ssh_tunneling != null)
+			ssh_tunneling.close();
+		if (connected)
+		{
+			connected = false;
+			mds.DisconnectFromMds();
+			final ConnectionEvent ce = new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION,
+					"Lost connection from : " + provider);
+			mds.dispatchConnectionEvent(ce);
+		}
+		if (updateWorker != null && updateWorker.isAlive())
+		{
+			updateWorker.stopUpdateWorker();
+		}
+	}
+
+	protected void dispatchConnectionEvent(ConnectionEvent e)
+	{
+		if (mds != null)
+			mds.dispatchConnectionEvent(e);
+	}
+
+	public void enableAsyncUpdate(boolean enable)
+	{
+		updateWorker.enableAsyncUpdate(enable);
+	}
+
+	@Override
 	protected void finalize()
 	{
 		if (open)
 			mds.MdsValue("JavaClose(\"" + experiment + "\"," + shot + ")");
 		if (connected)
 			mds.DisconnectFromMds();
-	}
-
-	// To be overridden by any DataProvider implementation with added dynamic
-	// generation
-	public AsyncDataSource getAsynchSource()
-	{ return null; }
-
-	@Override
-	public void setArgument(String arg) throws IOException
-	{
-		setProvider(arg);
-		mds.setProvider(provider);
-	}
-
-	private void setProvider(String arg)
-	{
-		if (is_tunneling)
-			provider = tunnel_provider;
-		else
-			provider = arg;
-	}
-
-	public boolean SupportsCompression()
-	{
-		return true;
-	}
-
-	public void SetCompression(boolean state)
-	{
-		if (connected)
-			close();
-		use_compression = state;
-	}
-
-	protected String GetExperimentName(String in_frame)
-	{
-		String exp;
-		if (experiment == null)
-		{
-			if (in_frame.indexOf(".") == -1)
-				exp = in_frame;
-			else
-				exp = in_frame.substring(0, in_frame.indexOf("."));
-		}
-		else
-			exp = experiment;
-		return exp;
-	}
-
-	@Override
-	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
-	{
-		int[] numSegments = null;
-		try
-		{
-			numSegments = getIntArray("GetNumSegments(" + in_y + ")");
-		}
-		catch (final Exception exc)
-		{
-			error = null;
-		}
-		if (numSegments != null && numSegments[0] > 0)
-			return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
-		else
-		{
-			try
-			{
-				return (new SimpleFrameData(in_y, in_x, time_min, time_max));
-			}
-			catch (final Exception exc)
-			{
-				return null;
-			}
-		}
 	}
 
 	public synchronized byte[] GetAllFrames(String in_frame) throws IOException
@@ -1348,43 +1492,10 @@ public class MdsDataProvider implements DataProvider
 		}
 	}
 
-	public synchronized float[] GetFrameTimes(String in_frame)
-	{
-		final String exp = GetExperimentName(in_frame);
-		final String in = "JavaGetFrameTimes(\"" + exp + "\",\"" + in_frame + "\"," + shot + " )";
-		// if(!CheckOpen())
-		// return null;
-		final Descriptor desc = mds.MdsValue(in);
-		switch (desc.dtype)
-		{
-		case Descriptor.DTYPE_FLOAT:
-			return desc.float_data;
-		case Descriptor.DTYPE_LONG:
-			final float[] out_data = new float[desc.int_data.length];
-			for (int i = 0; i < desc.int_data.length; i++)
-				out_data[i] = desc.int_data[i];
-			return out_data;
-		case Descriptor.DTYPE_BYTE:
-			error = "Cannot convert byte array to float array";
-			return null;
-		case Descriptor.DTYPE_CSTRING:
-			if ((desc.status & 1) == 0)
-				error = desc.error;
-			return null;
-		}
-		return null;
-	}
-
-	public byte[] GetFrameAt(String in_frame, int frame_idx) throws IOException
-	{
-		if (debug)
-			System.out.println("GetFrameAt " + in_frame + "  " + frame_idx);
-		final String exp = GetExperimentName(in_frame);
-		final String in = "JavaGetFrameAt(\"" + exp + "\",\" " + in_frame + "\"," + shot + ", " + frame_idx + " )";
-		// if(!CheckOpen())
-		// return null;
-		return GetByteArray(in);
-	}
+	// To be overridden by any DataProvider implementation with added dynamic
+	// generation
+	public AsyncDataSource getAsynchSource()
+	{ return null; }
 
 	public synchronized byte[] GetByteArray(String in) throws IOException
 	{
@@ -1438,177 +1549,41 @@ public class MdsDataProvider implements DataProvider
 		throw new IOException(error);
 	}
 
+	protected MdsConnection getConnection()
+	{ return new MdsConnection(); }
+
+	protected MdsConnection getConnection(String arg)
+	{
+		return new MdsConnection(arg);
+	}
+
+	public double[] GetDoubleArray(String in) throws IOException
+	{
+		if (debug)
+			System.out.println("GetDoubleArray " + in);
+		final RealArray realArray = GetRealArray(in);
+		if (realArray == null)
+			return null;
+		return realArray.getDoubleArray();
+	}
+
 	@Override
 	public synchronized String getError()
 	{ return error; }
 
-	@Override
-	public synchronized void update(String experiment, long shot)
+	protected String GetExperimentName(String in_frame)
 	{
-		Update(experiment, shot, false);
-	}
-
-	public synchronized void Update(String experiment, long shot, boolean resetExperiment)
-	{
-		this.error = null;
-		this.var_idx = 0;
-		if (resetExperiment)
+		String exp;
+		if (experiment == null)
 		{
-			this.experiment = null;
-		}
-		if ((shot != this.shot) || (shot == 0L) || (this.experiment == null) || (this.experiment.length() == 0)
-				|| (!this.experiment.equalsIgnoreCase(experiment)))
-		{
-			this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
-			this.shot = shot;
-			this.open = false;
-			resetPrevious();
-		}
-	}
-
-	protected void resetPrevious()
-	{}// Used by subclass MdsDataProviderStream to close previous connections
-
-	@Override
-	public synchronized String getString(String _in, int row, int col, int index) throws IOException
-	{
-		if (_in == null)
-			return null;
-		String in;
-		if (row != -1)
-			in = "( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + _in + " ; )";
-		else
-			in = _in;
-		error = null;
-		if (NotYetString(in))
-		{
-			if (!CheckOpen())
-				return null;
-			final Descriptor desc = mds.MdsValue(in);
-			switch (desc.dtype)
-			{
-			case Descriptor.DTYPE_BYTE:
-			case Descriptor.DTYPE_UBYTE:
-				return new String(desc.byte_data);
-			case Descriptor.DTYPE_FLOAT:
-				error = "Cannot convert a float to string";
-				throw new IOException(error);
-			case Descriptor.DTYPE_CSTRING:
-				if ((desc.status & 1) == 1)
-					return desc.strdata;
-				else
-					return (error = desc.error);
-			}
-			if (desc.error == null)
-				return "Undefined error";
-			return (error = desc.error);
+			if (in_frame.indexOf(".") == -1)
+				exp = in_frame;
+			else
+				exp = in_frame.substring(0, in_frame.indexOf("."));
 		}
 		else
-			return new String(in.getBytes(), 1, in.length() - 2);
-	}
-
-	@Override
-	public synchronized void setEnvironment(String in) throws IOException
-	{
-		if (in == null || in.length() == 0)
-			return;
-		final Properties pr = new Properties();
-		pr.load(new ByteArrayInputStream(in.getBytes()));
-		String def_node = pr.getProperty("__default_node");
-		if (def_node != null)
-		{
-			def_node = def_node.trim();
-			if (!(default_node != null && def_node.equals(default_node))
-					|| (def_node.length() == 0 && default_node != null))
-			{
-				default_node = (def_node.length() == 0) ? null : def_node;
-			}
-			return;
-		}
-		if (in.indexOf("pulseSetVer") >= 0)
-		{
-			open = false;
-		}
-		if (environment_vars == null || !environment_vars.equalsIgnoreCase(in))
-		{
-			open = false;
-			environment_vars = in;
-		}
-	}
-
-	void SetEnvironmentSpecific(String in)
-	{
-		final Descriptor desc = mds.MdsValue(in);
-		switch (desc.dtype)
-		{
-		case Descriptor.DTYPE_CSTRING:
-			if ((desc.status & 1) == 0)
-				error = desc.error;
-		}
-	}
-
-	public void enableAsyncUpdate(boolean enable)
-	{
-		updateWorker.enableAsyncUpdate(enable);
-	}
-
-	double GetNow(String in) throws Exception
-	{
-		boolean isPlus = true;
-		int hours = 0, minutes = 0, seconds = 0;
-		String currStr = in.trim().toUpperCase();
-		if (!currStr.startsWith("NOW"))
-			throw new Exception();
-		currStr = currStr.substring(3).trim();
-		if (currStr.length() > 0) // Not only NOW
-		{
-			if (currStr.startsWith("+"))
-				isPlus = true;
-			else if (currStr.startsWith("-"))
-				isPlus = false;
-			else
-				throw new Exception();
-			currStr = currStr.substring(1).trim();
-			final StringTokenizer st = new StringTokenizer(currStr, ":", true);
-			String currTok = st.nextToken();
-			if (currTok.equals(":"))
-				hours = 0;
-			else
-			{
-				hours = Integer.parseInt(currTok);
-				currTok = st.nextToken();
-			}
-			if (!currTok.equals(":"))
-				throw new Exception();
-			currTok = st.nextToken();
-			if (currTok.equals(":"))
-				minutes = 0;
-			else
-			{
-				minutes = Integer.parseInt(currTok);
-				currTok = st.nextToken();
-			}
-			if (!currTok.equals(":"))
-				throw new Exception();
-			if (st.hasMoreTokens())
-			{
-				seconds = Integer.parseInt(st.nextToken());
-			}
-		}
-		if (!isPlus)
-		{
-			hours = -hours;
-			minutes = -minutes;
-			seconds = -seconds;
-		}
-		final Calendar cal = Calendar.getInstance();
-		// cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
-		cal.setTime(new Date());
-		cal.add(Calendar.HOUR, hours);
-		cal.add(Calendar.MINUTE, minutes);
-		cal.add(Calendar.SECOND, seconds);
-		final long javaTime = cal.getTime().getTime();
-		return javaTime;
+			exp = experiment;
+		return exp;
 	}
 
 	@Override
@@ -1679,21 +1654,6 @@ public class MdsDataProvider implements DataProvider
 		return 0;
 	}
 
-	@Override
-	public WaveData getWaveData(String in, int row, int col, int index)
-	{
-		return new SimpleWaveData("( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in + " ; )",
-				experiment, shot, default_node);
-	}
-
-	@Override
-	public WaveData getWaveData(String in_y, String in_x, int col, int row, int index)
-	{
-		return new SimpleWaveData(
-				"( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in_y + " ; )", in_x,
-				experiment, shot, default_node);
-	}
-
 	public float[] GetFloatArray(String in) throws IOException
 	{
 		if (debug)
@@ -1704,15 +1664,198 @@ public class MdsDataProvider implements DataProvider
 		return realArray.getFloatArray();
 	}
 
-	public double[] GetDoubleArray(String in) throws IOException
+	public byte[] GetFrameAt(String in_frame, int frame_idx) throws IOException
 	{
 		if (debug)
-			System.out.println("GetDoubleArray " + in);
-		final RealArray realArray = GetRealArray(in);
-		if (realArray == null)
-			return null;
-		return realArray.getDoubleArray();
+			System.out.println("GetFrameAt " + in_frame + "  " + frame_idx);
+		final String exp = GetExperimentName(in_frame);
+		final String in = "JavaGetFrameAt(\"" + exp + "\",\" " + in_frame + "\"," + shot + ", " + frame_idx + " )";
+		// if(!CheckOpen())
+		// return null;
+		return GetByteArray(in);
 	}
+
+	@Override
+	public FrameData getFrameData(String in_y, String in_x, float time_min, float time_max) throws IOException
+	{
+		int[] numSegments = null;
+		try
+		{
+			numSegments = getIntArray("GetNumSegments(" + in_y + ")");
+		}
+		catch (final Exception exc)
+		{
+			error = null;
+		}
+		if (numSegments != null && numSegments[0] > 0)
+			return new SegmentedFrameData(in_y, in_x, time_min, time_max, numSegments[0]);
+		else
+		{
+			try
+			{
+				return (new SimpleFrameData(in_y, in_x, time_min, time_max));
+			}
+			catch (final Exception exc)
+			{
+				return null;
+			}
+		}
+	}
+
+	public synchronized float[] GetFrameTimes(String in_frame)
+	{
+		final String exp = GetExperimentName(in_frame);
+		final String in = "JavaGetFrameTimes(\"" + exp + "\",\"" + in_frame + "\"," + shot + " )";
+		// if(!CheckOpen())
+		// return null;
+		final Descriptor desc = mds.MdsValue(in);
+		switch (desc.dtype)
+		{
+		case Descriptor.DTYPE_FLOAT:
+			return desc.float_data;
+		case Descriptor.DTYPE_LONG:
+			final float[] out_data = new float[desc.int_data.length];
+			for (int i = 0; i < desc.int_data.length; i++)
+				out_data[i] = desc.int_data[i];
+			return out_data;
+		case Descriptor.DTYPE_BYTE:
+			error = "Cannot convert byte array to float array";
+			return null;
+		case Descriptor.DTYPE_CSTRING:
+			if ((desc.status & 1) == 0)
+				error = desc.error;
+			return null;
+		}
+		return null;
+	}
+
+	public int[] getIntArray(String in) throws IOException
+	{ // public because its used by MdsAccess
+		if (debug)
+			System.out.println("GetIntArray " + in);
+		if (in == null)
+			return null;
+		if (!CheckOpen())
+			throw new IOException("Tree not open");
+		return getIntegerArray(in);
+	}
+
+	private synchronized int[] getIntegerArray(String in) throws IOException
+	{
+		if (debug)
+			System.out.println("GetIntegerArray " + in);
+		int out_data[];
+		final Descriptor desc = mds.MdsValue(in);
+		switch (desc.dtype)
+		{
+		case Descriptor.DTYPE_LONG:
+			return desc.int_data;
+		case Descriptor.DTYPE_FLOAT:
+			out_data = new int[desc.float_data.length];
+			for (int i = 0; i < desc.float_data.length; i++)
+				out_data[i] = (int) (desc.float_data[i] + 0.5);
+			return out_data;
+		case Descriptor.DTYPE_BYTE:
+		case Descriptor.DTYPE_UBYTE:
+			out_data = new int[desc.byte_data.length];
+			for (int i = 0; i < desc.byte_data.length; i++)
+				out_data[i] = (int) (desc.byte_data[i] + 0.5);
+			return out_data;
+		case Descriptor.DTYPE_CSTRING:
+			if ((desc.status & 1) == 0)
+				error = desc.error;
+			throw new IOException(error);
+		default:
+			error = "Data type code : " + desc.dtype + " not yet supported ";
+		}
+		throw new IOException(error);
+	}
+
+	double GetNow(String in) throws Exception
+	{
+		boolean isPlus = true;
+		int hours = 0, minutes = 0, seconds = 0;
+		String currStr = in.trim().toUpperCase();
+		if (!currStr.startsWith("NOW"))
+			throw new Exception();
+		currStr = currStr.substring(3).trim();
+		if (currStr.length() > 0) // Not only NOW
+		{
+			if (currStr.startsWith("+"))
+				isPlus = true;
+			else if (currStr.startsWith("-"))
+				isPlus = false;
+			else
+				throw new Exception();
+			currStr = currStr.substring(1).trim();
+			final StringTokenizer st = new StringTokenizer(currStr, ":", true);
+			String currTok = st.nextToken();
+			if (currTok.equals(":"))
+				hours = 0;
+			else
+			{
+				hours = Integer.parseInt(currTok);
+				currTok = st.nextToken();
+			}
+			if (!currTok.equals(":"))
+				throw new Exception();
+			currTok = st.nextToken();
+			if (currTok.equals(":"))
+				minutes = 0;
+			else
+			{
+				minutes = Integer.parseInt(currTok);
+				currTok = st.nextToken();
+			}
+			if (!currTok.equals(":"))
+				throw new Exception();
+			if (st.hasMoreTokens())
+			{
+				seconds = Integer.parseInt(st.nextToken());
+			}
+		}
+		if (!isPlus)
+		{
+			hours = -hours;
+			minutes = -minutes;
+			seconds = -seconds;
+		}
+		final Calendar cal = Calendar.getInstance();
+		// cal.setTimeZone(TimeZone.getTimeZone("GMT+00"));
+		cal.setTime(new Date());
+		cal.add(Calendar.HOUR, hours);
+		cal.add(Calendar.MINUTE, minutes);
+		cal.add(Calendar.SECOND, seconds);
+		final long javaTime = cal.getTime().getTime();
+		return javaTime;
+	}
+
+	protected int[] getNumDimensions(String in_y) throws IOException
+	{
+		final int[] fullDims = getIntArray(in_y);
+		if (fullDims == null)
+			return null;
+		if (fullDims.length == 1)
+			return fullDims;
+		// count dimensions == 1
+		int numDimensions = 0;
+		for (final int fullDim : fullDims)
+		{
+			if (fullDim != 1)
+				numDimensions++;
+		}
+		final int[] retDims = new int[numDimensions];
+		int j = 0;
+		for (final int fullDim : fullDims)
+		{
+			if (fullDim != 1)
+				retDims[j++] = fullDim;
+		}
+		return retDims;
+	}
+
+	protected String getProvider()
+	{ return provider; }
 
 	public synchronized RealArray GetRealArray(String in) throws IOException
 	{
@@ -1856,244 +1999,72 @@ public class MdsDataProvider implements DataProvider
 		}
 	}
 
-	public int[] getIntArray(String in) throws IOException
-	{ // public because its used by MdsAccess
-		if (debug)
-			System.out.println("GetIntArray " + in);
-		if (in == null)
+	@Override
+	public synchronized String getString(String _in, int row, int col, int index) throws IOException
+	{
+		if (_in == null)
 			return null;
-		if (!CheckOpen())
-			throw new IOException("Tree not open");
-		return getIntegerArray(in);
+		String in;
+		if (row != -1)
+			in = "( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + _in + " ; )";
+		else
+			in = _in;
+		error = null;
+		if (NotYetString(in))
+		{
+			if (!CheckOpen())
+				return null;
+			final Descriptor desc = mds.MdsValue(in);
+			switch (desc.dtype)
+			{
+			case Descriptor.DTYPE_BYTE:
+			case Descriptor.DTYPE_UBYTE:
+				return new String(desc.byte_data);
+			case Descriptor.DTYPE_FLOAT:
+				error = "Cannot convert a float to string";
+				throw new IOException(error);
+			case Descriptor.DTYPE_CSTRING:
+				if ((desc.status & 1) == 1)
+					return desc.strdata;
+				else
+					return (error = desc.error);
+			}
+			if (desc.error == null)
+				return "Undefined error";
+			return (error = desc.error);
+		}
+		else
+			return new String(in.getBytes(), 1, in.length() - 2);
 	}
 
-	private synchronized int[] getIntegerArray(String in) throws IOException
-	{
+	public String getStringValue(String expr) throws IOException
+	{ // public as used by MdsAccess
 		if (debug)
-			System.out.println("GetIntegerArray " + in);
-		int out_data[];
-		final Descriptor desc = mds.MdsValue(in);
-		switch (desc.dtype)
+			System.out.println("getStringValue " + expr);
+		String out = getString(expr, -1, -1, -1);
+		if (out == null || out.length() == 0 || error != null)
 		{
-		case Descriptor.DTYPE_LONG:
-			return desc.int_data;
-		case Descriptor.DTYPE_FLOAT:
-			out_data = new int[desc.float_data.length];
-			for (int i = 0; i < desc.float_data.length; i++)
-				out_data[i] = (int) (desc.float_data[i] + 0.5);
-			return out_data;
-		case Descriptor.DTYPE_BYTE:
-		case Descriptor.DTYPE_UBYTE:
-			out_data = new int[desc.byte_data.length];
-			for (int i = 0; i < desc.byte_data.length; i++)
-				out_data[i] = (int) (desc.byte_data[i] + 0.5);
-			return out_data;
-		case Descriptor.DTYPE_CSTRING:
-			if ((desc.status & 1) == 0)
-				error = desc.error;
-			throw new IOException(error);
-		default:
-			error = "Data type code : " + desc.dtype + " not yet supported ";
+			error = null;
+			return null;
 		}
-		throw new IOException(error);
+		if (out.indexOf(0) > 0)
+			out = out.substring(0, out.indexOf(0));
+		return out;
 	}
 
 	@Override
-	public synchronized void close()
+	public WaveData getWaveData(String in, int row, int col, int index)
 	{
-		if (is_tunneling && ssh_tunneling != null)
-			ssh_tunneling.close();
-		if (connected)
-		{
-			connected = false;
-			mds.DisconnectFromMds();
-			final ConnectionEvent ce = new ConnectionEvent(this, ConnectionEvent.LOST_CONNECTION,
-					"Lost connection from : " + provider);
-			mds.dispatchConnectionEvent(ce);
-		}
-		if (updateWorker != null && updateWorker.isAlive())
-		{
-			updateWorker.stopUpdateWorker();
-		}
-	}
-
-	protected synchronized void CheckConnection() throws IOException
-	{
-		if (!connected)
-		{
-			if (mds.ConnectToMds(use_compression) == 0)
-			{
-				if (mds.error != null)
-					throw new IOException(mds.error);
-				else
-					throw new IOException("Could not get IO for " + provider);
-			}
-			else
-			{
-				connected = true;
-				updateWorker = new UpdateWorker();
-				updateWorker.start();
-			}
-		}
-	}
-
-	protected synchronized boolean CheckOpen() throws IOException
-	{
-		return CheckOpen(this.experiment, this.shot, null);
-	}
-
-	protected synchronized boolean CheckOpen(String experiment, long shot, String defaultNode) throws IOException
-	{
-		int status;
-		if (!connected)
-		{
-			status = mds.ConnectToMds(use_compression);
-			if (status == 0)
-			{
-				if (mds.error != null)
-					throw new IOException("Cannot connect to data server : " + mds.error);
-				else
-					error = "Cannot connect to data server";
-				return false;
-			}
-			connected = true;
-			updateWorker = new UpdateWorker();
-			updateWorker.start();
-		}
-		if (!open && experiment != null || this.shot != shot
-				|| experiment != null && !experiment.equalsIgnoreCase(this.experiment))
-		{
-			// System.out.println("\n-->\nOpen tree "+experiment+ " shot "+ shot
-			// +"\n<--\n");
-			final Descriptor descr = mds.MdsValue("JavaOpen(\"" + experiment + "\"," + shot + ")");
-			if (descr.dtype != Descriptor.DTYPE_CSTRING && descr.dtype == Descriptor.DTYPE_LONG
-					&& descr.int_data != null && descr.int_data.length > 0 && (descr.int_data[0] % 2 == 1))
-			{
-				open = true;
-				this.shot = shot;
-				this.experiment = experiment;
-				final Descriptor descr1 = mds.MdsValue("setenv(\'MDSPLUS_DEFAULT_RESAMPLE_MODE=MinMax\')");
-				switch (descr1.dtype)
-				{
-				case Descriptor.DTYPE_CSTRING:
-					if ((descr1.status & 1) == 0)
-					{
-						error = descr1.error;
-						return false;
-					}
-				}
-				if (environment_vars != null && environment_vars.length() > 0)
-				{
-					this.SetEnvironmentSpecific(environment_vars);
-					if (error != null)
-					{
-						error = "Public variable evaluation error " + experiment + " shot " + shot + " : " + error;
-						return false;
-					}
-				}
-			}
-			else
-			{
-				if (mds.error != null)
-					error = "Cannot open experiment " + experiment + " shot " + shot + " : " + mds.error;
-				else
-					error = "Cannot open experiment " + experiment + " shot " + shot;
-				return false;
-			}
-		}
-		if (open)
-		{
-			if (defaultNode != null && (prev_default_node == null || !defaultNode.equals(prev_default_node)))
-			{
-				Descriptor descr;
-				if (default_node.trim().charAt(0) == '\\')
-					descr = mds.MdsValue("TreeSetDefault(\"\\" + defaultNode + "\")");
-				else
-					descr = mds.MdsValue("TreeSetDefault(\"\\\\" + defaultNode + "\")");
-				prev_default_node = defaultNode;
-				if ((descr.int_data[0] & 1) == 0)
-				{
-					mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
-					prev_default_node = null;
-				}
-			}
-			else if (defaultNode == null && prev_default_node != null)
-			{
-				mds.MdsValue("TreeSetDefault(\"\\\\::TOP\")");
-				prev_default_node = null;
-			}
-		}
-		return true;
-	}
-
-	protected boolean NotYetString(String in)
-	{
-		int i;
-		if (in.charAt(0) == '\"')
-		{
-			for (i = 1; i < in.length()
-					&& (in.charAt(i) != '\"' || (i > 0 && in.charAt(i) == '\"' && in.charAt(i - 1) == '\\')); i++);
-			if (i == (in.length() - 1))
-				return false;
-		}
-		return true;
-	}
-
-	protected boolean NotYetNumber(String in)
-	{
-		try
-		{
-			Float.parseFloat(in);
-			return false;
-		}
-		catch (final NumberFormatException e)
-		{
-			return true;
-		}
+		return new SimpleWaveData("( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in + " ; )",
+				experiment, shot, default_node);
 	}
 
 	@Override
-	public synchronized void addUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
+	public WaveData getWaveData(String in_y, String in_x, int col, int row, int index)
 	{
-		if (event_name == null || event_name.trim().length() == 0)
-			return;
-		CheckConnection();
-		mds.MdsSetEvent(l, event_name);
-	}
-
-	@Override
-	public synchronized void removeUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
-	{
-		if (event_name == null || event_name.trim().length() == 0)
-			return;
-		CheckConnection();
-		mds.MdsRemoveEvent(l, event_name);
-	}
-
-	@Override
-	public synchronized void addConnectionListener(ConnectionListener l)
-	{
-		if (mds != null)
-			mds.addConnectionListener(l);
-	}
-
-	@Override
-	public synchronized void removeConnectionListener(ConnectionListener l)
-	{
-		if (mds != null)
-			mds.removeConnectionListener(l);
-	}
-
-	protected void dispatchConnectionEvent(ConnectionEvent e)
-	{
-		if (mds != null)
-			mds.dispatchConnectionEvent(e);
-	}
-
-	@Override
-	public boolean supportsTunneling()
-	{
-		return true;
+		return new SimpleWaveData(
+				"( _ROW = " + row + "; _COLUMN = " + col + "; _INDEX = " + index + "; " + in_y + " ; )", in_x,
+				experiment, shot, default_node);
 	}
 
 	@Override
@@ -2132,120 +2103,149 @@ public class MdsDataProvider implements DataProvider
 		return DataProvider.LOGIN_OK;
 	}
 
-	public String getStringValue(String expr) throws IOException
-	{ // public as used by MdsAccess
-		if (debug)
-			System.out.println("getStringValue " + expr);
-		String out = getString(expr, -1, -1, -1);
-		if (out == null || out.length() == 0 || error != null)
-		{
-			error = null;
-			return null;
-		}
-		if (out.indexOf(0) > 0)
-			out = out.substring(0, out.indexOf(0));
-		return out;
-	}
-
-	protected int[] getNumDimensions(String in_y) throws IOException
-	{
-		final int[] fullDims = getIntArray(in_y);
-		if (fullDims == null)
-			return null;
-		if (fullDims.length == 1)
-			return fullDims;
-		// count dimensions == 1
-		int numDimensions = 0;
-		for (final int fullDim : fullDims)
-		{
-			if (fullDim != 1)
-				numDimensions++;
-		}
-		final int[] retDims = new int[numDimensions];
-		int j = 0;
-		for (final int fullDim : fullDims)
-		{
-			if (fullDim != 1)
-				retDims[j++] = fullDim;
-		}
-		return retDims;
-	}
-
-	static class RealArray
-	{
-		double doubleArray[] = null;
-		float floatArray[] = null;
-		long longArray[] = null;
-		boolean isDouble;
-		boolean isLong;
-
-		RealArray(float[] floatArray)
-		{
-			this.floatArray = floatArray;
-			isDouble = false;
-			isLong = false;
-		}
-
-		RealArray(double[] doubleArray)
-		{
-			this.doubleArray = doubleArray;
-			isDouble = true;
-			isLong = false;
-		}
-
-		RealArray(long[] longArray)
-		{
-			this.longArray = longArray;
-			for (int i = 0; i < longArray.length; i++)
-				longArray[i] = Waveform.convertFromSpecificTime(longArray[i]);
-			isDouble = false;
-			isLong = true;
-		}
-
-		boolean isDouble()
-		{ return isDouble; }
-
-		boolean isLong()
-		{ return isLong; }
-
-		float[] getFloatArray()
-		{
-			if (isLong)
-				return null;
-			if (isDouble && floatArray == null && doubleArray != null)
-			{
-				floatArray = new float[doubleArray.length];
-				for (int i = 0; i < doubleArray.length; i++)
-					floatArray[i] = (float) doubleArray[i];
-			}
-			return floatArray;
-		}
-
-		double[] getDoubleArray()
-		{
-			if (isLong)
-				return null;
-			if (!isDouble && floatArray != null && doubleArray == null)
-			{
-				doubleArray = new double[floatArray.length];
-				for (int i = 0; i < floatArray.length; i++)
-					doubleArray[i] = floatArray[i];
-			}
-			return doubleArray;
-		}
-
-		long[] getLongArray()
-		{
-			if (isDouble)
-				return null;
-			return longArray;
-		}
-	}
-
-	protected String getProvider()
-	{ return provider; }
-
 	@Override
 	public boolean isBusy()
 	{ return this.mds != null && this.mds.isBusy(); }
+
+	protected boolean NotYetNumber(String in)
+	{
+		try
+		{
+			Float.parseFloat(in);
+			return false;
+		}
+		catch (final NumberFormatException e)
+		{
+			return true;
+		}
+	}
+
+	protected boolean NotYetString(String in)
+	{
+		int i;
+		if (in.charAt(0) == '\"')
+		{
+			for (i = 1; i < in.length()
+					&& (in.charAt(i) != '\"' || (i > 0 && in.charAt(i) == '\"' && in.charAt(i - 1) == '\\')); i++);
+			if (i == (in.length() - 1))
+				return false;
+		}
+		return true;
+	}
+
+	@Override
+	public synchronized void removeConnectionListener(ConnectionListener l)
+	{
+		if (mds != null)
+			mds.removeConnectionListener(l);
+	}
+
+	@Override
+	public synchronized void removeUpdateEventListener(UpdateEventListener l, String event_name) throws IOException
+	{
+		if (event_name == null || event_name.trim().length() == 0)
+			return;
+		CheckConnection();
+		mds.MdsRemoveEvent(l, event_name);
+	}
+
+	protected void resetPrevious()
+	{}// Used by subclass MdsDataProviderStream to close previous connections
+
+	@Override
+	public void setArgument(String arg) throws IOException
+	{
+		setProvider(arg);
+		mds.setProvider(provider);
+	}
+
+	public void SetCompression(boolean state)
+	{
+		if (connected)
+			close();
+		use_compression = state;
+	}
+
+	@Override
+	public synchronized void setEnvironment(String in) throws IOException
+	{
+		if (in == null || in.length() == 0)
+			return;
+		final Properties pr = new Properties();
+		pr.load(new ByteArrayInputStream(in.getBytes()));
+		String def_node = pr.getProperty("__default_node");
+		if (def_node != null)
+		{
+			def_node = def_node.trim();
+			if (!(default_node != null && def_node.equals(default_node))
+					|| (def_node.length() == 0 && default_node != null))
+			{
+				default_node = (def_node.length() == 0) ? null : def_node;
+			}
+			return;
+		}
+		if (in.indexOf("pulseSetVer") >= 0)
+		{
+			open = false;
+		}
+		if (environment_vars == null || !environment_vars.equalsIgnoreCase(in))
+		{
+			open = false;
+			environment_vars = in;
+		}
+	}
+
+	void SetEnvironmentSpecific(String in)
+	{
+		final Descriptor desc = mds.MdsValue(in);
+		switch (desc.dtype)
+		{
+		case Descriptor.DTYPE_CSTRING:
+			if ((desc.status & 1) == 0)
+				error = desc.error;
+		}
+	}
+
+	private void setProvider(String arg)
+	{
+		if (is_tunneling)
+			provider = tunnel_provider;
+		else
+			provider = arg;
+	}
+
+	public boolean SupportsCompression()
+	{
+		return true;
+	}
+
+	@Override
+	public boolean supportsTunneling()
+	{
+		return true;
+	}
+
+	@Override
+	public synchronized void update(String experiment, long shot)
+	{
+		Update(experiment, shot, false);
+	}
+
+	public synchronized void Update(String experiment, long shot, boolean resetExperiment)
+	{
+		this.error = null;
+		this.var_idx = 0;
+		if (resetExperiment)
+		{
+			this.experiment = null;
+		}
+		if ((shot != this.shot) || (shot == 0L) || (this.experiment == null) || (this.experiment.length() == 0)
+				|| (!this.experiment.equalsIgnoreCase(experiment)))
+		{
+			this.experiment = ((experiment != null) && (experiment.trim().length() > 0) ? experiment : null);
+			this.shot = shot;
+			this.open = false;
+			resetPrevious();
+		}
+	}
 }

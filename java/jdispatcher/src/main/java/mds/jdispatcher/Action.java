@@ -6,6 +6,15 @@ import MDSplus.MdsException;
 
 class Action
 {
+	// private int timestamp;
+	static final int NOT_DISPATCHED = 1;
+	static final int DISPATCHED = 2;
+	static final int DOING = 3;
+	static final int DONE = 4;
+	static final int ABORTED = 5;
+	static final int ServerNOT_DISPATCHED = 0xfe18008;
+	static final int ServerINVALID_DEPENDENCY = 0xfe18012;
+	static final int ServerCANT_HAPPEN = 0xfe1801a;
 	private final MDSplus.Action action;
 	private final MDSplus.Dispatch dispatch;
 	private String server_address;
@@ -16,15 +25,6 @@ class Action
 	private int status;
 	private boolean manual = false;
 	private final boolean essential;
-	// private int timestamp;
-	static final int NOT_DISPATCHED = 1;
-	static final int DISPATCHED = 2;
-	static final int DOING = 3;
-	static final int DONE = 4;
-	static final int ABORTED = 5;
-	static final int ServerNOT_DISPATCHED = 0xfe18008;
-	static final int ServerINVALID_DEPENDENCY = 0xfe18012;
-	static final int ServerCANT_HAPPEN = 0xfe1801a;
 
 	public Action(final MDSplus.Action action, final int nid, final String name, final boolean on,
 			final boolean essential, final String server_address)
@@ -62,14 +62,20 @@ class Action
 	public MDSplus.Dispatch getDispatch()
 	{ return dispatch; }
 
-	public int getNid()
-	{ return nid; }
+	public synchronized int getDispatchStatus()
+	{ return dispatch_status; }
 
 	public String getName()
 	{ return name; }
 
-	public boolean isOn()
-	{ return on; }
+	public int getNid()
+	{ return nid; }
+
+	public synchronized String getServerAddress()
+	{ return server_address; }
+
+	public synchronized int getStatus()
+	{ return status; }
 
 	public boolean isEssential()
 	{ return essential; }
@@ -77,23 +83,17 @@ class Action
 	public synchronized boolean isManual()
 	{ return manual; }
 
+	public boolean isOn()
+	{ return on; }
+
 	public synchronized void setManual(final boolean manual)
 	{ this.manual = manual; }
-
-	public synchronized int getStatus()
-	{ return status; }
-
-	synchronized void setStatus(final int status)
-	{ this.status = status; }
-
-	public synchronized String getServerAddress()
-	{ return server_address; }
 
 	public synchronized void setServerAddress(final String server_address)
 	{ this.server_address = server_address; }
 
-	public synchronized int getDispatchStatus()
-	{ return dispatch_status; }
+	synchronized void setStatus(final int status)
+	{ this.status = status; }
 
 	synchronized void setStatus(final int dispatch_status, final int status, final boolean verbose)
 	{
