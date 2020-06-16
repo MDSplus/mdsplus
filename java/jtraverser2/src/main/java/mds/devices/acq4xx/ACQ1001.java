@@ -1,13 +1,9 @@
 package mds.devices.acq4xx;
 
-import java.awt.BorderLayout;
-import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.lang.reflect.Constructor;
-import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
+
+import javax.swing.*;
 
 import mds.Mds;
 import mds.MdsException;
@@ -25,10 +21,12 @@ public class ACQ1001 extends Device
 	public static void main(final String... args) throws MdsException
 	{
 		final Mds mds = new MdsIp();
-		final TREE tree = new TREE(mds, "test", 1, TREE.NEW);
-		tree.open();
-		final Nid dev = tree.getTop().addConglom("DEVICE", "ACQ2106_ACQ480x4");
-		new ACQ1001(null, dev, true, ACQ480.class).showDialog();
+		try (final TREE tree = new TREE(mds, "test", 1, TREE.NEW))
+		{
+			tree.open();
+			final Nid dev = tree.getTop().addConglom("DEVICE", "ACQ2106_ACQ480x4");
+			new ACQ1001(null, dev, true, ACQ480.class).showDialog();
+		}
 	}
 
 	final ACQ4xx module;

@@ -2,7 +2,6 @@ package MDSplus;
 
 import org.junit.*;
 
-@SuppressWarnings("static-method")
 public class MdsTreeNodeTest
 {
 	private static final int array[] = new int[]

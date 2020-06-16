@@ -15,6 +15,7 @@ public class WaveInterface
 	static final int MAX_NUM_SHOT = 30;
 	static public boolean auto_color_on_expr = false;
 	public static boolean brief_error = true;
+
 	protected static String AddNewLineCode(String s)
 	{
 		String s_new = new String();
@@ -30,6 +31,7 @@ public class WaveInterface
 		s_new = s_new.concat(s.substring(old_pos, s.length()));
 		return s_new;
 	}
+
 	public static long[] GetShotArray(String in_shots, String exp, DataProvider dp) throws IOException
 	{
 		long shot_list[] = null;
@@ -59,6 +61,7 @@ public class WaveInterface
 		}
 		return shot_list;
 	}
+
 	static String processShotExpression(String shotExpr, String exp)
 	{
 		String outStr = "";
@@ -86,6 +89,7 @@ public class WaveInterface
 			outStr += (prevIdx < shotExpr.length() ? shotExpr.substring(prevIdx, shotExpr.length()) : "");
 		return outStr;
 	}
+
 	protected static String RemoveNewLineCode(String s)
 	{
 		String y_new = new String();
@@ -99,6 +103,7 @@ public class WaveInterface
 		y_new = y_new.concat(s.substring(old_pos, s.length()));
 		return y_new;
 	}
+
 	static String TrimString(String s)
 	{
 		String s_new = new String();
@@ -111,6 +116,7 @@ public class WaveInterface
 		s_new = s_new.concat(s.substring(old_pos, s.length()));
 		return s_new;
 	}
+
 	public static void WriteLine(PrintWriter out, String prompt, String value)
 	{
 		if (value != null && value.length() != 0)
@@ -118,6 +124,7 @@ public class WaveInterface
 			out.println(prompt + value);
 		}
 	}
+
 	public Waveform wave;
 	public int num_waves;
 	public boolean x_log, y_log;
@@ -149,7 +156,7 @@ public class WaveInterface
 	public int mode2D[];
 	public int mode1D[];
 	public long shots[];
-public String error;
+	public String error;
 	private String curr_error;
 	public String provider;
 	public String w_error[];
@@ -167,18 +174,12 @@ public String error;
 	public boolean vertical_flip = false;
 	public int signal_select = -1;
 	private Frames frames;
-
 	// True when a signal is added
 	protected boolean add_signal = false;
-
 	protected boolean is_signal_added = false;
-
 	public ColorMap colorMap = new ColorMap();
-
 	boolean xLimitsLong;
-
 	long xminLong = 0;
-
 	long xmaxLong = 0;
 
 	public WaveInterface()
@@ -367,7 +368,7 @@ public String error;
 		{
 			try
 			{
-				final Class cl = Class.forName("jScope.FrameJAI");
+				final Class<?> cl = Class.forName("jScope.FrameJAI");
 				frames = (Frames) cl.newInstance();
 			}
 			catch (final Exception e)
@@ -693,8 +694,8 @@ public String error;
 		WaveData up_err = null, low_err = null;
 		WaveData wd = null;
 		WaveData xwd = null;
-		final int xDimension = 1;
-		final int yDimension = 1;
+		int xDimension = 1;
+		// final int yDimension = 1;
 		Signal out_signal;
 		String xlabel = null, ylabel = null, title = null;
 		if (shots != null && shots.length != 0)
@@ -741,7 +742,7 @@ public String error;
 		{
 			if (wd == null)
 				wd = dp.getWaveData(in_y[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
-			if (yDimension == 1)
+			// if (yDimension == 1)
 			{
 				if (in_up_err != null && in_up_err[curr_wave] != null && (in_up_err[curr_wave].trim()).length() != 0)
 				{
@@ -758,11 +759,11 @@ public String error;
 			curr_error = dp.getError();
 			return null;
 		}
-		// Check for bidimensional X axis
+		// Check for 2-dimensional X axis
 		if (in_x[curr_wave] != null)
 		{
 			xwd = dp.getWaveData(in_x[curr_wave], wave.getRow(), wave.getColumn(), wave.getIndex());
-			if (xwd.getNumDimension() == 1)
+			if ((xDimension = xwd.getNumDimension()) == 1)
 				xwd = null; // xwd is different from null ONLY for bidimensional X axis
 		}
 		if (xDimension == 1)
@@ -779,10 +780,8 @@ public String error;
 			else
 				out_signal = new Signal(wd, xwd, xmin, xmax);
 		}
-		if (yDimension > 1)
-			out_signal.setMode2D(mode2D[curr_wave]);
-		else
-			out_signal.setMode1D(mode1D[curr_wave]);
+		// if (yDimension > 1) out_signal.setMode2D(mode2D[curr_wave]); else
+		out_signal.setMode1D(mode1D[curr_wave]);
 		if (wd != null)
 		{
 			try
@@ -956,9 +955,9 @@ public String error;
 	{
 		try
 		{
-			for (int i = 0; i < signals.length; i++)
-				if (signals[i] != null)
-					setLimits(signals[i]);
+			for (final Signal signal : signals)
+				if (signal != null)
+					setLimits(signal);
 		}
 		catch (final Exception e)
 		{}

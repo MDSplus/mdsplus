@@ -460,13 +460,14 @@ public class WavePopup extends JPopupMenu implements ItemListener
 
 	protected void SelectListItem(ButtonGroup bg, int idx)
 	{
-		int i;
-		JRadioButtonMenuItem b = null;
-		Enumeration e;
-		for (e = bg.getElements(), i = 0; e.hasMoreElements() && i <= idx; i++)
-			b = (JRadioButtonMenuItem) e.nextElement();
-		if (b != null)
+		if (idx >= 0 && idx < bg.getButtonCount())
+		{ // otherwise its out of range
+			AbstractButton b = null;
+			final Enumeration<AbstractButton> e = bg.getElements();
+			for (int i = 0; i <= idx; i++)
+				b = e.nextElement();
 			bg.setSelected(b.getModel(), true);
+		}
 	}
 
 	protected void SetColor(int idx)

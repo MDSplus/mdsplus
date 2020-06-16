@@ -81,8 +81,6 @@ public class WaveformEvent extends AWTEvent
 		this.name = name;
 		this.values_x = values_x;
 		this.values_y = values_y;
-		this.values_signal = values_signal;
-		this.frames_time = frames_time;
 		this.start_pixel_x = start_pixel_x;
 		this.start_pixel_y = start_pixel_y;
 	}
@@ -97,8 +95,6 @@ public class WaveformEvent extends AWTEvent
 		this.name = name;
 		this.pixels_x = pixels_x;
 		this.pixels_y = pixels_y;
-		this.pixels_signal = pixels_signal;
-		this.frames_time = frames_time;
 		this.start_pixel_x = start_pixel_x;
 		this.start_pixel_y = start_pixel_y;
 	}

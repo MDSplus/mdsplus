@@ -1,35 +1,17 @@
 package mds.jtraverser.dialogs;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
+import java.awt.*;
+import java.awt.event.*;
+
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 
-import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
 import mds.data.descriptor_s.StringDsc;
-import mds.jtraverser.MdsView;
-import mds.jtraverser.TreeManager;
-import mds.jtraverser.TreeView;
+import mds.jtraverser.*;
 
 public class OpenTreeDialog extends JDialog
 {
@@ -179,18 +161,21 @@ public class OpenTreeDialog extends JDialog
 				OpenTreeDialog.this.shot_list.removeAllItems();
 				OpenTreeDialog.this.shot_list.addItem("model");
 				int[] shots;
-				try
-				{
-					final String exp = OpenTreeDialog.this.expt.getText().trim();
-					final Mds mds = OpenTreeDialog.this.treeman == null ? null : OpenTreeDialog.this.treeman.getMds();
-					OpenTreeDialog.this.setTreePath(exp);
-					shots = mds == null ? new int[0] : mds.getIntegerArray("getShotDB($)", new StringDsc(exp));
-				}
-				catch (final MdsException exc)
-				{
-					MdsException.stderr("getShotDB", exc);
+				final String exp = OpenTreeDialog.this.expt.getText().trim();
+				OpenTreeDialog.this.setTreePath(exp);
+				if (OpenTreeDialog.this.treeman == null)
 					shots = new int[0];
-				}
+				else
+					try
+					{
+						shots = OpenTreeDialog.this.treeman.getMds().getIntegerArray("getShotDB($)",
+								new StringDsc(exp));
+					}
+					catch (final MdsException exc)
+					{
+						MdsException.stderr("getShotDB", exc);
+						shots = new int[0];
+					}
 				for (final int shot : shots)
 					OpenTreeDialog.this.shot_list.addItem(Integer.toString(shot));
 			}

@@ -1,35 +1,31 @@
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.*;
-import java.util.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 public class DeviceChannel extends DeviceComponent
 {
-	/**
-	 *
-	 */
+	// Keep copied data for channel components
+	// indexed by the offset between this nid and the component nid
+	static Hashtable<Integer, Object> componentHash = new Hashtable<>();
 	private static final long serialVersionUID = 1L;
-	// Keep copied data for channel components: indexed by the offset between this
-	// nid and the component nid
-	static Hashtable componentHash = new Hashtable();
-	public String labelString = null;
 	public boolean borderVisible = false;
-	public boolean inSameLine = false;
 	protected JCheckBox checkB = null;
-	protected Vector device_components = null;
-	public int lines = 1, columns = 0; // if columns == 0 FlowLayout is assumed
-	public String showVal;
-	public boolean showState = true;
-	private boolean initial_state;
-	private boolean reportingChange = false;
-	private final JPopupMenu copyPastePopup;
-	protected boolean initializing = false;
 	protected JPanel componentsPanel;
+	private final JPopupMenu copyPastePopup;
+	protected Vector<DeviceComponent> device_components = null;
+	private boolean initial_state;
+	protected boolean initializing = false;
+	public boolean inSameLine = false;
+	public String labelString = null;
+	public int lines = 1, columns = 0; // if columns == 0 FlowLayout is assumed
+	private boolean reportingChange = false;
+	public boolean showState = true;
+	public String showVal;
 
 	public DeviceChannel()
 	{
@@ -116,20 +112,20 @@ public class DeviceChannel extends DeviceComponent
 	{
 		if (device_components == null)
 		{
-			device_components = new Vector();
-			final java.util.Stack search_stack = new java.util.Stack();
+			device_components = new Vector<>();
+			final Stack<Component> search_stack = new Stack<>();
 			search_stack.push(this);
 			do
 			{
 				final Component[] curr_components = ((Container) search_stack.pop()).getComponents();
 				if (curr_components == null)
 					continue;
-				for (int i = 0; i < curr_components.length; i++)
+				for (final Component curr_component : curr_components)
 				{
-					if (curr_components[i] instanceof DeviceComponent)
-						device_components.addElement(curr_components[i]);
-					else if (curr_components[i] instanceof Container)
-						search_stack.push(curr_components[i]);
+					if (curr_component instanceof DeviceComponent)
+						device_components.addElement((DeviceComponent) curr_component);
+					else if (curr_component instanceof Container)
+						search_stack.push(curr_component);
 				}
 			}
 			while (!search_stack.empty());
@@ -141,7 +137,7 @@ public class DeviceChannel extends DeviceComponent
 		buildComponentList();
 		for (int i = 0; i < device_components.size(); i++)
 		{
-			final DeviceComponent currComponent = (DeviceComponent) device_components.elementAt(i);
+			final DeviceComponent currComponent = device_components.elementAt(i);
 			final int intOffset = currComponent.getOffsetNid() - getOffsetNid();
 			componentHash.put(new Integer(intOffset), currComponent.getFullData());
 		}
@@ -169,7 +165,6 @@ public class DeviceChannel extends DeviceComponent
 			final LayoutManager layout = getParent().getLayout();
 			if (layout != null && (layout instanceof CardLayout))
 				((CardLayout) layout).show(getParent(), showVal);
-			// Display this component using showVal as constraint
 		}
 		else
 			setEnabledAll(false);
@@ -181,12 +176,8 @@ public class DeviceChannel extends DeviceComponent
 	public int getColumns()
 	{ return columns; }
 
-	public Container getContainer()
-	{
-		// JOptionPane.showMessageDialog(null, "GET CONTAINER", "",
-		// JOptionPane.INFORMATION_MESSAGE);
-		return componentsPanel;
-	}
+	public final Container getContainer()
+	{ return componentsPanel; }
 
 	@Override
 	protected String getData()
@@ -248,7 +239,7 @@ public class DeviceChannel extends DeviceComponent
 		buildComponentList();
 		for (int i = 0; i < device_components.size(); i++)
 		{
-			final DeviceComponent currComponent = (DeviceComponent) device_components.elementAt(i);
+			final DeviceComponent currComponent = device_components.elementAt(i);
 			final int intOffset = currComponent.getOffsetNid() - getOffsetNid();
 			final Object currData = componentHash.get(new Integer(intOffset));
 			if (currData != null)
@@ -267,11 +258,11 @@ public class DeviceChannel extends DeviceComponent
 		copy();
 		final Container parent = getParent();
 		final Component components[] = parent.getComponents();
-		for (int i = 0; i < components.length; i++)
+		for (final Component component2 : components)
 		{
-			if (components[i] instanceof DeviceChannel && components[i] != this)
+			if (component2 instanceof DeviceChannel && component2 != this)
 			{
-				((DeviceChannel) components[i]).paste();
+				((DeviceChannel) component2).paste();
 			}
 		}
 	}
@@ -281,7 +272,7 @@ public class DeviceChannel extends DeviceComponent
 		buildComponentList();
 		final int size = device_components.size();
 		for (int i = 0; i < size; i++)
-			((DeviceComponent) device_components.elementAt(i)).setEnabled(state);
+			device_components.elementAt(i).setEnabled(state);
 	}
 
 	public void setBorderVisible(boolean borderVisible)
@@ -316,7 +307,7 @@ public class DeviceChannel extends DeviceComponent
 		{
 			final int size = device_components.size();
 			for (int i = 0; i < size; i++)
-				((DeviceComponent) device_components.elementAt(i)).setEnabled(state);
+				device_components.elementAt(i).setEnabled(state);
 		}
 	}
 
@@ -329,9 +320,9 @@ public class DeviceChannel extends DeviceComponent
 			for (int i = 0; i < size; i++)
 			{
 				if (enabled)
-					((DeviceComponent) device_components.elementAt(i)).setEnable();
+					device_components.elementAt(i).setEnable();
 				else
-					((DeviceComponent) device_components.elementAt(i)).setDisable();
+					device_components.elementAt(i).setDisable();
 			}
 		}
 	}

@@ -1,7 +1,6 @@
+package mds.jtraverser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import mds.jtraverser.jTraverserFacade;
 
 public class jTraverser
 {

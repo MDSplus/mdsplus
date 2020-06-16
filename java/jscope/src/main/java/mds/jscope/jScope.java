@@ -1,5 +1,4 @@
-import mds.jscope.jScopeFacade;
-
+package mds.jscope;
 public class jScope
 {
 	public static void main(String args[])

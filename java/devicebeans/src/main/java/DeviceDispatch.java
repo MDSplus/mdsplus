@@ -1,7 +1,9 @@
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.border.LineBorder;
 
 public class DeviceDispatch extends DeviceComponent
 {
@@ -35,17 +37,17 @@ public class DeviceDispatch extends DeviceComponent
 		public void setItem(Object obj)
 		{}
 	}
+
 	private static final long serialVersionUID = 1L;
 	private DeviceDispatchField dispatch_fields[], active_field;
 	private String actions[];
 	private JDialog dialog = null;
-	private final JComboBox menu;
-
+	private final JComboBox<String> menu;
 	protected boolean initializing = false;
 
 	public DeviceDispatch()
 	{
-		menu = new JComboBox();
+		menu = new JComboBox<>();
 		menu.setEditor(new DispatchComboEditor());
 		menu.setEditable(true);
 		menu.setBorder(new LineBorder(Color.black, 1));
@@ -91,8 +93,8 @@ public class DeviceDispatch extends DeviceComponent
 	{
 		if (dispatch_fields == null)
 			return;
-		for (int i = 0; i < dispatch_fields.length; i++)
-			dispatch_fields[i].apply();
+		for (final DeviceDispatchField dispatch_field : dispatch_fields)
+			dispatch_field.apply();
 	}
 
 	@Override
@@ -187,7 +189,7 @@ public class DeviceDispatch extends DeviceComponent
 	{
 		if (dispatch_fields == null)
 			return;
-		for (int i = 0; i < dispatch_fields.length; i++)
-			dispatch_fields[i].reset();
+		for (final DeviceDispatchField dispatch_field : dispatch_fields)
+			dispatch_field.reset();
 	}
 }

@@ -1,13 +1,15 @@
 package mds.jscope;
 
-import java.io.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.lang.Integer;
-import java.util.*;
+import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.Vector;
+
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import mds.wave.*;
 
@@ -73,6 +75,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 			return true;
 		}
 	}
+
 	class ExpandExp extends JDialog implements ActionListener
 	{
 		/**
@@ -152,6 +155,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 				y_expr.setText(y);
 		}
 	}
+
 	class SError extends JDialog implements ActionListener
 	{
 		/**
@@ -230,6 +234,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 				e_low.setText(ws.low_err);
 		}
 	}
+
 	class SList extends JPanel implements ItemListener
 	{
 		/**
@@ -265,7 +270,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 				{
 					if (e.getValueIsAdjusting())
 						return;
-					SList.this.signalSelect(((JList) e.getSource()).getSelectedIndex() - 1);
+					SList.this.signalSelect(((JList<?>) e.getSource()).getSelectedIndex() - 1);
 				}
 			});
 			sig_list.addKeyListener(new KeyAdapter()
@@ -309,8 +314,8 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 			gridbag.setConstraints(color, c);
 			p.add(color);
 			marker = new JComboBox<>();
-			for (int i = 0; i < Signal.markerList.length; i++)
-				marker.addItem(Signal.markerList[i]);
+			for (final String element : Signal.markerList)
+				marker.addItem(element);
 			marker.addItemListener(this);
 			gridbag.setConstraints(marker, c);
 			p.add(marker);
@@ -670,8 +675,8 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 				color.removeAllItems();
 			if (colors_name != null)
 			{
-				for (int i = 0; i < colors_name.length; i++)
-					color.addItem(colors_name[i]);
+				for (final String element : colors_name)
+					color.addItem(element);
 			}
 		}
 
@@ -882,6 +887,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 			signals.setElementAt(ws, idx);
 		}
 	}
+
 	class SymContainer extends java.awt.event.ContainerAdapter
 	{
 		@Override
@@ -892,6 +898,7 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 				SetupDataDialog_componentAdded(event);
 		}
 	}
+
 	/**
 	 *
 	 */
@@ -955,15 +962,10 @@ class SetupDataDialog extends JDialog implements ActionListener, ItemListener, K
 	JTextField def_node = new JTextField(20);
 	JCheckBox vertical_flip_b = new JCheckBox("Vertical Flip");
 	JPanel p9 = new JPanel(new BorderLayout(2, 2));
-
 	JButton ok = new JButton("Ok");
-
 	JButton apply = new JButton("Apply");
-
 	JButton reset = new JButton("Reset");
-
 	JButton erase = new JButton("Erase");
-
 	JButton cancel = new JButton("Cancel");
 
 	public SetupDataDialog(Frame fw, String frame_title)

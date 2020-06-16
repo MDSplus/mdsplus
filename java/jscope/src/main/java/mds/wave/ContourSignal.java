@@ -111,15 +111,15 @@ public class ContourSignal
 				}
 			}
 		}
-		for (int i = 0; i < y.length; i++)
+		for (final float element : y)
 		{
-			if (y[i] < ymin)
+			if (element < ymin)
 			{
-				ymin = y[i];
+				ymin = element;
 			}
-			if (y[i] > ymax)
+			if (element > ymax)
 			{
-				ymax = y[i];
+				ymax = element;
 			}
 		}
 		equalCases();

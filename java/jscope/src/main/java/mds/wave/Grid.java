@@ -1,19 +1,11 @@
 package mds.wave;
 
 /* $Id$ */
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.SimpleTimeZone;
+import java.util.*;
 
 public class Grid implements Serializable
 {
@@ -29,14 +21,17 @@ public class Grid implements Serializable
 	public static final int MAX_GRID = 10;
 	public final static String GRID_MODE[] =
 	{ "Dotted", "Gray", "None" };
+
 	static public double evalStep(double min, double max, int numStep)
 	{
 		final double delta = Math.abs(max - min);
 		final int pow = (int) Math.log10(delta) - 1;
 		return 2. * Math.pow(10, pow);
 	}
+
 	public static void main(String args[])
 	{}
+
 	WaveformMetrics wm;
 	boolean reversed = false;
 	int x_dim, y_dim;
@@ -47,9 +42,7 @@ public class Grid implements Serializable
 	Font font;
 	int label_width, label_height, label_descent, num_x_steps, num_y_steps;
 	String x_label, y_label, title, error;
-
 	double xmax;
-
 	boolean xAxisHMS = false;
 
 	public Grid(double xmax, double ymax, double xmin, double ymin, boolean xlog, boolean ylog, int mode,
@@ -102,8 +95,6 @@ public class Grid implements Serializable
 			curr_max = ymax + 0.1 * yrange;
 			curr_min = ymin - 0.1 * yrange;
 			step = (ymax - ymin) / grid_step;
-//	    if(step < 10e-10)
-//		step = 10e-10;
 		}
 		if (step > 1)
 		{
@@ -139,89 +130,6 @@ public class Grid implements Serializable
 		for (i = 0; i < 50 && curr < curr_max + step; i++)
 		{
 			val[i] = (long) (curr / step + 0.5) * step;
-//Fix per la stampa dello 0
-			if (val[i] < step / 100 && val[i] > -step / 100)
-				val[i] = 0;
-			curr += step;
-		}
-		if (mode == IS_X)
-		{
-			x_step = step / num_steps;
-			num_x_steps = num_steps;
-		}
-		else
-		{
-			y_step = step / num_steps;
-			num_y_steps = num_steps;
-		}
-		return i;
-	}
-
-	private int BuildGridNew(double val[], int mode, double xmax, double ymax, double xmin, double ymin, boolean xlog,
-			boolean ylog)
-	{
-		if (ymax < ymin)
-			ymax = ymin + 1E-10;
-		if (xmax < xmin)
-			xmax = xmin + 1E-10;
-		double step, curr, curr_max, curr_min, xrange = xmax - xmin, yrange = ymax - ymin;
-		boolean greater = false;
-		int grid_step;
-		int count = 0, i, num_steps;
-		if (xrange <= 0)
-			xrange = 1E-3;
-		if (yrange <= 0)
-			yrange = 1E-3;
-		if (mode == IS_X)
-		{
-			grid_step = grid_step_x;
-			curr_max = xmax + 0.1 * xrange;
-			curr_min = xmin - 0.1 * xrange;
-			step = (xmax - xmin) / grid_step;
-			step = evalStep(xmin, xmax, grid_step);
-		}
-		else
-		{
-			grid_step = grid_step_y;
-			curr_max = ymax + 0.1 * yrange;
-			curr_min = ymin - 0.1 * yrange;
-			step = (ymax - ymin) / grid_step;
-		}
-		if (step > 1)
-		{
-			greater = true;
-			while (step / 10. > 1.)
-			{
-				step /= 10;
-				count++;
-			}
-		}
-		else
-		{
-			greater = false;
-			while (step < 1 && step > 0)
-			{
-				step *= 10;
-				count++;
-			}
-		}
-		step = ((int) step);
-		num_steps = (int) step;
-		if (greater)
-			for (i = 0; i < count; i++)
-				step *= 10;
-		else
-			for (i = 0; i < count; i++)
-				step /= 10;
-		curr = (long) (curr_min / step) * step;
-		if (curr > curr_min)
-			curr -= (long) ((curr - curr_min) / step) * step;
-		while (curr >= curr_min)
-			curr -= step;
-		for (i = 0; i < 50 && curr < curr_max + step; i++)
-		{
-			val[i] = (long) (curr / step + 0.5) * step;
-//Fix per la stampa dello 0
 			if (val[i] < step / 100 && val[i] > -step / 100)
 				val[i] = 0;
 			curr += step;

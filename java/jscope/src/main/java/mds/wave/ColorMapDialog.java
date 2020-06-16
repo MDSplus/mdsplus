@@ -47,8 +47,10 @@ public class ColorMapDialog extends JDialog
 			repaint();
 		}
 	}
+
 	private static final long serialVersionUID = 1L;
 	private static String lastMap = null;
+
 	public static void exportPalette(final File file) throws IOException
 	{
 		try (final InputStream is = getResourcePalette())
@@ -62,24 +64,23 @@ public class ColorMapDialog extends JDialog
 			}
 		}
 	}
+
 	private static final InputStream getResourcePalette()
 	{ return ColorMapDialog.class.getClassLoader().getResourceAsStream("mds/wave/colors.tbl"); }
+
 	private final Vector<ActionListener> colorMapListener = new Vector<>();
 	ColorMap colorMap;
 	ColorPalette cp;
 	JComboBox<ColorMap> cmComboBox;
 	JTextField minVal, maxVal;
 	JButton ok, apply, cancel;
-JSlider shiftSlider;
+	JSlider shiftSlider;
 	JCheckBox bitClip;
 	JPanel bitOptionPanel;
 	boolean is16BitImage = false;
-
-	//WaveformEditor weR, weG, weB;
+	// WaveformEditor weR, weG, weB;
 	Waveform wave = null;
-
 	String nameColorTables[];
-
 	byte colorTables[];
 
 	/*
@@ -149,7 +150,7 @@ JSlider shiftSlider;
 				ColorMapDialog.this.wave.setFrameMinMax(min, max);
 			}
 		});
-		cmComboBox = new JComboBox();
+		cmComboBox = new JComboBox<>();
 		pan3.add(cmComboBox);
 		final int r[] = new int[256];
 		final int g[] = new int[256];

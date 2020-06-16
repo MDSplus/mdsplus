@@ -3,10 +3,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 public class DeviceChoice extends DeviceComponent
 {
@@ -20,13 +17,9 @@ public class DeviceChoice extends DeviceComponent
 	protected double choiceDoubleValues[] = null;
 	protected boolean convert = false;
 	private boolean reportingChange = false;
-
 	protected JCheckBox checkB;
-
-	protected JComboBox comboB;
-
+	protected JComboBox<String> comboB;
 	protected JLabel label;
-
 	protected boolean initializing = false;
 
 	public DeviceChoice()
@@ -35,7 +28,7 @@ public class DeviceChoice extends DeviceComponent
 		add(checkB = new JCheckBox());
 		checkB.setVisible(false);
 		add(label = new JLabel("Choice: "));
-		add(comboB = new JComboBox(new String[]
+		add(comboB = new JComboBox<>(new String[]
 		{ "Item" }));
 		initializing = false;
 	}
@@ -200,6 +193,7 @@ public class DeviceChoice extends DeviceComponent
 
 	public boolean getConvert()
 	{ return convert; }
+
 	@Override
 	protected String getData()
 	{
@@ -221,8 +215,10 @@ public class DeviceChoice extends DeviceComponent
 			return choiceItems[curr_idx];
 		}
 	}
+
 	public String getLabelString()
 	{ return labelString; }
+
 	public boolean getShowState()
 	{ return showState; }
 

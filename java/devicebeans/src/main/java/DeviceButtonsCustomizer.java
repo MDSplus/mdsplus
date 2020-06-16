@@ -1,16 +1,6 @@
-import java.awt.BorderLayout;
-import java.awt.Button;
-import java.awt.GridLayout;
-import java.awt.Label;
-import java.awt.Panel;
-import java.awt.TextField;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.beans.Customizer;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import java.awt.*;
+import java.awt.event.*;
+import java.beans.*;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
@@ -24,7 +14,7 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
 	PropertyChangeSupport listeners = new PropertyChangeSupport(this);
 	TextField expression, message, methods;
 	java.awt.List exprList;
-	Vector expressionsV = new Vector(), messagesV = new Vector();
+	Vector<String> expressionsV = new Vector<>(), messagesV = new Vector<>();
 	Button addButton, removeButton, doneButton;
 
 	public DeviceButtonsCustomizer()
@@ -56,8 +46,8 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
 			public void itemStateChanged(ItemEvent e)
 			{
 				final int idx = exprList.getSelectedIndex();
-				expression.setText((String) (expressionsV.elementAt(idx)));
-				message.setText((String) (messagesV.elementAt(idx)));
+				expression.setText((expressionsV.elementAt(idx)));
+				message.setText((messagesV.elementAt(idx)));
 			}
 		});
 		final String exprs[] = bean.getCheckExpressions();
@@ -150,8 +140,8 @@ public class DeviceButtonsCustomizer extends Panel implements Customizer
 				final String[] expressions = new String[expressionsV.size()];
 				for (int i = 0; i < messagesV.size(); i++)
 				{
-					messages[i] = (String) (messagesV.elementAt(i));
-					expressions[i] = (String) (expressionsV.elementAt(i));
+					messages[i] = (messagesV.elementAt(i));
+					expressions[i] = (expressionsV.elementAt(i));
 				}
 				final String[] oldCheckMessages = bean.getCheckMessages();
 				bean.setCheckMessages(messages);

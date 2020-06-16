@@ -1,7 +1,9 @@
-import javax.swing.*;
-import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.*;
+
+import javax.swing.*;
+
 import mds.devices.Interface;
 import mds.devices.Interface.Setup;
 
@@ -9,13 +11,15 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 {
 	private static final long serialVersionUID = 1L;
 	// public int width = 400, height = 200;
-	protected static Hashtable<Integer, DeviceSetup> activeNidHash = new Hashtable();
-	static Vector<DeviceSetup> openDevicesV = new Vector();
+	protected static Hashtable<Integer, DeviceSetup> activeNidHash = new Hashtable<>();
+	static Vector<DeviceSetup> openDevicesV = new Vector<>();
+
 	static void closeSetups()
 	{
 		for (final DeviceSetup setup : openDevicesV)
 			setup.cancel();
 	}
+
 	public final static Setup getSetup(final int nid, final boolean readOnly)
 	{
 		final DeviceSetup ds = activeNidHash.get(new Integer(nid));
@@ -26,6 +30,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		}
 		return ds;
 	}
+
 	public static Setup newSetup(final int nid, final String model, final Interface iface,
 			final Object pointOrComponent, final boolean readOnly) throws Exception
 	{
@@ -61,25 +66,23 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		ds.setVisible(true);
 		return ds;
 	}
+
 	protected String deviceType;
 	protected String deviceTitle;
 	protected String deviceProvider;
 	public int baseNid, num_components = 0;
-	protected Vector<DeviceComponent> device_components = new Vector();
-	protected Vector<DeviceControl> device_controls = new Vector();
+	protected Vector<DeviceComponent> device_components = new Vector<>();
+	protected Vector<DeviceControl> device_controls = new Vector<>();
 	public Interface subtree = null;
 	protected String[] methods;
 	protected DeviceButtons buttons = null;
 	JMenuItem pop_items[];
 	JPopupMenu pop_methods = null;
-	Hashtable<String, Vector<DeviceComponent>> updateHash = new Hashtable();
-	Vector<DeviceCloseListener> deviceCloseListenerV = new Vector();
-	Vector<DeviceUpdateListener> deviceUpdateListenerV = new Vector();
-
+	Hashtable<String, Vector<DeviceComponent>> updateHash = new Hashtable<>();
+	Vector<DeviceCloseListener> deviceCloseListenerV = new Vector<>();
+	Vector<DeviceUpdateListener> deviceUpdateListenerV = new Vector<>();
 	boolean readOnly = false;
-
 	boolean justApplied = false;
-
 	protected String updateEvent = null;
 
 	/*
@@ -249,7 +252,7 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		else
 			setTitle(deviceTitle + " -- " + path);
 		// collect every DeviceComponent
-		final Stack<Container> search_stack = new Stack();
+		final Stack<Container> search_stack = new Stack<>();
 		search_stack.push(this);
 		while (!search_stack.isEmpty())
 		{
@@ -499,8 +502,8 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 		for (final DeviceComponent comp : device_components)
 		{
 			final int nid = comp.getBaseNid() + comp.getOffsetNid();
-			for (int j = 0; j < nids.length; j++)
-				if (nids[j] == nid)
+			for (final int nid2 : nids)
+				if (nid2 == nid)
 				{
 					comp.setHighlight(isHighlighted);
 					break;

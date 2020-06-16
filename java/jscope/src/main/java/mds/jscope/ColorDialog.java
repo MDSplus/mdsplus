@@ -2,8 +2,10 @@ package mds.jscope;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.*;
-import java.io.*;
+
 import javax.swing.*;
 import javax.swing.event.*;
 
@@ -22,9 +24,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 			color = c;
 		}
 	}
-	/**
-	 *
-	 */
+
 	private static final long serialVersionUID = 1L;
 	JList<String> colorList;
 	DefaultListModel<String> listModel = new DefaultListModel<>();
@@ -42,7 +42,6 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 	Color color_vector[];
 	String color_name[];
 	int colorMapIndex[] = null;
-
 	private boolean reversed = false;
 
 	ColorDialog(Frame dw, String title)
@@ -102,7 +101,7 @@ class ColorDialog extends JDialog implements ActionListener, ItemListener
 			@Override
 			public void valueChanged(ListSelectionEvent e)
 			{
-				final int color_idx = ((JList) e.getSource()).getSelectedIndex();
+				final int color_idx = ((JList<?>) e.getSource()).getSelectedIndex();
 				if (color_idx >= 0 && color_idx < color_set.size())
 				{
 					final Item c_item = color_set.elementAt(color_idx);

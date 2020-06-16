@@ -1,28 +1,9 @@
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Event;
-import java.awt.Toolkit;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.*;
+import java.awt.datatransfer.*;
+import java.awt.event.*;
 import java.util.StringTokenizer;
 
-import javax.swing.CellEditor;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
+import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
@@ -415,23 +396,10 @@ public class DeviceTable extends DeviceComponent
 		label.setText(labelString);
 		table.setModel(new AbstractTableModel()
 		{
-			/**
-			 *
-			 */
 			private static final long serialVersionUID = 1L;
 
-			private String convertValue(String value)
-			{
-				if (refMode != REFLEX_INVERT)
-					return value;
-				else if (value.trim().startsWith("-"))
-					return value.trim().substring(1);
-				else
-					return "-" + value.trim();
-			}
-
 			@Override
-			public Class getColumnClass(int c)
+			public Class<?> getColumnClass(int c)
 			{
 				if (!binary)
 					return String.class;

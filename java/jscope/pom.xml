@@ -14,13 +14,6 @@
 		MDSplus data display program for waveforms, images and more.
 	</description>
 	<build>
-		<sourceDirectory>${sourceDirectory}/jscope/src/main/java</sourceDirectory>
-		<testSourceDirectory>${sourceDirectory}/jscope/src/test/java</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>${sourceDirectory}/jscope/src/main/resources</directory>
-			</resource>
-		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -28,7 +21,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>jScope</mainClass>
+							<mainClass>mds.jscope.jScope</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

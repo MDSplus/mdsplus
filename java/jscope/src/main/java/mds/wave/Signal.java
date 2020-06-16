@@ -2,13 +2,11 @@ package mds.wave;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
-import java.text.*;
-
-import java.util.*;
-
-import mds.wave.ContourSignal;
-
-import java.io.*;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Vector;
 
 /**
  * The DataSignal class encapsulates a description of a
@@ -34,6 +32,7 @@ public class Signal implements WaveDataListener
 			this.resolution = resolution; // Number of points for this region / (upperBound - lowerBound)
 		}
 	}
+
 	class ResolutionManager
 	{
 		Vector<RegionDescriptor> lowResRegions = new Vector<>();
@@ -241,6 +240,7 @@ public class Signal implements WaveDataListener
 			lowResRegions.clear();
 		}
 	} // End inner class ResolutionManager
+
 	public static final int TYPE_1D = 0;
 	public static final int TYPE_2D = 1;
 	public static final int MODE_XZ = 0;
@@ -294,11 +294,13 @@ public class Signal implements WaveDataListener
 	public final static int FIXED_LIMIT = 2;
 	public final static int DO_NOT_UPDATE = 4;
 	private static final int DEFAULT_INC_SIZE = 10000;
+
 	static String toStringTime(long time)
 	{
 		final DateFormat df = new SimpleDateFormat("HH:mm:sss");
 		return df.format(new Date(time));
 	}
+
 	boolean debug = false;
 	/**
 	 * data object
@@ -451,7 +453,7 @@ public class Signal implements WaveDataListener
 	private long xMinLong, xMaxLong;
 	ContourSignal cs;
 	private double contourLevels[];
-	Vector<Vector> contourSignals = new Vector<>();
+	Vector<Vector<Vector<Point2D.Double>>> contourSignals = new Vector<>();
 	Vector<Double> contourLevelValues = new Vector<>();
 	final int NOT_FREEZED = 0, FREEZED_BLOCK = 1, FREEZED_SCROLL = 2;
 	int freezeMode = NOT_FREEZED;
@@ -468,30 +470,18 @@ public class Signal implements WaveDataListener
 	float y2D[];
 	float z[];
 	double xY2D[];
-
 	float yY2D[];
-
 	float zY2D[];
-
 	// 1D management
 	double x[] = null;
-
 	float y[] = null;
-
 	long xLong[] = null;
-
 	float upError[];
-
 	float lowError[];
-
 	boolean upToDate = false;
-
 	ResolutionManager resolutionManager = new ResolutionManager();
-
 	private double z_value = Double.NaN;
-
 	private boolean find_NaN = false;
-
 	/**
 	 * Return index of nearest signal point to argument (curr_x, curr_y) point.
 	 *
@@ -500,27 +490,16 @@ public class Signal implements WaveDataListener
 	 * @return index of signal point
 	 */
 	private int img_xprev = 0;
-
 	private int img_yprev = 0;
-
 	boolean fix_xmin = false;
-
 	boolean fix_xmax = false;
-
 	boolean fix_ymin = false;
-
 	boolean fix_ymax = false;
-
 	private int updSignalSizeInc;
-
 	public int startIndexToUpdate = 0;
-
 	public boolean needFullUpdate = true;
-
 	private int x2D_points = 0;
-
 	private int y2D_points = 0;
-
 	private int z2D_points = 0;
 
 	/**
@@ -948,7 +927,7 @@ public class Signal implements WaveDataListener
 		{
 			cs = new ContourSignal(this);
 		}
-		final Vector<Vector<Point2D.Double>> v = cs.contour(level);
+		final Vector<Vector<java.awt.geom.Point2D.Double>> v = cs.contour(level);
 		if (v.size() != 0)
 		{
 			contourSignals.addElement(v);
@@ -1138,12 +1117,12 @@ public class Signal implements WaveDataListener
 		if (x == null || x.length == 0)
 			return;
 		xmin = xmax = currX[0];
-		for (int i = 0; i < currX.length; i++)
+		for (final double element : currX)
 		{
-			if (currX[i] < xmin)
-				xmin = currX[i];
-			if (currX[i] > xmax)
-				xmax = currX[i];
+			if (element < xmin)
+				xmin = element;
+			if (element > xmax)
+				xmax = element;
 		}
 		if (xmin == xmax)
 			xmax = xmin + (float) 1E-10;
@@ -1165,12 +1144,12 @@ public class Signal implements WaveDataListener
 			else
 			{
 				ymax = ymin = sliceY[0];
-				for (int i = 0; i < sliceY.length; i++)
+				for (final float element : sliceY)
 				{
-					if (sliceY[i] < ymin)
-						ymin = sliceY[i];
-					if (sliceY[i] > ymax)
-						ymax = sliceY[i];
+					if (element < ymin)
+						ymin = element;
+					if (element > ymax)
+						ymax = element;
 				}
 				if (ymin == ymax)
 					ymax = ymin + ymin / 4;
@@ -1321,12 +1300,12 @@ public class Signal implements WaveDataListener
 				if (y.length > 0)
 				{
 					this.ymin = this.ymax = y[0];
-					for (int i = 0; i < y.length; i++)
+					for (final float element : y)
 					{
-						if (y[i] < this.ymin)
-							this.ymin = y[i];
-						if (y[i] > this.ymax)
-							this.ymax = y[i];
+						if (element < this.ymin)
+							this.ymin = element;
+						if (element > this.ymax)
+							this.ymax = element;
 					}
 					if (data.isXLong())
 					{
@@ -1394,12 +1373,12 @@ public class Signal implements WaveDataListener
 			if (y2D != null && y2D.length > 0)
 			{
 				y2D_min = y2D_max = y2D[0];
-				for (int i = 0; i < y2D.length; i++)
+				for (final float element : y2D)
 				{
-					if (y2D[i] < y2D_min)
-						y2D_min = y2D[i];
-					if (y2D[i] > y2D_max)
-						y2D_max = y2D[i];
+					if (element < y2D_min)
+						y2D_min = element;
+					if (element > y2D_max)
+						y2D_max = element;
 				}
 			}
 			else
@@ -1409,12 +1388,12 @@ public class Signal implements WaveDataListener
 			if (z != null && z.length > 0)
 			{
 				z2D_min = z2D_max = z[0];
-				for (int i = 0; i < z.length; i++)
+				for (final float element : z)
 				{
-					if (z[i] < z2D_min)
-						z2D_min = z[i];
-					if (z[i] > z2D_max)
-						z2D_max = z[i];
+					if (element < z2D_min)
+						z2D_min = element;
+					if (element > z2D_max)
+						z2D_max = element;
 				}
 			}
 			else
@@ -1925,7 +1904,7 @@ public class Signal implements WaveDataListener
 	Vector<Double> getContourLevelValues()
 	{ return contourLevelValues; }
 
-	Vector<Vector> getContourSignals()
+	Vector<Vector<Vector<Point2D.Double>>> getContourSignals()
 	{ return contourSignals; }
 
 	public double getCurrentXmax()
@@ -2119,6 +2098,7 @@ public class Signal implements WaveDataListener
 			return 0;
 		}
 	}
+
 	public float[] getY2D()
 	{
 		if (y2D == null)
@@ -2182,6 +2162,7 @@ public class Signal implements WaveDataListener
 
 	public String getZlabel()
 	{ return zlabel; }
+
 	public double getZValue()
 	{
 		if (this.type == Signal.TYPE_2D)
@@ -2201,19 +2182,23 @@ public class Signal implements WaveDataListener
 		}
 		return Float.NaN;
 	}
+
 	boolean hasAsymError()
 	{
 		return asym_error;
 	}
+
 	boolean hasError()
 	{
 		return error;
 	}
+
 	public final boolean hasX()
 	{
 		return true;
 		// return data.hasX();
 	}
+
 	public void incShow()
 	{
 		if (type == TYPE_2D)
@@ -2232,11 +2217,13 @@ public class Signal implements WaveDataListener
 			}
 		}
 	}
+
 	public void incShowXZ()
 	{
 		if (type == TYPE_2D && mode2D == Signal.MODE_XZ)
 			showXZ((curr_y_xz_idx + 1) % y2D.length);
 	}
+
 	public void incShowYZ()
 	{
 		if (type == TYPE_2D && mode2D == Signal.MODE_YZ)
@@ -2261,9 +2248,9 @@ public class Signal implements WaveDataListener
 				contourLevels[i] = z2D_min + dz * (i + 1);
 			}
 		}
-		for (int k = 0; k < contourLevels.length; k++)
+		for (final double contourLevel : contourLevels)
 		{
-			addContourLevel(contourLevels[k]);
+			addContourLevel(contourLevel);
 		}
 	}
 
@@ -2598,6 +2585,7 @@ public class Signal implements WaveDataListener
 	 */
 	public void setInterpolate(boolean interpolate)
 	{ this.interpolate = interpolate; }
+
 	public void setLabels(String title, String xlabel, String ylabel, String zlabel)
 	{
 		this.title = title;
@@ -2605,8 +2593,10 @@ public class Signal implements WaveDataListener
 		this.ylabel = ylabel;
 		this.zlabel = zlabel;
 	}
+
 	public void setLegend(String legend)
 	{ this.legend = legend; }
+
 	/**
 	 * Set market type.
 	 *
@@ -2759,12 +2749,14 @@ public class Signal implements WaveDataListener
 
 	public void setType(int type)
 	{ this.type = type; }
+
 	public void setUpdSignalSizeInc(int updSignalSizeInc)
 	{
 		if (updSignalSizeInc <= 0)
 			updSignalSizeInc = DEFAULT_INC_SIZE;
 		this.updSignalSizeInc = updSignalSizeInc;
 	}
+
 	public void setXinYZplot(float curr_x_yz_plot)
 	{ this.curr_x_yz_plot = curr_x_yz_plot; }
 

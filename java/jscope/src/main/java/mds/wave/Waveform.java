@@ -1,18 +1,7 @@
 package mds.wave;
 
 /* $Id$ */
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -39,6 +28,7 @@ public class Waveform extends JComponent implements SignalListener
 			}
 		}
 	}
+
 	class ZoomRegion
 	{
 		double start_xs;
@@ -54,23 +44,19 @@ public class Waveform extends JComponent implements SignalListener
 			this.end_ys = end_ys;
 		}
 	}
+
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	public static final int JAVA_TIME = 1, VMS_TIME = 2, EPICS_TIME = 3;
 	public static int timeMode = JAVA_TIME;
-
 	public static final long VMS_BASE = 0x7c95674beb4000L;
-
 	// static final long EPICS_BASE = 631062000000L;
 	// static final long EPICS_BASE = 631148400000L;
 	public static final long EPICS_BASE = 631152000000L;
-
 	public static final int MAX_POINTS = 1000;
-
 	static public boolean is_debug = false;
-
 	public static final Color[] COLOR_SET =
 	{ Color.black, Color.blue, Color.cyan, Color.darkGray, Color.gray, Color.green, Color.lightGray, Color.magenta,
 			Color.orange, Color.pink, Color.red, Color.yellow };
@@ -95,6 +81,7 @@ public class Waveform extends JComponent implements SignalListener
 	private static boolean bug_image = true;
 	static protected int horizontal_offset = 0;
 	static protected int vertical_offset = 0;
+
 	public static int ColorNameToIndex(String name)
 	{
 		if (name == null)
@@ -110,6 +97,7 @@ public class Waveform extends JComponent implements SignalListener
 		}
 		return 0;
 	}
+
 	public static long convertFromSpecificDeltaTime(long deltaTime)
 	{
 		if (timeMode == VMS_TIME)
@@ -121,6 +109,7 @@ public class Waveform extends JComponent implements SignalListener
 		else
 			return deltaTime;
 	}
+
 	public static long convertFromSpecificTime(long inTime)
 	{
 		if (timeMode == VMS_TIME)
@@ -133,6 +122,7 @@ public class Waveform extends JComponent implements SignalListener
 		else
 			return inTime;
 	}
+
 	public static long convertToSpecificTime(long inTime)
 	{
 		if (timeMode == VMS_TIME)
@@ -142,6 +132,7 @@ public class Waveform extends JComponent implements SignalListener
 		else
 			return inTime;
 	}
+
 	protected static String ConvertToString(double f, boolean is_log)
 	{
 		double curr_f;
@@ -182,46 +173,57 @@ public class Waveform extends JComponent implements SignalListener
 		out = out.trim();
 		return out;
 	}
+
 	static public Color[] getColors()
 	{
 		colors_changed = false;
 		return colors;
 	}
+
 	static public String[] getColorsName()
 	{
 		colors_changed = false;
 		return colors_name;
 	}
+
 	static public int GetHorizontalOffset()
 	{
 		return horizontal_offset;
 	}
+
 	public static int getTimeMode()
 	{ return timeMode; }
+
 	static public int GetVerticalOffset()
 	{
 		return vertical_offset;
 	}
+
 	static boolean isColorsChanged()
 	{ return colors_changed; }
+
 	static public void SetColors(Color _colors[], String _colors_name[])
 	{
 		colors_changed = true;
 		colors = _colors;
 		colors_name = _colors_name;
 	}
+
 	static public void SetFont(Font f)
 	{
 		font = f;
 	}
+
 	static public void SetHorizontalOffset(int h_offset)
 	{
 		horizontal_offset = h_offset;
 	}
+
 	static public void SetVerticalOffset(int v_offset)
 	{
 		vertical_offset = v_offset;
 	}
+
 	protected Signal waveform_signal;
 	protected WaveformMetrics wm;
 	protected boolean not_drawn = true;
@@ -254,7 +256,7 @@ public class Waveform extends JComponent implements SignalListener
 	protected Point points[];
 	protected int num_points;
 	protected int grid_step_x = 3, grid_step_y = 3;
-protected boolean first_set_point;
+	protected boolean first_set_point;
 	protected int marker_width;
 	protected boolean x_log, y_log;
 	protected boolean is_mb2, is_mb3;
@@ -283,37 +285,21 @@ protected boolean first_set_point;
 	private boolean send_profile = false;
 	protected Border unselect_border;
 	protected Border select_border;
-
 	private boolean border_changed = false;
-
 	private final javax.swing.Timer play_timer;
-
 	private boolean restart_play = false;
-
 	private boolean pan_enabled = true;
-
 	private double xmax = 1, ymax = 1, xmin = 0, ymin = 0;
-
 	boolean is_min_size;
-
 	private boolean event_enabled = true;
-
 	public float lx_max = Float.MAX_VALUE;
-
 	public float lx_min = Float.MIN_VALUE;
-
 	public float ly_max = Float.MAX_VALUE;
-
 	public float ly_min = Float.MIN_VALUE;
-
 	protected ColorMap colorMap = new ColorMap();
-
 	private String properties;
-
 	boolean appendDrawMode = false;
-
 	boolean appendPaintFlag = false;
-
 	Rectangle frame_zoom = null;
 
 	public Waveform()
@@ -498,7 +484,7 @@ protected boolean first_set_point;
 		}
 	}
 
-	public void drawContourLevel(Vector<Vector> cOnLevel, Graphics g, Dimension d)
+	public void drawContourLevel(Vector<Vector<Point2D.Double>> cOnLevel, Graphics g, Dimension d)
 	{
 		wm.ComputeFactors(d);
 		for (int i = 0; i < cOnLevel.size(); i++)
@@ -772,22 +758,22 @@ protected boolean first_set_point;
 
 	protected void drawSignalContour(Signal s, Graphics g, Dimension d)
 	{
-		final Vector<Vector> cs = s.getContourSignals();
+		final Vector<Vector<Vector<Point2D.Double>>> cs = s.getContourSignals();
 		final Vector<Double> ls = s.getContourLevelValues();
 		float level;
 		for (int l = 0; l < cs.size(); l++)
 		{
-			final Vector<Vector> cOnLevel = cs.elementAt(l);
+			final Vector<Vector<Point2D.Double>> cOnLevel = cs.elementAt(l);
 			level = ls.elementAt(l).floatValue();
 			final float z[] = s.getZ();
 			float zMin, zMax;
 			zMin = zMax = z[0];
-			for (int i = 0; i < z.length; i++)
+			for (final float element : z)
 			{
-				if (z[i] < zMin)
-					zMin = z[i];
-				if (z[i] > zMax)
-					zMax = z[i];
+				if (element < zMin)
+					zMin = element;
+				if (element > zMax)
+					zMax = element;
 			}
 			g.setColor(colorMap.getColor(level, zMin, zMax));
 			drawContourLevel(cOnLevel, g, d);

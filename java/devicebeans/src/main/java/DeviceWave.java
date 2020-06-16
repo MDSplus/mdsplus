@@ -1,15 +1,16 @@
-import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
+import java.awt.datatransfer.*;
 import java.awt.event.*;
-import javax.swing.table.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.text.NumberFormat;
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.DefaultTableModel;
 
 import mds.wave.*;
-
-import java.util.*;
-import java.text.*;
-import java.awt.datatransfer.*;
-import java.io.*;
 
 public class DeviceWave extends DeviceComponent
 {
@@ -21,49 +22,38 @@ public class DeviceWave extends DeviceComponent
 	static final double MIN_STEP = 1E-5;
 	protected static float savedMinX, savedMinY, savedMaxX, savedMaxY;
 	protected static float savedWaveX[] = null, savedWaveY[] = null;
+
 	public static void main(String args[])
 	{
 		new DeviceWave();
 		System.out.println("Istanziato");
 	}
+
 	public boolean maxXVisible = false;
 	public boolean minXVisible = false;
 	public boolean maxYVisible = true;
 	public boolean minYVisible = false;
-
 	public boolean waveEditable = false;
-
 	public String updateExpression = null;
-
 	protected int prefHeight = 200;
-
 	protected boolean initializing = false;
-
 	protected WaveformEditor waveEditor;
-
 	protected JTable table;
-
 	protected JTextField maxXField = null, minXField = null, maxYField = null, minYField = null;
-
 	protected JCheckBox editCB;
-
 	protected JScrollPane scroll;
-
 	protected int numPoints;
-
 	protected float[] waveX = null, waveY = null;
-
 	protected float[] waveXOld = null, waveYOld = null;
-
 	protected float maxX, minX, maxY, minY;
-
 	protected float maxXOld, minXOld, maxYOld, minYOld;
-
 	private final NumberFormat nf = NumberFormat.getInstance(Locale.ENGLISH);
 	JPopupMenu copyPastePopup;
 	JMenuItem copyI, copyC, pasteI, pasteC;
+
 	public DeviceWave()
 	{}
+
 	@Override
 	public Component add(Component c)
 	{
@@ -76,6 +66,7 @@ public class DeviceWave extends DeviceComponent
 		}
 		return super.add(c);
 	}
+
 	@Override
 	public Component add(Component c, int intex)
 	{
@@ -88,6 +79,7 @@ public class DeviceWave extends DeviceComponent
 		}
 		return super.add(c);
 	}
+
 	@Override
 	public Component add(String name, Component c)
 	{
@@ -100,6 +92,7 @@ public class DeviceWave extends DeviceComponent
 		}
 		return super.add(c);
 	}
+
 	@Override
 	public void apply() throws Exception
 	{
@@ -153,6 +146,7 @@ public class DeviceWave extends DeviceComponent
 			}
 		}
 	}
+
 	private void create()
 	{
 		savedWaveX = null;
@@ -213,7 +207,7 @@ public class DeviceWave extends DeviceComponent
 			{}
 
 			@Override
-			public Class getColumnClass(int col)
+			public Class<?> getColumnClass(int col)
 			{
 				return new String().getClass();
 			}
@@ -423,14 +417,14 @@ public class DeviceWave extends DeviceComponent
 					final Transferable contents = clip.getContents(null);
 					final DataFlavor[] flavors = contents.getTransferDataFlavors();
 					String valType = "";
-					for (int k = 0; k < flavors.length; k++)
+					for (final DataFlavor flavor : flavors)
 					{
 						try
 						{
 							// System.out.println( flavors[k].getHumanPresentableName());
-							if (!flavors[k].getHumanPresentableName().equals("Unicode String"))
+							if (!flavor.getHumanPresentableName().equals("Unicode String"))
 								continue;
-							final BufferedReader in = new BufferedReader(flavors[k].getReaderForText(contents));
+							final BufferedReader in = new BufferedReader(flavor.getReaderForText(contents));
 							String s = in.readLine();
 							while (s != null) // && s.trim().length() != 0 )
 							{
@@ -731,41 +725,34 @@ public class DeviceWave extends DeviceComponent
 			}
 		});
 	}
+
 	@Override
 	protected void dataChanged(int offsetNid, Object data)
 	{
 		if (offsetNid != getOffsetNid())
 			return;
-		Vector inVect;
-		try
-		{
-			inVect = (Vector) data;
-		}
-		catch (final Exception exc)
+		if (!(data instanceof Vector<?>))
 		{
 			System.err.println("Internal error: wrong data passed to DeviceWave.dataChanged");
 			return;
 		}
-		minX = ((Float) inVect.elementAt(0)).floatValue();
-		maxX = ((Float) inVect.elementAt(1)).floatValue();
-		minY = ((Float) inVect.elementAt(2)).floatValue();
-		maxY = ((Float) inVect.elementAt(3)).floatValue();
-		final float[] currX = (float[]) inVect.elementAt(4);
-		final float[] currY = (float[]) inVect.elementAt(5);
+		final Vector<?> inVect = (Vector<?>) data;
 		try
 		{
-			waveX = new float[currX.length];
-			waveY = new float[currY.length];
-			for (int i = 0; i < currX.length; i++)
-			{
-				waveX[i] = currX[i];
-				waveY[i] = currY[i];
-			}
+			minX = ((Number) inVect.elementAt(0)).floatValue();
+			maxX = ((Number) inVect.elementAt(1)).floatValue();
+			minY = ((Number) inVect.elementAt(2)).floatValue();
+			maxY = ((Number) inVect.elementAt(3)).floatValue();
+			final float[] currX = (float[]) inVect.elementAt(4);
+			final float[] currY = (float[]) inVect.elementAt(5);
+			waveX = Arrays.copyOf(currX, currX.length);
+			waveY = Arrays.copyOf(currY, currY.length);
 		}
 		catch (final Exception exc)
 		{}
 		displayData(null, true);
 	}
+
 	@Override
 	protected void displayData(String data, boolean is_on)
 	{
@@ -788,6 +775,7 @@ public class DeviceWave extends DeviceComponent
 		}
 		table.repaint();
 	}
+
 	@Override
 	public void fireUpdate(String updateId, String newExpr)
 	{
@@ -822,6 +810,7 @@ public class DeviceWave extends DeviceComponent
 			}
 		}
 	}
+
 	protected String getArrayExpr(float[] vals)
 	{
 		String retExpr = "";
@@ -834,6 +823,7 @@ public class DeviceWave extends DeviceComponent
 		}
 		return retExpr + "]";
 	}
+
 	@Override
 	protected String getData()
 	{
@@ -842,10 +832,11 @@ public class DeviceWave extends DeviceComponent
 		final String values = getArrayExpr(waveY);
 		return "BUIILD_SIGNAL(" + values + ",," + dims + ")";
 	}
+
 	@Override
 	protected Object getFullData()
 	{
-		final Vector res = new Vector();
+		final Vector<Object> res = new Vector<>();
 		res.add(new Float(minX));
 		res.add(new Float(maxX));
 		res.add(new Float(minY));
@@ -854,6 +845,7 @@ public class DeviceWave extends DeviceComponent
 		res.add(waveY);
 		return res;
 	}
+
 	public boolean getMaxXVisible()
 	{ return maxXVisible; }
 
@@ -1009,10 +1001,10 @@ public class DeviceWave extends DeviceComponent
 		final DataFlavor[] flavors = contents.getTransferDataFlavors();
 		// System.out.println("isClipboardText: " + flavors);
 		boolean isText = false;
-		for (int k = 0; k < flavors.length; k++)
+		for (final DataFlavor flavor : flavors)
 		{
 			// System.out.println( flavors[k].getHumanPresentableName());
-			if (!flavors[k].getHumanPresentableName().equals("Unicode String"))
+			if (!flavor.getHumanPresentableName().equals("Unicode String"))
 				continue;
 			isText = true;
 			break;

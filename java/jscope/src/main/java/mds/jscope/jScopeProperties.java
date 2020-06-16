@@ -1,10 +1,7 @@
 package mds.jscope;
 
-import java.io.BufferedReader;
 /* $Id$ */
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.util.Properties;
 
 public class jScopeProperties extends Properties
@@ -15,7 +12,7 @@ public class jScopeProperties extends Properties
 	private static final long serialVersionUID = 1L;
 	private static final String keyValueSeparators = "=: \t\r\n\f";
 	private static final String strictKeyValueSeparators = "=:";
-	private static final String specialSaveChars = "=: \t\r\n\f#!";
+	// private static final String specialSaveChars = "=: \t\r\n\f#!";
 	private static final String whiteSpaceChars = " \t\r\n\f";
 
 	/*

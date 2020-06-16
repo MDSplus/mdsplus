@@ -13,15 +13,6 @@
 	<description>
 		MDSplus device beans for jdevice dialogs
 	</description>
-	<build>
-		<sourceDirectory>${sourceDirectory}/devicebeans/src/main/java</sourceDirectory>
-		<testSourceDirectory>${sourceDirectory}/devicebeans/src/test/java</testSourceDirectory>
-		<resources>
-			<resource>
-				<directory>${sourceDirectory}/devicebeans/src/main/resources</directory>
-			</resource>
-		</resources>
-	</build>
 	<dependencies>
 		<dependency>
 			<groupId>org.mdsplus</groupId>
