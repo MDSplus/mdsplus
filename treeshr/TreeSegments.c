@@ -860,10 +860,9 @@ static int check_sinfo(vars_t *vars) {
   vars->sinfo = &vars->sindex.segment[vars->idx % SEGMENTS_PER_INDEX];
   return TreeSUCCESS;
 }
-
-static int xnci_get_segment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim, const int nci_locked);
-static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
-                              int checkcompress(vars_t*vars,mdsdsc_xd_t*,mdsdsc_xd_t*,mdsdsc_a_t*)) {
+static int read_segment(void *dbid, TREE_INFO *tinfo, int nid, SEGMENT_HEADER *shead, SEGMENT_INFO *sinfo, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim);
+static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue, int checkcompress(vars_t*vars,mdsdsc_xd_t*,mdsdsc_xd_t*,mdsdsc_a_t*))
+{
   int status = TreeSUCCESS;
   vars->add_length = 0;
   if (vars->idx == -1) {
@@ -908,7 +907,7 @@ static int begin_sinfo(vars_t *vars, mdsdsc_a_t *initialValue,
     EMPTYXD(xd_data);
     EMPTYXD(xd_dim);
     vars->sinfo = &vars->sindex.segment[(vars->idx % SEGMENTS_PER_INDEX) - 1];
-    status = xnci_get_segment(vars->dblist, *(int *)vars->nid_ptr, vars->xnci, vars->idx - 1, &xd_data, &xd_dim, vars->nci_locked);
+    status = read_segment(vars->dblist, vars->tinfo, *(int *)vars->nid_ptr, &vars->shead, vars->sinfo, vars->idx-1, &xd_data, &xd_dim);
     if STATUS_OK
       status = checkcompress(vars, &xd_data, &xd_dim, initialValue);
     MdsFree1Dx(&xd_data, 0);
@@ -2232,18 +2231,13 @@ int _TreeXNciGetSegmentLimits(void *dbid, int nid, const char *xnci, int idx,
   return get_segment_limits(vars, retStart, retEnd);
 }
 
-static int xnci_get_segment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim, const int nci_locked)
-{
+int _TreeXNciGetSegment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim) {
   INIT_VARS;
   vars->idx = idx;
-  vars->nci_locked = nci_locked;
   RETURN_IF_NOT_OK(get_segment(vars));
   return read_segment(dbid, vars->tinfo, nid, &vars->shead, vars->sinfo, vars->idx, segment, dim);
 }
 
-int _TreeXNciGetSegment(void *dbid, int nid, const char *xnci, int idx, mdsdsc_xd_t *segment, mdsdsc_xd_t *dim) {
-  return xnci_get_segment(dbid, nid, xnci, idx, segment, dim, 0);
-}
 int _TreeXNciGetSegmentInfo(void *dbid, int nid, const char *xnci, int idx,
                             char *dtype, char *dimct, int *dims,
                             int *next_row) {
