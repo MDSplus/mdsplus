@@ -367,9 +367,17 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 	}
 
 	@Override
-	public final void close() throws MdsException
+	public final void close()
 	{
-		MdsException.handleStatus(this.api.treeClose(this.ctx, null, 0));
+		try
+		{
+			if (this.is_editable())
+				this.api.treeQuitTree(ctx, null, 0);
+			else
+				this.api.treeClose(ctx, null, 0);
+		}
+		catch (final MdsException e)
+		{}
 		this.updateListener(false);
 	}
 
