@@ -259,7 +259,7 @@ public class jDispatchMonitor extends JFrame implements MdsServerListener, Conne
 
 		public void saveTimePhaseExecution()
 		{
-			final File file = new File("PulsesPhasesEsecutionTime.log");
+			final File file = new File("PhaseExecutionTime.log");
 			try
 			{
 				if (log == null)
