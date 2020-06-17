@@ -24,11 +24,15 @@
 #
 import MDSplus
 import threading
-from queue import Queue, Empty
+
 import time
 import socket
-import math
 import numpy as np
+import sys
+if sys.version_info < (3,):
+    from Queue import Queue, Empty
+else:
+    from queue import Queue, Empty
 
 
 class _ACQ2106_423ST(MDSplus.Device):

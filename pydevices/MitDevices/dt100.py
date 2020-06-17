@@ -23,12 +23,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import pexpect
+
 import re
 import transport
 import array
 import os
 
+# import pexpect
 debug = 0
 
 if os.getenv("LOGCMD", "NO") == "YES":
@@ -63,6 +64,7 @@ class DT100(transport.Transport):
             print("%s <= \"%s\"" % (self.host, s))
 
     def _connect(self):
+        import pexpect
         hp = self.host.split(":")
         if len(hp)==2:
 # it's a tunnel ...
@@ -95,6 +97,7 @@ class DT100(transport.Transport):
             print("Timeout")
 
     def connectStatemon(self):
+        import pexpect
         hp = self.host.split(":")
         if len(hp)==2:
             # it's a tunnel ...
@@ -151,6 +154,7 @@ class DT100(transport.Transport):
             return 0
 
     def waitState(self, state):
+        import pexpect
         regstr = '([0-9\.]*) [0-9] ST_(.*)\r\n'
         dprint("waitState %s" % regstr)
         wantex = re.compile(regstr)
