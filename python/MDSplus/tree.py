@@ -3497,11 +3497,14 @@ If you did intend to write to a subnode of the device you should check the prope
     @staticmethod
     def __cached():
         import sys,os
-        path = _mds.getenv("MDS_PYDEVICE_PATH")
+        path = _mds.getenv("MDS_PYDEVICE_PATH", None)
+        if not path:
+            path = os.path.join(
+                _mds.getenv("MDSPLUS_DIR", "/usr/local/mdsplus"), "pydevices")
         if not path == Device.__cached_mds_pydevice_path:
             Device.__cached_mds_pydevice_path = path
             Device.__cached_py_devices = None
-        return sys,os,path
+        return sys, os, path
 
     __cached_mds_pydevice_path = ""
     __cached_py_devices = None
@@ -3523,37 +3526,53 @@ If you did intend to write to a subnode of the device you should check the prope
         """Find all device support models in the MDS_PYDEVICE_PATH environment variable search list.
         @rtype: dict of device_name:device_class
         """
+        def process_file(fname, ans):
+            if fname.startswith("_"):
+                return  # filter: hidden
+            if not fname.endswith('.py'):
+                return  # filter: other file types
+            try:
+                modname = fname[:-3]
+                module = __import__(modname)
+                for k, v in module.__dict__.items():
+                    try:
+                        if k.startswith("_"):
+                            continue  # filter: no private classes
+                        if not isinstance(v, (Device.__class__,)):
+                            continue  # filter: only classes
+                        if not issubclass(v, Device):
+                            continue  # filter: only device classes
+                        if not v.__module__ == modname:
+                            continue  # filter: no super classes
+                        kupper = k.upper()
+                        if not kupper in ans:
+                            ans[kupper] = v
+                        else:
+                            print("Device '%s' in '%s' already imported from '%s'." % (k, modname, ans[k].__module__))
+                    except Exception as e:
+                        print('Error importing %s from %s: %s' % (k, fname, e))
+            except Exception as e:
+                print('Error importing from %s: %s' % (fname, e))
+
         with cls.__cached_lock:
-          sys,os,path = Device.__cached()
-          if Device.__cached_py_devices is None:
-            ans=dict()
-            if path is not None:
-              parts=path.split(';')
-              for part in parts:
-                for dp,dn,fn in os.walk(part):
-                  sys.path.insert(0,dp)
-                  try:
-                    for fname in fn:
-                      if fname == "__init__.py": continue
-                      if not fname.endswith('.py'): continue
-                      try:
-                          modname = fname[:-3]
-                          module = __import__(modname)
-                          for k,v in module.__dict__.items():
-                            try:
-                              if k.startswith("_"):                     continue # filter: no private classes
-                              if not isinstance(v,(Device.__class__,)): continue # filter: only classes
-                              if not issubclass(v,Device):              continue # filter: only device classes
-                              if not v.__module__ == modname:           continue # filter: no super classes
-                              kupper = k.upper()
-                              if not kupper in ans: ans[kupper] = v
-                              else: _sys.stderr.write("Device '%s' from '%s' already imported from '%s'\n" % (k,modname,ans[k].__module__))
-                            except Exception as e: _sys.stderr.write('Error importing %s from %s: %s\n' % (k, fname, e))
-                      except: pass
-                  finally:
-                    sys.path.remove(dp)
-            Device.__cached_py_devices = ans
-          return Device.__cached_py_devices
+            sys, os, path = Device.__cached()
+            if Device.__cached_py_devices is None:
+                ans = {}
+                if path:
+                    sys.path.insert(0, '')
+                    try:
+                        for part in path.split(';'):
+                            for dp, dn, fn in os.walk(part):
+                                if dp.endswith('__pycache__'):
+                                    continue
+                                sys.path[0] = dp
+                                for fname in fn:
+                                    process_file(fname, ans)
+                    finally:
+                        del(sys.path[0])
+                Device.__cached_py_devices = ans
+                sys.stdout.flush()
+            return Device.__cached_py_devices
 
     @classmethod
     def PyDevice(cls,module,model=None):
