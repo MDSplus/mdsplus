@@ -24,25 +24,23 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-import importlib
+import _acq400_base
 
-acq400_base = importlib.import_module('acq400_base')
+class _ACQ1001_ST(_acq400_base._ACQ400_ST_BASE):
+    """D-Tacq ACQ2106 stream support."""
 
-class _ACQ1001_ST(acq400_base._ACQ400_ST_BASE):
-    """
-    D-Tacq ACQ2106 stream support.
-    """
 
-class_ch_dict = acq400_base.create_classes(
+class_ch_dict = _acq400_base.create_classes(
     _ACQ1001_ST, "ACQ1001_ST",
-    list(_ACQ1001_ST.base_parts) + list(_ACQ1001_ST.st_base_parts),
-    acq400_base.ACQ1001_CHANNEL_CHOICES
+    _ACQ1001_ST.base_parts + _ACQ1001_ST.st_base_parts,
+    _acq400_base.ACQ1001_CHANNEL_CHOICES
 )
 
 globals().update(class_ch_dict)
 
+
 if __name__ == '__main__':
-    acq400_base.print_generated_classes(class_ch_dict)
+    _acq400_base.print_generated_classes(class_ch_dict)
 del(class_ch_dict)
 
 # public classes created in this module

@@ -23,30 +23,24 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import MDSplus
-import threading
-import importlib
 
-acq400_base = importlib.import_module('acq400_base')
+import _acq400_base
 
-
-class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
-    """
-    D-Tacq ACQ2106 transient support.
-    """
+class _ACQ2106_TR(_acq400_base._ACQ400_TR_BASE):
+    """D-Tacq ACQ2106 transient support."""
 
 
-class_ch_dict = acq400_base.create_classes(
+class_ch_dict = _acq400_base.create_classes(
     _ACQ2106_TR, "ACQ2106_TR",
-    list(_ACQ2106_TR.tr_base_parts) + list(_ACQ2106_TR.base_parts),
-    acq400_base.ACQ2106_CHANNEL_CHOICES
+    _ACQ2106_TR.tr_base_parts + _ACQ2106_TR.base_parts,
+    _acq400_base.ACQ2106_CHANNEL_CHOICES
 )
 
 globals().update(class_ch_dict)
 
 
 if __name__ == '__main__':
-    acq400_base.print_generated_classes(class_ch_dict)
+    _acq400_base.print_generated_classes(class_ch_dict)
 del(class_ch_dict)
 
 # public classes created in this module
