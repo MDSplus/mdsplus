@@ -330,7 +330,6 @@ class phantom(object):
     def __repr__(self): return str(self)
     def __getattr__(self, name): return self.get(name.replace("_", "."))
     def __setattr__(self, name, value): self.set(name.replace("_", "."), value)
-    def store_cinfo(self, cinfo): self.cinfo = cinfo
 
     def new_socket(self):
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -753,7 +752,6 @@ else:
                             (MDSplus.Float64(rate).setUnits('Hz')))
                 self.update(self.dev.exposure,
                             (MDSplus.Int32(cinfo['exp']).setUnits('ns')))
-                self.dev.frames_meta = MDSplus.Data(cinfo)
                 num_cine = len(self.lib.cstats())
                 Q = queue.Queue(30)
                 writer = self.Writer(self, Q)
@@ -847,14 +845,15 @@ else:
         ),
         dict(
             path=':FRAMES:META',
-            type='ANY',
+            type='TEXT',
             options=('no_write_model', 'write_once'),
+            filter=json.loads,
         ),
         dict(
             path=':HOST',
             type='TEXT',
             options=('no_write_shot', ),
-            filter=MDSplus.mdsrecord.str,
+            filter=str,
             default=None,
         ),
         dict(
@@ -877,7 +876,7 @@ else:
             valueExpr='Uint16Array([256, 128])',
             options=('no_write_shot', ),
             help='frame dimension in [W, H]',
-            filter=MDSplus.mdsrecord.int_list,
+            filter=[int],
         ),
         dict(
             path=':NUM_FRAMES',
@@ -901,18 +900,15 @@ else:
             help='Exposure time in ns caps automatically based on frame_rate',
             filter=int,
         ),
-        dict(
-            path=':CINFO_JSON',
-            type='TEXT',
-            options=('no_write_model', 'write_once'),
-            filter=json.loads,
-        ),
     ]
 
-    def store_cinfo(self, cinfo): self.cinfo_json = json.dumps(cinfo)
+    def store_cinfo(self, cinfo):
+        """Store cinfo in tree. as method so it can be redirected."""
+        self.frames_meta = json.dumps(cinfo)
 
     @property
     def lib(self):
+        """Cache phantom interface. Clears on deinit."""
         pers = self.persistent
         if pers is None:
             pers = self.persistent = dict(
@@ -921,6 +917,7 @@ else:
         return pers['lib']
 
     def init(self):
+        """Run the INIT action."""
         if self.debug:
             dprint("started init")
         w, h = self._resolution
@@ -935,6 +932,7 @@ else:
             raise MDSplus.DevERROR_DOING_INIT
 
     def arm(self):
+        """Run the ARM action."""
         if self.debug:
             print("started arm")
         pers = self.persistent
@@ -954,6 +952,7 @@ else:
             raise MDSplus.DevINV_SETUP
 
     def soft_trigger(self):
+        """Run the SOFT_TRIGGER action."""
         if self.debug:
             dprint("started soft_trigger")
         try:
@@ -966,6 +965,7 @@ else:
             raise MDSplus.DevTRIGGER_FAILED
 
     def store(self):
+        """Run the STORE action."""
         pers = self.persistent
         if pers is None:
             raise MDSplus.DevINV_SETUP
@@ -990,6 +990,7 @@ else:
             raise MDSplus.DevCOMM_ERROR
 
     def deinit(self):
+        """Run the DEINIT action."""
         pers = self.persistent
         if pers is not None:
             try:
@@ -1003,6 +1004,7 @@ else:
 
 
 def test_single_cine():
+    """Test basic functions and single cine capture."""
     # print(phantom.find_cameras("192.168.44.255"))
     p = phantom("192.168.44.255")
     p.init(100, 1000, 100000, 128, 80)
@@ -1028,6 +1030,7 @@ def test_single_cine():
 
 
 def test_multi_cine():
+    """Test multi cine capture."""
     p = phantom("192.168.44.255")
     p.init(1000, 100000, 100000, 1280, 800)
     num_cine = p.arm()
@@ -1046,6 +1049,7 @@ def test_multi_cine():
 
 if MDSplus is not None:
     def testmds(expt='test', shot=1):
+        """Test MDSplus device with multi cine, i.e. multiple trigger."""
         import gc
         gc.collect(2)
         MDSplus.setenv('default_tree_path', os.getenv("TMP", "/tmp"))

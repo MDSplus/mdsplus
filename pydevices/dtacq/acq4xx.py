@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # Author: Timo Schroeder
 
 # TODO:
@@ -766,21 +766,21 @@ class _property_state(object):
             return self
         ans = inst(self._cmd)
         if not ans:
-            return dict(state='CLEANUP')
+            return {'state': 'CLEANUP'}
         try:
             res = list(map(int, ans.split(' ')))+[0]*4
         except ValueError:
-            return dict(state='CLEANUP')
+            return {'state': 'CLEANUP'}
         stat = res[0]
         if stat <= 5:
             stat = STATE.get_name(stat)
-        return dict(
-            state=stat,
-            pre=res[1],
-            post=res[2],
-            elapsed=res[3],
-            reserved=tuple(res[4:]),
-        )
+        return {
+            'state': stat,
+            'pre': res[1],
+            'post': res[2],
+            'elapsed': res[3],
+            'reserved': tuple(res[4:]),
+        }
 
     def __init__(self, cmd, doc=None):
         if doc is not None:
@@ -2081,7 +2081,7 @@ class _streaming(ABC):
     def streaming_arm(self, before, stream, after):
         if self._streams is not None:
             raise Exception("Streams already initialized.")
-        self.share = dict(lock=threading.Lock())
+        self.share = {'lock': threading.Lock()}
         before()
         streams = set([])
         for idx in self.active_streams:
@@ -3296,6 +3296,8 @@ def test_without_mds(mode=STREAM_MODE.OFF, w_ao=True, w_ai=True):
 
 
 def test_stream_es():
+    if not os.path.exists('/data/2.00'):
+        return
     class test_streaming(_streaming):
         nChannels = "set in __init__"
         es_clock_div = "set in __init__"
@@ -3320,7 +3322,7 @@ def test_stream_es():
 
             def buffers(self):
                 for i in range(0, 24, 4):
-                    filepath = "/m/2.%02d" % i
+                    filepath = "/data/2.%02d" % i
                     yield numpy.memmap(
                             filepath, dtype='int16', mode='r',
                             shape=(self.nSamples, self.nChannels))
@@ -3403,38 +3405,34 @@ else:
  @MDSplus.with_mdsrecords  # analysis:ignore
  class _STREAMING_MGT482(_streaming_mgt482, _STREAMING_ETH):  # analysis:ignore
     parts = [
-        dict(
-            path=':STREAM.MGT_A',
-            type='numeric',
-            options=('no_write_shot', 'write_once'),
-            help="Host's device id for lane A",
-            filter=int,
-            default=0,
-        ),
-        dict(
-            path=':STREAM.MGT_A:SITES',
-            type='numeric',
-            options=('no_write_shot',),
-            help="Sites streamed via lane A",
-            filter=MDSplus.mdsrecord.int_list,
-            default=[],
-        ),
-        dict(
-            path=':STREAM.MGT_B',
-            type='numeric',
-            options=('no_write_shot', 'write_once'),
-            help="Host's device id for lane B",
-            filter=int,
-            default=1,
-        ),
-        dict(
-            path=':STREAM.MGT_B:SITES',
-            type='numeric',
-            options=('no_write_shot',),
-            help="Sites streamed via lane B",
-            filter=MDSplus.mdsrecord.int_list,
-            default=[],
-        ),
+        {'path': ':STREAM.MGT_A',
+         'type': 'numeric',
+         'options': ('no_write_shot', 'write_once'),
+         'help': "Host's device id for lane A",
+         'filter': int,
+         'default': 0,
+        },
+        {'path': ':STREAM.MGT_A:SITES',
+         'type': 'numeric',
+         'options': ('no_write_shot',),
+         'help': "Sites streamed via lane A",
+         'filter': [int],
+         'default': [],
+        },
+        {'path': ':STREAM.MGT_B',
+         'type': 'numeric',
+         'options': ('no_write_shot', 'write_once'),
+         'help': "Host's device id for lane B",
+         'filter': int,
+         'default': 1,
+        },
+        {'path': ':STREAM.MGT_B:SITES',
+         'type': 'numeric',
+         'options': ('no_write_shot',),
+         'help': "Sites streamed via lane B",
+         'filter': [int],
+         'default': [],
+        },
     ]
 
     def get_devid(self, i):
@@ -3504,128 +3502,84 @@ else:
     PVs are set from the user tree-knobs.
     """
     parts = [
-        dict(
-            path=':ACTIONSERVER',
-            type='TEXT',
-            options=('no_write_shot', 'write_once'),
-        ),
-        dict(
-            path=':ACTIONSERVER:INIT',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Action(node.DISPATCH,node.TASK)',
-        ),
-        dict(
-            path=':ACTIONSERVER:INIT:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.actionserver,"INIT",31)',
-        ),
-        dict(
-            path=':ACTIONSERVER:INIT:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None,"init",head)',
-        ),
-        dict(
-            path=':ACTIONSERVER:ARM',
-            type='ACTION',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Action(node.DISPATCH,node.TASK)',
-        ),
-
-        dict(
-            path=':ACTIONSERVER:ARM:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr=(
-                'Dispatch(head.actionserver,"INIT",head.actionserver_init)'),
-        ),
-
-        dict(
-            path=':ACTIONSERVER:ARM:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None,"arm",head)',
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER',
-            type='ACTION',
-            options=('no_write_shot', 'write_once', 'disabled'),
-            valueExpr='Action(node.DISPATCH,node.TASK)',
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER:DISPATCH',
-            type='DISPATCH',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Dispatch(head.actionserver,"PULSE",1)',
-        ),
-        dict(
-            path=':ACTIONSERVER:SOFT_TRIGGER:TASK',
-            type='TASK',
-            options=('no_write_shot', 'write_once'),
-            valueExpr='Method(None,"soft_trigger",head)',
-        ),
-        dict(
-            path=':ACTIONSERVER:REBOOT',
-            type='TASK',
-            options=('write_once',),
-            valueExpr='Method(None,"reboot",head)',
-        ),
-        dict(
-            path=':COMMENT',
-            type='text',
-        ),
-        dict(
-            path=':HOST',
-            type='text',
-            value='localhost',
-            options=('no_write_shot',),  # hostname or ip address
-        ),
-        dict(
-            path=':STREAM',
-            type='numeric',
-            valueExpr='SUBSCRIPT({"OFF":0,"ETH":1,"MGT":2},"OFF")',
-            options=('no_write_shot',),
-            help='Stream Mode: OFF,ETH,MGT',
-        ),
-        dict(
-            path=':TRIGGER',
-            type='numeric',
-            valueExpr='Int64(0)',
-            options=('no_write_shot',),
-        ),
-        dict(
-            path=':TRIGGER:EDGE',
-            type='text',
-            value='rising',
-            options=('no_write_shot',),
-        ),
-        dict(
-            path=':CLOCK',
-            type='numeric',
-            valueExpr='head._default_clock',
-            options=('no_write_shot',),
-        ),
-        dict(
-            path=':CLOCK:SRC',
-            type='numeric',
-            valueExpr='head.clock_src_zclk',
-            options=('no_write_shot',),
-            help="reference to ZCLK or set FPCLK in Hz",
-        ),
-        dict(
-            path=':CLOCK:SRC:ZCLK',
-            type='numeric',
-            valueExpr='Int32(33.333e6).setHelp("INT33M")',
-            options=('no_write_shot',),
-            help='INT33M',
-        ),
-        dict(
-            path=':COMMANDS',
-            type='text',
-            options=('no_write_model', 'write_once'),
-        ),
+        {'path': ':ACTIONSERVER',
+         'type': 'TEXT',
+         'options': ('no_write_shot', 'write_once'),
+         'filter': str,
+        },
+        {'path': ':ACTIONSERVER:INIT',
+         'type': 'ACTION',
+         'options': ('no_write_shot', 'write_once'),
+         'valueExpr': ('Action('
+                       'Dispatch(head.actionserver,"INIT",31),'
+                       'Method(None,"init",head))')
+        },
+        {'path': ':ACTIONSERVER:ARM',
+         'type': 'ACTION',
+         'options': ('no_write_shot', 'write_once'),
+         'valueExpr': ('Action('
+                       'Dispatch(head.actionserver,"INIT",head.actionserver_init),'
+                       'Method(None,"arm",head))')
+        },
+        {'path': ':ACTIONSERVER:SOFT_TRIGGER',
+         'type': 'ACTION',
+         'options': ('no_write_shot', 'write_once', 'disabled'),
+         'valueExpr': ('Action('
+                       'Dispatch(head.actionserver,"PULSE",1),'
+                       'Method(None,"soft_trigger",head))')
+        },
+        {'path': ':ACTIONSERVER:REBOOT',
+         'type': 'TASK',
+         'options': ('write_once',),
+         'valueExpr': 'Method(None,"reboot",head)',
+        },
+        {'path': ':HOST',
+         'type': 'text',
+         'value': 'localhost',
+         'options': ('no_write_shot',),  # hostname or ip address
+         'filer': str,
+        },
+        {'path': ':STREAM',
+         'type': 'numeric',
+         'valueExpr': 'SUBSCRIPT({"OFF":0,"ETH":1,"MGT":2},"OFF")',
+         'options': ('no_write_shot',),
+         'help': 'Stream Mode: OFF,ETH,MGT',
+        },
+        {'path': ':TRIGGER',
+         'type': 'numeric',
+         'valueExpr': 'Int64(0)',
+         'options': ('no_write_shot',),
+        },
+        {'path': ':TRIGGER:EDGE',
+         'type': 'text',
+         'value': 'rising',
+         'options': ('no_write_shot',),
+         'filer': str,
+        },
+        {'path': ':CLOCK',
+         'type': 'numeric',
+         'valueExpr': 'head._default_clock',
+         'options': ('no_write_shot',),
+         'filer': float,
+        },
+        {'path': ':CLOCK:SRC',
+         'type': 'numeric',
+         'valueExpr': 'head.clock_src_zclk',
+         'options': ('no_write_shot',),
+         'help': "reference to ZCLK or set FPCLK in Hz",
+         'filer': float,
+        },
+        {'path': ':CLOCK:SRC:ZCLK',
+         'type': 'numeric',
+         'valueExpr': 'Int32(33.333e6).setHelp("INT33M")',
+         'options': ('no_write_shot',),
+         'help': 'INT33M',
+        },
+        {'path': ':COMMANDS',
+         'type': 'text',
+         'options': ('no_write_model', 'write_once'),
+         'filer': json.loads,
+        },
     ]
 
     @staticmethod
@@ -3633,54 +3587,30 @@ else:
         _carrier.setup_class(cls, module, num_modules)
         if module._is_ai:
             cls.parts = cls.parts + [
-                dict(
-                    path=':ACTIONSERVER:STORE',
-                    type='ACTION',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Action(node.DISPATCH,node.TASK)',
-                ),
-                dict(
-                    path=':ACTIONSERVER:STORE:DISPATCH',
-                    type='DISPATCH',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Dispatch(head.actionserver,"STORE",51)',
-                ),
-                dict(
-                    path=':ACTIONSERVER:STORE:TASK',
-                    type='TASK',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Method(None,"store",head)',
-                ),
-                dict(
-                    path=':ACTIONSERVER:DEINIT',
-                    type='ACTION',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Action(node.DISPATCH,node.TASK)',
-                ),
-                dict(
-                    path=':ACTIONSERVER:DEINIT:DISPATCH',
-                    type='DISPATCH',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Dispatch(head.actionserver,"DEINIT",31)',
-                ),
-                dict(
-                    path=':ACTIONSERVER:DEINIT:TASK',
-                    type='TASK',
-                    options=('no_write_shot', 'write_once'),
-                    valueExpr='Method(None,"deinit",head)',
-                ),
-                dict(
-                    path=':TRIGGER:PRE',
-                    type='numeric',
-                    value=0,
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path=':TRIGGER:POST',
-                    type='numeric',
-                    value=100000,
-                    options=('no_write_shot',),
-                ),
+                {'path': ':ACTIONSERVER:STORE',
+                 'type': 'ACTION',
+                 'options': ('no_write_shot', 'write_once'),
+                 'valueExpr': ('Action('
+                               'Dispatch(head.actionserver,"STORE",51),'
+                               'Method(None,"store",head))'),
+                },
+                {'path': ':ACTIONSERVER:DEINIT',
+                 'type': 'ACTION',
+                 'options': ('no_write_shot', 'write_once'),
+                 'valueExpr': ('Action('
+                               'Dispatch(head.actionserver,"DEINIT",31),'
+                               'Method(None,"deinit",head))'),
+                },
+                {'path': ':TRIGGER:PRE',
+                 'type': 'numeric',
+                 'value': 0,
+                 'options': ('no_write_shot',),
+                },
+                {'path': ':TRIGGER:POST',
+                 'type': 'numeric',
+                 'value': 100000,
+                 'options': ('no_write_shot',),
+                },
             ]
             @MDSplus.mdsrecord(filter=int)
             def _setting_pre(self): return self.__getattr__('trigger_pre')
@@ -3694,12 +3624,13 @@ else:
             cls._setting_post = 0
         for i in range(num_modules):
             prefix = ':MODULE%d' % (i+1)
-            cls.parts.append(dict(
-                path=prefix,
-                type='text',
-                value=module.__name__[1:],
-                options=('write_once',),
-            ))
+            cls.parts.extend([
+                {'path': prefix,
+                 'type': 'text',
+                 'value': module.__name__[1:],
+                 'options': ('write_once',),
+                },
+            ])
             module._addModuleKnobs(cls, prefix, i)
             if i == 0:
                 module._addMasterKnobs(cls, prefix)
@@ -3896,28 +3827,29 @@ else:
 
     @classmethod
     def _addMasterKnobs(cls, carrier, prefix):
-        carrier.parts.append(dict(
-            path='%s:TRIG_MODE' % (prefix,),
-            type='text',
-            options=('no_write_shot',),
-            help='*,"RTM","RGM"',
-        ))
-        carrier.parts.append(dict(
-            path='%s:TRIG_MODE:TRANSLEN' % (prefix,),
-            type='numeric',
-            value=10000,
-            options=('no_write_shot',),
-            help='Samples acquired per trigger for RTM',
-        ))
+        carrier.parts.extend([
+            {'path': '%s:TRIG_MODE' % (prefix,),
+             'type': 'text',
+             'options': ('no_write_shot',),
+             'help': '*,"RTM","RGM"',
+            },
+            {'path': '%s:TRIG_MODE:TRANSLEN' % (prefix,),
+             'type': 'numeric',
+              'value': 10000,
+             'options': ('no_write_shot',),
+             'help': 'Samples acquired per trigger for RTM',
+            },
+        ])
 
     @classmethod
     def _addModuleKnobs(cls, carrier, prefix, idx):
-        carrier.parts.append(dict(
-            path='%s:CHECK' % (prefix,),
-            type='TASK',
-            options=('write_once',),
-            valueExpr='Method(None,"check",head)'
-        ))
+        carrier.parts.extend([
+            {'path': '%s:CHECK' % (prefix,),
+             'type': 'TASK',
+             'options': ('write_once',),
+             'valueExpr': 'Method(None,"check",head)',
+            },
+        ])
 
     def __getattr__(self, name):
         """ redirect Device.part_name to head """
@@ -3992,11 +3924,12 @@ else:
     @classmethod
     def _addMasterKnobs(cls, carrier, prefix):
         _MODULE._addMasterKnobs(carrier, prefix)
-        carrier.parts.append(dict(
-            path='%s:CLKDIV' % (prefix,),
-            type='numeric',
-            options=('no_write_model',)
-        ))
+        carrier.parts.extend([
+            {'path': '%s:CLKDIV' % (prefix,),
+             'type': 'numeric',
+             'options': ('no_write_model',),
+            },
+        ])
 
     @classmethod
     def _addModuleKnobs(cls, carrier, prefix, idx):
@@ -4005,31 +3938,27 @@ else:
         for i in range(start, start+cls._num_channels):
             path = '%s:CHANNEL%02d' % (prefix, i)
             carrier.parts.extend([
-                dict(
-                    path=path,
-                    type='SIGNAL',
-                    options=('no_write_model', 'write_once',)
-                ),
-                dict(
-                    path='%s:RANGE' % (path,),
-                    type='AXIS',
-                    valueExpr='Range(None, None, 1)',
-                    options=('no_write_shot'),
-                ),
-                dict(
-                    path='%s:GAIN' % (path,),
-                    type='NUMERIC',
-                    value=10,
-                    help='0..12 [dB]',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:OFFSET' % (path,),
-                    type='NUMERIC',
-                    value=0.,
-                    help='[-1., 1.]',
-                    options=('no_write_shot',),
-                ),
+                {'path': path,
+                 'type': 'SIGNAL',
+                 'options': ('no_write_model', 'write_once',)
+                },
+                {'path': '%s:RANGE' % (path,),
+                 'type': 'AXIS',
+                 'valueExpr': 'Range(None, None, 1)',
+                 'options': ('no_write_shot'),
+                },
+                {'path': '%s:GAIN' % (path,),
+                 'type': 'NUMERIC',
+                 'value': 10,
+                 'help': '0..12 [dB]',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:OFFSET' % (path,),
+                 'type': 'NUMERIC',
+                 'value': 0.,
+                 'help': '[-1., 1.]',
+                 'options': ('no_write_shot',),
+                },
             ])
 
     def _setting_gain(self, i):
@@ -4074,29 +4003,25 @@ else:
     def _addMasterKnobs(cls, carrier, prefix):
         _MODULE._addMasterKnobs(carrier, prefix)
         carrier.parts.extend([
-            dict(
-                path='%s:CLKDIV' % (prefix,),
-                type='numeric',
-                valueExpr='MULTIPLY(node.FIR,node.FPGA)',
-                options=('write_once', 'no_write_shot'),
-            ),
-            dict(
-                path='%s:CLKDIV:FIR' % (prefix,),
-                type='numeric',
-                options=('write_once', 'no_write_model'),
-            ),
-            dict(
-                path='%s:CLKDIV:FPGA' % (prefix,),
-                type='numeric',
-                options=('write_once', 'no_write_model'),
-            ),
-            dict(
-                path='%s:FIR' % (prefix,),
-                type='numeric',
-                value=0,
-                help='DECIM=[1,2,2,4,4,4,4,2,4,8,1] for FIR=[0,..,10]',
-                options=('no_write_shot',),
-            ),
+            {'path': '%s:CLKDIV' % (prefix,),
+             'type': 'numeric',
+             'valueExpr': 'MULTIPLY(node.FIR,node.FPGA)',
+             'options': ('write_once', 'no_write_shot'),
+            },
+            {'path': '%s:CLKDIV:FIR' % (prefix,),
+             'type': 'numeric',
+             'options': ('write_once', 'no_write_model'),
+            },
+            {'path': '%s:CLKDIV:FPGA' % (prefix,),
+             'type': 'numeric',
+             'options': ('write_once', 'no_write_model'),
+            },
+            {'path': '%s:FIR' % (prefix,),
+             'type': 'numeric',
+             'value': 0,
+             'help': 'DECIM=[1,2,2,4,4,4,4,2,4,8,1] for FIR=[0,..,10]',
+             'options': ('no_write_shot',),
+            },
         ])
 
     @classmethod
@@ -4105,52 +4030,45 @@ else:
         for i in range(start, start+cls._num_channels):
             path = '%s:CHANNEL%02d' % (prefix, i)
             carrier.parts.extend([
-                dict(
-                    path=path,
-                    type='signal',
-                    options=('no_write_model', 'write_once',),
-                ),
-                dict(
-                    path='%s:INVERT' % (path,),
-                    type='numeric',
-                    value=False,
-                    help='bool',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:RANGE' % (path,),
-                    type='axis',
-                    valueExpr='Range(None, None, 1)',
-                    options=('no_write_shot'),
-                ),
-                dict(
-                    path='%s:GAIN' % (path,),
-                    type='numeric',
-                    value=0,
-                    help='0..12 [dB]',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:LFNS' % (path,),
-                    type='numeric',
-                    value=False,
-                    help='bool',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:HPF' % (path,),
-                    type='numeric',
-                    value=False,
-                    help='bool',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:T50R' % (path,),
-                    type='numeric',
-                    value=False,
-                    help='bool',
-                    options=('no_write_shot',),
-                ),
+                {'path': path,
+                 'type': 'signal',
+                 'options': ('no_write_model', 'write_once',),
+                },
+                {'path': '%s:INVERT' % (path,),
+                 'type': 'numeric',
+                 'value': False,
+                 'help': 'bool',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:RANGE' % (path,),
+                 'type': 'axis',
+                 'valueExpr': 'Range(None, None, 1)',
+                 'options': ('no_write_shot'),
+                },
+                {'path': '%s:GAIN' % (path,),
+                 'type': 'numeric',
+                 'value': 0,
+                 'help': '0..12 [dB]',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:LFNS' % (path,),
+                 'type': 'numeric',
+                 'value': False,
+                 'help': 'bool',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:HPF' % (path,),
+                 'type': 'numeric',
+                 'value': False,
+                 'help': 'bool',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:T50R' % (path,),
+                 'type': 'numeric',
+                 'value': False,
+                 'help': 'bool',
+                 'options': ('no_write_shot',),
+                },
             ])
 
     @MDSplus.mdsrecord(filter=int, default=0)
@@ -4216,11 +4134,12 @@ else:
     @classmethod
     def _addMasterKnobs(cls, carrier, prefix):
         _MODULE._addMasterKnobs(carrier, prefix)
-        carrier.parts.append(dict(
-            path='%s:CLKDIV' % (prefix,),
-            type='numeric',
-            options=('no_write_model',),
-        ))
+        carrier.parts.extend([
+            {'path': '%s:CLKDIV' % (prefix,),
+             'type': 'numeric',
+             'options': ('no_write_model',),
+            },
+        ])
 
     @classmethod
     def _addModuleKnobs(cls, carrier, prefix, idx):
@@ -4228,33 +4147,28 @@ else:
         for i in range(start, start+cls._num_channels):
             path = '%s:CHANNEL%02d' % (prefix, i)
             carrier.parts.extend([
-                dict(
-                    path=path,
-                    type='numeric',
-                    valueExpr='EXT_FUNCTION(None, "numpy", node.EXPR)',
-                    options=('no_write_shot', 'no_write_model', 'write_once'),
-                ),
-                dict(
-                    path='%s:EXPR' % (path,),
-                    type='text',
-                    value='sin(linspace(0, 2*pi, 100000))*5',
-                    options=('no_write_shot',),
-                ),
-                dict(
-                    path='%s:RANGE' % (path,),
-                    type='text',
-                    options=('no_write_model', 'write_once'),
-                ),
-                dict(
-                    path='%s:GAIN' % (path,),
-                    type='numeric',
-                    options=('no_write_model', 'write_once'),
-                ),
-                dict(
-                    path='%s:OFFSET' % (path,),
-                    type='numeric',
-                    options=('no_write_model', 'write_once'),
-                ),
+                {'path': path,
+                 'type': 'numeric',
+                 'valueExpr': 'EXT_FUNCTION(None, "numpy", node.EXPR)',
+                 'options': ('no_write_shot', 'no_write_model', 'write_once'),
+                },
+                {'path': '%s:EXPR' % (path,),
+                 'type': 'text',
+                 'value': 'sin(linspace(0, 2*pi, 100000))*5',
+                 'options': ('no_write_shot',),
+                },
+                {'path': '%s:RANGE' % (path,),
+                 'type': 'text',
+                 'options': ('no_write_model', 'write_once'),
+                },
+                {'path': '%s:GAIN' % (path,),
+                 'type': 'numeric',
+                 'options': ('no_write_model', 'write_once'),
+                },
+                {'path': '%s:OFFSET' % (path,),
+                 'type': 'numeric',
+                 'options': ('no_write_model', 'write_once'),
+                },
             ])
 
     def _setting_expr(self, ch):
@@ -4641,6 +4555,33 @@ else:
     print("STORE PHASE DONE")
 
  if __name__=='__main__':  # analysis:ignore
+    # test generation
+    MDSplus.setenv('acq4xx_path','/tmp')
+    with MDSplus.Tree('acq4xx', -1, 'new') as t:
+        import acq4xx
+        acq4xx.ACQ1001 = t.addNode('ACQ1001')
+        acq4xx.ACQ1001_ACQ425.Add(t,"ACQ1001:ACQ425")
+        acq4xx.ACQ1001_ACQ425_12CH.Add(t,"ACQ1001:ACQ425_12CH")
+        acq4xx.ACQ1001_ACQ425_8CH.Add(t,"ACQ1001:ACQ425_8CH")
+        acq4xx.ACQ1001_ACQ425_4CH.Add(t,"ACQ1001:ACQ425_4CH")
+        acq4xx.ACQ1001_ACQ480.Add(t,"ACQ1001:ACQ480")
+        acq4xx.ACQ1001_ACQ480_4CH.Add(t,"ACQ1001:ACQ480_4CH")
+        acq4xx.ACQ1001_AO420.Add(t,"ACQ1001:AO420")
+        acq4xx.ACQ2106 = t.addNode('ACQ2106')
+        acq4xx.ACQ2106_ACQ425x1.Add(t,"ACQ2106:ACQ425x1")
+        acq4xx.ACQ2106_ACQ425x2.Add(t,"ACQ2106:ACQ425x2")
+        acq4xx.ACQ2106_ACQ425x3.Add(t,"ACQ2106:ACQ425x3")
+        acq4xx.ACQ2106_ACQ425x4.Add(t,"ACQ2106:ACQ425x4")
+        acq4xx.ACQ2106_ACQ425x5.Add(t,"ACQ2106:ACQ425x5")
+        acq4xx.ACQ2106_ACQ425x1.Add(t,"ACQ2106:ACQ425x6")
+        acq4xx.ACQ2106_ACQ480x1.Add(t,"ACQ1001:ACQ480x1")
+        acq4xx.ACQ2106_ACQ480x2.Add(t,"ACQ1001:ACQ480x2")
+        acq4xx.ACQ2106_ACQ480x3.Add(t,"ACQ1001:ACQ480x3")
+        acq4xx.ACQ2106_ACQ480x4.Add(t,"ACQ1001:ACQ480x4")
+        acq4xx.ACQ2106_ACQ480x5.Add(t,"ACQ1001:ACQ480x5")
+        acq4xx.ACQ2106_ACQ480x6.Add(t,"ACQ1001:ACQ480x6")
+        t.write()
+
     if run_test:
         Tests.simulate = True
         t = Tests()
