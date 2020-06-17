@@ -171,6 +171,16 @@ class TestDevice(Device):
             type='SIGNAL',
             options=('no_write_model', 'write_once'),
         ),
+        dict(
+            path=':STR',
+            type='TEST',
+            filter=str,
+        )
+        dict(
+            path=':INT_LIST',
+            type='NUMERIC',
+            filter=[int],
+        )
     ]
 
     class Worker(threading.Thread):

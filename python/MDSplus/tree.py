@@ -2982,13 +2982,43 @@ class mdsrecord(object):
     del(dev._trigger)  <=>   dev.trigger.record = None
     # if trigger contains no data _trigger defaults to 0
     """
+    @classmethod
+    def smart_filter(cls, filt):
+        """Generate filter from str, bytes, [str], [float], and others."""
+        if not filt:
+            return _dat.Data.data
+        if filt == str:
+            return cls.str
+        if filt == bytes:
+            return cls.bytes
+        if isinstance(filt, list):
+            if not filt:
+                def filter(a):
+                    return a.data().flatten().tolist()
+                return filter()
+            if filt[0] == int:
+                return cls.int_list
+            if filt[0] == float:
+                return cls.float_list
+            if filt[0] == str:
+                return cls.str_list
+            if filt[0] == bytes:
+                return cls.bytes_list
+            efilt = cls.smart_filter(filt[0])
+            def filter(a):
+                return [efilt(e) for e in a]
+            return filter
+        return filt
+
     def __new__(cls, *target, **opt):
-        """ use new so in can return cached_property """
+        """Use new so it can return cached_property."""
         self = object.__new__(cls)
         self.filter = opt.get("filter", None)
-        if 'default' in opt:
+        if self.filter:
+            self.filter = cls.smart_filter(self.filter)
+        try:
             self.default = [opt['default']]
-        else:
+        except KeyError:
             self.default = []
         self.cached = opt.get("cached", None)
         if target:
