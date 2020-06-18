@@ -40,7 +40,7 @@ class DT132(Device):
     Init(arg) - initialize the DTAO32 device
                 write setup parameters and waveforms to the device
     Store(arg) - store the data acquired by the device
-    Help(arg) - print(this message
+    Help(arg) - print this message
 
     Nodes:
 
