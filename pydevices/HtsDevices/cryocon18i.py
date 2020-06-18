@@ -24,9 +24,7 @@
 #
 import MDSplus
 import threading
-import copy
 import socket
-import string
 import time
 import datetime
 import numpy as np
@@ -53,24 +51,21 @@ class CRYOCON18I(MDSplus.Device):
 
     """
 
-    @staticmethod
-    def inputs():
-        return range(ord('a'), ord('h')+1)
+    inputs = "abcdefgh"
 
     parts=[
         {'path':':COMMENT','type':'text', 'options':('no_write_shot')},
         {'path':':RUNNING','type':'numeric', 'options':('no_write_model')},
         {'path':':INIT_ACTION','type':'action','valueExpr':"Action(Dispatch('S','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION','type':'action','valueExpr':"Action(Dispatch('S','STOP',50,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
-        ]
-
-    for c in inputs.__func__():
-        C = str(chr(c)).upper()
-        parts.append({'path':':INPUT_{}'.format(C),'type':'signal','options':('no_write_model','write_once',)})
-        parts.append({'path':':INPUT_{}:RESISTENCE'.format(C),'type':'SIGNAL','options':('no_write_model', 'write_once',)})
-        parts.append({'path':':INPUT_{}:CALIBRATION'.format(C),'type':'TEXT','options':('no_write_model', 'write_once',)})
- 
-    del c
+    ]
+    for i in inputs.upper():
+        parts.extend([
+            {'path':':INPUT_%c' % (i,),'type':'signal','options':('no_write_model','write_once',)},
+            {'path':':INPUT_%c:RESISTENCE' % (i,),'type':'SIGNAL','options':('no_write_model', 'write_once',)},
+            {'path':':INPUT_%c:CALIBRATION' % (i,),'type':'TEXT','options':('no_write_model', 'write_once',)},
+        ])
+    del(i)
     debug=None
 
     def debugging(self):
@@ -82,12 +77,12 @@ class CRYOCON18I(MDSplus.Device):
 
 class CRYOCON18I_TREND(CRYOCON18I):
 
-    parts = copy.copy(CRYOCON18I.parts)
-
-    parts.append({'path':':NODE','type':'text','value':'','options':('no_write_shot')})
-    parts.append({'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON18I_TREND', 'options':('no_write_shot')})
-    parts.append({'path':':STATUS_CMDS','type':'text','value':MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options':('no_write_shot',)})
-    parts.append({'path':':STATUS_OUT','type':'any','options':('write_shot','write_once','no_write_model')})
+    parts = CRYOCON18I.parts + [
+        {'path':':NODE','type':'text','value':'','options':('no_write_shot')},
+        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON18I_TREND', 'options':('no_write_shot')},
+        {'path':':STATUS_CMDS','type':'text','value':MDSplus.makeArray(['*IDN?','SYSTem:HWRev?','SYSTem:FWREV?','SYSTem:AMBient?']),'options':('no_write_shot',)},
+        {'path':':STATUS_OUT','type':'any','options':('write_shot','write_once','no_write_model')},
+    ]
 
     def sendCommand(self,s,cmd):
         s.send(cmd + "\r\n")
@@ -135,7 +130,7 @@ class CRYOCON18I_TREND(CRYOCON18I):
 
         if self.debugging():
             print("About to open cryocon device %s" % str(self.node.data()))
-        
+
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((str(self.node.data()), 5000))
 
@@ -164,13 +159,13 @@ class CRYOCON18I_TREND(CRYOCON18I):
 
         query_cmd = ''
         ansQuery = []
-        for i in self.inputs():
-            t_chan = self.__getattr__('input_%c'%(chr(i),))
+        for i in self.inputs:
+            t_chan = self.__getattr__('input_%c' % (i,))
             if t_chan.on:
-                query_cmd = 'INP %c?;INP %c:SENP?;'%(chr(i), chr(i),)
+                query_cmd = 'INP %c?;INP %c:SENP?;'% (i, i)
                 ansQuery  = self.queryCommand(s, query_cmd)[:-1].split(';')
                 t_time=time.time()
-                
+
                 try:
                     temp = float(ansQuery[0])
                 except:
@@ -181,14 +176,14 @@ class CRYOCON18I_TREND(CRYOCON18I):
                 t_chan.putRow(1000,MDSplus.Float32(temp),MDSplus.Int64(t_time*1000.))
 
 
-                r_chan=self.__getattr__('input_%c_resistence' % (chr(i)))                
+                r_chan=self.__getattr__('input_%c_resistence' % (i,))
                 try:
                     resist = float(ansQuery[1])
                 except:
                     if self.debugging():
                         print("Could not parse resist /%s/"% ansQuery[1])
                     resist = 0.0
-                
+
                 r_chan.putRow(1000, MDSplus.Float32(resist), MDSplus.Int64(t_time*1000.))
 
         MDSplus.Event.setevent(event_name)
@@ -206,15 +201,15 @@ class CRYOCON18I_TREND(CRYOCON18I):
 
 class CRYOCON18I_SHOT(CRYOCON18I):
 
-    parts = copy.copy(CRYOCON18I.parts)
-    parts.append({'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON18I_DATA','options':('no_write_shot')})
-    parts.append({'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in seconds that the shot began taking data'})
-    parts.append({'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')})
+    parts = CRYOCON18I.parts + [
+        {'path':':DATA_EVENT','type':'text', 'value': 'CRYOCON18I_DATA','options':('no_write_shot')},
+        {'path': ':T1', 'type': 'numeric', 'options': ('no_write_shot'), 'help': 'The time in seconds that the shot began taking data'},
+        {'path': ':T2', 'type': 'numeric', 'value': 0,'options': ('write_shot')},
 
-    parts.append({'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')})
-    parts.append({'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'})
-
+        {'path': ':TREND_TREE', 'type': 'text', 'options': ('no_write_shot')},
+        {'path': ':TREND_DEVICE', 'type': 'text', 'options': ('no_write_shot')},
+        {'path': ':TREND_SHOT', 'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the trend this data came from'},
+    ]
 
     def getTrendTree(self):
         tree_name    = self.trend_tree.data()
@@ -241,15 +236,15 @@ class CRYOCON18I_SHOT(CRYOCON18I):
 
         # Saving TREND shot number information into the tree:
         self.trend_shot.record = trend_tree.getCurrent(self.trend_tree.data())
-        
+
         # Set Time Context
         trend_tree.setTimeContext(t1, MDSplus.Int64(self.t2.data()*1000.))
 
         print('Writing data into shot node')
-        for c in self.inputs():
-            trend_temp     = trend_dev.__getattr__('input_{}'.format(c))
-            trend_resis    = trend_dev.__getattr__('input_{}_resistence'.format(c))
-                        
+        for i in self.inputs:
+            trend_temp     = trend_dev.__getattr__('input_%c' % (i,))
+            trend_resis    = trend_dev.__getattr__('input_%c_resistence' % (i,))
+
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
             resists  = trend_resis.data()
@@ -257,14 +252,13 @@ class CRYOCON18I_SHOT(CRYOCON18I):
             start_time = times[0]
             for j in range(len(times)):
                 times[j] -= start_time
-                times[j] = float(times[j]) / 1000.    
+                times[j] = float(times[j]) / 1000.
 
-            shot_temp     = self.__getattr__('input_{}'.format(c))
-            shot_resis    = self.__getattr__('input_{}_resistence'.format(c))
-            
+            shot_temp     = self.__getattr__('input_%c' % (i,))
+            shot_resis    = self.__getattr__('input_%c_resistence' % (i,))
+
             shot_temp.record     = MDSplus.Signal(temps, None, times)
-            shot_resis.record    = MDSplus.Signal(resists, None, times)        
+            shot_resis.record    = MDSplus.Signal(resists, None, times)
 
         MDSplus.Event.setevent(event_name)
     STORE=store
-

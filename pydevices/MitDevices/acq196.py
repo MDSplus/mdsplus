@@ -67,32 +67,32 @@ class ACQ196(acq.Acq):
 
         start=time.time()
         if self.debugging():
-            print "starting init\n";
+            print("starting init\n")
         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
         if self.debugging():
-            print 'ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot)
+            print('ACQ196 initftp path = %s tree = %s shot = %d\n' % (path, tree, shot))
 
         active_chan = self.getInteger(self.active_chan, DevBAD_ACTIVE_CHAN)
         if active_chan not in (32,64,96) :
             raise DevBAD_ACTIVE_CHAN()
         if self.debugging():
-            print "have active chan\n";
+            print("have active chan\n")
 
         try:
             trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
-        except Exception, e:
+        except Exception as e:
             raise DevBAD_TRIG_SRC(str(e))
         if self.debugging():
-            print "have trig_src\n";
+            print("have trig_src\n")
 
         try:
             clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
-        except Exception, e:
+        except Exception as e:
             raise DevBAD_CLOCK_SRC(str(e))
         if self.debugging():
-            print "have clock src\n";
+            print("have clock src\n")
 
         try:
             clock_out=str(self.clock_out.record.getOriginalPartName())[1:]
@@ -101,11 +101,11 @@ class ACQ196(acq.Acq):
 
         pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
-            print "have pre trig\n";
+            print("have pre trig\n")
 
         post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
-            print "have post trig\n";
+            print("have post trig\n")
 
         if clock_src == "INT_CLOCK":
             clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
@@ -114,7 +114,7 @@ class ACQ196(acq.Acq):
         except:
             clock_div = 1
         if self.debugging():
-            print "have the settings\n";
+            print("have the settings\n")
 
 
 #
@@ -123,20 +123,20 @@ class ACQ196(acq.Acq):
 #            fd = tempfile.TemporaryFile()
         fd = tempfile.NamedTemporaryFile(mode='w+b', bufsize=-1, suffix='.tmp', prefix='tmp', dir='/tmp', delete= not self.debugging())
         if self.debugging():
-            print 'opened temporary file %s\n'% fd.name
+            print('opened temporary file %s\n'% fd.name)
         self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
         fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
         if clock_src == 'INT_CLOCK':
             if clock_out == None:
                 if self.debugging():
-                    print "internal clock no clock out\n"
+                    print("internal clock no clock out\n")
                 fd.write("acqcmd setInternalClock %d\n" % clock_freq)
             else:
                 clock_out_num_str = clock_out[-1]
                 clock_out_num = int(clock_out_num_str)
                 setDIOcmd = 'acqcmd -- setDIO '+'-'*clock_out_num+'1'+'-'*(6-clock_out_num)+'\n'
                 if self.debugging():
-                    print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+                    print("internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,))
                 fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                 fd.write(setDIOcmd)
         else:
@@ -165,13 +165,13 @@ class ACQ196(acq.Acq):
         fd.write("add_cmd 'get.vin 65:96'>> $settingsf\n")
         self.finishJSON(fd, auto_store)
 
-        print "Time to make init file = %g\n" % (time.time()-start)
+        print("Time to make init file = %g\n" % (time.time()-start))
         start=time.time()
         self.doInit(fd)
 
         fd.close()
 
-        print "Time for board to init = %g\n" % (time.time()-start)
+        print("Time for board to init = %g\n" % (time.time()-start))
         return  1
 
 
@@ -179,7 +179,7 @@ class ACQ196(acq.Acq):
 
     def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
-            print "Begining store\n"
+            print("Begining store\n")
 
         self.checkTrigger(arg1, arg2)
         self.loadSettings()
@@ -189,26 +189,26 @@ class ACQ196(acq.Acq):
         preTrig = self.getPreTrig()
         postTrig = self.getPostTrig()
         if self.debugging():
-            print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
+            print("got preTrig %d and postTrig %d\n" % (preTrig, postTrig,))
 
         vin1 = self.settings['get.vin 1:32']
         vin2 = self.settings['get.vin 33:64']
         vin3 = self.settings['get.vin 65:96']
         active_chan = int(self.active_chan.record)
-	if active_chan == 96 :
+        if active_chan == 96 :
             vins = eval('MDSplus.makeArray([%s, %s, %s])' % (vin1, vin2, vin3,))
-	else :
-	    if active_chan == 64 :
-	        vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
-	    else :
+        else :
+            if active_chan == 64 :
+                vins = eval('MDSplus.makeArray([%s, %s])' % (vin1, vin2,))
+            else :
                 vins = eval('MDSplus.makeArray([%s])' % (vin1,))
         if self.debugging():
-            print "got the vins "
-            print vins
+            print("got the vins ")
+            print(vins)
         self.ranges.record = vins
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
-            print "chan_mask = %s\n" % (chanMask,)
+            print("chan_mask = %s\n" % (chanMask,))
 
         self.storeClock()
         clock = self.clock
@@ -219,8 +219,8 @@ class ACQ196(acq.Acq):
         for chan in range(96):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
-            except e:
-                print "Error storing channel %d\n%s" % (chan, e,)
+            except Exception as e:
+                print("Error storing channel %d\n%s" % (chan, e,))
                 last_error = e
         self.dataSocketDone()
         if last_error:

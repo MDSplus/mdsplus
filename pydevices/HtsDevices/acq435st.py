@@ -25,7 +25,11 @@
 import numpy as np
 import MDSplus
 import threading
-from queue import Queue, Empty
+import sys
+if sys.version_info < (3,):
+    from Queue import Queue, Empty
+else:
+    from queue import Queue, Empty
 
 
 class ACQ435ST(MDSplus.Device):

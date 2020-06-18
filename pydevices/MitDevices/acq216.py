@@ -68,7 +68,7 @@ class ACQ216(acq.Acq):
         start=time.time()
 
         if self.debugging():
-            print "starting init\n";
+            print("starting init\n")
         path = self.local_path
         tree = self.local_tree
         shot = self.tree.shot
@@ -77,21 +77,21 @@ class ACQ216(acq.Acq):
         if active_chan not in (4,8,16) :
             raise DevBAD_ACTIVE_CHAN()
         if self.debugging():
-            print "have active chan\n";
+            print("have active chan\n")
 
         try:
             trig_src=str(self.trig_src.record.getOriginalPartName())[1:]
-        except Exception, e:
+        except Exception as e:
             raise DevBAD_TRIG_SRC(str(e))
         if self.debugging():
-            print "have trig_src\n";
+            print("have trig_src\n")
 
         try:
             clock_src=str(self.clock_src.record.getOriginalPartName())[1:]
-        except Exception, e:
+        except Exception as e:
             raise DevBAD_CLOCK_SRC(str(e))
         if self.debugging():
-            print "have clock src\n";
+            print("have clock src\n")
 
         try:
             clock_out=str(self.clock_out.record.getOriginalPartName())[1:]
@@ -100,11 +100,11 @@ class ACQ216(acq.Acq):
 
         pre_trig = self.getInteger(self.pre_trig, DevBAD_PRE_TRIG)*1024
         if self.debugging():
-            print "have pre trig\n";
+            print("have pre trig\n")
 
         post_trig = self.getInteger(self.post_trig, DevBAD_POST_TRIG)*1024
         if self.debugging():
-            print "have post trig\n";
+            print("have post trig\n")
 
         if clock_src == "INT_CLOCK":
             clock_freq = self.getInteger(self.clock_freq,DevBAD_CLOCK_FREQ)
@@ -115,7 +115,7 @@ class ACQ216(acq.Acq):
             except:
                 clock_div = 1
         if self.debugging():
-            print "have the settings\n";
+            print("have the settings\n")
 
 
 #
@@ -126,22 +126,22 @@ class ACQ216(acq.Acq):
             self.startInitializationFile(fd, trig_src, pre_trig, post_trig)
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             for chan in range(16):
-		vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
-		if (vin == 2.5) :
-		    vin_str = "2.5"
-		elif (vin == 4) :
-		    vin_str = "4"
-		elif (vin == 6) :
-		    vin_str = "6"
-		elif (vin == 10) :
-		    vin_str = "10"
-		else :
-		    vin_str = "10"
+                vin = self.__getattr__('input_%2.2d_vin' % (chan+1,))
+                if (vin == 2.5) :
+                    vin_str = "2.5"
+                elif (vin == 4) :
+                    vin_str = "4"
+                elif (vin == 6) :
+                    vin_str = "6"
+                elif (vin == 10) :
+                    vin_str = "10"
+                else :
+                    vin_str = "10"
                 fd.write("set.vin %d %s\n" % (chan+1, vin_str))
             if clock_src == 'INT_CLOCK':
                 if clock_out == None:
                     if self.debugging():
-                        print "internal clock no clock out\n"
+                        print("internal clock no clock out\n")
                     fd.write("acqcmd setInternalClock %d\n" % clock_freq)
                 else:
                     clock_out_num_str = clock_out[-1]
@@ -150,12 +150,12 @@ class ACQ216(acq.Acq):
 #    force the routing for this clock output
 #    regardless of the settings for this line
 #    above
-		    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
+                    setRoutecmd = 'set.route d%1.1d in fpga out pxi\n' % (clock_out_num,)
                     if self.debugging():
-                        print "internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,)
+                        print("internal clock clock out is %s setDIOcmd = %s\n" % (clock_out, setDIOcmd,))
                     fd.write("acqcmd setInternalClock %d DO%s\n" % (clock_freq, clock_out_num_str,))
                     fd.write(setDIOcmd)
-		    fd.write(setRoutecmd)
+                    fd.write(setRoutecmd)
             else:
                 if (clock_out != None) :
                     clock_out_num_str = clock_out[-1]
@@ -170,25 +170,25 @@ class ACQ216(acq.Acq):
 #
             fd.write("acqcmd  setChannelMask " + '1' * active_chan+"\n")
             if self.debugging():
-                print "routes all set now move on to pre-post\n"
-                print "pre trig = %d\n" % (pre_trig,)
-                print "post trig = %d\n" % (post_trig,)
-                print "trig_src = %s\n" % (trig_src,)
+                print("routes all set now move on to pre-post\n")
+                print("pre trig = %d\n" % (pre_trig,))
+                print("post trig = %d\n" % (post_trig,))
+                print("trig_src = %s\n" % (trig_src,))
             fd.write("set.pre_post_mode %d %d %s %s\n" %(pre_trig, post_trig, trig_src, 'rising',))
             if self.debugging():
-                print "pre-post all set now the JSON and commands\n"
+                print("pre-post all set now the JSON and commands\n")
 
             self.addGenericJSON(fd)
 
             fd.write("add_cmd 'get.vin'>> $settingsf\n")
             self.finishJSON(fd, auto_store)
 
-            print "Time to make init file = %g\n" % (time.time()-start)
+            print("Time to make init file = %g\n" % (time.time()-start))
             start=time.time()
 
             self.doInit(fd)
 
-        except Exception,e:
+        except Exception:
             try:
                 fd.close()
             except:
@@ -198,14 +198,14 @@ class ACQ216(acq.Acq):
 
         fd.close()
 
-        print "Time for board to init = %g\n" % (time.time()-start)
+        print("Time for board to init = %g\n" % (time.time()-start))
         return  1
 
     INITFTP=initftp
 
     def store(self, arg1='checks', arg2='noauto'):
         if self.debugging():
-            print "Begining store\n"
+            print("Begining store\n")
 
         self.checkTrigger(arg1, arg2)
         self.loadSettings()
@@ -215,18 +215,18 @@ class ACQ216(acq.Acq):
         preTrig = self.getPreTrig()
         postTrig = self.getPostTrig()
         if self.debugging():
-            print "got preTrig %d and postTrig %d\n" % (preTrig, postTrig,)
+            print("got preTrig %d and postTrig %d\n" % (preTrig, postTrig,))
 
         vin1 = self.settings['get.vin']
         vins = eval('MDSplus.makeArray([%s,])' % (vin1,))
 
         if self.debugging():
-            print "got the vins "
-            print vins
+            print("got the vins ")
+            print(vins)
         self.ranges.record = vins
         chanMask = self.settings['getChannelMask'].split('=')[-1]
         if self.debugging():
-            print "chan_mask = %s\n" % (chanMask,)
+            print("chan_mask = %s\n" % (chanMask,))
 
         self.storeClock()
         clock = self.clock
@@ -238,8 +238,8 @@ class ACQ216(acq.Acq):
         for chan in range(16):
             try:
                 self.storeChannel(chan, chanMask, preTrig, postTrig, clock, vins)
-            except e:
-                print "Error storing channel %d\n%s" % (chan, e,)
+            except Exception as e:
+                print("Error storing channel %d\n%s" % (chan, e,))
                 last_error = e
 
         self.dataSocketDone()

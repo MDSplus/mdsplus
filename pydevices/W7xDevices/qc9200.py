@@ -23,15 +23,17 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from serial import Serial
-from time import sleep
-from MDSplus import Device, mdsExceptions
+import time
+import MDSplus
 
-def qc_connect (port) :
-    ser = Serial(port, 115200, timeout=1)
-    sleep(0.5)
+# serial
+
+def qc_connect (port):
+    import serial
+    ser = serial.Serial(port, 115200, timeout=1)
+    time.sleep(0.5)
     if not ser.isOpen() :
-        raise mdsExceptions.DevCOMM_ERROR('Serial port not open.')
+        raise MDSplus.DevCOMM_ERROR('Serial port not open.')
     return ser
 
 def qc_talk (ser, msg) :
@@ -40,7 +42,7 @@ def qc_talk (ser, msg) :
     ser.read(1) # clear out extra \x00 character
     return reply.strip('\r\n')
 
-class QC9200 (Device) :
+class QC9200 (MDSplus.Device) :
     """Limited control for the Quantum Composers Sapphire 9200 Series Pulse Generator."""
     parts=[{'path': ':PORT',        'type': 'TEXT',    'options':('no_write_shot',), 'value': 'COM3'}, # likely /dev/ttyACM0 on Linux
            {'path': ':TRIG_LEVEL',  'type': 'NUMERIC', 'options':('no_write_shot',), 'value': 2.5},
@@ -70,8 +72,10 @@ class QC9200 (Device) :
             period     = float(self.period.data())
             n_burst    = int(self.n_burst.data())
 
-            if trig_level < 0.2 or trig_level > 15.0 or not (trig_edge == 'RISING' or trig_edge == 'FALLING') : raise mdsExceptions.DevBAD_PARAMETER
-            if period <= 0.0 or n_burst < 1                                                                   : raise mdsExceptions.DevBAD_PARAMETER
+            if trig_level < 0.2 or trig_level > 15.0 or not (trig_edge == 'RISING' or trig_edge == 'FALLING'):
+                raise MDSplus.DevBAD_PARAMETER
+            if period <= 0.0 or n_burst < 1:
+                raise MDSplus.DevBAD_PARAMETER
 
             enable   = []
             delay    = []
@@ -87,10 +91,14 @@ class QC9200 (Device) :
                 polarity.append(   self.getNode('.CHANNEL_%s:POLARITY' % ch).data().upper())
 
             for n in range(4) :
-                if delay[n] < 0.0          or  delay[n] > 1e3            : raise mdsExceptions.DevBAD_PARAMETER
-                if width[n] < 10e-9        or  width[n] > 1e3            : raise mdsExceptions.DevBAD_PARAMETER
-                if level[n] < 3.3          or  level[n] > 5.0            : raise mdsExceptions.DevBAD_PARAMETER
-                if polarity[n] != 'NORMAL' and polarity[n] != 'INVERTED' : raise mdsExceptions.DevBAD_PARAMETER
+                if delay[n] < 0.0          or  delay[n] > 1e3:
+                    raise MDSplus.DevBAD_PARAMETER
+                if width[n] < 10e-9        or  width[n] > 1e3:
+                    raise MDSplus.DevBAD_PARAMETER
+                if level[n] < 3.3          or  level[n] > 5.0:
+                    raise MDSplus.DevBAD_PARAMETER
+                if polarity[n] != 'NORMAL' and polarity[n] != 'INVERTED':
+                    raise MDSplus.DevBAD_PARAMETER
 
         except :
             print('One or more configs is missing or invalid.')

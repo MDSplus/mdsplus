@@ -25,12 +25,14 @@
 
 import time
 import math
-import pexpect
 import socket
 import array
 import numpy
 
 import MDSplus
+
+# import pexpect
+
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -40,12 +42,14 @@ acqsuper=_mimport('acqsuper')
 
 class UUT:
     def __init__(self, addr, port, debug=None):
+        import pexpect
         self.addr  = addr
         self.port  = port
         self.debug = debug
         self.child = pexpect.spawn('nc %s %s' % (addr, str(port)), timeout=5)
 
     def send(self, cmd, no_reply=False):
+        import pexpect
         self.child.sendline(str(cmd))
         try:
             echo = self.child.readline().strip('\r\n')

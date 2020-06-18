@@ -23,9 +23,11 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import os,gc,numpy
+import os
+import gc
+import numpy
 from MDSplus import Tree,TreeNode,Data,Array,Signal,Range,Device,tree,tcl,Int32,Float32Array
-from MDSplus import TreeNOEDIT,ADD,COMPILE
+from MDSplus import TreeNOEDIT, ADD, COMPILE, mdsrecord
 def _mimport(name, level=1):
     try:
         return __import__(name, globals(), level=level)
@@ -390,6 +392,9 @@ class Tests(_UnitTest.TreeTests):
         self.assertEqual(node.cache, 1)
         del(node.cache)
         self.assertEqual(node.cache, 2)
+        # test smart filter
+        self.assertEqual(cls._str.filter, mdsrecord.str)
+        self.assertEqual(cls._int_list.filter, mdsrecord.int_list)
 
     @staticmethod
     def getTests():
