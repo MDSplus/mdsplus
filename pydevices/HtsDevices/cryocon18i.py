@@ -242,8 +242,8 @@ class CRYOCON18I_SHOT(CRYOCON18I):
 
         print('Writing data into shot node')
         for i in self.inputs:
-            trend_temp     = trend_dev.__getattr__('input_%c'.format(c))
-            trend_resis    = trend_dev.__getattr__('input_%c_resistence'.format(c))
+            trend_temp     = trend_dev.__getattr__('input_%c' % (i,))
+            trend_resis    = trend_dev.__getattr__('input_%c_resistence' % (i,))
 
             times    = trend_temp.dim_of().data()
             temps    = trend_temp.data()
