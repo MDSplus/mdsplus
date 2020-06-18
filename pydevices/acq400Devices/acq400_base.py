@@ -56,7 +56,7 @@ class _ACQ400_BASE(MDSplus.Device):
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':ARM_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",'options':('no_write_shot',)},
         {'path':':STORE_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',52,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
-    ]
+        ]
 
     trig_types=[ 'hard', 'soft', 'automatic']
 
@@ -81,10 +81,10 @@ class _ACQ400_BASE(MDSplus.Device):
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
+            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), trg_dx)
+            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
@@ -92,7 +92,7 @@ class _ACQ400_BASE(MDSplus.Device):
         if trg == 'automatic':
             uut.s0.transient = 'SOFT_TRIGGER=1'
 
-        uut.s0.transient = "POST=%s" % (self.samples.data())
+        uut.s0.transient = "POST={}".format(self.samples.data())
 
     INIT = init
 
@@ -110,7 +110,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
         {'path':':SEG_EVENT',   'type':'text',   'value': 'STREAM','options':('no_write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)}
-    ]
+        ]
 
 
     def arm(self):
@@ -311,7 +311,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 ch.putData(channel_data[ic])
                 ch.EOFF.putData(float(eoff[ic]))
                 ch.ESLO.putData(float(eslo[ic]))
-                expr = "%s * %f + %f" % (ch, ch.ESLO, ch.EOFF)
+                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
 
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
     STORE=store
@@ -326,10 +326,10 @@ def print_generated_classes(class_dict):
     for key in sorted(class_dict.keys(), key=int_key_chan):
         if key1 is None:
             key1 = key
-        print("# %s" % (key))
-    print(key1)
+        print("# {}".format(key))
+    print("{}".format(key1))
     for p in class_dict[key1].parts:
-        print(p)
+        print("{}".format(p))
 
 
 INPFMT3 = ':INPUT_%3.3d'
@@ -357,7 +357,7 @@ def assemble(cls):
 def create_classes(base_class, root_name, parts, channel_choices):
     my_classes = {}
     for nchan in channel_choices:
-        class_name = "%s_%s" % (root_name, nchan)
+        class_name = "{}_{}".format(root_name, str(nchan))
         my_parts = list(parts)
         my_classes[class_name] = assemble(
             type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
