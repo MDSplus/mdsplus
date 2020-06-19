@@ -23,26 +23,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-
-import _acq400_base
-
-class _ACQ1001_ST(_acq400_base._ACQ400_ST_BASE):
-    """D-Tacq ACQ2106 stream support."""
-
-
-class_ch_dict = _acq400_base.create_classes(
-    _ACQ1001_ST, "ACQ1001_ST",
-    _ACQ1001_ST.base_parts + _ACQ1001_ST.st_base_parts,
-    _acq400_base.ACQ1001_CHANNEL_CHOICES
-)
-
-globals().update(class_ch_dict)
-
-
-if __name__ == '__main__':
-    _acq400_base.print_generated_classes(class_ch_dict)
-del(class_ch_dict)
-
+NCHAN_VARIANTS = [8, 16, 24, 32, 40, 48, 64]
+import _acq400
+_acq400.BUILD_ALL(globals(), 'ACQ1001', NCHAN_VARIANTS)
 # public classes created in this module
 # ACQ1001_ST_8
 # ACQ1001_ST_16
@@ -51,3 +34,17 @@ del(class_ch_dict)
 # ACQ1001_ST_40
 # ACQ1001_ST_48
 # ACQ1001_ST_64
+# ACQ1001_TR_8
+# ACQ1001_TR_16
+# ACQ1001_TR_24
+# ACQ1001_TR_32
+# ACQ1001_TR_40
+# ACQ1001_TR_48
+# ACQ1001_TR_64
+# ACQ1001_MR_8
+# ACQ1001_MR_16
+# ACQ1001_MR_24
+# ACQ1001_MR_32
+# ACQ1001_MR_40
+# ACQ1001_MR_48
+# ACQ1001_MR_64
