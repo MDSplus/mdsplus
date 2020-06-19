@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # Copyright (c) 2020, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -34,33 +34,45 @@ class WRITER(_acq400.WRITER):
 
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
-        self.uut = dev.acq400()
-        self.controller = dev.acq400_hapi.ShotController(self.uut)
+        controller = dev.get_shot_controller([dev.acq400()])
+        controller.run_shot()
+        self.first = - max(dev._trigger_pre_samples, 0)
         dev.dprint(1, "Using HAPI ShotController to run the shot.")
+
+    def abort(self, *abort):
+        """Abort ans set abort."""
+        super(WRITER, self).abort()
+        self.uut.s0.set_abort=1
 
     def write(self):
         """Consume data and write to tree."""
-        self.controller.run_shot()
-        # wait for done
-        while self.uut.statmon.get_state() != 0:
-            time.sleep(.1)
-        channel_data = self.uut.read_channels()
-        self.dprint('Trig T0  %s' % (self.dev._trigger,))
-        self.dprint('Trig TAI %s' % (self.dev.trigger.record,))
+        uut = self.dev.acq400()
 
-        first = - self._trigger_pre_samples
-        last = self.samples.data() - 1
+        # wait for done
+        while (uut.statmon.get_state() != 0
+               and not self.was_stopped
+               and not self.was_aborted):
+            time.sleep(.1)
+        self.dprint(1, 'READ CHANNELS')
+        channel_data = self.uut.read_channels()
+        self.dprint(1, 'Trig T0  %s', self.dev._trigger)
+        self.dprint(1, 'Trig TAI %s', self.dev.trigger.record)
+
+        last = self.first + channel_data[0].size - 1
 
         for i, ch in enumerate(self.dev.gen_for_all(self.dev.input_node)):
             if ch.on:
+                self.dprint(5, 'STORE for %s', ch)
                 ch.putData(MDSplus.Signal(
                     self.dev.get_input_scaling_expr(i),
                     channel_data[i],
                     self.dev.get_dimension_expr(
-                        first, last, self.get_input_range_expr(i))))
+                        self.first, last, self.dev.get_input_range_expr(i))))
 
 class CLASS(_acq400.CLASS):
     """Transient capture."""
+
+    _WORKER = WRITER
 
     def init(self):
         """Initialize device."""
@@ -131,13 +143,6 @@ class CLASS(_acq400.CLASS):
         print("TR state: %s" % (trstate,))
         print("TR status: %s" % (_status,))
 
-    def stop(self):
-        """Stop the acquisiton."""
-        uut =  self.acq400()
-        print("PRE %d, POST %d and ELAPSED %d" % (
-            uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
-        uut.s0.set_abort=1
-
 
 PARTS = _acq400.PARTS + [
     {'path':':TRIG_TIME',
@@ -188,3 +193,30 @@ PARTS = _acq400.PARTS + [
 INPUTS = _acq400.INPUTS
 
 BUILD = _acq400.GENERATE_BUILD(CLASS, PARTS, INPUTS, "TR")
+
+# tests
+if __name__ == '__main__':
+    import os
+    MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
+    MDSplus.setenv("test_path", '/tmp')
+    with MDSplus.Tree("test",-1,'new') as t:
+        # MDSplus.Device.findPyDevices()['ACQ2106_ST_32'].Add(t, 'DEV')
+        d = t.addDevice("DEVICE","ACQ2106_TR_8")
+        t.write()
+    t.open()
+    d.ACTION.record = 'ACTION_SERVER'
+    d.UUT.record = "192.168.44.255"
+    t.createPulse(1)
+    t.shot=1
+    t.open()
+    d.debug = 5
+    try:
+        d.init()
+        d.arm()
+        time.sleep(5)
+        d.soft_trigger()
+        time.sleep(2)
+        d.store()
+    finally:
+        d.deinit()
+    print(d.INPUT.CH001.record)

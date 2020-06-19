@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # Copyright (c) 2020, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -23,8 +23,96 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import MDSplus
+import numpy
 
+import socket
 import threading
+import time
+
+class ACQ400_CONNECTOR:
+    """Allow to induce a mockup connection."""
+
+    @staticmethod
+    def acq400_hapi():
+        import acq400_hapi
+        return acq400_hapi
+
+    @classmethod
+    def ShotController(cls, *a, **kw):
+        return cls.acq400_hapi().ShotController(*a, **kw)
+
+    @staticmethod
+    def stream(host, port=4210):
+        def connect():
+            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host, port))
+            sock.settimeout(1)
+            def recv_into(view, toread):
+                return sock.recv_into(view, toread)
+            return recv_into
+        return connect
+
+    @classmethod
+    def acq400(cls, host, nchan, *a, **kw):
+        return cls.acq400_hapi().Acq400(host, *a, **kw)
+
+
+class MOCKUP_CONNECTOR:
+    """Allow to induce a mockup connection."""
+
+    @staticmethod
+    def acq400_hapi(self):
+        import acq400_hapi
+        return acq400_hapi
+
+    @classmethod
+    def ShotController(cls, *a, **kw):
+        class ShotController:
+            @staticmethod
+            def run_shot():
+                pass
+        return ShotController
+
+
+    @staticmethod
+    def stream(host, port=4210):
+        def connect():
+            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host, port))
+            sock.settimeout(1)
+            def recv_into(view, toread):
+                time.sleep(.001)
+                return min(toread, 4096)
+            return recv_into
+        return connect
+
+
+    class acq400:
+        def __init__(self, host, nchan, *a, **kw):
+            self._nchan = nchan
+        def nchan(self):
+            return self._nchan
+        def fetch_all_calibration(self):
+            self.cal_eoff = [self._nchan]+[.001]*self._nchan
+            self.cal_eslo = [self._nchan]+[0.01]*self._nchan
+        class s0:
+            trg = 1
+            SIG_CLK_S1_FREQ = 5000000
+        class s1:
+            trg = 1
+        def pre_samples(self):
+            return 54321
+        def post_samples(self):
+            return 12345
+        def elapsed_samples(self):
+            return 66666
+        class statmon:
+            @staticmethod
+            def get_state():
+                return 0
+        def read_channels(self):
+            return numpy.zeros(
+                (self._nchan, self.pre_samples()+self.post_samples()), 'i2')
 
 class WORKER(threading.Thread):
     """Super class for workers.
@@ -42,10 +130,12 @@ class WORKER(threading.Thread):
 
     def stop(self):
         """Request Stream to stop."""
+        self.dprint(1, "%s STOP", self.name)
         self.stopped.set()
 
     def abort(self):
         """Request Stream to stop."""
+        self.dprint(1, "%s ABORT", self.name)
         self.aborted.set()
 
     @property
@@ -64,8 +154,13 @@ class WORKER(threading.Thread):
         try:
             self.work()
         except Exception as e:
+            if self.exception:
+                e = Exception(self.exception, e)
             self.exception = e
             self.dprint(0, "%s ERROR: %s", self.name, e)
+        finally:
+            self.dprint(1, "%s END", self.name)
+
 
     def work(self):
         """Implement this method in sub classes."""
@@ -103,24 +198,32 @@ class CLASS:
     _WORKER = WORKER
 
     @property
-    def acq400_hapi(self):
-        """Connect to acq400_hapi."""
-        import acq400_hapi
-        return acq400_hapi
+    def _connector(self):
+        """Simulate device if debug level is 6 or higher."""
+        if self.debug>5:
+            return MOCKUP_CONNECTOR
+        else:
+            return ACQ400_CONNECTOR
 
-    def acq400(self, **kw):
+    def acq400(self, monitor=True):
         """Connect to uut with hapi."""
-        return self.acq400_hapi.Acq400(self._uut, **kw)
+        return self._connector.acq400(self._uut, self.nchan, monitor=monitor)
+
+    def get_stream(self):
+        """Return a steam connector."""
+        return self._connector.stream(self._uut)
+    def get_shot_controller(self, *a, **kw):
+        return self._connector.ShotController(*a, **kw)
 
     @MDSplus.cached_property
     def uut_nchan(self):
         """Return nchan as provided by the device."""
-        return self.acq400().nchan()
+        return self.acq400(False).nchan()
 
     @MDSplus.cached_property
     def callibrations(self):
         """Return EOFF and ESLO - cached."""
-        uut = self.acq400()
+        uut = self.acq400(False)
         uut.fetch_all_calibration()
         return uut.cal_eoff[1:], uut.cal_eslo[1:]
 
@@ -221,12 +324,18 @@ class CLASS:
     def soft_trigger(self):
         """Send soft trigger."""
         self.dprint(1, "ACQ400_SOFT_TRIGGER")
-        self.acq400().s0.soft_trigger
+        sock = socket.socket()
+        sock.connect((self._uut, 4220))
+        try:
+            sock.send(b"soft_trigger\n")
+            sock.recv(1)
+        finally:
+            sock.close()
+        # self.acq400().s0.soft_trigger
 
     def _stop(self , abort=False):
-        """Stop/Abort writer and wait for it to finish."""
         pers = self.persistent
-        if not pers:
+        if not pers and not abort:
             raise MDSplus.DevINV_SETUP
         worker = pers.get('worker', None)
         if worker is not None:
@@ -354,6 +463,7 @@ PARTS = [
 class INPUTS:
     """Provide parts and access tools for input nodes."""
 
+    @staticmethod
     def STUCTURE():
         """Can be empty but allows to create strucutres."""
         yield {'path': '.INPUT'}
