@@ -419,13 +419,15 @@ class Tree(object):
         @rtype: Tree
         """
         return Tree(self.tree,self.shot,mode)
-    def readonly(self):
-        self.open('READONLY')
-    def edit(self):
-        self.open('EDIT')
-    def normal(self):
+    def readonly(self, shot=None):
+        self.open('READONLY', shot)
+    def edit(self, shot=None):
+        self.open('EDIT', shot)
+    def normal(self, shot=None):
         self.open('NORMAL')
-    def open(self, mode='NORMAL'):
+    def open(self, mode='NORMAL', shot=None):
+        if shot is not None:
+            self.shot = shot
         try:
             env_name = '%s_path'%self.tree.lower()
 
@@ -3235,13 +3237,17 @@ class Device(TreeNode): # HINT: Device begin
     part_names = tuple()
     part_dict = {}
     __initialized = set()
+
     def __new__(cls,node,tree=None,head=0,*a,**kw):
-        """Create class instance. Initialize part_dict class attribute if necessary.
+        """Create a Device class instance.
+
+        Initialize part_dict class attribute if necessary.
         @param node: Node of device
         @type node: TreeNode
         @return: Instance of the device subclass
         @rtype: Device subclass instance
         """
+
         if cls is Device:
             try:
                 head = TreeNode(node.conglomerate_nids.nid_number[0],node.tree,0)
@@ -3259,7 +3265,8 @@ class Device(TreeNode): # HINT: Device begin
         return super(Device,cls).__new__(cls,node,tree,head)
 
     def __init__(self,node,tree=None,head=0,*a,**kw):
-        """Initialize a Device instance
+        """Initialize a Device instance.
+
         @param node: Conglomerate node of this device
         @type node: TreeNode
         @rtype: None
@@ -3269,6 +3276,15 @@ class Device(TreeNode): # HINT: Device begin
             super(Device,self).__init__(node)
         else:
             super(Device,self).__init__(node,tree,head)
+
+    def copy(self, mode='NORMAL'):
+        """Make a thread safe copy of this Device node."""
+        head = 0 if self.head == 0 else None
+        new = self.__class__(TreeNode(self.nid, self.tree.copy(mode), head))
+        for k, v in self.__dict__.items():
+            if not k in new.__dict__:
+                new.__dict__[k] = self.__dict__[k]
+        return new
 
     @property
     def fullhelp_str(self):
@@ -3454,7 +3470,7 @@ If you did intend to write to a subnode of the device you should check the prope
         glob['path'] = head.path
         glob['head'] = head
         for elt in cls.parts:  # first add all nodes
-            node=head.addNode(elt['path'],elt['type'])
+            node=head.addNode(elt['path'], elt.get('type', 'none'))
         for elt in cls.parts:  # then you can reference them in valueExpr
             try:
                 node=head.getNode(elt['path'])
@@ -3593,7 +3609,7 @@ If you did intend to write to a subnode of the device you should check the prope
                     try:
                         for part in path.split(';'):
                             for dp, dn, fn in os.walk(part):
-                                if dp.endswith('__pycache__'):
+                                if os.path.basename(dp).startswith('_'):
                                     continue
                                 sys.path[0] = dp
                                 for fname in fn:
