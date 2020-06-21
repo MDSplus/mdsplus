@@ -24,32 +24,56 @@
 
 import MDSplus
 
+import threading
 import time
 
 import _acq400
 
+class SHOTCONNECTOR:
+    """Adds get_shot_controller to CLASS."""
+
+    def get_shot_controller(self, *a, **kw):
+        """Instantiate a ShotController."""
+        if self.use_mockup:
+            class ShotController:
+                @staticmethod
+                def run_shot():
+                    pass
+            return ShotController
+        else:
+            return self.acq400_hapi.ShotController(*a, **kw)
+
+class MOCKUP_ACQ400(_acq400.MOCKUP_ACQ400):
+    """Extends MOCKUP with statmon."""
+
+    class statmon:
+        """Monitors the state of the device on monitor port."""
+
+        @staticmethod
+        def get_state():
+            """Return state - 0 is idle."""
+            return 0
 
 class WRITER(_acq400.WRITER):
     """Write data to tree."""
 
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
-        controller = dev.get_shot_controller([dev.acq400()])
-        controller.run_shot()
+        self.uut = dev.acq400(True)
         self.first = - max(dev._trigger_pre_samples, 0)
         dev.dprint(1, "Using HAPI ShotController to run the shot.")
+        controller = dev.get_shot_controller([self.uut])
+        threading.Thread(target=controller.run_shot).start()
 
     def abort(self, *abort):
-        """Abort ans set abort."""
+        """Abort and set abort."""
         super(WRITER, self).abort()
         self.uut.s0.set_abort=1
 
     def write(self):
         """Consume data and write to tree."""
-        uut = self.dev.acq400()
-
-        # wait for done
-        while (uut.statmon.get_state() != 0
+        self.dev.callibrations  # prefetch callibrations
+        while (self.uut.statmon.get_state() != 0
                and not self.was_stopped
                and not self.was_aborted):
             time.sleep(.1)
@@ -69,9 +93,10 @@ class WRITER(_acq400.WRITER):
                     self.dev.get_dimension_expr(
                         self.first, last, self.dev.get_input_range_expr(i))))
 
-class CLASS(_acq400.CLASS):
+class CLASS(_acq400.CLASS, SHOTCONNECTOR):
     """Transient capture."""
 
+    _MOCKUP_ACQ400 = MOCKUP_ACQ400
     _WORKER = WRITER
 
     def init(self):
@@ -197,6 +222,7 @@ BUILD = _acq400.GENERATE_BUILD(CLASS, PARTS, INPUTS, "TR")
 # tests
 if __name__ == '__main__':
     import os
+    MDSplus.Device._Device__cached_mds_pydevice_path = None
     MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
     MDSplus.setenv("test_path", '/tmp')
     with MDSplus.Tree("test",-1,'new') as t:
@@ -205,15 +231,16 @@ if __name__ == '__main__':
         t.write()
     t.open()
     d.ACTION.record = 'ACTION_SERVER'
-    d.UUT.record = "192.168.44.255"
+    d.UUT.record = "daq-e5-qxt-1"
+    d.TRIGGER.MODE.record = 'soft'
     t.createPulse(1)
-    t.shot=1
-    t.open()
+    t.open(shot=1)
     d.debug = 5
+    d.use_mockup = False
     try:
         d.init()
         d.arm()
-        time.sleep(5)
+        time.sleep(1)
         d.soft_trigger()
         time.sleep(2)
         d.store()

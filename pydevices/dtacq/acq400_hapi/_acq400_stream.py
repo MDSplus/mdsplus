@@ -27,6 +27,7 @@ import MDSplus
 import numpy
 import socket
 import sys
+import time
 if sys.version_info < (3,):
     import Queue as queue
     from fractions import gcd
@@ -36,14 +37,43 @@ else:
 
 import _acq400
 
+class STREAM:
+    """Adds get_stream_connect to CLASS."""
+
+    def get_stream_connect(self):
+        """Return a connect method returning a recv_into methods."""
+        if self.use_mockup:
+            return self._mockup_stream_connect()
+        else:
+            return self._acq400_stream_connect(self._uut)
+
+    @staticmethod
+    def _acq400_stream_connect(host, port=4210):
+        def connect():
+            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            sock.connect((host, port))
+            sock.settimeout(1)
+            def recv_into(view, toread):
+                return sock.recv_into(view, toread)
+            return recv_into
+        return connect
+
+    @staticmethod
+    def _mockup_stream_connect(*a):
+        def connect():
+            def recv_into(view, toread):
+                time.sleep(.001)
+                return min(toread, 4096)
+            return recv_into
+        return connect
 
 class WRITER(_acq400.WRITER):
     """Write data to tree."""
 
-    NUM_BUFFERS = 20
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
         self.dev = dev.copy() # make run thread safe
+        self.uut = dev.acq400()
         # self.nchan = dev.nchan
         self.nchan = dev.uut_nchan
         # nchan may be different form len(chans)
@@ -64,17 +94,25 @@ class WRITER(_acq400.WRITER):
         if overhead > 0:
             self.seg_length += dec - overhead
         self.range = dev.list_for_all(dev.get_input_range_expr)
-
         self.queue = queue.Queue()
         self.reader = READER(dev, self)
-        # store scaling
-        for i, ch in enumerate(self.chans):
-            if ch.on:
-                ch.setSegmentScale(dev.get_input_scaling_expr(i))
+
+    def stop(self):
+        """Stop the stream."""
+        self.reader.stop()
+        super(WRITER, self).stop()
+
+    def abort(self):
+        """Stop the stream."""
+        self.reader.abort()
+        super(WRITER, self).abort()
 
     def write(self):
         """Consume data and write to tree."""
         self.reader.start()
+        for i, ch in enumerate(self.chans):
+            if ch.on:
+                ch.setSegmentScale(self.dev.get_input_scaling_expr(i))
         try:
             max_begin = 0
             while max_begin < self.max_samples and not self.was_aborted:
@@ -82,9 +120,10 @@ class WRITER(_acq400.WRITER):
                     buf = self.queue.get(block=True, timeout=1)
                 except queue.Empty:
                     # check if there can be more
-                    if self.was_stopped or not self.reader.is_alive():
-                        self.dprint(2, "stopped=%s", self.was_stopped)
-                        self.dprint(2, "reader=%s", self.reader.is_alive())
+                    if self.was_stopped:
+                        self.dprint(2, "STOPPED")
+                        return
+                    if not self.reader.is_alive():
                         return
                     continue
                 buffer = numpy.frombuffer(buf, dtype='int16')
@@ -105,6 +144,9 @@ class WRITER(_acq400.WRITER):
             else:
                 self.dprint(2, "SAMPLES=%s", max_begin)
         finally:
+            self.uut.s0.streamtonowhered = 'stop'
+            self.reader.abort()
+            self.reader.join()
             self.exception = self.reader.exception
 
 
@@ -116,31 +158,43 @@ class READER(_acq400.WORKER):
         self.writer = writer
         self.buffer_size = writer.seg_length*writer.nchan*2 # 16bit
         self.max_bytes = writer.max_samples*writer.nchan*2
-        self.connect = dev.get_stream()
+        self.connect = dev.get_stream_connect()
 
     def work(self):
         """Read from device and put buffer in queue."""
         recv_into = self.connect()
         tot_bytes = 0
-        while (tot_bytes < self.max_bytes
-               and self.writer.is_alive()
-               and not self.was_aborted):
+        while (tot_bytes < self.max_bytes):
+            if self.was_aborted:
+                self.dprint(2, "ABORTED")
+                return
+            if not self.writer.is_alive():
+                self.dprint(2, "WRITER DIED")
+                return
+            self.dprint(3, "READING %dB / %dB", tot_bytes, self.max_bytes)
             buf = bytearray(self.buffer_size)
             toread = self.buffer_size
             view = memoryview(buf)
             try:
-                while toread and not self.was_aborted:
+                while toread:
+                    if self.was_aborted:
+                        self.dprint(2, "ABORTED")
+                        return
                     try:
                         nbytes = recv_into(view, toread)
-                    except Exception as e:
-                        self.dprint(nbytes, e)
+                        self.dprint(5, "NBYTES=%d", nbytes)
                     except socket.timeout:
                         if toread < self.buffer_size:
                             self.dprint(2, "TIMEOUT: %s", toread)
+                        else:
+                            self.dprint(4, "TIMEOUT")
                         # check if we should wait for more
                         if self.was_stopped:
+                            self.dprint(2, "STOPPED")
                             return
                         continue
+                    except Exception as e:
+                        self.dprint(0, "NBYTES=%d %s", nbytes, e)
                     if nbytes:
                         view = view[nbytes:] # slicing views is cheap
                         toread -= nbytes
@@ -149,18 +203,17 @@ class READER(_acq400.WORKER):
                         return
             finally:
                 read = self.buffer_size - toread
+                tot_bytes += read
                 if toread:
                     if read > 0:
                         self.writer.queue.put(buf[:read])
+                    self.dprint(2, "READ %dB / %dB", read, self.buffer_size)
                     return
                 else:
                     self.writer.queue.put(buf)
-        else:
-            if self.was_aborted:
-                self.dprint(2, "ABORTED")
 
 
-class CLASS(_acq400.CLASS):
+class CLASS(_acq400.CLASS, STREAM):
     """Adds STREAM function to ACQ400."""
 
     # pre is not used but set it to default values
@@ -193,7 +246,7 @@ BUILD = _acq400.GENERATE_BUILD(CLASS, PARTS, INPUTS, "ST")
 # tests
 if __name__ == '__main__':
     import os
-    import time
+    MDSplus.Device._Device__cached_mds_pydevice_path = None
     MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
     MDSplus.setenv("test_path", '/tmp')
     with MDSplus.Tree("test",-1,'new') as t:
@@ -202,17 +255,18 @@ if __name__ == '__main__':
         t.write()
     t.open()
     d.ACTION.record = 'ACTION_SERVER'
-    d.UUT.record = "192.168.44.255"
+    d.UUT.record = "daq-e5-qxt-1"
+    d.TRIGGER.MODE.record = 'soft'
     t.createPulse(1)
-    t.shot=1
-    t.open()
+    t.open(shot=1)
     d.debug = 5
+    d.use_mockup = False
     try:
         d.init()
         d.arm()
-        time.sleep(.1)
+        time.sleep(10)
         d.soft_trigger()
-        time.sleep(.2)
+        time.sleep(10)
         d.store()
     finally:
         d.deinit()

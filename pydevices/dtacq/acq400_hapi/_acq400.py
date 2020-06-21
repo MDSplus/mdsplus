@@ -29,90 +29,54 @@ import socket
 import threading
 import time
 
-class ACQ400_CONNECTOR:
+class MOCKUP_ACQ400:
     """Allow to induce a mockup connection."""
 
-    @staticmethod
-    def acq400_hapi():
-        import acq400_hapi
-        return acq400_hapi
+    """Simulates the Acq400 interface of acq400_hapi."""
 
-    @classmethod
-    def ShotController(cls, *a, **kw):
-        return cls.acq400_hapi().ShotController(*a, **kw)
+    def __init__(self, dev, nchan, *a, **kw):
+        self._nchan = nchan
+    def nchan(self):
+        """Return total number of channels of the device."""
+        return self._nchan
+    def fetch_all_calibration(self):
+        """Read all calibrations into cal_eoff andcal_eslo fileds."""
+        self.cal_eoff = [self._nchan]+[.001]*self._nchan
+        self.cal_eslo = [self._nchan]+[0.01]*self._nchan
+    class s0:
+        """Site 0 knobs - carrier."""
 
-    @staticmethod
-    def stream(host, port=4210):
-        def connect():
-            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((host, port))
-            sock.settimeout(1)
-            def recv_into(view, toread):
-                return sock.recv_into(view, toread)
-            return recv_into
-        return connect
+        trg = 1
+        SIG_CLK_S1_FREQ = 5000000
 
-    @classmethod
-    def acq400(cls, host, nchan, *a, **kw):
-        return cls.acq400_hapi().Acq400(host, *a, **kw)
+    class s1:
+        """Site 1 knobs - master module."""
 
+        trg = 1
 
-class MOCKUP_CONNECTOR:
-    """Allow to induce a mockup connection."""
+    def pre_samples(self):
+        """Return the total number of acquired pre samples."""
+        for s in self.s0.transient.split(' '):
+            if s.upper().startswith('PRE='):
+                return int(s[4:])
+        else:
+            return 0
+    def post_samples(self):
+        """Return the total number of acquired post samples."""
+        for s in self.s0.transient.split(' '):
+            if s.upper().startswith('POST='):
+                return int(s[5:])
+        else:
+            return 0
 
-    @staticmethod
-    def acq400_hapi(self):
-        import acq400_hapi
-        return acq400_hapi
+    def elapsed_samples(self):
+        """Rerurn the number of total samples processed."""
+        return ((self.pre_samples() + self.post_samples() - 1) // 65536 + 1) * 65536
 
-    @classmethod
-    def ShotController(cls, *a, **kw):
-        class ShotController:
-            @staticmethod
-            def run_shot():
-                pass
-        return ShotController
-
-
-    @staticmethod
-    def stream(host, port=4210):
-        def connect():
-            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((host, port))
-            sock.settimeout(1)
-            def recv_into(view, toread):
-                time.sleep(.001)
-                return min(toread, 4096)
-            return recv_into
-        return connect
-
-
-    class acq400:
-        def __init__(self, host, nchan, *a, **kw):
-            self._nchan = nchan
-        def nchan(self):
-            return self._nchan
-        def fetch_all_calibration(self):
-            self.cal_eoff = [self._nchan]+[.001]*self._nchan
-            self.cal_eslo = [self._nchan]+[0.01]*self._nchan
-        class s0:
-            trg = 1
-            SIG_CLK_S1_FREQ = 5000000
-        class s1:
-            trg = 1
-        def pre_samples(self):
-            return 54321
-        def post_samples(self):
-            return 12345
-        def elapsed_samples(self):
-            return 66666
-        class statmon:
-            @staticmethod
-            def get_state():
-                return 0
-        def read_channels(self):
-            return numpy.zeros(
-                (self._nchan, self.pre_samples()+self.post_samples()), 'i2')
+    def read_channels(self):
+        """Pull list of all channel data."""
+        return numpy.zeros(
+            (self._nchan, self.pre_samples()+self.post_samples()), 'i2')
 
 class WORKER(threading.Thread):
     """Super class for workers.
@@ -137,6 +101,7 @@ class WORKER(threading.Thread):
         """Request Stream to stop."""
         self.dprint(1, "%s ABORT", self.name)
         self.aborted.set()
+        self.stop()
 
     @property
     def was_stopped(self):
@@ -157,14 +122,14 @@ class WORKER(threading.Thread):
             if self.exception:
                 e = Exception(self.exception, e)
             self.exception = e
-            self.dprint(0, "%s ERROR: %s", self.name, e)
+            self.dprint(0, "%s %s: %s", self.name, e.__class__.__name__, e)
         finally:
             self.dprint(1, "%s END", self.name)
 
 
     def work(self):
         """Implement this method in sub classes."""
-        raise NotImplementedError
+        raise NotImplementedError("Method WORKER.work() was not implemented.")
 
 class WRITER(WORKER):
     """Super class for writers.
@@ -175,6 +140,8 @@ class WRITER(WORKER):
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
         self.dev = dev.copy()  # make run thread safe
+        self.dev.debug = dev.debug
+        self.dev.use_mockup = dev.use_mockup
 
     def work(self):
         """Run writer task."""
@@ -182,8 +149,45 @@ class WRITER(WORKER):
         self.write()
 
     def write(self):
-        """Implement this method in sub classes."""
-        raise NotImplementedError
+        """Implement in subclass."""
+        raise NotImplementedError("Method WRITER.write() was not implemented.")
+
+class SIMPLE_WRITER(WRITER):
+    """Read transient data once available."""
+
+    def __init__(self, dev):
+        super(SIMPLE_WRITER, self).__init__(dev)
+        self.first = min(-dev._trigger_pre_samples, 0)
+        self.uut = dev.acq400(True)
+        self.uut.s0.set_arm = 1
+        while self.uut.statmon.get_state() == 0:
+            pass
+
+    def abort(self, *abort):
+        """Abort and set abort."""
+        super(SIMPLE_WRITER, self).abort()
+        self.uut.s0.set_abort = 1
+
+    def write(self):
+        """Read channels and store in tree."""
+        self.dev.callibrations  # prefetch callibrations
+        while not (self.was_aborted or self.was_stopped):
+            state = self.uut.statmon.get_state()
+            self.dprint(5, 'STATE %d', state)
+            if state==0: break
+            time.sleep(.2)
+        self.dprint(1, 'READ CHANNELS')
+        channel_data = self.uut.read_channels()
+        last = self.first + channel_data[0].size - 1
+        for i, ch in enumerate(self.dev.gen_for_all(self.dev.input_node)):
+            if ch.on:
+                self.dprint(5, 'STORE for %s', ch)
+                ch.putData(MDSplus.Signal(
+                    self.dev.get_input_scaling_expr(i),
+                    channel_data[i],
+                    self.dev.get_dimension_expr(
+                        self.first, last, self.dev.get_input_range_expr(i))))
+
 
 class CLASS:
     """D-Tacq ACQ400 Base parts and methods.
@@ -195,25 +199,22 @@ class CLASS:
          - print if debuglevel >= MDSplus.Device.debug
     """
 
-    _WORKER = WORKER
+    _MOCKUP_ACQ400 = MOCKUP_ACQ400
+    _WORKER = SIMPLE_WRITER
 
+    use_mockup = False
     @property
-    def _connector(self):
-        """Simulate device if debug level is 6 or higher."""
-        if self.debug>5:
-            return MOCKUP_CONNECTOR
-        else:
-            return ACQ400_CONNECTOR
+    def acq400_hapi(self):
+        """Import acq400_hapi."""
+        import acq400_hapi
+        return acq400_hapi
+
 
     def acq400(self, monitor=True):
         """Connect to uut with hapi."""
-        return self._connector.acq400(self._uut, self.nchan, monitor=monitor)
-
-    def get_stream(self):
-        """Return a steam connector."""
-        return self._connector.stream(self._uut)
-    def get_shot_controller(self, *a, **kw):
-        return self._connector.ShotController(*a, **kw)
+        if self.use_mockup:
+            return self._MOCKUP_ACQ400(self, self.nchan)
+        return self.acq400_hapi.Acq400(self._uut, monitor=monitor)
 
     @MDSplus.cached_property
     def uut_nchan(self):
@@ -260,12 +261,10 @@ class CLASS:
         """Initialize device."""
         self.dprint(1, "INIT")
         uut = self.acq400()
-        trg = self._trigger_mode
-        if trg == 'hard':
+        trg = self._trigger_mode.lower()
+        if trg.startswith('hard'):
             trg_dx = 0
-        elif trg == 'soft':
-            trg_dx = 1
-        elif trg == 'auto':
+        elif trg.startswith('soft') or trg.startswith('auto'):
             trg_dx = 1
         # The default case is to use the trigger set by sync_role.
         if trg == 'role':
@@ -274,14 +273,16 @@ class CLASS:
             # If the user has specified a trigger.
             uut.s0.sync_role = '%s %s TRG:DX=%s' % (self._role, self._freq, trg_dx)
 
-        # Now we set the trigger to be soft when desired.
-        if trg == 'soft':
-            uut.s0.transient = 'SOFT_TRIGGER=0'
-        if trg == 'auto':
-            uut.s0.transient = 'SOFT_TRIGGER=1'
-
         pre, post = self._trigger_pre_samples, self._trigger_post_samples
+        if pre:  # only works with hard trigger
+            uut.s1.trg = '1,1,1'
+            uut.s1.event0 = '1,%d,1' % (trg_dx,)
         data = "PRE=%d POST=%d" % (pre, post)
+        # Now we set the trigger to be soft when desired.
+        if trg == 'auto' or pre>0:
+            data += ' SOFT_TRIGGER=1'
+        elif trg == 'soft' :
+            data += ' SOFT_TRIGGER=0'
         self.dprint(1, data)
         uut.s0.transient = data
 
@@ -305,8 +306,8 @@ class CLASS:
 
         #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
         uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
-        uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
-        uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
+        uut.s0.SIG_ZCLK_SRC      = 'INT33M'
+        uut.s0.SYS_CLK_Si5326_PLAN = '1'
 
     def arm(self):
         """Start stream."""
@@ -324,6 +325,8 @@ class CLASS:
     def soft_trigger(self):
         """Send soft trigger."""
         self.dprint(1, "ACQ400_SOFT_TRIGGER")
+        if self.use_mockup:
+            return
         sock = socket.socket()
         sock.connect((self._uut, 4220))
         try:
@@ -331,7 +334,7 @@ class CLASS:
             sock.recv(1)
         finally:
             sock.close()
-        # self.acq400().s0.soft_trigger
+            # self.acq400().s0.soft_trigger
 
     def _stop(self , abort=False):
         pers = self.persistent
@@ -456,7 +459,7 @@ PARTS = [
      'type': 'numeric',
      'options': ('no_write_shot',),
      'filter': int,
-     'value': 100000,
+     'value': 0,
     },
 ]
 
@@ -497,25 +500,30 @@ class INPUTS:
 
     @classmethod
     def get_node(cls, self, i, sub=''):
+        """Return the node of input or subnode."""
         return getattr(self, cls.input_fmt % (i+1, sub))
     @classmethod
     def get_data(cls, self, i, sub=''):
+        """Return data of input or subnode."""
         return getattr(self, '_' + (cls.input_fmt % (i+1, sub)))
 
     class ACCESS:
         """Merged with Device class, provides access tools."""
 
         def input_node(self, i):
+            """Return input node."""
             return INPUTS.get_node(self, i)
-        def input_data(self, i):
-            return INPUTS.get_data(self, i)
         def input_decimate(self, i):
+            """Return node of input's decimate."""
             return INPUTS.get_node(self, i, INPUTS.decimate)
         def _input_decimate(self, i):
+            """Return data of input's decimate."""
             return INPUTS.get_data(self, i, INPUTS.decimate)
         def input_offset(self, i):
+            """Return node of input's offset."""
             return INPUTS.get_node(self, i, INPUTS.offset)
         def _input_offset(self, i):
+            """Return data of input's offset."""
             return INPUTS.get_data(self, i, INPUTS.offset)
 
 
@@ -553,14 +561,46 @@ def GENERATE_BUILD(base_class, base_parts, inputs, suffix=None):
                         print(p)
     return BUILD
 
+BUILD = GENERATE_BUILD(CLASS, PARTS, INPUTS)
+
 def BUILD_ALL(globalsO, prefix, channel_variants):
     """Generate Device classes for all known variants."""
     if  globalsO.get('__name__', '__main__') == '__main__':
         print("# public classes created in this module")
+    from _acq400 import BUILD
+    BUILD(globalsO, prefix, channel_variants)
     from _acq400_stream import BUILD
     BUILD(globalsO, prefix, channel_variants)
     from _acq400_transient import BUILD
     BUILD(globalsO, prefix, channel_variants)
-    from _acq400_mr import BUILD
+    from _acq400_multirate import BUILD
     BUILD(globalsO, prefix, channel_variants)
 
+
+# tests
+if __name__ == '__main__':
+    import os
+    MDSplus.Device._Device__cached_mds_pydevice_path = None
+    MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
+    MDSplus.setenv("test_path", '/tmp')
+    with MDSplus.Tree("test",-1,'new') as t:
+        # MDSplus.Device.findPyDevices()['ACQ2106_ST_32'].Add(t, 'DEV')
+        d = t.addDevice("DEVICE","ACQ2106_8")
+        t.write()
+    t.open()
+    d.UUT.record = "daq-e5-qxt-1"
+    d.TRIGGER.MODE.record = 'soft'
+    t.createPulse(1)
+    t.open(shot=1)
+    d.debug = 5
+    d.use_mockup = False
+    try:
+        d.init()
+        d.arm()
+        time.sleep(6)
+        d.soft_trigger()
+        time.sleep(10)
+        d.store()
+    finally:
+        d.deinit()
+    print(d.INPUT.CH001.record)

@@ -27,10 +27,7 @@ import numpy
 import _acq400
 
 class CLASS(_acq400.CLASS):
-    """
-    A sub-class of _ACQ400_TR_BASE that includes functions for MR data
-    and the extra nodes for MR processing.
-    """
+    """Provides multi rate support."""
 
     def init(self):
         import acq400_hapi
