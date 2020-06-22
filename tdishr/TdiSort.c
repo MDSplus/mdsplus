@@ -490,7 +490,7 @@ int Tdi1Bsearch(opcode_t opcode, int narg, struct descriptor *list[], struct des
 int Tdi1Sort(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
   INIT_STATUS;
-  static int64_t ran = 0;
+  int64_t ran = 0;
   int i, j, keep, l, r, jstack, *ndx;
   int upcase = 0, cmode = -1, len, n = 0;
   int (*gtr) () = 0;
