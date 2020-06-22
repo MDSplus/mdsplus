@@ -1730,18 +1730,22 @@ static int read_segment(void *dbid, TREE_INFO *tinfo, int nid, SEGMENT_HEADER *s
     void *ans_ptr = ans.pointer = malloc(ans.arsize);
     status = read_property(tinfo, sinfo->dimension_offset, ans.pointer, (ssize_t)ans.arsize);
     CHECK_ENDIAN(ans.pointer, ans.arsize, sizeof(int64_t), 0);
-    if (dbid) {
+    if (dbid)
+    {
       if (idx == shead->idx)
         filled_rows = shead->next_row;
       else
         filled_rows = get_filled_rows_ts(shead, sinfo, idx, (int64_t *)ans.pointer);
-      if (dim) {
-        ans.arsize = filled_rows * sizeof(int64_t);
-        if (ans.arsize == 0) ans.pointer = NULL;
-        MdsCopyDxXd((mdsdsc_t *)&ans, dim);
-      }
-    } else
+    }
+    else
       filled_rows = rows;
+    if (dim)
+    {
+      ans.arsize = filled_rows * sizeof(int64_t);
+      if (ans.arsize == 0)
+        ans.pointer = NULL;
+      MdsCopyDxXd((mdsdsc_t *)&ans, dim);
+    }
     free(ans_ptr);
   } else if (sinfo->dimension_length != -1) {
     filled_rows = (idx == shead->idx) ? shead->next_row : rows;
