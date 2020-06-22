@@ -362,7 +362,7 @@ class Tests(_UnitTest.TreeTests):
             node = ptree.addNode('S')
             node.compress_on_put = False
             ptree.write()
-        ptree.compressDatafile()
+        ptree.cleanDatafile()
         ptree.normal()
         te = DateToQuad("now")
         sampperseg = 50
@@ -391,8 +391,25 @@ class Tests(_UnitTest.TreeTests):
         for i in range(numsegs):
             self.assertEqual(node.getSegmentDim(i).data().tolist(),node1.getSegmentDim(i).data().tolist())
 
+    def CompressTimestampedSegments(self):
+        from MDSplus import Tree, Int32, Int64
+        with Tree(self.tree,self.shot+10,'NEW') as ptree:
+            s = ptree.addNode('s', 'SIGNAL')
+            ptree.write()
+        ptree.normal()
+        for i in range(2):  # time is even, data is odd
+            data = [i*10+j*2 for j in range(5)]
+            s.makeTimestampedSegment(Int64(data), Int32(data)+1)
+        before = s.record
+        ptree.compressDatafile()
+        ptree.readonly()
+        after = s.record
+        self.assertEqual(True,(before.data()==after.data()).all(), "%r != %r" % (before.value, after.value) )
+        self.assertEqual(True,(before.dim_of().data()==after.dim_of().data()).all(), "%r != %r" % (before.dim_of(), after.dim_of()))
+
+
     @staticmethod
     def getTests():
-        return ['ArrayDimensionOrder','BlockAndRows','WriteSegments','WriteOpaque','UpdateSegments','TimeContext','ScaledSegments','DimensionlessSegments','CompressSegments']
+        return ['ArrayDimensionOrder','BlockAndRows','WriteSegments','WriteOpaque','UpdateSegments','TimeContext','ScaledSegments','DimensionlessSegments','CompressSegments', 'CompressTimestampedSegments']
 
 Tests.main(__name__)
