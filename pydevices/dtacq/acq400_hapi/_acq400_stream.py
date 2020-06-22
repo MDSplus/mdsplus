@@ -38,37 +38,46 @@ else:
 import _acq400
 
 class STREAM:
-    """Adds get_stream_connect to CLASS."""
+    """Adds get_stream to CLASS."""
 
-    def get_stream_connect(self):
+    def get_stream(self):
         """Return a connect method returning a recv_into methods."""
         if self.use_mockup:
-            return self._mockup_stream_connect()
+            return self._mockup_stream()
         else:
-            return self._acq400_stream_connect(self._uut)
+            return self._acq400_stream(self._uut)
 
     @staticmethod
-    def _acq400_stream_connect(host, port=4210):
-        def connect():
-            sock=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect((host, port))
-            sock.settimeout(1)
-            def recv_into(view, toread):
-                return sock.recv_into(view, toread)
-            return recv_into
-        return connect
+    def _acq400_stream(host, port=4210):
+        sock = socket.socket()
+        sock.connect((host, port))
+        sock.settimeout(1)
+        return sock
 
     @staticmethod
-    def _mockup_stream_connect(*a):
-        def connect():
+    def _mockup_stream(*a):
+        class socket_mockup:
+            @staticmethod
             def recv_into(view, toread):
-                time.sleep(.001)
-                return min(toread, 4096)
-            return recv_into
-        return connect
+                time.sleep(.065)
+                return min(toread, 65535)
+            @staticmethod
+            def close():
+                pass
+        return socket_mockup
 
 class WRITER(_acq400.WRITER):
     """Write data to tree."""
+
+    def get_state(self):
+        """Work around state issue to determine if device is armed."""
+        statestr = self.uut.s0.sr('state;shot').split('\n')
+        if len(statestr) > 1:
+            self.dev.dprint(5, "STATE %s", statestr[0])
+            return int(statestr[0].split(' ', 1)[0])
+        else:
+            self.dev.dprint(5, "STATE None")
+            return 0
 
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
@@ -96,6 +105,11 @@ class WRITER(_acq400.WRITER):
         self.range = dev.list_for_all(dev.get_input_range_expr)
         self.queue = queue.Queue()
         self.reader = READER(dev, self)
+        # wait for device to be armed
+        state = self.get_state()
+        while state == 0 or state > 4:
+            time.sleep(.1)
+            state = self.get_state()
 
     def stop(self):
         """Stop the stream."""
@@ -144,7 +158,6 @@ class WRITER(_acq400.WRITER):
             else:
                 self.dprint(2, "SAMPLES=%s", max_begin)
         finally:
-            self.uut.s0.streamtonowhered = 'stop'
             self.reader.abort()
             self.reader.join()
             self.exception = self.reader.exception
@@ -158,59 +171,60 @@ class READER(_acq400.WORKER):
         self.writer = writer
         self.buffer_size = writer.seg_length*writer.nchan*2 # 16bit
         self.max_bytes = writer.max_samples*writer.nchan*2
-        self.connect = dev.get_stream_connect()
+        self.stream = dev.get_stream()  # this arm the device
 
     def work(self):
         """Read from device and put buffer in queue."""
-        recv_into = self.connect()
-        tot_bytes = 0
-        while (tot_bytes < self.max_bytes):
-            if self.was_aborted:
-                self.dprint(2, "ABORTED")
-                return
-            if not self.writer.is_alive():
-                self.dprint(2, "WRITER DIED")
-                return
-            self.dprint(3, "READING %dB / %dB", tot_bytes, self.max_bytes)
-            buf = bytearray(self.buffer_size)
-            toread = self.buffer_size
-            view = memoryview(buf)
-            try:
-                while toread:
-                    if self.was_aborted:
-                        self.dprint(2, "ABORTED")
-                        return
-                    try:
-                        nbytes = recv_into(view, toread)
-                        self.dprint(5, "NBYTES=%d", nbytes)
-                    except socket.timeout:
-                        if toread < self.buffer_size:
-                            self.dprint(2, "TIMEOUT: %s", toread)
-                        else:
-                            self.dprint(4, "TIMEOUT")
-                        # check if we should wait for more
-                        if self.was_stopped:
-                            self.dprint(2, "STOPPED")
-                            return
-                        continue
-                    except Exception as e:
-                        self.dprint(0, "NBYTES=%d %s", nbytes, e)
-                    if nbytes:
-                        view = view[nbytes:] # slicing views is cheap
-                        toread -= nbytes
-                    else:
-                        self.dprint(2, "NBYTES=0")
-                        return
-            finally:
-                read = self.buffer_size - toread
-                tot_bytes += read
-                if toread:
-                    if read > 0:
-                        self.writer.queue.put(buf[:read])
-                    self.dprint(2, "READ %dB / %dB", read, self.buffer_size)
+        try:
+            tot_bytes = 0
+            while (tot_bytes < self.max_bytes):
+                if self.was_aborted:
+                    self.dprint(2, "ABORTED")
                     return
-                else:
-                    self.writer.queue.put(buf)
+                if not self.writer.is_alive():
+                    self.dprint(2, "WRITER DIED")
+                    return
+                self.dprint(3, "READING %dB / %dB", tot_bytes, self.max_bytes)
+                buf = bytearray(self.buffer_size)
+                toread = self.buffer_size
+                view = memoryview(buf)
+                try:
+                    while toread:
+                        if self.was_aborted:
+                            self.dprint(2, "ABORTED")
+                            return
+                        try:
+                            nbytes = self.stream.recv_into(view, toread)
+                        except socket.timeout:
+                            if toread < self.buffer_size:
+                                self.dprint(2, "TIMEOUT: %s", toread)
+                            else:
+                                self.dprint(4, "TIMEOUT")
+                            # check if we should wait for more
+                            if self.was_stopped:
+                                self.dprint(2, "STOPPED")
+                                return
+                            continue
+                        except Exception as e:
+                            self.dprint(0, "NBYTES=%d %s", nbytes, e)
+                        if nbytes:
+                            view = view[nbytes:] # slicing views is cheap
+                            toread -= nbytes
+                        else:
+                            self.dprint(2, "NBYTES=0")
+                            return
+                finally:
+                    read = self.buffer_size - toread
+                    tot_bytes += read
+                    if toread:
+                        if read > 0:
+                            self.writer.queue.put(buf[:read])
+                        self.dprint(2, "READ %dB / %dB", read, self.buffer_size)
+                        return
+                    else:
+                        self.writer.queue.put(buf)
+        finally:
+            self.stream.close()
 
 
 class CLASS(_acq400.CLASS, STREAM):
@@ -267,9 +281,9 @@ if __name__ == '__main__':
     try:
         d.init()
         d.arm()
-        time.sleep(10)
+        time.sleep(1)
         d.soft_trigger()
-        time.sleep(10)
+        time.sleep(5)
         d.store()
     finally:
         d.deinit()

@@ -48,6 +48,10 @@ class MOCKUP_ACQ400:
 
         trg = 1
         SIG_CLK_S1_FREQ = 5000000
+        @staticmethod
+        def sr(cmd):
+            """Return current state of carrier."""
+            return '%d 0 0 0 0\n0' % MOCKUP_ACQ400.statmon.get_state()
 
     class s1:
         """Site 1 knobs - master module."""
