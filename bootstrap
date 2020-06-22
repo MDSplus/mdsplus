@@ -39,6 +39,7 @@ automake --add-missing
 autoconf
 
 python deploy/gen_messages.py
+python deploy/gen_compound_opcbuiltins.py
 
 deploy/yylex.gen tdishr
 deploy/yylex.gen mdsdcl

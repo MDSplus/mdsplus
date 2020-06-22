@@ -166,6 +166,7 @@ mdstcpip/docs/Makefile.in
 mdstcpip/docs/img/Makefile.in
 mdstcpip/zlib/Makefile.in
 python/MDSplus/docs/Makefile.in
+python/MDSplus/compound.py
 python/MDSplus/mdsExceptions.py
 python/MDSplus/tests/Makefile.in
 rpm/Makefile.in

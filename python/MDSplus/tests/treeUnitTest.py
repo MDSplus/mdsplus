@@ -393,8 +393,8 @@ class Tests(_UnitTest.TreeTests):
         del(node.cache)
         self.assertEqual(node.cache, 2)
         # test smart filter
-        self.assertEqual(cls._str.filter, mdsrecord.str)
-        self.assertEqual(cls._int_list.filter, mdsrecord.int_list)
+        self.assertEqual(cls._parts_str.filter, mdsrecord.str)
+        self.assertEqual(cls._parts_int_list.filter, mdsrecord.int_list)
 
     @staticmethod
     def getTests():
