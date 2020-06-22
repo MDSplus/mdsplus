@@ -3176,37 +3176,37 @@ class Device(TreeNode): # HINT: Device begin
         debug = 0
     gtkThread = None
 
+    def dprint(self, debuglevel, fmt, *args):
+        if debuglevel > self.debug:
+            return
+        now = _time.time()
+        line = str(fmt) if not args else (fmt % args)
+        _sys.stdout.write('%.3f: [%s] %s\n' % (now, self, line))
+        _sys.stdout.flush()
+
     """ debug safe import """
     if debug == 0:
-        def dprint(self, debuglevel, fmt, *args): pass
+        @staticmethod
+        def _debugDevice(device):
+            return device
+    elif debug < 0:
+        @staticmethod
+        def _debugDevice(dev):
+            if not (isinstance(dev,(type,)) and issubclass(dev,(Device,))):
+                return dev
+            from types import FunctionType
+            def dummy(self,*args,**kvargs): pass
+            db = {}
+            for d in dev.mro()[-5::-1]: #mro[-4] is Device
+                for k,v in d.__dict__.items():
+                    if isinstance(v,(FunctionType,)):
+                        db[k] = dummy
+                    else:
+                        db[k] = v
+            return type(dev.__name__,(Device,),db)
+    else:
         @staticmethod
         def _debugDevice(device): return device
-    else:
-        def dprint(self, debuglevel, fmt, *args):
-            if debuglevel > self.debug:
-                return
-            now = _time.time()
-            line = str(fmt) if not args else (fmt % args)
-            _sys.stdout.write('%.3f: [%s] %s\n' % (now, self, line))
-            _sys.stdout.flush()
-        if debug < 0:
-            @staticmethod
-            def _debugDevice(dev):
-                if not (isinstance(dev,(type,)) and issubclass(dev,(Device,))):
-                    return dev
-                from types import FunctionType
-                def dummy(self,*args,**kvargs): pass
-                db = {}
-                for d in dev.mro()[-5::-1]: #mro[-4] is Device
-                    for k,v in d.__dict__.items():
-                        if isinstance(v,(FunctionType,)):
-                            db[k] = dummy
-                        else:
-                            db[k] = v
-                return type(dev.__name__,(Device,),db)
-        else:
-            @staticmethod
-            def _debugDevice(device): return device
 
     @staticmethod
     def _mimport(loc,glob,filename,name=None):
