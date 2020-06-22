@@ -246,21 +246,24 @@ BUILD = _acq400.GENERATE_BUILD(CLASS, PARTS, INPUTS, "ST")
 # tests
 if __name__ == '__main__':
     import os
-    MDSplus.Device._Device__cached_mds_pydevice_path = None
+    import sys
+    use_mockup = len(sys.argv) < 2
     MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
     MDSplus.setenv("test_path", '/tmp')
-    with MDSplus.Tree("test",-1,'new') as t:
+    with MDSplus.Tree("test", -1, 'new') as t:
         # MDSplus.Device.findPyDevices()['ACQ2106_ST_32'].Add(t, 'DEV')
         d = t.addDevice("DEVICE","ACQ2106_ST_8")
         t.write()
     t.open()
     d.ACTION.record = 'ACTION_SERVER'
-    d.UUT.record = "daq-e5-qxt-1"
+    d.debug = 5
+    if use_mockup:
+        d.use_mockup = True
+    else:
+        d.UUT.record = sys.argv[1]
     d.TRIGGER.MODE.record = 'soft'
     t.createPulse(1)
     t.open(shot=1)
-    d.debug = 5
-    d.use_mockup = False
     try:
         d.init()
         d.arm()

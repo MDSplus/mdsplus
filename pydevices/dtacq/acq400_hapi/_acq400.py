@@ -78,6 +78,15 @@ class MOCKUP_ACQ400:
         return numpy.zeros(
             (self._nchan, self.pre_samples()+self.post_samples()), 'i2')
 
+    class statmon:
+        """Monitors the state of the device on monitor port."""
+
+        state = 0
+        @classmethod
+        def get_state(cls):
+            """Return state - 0 is idle."""
+            cls.state = (cls.state+1) % 7
+            return cls.state
 class WORKER(threading.Thread):
     """Super class for workers.
 
@@ -580,20 +589,23 @@ def BUILD_ALL(globalsO, prefix, channel_variants):
 # tests
 if __name__ == '__main__':
     import os
-    MDSplus.Device._Device__cached_mds_pydevice_path = None
+    import sys
+    use_mockup = len(sys.argv) < 2
     MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
     MDSplus.setenv("test_path", '/tmp')
-    with MDSplus.Tree("test",-1,'new') as t:
-        # MDSplus.Device.findPyDevices()['ACQ2106_ST_32'].Add(t, 'DEV')
-        d = t.addDevice("DEVICE","ACQ2106_8")
+    with MDSplus.Tree("test", -1, 'new') as t:
+        d = t.addDevice("DEVICE", "ACQ2106_8")
         t.write()
     t.open()
-    d.UUT.record = "daq-e5-qxt-1"
+    d.ACTION.record = 'ACTION_SERVER'
+    d.debug = 5
+    if use_mockup:
+        d.use_mockup = True
+    else:
+        d.UUT.record = sys.argv[1]
     d.TRIGGER.MODE.record = 'soft'
     t.createPulse(1)
     t.open(shot=1)
-    d.debug = 5
-    d.use_mockup = False
     try:
         d.init()
         d.arm()
