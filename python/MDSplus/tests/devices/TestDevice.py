@@ -147,16 +147,16 @@ class TestDevice(Device):
          'filter': float,
          'default': -1,
         },
-        {'path': ':DATA',
+        {'path': ':CHANNEL',
          'type': 'SIGNAL',
          'options': ('no_write_model', 'write_once'),
         },
-
-        {'path': ':STR',
+        {'path': '.PARTS'},
+        {'path': '.PARTS:STR',
          'type': 'TEXT',
          'filter': str,
         },
-        {'path': ':INT_LIST',
+        {'path': '.PARTS:INT_LIST',
          'type': 'NUMERIC',
          'filter': [int],
         },
@@ -178,12 +178,12 @@ class TestDevice(Device):
         def run(self):
             """Process data - streeam to DATA node."""
             self.dev.tree.normal()
-            self.dev.DATA.beginSegment(0, 9,
+            self.dev.channel.beginSegment(0, 9,
                                        Int32Array(range(10)),
                                        Int32Array([0]*10))
             for i in range(10):
                 time.sleep(.1)
-                self.dev.DATA.putSegment(Int32Array([i]), i)
+                self.dev.channel.putSegment(Int32Array([i]), i)
 
     def init1(self):
         """Capture time - simulating init stage 1."""
