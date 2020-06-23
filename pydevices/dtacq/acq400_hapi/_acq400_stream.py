@@ -69,7 +69,8 @@ class STREAM:
 class WRITER(_acq400.WRITER):
     """Write data to tree."""
 
-    def get_state(self):
+    @property
+    def state(self):
         """Work around state issue to determine if device is armed."""
         statestr = self.uut.s0.sr('state;shot').split('\n')
         if len(statestr) > 1:
@@ -79,10 +80,17 @@ class WRITER(_acq400.WRITER):
             self.dev.dprint(5, "STATE None")
             return 0
 
+    @property
+    def state_new(self):
+        """Intened but broken way to determine if device is armed."""
+        state = self.uut.state()
+        self.dev.dprint(5, "STATE %d", state)
+        return state
+
     def __init__(self, dev):
         super(WRITER, self).__init__(dev)
         self.dev = dev.copy() # make run thread safe
-        self.uut = dev.acq400()
+        self.uut = dev.acq400(True)
         # self.nchan = dev.nchan
         self.nchan = dev.uut_nchan
         # nchan may be different form len(chans)
@@ -106,10 +114,10 @@ class WRITER(_acq400.WRITER):
         self.queue = queue.Queue()
         self.reader = READER(dev, self)
         # wait for device to be armed
-        state = self.get_state()
+        state = self.state
         while state == 0 or state > 4:
             time.sleep(.1)
-            state = self.get_state()
+            state = self.state
 
     def stop(self):
         """Stop the stream."""
