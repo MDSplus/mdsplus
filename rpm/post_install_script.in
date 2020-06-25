@@ -202,7 +202,11 @@ then
     else
       cp $MDSPLUS_DIR/rpm/mdsipd.xinetd /etc/xinetd.d/mdsip
     fi
-    @HUP_TO_XINETD@
+    if [ -r /etc/rc.d/init.d/xinetd ] ; then
+      @HUP_TO_XINETD@
+    else  #Use service instead
+      @HUP_TO_XINETD_SERVICE@
+    fi
   else
     echo Adding mdsipd service to /etc/inetd.conf
     if grep "^mdsip " /etc/inetd.conf > /dev/null
@@ -219,6 +223,14 @@ then
   echo Adding $product login scripts
   if [ -r /etc/profile.d ]
   then
+    if [ -r /etc/profile.d/mdsplus.csh ]
+    then
+      rm /etc/profile.d/mdsplus.csh
+    fi
+    if [ -r /etc/profile.d/mdsplus.sh ]
+    then
+      rm /etc/profile.d/mdsplus.sh
+    fi
     ln -s $MDSPLUS_DIR/setup.csh /etc/profile.d/mdsplus.csh
     ln -s $MDSPLUS_DIR/setup.sh /etc/profile.d/mdsplus.sh
   else
