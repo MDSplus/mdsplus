@@ -26,14 +26,14 @@
 import threading
 import socket
 import time
-from queue import Queue, Empty
 import numpy
 import MDSplus
 
-try:
-    acq400_hapi = __import__('acq400_hapi', globals(), level=1)
-except:
-    acq400_hapi = __import__('acq400_hapi', globals())
+import sys
+if sys.version_info < (3,):
+    import Queue as queue
+else:
+    import queue
 
 
 class _ACQ400_BASE(MDSplus.Device):
@@ -64,6 +64,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
 
     def init(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         trig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
@@ -90,9 +91,7 @@ class _ACQ400_BASE(MDSplus.Device):
 
         # If PRE samples different from zero
         presamples = 100000
-        # presamples = 0
-        uut.s0.transient = "PRE={} POST={}".format(presamples, self.samples.data())
-
+        uut.s0.transient = "PRE=%d POST=%d" % (self.presamples.data(), self.samples.data())
         #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
         uut.s0.SIG_CLK_MB_FIN = '0'
 
@@ -161,10 +160,11 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
     def trig(self, msg=''):
         message = str(msg)
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         self.dprint(1, "The trigger message for streamming is: %s", message)
 
-        wrtdtx = '1 --tx_id=' + message
+        wrtdtx = '1 --tx_id=' + message + '\n'
         uut.s0.wrtd_tx_immediate = wrtdtx
     
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
@@ -179,7 +179,8 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
-            
+            import acq400_hapi
+
             threading.Thread.__init__(self)
             self.dev = dev.copy()
 
@@ -356,6 +357,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
 
     def trig(self, msg=''):
         message = str(msg)
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         self.dprint(1, "The trigger message for transient recording is: %s", message)
 
@@ -366,6 +368,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     TRIG=trig
 
     def state(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         _status = [int(x) for x in uut.s0.state.split(" ")]
 
@@ -379,6 +382,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     STATE=state
     
     def stop(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         print("PRE {}, POST {} and ELAPSED {}".format(uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
         uut.s0.set_abort=1
@@ -386,6 +390,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
 
 
     def _arm(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         shot_controller = acq400_hapi.ShotController([uut])
         shot_controller.run_shot()
@@ -405,7 +410,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
     STORE=store
 
     def _store(self):
-
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         while uut.statmon.get_state() != 0: continue
         self.chans = []
@@ -468,6 +473,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
         self.TB_NS.putData(tb_ns)
 
     def store(self):
+        import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
         self.chans = []
         nchans = uut.nchan()
@@ -493,6 +499,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
 
 
     def arm():
+        import acq400_hapi
         # A customised ARM function for the acq2106_MR setup.
         uut = acq400_hapi.Acq400(self.node.data())
         shot_controller = acq400_hapi.ShotController(uut)
@@ -540,6 +547,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
 
 
     def init(self):
+        import acq400_hapi
         # args.uuts = [ acq400_hapi.Acq2106(u, has_comms=False) for u in args.uut ]
         uut = acq400_hapi.Acq2106(self.node.data())
         # master = args.uuts[0]

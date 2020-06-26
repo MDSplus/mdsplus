@@ -48,7 +48,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
-        # {'path':':STL_FILE',    'type':'TEXT'},
+        {'path':':GPG_TRG_DX',  'type':'text', 'value': 'dx', 'options':('write_shot',)},
     ]
 
 
@@ -59,18 +59,18 @@ class ACQ2106_WRPG(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         
-        #Number of channels of the DIO482
-        nchans = 32
+        #Number of channels of the DIO482, e.g nchans = 32
+        nchans = int(uut.s6.NCHAN)
 
         # uut.s0.SIG_SRC_TRG_0 ='WRTT0'
         # Setting the trigger in the GPG module. These settings depends very much on what is the
-        # configuration of the experiment. For example, when using one WRTT timing highway, the we can use d0, which will be
-        # the same used by the digitazer module. Otherwise, we can choose a different one, to be a independent highway from
+        # configuration of the experiment. For example, when using one WRTT timing highway, then we can use d0, which will be
+        # the same used by the digitazer module. Otherwise, we can choose a different one, to be in an independent highway from
         # the digitazer, like d1.
         uut.s0.SIG_EVENT_SRC_0 = 'GPG'
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
-        uut.s0.GPG_TRG_DX    ='d1'   #d1 for WRTT1. d0 for WRTT0 or EXT.
+        uut.s0.GPG_TRG_DX    =str(self.gpg_trg_dx.data())   #d1 for WRTT1. d0 for WRTT0 or EXT.
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
