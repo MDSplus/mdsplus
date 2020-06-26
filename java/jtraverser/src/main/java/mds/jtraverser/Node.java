@@ -484,11 +484,8 @@ public class Node
 	public final String getName()
 	{
 		checkInfo();
-                try {
-                    return info.getName();
-                 }catch(Exception exc){return "";}
-        }
-        
+		return info.getName();
+	}
 
 	public int getNumSegments()
 	{

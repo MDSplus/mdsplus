@@ -167,14 +167,7 @@ public class jTraverser extends JFrame implements ActionListener
 	{
 		final Object source = e.getSource();
 		if (source == open)
-                {
-                    try {
 			tree.open();
-                    }catch(Exception exc)
-                    {
- 			JOptionPane.showMessageDialog(this, exc.getMessage(), "Error opening tree", JOptionPane.ERROR_MESSAGE);
-                   }
-                }
 		if (source == close)
 			tree.close();
 		if (source == quit)
