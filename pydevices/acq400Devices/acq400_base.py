@@ -78,10 +78,10 @@ class _ACQ400_BASE(MDSplus.Device):
 
         # The default case is to use the trigger set by sync_role.
         if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "{} {}".format(self.role.data(), self.freq.data())
+            uut.s0.sync_role = "%s %d" % (self.role.data(), self.freq.data())
         else:
             # If the user has specified a trigger.
-            uut.s0.sync_role = '{} {} TRG:DX={}'.format(self.role.data(), self.freq.data(), trg_dx)
+            uut.s0.sync_role = "%s %d TRG:DX=%s" % (self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
@@ -103,7 +103,7 @@ class _ACQ400_BASE(MDSplus.Device):
         self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
         clockdiv      = mb_freq/self.freq.data()
 
-        uut.s1.CLKDIV = "{}".format(clockdiv)
+        uut.s1.CLKDIV = "%d" % clockdiv
 
         acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
         
@@ -162,7 +162,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         message = str(msg)
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
-        self.dprint(1, "The trigger message for streamming is: %s", message)
+        self.dprint(1, "The trigger message for streamming is: %s" % message)
 
         wrtdtx = '1 --tx_id=' + message + '\n'
         uut.s0.wrtd_tx_immediate = wrtdtx
@@ -206,7 +206,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 if ch.on:
                     ch.EOFF.putData(float(eoff[ic]))
                     ch.ESLO.putData(float(eslo[ic]))
-                    expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+                    expr = "%d*%d + %d" % (ch, ch.ESLO, ch.EOFF)
 
                     ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
@@ -377,14 +377,14 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
 
         trstate = acq400_hapi.acq400.STATE.str(_status[0])
         
-        print("TR state: {}".format(trstate))
-        print("TR status: {}".format(_status))
+        print("TR state: %d" % (trstate))
+        print("TR status: %d" % (_status))
     STATE=state
     
     def stop(self):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data())
-        print("PRE {}, POST {} and ELAPSED {}".format(uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
+        print("PRE %d, POST %d and ELAPSED %d" % (uut.pre_samples(), uut.post_samples(), uut.elapsed_samples()))
         uut.s0.set_abort=1
     STOP = stop
 
@@ -430,7 +430,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 ch.ESLO.putData(float(eslo[ic]))
 
                 #Expression to calculate the calibrarted inputs:
-                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+                expr = "%d*%d + %d" % (ch, ch.ESLO, ch.EOFF)
 
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
@@ -490,7 +490,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
                 ch.putData(channel_data[ic])
                 ch.EOFF.putData(float(eoff[ic]))
                 ch.ESLO.putData(float(eslo[ic]))
-                expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
+                expr = "%d*%d + %d" % (ch, ch.ESLO, ch.EOFF)
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
 	    self.create_time_base(uut)
@@ -538,7 +538,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
                 delayk = int(delay * 40000000 / 1000000)
                 delaym = delayk - delayk % self.MR10DEC.data()
                 state = state << self.evsel0.data()
-                elem = "{}{:d},{:02x}".format(delayp, delaym, state)
+                elem = "%s%d,%x" % (delayp, delaym, state)
                 stl_literal_lines.append(elem)
                 # if args.verbose:
                 #     print(line)
@@ -566,8 +566,8 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
         uut.s0.GPG_ENABLE = '0'
         uut.load_gpg(lit_stl, 2) # TODO: Change to MDSplus debug.
         uut.set_MR(True, evsel0=self.evsel0.data(), evsel1=self.evsel0.data()+1, MR10DEC=self.MR10DEC.data())
-        uut.s0.set_knob('SIG_EVENT_SRC_{}'.format(self.evsel0.data()), 'GPG')
-        uut.s0.set_knob('SIG_EVENT_SRC_{}'.format(self.evsel0.data()+1), 'GPG')
+        uut.s0.set_knob('SIG_EVENT_SRC_%s' % (self.evsel0.data()), 'GPG')
+        uut.s0.set_knob('SIG_EVENT_SRC_%s' % (self.evsel0.data()+1), 'GPG')
         uut.s0.GPG_ENABLE = '1'
     INIT = init
 
@@ -581,10 +581,10 @@ def print_generated_classes(class_dict):
     for key in sorted(class_dict.keys(), key=int_key_chan):
         if key1 is None:
             key1 = key
-        print("# {}".format(key))
-    print("{}".format(key1))
+        print("# %s" % (key))
+    print("%s" % (key1))
     for p in class_dict[key1].parts:
-        print("{}".format(p))
+        print("%s" % (p))
 
 
 INPFMT3 = ':INPUT_%3.3d'
@@ -611,7 +611,7 @@ def assemble(cls):
 def create_classes(base_class, root_name, parts, channel_choices):
     my_classes = {}
     for nchan in channel_choices:
-        class_name = "{}_{}".format(root_name, str(nchan))
+        class_name = "%s_%s".format(root_name, str(nchan))
         my_parts = list(parts)
         my_classes[class_name] = assemble(
             type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
