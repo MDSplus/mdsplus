@@ -387,6 +387,7 @@ MAKELIBDIR="\$(top_builddir)/lib/"
 JDK_LIVECONNECT="$with_jdk/jre/lib/plugin.jar"
 TAR_EXCLUDE="-e"
 HUP_TO_XINETD=""
+HUP_TO_XINETD_SERVICE=""
 HUP_TO_INETD=""
 JRE="jre"
 UILCMD="uil"
@@ -489,6 +490,7 @@ case "$host" in
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_XINETD_SERVICE="service xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";
        ;;
 *arm-xilinx-linux-gnueabi) echo "configuring for Xylinx zynq board (arm cortex a9)";
@@ -519,6 +521,7 @@ case "$host" in
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_XINETD_SERVICE="service xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *linux*) CFLAGS="$CFLAGS -fpic -fsigned-char -shared-libgcc -fno-strict-aliasing";
        FCFLAGS="$FCFLAGS -fno-range-check";
@@ -538,6 +541,7 @@ case "$host" in
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
+       HUP_TO_XINETD_SERVICE="service xinetd restart";
        HUP_TO_INETD="kill -HUP \`/sbin/pidof inetd\`";;
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
@@ -1291,6 +1295,7 @@ AC_SUBST(HDF5_LIBS)
 AC_SUBST(HDF5_APS)
 AC_SUBST(HUP_TO_INETD)
 AC_SUBST(HUP_TO_XINETD)
+AC_SUBST(HUP_TO_XINETD_SERVICE)
 AC_SUBST(IDL_INC)
 AC_SUBST(IDL_LIB)
 AC_SUBST(IDLMDSEVENT)

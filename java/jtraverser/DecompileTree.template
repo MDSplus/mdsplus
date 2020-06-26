@@ -19,4 +19,4 @@ DYLD_LIBRARY_PATH=$DYLD_LIBRARY_PATH:$MDSPLUS_DIR/${lib} \
 CLASSPATH=\
 $MDSPLUS_DIR/java/classes/jTraverser.jar:\
 $MDSPLUS_DIR/java/classes/mdsobjects.jar \
-java -Xss5M -Djava.library.path=$MDSPLUS_DIR/${lib} DecompileTree $1 $2 
+java -Xss5M -Djava.library.path=$MDSPLUS_DIR/${lib} mds.jtraverser.DecompileTree $1 $2 
