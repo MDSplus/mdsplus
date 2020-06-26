@@ -12,6 +12,7 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
+import static mds.jtraverser.jTraverser.tree;
 
 public class Tree extends JScrollPane implements TreeSelectionListener, MouseListener, ActionListener, KeyListener
 {
@@ -1305,7 +1306,12 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 					@Override
 					public void actionPerformed(ActionEvent e)
 					{
-						open();
+                                            try {
+                                                 tree.open();
+                                             }catch(Exception exc)
+                                             {
+                                                 JOptionPane.showMessageDialog(FrameRepository.frame, exc.getMessage(), "Error opening tree", JOptionPane.ERROR_MESSAGE);
+                                            }
 					}
 				});
 				pop.add(mitem = new JMenuItem("Close"));
@@ -1481,8 +1487,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error in RMI communication", exc);
-		}
+                        JOptionPane.showMessageDialog(FrameRepository.frame, exc.getMessage(), "Error opening tree", JOptionPane.ERROR_MESSAGE);
+                        return;
+                }
 		try
 		{
 			top_node = new Node(curr_experiment, this);
