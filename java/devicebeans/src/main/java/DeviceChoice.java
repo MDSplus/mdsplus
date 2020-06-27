@@ -212,7 +212,7 @@ public class DeviceChoice extends DeviceComponent
 				return "" + choiceFloatValues[curr_idx];
 			if (choiceDoubleValues != null)
 				return "" + choiceDoubleValues[curr_idx];
-			return choiceItems[curr_idx];
+			return "\""+choiceItems[curr_idx]+"\"";
 		}
 	}
 

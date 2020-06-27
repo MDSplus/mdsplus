@@ -1481,7 +1481,9 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		}
 		catch (final Exception exc)
 		{
-			jTraverser.stderr("Error in RMI communication", exc);
+			JOptionPane.showMessageDialog(FrameRepository.frame, exc,
+					"Error OPENING TREE", JOptionPane.WARNING_MESSAGE);
+			return;
 		}
 		try
 		{
