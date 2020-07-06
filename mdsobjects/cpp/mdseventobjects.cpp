@@ -56,7 +56,7 @@ int MdsEventTriggerAndWait(char *name, char *buf, int size);
 static bool critSectInitialized = false;
 static CRITICAL_SECTION critSect;
 #else
-static 	pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
 #endif
   
 namespace MDSplus {
@@ -68,7 +68,7 @@ void eventAst(void *arg, int len, char *buf)
 #ifdef _WIN32
     EnterCriticalSection(&critSect);
 #else
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&evMutex);
 #endif
     Event *ev = (Event *)arg;
     ev->eventBuf.assign(buf, len);
@@ -80,7 +80,7 @@ void eventAst(void *arg, int len, char *buf)
 #ifdef _WIN32
     LeaveCriticalSection(&critSect);
 #else
-    pthread_mutex_unlock(&mutex);
+    pthread_mutex_unlock(&evMutex);
 #endif
 }
 } // MDSplus
