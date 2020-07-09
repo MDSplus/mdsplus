@@ -54,6 +54,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CTXCALLR(FUN,...) (ctx?_##FUN(&ctx,__VA_ARGS__):FUN(__VA_ARGS__))
 #define CTXCALLN(FUN,...) (ctx?_##FUN( ctx,__VA_ARGS__):FUN(__VA_ARGS__))
 
+
+
+#ifdef _WIN32
+static bool critSectInitialized = false;
+static CRITICAL_SECTION critSect;
+#else
+static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+
+
 static void set_ctx_field(JNIEnv * env, jobject jobj, void *ctx) {
   jclass   cls = (*env)->GetObjectClass(env, jobj);
   if (!cls) return; // be safe during finalize
@@ -3025,6 +3036,11 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   jbyteArray jbuf;
   int64_t time;
   jobject obj = (jobject) objPtr;
+#ifdef _WIN32
+    EnterCriticalSection(&critSect);
+#else
+    pthread_mutex_lock(&evMutex);
+#endif
 
   env = getJNIEnv();
   if (!env)
@@ -3043,6 +3059,11 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   args[1].j = time;
   (*env)->CallVoidMethodA(env, obj, mid, args);
   releaseJNIEnv();
+#ifdef _WIN32
+    LeaveCriticalSection(&critSect);
+#else
+    pthread_mutex_unlock(&evMutex);
+#endif
 }
 /*
 static void handleREvent(char *evName, char *buf, int dim, void *objPtr)
