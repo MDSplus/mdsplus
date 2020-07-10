@@ -60,7 +60,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 #ifdef _WIN32
-static bool critSectInitialized = false;
+static char critSectInitialized = 0;
 static CRITICAL_SECTION critSect;
 #else
 static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
@@ -3137,7 +3137,7 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv * env, jobject o
 #ifdef _WIN32
     if(!critSectInitialized)
     {
-        critSectInitialized = true;
+        critSectInitialized = 1;
 	InitializeCriticalSection(&critSect);
     }
 #endif
