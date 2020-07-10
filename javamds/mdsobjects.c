@@ -46,6 +46,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MDSplus_REvent.h"
 #include "MDSplus_Connection.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define PTR2JLONG(ctx) (jlong)(int64_t)(intptr_t)(ctx)
 #define JLONG2PTR(ctx) (void*)(intptr_t)(int64_t)(ctx)
