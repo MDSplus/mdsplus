@@ -3134,6 +3134,14 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv * env, jobject o
   }
   event = (*env)->GetStringUTFChars(env, jevent, 0);
   //make sure this Event instance will not be released by the garbage collector
+#ifdef _WIN32
+    if(!critSectInitialized)
+    {
+        critSectInitialized = true;
+	InitializeCriticalSection(&critSect);
+    }
+#endif
+
   status = MDSEventAst((char *)event, handleEvent, (void *)eventObj, &eventId);
   addEventDescr(eventObj, (int64_t) eventId);
   (*env)->ReleaseStringUTFChars(env, jevent, event);
