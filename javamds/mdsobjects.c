@@ -46,6 +46,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MDSplus_REvent.h"
 #include "MDSplus_Connection.h"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define PTR2JLONG(ctx) (jlong)(int64_t)(intptr_t)(ctx)
 #define JLONG2PTR(ctx) (void*)(intptr_t)(int64_t)(ctx)
@@ -53,6 +56,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CTXCALL0(FUN)     (ctx?_##FUN( ctx)            :FUN())
 #define CTXCALLR(FUN,...) (ctx?_##FUN(&ctx,__VA_ARGS__):FUN(__VA_ARGS__))
 #define CTXCALLN(FUN,...) (ctx?_##FUN( ctx,__VA_ARGS__):FUN(__VA_ARGS__))
+
+
+
+#ifdef _WIN32
+static char critSectInitialized = 0;
+static CRITICAL_SECTION critSect;
+#else
+static 	pthread_mutex_t evMutex = PTHREAD_MUTEX_INITIALIZER;
+#endif
+
+
 
 static void set_ctx_field(JNIEnv * env, jobject jobj, void *ctx) {
   jclass   cls = (*env)->GetObjectClass(env, jobj);
@@ -3025,6 +3039,11 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   jbyteArray jbuf;
   int64_t time;
   jobject obj = (jobject) objPtr;
+#ifdef _WIN32
+    EnterCriticalSection(&critSect);
+#else
+    pthread_mutex_lock(&evMutex);
+#endif
 
   env = getJNIEnv();
   if (!env)
@@ -3043,6 +3062,11 @@ static void handleEvent(void *objPtr, int dim, char *buf)
   args[1].j = time;
   (*env)->CallVoidMethodA(env, obj, mid, args);
   releaseJNIEnv();
+#ifdef _WIN32
+    LeaveCriticalSection(&critSect);
+#else
+    pthread_mutex_unlock(&evMutex);
+#endif
 }
 /*
 static void handleREvent(char *evName, char *buf, int dim, void *objPtr)
@@ -3110,6 +3134,14 @@ JNIEXPORT jlong JNICALL Java_MDSplus_Event_registerEvent(JNIEnv * env, jobject o
   }
   event = (*env)->GetStringUTFChars(env, jevent, 0);
   //make sure this Event instance will not be released by the garbage collector
+#ifdef _WIN32
+    if(!critSectInitialized)
+    {
+        critSectInitialized = 1;
+	InitializeCriticalSection(&critSect);
+    }
+#endif
+
   status = MDSEventAst((char *)event, handleEvent, (void *)eventObj, &eventId);
   addEventDescr(eventObj, (int64_t) eventId);
   (*env)->ReleaseStringUTFChars(env, jevent, event);
