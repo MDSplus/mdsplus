@@ -86,23 +86,24 @@ class ACQ2106_WRPG(MDSplus.Device):
 
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debug information during loading
-        self.load_stl_file(traces)
+        self.load_stl_data(traces)
         self.dprint(1,'WRPG has loaded the STL')
       
     INIT=init
 
 
-    def load_stl_file(self,traces):
+    def load_stl_data(self,traces):
         import acq400_hapi
 
-        stl_table = self.stl_file
-        self.dprint(1, 'Path to State Table: %s', stl_table)
+        # Pair of (transition time, 32 bit channel states):
+        stl_pairs = self.stl_lists.data()
+        # Change from Numpy array to List with toList()
+        pairs = "\n".join([ item for item in stl_pairs.tolist() ])        
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
         
-        with open(stl_table, 'r') as fp:
-            uut.load_wrpg(fp.read(), uut.s0.trace)
+        uut.load_wrpg(pairs, uut.s0.trace)
 
 
     def set_stl(self, nchan):
@@ -173,21 +174,15 @@ class ACQ2106_WRPG(MDSplus.Device):
         for elements in t_times:
             times_usecs.append(int(elements * 1E6)) #in micro-seconds
         # Building a pair between the t_times and bin states:
-        stl_list = zip(times_usecs, binrows)
+        stl_tuple = zip(times_usecs, binrows)
 
-        # Creating the STL file with the path and file name given in self.stl_file.data()
-        fd, temp_path = mkstemp(prefix='acq2106-dio482-', suffix='.stl')
-
-        self.dprint(1, 'STL temp file: %s', temp_path)
-
-        self.stl_file = temp_path
-
-        # f=open(self.stl_file.data(), 'w')
-        f = open(temp_path, 'w')
-
+        #Record the list of lists into a tree node:
+        stl_list  = []
+        
         # Write to file with states in HEX form.
-        for s in stl_list:
-            f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
+        for s in stl_tuple:
+            stl_list.append('%d,%08X\n' % (s[0], int(s[1], 2)))
+        print(stl_list)
 
-        f.close()
-        os.close(fd)
+        # MDSplus wants a numpy array
+        self.stl_lists.putData(numpy.array(stl_list))
