@@ -35,7 +35,7 @@ class ACQ2106_WRPG(MDSplus.Device):
     DIO with 32 channels
 
     MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
-		MDSplus.Device.dprint(debuglevel, fmt, args)
+        MDSplus.Device.dprint(debuglevel, fmt, args)
          - print if debuglevel >= MDSplus.Device.debug
 
     """
@@ -48,6 +48,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
+        {'path':':STL_LISTS',   'type':'text',                  'options':('write_shot',)},
         {'path':':GPG_TRG_DX',  'type':'text', 'value': 'dx', 'options':('write_shot',)},
     ]
 
@@ -70,7 +71,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut.s0.SIG_EVENT_SRC_0 = 'GPG'
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
-        uut.s0.GPG_TRG_DX    =str(self.gpg_trg_dx.data())   #d1 for WRTT1. d0 for WRTT0 or EXT.
+        uut.s0.GPG_TRG_DX    = str(self.gpg_trg_dx.data())   #d1 for WRTT1. d0 for WRTT0 or EXT.
         uut.s0.GPG_TRG_SENSE ='rising'
         uut.s0.GPG_MODE      ='ONCE'
 
@@ -179,10 +180,9 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Record the list of lists into a tree node:
         stl_list  = []
         
-        # Write to file with states in HEX form.
+        # Write to a list with states in HEX form.
         for s in stl_tuple:
             stl_list.append('%d,%08X\n' % (s[0], int(s[1], 2)))
-        print(stl_list)
 
         # MDSplus wants a numpy array
         self.stl_lists.putData(numpy.array(stl_list))
