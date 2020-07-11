@@ -49,6 +49,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
+        {'path':':STL_LISTS',   'type':'text',                  'options':('write_shot',)},
     ]
 
 
@@ -59,8 +60,8 @@ class ACQ2106_WRPG(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         
-        #Number of channels of the DIO482
-        nchans = 32
+        #Number of channels of the DIO482, e.g nchans = 32
+        nchans = int(uut.s6.NCHAN)
 
         # Setting the trigger in the GPG module. These settings depends very much on what is the
         # configuration of the experiment. For example, when using one WRTT timing highway, the we can use d0, which will be
@@ -86,7 +87,8 @@ class ACQ2106_WRPG(MDSplus.Device):
 
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debug information during loading
-        self.load_stl_file(traces)
+        # self.load_stl_file(traces)
+        self.load_stl_data(traces)
         self.dprint(1,'WRPG has loaded the STL')
       
     INIT=init
@@ -103,6 +105,21 @@ class ACQ2106_WRPG(MDSplus.Device):
         
         with open(stl_table, 'r') as fp:
             uut.load_wrpg(fp.read(), uut.s0.trace)
+
+
+    def load_stl_data(self,traces):
+        import acq400_hapi
+
+        # Pair of (transition time, 32 bit channel states):
+        stl_pairs = self.stl_lists.data()
+        print(stl_pairs.tolist())
+        pairs = "\n".join([ item for item in stl_pairs.tolist() ])        
+        print(pairs)
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+        uut.s0.trace = traces
+        
+        uut.load_wrpg(pairs, uut.s0.trace)
 
 
     def set_stl(self, nchan):
@@ -173,7 +190,18 @@ class ACQ2106_WRPG(MDSplus.Device):
         for elements in t_times:
             times_usecs.append(int(elements * 1E6)) #in micro-seconds
         # Building a pair between the t_times and bin states:
-        stl_list = zip(times_usecs, binrows)
+        stl_tuple = zip(times_usecs, binrows)
+
+        #Record the list of lists into a tree node:
+        stl_list  = []
+        
+        # Write to file with states in HEX form.
+        for s in stl_tuple:
+            stl_list.append('%d,%08X\n' % (s[0], int(s[1], 2)))
+        print(stl_list)
+
+        self.stl_lists.putData(numpy.array(stl_list))
+        print("Lists recorded into STL_LISTS")
 
         # Creating the STL file with the path and file name given in self.stl_file.data()
         fd, temp_path = mkstemp(prefix='acq2106-dio482-', suffix='.stl')
@@ -186,7 +214,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         f = open(temp_path, 'w')
 
         # Write to file with states in HEX form.
-        for s in stl_list:
+        for s in stl_tuple:
             f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
 
         f.close()

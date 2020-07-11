@@ -31,8 +31,7 @@ acq400_base = importlib.import_module('acq400_base')
 class _ACQ2106_ST(acq400_base._ACQ400_ST_BASE):
     """
     D-Tacq ACQ2106 stream support.
-    """
-
+    """     
 
 class_ch_dict = acq400_base.create_classes(
     _ACQ2106_ST, "ACQ2106_ST",

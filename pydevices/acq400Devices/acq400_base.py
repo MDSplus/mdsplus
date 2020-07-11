@@ -43,7 +43,7 @@ class _ACQ400_BASE(MDSplus.Device):
     All other carrier/function combinations use this class as a parent class.
 
     MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
-	MDSplus.Device.dprint(debuglevel, fmt, args)
+    MDSplus.Device.dprint(debuglevel, fmt, args)
          - print if debuglevel >= MDSplus.Device.debug
     """
 
@@ -90,7 +90,6 @@ class _ACQ400_BASE(MDSplus.Device):
             uut.s0.transient = 'SOFT_TRIGGER=1'
 
         # If PRE samples different from zero
-        print("PRE={} POST={}".format(self.presamples.data(), self.samples.data()))
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.samples.data())
 
         #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
@@ -132,8 +131,59 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
         {'path':':SEG_EVENT',   'type':'text',    'value': 'STREAM','options':('no_write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
+        #Trigger sources
+        {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('write_shot',)},
+        {'path':':TRIG_DX',    'type':'text',      'value': 'dx', 'options':('write_shot',)},
+        #WRTD tree information
+        {'path':':WR',         'type':'numeric',   'value': 0,  'options':('write_shot',)},
+            {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
+            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
+            {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
+    def init(self):
+        import acq400_hapi
+        # Needs the initialization given in the superclass:
+        super(_ACQ400_ST_BASE, self).init()
+
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+        
+        # Initializing Sources to NONE:
+        # D0 signal:
+        uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
+
+        #Trigger sources choices:
+        # d0:
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
+        # d1:
+        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
+
+        # When WR is not being used to trigger:
+        if self.wr.data() == 0:
+            # No PRE samples --> EVENT0 doesn't need to be set.
+            # TRIGGER setting
+            if str(self.trig_src.data()) in srcs_1:
+                uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+                #Setting the signal (dX) to use for ACQ2106 stream control
+                uut.s1.TRG       = 'enable'
+                uut.s1.TRG_DX    = 'd1'
+                uut.s1.TRG_SENSE = 'rising'
+
+            elif str(self.trig_src.data()) in srcs_0:
+                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+                #Setting the signal (dX) to use for ACQ2106 stream control
+                uut.s1.TRG       = 'enable'
+                uut.s1.TRG_DX    = 'd0'
+                uut.s1.TRG_SENSE = 'rising'
+            #pass
+        
+        #If WR is used to trigger, then:
+        else:
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_SENSE = 'rising'
 
     def arm(self):
         self.running.on=True
@@ -344,6 +394,8 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         super(_ACQ400_TR_BASE, self).init()
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+
+        print("PRE={} POST={}".format(self.presamples.data(), self.samples.data()))
         
         # Initializing Sources to NONE:
         # D0 signal:
@@ -545,7 +597,7 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
                 expr = "{} * {} + {}".format(ch, ch.ESLO, ch.EOFF)
                 ch.CAL_INPUT.putData(MDSplus.Data.compile(expr))
 
-	    self.create_time_base(uut)
+        self.create_time_base(uut)
         # return None
     STORE=store
 
