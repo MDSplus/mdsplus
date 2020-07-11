@@ -99,7 +99,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         # Pair of (transition time, 32 bit channel states):
         stl_pairs = self.stl_lists.data()
         # Change from Numpy array to List with toList()
-        pairs = b"\n".join([ item for item in stl_pairs.tolist() ])        
+        pairs = "\n".join([ str(item) for item in stl_pairs.tolist() ])        
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
