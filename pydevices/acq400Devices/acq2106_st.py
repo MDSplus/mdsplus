@@ -24,23 +24,21 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-try:
-    acq400_base = __import__('acq400_base', globals(), level=1)
-except:
-    acq400_base = __import__('acq400_base', globals())
+import importlib
 
+acq400_base = importlib.import_module('acq400_base')
 
 class _ACQ2106_ST(acq400_base._ACQ400_ST_BASE):
     """
     D-Tacq ACQ2106 stream support.
-    """
-
+    """     
 
 class_ch_dict = acq400_base.create_classes(
     _ACQ2106_ST, "ACQ2106_ST",
     list(_ACQ2106_ST.base_parts) + list(_ACQ2106_ST.st_base_parts),
     acq400_base.ACQ2106_CHANNEL_CHOICES
 )
+
 globals().update(class_ch_dict)
 
 if __name__ == '__main__':
