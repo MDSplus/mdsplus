@@ -159,7 +159,7 @@ public class TdiShr extends TreeShr
 	{
 		final Descriptor<?>[] args = new Descriptor<?>[args1.length + 1];
 		args[0] = arg0;
-		System.arraycopy(args, 1, args1, 0, args1.length);
+		System.arraycopy(args1, 0, args, 1, args1.length);
 		return this.tdiIntrinsic(ctx, opcode, args);
 	}
 }
