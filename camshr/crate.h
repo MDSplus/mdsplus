@@ -52,7 +52,7 @@ struct CRATE {
 
 //-------------------------------------------------------------------------
 // internal structure
-struct Crate_ {
+typedef struct Crate_ {
   char name[7];
   int device;
   int type;
