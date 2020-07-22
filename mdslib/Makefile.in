@@ -14,6 +14,10 @@ MKDIR_P=@MKDIR_P@
 LIBS = @LIBS@ @GLOBUS_LIBS@ $(LIBSOCKET) @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
+# WARNING: gfortran 10 dangerous fixes ... actual fortran code must be reviewed asap
+#          see: https://gcc.gnu.org/gcc-10/porting_to.html
+FFLAGS += $(FCFLAGS) -fallow-invalid-boz -fallow-argument-mismatch
+
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
 
