@@ -16,7 +16,9 @@ MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
 # WARNING: gfortran 10 dangerous fixes ... actual fortran code must be reviewed asap
 #          see: https://gcc.gnu.org/gcc-10/porting_to.html
-FFLAGS += $(FCFLAGS) -fallow-invalid-boz -fallow-argument-mismatch
+#          added flags in m4/m4_as_fortran_flags.m4 
+#          -fallow-invalid-boz -fallow-argument-mismatch
+FFLAGS += $(FCFLAGS)
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)

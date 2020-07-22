@@ -581,6 +581,8 @@ case "$host" in
        X_EXTRA_LIBS="-lXmu";;
 esac
 
+# add specific flags for fortran depending on compiler version
+AX_FORTRAN_FLAGS([FCFLAGS])
 
 AC_CHECK_SIZEOF(long)
 
