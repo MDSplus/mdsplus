@@ -92,28 +92,28 @@ class _ACQ400_BASE(MDSplus.Device):
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.samples.data())
 
-        #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
-        uut.s0.SIG_CLK_MB_FIN = '0'
+        # #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
+        # uut.s0.SIG_CLK_MB_FIN = '0'
 
-        #Set the Sampling rate in the ACQ:
-        # MB Clock (WR Clock): 20MHz
-        # mb_freq = uut.s0.SIG_CLK_MB_FREQ
-        mb_freq = 20000000.00 #Hz
+        # #Set the Sampling rate in the ACQ:
+        # # MB Clock (WR Clock): 20MHz
+        # # mb_freq = uut.s0.SIG_CLK_MB_FREQ
+        # mb_freq = 20000000.00 #Hz
 
-        self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
-        clockdiv      = mb_freq/self.freq.data()
+        # self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
+        # clockdiv      = mb_freq/self.freq.data()
 
-        #The following will set the sample rate, by setting the clock div.
-        uut.s1.CLKDIV = "{}".format(clockdiv)
+        # #The following will set the sample rate, by setting the clock div.
+        # uut.s1.CLKDIV = "{}".format(clockdiv)
 
-        acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
+        # acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
         
-        self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz", acq_sample_freq)
+        # self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz", acq_sample_freq)
 
-        #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
-        uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
-        uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
-        uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
+        # #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
+        # uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
+        # uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
+        # uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
 
     INIT = init
 
@@ -131,6 +131,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         {'path':':MAX_SEGMENTS','type':'numeric', 'value': 1000,   'options':('no_write_shot',)},
         {'path':':SEG_EVENT',   'type':'text',    'value': 'STREAM','options':('no_write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
+        {'path':':DEF_DECIMATE','type':'numeric', 'value': 1,      'options':('no_write_shot',)},
         #Trigger sources
         {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('write_shot',)},
         {'path':':TRIG_DX',    'type':'text',      'value': 'dx', 'options':('write_shot',)},
@@ -197,6 +198,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
+        #NUM_BUFFERS = 5
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
@@ -209,6 +211,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
             # self.nchans = self.dev.sites*32
             uut = acq400_hapi.Acq400(self.dev.node.data())
             self.nchans = uut.nchan()
+            print("Number of Channels {}".format(self.nchans))
 
             for i in range(self.nchans):
                 self.chans.append(getattr(self.dev, 'INPUT_%3.3d'%(i+1)))
@@ -283,7 +286,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                         c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
-                MDSplus.Event.setevent(event_name)
+                #MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
@@ -508,8 +511,8 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         eoff = uut.cal_eoff[1:]
         channel_data = uut.read_channels()
 
-        print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
-        print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
+        # print('Trig T0  {}'.format(str(self.wr_wrtd_t0.data())))
+        # print('Trig TAI {}'.format(str(self.wr_trig_tai.data())))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
@@ -525,7 +528,7 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 clock_period = 1./self.freq.data()
 
                 # self.wr_wrtd_t0 is the reference to the node in the WRTD device. (secs)
-                # self.trig_time  is the reference to the node in WRTD device. (TAI time)
+                # self.wr_wrtd_tai  is the reference to the node in WRTD device. (TAI time)
 
                 mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_wrtd_t0)   
                 # mdswindow = MDSplus.Window(start_idx, end_idx, self.wr_trig_tai)
@@ -700,7 +703,7 @@ def assemble(cls):
 # probably easier for analysis code if ALWAYS INPUT_001
 #    inpfmt = INPFMT2 if cls.nchan < 100 else INPFMT3
     for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once',)})
+        cls.parts.append({'path':inpfmt%(ch,), 'type':'signal','options':('no_write_model','write_once','do_not_compress')})
         cls.parts.append({'path':inpfmt%(ch,)+':DECIMATE', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':COEFFICIENT','type':'NUMERIC', 'value':1, 'options':('no_write_shot')})
         cls.parts.append({'path':inpfmt%(ch,)+':OFFSET', 'type':'NUMERIC', 'value':1, 'options':('no_write_shot')})

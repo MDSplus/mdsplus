@@ -105,6 +105,13 @@ class ACQ2106_WRTD(MDSplus.Device):
     INIT=init
 
     def trig(self, msg=''):
+        thread = threading.Thread(target = self._trig, args=(msg))
+        thread.start()
+        return None
+    TRIG=trig
+
+
+    def _trig(self, msg=''):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
 
@@ -147,4 +154,4 @@ class ACQ2106_WRTD(MDSplus.Device):
         # /mnt/local/sysconfig/wr.sh
         # uut.cC.wrtd_reset_tx = 1
 
-    TRIG=trig
+    _TRIG=_trig

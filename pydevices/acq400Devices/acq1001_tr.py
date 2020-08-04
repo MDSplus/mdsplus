@@ -27,15 +27,23 @@
 import importlib
 
 acq400_base = importlib.import_module('acq400_base')
+acq400_hapi = importlib.import_module('acq400_hapi')
 
 class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
     """
     D-Tacq ACQ1001 transient support.
     """
+    def init(self):
+        super(_ACQ1001_TR, self).init()
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
+
+        uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
+        freq = int(self.freq.data())
+        uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
 
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_TR, "ACQ1001_TR",
-    list(_ACQ1001_TR.base_parts),
+    list(_ACQ1001_TR.tr_base_parts) + list(_ACQ1001_TR.base_parts),
     acq400_base.ACQ1001_CHANNEL_CHOICES
 )
 

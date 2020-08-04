@@ -35,7 +35,7 @@ class ACQ2106_WRPG(MDSplus.Device):
     DIO with 32 channels
 
     MDSplus.Device.debug - Controlled by environment variable DEBUG_DEVICES
-		MDSplus.Device.dprint(debuglevel, fmt, args)
+        MDSplus.Device.dprint(debuglevel, fmt, args)
          - print if debuglevel >= MDSplus.Device.debug
 
     """
@@ -44,12 +44,12 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':NODE',        'type':'text',                     'options':('no_write_shot',)},
         {'path':':COMMENT',     'type':'text',                     'options':('no_write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
-        {'path':':TRIG_DX',     'type':'text',    'value': 'dx',   'options':('no_write_shot',)},
         {'path':':RUNNING',     'type':'numeric',                  'options':('no_write_model',)},
         {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
         {'path':':STL_LISTS',   'type':'text',                  'options':('write_shot',)},
+        {'path':':GPG_TRG_DX',  'type':'text', 'value': 'dx', 'options':('write_shot',)},
     ]
 
 
@@ -63,17 +63,17 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Number of channels of the DIO482, e.g nchans = 32
         nchans = int(uut.s6.NCHAN)
 
+        # uut.s0.SIG_SRC_TRG_0 ='WRTT0'
         # Setting the trigger in the GPG module. These settings depends very much on what is the
-        # configuration of the experiment. For example, when using one WRTT timing highway, the we can use d0, which will be
-        # the same used by the digitazer module. Otherwise, we can choose a different one, to be a independent highway from
+        # configuration of the experiment. For example, when using one WRTT timing highway, then we can use d0, which will be
+        # the same used by the digitazer module. Otherwise, we can choose a different one, to be in an independent highway from
         # the digitazer, like d1.
-       
         uut.s0.SIG_EVENT_SRC_0 = 'GPG'
-        uut.s0.GPG_ENABLE      = 'enable'
-        uut.s0.GPG_TRG         = '1'    #external=1, internal=0
-        uut.s0.GPG_TRG_DX      =  self.TRIG_DX   #d1 for WRTT1. d0 for WRTT0 or EXT.
-        uut.s0.GPG_TRG_SENSE   = 'rising'
-        uut.s0.GPG_MODE        = 'ONCE'
+        uut.s0.GPG_ENABLE    ='enable'
+        uut.s0.GPG_TRG       ='1'    #external=1, internal=0
+        uut.s0.GPG_TRG_DX    = str(self.gpg_trg_dx.data())   #d1 for WRTT1. d0 for WRTT0 or EXT.
+        uut.s0.GPG_TRG_SENSE ='rising'
+        uut.s0.GPG_MODE      ='ONCE'
 
         if self.debug >= 2:
             start_time = time.time()
@@ -86,25 +86,11 @@ class ACQ2106_WRPG(MDSplus.Device):
             self.dprint(2, "Building STL: end --- %s seconds ---", (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
-        traces = False  # True: shows debug information during loading
-        # self.load_stl_file(traces)
+        traces = True  # True: shows debug information during loading
         self.load_stl_data(traces)
         self.dprint(1,'WRPG has loaded the STL')
       
     INIT=init
-
-
-    def load_stl_file(self,traces):
-        import acq400_hapi
-
-        stl_table = self.stl_file
-        self.dprint(1, 'Path to State Table: %s', stl_table)
-
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-        uut.s0.trace = traces
-        
-        with open(stl_table, 'r') as fp:
-            uut.load_wrpg(fp.read(), uut.s0.trace)
 
 
     def load_stl_data(self,traces):
@@ -112,9 +98,8 @@ class ACQ2106_WRPG(MDSplus.Device):
 
         # Pair of (transition time, 32 bit channel states):
         stl_pairs = self.stl_lists.data()
-        print(stl_pairs.tolist())
-        pairs = "\n".join([ item for item in stl_pairs.tolist() ])        
-        print(pairs)
+        # Change from Numpy array to List with toList()
+        pairs = ''.join([ str(item) for item in stl_pairs.tolist() ])        
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.trace = traces
@@ -195,27 +180,9 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Record the list of lists into a tree node:
         stl_list  = []
         
-        # Write to file with states in HEX form.
+        # Write to a list with states in HEX form.
         for s in stl_tuple:
             stl_list.append('%d,%08X\n' % (s[0], int(s[1], 2)))
-        print(stl_list)
 
+        # MDSplus wants a numpy array
         self.stl_lists.putData(numpy.array(stl_list))
-        print("Lists recorded into STL_LISTS")
-
-        # Creating the STL file with the path and file name given in self.stl_file.data()
-        fd, temp_path = mkstemp(prefix='acq2106-dio482-', suffix='.stl')
-
-        self.dprint(1, 'STL temp file: %s', temp_path)
-
-        self.stl_file = temp_path
-
-        # f=open(self.stl_file.data(), 'w')
-        f = open(temp_path, 'w')
-
-        # Write to file with states in HEX form.
-        for s in stl_tuple:
-            f.write('%d,%08X\n' % (s[0], int(s[1], 2)))
-
-        f.close()
-        os.close(fd)
