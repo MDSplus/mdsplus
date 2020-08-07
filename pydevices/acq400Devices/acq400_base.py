@@ -92,29 +92,6 @@ class _ACQ400_BASE(MDSplus.Device):
         # If PRE samples different from zero
         uut.s0.transient = "PRE={} POST={}".format(self.presamples.data(), self.samples.data())
 
-        # #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
-        # uut.s0.SIG_CLK_MB_FIN = '0'
-
-        # #Set the Sampling rate in the ACQ:
-        # # MB Clock (WR Clock): 20MHz
-        # # mb_freq = uut.s0.SIG_CLK_MB_FREQ
-        # mb_freq = 20000000.00 #Hz
-
-        # self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
-        # clockdiv      = mb_freq/self.freq.data()
-
-        # #The following will set the sample rate, by setting the clock div.
-        # uut.s1.CLKDIV = "{}".format(clockdiv)
-
-        # acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
-        
-        # self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz", acq_sample_freq)
-
-        # #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
-        # uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
-        # uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
-        # uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
-
     INIT = init
 
 
@@ -656,10 +633,11 @@ class _ACQ400_MR_BASE(_ACQ400_TR_BASE):
         # args.uuts = [ acq400_hapi.Acq2106(u, has_comms=False) for u in args.uut ]
         uut = acq400_hapi.Acq2106(self.node.data())
         # master = args.uuts[0]
-        self.STL.putData("/home/dt100/PROJECTS/acq400_hapi/user_apps/STL/acq2106_test10.stl")
-        with open(self.STL.data(), 'r') as fp:
-            stl = fp.read()
 
+        # The STL node will contains a reference to the WRPG device that contains the generated STL table by the WRPG device
+        # (see acq2106_WRPG.py).
+        # Pair of (transition time, 32 bit channel states):
+        stl = self.STL.data()
         lit_stl = self.denormalise_stl(stl)
 
         uut.s0.SIG_SRC_TRG_0 = 'NONE'
