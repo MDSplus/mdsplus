@@ -569,7 +569,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
           text="Device is not a python device."
           />
     <status name="UNSUPPORTED_METHOD" value="5308" severity="Info"
-          text="Device method unimplimented""
+          text="Device method not implemented."
           />
 
 
