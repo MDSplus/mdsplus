@@ -568,6 +568,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <status name="NOT_A_PYDEVICE" value="5307" severity="Error"
           text="Device is not a python device."
           />
+    <status name="UNSUPPORTED_METHOD" value="5308" severity="Info"
+          text="Device method unimplimented""
+          />
 
 
    </facility>

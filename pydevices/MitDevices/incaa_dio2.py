@@ -425,9 +425,9 @@ class INCAA_DIO2(MDSplus.Device):
     INIT=init
 
     def store(self):
-        pass
+        raise MDSplus.DevUNSUPPORTED_METHOD
     STORE=store
 
     def trigger(self):
-        pass
+        raise MDSplus.DevUNSUPPORTED_METHOD
     TRIGGER=trigger
