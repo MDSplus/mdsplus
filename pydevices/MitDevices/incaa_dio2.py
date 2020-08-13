@@ -33,32 +33,37 @@ class INCAA_DIO2(MDSplus.Device):
     Nodes:
 
         BOARD_ID     - board number assigned by DIO2 Device Driver [0-n]
-        IP_ADDR      - ipaddress[:port] to mdsconnect to if remote
+        SW_MODE      - either 'LOCAL or REMOTE'
+        IP_ADDR      - if SW_MODE is REMOTE ipaddress[:port] to mdsconnect to if remote
         COMMENT      - user comment
         CLOCK_SRC    - HIGHWAY or INTERNAL
         REC_START_EV - name of event(s) to record times of - UNIMPLEMENTED
-        SYNC_EVENT   - name of events(s) to start the onboard scalars
-        INIT_ACTION  - action to arm board
-        STORE_ACTION - action to store board - UNIMPLEMENTED
 
         8 Channels for the outputs
         .CHANNEL_[1-8]   - STRUCTURE node containing knobs and outputs for channel
             FUNCTION     - Channel function one of 'PULSE', 'CLOCK', 'GGLOCK', 'DCLOCK'
             TRIG_MODE    - trigger mode for this channel one of EVENT, RISING, FALLING, SOFTWARE
             EVENT        - name of the event(s) that will fire this channel
-            CYCLIC       - should this channel repeat (node off) or not (node on)
+            CYCLIC       - should this channel repeat - text YES / NO
             DELAY        - Delay before channel starts
             DURATION     - Duration if channel is pulse
             FREQUENCY_1  - Clock frequency in Hz
             FREQUENCY_2  - Clock frequency in Hz (if dual speed clock - DCLOCK)
-            DUTY_CYCLE   - Duty cycle of clock if 1 speed clock (1 - 100)
             INIT_LEVEL_1 - starting level for this channel 0-low, 1-high
             INIT_LEVEL_2 - transition to level for this channel 0-low, 1-high
+            DUTY_CYCLE   - Duty cycle of clock if 1 speed clock (1 - 100)
             TRIGGER      - Time to assign to this channel's event
+            CLOCK        - clock stored if this is channel is in CLOCK_MODE
             TRIGGER_1    - Time of the first transition of this channel if PULSE
             TRIGGER_2    - Time of the second transition of this channel if PULSE
-            CLOCK        - clock stored if this is channel is in CLOCK_MODE
             COMMENT      - Comment on this channel
+
+        REC_EVENTS   - name(s) of events whose times to record
+        REC_TIMES    - time(s) of those recorded events
+        SYNC         - Syncronize the start of the devices with external event YES/NO
+        SYNC_EVENT   - name of events(s) to start the onboard scalars
+        INIT_ACTION  - action to arm board
+        STORE_ACTION - action to store board - UNIMPLEMENTED
 
     event codes (0-127) are defined in incaa_event_table.py, sample in /usr/local/mdsplus/tdi/MitDevices
     debug - is debugging enabled.  Controlled by environment variable DEBUG_DEVICES
@@ -68,6 +73,8 @@ class INCAA_DIO2(MDSplus.Device):
     parts=[
         {'path':':BOARD_ID','type':'numeric', 'value': 0, 'options':('no_write_shot',),
             'help' : "board number assigned by DIO2 Device Driver [0-n]"},
+        {'path':':SW_MODE','type':'text', 'value': 'REMOTE', 'options':('no_write_shot',),
+            'help': 'connect to external host[:port] to address hardware LOCAL / REMOTE' },
         {'path':':IP_ADDR','type':'text', 'options':('no_write_shot',),
             'help': 'ipaddress[:port] to mdsconnect to if remote' },
         {'path':':COMMENT','type':'text', 'options':('no_write_shot',),
@@ -75,18 +82,9 @@ class INCAA_DIO2(MDSplus.Device):
         {'path':':CLOCK_SRC','type':'text', 'options':('no_write_shot',),
             'help':  'HIGHWAY or INTERNAL'},
         {'path':':REC_START_EV','type':'text', 'options':('no_write_shot',),
-            'help': 'name of event(s) to record times of - UNIMPLEMENTED' },
-        {'path':':SYNC_EVENT','type':'text', 'options':('no_write_shot',),
-            'help': 'name of events(s) to start the onboard scalars' },
-        {'path':':INIT_ACTION','type':'action',
-            'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
-            'options':('no_write_shot',),
-            'help': 'action to arm board'},
-        {'path':':STORE_ACTION','type':'action',
-            'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
-            'options':('no_write_shot',),
-            'help': 'action to store board - UNIMPLEMENTED' },
+            'help': 'name of event to record event times from' },
         ]
+
     for i in range(8):
         parts.append({'path':'.CHANNEL_%1.1d'%(i+1,),'type':'STRUCTURE',
             'help': 'STRUCTURE node containing knobs and outputs for channel' })
@@ -96,8 +94,8 @@ class INCAA_DIO2(MDSplus.Device):
             'help': 'trigger mode for this channel one of EVENT, RISING, FALLING, SOFTWARE' })
         parts.append({'path':'.CHANNEL_%1.1d:EVENT'%(i+1,),'type':'TEXT', 'options':('no_write_shot'),
             'help': 'name of events(s) to start this channel' })
-        parts.append({'path':'.CHANNEL_%1.1d:CYCLIC'%(i+1,),'type':'NUMERIC', 'value':0, 'options':('no_write_shot'),
-            'help': 'should this channel repeat (node off) or not (node on)' })
+        parts.append({'path':'.CHANNEL_%1.1d:CYCLIC'%(i+1,),'type':'TEXT', 'value': 'NO', 'options':('no_write_shot'),
+            'help': 'should this channel repeat NO / YES' })
         parts.append({'path':'.CHANNEL_%1.1d:DELAY'%(i+1,),'type':'NUMERIC', 'value': 1E-6, 'options':('no_write_shot'),
             'help': 'delay in seconds if channel is pulse' })
         parts.append({'path':'.CHANNEL_%1.1d:DURATION'%(i+1,),'type':'NUMERIC', 'value': 5E-6, 'options':('no_write_shot'),
@@ -106,14 +104,18 @@ class INCAA_DIO2(MDSplus.Device):
             'help': 'Clock frequency in Hz'  })
         parts.append({'path':'.CHANNEL_%1.1d:FREQUENCY_2'%(i+1,),'type':'NUMERIC', 'value': 1000, 'options':('no_write_shot'),
             'help': 'Clock frequency in Hz (if dual speed clock - DCLOCK)' })
-        parts.append({'path':'.CHANNEL_%1.1d:DUTY_CYCLE'%(i+1,),'type':'NUMERIC', 'value': 50, 'options':('no_write_shot'),
-            'help': 'Duty cycle of clock if 1 speed clock (1 - 100)' })
         parts.append({'path':'.CHANNEL_%1.1d:INIT_LEVEL_1'%(i+1,),'type':'NUMERIC', 'value': 0, 'options':('no_write_shot'),
             'help': 'starting level for this channel 0-low, 1-high' })
         parts.append({'path':'.CHANNEL_%1.1d:INIT_LEVEL_2'%(i+1,),'type':'NUMERIC', 'value': 1, 'options':('no_write_shot'),
             'help': 'transition to level for this channel 0-low, 1-high' })
+        parts.append({'path':'.CHANNEL_%1.1d:DUTY_CYCLE'%(i+1,),'type':'NUMERIC', 'value': 50, 'options':('no_write_shot'),
+            'help': 'Duty cycle of clock if 1 speed clock (1 - 100)' })
         parts.append({'path':'.CHANNEL_%1.1d:TRIGGER'%(i+1,),'type':'NUMERIC', 'value': 0, 'options':('no_write_shot'),
             'help': "Time to assign to this channel's event" })
+        parts.append({'path':'.CHANNEL_%1.1d:CLOCK'%(i+1,),'type':'NUMERIC',
+            'valueExpr': 'Data.compile("* : * : 1.D0/$", head.channel_%1.1d_frequency_1)'%(i+1,),
+            'options':('no_write_shot'),
+            'help': 'Stored clock (RANGE) if this channel is one of the CLOCK types' })
         parts.append({'path':'.CHANNEL_%1.1d:TRIGGER_1'%(i+1,),'type':'NUMERIC', 
             'valueExpr': 'Data.compile("$ + $", head.channel_%1.1d_trigger, head.channel_%1.1d_delay)'%(i+1, i+1),
             'options':('no_write_shot'),
@@ -122,32 +124,34 @@ class INCAA_DIO2(MDSplus.Device):
             'valueExpr': 'Data.compile("$ + $", head.channel_%1.1d_trigger_1, head.channel_%1.1d_duration)'%(i+1, i+1),
             'options':('no_write_shot'),
             'help': 'Time of the second transition of this channel if PULSE' })
-        parts.append({'path':'.CHANNEL_%1.1d:CLOCK'%(i+1,),'type':'NUMERIC',
-            'valueExpr': 'Data.compile("* : * : 1.D0/$", head.channel_%1.1d_frequency_1)'%(i+1,),
-            'options':('no_write_shot'),
-            'help': 'Stored clock (RANGE) if this channel is one of the CLOCK types' })
         parts.append({'path':'.CHANNEL_%1.1d:COMMENT'%(i+1,),'type':'TEXT', 'options':('no_write_shot'),
             'help': 'comment for this channel' })
     del i
+    parts.append({'path':':REC_EVENTS','type':'TEXT', 'value': 'NO', 'options':('no_write_shot'),
+        'help': 'Names of events whose time to record' })
+    parts.append({'path':':REC_TIMES','type':'NUMERIC', 'options':('no_write_model', 'write_once'),
+        'help': 'TIME(s) of recorded events'  })
+    parts.append({'path':':SYNCH','type':'TEXT', 'value': 'NO', 'options':('no_write_shot'),
+        'help': 'Should this device syncrhonize on an event' })
 
+    parts.append( {'path':':SYNCH_EVENT','type':'text', 'options':('no_write_shot',),
+            'help': 'name of events(s) to start the onboard scalars' })
+    parts.append( {'path':':INIT_ACTION','type':'action',
+            'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
+            'options':('no_write_shot',),
+            'help': 'action to arm board'})
+    parts.append( {'path':':STORE_ACTION','type':'action',
+            'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STORE',head))",
+            'options':('no_write_shot',),
+            'help': 'action to store board - UNIMPLEMENTED' })
 
     debug=None
 
-    clock_sources=[ 'EXTERNAL', 'INTERNAL']
-    functions=[ 'CLOCK',]
-
-
-    def mds_connect(self):
-        host = self.ip_addr.data()
-        self.connection = None
-        if host.upper() != 'LOCAL' :
-            self.connection = MDSplus.Connection(host)
-
-    def mds_value(self, *args):
-        if self.connection:
-            return self.connection.get(*args)
-        else:
-            return MDSplus.Data.evaluate(*args)
+    local_remote = ('LOCAL', 'REMOTE')
+    clock_sources = ('EXTERNAL', 'INTERNAL')
+    functions = ('CLOCK','PULSE','DCLOCK', 'GCLOCK')
+    off_on = ('OFF', 'ON')
+    no_yes = ('NO', 'YES')
 
     @property
     def _board_id(self):
@@ -159,7 +163,7 @@ class INCAA_DIO2(MDSplus.Device):
             e.args =  ('DIO2 board ID', + e.args)
             raise
         return board_id
-      
+
     @property
     def _clock_source(self):
         try:
@@ -171,6 +175,37 @@ class INCAA_DIO2(MDSplus.Device):
             return 1
         else:
             return 0
+
+    @property
+    def host_ip(self):
+        host = str(self.ip_addr.data())
+        return host
+
+    @property
+    def _local_remote(self):
+       try:
+           mode_str = str(self.sw_mode.data())
+           mode = self.local_remote.index(mode_str.upper())
+       except Exception as e:
+           raise
+       return mode
+
+    @property
+    def _synch(self):
+        ny = str(self.synch.data().upper())
+        return self.no_yes.index(ny)
+
+    def mds_connect(self):
+        io_mode = self._local_remote
+        self.connection = None
+        if io_mode:
+            self.connection = MDSplus.Connection(self.host_ip)
+
+    def mds_value(self, *args):
+        if self.connection:
+            return self.connection.get(*args)
+        else:
+            return MDSplus.Data.evaluate(*args)
 
     def event_lookup(self, node):
        evtab = MDSplus.Data.compile('incaa_event_table()').data() 
@@ -311,6 +346,7 @@ class INCAA_DIO2(MDSplus.Device):
  
     def init(self):
         import os
+        print('this is the one in /mdsplus')
         if self.debug == None:
             self.debug = os.getenv("DEBUG_DEVICES")
         if self.debug:
@@ -319,7 +355,9 @@ class INCAA_DIO2(MDSplus.Device):
         board_id = self._board_id
         clock_source = self._clock_source
         rec_event_number = self.event_lookup(self.rec_start_ev)
-        sync_event_numbers = self.event_lookup(self.sync_event)
+        sync_event_numbers = 0
+        if self._synch:
+            sync_event_numbers = self.event_lookup(self.synch_event)
         if self.debug:
             print('got the rec_start_ev and the sync_event', rec_event_number, sync_event_numbers)
         self.mds_connect()
@@ -353,6 +391,7 @@ class INCAA_DIO2(MDSplus.Device):
                     if self.debug:
                         print('DIO2HWSetClockChan(0, $, $, $, $)', board_id, channel, frequency, duty_cycle)
                     self.mds_value('DIO2HWSetClockChan(0, $, $, $, $)', board_id, channel, frequency, duty_cycle)
+                    _chan.chan_prop('clock').record = MDSplus.Range(None, None, 1.0/frequency)
                 elif function == 'GCLOCK':
                     trig_mode, trig_event = _chan.trigger
                     frequency = _chan.frequency_1
@@ -364,7 +403,9 @@ class INCAA_DIO2(MDSplus.Device):
                                   delay, duration, trig_event)
                     self.mds_value(self, 'DIO2HWSetGClockChan(0, $1, $2, $3, $4, $5, $6, $7)', board_id, channel, trig_mode, frequency,
                                   delay, duration, trig_event);
-                    chan.CLOCK.record = MDSplus.Range(MDSplus.Add(chan.TRIGGER,chan.DELAY), MDSplus.Add(MDSplus.Add(chan.TRIGGER,chan.DELAY),chan.DURATION), period)
+                    _chan.chan_prop('clock').record = MDSplus.Range(MDSplus.Add(chan.TRIGGER,chan.DELAY), 
+                                                                    MDSplus.Add(MDSplus.Add(chan.TRIGGER,chan.DELAY),chan.DURATION), 
+                                                                    period)
                 elif function == 'DCLOCK':
                     trig_mode, trig_event = self.get_trigger(chan)
                     frequency_1 = _chan.frequency_1
@@ -378,11 +419,9 @@ class INCAA_DIO2(MDSplus.Device):
                                   frequency_1, frequency_2, delay, duration, event)
                     self.mds_value(self, 'DIO2HWSetDClockChan(0, $1, $2, $3, $4, $5, $6, $7, $8)', board_id, channel, trig_mode,
                                   frequency_1, frequency_2, delay, duration, event)
-                    chan.CLOCK.record = MDSplus.Range([-1E-6, chan.TRIGGER_1, chan.TRIGGER_2], 
-                                                      [ chan.TRIGGER_1, chan.TRIGGER_2, 1E6],
-                                                      [periond_1, period_2, period_1]) 
-                else:
-                    raise MDSplus.DevBAD_PARAMETER('DIO2 function for %s must be in [PULSE, CLOCK, GGLOCK, DCLOCK got %s' % (chan, function))
+                    _chan.chan_prop('clock').record = MDSplus.Range([-1E-6, chan.TRIGGER_1, chan.TRIGGER_2], 
+                                                                    [ chan.TRIGGER_1, chan.TRIGGER_2, 1E6],
+                                                                    [periond_1, period_2, period_1]) 
     INIT=init
 
     def store(self):
