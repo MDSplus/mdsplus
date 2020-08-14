@@ -362,8 +362,8 @@ class INCAA_DIO2(MDSplus.Device):
             print('got the rec_start_ev and the sync_event', rec_event_number, sync_event_numbers)
         self.mds_connect()
         if self.debug:
-            print('DIO2HWInit($, $, $, $, $)', self.nid_number, board_id, clock_source, rec_event_number, sync_event_numbers)
-        self.mds_value('DIO2HWInit($, $, $, $, $)', self.head.nid_number, board_id, clock_source, rec_event_number, sync_event_numbers)
+            print('DIO2HWInit($1, $2, $3, $4, $5)', self.nid_number, board_id, clock_source, rec_event_number, sync_event_numbers)
+        self.mds_value('DIO2HWInit($1, $2, $3, $4, $5)', self.head.nid_number, board_id, clock_source, rec_event_number, sync_event_numbers)
 
         for channel in range(8):
             c_name = 'channel_%1.1d' % (channel+1)
@@ -389,8 +389,8 @@ class INCAA_DIO2(MDSplus.Device):
                     frequency = _chan.frequency_1
                     duty_cycle = _chan.duty_cycle
                     if self.debug:
-                        print('DIO2HWSetClockChan(0, $, $, $, $)', board_id, channel, frequency, duty_cycle)
-                    self.mds_value('DIO2HWSetClockChan(0, $, $, $, $)', board_id, channel, frequency, duty_cycle)
+                        print('DIO2HWSetClockChan(0, $1, $2, $3, $4)', board_id, channel, frequency, duty_cycle)
+                    self.mds_value('DIO2HWSetClockChan(0, $1, $2, $3, $4)', board_id, channel, frequency, duty_cycle)
                     _chan.chan_prop('clock').record = MDSplus.Range(None, None, 1.0/frequency)
                 elif function == 'GCLOCK':
                     trig_mode, trig_event = _chan.trigger
