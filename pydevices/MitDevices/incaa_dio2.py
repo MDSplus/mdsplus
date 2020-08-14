@@ -411,7 +411,7 @@ class INCAA_DIO2(MDSplus.Device):
                     frequency_1 = _chan.frequency_1
                     period_1 = long((1. / frequency_1) / 1E-7 + 0.5) * 1E-7
                     frequency_2 = _chan.frequency_2 
-                    period_2 = long((1. / frequency_1) / 1E-7 + 0.5) * 1E-7
+                    period_2 = long((1. / frequency_2) / 1E-7 + 0.5) * 1E-7
                     delay = _chan.delay
                     duration = _chan.duration
                     if self.debug:
