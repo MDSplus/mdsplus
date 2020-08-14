@@ -263,7 +263,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                         c.makeSegment(begin, end, dim, b)
                     i += 1
                 segment += 1
-                #MDSplus.Event.setevent(event_name)
+                MDSplus.Event.setevent(event_name)
 
                 self.empty_buffers.put(buf)
 
