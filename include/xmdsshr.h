@@ -56,5 +56,5 @@ extern EXPORT void XmdsUsageIconsInitialize(Widget w);
 extern EXPORT Pixmap *XmdsUsageIcons();
 extern EXPORT Pixmap *XmdsUsageGrayIcons();
 
-EXPORT WidgetClass xmdsWaveformWidgetClass;
-EXPORT XmdsWaveformClassRec xmdsWaveformClassRec;
+extern EXPORT WidgetClass xmdsWaveformWidgetClass;
+extern EXPORT XmdsWaveformClassRec xmdsWaveformClassRec;

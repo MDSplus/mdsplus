@@ -1,6 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 # bison -V	# bison (GNU Bison) 3.0.4
 # flex -V	# flex 2.6.1
+# gperf -v	# GNU gperf 3.0.4
 
 YACC=${YACC:=bison}
 YFLAGS=--verbose
@@ -8,24 +9,30 @@ YFLAGS=--verbose
 LEX=${LEX:=flex}
 LFLAGS=-p
 
-if ! which $YACC >/dev/null 2>&1
+GPERF=${GPERF:=gperf}
+
+test() {
+if ! which $2 >/dev/null 2>&1
 then
-	echo "YACC=$YACC - program not found; not installed?"
+	echo "$1=$2 - program not found; not installed?"
 	exit 127
 else
-	$YACC -V | head -n 1
+	$2 $3 | head -n 1
 fi
+}
 
-if ! which $LEX >/dev/null 2>&1
-then
-	echo "LEX=$LEX - program not found; not installed?"
-	exit 127
-else
-	$LEX -V | head -n 1
-fi
+test YACC "$YACC" -V
+test LEX "$LEX" -V
+test GPERF "$GPERF" -v
 
-OUTFILES="$(echo $(cat $1/yylex/outfiles))"
-ycmd="for y in $1/yylex/*.y; do echo \$y;$YACC $YFLAGS \$y; done"
-lcmd="for l in $1/yylex/*.l; do echo \$l;$LEX  $LFLAGS \$l; done"
-# scmd="sed -i 's/int num_to_read/size_t num_to_read/g' $OUTFILES"
-eval "$ycmd ; $lcmd " # && $scmd"
+yjob() { $YACC $YFLAGS $1; }
+ljob() { $LEX  $LFLAGS $1; }
+genjob() { GPERF=$GPERF $1; }
+
+job()  { if [ -e $2 ] ; then echo $2;${1}job $2; fi }
+loop() { for o in $1/yylex/*.$2; do job $2 $o; done; }
+
+loop $1 y
+loop $1 l
+loop $1 gen
+# sed -i 's/int num_to_read/size_t num_to_read/g' $(echo $(cat $1/yylex/outfiles))

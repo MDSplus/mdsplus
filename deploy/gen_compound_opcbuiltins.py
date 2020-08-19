@@ -19,7 +19,7 @@ forceref = ('$EXPT','$SHOT','$SHOTNAME','$DEFAULT','GETNCI',
 srcdir = os.path.realpath(os.path.dirname(__file__) + '/..')
 filepath = srcdir + '/include/opcbuiltins.h'
 target = srcdir + '/python/MDSplus/compound.py'
-print('Parsing %s to genarate %s.' % (filepath, target))
+print('Parsing %s to generate %s.' % (filepath, target))
 def opc(f=sys.stdout):
     opcnames = ('name', 'NAME', 'f1', 'f2', 'f3', 'i1', 'i2', 'o1', 'o2', 'm1', 'm2', 'token') 
     opcode = 0

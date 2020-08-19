@@ -101,9 +101,6 @@ _version.py
 testing/MDSplus/
 testing/*Devices/
 
-# file created by release build trigger.sh script
-trigger.opts
-
 eclipse/
 target/
 .project
@@ -115,7 +112,6 @@ trigger.opts
 
 # yacc verbose
 *.output
-
 
 # bootstrap output files
 LabView/Makefile.in
@@ -172,6 +168,7 @@ python/MDSplus/tests/Makefile.in
 rpm/Makefile.in
 scripts/Makefile.in
 setevent/Makefile.in
+tdishr/TdiHash.c
 tdishr/TdiLex.c
 tdishr/TdiYacc.c
 tdishr/tdilex.h
