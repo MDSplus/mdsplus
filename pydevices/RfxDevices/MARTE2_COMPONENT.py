@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Device, Data, TreeNode, Range, TreePath
+from MDSplus import Device, Data, TreeNode, Range, TreePath, Int8, Uint8, Int16, Uint16, Int32, Uint32, Int64, Uint64, Float32, Float64, Int8Array, Uint8Array, Int16Array, Uint16Array, Int32Array, Uint32Array, Int64Array, Uint64Array, Float32Array, Float64Array
 import numpy as np
 
 
@@ -230,7 +230,26 @@ class MARTE2_COMPONENT(Device):
           if paramDict['is_text']:
             outText += paramDict['name']+' = "'+str(paramDict['value'])+'"\n'
           else:
-            outText += paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
+            if isinstance(paramDict['value'], Int8) or isinstance(paramDict['value'], Int8Array):
+              outText += paramDict['name']+' = (int8)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Uint8) or isinstance(paramDict['value'], Uint8Array):
+              outText += paramDict['name']+' = (uint8)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Int16) or isinstance(paramDict['value'], Int16Array):
+              outText += paramDict['name']+' = (int16)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Uint16) or isinstance(paramDict['value'], Uint16Array):
+              outText += paramDict['name']+' = (uint16)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Int32) or isinstance(paramDict['value'], Int32Array):
+              outText += paramDict['name']+' = (int32)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Uint32) or isinstance(paramDict['value'], Uint32Array):
+              outText += paramDict['name']+' = (uint32)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Int64) or isinstance(paramDict['value'], Int64Array):
+              outText += paramDict['name']+' = (int64)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Uint64) or isinstance(paramDict['value'], Uint64Array):
+              outText += paramDict['name']+' = (uint64)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            elif isinstance(paramDict['value'], Float32) or isinstance(paramDict['value'], Float32Array):
+              outText += paramDict['name']+' = (float32)'+self.convertVal(str(paramDict['value'].data()))+'\n'
+            else:
+              outText += paramDict['name']+' = (float64)'+self.convertVal(str(paramDict['value'].data()))+'\n'
         else:
           if names[0] in rootParDict:
             rootParDict[names[0]].append({'name': currName[currName.find('.')+1:], 'is_text': paramDict['is_text'], 'value': paramDict['value']})
@@ -280,7 +299,7 @@ class MARTE2_COMPONENT(Device):
         paramDict = {}
         try:
           paramDict['name'] = parameter.getNode('name').data()
-          paramDict['value'] = parameter.getNode('value').data()
+          paramDict['value'] = parameter.getNode('value').getData()
           paramDict['is_text']= (parameter.getNode('value').getUsage() == 'TEXT')
           paramDicts.append(paramDict)
         except:
