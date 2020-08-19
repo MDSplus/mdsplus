@@ -84,6 +84,7 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
   int retClassLen, retDtypeLen;
   EMPTYXD(xd);
   mdsdsc_r_t *rDsc;
+
   switch (dsc->class) {
     case CLASS_S: {
       if(dsc->dtype == DTYPE_NID) {
@@ -119,9 +120,23 @@ static int recIsSegmented(const mdsdsc_t *const dsc) {
 	status = TreeFindNode(path, &nid);
 	free(path);
 	if STATUS_OK
+	{
 	  status = TreeGetNumSegments(nid, &numSegments);
-	if (STATUS_OK && numSegments > 0)
-	  return nid;
+	  if (STATUS_OK)
+	  {
+	      if(numSegments > 0)
+	      {
+		  return nid;
+	      }
+	      status = TreeGetRecord(nid, &xd);
+	      if (STATUS_OK && xd.l_length > 0) {
+		nid = recIsSegmented(xd.pointer);
+		MdsFree1Dx(&xd, 0);
+		return nid;
+	      }
+	  }
+	}
+	      
       }
       break;
     }

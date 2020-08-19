@@ -12,6 +12,7 @@ import java.util.StringTokenizer;
  * @author mdsplus
  */
 public class EventStream extends Event {
+    static boolean debug = false;
     java.lang.String streamName;
     Hashtable<java.lang.String, Vector<DataStreamListener>> listenerHash = 
                     new Hashtable<java.lang.String, Vector<DataStreamListener>>();
@@ -82,6 +83,7 @@ public class EventStream extends Event {
         if(!evName.equals("STREAMING"))
             return; //Should never happen
         java.lang.String evMessage = new java.lang.String(getRaw());
+        if(debug) System.out.println(evMessage);
         StringTokenizer st = new StringTokenizer(evMessage);
         try {
             int shot = Integer.parseInt(st.nextToken());
