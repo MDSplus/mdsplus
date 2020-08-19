@@ -82,6 +82,7 @@ public class EventStream extends Event {
         if(!evName.equals("STREAMING"))
             return; //Should never happen
         java.lang.String evMessage = new java.lang.String(getRaw());
+        System.out.println(evMessage);
         StringTokenizer st = new StringTokenizer(evMessage);
         try {
             int shot = Integer.parseInt(st.nextToken());
