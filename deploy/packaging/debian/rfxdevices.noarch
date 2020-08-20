@@ -31,6 +31,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_MUL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PID.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PWM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RFXMODEL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_TANK.py
@@ -83,7 +84,6 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SETUP.py
 ./usr/local/mdsplus/pydevices/RfxDevices/SPIDER_SM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/ZELOS2150GV.py
-./usr/local/mdsplus/pydevices/RfxDevices/__init__.py
 ./usr/local/mdsplus/pydevices/RfxDevices/_version.py
 ./usr/local/mdsplus/tdi/RfxDevices/AAGain.fun
 ./usr/local/mdsplus/tdi/RfxDevices/AAMaxValue.fun
