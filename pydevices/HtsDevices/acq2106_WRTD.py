@@ -74,7 +74,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         msgs  = str(newmsg)
         wrmgs = msgs.split(":")
-        print("Messages are {} and {}".formt(str(wrmgs[0]) + str(wrmgs[1])))
+        print("Messages are {} and {}".format(str(wrmgs[0]) + str(wrmgs[1])))
 
         self.wrtt0_msg.record = str(wrmgs[0])
         self.wrtt1_msg.record = str(wrmgs[1])
@@ -122,7 +122,6 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         # Choose the source (eg. WRTT0 or WRTT1) that use go through the bus (TRG, EVENT) and the signal (d0, d1)
         if message in uut.cC.WRTD_RX_MATCHES:
-            # uut.s0.SIG_SRC_TRG_0   = 'WRTT0'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
 
@@ -131,7 +130,6 @@ class ACQ2106_WRTD(MDSplus.Device):
             self.event0_src.record = 'WRTT0'
 
         elif message in uut.cC.WRTD_RX_MATCHES1:
-            # uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'
 

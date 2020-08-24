@@ -88,7 +88,8 @@ class _ACQ400_BASE(MDSplus.Device):
                 # If the user has specified a trigger.
                 uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), 'd'+str(trg_dx))
         else:
-            print('CLK set to be WR clocks, init by the subclass')
+            # Place holder for a WR sync_role call
+            print('CLKs set to WR clocks, initisialized by the corresponding subclass')
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
@@ -135,24 +136,26 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         #Trigger sources choices:
         # d0:
-        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'WRTT0', 'NONE']
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'NONE']
         # d1:
-        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
-
+        srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'NONE']
+        
+        #Setting the signal (dX) to use for ACQ2106 stream control
         if str(self.trig_src.data()) in srcs_1:
-            #Setting the signal (dX) to use for ACQ2106 stream control
+            uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+        elif str(self.trig_src.data()) == 'WRTT1':
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = 'd1'
             uut.s1.TRG_SENSE = 'rising'
             uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
 
         elif str(self.trig_src.data()) in srcs_0:
-            #Setting the signal (dX) to use for ACQ2106 stream control
+            uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+        elif str(self.trig_src.data()) == 'WRTT0':
             uut.s1.TRG       = 'enable'
             uut.s1.TRG_DX    = 'd0'
             uut.s1.TRG_SENSE = 'rising'
             uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
-
 
 
     def arm(self):
@@ -385,48 +388,82 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         # d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
-        # If IS_WR then:
-        if self.wr.data() == 1:
+        if str(self.trig_src.data()) in srcs_1:
+            uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+            #Setting the signal (dX) to use for ACQ2106 stream control
             uut.s1.TRG       = 'enable'
-            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_DX    = 'd1'
             uut.s1.TRG_SENSE = 'rising'
 
-            uut.s1.EVENT0       = 'enable'
-            uut.s1.EVENT0_DX    = str(self.event0_dx.data())
-            uut.s1.EVENT0_SENSE = 'rising'
-
-        #If NOT WR then:
-        else:
-            # TRIGGER setting
-            if str(self.trig_src.data()) in srcs_1:
-                # uut.s0.SIG_SRC_TRG_1   = 'STRIG'
-                uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
-                #Setting the signal (dX) to use for ACQ2106 stream control
-                uut.s1.TRG       = 'enable'
-                uut.s1.TRG_DX    = 'd1'
-                uut.s1.TRG_SENSE = 'rising'
-
-                #EVENT0 setting in d0:
+            #EVENT0 setting in d0:
+            if str(self.event0_src.data()) in srcs_0:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
                 uut.s1.EVENT0       = 'enable'
                 uut.s1.EVENT0_DX    = 'd0'
                 uut.s1.EVENT0_SENSE = 'rising'
                 uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
+            else:
+                print("EVENT0 source should be from {}".format(srcs_0))
 
-            elif str(self.trig_src.data()) in srcs_0:
-                # uut.s0.SIG_SRC_TRG_0   = 'EXT'
-                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
-                #Setting the signal (dX) to use for ACQ2106 stream control
-                uut.s1.TRG       = 'enable'
-                uut.s1.TRG_DX    = 'd0'
-                uut.s1.TRG_SENSE = 'rising'
+        elif str(self.trig_src.data()) in srcs_0:
+            uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+            #Setting the signal (dX) to use for ACQ2106 stream control
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = 'd0'
+            uut.s1.TRG_SENSE = 'rising'
 
-                #EVENT0 setting in d1:
+            #EVENT0 setting in d1:
+            if str(self.event0_src.data()) in srcs_1:
                 uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
                 uut.s1.EVENT0       = 'enable'
                 uut.s1.EVENT0_DX    = 'd1'
                 uut.s1.EVENT0_SENSE = 'rising'
                 uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
+            else:
+                print("EVENT0 source should be from {}".format(srcs_1))
+
+    #     # If IS_WR then:
+    #     if self.wr.data() == 1:
+    #         uut.s1.TRG       = 'enable'
+    #         uut.s1.TRG_DX    = str(self.trig_dx.data())
+    #         uut.s1.TRG_SENSE = 'rising'
+
+    #         uut.s1.EVENT0       = 'enable'
+    #         uut.s1.EVENT0_DX    = str(self.event0_dx.data())
+    #         uut.s1.EVENT0_SENSE = 'rising'
+
+    #     #If NOT WR then:
+    #     else:
+    #         # TRIGGER setting
+    #         if str(self.trig_src.data()) in srcs_1:
+    #             # uut.s0.SIG_SRC_TRG_1   = 'STRIG'
+    #             uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+    #             #Setting the signal (dX) to use for ACQ2106 stream control
+    #             uut.s1.TRG       = 'enable'
+    #             uut.s1.TRG_DX    = 'd1'
+    #             uut.s1.TRG_SENSE = 'rising'
+
+    #             #EVENT0 setting in d0:
+    #             uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
+    #             uut.s1.EVENT0       = 'enable'
+    #             uut.s1.EVENT0_DX    = 'd0'
+    #             uut.s1.EVENT0_SENSE = 'rising'
+    #             uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
+
+    #         elif str(self.trig_src.data()) in srcs_0:
+    #             # uut.s0.SIG_SRC_TRG_0   = 'EXT'
+    #             uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+    #             #Setting the signal (dX) to use for ACQ2106 stream control
+    #             uut.s1.TRG       = 'enable'
+    #             uut.s1.TRG_DX    = 'd0'
+    #             uut.s1.TRG_SENSE = 'rising'
+
+    #             #EVENT0 setting in d1:
+    #             uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
+    #             uut.s1.EVENT0       = 'enable'
+    #             uut.s1.EVENT0_DX    = 'd1'
+    #             uut.s1.EVENT0_SENSE = 'rising'
+    #             uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
     INIT=init
 
     def _arm(self):
