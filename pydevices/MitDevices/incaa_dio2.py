@@ -428,6 +428,28 @@ class INCAA_DIO2(MDSplus.Device):
         raise MDSplus.DevUNSUPPORTED_METHOD
     STORE=store
 
+# Note trigger method different than original
+#
+# Triggers all channels that are either software or event
+#
     def trigger(self):
-        raise MDSplus.DevUNSUPPORTED_METHOD
+        channel = 0
+        board_id = self._board_id
+
+        for channel in range(8):
+            c_name = 'channel_%1.1d' % (channel+1)
+            chan = self.__getattr__(c_name)
+            if chan.on:
+                _chan = self._chan(self.head, c_name, self.debug)
+                function = _chan.function
+                if self.debug:
+                    print('function for %s is %s' % (str(chan), function))
+                if function == 'PULSE':
+                    trig_mode, trig_event = _chan.trigger
+                    if trig_mode in (0,3):
+                       channel_mask = channel_mask | (1 << channel)
+ 
+            if self.debug:
+                print(self, 'DIO2HWTrigger(0, $1, $2)', board_id, channeli_mask)
+                self.mds_value(self, 'DIO2HWTrigger(0, $1, $2)', board_id, channel_mask)
     TRIGGER=trigger
