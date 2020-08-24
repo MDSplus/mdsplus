@@ -381,7 +381,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         # D1 signal:
         uut.s0.SIG_SRC_TRG_1   = 'NONE'
 
-
         #Trigger sources choices:
         # d0:
         srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
@@ -422,48 +421,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
             else:
                 print("EVENT0 source should be from {}".format(srcs_1))
 
-    #     # If IS_WR then:
-    #     if self.wr.data() == 1:
-    #         uut.s1.TRG       = 'enable'
-    #         uut.s1.TRG_DX    = str(self.trig_dx.data())
-    #         uut.s1.TRG_SENSE = 'rising'
-
-    #         uut.s1.EVENT0       = 'enable'
-    #         uut.s1.EVENT0_DX    = str(self.event0_dx.data())
-    #         uut.s1.EVENT0_SENSE = 'rising'
-
-    #     #If NOT WR then:
-    #     else:
-    #         # TRIGGER setting
-    #         if str(self.trig_src.data()) in srcs_1:
-    #             # uut.s0.SIG_SRC_TRG_1   = 'STRIG'
-    #             uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
-    #             #Setting the signal (dX) to use for ACQ2106 stream control
-    #             uut.s1.TRG       = 'enable'
-    #             uut.s1.TRG_DX    = 'd1'
-    #             uut.s1.TRG_SENSE = 'rising'
-
-    #             #EVENT0 setting in d0:
-    #             uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
-    #             uut.s1.EVENT0       = 'enable'
-    #             uut.s1.EVENT0_DX    = 'd0'
-    #             uut.s1.EVENT0_SENSE = 'rising'
-    #             uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
-
-    #         elif str(self.trig_src.data()) in srcs_0:
-    #             # uut.s0.SIG_SRC_TRG_0   = 'EXT'
-    #             uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
-    #             #Setting the signal (dX) to use for ACQ2106 stream control
-    #             uut.s1.TRG       = 'enable'
-    #             uut.s1.TRG_DX    = 'd0'
-    #             uut.s1.TRG_SENSE = 'rising'
-
-    #             #EVENT0 setting in d1:
-    #             uut.s0.SIG_SRC_TRG_0   = str(self.event0_src.data())
-    #             uut.s1.EVENT0       = 'enable'
-    #             uut.s1.EVENT0_DX    = 'd1'
-    #             uut.s1.EVENT0_SENSE = 'rising'
-    #             uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
     INIT=init
 
     def _arm(self):

@@ -74,7 +74,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         msgs  = str(newmsg)
         wrmgs = msgs.split(":")
-        print("Messages are {} and {}".format(str(wrmgs[0]) + str(wrmgs[1])))
+        print("Messages are {} and {}".format(str(wrmgs[0]), str(wrmgs[1])))
 
         self.wrtt0_msg.record = str(wrmgs[0])
         self.wrtt1_msg.record = str(wrmgs[1])
