@@ -433,7 +433,7 @@ class INCAA_DIO2(MDSplus.Device):
 # Triggers all channels that are either software or event
 #
     def trigger(self):
-        channel = 0
+        channel_mask = 0
         board_id = self._board_id
 
         for channel in range(8):
