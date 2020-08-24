@@ -26,7 +26,6 @@ import MDSplus
 import time
 import numpy
 import os
-from tempfile import mkstemp
 
 class ACQ2106_WRPG(MDSplus.Device):
     """
@@ -41,15 +40,16 @@ class ACQ2106_WRPG(MDSplus.Device):
     """
 
     parts=[
-        {'path':':NODE',        'type':'text',                     'options':('no_write_shot',)},
-        {'path':':COMMENT',     'type':'text',                     'options':('no_write_shot',)},
-        {'path':':TRIG_TIME',   'type':'numeric',                  'options':('write_shot',)},
-        {'path':':RUNNING',     'type':'numeric',                  'options':('no_write_model',)},
-        {'path':':LOG_OUTPUT',  'type':'text',   'options':('no_write_model', 'write_once', 'write_shot',)},
-        {'path':':INIT_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
-        {'path':':STOP_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
-        {'path':':STL_LISTS',   'type':'text',                  'options':('write_shot',)},
-        {'path':':GPG_TRG_DX',  'type':'text', 'value': 'dx', 'options':('write_shot',)},
+        {'path':':COMMENT',     'type':'text',     'options':('no_write_shot',)},
+        {'path':':NODE',        'type':'text',     'options':('no_write_shot',)},
+        {'path':':DIO_SITE',    'type':'numeric',  'value': int(6), 'options':('no_write_shot',)},
+        {'path':':TRIG_TIME',   'type':'numeric',  'options':('write_shot',)},
+        {'path':':RUNNING',     'type':'numeric',  'options':('no_write_model',)},
+        {'path':':LOG_OUTPUT',  'type':'text',     'options':('no_write_model', 'write_once', 'write_shot',)},
+        {'path':':INIT_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
+        {'path':':STOP_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",      'options':('no_write_shot',)},
+        {'path':':STL_LISTS',   'type':'text',     'options':('write_shot',)},
+        {'path':':GPG_TRG_DX',  'type':'text',     'value': 'dx', 'options':('write_shot',)},
     ]
 
 
@@ -60,8 +60,12 @@ class ACQ2106_WRPG(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         
+        site_number  = self.dio_site.data()
+        uut_sX_nchan = 'uut.s' + str(int(site_number)) + '.NCHAN'
         #Number of channels of the DIO482, e.g nchans = 32
-        nchans = int(uut.s6.NCHAN)
+        nchans = int(eval(uut_sX_nchan))
+        if self.debug >= 2:
+            self.dprint(2, 'DIO site and number of channels: {} {}'.format(site_number, nchans))
 
         # uut.s0.SIG_SRC_TRG_0 ='WRTT0'
         # Setting the trigger in the GPG module. These settings depends very much on what is the
@@ -86,7 +90,7 @@ class ACQ2106_WRPG(MDSplus.Device):
             self.dprint(2, "Building STL: end --- %s seconds ---", (time.time() - start_time))
 
         #Load the STL into the WRPG hardware: GPG
-        traces = True  # True: shows debug information during loading
+        traces = False  # True: shows debug information during loading
         self.load_stl_data(traces)
         self.dprint(1,'WRPG has loaded the STL')
       

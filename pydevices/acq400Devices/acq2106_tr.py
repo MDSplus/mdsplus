@@ -32,34 +32,7 @@ class _ACQ2106_TR(acq400_base._ACQ400_TR_BASE):
     """
     D-Tacq ACQ2106 transient support.
     """
-    def init(self):
-        super(_ACQ2106_TR, self).init()
-        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
-
-        #Setting WR Clock to 20MHz by first being sure that MBCLK FIN is in fact = 0
-        uut.s0.SIG_CLK_MB_FIN = '0'
-
-        #Set the Sampling rate in the ACQ:
-        # MB Clock (WR Clock): 20MHz
-        # mb_freq = uut.s0.SIG_CLK_MB_FREQ
-        mb_freq = 20000000.00 #Hz
-
-        self.dprint(1, "Setting sample rate to %r Hz", self.freq.data())
-        clockdiv      = mb_freq/self.freq.data()
-
-        #The following will set the sample rate, by setting the clock div.
-        uut.s1.CLKDIV = "{}".format(clockdiv)
-
-        acq_sample_freq = uut.s0.SIG_CLK_S1_FREQ
-        
-        self.dprint(1, "After setting the sample rate the value in the ACQ is%r Hz", acq_sample_freq)
-
-        #The following is what the ACQ script called "/mnt/local/set_clk_WR" does to set the WR clock to 20MHz
-        uut.s0.SYS_CLK_FPMUX     = 'ZCLK'
-        uut.s0.SIG_ZCLK_SRC      = 'WR31M25'
-        uut.s0.set_si5326_bypass = 'si5326_31M25-20M.txt'
-
-
+    
 class_ch_dict = acq400_base.create_classes(
     _ACQ2106_TR, "ACQ2106_TR",
     list(_ACQ2106_TR.tr_base_parts) + list(_ACQ2106_TR.base_parts),

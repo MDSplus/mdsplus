@@ -37,9 +37,7 @@ class _ACQ1001_TR(acq400_base._ACQ400_TR_BASE):
         super(_ACQ1001_TR, self).init()
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
-        uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
-        freq = int(self.freq.data())
-        uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
+        uut.s0.set_knob('SYS_CLK_FPMUX', 'XCLK')
 
 class_ch_dict = acq400_base.create_classes(
     _ACQ1001_TR, "ACQ1001_TR",

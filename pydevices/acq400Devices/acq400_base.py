@@ -50,7 +50,7 @@ class _ACQ400_BASE(MDSplus.Device):
     base_parts=[
         # The user will need to change the hostname to the relevant hostname/IP.
         {'path':':NODE','type':'text',            'value':'acq1001_999', 'options':('no_write_shot',)},
-        {'path':':SITE','type':'numeric',         'value': 1, 'options':('no_write_shot',)},
+        {'path':':IS_WR','type':'numeric',        'value': 0, 'options':('no_write_shot',)},
         {'path':':TRIG_MODE','type':'text',       'value': 'role_default', 'options':('no_write_shot',)},
         {'path':':ROLE','type':'text',            'value': 'master', 'options':('no_write_shot',)},
         {'path':':FREQ','type':'numeric',         'value': int(1e6), 'options':('no_write_shot',)},
@@ -59,10 +59,9 @@ class _ACQ400_BASE(MDSplus.Device):
         {'path':':INIT_ACTION', 'type':'action',  'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))",'options':('no_write_shot',)},
         {'path':':ARM_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',51,None),Method(None,'ARM',head))",'options':('no_write_shot',)},
         {'path':':STORE_ACTION', 'type':'action', 'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',52,None),Method(None,'STORE',head))",'options':('no_write_shot',)},
-    ]
+        ]
 
     trig_types=[ 'hard', 'soft', 'automatic']
-
 
     def init(self):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
@@ -76,12 +75,20 @@ class _ACQ400_BASE(MDSplus.Device):
         elif trg == 'soft':
             trg_dx = 1
 
+
         # The default case is to use the trigger set by sync_role.
-        if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
+        # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
+        # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
+        # modifiers [TRG=int|ext]
+        # modifiers [CLKDIV=div]
+        if self.is_wr.data() == 0: # if the device is not a WR device then set the clocks with sync_role
+            if self.trig_mode.data() == 'role_default':
+                uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
+            else:
+                # If the user has specified a trigger.
+                uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), 'd'+str(trg_dx))
         else:
-            # If the user has specified a trigger.
-            uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), trg_dx)
+            print('CLK set to be WR clocks, init by the subclass')
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
@@ -111,12 +118,6 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
         {'path':':DEF_DECIMATE','type':'numeric', 'value': 1,      'options':('no_write_shot',)},
         #Trigger sources
         {'path':':TRIG_SRC',   'type':'text',      'value': 'NONE', 'options':('write_shot',)},
-        {'path':':TRIG_DX',    'type':'text',      'value': 'dx', 'options':('write_shot',)},
-        #WRTD tree information
-        {'path':':WR',         'type':'numeric',   'value': 0,  'options':('write_shot',)},
-            {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
-            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
-            {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
     def init(self):
@@ -134,34 +135,25 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
 
         #Trigger sources choices:
         # d0:
-        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'WRTT0', 'nc', 'NONE']
+        srcs_0 = ['EXT', 'HDMI', 'HOSTB', 'GPG0', 'DSP0', 'nc', 'WRTT0', 'NONE']
         # d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
-        # When WR is not being used to trigger:
-        if self.wr.data() == 0:
-            # No PRE samples --> EVENT0 doesn't need to be set.
-            # TRIGGER setting
-            if str(self.trig_src.data()) in srcs_1:
-                uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
-                #Setting the signal (dX) to use for ACQ2106 stream control
-                uut.s1.TRG       = 'enable'
-                uut.s1.TRG_DX    = 'd1'
-                uut.s1.TRG_SENSE = 'rising'
-
-            elif str(self.trig_src.data()) in srcs_0:
-                uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
-                #Setting the signal (dX) to use for ACQ2106 stream control
-                uut.s1.TRG       = 'enable'
-                uut.s1.TRG_DX    = 'd0'
-                uut.s1.TRG_SENSE = 'rising'
-            #pass
-        
-        #If WR is used to trigger, then:
-        else:
+        if str(self.trig_src.data()) in srcs_1:
+            #Setting the signal (dX) to use for ACQ2106 stream control
             uut.s1.TRG       = 'enable'
-            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_DX    = 'd1'
             uut.s1.TRG_SENSE = 'rising'
+            uut.s0.SIG_SRC_TRG_1   = str(self.trig_src.data())
+
+        elif str(self.trig_src.data()) in srcs_0:
+            #Setting the signal (dX) to use for ACQ2106 stream control
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = 'd0'
+            uut.s1.TRG_SENSE = 'rising'
+            uut.s0.SIG_SRC_TRG_0   = str(self.trig_src.data())
+
+
 
     def arm(self):
         self.running.on=True
@@ -170,12 +162,20 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
     ARM=arm
 
     def stop(self):
+        import acq400_hapi
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=True)
+        
         self.running.on = False
+        
+        # Initializing Sources back to NONE:
+        # D0 signal:
+        uut.s0.SIG_SRC_TRG_0   = 'NONE'
+        # D1 signal:
+        uut.s0.SIG_SRC_TRG_1   = 'NONE'
     STOP = stop
 
     class MDSWorker(threading.Thread):
         NUM_BUFFERS = 20
-        #NUM_BUFFERS = 5
 
         def __init__(self,dev):
             super(_ACQ400_ST_BASE.MDSWorker,self).__init__(name=dev.path)
@@ -196,7 +196,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
             self.seg_length = self.dev.seg_length.data()
             self.segment_bytes = self.seg_length*self.nchans*numpy.int16(0).nbytes
 
-            #Fechting all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+            #Fetching all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
             uut.fetch_all_calibration()
             eslo = uut.cal_eslo[1:]
             eoff = uut.cal_eoff[1:]
@@ -360,11 +360,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         #Event sources
         {'path':':EVENT0_SRC', 'type': 'text',     'value': 'NONE', 'options':('write_shot',)},
         {'path':':EVENT0_DX',  'type': 'text',     'value': 'dx',    'options':('write_shot',)},
-        #WRTD tree information
-        {'path':':WR',         'type':'numeric',   'value': 0,  'options':('write_shot',)},
-            {'path':':WR:WRTD_TREE',   'type': 'text', 'value':'WRTD','options': ('no_write_shot')},
-            {'path':':WR:WRTD_T0',     'type': 'numeric', 'value': 0, 'options': ('write_shot')},
-            {'path':':WR:TRIG_TAI',    'type': 'numeric', 'value': 0, 'options': ('write_shot'), 'help': 'The record of the shot number of the wrtd this data came from'},
         ]
 
 
@@ -390,8 +385,18 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
         # d1:
         srcs_1 = ['STRIG', 'HOSTA', 'HDMI_GPIO', 'GPG1', 'DSP1', 'FP_SYNC', 'WRTT1', 'NONE']
 
-        # When WR is not being used to trigger:
-        if self.wr.data() == 0:
+        # If IS_WR then:
+        if self.wr.data() == 1:
+            uut.s1.TRG       = 'enable'
+            uut.s1.TRG_DX    = str(self.trig_dx.data())
+            uut.s1.TRG_SENSE = 'rising'
+
+            uut.s1.EVENT0       = 'enable'
+            uut.s1.EVENT0_DX    = str(self.event0_dx.data())
+            uut.s1.EVENT0_SENSE = 'rising'
+
+        #If NOT WR then:
+        else:
             # TRIGGER setting
             if str(self.trig_src.data()) in srcs_1:
                 # uut.s0.SIG_SRC_TRG_1   = 'STRIG'
@@ -422,16 +427,6 @@ class _ACQ400_TR_BASE(_ACQ400_BASE):
                 uut.s1.EVENT0_DX    = 'd1'
                 uut.s1.EVENT0_SENSE = 'rising'
                 uut.s0.SIG_EVENT_SRC_0 = 'TRG' # In the EVENT bus, the source needs to be TRG to make the transition PRE->POST
-
-        #If WR is used to trigger, then:
-        else:
-            uut.s1.TRG       = 'enable'
-            uut.s1.TRG_DX    = str(self.trig_dx.data())
-            uut.s1.TRG_SENSE = 'rising'
-
-            uut.s1.EVENT0       = 'enable'
-            uut.s1.EVENT0_DX    = str(self.event0_dx.data())
-            uut.s1.EVENT0_SENSE = 'rising'
     INIT=init
 
     def _arm(self):

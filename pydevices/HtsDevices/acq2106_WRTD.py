@@ -74,6 +74,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         msgs  = str(newmsg)
         wrmgs = msgs.split(":")
+        print("Messages are {} and {}".formt(str(wrmgs[0]) + str(wrmgs[1])))
 
         self.wrtt0_msg.record = str(wrmgs[0])
         self.wrtt1_msg.record = str(wrmgs[1])
@@ -121,7 +122,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         # Choose the source (eg. WRTT0 or WRTT1) that use go through the bus (TRG, EVENT) and the signal (d0, d1)
         if message in uut.cC.WRTD_RX_MATCHES:
-            uut.s0.SIG_SRC_TRG_0   = 'WRTT0'
+            # uut.s0.SIG_SRC_TRG_0   = 'WRTT0'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
 
@@ -130,7 +131,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             self.event0_src.record = 'WRTT0'
 
         elif message in uut.cC.WRTD_RX_MATCHES1:
-            uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
+            # uut.s0.SIG_SRC_TRG_1   = 'WRTT1'
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'
 
@@ -142,12 +143,8 @@ class ACQ2106_WRTD(MDSplus.Device):
             print('Message does not match either of the WRTTs available')
             self.running.on = False
 
-        uut.cC.WRTD_ID = message
-        time.sleep(1)
+        uut.s0.wrtd_tx_immediate = message
 
-        wrtdtx = message
-        uut.s0.wrtd_tx_immediate = wrtdtx
-    
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
 
         # Reseting the RX matches to its orignal default values found in the acq2106:
