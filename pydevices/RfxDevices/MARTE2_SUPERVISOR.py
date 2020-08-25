@@ -380,11 +380,11 @@ class MARTE2_SUPERVISOR(Device):
       eventString1 = marteName+':StopCurrentStateExecution:XX'
       eventString2 = marteName+':'+'PrepareNextState:'+stateName
       eventString3 = marteName+':StartNextStateExecution:XX'
-      Event.seteventRaw(marteName, np.frombuffer(eventString1, dtype = np.uint8))
+      Event.seteventRaw(marteName, np.fromstring(eventString1, dtype = np.uint8))
       time.sleep(.1)
-      Event.seteventRaw(marteName, np.frombuffer(eventString2, dtype = np.uint8))
+      Event.seteventRaw(marteName, np.fromstring(eventString2, dtype = np.uint8))
       time.sleep(.1)
-      Event.seteventRaw(marteName, np.frombuffer(eventString3, dtype = np.uint8))
+      Event.seteventRaw(marteName, np.fromstring(eventString3, dtype = np.uint8))
       return 1
 
     def doState1(self):
