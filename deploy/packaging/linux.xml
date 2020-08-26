@@ -39,7 +39,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <requires package="java" external="True"/>
     <include dir="/usr/local/mdsplus/java"/>
     <include dir="/usr/local/mdsplus/desktop/java"/>
-    <exclude file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
     <include file="/usr/local/mdsplus/pixmaps/jscope.png"/>
     <include file="/usr/local/mdsplus/pixmaps/jtraverser.png"/>
     <include file="/usr/local/mdsplus/pixmaps/jtraverser2.png"/>
@@ -108,58 +107,6 @@ ldconfig -n /etc/ld.so.conf.d/mdsplus.conf
 
     </prerm>
     <!-- end deb scripts -->
-
-  </package>
-
-  <package name="mitdevices" arch="noarch" summary="Support for MIT Data acquisition devices" description="Support for MIT Data acquisition devices">
-    <requires package="kernel"/>
-    <requires package="camac"/>
-    <requires package="python"/>
-    <requires package="motif"/>
-    <requires package="mitdevices_bin"/>
-    <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
-    <include dir="/usr/local/mdsplus/pydevices/MitDevices"/>
-
-    <!-- rpm scripts -->
-    <pre>
-      $RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MitDevices
-    </pre>
-    <post>
-
-python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-
-    </post>
-    <postun>
-      if [ "$1" == "0" ]
-      then
-        rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/MitDevices
-      fi
-    </postun>
-    <!-- end rpm scripts -->
-
-    <!-- deb scripts -->
-    <preinst>
-      /usr/local/mdsplus/rpm/removePythonModule.sh MitDevices
-    </preinst>
-    <postinst>
-
-python -m compileall -q /usr/local/mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-
-    </postinst>
-    <prerm>rm -Rf /usr/local/mdsplus/pydevices/MitDevices</prerm>
-    <!-- end rpm scripts -->
-
-    <!-- alpine scripts -->
-    <pre-install>
-      /mdsplus/rpm/removePythonModule.sh MitDevices
-    </pre-install>
-    <post-install>
-
-python -m compileall -q /mdsplus/pydevices/MitDevices &gt;/dev/null 2&gt;&amp;1
-
-    </post-install>
-    <post-deinstall> rm -Rf /mdsplus/pydevices/MitDevices</post-deinstall>
-    <!-- end alpine scripts -->
 
   </package>
 
@@ -783,98 +730,115 @@ rm -f /etc/ld.so.conf.d/mdsplus.conf 2&gt;/dev/null
     <include dir="/usr/local/mdsplus/epics"/>
   </package>
 
+  <package name="mitdevices" arch="noarch" summary="Support for MIT Data acquisition devices" description="Support for MIT Data acquisition devices">
+    <requires package="kernel"/>
+    <requires package="camac"/>
+    <requires package="python"/>
+    <requires package="motif"/>
+    <requires package="mitdevices_bin"/>
+    <include dir="/usr/local/mdsplus/tdi/MitDevices"/>
+    <include dir="/usr/local/mdsplus/python/MitDevices"/>
+
+    <!-- rpm scripts -->
+    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MitDevices $RPM_INSTALL_PREFIX/mdsplus</pre>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/python/MitDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <postun>[ "$1" == "0" ]&amp;&amp;$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh MitDevices $RPM_INSTALL_PREFIX/mdsplus</postun>
+    <!-- end rpm scripts -->
+
+    <!-- deb scripts -->
+    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh MitDevices /usr/local/mdsplus</preinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/python/MitDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <prerm>/usr/local/mdsplus/rpm/removePythonModule.sh MitDevices /usr/local/mdsplus</prerm>
+    <!-- end deb scripts -->
+
+    <!-- alpine scripts -->
+    <pre-install>/mdsplus/rpm/removePythonModule.sh MitDevices /mdsplus</pre-install>
+    <post-install>python -m compileall -q /mdsplus/python/MitDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-deinstall>/mdsplus/rpm/removePythonModule.sh MitDevices /mdsplus</post-deinstall>
+    <!-- end alpine scripts -->
+
+  </package>
+
   <package name="rfxdevices" arch="noarch" summary="Support for RFX data acquisition devices" description="Support for RFX data acquisition devices">
     <requires package="java"/>
     <requires package="python"/>
     <include dir="/usr/local/mdsplus/tdi/RfxDevices"/>
-    <include dir="/usr/local/mdsplus/pydevices/RfxDevices"/>
-    <include file="/usr/local/mdsplus/java/classes/jDevices.jar"/>
+    <include dir="/usr/local/mdsplus/python/RfxDevices"/>
 
     <!-- rpm scripts -->
-    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh RfxDevices</pre>
-    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post>
-    <postun>
-if [ "$1" == "0" ]
-then
-  rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/RfxDevices
-fi
-    </postun>
+    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh RfxDevices $RPM_INSTALL_PREFIX/mdsplus</pre>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/python/RfxDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <postun>[ "$1" == "0" ]&amp;&amp;$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh RfxDevices $RPM_INSTALL_PREFIX/mdsplus</postun>
     <!-- end rpm scripts -->
 
     <!-- deb scripts -->
-    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh RfxDevices</preinst>
-    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</postinst>
-    <prerm>rm -Rf /usr/local/mdsplus/pydevices/RfxDevices</prerm>
+    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh RfxDevices /usr/local/mdsplus</preinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/python/RfxDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <prerm>/usr/local/mdsplus/rpm/removePythonModule.sh RfxDevices /usr/local/mdsplus</prerm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
-    <pre-install>/mdsplus/rpm/removePythonModule.sh RfxDevices</pre-install>
-    <post-install>python -m compileall -q /mdsplus/pydevices/RfxDevices &gt;/dev/null 2&gt;&amp;1</post-install>
-    <post-deinstall> rm -Rf /mdsplus/pydevices/RfxDevices</post-deinstall>
+    <pre-install>/mdsplus/rpm/removePythonModule.sh RfxDevices /mdsplus</pre-install>
+    <post-install>python -m compileall -q /mdsplus/python/RfxDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-deinstall>/mdsplus/rpm/removePythonModule.sh RfxDevices /mdsplus</post-deinstall>
     <!-- end alpine scripts -->
 
   </package>
   <package name="w7xdevices" arch="noarch" summary="Support for W7x data acquisition devices" description="Support for W7x data acquisition devices">
     <requires package="python"/>
-    <include dir="/usr/local/mdsplus/pydevices/W7xDevices"/>
+    <include dir="/usr/local/mdsplus/python/W7xDevices"/>
 
     <!-- rpm scripts -->
-    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh W7xDevices</pre>
-    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post>
-    <postun>
-
-if [ "$1" == "0" ]
-then
-  rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7Devices
-fi
-
-    </postun>
+    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh W7xDevices $RPM_INSTALL_PREFIX/mdsplus</pre>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/python/W7xDevices &gt;/dev/null 2&gt;&amp;1</post>
+    <postun>[ "$1" == "0" ]&amp;&amp;$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh W7xDevices $RPM_INSTALL_PREFIX/mdsplus</postun>
     <!-- end rpm scripts -->
 
     <!-- deb scripts -->
-    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh W7xDevices</preinst>
-    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</postinst>
-    <prerm>rm -Rf /usr/local/mdsplus/pydevices/W7xDevices</prerm>
+    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh W7xDevices /usr/local/mdsplus</preinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/python/W7xDevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <prerm>/usr/local/mdsplus/rpm/removePythonModule.sh W7xDevices /usr/local/mdsplus</prerm>
     <!-- end deb scripts -->
 
     <!-- alpine scripts -->
-    <pre-install>/mdsplus/rpm/removePythonModule.sh W7xDevices</pre-install>
-    <post-install>python -m compileall -q /mdsplus/pydevices/W7xDevices &gt;/dev/null 2&gt;&amp;1</post-install>
-    <post-deinstall> rm -Rf /mdsplus/pydevices/W7xDevices</post-deinstall>
+    <pre-install>/mdsplus/rpm/removePythonModule.sh W7xDevices /mdsplus</pre-install>
+    <post-install>python -m compileall -q /mdsplus/python/W7xDevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-deinstall>/mdsplus/rpm/removePythonModule.sh W7xDevices /mdsplus</post-deinstall>
     <!-- end alpine scripts -->
+
   </package>
 
+
   <package name="htsdevices" arch="noarch" summary="Support for HTS data acquisition devices" description="Support for HTS data acquisition devices">
-    <requires package="python"/>
-    <include dir="/usr/local/mdsplus/pydevices/HtsDevices"/>
-    <!-- rpm scripts -->
-    <pre>$RPM_INSTALL_PREFIX/mdsplus/rpm/removePythonModule.sh HtsDevices</pre>
-    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post>
-    <postun>
-
-if [ "$1" == "0" ]
-then
-  rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices/W7Devices
-fi
-    </postun>
-    <!-- end rpm scripts -->
-
-    <!-- deb scripts -->
-    <preinst>/usr/local/mdsplus/rpm/removePythonModule.sh HtsDevices</preinst>
-    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</postinst>
-    <prerm>rm -Rf /usr/local/mdsplus/pydevices/HtsDevices</prerm>
-    <!-- end deb scripts -->
-
-    <!-- alpine scripts -->
-    <pre-install>/mdsplus/rpm/removePythonModule.sh HtsDevices</pre-install>
-    <post-install>python -m compileall -q /mdsplus/pydevices/HtsDevices &gt;/dev/null 2&gt;&amp;1</post-install>
-    <post-deinstall> rm -Rf /mdsplus/pydevices/HtsDevices</post-deinstall>
-    <!-- end alpine scripts -->
+    <requires package="pydevices"/>
   </package>
 
 
   <package name="kbsidevices" arch="noarch" summary="Support for KBSI data acquisition devices" description="Support for KBSI data acquisition devices">
     <include dir="/usr/local/mdsplus/tdi/KbsiDevices"/>
+  </package>
+
+  <package name="pydevices" arch="noarch" summary="Support for pure python devices" description="Support for misc devices implemented in python">
+    <requires package="python"/>
+    <include dir="/usr/local/mdsplus/pydevices"/>
+
+    <!-- rpm scripts -->
+    <pre>rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices</pre>
+    <post>python -m compileall -q $RPM_INSTALL_PREFIX/mdsplus/pydevices &gt;/dev/null 2&gt;&amp;1</post>
+    <postun>[ "$1" == "0" ]&amp;&amp;rm -Rf $RPM_INSTALL_PREFIX/mdsplus/pydevices</postun>
+    <!-- end rpm scripts -->
+
+    <!-- deb scripts -->
+    <preinst>rm -Rf /usr/local/mdsplus/pydevices</preinst>
+    <postinst>python -m compileall -q /usr/local/mdsplus/pydevices &gt;/dev/null 2&gt;&amp;1</postinst>
+    <prerm>rm -Rf /usr/local/mdsplus/pydevices</prerm>
+    <!-- end deb scripts -->
+
+    <!-- alpine scripts -->
+    <pre-install>rm -Rf /mdsplus/pydevices</pre-install>
+    <post-install>python -m compileall -q /mdsplus/pydevices &gt;/dev/null 2&gt;&amp;1</post-install>
+    <post-deinstall>rm -Rf /mdsplus/pydevices</post-deinstall>
+    <!-- end alpine scripts -->
   </package>
 
   <package name="matlab" arch="noarch" summary="Mathworks MATLAB extensions" description="Mathworks MATLAB extensions">

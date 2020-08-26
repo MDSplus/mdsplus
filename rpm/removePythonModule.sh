@@ -43,6 +43,10 @@ do
   done
 done
 
+if [ -n "$2"]
+then rm -Rf $2/python/$1
+fi
+
 if test ! -z $2
 then echo $removed
 fi
