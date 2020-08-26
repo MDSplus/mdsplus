@@ -281,13 +281,16 @@ class ACQ435ST(MDSplus.Device):
         freq = int(self.freq.data())
         uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
         
-        if 0 < self.hw_filter.length <= 4:
-            nacc = int(self.hw_filter.data())
+        if self.dev.debug:
+                print("Hardware Filter is {}".format(int(self.hw_filter.data()))
+
+        nacc = int(self.hw_filter.data())
+        if 0 < nacc <= 4:
             nacc_samp = 2**nacc
             nacc=('%d'%nacc).strip()
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
-        elif self.hw_filter.length == 0:
+        elif nacc == 0:
             uut.s1.set_knob('nacc', '0,0')
         else:
             print("WARNING: Hardware Filter greater than 4!. Set it to 0.")
