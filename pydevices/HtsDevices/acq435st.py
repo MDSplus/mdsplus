@@ -280,14 +280,19 @@ class ACQ435ST(MDSplus.Device):
             uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
         freq = int(self.freq.data())
         uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
-        if self.hw_filter.length > 0:
+        
+        if 0 < self.hw_filter.length <= 4:
             nacc = int(self.hw_filter.data())
             nacc_samp = 2**nacc
             nacc=('%d'%nacc).strip()
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
-        else :
+        elif self.hw_filter.length == 0:
             uut.s1.set_knob('nacc', '0,0')
+        else:
+            print("WARNING: Hardware Filter greater than 4!. Set it to 0.")
+            uut.s1.set_knob('nacc', '0,0')
+
         if self.trig_mode.data() == 'hard':
             uut.s1.set_knob('trg', '1,0,1')
         else:
@@ -300,7 +305,7 @@ class ACQ435ST(MDSplus.Device):
 #
 #        for chan in range(32):
 #
-        coeffs =  map(float, uut.s1.AI_CAL_ESLO.split(" ")[3:] )
+        coeffs  =  map(float, uut.s1.AI_CAL_ESLO.split(" ")[3:] )
         offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
 
         for i in range(32):
