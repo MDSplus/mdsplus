@@ -122,13 +122,18 @@ public class DeviceChoice extends DeviceComponent
 		else
 			try
 			{
-				final String data_value = subtree.getString(data);
-				for (int i = 0; i < choiceItems.length; i++)
+				if(data == null)
+					comboB.setSelectedIndex(-1);
+				else
 				{
-					if (choiceItems[i].equals(data_value))
+					final String data_value = subtree.getString(data);
+					for (int i = 0; i < choiceItems.length; i++)
 					{
-						comboB.setSelectedIndex(i);
-						break;
+						if (choiceItems[i].equals(data_value))
+						{
+							comboB.setSelectedIndex(i);
+							break;
+						}
 					}
 				}
 			}
