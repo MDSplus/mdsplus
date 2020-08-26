@@ -1,0 +1,1 @@
+../../pydevices/W7xDevices/qc9200.py

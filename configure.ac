@@ -1447,10 +1447,9 @@ AC_OUTPUT(
   python/MDSplus/docs/Makefile
   python/MDSplus/tests/Makefile
   python/MDSplus/_version.py
-  pydevices/HtsDevices/_version.py
-  pydevices/MitDevices/_version.py
-  pydevices/RfxDevices/_version.py
-  pydevices/W7xDevices/_version.py
+  python/MitDevices/_version.py
+  python/RfxDevices/_version.py
+  python/W7xDevices/_version.py
   mdsobjects/labview/Makefile
   mdsmisc/Makefile
   mdsshr/Makefile

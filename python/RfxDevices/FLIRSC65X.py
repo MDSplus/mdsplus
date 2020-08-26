@@ -1,0 +1,1 @@
+../../pydevices/RfxDevices/FLIRSC65X.py

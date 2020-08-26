@@ -1,0 +1,1 @@
+../../pydevices/RfxDevices/EQUINOX_GAM.py
