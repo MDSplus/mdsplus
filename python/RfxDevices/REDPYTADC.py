@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/REDPYTADC.py
+../../pydevices/redpitaya/REDPYTADC.py

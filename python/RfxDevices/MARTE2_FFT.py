@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_FFT.py
+../../pydevices/marte2/MARTE2_FFT.py

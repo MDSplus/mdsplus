@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/RFXVICONTROL.py
+../../pydevices/rfx/RFXVICONTROL.py

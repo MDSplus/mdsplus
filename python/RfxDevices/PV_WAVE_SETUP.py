@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/PV_WAVE_SETUP.py
+../../pydevices/rfx/PV_WAVE_SETUP.py

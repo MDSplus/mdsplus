@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/dtao32.py
+../../pydevices/dtacq/acq200/dtao32.py

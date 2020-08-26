@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/cp7452.py
+../../pydevices/dtacq/adlink/cp7452.py

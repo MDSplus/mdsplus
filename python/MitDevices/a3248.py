@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/a3248.py
+../../pydevices/aeon/a3248.py

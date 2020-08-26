@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_DUTY_CYCLE.py
+../../pydevices/marte/MARTE_DUTY_CYCLE.py

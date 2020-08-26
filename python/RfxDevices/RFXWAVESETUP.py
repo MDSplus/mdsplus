@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/RFXWAVESETUP.py
+../../pydevices/rfx/RFXWAVESETUP.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/CYGNET4K.py
+../../pydevices/raptorphotonics/cygnet4k.py

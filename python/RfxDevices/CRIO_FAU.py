@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/CRIO_FAU.py
+../../pydevices/rfx/CRIO_FAU.py

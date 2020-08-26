@@ -1,1 +1,1 @@
-../../pydevices/W7xDevices/acqfmc.py
+../../pydevices/dtacq/w7x11/acqfmc.py

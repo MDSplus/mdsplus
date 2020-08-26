@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_NI6259.py
+../../pydevices/marte2/MARTE2_NI6259.py

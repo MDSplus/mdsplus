@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/RFX_PROTECTIONS.py
+../../pydevices/rfx/RFX_PROTECTIONS.py

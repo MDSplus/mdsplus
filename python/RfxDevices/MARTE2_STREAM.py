@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_STREAM.py
+../../pydevices/marte2/MARTE2_STREAM.py

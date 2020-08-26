@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_WAVEGEN.py
+../../pydevices/marte/MARTE_WAVEGEN.py

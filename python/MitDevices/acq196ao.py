@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/acq196ao.py
+../../pydevices/dtacq/acq200/acq196ao.py

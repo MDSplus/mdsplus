@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_SYNCH_IN.py
+../../pydevices/marte2/MARTE2_SYNCH_IN.py

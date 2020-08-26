@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/ZELOS2150GV.py
+../../pydevices/cm-tech/ZELOS2150GV.py

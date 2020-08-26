@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/Dt200WriteMaster.py
+../../pydevices/dtacq/acq200/Dt200WriteMaster.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/NI6259EV.py
+../../pydevices/national_instruments/NI6259EV.py

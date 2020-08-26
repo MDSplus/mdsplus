@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/SPECTRO_CFG.py
+../../pydevices/rfx/SPECTRO_CFG.py

@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/picam.py
+../../pydevices/princetoninstruments/picam.py

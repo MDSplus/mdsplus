@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_SUPERVISOR.py
+../../pydevices/marte2/MARTE2_SUPERVISOR.py

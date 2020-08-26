@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/CAENV1740.py
+../../pydevices/caen/v/CAENV1740.py

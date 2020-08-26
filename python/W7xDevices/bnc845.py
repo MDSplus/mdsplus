@@ -1,1 +1,1 @@
-../../pydevices/W7xDevices/bnc845.py
+../../pydevices/berkeleynucleonics/bnc845.py

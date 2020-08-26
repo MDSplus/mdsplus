@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/NI6368AI.py
+../../pydevices/national_instruments/NI6368AI.py

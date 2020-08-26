@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/SPIDER.py
+../../pydevices/rfx/SPIDER.py

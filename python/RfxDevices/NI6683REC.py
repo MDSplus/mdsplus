@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/NI6683REC.py
+../../pydevices/national_instruments/NI6683REC.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE2_SIMULINK.py
+../../pydevices/marte2/MARTE2_SIMULINK.py

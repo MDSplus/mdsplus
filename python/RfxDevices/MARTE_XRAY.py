@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_XRAY.py
+../../pydevices/marte/MARTE_XRAY.py

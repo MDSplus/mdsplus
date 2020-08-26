@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/PI_CAM.py
+../../pydevices/physikinstrumente/PI_CAM.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_MHD_I.py
+../../pydevices/marte/MARTE_MHD_I.py

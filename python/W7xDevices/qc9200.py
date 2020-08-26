@@ -1,1 +1,1 @@
-../../pydevices/W7xDevices/qc9200.py
+../../pydevices/quantumcomposers/qc9200.py

@@ -1,1 +1,1 @@
-../../pydevices/W7xDevices/acq480.py
+../../pydevices/dtacq/w7x11/acq480.py

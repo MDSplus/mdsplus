@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/RFX_RPADC.py
+../../pydevices/rfx/RFX_RPADC.py

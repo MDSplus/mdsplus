@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_RTSM.py
+../../pydevices/marte/MARTE_RTSM.py

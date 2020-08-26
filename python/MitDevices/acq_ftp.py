@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/acq_ftp.py
+../../pydevices/dtacq/acq200/acq_ftp.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/EQUINOX_GAM.py
+../../pydevices/marte2/EQUINOX_GAM.py

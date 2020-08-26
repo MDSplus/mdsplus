@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/SOFT_TRIGGER.py
+../../pydevices/rfx/SOFT_TRIGGER.py

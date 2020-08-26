@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/CAENDT5720.py
+../../pydevices/caen/dt/CAENDT5720.py

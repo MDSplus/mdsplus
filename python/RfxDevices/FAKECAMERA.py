@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/FAKECAMERA.py
+../../pydevices/rfx/FAKECAMERA.py

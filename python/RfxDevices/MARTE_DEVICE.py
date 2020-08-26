@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_DEVICE.py
+../../pydevices/marte/MARTE_DEVICE.py

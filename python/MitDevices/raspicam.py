@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/raspicam.py
+../../pydevices/raspberrypi/raspicam.py

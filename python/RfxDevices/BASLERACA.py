@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/BASLERACA.py
+../../pydevices/basler/BASLERACA.py

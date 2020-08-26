@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/SIS3820.py
+../../pydevices/struck_innovative_systeme/SIS3820.py

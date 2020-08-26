@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/ACQIPPSETUP.py
+../../pydevices/rfx/ACQIPPSETUP.py

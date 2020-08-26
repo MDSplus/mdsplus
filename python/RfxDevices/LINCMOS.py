@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/LINCMOS.py
+../../pydevices/texas_instruments/LINCMOS.py

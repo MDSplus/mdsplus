@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/CONTIPPSETUP.py
+../../pydevices/rfx/CONTIPPSETUP.py

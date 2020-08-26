@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/MARTE_EDA3_OUT.py
+../../pydevices/marte/MARTE_EDA3_OUT.py

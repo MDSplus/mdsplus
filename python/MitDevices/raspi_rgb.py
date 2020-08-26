@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/raspi_rgb.py
+../../pydevices/raspberrypi/raspi_rgb.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/DEMOADC.py
+../../pydevices/demo/DEMOADC.py

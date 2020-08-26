@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/DEMOSTREAM.py
+../../pydevices/demo/DEMOSTREAM.py

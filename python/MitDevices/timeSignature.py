@@ -1,1 +1,1 @@
-../../pydevices/MitDevices/timeSignature.py
+../../pydevices/mit/timeSignature.py

@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/FLIRSC65X.py
+../../pydevices/flir/FLIRSC65X.py

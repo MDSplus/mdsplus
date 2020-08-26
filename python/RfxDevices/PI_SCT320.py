@@ -1,1 +1,1 @@
-../../pydevices/RfxDevices/PI_SCT320.py
+../../pydevices/physikinstrumente/PI_SCT320.py
