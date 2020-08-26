@@ -70,16 +70,22 @@ class BUILDER:
 
     @classmethod
     def convert_param(cls, name, dim, dtype, val):
-        if dim[0] == 1 and dim[1] == 1:
-            val = val[0]
         try:
             dtype = cls.types[dtype]
         except KeyError:
              dtype = 'int32'
+        if dim[0] == 1 and dim[1] == 1:
+          try:
+            outval = val[0]
+          except:
+            outval = val
+        else:
+          outval = np.array(val, dtype)
         return {
             'name': 'Parameters.' + name,
             'type': dtype,
-            'value': np.array(val, dtype),
+            'value': outval,
+#            'value': np.array(val, dtype),
         }
 
     def __call__(self, cls):
