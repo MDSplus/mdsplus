@@ -285,16 +285,14 @@ class ACQ435ST(MDSplus.Device):
             print("Hardware Filter is {}".format(int(self.hw_filter.data())))
 
         nacc = int(self.hw_filter.data())
-        if 0 < nacc <= 4:
+        if 0 <= nacc <= 4:
             nacc_samp = 2**nacc
             nacc=('%d'%nacc).strip()
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
-        elif nacc == 0:
-            uut.s1.set_knob('nacc', '0,0')
         else:
-            print("WARNING: Hardware Filter greater than 4!. Set it to 0.")
-            uut.s1.set_knob('nacc', '0,0')
+            print("WARNING: Hardware Filter must be in range[0,4]. Set it to 1.")
+            uut.s1.set_knob('nacc', '1,1')
 
         if self.trig_mode.data() == 'hard':
             uut.s1.set_knob('trg', '1,0,1')
