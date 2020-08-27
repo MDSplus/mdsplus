@@ -460,8 +460,10 @@ EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *sa
     char *timesSer = timesD->serialize(&nTimesSer);
     char *samplesSer = samplesD->serialize(&nSamplesSer);
     char *msgBuf = new char[nTimesSer +  nSamplesSer + 256];
-    sprintf(msgBuf, "%d %s B %d ", shot, name, nTimesSer);
-    int headerLen = strlen(msgBuf);
+    char headBuf[256];
+    sprintf(headBuf, "%d %s B %d ", shot, name, nTimesSer);
+    int headerLen = strlen(headBuf);
+    memcpy(msgBuf, headBuf, headerLen);
     memcpy(&msgBuf[headerLen], timesSer, nTimesSer);
     memcpy(&msgBuf[headerLen+nTimesSer], samplesSer, nSamplesSer);
     Event::setEventRaw("STREAMING", headerLen+nTimesSer+nSamplesSer, msgBuf);
