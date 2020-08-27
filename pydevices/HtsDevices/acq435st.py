@@ -126,6 +126,10 @@ class ACQ435ST(MDSplus.Device):
             self.device_thread = self.DeviceWorker(self)
 
         def run(self):
+            import acq400_hapi
+            import ast
+            uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
+
             def lcm(a,b):
                 from fractions import gcd
                 return (a * b / gcd(int(a), int(b)))
@@ -142,10 +146,16 @@ class ACQ435ST(MDSplus.Device):
             event_name = self.dev.seg_event.data()
 
             trig = self.dev.trigger.data()
-            if self.dev.hw_filter.length > 0:
-                dt = 1./self.dev.freq.data() * 2 ** self.dev.hw_filter.data()
-            else:
-                dt = 1./self.dev.freq.data()
+            
+            # Retrive the actual value of NACC set in the ACQ box
+            nacc_str   = uut.s1.get_knob('nacc')
+            nacc_tuple = ast.literal_eval(nacc_str)
+            nacc       = nacc_tuple[0]
+            if self.dev.debug:
+                print("The ACQ NACC value was set to {}".format(nacc))
+
+            # nacc values are always between 1 and 16, set in the ACQ box by the INIT() function , therefore:
+            dt = 1./self.dev.freq.data() * nacc
 
             decimator = lcma(self.decim)
 
@@ -270,6 +280,7 @@ class ACQ435ST(MDSplus.Device):
         import tempfile
         import subprocess
         import acq400_hapi
+
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
@@ -282,7 +293,7 @@ class ACQ435ST(MDSplus.Device):
         uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
         
         if self.debug:
-            print("Hardware Filter is {}".format(int(self.hw_filter.data())))
+            print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
 
         nacc = int(self.hw_filter.data())
         if 0 <= nacc <= 4:
@@ -291,8 +302,8 @@ class ACQ435ST(MDSplus.Device):
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
         else:
-            print("WARNING: Hardware Filter must be in range[0,4]. Set it to 1.")
-            uut.s1.set_knob('nacc', '1,1')
+            print("WARNING: Hardware Filter must be in the range [0,4]. Set it to 0.")
+            uut.s1.set_knob('nacc', '1,0')
 
         if self.trig_mode.data() == 'hard':
             uut.s1.set_knob('trg', '1,0,1')
