@@ -456,7 +456,7 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
 
 EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *samplesD)
 {
-    int nTimesSer, nSamplesSer;
+    int nTimesSer = 0, nSamplesSer = 0;
     char *timesSer = timesD->serialize(&nTimesSer);
     char *samplesSer = samplesD->serialize(&nSamplesSer);
     char *msgBuf = new char[nTimesSer +  nSamplesSer + 256];
