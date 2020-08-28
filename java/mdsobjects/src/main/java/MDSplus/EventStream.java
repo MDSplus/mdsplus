@@ -77,22 +77,56 @@ public class EventStream extends Event {
         seteventRaw("STREAMING", msgString.getBytes());
     }
  
+    public static void send(int shot, java.lang.String streamName, Data times, Data samples)
+    {
+        byte [] serTimes = times.serialize();
+        byte [] serSamples = samples.serialize();
+        int numSamples = serTimes.length;
+        java.lang.String msgString = ""+shot+ " "+streamName+" B "+numSamples+" ";
+        byte[] header = msgString.getBytes();
+        byte [] message = new byte[header.length+serTimes.length+serSamples.length];
+        System.arraycopy(header, 0, message, 0, header.length);
+        System.arraycopy(serTimes, 0, message, header.length, serTimes.length);
+        System.arraycopy(serSamples, 0, message, header.length+serTimes.length, serSamples.length);
+        seteventRaw("STREAMING", message);
+    }
+
     public synchronized void run()
     {
         java.lang.String evName = getName();
         if(!evName.equals("STREAMING"))
             return; //Should never happen
-        java.lang.String evMessage = new java.lang.String(getRaw());
+        byte[] rawMsg = getRaw();
+        java.lang.String evMessage = new java.lang.String(rawMsg);
+        int byteIdx = 0;
         if(debug) System.out.println(evMessage);
         StringTokenizer st = new StringTokenizer(evMessage);
         try {
-            int shot = Integer.parseInt(st.nextToken());
+            java.lang.String currStr = st.nextToken();
+            byteIdx = currStr.length() + 1; //A single blank between header fields
+            int shot = Integer.parseInt(currStr);
             java.lang.String streamName = st.nextToken();
+            byteIdx += streamName.length() + 1; 
             Vector<DataStreamListener>listeners = listenerHash.get(streamName);
             if(listeners != null && listeners.size() > 0)
             {
                 java.lang.String mode = st.nextToken();
-                int numSamples = Integer.parseInt(st.nextToken());
+                byteIdx += 2;
+                currStr = st.nextToken();
+                byteIdx += currStr.length() + 1;
+                int numSamples = Integer.parseInt(currStr);
+                if(mode.equals("B")) //Serialized times and values
+                {
+                    byte [] serTimes = new byte[numSamples];
+                    byte [] serSamples = new byte[rawMsg.length - byteIdx - numSamples];
+                    System.arraycopy(rawMsg, byteIdx, serTimes, 0, numSamples);
+                    System.arraycopy(rawMsg, byteIdx + numSamples, serSamples, 0, rawMsg.length - byteIdx - numSamples);
+                    Data timesD = Data.deserialize(serTimes);
+                    Data samplesD = Data.deserialize(serSamples);
+                    for(int i = 0; i < listeners.size(); i++)
+                        listeners.elementAt(i).dataReceived(streamName, shot,timesD, samplesD);
+                    return; //All done
+                }
                 if(numSamples == 1)
                 {
                     Data timeD, sampleD;
@@ -140,9 +174,9 @@ public class EventStream extends Event {
     }
     public static void main(java.lang.String args[])
     {
-        try {
+/*        try {
             EventStream es = new EventStream();
-            es.registerListener("TestStream", new DataStreamListener() {
+            es.registerListener("Channel1", new DataStreamListener() {
                 public void dataReceived(java.lang.String streamName, int shot, Data times, Data samples)
                 {
                     System.out.println(streamName+" Time: "+times + "Sample: " + samples);
@@ -150,6 +184,8 @@ public class EventStream extends Event {
             });
             Thread.currentThread().sleep(1000000);
         }catch(Exception exc){System.out.println(exc);}
+*/       
         
+    EventStream.send(0, "Channel1", new Float32Array(new float[]{0,1}),new Float32Array(new float[]{10,20}));   
     }
 }

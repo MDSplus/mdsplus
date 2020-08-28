@@ -393,7 +393,18 @@ void *monitorStreamInfo(void *par __attribute__ ((unused)))
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Class StreamEvents provides an alternative streaming solution. It provides a set of methods for sending chuncks of data as MDSplus events. Events will be       //
-// recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners.                                 //
+// recorded by node.js application using ServerSent Events for streaming visualization and/or by registered StreamEvent listeners. 
+// The coding of the message exchanged is the following:
+// Shot number: ASCII integer
+// Channel number: String
+// Mode: a single char with the following code:
+// - F: times sent as ASCII floats, Samples sent as ASCII floats
+// - L: times sent as ASCII int64, Samples sent as ASCII floats
+// - A: Same as F: recongnized by stream visualizer to doiplsy in oscilloscope mode instead of a chart
+// - B: Times and Samples sent as serialized MDSplus expressions
+// Number of elements (for modes F, L, A) or number of bytes of serialized times (for mode B)
+// For all modes except B: ASCII times and values
+// For mode B only: serialized times followed by serialized values
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 using namespace MDSplus;
 
@@ -443,6 +454,23 @@ EXPORT void EventStream::send(int shot, const char *name, int numSamples, uint64
     delete [] msgBuf;
 }
 
+EXPORT void EventStream::send(int shot, const char *name, Data *timesD, Data *samplesD)
+{
+    int nTimesSer = 0, nSamplesSer = 0;
+    char *timesSer = timesD->serialize(&nTimesSer);
+    char *samplesSer = samplesD->serialize(&nSamplesSer);
+    char *msgBuf = new char[nTimesSer +  nSamplesSer + 256];
+    char headBuf[256];
+    sprintf(headBuf, "%d %s B %d ", shot, name, nTimesSer);
+    int headerLen = strlen(headBuf);
+    memcpy(msgBuf, headBuf, headerLen);
+    memcpy(&msgBuf[headerLen], timesSer, nTimesSer);
+    memcpy(&msgBuf[headerLen+nTimesSer], samplesSer, nSamplesSer);
+    Event::setEventRaw("STREAMING", headerLen+nTimesSer+nSamplesSer, msgBuf);
+    delete [] msgBuf;
+    delete[] timesSer;
+    delete [] samplesSer;
+}
 
 
 EXPORT void EventStream::run()
@@ -500,7 +528,7 @@ EXPORT void EventStream::run()
 	    timesD = new Float32(times[0]);
 	delete [] times;
     }
-    else
+    else if (timeFormat[0] != 'B')
     {
 	uint64_t *times = new uint64_t[numSamples];
 	for(int i = 0; i < numSamples; i++)
@@ -521,6 +549,22 @@ EXPORT void EventStream::run()
 	else
 	    timesD = new Uint64(times[0]);
 	delete [] times;
+    }
+    else //Mode B
+    {
+	Data *timesD  = deserialize(&str[j]);
+	Data *samplesD  = deserialize(&str[j+numSamples]);
+	//Expressions already available, do not need any further action
+	std::string nameStr(name);
+	for(size_t i = 0; i < listeners.size(); i++)
+	{
+	    if(names[i] == nameStr)
+		listeners[i]->dataReceived(samplesD, timesD, shot);
+	}
+	deleteData(samplesD);
+	deleteData(timesD);
+	delete[] str;
+	return;
     }
     Data *samplesD;
     float *samples = new float[numSamples];

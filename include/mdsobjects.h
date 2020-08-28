@@ -4286,7 +4286,7 @@ class EXPORT EventStream:public Event {
   std::vector<std::string> names;
 public:
   virtual void run();
-  EventStream():Event("STREAMING"){}
+  EventStream():Event("STREAMING"){listeners.clear(); names.clear();}
   static void send(int shot, const char *name, float time, float sample);
   static void send(int shot, const char *name, uint64_t time, float sample);
   static void send(int shot, const char *name, int numSamples, float *times, float *samples, bool oscilloscopeMode = false);
