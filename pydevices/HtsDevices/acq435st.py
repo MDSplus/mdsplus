@@ -284,31 +284,46 @@ class ACQ435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
-        if self.ext_clock.length > 0:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
-            uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
-        else:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
-        freq = int(self.freq.data())
-        uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
-        
-        if self.debug:
-            print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
+        # if self.ext_clock.length > 0:
+        #     uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
+        #     uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
+        # else:
+        #     uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
+        # freq = int(self.freq.data())
+        # uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
 
-        nacc = int(self.hw_filter.data())
-        if 0 <= nacc <= 4:
+        # if self.trig_mode.data() == 'hard':
+        #     uut.s1.set_knob('trg', '1,0,1')
+        # else:
+        #     uut.s1.set_knob('trg', '1,1,1')
+
+        rig_types=[ 'hard', 'soft', 'automatic']
+        trg = self.trig_mode.data()
+
+        if trg == 'hard':
+            trg_dx = 0
+        elif trg == 'automatic':
+            trg_dx = 1
+        elif trg == 'soft':
+            trg_dx = 1
+
+        role = 'master'
+        if self.trig_mode.data() == 'role_default':
+            uut.s0.sync_role = "%s %s" % (role, self.freq.data())
+        else:
+            # If the user has specified a trigger.
+            uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), 'd'+str(trg_dx))
+
+
+        if self.hw_filter.length > 0:
+            nacc = int(self.hw_filter.data())
             nacc_samp = 2**nacc
             nacc=('%d'%nacc).strip()
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
-        else:
-            print("WARNING: Hardware Filter must be in the range [0,4]. Set it to 0.")
-            uut.s1.set_knob('nacc', '1,0')
+        else :
+            uut.s1.set_knob('nacc', '0,0')
 
-        if self.trig_mode.data() == 'hard':
-            uut.s1.set_knob('trg', '1,0,1')
-        else:
-            uut.s1.set_knob('trg', '1,1,1')
 
 #
 #  Read the coeffients and offsets
