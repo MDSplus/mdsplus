@@ -75,7 +75,7 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot',),'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model','write_once','write_shot')},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
+        {'path':':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
          'options':('no_write_shot',)},
@@ -284,20 +284,6 @@ class ACQ435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
-        # if self.ext_clock.length > 0:
-        #     uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
-        #     uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
-        # else:
-        #     uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
-        # freq = int(self.freq.data())
-        # uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
-
-        # if self.trig_mode.data() == 'hard':
-        #     uut.s1.set_knob('trg', '1,0,1')
-        # else:
-        #     uut.s1.set_knob('trg', '1,1,1')
-
-        rig_types=[ 'hard', 'soft', 'automatic']
         trg = self.trig_mode.data()
 
         if trg == 'hard':
@@ -307,12 +293,13 @@ class ACQ435ST(MDSplus.Device):
         elif trg == 'soft':
             trg_dx = 1
 
-        role = 'master'
-        if self.trig_mode.data() == 'role_default':
-            uut.s0.sync_role = "%s %s" % (role, self.freq.data())
-        else:
-            # If the user has specified a trigger.
-            uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), 'd'+str(trg_dx))
+        # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
+        # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
+        # modifiers [TRG=int|ext]
+        # modifiers [CLKDIV=div]
+
+        # If the user has specified a trigger.
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), 'd'+str(trg_dx))
 
 
         if self.hw_filter.length > 0:
