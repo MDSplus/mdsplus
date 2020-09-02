@@ -89,16 +89,7 @@ Function DirectoryLeave
 ${If} ${FileExists} "$InstDir"
 	MessageBox MB_YESNO `"$InstDir" already exists.$\r$\nDo you want to continue and DELETE all it's content?` IDYES yes
 	Abort
-yes:
-	RmDir /r "$INSTDIR"
-;	Push $R0
-;	${Recycle} "$INSTDIR" $R0
-;	${If} $R0 == 0
-;		Pop $R0
-;	${Else}
-;		Pop $R0
-;		Abort
-;	${EndIf}
+	yes:
 ${EndIf}
 FunctionEnd
 Page Directory "" "" DirectoryLeave
@@ -157,6 +148,7 @@ Page Directory "" "" DirectoryLeave
 
 ### BEGIN SECTIONS ###
 Function install_core_pre
+	RmDir /r "$INSTDIR"
 	SetOutPath "$INSTDIR"
 	writeUninstaller "$INSTDIR\uninstall.exe"
 	File icons/mdsplus.ico
