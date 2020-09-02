@@ -63,7 +63,17 @@ InstType "Minimal"
 Var StartMenuFolder
 !insertmacro MUI_PAGE_LICENSE "MDSplus-License.rtf"
 !insertmacro MULTIUSER_PAGE_INSTALLMODE
-!insertmacro MUI_PAGE_DIRECTORY
+;; !insertmacro MUI_PAGE_DIRECTORY
+;; replace with warning if selected folder already exists
+Function DirectoryLeave
+${If} ${FileExists} "$InstDir"
+    MessageBox MB_YESNO `"$InstDir" already exists.$\r$\nDo you want to continue and DELETE all it's content?` IDYES yes
+    Abort
+yes:
+    RMDir /r "$InstDir"
+${EndIf}
+FunctionEnd
+Page Directory "" "" DirectoryLeave
 !insertmacro MUI_PAGE_COMPONENTS
 !insertmacro MUI_PAGE_STARTMENU "Application" $StartMenuFolder
 !insertmacro MUI_PAGE_INSTFILES
@@ -88,10 +98,10 @@ Var StartMenuFolder
 ;	Push `${line}`
 ;	Exch $0
 ;	Push $R0
-;	StrCpy $LOG `$LOG$0$\n`
+;	StrCpy $LOG `$LOG$0$\r$\n`
 ;	FileOpen  $R0 `$INSTDIR\log.log` a
 ;	FileSeek  $R0 0 END
-;	FileWrite $R0 `$0$\n`
+;	FileWrite $R0 `$0$\r$\n`
 ;	FileClose $R0
 ;	Pop $R0
 ;	Pop $0
@@ -479,7 +489,7 @@ FunctionEnd ; FileLowerExt
 		FileClose ${logfile}
 		Abort
 		ignore${_id_}:
-		FileWrite ${logfile} "${dest}\$1$\n"
+		FileWrite ${logfile} "${dest}\$1$\r$\n"
 		next${_id_}:
 		FindNext $0 $1
 		Goto loop${_id_}
@@ -734,7 +744,7 @@ SectionGroup /e "!APIs" apis
 	SetOutPath "$INSTDIR\LabView"
 	File /r LabView/MDSplus
   SectionEnd ; LV2017
-  !define LVOLD_DESC "https://github.com/MDSplus/mdsplus/$\n"
+  !define LVOLD_DESC "https://github.com/MDSplus/mdsplus/$\r$\n"
   Section "LV2015 (15.0) on GitHub" LV2015
 	!define LV2015_DESC "mdsobjects/labview/MDSplus_LV2015"
 ;	SetOutPath "$INSTDIR\LabView\LV2015\MDSplus"
@@ -953,7 +963,7 @@ Function Init
 	${ReadEnv} $INSTDIR MDSPLUS_DIR
 	${IfNot}  $R0 == ""
 		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
-		"MDSplus is already installed. $\n$\nClick `OK` to remove the \
+		"MDSplus is already installed. $\r$\n$\r$\nClick `OK` to remove the \
 		previous version or `Cancel` to cancel this upgrade." IDOK uninst
 			Abort
 		; Run the uninstaller
