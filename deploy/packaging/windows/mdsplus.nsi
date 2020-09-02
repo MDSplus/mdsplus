@@ -33,9 +33,6 @@ InstType "Minimal"
 
 !define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
 
-!define BINDIR32		"$INSTDIR\bin32"
-!define BINDIR64		"$INSTDIR\bin64"
-
 !define MDSPLUS_DIR		"$INSTDIR"
 !define MDS_PATH		"$INSTDIR\tdi"
 !define MDS_PYDEVICE_PATH	"$INSTDIR\pydevices"
@@ -50,6 +47,29 @@ InstType "Minimal"
 !define MULTIUSER_INSTALLMODE_COMMANDLINE
 !define MULTIUSER_INSTALLMODE_FUNCTION   Init
 !include MultiUser.nsh
+
+;; tools for If and Loop logics
+!include LogicLib.nsh
+
+;; 64bit detection and handling
+!include x64.nsh
+
+;; string manipulation; defines ${UnStrTrimNewLines}
+!include StrFunc.nsh
+${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
+
+;; used to get filename in ignore branch of uninstaller
+!include "WordFunc.nsh"
+
+!addincludedir ${INCLUDE}
+!include debug.nsh		; define debug tools
+;	!include recycle.nsh		; define Recycle
+!include in_operator.nsh	; define in
+!include is_operator.nsh	; define is
+!include registry.nsh		; define AllUsers, registry and env add/remove
+!include getbindir.nsh		; define GetBinDir
+!include filelowerext.nsh	; FileLowerExt
+
 
 ;; MUI2 include and definitions determine the design of the installer
 !include "MUI2.nsh"
@@ -67,10 +87,18 @@ Var StartMenuFolder
 ;; replace with warning if selected folder already exists
 Function DirectoryLeave
 ${If} ${FileExists} "$InstDir"
-    MessageBox MB_YESNO `"$InstDir" already exists.$\r$\nDo you want to continue and DELETE all it's content?` IDYES yes
-    Abort
+	MessageBox MB_YESNO `"$InstDir" already exists.$\r$\nDo you want to continue and DELETE all it's content?` IDYES yes
+	Abort
 yes:
-    RMDir /r "$InstDir"
+	RmDir /r "$INSTDIR"
+;	Push $R0
+;	${Recycle} "$INSTDIR" $R0
+;	${If} $R0 == 0
+;		Pop $R0
+;	${Else}
+;		Pop $R0
+;		Abort
+;	${EndIf}
 ${EndIf}
 FunctionEnd
 Page Directory "" "" DirectoryLeave
@@ -84,389 +112,12 @@ Page Directory "" "" DirectoryLeave
 
 
 
-### BEGIN DEBUG TOOLS ###
-;Var LOG
-;; ShowLog show an OK_BOX with $LOG if $LOG is not empty
-!macro ShowLog
-;	StrCmp $LOG "" +3 +1
-;	MessageBox MB_OK $LOG
-;	StrCpy $LOG ""
-!macroend ; ToLog
-!define ShowLog '!insertmacro "ShowLog"'
-;; ToLog appends the passed string to $INSTDIR\log.log or $LOG
-!macro ToLog line
-;	Push `${line}`
-;	Exch $0
-;	Push $R0
-;	StrCpy $LOG `$LOG$0$\r$\n`
-;	FileOpen  $R0 `$INSTDIR\log.log` a
-;	FileSeek  $R0 0 END
-;	FileWrite $R0 `$0$\r$\n`
-;	FileClose $R0
-;	Pop $R0
-;	Pop $0
-!macroend ; ToLog
-!define ToLog '!insertmacro "ToLog"'
-### END DEBUG TOOLS ###
-
-
-
-;; tools for If and Loop logics
-!include LogicLib.nsh
-
-;; 64bit detection and handling
-!include x64.nsh
-
-;; string manipulation; defines ${UnStrTrimNewLines}
-!include StrFunc.nsh
-${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
-
-;; used to get filename in ignore branch of uninstaller
-!include "WordFunc.nsh"
-
-
-### BEGIN _in ###
-;; looks for substring in string and stores starting pos in INPOS
-;; INPOS == -1 if substring not found in string
-;; ${If} "${needle}" in "${haystack}"
-Var INPOS
-!macro _in substr string t f
-	; work around bug in LogicLib.nsh
-	; these definitions need to be disables temporarely
-	!ifdef _c=false
-	!define _c=false_
-	!undef _c=false
-	!endif
-	!ifdef _c=true
-	!define _c=true_
-	!undef _c=true
-	!endif
-	Push `${string}`	;; In order to process two args without
-	Push `${substr}`	;; destroying the content of $0 or $1,
-	Exch $0  ; substr	;; we push the args to the stack FiLo
-	Exch			;; exchange 1st, swap stack, exchange 2nd.
-	Exch $1  ; string	;; stack: BOTTOM <= $0, $1 = TOP
-	Push $R0 ; substr_len
-	Push $R1 ; max_inpos	;; last possible inpos that would fit substr
-	Push $R2 ; tmpstr
-	StrLen $R0 $0				; get length of substr
-	StrLen $R1 $1				; get length of string
-	IntOp  $R1 $R1 - $R0			; get max_inpos
-	StrCpy $INPOS 0				; init search pos
-	${Do}					; Loop until "substr" is found or "string" reaches its end
-		${If} $INPOS > $R1		; Check if end of "string"
-			StrCpy $INPOS -1	; set INPOS to NOT_FOUND
-			${ExitDo}
-		${EndIf}
-		StrCpy $R2 `$1` $R0 $INPOS	; Trim "tmpstr" to len of "substr"
-		${If} $R2 == `$0`		; Compare "tmpStr" with "substr"
-			${ExitDo}
-		${EndIf}
-		IntOp $INPOS $INPOS + 1		; If not, $INPOS++ and continue the loop
-	${Loop}
-	Pop $R2			; restore registers
-	Pop $R1
-	Pop $R0
-	${ToLog} `IN("$0", "$1") = $INPOS`
-	Pop $1
-	Pop $0
-	!ifdef _c=false_	; restore definitions of the LogicLib
-	!define _c=false
-	!undef _c=false_
-	!endif
-	!ifdef _c=true_
-	!define _c=true
-	!undef _c=true_
-	!endif
-	; perform the jump so it will work as If operator
-	IntCmp $INPOS 0 `${t}` `${f}` `${t}`	; $INPOS>=0
-!macroend ; _in
-### END _in ###
-
-
-
 ;; tools to manipulate component selection used e.g. in .onSelChange
 !include Sections.nsh
 !define SelectSection    '!insertmacro "SelectSection"'
 !define UnselectSection  '!insertmacro "UnselectSection"'
 !define ClearSectionFlag '!insertmacro "ClearSectionFlag"'
 !define SetSectionFlag   '!insertmacro "SetSectionFlag"'
-### BEGIN _is ###
-;; If operator to check whether section has a flag set
-;; ${If} ${setion} is ${SF_SELECTED}
-Var ISVAR
-!macro _is section flag t f
-	Push `${flag}`		;; In order to process two args without
-	Push `${section}`	;; destroying the content of $0 or $1,
-	Exch $0 ; substr	;; we push the args to the stack FiLo
-	Exch			;; exchange 1st, swap stack, exchange 2nd.
-	Exch $1 ; string	;; stack: BOTTOM <= $0, $1 = TOP
-	Call isfun
-	;${ToLog} `IS($0,$1) = $ISVAR`
-	Pop $1
-	Pop $0
-	; perform the jump so it will work as If operator
-	IntCmp $ISVAR 0 `${f}` `${t}` `${t}`	; $ISVAR != 0
-!macroend ; _is
-; this helper function is required to isolate the jump markers
-; SectionFlagIsSet does not support relative jumps that may be passes by If
-Function isfun
-	!insertmacro SectionFlagIsSet $0 $1 true false
-true:	StrCpy $ISVAR 1
-	Goto +2		;done
-false:	StrCpy $ISVAR 0
-FunctionEnd
-### END _is ###
-
-
-
-### BEGIN _AllUsers ###
-;; If operator to check whether execution level is of a given type e.g. admin
-;; ${if} for AllUsers ?
-!macro _AllUsers dummy1 dummy2 t f
-	${ToLog} `InstallMode $MultiUser.InstallMode`
-	StrCmp `$MultiUser.InstallMode` AllUsers `${t}` `${f}`
-!macroend ; _AllUsers
-### END _AllUsers ###
-
-
-
-### BEGIN REGISTRY MANIPULATION ###
-;; the root HKLM or HKCU must be a constant as it is interpreted at compiletime
-;; these macros write to the corresponding root (and key) base on AllUsers admin
-!macro WriteKeyStr key name value
-	${If} for AllUsers ?
-		WriteRegStr HKLM `${key}` `${name}` `${value}`
-	${Else}
-		WriteRegStr HKCU `${key}` `${name}` `${value}`
-	${EndIf}
-!macroend ; WriteKeyStr
-!define WriteKeyStr '!insertmacro "WriteKeyStr"'
-!macro WriteKeyDWORD key name value
-	${If} for AllUsers ?
-		WriteRegDWORD HKLM `${key}` `${name}` `${value}`
-	${Else}
-		WriteRegDWORD HKCU `${key}` `${name}` `${value}`
-	${EndIf}
-!macroend ; WriteKeyDWORD
-!define WriteKeyDWORD '!insertmacro "WriteKeyDWORD"'
-!macro ReadKeyStr var key name
-	${If} for AllUsers ?
-		ReadRegStr ${var} HKLM `${key}` `${name}`
-	${Else}
-		ReadRegStr ${var} HKCU `${key}` `${name}`
-	${EndIf}
-!macroend ; ReadKeyStr
-!define ReadKeyStr '!insertmacro "ReadKeyStr"'
-!macro DeleteKey key
-	${If} for AllUsers ?
-		DeleteRegKey HKLM `${key}`
-	${Else}
-		DeleteRegKey HKCU `${key}`
-	${EndIf}
-!macroend ; DeleteKey
-!define DeleteKey '!insertmacro "DeleteKey"'
-
-
-## BEGIN ENVIRONMENT MANIPULATION ##
-;; The key which hold the evironment variables is different for HKLM and HKCU
-!define ENVREG_ALL "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-!define ENVREG_USR "Environment"
-
-# BEGIN WriteEnv #
-;; create or overwrite environment var
-!macro WriteEnv name value
-	${ToLog} `SET_ENV ${name} "${value}"`
-	${If} for AllUsers ?
-		WriteRegStr HKLM "${ENVREG_ALL}" `${name}` `${value}`
-	${Else}
-		WriteRegStr HKCU "${ENVREG_USR}" `${name}` `${value}`
-	${EndIf}
-!macroend ; WriteEnv
-!define WriteEnv '!insertmacro "WriteEnv"'
-# END WriteEnv #
-
-# BEGIN ReadEnv #
-;; read environment var into var
-!macro ReadEnv var name
-	${If} for AllUsers ?
-		ReadRegStr ${var} HKLM "${ENVREG_ALL}" `${name}`
-	${Else}
-		ReadRegStr ${var} HKCU "${ENVREG_USR}" `${name}`
-	${EndIf}
-	${ToLog} `GET_ENV ${name} "${var}"`
-!macroend ; ReadEnv
-!define ReadEnv '!insertmacro "ReadEnv"'
-# END ReadEnv #
-
-# BEGIN DeleteEnv #
-;; delete environment var
-!macro DeleteEnv name
-	${ToLog} `DEL_ENV ${name}`
-	${If} for AllUsers ?
-		DeleteRegValue HKLM "${ENVREG_ALL}" `${name}`
-	${Else}
-		DeleteRegValue HKCU "${ENVREG_USR}" `${name}`
-	${EndIf}
-!macroend ; DeleteEnv
-!define DeleteEnv '!insertmacro "DeleteEnv"'
-# END DeleteEnv #
-
-# BEGIN AddToEnv #
-;; AddToEnv creates the environment var <name> with <value> if not existent
-;; Otherwise, it will check is env contains <value> given env is a ';'-separated list
-;; It will only append <value> to env list if entry not found
-;; It will preserve any tailing ';' if present
-!macro AddToEnv name value
-	Push `${value}`	;; In order to process two args without
-	Push `${name}`	;; destroying the content of $0 or $1,
-	Exch $0 ; name	;; we push the args to the stack FiLo
-	Exch		;; exchange 1st, swap stack, exchange 2nd.
-	Exch $1 ; value	;; stack: BOTTOM <= $0, $1 = TOP
-	Call AddToEnv
-	Pop $1
-	Pop $0
-!macroend ; AddToEnv
-Function AddToEnv ; name value
-	Push $R0
-	${ReadEnv} $R0 `$0`
-	${If} `$R0` == ""		; if env did not exist or was empty
-		${WriteEnv} `$0` `$1`
-	${ElseIfNot} `;$1;` in `;$R0;`	; if env does not contain <value>
-		Push $R1
-		StrCpy $R1 $R0 1 -1	; last char of env
-		${If} `$R1` == ";"			;; if env terminates on ';'
-			${WriteEnv} `$0` `$R0$1;`	;; append <value> and terminate with ';'
-		${Else}					;; otherwise
-			${WriteEnv} `$0` `$R0;$1`	;; append separator ';' and <value>
-		${EndIf}
-		Pop $R1
-	${EndIf}
-	Pop $R0
-FunctionEnd ; AddToEnv
-!define AddToEnv '!insertmacro "AddToEnv"'
-# END AddToEnv #
-
-# BEGIN RemoveFromEnv #
-;; reverts AddToEnv
-;; checks if enironment var is present
-;; if present it will check if env contains <value> given env is a ';'-separated list
-;; if <value> is contained in env it will cut <value>
-;; it will continue until env does not contain any more <value>
-;; It will preserve any tailing ';' if present
-!macro RemoveFromEnv name value
-	Push `${value}`	;; In order to process two args without
-	Push `${name}`	;; destroying the content of $0 or $1,
-	Exch $0 ; name	;; we push the args to the stack FiLo
-	Exch		;; exchange 1st, swap stack, exchange 2nd.
-	Exch $1 ; value	;; stack: BOTTOM <= $0, $1 = TOP
-	Call un.RemoveFromEnv
-	Pop $1
-	Pop $0
-!macroend ; RemoveFromEnv
-Function un.RemoveFromEnv ; name value
-	Push $R0
-	${ReadEnv} $R0 `$0`
-	${If}   `$R0` == ""	; env is empty or not present
-	${OrIf} `$R0` == `$1`	; env contains only <value>
-	${OrIf} `$R0` == `$1;`	; env contains only <value> and a terminating ';'
-		${DeleteEnv} `$0`	; then delete env (is NOP if not present)
-	${Else}			; otherwise remove any occurence of <value> in env
-		Push $R1 ; value_len
-		Push $R2 ; env_len
-		Push $R3 ; tmpstr to hold pre part
-		StrLen $R1 $1
-		${If} `;$1;` in `;$R0;`	;; adding ';' helps isolating <value> as element
-			${Do}			; $INPOS points to start pos of found <value> in env
-				StrLen $R2 $R0		; current len of env
-				${If} $INPOS == 0		; remove <value> and ';' from head
-					IntOp  $INPOS $R1 + 1		;; offset = value_len + 1 for ';'
-					StrCpy $R0 $R0 $R2 $INPOS	;; cut head
-				${Else}				; remove ';' and <value> from env at $INPOS
-					IntOp  $R3 $INPOS - 1		;; set pre len so it will exclude the ';' before <value>
-					StrCpy $R3 $R0 $R3		;; store pre part in tmpstr
-					IntOp  $INPOS $R1 + $INPOS	;; set post offset to $INPOS + value_len 
-					StrLen $R2 $R0			;; maxlen of env
-					StrCpy $R0 $R0 $R2 $INPOS	;; store post part
-					StrCpy $R0 `$R3$R0`		;; strcat pre and post for new env
-				${EndIf}	; update INPOS and abort loop if <value> no longer be found in env
-				${IfNotThen} `;$1;` in `;$R0;` ${|} ${ExitDo} ${|}
-			${Loop} ; finally update env in registry
-			${WriteEnv} `$0` `$R0`
-		${EndIf}
-		Pop $R3
-		Pop $R2
-		Pop $R1
-	${EndIf}
-	Pop $R0
-FunctionEnd ; RemoveFromEnv
-!define RemoveFromEnv '!insertmacro "RemoveFromEnv"'
-# END RemoveFromEnv #
-
-## END ENVIRONMENT MANIPULATION ##
-
-
-### END REGISTRY MANIPULATION ###
-
-
-
-### BEGIN GetBinDir ###
-;; stores the location of the native binaries in var
-;; the localtion depends on privileges and architecture
-!macro GetBinDir var
-	${If} for AllUsers ?
-		StrCpy ${var} "$SYSDIR"
-	${ElseIf} ${RunningX64}
-		StrCpy ${var} "${BINDIR64}"
-	${Else}
-		StrCpy ${var} "${BINDIR32}"
-	${EndIf}
-!macroend
-!define GetBinDir '!insertmacro "GetBinDir"'
-### END GetBinDir ###
-
-
-
-### BEGIN FileLowerExt ###
-;; the devtools filenames require a cast to lower case
-;; and in case of the mings a change of the extension
-;; this marco copies all files of extin in pathin to pathout
-;; then it renames the files to the desired format
-!macro FileLowerExt pathin extin pathout extout
-	Push ${pathout}		;; !!! this macro expects the arguments to be constants !!!
-	Exch $0			;; We can push argument and then exchange with a register
-	Push ${extin}		;; Given that: $0 not used in extin
-	Exch $1			;; stack: BOTTOM <= $0, $1 = TOP
-	Push ${extout}		;; Given that: $0 and $1 not used in extout
-	Exch $2			;; stack: BOTTOM <= $0, $1, $2 = TOP
-	SetOutPath "${pathout}"	;; Given that: $0, $1, and $2 not used in pathout
-	File "${pathin}/*${extin}"
-	Call FileLowerExt
-	Pop $2
-	Pop $1
-	Pop $0
-!macroend ; FileLowerExt
-Function FileLowerExt ; path extin extout
-	Push $R0		; find handle
-	Push $R1		; source file name
-	Push $R2
-	StrLen $R2 $1
-	IntOp $R2 0 - $R2	; - len of extin
-	FindFirst $R0 $R1 "$0\*$1"
-	${Do}
-		${IfThen} $R1 == "" ${|} ${ExitDo} ${|}
-		StrCpy $1 $R1 $R2	; remove 'extin'
-		System::Call "User32::CharLowerA(t r1 r1)t"
-		Rename "$0\$R1" "$0\$1$2"
-		FindNext $R0 $R1
-	${Loop}
-	FindClose $R0
-	Pop $R2
-	Pop $R1
-	Pop $R0
-FunctionEnd ; FileLowerExt
-!define FileLowerExt '!insertmacro "FileLowerExt"'
-### END FileLowerExt ###
 
 
 
@@ -1085,7 +736,8 @@ Section uninstall
 	${RemoveFromEnv}        MDS_PYDEVICE_PATH	"${MDS_PYDEVICE_PATH}"
 	${DeleteKey} "${UNINSTALL_KEY}"
 	SetOutPath "$SYSDIR" ; avoid access to $INSTDIR so it may be deleted
-	RMDir /r "$INSTDIR"
+;	${Recycle} "$INSTDIR" $R0 ;; silent on failure
+	RmDir /r "$INSTDIR"
 	Pop $R2
 	Pop $R1
 	Pop $R0
