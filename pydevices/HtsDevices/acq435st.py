@@ -245,14 +245,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        # print("We have Got a timeout.")
+                        print("We have Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            # print (' received timed out, retry later')
+                            print (' received timed out, retry later')
                             continue
                         else:
                             print (e)
