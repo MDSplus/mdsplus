@@ -75,7 +75,7 @@ class ACQ435ST(MDSplus.Device):
         {'path':':TRIG_STR','type':'text', 'options':('nowrite_shot',),'valueExpr':"EXT_FUNCTION(None,'ctime',head.TRIG_TIME)"},
         {'path':':RUNNING','type':'any', 'options':('no_write_model',)},
         {'path':':LOG_OUTPUT','type':'text', 'options':('no_write_model','write_once','write_shot')},
-        {'path': ':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
+        {'path':':GIVEUP_TIME', 'type': 'numeric', 'value': 180.0, 'options': ('no_write_shot',)},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head,'auto'))",
          'options':('no_write_shot',)},
@@ -285,31 +285,32 @@ class ACQ435ST(MDSplus.Device):
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
-            uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
-        else:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
-        freq = int(self.freq.data())
-        uut.s1.set_knob('ACQ43X_SAMPLE_RATE', "%d"%freq)
-        
-        if self.debug:
-            print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
+            raise Exception('External Clock is not supported')
 
-        nacc = int(self.hw_filter.data())
-        if 0 <= nacc <= 4:
+        trg = self.trig_mode.data()
+
+        if trg == 'hard':
+            trg_dx = 'd0'
+        elif trg == 'automatic':
+            trg_dx = 'd1'
+        elif trg == 'soft':
+            trg_dx = 'd1'
+
+        # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
+        # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
+        # modifiers [TRG=int|ext]
+        # modifiers [CLKDIV=div]  
+        # If the user has specified a trigger.
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
+
+        if self.hw_filter.length > 0:
+            nacc = int(self.hw_filter.data())
             nacc_samp = 2**nacc
             nacc=('%d'%nacc).strip()
             nacc_samp = ('%d'%nacc_samp).strip()
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
-        else:
-            print("WARNING: Hardware Filter must be in the range [0,4]. Set it to 0.")
-            uut.s1.set_knob('nacc', '1,0')
-
-        if self.trig_mode.data() == 'hard':
-            uut.s1.set_knob('trg', '1,0,1')
-        else:
-            uut.s1.set_knob('trg', '1,1,1')
-
+        else :
+            uut.s1.set_knob('nacc', '0,0')
 #
 #  Read the coeffients and offsets
 #  for each channel
