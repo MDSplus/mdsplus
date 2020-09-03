@@ -285,7 +285,7 @@ class ACQ435ST(MDSplus.Device):
         uut.s0.set_knob('set_abort', '1')
 
         if self.ext_clock.length > 0:
-            raise Exception('Ext. Clock is not supported')
+            raise Exception('External Clock is not supported')
 
         trg = self.trig_mode.data()
 
