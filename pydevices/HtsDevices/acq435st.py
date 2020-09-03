@@ -245,14 +245,14 @@ class ACQ435ST(MDSplus.Device):
                             toread -= nbytes
 
                     except socket.timeout as e:
-                        print("We have Got a timeout.")
+                        # print("We have Got a timeout.")
                         err = e.args[0]
                         # this next if/else is a bit redundant, but illustrates how the
                         # timeout exception is setup
 
                         if err == 'timed out':
                             time.sleep(1)
-                            print (' received timed out, retry later')
+                            # print (' received timed out, retry later')
                             continue
                         else:
                             print (e)
@@ -296,11 +296,9 @@ class ACQ435ST(MDSplus.Device):
         # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
-        # modifiers [CLKDIV=div]
-
+        # modifiers [CLKDIV=div]  
         # If the user has specified a trigger.
         uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), 'd'+str(trg_dx))
-
 
         if self.hw_filter.length > 0:
             nacc = int(self.hw_filter.data())
@@ -310,8 +308,6 @@ class ACQ435ST(MDSplus.Device):
             uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
         else :
             uut.s1.set_knob('nacc', '0,0')
-
-
 #
 #  Read the coeffients and offsets
 #  for each channel
