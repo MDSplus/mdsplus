@@ -284,21 +284,24 @@ class ACQ435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
+        if self.ext_clock.length > 0:
+            raise Exception('Ext. Clock is not supported')
+
         trg = self.trig_mode.data()
 
         if trg == 'hard':
-            trg_dx = 0
+            trg_dx = 'd0'
         elif trg == 'automatic':
-            trg_dx = 1
+            trg_dx = 'd1'
         elif trg == 'soft':
-            trg_dx = 1
+            trg_dx = 'd1'
 
         # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]  
         # If the user has specified a trigger.
-        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), 'd'+str(trg_dx))
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
 
         if self.hw_filter.length > 0:
             nacc = int(self.hw_filter.data())
