@@ -63,7 +63,7 @@ ${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
 
 !addincludedir ${INCLUDE}
 !include debug.nsh		; define debug tools
-;	!include recycle.nsh		; define Recycle
+!include recycle.nsh		; define Recycle, Delete, and TryRecycle
 !include in_operator.nsh	; define in
 !include is_operator.nsh	; define is
 !include registry.nsh		; define AllUsers, registry and env add/remove
@@ -148,7 +148,7 @@ Page Directory "" "" DirectoryLeave
 
 ### BEGIN SECTIONS ###
 Function install_core_pre
-	RmDir /r "$INSTDIR"
+	${TryRecycle} "$INSTDIR"
 	SetOutPath "$INSTDIR"
 	writeUninstaller "$INSTDIR\uninstall.exe"
 	File icons/mdsplus.ico
@@ -728,8 +728,7 @@ Section uninstall
 	${RemoveFromEnv}        MDS_PYDEVICE_PATH	"${MDS_PYDEVICE_PATH}"
 	${DeleteKey} "${UNINSTALL_KEY}"
 	SetOutPath "$SYSDIR" ; avoid access to $INSTDIR so it may be deleted
-;	${Recycle} "$INSTDIR" $R0 ;; silent on failure
-	RmDir /r "$INSTDIR"
+	${TryRecycle} "$INSTDIR"
 	Pop $R2
 	Pop $R1
 	Pop $R0
