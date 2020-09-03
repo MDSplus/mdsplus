@@ -29,7 +29,6 @@ InstType "Minimal"
 !define ICONV_LIB iconv.dll
 !define ZLIB1_LIB zlib1.dll
 !define UNINSTALL_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\MDSplus"
-!define UNINSTALL_VAL "UninstallString"
 
 !define TEMP_DEL_DIR "$WINDIR\Temp\MDSplus_uninstall_relicts.delete_me"
 
@@ -69,7 +68,6 @@ ${UnStrTrimNewLines}  ; implements ${UnStrTrimNewLines}
 !include registry.nsh		; define AllUsers, registry and env add/remove
 !include getbindir.nsh		; define GetBinDir
 !include filelowerext.nsh	; FileLowerExt
-
 
 ;; MUI2 include and definitions determine the design of the installer
 !include "MUI2.nsh"
@@ -157,8 +155,10 @@ Function install_core_pre
 
 	# Registry information for add/remove programs
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayName" "MDSplus${FLAVOR}"
-	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" "$INSTDIR\uninstall.exe /$MultiUser.InstallMode"
-	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" "$INSTDIR\uninstall.exe /S /$MultiUser.InstallMode"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "UninstallString" '"$INSTDIR\uninstall.exe" /$MultiUser.InstallMode'
+	${WriteKeyStr} "${UNINSTALL_KEY}" "QuietUninstallString" '"$INSTDIR\uninstall.exe" /S /$MultiUser.InstallMode'
+	${WriteKeyStr} "${UNINSTALL_KEY}" "Uninstaller"	"$INSTDIR\uninstall.exe"
+	${WriteKeyStr} "${UNINSTALL_KEY}" "InstallMode"	"$MultiUser.InstallMode"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "InstallLocation" "$INSTDIR"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "DisplayIcon"	"$INSTDIR\mdsplus.ico"
 	${WriteKeyStr} "${UNINSTALL_KEY}" "Publisher" "MDSplus Collaboratory"
@@ -602,17 +602,38 @@ FunctionEnd
 Function Init
 	${ToLog} "BEGIN INIT"
 	Push $R0
-	${ReadkeyStr} $R0 ${UNINSTALL_KEY} ${UNINSTALL_VAL}
-	${ReadEnv} $INSTDIR MDSPLUS_DIR
+	${ReadkeyStr} $R0 ${UNINSTALL_KEY} "UninstallString"
 	${IfNot}  $R0 == ""
+		${ReadkeyStr} $INSTDIR ${UNINSTALL_KEY} "InstallLocation"
 		MessageBox MB_OKCANCEL|MB_ICONEXCLAMATION \
 		"MDSplus is already installed. $\r$\n$\r$\nClick `OK` to remove the \
 		previous version or `Cancel` to cancel this upgrade." IDOK uninst
 			Abort
 		; Run the uninstaller
 		uninst:
-		ClearErrors
-		ExecWait '$R0 _?=$INSTDIR' ;Do not copy the uninstaller to a temp file
+		; The uninstaller would create a temp copy before executing
+		; This ensures the the original file can be uninstalled
+		; however this brease the wait functionality of execwait
+		; This is why we create a tempfile manually
+		Push $R1
+		Push $R2
+		${ReadkeyStr} $R2 ${UNINSTALL_KEY} "Uninstaller"
+		${If} "$R2" == ""
+			ClearErrors
+			ExecWait '$R0 _?=$INSTDIR' ; _? prevents temp file creation
+		${Else}
+			System::Call 'ole32::CoCreateGuid(g .R1)'
+			StrCpy $R1 `$TEMP\mdsplus_$R1_uninstall.exe`
+			CopyFiles `$R2` `$R1`
+			${ReadkeyStr} $R2 ${UNINSTALL_KEY} "InstallMode"
+			ClearErrors
+			ExecWait '"$R1" /$R2 _?=$INSTDIR' ; _? prevents temp file creation
+			Delete `$R1`
+		${EndIf}
+		Pop $R2
+		Pop $R1
+	${Else}
+		${ReadEnv} $INSTDIR MDSPLUS_DIR
 	${EndIf}
 	Pop $R0
 	${If} ${RunningX64}
@@ -662,6 +683,10 @@ FunctionEnd
 ### BEGIN UNINSTALLER ###
 Function un.onInit
 	!insertmacro MULTIUSER_UNINIT
+	${ReadkeyStr} $INSTDIR ${UNINSTALL_KEY} "InstallLocation"
+	${If} "$INSTDIR" == ""
+		Abort
+	${EndIf}
 functionEnd ; un.onInit
 
 Function un.onGUIEnd
