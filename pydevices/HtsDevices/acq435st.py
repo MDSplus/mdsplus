@@ -310,15 +310,13 @@ class ACQ435ST(MDSplus.Device):
         if self.debug:
             print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
 
-        nacc = int(self.hw_filter.data())
-        if 0 <= nacc <= 4:
-            nacc_samp = 2**nacc
-            nacc=('%d'%nacc).strip()
-            nacc_samp = ('%d'%nacc_samp).strip()
-            uut.s1.set_knob('nacc', '%s,%s'%(nacc_samp, nacc,))
+        # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
+        nacc_samp = int(self.hw_filter.data())
+        if 1 <= nacc_samp <= 32:
+            uut.s1.nacc = ('%d'%nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter must be in the range [0,4]. Set it to 0.")
-            uut.s1.set_knob('nacc', '1,0')
+            print("WARNING: Hardware Filter samples must be in the range [1,32]. It is now set it to 1 --> No Hardware decimation")
+            uut.s1.nacc = '1'
 #
 #  Read the coeffients and offsets
 #  for each channel
