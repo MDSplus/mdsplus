@@ -158,7 +158,7 @@ class ACQ435ST(MDSplus.Device):
             if self.dev.debug:
                 print("The ACQ NACC sample value was set to {}".format(nacc_sample))
 
-            # nacc_sample values are always between 1 and 16 (ie 2^0 to 2^4, see nacc in INIT), set in the ACQ box by the INIT() function , therefore:
+            # nacc_sample values are always between 1 and 32, set in the ACQ box by the INIT() function , therefore:
             dt = 1./self.dev.freq.data() * nacc_sample
 
             decimator = lcma(self.decim)
