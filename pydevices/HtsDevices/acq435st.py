@@ -147,7 +147,7 @@ class ACQ435ST(MDSplus.Device):
 
             trig = self.dev.trigger.data()
             
-            # Retrive the actual value of NACC (samples) set in the ACQ box
+            # Retrive the actual value of NACC (samples) already set in the ACQ box
             nacc_str   = uut.s1.get_knob('nacc')
             if nacc_str == '0,0,0':
                 nacc_sample = 1
@@ -158,7 +158,7 @@ class ACQ435ST(MDSplus.Device):
             if self.dev.debug:
                 print("The ACQ NACC sample value was set to {}".format(nacc_sample))
 
-            # nacc_sample values are always between 1 and 32, set in the ACQ box by the INIT() function , therefore:
+            # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function, therefore:
             dt = 1./self.dev.freq.data() * nacc_sample
 
             decimator = lcma(self.decim)
@@ -315,7 +315,7 @@ class ACQ435ST(MDSplus.Device):
         if 1 <= nacc_samp <= 32:
             uut.s1.nacc = ('%d'%nacc_samp).strip()
         else:
-            print("WARNING: Hardware Filter samples must be in the range [1,32]. It is now set it to 1 --> No Hardware decimation")
+            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
             uut.s1.nacc = '1'
 #
 #  Read the coeffients and offsets
