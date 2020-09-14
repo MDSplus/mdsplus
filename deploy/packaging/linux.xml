@@ -79,6 +79,7 @@ rm -f /usr/share/applications/mdsplus/java 2&gt;&amp;1
     <include file="/usr/local/mdsplus/bin/jScope"/>
     <include file="/usr/local/mdsplus/bin/jServer"/>
     <include file="/usr/local/mdsplus/bin/jTraverser*"/>
+    <include file="/usr/local/mdsplus/bin/setupDevice"/>
     <include file="/usr/local/mdsplus/lib/libJava*"/>
 
     <!-- rpm scripts -->
@@ -622,6 +623,7 @@ rm -f /etc/profile.d/mdsplus.csh
     <exclude file="/usr/local/mdsplus/bin/jScope"/>
     <exclude file="/usr/local/mdsplus/bin/jServer"/>
     <exclude file="/usr/local/mdsplus/bin/jTraverser*"/>
+    <exclude file="/usr/local/mdsplus/bin/setupDevice"/>
     <exclude file="/usr/local/mdsplus/bin/mdsccl"/>
     <exclude file="/usr/local/mdsplus/bin/mdscts"/>
     <exclude file="/usr/local/mdsplus/bin/reboot_dtaq_satelite"/>

@@ -33,6 +33,10 @@ public class MdsTreeTest
 		tree.write();
 		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1, "NORMAL");
+		Assert.assertEquals(tree.tdiCompile(null).toString(), "*");
+		Assert.assertEquals(tree.tdiCompile("").toString(), "*");
+		Assert.assertEquals(tree.tdiExecute(null).toString(), "*");
+		Assert.assertEquals(tree.tdiExecute("").toString(), "*");
 		tree.close();
 		tree = new MDSplus.Tree("java_test0", -1, "READONLY");
 		Assert.assertEquals(true, tree.isReadOnly());

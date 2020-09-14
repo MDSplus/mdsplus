@@ -6,4 +6,5 @@
 ./usr/local/mdsplus/bin/jServer
 ./usr/local/mdsplus/bin/jTraverser
 ./usr/local/mdsplus/bin/jTraverser2
+./usr/local/mdsplus/bin/setupDevice
 ./usr/local/mdsplus/lib/libJavaMds.so

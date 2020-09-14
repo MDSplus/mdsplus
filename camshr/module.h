@@ -39,7 +39,7 @@ struct MODULE {
 #define	MODULE_ENTRY	sizeof(struct MODULE)
 
 // internal structure
-struct Module_ {
+typedef struct Module_ {
   char name[32];		// 2002.02.07
   int adapter;
   int id;

@@ -522,30 +522,20 @@ public class Tree
 		return size;
 	}
 
-	public Data tdiCompile(java.lang.String expr, Data args[])
+	public Data tdiCompile(java.lang.String expr, Data... args)
 	{
+		if (expr == null || expr.isEmpty())
+			return new Data();
 		final Data retData = compile(ctx, expr, args);
 		retData.setCtxTree(this);
 		return retData;
 	}
 
-	public Data tdiCompile(java.lang.String expr)
+	public Data tdiExecute(java.lang.String expr, Data... args)
 	{
-		final Data retData = compile(ctx, expr, new Data[0]);
-		retData.setCtxTree(this);
-		return retData;
-	}
-
-	public Data tdiExecute(java.lang.String expr, Data args[])
-	{
+		if (expr == null || expr.isEmpty())
+			return new Data();
 		final Data retData = execute(ctx, expr, args);
-		retData.setCtxTree(this);
-		return retData;
-	}
-
-	public Data tdiExecute(java.lang.String expr)
-	{
-		final Data retData = execute(ctx, expr, new Data[0]);
 		retData.setCtxTree(this);
 		return retData;
 	}

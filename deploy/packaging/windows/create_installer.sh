@@ -16,6 +16,7 @@ fi
 
 pushd ${MDSPLUS_DIR}
 makensis -V4 -DMAJOR=${major} -DMINOR=${minor} -DRELEASE=${release} -DFLAVOR=${bname} -NOCD -DBRANCH=${BRANCH} \
+     -DINCLUDE=${srcdir}/deploy/packaging/${PLATFORM} \
      -DOUTDIR=/release/${BRANCH} -Dsrcdir=${srcdir} ${vs} ${srcdir}/deploy/packaging/${PLATFORM}/mdsplus.nsi
 popd
 if [ -d /sign_keys ]

@@ -1,0 +1,5 @@
+#!/bin/sh
+cd "$MDSPLUS_DIR/java/classes"
+exec env java -Xss5M \
+ -cp "mdsplus-api.jar:jTraverser2.jar:DeviceBeans.jar:jDevices.jar" \
+ mds.devices.Device "$@" >/dev/null 2>&1

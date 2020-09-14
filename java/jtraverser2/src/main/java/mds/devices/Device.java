@@ -1,31 +1,58 @@
 package mds.devices;
 
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.GridLayout;
+import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.*;
 
 import mds.Mds;
 import mds.MdsException;
 import mds.data.TREE;
 import mds.data.TREE.NodeInfo;
 import mds.data.descriptor_r.Conglom;
-import mds.data.descriptor_s.NODE;
+import mds.data.descriptor_s.*;
 import mds.data.descriptor_s.NODE.Flags;
-import mds.jtraverser.editor.Editor;
-import mds.jtraverser.editor.EnumEditor;
-import mds.jtraverser.editor.ExprEditor;
-import mds.data.descriptor_s.Nid;
-import mds.data.descriptor_s.StringDsc;
+import mds.jtraverser.editor.*;
+import mds.mdsip.MdsIp;
 
 public class Device implements Interface
 {
+	public static void main(String... args) throws Exception
+	{
+		showDeviceSetup(args[0], Integer.valueOf(args[1]), args[2]);
+	}
+
+	public static void showDeviceSetup(String experiment, int shot, String path) throws Exception
+	{
+		final MdsIp mds = new MdsIp();
+		try (final TREE tree = new TREE(mds, experiment, shot))
+		{
+			tree.open(TREE.NORMAL);
+			final Nid nid = tree.getNode(path);
+			final JDialog dialog = showDialog(null, nid, !tree.is_readonly());
+			if (dialog != null)
+			{
+				dialog.addWindowListener(new WindowAdapter()
+				{
+					@Override
+					public void windowClosed(WindowEvent e)
+					{
+						synchronized (dialog)
+						{
+							dialog.notifyAll();
+						}
+					}
+				});
+				synchronized (dialog)
+				{
+					while (dialog.isShowing())
+						dialog.wait(1000);
+				}
+			}
+		}
+	}
+
 	public static Device getEditor(final Frame frame, final Nid nid, final boolean editable) throws Exception
 	{
 		return Device.getEditor(frame, nid, editable, getModel(nid));
@@ -58,7 +85,7 @@ public class Device implements Interface
 		return model.toString();
 	}
 
-	public static void showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception
+	public static JDialog showDialog(final Frame frame, final Nid nid, final boolean editable) throws Exception
 	{
 		final String model = Device.getModel(nid);
 		try
@@ -68,12 +95,14 @@ public class Device implements Interface
 			final Setup setup = (Setup) devicesetup.getMethod("getSetup", int.class, boolean.class) //
 					.invoke(null, nidnum, !editable);
 			if (setup == null)
-				devicesetup.getMethod("newSetup", int.class, String.class, Interface.class, Object.class, boolean.class) //
+				return (JDialog) devicesetup
+						.getMethod("newSetup", int.class, String.class, Interface.class, Object.class, boolean.class) //
 						.invoke(null, nidnum, model, new Device(nid), frame, !editable);
+			return null;
 		}
 		catch (final Exception e)
 		{
-			Device.getEditor(frame, nid, editable, model).showDialog();
+			return Device.getEditor(frame, nid, editable, model).showDialog();
 		}
 	}
 
