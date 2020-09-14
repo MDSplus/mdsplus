@@ -9,12 +9,17 @@ import mds.data.descriptor_a.Int32Array;
 import mds.data.descriptor_a.Int64Array;
 import mds.data.descriptor_apd.List;
 import mds.data.descriptor_r.Signal;
-import mds.data.descriptor_s.Int32;
-import mds.data.descriptor_s.NUMBER;
-import mds.data.descriptor_s.Pointer;
+import mds.data.descriptor_s.*;
 
 public class TreeShr extends MdsShr
 {
+	/** to set maximum number of trees in context */
+	public static final int DBI_MAX_OPEN = 7;
+	/** to 1: enable, 0: disable versioning in model files */
+	public static final int DBI_VERSIONS_IN_MODEL = 10;
+	/** to 1: enable, 0: disable versioning in pulse files */
+	public static final int DBI_VERSIONS_IN_PULSE = 11;
+
 	public static class DescriptorStatus
 	{
 		private final Descriptor<?> data;
@@ -379,9 +384,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeCompressDatafile(final Null NULL, final String expt, final int shot) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeCompressDatafile")//
-						.ref(Descriptor.valueOf(expt)).val(shot).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeCompressDatafile")//
+				.ref(Descriptor.valueOf(expt)).val(shot).fin();
 		return this.mds.getDescriptor(null, request).getValue();
 	}
 
@@ -393,9 +397,8 @@ public class TreeShr extends MdsShr
 	public final int treeCreateTreeFiles(final Null NULL, final String expt, final int newshot, final int fromshot)
 			throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeCreateTreeFiles")//
-						.ref(Descriptor.valueOf(expt)).val(newshot).val(fromshot).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeCreateTreeFiles")//
+				.ref(Descriptor.valueOf(expt)).val(newshot).val(fromshot).fin();
 		return this.mds.getDescriptor(null, request).getValue();
 	}
 
@@ -430,9 +433,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeDeleteNodeExecute(final Pointer ctx) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeDeleteNodeExecute")//
-						.fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeDeleteNodeExecute")//
+				.fin();
 		this.mds.getDescriptor(ctx, request).getValue();
 		return MdsException.TreeSUCCESS;// treeDeleteNodeExecute returns void
 	}
@@ -486,9 +488,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeEndConglomerate(final Pointer ctx) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeEndConglomerate")//
-						.fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeEndConglomerate")//
+				.fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -549,8 +550,8 @@ public class TreeShr extends MdsShr
 	{
 		if (dbid == null || dbid.getAddress() == 0)
 			return 0;
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeFreeDbid")
-				.val(dbid).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeFreeDbid").val(dbid)
+				.fin();
 		final int errno = this.mds.getDescriptor(null, request).getValue();
 		dbid.setAddress(0);
 		return errno;
@@ -563,9 +564,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeGetCurrentShotId(final Null NULL, final String expt) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeGetCurrentShotId")//
-						.ref(Descriptor.valueOf(expt)).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeGetCurrentShotId")//
+				.ref(Descriptor.valueOf(expt)).fin();
 		return this.mds.getDescriptor(null, request).getValue();
 	}
 
@@ -576,9 +576,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeGetDatafileSize(final Pointer ctx) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeGetDatafileSize")//
-						.fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeGetDatafileSize")//
+				.fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -906,9 +905,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeRemoveNodesTags(final CTX ctx, final int nid) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeRemoveNodesTags")//
-						.val(nid).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeRemoveNodesTags")//
+				.val(nid).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -931,9 +929,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeRestoreContext(final CTX ctx, final Pointer treectx) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeRestoreContext")//
-						.val(treectx).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeRestoreContext")//
+				.val(treectx).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -956,9 +953,26 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeSetCurrentShotId(final CTX ctx, final String expt, final int shot) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeSetCurrentShotId")//
-						.ref(Descriptor.valueOf(expt)).val(shot).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetCurrentShotId")//
+				.ref(Descriptor.valueOf(expt)).val(shot).fin();
+		return this.mds.getDescriptor(ctx, request).getValue();
+	}
+
+	/**
+	 * sets the DbiItem of ctx to value
+	 *
+	 * @param ctx
+	 * @param item  one of {@link TreeShr#DBI_MAX_OPEN},
+	 *              {@link TreeShr#DBI_VERSIONS_IN_MODEL}, or
+	 *              {@link TreeShr#DBI_VERSIONS_IN_PULSE}
+	 * @param value
+	 * @return
+	 * @throws MdsException
+	 */
+	public final int treeSetDbiItm(final CTX ctx, final int item, final int value) throws MdsException
+	{
+		final Request<Int32> request = new TreeCall<>(Int32.class, "TreeSetDbiItm")//
+				.val(item).val(value).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -1008,9 +1022,8 @@ public class TreeShr extends MdsShr
 
 	public final int treeSetSegmentScale(final CTX ctx, final int nid, final Descriptor<?> scale) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeSetSegmentScale")//
-						.val(nid).xd(scale).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetSegmentScale")//
+				.val(nid).xd(scale).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -1046,9 +1059,8 @@ public class TreeShr extends MdsShr
 	public final int treeSetTimeContext(final CTX ctx, final NUMBER<?> start, final NUMBER<?> end,
 			final NUMBER<?> delta) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeSetTimeContext")//
-						.descr(start).descr(end).descr(delta).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeSetTimeContext")//
+				.descr(start).descr(end).descr(delta).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -1082,9 +1094,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final int treeStartConglomerate(final CTX ctx, final int size) throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeStartConglomerate")//
-						.val(size).fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeStartConglomerate")//
+				.val(size).fin();
 		return this.mds.getDescriptor(ctx, request).getValue();
 	}
 
@@ -1154,9 +1165,8 @@ public class TreeShr extends MdsShr
 	 **/
 	public final boolean treeUsingPrivateCtx() throws MdsException
 	{
-		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class,
-				"TreeUsingPrivateCtx")//
-						.fin();
+		final Request<Int32> request = new TreeCall<>(Request.PROP_ATOMIC_RESULT, Int32.class, "TreeUsingPrivateCtx")//
+				.fin();
 		return this.mds.getDescriptor(null, request).getValue() == 1;
 	}
 

@@ -2,23 +2,12 @@ package mds;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 import java.util.Vector;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.WindowConstants;
-import javax.swing.text.DefaultEditorKit;
-import javax.swing.text.JTextComponent;
-import javax.swing.text.TextAction;
+
+import javax.swing.*;
+import javax.swing.text.*;
+
 import mds.data.CTX;
 import mds.mdsip.MdsIp;
 
@@ -184,10 +173,10 @@ public final class TCL
 		{
 			if (!this.setcommandtcl)
 			{
-				this.mds.tcl(null, "set command tcl");
+				this.mds.dcl(null, "set command tcl");
 				this.setcommandtcl = true;
 			}
-			return this.mds.tcl(null, command);
+			return this.mds.dcl(null, command);
 		}
 		catch (final MdsException e)
 		{
