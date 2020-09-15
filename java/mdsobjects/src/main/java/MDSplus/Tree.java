@@ -531,11 +531,28 @@ public class Tree
 		return retData;
 	}
 
+	public Data tdiCompile(java.lang.String expr)
+	{
+		if (expr == null || expr.isEmpty())
+			return new Data();
+		final Data retData = compile(ctx, expr, new Data[0]);
+		retData.setCtxTree(this);
+		return retData;
+	}
+
 	public Data tdiExecute(java.lang.String expr, Data... args)
 	{
 		if (expr == null || expr.isEmpty())
 			return new Data();
 		final Data retData = execute(ctx, expr, args);
+		retData.setCtxTree(this);
+		return retData;
+	}
+	public Data tdiExecute(java.lang.String expr)
+	{
+		if (expr == null || expr.isEmpty())
+			return new Data();
+		final Data retData = execute(ctx, expr, new Data[0]);
 		retData.setCtxTree(this);
 		return retData;
 	}
