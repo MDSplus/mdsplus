@@ -117,6 +117,10 @@ class _ACQ2106_435ST(MDSplus.Device):
             self.device_thread = self.DeviceWorker(self)
 
         def run(self):
+            import acq400_hapi
+            import ast
+            uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
+
             def lcm(a,b):
                 from fractions import gcd
                 return (a * b / gcd(int(a), int(b)))
@@ -132,7 +136,21 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             event_name = self.dev.seg_event.data()
 
-            dt = 1./self.dev.freq.data()
+            # Retrive the actual value of NACC (samples) already set in the ACQ box
+            nacc_str   = uut.s1.get_knob('nacc')
+            if nacc_str == '0,0,0':
+                nacc_sample = 1
+            else:
+                nacc_tuple  = ast.literal_eval(nacc_str)
+                nacc_sample = nacc_tuple[0]
+                
+            if self.dev.debug:
+                print("The ACQ NACC sample value was set to {}".format(nacc_sample))
+
+            # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function, therefore:
+            dt = 1./self.dev.freq.data() * nacc_sample
+
+            #dt = 1./self.dev.freq.data()
 
             decimator = lcma(self.decim)
 
@@ -150,7 +168,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 except Empty:
                     continue
 
-                buffer = np.frombuffer(buf, dtype='int16')
+                #buffer = np.frombuffer(buf, dtype='int16')
+                buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
                     slength = self.seg_length/self.decim[i]
@@ -167,7 +186,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+            #self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
+            self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
             self.device_thread.stop()
 
         class DeviceWorker(threading.Thread):
