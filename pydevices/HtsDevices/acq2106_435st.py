@@ -136,13 +136,16 @@ class _ACQ2106_435ST(MDSplus.Device):
 
             event_name = self.dev.seg_event.data()
 
-            # Retrive the actual value of NACC (samples) already set in the ACQ box
-            nacc_str   = uut.s1.get_knob('nacc')
-            if nacc_str == '0,0,0':
-                nacc_sample = 1
-            else:
-                nacc_tuple  = ast.literal_eval(nacc_str)
-                nacc_sample = nacc_tuple[0]
+            for card in range(self.dev.sites):
+                # Retrive the actual value of NACC (samples) already set in the ACQ box
+                # nacc_str = uut.s1.get_knob('nacc')
+                nacc_str = self.dev.slots[card].nacc
+
+                if nacc_str == '0,0,0':
+                    nacc_sample = 1
+                else:
+                    nacc_tuple  = ast.literal_eval(nacc_str)
+                    nacc_sample = nacc_tuple[0]
                 
             if self.dev.debug:
                 print("The ACQ NACC sample value was set to {}".format(nacc_sample))
@@ -265,6 +268,16 @@ class _ACQ2106_435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
+        try:
+            self.slots = [uut.s1]
+            self.slots.append(uut.s2)
+            self.slots.append(uut.s3)
+            self.slots.append(uut.s4)
+            self.slots.append(uut.s5)
+            self.slots.append(uut.s6)
+        except:
+            pass
+
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
 
@@ -286,27 +299,19 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         if self.debug:
             print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
-
+        
         # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
         nacc_samp = int(self.hw_filter.data())
-        if 1 <= nacc_samp <= 32:
-            uut.s1.nacc = ('%d'%nacc_samp).strip()
-        else:
-            print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
-            uut.s1.nacc = '1'
-
-        try:
-            slots = [uut.s1]
-            slots.append(uut.s2)
-            slots.append(uut.s3)
-            slots.append(uut.s4)
-            slots.append(uut.s5)
-            slots.append(uut.s6)
-        except:
-            pass
+        print("Number of sites in use {}".format(self.sites))
 
         for card in range(self.sites):
-            coeffs  =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
+            if 1 <= nacc_samp <= 32:
+                self.slots[card].nacc = ('%d'%nacc_samp).strip()
+            else:
+                print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
+                self.slots[card].nacc = '1'
+
+            coeffs  =  map(float, self.slots[card].AI_CAL_ESLO.split(" ")[3:] )
             offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
             for i in range(32):
                 coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
