@@ -35,9 +35,9 @@ else:
     from queue import Queue, Empty
 
 
-class _ACQ2106_423ST(MDSplus.Device):
+class _ACQ2106_435ST(MDSplus.Device):
     """
-    D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
+    D-Tacq ACQ2106 with ACQ435 Digitizers (up to 6)  real time streaming support.
 
     32 Channels * number of slots
     Minimum 2Khz Operation
@@ -92,7 +92,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         NUM_BUFFERS = 20
 
         def __init__(self,dev):
-            super(_ACQ2106_423ST.MDSWorker,self).__init__(name=dev.path)
+            super(_ACQ2106_435ST.MDSWorker,self).__init__(name=dev.path)
             threading.Thread.__init__(self)
 
             self.dev = dev.copy()
@@ -319,7 +319,7 @@ class _ACQ2106_423ST(MDSplus.Device):
 
 
 def assemble(cls):
-    cls.parts = list(_ACQ2106_423ST.carrier_parts)
+    cls.parts = list(_ACQ2106_435ST.carrier_parts)
     for i in range(cls.sites*32):
         cls.parts += [
             {'path':':INPUT_%3.3d'%(i+1,),            'type':'SIGNAL', 'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)},
@@ -328,17 +328,17 @@ def assemble(cls):
             {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC',                                            'options':('no_write_model', 'write_once',)},
         ]
 
-class ACQ2106_423_1ST(_ACQ2106_423ST): sites=1
-assemble(ACQ2106_423_1ST)
-class ACQ2106_423_2ST(_ACQ2106_423ST): sites=2
-assemble(ACQ2106_423_2ST)
-class ACQ2106_423_3ST(_ACQ2106_423ST): sites=3
-assemble(ACQ2106_423_3ST)
-class ACQ2106_423_4ST(_ACQ2106_423ST): sites=4
-assemble(ACQ2106_423_4ST)
-class ACQ2106_423_5ST(_ACQ2106_423ST): sites=5
-assemble(ACQ2106_423_5ST)
-class ACQ2106_423_6ST(_ACQ2106_423ST): sites=6
-assemble(ACQ2106_423_6ST)
+class ACQ2106_435_1ST(_ACQ2106_435ST): sites=1
+assemble(ACQ2106_435_1ST)
+class ACQ2106_435_2ST(_ACQ2106_435ST): sites=2
+assemble(ACQ2106_435_2ST)
+class ACQ2106_435_3ST(_ACQ2106_435ST): sites=3
+assemble(ACQ2106_435_3ST)
+class ACQ2106_435_4ST(_ACQ2106_435ST): sites=4
+assemble(ACQ2106_435_4ST)
+class ACQ2106_435_5ST(_ACQ2106_435ST): sites=5
+assemble(ACQ2106_435_5ST)
+class ACQ2106_435_6ST(_ACQ2106_435ST): sites=6
+assemble(ACQ2106_435_6ST)
 
 del(assemble)
