@@ -150,8 +150,6 @@ class _ACQ2106_435ST(MDSplus.Device):
             # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function, therefore:
             dt = 1./self.dev.freq.data() * nacc_sample
 
-            #dt = 1./self.dev.freq.data()
-
             decimator = lcma(self.decim)
 
             if self.seg_length % decimator:
@@ -168,7 +166,6 @@ class _ACQ2106_435ST(MDSplus.Device):
                 except Empty:
                     continue
 
-                #buffer = np.frombuffer(buf, dtype='int16')
                 buffer = np.right_shift(np.frombuffer(buf, dtype='int32') , 8)
                 i = 0
                 for c in self.chans:
@@ -186,7 +183,6 @@ class _ACQ2106_435ST(MDSplus.Device):
 
                 self.empty_buffers.put(buf)
 
-            #self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int16(0).nbytes) * dt)
             self.dev.trig_time.record = self.device_thread.trig_time - ((self.device_thread.io_buffer_size / np.int32(0).nbytes) * dt)
             self.device_thread.stop()
 
