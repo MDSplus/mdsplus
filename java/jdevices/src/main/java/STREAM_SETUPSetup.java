@@ -29,539 +29,2403 @@ public class STREAM_SETUPSetup extends DeviceSetup
 	 */
 	@SuppressWarnings("unchecked")
 	// <editor-fold defaultstate="collapsed" desc="Generated
-	// Code">//GEN-BEGIN:initComponents
-	private void initComponents()
-	{
-		deviceButtons1 = new DeviceButtons();
-		jScrollPane1 = new javax.swing.JScrollPane();
-		jPanel1 = new javax.swing.JPanel();
-		jPanel2 = new javax.swing.JPanel();
-		deviceField1 = new DeviceField();
-		deviceField2 = new DeviceField();
-		deviceField33 = new DeviceField();
-		deviceField34 = new DeviceField();
-		jPanel3 = new javax.swing.JPanel();
-		deviceField3 = new DeviceField();
-		deviceField4 = new DeviceField();
-		deviceField35 = new DeviceField();
-		deviceField36 = new DeviceField();
-		jPanel4 = new javax.swing.JPanel();
-		deviceField5 = new DeviceField();
-		deviceField6 = new DeviceField();
-		deviceField37 = new DeviceField();
-		deviceField38 = new DeviceField();
-		jPanel5 = new javax.swing.JPanel();
-		deviceField7 = new DeviceField();
-		deviceField8 = new DeviceField();
-		deviceField39 = new DeviceField();
-		deviceField40 = new DeviceField();
-		jPanel6 = new javax.swing.JPanel();
-		deviceField9 = new DeviceField();
-		deviceField10 = new DeviceField();
-		deviceField41 = new DeviceField();
-		deviceField42 = new DeviceField();
-		jPanel7 = new javax.swing.JPanel();
-		deviceField11 = new DeviceField();
-		deviceField12 = new DeviceField();
-		deviceField43 = new DeviceField();
-		deviceField44 = new DeviceField();
-		jPanel8 = new javax.swing.JPanel();
-		deviceField13 = new DeviceField();
-		deviceField14 = new DeviceField();
-		deviceField45 = new DeviceField();
-		deviceField46 = new DeviceField();
-		jPanel9 = new javax.swing.JPanel();
-		deviceField15 = new DeviceField();
-		deviceField16 = new DeviceField();
-		deviceField47 = new DeviceField();
-		deviceField48 = new DeviceField();
-		jPanel10 = new javax.swing.JPanel();
-		deviceField17 = new DeviceField();
-		deviceField18 = new DeviceField();
-		deviceField49 = new DeviceField();
-		deviceField50 = new DeviceField();
-		jPanel11 = new javax.swing.JPanel();
-		deviceField19 = new DeviceField();
-		deviceField20 = new DeviceField();
-		deviceField51 = new DeviceField();
-		deviceField52 = new DeviceField();
-		jPanel12 = new javax.swing.JPanel();
-		deviceField21 = new DeviceField();
-		deviceField22 = new DeviceField();
-		deviceField53 = new DeviceField();
-		deviceField54 = new DeviceField();
-		jPanel13 = new javax.swing.JPanel();
-		deviceField23 = new DeviceField();
-		deviceField24 = new DeviceField();
-		deviceField55 = new DeviceField();
-		deviceField56 = new DeviceField();
-		jPanel14 = new javax.swing.JPanel();
-		deviceField25 = new DeviceField();
-		deviceField26 = new DeviceField();
-		deviceField57 = new DeviceField();
-		deviceField58 = new DeviceField();
-		jPanel15 = new javax.swing.JPanel();
-		deviceField27 = new DeviceField();
-		deviceField28 = new DeviceField();
-		deviceField59 = new DeviceField();
-		deviceField60 = new DeviceField();
-		jPanel16 = new javax.swing.JPanel();
-		deviceField29 = new DeviceField();
-		deviceField30 = new DeviceField();
-		deviceField61 = new DeviceField();
-		deviceField62 = new DeviceField();
-		jPanel17 = new javax.swing.JPanel();
-		deviceField31 = new DeviceField();
-		deviceField32 = new DeviceField();
-		deviceField63 = new DeviceField();
-		deviceField64 = new DeviceField();
-		setDeviceProvider("scpsl.nbtf:8123");
-		setDeviceTitle("Stream Setup");
-		setDeviceType("STREAM_SETUP");
-		setHeight(300);
-		setWidth(1000);
-		getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
-		jPanel1.setLayout(new java.awt.GridLayout(16, 1));
-		deviceField1.setIdentifier("");
-		deviceField1.setLabelString("Node:");
-		deviceField1.setNumCols(30);
-		deviceField1.setOffsetNid(2);
-		jPanel2.add(deviceField1);
-		deviceField2.setIdentifier("");
-		deviceField2.setLabelString("Stream name:");
-		deviceField2.setNumCols(20);
-		deviceField2.setOffsetNid(3);
-		deviceField2.setTextOnly(true);
-		jPanel2.add(deviceField2);
-		deviceField33.setIdentifier("");
-		deviceField33.setLabelString("Gain:");
-		deviceField33.setNumCols(20);
-		deviceField33.setOffsetNid(34);
-		jPanel2.add(deviceField33);
-		deviceField34.setIdentifier("");
-		deviceField34.setLabelString("Offset: ");
-		deviceField34.setNumCols(20);
-		deviceField34.setOffsetNid(50);
-		jPanel2.add(deviceField34);
-		jPanel1.add(jPanel2);
-		deviceField3.setIdentifier("");
-		deviceField3.setLabelString("Node:");
-		deviceField3.setNumCols(30);
-		deviceField3.setOffsetNid(4);
-		jPanel3.add(deviceField3);
-		deviceField4.setIdentifier("");
-		deviceField4.setLabelString("Stream name:");
-		deviceField4.setNumCols(20);
-		deviceField4.setOffsetNid(5);
-		deviceField4.setTextOnly(true);
-		jPanel3.add(deviceField4);
-		deviceField35.setIdentifier("");
-		deviceField35.setLabelString("Gain:");
-		deviceField35.setNumCols(20);
-		deviceField35.setOffsetNid(35);
-		jPanel3.add(deviceField35);
-		deviceField36.setIdentifier("");
-		deviceField36.setLabelString("Offset: ");
-		deviceField36.setNumCols(20);
-		deviceField36.setOffsetNid(51);
-		jPanel3.add(deviceField36);
-		jPanel1.add(jPanel3);
-		deviceField5.setIdentifier("");
-		deviceField5.setLabelString("Node:");
-		deviceField5.setNumCols(30);
-		deviceField5.setOffsetNid(6);
-		jPanel4.add(deviceField5);
-		deviceField6.setIdentifier("");
-		deviceField6.setLabelString("Stream name:");
-		deviceField6.setNumCols(20);
-		deviceField6.setOffsetNid(7);
-		deviceField6.setTextOnly(true);
-		jPanel4.add(deviceField6);
-		deviceField37.setIdentifier("");
-		deviceField37.setLabelString("Gain:");
-		deviceField37.setNumCols(20);
-		deviceField37.setOffsetNid(36);
-		jPanel4.add(deviceField37);
-		deviceField38.setIdentifier("");
-		deviceField38.setLabelString("Offset: ");
-		deviceField38.setNumCols(20);
-		deviceField38.setOffsetNid(52);
-		jPanel4.add(deviceField38);
-		jPanel1.add(jPanel4);
-		deviceField7.setIdentifier("");
-		deviceField7.setLabelString("Node:");
-		deviceField7.setNumCols(30);
-		deviceField7.setOffsetNid(8);
-		jPanel5.add(deviceField7);
-		deviceField8.setIdentifier("");
-		deviceField8.setLabelString("Stream name:");
-		deviceField8.setNumCols(20);
-		deviceField8.setOffsetNid(9);
-		deviceField8.setTextOnly(true);
-		jPanel5.add(deviceField8);
-		deviceField39.setIdentifier("");
-		deviceField39.setLabelString("Gain:");
-		deviceField39.setNumCols(20);
-		deviceField39.setOffsetNid(37);
-		jPanel5.add(deviceField39);
-		deviceField40.setIdentifier("");
-		deviceField40.setLabelString("Offset: ");
-		deviceField40.setNumCols(20);
-		deviceField40.setOffsetNid(53);
-		jPanel5.add(deviceField40);
-		jPanel1.add(jPanel5);
-		deviceField9.setIdentifier("");
-		deviceField9.setLabelString("Node:");
-		deviceField9.setNumCols(30);
-		deviceField9.setOffsetNid(10);
-		jPanel6.add(deviceField9);
-		deviceField10.setIdentifier("");
-		deviceField10.setLabelString("Stream name:");
-		deviceField10.setNumCols(20);
-		deviceField10.setOffsetNid(11);
-		deviceField10.setTextOnly(true);
-		jPanel6.add(deviceField10);
-		deviceField41.setIdentifier("");
-		deviceField41.setLabelString("Gain:");
-		deviceField41.setNumCols(20);
-		deviceField41.setOffsetNid(38);
-		jPanel6.add(deviceField41);
-		deviceField42.setIdentifier("");
-		deviceField42.setLabelString("Offset: ");
-		deviceField42.setNumCols(20);
-		deviceField42.setOffsetNid(54);
-		jPanel6.add(deviceField42);
-		jPanel1.add(jPanel6);
-		deviceField11.setIdentifier("");
-		deviceField11.setLabelString("Node:");
-		deviceField11.setNumCols(30);
-		deviceField11.setOffsetNid(12);
-		jPanel7.add(deviceField11);
-		deviceField12.setIdentifier("");
-		deviceField12.setLabelString("Stream name:");
-		deviceField12.setNumCols(20);
-		deviceField12.setOffsetNid(13);
-		deviceField12.setTextOnly(true);
-		jPanel7.add(deviceField12);
-		deviceField43.setIdentifier("");
-		deviceField43.setLabelString("Gain:");
-		deviceField43.setNumCols(20);
-		deviceField43.setOffsetNid(39);
-		jPanel7.add(deviceField43);
-		deviceField44.setIdentifier("");
-		deviceField44.setLabelString("Offset: ");
-		deviceField44.setNumCols(20);
-		deviceField44.setOffsetNid(55);
-		jPanel7.add(deviceField44);
-		jPanel1.add(jPanel7);
-		deviceField13.setIdentifier("");
-		deviceField13.setLabelString("Node:");
-		deviceField13.setNumCols(30);
-		deviceField13.setOffsetNid(14);
-		jPanel8.add(deviceField13);
-		deviceField14.setIdentifier("");
-		deviceField14.setLabelString("Stream name:");
-		deviceField14.setNumCols(20);
-		deviceField14.setOffsetNid(15);
-		deviceField14.setTextOnly(true);
-		jPanel8.add(deviceField14);
-		deviceField45.setIdentifier("");
-		deviceField45.setLabelString("Gain:");
-		deviceField45.setNumCols(20);
-		deviceField45.setOffsetNid(40);
-		jPanel8.add(deviceField45);
-		deviceField46.setIdentifier("");
-		deviceField46.setLabelString("Offset: ");
-		deviceField46.setNumCols(20);
-		deviceField46.setOffsetNid(56);
-		jPanel8.add(deviceField46);
-		jPanel1.add(jPanel8);
-		deviceField15.setIdentifier("");
-		deviceField15.setLabelString("Node:");
-		deviceField15.setNumCols(30);
-		deviceField15.setOffsetNid(16);
-		jPanel9.add(deviceField15);
-		deviceField16.setIdentifier("");
-		deviceField16.setLabelString("Stream name:");
-		deviceField16.setNumCols(20);
-		deviceField16.setOffsetNid(17);
-		deviceField16.setTextOnly(true);
-		jPanel9.add(deviceField16);
-		deviceField47.setIdentifier("");
-		deviceField47.setLabelString("Gain:");
-		deviceField47.setNumCols(20);
-		deviceField47.setOffsetNid(41);
-		jPanel9.add(deviceField47);
-		deviceField48.setIdentifier("");
-		deviceField48.setLabelString("Offset: ");
-		deviceField48.setNumCols(20);
-		deviceField48.setOffsetNid(57);
-		jPanel9.add(deviceField48);
-		jPanel1.add(jPanel9);
-		deviceField17.setIdentifier("");
-		deviceField17.setLabelString("Node:");
-		deviceField17.setNumCols(30);
-		deviceField17.setOffsetNid(18);
-		jPanel10.add(deviceField17);
-		deviceField18.setIdentifier("");
-		deviceField18.setLabelString("Stream name:");
-		deviceField18.setNumCols(20);
-		deviceField18.setOffsetNid(19);
-		deviceField18.setTextOnly(true);
-		jPanel10.add(deviceField18);
-		deviceField49.setIdentifier("");
-		deviceField49.setLabelString("Gain:");
-		deviceField49.setNumCols(20);
-		deviceField49.setOffsetNid(42);
-		jPanel10.add(deviceField49);
-		deviceField50.setIdentifier("");
-		deviceField50.setLabelString("Offset: ");
-		deviceField50.setNumCols(20);
-		deviceField50.setOffsetNid(58);
-		jPanel10.add(deviceField50);
-		jPanel1.add(jPanel10);
-		deviceField19.setIdentifier("");
-		deviceField19.setLabelString("Node:");
-		deviceField19.setNumCols(30);
-		deviceField19.setOffsetNid(20);
-		jPanel11.add(deviceField19);
-		deviceField20.setIdentifier("");
-		deviceField20.setLabelString("Stream name:");
-		deviceField20.setNumCols(20);
-		deviceField20.setOffsetNid(21);
-		deviceField20.setTextOnly(true);
-		jPanel11.add(deviceField20);
-		deviceField51.setIdentifier("");
-		deviceField51.setLabelString("Gain:");
-		deviceField51.setNumCols(20);
-		deviceField51.setOffsetNid(43);
-		jPanel11.add(deviceField51);
-		deviceField52.setIdentifier("");
-		deviceField52.setLabelString("Offset: ");
-		deviceField52.setNumCols(20);
-		deviceField52.setOffsetNid(59);
-		jPanel11.add(deviceField52);
-		jPanel1.add(jPanel11);
-		deviceField21.setIdentifier("");
-		deviceField21.setLabelString("Node:");
-		deviceField21.setNumCols(30);
-		deviceField21.setOffsetNid(22);
-		jPanel12.add(deviceField21);
-		deviceField22.setIdentifier("");
-		deviceField22.setLabelString("Stream name:");
-		deviceField22.setNumCols(20);
-		deviceField22.setOffsetNid(23);
-		deviceField22.setTextOnly(true);
-		jPanel12.add(deviceField22);
-		deviceField53.setIdentifier("");
-		deviceField53.setLabelString("Gain:");
-		deviceField53.setNumCols(20);
-		deviceField53.setOffsetNid(44);
-		jPanel12.add(deviceField53);
-		deviceField54.setIdentifier("");
-		deviceField54.setLabelString("Offset: ");
-		deviceField54.setNumCols(20);
-		deviceField54.setOffsetNid(60);
-		jPanel12.add(deviceField54);
-		jPanel1.add(jPanel12);
-		deviceField23.setIdentifier("");
-		deviceField23.setLabelString("Node:");
-		deviceField23.setNumCols(30);
-		deviceField23.setOffsetNid(24);
-		jPanel13.add(deviceField23);
-		deviceField24.setIdentifier("");
-		deviceField24.setLabelString("Stream name:");
-		deviceField24.setNumCols(20);
-		deviceField24.setOffsetNid(25);
-		deviceField24.setTextOnly(true);
-		jPanel13.add(deviceField24);
-		deviceField55.setIdentifier("");
-		deviceField55.setLabelString("Gain:");
-		deviceField55.setNumCols(20);
-		deviceField55.setOffsetNid(45);
-		jPanel13.add(deviceField55);
-		deviceField56.setIdentifier("");
-		deviceField56.setLabelString("Offset: ");
-		deviceField56.setNumCols(20);
-		deviceField56.setOffsetNid(61);
-		jPanel13.add(deviceField56);
-		jPanel1.add(jPanel13);
-		deviceField25.setIdentifier("");
-		deviceField25.setLabelString("Node:");
-		deviceField25.setNumCols(30);
-		deviceField25.setOffsetNid(26);
-		jPanel14.add(deviceField25);
-		deviceField26.setIdentifier("");
-		deviceField26.setLabelString("Stream name:");
-		deviceField26.setNumCols(20);
-		deviceField26.setOffsetNid(27);
-		deviceField26.setTextOnly(true);
-		jPanel14.add(deviceField26);
-		deviceField57.setIdentifier("");
-		deviceField57.setLabelString("Gain:");
-		deviceField57.setNumCols(20);
-		deviceField57.setOffsetNid(46);
-		jPanel14.add(deviceField57);
-		deviceField58.setIdentifier("");
-		deviceField58.setLabelString("Offset: ");
-		deviceField58.setNumCols(20);
-		deviceField58.setOffsetNid(62);
-		jPanel14.add(deviceField58);
-		jPanel1.add(jPanel14);
-		deviceField27.setIdentifier("");
-		deviceField27.setLabelString("Node:");
-		deviceField27.setNumCols(30);
-		deviceField27.setOffsetNid(28);
-		jPanel15.add(deviceField27);
-		deviceField28.setIdentifier("");
-		deviceField28.setLabelString("Stream name:");
-		deviceField28.setNumCols(20);
-		deviceField28.setOffsetNid(29);
-		deviceField28.setTextOnly(true);
-		jPanel15.add(deviceField28);
-		deviceField59.setIdentifier("");
-		deviceField59.setLabelString("Gain:");
-		deviceField59.setNumCols(20);
-		deviceField59.setOffsetNid(47);
-		jPanel15.add(deviceField59);
-		deviceField60.setIdentifier("");
-		deviceField60.setLabelString("Offset: ");
-		deviceField60.setNumCols(20);
-		deviceField60.setOffsetNid(63);
-		jPanel15.add(deviceField60);
-		jPanel1.add(jPanel15);
-		deviceField29.setIdentifier("");
-		deviceField29.setLabelString("Node:");
-		deviceField29.setNumCols(30);
-		deviceField29.setOffsetNid(30);
-		jPanel16.add(deviceField29);
-		deviceField30.setIdentifier("");
-		deviceField30.setLabelString("Stream name:");
-		deviceField30.setNumCols(20);
-		deviceField30.setOffsetNid(31);
-		deviceField30.setTextOnly(true);
-		jPanel16.add(deviceField30);
-		deviceField61.setIdentifier("");
-		deviceField61.setLabelString("Gain:");
-		deviceField61.setNumCols(20);
-		deviceField61.setOffsetNid(48);
-		jPanel16.add(deviceField61);
-		deviceField62.setIdentifier("");
-		deviceField62.setLabelString("Offset: ");
-		deviceField62.setNumCols(20);
-		deviceField62.setOffsetNid(64);
-		jPanel16.add(deviceField62);
-		jPanel1.add(jPanel16);
-		deviceField31.setIdentifier("");
-		deviceField31.setLabelString("Node:");
-		deviceField31.setNumCols(30);
-		deviceField31.setOffsetNid(32);
-		jPanel17.add(deviceField31);
-		deviceField32.setIdentifier("");
-		deviceField32.setLabelString("Stream name:");
-		deviceField32.setNumCols(20);
-		deviceField32.setOffsetNid(33);
-		deviceField32.setTextOnly(true);
-		jPanel17.add(deviceField32);
-		deviceField63.setIdentifier("");
-		deviceField63.setLabelString("Gain:");
-		deviceField63.setNumCols(20);
-		deviceField63.setOffsetNid(49);
-		jPanel17.add(deviceField63);
-		deviceField64.setIdentifier("");
-		deviceField64.setLabelString("Offset: ");
-		deviceField64.setNumCols(20);
-		deviceField64.setOffsetNid(65);
-		jPanel17.add(deviceField64);
-		jPanel1.add(jPanel17);
-		jScrollPane1.setViewportView(jPanel1);
-		getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
-		getAccessibleContext().setAccessibleName("");
-	}// </editor-fold>//GEN-END:initComponents
+    // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
+    private void initComponents() {
 
-	// Variables declaration - do not modify//GEN-BEGIN:variables
-	private DeviceButtons deviceButtons1;
-	private DeviceField deviceField1;
-	private DeviceField deviceField10;
-	private DeviceField deviceField11;
-	private DeviceField deviceField12;
-	private DeviceField deviceField13;
-	private DeviceField deviceField14;
-	private DeviceField deviceField15;
-	private DeviceField deviceField16;
-	private DeviceField deviceField17;
-	private DeviceField deviceField18;
-	private DeviceField deviceField19;
-	private DeviceField deviceField2;
-	private DeviceField deviceField20;
-	private DeviceField deviceField21;
-	private DeviceField deviceField22;
-	private DeviceField deviceField23;
-	private DeviceField deviceField24;
-	private DeviceField deviceField25;
-	private DeviceField deviceField26;
-	private DeviceField deviceField27;
-	private DeviceField deviceField28;
-	private DeviceField deviceField29;
-	private DeviceField deviceField3;
-	private DeviceField deviceField30;
-	private DeviceField deviceField31;
-	private DeviceField deviceField32;
-	private DeviceField deviceField33;
-	private DeviceField deviceField34;
-	private DeviceField deviceField35;
-	private DeviceField deviceField36;
-	private DeviceField deviceField37;
-	private DeviceField deviceField38;
-	private DeviceField deviceField39;
-	private DeviceField deviceField4;
-	private DeviceField deviceField40;
-	private DeviceField deviceField41;
-	private DeviceField deviceField42;
-	private DeviceField deviceField43;
-	private DeviceField deviceField44;
-	private DeviceField deviceField45;
-	private DeviceField deviceField46;
-	private DeviceField deviceField47;
-	private DeviceField deviceField48;
-	private DeviceField deviceField49;
-	private DeviceField deviceField5;
-	private DeviceField deviceField50;
-	private DeviceField deviceField51;
-	private DeviceField deviceField52;
-	private DeviceField deviceField53;
-	private DeviceField deviceField54;
-	private DeviceField deviceField55;
-	private DeviceField deviceField56;
-	private DeviceField deviceField57;
-	private DeviceField deviceField58;
-	private DeviceField deviceField59;
-	private DeviceField deviceField6;
-	private DeviceField deviceField60;
-	private DeviceField deviceField61;
-	private DeviceField deviceField62;
-	private DeviceField deviceField63;
-	private DeviceField deviceField64;
-	private DeviceField deviceField7;
-	private DeviceField deviceField8;
-	private DeviceField deviceField9;
-	private javax.swing.JPanel jPanel1;
-	private javax.swing.JPanel jPanel10;
-	private javax.swing.JPanel jPanel11;
-	private javax.swing.JPanel jPanel12;
-	private javax.swing.JPanel jPanel13;
-	private javax.swing.JPanel jPanel14;
-	private javax.swing.JPanel jPanel15;
-	private javax.swing.JPanel jPanel16;
-	private javax.swing.JPanel jPanel17;
-	private javax.swing.JPanel jPanel2;
-	private javax.swing.JPanel jPanel3;
-	private javax.swing.JPanel jPanel4;
-	private javax.swing.JPanel jPanel5;
-	private javax.swing.JPanel jPanel6;
-	private javax.swing.JPanel jPanel7;
-	private javax.swing.JPanel jPanel8;
-	private javax.swing.JPanel jPanel9;
-	private javax.swing.JScrollPane jScrollPane1;
-	// End of variables declaration//GEN-END:variables
+        deviceButtons1 = new DeviceButtons();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel1 = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        deviceField1 = new DeviceField();
+        deviceField2 = new DeviceField();
+        deviceField33 = new DeviceField();
+        deviceField34 = new DeviceField();
+        jPanel3 = new javax.swing.JPanel();
+        deviceField3 = new DeviceField();
+        deviceField4 = new DeviceField();
+        deviceField35 = new DeviceField();
+        deviceField36 = new DeviceField();
+        jPanel18 = new javax.swing.JPanel();
+        deviceField65 = new DeviceField();
+        deviceField66 = new DeviceField();
+        deviceField67 = new DeviceField();
+        deviceField68 = new DeviceField();
+        jPanel19 = new javax.swing.JPanel();
+        deviceField69 = new DeviceField();
+        deviceField70 = new DeviceField();
+        deviceField71 = new DeviceField();
+        deviceField72 = new DeviceField();
+        jPanel20 = new javax.swing.JPanel();
+        deviceField73 = new DeviceField();
+        deviceField74 = new DeviceField();
+        deviceField75 = new DeviceField();
+        deviceField76 = new DeviceField();
+        jPanel21 = new javax.swing.JPanel();
+        deviceField77 = new DeviceField();
+        deviceField78 = new DeviceField();
+        deviceField79 = new DeviceField();
+        deviceField80 = new DeviceField();
+        jPanel22 = new javax.swing.JPanel();
+        deviceField81 = new DeviceField();
+        deviceField82 = new DeviceField();
+        deviceField83 = new DeviceField();
+        deviceField84 = new DeviceField();
+        jPanel23 = new javax.swing.JPanel();
+        deviceField85 = new DeviceField();
+        deviceField86 = new DeviceField();
+        deviceField87 = new DeviceField();
+        deviceField88 = new DeviceField();
+        jPanel24 = new javax.swing.JPanel();
+        deviceField89 = new DeviceField();
+        deviceField90 = new DeviceField();
+        deviceField91 = new DeviceField();
+        deviceField92 = new DeviceField();
+        jPanel25 = new javax.swing.JPanel();
+        deviceField93 = new DeviceField();
+        deviceField94 = new DeviceField();
+        deviceField95 = new DeviceField();
+        deviceField96 = new DeviceField();
+        jPanel26 = new javax.swing.JPanel();
+        deviceField97 = new DeviceField();
+        deviceField98 = new DeviceField();
+        deviceField99 = new DeviceField();
+        deviceField100 = new DeviceField();
+        jPanel27 = new javax.swing.JPanel();
+        deviceField101 = new DeviceField();
+        deviceField102 = new DeviceField();
+        deviceField103 = new DeviceField();
+        deviceField104 = new DeviceField();
+        jPanel28 = new javax.swing.JPanel();
+        deviceField105 = new DeviceField();
+        deviceField106 = new DeviceField();
+        deviceField107 = new DeviceField();
+        deviceField108 = new DeviceField();
+        jPanel29 = new javax.swing.JPanel();
+        deviceField109 = new DeviceField();
+        deviceField110 = new DeviceField();
+        deviceField111 = new DeviceField();
+        deviceField112 = new DeviceField();
+        jPanel30 = new javax.swing.JPanel();
+        deviceField113 = new DeviceField();
+        deviceField114 = new DeviceField();
+        deviceField115 = new DeviceField();
+        deviceField116 = new DeviceField();
+        jPanel31 = new javax.swing.JPanel();
+        deviceField117 = new DeviceField();
+        deviceField118 = new DeviceField();
+        deviceField119 = new DeviceField();
+        deviceField120 = new DeviceField();
+        jPanel32 = new javax.swing.JPanel();
+        deviceField121 = new DeviceField();
+        deviceField122 = new DeviceField();
+        deviceField123 = new DeviceField();
+        deviceField124 = new DeviceField();
+        jPanel33 = new javax.swing.JPanel();
+        deviceField125 = new DeviceField();
+        deviceField126 = new DeviceField();
+        deviceField127 = new DeviceField();
+        deviceField128 = new DeviceField();
+        jPanel34 = new javax.swing.JPanel();
+        deviceField129 = new DeviceField();
+        deviceField130 = new DeviceField();
+        deviceField131 = new DeviceField();
+        deviceField132 = new DeviceField();
+        jPanel35 = new javax.swing.JPanel();
+        deviceField133 = new DeviceField();
+        deviceField134 = new DeviceField();
+        deviceField135 = new DeviceField();
+        deviceField136 = new DeviceField();
+        jPanel36 = new javax.swing.JPanel();
+        deviceField137 = new DeviceField();
+        deviceField138 = new DeviceField();
+        deviceField139 = new DeviceField();
+        deviceField140 = new DeviceField();
+        jPanel37 = new javax.swing.JPanel();
+        deviceField141 = new DeviceField();
+        deviceField142 = new DeviceField();
+        deviceField143 = new DeviceField();
+        deviceField144 = new DeviceField();
+        jPanel38 = new javax.swing.JPanel();
+        deviceField145 = new DeviceField();
+        deviceField146 = new DeviceField();
+        deviceField147 = new DeviceField();
+        deviceField148 = new DeviceField();
+        jPanel39 = new javax.swing.JPanel();
+        deviceField149 = new DeviceField();
+        deviceField150 = new DeviceField();
+        deviceField151 = new DeviceField();
+        deviceField152 = new DeviceField();
+        jPanel40 = new javax.swing.JPanel();
+        deviceField153 = new DeviceField();
+        deviceField154 = new DeviceField();
+        deviceField155 = new DeviceField();
+        deviceField156 = new DeviceField();
+        jPanel41 = new javax.swing.JPanel();
+        deviceField157 = new DeviceField();
+        deviceField158 = new DeviceField();
+        deviceField159 = new DeviceField();
+        deviceField160 = new DeviceField();
+        jPanel42 = new javax.swing.JPanel();
+        deviceField161 = new DeviceField();
+        deviceField162 = new DeviceField();
+        deviceField163 = new DeviceField();
+        deviceField164 = new DeviceField();
+        jPanel43 = new javax.swing.JPanel();
+        deviceField165 = new DeviceField();
+        deviceField166 = new DeviceField();
+        deviceField168 = new DeviceField();
+        deviceField167 = new DeviceField();
+        jPanel44 = new javax.swing.JPanel();
+        deviceField169 = new DeviceField();
+        deviceField170 = new DeviceField();
+        deviceField171 = new DeviceField();
+        deviceField172 = new DeviceField();
+        jPanel45 = new javax.swing.JPanel();
+        deviceField173 = new DeviceField();
+        deviceField174 = new DeviceField();
+        deviceField175 = new DeviceField();
+        deviceField176 = new DeviceField();
+        jPanel46 = new javax.swing.JPanel();
+        deviceField177 = new DeviceField();
+        deviceField178 = new DeviceField();
+        deviceField179 = new DeviceField();
+        deviceField180 = new DeviceField();
+        jPanel47 = new javax.swing.JPanel();
+        deviceField181 = new DeviceField();
+        deviceField182 = new DeviceField();
+        deviceField183 = new DeviceField();
+        deviceField184 = new DeviceField();
+        jPanel48 = new javax.swing.JPanel();
+        deviceField185 = new DeviceField();
+        deviceField186 = new DeviceField();
+        deviceField187 = new DeviceField();
+        deviceField188 = new DeviceField();
+        jPanel49 = new javax.swing.JPanel();
+        deviceField189 = new DeviceField();
+        deviceField190 = new DeviceField();
+        deviceField191 = new DeviceField();
+        deviceField192 = new DeviceField();
+        jPanel50 = new javax.swing.JPanel();
+        deviceField193 = new DeviceField();
+        deviceField194 = new DeviceField();
+        deviceField195 = new DeviceField();
+        deviceField196 = new DeviceField();
+        jPanel51 = new javax.swing.JPanel();
+        deviceField197 = new DeviceField();
+        deviceField198 = new DeviceField();
+        deviceField199 = new DeviceField();
+        deviceField200 = new DeviceField();
+        jPanel52 = new javax.swing.JPanel();
+        deviceField201 = new DeviceField();
+        deviceField202 = new DeviceField();
+        deviceField203 = new DeviceField();
+        deviceField204 = new DeviceField();
+        jPanel53 = new javax.swing.JPanel();
+        deviceField205 = new DeviceField();
+        deviceField206 = new DeviceField();
+        deviceField207 = new DeviceField();
+        deviceField208 = new DeviceField();
+        jPanel54 = new javax.swing.JPanel();
+        deviceField209 = new DeviceField();
+        deviceField210 = new DeviceField();
+        deviceField211 = new DeviceField();
+        deviceField212 = new DeviceField();
+        jPanel55 = new javax.swing.JPanel();
+        deviceField213 = new DeviceField();
+        deviceField214 = new DeviceField();
+        deviceField215 = new DeviceField();
+        deviceField216 = new DeviceField();
+        jPanel56 = new javax.swing.JPanel();
+        deviceField217 = new DeviceField();
+        deviceField218 = new DeviceField();
+        deviceField219 = new DeviceField();
+        deviceField220 = new DeviceField();
+        jPanel57 = new javax.swing.JPanel();
+        deviceField221 = new DeviceField();
+        deviceField222 = new DeviceField();
+        deviceField223 = new DeviceField();
+        deviceField224 = new DeviceField();
+        jPanel58 = new javax.swing.JPanel();
+        deviceField225 = new DeviceField();
+        deviceField226 = new DeviceField();
+        deviceField227 = new DeviceField();
+        deviceField228 = new DeviceField();
+        jPanel59 = new javax.swing.JPanel();
+        deviceField229 = new DeviceField();
+        deviceField230 = new DeviceField();
+        deviceField231 = new DeviceField();
+        deviceField232 = new DeviceField();
+        jPanel60 = new javax.swing.JPanel();
+        deviceField233 = new DeviceField();
+        deviceField234 = new DeviceField();
+        deviceField235 = new DeviceField();
+        deviceField236 = new DeviceField();
+        jPanel61 = new javax.swing.JPanel();
+        deviceField237 = new DeviceField();
+        deviceField238 = new DeviceField();
+        deviceField239 = new DeviceField();
+        deviceField240 = new DeviceField();
+        jPanel62 = new javax.swing.JPanel();
+        deviceField241 = new DeviceField();
+        deviceField242 = new DeviceField();
+        deviceField243 = new DeviceField();
+        deviceField244 = new DeviceField();
+        jPanel63 = new javax.swing.JPanel();
+        deviceField245 = new DeviceField();
+        deviceField246 = new DeviceField();
+        deviceField247 = new DeviceField();
+        deviceField248 = new DeviceField();
+        jPanel64 = new javax.swing.JPanel();
+        deviceField249 = new DeviceField();
+        deviceField250 = new DeviceField();
+        deviceField251 = new DeviceField();
+        deviceField252 = new DeviceField();
+        jPanel65 = new javax.swing.JPanel();
+        deviceField253 = new DeviceField();
+        deviceField254 = new DeviceField();
+        deviceField255 = new DeviceField();
+        deviceField256 = new DeviceField();
+        jPanel66 = new javax.swing.JPanel();
+        deviceField257 = new DeviceField();
+        deviceField258 = new DeviceField();
+        deviceField259 = new DeviceField();
+        deviceField260 = new DeviceField();
+        jPanel67 = new javax.swing.JPanel();
+        deviceField261 = new DeviceField();
+        deviceField262 = new DeviceField();
+        deviceField263 = new DeviceField();
+        deviceField264 = new DeviceField();
+        jPanel68 = new javax.swing.JPanel();
+        deviceField265 = new DeviceField();
+        deviceField266 = new DeviceField();
+        deviceField267 = new DeviceField();
+        deviceField268 = new DeviceField();
+        jPanel69 = new javax.swing.JPanel();
+        deviceField269 = new DeviceField();
+        deviceField270 = new DeviceField();
+        deviceField271 = new DeviceField();
+        deviceField272 = new DeviceField();
+        jPanel70 = new javax.swing.JPanel();
+        deviceField273 = new DeviceField();
+        deviceField274 = new DeviceField();
+        deviceField275 = new DeviceField();
+        deviceField276 = new DeviceField();
+        jPanel71 = new javax.swing.JPanel();
+        deviceField277 = new DeviceField();
+        deviceField278 = new DeviceField();
+        deviceField279 = new DeviceField();
+        deviceField280 = new DeviceField();
+        jPanel72 = new javax.swing.JPanel();
+        deviceField281 = new DeviceField();
+        deviceField282 = new DeviceField();
+        deviceField283 = new DeviceField();
+        deviceField284 = new DeviceField();
+        jPanel73 = new javax.swing.JPanel();
+        deviceField285 = new DeviceField();
+        deviceField286 = new DeviceField();
+        deviceField287 = new DeviceField();
+        deviceField288 = new DeviceField();
+        jPanel74 = new javax.swing.JPanel();
+        deviceField289 = new DeviceField();
+        deviceField290 = new DeviceField();
+        deviceField291 = new DeviceField();
+        deviceField292 = new DeviceField();
+        jPanel75 = new javax.swing.JPanel();
+        deviceField293 = new DeviceField();
+        deviceField294 = new DeviceField();
+        deviceField295 = new DeviceField();
+        deviceField296 = new DeviceField();
+        jPanel76 = new javax.swing.JPanel();
+        deviceField297 = new DeviceField();
+        deviceField298 = new DeviceField();
+        deviceField299 = new DeviceField();
+        deviceField300 = new DeviceField();
+        jPanel77 = new javax.swing.JPanel();
+        deviceField301 = new DeviceField();
+        deviceField302 = new DeviceField();
+        deviceField303 = new DeviceField();
+        deviceField304 = new DeviceField();
+        jPanel78 = new javax.swing.JPanel();
+        deviceField305 = new DeviceField();
+        deviceField306 = new DeviceField();
+        deviceField307 = new DeviceField();
+        deviceField308 = new DeviceField();
+        jPanel79 = new javax.swing.JPanel();
+        deviceField309 = new DeviceField();
+        deviceField310 = new DeviceField();
+        deviceField311 = new DeviceField();
+        deviceField312 = new DeviceField();
+
+        setDeviceProvider("spilds.rfx.local:8100");
+        setDeviceTitle("Stream Setup");
+        setDeviceType("STREAM_SETUP");
+        setHeight(300);
+        setWidth(1000);
+        getContentPane().add(deviceButtons1, java.awt.BorderLayout.PAGE_END);
+
+        jPanel1.setLayout(new java.awt.GridLayout(64, 1));
+
+        deviceField1.setIdentifier("");
+        deviceField1.setLabelString("Node:");
+        deviceField1.setNumCols(30);
+        deviceField1.setOffsetNid(4);
+        jPanel2.add(deviceField1);
+
+        deviceField2.setIdentifier("");
+        deviceField2.setLabelString("Stream name:");
+        deviceField2.setNumCols(20);
+        deviceField2.setOffsetNid(3);
+        deviceField2.setTextOnly(true);
+        jPanel2.add(deviceField2);
+
+        deviceField33.setIdentifier("");
+        deviceField33.setLabelString("Gain:");
+        deviceField33.setNumCols(20);
+        deviceField33.setOffsetNid(5);
+        jPanel2.add(deviceField33);
+
+        deviceField34.setIdentifier("");
+        deviceField34.setLabelString("Offset: ");
+        deviceField34.setNumCols(20);
+        deviceField34.setOffsetNid(6);
+        jPanel2.add(deviceField34);
+
+        jPanel1.add(jPanel2);
+
+        deviceField3.setIdentifier("");
+        deviceField3.setLabelString("Node:");
+        deviceField3.setNumCols(30);
+        deviceField3.setOffsetNid(9);
+        jPanel3.add(deviceField3);
+
+        deviceField4.setIdentifier("");
+        deviceField4.setLabelString("Stream name:");
+        deviceField4.setNumCols(20);
+        deviceField4.setOffsetNid(8);
+        deviceField4.setTextOnly(true);
+        jPanel3.add(deviceField4);
+
+        deviceField35.setIdentifier("");
+        deviceField35.setLabelString("Gain:");
+        deviceField35.setNumCols(20);
+        deviceField35.setOffsetNid(10);
+        jPanel3.add(deviceField35);
+
+        deviceField36.setIdentifier("");
+        deviceField36.setLabelString("Offset: ");
+        deviceField36.setNumCols(20);
+        deviceField36.setOffsetNid(11);
+        jPanel3.add(deviceField36);
+
+        jPanel1.add(jPanel3);
+
+        deviceField65.setIdentifier("");
+        deviceField65.setLabelString("Node:");
+        deviceField65.setNumCols(30);
+        deviceField65.setOffsetNid(14);
+        jPanel18.add(deviceField65);
+
+        deviceField66.setIdentifier("");
+        deviceField66.setLabelString("Stream name:");
+        deviceField66.setNumCols(20);
+        deviceField66.setOffsetNid(13);
+        deviceField66.setTextOnly(true);
+        jPanel18.add(deviceField66);
+
+        deviceField67.setIdentifier("");
+        deviceField67.setLabelString("Gain:");
+        deviceField67.setNumCols(20);
+        deviceField67.setOffsetNid(15);
+        jPanel18.add(deviceField67);
+
+        deviceField68.setIdentifier("");
+        deviceField68.setLabelString("Offset: ");
+        deviceField68.setNumCols(20);
+        deviceField68.setOffsetNid(16);
+        jPanel18.add(deviceField68);
+
+        jPanel1.add(jPanel18);
+
+        deviceField69.setIdentifier("");
+        deviceField69.setLabelString("Node:");
+        deviceField69.setNumCols(30);
+        deviceField69.setOffsetNid(19);
+        jPanel19.add(deviceField69);
+
+        deviceField70.setIdentifier("");
+        deviceField70.setLabelString("Stream name:");
+        deviceField70.setNumCols(20);
+        deviceField70.setOffsetNid(18);
+        deviceField70.setTextOnly(true);
+        jPanel19.add(deviceField70);
+
+        deviceField71.setIdentifier("");
+        deviceField71.setLabelString("Gain:");
+        deviceField71.setNumCols(20);
+        deviceField71.setOffsetNid(20);
+        jPanel19.add(deviceField71);
+
+        deviceField72.setIdentifier("");
+        deviceField72.setLabelString("Offset: ");
+        deviceField72.setNumCols(20);
+        deviceField72.setOffsetNid(21);
+        jPanel19.add(deviceField72);
+
+        jPanel1.add(jPanel19);
+
+        deviceField73.setIdentifier("");
+        deviceField73.setLabelString("Node:");
+        deviceField73.setNumCols(30);
+        deviceField73.setOffsetNid(24);
+        jPanel20.add(deviceField73);
+
+        deviceField74.setIdentifier("");
+        deviceField74.setLabelString("Stream name:");
+        deviceField74.setNumCols(20);
+        deviceField74.setOffsetNid(23);
+        deviceField74.setTextOnly(true);
+        jPanel20.add(deviceField74);
+
+        deviceField75.setIdentifier("");
+        deviceField75.setLabelString("Gain:");
+        deviceField75.setNumCols(20);
+        deviceField75.setOffsetNid(25);
+        jPanel20.add(deviceField75);
+
+        deviceField76.setIdentifier("");
+        deviceField76.setLabelString("Offset: ");
+        deviceField76.setNumCols(20);
+        deviceField76.setOffsetNid(26);
+        jPanel20.add(deviceField76);
+
+        jPanel1.add(jPanel20);
+
+        deviceField77.setIdentifier("");
+        deviceField77.setLabelString("Node:");
+        deviceField77.setNumCols(30);
+        deviceField77.setOffsetNid(29);
+        jPanel21.add(deviceField77);
+
+        deviceField78.setIdentifier("");
+        deviceField78.setLabelString("Stream name:");
+        deviceField78.setNumCols(20);
+        deviceField78.setOffsetNid(28);
+        deviceField78.setTextOnly(true);
+        jPanel21.add(deviceField78);
+
+        deviceField79.setIdentifier("");
+        deviceField79.setLabelString("Gain:");
+        deviceField79.setNumCols(20);
+        deviceField79.setOffsetNid(30);
+        jPanel21.add(deviceField79);
+
+        deviceField80.setIdentifier("");
+        deviceField80.setLabelString("Offset: ");
+        deviceField80.setNumCols(20);
+        deviceField80.setOffsetNid(31);
+        jPanel21.add(deviceField80);
+
+        jPanel1.add(jPanel21);
+
+        deviceField81.setIdentifier("");
+        deviceField81.setLabelString("Node:");
+        deviceField81.setNumCols(30);
+        deviceField81.setOffsetNid(34);
+        jPanel22.add(deviceField81);
+
+        deviceField82.setIdentifier("");
+        deviceField82.setLabelString("Stream name:");
+        deviceField82.setNumCols(20);
+        deviceField82.setOffsetNid(33);
+        deviceField82.setTextOnly(true);
+        jPanel22.add(deviceField82);
+
+        deviceField83.setIdentifier("");
+        deviceField83.setLabelString("Gain:");
+        deviceField83.setNumCols(20);
+        deviceField83.setOffsetNid(35);
+        jPanel22.add(deviceField83);
+
+        deviceField84.setIdentifier("");
+        deviceField84.setLabelString("Offset: ");
+        deviceField84.setNumCols(20);
+        deviceField84.setOffsetNid(36);
+        jPanel22.add(deviceField84);
+
+        jPanel1.add(jPanel22);
+
+        deviceField85.setIdentifier("");
+        deviceField85.setLabelString("Node:");
+        deviceField85.setNumCols(30);
+        deviceField85.setOffsetNid(39);
+        jPanel23.add(deviceField85);
+
+        deviceField86.setIdentifier("");
+        deviceField86.setLabelString("Stream name:");
+        deviceField86.setNumCols(20);
+        deviceField86.setOffsetNid(38);
+        deviceField86.setTextOnly(true);
+        jPanel23.add(deviceField86);
+
+        deviceField87.setIdentifier("");
+        deviceField87.setLabelString("Gain:");
+        deviceField87.setNumCols(20);
+        deviceField87.setOffsetNid(40);
+        jPanel23.add(deviceField87);
+
+        deviceField88.setIdentifier("");
+        deviceField88.setLabelString("Offset: ");
+        deviceField88.setNumCols(20);
+        deviceField88.setOffsetNid(41);
+        jPanel23.add(deviceField88);
+
+        jPanel1.add(jPanel23);
+
+        deviceField89.setIdentifier("");
+        deviceField89.setLabelString("Node:");
+        deviceField89.setNumCols(30);
+        deviceField89.setOffsetNid(44);
+        jPanel24.add(deviceField89);
+
+        deviceField90.setIdentifier("");
+        deviceField90.setLabelString("Stream name:");
+        deviceField90.setNumCols(20);
+        deviceField90.setOffsetNid(43);
+        deviceField90.setTextOnly(true);
+        jPanel24.add(deviceField90);
+
+        deviceField91.setIdentifier("");
+        deviceField91.setLabelString("Gain:");
+        deviceField91.setNumCols(20);
+        deviceField91.setOffsetNid(45);
+        jPanel24.add(deviceField91);
+
+        deviceField92.setIdentifier("");
+        deviceField92.setLabelString("Offset: ");
+        deviceField92.setNumCols(20);
+        deviceField92.setOffsetNid(46);
+        jPanel24.add(deviceField92);
+
+        jPanel1.add(jPanel24);
+
+        deviceField93.setIdentifier("");
+        deviceField93.setLabelString("Node:");
+        deviceField93.setNumCols(30);
+        deviceField93.setOffsetNid(49);
+        jPanel25.add(deviceField93);
+
+        deviceField94.setIdentifier("");
+        deviceField94.setLabelString("Stream name:");
+        deviceField94.setNumCols(20);
+        deviceField94.setOffsetNid(48);
+        deviceField94.setTextOnly(true);
+        jPanel25.add(deviceField94);
+
+        deviceField95.setIdentifier("");
+        deviceField95.setLabelString("Gain:");
+        deviceField95.setNumCols(20);
+        deviceField95.setOffsetNid(50);
+        jPanel25.add(deviceField95);
+
+        deviceField96.setIdentifier("");
+        deviceField96.setLabelString("Offset: ");
+        deviceField96.setNumCols(20);
+        deviceField96.setOffsetNid(51);
+        jPanel25.add(deviceField96);
+
+        jPanel1.add(jPanel25);
+
+        deviceField97.setIdentifier("");
+        deviceField97.setLabelString("Node:");
+        deviceField97.setNumCols(30);
+        deviceField97.setOffsetNid(54);
+        jPanel26.add(deviceField97);
+
+        deviceField98.setIdentifier("");
+        deviceField98.setLabelString("Stream name:");
+        deviceField98.setNumCols(20);
+        deviceField98.setOffsetNid(53);
+        deviceField98.setTextOnly(true);
+        jPanel26.add(deviceField98);
+
+        deviceField99.setIdentifier("");
+        deviceField99.setLabelString("Gain:");
+        deviceField99.setNumCols(20);
+        deviceField99.setOffsetNid(55);
+        jPanel26.add(deviceField99);
+
+        deviceField100.setIdentifier("");
+        deviceField100.setLabelString("Offset: ");
+        deviceField100.setNumCols(20);
+        deviceField100.setOffsetNid(56);
+        jPanel26.add(deviceField100);
+
+        jPanel1.add(jPanel26);
+
+        deviceField101.setIdentifier("");
+        deviceField101.setLabelString("Node:");
+        deviceField101.setNumCols(30);
+        deviceField101.setOffsetNid(59);
+        jPanel27.add(deviceField101);
+
+        deviceField102.setIdentifier("");
+        deviceField102.setLabelString("Stream name:");
+        deviceField102.setNumCols(20);
+        deviceField102.setOffsetNid(58);
+        deviceField102.setTextOnly(true);
+        jPanel27.add(deviceField102);
+
+        deviceField103.setIdentifier("");
+        deviceField103.setLabelString("Gain:");
+        deviceField103.setNumCols(20);
+        deviceField103.setOffsetNid(60);
+        jPanel27.add(deviceField103);
+
+        deviceField104.setIdentifier("");
+        deviceField104.setLabelString("Offset: ");
+        deviceField104.setNumCols(20);
+        deviceField104.setOffsetNid(61);
+        jPanel27.add(deviceField104);
+
+        jPanel1.add(jPanel27);
+
+        deviceField105.setIdentifier("");
+        deviceField105.setLabelString("Node:");
+        deviceField105.setNumCols(30);
+        deviceField105.setOffsetNid(64);
+        jPanel28.add(deviceField105);
+
+        deviceField106.setIdentifier("");
+        deviceField106.setLabelString("Stream name:");
+        deviceField106.setNumCols(20);
+        deviceField106.setOffsetNid(63);
+        deviceField106.setTextOnly(true);
+        jPanel28.add(deviceField106);
+
+        deviceField107.setIdentifier("");
+        deviceField107.setLabelString("Gain:");
+        deviceField107.setNumCols(20);
+        deviceField107.setOffsetNid(65);
+        jPanel28.add(deviceField107);
+
+        deviceField108.setIdentifier("");
+        deviceField108.setLabelString("Offset: ");
+        deviceField108.setNumCols(20);
+        deviceField108.setOffsetNid(66);
+        jPanel28.add(deviceField108);
+
+        jPanel1.add(jPanel28);
+
+        deviceField109.setIdentifier("");
+        deviceField109.setLabelString("Node:");
+        deviceField109.setNumCols(30);
+        deviceField109.setOffsetNid(69);
+        jPanel29.add(deviceField109);
+
+        deviceField110.setIdentifier("");
+        deviceField110.setLabelString("Stream name:");
+        deviceField110.setNumCols(20);
+        deviceField110.setOffsetNid(68);
+        deviceField110.setTextOnly(true);
+        jPanel29.add(deviceField110);
+
+        deviceField111.setIdentifier("");
+        deviceField111.setLabelString("Gain:");
+        deviceField111.setNumCols(20);
+        deviceField111.setOffsetNid(70);
+        jPanel29.add(deviceField111);
+
+        deviceField112.setIdentifier("");
+        deviceField112.setLabelString("Offset: ");
+        deviceField112.setNumCols(20);
+        deviceField112.setOffsetNid(71);
+        jPanel29.add(deviceField112);
+
+        jPanel1.add(jPanel29);
+
+        deviceField113.setIdentifier("");
+        deviceField113.setLabelString("Node:");
+        deviceField113.setNumCols(30);
+        deviceField113.setOffsetNid(74);
+        jPanel30.add(deviceField113);
+
+        deviceField114.setIdentifier("");
+        deviceField114.setLabelString("Stream name:");
+        deviceField114.setNumCols(20);
+        deviceField114.setOffsetNid(73);
+        deviceField114.setTextOnly(true);
+        jPanel30.add(deviceField114);
+
+        deviceField115.setIdentifier("");
+        deviceField115.setLabelString("Gain:");
+        deviceField115.setNumCols(20);
+        deviceField115.setOffsetNid(75);
+        jPanel30.add(deviceField115);
+
+        deviceField116.setIdentifier("");
+        deviceField116.setLabelString("Offset: ");
+        deviceField116.setNumCols(20);
+        deviceField116.setOffsetNid(76);
+        jPanel30.add(deviceField116);
+
+        jPanel1.add(jPanel30);
+
+        deviceField117.setIdentifier("");
+        deviceField117.setLabelString("Node:");
+        deviceField117.setNumCols(30);
+        deviceField117.setOffsetNid(79);
+        jPanel31.add(deviceField117);
+
+        deviceField118.setIdentifier("");
+        deviceField118.setLabelString("Stream name:");
+        deviceField118.setNumCols(20);
+        deviceField118.setOffsetNid(78);
+        deviceField118.setTextOnly(true);
+        jPanel31.add(deviceField118);
+
+        deviceField119.setIdentifier("");
+        deviceField119.setLabelString("Gain:");
+        deviceField119.setNumCols(20);
+        deviceField119.setOffsetNid(80);
+        jPanel31.add(deviceField119);
+
+        deviceField120.setIdentifier("");
+        deviceField120.setLabelString("Offset: ");
+        deviceField120.setNumCols(20);
+        deviceField120.setOffsetNid(81);
+        jPanel31.add(deviceField120);
+
+        jPanel1.add(jPanel31);
+
+        deviceField121.setIdentifier("");
+        deviceField121.setLabelString("Node:");
+        deviceField121.setNumCols(30);
+        deviceField121.setOffsetNid(84);
+        jPanel32.add(deviceField121);
+
+        deviceField122.setIdentifier("");
+        deviceField122.setLabelString("Stream name:");
+        deviceField122.setNumCols(20);
+        deviceField122.setOffsetNid(83);
+        deviceField122.setTextOnly(true);
+        jPanel32.add(deviceField122);
+
+        deviceField123.setIdentifier("");
+        deviceField123.setLabelString("Gain:");
+        deviceField123.setNumCols(20);
+        deviceField123.setOffsetNid(85);
+        jPanel32.add(deviceField123);
+
+        deviceField124.setIdentifier("");
+        deviceField124.setLabelString("Offset: ");
+        deviceField124.setNumCols(20);
+        deviceField124.setOffsetNid(86);
+        jPanel32.add(deviceField124);
+
+        jPanel1.add(jPanel32);
+
+        deviceField125.setIdentifier("");
+        deviceField125.setLabelString("Node:");
+        deviceField125.setNumCols(30);
+        deviceField125.setOffsetNid(89);
+        jPanel33.add(deviceField125);
+
+        deviceField126.setIdentifier("");
+        deviceField126.setLabelString("Stream name:");
+        deviceField126.setNumCols(20);
+        deviceField126.setOffsetNid(88);
+        deviceField126.setTextOnly(true);
+        jPanel33.add(deviceField126);
+
+        deviceField127.setIdentifier("");
+        deviceField127.setLabelString("Gain:");
+        deviceField127.setNumCols(20);
+        deviceField127.setOffsetNid(90);
+        jPanel33.add(deviceField127);
+
+        deviceField128.setIdentifier("");
+        deviceField128.setLabelString("Offset: ");
+        deviceField128.setNumCols(20);
+        deviceField128.setOffsetNid(91);
+        jPanel33.add(deviceField128);
+
+        jPanel1.add(jPanel33);
+
+        deviceField129.setIdentifier("");
+        deviceField129.setLabelString("Node:");
+        deviceField129.setNumCols(30);
+        deviceField129.setOffsetNid(94);
+        jPanel34.add(deviceField129);
+
+        deviceField130.setIdentifier("");
+        deviceField130.setLabelString("Stream name:");
+        deviceField130.setNumCols(20);
+        deviceField130.setOffsetNid(93);
+        deviceField130.setTextOnly(true);
+        jPanel34.add(deviceField130);
+
+        deviceField131.setIdentifier("");
+        deviceField131.setLabelString("Gain:");
+        deviceField131.setNumCols(20);
+        deviceField131.setOffsetNid(95);
+        jPanel34.add(deviceField131);
+
+        deviceField132.setIdentifier("");
+        deviceField132.setLabelString("Offset: ");
+        deviceField132.setNumCols(20);
+        deviceField132.setOffsetNid(96);
+        jPanel34.add(deviceField132);
+
+        jPanel1.add(jPanel34);
+
+        deviceField133.setIdentifier("");
+        deviceField133.setLabelString("Node:");
+        deviceField133.setNumCols(30);
+        deviceField133.setOffsetNid(99);
+        jPanel35.add(deviceField133);
+
+        deviceField134.setIdentifier("");
+        deviceField134.setLabelString("Stream name:");
+        deviceField134.setNumCols(20);
+        deviceField134.setOffsetNid(98);
+        deviceField134.setTextOnly(true);
+        jPanel35.add(deviceField134);
+
+        deviceField135.setIdentifier("");
+        deviceField135.setLabelString("Gain:");
+        deviceField135.setNumCols(20);
+        deviceField135.setOffsetNid(100);
+        jPanel35.add(deviceField135);
+
+        deviceField136.setIdentifier("");
+        deviceField136.setLabelString("Offset: ");
+        deviceField136.setNumCols(20);
+        deviceField136.setOffsetNid(101);
+        jPanel35.add(deviceField136);
+
+        jPanel1.add(jPanel35);
+
+        deviceField137.setIdentifier("");
+        deviceField137.setLabelString("Node:");
+        deviceField137.setNumCols(30);
+        deviceField137.setOffsetNid(104);
+        jPanel36.add(deviceField137);
+
+        deviceField138.setIdentifier("");
+        deviceField138.setLabelString("Stream name:");
+        deviceField138.setNumCols(20);
+        deviceField138.setOffsetNid(103);
+        deviceField138.setTextOnly(true);
+        jPanel36.add(deviceField138);
+
+        deviceField139.setIdentifier("");
+        deviceField139.setLabelString("Gain:");
+        deviceField139.setNumCols(20);
+        deviceField139.setOffsetNid(105);
+        jPanel36.add(deviceField139);
+
+        deviceField140.setIdentifier("");
+        deviceField140.setLabelString("Offset: ");
+        deviceField140.setNumCols(20);
+        deviceField140.setOffsetNid(106);
+        jPanel36.add(deviceField140);
+
+        jPanel1.add(jPanel36);
+
+        deviceField141.setIdentifier("");
+        deviceField141.setLabelString("Node:");
+        deviceField141.setNumCols(30);
+        deviceField141.setOffsetNid(109);
+        jPanel37.add(deviceField141);
+
+        deviceField142.setIdentifier("");
+        deviceField142.setLabelString("Stream name:");
+        deviceField142.setNumCols(20);
+        deviceField142.setOffsetNid(108);
+        deviceField142.setTextOnly(true);
+        jPanel37.add(deviceField142);
+
+        deviceField143.setIdentifier("");
+        deviceField143.setLabelString("Gain:");
+        deviceField143.setNumCols(20);
+        deviceField143.setOffsetNid(110);
+        jPanel37.add(deviceField143);
+
+        deviceField144.setIdentifier("");
+        deviceField144.setLabelString("Offset: ");
+        deviceField144.setNumCols(20);
+        deviceField144.setOffsetNid(111);
+        jPanel37.add(deviceField144);
+
+        jPanel1.add(jPanel37);
+
+        deviceField145.setIdentifier("");
+        deviceField145.setLabelString("Node:");
+        deviceField145.setNumCols(30);
+        deviceField145.setOffsetNid(114);
+        jPanel38.add(deviceField145);
+
+        deviceField146.setIdentifier("");
+        deviceField146.setLabelString("Stream name:");
+        deviceField146.setNumCols(20);
+        deviceField146.setOffsetNid(113);
+        deviceField146.setTextOnly(true);
+        jPanel38.add(deviceField146);
+
+        deviceField147.setIdentifier("");
+        deviceField147.setLabelString("Gain:");
+        deviceField147.setNumCols(20);
+        deviceField147.setOffsetNid(115);
+        jPanel38.add(deviceField147);
+
+        deviceField148.setIdentifier("");
+        deviceField148.setLabelString("Offset: ");
+        deviceField148.setNumCols(20);
+        deviceField148.setOffsetNid(116);
+        jPanel38.add(deviceField148);
+
+        jPanel1.add(jPanel38);
+
+        deviceField149.setIdentifier("");
+        deviceField149.setLabelString("Node:");
+        deviceField149.setNumCols(30);
+        deviceField149.setOffsetNid(119);
+        jPanel39.add(deviceField149);
+
+        deviceField150.setIdentifier("");
+        deviceField150.setLabelString("Stream name:");
+        deviceField150.setNumCols(20);
+        deviceField150.setOffsetNid(118);
+        deviceField150.setTextOnly(true);
+        jPanel39.add(deviceField150);
+
+        deviceField151.setIdentifier("");
+        deviceField151.setLabelString("Gain:");
+        deviceField151.setNumCols(20);
+        deviceField151.setOffsetNid(120);
+        jPanel39.add(deviceField151);
+
+        deviceField152.setIdentifier("");
+        deviceField152.setLabelString("Offset: ");
+        deviceField152.setNumCols(20);
+        deviceField152.setOffsetNid(121);
+        jPanel39.add(deviceField152);
+
+        jPanel1.add(jPanel39);
+
+        deviceField153.setIdentifier("");
+        deviceField153.setLabelString("Node:");
+        deviceField153.setNumCols(30);
+        deviceField153.setOffsetNid(124);
+        jPanel40.add(deviceField153);
+
+        deviceField154.setIdentifier("");
+        deviceField154.setLabelString("Stream name:");
+        deviceField154.setNumCols(20);
+        deviceField154.setOffsetNid(123);
+        deviceField154.setTextOnly(true);
+        jPanel40.add(deviceField154);
+
+        deviceField155.setIdentifier("");
+        deviceField155.setLabelString("Gain:");
+        deviceField155.setNumCols(20);
+        deviceField155.setOffsetNid(125);
+        jPanel40.add(deviceField155);
+
+        deviceField156.setIdentifier("");
+        deviceField156.setLabelString("Offset: ");
+        deviceField156.setNumCols(20);
+        deviceField156.setOffsetNid(126);
+        jPanel40.add(deviceField156);
+
+        jPanel1.add(jPanel40);
+
+        deviceField157.setIdentifier("");
+        deviceField157.setLabelString("Node:");
+        deviceField157.setNumCols(30);
+        deviceField157.setOffsetNid(129);
+        jPanel41.add(deviceField157);
+
+        deviceField158.setIdentifier("");
+        deviceField158.setLabelString("Stream name:");
+        deviceField158.setNumCols(20);
+        deviceField158.setOffsetNid(128);
+        deviceField158.setTextOnly(true);
+        jPanel41.add(deviceField158);
+
+        deviceField159.setIdentifier("");
+        deviceField159.setLabelString("Gain:");
+        deviceField159.setNumCols(20);
+        deviceField159.setOffsetNid(130);
+        jPanel41.add(deviceField159);
+
+        deviceField160.setIdentifier("");
+        deviceField160.setLabelString("Offset: ");
+        deviceField160.setNumCols(20);
+        deviceField160.setOffsetNid(131);
+        jPanel41.add(deviceField160);
+
+        jPanel1.add(jPanel41);
+
+        deviceField161.setIdentifier("");
+        deviceField161.setLabelString("Node:");
+        deviceField161.setNumCols(30);
+        deviceField161.setOffsetNid(134);
+        jPanel42.add(deviceField161);
+
+        deviceField162.setIdentifier("");
+        deviceField162.setLabelString("Stream name:");
+        deviceField162.setNumCols(20);
+        deviceField162.setOffsetNid(133);
+        deviceField162.setTextOnly(true);
+        jPanel42.add(deviceField162);
+
+        deviceField163.setIdentifier("");
+        deviceField163.setLabelString("Gain:");
+        deviceField163.setNumCols(20);
+        deviceField163.setOffsetNid(135);
+        jPanel42.add(deviceField163);
+
+        deviceField164.setIdentifier("");
+        deviceField164.setLabelString("Offset: ");
+        deviceField164.setNumCols(20);
+        deviceField164.setOffsetNid(136);
+        jPanel42.add(deviceField164);
+
+        jPanel1.add(jPanel42);
+
+        deviceField165.setIdentifier("");
+        deviceField165.setLabelString("Node:");
+        deviceField165.setNumCols(30);
+        deviceField165.setOffsetNid(139);
+        jPanel43.add(deviceField165);
+
+        deviceField166.setIdentifier("");
+        deviceField166.setLabelString("Stream name:");
+        deviceField166.setNumCols(20);
+        deviceField166.setOffsetNid(138);
+        deviceField166.setTextOnly(true);
+        jPanel43.add(deviceField166);
+
+        deviceField168.setIdentifier("");
+        deviceField168.setLabelString("Offset: ");
+        deviceField168.setNumCols(20);
+        deviceField168.setOffsetNid(141);
+        jPanel43.add(deviceField168);
+
+        deviceField167.setIdentifier("");
+        deviceField167.setLabelString("Gain:");
+        deviceField167.setNumCols(20);
+        deviceField167.setOffsetNid(140);
+        jPanel43.add(deviceField167);
+
+        jPanel1.add(jPanel43);
+
+        deviceField169.setIdentifier("");
+        deviceField169.setLabelString("Node:");
+        deviceField169.setNumCols(30);
+        deviceField169.setOffsetNid(144);
+        jPanel44.add(deviceField169);
+
+        deviceField170.setIdentifier("");
+        deviceField170.setLabelString("Stream name:");
+        deviceField170.setNumCols(20);
+        deviceField170.setOffsetNid(143);
+        deviceField170.setTextOnly(true);
+        jPanel44.add(deviceField170);
+
+        deviceField171.setIdentifier("");
+        deviceField171.setLabelString("Gain:");
+        deviceField171.setNumCols(20);
+        deviceField171.setOffsetNid(145);
+        jPanel44.add(deviceField171);
+
+        deviceField172.setIdentifier("");
+        deviceField172.setLabelString("Offset: ");
+        deviceField172.setNumCols(20);
+        deviceField172.setOffsetNid(146);
+        jPanel44.add(deviceField172);
+
+        jPanel1.add(jPanel44);
+
+        deviceField173.setIdentifier("");
+        deviceField173.setLabelString("Node:");
+        deviceField173.setNumCols(30);
+        deviceField173.setOffsetNid(149);
+        jPanel45.add(deviceField173);
+
+        deviceField174.setIdentifier("");
+        deviceField174.setLabelString("Stream name:");
+        deviceField174.setNumCols(20);
+        deviceField174.setOffsetNid(148);
+        deviceField174.setTextOnly(true);
+        jPanel45.add(deviceField174);
+
+        deviceField175.setIdentifier("");
+        deviceField175.setLabelString("Gain:");
+        deviceField175.setNumCols(20);
+        deviceField175.setOffsetNid(150);
+        jPanel45.add(deviceField175);
+
+        deviceField176.setIdentifier("");
+        deviceField176.setLabelString("Offset: ");
+        deviceField176.setNumCols(20);
+        deviceField176.setOffsetNid(151);
+        deviceField176.setShowState(true);
+        jPanel45.add(deviceField176);
+
+        jPanel1.add(jPanel45);
+
+        deviceField177.setIdentifier("");
+        deviceField177.setLabelString("Node:");
+        deviceField177.setNumCols(30);
+        deviceField177.setOffsetNid(154);
+        jPanel46.add(deviceField177);
+
+        deviceField178.setIdentifier("");
+        deviceField178.setLabelString("Stream name:");
+        deviceField178.setNumCols(20);
+        deviceField178.setOffsetNid(153);
+        deviceField178.setTextOnly(true);
+        jPanel46.add(deviceField178);
+
+        deviceField179.setIdentifier("");
+        deviceField179.setLabelString("Gain:");
+        deviceField179.setNumCols(20);
+        deviceField179.setOffsetNid(155);
+        jPanel46.add(deviceField179);
+
+        deviceField180.setIdentifier("");
+        deviceField180.setLabelString("Offset: ");
+        deviceField180.setNumCols(20);
+        deviceField180.setOffsetNid(156);
+        jPanel46.add(deviceField180);
+
+        jPanel1.add(jPanel46);
+
+        deviceField181.setIdentifier("");
+        deviceField181.setLabelString("Node:");
+        deviceField181.setNumCols(30);
+        deviceField181.setOffsetNid(159);
+        jPanel47.add(deviceField181);
+
+        deviceField182.setIdentifier("");
+        deviceField182.setLabelString("Stream name:");
+        deviceField182.setNumCols(20);
+        deviceField182.setOffsetNid(158);
+        deviceField182.setTextOnly(true);
+        jPanel47.add(deviceField182);
+
+        deviceField183.setIdentifier("");
+        deviceField183.setLabelString("Gain:");
+        deviceField183.setNumCols(20);
+        deviceField183.setOffsetNid(160);
+        jPanel47.add(deviceField183);
+
+        deviceField184.setIdentifier("");
+        deviceField184.setLabelString("Offset: ");
+        deviceField184.setNumCols(20);
+        deviceField184.setOffsetNid(161);
+        jPanel47.add(deviceField184);
+
+        jPanel1.add(jPanel47);
+
+        deviceField185.setIdentifier("");
+        deviceField185.setLabelString("Node:");
+        deviceField185.setNumCols(30);
+        deviceField185.setOffsetNid(164);
+        jPanel48.add(deviceField185);
+
+        deviceField186.setIdentifier("");
+        deviceField186.setLabelString("Stream name:");
+        deviceField186.setNumCols(20);
+        deviceField186.setOffsetNid(163);
+        deviceField186.setTextOnly(true);
+        jPanel48.add(deviceField186);
+
+        deviceField187.setIdentifier("");
+        deviceField187.setLabelString("Gain:");
+        deviceField187.setNumCols(20);
+        deviceField187.setOffsetNid(165);
+        jPanel48.add(deviceField187);
+
+        deviceField188.setIdentifier("");
+        deviceField188.setLabelString("Offset: ");
+        deviceField188.setNumCols(20);
+        deviceField188.setOffsetNid(166);
+        jPanel48.add(deviceField188);
+
+        jPanel1.add(jPanel48);
+
+        deviceField189.setIdentifier("");
+        deviceField189.setLabelString("Node:");
+        deviceField189.setNumCols(30);
+        deviceField189.setOffsetNid(169);
+        jPanel49.add(deviceField189);
+
+        deviceField190.setIdentifier("");
+        deviceField190.setLabelString("Stream name:");
+        deviceField190.setNumCols(20);
+        deviceField190.setOffsetNid(168);
+        deviceField190.setTextOnly(true);
+        jPanel49.add(deviceField190);
+
+        deviceField191.setIdentifier("");
+        deviceField191.setLabelString("Gain:");
+        deviceField191.setNumCols(20);
+        deviceField191.setOffsetNid(170);
+        jPanel49.add(deviceField191);
+
+        deviceField192.setIdentifier("");
+        deviceField192.setLabelString("Offset: ");
+        deviceField192.setNumCols(20);
+        deviceField192.setOffsetNid(171);
+        jPanel49.add(deviceField192);
+
+        jPanel1.add(jPanel49);
+
+        deviceField193.setIdentifier("");
+        deviceField193.setLabelString("Node:");
+        deviceField193.setNumCols(30);
+        deviceField193.setOffsetNid(174);
+        jPanel50.add(deviceField193);
+
+        deviceField194.setIdentifier("");
+        deviceField194.setLabelString("Stream name:");
+        deviceField194.setNumCols(20);
+        deviceField194.setOffsetNid(173);
+        deviceField194.setTextOnly(true);
+        jPanel50.add(deviceField194);
+
+        deviceField195.setIdentifier("");
+        deviceField195.setLabelString("Gain:");
+        deviceField195.setNumCols(20);
+        deviceField195.setOffsetNid(175);
+        jPanel50.add(deviceField195);
+
+        deviceField196.setIdentifier("");
+        deviceField196.setLabelString("Offset: ");
+        deviceField196.setNumCols(20);
+        deviceField196.setOffsetNid(176);
+        jPanel50.add(deviceField196);
+
+        jPanel1.add(jPanel50);
+
+        deviceField197.setIdentifier("");
+        deviceField197.setLabelString("Node:");
+        deviceField197.setNumCols(30);
+        deviceField197.setOffsetNid(179);
+        jPanel51.add(deviceField197);
+
+        deviceField198.setIdentifier("");
+        deviceField198.setLabelString("Stream name:");
+        deviceField198.setNumCols(20);
+        deviceField198.setOffsetNid(178);
+        deviceField198.setTextOnly(true);
+        jPanel51.add(deviceField198);
+
+        deviceField199.setIdentifier("");
+        deviceField199.setLabelString("Gain:");
+        deviceField199.setNumCols(20);
+        deviceField199.setOffsetNid(180);
+        jPanel51.add(deviceField199);
+
+        deviceField200.setIdentifier("");
+        deviceField200.setLabelString("Offset: ");
+        deviceField200.setNumCols(20);
+        deviceField200.setOffsetNid(181);
+        deviceField200.setShowState(true);
+        jPanel51.add(deviceField200);
+
+        jPanel1.add(jPanel51);
+
+        deviceField201.setIdentifier("");
+        deviceField201.setLabelString("Node:");
+        deviceField201.setNumCols(30);
+        deviceField201.setOffsetNid(184);
+        jPanel52.add(deviceField201);
+
+        deviceField202.setIdentifier("");
+        deviceField202.setLabelString("Stream name:");
+        deviceField202.setNumCols(20);
+        deviceField202.setOffsetNid(183);
+        deviceField202.setTextOnly(true);
+        jPanel52.add(deviceField202);
+
+        deviceField203.setIdentifier("");
+        deviceField203.setLabelString("Gain:");
+        deviceField203.setNumCols(20);
+        deviceField203.setOffsetNid(185);
+        jPanel52.add(deviceField203);
+
+        deviceField204.setIdentifier("");
+        deviceField204.setLabelString("Offset: ");
+        deviceField204.setNumCols(20);
+        deviceField204.setOffsetNid(186);
+        jPanel52.add(deviceField204);
+
+        jPanel1.add(jPanel52);
+
+        deviceField205.setIdentifier("");
+        deviceField205.setLabelString("Node:");
+        deviceField205.setNumCols(30);
+        deviceField205.setOffsetNid(189);
+        jPanel53.add(deviceField205);
+
+        deviceField206.setIdentifier("");
+        deviceField206.setLabelString("Stream name:");
+        deviceField206.setNumCols(20);
+        deviceField206.setOffsetNid(188);
+        deviceField206.setTextOnly(true);
+        jPanel53.add(deviceField206);
+
+        deviceField207.setIdentifier("");
+        deviceField207.setLabelString("Gain:");
+        deviceField207.setNumCols(20);
+        deviceField207.setOffsetNid(190);
+        jPanel53.add(deviceField207);
+
+        deviceField208.setIdentifier("");
+        deviceField208.setLabelString("Offset: ");
+        deviceField208.setNumCols(20);
+        deviceField208.setOffsetNid(191);
+        jPanel53.add(deviceField208);
+
+        jPanel1.add(jPanel53);
+
+        deviceField209.setIdentifier("");
+        deviceField209.setLabelString("Node:");
+        deviceField209.setNumCols(30);
+        deviceField209.setOffsetNid(194);
+        jPanel54.add(deviceField209);
+
+        deviceField210.setIdentifier("");
+        deviceField210.setLabelString("Stream name:");
+        deviceField210.setNumCols(20);
+        deviceField210.setOffsetNid(193);
+        deviceField210.setTextOnly(true);
+        jPanel54.add(deviceField210);
+
+        deviceField211.setIdentifier("");
+        deviceField211.setLabelString("Gain:");
+        deviceField211.setNumCols(20);
+        deviceField211.setOffsetNid(195);
+        jPanel54.add(deviceField211);
+
+        deviceField212.setIdentifier("");
+        deviceField212.setLabelString("Offset: ");
+        deviceField212.setNumCols(20);
+        deviceField212.setOffsetNid(196);
+        jPanel54.add(deviceField212);
+
+        jPanel1.add(jPanel54);
+
+        deviceField213.setIdentifier("");
+        deviceField213.setLabelString("Node:");
+        deviceField213.setNumCols(30);
+        deviceField213.setOffsetNid(199);
+        jPanel55.add(deviceField213);
+
+        deviceField214.setIdentifier("");
+        deviceField214.setLabelString("Stream name:");
+        deviceField214.setNumCols(20);
+        deviceField214.setOffsetNid(198);
+        deviceField214.setTextOnly(true);
+        jPanel55.add(deviceField214);
+
+        deviceField215.setIdentifier("");
+        deviceField215.setLabelString("Gain:");
+        deviceField215.setNumCols(20);
+        deviceField215.setOffsetNid(200);
+        jPanel55.add(deviceField215);
+
+        deviceField216.setIdentifier("");
+        deviceField216.setLabelString("Offset: ");
+        deviceField216.setNumCols(20);
+        deviceField216.setOffsetNid(201);
+        deviceField216.setShowState(true);
+        jPanel55.add(deviceField216);
+
+        jPanel1.add(jPanel55);
+
+        deviceField217.setIdentifier("");
+        deviceField217.setLabelString("Node:");
+        deviceField217.setNumCols(30);
+        deviceField217.setOffsetNid(204);
+        jPanel56.add(deviceField217);
+
+        deviceField218.setIdentifier("");
+        deviceField218.setLabelString("Stream name:");
+        deviceField218.setNumCols(20);
+        deviceField218.setOffsetNid(203);
+        deviceField218.setTextOnly(true);
+        jPanel56.add(deviceField218);
+
+        deviceField219.setIdentifier("");
+        deviceField219.setLabelString("Gain:");
+        deviceField219.setNumCols(20);
+        deviceField219.setOffsetNid(205);
+        jPanel56.add(deviceField219);
+
+        deviceField220.setIdentifier("");
+        deviceField220.setLabelString("Offset: ");
+        deviceField220.setNumCols(20);
+        deviceField220.setOffsetNid(206);
+        jPanel56.add(deviceField220);
+
+        jPanel1.add(jPanel56);
+
+        deviceField221.setIdentifier("");
+        deviceField221.setLabelString("Node:");
+        deviceField221.setNumCols(30);
+        deviceField221.setOffsetNid(209);
+        jPanel57.add(deviceField221);
+
+        deviceField222.setIdentifier("");
+        deviceField222.setLabelString("Stream name:");
+        deviceField222.setNumCols(20);
+        deviceField222.setOffsetNid(208);
+        deviceField222.setTextOnly(true);
+        jPanel57.add(deviceField222);
+
+        deviceField223.setIdentifier("");
+        deviceField223.setLabelString("Gain:");
+        deviceField223.setNumCols(20);
+        deviceField223.setOffsetNid(210);
+        jPanel57.add(deviceField223);
+
+        deviceField224.setIdentifier("");
+        deviceField224.setLabelString("Offset: ");
+        deviceField224.setNumCols(20);
+        deviceField224.setOffsetNid(211);
+        jPanel57.add(deviceField224);
+
+        jPanel1.add(jPanel57);
+
+        deviceField225.setIdentifier("");
+        deviceField225.setLabelString("Node:");
+        deviceField225.setNumCols(30);
+        deviceField225.setOffsetNid(214);
+        jPanel58.add(deviceField225);
+
+        deviceField226.setIdentifier("");
+        deviceField226.setLabelString("Stream name:");
+        deviceField226.setNumCols(20);
+        deviceField226.setOffsetNid(213);
+        deviceField226.setTextOnly(true);
+        jPanel58.add(deviceField226);
+
+        deviceField227.setIdentifier("");
+        deviceField227.setLabelString("Gain:");
+        deviceField227.setNumCols(20);
+        deviceField227.setOffsetNid(215);
+        jPanel58.add(deviceField227);
+
+        deviceField228.setIdentifier("");
+        deviceField228.setLabelString("Offset: ");
+        deviceField228.setNumCols(20);
+        deviceField228.setOffsetNid(216);
+        jPanel58.add(deviceField228);
+
+        jPanel1.add(jPanel58);
+
+        deviceField229.setIdentifier("");
+        deviceField229.setLabelString("Node:");
+        deviceField229.setNumCols(30);
+        deviceField229.setOffsetNid(219);
+        jPanel59.add(deviceField229);
+
+        deviceField230.setIdentifier("");
+        deviceField230.setLabelString("Stream name:");
+        deviceField230.setNumCols(20);
+        deviceField230.setOffsetNid(218);
+        deviceField230.setTextOnly(true);
+        jPanel59.add(deviceField230);
+
+        deviceField231.setIdentifier("");
+        deviceField231.setLabelString("Gain:");
+        deviceField231.setNumCols(20);
+        deviceField231.setOffsetNid(220);
+        jPanel59.add(deviceField231);
+
+        deviceField232.setIdentifier("");
+        deviceField232.setLabelString("Offset: ");
+        deviceField232.setNumCols(20);
+        deviceField232.setOffsetNid(221);
+        jPanel59.add(deviceField232);
+
+        jPanel1.add(jPanel59);
+
+        deviceField233.setIdentifier("");
+        deviceField233.setLabelString("Node:");
+        deviceField233.setNumCols(30);
+        deviceField233.setOffsetNid(224);
+        jPanel60.add(deviceField233);
+
+        deviceField234.setIdentifier("");
+        deviceField234.setLabelString("Stream name:");
+        deviceField234.setNumCols(20);
+        deviceField234.setOffsetNid(223);
+        deviceField234.setTextOnly(true);
+        jPanel60.add(deviceField234);
+
+        deviceField235.setIdentifier("");
+        deviceField235.setLabelString("Gain:");
+        deviceField235.setNumCols(20);
+        deviceField235.setOffsetNid(225);
+        jPanel60.add(deviceField235);
+
+        deviceField236.setIdentifier("");
+        deviceField236.setLabelString("Offset: ");
+        deviceField236.setNumCols(20);
+        deviceField236.setOffsetNid(226);
+        jPanel60.add(deviceField236);
+
+        jPanel1.add(jPanel60);
+
+        deviceField237.setIdentifier("");
+        deviceField237.setLabelString("Node:");
+        deviceField237.setNumCols(30);
+        deviceField237.setOffsetNid(229);
+        jPanel61.add(deviceField237);
+
+        deviceField238.setIdentifier("");
+        deviceField238.setLabelString("Stream name:");
+        deviceField238.setNumCols(20);
+        deviceField238.setOffsetNid(228);
+        deviceField238.setTextOnly(true);
+        jPanel61.add(deviceField238);
+
+        deviceField239.setIdentifier("");
+        deviceField239.setLabelString("Gain:");
+        deviceField239.setNumCols(20);
+        deviceField239.setOffsetNid(230);
+        jPanel61.add(deviceField239);
+
+        deviceField240.setIdentifier("");
+        deviceField240.setLabelString("Offset: ");
+        deviceField240.setNumCols(20);
+        deviceField240.setOffsetNid(231);
+        jPanel61.add(deviceField240);
+
+        jPanel1.add(jPanel61);
+
+        deviceField241.setIdentifier("");
+        deviceField241.setLabelString("Node:");
+        deviceField241.setNumCols(30);
+        deviceField241.setOffsetNid(234);
+        jPanel62.add(deviceField241);
+
+        deviceField242.setIdentifier("");
+        deviceField242.setLabelString("Stream name:");
+        deviceField242.setNumCols(20);
+        deviceField242.setOffsetNid(233);
+        deviceField242.setTextOnly(true);
+        jPanel62.add(deviceField242);
+
+        deviceField243.setIdentifier("");
+        deviceField243.setLabelString("Gain:");
+        deviceField243.setNumCols(20);
+        deviceField243.setOffsetNid(235);
+        jPanel62.add(deviceField243);
+
+        deviceField244.setIdentifier("");
+        deviceField244.setLabelString("Offset: ");
+        deviceField244.setNumCols(20);
+        deviceField244.setOffsetNid(236);
+        jPanel62.add(deviceField244);
+
+        jPanel1.add(jPanel62);
+
+        deviceField245.setIdentifier("");
+        deviceField245.setLabelString("Node:");
+        deviceField245.setNumCols(30);
+        deviceField245.setOffsetNid(239);
+        jPanel63.add(deviceField245);
+
+        deviceField246.setIdentifier("");
+        deviceField246.setLabelString("Stream name:");
+        deviceField246.setNumCols(20);
+        deviceField246.setOffsetNid(238);
+        deviceField246.setTextOnly(true);
+        jPanel63.add(deviceField246);
+
+        deviceField247.setIdentifier("");
+        deviceField247.setLabelString("Gain:");
+        deviceField247.setNumCols(20);
+        deviceField247.setOffsetNid(240);
+        jPanel63.add(deviceField247);
+
+        deviceField248.setIdentifier("");
+        deviceField248.setLabelString("Offset: ");
+        deviceField248.setNumCols(20);
+        deviceField248.setOffsetNid(241);
+        jPanel63.add(deviceField248);
+
+        jPanel1.add(jPanel63);
+
+        deviceField249.setIdentifier("");
+        deviceField249.setLabelString("Node:");
+        deviceField249.setNumCols(30);
+        deviceField249.setOffsetNid(244);
+        jPanel64.add(deviceField249);
+
+        deviceField250.setIdentifier("");
+        deviceField250.setLabelString("Stream name:");
+        deviceField250.setNumCols(20);
+        deviceField250.setOffsetNid(243);
+        deviceField250.setTextOnly(true);
+        jPanel64.add(deviceField250);
+
+        deviceField251.setIdentifier("");
+        deviceField251.setLabelString("Gain:");
+        deviceField251.setNumCols(20);
+        deviceField251.setOffsetNid(245);
+        jPanel64.add(deviceField251);
+
+        deviceField252.setIdentifier("");
+        deviceField252.setLabelString("Offset: ");
+        deviceField252.setNumCols(20);
+        deviceField252.setOffsetNid(246);
+        jPanel64.add(deviceField252);
+
+        jPanel1.add(jPanel64);
+
+        deviceField253.setIdentifier("");
+        deviceField253.setLabelString("Node:");
+        deviceField253.setNumCols(30);
+        deviceField253.setOffsetNid(249);
+        jPanel65.add(deviceField253);
+
+        deviceField254.setIdentifier("");
+        deviceField254.setLabelString("Stream name:");
+        deviceField254.setNumCols(20);
+        deviceField254.setOffsetNid(248);
+        deviceField254.setTextOnly(true);
+        jPanel65.add(deviceField254);
+
+        deviceField255.setIdentifier("");
+        deviceField255.setLabelString("Gain:");
+        deviceField255.setNumCols(20);
+        deviceField255.setOffsetNid(250);
+        jPanel65.add(deviceField255);
+
+        deviceField256.setIdentifier("");
+        deviceField256.setLabelString("Offset: ");
+        deviceField256.setNumCols(20);
+        deviceField256.setOffsetNid(251);
+        jPanel65.add(deviceField256);
+
+        jPanel1.add(jPanel65);
+
+        deviceField257.setIdentifier("");
+        deviceField257.setLabelString("Node:");
+        deviceField257.setNumCols(30);
+        deviceField257.setOffsetNid(254);
+        jPanel66.add(deviceField257);
+
+        deviceField258.setIdentifier("");
+        deviceField258.setLabelString("Stream name:");
+        deviceField258.setNumCols(20);
+        deviceField258.setOffsetNid(253);
+        deviceField258.setTextOnly(true);
+        jPanel66.add(deviceField258);
+
+        deviceField259.setIdentifier("");
+        deviceField259.setLabelString("Gain:");
+        deviceField259.setNumCols(20);
+        deviceField259.setOffsetNid(255);
+        jPanel66.add(deviceField259);
+
+        deviceField260.setIdentifier("");
+        deviceField260.setLabelString("Offset: ");
+        deviceField260.setNumCols(20);
+        deviceField260.setOffsetNid(256);
+        jPanel66.add(deviceField260);
+
+        jPanel1.add(jPanel66);
+
+        deviceField261.setIdentifier("");
+        deviceField261.setLabelString("Node:");
+        deviceField261.setNumCols(30);
+        deviceField261.setOffsetNid(259);
+        jPanel67.add(deviceField261);
+
+        deviceField262.setIdentifier("");
+        deviceField262.setLabelString("Stream name:");
+        deviceField262.setNumCols(20);
+        deviceField262.setOffsetNid(258);
+        deviceField262.setTextOnly(true);
+        jPanel67.add(deviceField262);
+
+        deviceField263.setIdentifier("");
+        deviceField263.setLabelString("Gain:");
+        deviceField263.setNumCols(20);
+        deviceField263.setOffsetNid(260);
+        jPanel67.add(deviceField263);
+
+        deviceField264.setIdentifier("");
+        deviceField264.setLabelString("Offset: ");
+        deviceField264.setNumCols(20);
+        deviceField264.setOffsetNid(261);
+        jPanel67.add(deviceField264);
+
+        jPanel1.add(jPanel67);
+
+        deviceField265.setIdentifier("");
+        deviceField265.setLabelString("Node:");
+        deviceField265.setNumCols(30);
+        deviceField265.setOffsetNid(264);
+        jPanel68.add(deviceField265);
+
+        deviceField266.setIdentifier("");
+        deviceField266.setLabelString("Stream name:");
+        deviceField266.setNumCols(20);
+        deviceField266.setOffsetNid(263);
+        deviceField266.setTextOnly(true);
+        jPanel68.add(deviceField266);
+
+        deviceField267.setIdentifier("");
+        deviceField267.setLabelString("Gain:");
+        deviceField267.setNumCols(20);
+        deviceField267.setOffsetNid(265);
+        jPanel68.add(deviceField267);
+
+        deviceField268.setIdentifier("");
+        deviceField268.setLabelString("Offset: ");
+        deviceField268.setNumCols(20);
+        deviceField268.setOffsetNid(266);
+        jPanel68.add(deviceField268);
+
+        jPanel1.add(jPanel68);
+
+        deviceField269.setIdentifier("");
+        deviceField269.setLabelString("Node:");
+        deviceField269.setNumCols(30);
+        deviceField269.setOffsetNid(269);
+        jPanel69.add(deviceField269);
+
+        deviceField270.setIdentifier("");
+        deviceField270.setLabelString("Stream name:");
+        deviceField270.setNumCols(20);
+        deviceField270.setOffsetNid(268);
+        deviceField270.setTextOnly(true);
+        jPanel69.add(deviceField270);
+
+        deviceField271.setIdentifier("");
+        deviceField271.setLabelString("Gain:");
+        deviceField271.setNumCols(20);
+        deviceField271.setOffsetNid(270);
+        jPanel69.add(deviceField271);
+
+        deviceField272.setIdentifier("");
+        deviceField272.setLabelString("Offset: ");
+        deviceField272.setNumCols(20);
+        deviceField272.setOffsetNid(271);
+        jPanel69.add(deviceField272);
+
+        jPanel1.add(jPanel69);
+
+        deviceField273.setIdentifier("");
+        deviceField273.setLabelString("Node:");
+        deviceField273.setNumCols(30);
+        deviceField273.setOffsetNid(274);
+        jPanel70.add(deviceField273);
+
+        deviceField274.setIdentifier("");
+        deviceField274.setLabelString("Stream name:");
+        deviceField274.setNumCols(20);
+        deviceField274.setOffsetNid(273);
+        deviceField274.setTextOnly(true);
+        jPanel70.add(deviceField274);
+
+        deviceField275.setIdentifier("");
+        deviceField275.setLabelString("Gain:");
+        deviceField275.setNumCols(20);
+        deviceField275.setOffsetNid(275);
+        jPanel70.add(deviceField275);
+
+        deviceField276.setIdentifier("");
+        deviceField276.setLabelString("Offset: ");
+        deviceField276.setNumCols(20);
+        deviceField276.setOffsetNid(276);
+        jPanel70.add(deviceField276);
+
+        jPanel1.add(jPanel70);
+
+        deviceField277.setIdentifier("");
+        deviceField277.setLabelString("Node:");
+        deviceField277.setNumCols(30);
+        deviceField277.setOffsetNid(279);
+        jPanel71.add(deviceField277);
+
+        deviceField278.setIdentifier("");
+        deviceField278.setLabelString("Stream name:");
+        deviceField278.setNumCols(20);
+        deviceField278.setOffsetNid(278);
+        deviceField278.setTextOnly(true);
+        jPanel71.add(deviceField278);
+
+        deviceField279.setIdentifier("");
+        deviceField279.setLabelString("Gain:");
+        deviceField279.setNumCols(20);
+        deviceField279.setOffsetNid(280);
+        jPanel71.add(deviceField279);
+
+        deviceField280.setIdentifier("");
+        deviceField280.setLabelString("Offset: ");
+        deviceField280.setNumCols(20);
+        deviceField280.setOffsetNid(281);
+        jPanel71.add(deviceField280);
+
+        jPanel1.add(jPanel71);
+
+        deviceField281.setIdentifier("");
+        deviceField281.setLabelString("Node:");
+        deviceField281.setNumCols(30);
+        deviceField281.setOffsetNid(284);
+        jPanel72.add(deviceField281);
+
+        deviceField282.setIdentifier("");
+        deviceField282.setLabelString("Stream name:");
+        deviceField282.setNumCols(20);
+        deviceField282.setOffsetNid(283);
+        deviceField282.setTextOnly(true);
+        jPanel72.add(deviceField282);
+
+        deviceField283.setIdentifier("");
+        deviceField283.setLabelString("Gain:");
+        deviceField283.setNumCols(20);
+        deviceField283.setOffsetNid(285);
+        jPanel72.add(deviceField283);
+
+        deviceField284.setIdentifier("");
+        deviceField284.setLabelString("Offset: ");
+        deviceField284.setNumCols(20);
+        deviceField284.setOffsetNid(286);
+        jPanel72.add(deviceField284);
+
+        jPanel1.add(jPanel72);
+
+        deviceField285.setIdentifier("");
+        deviceField285.setLabelString("Node:");
+        deviceField285.setNumCols(30);
+        deviceField285.setOffsetNid(289);
+        jPanel73.add(deviceField285);
+
+        deviceField286.setIdentifier("");
+        deviceField286.setLabelString("Stream name:");
+        deviceField286.setNumCols(20);
+        deviceField286.setOffsetNid(288);
+        deviceField286.setTextOnly(true);
+        jPanel73.add(deviceField286);
+
+        deviceField287.setIdentifier("");
+        deviceField287.setLabelString("Gain:");
+        deviceField287.setNumCols(20);
+        deviceField287.setOffsetNid(290);
+        jPanel73.add(deviceField287);
+
+        deviceField288.setIdentifier("");
+        deviceField288.setLabelString("Offset: ");
+        deviceField288.setNumCols(20);
+        deviceField288.setOffsetNid(291);
+        jPanel73.add(deviceField288);
+
+        jPanel1.add(jPanel73);
+
+        deviceField289.setIdentifier("");
+        deviceField289.setLabelString("Node:");
+        deviceField289.setNumCols(30);
+        deviceField289.setOffsetNid(294);
+        jPanel74.add(deviceField289);
+
+        deviceField290.setIdentifier("");
+        deviceField290.setLabelString("Stream name:");
+        deviceField290.setNumCols(20);
+        deviceField290.setOffsetNid(293);
+        deviceField290.setTextOnly(true);
+        jPanel74.add(deviceField290);
+
+        deviceField291.setIdentifier("");
+        deviceField291.setLabelString("Gain:");
+        deviceField291.setNumCols(20);
+        deviceField291.setOffsetNid(295);
+        jPanel74.add(deviceField291);
+
+        deviceField292.setIdentifier("");
+        deviceField292.setLabelString("Offset: ");
+        deviceField292.setNumCols(20);
+        deviceField292.setOffsetNid(296);
+        jPanel74.add(deviceField292);
+
+        jPanel1.add(jPanel74);
+
+        deviceField293.setIdentifier("");
+        deviceField293.setLabelString("Node:");
+        deviceField293.setNumCols(30);
+        deviceField293.setOffsetNid(299);
+        jPanel75.add(deviceField293);
+
+        deviceField294.setIdentifier("");
+        deviceField294.setLabelString("Stream name:");
+        deviceField294.setNumCols(20);
+        deviceField294.setOffsetNid(298);
+        deviceField294.setTextOnly(true);
+        jPanel75.add(deviceField294);
+
+        deviceField295.setIdentifier("");
+        deviceField295.setLabelString("Gain:");
+        deviceField295.setNumCols(20);
+        deviceField295.setOffsetNid(300);
+        jPanel75.add(deviceField295);
+
+        deviceField296.setIdentifier("");
+        deviceField296.setLabelString("Offset: ");
+        deviceField296.setNumCols(20);
+        deviceField296.setOffsetNid(301);
+        jPanel75.add(deviceField296);
+
+        jPanel1.add(jPanel75);
+
+        deviceField297.setIdentifier("");
+        deviceField297.setLabelString("Node:");
+        deviceField297.setNumCols(30);
+        deviceField297.setOffsetNid(304);
+        jPanel76.add(deviceField297);
+
+        deviceField298.setIdentifier("");
+        deviceField298.setLabelString("Stream name:");
+        deviceField298.setNumCols(20);
+        deviceField298.setOffsetNid(303);
+        deviceField298.setTextOnly(true);
+        jPanel76.add(deviceField298);
+
+        deviceField299.setIdentifier("");
+        deviceField299.setLabelString("Gain:");
+        deviceField299.setNumCols(20);
+        deviceField299.setOffsetNid(305);
+        jPanel76.add(deviceField299);
+
+        deviceField300.setIdentifier("");
+        deviceField300.setLabelString("Offset: ");
+        deviceField300.setNumCols(20);
+        deviceField300.setOffsetNid(306);
+        jPanel76.add(deviceField300);
+
+        jPanel1.add(jPanel76);
+
+        deviceField301.setIdentifier("");
+        deviceField301.setLabelString("Node:");
+        deviceField301.setNumCols(30);
+        deviceField301.setOffsetNid(309);
+        jPanel77.add(deviceField301);
+
+        deviceField302.setIdentifier("");
+        deviceField302.setLabelString("Stream name:");
+        deviceField302.setNumCols(20);
+        deviceField302.setOffsetNid(308);
+        deviceField302.setTextOnly(true);
+        jPanel77.add(deviceField302);
+
+        deviceField303.setIdentifier("");
+        deviceField303.setLabelString("Gain:");
+        deviceField303.setNumCols(20);
+        deviceField303.setOffsetNid(310);
+        jPanel77.add(deviceField303);
+
+        deviceField304.setIdentifier("");
+        deviceField304.setLabelString("Offset: ");
+        deviceField304.setNumCols(20);
+        deviceField304.setOffsetNid(311);
+        jPanel77.add(deviceField304);
+
+        jPanel1.add(jPanel77);
+
+        deviceField305.setIdentifier("");
+        deviceField305.setLabelString("Node:");
+        deviceField305.setNumCols(30);
+        deviceField305.setOffsetNid(314);
+        jPanel78.add(deviceField305);
+
+        deviceField306.setIdentifier("");
+        deviceField306.setLabelString("Stream name:");
+        deviceField306.setNumCols(20);
+        deviceField306.setOffsetNid(313);
+        deviceField306.setTextOnly(true);
+        jPanel78.add(deviceField306);
+
+        deviceField307.setIdentifier("");
+        deviceField307.setLabelString("Gain:");
+        deviceField307.setNumCols(20);
+        deviceField307.setOffsetNid(315);
+        jPanel78.add(deviceField307);
+
+        deviceField308.setIdentifier("");
+        deviceField308.setLabelString("Offset: ");
+        deviceField308.setNumCols(20);
+        deviceField308.setOffsetNid(316);
+        jPanel78.add(deviceField308);
+
+        jPanel1.add(jPanel78);
+
+        deviceField309.setIdentifier("");
+        deviceField309.setLabelString("Node:");
+        deviceField309.setNumCols(30);
+        deviceField309.setOffsetNid(319);
+        jPanel79.add(deviceField309);
+
+        deviceField310.setIdentifier("");
+        deviceField310.setLabelString("Stream name:");
+        deviceField310.setNumCols(20);
+        deviceField310.setOffsetNid(318);
+        deviceField310.setTextOnly(true);
+        jPanel79.add(deviceField310);
+
+        deviceField311.setIdentifier("");
+        deviceField311.setLabelString("Gain:");
+        deviceField311.setNumCols(20);
+        deviceField311.setOffsetNid(320);
+        jPanel79.add(deviceField311);
+
+        deviceField312.setIdentifier("");
+        deviceField312.setLabelString("Offset: ");
+        deviceField312.setNumCols(20);
+        deviceField312.setOffsetNid(321);
+        jPanel79.add(deviceField312);
+
+        jPanel1.add(jPanel79);
+
+        jScrollPane1.setViewportView(jPanel1);
+
+        getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        getAccessibleContext().setAccessibleName("");
+    }// </editor-fold>//GEN-END:initComponents
+
+    // Variables declaration - do not modify//GEN-BEGIN:variables
+    private DeviceButtons deviceButtons1;
+    private DeviceField deviceField1;
+    private DeviceField deviceField100;
+    private DeviceField deviceField101;
+    private DeviceField deviceField102;
+    private DeviceField deviceField103;
+    private DeviceField deviceField104;
+    private DeviceField deviceField105;
+    private DeviceField deviceField106;
+    private DeviceField deviceField107;
+    private DeviceField deviceField108;
+    private DeviceField deviceField109;
+    private DeviceField deviceField110;
+    private DeviceField deviceField111;
+    private DeviceField deviceField112;
+    private DeviceField deviceField113;
+    private DeviceField deviceField114;
+    private DeviceField deviceField115;
+    private DeviceField deviceField116;
+    private DeviceField deviceField117;
+    private DeviceField deviceField118;
+    private DeviceField deviceField119;
+    private DeviceField deviceField120;
+    private DeviceField deviceField121;
+    private DeviceField deviceField122;
+    private DeviceField deviceField123;
+    private DeviceField deviceField124;
+    private DeviceField deviceField125;
+    private DeviceField deviceField126;
+    private DeviceField deviceField127;
+    private DeviceField deviceField128;
+    private DeviceField deviceField129;
+    private DeviceField deviceField130;
+    private DeviceField deviceField131;
+    private DeviceField deviceField132;
+    private DeviceField deviceField133;
+    private DeviceField deviceField134;
+    private DeviceField deviceField135;
+    private DeviceField deviceField136;
+    private DeviceField deviceField137;
+    private DeviceField deviceField138;
+    private DeviceField deviceField139;
+    private DeviceField deviceField140;
+    private DeviceField deviceField141;
+    private DeviceField deviceField142;
+    private DeviceField deviceField143;
+    private DeviceField deviceField144;
+    private DeviceField deviceField145;
+    private DeviceField deviceField146;
+    private DeviceField deviceField147;
+    private DeviceField deviceField148;
+    private DeviceField deviceField149;
+    private DeviceField deviceField150;
+    private DeviceField deviceField151;
+    private DeviceField deviceField152;
+    private DeviceField deviceField153;
+    private DeviceField deviceField154;
+    private DeviceField deviceField155;
+    private DeviceField deviceField156;
+    private DeviceField deviceField157;
+    private DeviceField deviceField158;
+    private DeviceField deviceField159;
+    private DeviceField deviceField160;
+    private DeviceField deviceField161;
+    private DeviceField deviceField162;
+    private DeviceField deviceField163;
+    private DeviceField deviceField164;
+    private DeviceField deviceField165;
+    private DeviceField deviceField166;
+    private DeviceField deviceField167;
+    private DeviceField deviceField168;
+    private DeviceField deviceField169;
+    private DeviceField deviceField170;
+    private DeviceField deviceField171;
+    private DeviceField deviceField172;
+    private DeviceField deviceField173;
+    private DeviceField deviceField174;
+    private DeviceField deviceField175;
+    private DeviceField deviceField176;
+    private DeviceField deviceField177;
+    private DeviceField deviceField178;
+    private DeviceField deviceField179;
+    private DeviceField deviceField180;
+    private DeviceField deviceField181;
+    private DeviceField deviceField182;
+    private DeviceField deviceField183;
+    private DeviceField deviceField184;
+    private DeviceField deviceField185;
+    private DeviceField deviceField186;
+    private DeviceField deviceField187;
+    private DeviceField deviceField188;
+    private DeviceField deviceField189;
+    private DeviceField deviceField190;
+    private DeviceField deviceField191;
+    private DeviceField deviceField192;
+    private DeviceField deviceField193;
+    private DeviceField deviceField194;
+    private DeviceField deviceField195;
+    private DeviceField deviceField196;
+    private DeviceField deviceField197;
+    private DeviceField deviceField198;
+    private DeviceField deviceField199;
+    private DeviceField deviceField2;
+    private DeviceField deviceField200;
+    private DeviceField deviceField201;
+    private DeviceField deviceField202;
+    private DeviceField deviceField203;
+    private DeviceField deviceField204;
+    private DeviceField deviceField205;
+    private DeviceField deviceField206;
+    private DeviceField deviceField207;
+    private DeviceField deviceField208;
+    private DeviceField deviceField209;
+    private DeviceField deviceField210;
+    private DeviceField deviceField211;
+    private DeviceField deviceField212;
+    private DeviceField deviceField213;
+    private DeviceField deviceField214;
+    private DeviceField deviceField215;
+    private DeviceField deviceField216;
+    private DeviceField deviceField217;
+    private DeviceField deviceField218;
+    private DeviceField deviceField219;
+    private DeviceField deviceField220;
+    private DeviceField deviceField221;
+    private DeviceField deviceField222;
+    private DeviceField deviceField223;
+    private DeviceField deviceField224;
+    private DeviceField deviceField225;
+    private DeviceField deviceField226;
+    private DeviceField deviceField227;
+    private DeviceField deviceField228;
+    private DeviceField deviceField229;
+    private DeviceField deviceField230;
+    private DeviceField deviceField231;
+    private DeviceField deviceField232;
+    private DeviceField deviceField233;
+    private DeviceField deviceField234;
+    private DeviceField deviceField235;
+    private DeviceField deviceField236;
+    private DeviceField deviceField237;
+    private DeviceField deviceField238;
+    private DeviceField deviceField239;
+    private DeviceField deviceField240;
+    private DeviceField deviceField241;
+    private DeviceField deviceField242;
+    private DeviceField deviceField243;
+    private DeviceField deviceField244;
+    private DeviceField deviceField245;
+    private DeviceField deviceField246;
+    private DeviceField deviceField247;
+    private DeviceField deviceField248;
+    private DeviceField deviceField249;
+    private DeviceField deviceField250;
+    private DeviceField deviceField251;
+    private DeviceField deviceField252;
+    private DeviceField deviceField253;
+    private DeviceField deviceField254;
+    private DeviceField deviceField255;
+    private DeviceField deviceField256;
+    private DeviceField deviceField257;
+    private DeviceField deviceField258;
+    private DeviceField deviceField259;
+    private DeviceField deviceField260;
+    private DeviceField deviceField261;
+    private DeviceField deviceField262;
+    private DeviceField deviceField263;
+    private DeviceField deviceField264;
+    private DeviceField deviceField265;
+    private DeviceField deviceField266;
+    private DeviceField deviceField267;
+    private DeviceField deviceField268;
+    private DeviceField deviceField269;
+    private DeviceField deviceField270;
+    private DeviceField deviceField271;
+    private DeviceField deviceField272;
+    private DeviceField deviceField273;
+    private DeviceField deviceField274;
+    private DeviceField deviceField275;
+    private DeviceField deviceField276;
+    private DeviceField deviceField277;
+    private DeviceField deviceField278;
+    private DeviceField deviceField279;
+    private DeviceField deviceField280;
+    private DeviceField deviceField281;
+    private DeviceField deviceField282;
+    private DeviceField deviceField283;
+    private DeviceField deviceField284;
+    private DeviceField deviceField285;
+    private DeviceField deviceField286;
+    private DeviceField deviceField287;
+    private DeviceField deviceField288;
+    private DeviceField deviceField289;
+    private DeviceField deviceField290;
+    private DeviceField deviceField291;
+    private DeviceField deviceField292;
+    private DeviceField deviceField293;
+    private DeviceField deviceField294;
+    private DeviceField deviceField295;
+    private DeviceField deviceField296;
+    private DeviceField deviceField297;
+    private DeviceField deviceField298;
+    private DeviceField deviceField299;
+    private DeviceField deviceField3;
+    private DeviceField deviceField300;
+    private DeviceField deviceField301;
+    private DeviceField deviceField302;
+    private DeviceField deviceField303;
+    private DeviceField deviceField304;
+    private DeviceField deviceField305;
+    private DeviceField deviceField306;
+    private DeviceField deviceField307;
+    private DeviceField deviceField308;
+    private DeviceField deviceField309;
+    private DeviceField deviceField310;
+    private DeviceField deviceField311;
+    private DeviceField deviceField312;
+    private DeviceField deviceField33;
+    private DeviceField deviceField34;
+    private DeviceField deviceField35;
+    private DeviceField deviceField36;
+    private DeviceField deviceField4;
+    private DeviceField deviceField65;
+    private DeviceField deviceField66;
+    private DeviceField deviceField67;
+    private DeviceField deviceField68;
+    private DeviceField deviceField69;
+    private DeviceField deviceField70;
+    private DeviceField deviceField71;
+    private DeviceField deviceField72;
+    private DeviceField deviceField73;
+    private DeviceField deviceField74;
+    private DeviceField deviceField75;
+    private DeviceField deviceField76;
+    private DeviceField deviceField77;
+    private DeviceField deviceField78;
+    private DeviceField deviceField79;
+    private DeviceField deviceField80;
+    private DeviceField deviceField81;
+    private DeviceField deviceField82;
+    private DeviceField deviceField83;
+    private DeviceField deviceField84;
+    private DeviceField deviceField85;
+    private DeviceField deviceField86;
+    private DeviceField deviceField87;
+    private DeviceField deviceField88;
+    private DeviceField deviceField89;
+    private DeviceField deviceField90;
+    private DeviceField deviceField91;
+    private DeviceField deviceField92;
+    private DeviceField deviceField93;
+    private DeviceField deviceField94;
+    private DeviceField deviceField95;
+    private DeviceField deviceField96;
+    private DeviceField deviceField97;
+    private DeviceField deviceField98;
+    private DeviceField deviceField99;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel18;
+    private javax.swing.JPanel jPanel19;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JPanel jPanel20;
+    private javax.swing.JPanel jPanel21;
+    private javax.swing.JPanel jPanel22;
+    private javax.swing.JPanel jPanel23;
+    private javax.swing.JPanel jPanel24;
+    private javax.swing.JPanel jPanel25;
+    private javax.swing.JPanel jPanel26;
+    private javax.swing.JPanel jPanel27;
+    private javax.swing.JPanel jPanel28;
+    private javax.swing.JPanel jPanel29;
+    private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel30;
+    private javax.swing.JPanel jPanel31;
+    private javax.swing.JPanel jPanel32;
+    private javax.swing.JPanel jPanel33;
+    private javax.swing.JPanel jPanel34;
+    private javax.swing.JPanel jPanel35;
+    private javax.swing.JPanel jPanel36;
+    private javax.swing.JPanel jPanel37;
+    private javax.swing.JPanel jPanel38;
+    private javax.swing.JPanel jPanel39;
+    private javax.swing.JPanel jPanel40;
+    private javax.swing.JPanel jPanel41;
+    private javax.swing.JPanel jPanel42;
+    private javax.swing.JPanel jPanel43;
+    private javax.swing.JPanel jPanel44;
+    private javax.swing.JPanel jPanel45;
+    private javax.swing.JPanel jPanel46;
+    private javax.swing.JPanel jPanel47;
+    private javax.swing.JPanel jPanel48;
+    private javax.swing.JPanel jPanel49;
+    private javax.swing.JPanel jPanel50;
+    private javax.swing.JPanel jPanel51;
+    private javax.swing.JPanel jPanel52;
+    private javax.swing.JPanel jPanel53;
+    private javax.swing.JPanel jPanel54;
+    private javax.swing.JPanel jPanel55;
+    private javax.swing.JPanel jPanel56;
+    private javax.swing.JPanel jPanel57;
+    private javax.swing.JPanel jPanel58;
+    private javax.swing.JPanel jPanel59;
+    private javax.swing.JPanel jPanel60;
+    private javax.swing.JPanel jPanel61;
+    private javax.swing.JPanel jPanel62;
+    private javax.swing.JPanel jPanel63;
+    private javax.swing.JPanel jPanel64;
+    private javax.swing.JPanel jPanel65;
+    private javax.swing.JPanel jPanel66;
+    private javax.swing.JPanel jPanel67;
+    private javax.swing.JPanel jPanel68;
+    private javax.swing.JPanel jPanel69;
+    private javax.swing.JPanel jPanel70;
+    private javax.swing.JPanel jPanel71;
+    private javax.swing.JPanel jPanel72;
+    private javax.swing.JPanel jPanel73;
+    private javax.swing.JPanel jPanel74;
+    private javax.swing.JPanel jPanel75;
+    private javax.swing.JPanel jPanel76;
+    private javax.swing.JPanel jPanel77;
+    private javax.swing.JPanel jPanel78;
+    private javax.swing.JPanel jPanel79;
+    private javax.swing.JScrollPane jScrollPane1;
+    // End of variables declaration//GEN-END:variables
 }
