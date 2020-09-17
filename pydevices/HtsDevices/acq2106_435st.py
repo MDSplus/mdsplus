@@ -106,7 +106,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 self.decim.append(getattr(self.dev, 'input_%3.3d_decimate' %(i+1)).data())
 
             self.seg_length = self.dev.seg_length.data()
-            self.segment_bytes = self.seg_length*self.nchans*np.int16(0).nbytes
+            self.segment_bytes = self.seg_length*self.nchans*np.int32(0).nbytes
+
 
             self.empty_buffers = Queue()
             self.full_buffers  = Queue()
@@ -344,7 +345,7 @@ def assemble(cls):
     for i in range(cls.sites*32):
         cls.parts += [
             {'path':':INPUT_%3.3d'%(i+1,),            'type':'SIGNAL', 'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),   'type':'NUMERIC','valueExpr':'head.def_dcim',            'options':('no_write_shot',)},
+            {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),   'type':'NUMERIC','valueExpr':'head.def_dcim',            'options':('no_write_shot',)},           
             {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,),'type':'NUMERIC',                                            'options':('no_write_model', 'write_once',)},
             {'path':':INPUT_%3.3d:OFFSET'%(i+1,),     'type':'NUMERIC',                                            'options':('no_write_model', 'write_once',)},
         ]
