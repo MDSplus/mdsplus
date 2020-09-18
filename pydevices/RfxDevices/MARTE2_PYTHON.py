@@ -80,22 +80,22 @@ class BUILDER:
         }
 
     def __call__(self, cls):
-        self.pygam.initialize()
+        self.pygam.initialize(self.module.__name__)
         cls.inputs = [
             self.convert_io(
-                self.pygam.getInputName(i),
-                self.pygam.getInputDimensions(i),
-                self.pygam.getInputType(i),
+                self.pygam.getInputName(self.module.__name__, i),
+                self.pygam.getInputDimensions(self.module.__name__, i),
+                self.pygam.getInputType(self.module.__name__, i),
             )
-            for i in range(self.pygam.getNumberOfInputs())
+            for i in range(self.pygam.getNumberOfInputs(self.module.__name__))
         ]
         cls.outputs = [
             self.convert_io(
-                self.pygam.getOutputName(i),
-                self.pygam.getOutputDimensions(i),
-                self.pygam.getOutputType(i),
+                self.pygam.getOutputName(self.module.__name__, i),
+                self.pygam.getOutputDimensions(self.module.__name__, i),
+                self.pygam.getOutputType(self.module.__name__, i),
             )
-            for i in range(self.pygam.getNumberOfOutputs())
+            for i in range(self.pygam.getNumberOfOutputs(self.module.__name__))
         ]
         cls.parameters = [{
             'name': 'FileName',
@@ -103,12 +103,12 @@ class BUILDER:
             'value': self.module.__file__.split('/')[-1].split('.')[0]},
         ] + [
             self.convert_param(
-                self.pygam.getParameterName(i),
-                self.pygam.getParameterDimensions(i),
-                self.pygam.getParameterType(i),
-                self.pygam.getParameterDefaultValue(i),
+                self.pygam.getParameterName(self.module.__name__, i),
+                self.pygam.getParameterDimensions(self.module.__name__, i),
+                self.pygam.getParameterType(self.module.__name__, i),
+                self.pygam.getParameterDefaultValue(self.module.__name__, i),
             )
-            for i in range(self.pygam.getNumberOfParameters())
+            for i in range(self.pygam.getNumberOfParameters(self.module.__name__))
         ]
         cls.parts = []
         cls.buildGam(cls.parts, 'PyGAM', MC.MARTE2_COMPONENT.MODE_GAM)

@@ -41,16 +41,32 @@ def BUILDER(cls):
       cls.outputs = []
       cls.parameters = []
     else:
-      initializeFunc = cls.lib_name + '_initialize'
+      initializeFuncName = cls.lib_name + '_initialize'
 
-      # Initialization function is called with a dynamically-specified name
-      ModelLib[initializeFunc]()
-
+ 
+ 
+ 
       # By default functions are assumed to return the C int type.
       # Other return types can be specified by setting the restype attribute.
-      ModelLib.GetMmiPtr.argtypes = []
-      ModelLib.GetMmiPtr.restype = ctypes.POINTER(None)
-      mmi = ModelLib.GetMmiPtr()
+      InstFunc = getattr(ModelLib, cls.lib_name)
+      InstFunc.argtypes = []
+      InstFunc.restype = ctypes.POINTER(None)
+      states = InstFunc()
+      
+      GetMmiPtr = getattr(ModelLib, cls.lib_name+'_GetCAPImmi')
+#      ModelLib.GetMmiPtr.argtypes = []
+#      ModelLib.GetMmiPtr.restype = ctypes.POINTER(None)
+#      GetMmiPtr.argtypes = []
+      GetMmiPtr.argtypes = [ctypes.POINTER(None)]
+      GetMmiPtr.restype = ctypes.POINTER(None)
+#      mmi = ModelLib.GetMmiPtr()
+      mmi = GetMmiPtr(states)
+
+# Initialization function is called with a dynamically-specified name
+      InitializeFunc = getattr(ModelLib, initializeFuncName)
+      InitializeFunc.argtypes = [ctypes.POINTER(None)]
+      InitializeFunc(states)
+
 
       WrapperLib = ctypes.cdll.LoadLibrary("rtw_capi_wrapper.so")
 
@@ -341,15 +357,20 @@ def BUILDER(cls):
         return paramList
 
       # First parameter should be the model name
-      modelNameDict = dict(name = 'ModelName', type = 'string', dimensions = 0, value = cls.lib_name)
+#      modelNameDict = dict(name = 'ModelName', type = 'string', dimensions = 0, value = cls.lib_name)
+      symbolPrefixDict = dict(name = 'SymbolPrefix', type = 'string', dimensions = 0, value = cls.lib_name)
+      libraryDict = dict(name = 'Library', type = 'string', dimensions = 0, value = cls.lib_name+'.so')
+      verbosityDict = dict(name = 'Verbosity', type = 'numeric', dimensions = 0, value = 2)
 
       modelParameters = GetModelParameterData(ParameterStruct, numParameters)
-      modelParameters.insert(0, modelNameDict)
+      modelParameters.insert(0, symbolPrefixDict)
+      modelParameters.insert(0, libraryDict)
+      modelParameters.insert(0, verbosityDict)
 
       cls.inputs  = GetSignalData(RootInputStruct,  numInputs)
       cls.outputs = GetSignalData(RootOutputStruct, numOutputs)
       cls.parameters = modelParameters
 
     cls.parts = []
-    cls.buildGam(cls.parts, 'SimulinkInterfaceGAM', cls.MODE_GAM)
+    cls.buildGam(cls.parts, 'SimulinkWrapperGAM', cls.MODE_GAM)
     return cls

@@ -1,4 +1,4 @@
-#
+# 
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
 #
 
 from MDSplus import mdsExceptions, Device, Data, Range, Dimension, Window, Int32, Float32, Float64, Float32Array
+from MDSplus.mdsExceptions import DevCOMM_ERROR
 from MDSplus.mdsExceptions import DevBAD_PARAMETER
 
 from threading import Thread
@@ -84,6 +85,12 @@ class NI6259AI(Device):
     parts.append({'path':':CONV_CLK', 'type':'numeric','value':20})
     parts.append({'path':':SERIAL_NUM', 'type':'numeric'})
 
+    for i in range(0,32):
+        parts.append({'path':'.CHANNEL_%d:RES_RAW'%(i+1), 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  })
+
+    parts.append({'path':':WAIT_ACTION','type':'action',
+        'valueExpr':"Action(Dispatch('PXI_SERVER','FINISH_SHOT',55,None),Method(None,'wait_store',head))",
+        'options':('no_write_shot',)})
 
 #File descriptor
     fd = 0
@@ -104,16 +111,24 @@ class NI6259AI(Device):
     AI_START_SELECT_PULSE  = c_int(0)
     AI_START_SELECT_PFI1 = c_int(2)
 
-#    AI_START_SELECT_RTSI0 = c_int(11)
-#    AI_START_SELECT_RTSI1 = c_int(12)
+    AI_START_SELECT_RTSI0 = c_int(11)
+    AI_START_SELECT_RTSI1 = c_int(12)
 
+
+
+#check CODAC version for 
+    try:
+      codacVer = os.environ.get('CODAC_VERSION')
+      if codacVer[0] == '5':
 #Codac Core 5.0
-#    AI_START_SELECT = c_int(10)
-#    AI_START_POLARITY = c_int(11)
-
+        AI_START_SELECT = c_int(10)
+        AI_START_POLARITY = c_int(11)
+      else :
 #Codac Core 6.0
-    AI_START_SELECT = c_int(11)
-    AI_START_POLARITY = c_int(12)
+        AI_START_SELECT = c_int(11)
+        AI_START_POLARITY = c_int(12)
+    except:
+      pass
 
     AI_START_POLARITY_RISING_EDGE = c_int(0)
     AI_REFERENCE_SELECT_PULSE  = c_int(0)
@@ -133,6 +148,7 @@ class NI6259AI(Device):
     enableDict = {'ENABLED':True , 'DISABLED':False}
     gainDict = {'10V':c_byte(1), '5V':c_byte(2),'2V':c_byte(3), '1V':c_byte(4),'500mV':c_byte(5),'200mV':c_byte(6),'100mV':c_byte(7)}
     gainValueDict = {'10V':10., '5V':5.,'2V':2., '1V':1.,'500mV':0.5,'200mV':0.2,'100mV':0.1}
+    gainDividerDict = {'10V':1., '5V':1.,'2V':5., '1V':10.,'500mV':20.,'200mV':50.,'100mV':100.}
 
     polarityDict = {'UNIPOLAR':AI_POLARITY_UNIPOLAR, 'BIPOLAR':AI_POLARITY_BIPOLAR}
     diffChanMap = [0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23]
@@ -150,10 +166,12 @@ class NI6259AI(Device):
           msger=""
           if NI6259AI.niInterfaceLib is not None:
               errno = NI6259AI.niInterfaceLib.getErrno();
-              print ("erno ", errno)
-              if errno is not None:
+              msger = ''
+              #errno 11 Resource temporarily unavailable is removed    
+              if errno is not None and errno != 0 and errno != 11:
                   msger = 'Error (%d) %s' % (errno, os.strerror( errno ))
           print( self.name + ":" + msg, obj, msger );
+          sys.stdout.flush()
 
 #saveInfo and restoreInfo allow to handle open file descriptors
     def saveInfo(self):
@@ -180,7 +198,7 @@ class NI6259AI(Device):
                devName = '/dev/pxi6259.'+str(boardId);
                dfd = os.open(devName, os.O_RDWR);
                serialNum = c_int(0)
-               if NI6259AI.niLib.pxi6259_get_board_serial_number(dfd, byref(serialNum)) == 0 :
+               if NI6259AI.niLib.pxi6259_get_board_serial_number(dfd, byref(serialNum)) == 0 : 
                   self.serial_num.putData(serialNum)
                os.close(dfd)
             except:
@@ -262,7 +280,7 @@ class NI6259AI(Device):
             #trigSource = self.device.trig_source.data()
             clockSource = self.device.clock_source.evaluate()
 
-            frequency = float( clockSource.getDelta() )
+            period = float( clockSource.getDelta() )
 
 
             if( acqMode == 'TRANSIENT REC.'):
@@ -270,12 +288,14 @@ class NI6259AI(Device):
 
             chanFd = []
             chanNid = []
+            resNid = []
+            coeffsNid = []
 
             coeff_array = c_float*4
             coeff = coeff_array();
 
             #NI6259AI.niInterfaceLib.getStopAcqFlag(byref(self.stopAcq));
-
+            gainDividers = []
             for chan in range(len(self.chanMap)):
                 try:
                     #self.device.debugPrint 'CHANNEL', self.chanMap[chan]+1
@@ -285,11 +305,12 @@ class NI6259AI(Device):
 
                     chanNid.append( getattr(self.device, 'channel_%d_data_raw'%(self.chanMap[chan]+1)).getNid() )
                     #self.device.debugPrint "chanFd "+'channel_%d_data'%(self.chanMap[chan]+1), chanFd[chan], " chanNid ", chanNid[chan]
+                    resNid.append( getattr(self.device, 'channel_%d_res_raw'%(self.chanMap[chan]+1)).getNid() )
+                    coeffsNid.append(getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).getNid() ) 
 
                     gain = getattr(self.device, 'channel_%d_range'%(self.chanMap[chan]+1)).data()
                     gain_code = self.device.gainDict[gain]
-
-                    #time.sleep(0.600)
+                    gainDividers.append(self.device.gainDividerDict[gain])
                     n_coeff = c_int(0)
                     status = NI6259AI.niInterfaceLib.pxi6259_getCalibrationParams(currFd, gain_code, coeff, byref(n_coeff) )
 
@@ -301,15 +322,14 @@ class NI6259AI(Device):
                         gainValue = self.device.gainValueDict[gain] * 2.
                         coeff[0] = coeff[2] = coeff[3] = 0
                         coeff[1] = c_float( gainValue / 65536. )
-
+		    
                     getattr(self.device, 'channel_%d_calib_param'%(self.chanMap[chan]+1)).putData(Float32Array(coeff))
 
                 except Exception as e:
                     self.device.debugPrint(e)
                     Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open Channel '+ str(self.chanMap[chan]))
                     self.error = self.ACQ_ERROR;
-                    return
-
+                    return 
             if( not transientRec ):
 
                 if(bufSize > segmentSize):
@@ -338,25 +358,41 @@ class NI6259AI(Device):
             if(status != 0):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot Start Acquisition ')
                 self.error = self.ACQ_ERROR
-                return
+                return 
 
 
             saveList = c_void_p(0)
             NI6259AI.niInterfaceLib.startSave(byref(saveList))
             #count = 0
 
+            val = 0
             chanNid_c = (c_int * len(chanNid) )(*chanNid)
             chanFd_c = (c_int * len(chanFd) )(*chanFd)
+            resNid_c = (c_int * len(resNid))(*resNid)
+            coeffsNid_c = (c_int * len(coeffsNid))(*coeffsNid)
+            gainDividers_c = (c_float * len(gainDividers))(*gainDividers)
 
             #timeAt0 = trigSource + startTime
-            #self.device.debugPrint("PXI 6259 TIME AT0 ", numSamples)
+            #self.device.debugPrint("PXI 6259 TIME AT0 ", numSamples)            
             timeAt0 = startTime
 
             while not self.stopReq:
-                status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq)
+                try :
+                    status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period), self.treePtr, saveList, self.stopAcq, c_int(self.device.getTree().shot), resNid_c)
+                except Exception as ex :
+                    self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
+                    self.error = self.ACQ_ERROR
+                    self.stopReq = True
+ 
 
    ##Check termination
                 if ( numSamples > 0 or (transientRec and status == -1) ):
+                    self.stopReq = True
+
+                
+                if status < 0 :
+                    self.device.debugPrint('Acquisition Loop exit with code %d'%(status))
+                    self.error = self.ACQ_ERROR
                     self.stopReq = True
 
 
@@ -364,16 +400,27 @@ class NI6259AI(Device):
                 Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6259 Module is not in stop state')
                 self.error = self.ACQ_ERROR
 
+            if( status < 0 ):
+                if( status == -1 ):
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 Module is not triggered')
+                if( status == -2 ):
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 DMA overflow')
+                if( status == -3 ):
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 Exception on acquisition function')
+                self.error = self.ACQ_ERROR;                    
+
+
             status = NI6259AI.niLib.pxi6259_stop_ai(c_int(self.fd))
 
             for chan in range(len(self.chanMap)):
                 os.close(chanFd[chan])
-            #self.device.debugPrint 'ASYNCH WORKER TERMINATED'
+            self.device.debugPrint('ASYNCH WORKER TERMINATED')
             NI6259AI.niInterfaceLib.stopSave(saveList)
             NI6259AI.niInterfaceLib.freeStopAcqFlag(self.stopAcq)
+
             self.device.closeInfo()
 
-            return
+            return 
 
         def stop(self):
             self.stopReq = True
@@ -381,6 +428,11 @@ class NI6259AI(Device):
 
         def hasError(self):
             return ( self.error != self.ACQ_NOERROR)
+   
+        def closeTree(self):
+            #On first test dosen't work  
+            NI6259AI.niInterfaceLib.closeTree(self.treePtr)
+            self.device.debugPrint('CLOSE TREE')
 
 
 
@@ -389,8 +441,8 @@ class NI6259AI(Device):
 ##########init############################################################################
     def init(self):
 
-        self.debugPrint('================= 11 PXI 6259 Init ===============')
-
+        self.debugPrint('================= PXI 6259 Init ===============')
+        print('USE PRIVATE CTX: '+str(self.getTree().usingPrivateCtx()))
 
 #Module in acquisition check
         if self.restoreInfo() == self.DEV_IS_OPEN :
@@ -402,6 +454,7 @@ class NI6259AI(Device):
                self.restoreInfo()
             except:
                pass
+
 
         aiConf = c_void_p(0)
         NI6259AI.niInterfaceLib.pxi6259_create_ai_conf_ptr(byref(aiConf))
@@ -418,21 +471,22 @@ class NI6259AI(Device):
 #Channel configuration
         activeChan = 0;
         for chan in range(0, numChannels):
-
-            #Empy the node which will contain  the segmented data
+                    
+            #Empy the node which will contain  the segmented data   
             getattr(self, 'channel_%d_data_raw'%(chan+1)).deleteData()
-
             getattr(self, 'channel_%d_data_raw'%(chan+1)).setCompressOnPut(False)
+            getattr(self, 'channel_%d_res_raw'%(chan+1)).deleteData()
+            getattr(self, 'channel_%d_res_raw'%(chan+1)).setCompressOnPut(False)
             try:
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan+1)).data()]
                 polarity = self.polarityDict[getattr(self, 'channel_%d_polarity'%(chan+1)).data()]
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan+1)).data()]
-
+ 
                 data = Data.compile("NIpxi6259analogInputScaled(build_path($), build_path($), $ )", getattr(self, 'channel_%d_data_raw'%(chan+1)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan+1)).getPath(), gain )
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan+1)).putData(data)
             except Exception as e:
-                self.debugPrint (str(e))
+                self.debugPrint (estr(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid Configuration for channel '+str(chan + 1))
                 raise DevBAD_PARAMETER
             if(enabled):
@@ -492,17 +546,17 @@ class NI6259AI(Device):
                     """
                     if( trigMode == 'EXTERNAL_PFI1' or trigMode == 'EXT_PFI1_R_RTSI1' ):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
-                        self.debugPrint('AI_START_SELECT_PFI1 %d'%(status) )
+                        self.debugPrint('AI_START_SELECT_PFI1 %d'%(status) ) 
                     else:
                         self.debugPrint("1 OK AI_START_SELECT_RTSI1")
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_RTSI1)
                     if( status == 0 ):
                         status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_POLARITY, self.AI_START_POLARITY_RISING_EDGE)
-                        self.debugPrint('AI_START_POLARITY_RISING_EDGE %d'%(status) )
+                        self.debugPrint('AI_START_POLARITY_RISING_EDGE %d'%(status) ) 
                     if( status != 0 ):
                         Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot set external trigger')
-                        raise DevBAD_PARAMETER
-
+                        raise DevBAD_PARAMETER                    
+                    
                 else:
                     if( trigMode == 'EXT_PFI1_R_RTSI1' ):
                          status = NI6259AI.niLib.pxi6259_set_ai_attribute(aiConf, self.AI_START_SELECT, self.AI_START_SELECT_PFI1)
@@ -597,7 +651,7 @@ class NI6259AI(Device):
 
             convClk = self.conv_clk.data()
             if ( activeChan == 1 and convClk == 20 ) :
-                convClk = 16
+                convClk = 16  
 
 
             status = NI6259AI.niLib.pxi6259_set_ai_convert_clk(aiConf, c_int(convClk), c_int(3), self.AI_CONVERT_SELECT_SI2TC, self.AI_CONVERT_POLARITY_RISING_EDGE)
@@ -698,7 +752,6 @@ class NI6259AI(Device):
             preTrigger = nSamples - endIdx
             """
             self.debugPrint('PXI 6259 nSamples   = ', Int32(int(nSamples)))
-            self.seg_length.putData(Int32(int(nSamples)))
 
 #           status = NI6259AI.niLib.pxi6259_set_ai_number_of_samples(aiConf, c_int(postTrigger), c_int(preTrigger), 0)
 
@@ -779,10 +832,11 @@ class NI6259AI(Device):
             self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
-
+        
         time.sleep(2)
 
         if self.worker.hasError():
+            self.worker.error = self.worker.ACQ_NOERROR 
             raise mdsExceptions.TclFAILED_ESSENTIAL
 
         self.debugPrint("======================================================")
@@ -792,7 +846,7 @@ class NI6259AI(Device):
     def stop_store(self):
 
       self.debugPrint('================= PXI 6259 stop store ================')
-      error = False
+#      error = False
       """
       if self.restoreInfo() != self.DEV_IS_OPEN :
           Data.execute('DevLogErr($1,$2)', self.getNid(), 'Module not Initialized')
@@ -808,20 +862,54 @@ class NI6259AI(Device):
       if self.worker.isAlive():
           self.debugPrint("PXI 6259 stop_worker")
           self.worker.stop()
-          self.worker.join()
+ #        self.worker.join() worker therad waithing ternmination in wait_store method
           error = self.worker.hasError()
       else:
           error = self.worker.hasError()
-          if not error:
+          if not error: 
               Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread stopped')
 
 
       if error :
+          self.worker.error = self.worker.ACQ_NOERROR 
           raise mdsExceptions.TclFAILED_ESSENTIAL
 
       self.debugPrint("======================================================")
 
       return 1
+
+    def wait_store(self):
+
+      self.debugPrint('================= PXI 6259 wait store ================')
+
+      try:
+          self.restoreWorker()
+      except:
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread not created')
+          return
+
+      if self.worker.isAlive():
+          self.worker.stop()
+          self.worker.join()
+          error = self.worker.hasError()
+      else:
+          error = self.worker.hasError()
+          if not error: 
+              Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread already stopped')
+
+
+      if error :
+          Data.execute('DevLogErr($1,$2)', self.getNid(), 'Acquisition thread exit with fault')
+          self.worker.error = self.worker.ACQ_NOERROR 
+          raise mdsExceptions.TclFAILED_ESSENTIAL
+
+      #self.worker.closeTree()
+
+      self.debugPrint("======================================================")
+      return 1
+
+
+
 
     def readConfig(self):
 
