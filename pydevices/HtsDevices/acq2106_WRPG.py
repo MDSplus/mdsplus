@@ -61,9 +61,25 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         
         site_number  = self.dio_site.data()
-        uut_sX_nchan = 'uut.s' + str(int(site_number)) + '.NCHAN'
+        try:
+            if site_number   == 1:
+                slot = uut.s1
+            elif site_number == 2:
+                slot = uut.s2
+            elif site_number == 3:
+                slot = uut.s3
+            elif site_number == 4:
+                slot = uut.s4
+            elif site_number == 5:
+                slot = uut.s5
+            elif site_number == 6:
+                slot = uut.s6
+        except:
+            pass
+
         #Number of channels of the DIO482, e.g nchans = 32
-        nchans = int(eval(uut_sX_nchan))
+        nchans = int(slot.NCHAN)
+
         if self.debug >= 2:
             self.dprint(2, 'DIO site and number of channels: {} {}'.format(site_number, nchans))
 
