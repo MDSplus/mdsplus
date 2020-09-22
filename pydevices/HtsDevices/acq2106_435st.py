@@ -156,7 +156,8 @@ class _ACQ2106_435ST(MDSplus.Device):
             freq_str = re.findall("\d+\.\d+", uut.s0.SIG_CLK_S1_FREQ)
             # Here 512 is the ADC_MODE (High Res mode: get.site 1 hi_res_mode), 
             # i.e. HR_512 : ADC averages over 512 clock cycles, higher resolution, with max rate 50kSPS.
-            freq     = float(freq_str[0]/512) 
+            HR_512 = 512
+            freq     = float(freq_str[0]) / HR_512 
 
             if self.dev.debug:
                 print("The ACQ SAMPLE RATE is {}".format(freq))
