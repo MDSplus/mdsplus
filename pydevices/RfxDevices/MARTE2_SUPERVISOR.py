@@ -126,7 +126,7 @@ class MARTE2_SUPERVISOR(Device):
                   gamClass = currGamNode.getData().getDevice()
                   gamInstance = gamClass(currGamNode)
                 except:
-                  raise Exeption('Cannot instantiate device for node '+currGamNode.getFullPath())
+                  raise Exception('Cannot instantiate device for node '+currGamNode.getFullPath())
                 gamList = []
                 if not (currGamNode.getNid() in gamNids):
                   #try:
@@ -381,7 +381,8 @@ class MARTE2_SUPERVISOR(Device):
 
     def startMarte(self):
        self.buildConfiguration()
-       subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode('name').data()+'_marte_configuration.cfg -s State1'], shell=True)
+       stateName = self.state_1_name.data()
+       subprocess.Popen(['$MARTE_DIR/Playground.sh -f '+self.getNode('name').data()+'_marte_configuration.cfg -s '+stateName], shell=True)
        return 1
 
     def doState(self, state):
