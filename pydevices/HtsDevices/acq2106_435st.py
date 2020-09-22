@@ -153,8 +153,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
 
             # We ask the ACQ to return the value of the sample rate that we set in INIT().
-            freq_str = re.findall("\d+\.\d+", uut.s0.SIG_SYN_S1_FREQ)
-            freq     = float(freq_str[0])
+            freq_str = re.findall("\d+\.\d+", uut.s0.SIG_CLK_S1_FREQ)
+            freq     = float(freq_str[0]/512)
 
             if self.dev.debug:
                 print("The ACQ SAMPLE RATE is {}".format(freq))
