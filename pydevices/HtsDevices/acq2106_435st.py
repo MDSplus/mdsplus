@@ -120,6 +120,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         def run(self):
             import acq400_hapi
             import ast
+            import re
             uut = acq400_hapi.Acq400(self.dev.node.data(), monitor=False)
 
             def lcm(a,b):
@@ -149,10 +150,20 @@ class _ACQ2106_435ST(MDSplus.Device):
                     nacc_sample = nacc_tuple[0]
                 
             if self.dev.debug:
-                print("The ACQ NACC sample value was set to {}".format(nacc_sample))
+                print("The ACQ NACC sample value is {}".format(nacc_sample))
 
-            # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function, therefore:
-            dt = 1./self.dev.freq.data() * nacc_sample
+            # We ask the ACQ to return the value of the sample rate that we set in INIT().
+            freq_str = re.findall("\d+\.\d+", uut.s0.SIG_SYN_S1_FREQ)
+            freq     = float(freq_str[0])
+
+            if self.dev.debug:
+                print("The ACQ SAMPLE RATE is {}".format(freq))
+
+            # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function
+            dt = float(1./freq * nacc_sample)
+
+            if self.dev.debug:
+                print("The timebase delta t is {}".format(dt))
 
             decimator = lcma(self.decim)
 
@@ -295,7 +306,6 @@ class _ACQ2106_435ST(MDSplus.Device):
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]  
-        # If the user has specified a trigger.
         uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
 
         if self.debug:
@@ -319,6 +329,9 @@ class _ACQ2106_435ST(MDSplus.Device):
                 coeff.record = coeffs[i]
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
+
+        # The following sleep is to be sure that the change in the clock has stabilized/settled
+        if trg == 'soft': time.sleep(5)
 
         self.running.on=True
         thread = self.MDSWorker(self)
