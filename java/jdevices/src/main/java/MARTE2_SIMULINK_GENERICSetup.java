@@ -1,3 +1,6 @@
+
+import javax.swing.JOptionPane;
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -161,6 +164,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel3 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
+        jButton1 = new javax.swing.JButton();
 
         setDeviceProvider("spilds:8100");
         setDeviceTitle("MARTe2 Simulink Generic device");
@@ -841,10 +845,34 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField4.setOffsetNid(101);
         jPanel3.add(deviceField4);
 
+        jButton1.setText("Fill fields");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        jPanel3.add(jButton1);
+
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        // TODO add your handling code here:
+        String msg;
+	try
+	{
+            msg = subtree.getString(subtree.execute("fillMarteSimulinkFields(\'" + subtree.getName() + "\', " + baseNid + ")"));
+	}
+	catch (final Exception exc)
+	{
+            msg = exc.toString();
+	}
+	JOptionPane.showMessageDialog(this, msg);
+        update();
+
+    }//GEN-LAST:event_jButton1ActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -933,6 +961,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceField deviceField7;
     private DeviceField deviceField8;
     private DeviceField deviceField9;
+    private javax.swing.JButton jButton1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
