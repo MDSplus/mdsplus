@@ -85,7 +85,7 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
         libraryName =  modelName + '.so';
         ModelLib = ctypes.cdll.LoadLibrary(libraryName)
       except:
-        raise Exception( 'Cannot retrieve shared library for the Simulink model '+ libraryName)
+        raise Exception( 'Cannot retrieve shared library for the Simulink model ')
       initializeFuncName = modelName + '_initialize'
       # By default functions are assumed to return the C int type.
       # Other return types can be specified by setting the restype attribute.
@@ -406,10 +406,10 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
         self.getNode('parameters.par_'+str(i+4)+':value').deleteData()
         self.getNode('inputs.in'+str(i+1)+':dimensions').deleteData()
         self.getNode('inputs.in'+str(i+1)+':name').deleteData()
-        self.getNode('inputs.in'+str(i+1)+':type').deleteData()
+        self.getNode('inputs.in'+str(i+1)+':type').putData('int32')
         self.getNode('outputs.out'+str(i+1)+':dimensions').putData(-1)
         self.getNode('outputs.out'+str(i+1)+':name').deleteData()
-        self.getNode('outputs.out'+str(i+1)+':type').deleteData()
+        self.getNode('outputs.out'+str(i+1)+':type').putData('int32')
 
 
 
