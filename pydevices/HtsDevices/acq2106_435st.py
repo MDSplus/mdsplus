@@ -152,14 +152,11 @@ class _ACQ2106_435ST(MDSplus.Device):
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
 
-            if self.dev.debug:
-                print("The ACQ SAMPLE RATE is {}".format(float(srate)))
-
             # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function
             dt = float(1./self.dev.freq.data() * nacc_sample)
 
             if self.dev.debug:
-                print("The timebase delta t is {}".format(dt))
+                print("The SR is {} and timebase delta t is {}".format(self.dev.freq.data(), dt))
 
             decimator = lcma(self.decim)
 
