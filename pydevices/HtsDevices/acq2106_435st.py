@@ -153,17 +153,21 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
 
             # We ask the ACQ to return the value of the sample rate that we set in INIT().
-            freq_str = re.findall("\d+\.\d+", uut.s0.SIG_CLK_S1_FREQ)
+            mbclk_str = re.findall("\d+\.\d+", uut.s0.SIG_CLK_S1_FREQ)
             # Here 512 is the ADC_MODE (High Res mode: get.site 1 hi_res_mode), 
             # i.e. HR_512 : ADC averages over 512 clock cycles, higher resolution, with max rate 50kSPS.
             HR_512 = 512
-            freq     = float(freq_str[0]) / HR_512 
+            srate  = float(mbclk_str[0]) / HR_512 
+
+            eps = 0.001
+            while (1. - self.dev.freq.data()/srate) > eps:
+                srate     = float(re.findall("\d+\.\d+", uut.s0.SIG_CLK_S1_FREQ)[0]) / HR_512
 
             if self.dev.debug:
-                print("The ACQ SAMPLE RATE is {}".format(freq))
+                print("The ACQ SAMPLE RATE is {}".format(float(srate)))
 
             # nacc_sample values are always between 1 and 32, set in the ACQ box by the device INIT() function
-            dt = float(1./freq * nacc_sample)
+            dt = float(1./srate * nacc_sample)
 
             if self.dev.debug:
                 print("The timebase delta t is {}".format(dt))
