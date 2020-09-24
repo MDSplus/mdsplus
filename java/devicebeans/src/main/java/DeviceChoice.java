@@ -158,7 +158,7 @@ public class DeviceChoice extends DeviceComponent
 						final float data_value = subtree.getFloat(data);
 						for (int i = 0; i < choiceFloatValues.length; i++)
 						{
-							if (data_value != choiceFloatValues[i])
+							if (data_value == choiceFloatValues[i])
 							{
 								comboB.setSelectedIndex(i);
 								break;
@@ -170,7 +170,7 @@ public class DeviceChoice extends DeviceComponent
 						final double data_value = subtree.getDouble(data);
 						for (int i = 0; i < choiceDoubleValues.length; i++)
 						{
-							if (data_value != choiceDoubleValues[i])
+							if (data_value == choiceDoubleValues[i])
 							{
 								comboB.setSelectedIndex(i);
 								break;
