@@ -209,7 +209,8 @@ class MARTE2_COMPONENT(Device):
       paramDicts = []
       for parNode in parsNode.getChildren():
         name = parNode.getNode(':NAME').data()
-        value = parNode.getNode(':VALUE').data()
+        # value = parNode.getNode(':VALUE').data()
+        value = parNode.getNode(':VALUE').getData()
         if parNode.getNode(':VALUE').getUsage() == 'TEXT':
           paramDicts.append({'name': name, 'value': value, 'is_text':True})
         else:
@@ -249,6 +250,8 @@ class MARTE2_COMPONENT(Device):
             elif isinstance(paramDict['value'], Float32) or isinstance(paramDict['value'], Float32Array):
               outText += paramDict['name']+' = (float32)'+self.convertVal(str(paramDict['value'].data()))+'\n'
             else:
+              print('$$$$')
+              print(paramDict)
               outText += paramDict['name']+' = (float64)'+self.convertVal(str(paramDict['value'].data()))+'\n'
         else:
           if names[0] in rootParDict:
