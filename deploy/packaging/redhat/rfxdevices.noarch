@@ -34,11 +34,13 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_NI6259_DO.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_MUL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PID.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PWM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RFXMODEL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_MAGNET.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_TANK.py
