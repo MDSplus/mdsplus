@@ -323,9 +323,6 @@ class _ACQ2106_435ST(MDSplus.Device):
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
 
-        # The following sleep is to be sure that the change in the clock has stabilized/settled
-        if trg == 'soft': time.sleep(5)
-
         self.running.on=True
         thread = self.MDSWorker(self)
         thread.start()
