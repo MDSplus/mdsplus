@@ -55,6 +55,11 @@ Tcl('close')
 265389633
 Tcl('edit/new main/shot=1')
 265389633
+Tcl('set versions/nomodel/shot')
+265389633
+Tcl('show versions')
+  Versions are disabled in the model file and enabled in the shot file.
+265389633
 Tcl('add node any/usage=any')
 265389633
 Tcl('add node .child/usage=structure')
