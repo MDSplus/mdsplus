@@ -119,11 +119,11 @@ class Descriptor(object):
         self.ptr_= _C.cast(self.ptr,Descriptor.PTR)
 
     def __getattr__(self,name):
-        if name is not '_structure' and name in dict(self._structure._fields_):
+        if name != '_structure' and name in dict(self._structure._fields_):
             return self._structure.__getattribute__(name)
         return super(Descriptor,self).__getattr__(name)
     def __setattr__(self,name,value):
-        if name is not '_structure' and name in dict(self._structure._fields_):
+        if name != '_structure' and name in dict(self._structure._fields_):
             return self._structure.__setattr__(name,value)
         return super(Descriptor,self).__setattr__(name,value)
 
