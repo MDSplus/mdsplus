@@ -1,19 +1,13 @@
 package mds;
 
 import java.nio.ByteBuffer;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
 import java.util.regex.Pattern;
+
 import mds.Mdsdcl.DclStatus;
 import mds.data.CTX;
 import mds.data.TREE;
-import mds.data.descriptor.ARRAY;
-import mds.data.descriptor.Descriptor;
-import mds.data.descriptor.Descriptor_A;
-import mds.data.descriptor.Descriptor_S;
+import mds.data.descriptor.*;
 import mds.data.descriptor_a.Uint8Array;
 import mds.data.descriptor_s.Missing;
 import mds.data.descriptor_s.StringDsc;
@@ -626,13 +620,19 @@ public abstract class Mds implements AutoCloseable
 		this.mdsSetEvent(event, eventid);
 	}
 
-	public final String tcl(final CTX ctx, final String tclcmd) throws MdsException
+	public final String dcl(final CTX ctx, final String dclcmd) throws MdsException
 	{
-		final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, tclcmd);
+		final DclStatus res = this.getAPI().mdsdcl_do_command_dsc(ctx, dclcmd);
 		MdsException.handleStatus(res.status);
 		final String err = res.getErrString();
 		if (err != null)
 			throw new Mdsdcl.DclException(err);
 		return res.getOutString();
+	}
+
+	public final String tcl(final CTX ctx, final String command) throws MdsException
+	{
+		this.dcl(ctx, "set command tcl");
+		return this.dcl(ctx, command);
 	}
 }

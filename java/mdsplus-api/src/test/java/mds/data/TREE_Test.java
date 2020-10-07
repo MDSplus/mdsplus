@@ -4,8 +4,7 @@ import java.util.Arrays;
 
 import org.junit.*;
 
-import mds.AllTests;
-import mds.Mds;
+import mds.*;
 import mds.data.descriptor_a.Float32Array;
 import mds.data.descriptor_a.Float64Array;
 import mds.data.descriptor_s.*;
@@ -105,6 +104,21 @@ public class TREE_Test
 			Assert.assertEquals(0, tree.deleteNodeExecute().findNodesWild(NODE.USAGE_SUBTREE).length);
 			Assert.assertFalse(tree.writeTree().quitTree().is_open());
 		}
+	}
+
+	@Test
+	public void testVersions() throws MdsException
+	{
+		try (TREE tree = new TREE(TREE_Test.mds, TREE_Test.expt, TREE_Test.shot, TREE.NEW))
+		{
+			tree.open();
+			tree.setVersioning(false, true);
+			System.out.println(tree.api.tdiExecute(tree, "TCL('SHOW VERSIONS')"));
+			// TODO: test verisoning ala
+			// https://www.mdsplus.org/index.php/Documentation:Tutorial:Using_Data_Versioning
+		}
+		finally
+		{}
 	}
 
 	@Before
