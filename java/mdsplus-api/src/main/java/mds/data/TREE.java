@@ -1163,6 +1163,14 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		this.setActive().api.treeSetTimeContext(this.ctx, start, end, delta);
 	}
 
+	public final void setVersioning(final boolean model, final boolean pulse) throws MdsException
+	{
+		MdsException
+				.handleStatus(this.setActive().api.treeSetDbiItm(this, TreeShr.DBI_VERSIONS_IN_MODEL, model ? 1 : 0));
+		MdsException
+				.handleStatus(this.setActive().api.treeSetDbiItm(this, TreeShr.DBI_VERSIONS_IN_PULSE, pulse ? 1 : 0));
+	}
+
 	@Override
 	public final String toString()
 	{
