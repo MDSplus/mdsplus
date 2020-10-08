@@ -1777,8 +1777,8 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
-          startTime = currTimebase.begin
-          period = currTimebase.delta
+          startTime = currTimebase.begin.data()
+          period = currTimebase.delta.data()
         else:
           currTimebase = currTimebase.data()
           startTime = currTimebase[0]
