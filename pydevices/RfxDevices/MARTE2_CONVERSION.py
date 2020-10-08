@@ -23,11 +23,27 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+from MDSplus import Data, TreeNode, TreePath
+
 MC = __import__('MARTE2_COMPONENT', globals())
 
 
-@MC.BUILDER('TestSynchIn', MC.MARTE2_COMPONENT.MODE_SYNCH_INPUT)
-class MARTE2_SYNCH_IN(MC.MARTE2_COMPONENT):
-    outputs = [{'name': 'Uscita1', 'type': 'float32', 'dimensions': 0, 'parameters':{}}, {'name': 'Uscita2', 'type': 'int32', 'dimensions': [10],'parameters':{}}]
-    parameters = [{'name':'Parameter1', 'type': 'float32'}, {'name':'Parameter2', 'type': 'string'}]
+@MC.BUILDER('ConversionGAM', MC.MARTE2_COMPONENT.MODE_GAM)
+class MARTE2_CONVERSION(MC.MARTE2_COMPONENT):
+    inputs = []
+    for i in range(16):
+      inputs.append({'name': 'In'+str(i+1), 'type':'float64', 'dimensions': 0, 'parameters':[]})
+    outputs = []
+    for i in range(16):
+      outputs.append({'name': 'Out'+str(i+1), 'type':'float64', 'dimensions': 0, 'parameters':[]})
+    parameters = []
     parts = []
+
+    def prepareMarteInfo(self):
+#All outputs must have the same dimension of the corresponding input
+      for chan in range(16):
+        try:
+          getattr(self, 'outputs_out%d_dimensions'%(chan+1)).putData(getattr(self, 'inputs_in%d_dimensions'%(chan+1)).data())
+        except:
+          pass
+
