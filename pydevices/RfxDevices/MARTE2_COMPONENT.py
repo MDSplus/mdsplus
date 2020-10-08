@@ -633,7 +633,8 @@ class MARTE2_COMPONENT(Device):
       #    gamText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
 #input Signals
-      gamText += '    InputSignals = {\n'
+      if len(inputDicts) > 0:
+        gamText += '    InputSignals = {\n'
       nonGamInputNodes = []
       for inputDict in inputDicts:
         if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent() == self: #This is a Time field referring to this timebase
@@ -703,12 +704,14 @@ class MARTE2_COMPONENT(Device):
           gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
           gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
         gamText += '      }\n'
-      gamText += '    }\n'
+      if len(inputDicts) > 0:
+        gamText += '    }\n'
 
      #Output Signals
       synchThreadSignals = []
       asynchThreadSignals = []
-      gamText += '    OutputSignals = {\n'
+      if len(outputDicts) > 0:
+        gamText += '    OutputSignals = {\n'
       for outputDict in outputDicts:
         gamText += '      '+outputDict['name']+' = {\n'
         gamText += '        DataSource = '+gamName+'_Output_DDB\n'
@@ -729,7 +732,8 @@ class MARTE2_COMPONENT(Device):
           synchThreadSignals.append(outputDict['name'])
         if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], False):
           asynchThreadSignals.append(outputDict['name'])
-      gamText += '    }\n'
+      if len(outputDicts) > 0:
+        gamText += '    }\n'
       gamText += '  }\n'
       gams.append(gamText)
     #We need to declare out DDB, out MdsWriter and relative IOGAM
@@ -783,7 +787,14 @@ class MARTE2_COMPONENT(Device):
 #Time Management
         dataSourceText += '      Time = {\n'
         dataSourceText += '        NodeName = "'+configDict['outTimeNid'].getFullPath()+'"\n'
-        dataSourceText += '        Period = '+str(period)+'\n'
+#keep into account possibl sample information for that GAM
+        currSamples = 1
+        try:
+          currSamples = outputDict['samples']
+        except:
+          currSamples = 1
+            
+        dataSourceText += '        Period = '+str(period/currSamples)+'\n'
         dataSourceText += '        MakeSegmentAfterNWrites = 100\n'
         dataSourceText += '        AutomaticSegmentation = 0\n'
         if outputTrigger != None:
@@ -796,7 +807,7 @@ class MARTE2_COMPONENT(Device):
           if outputDict['seg_len'] > 0:
             dataSourceText += '      '+outputDict['name']+' = {\n'
             dataSourceText += '        NodeName = "'+outputDict['value_nid'].getFullPath()+'"\n'
-            dataSourceText += '        Period = '+str(period)+'\n'
+            dataSourceText += '        Period = '+str(period/currSamples)+'\n'
             dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
             dataSourceText += '        AutomaticSegmentation = 0\n'
             if startTime != 0:
@@ -883,16 +894,32 @@ class MARTE2_COMPONENT(Device):
             gamText += '      '+outputDict['name'] + ' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeOutput\n'
             gamText += '        Type = '+outputDict['type']+'\n'
-            if outputDict['dimensions'] == 0:
-              numberOfElements = 1
-              numberOfDimensions = 0
-            else:
-              numberOfDimensions = len(outputDict['dimensions'])
-              numberOfElements = 1
-              for currDim in outputDict['dimensions']:
-                numberOfElements *= currDim
-            gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
-            gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+
+
+#If the GAM device defines Samples in its output, take precedence over dimensions information
+            hasSamples = False
+            try:
+              currSamples = outputDict['samples']
+              if currSamples > 1:
+                hasSamples = True
+            except:
+              pass
+            
+            if hasSamples:     #E.g. MARTE2_RESAMPLER
+              gamText += '        NumberOfDimensions = 0\n'
+              gamText += '        Samples = '+str(currSamples)+'\n'
+            else: #store single sample of scalar or array
+              if outputDict['dimensions'] == 0:
+                numberOfElements = 1
+                numberOfDimensions = 0
+              else:
+                numberOfDimensions = len(outputDict['dimensions'])
+                numberOfElements = 1
+                for currDim in outputDict['dimensions']:
+                  numberOfElements *= currDim
+              gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+              gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+
             gamText += '      }\n'
 
         gamText += '    }\n'
@@ -1298,7 +1325,7 @@ class MARTE2_COMPONENT(Device):
           period = timebase.getDescAt(2).data() #Must be correct(will be checked before)
           frequency = 1./period
 
-          gamText += '        Frequency = '+str(round(frequency, 10))+'\n'
+          gamText += '        Frequency = '+str(round(frequency, 4))+'\n'
          # gamText += '        Frequency = '+str(round(frequency))+'\n'
 
         gamText += '      }\n'
@@ -1750,8 +1777,8 @@ class MARTE2_COMPONENT(Device):
         dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
         currTimebase = self.getNode('timebase').evaluate()
         if isinstance(currTimebase, Range):
-          startTime = currTimebase.begin
-          period = currTimebase.delta
+          startTime = currTimebase.begin.data()
+          period = currTimebase.delta.data()
         else:
           currTimebase = currTimebase.data()
           startTime = currTimebase[0]
