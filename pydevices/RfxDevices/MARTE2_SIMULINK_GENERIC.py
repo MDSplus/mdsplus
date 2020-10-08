@@ -23,6 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import ctypes
+import MDSplus
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
@@ -425,7 +426,10 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
       for inputDict in inputDicts:
         self.getNode('inputs.in'+str(inputIdx)+':name').putData(inputDict['name'])
         self.getNode('inputs.in'+str(inputIdx)+':type').putData(inputDict['type'])
-        self.getNode('inputs.in'+str(inputIdx)+':dimensions').putData(inputDict['dimensions'])
+        inDim = inputDict['dimensions']
+        if inDim != 0:
+          inDim = MDSplus.Int32Array(inDim)
+        self.getNode('inputs.in'+str(inputIdx)+':dimensions').putData(inDim)
         inputIdx += 1
         
       outputIdx = 1
@@ -433,7 +437,10 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
       for outputDict in outputDicts:
         self.getNode('outputs.out'+str(outputIdx)+':name').putData(outputDict['name'])
         self.getNode('outputs.out'+str(outputIdx)+':type').putData(outputDict['type'])
-        self.getNode('outputs.out'+str(outputIdx)+':dimensions').putData(outputDict['dimensions'])
+        outDim = outputDict['dimensions']
+        if outDim != 0:
+          outDim = MDSplus.Int32Array(outDim)
+        self.getNode('outputs.out'+str(outputIdx)+':dimensions').putData(outDim)
         outputIdx += 1
         
        
