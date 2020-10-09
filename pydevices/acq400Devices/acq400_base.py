@@ -69,11 +69,11 @@ class _ACQ400_BASE(MDSplus.Device):
         trg = self.trig_mode.data()
 
         if trg == 'hard':
-            trg_dx = 0
+            trg_dx = 'd0'
         elif trg == 'automatic':
-            trg_dx = 1
+            trg_dx = 'd1'
         elif trg == 'soft':
-            trg_dx = 1
+            trg_dx = 'd1'
 
 
         # The default case is to use the trigger set by sync_role.
@@ -86,10 +86,11 @@ class _ACQ400_BASE(MDSplus.Device):
                 uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
             else:
                 # If the user has specified a trigger.
-                uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), 'd'+str(trg_dx))
+                uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), trg_dx)
         else:
-            # Place holder for a WR sync_role call
-            print('CLKs set to WR clocks, initisialized by the corresponding subclass')
+            uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.freq.data(), trg_dx)
+            print('CLKs set to WR clocks, initisialized by sync_role')
+            #print('CLKs set to WR clocks, initisialized by the corresponding subclass')
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
