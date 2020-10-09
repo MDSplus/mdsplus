@@ -34,7 +34,8 @@ class MARTE2_NI6368_DO(MC.MARTE2_COMPONENT):
               {'name':'OutputPortMask', 'type':'int', 'value': 1}]}
     ]
     parameters = [
-        {'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
+
+        {'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxie-6368'},
         {'name': 'BoardId', 'type': 'int32', 'value':0},
         {'name': 'ClockSampleSource', 'type': 'string', 'value':'INTERNAL'},
         {'name': 'ClockSamplePolarity', 'type': 'string', 'value':'ACTIVE_HIGH_OR_RISING_EDGE'},

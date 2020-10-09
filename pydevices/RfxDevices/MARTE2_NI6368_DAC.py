@@ -30,23 +30,25 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6368_DAC(MC.MARTE2_COMPONENT):
     inputs = [
       {'name': 'DAC0_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-                                       {'name':'OutputRange', 'type':'float32', 'value': 10}]},
+<<<<<<< HEAD
+                                       {'name':'OutputRange', 'type':'string', 'value': '10'},
+              			       {'name':'Trigger', 'type':'int', 'value':1}]},
       {'name': 'DAC0_1', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':1},
-                                       {'name':'OutputRange', 'type':'float32', 'value': 10}]},
+                                       {'name':'OutputRange', 'type':'string', 'value': '10'}]},
       {'name': 'DAC0_2', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':2},
-                                       {'name':'OutputRange', 'type':'float32', 'value': 10}]},
+                                       {'name':'OutputRange', 'type':'string', 'value': '10'}]},
       {'name': 'DAC0_3', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':3},
-                                       {'name':'OutputRange', 'type':'float32', 'value': 10}]},
+                                       {'name':'OutputRange', 'type':'string', 'value': '10'}]},
 ]
-    parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxi6259'},
+    parameters = [{'name': 'DeviceName', 'type': 'string', 'value':'/dev/pxie-6368'},
                   {'name': 'BoardId', 'type': 'int32', 'value':0},
                   {'name': 'StartTriggerSource', 'type': 'string', 'value':'SW_PULSE'},
                   {'name': 'UpdateCounterSource', 'type': 'string', 'value':'UI_TC'},
+                  {'name': 'UpdateCounterPolarity', 'type': 'string', 'value':'RISING_EDGE'},
                   {'name': 'UpdateIntervalCounterSource', 'type': 'string', 'value':'TB3'},
                   {'name': 'UpdateIntervalCounterPolarity', 'type': 'string', 'value':'RISING_EDGE'},
-                  {'name': 'UpdateIntervalCounterDivisor', 'type': 'int32', 'value':100000},
+                  {'name': 'UpdateIntervalCounterPeriodDivisor', 'type': 'int32', 'value':100000},
                   {'name': 'UpdateIntervalCounterDelay', 'type': 'int32', 'value':2}]
     parts = []
-
 
 
