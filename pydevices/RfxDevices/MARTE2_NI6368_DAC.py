@@ -30,7 +30,6 @@ MC = __import__('MARTE2_COMPONENT', globals())
 class MARTE2_NI6368_DAC(MC.MARTE2_COMPONENT):
     inputs = [
       {'name': 'DAC0_0', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':0},
-<<<<<<< HEAD
                                        {'name':'OutputRange', 'type':'string', 'value': '10'},
               			       {'name':'Trigger', 'type':'int', 'value':1}]},
       {'name': 'DAC0_1', 'type': 'float32', 'dimensions': 0, 'parameters':[{'name':'ChannelId', 'type': 'int', 'value':1},
