@@ -81,16 +81,11 @@ class _ACQ400_BASE(MDSplus.Device):
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]
-        if self.is_wr.data() == 0: # if the device is not a WR device then set the clocks with sync_role
-            if self.trig_mode.data() == 'role_default':
-                uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
-            else:
-                # If the user has specified a trigger.
-                uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), trg_dx)
+        if self.trig_mode.data() == 'role_default':
+            uut.s0.sync_role = "%s %s" % (self.role.data(), self.freq.data())
         else:
-            uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.freq.data(), trg_dx)
-            print('CLKs set to WR clocks, initisialized by sync_role')
-            #print('CLKs set to WR clocks, initisialized by the corresponding subclass')
+            # If the user has specified a trigger.
+            uut.s0.sync_role = '%s %s TRG:DX=%s' % (self.role.data(), self.freq.data(), trg_dx)
 
         # Now we set the trigger to be soft when desired.
         if trg == 'soft':
