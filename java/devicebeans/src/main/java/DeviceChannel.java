@@ -158,7 +158,6 @@ public class DeviceChannel extends DeviceComponent
 		if (updateId == null || !updateIdentifier.equals(updateId))
 			return;
 		String newVal = newExpr.toString();
-		newVal = newVal.substring(1, newVal.length() - 1);
 		if (showVal != null && showVal.equals(newVal))
 		{
 			setEnabledAll(true);
