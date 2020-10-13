@@ -367,17 +367,21 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
             valueList = []
             valueRow = []
             for nRow in range(currDimension[0]):
-              for nCol in range(currDimension[1]):
+              if currDimension[1] == 1:
+                valueList.append(paramPointer[idx])
+                idx = idx + 1
+              else:
+                for nCol in range(currDimension[1]):
                   valueRow.append(paramPointer[idx])
                   idx = idx + 1
-              valueList.append(valueRow)
-              valueRow = []
+                valueList.append(valueRow)
+                valueRow = []
 
           if currDimension[0] != 1 or currDimension[1] != 1:
               if retrievedSLIdType == 0:
-                mdsplusValue = MDSplus.Float32Array(valueList)
-              elif retrievedSLIdType == 1:
                 mdsplusValue = MDSplus.Float64Array(valueList)
+              elif retrievedSLIdType == 1:
+                mdsplusValue = MDSplus.Float32Array(valueList)
               elif retrievedSLIdType == 2:
                 mdsplusValue = MDSplus.Int8Array(valueList)
               elif retrievedSLIdType == 3:
