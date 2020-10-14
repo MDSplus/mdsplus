@@ -376,6 +376,16 @@ class MARTE2_SIMULINK_GENERIC(MC.MARTE2_COMPONENT):
                   idx = idx + 1
                 valueList.append(valueRow)
                 valueRow = []
+            #Transpose matrix
+            if currDimension[0] > 1 and currDimension[1] > 1:
+              transList = []
+              transRow = []
+              for nRow in range(currDimension[1]):
+                for nCol in range(currDimension[0]):
+                  transRow.append(  paramPointer[nCol * currDimension[1] + nRow])
+                transList.append(transRow)
+                transRow = []
+              valueList = transList 
 
           if currDimension[0] != 1 or currDimension[1] != 1:
               if retrievedSLIdType == 0:
