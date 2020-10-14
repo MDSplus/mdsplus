@@ -1473,7 +1473,14 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 		try
 		{
 			if (editable)
-				curr_experiment = new MDSplus.Tree(exp, shot, "EDIT");
+			{
+                            try {
+                                    curr_experiment = new MDSplus.Tree(exp, shot, "EDIT");
+                            }catch(Exception exc)
+                            {
+                                    curr_experiment = new MDSplus.Tree(exp, shot, "NEW");
+                            }
+			}
 			else if (readonly)
 				curr_experiment = new MDSplus.Tree(exp, shot, "READONLY");
 			else
