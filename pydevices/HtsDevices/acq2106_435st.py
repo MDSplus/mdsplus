@@ -288,7 +288,7 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         #D-Tacq Recommendation: the minimum sample rate is 10kHz.
         if  self.freq.data() < 10000:
-            raise ValueError("The minimum sample rate should be greater or equal to 10kHz")
+            raise ValueError("The sample rate frequency should be greater or equal than 10kHz")
 
         trg = self.trig_mode.data()
 
