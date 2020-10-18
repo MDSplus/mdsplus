@@ -258,13 +258,14 @@ class _ACQ2106_423ST(MDSplus.Device):
         except:
             pass
         for card in range(self.sites):
-            coeffs =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
+            coeffs  =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
             offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
             for i in range(32):
                 coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
                 coeff.record = coeffs[i]
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
+                
         if self.trig_mode.data() == 'hard':
             uut.s1.set_knob('trg', '1,0,1')
         else:

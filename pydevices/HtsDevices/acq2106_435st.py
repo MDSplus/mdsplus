@@ -286,6 +286,10 @@ class _ACQ2106_435ST(MDSplus.Device):
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
 
+        #D-Tacq Recommendation: the minimum sample rate is 10kHz.
+        if  self.freq.data() < 10000:
+            raise ValueError("The minimum sample rate should be greater or equal to 10kHz")
+
         trg = self.trig_mode.data()
 
         if trg == 'hard':
