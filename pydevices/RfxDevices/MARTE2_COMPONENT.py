@@ -148,7 +148,8 @@ class MARTE2_COMPONENT(Device):
 
 # add timebase division, valid only if the timebase refers to a MASRTE2 device belonging to a different thread
       parts.append({'path':':TIMEBASE_DIV', 'type': 'numeric'})
-
+#add debug definition. When 'ENABLED' input and outputs will be printed via LoggetDataSOurce
+      parts.append({'path':':PRINT_DEBUG', 'type': 'text', 'value': 'DISABLED'})
 
 #      for part in parts:
 #        print(part)
@@ -288,6 +289,10 @@ class MARTE2_COMPONENT(Device):
 
 
     def getGamInfo(self):
+      try: 
+        isDebug = (self.print_debug.data().upper() == 'ENABLED')
+      except:
+        isDebug = False
       try:
         timebase = self.timebase.getData()
       except:
@@ -369,7 +374,7 @@ class MARTE2_COMPONENT(Device):
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
           'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts,
           'outputTrigger':outputTrigger, 'outTimeNid':outTimeNid, 'outTimeIdx':outTimeIdx, 'preTrigger':preTrigger,
-          'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask}
+          'postTrigger':postTrigger, 'storeSignals':storeSignals, 'cpuMask': cpuMask, 'debug': isDebug}
       else:
         return {'gamName':gamName, 'gamClass':gamClass , 'gamMode':gamMode,
           'timebase':timebase, 'paramDicts':paramDicts, 'inputDicts':inputDicts, 'outputDicts':outputDicts}
@@ -482,6 +487,7 @@ class MARTE2_COMPONENT(Device):
       inputDicts = configDict['inputDicts']
       outputDicts = configDict['outputDicts']
       outputTrigger = configDict['outputTrigger']
+      debugEnabled = configDict['debug']
 
       outPeriod = 0  #If different from 0, this means that the corresponing component is driving the thread timing
 # timebase
@@ -633,10 +639,14 @@ class MARTE2_COMPONENT(Device):
       #    gamText += '    '+paramDict['name']+' = '+self.convertVal(str(paramDict['value']))+'\n'
 
 #input Signals
+      inputSignals = []  #Used for debug printout
+      inputSignals.append({'name':'Time', 'datasource':timerDDB, 'type': 'uint32', 'dimensions':0, 'elements':1})
+      
       if len(inputDicts) > 0:
         gamText += '    InputSignals = {\n'
       nonGamInputNodes = []
       for inputDict in inputDicts:
+        signalDict = {}
         if inputDict['value'].getNodeName() == 'TIMEBASE' and inputDict['value'].getParent() == self: #This is a Time field referring to this timebase
           gamText += '      Time = {\n'
           gamText += '      DataSource = '+ timerDDB+'\n'
@@ -668,12 +678,18 @@ class MARTE2_COMPONENT(Device):
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
             gamText += '      '+signalName+' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeInput\n'
+            signalDict['name'] = signalName
+            signalDict['datasource'] = gamName+'_TreeInput_Debug'
           else:
             gamText += '      '+signalGamName+' = {\n'
             if self.onSameThread(threadMap, sourceNode):
               gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+              signalDict['name'] = signalGamName
+              signalDict['datasource'] = sourceGamName+'_Output_DDB'
             elif self.sameSynchSource(sourceNode):
               gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+              signalDict['name'] = signalGamName
+              signalDict['datasource'] = sourceGamName+'_Output_Synch'
 
               try:
                 syncDiv = self.timebase_div.data()
@@ -690,6 +706,7 @@ class MARTE2_COMPONENT(Device):
         if 'type' in inputDict:
           gamText += '        Type = '+inputDict['type']+'\n'
 
+        signalDict['type'] = inputDict['type']
         if 'dimensions' in inputDict and not forceUsingSamples:
           dimensions = inputDict['dimensions']
           if dimensions == 0:
@@ -703,22 +720,33 @@ class MARTE2_COMPONENT(Device):
           gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
           gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
           gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
+          signalDict['dimensions'] = numberOfDimensions
+          signalDict['elements'] = numberOfElements
         gamText += '      }\n'
+        
+        inputSignals.append(signalDict)
       if len(inputDicts) > 0:
         gamText += '    }\n'
 
      #Output Signals
+      outputSignals = []  #For debug printout
+     
       synchThreadSignals = []
       asynchThreadSignals = []
       if len(outputDicts) > 0:
         gamText += '    OutputSignals = {\n'
       for outputDict in outputDicts:
+        outputSignalDict = {}
+        outputSignalDict['name'] = outputDict['name']
         gamText += '      '+outputDict['name']+' = {\n'
         gamText += '        DataSource = '+gamName+'_Output_DDB\n'
         gamText += '        Type = '+outputDict['type']+'\n'
+        outputSignalDict['type'] = outputDict['type']
         if outputDict['dimensions'] == 0:
           numberOfElements = 1
           numberOfDimensions = 0
+          outputSignalDict['dimensions'] = 0
+          outputSignalDict['elements'] = 1
         else:
           numberOfDimensions = len(outputDict['dimensions'])
           numberOfElements = 1
@@ -726,12 +754,15 @@ class MARTE2_COMPONENT(Device):
             numberOfElements *= currDim
         gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
         gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+        outputSignalDict['dimensions'] = numberOfDimensions
+        outputSignalDict['elements'] = numberOfElements
         gamText = self.addSignalParameters(outputDict['value_nid'].getParent().getNode('parameters'), gamText)
         gamText += '      }\n'
         if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], True):
           synchThreadSignals.append(outputDict['name'])
         if self.isUsedOnAnotherThread(threadMap, outputDict['value_nid'], False):
           asynchThreadSignals.append(outputDict['name'])
+        outputSignals.append(outputSignalDict)
       if len(outputDicts) > 0:
         gamText += '    }\n'
       gamText += '  }\n'
@@ -931,49 +962,57 @@ class MARTE2_COMPONENT(Device):
 
 
       if len(nonGamInputNodes) > 0:  #There are input references to tree nodes, we need to build a MdsReader DataSource named <gam name>_TreeInput
-        dataSourceText = '  +'+gamName+'_TreeInput = {\n'
-        dataSourceText += '    Class = MDSReaderNS\n'
-        dataSourceText += '    UseColumnOrder = 0\n'
-        dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
-        dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
-        currTimebase = self.getNode('timebase').evaluate()
-        if isinstance(currTimebase, Range):
-          startTime = currTimebase.begin.data()
-          period = currTimebase.delta.data()
-        else:
-          currTimebase = currTimebase.data()
-          startTime = currTimebase[0]
-          period = currTimebase[1] - currTimebase[0]
-        frequency = 1./period
-
-        dataSourceText += '    StartTime = '+str(startTime)+'\n'
-        dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
-        dataSourceText += '    Signals = { \n'
-        for nodeDict in nonGamInputNodes:
-          dataSourceText += '      '+nodeDict['name']+' = {\n'
-          valExpr = nodeDict['expr']
-          if isinstance(valExpr, TreeNode):
-            valExpr = valExpr.getFullPath()
-          dataSourceText += '        DataExpr = "'+valExpr+'"\n'
-          dataSourceText += '        TimebaseExpr = "dim_of('+valExpr+')"\n'
-          numberOfElements = 1
-          if not (np.isscalar(nodeDict['dimensions'])):
-            for currDim in nodeDict['dimensions']:
-              numberOfElements *= currDim
-          dataSourceText += '        NumberOfElements = '+str(numberOfElements)+'\n'
-          if nodeDict['col_order']:
-            dataSourceText += '        UseColumnOrder = 1\n'
+#if debugEnabled, we need to write TWO instances of MDSReaderNS (_TreeInput and _TreeInput_Debug)
+        treeInputExtensions = []
+        treeInputExtensions.append('_TreeInput')
+        if debugEnabled:
+          treeInputExtensions.append('_TreeInput_Debug')
+        
+        for treeInputExtension in treeInputExtensions:  
+          #dataSourceText = '  +'+gamName+'_TreeInput = {\n'
+          dataSourceText = '  +'+gamName+treeInputExtension +' = {\n'
+          dataSourceText += '    Class = MDSReaderNS\n'
+          dataSourceText += '    UseColumnOrder = 0\n'
+          dataSourceText += '    TreeName = "'+self.getTree().name+'"\n'
+          dataSourceText += '    ShotNumber = '+str(self.getTree().shot)+'\n'
+          currTimebase = self.getNode('timebase').evaluate()
+          if isinstance(currTimebase, Range):
+            startTime = currTimebase.begin.data()
+            period = currTimebase.delta.data()
           else:
-            dataSourceText += '        UseColumnOrder = 0\n'
-            dataSourceText += '        DataManagement = 1\n'
-            dataSourceText += '      }\n'
-        dataSourceText += '      timebase = {\n'
-        dataSourceText += '        NumberOfElements = 1\n'
-        dataSourceText += '        Type = uint64\n'
-        dataSourceText += '         }\n'
-        dataSourceText += '    }\n'
-        dataSourceText += '  }\n'
-        dataSources.append(dataSourceText)
+            currTimebase = currTimebase.data()
+            startTime = currTimebase[0]
+            period = currTimebase[1] - currTimebase[0]
+          frequency = 1./period
+
+          dataSourceText += '    StartTime = '+str(startTime)+'\n'
+          dataSourceText += '    Frequency = '+str(round(frequency, 4))+'\n'
+          dataSourceText += '    Signals = { \n'
+          for nodeDict in nonGamInputNodes:
+            dataSourceText += '      '+nodeDict['name']+' = {\n'
+            valExpr = nodeDict['expr']
+            if isinstance(valExpr, TreeNode):
+              valExpr = valExpr.getFullPath()
+            dataSourceText += '        DataExpr = "'+valExpr+'"\n'
+            dataSourceText += '        TimebaseExpr = "dim_of('+valExpr+')"\n'
+            numberOfElements = 1
+            if not (np.isscalar(nodeDict['dimensions'])):
+              for currDim in nodeDict['dimensions']:
+                numberOfElements *= currDim
+            dataSourceText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+            if nodeDict['col_order']:
+              dataSourceText += '        UseColumnOrder = 1\n'
+            else:
+              dataSourceText += '        UseColumnOrder = 0\n'
+              dataSourceText += '        DataManagement = 1\n'
+              dataSourceText += '      }\n'
+          dataSourceText += '      timebase = {\n'
+          dataSourceText += '        NumberOfElements = 1\n'
+          dataSourceText += '        Type = uint64\n'
+          dataSourceText += '         }\n'
+          dataSourceText += '    }\n'
+          dataSourceText += '  }\n'
+          dataSources.append(dataSourceText)
 
       if len(synchThreadSignals) > 0:  # Some outputs are connected to devices on separate synchronized theads
         dataSourceText = '  +'+gamName+'_Output_Synch = {\n'
@@ -1025,6 +1064,54 @@ class MARTE2_COMPONENT(Device):
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
+        
+#If debug enabled we need one IOGAM for printing inputs and outputs       
+      if debugEnabled:
+        gamText = '  +'+gamName+'_Logger_IOGAM = {\n'
+        gamText += '    Class = IOGAM\n'
+        gamText += '    InputSignals = {\n'
+        for signalDict in inputSignals:
+          gamText += '      '+signalDict['name']+' = {\n'
+          gamText += '        DataSource = '+signalDict['datasource']+'\n'
+          gamText += '        Type = '+signalDict['type']+'\n'
+          gamText += '        NumberOfDimensions = '+str(signalDict['dimensions'])+'\n'
+          gamText += '        NumberOfElements = '+str(signalDict['elements'])+'\n'
+          gamText += '      }\n'
+        for signalDict in outputSignals:
+          gamText += '      '+signalDict['name']+' = {\n'
+          gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+          gamText += '        NumberOfDimensions = '+str(signalDict['dimensions'])+'\n'
+          gamText += '        NumberOfElements = '+str(signalDict['elements'])+'\n'
+          gamText += '        Type = '+signalDict['type']+'\n'
+          gamText += '      }\n'
+        gamText += '    }\n'
+        gamText += '    OutputSignals = {\n'
+        for signalDict in inputSignals:
+          gamText += '      '+signalDict['name']+' = {\n'
+          gamText += '        DataSource = '+gamName+'_Logger\n'
+          gamText += '        Type = '+signalDict['type']+'\n'
+          gamText += '        NumberOfDimensions = '+str(signalDict['dimensions'])+'\n'
+          gamText += '        NumberOfElements = '+str(signalDict['elements'])+'\n'
+          gamText += '      }\n'
+        for signalDict in outputSignals:
+          gamText += '      '+signalDict['name']+' = {\n'
+          gamText += '        DataSource = '+gamName+'_Logger\n'
+          gamText += '        NumberOfDimensions = '+str(signalDict['dimensions'])+'\n'
+          gamText += '        NumberOfElements = '+str(signalDict['elements'])+'\n'
+          gamText += '        Type = '+signalDict['type']+'\n'
+          gamText += '      }\n'
+        gamText += '    }\n'
+        gamText += '  }\n'
+        gams.append(gamText)
+        
+        dataSourceText = '  +'+gamName+'_Logger = {\n'
+        dataSourceText += '    Class = LoggerDataSource\n'
+        dataSourceText += ' }\n'
+        dataSources.append(dataSourceText)
+        gamList.append(gamName+'_Logger_IOGAM')
+      
+  
+ 
       return outPeriod
 
 
