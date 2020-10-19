@@ -245,7 +245,12 @@ class _ACQ2106_423ST(MDSplus.Device):
             uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
         else:
             uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
+        
         freq = int(self.freq.data())
+        #D-Tacq Recommendation: the minimum sample rate is 10kHz.
+        if  freq < 10000:
+            raise ValueError("The sample rate frequency should be greater or equal than 10kHz")
+
         uut.s0.set_knob('sync_role', 'master %d TRG:DX=d0' % freq)
 
         try:
