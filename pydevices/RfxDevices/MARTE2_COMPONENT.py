@@ -966,7 +966,7 @@ class MARTE2_COMPONENT(Device):
         treeInputExtensions = []
         treeInputExtensions.append('_TreeInput')
         if debugEnabled:
-          treeInputExtensions.append('_TreeInput_Debug')
+          treeInputExtensions.append('_TreeInput_Logger')
         
         for treeInputExtension in treeInputExtensions:  
           #dataSourceText = '  +'+gamName+'_TreeInput = {\n'
