@@ -270,6 +270,8 @@ class _ACQ2106_435ST(MDSplus.Device):
 
     def init(self):
         import acq400_hapi
+        MIN_FREQUENCY = 10000
+
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
@@ -286,9 +288,10 @@ class _ACQ2106_435ST(MDSplus.Device):
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
 
+        freq = int(self.freq.data())
         #D-Tacq Recommendation: the minimum sample rate is 10kHz.
-        if  self.freq.data() < 10000:
-            raise ValueError("The sample rate frequency should be greater or equal than 10kHz")
+        if  freq < MIN_FREQUENCY:
+            raise MDSplus.DevBAD_PARAMETER("Sample rate should be greater or equal than 10kHz")
 
         trg = self.trig_mode.data()
 
