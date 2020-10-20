@@ -165,6 +165,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
         jButton1 = new javax.swing.JButton();
+        deviceChoice17 = new DeviceChoice();
 
         setDeviceProvider("spilds:8100");
         setDeviceTitle("MARTe2 Simulink Generic device");
@@ -853,6 +854,13 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         });
         jPanel3.add(jButton1);
 
+        deviceChoice17.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice17.setIdentifier("");
+        deviceChoice17.setLabelString("Logger:");
+        deviceChoice17.setOffsetNid(167);
+        deviceChoice17.setUpdateIdentifier("");
+        jPanel3.add(deviceChoice17);
+
         jPanel1.add(jPanel3);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
@@ -885,6 +893,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice14;
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;
+    private DeviceChoice deviceChoice17;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
