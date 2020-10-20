@@ -238,6 +238,8 @@ class _ACQ2106_423ST(MDSplus.Device):
 
     def init(self):
         import acq400_hapi
+        MIN_FREQUENCY = 10000
+
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
         if self.ext_clock.length > 0:
@@ -245,7 +247,12 @@ class _ACQ2106_423ST(MDSplus.Device):
             uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
         else:
             uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
+        
         freq = int(self.freq.data())
+        #D-Tacq Recommendation: the minimum sample rate is 10kHz.
+        if  freq < MIN_FREQUENCY:
+            raise MDSplus.DevBAD_PARAMETER("Sample rate should be greater or equal than 10kHz")
+
         uut.s0.set_knob('sync_role', 'master %d TRG:DX=d0' % freq)
 
         try:
@@ -258,13 +265,14 @@ class _ACQ2106_423ST(MDSplus.Device):
         except:
             pass
         for card in range(self.sites):
-            coeffs =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
+            coeffs  =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
             offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
             for i in range(32):
                 coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
                 coeff.record = coeffs[i]
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
+                
         if self.trig_mode.data() == 'hard':
             uut.s1.set_knob('trg', '1,0,1')
         else:
