@@ -14,13 +14,13 @@ CFLAGS_RELEASE := -fPIC  -O3
 #LDFLAGS_RELEASE = -Wall
 LDFLAGS_RELEASE =
 
-CFLAGS =   -fPIC -O0 -g -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include 
+CFLAGS =   -fPIC -O3 -I${MDSPLUS_DIR}/include -I${CODAC_ROOT}/include -std=c++11 
 LDFLAGS =  -fPIC -O0 -L${MDSPLUS_DIR}/lib -L${CODAC_ROOT}/lib/ -lm -lNiFpga -lpxi6259 -lnixseries -lpthread -lMdsObjectsCppShr 
 
 # Debug builds (make debug)
 
 
-SOURCES_LIB=NiInterface.cpp cRioFAUfunction.cpp
+SOURCES_LIB=NiInterface.cpp cRioFAUfunction.cpp cRioMPAGfunction.cpp AsyncStoreManager.cpp
 OBJECTS=$(SOURCES_LIB:.cpp=.o)
 SHAREDLIB=libNiInterface.so
 EXE_PROGRAM=generateWave probeTermControl startStopTermControl  writeDigitalOut print_device_info pxi6259devList.sh pxie6368devList.sh
@@ -50,6 +50,10 @@ clean:
 install:
 	mv  $(SHAREDLIB)  ${MDSPLUS_DIR}/lib
 	cp  $(EXE_PROGRAM) ${MDSPLUS_DIR}/bin
+	pxie6368devList.sh $(MDSPLUS_DIR)/tdi/RfxDevices/getPxie6368BoarId.fun
+	pxi6259devList.sh $(MDSPLUS_DIR)/tdi/RfxDevices/getPxi6259BoarId.fun
+        
+updateNIboard:
 	pxie6368devList.sh $(MDSPLUS_DIR)/tdi/RfxDevices/getPxie6368BoarId.fun
 	pxi6259devList.sh $(MDSPLUS_DIR)/tdi/RfxDevices/getPxi6259BoarId.fun
         

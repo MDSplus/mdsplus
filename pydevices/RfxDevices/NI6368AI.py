@@ -384,7 +384,7 @@ class NI6368AI(Device):
 
             while not self.stopReq:
                 try :
-                    status = NI6368AI.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq,
+                    status = NI6368AI.niInterfaceLib.xseriesReadAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(int(round(bufSize))), c_int(int(round(segmentSize))), c_int(sampleToSkip), c_int(numSamples), c_float( timeAt0 ), c_float(frequency), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), self.treePtr, saveList, self.stopAcq,
                     c_int(self.device.getTree().shot), resNid_c)
                 except Exception as ex :
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
@@ -779,7 +779,7 @@ class NI6368AI(Device):
                 getattr(self, 'channel_%d_data_raw'%(chan)).setCompressOnPut(False)
                 enabled = self.enableDict[getattr(self, 'channel_%d_state'%(chan)).data()]
                 gain = self.gainDict[getattr(self, 'channel_%d_range'%(chan)).data()]
-                data = Data.compile("NIanalogInputScaled( build_path($), build_path($) )", getattr(self, 'channel_%d_data_raw'%(chan)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan)).getPath() )
+                data = self.getTree().tdiCompile("NIanalogInputScaled( build_path($), build_path($) )", getattr(self, 'channel_%d_data_raw'%(chan)).getPath(),  getattr(self, 'channel_%d_calib_param'%(chan)).getPath() )
                 data.setUnits("Volts")
                 getattr(self, 'channel_%d_data'%(chan)).putData(data)
             except:
@@ -869,7 +869,7 @@ class NI6368AI(Device):
         stopAcq = c_void_p(0)
         NI6368AI.niInterfaceLib.getStopAcqFlag(byref(stopAcq));
  
-        self.worker.configure(self, self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
+        self.worker.configure(self.copy(), self.ai_fd, chanMap, self.diffChanMap, treePtr, stopAcq)
 
         self.saveWorker()
         self.worker.start()

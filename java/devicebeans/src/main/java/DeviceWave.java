@@ -830,7 +830,7 @@ public class DeviceWave extends DeviceComponent
 //System.out.println("waveY length " + waveY.length);
 		final String dims = getArrayExpr(waveX);
 		final String values = getArrayExpr(waveY);
-		return "BUIILD_SIGNAL(" + values + ",," + dims + ")";
+		return "BUILD_SIGNAL(" + values + ",," + dims + ")";
 	}
 
 	@Override
