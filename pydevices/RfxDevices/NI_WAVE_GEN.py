@@ -95,7 +95,7 @@ class NI_WAVE_GEN(Device):
 
     def restoreInfo(self, openFlag):
         if NI_WAVE_GEN.niLib6259 is None:
-	    NI_WAVE_GEN.niLib6259 = CDLL("libpxi6259.so")
+            NI_WAVE_GEN.niLib6259 = CDLL("libpxi6259.so")
         if NI_WAVE_GEN.niInterfaceLib is None:
             NI_WAVE_GEN.niInterfaceLib = CDLL("libNiInterface.so")
 
@@ -122,9 +122,9 @@ class NI_WAVE_GEN(Device):
                     fileName = NI_WAVE_GEN.boardTypeDict[boardType] + str(boardId)+'.ao'
                     self.ao_fd = os.open(fileName, os.O_RDWR | os.O_NONBLOCK)
                     print('Open fileName : ', fileName)
-                except IOError, (error, message):
-                    print error, repr(message)
-                    print errno.errorcode[error]            
+                except IOError(error, message):
+                    print (error, repr(message))
+                    print (errno.errorcode[error])            
                 except Exception as exc:
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Cannot open device '+ fileName +" "+ str(exc))
                     return NI_WAVE_GEN.ERROR
@@ -184,10 +184,10 @@ class NI_WAVE_GEN(Device):
            
             print("Event %s occurred at %s with data: %s " %(str(self.event),str(self.qtime.date),str(self.raw)))
             jcmd = self.raw.deserialize()
-            print jcmd
+            print (jcmd)
 
 
-	    cmdEventName = self.device.cmd_event.data();
+            cmdEventName = self.device.cmd_event.data();
 
             if jcmd["command"] == 'pause' :
                try :     
@@ -221,19 +221,19 @@ class NI_WAVE_GEN(Device):
                       if chFreqAr[ch] < minFreq:
                          minFreq = chFreqAr[ch]
 
-	       numPeriod = (np.asarray(chFreqAr) / minFreq + 0.5).astype(int)
+               numPeriod = (np.asarray(chFreqAr) / minFreq + 0.5).astype(int)
 
-	       sampleRate = wavePoint * minFreq;
-	       periodDivisor = int(20000000 / sampleRate);
-               print '==update periodDivisor ', periodDivisor
-	       print '==update Num Period ', chFreqAr, numPeriod, minFreq
+               sampleRate = wavePoint * minFreq;
+               periodDivisor = int(20000000 / sampleRate);
+               print ('==update periodDivisor ', periodDivisor)
+               print ('==update Num Period ', chFreqAr, numPeriod, minFreq)
 
                try:
                    self.device.__stopGeneration__()
                    self.device.closeInfo()
-		   if self.device.restoreInfo(True) != NI_WAVE_GEN.NO_ERROR :
-		       Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open device')
-		       raise mdsExceptions.DevINV_SETUP
+                   if self.device.restoreInfo(True) != NI_WAVE_GEN.NO_ERROR :
+                       Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'Cannot open device')
+                       raise mdsExceptions.DevINV_SETUP
                    self.device.saveInfo()
 
                    aoConfig = c_void_p(0)
@@ -272,7 +272,7 @@ class NI_WAVE_GEN(Device):
         offset = ( chMax + chMin ) / 2
         level  = ( chMax - chMin ) / 2
 
-        print "ch type ", chType
+        print ("ch type ", chType)
 
         # create one complete sine period in volts
     
@@ -327,7 +327,7 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.DevIO_STUCK
 
         if not reset and  isOn :
-            print "configChannel ", boardType, boardId, ch, reset, wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod
+            print ("configChannel ", boardType, boardId, ch, reset, wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod)
             scaledWriteArray = NI_WAVE_GEN.buildWave(self, wavePoint, chMax, chMin, chType, aoX, aoY, nPeriod)
         else:
             zero_arr = np.zeros(wavePoint)
@@ -388,13 +388,13 @@ class NI_WAVE_GEN(Device):
 
 
         if chType == "AS_IS":
-	    try:
+            try:
                 chAOX = getattr(self, 'ao_%d_x'%(ch+1)).data()
             except Exception as ex:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid channel %d wave aoY : %s'%(ch, str(ex)))
                 raise mdsExceptions.DevBAD_PARAMETER
 
-	    try:
+            try:
                 chAOY = getattr(self, 'ao_%d_y'%(ch+1)).data()
             except Exception as ex:
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid channel %d wave aoX : %s'%(ch, str(ex)))
@@ -433,7 +433,7 @@ class NI_WAVE_GEN(Device):
                    minFreq = fr
 
         numPeriod = (np.asarray(freq) / minFreq + 0.5).astype(int)
-        print 'Num Period ', freq, numPeriod, minFreq
+        print ('Num Period ', freq, numPeriod, minFreq)
         
 
         for ch in range(4) :
@@ -473,7 +473,7 @@ class NI_WAVE_GEN(Device):
             raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
 
         # load AO configuration and let it apply
-        print "ao_fd " , self.ao_fd
+        print ("ao_fd " , self.ao_fd)
         if NI_WAVE_GEN.niLib6259.pxi6259_load_ao_conf(c_int(self.ao_fd), aoConfig) != 0:
             errno = NI_WAVE_GEN.niInterfaceLib.getErrno();
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Failed to load configuration! (%d) %s' % (errno, os.strerror( errno )) )
@@ -484,7 +484,7 @@ class NI_WAVE_GEN(Device):
 
     def init(self):
 
-        print '================= NI Wavefor Generation Init ==============='
+        print ('================= NI Wavefor Generation Init ===============')
 
         if self.board_type.data() == 'NI6368':
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'Device NI6368 not yet supported')
@@ -527,7 +527,7 @@ class NI_WAVE_GEN(Device):
         # configure AO update clock
         freq = []
         for ch in range(4) :
-            print ch
+            print (ch)
             if getattr(self, 'ao_%d'%(ch+1)).isOn():
                 try:
                     fr = getattr(self, 'ao_%d_freq'%(ch+1)).data()
@@ -541,8 +541,8 @@ class NI_WAVE_GEN(Device):
                 
 
         minFreq = min(freq)
-        print freq
-        print (np.asarray(freq)*10).astype(int) % int(minFreq*10)
+        print (freq)
+        print ((np.asarray(freq)*10).astype(int) % int(minFreq*10))
         if sum((np.asarray(freq)*10).astype(int) % int(minFreq*10) ) :
              Data.execute('DevLogErr($1,$2)', self.getNid(), 'Minimum waveform frequency must be multiple of the other wavefoms frequency')
              raise mdsExceptions.DevBAD_FREQ;
@@ -566,7 +566,7 @@ class NI_WAVE_GEN(Device):
                    if  wp > currWavePoint :
                        currWavePoint = wp
                                    
-               print  currWavePoint, wavePoint, freq[ch]
+               print  (currWavePoint, wavePoint, freq[ch])
                """
                if ( wavePoint / freq[ch] ) < 10. :
                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Waveform %d has less than 10 points for period'%(ch))
@@ -578,33 +578,33 @@ class NI_WAVE_GEN(Device):
             wavePoint = currWavePoint
             self.wave_point.putData(wavePoint);              
         
-	sampleRate = wavePoint * minFreq;
-	periodDivisor = int(20000000 / sampleRate);
-        print 'periodDivisor ', periodDivisor
+        sampleRate = wavePoint * minFreq;
+        periodDivisor = int(20000000 / sampleRate);
+        print ('periodDivisor ', periodDivisor)
 
-        print 'OK 1'
+        print ('OK 1')
 
         aoConfig = c_void_p(0)
         NI_WAVE_GEN.niInterfaceLib.pxi6259_create_ao_conf_ptr(byref(aoConfig))
 
-        print 'OK 2'
+        print ('OK 2')
 
         #  initialize AO configuration
         self.__aoConfiguration__(aoConfig, self.AO_DAC_POLARITY_BIPOLAR, wavePoint, periodDivisor)
 
-        print 'OK 3'
+        print ('OK 3')
 
         self.configChannels(False) 
 
-        print 'OK 4'
+        print ('OK 4')
 
         NI_WAVE_GEN.niInterfaceLib.pxi6259_free_ao_conf_ptr(aoConfig)
 
-        print 'OK 5'
+        print ('OK 5')
 
         self.saveInfo()
 
-        print 'OK 6'
+        print ('OK 6')
 
         return NI_WAVE_GEN.NO_ERROR
 
@@ -625,7 +625,7 @@ class NI_WAVE_GEN(Device):
         return NI_WAVE_GEN.NO_ERROR
 
     def start_gen(self):
-        print "================ NI Waveform Geneation Start Store ============="
+        print ("================ NI Waveform Geneation Start Store =============")
 
         self.__startGeneration__()
 
@@ -671,7 +671,7 @@ class NI_WAVE_GEN(Device):
     
 
     def stop_gen(self):
-        print "================ NI Waveform Geneation Stop Store ============="
+        print ("================ NI Waveform Geneation Stop Store =============")
 
         self.__stopGeneration__()
        
@@ -756,7 +756,7 @@ class NI_WAVE_GEN(Device):
         cmd['chAOY'] = np.asarray(chAOYAr) 
         cmd['chFreq'] = np.asarray(chFreqAr) 
 
-        print cmd
+        print (cmd)
 
         if self.__cmdEvent__(cmd) == NI_WAVE_GEN.ERROR :
             raise mdsExceptions.DevCOMM_ERROR

@@ -93,7 +93,7 @@ class EPFE(Device):
           
           cmd_status = self.send_cmd(ip, port, cmd)
           
-          print 'Sent command: %s'%(cmd)
+          print ('Sent command: %s'%(cmd))
           
           print ('Received status: %s'%(cmd_status))
           
@@ -107,7 +107,7 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    (print 'Sent command: %s'%(cmd))
+                    print ('Sent command: %s'%(cmd))
                
                     print ('Received status: %s'%(cmd_status))
                     

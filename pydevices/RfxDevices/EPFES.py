@@ -122,14 +122,14 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOn() - " + cmd.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOn() - " + cmd.rstrip("\r\n"))
 
 
                     sock.sendall(cmd)
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOn() - " + sock.recv(50).rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOn() - " + sock.recv(50).rstrip("\r\n"))
 
                     sock.close()
 
@@ -162,14 +162,14 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOff() - " + cmd.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOff() - " + cmd.rstrip("\r\n"))
 
 
                     sock.sendall(cmd)
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOff() - " + sock.recv(50).rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doAllOff() - " + sock.recv(50).rstrip("\r\n"))
 
 
                     sock.close()
@@ -179,7 +179,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram()"
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram()")
 
                     try:
                          ip = self.device.getNode('IP').data()
@@ -250,7 +250,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n"))
 
 
 
@@ -262,11 +262,11 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + rData.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + rData.rstrip("\r\n"))
 
                     if "Loc" in rData:
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - Module in local: skipped"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - Module in local: skipped")
 
                          self.local = 1
 
@@ -292,13 +292,13 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n"))
 
                     sock.sendall(cmd)
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n"))
 
 
                     sock.close()
@@ -314,7 +314,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n"))
 
 
 
@@ -326,7 +326,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + rData.rstrip("\r\n")
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + rData.rstrip("\r\n"))
 
                     rData = float(rData.split(':')[-1].strip())
 
@@ -373,13 +373,13 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n")
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n"))
 
                          sock.sendall(cmd)
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n")
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n"))
 
 
                          sock.close()
@@ -397,13 +397,13 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n")
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + cmd.rstrip("\r\n"))
 
                          sock.sendall(cmd)
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n")
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - doProgram() - " + sock.recv(50).rstrip("\r\n"))
 
                          sock.close()
 
@@ -424,7 +424,7 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - program() - Executing"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - program() - Executing")
 
 
                          self.programEvent.set()
@@ -434,14 +434,14 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - program() - Already in execution"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - program() - Already in execution")
 
 
                def myStart(self):
 
                     if self.local:
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Module in local: skipped"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Module in local: skipped")
 
                          return
 
@@ -449,7 +449,7 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Executing"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Executing")
 
                          self.doSequenceEvent.set()
                          self.newEvent.set()
@@ -458,7 +458,7 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Already in execution"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myStart() - Already in execution")
 
 
 
@@ -467,7 +467,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - stop()"
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - stop()")
 
 
 
@@ -484,7 +484,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myExit()"
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - myExit()")
 
 
                     self.exitEvent.set()
@@ -502,7 +502,7 @@ class EPFES(Device):
 
                          now = datetime.datetime.now()
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Waiting for event..."
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Waiting for event...")
 
 
                          self.newEvent.wait()
@@ -513,22 +513,22 @@ class EPFES(Device):
 
                          if self.doSequenceEvent.isSet():
                          
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - doSequenceEvent - Cycles to do: " + str(n)
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - doSequenceEvent - Cycles to do: " + str(n))
 
 
                          elif self.exitEvent.isSet():
 
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - exitEvent"
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - exitEvent")
 
                          elif self.stopSequenceEvent.isSet():
 
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - stopSequenceEvent"
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - stopSequenceEvent")
 
                          elif self.programEvent.isSet():
 
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - programEvent"
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - programEvent")
                          else:
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Warning: unknown event"
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Warning: unknown event")
 
 
 
@@ -537,7 +537,7 @@ class EPFES(Device):
 
                          if nToDo == 0:
 
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Warning: cycles to do is 0"
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Warning: cycles to do is 0")
 
                          i = 1
 
@@ -549,7 +549,7 @@ class EPFES(Device):
 
                               now = datetime.datetime.now()
 
-                              print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Cycle " + str(i) + " of " + str(nToDo)
+                              print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Cycle " + str(i) + " of " + str(nToDo))
 
                               i += 1
 
@@ -563,7 +563,7 @@ class EPFES(Device):
 
                               self.onEvent.wait(self.tOff)
 
-                         print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Done"
+                         print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - Job - run() - Done")
 
 
                          if self.programEvent.isSet() and not self.exitEvent.isSet():
@@ -634,7 +634,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.myExit()
                     self.job.join()
@@ -643,7 +643,7 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.myExit()
                     self.job.join()
@@ -652,42 +652,42 @@ class EPFES(Device):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.myStart()
                elif "start" == string.lower(data[0]):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.myStart()
                elif "stop_%s"%(str(self.nid)) == string.lower(data[0]):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.stop()
                elif "stop" == string.lower(data[0]):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.stop()
                elif "init_%s"%(str(self.nid)) == string.lower(data[0]):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.program()
                elif "init" == string.lower(data[0]):
 
                     now = datetime.datetime.now()
 
-                    print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0])
+                    print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.device.getPath() + " - MyEvent - run() - Arrived event " + string.lower(data[0]))
 
                     self.job.program()
 
@@ -743,7 +743,7 @@ class EPFES(Device):
 
                now = datetime.datetime.now()
 
-               print now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.getPath() + " - EPFES - start() - Init not done"
+               print (now.strftime("%Y-%m-%d %H:%M:%S") + " - " + self.getPath() + " - EPFES - start() - Init not done")
 
           return 1
 

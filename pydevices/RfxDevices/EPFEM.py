@@ -37,7 +37,7 @@ class EPFEM(Device):
           try:
                evtName = self.getNode('EVT').data()
 
-               print self.getPath() + " - EPFEM - trig() - Sent event " + evtName
+               print (self.getPath() + " - EPFEM - trig() - Sent event " + evtName)
 
                Event.setevent(evtName, "start")
           except:
