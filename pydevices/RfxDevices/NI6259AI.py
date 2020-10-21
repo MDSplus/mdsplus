@@ -378,7 +378,7 @@ class NI6259AI(Device):
 
             while not self.stopReq:
                 try :
-                    status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period), self.treePtr, saveList, self.stopAcq, c_int(self.device.getTree().shot), resNid_c)
+                    status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(int(round(bufSize))), c_int(int(round(segmentSize))), c_int(sampleToSkip), c_int(numSamples), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period), self.treePtr, saveList, self.stopAcq, c_int(self.device.getTree().shot), resNid_c)
                 except Exception as ex :
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
                     self.error = self.ACQ_ERROR
@@ -827,9 +827,9 @@ class NI6259AI(Device):
         treePtr = c_void_p(0)
         NI6259AI.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-            self.worker.configure(self, self.fd, chanMap, self.diffChanMap, treePtr, stopAcq)
+            self.worker.configure(self.copy(), self.fd, chanMap, self.diffChanMap, treePtr, stopAcq)
         else:
-            self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
+            self.worker.configure(self.copy(), self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
         
