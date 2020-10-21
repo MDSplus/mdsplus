@@ -242,18 +242,29 @@ class _ACQ2106_423ST(MDSplus.Device):
 
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
-        if self.ext_clock.length > 0:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'FPCLK')
-            uut.s0.set_knob('SIG_CLK_MB_FIN', '1000000')
-        else:
-            uut.s0.set_knob('SYS_CLK_FPMUX', 'ZCLK')
         
+        if self.ext_clock.length > 0:
+            raise Exception('External Clock is not supported')
+
         freq = int(self.freq.data())
         #D-Tacq Recommendation: the minimum sample rate is 10kHz.
         if  freq < MIN_FREQUENCY:
-            raise MDSplus.DevBAD_PARAMETER("Sample rate should be greater or equal than 10kHz")
+            raise MDSplus.DevBAD_PARAMETER(" Sample rate should be greater or equal than 10kHz")
 
-        uut.s0.set_knob('sync_role', 'master %d TRG:DX=d0' % freq)
+        trg = self.trig_mode.data()
+
+        if trg == 'hard':
+            trg_dx = 'd0'
+        elif trg == 'automatic':
+            trg_dx = 'd1'
+        elif trg == 'soft':
+            trg_dx = 'd1'
+
+        # USAGE sync_role {fpmaster|rpmaster|master|slave|solo} [CLKHZ] [FIN]
+        # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
+        # modifiers [TRG=int|ext]
+        # modifiers [CLKDIV=div]  
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
 
         try:
             slots = [uut.s1]
@@ -272,11 +283,6 @@ class _ACQ2106_423ST(MDSplus.Device):
                 coeff.record = coeffs[i]
                 offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
                 offset.record = offsets[i]
-                
-        if self.trig_mode.data() == 'hard':
-            uut.s1.set_knob('trg', '1,0,1')
-        else:
-            uut.s1.set_knob('trg', '1,1,1')
 
         self.running.on=True
         thread = self.MDSWorker(self)
