@@ -80,9 +80,9 @@ class EPFE(Device):
           
           cmd_status = self.send_cmd(ip, port, cmd)
           
-          print 'Sent command: %s'%(cmd)
+          print ('Sent command: %s'%(cmd))
           
-          print 'Received status: %s'%(cmd_status)
+          print ('Received status: %s'%(cmd_status))
           
           
 
@@ -95,7 +95,7 @@ class EPFE(Device):
           
           print 'Sent command: %s'%(cmd)
           
-          print 'Received status: %s'%(cmd_status)
+          print ('Received status: %s'%(cmd_status))
           
           for i in range(8):
                
@@ -107,9 +107,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    (print 'Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)
+                    print ('Received status: %s'%(cmd_status))
                     
                     
                     ch_irange = self.__getattr__('CH_%02d:IRANGE'%(i + 1)).data()
@@ -118,9 +118,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    print ('Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)
+                    print ('Received status: %s'%(cmd_status))
                     
                     
                     ch_bias = self.__getattr__('CH_%02d:BIAS'%(i + 1)).data()
@@ -129,9 +129,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    print ('Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)               
+                    print ('Received status: %s'%(cmd_status))               
           
           
           return 1
@@ -149,9 +149,9 @@ class EPFE(Device):
      
           cmd_status = self.send_cmd(ip, port, cmd)
           
-          print 'Sent command: %s'%(cmd)
+          print ('Sent command: %s'%(cmd))
           
-          print 'Received status: %s'%(cmd_status)
+          print ('Received status: %s'%(cmd_status))
           
           if ('???' != cmd_status) and (cmd_status == self.__getattr__('SYS_BIAS').data()):
           
@@ -162,9 +162,9 @@ class EPFE(Device):
      
           cmd_status = self.send_cmd(ip, port, cmd)
           
-          print 'Sent command: %s'%(cmd)
+          print ('Sent command: %s'%(cmd))
           
-          print 'Received status: %s'%(cmd_status)
+          print ('Received status: %s'%(cmd_status))
 
           if ('???' != cmd_status) and (cmd_status == self.__getattr__('WD_TIMEOUT').data()):
           
@@ -181,9 +181,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    print ('Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)
+                    print ('Received status: %s'%(cmd_status))
                     
                     if ('???' != cmd_status) and (cmd_status == self.__getattr__('CH_%02d:SOURCE'%(i + 1)).data()):
                     
@@ -194,9 +194,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    print ('Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)
+                    print ('Received status: %s'%(cmd_status))
                     
                     if ('???' != cmd_status) and (cmd_status == self.__getattr__('CH_%02d:IRANGE'%(i + 1)).data()):
                     
@@ -207,9 +207,9 @@ class EPFE(Device):
                     
                     cmd_status = self.send_cmd(ip, port, cmd)
                
-                    print 'Sent command: %s'%(cmd)
+                    print ('Sent command: %s'%(cmd))
                
-                    print 'Received status: %s'%(cmd_status)
+                    print ('Received status: %s'%(cmd_status))
                     
                     if ('???' != cmd_status) and (cmd_status == self.__getattr__('CH_%02d:BIAS'%(i + 1)).data()):
                     
