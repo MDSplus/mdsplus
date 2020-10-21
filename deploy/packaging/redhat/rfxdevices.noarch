@@ -67,14 +67,12 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_DEQU.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_DEVICE.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_DUTY_CYCLE.py
-./usr/local/mdsplus/pydevices/RfxDevices/MARTE_EDA1.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_EDA1_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_EDA3.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_EDA3_OUT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_AC_BC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_BR.py
-./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_BT.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_CTRL.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_MHD_I.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE_NE.py
