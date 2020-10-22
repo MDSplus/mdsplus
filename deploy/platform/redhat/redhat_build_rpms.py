@@ -103,8 +103,12 @@ def buildRpms():
             noarch_packages.append(package)
         else:
             bin_packages.append(package)
-
-    for arch in ({"target":"x86_64-linux","bits":64,"arch_t":".x86_64"},{"target":"i686-linux","bits":32,"arch_t":".i686"}):
+    architectures = [{"target":"x86_64-linux","bits":64,"arch_t":".x86_64"}]
+    print('******************** the DISTNAME is ', os.environ['DISTNAME'], '***********************')
+    if os.environ['DISTNAME'] != 'el8':
+        architectures.append({"target":"i686-linux","bits":32,"arch_t":".i686"})
+      
+    for arch in architectures:
         info['target']=arch['target']
         info['bits']=arch['bits']
         info['arch']="bin"
