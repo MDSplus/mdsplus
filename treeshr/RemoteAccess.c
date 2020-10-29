@@ -53,7 +53,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef DEBUG
 # define DBG(...) fprintf(stderr,__VA_ARGS__)
 #else
-# define DBG(...) do{}while(0)
+# define DBG(...) {}
 #endif
 
 static inline char *replaceBackslashes(char *filename) {
@@ -1317,7 +1317,7 @@ inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size, int
 
 static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in, int *deleted) {
   int fd = fdinfo.fd;
-  int err;
+  int status = TreeLOCK_FAILURE;
   int mode = mode_in & MDS_IO_LOCK_MASK;
   int nowait = mode_in & MDS_IO_LOCK_NOWAIT;
 #ifdef _WIN32
@@ -1328,21 +1328,14 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   overlapped.OffsetHigh = (int)(offset >> 32);
   overlapped.hEvent = 0;
   HANDLE h = (HANDLE) _get_osfhandle(fd);
-  if (mode > 0)
-  {
+  if (mode > 0) {
     flags = ((mode == MDS_IO_LOCK_RD) && (nowait == 0)) ? 0 : LOCKFILE_EXCLUSIVE_LOCK;
     if (nowait) flags |= LOCKFILE_FAIL_IMMEDIATELY;
-    //UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
-    err = !LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped);
+    UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped); //TODO: check return value
+    status = LockFileEx(h, flags, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
+  } else {
+    status = UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped) == 0 ? TreeLOCK_FAILURE : TreeSUCCESS;
   }
-  else
-  {
-    err = !UnlockFileEx(h, 0, (DWORD) size, 0, &overlapped);
-  }
-  if (err)
-    DBG("LOCK_ER %d mode=%d, errorcode=%d\n", fd, mode, (int)GetLastError());
-  else
-    DBG("LOCK_OK %d mode=%d\n", fd, mode);
   if (deleted) *deleted = 0;
 #else
   struct flock flock_info;
@@ -1351,11 +1344,11 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
   flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock_info.l_len = (mode == 0) ? 0 : size;
-  err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) == -1;
+  status = (fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) != -1) ? TreeSUCCESS : TreeLOCK_FAILURE;
   fstat(fd, &stat);
   if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
-  return err ? TreeLOCK_FAILURE : TreeSUCCESS;
+  return status;
 }
 
 EXPORT int MDS_IO_LOCK(int idx, off_t offset, size_t size, int mode_in, int *deleted){
@@ -1548,28 +1541,28 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
     *conid = remote_access_connect(host, 1, NULL);
     if (*conid != -1) {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
-	if (*filepath && !strstr(filepath,"::")) {
-	  INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
-	  int options,mode;
-	  getOptionsMode(new,edit,&options,&mode);
-	  *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
-	  status = *fd==-1 ? TreeFAILURE : TreeSUCCESS;
-	  if ((*fd>=0) && edit && (type == TREE_TREEFILE_TYPE)) {
-	    if IS_NOT_OK(io_lock_remote((fdinfo_t){*conid,*fd,*enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
-	      status = TreeEDITTING;
-	      *fd = -2;
-	    }
-	  }
-	  if (*fd>=0) {
-	    *fullpath = malloc(strlen(host)+3+strlen(tmp));
-	    sprintf(*fullpath,"%s::%s",host,tmp);
-	  }
-	  FREE_NOW(tmp);
-	} else {
-	  status = TreeUNSUPTHICKOP;
-	  remote_access_disconnect(*conid, B_FALSE);
-	}
-	break;
+        if (*filepath && !strstr(filepath,"::")) {
+          INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
+          int options,mode;
+          getOptionsMode(new,edit,&options,&mode);
+          *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
+          status = *fd==-1 ? TreeFAILURE : TreeSUCCESS;
+          if ((*fd>=0) && edit && (type == TREE_TREEFILE_TYPE)) {
+            if IS_NOT_OK(io_lock_remote((fdinfo_t){*conid,*fd,*enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+              status = TreeEDITTING;
+              *fd = -2;
+            }
+          }
+          if (*fd>=0) {
+            *fullpath = malloc(strlen(host)+3+strlen(tmp));
+            sprintf(*fullpath,"%s::%s",host,tmp);
+          }
+          FREE_NOW(tmp);
+        } else {
+          status = TreeUNSUPTHICKOP;
+          remote_access_disconnect(*conid, B_FALSE);
+        }
+        break;
       }
       int len = strlen(treename);
       int totlen = strlen(filepath)+len+2;
@@ -1580,7 +1573,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
       status = io_open_one_request(*conid,sizeof(mdsio.open_one),&mdsio,data,host,enhanced,fullpath,fd);
       FREE_NOW(data);
       if (*fd<0)
-	remote_access_disconnect(*conid, B_FALSE);
+        remote_access_disconnect(*conid, B_FALSE);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
       *fd = -1;
@@ -1629,8 +1622,7 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_ty
 	fullpath = NULL;
 	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, &fullpath, &conid, &fd, &enhanced);
 	if (fd < 0) {
-	  if (status != TreeUNSUPTHICKOP)
-	    status = TreeSUCCESS;
+	  status = TreeSUCCESS;
 	  conid = -1;
 	  enhanced = 0;
 	}
