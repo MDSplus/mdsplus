@@ -1541,28 +1541,28 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
     *conid = remote_access_connect(host, 1, NULL);
     if (*conid != -1) {
       if (GetConnectionVersion(*conid) < MDSIP_VERSION_OPEN_ONE) {
-	if (*filepath && !strstr(filepath,"::")) {
-	  INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
-	  int options,mode;
-	  getOptionsMode(new,edit,&options,&mode);
-	  *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
-	  status = *fd==-1 ? TreeFAILURE : TreeSUCCESS;
-	  if ((*fd>=0) && edit && (type == TREE_TREEFILE_TYPE)) {
-	    if IS_NOT_OK(io_lock_remote((fdinfo_t){*conid,*fd,*enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
-	      status = TreeEDITTING;
-	      *fd = -2;
-	    }
-	  }
-	  if (*fd>=0) {
-	    *fullpath = malloc(strlen(host)+3+strlen(tmp));
-	    sprintf(*fullpath,"%s::%s",host,tmp);
-	  }
-	  FREE_NOW(tmp);
-	} else {
-	  status = TreeUNSUPTHICKOP;
-	  remote_access_disconnect(*conid, B_FALSE);
-	}
-	break;
+        if (*filepath && !strstr(filepath,"::")) {
+          INIT_AS_AND_FREE_ON_EXIT(char*,tmp,generate_fullpath(filepath,treename,shot,type));
+          int options,mode;
+          getOptionsMode(new,edit,&options,&mode);
+          *fd = io_open_remote(host, tmp, options, mode, conid, enhanced);
+          status = *fd==-1 ? TreeFAILURE : TreeSUCCESS;
+          if ((*fd>=0) && edit && (type == TREE_TREEFILE_TYPE)) {
+            if IS_NOT_OK(io_lock_remote((fdinfo_t){*conid,*fd,*enhanced}, 1, 1, MDS_IO_LOCK_RD | MDS_IO_LOCK_NOWAIT, 0)) {
+              status = TreeEDITTING;
+              *fd = -2;
+            }
+          }
+          if (*fd>=0) {
+            *fullpath = malloc(strlen(host)+3+strlen(tmp));
+            sprintf(*fullpath,"%s::%s",host,tmp);
+          }
+          FREE_NOW(tmp);
+        } else {
+          status = TreeUNSUPTHICKOP;
+          remote_access_disconnect(*conid, B_FALSE);
+        }
+        break;
       }
       int len = strlen(treename);
       int totlen = strlen(filepath)+len+2;
@@ -1573,7 +1573,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
       status = io_open_one_request(*conid,sizeof(mdsio.open_one),&mdsio,data,host,enhanced,fullpath,fd);
       FREE_NOW(data);
       if (*fd<0)
-	remote_access_disconnect(*conid, B_FALSE);
+        remote_access_disconnect(*conid, B_FALSE);
     } else {
       fprintf(stderr, "Error connecting to host /%s/ in io_open_one_remote\n", host);
       *fd = -1;
