@@ -23,7 +23,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from MDSplus import Data, TreeNode, TreePath
+from MDSplus import Data, TreeNode, TreePath, Float64
 
 MC = __import__('MARTE2_COMPONENT', globals())
 
@@ -36,7 +36,7 @@ class MARTE2_RTSM(MC.MARTE2_COMPONENT):
       outputs.append({'name': 'OutWave'+str(i+1), 'type':'float32', 'dimensions':-1, 'parameters':[]})
     parameters = [{'name': 'TriggerIdx', 'type':'int32', 'value': 0},
 		  {'name': 'TriggerTime', 'type':'float32', 'value': 0},
- 		  {'name': 'Frequency', 'type':'float32', 'value': 0},
+ 		  {'name': 'Period', 'type':'float32', 'value': 0},
  		  {'name': 'NumStates', 'type':'int32', 'value': 0}]
     
     for stateIdx in range(16):
@@ -60,4 +60,9 @@ class MARTE2_RTSM(MC.MARTE2_COMPONENT):
     parts = []
 
     def prepareMarteInfo(self):
-      pass
+     # try:
+        period = self.timebase.evaluate().getDelta().data() 
+        self.parameters_par_3_value.putData(Float64(period))
+        print('****************PERIOD:', period)
+     # except:
+      #  pass

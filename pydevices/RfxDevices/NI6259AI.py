@@ -148,7 +148,7 @@ class NI6259AI(Device):
     enableDict = {'ENABLED':True , 'DISABLED':False}
     gainDict = {'10V':c_byte(1), '5V':c_byte(2),'2V':c_byte(3), '1V':c_byte(4),'500mV':c_byte(5),'200mV':c_byte(6),'100mV':c_byte(7)}
     gainValueDict = {'10V':10., '5V':5.,'2V':2., '1V':1.,'500mV':0.5,'200mV':0.2,'100mV':0.1}
-    gainDividerDict = {'10V':1., '5V':1.,'2V':5., '1V':10.,'500mV':20.,'200mV':50.,'100mV':100.}
+    gainDividerDict = {'10V':1., '5V':2.,'2V':5., '1V':10.,'500mV':20.,'200mV':50.,'100mV':100.}
 
     polarityDict = {'UNIPOLAR':AI_POLARITY_UNIPOLAR, 'BIPOLAR':AI_POLARITY_BIPOLAR}
     diffChanMap = [0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23]
