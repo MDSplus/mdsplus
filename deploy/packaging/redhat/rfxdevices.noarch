@@ -50,6 +50,7 @@
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_PYTHON_PWM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RESAMPLER.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RFXMODEL.py
+./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_RTSM.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_GENERIC.py
 ./usr/local/mdsplus/pydevices/RfxDevices/MARTE2_SIMULINK_LEV_CTRLR.py
