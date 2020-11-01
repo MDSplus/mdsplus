@@ -203,17 +203,9 @@ public class DeviceChoice extends DeviceComponent
 	protected String getData()
 	{
 		int curr_idx = comboB.getSelectedIndex();
-                if(curr_idx == -1) //This means that no data is stored. This is an error condition and a message must be issued
+                if(curr_idx == -1) //This means that no data is stored and no selection has been made. Leave data as is.
                 {
-                    String path;
-                    try {
-                        path = subtree.getFullPath(getBaseNid()+getOffsetNid());
-                    } catch(Exception exc)
-                    {
-                        path = "";
-                    }
-                    System.out.println("WARNING: field "+path + " did not contain any valid value. First option assumed");
-                    curr_idx = 0;
+		    return "";
                 }
 		if (convert)
 		{
