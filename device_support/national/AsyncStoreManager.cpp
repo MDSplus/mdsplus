@@ -1,6 +1,7 @@
 #include "AsyncStoreManager.h"
 
 pthread_mutex_t globalMutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t segmentMutex = PTHREAD_MUTEX_INITIALIZER;
   
 //Support class for enqueueing storage requests
 /*
@@ -233,10 +234,17 @@ void SaveItem::save()
 		    short *fBuf = new short[segmentSize];
 		    memset(fBuf, 0, sizeof(short) * segmentSize);
 		    Int16Array *fData = new Int16Array((short *)fBuf, segmentSize);
-		    if(resampledNode)
-			dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
-		    else
-			dataNode->beginSegment(startTime, endTime, dim, fData);
+		    pthread_mutex_lock(&segmentMutex);
+		    try {
+		    	if(resampledNode)
+			    //dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
+			    dataNode->beginSegment(startTime, endTime, dim, fData);
+		    	else
+			    dataNode->beginSegment(startTime, endTime, dim, fData);
+		    }  catch(MdsException &exc) {
+			printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n", dataNode->getFullPath(), exc.what());
+		    }
+		    pthread_mutex_unlock(&segmentMutex);
 		    delete [] fBuf;
 		    deleteData(fData);
 		}
@@ -246,10 +254,17 @@ void SaveItem::save()
 		    float *fBuf = new float[segmentSize];
 		    memset(fBuf, 0, sizeof(float) * segmentSize);
 		    Float32Array *fData = new Float32Array((float *)fBuf, segmentSize);
-		    if(resampledNode)
-			dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
-		    else
-			dataNode->beginSegment(startTime, endTime, dim, fData);
+		    pthread_mutex_lock(&segmentMutex);
+		    try {
+		    	if(resampledNode)
+			    //dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
+			    dataNode->beginSegment(startTime, endTime, dim, fData);
+		        else
+			    dataNode->beginSegment(startTime, endTime, dim, fData);
+		    }  catch(MdsException &exc) {
+			printf("BEGIN SEGMENT FAILED FOR NODE %s: %s\n", dataNode->getFullPath(), exc.what());
+		    }
+		    pthread_mutex_unlock(&segmentMutex);
 		    delete [] fBuf;
 		    deleteData(fData);
 		}
@@ -271,10 +286,19 @@ void SaveItem::save()
 		{
 //printf("Short Save data %s counter %d\n", dataNode->getPath(), counter );
 			Int16Array *data = new Int16Array((short *)buffer, bufSize);
-			if(resampledNode)
-			    dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-			else
-			    dataNode->putSegment(data, -1);
+
+			pthread_mutex_lock(&segmentMutex);
+			try  {
+			    if(resampledNode)
+//			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+			        dataNode->putSegment(data, -1);
+			    else
+			        dataNode->putSegment(data, -1);
+			} catch(MdsException &exc)
+			{
+			    printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(), exc.what());
+			}
+			pthread_mutex_unlock(&segmentMutex);
 			deleteData(data);
  			delete[] (short *)buffer;
 		}
@@ -283,10 +307,18 @@ void SaveItem::save()
 		{
 //printf("Float Save data %s counter %d\n", dataNode->getPath(), counter );
 			Float32Array *data = new Float32Array((float *)buffer, bufSize);
-			if(resampledNode)
-			    dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-			else
-			    dataNode->putSegment(data, -1);
+			pthread_mutex_lock(&segmentMutex);
+			try  {
+			    if(resampledNode)
+//			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+			        dataNode->putSegment(data, -1);
+			    else
+			        dataNode->putSegment(data, -1);
+			} catch(MdsException &exc)
+			{
+			    printf("PUT SEGMENT FAILED FOR NODE: %s: %s\n", dataNode->getFullPath(), exc.what());
+			}
+			pthread_mutex_unlock(&segmentMutex);
 			deleteData(data);
  			delete[] (float *)buffer;
 		}

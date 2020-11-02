@@ -712,7 +712,6 @@ extern "C" void stopSave(void *listPtr)
 }
 
 **********************************************************************************************************************************************/
-#define PXI6259_MAX_BUFSIZE 1000
 #define MAX_ITERATIONS 100000
 void readAiConfiguration(int fd)
 {
@@ -808,7 +807,7 @@ void pxi6259_ai_polynomial_scaler(int16_t *raw, float *scaled, uint32_t num_samp
 
 
 
-#define XSERIES_MAX_BUFSIZE 300000
+#define XSERIES_MAX_BUFSIZE 100000
 extern "C" int  getCalibrationParams(int chanfd, int range, float *coeff);
 
 
@@ -1213,7 +1212,7 @@ if( chan == 0 && (testCount % 1000) == 0 )
 }   
 
 //=============================
-#define PXI6259_MAX_BUFSIZE_NEW 300000
+#define PXI6259_MAX_BUFSIZE 50000
 
 int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, 
 			void *gainsPtr, void *coeffsNidPtr, int clockNid, float timeIdx0, 
@@ -1247,8 +1246,8 @@ int pxi6259_readAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int 
     float streamGains[nChan];
     float streamOffsets[nChan];
 
-    if (bufSize > PXI6259_MAX_BUFSIZE_NEW)
-        bufSize = PXI6259_MAX_BUFSIZE_NEW;
+    if (bufSize > PXI6259_MAX_BUFSIZE)
+        bufSize = PXI6259_MAX_BUFSIZE;
 
     printf("PXI 6259 nChan %d bufSize %d segmentSize %d numSamples %d stopAcq %d Time 0 %e Period %e\n", nChan, bufSize, segmentSize, numSamples, *(int *)stopAcq,  timeIdx0, period);
 
