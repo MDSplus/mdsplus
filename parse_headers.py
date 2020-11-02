@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 call 'python parse_headers.py'
 edit 'python/MDSplus/compound.py' and trunk file below '### parse_headers.py ###'
