@@ -1000,7 +1000,7 @@ AutoReqProv: yes
  <external_packages platform="redhat">
    <setuptools package="python2-setuptools"/>
    <python package="python2"/>
-   <numpy/>
+   <python2-numpy/>
    <xinetd/>
    <java/>
  </external_packages>
