@@ -60,7 +60,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         {'path':':NODE',        'type':'text',                     'options':('no_write_shot',)},
         {'path':':COMMENT',     'type':'text',                     'options':('no_write_shot',)},
         {'path':':TRIGGER',     'type':'numeric', 'value': 0.0,    'options':('no_write_shot',)},
-        {'path':':TRIG_MODE',   'type':'text',    'value': 'hard', 'options':('no_write_shot',)},
+        {'path':':TRIG_MODE',   'type':'text',    'value': 'master:hard', 'options':('no_write_shot',)},
         {'path':':EXT_CLOCK',   'type':'axis',                     'options':('no_write_shot',)},
         {'path':':FREQ',        'type':'numeric', 'value': 16000,  'options':('no_write_shot',)},
         {'path':':DEF_DECIMATE','type':'numeric', 'value': 1,      'options':('no_write_shot',)},
@@ -251,7 +251,11 @@ class _ACQ2106_423ST(MDSplus.Device):
         if  freq < MIN_FREQUENCY:
             raise MDSplus.DevBAD_PARAMETER(" Sample rate should be greater or equal than 10kHz")
 
-        trg = self.trig_mode.data()
+        mode = self.trig_mode.data()
+        role = mode.split(":")[0]
+        trg  = mode.split(":")[1]
+
+        print("Role is {} and Trigger is {}".format(role, trg))
 
         if trg == 'hard':
             trg_dx = 'd0'
@@ -264,25 +268,17 @@ class _ACQ2106_423ST(MDSplus.Device):
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]  
-        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
+        
+        #Fetching all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+        uut.fetch_all_calibration()
+        coeffs = uut.cal_eslo[1:]
+        eoff = uut.cal_eoff[1:]
 
-        try:
-            slots = [uut.s1]
-            slots.append(uut.s2)
-            slots.append(uut.s3)
-            slots.append(uut.s4)
-            slots.append(uut.s5)
-            slots.append(uut.s6)
-        except:
-            pass
-        for card in range(self.sites):
-            coeffs  =  map(float, slots[card].AI_CAL_ESLO.split(" ")[3:] )
-            offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
-            for i in range(32):
-                coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
-                coeff.record = coeffs[i]
-                offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
-                offset.record = offsets[i]
+        for ic, ch in enumerate(self.chans):
+            if ch.on:
+                ch.OFFSET.putData(float(eoff[ic]))
+                ch.COEFFICIENT.putData(float(coeffs[ic]))
 
         self.running.on=True
         thread = self.MDSWorker(self)
