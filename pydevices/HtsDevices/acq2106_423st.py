@@ -270,7 +270,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         # modifiers [CLKDIV=div]  
         uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
         
-        #Fetching all calibration information from every channel. Save it in INPUT_XXX:CAL_INPUT
+        #Fetching all calibration information from every channel.
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
