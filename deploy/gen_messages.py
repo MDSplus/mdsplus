@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 cpy_header = """
 Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 
