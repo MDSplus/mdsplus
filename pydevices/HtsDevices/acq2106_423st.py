@@ -255,7 +255,7 @@ class _ACQ2106_423ST(MDSplus.Device):
         role = mode.split(":")[0]
         trg  = mode.split(":")[1]
 
-        print("Role is {} and Trigger is {}".format(role, trg))
+        print("Role is {} and {} trigger".format(role, trg))
 
         if trg == 'hard':
             trg_dx = 'd0'
@@ -274,6 +274,11 @@ class _ACQ2106_423ST(MDSplus.Device):
         uut.fetch_all_calibration()
         coeffs = uut.cal_eslo[1:]
         eoff = uut.cal_eoff[1:]
+
+        self.chans = []
+        nchans = uut.nchan()
+        for ii in range(nchans):
+            self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
 
         for ic, ch in enumerate(self.chans):
             if ch.on:
