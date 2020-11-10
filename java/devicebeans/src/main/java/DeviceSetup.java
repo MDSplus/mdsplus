@@ -147,8 +147,16 @@ public class DeviceSetup extends JDialog implements Interface.Setup
 			catch (final Exception exc)
 			{
 				exc.printStackTrace();
-				JOptionPane.showMessageDialog(this, exc.toString(),
-						"Error writing data at offset nid " + comp.getOffsetNid(), JOptionPane.WARNING_MESSAGE);
+                                java.lang.String path;
+                                try {
+                                    path = subtree.getFullPath(comp.getBaseNid()+comp.getOffsetNid());
+                                }
+                                catch(Exception exc1)
+                                {
+                                    path = "";
+                                }
+				JOptionPane.showMessageDialog(this, "Error writing data at  " + path + ": "+exc.toString(),
+						"Error writing data", JOptionPane.WARNING_MESSAGE);
 			}
 		for (final DeviceComponent comp : device_components)
 			comp.postApply();

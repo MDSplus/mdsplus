@@ -192,13 +192,15 @@ publish() {
 	pushd /publish/repo
 	rsync -a /release/repo/conf/distributions /publish/repo/conf/
 	reprepro clearvanished
-	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${RELEASE_VERSION}_*
+	:&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus ../${BRANCH}/DEBS/${ARCH}/*${RELEASE_VERSION}_* \
+	 || env HOME=/sign_keys reprepro export MDSplus
 	checkstatus abort "Failure: Problem installing ${BRANCH} into debian repository." $?
 	PREVIOUS_VERSION="$(cat ${LAST_RELEASE_INFO})"
 	echo "PREVIOUS_VERSION=${PREVIOUS_VERSION}"
 	if [ ! -z $PREVIOUS_VERSION ]
 	then
-	    :&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_*
+	    :&& env HOME=/sign_keys reprepro -V --keepunused -C ${BRANCH} includedeb MDSplus-previous ../${BRANCH}/DEBS/${ARCH}/*${PREVIOUS_VERSION}_* \
+         || env HOME=/sign_keys reprepro export MDSplus-previous
 	    checkstatus abort "Failure: Problem installing previous ${BRANCH} into debian repository." $?
 	fi
 	popd

@@ -1,4 +1,4 @@
-#!/usr/bin/python -u
+#!/usr/bin/env python -u
 from socket import socket,SHUT_RDWR
 import struct
 import os

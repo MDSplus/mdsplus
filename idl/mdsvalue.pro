@@ -64,11 +64,27 @@ function MdsValue,expression,arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,
     if not status then return,0
     n = n_params()
     Mds$SendArg,sock,n,0,expression
-    if (vm_being_used) then begin
-      for i=1,n-1 do x = evaluate('Mds$SendArg,sock,n,i,arg'+strtrim(i,2))
-    endif else begin
-      for i=1,n-1 do x = execute('Mds$SendArg,sock,n,i,arg'+strtrim(i,2))
-    endelse
+    for i=1,n-1 do begin 
+          case (i) of ;This case statement replaces the logic to use idl function execute or evaluate
+          ; replacing this logic with a case statement, removes the dependence on an idl license and evaluate (removing bugs in evaluate)
+              1:Mds$SendArg,sock,n,i,arg1
+              2:Mds$SendArg,sock,n,i,arg2
+              3:Mds$SendArg,sock,n,i,arg3
+              4:Mds$SendArg,sock,n,i,arg4
+              5:Mds$SendArg,sock,n,i,arg5
+              6:Mds$SendArg,sock,n,i,arg6
+              7:Mds$SendArg,sock,n,i,arg7
+              8:Mds$SendArg,sock,n,i,arg8
+              9:Mds$SendArg,sock,n,i,arg9
+              10:Mds$SendArg,sock,n,i,arg10
+              11:Mds$SendArg,sock,n,i,arg11
+              12:Mds$SendArg,sock,n,i,arg12
+              13:Mds$SendArg,sock,n,i,arg13
+              14:Mds$SendArg,sock,n,i,arg14
+              15:Mds$SendArg,sock,n,i,arg15
+              16:Mds$SendArg,sock,n,i,arg16
+          endcase
+    endfor
     dtype = 0b
     ndims = 0b
     dims = lonarr(8)

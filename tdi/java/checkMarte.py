@@ -1,6 +1,6 @@
 from MDSplus import *
 def checkMarte(treeName, nid):
-  print('Ciao sono checkMarte')
+  print('Checking MaARTe2 configuration...')
   print(nid)
   t = Tree(treeName, -1)
   node = TreeNode(nid, t)

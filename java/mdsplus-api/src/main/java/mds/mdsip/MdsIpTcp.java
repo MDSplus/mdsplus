@@ -4,9 +4,8 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.ByteBuffer;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
+import java.nio.channels.*;
+
 import mds.mdsip.MdsIp.Connection;
 
 public class MdsIpTcp implements Connection
@@ -36,13 +35,13 @@ public class MdsIpTcp implements Connection
 	@Override
 	final public void close() throws IOException
 	{
+		socket.close();
 		synchronized (select_out)
 		{
 			synchronized (select_in)
 			{
-				select_out.cancel();
 				select_in.cancel();
-				socket.close();
+				select_out.cancel();
 			}
 		}
 	}
@@ -82,9 +81,16 @@ public class MdsIpTcp implements Connection
 				return 0;
 			if (select_in.selector().select(internal_timeout) >= 0 && select_in.isReadable())
 			{
-				final int read = socket.read(buffer);
-				if (read == -1)
-					return read;
+				try
+				{
+					final int read = socket.read(buffer);
+					if (read == -1)
+						return read;
+				}
+				catch (final ClosedChannelException e)
+				{
+					return -1;
+				}
 			}
 			return rem - buffer.remaining();
 		}

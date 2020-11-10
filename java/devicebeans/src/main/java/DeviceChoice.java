@@ -158,7 +158,7 @@ public class DeviceChoice extends DeviceComponent
 						final float data_value = subtree.getFloat(data);
 						for (int i = 0; i < choiceFloatValues.length; i++)
 						{
-							if (data_value != choiceFloatValues[i])
+							if (data_value == choiceFloatValues[i])
 							{
 								comboB.setSelectedIndex(i);
 								break;
@@ -170,7 +170,7 @@ public class DeviceChoice extends DeviceComponent
 						final double data_value = subtree.getDouble(data);
 						for (int i = 0; i < choiceDoubleValues.length; i++)
 						{
-							if (data_value != choiceDoubleValues[i])
+							if (data_value == choiceDoubleValues[i])
 							{
 								comboB.setSelectedIndex(i);
 								break;
@@ -202,7 +202,11 @@ public class DeviceChoice extends DeviceComponent
 	@Override
 	protected String getData()
 	{
-		final int curr_idx = comboB.getSelectedIndex();
+		int curr_idx = comboB.getSelectedIndex();
+                if(curr_idx == -1) //This means that no data is stored and no selection has been made. Leave data as is.
+                {
+		    return "";
+                }
 		if (convert)
 		{
 			if (choiceIntValues != null)
