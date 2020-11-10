@@ -50,14 +50,14 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':WRTT0_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WRTT1_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},       # uut.cC.WRTD_TICKNS: For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
+            {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
+            {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},        # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
             {'path':':WR_INIT:WRTD_RTP',    'type':'numeric', 'value': 15, 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_DTP', 'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},
+            {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},   # From uut.cC.WRTD_DELAY01
             {'path':':WR_INIT:WRTD_ID',     'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_TX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
@@ -80,28 +80,27 @@ class ACQ2106_WRTD(MDSplus.Device):
         self.wrtt1_msg.record = str(wrmgs[1])
 
         #Record the state of the WRTD environment:
-        self.wr_init_wrtd_delay.record  = MDSplus.Int64(uut.cC.WRTD_DELAY01)
-        self.wr_init_wrtd_dns.record    = MDSplus.Int64(uut.cC.WRTD_DELTA_NS) # 50msec - our "safe time for broadcast"
-        self.wr_init_wrtd_id.record     = uut.cC.WRTD_ID
-        self.wr_init_wrtd_rx_dtp.record = uut.cC.WRTD_RX_DOUBLETAP            # Match for DOUBLETAP: set WRTT0, delay WRTD_DELAY01, set WRTT1
-        self.wr_init_wrtd_rx_m.record   = str(wrmgs[0])                       # Match for WRTT0
-        self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1])                       # Match for WRTT1
-        self.wr_init_wrtd_tickns.record = MDSplus.Int64(uut.cC.WRTD_TICKNS)   # For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
-        self.wr_init_wrtd_tx.record     = MDSplus.Int64(uut.cC.WRTD_TX)
-        self.wr_init_wrtd_rx.record     = MDSplus.Int64(uut.cC.WRTD_RX)
-        self.wr_init_wrtd_vbose.record  = MDSplus.Int64(uut.cC.WRTD_VERBOSE)  # use for debugging - eg logread -f or nc localhost 4280
+        self.wr_init_wrtd_rx_m.record   = str(wrmgs[0]) # Matches for WRTT0
+        self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1]) # Matches for WRTT1
 
-        # Turn on RX:
-        uut.cC.WRTD_RX = '1'
-        #Commit the changes for WRTD RX
-        uut.cC.wrtd_commit_rx = 1
+        # Global WR settings:
+        # Set WRTD_ID
+        uut.cC.WRTD_ID = str(self.wr_init_wrtd_id)
 
-        # Define RX matches:
+        # Receiver:
+        # Turn on RX
+        uut.cC.WRTD_RX = int(self.wr_init_wrtd_rx)
+        # Define RX matches
         uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
         uut.cC.WRTD_RX_MATCHES1 = str(wrmgs[1])
-        
         #Commit the changes for WRTD RX
         uut.cC.wrtd_commit_rx = 1
+
+        # Transmiter:
+        # Turn on TX
+        uut.cC.WRTD_TX = int(self.wr_init_wrtd_tx)
+        #Commit the changes for WRTD TX
+        uut.cC.wrtd_commit_tx = 1
 
     INIT=init
 
