@@ -43,8 +43,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':HOSTNAME',    'type':'text',    'options':('no_write_shot',)},
         {'path':':COMMENT',     'type':'text',    'options':('no_write_shot',)},
         {'path':':TRIG_MSG',    'type':'text',    'options':('write_shot',)},
-        {'path':':TRIG_SRC',    'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
-        {'path':':EVENT0_SRC',  'type':'text',    'value': 'WRTTx', 'options':('write_shot',)},
+        {'path':':TRIG_SRC',    'type':'text',    'value': 'FPTRG', 'options':('write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':WRTT0_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
@@ -82,6 +81,9 @@ class ACQ2106_WRTD(MDSplus.Device):
         #Record the state of the WRTD environment:
         self.wr_init_wrtd_rx_m.record   = str(wrmgs[0]) # Matches for WRTT0
         self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1]) # Matches for WRTT1
+
+        # WR TRIGGER SOURCE:
+        uut.s0.WR_TRG_DX = str(self.trig_src)
 
         # Global WR settings:
         # Set WRTD_ID
@@ -124,17 +126,9 @@ class ACQ2106_WRTD(MDSplus.Device):
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
 
-            # Save choices in tree node:
-            self.trig_src.record   = 'WRTT0'
-            self.event0_src.record = 'WRTT0'
-
         elif message in uut.cC.WRTD_RX_MATCHES1:
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-
-            # Save choices in tree node:
-            self.trig_src.record   = 'WRTT1'
-            self.event0_src.record = 'WRTT1'
         
         else:
             print('Message does not match either of the WRTTs available')
