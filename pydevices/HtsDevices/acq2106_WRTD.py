@@ -83,15 +83,17 @@ class ACQ2106_WRTD(MDSplus.Device):
         self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1]) # Matches for WRTT1
 
         # WR TRIGGER SOURCE:
-        uut.s0.WR_TRG_DX = str(self.trig_src)
+        print("WR TRG Source {}".format(str(self.trig_src.data())))
+        uut.s0.WR_TRG_DX = str(self.trig_src.data())
 
         # Global WR settings:
         # Set WRTD_ID
-        uut.cC.WRTD_ID = str(self.wr_init_wrtd_id)
+        print("WRTD_ID {}".format(str(self.wr_init_wrtd_id.data())))
+        uut.cC.WRTD_ID = str(self.wr_init_wrtd_id.data())
 
         # Receiver:
         # Turn on RX
-        uut.cC.WRTD_RX = int(self.wr_init_wrtd_rx)
+        uut.cC.WRTD_RX = int(self.wr_init_wrtd_rx.data())
         # Define RX matches
         uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
         uut.cC.WRTD_RX_MATCHES1 = str(wrmgs[1])
@@ -100,7 +102,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         # Transmiter:
         # Turn on TX
-        uut.cC.WRTD_TX = int(self.wr_init_wrtd_tx)
+        uut.cC.WRTD_TX = int(self.wr_init_wrtd_tx.data())
         #Commit the changes for WRTD TX
         uut.cC.wrtd_commit_tx = 1
 
