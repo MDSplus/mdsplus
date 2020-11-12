@@ -2906,6 +2906,8 @@ public class Signal implements WaveDataListener
 		final int zLen = z.length;
 		float sliceMin, sliceMax;
 		// sliceMin = sliceMax = z[ y2d.length * idx];
+                if(x2d.length * (idx + 1) >= z.length)
+                    return; //Wrong dimensions, would cause ArrayOutOfBound Exception
 		sliceMin = sliceMax = z[x2d.length * idx];
 		for (int j = 0; j < x2d.length; j++)
 		{
