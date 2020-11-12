@@ -30,7 +30,12 @@ do_createrepo() {
 srcdir=$(readlink -e $(dirname ${0})/../..)
 
 test64="64 x86_64-linux bin64 lib64 --with-gsi=/usr:gcc64"
-test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/usr/lib64/valgrind"
+if [ $OS = rhel8 ]; then
+  test32="32 i686-linux   bin32 lib32 --with-valgrind-lib=/usr/lib32/valgrind"
+else
+  test32="32 i686-linux   bin32 lib32 --with-gsi=/usr:gcc32 --with-valgrind-lib=/usr/lib32/valgrind"
+fi
+
 makelist(){
     rpm2cpio $1 | \
         cpio --list --quiet | \
@@ -60,14 +65,16 @@ buildrelease(){
       $MAKE install
     fi
     popd;
-    mkdir -p /workspace/releasebld/32;
-    pushd /workspace/releasebld/32;
-    config ${test32} ${ALPHA_DEBUG_INFO}
-    if [ -z "$NOMAKE" ]; then
-      $MAKE
-      $MAKE install
+    if [ $OS != rhel8 ]; then
+      mkdir -p /workspace/releasebld/32;
+      pushd /workspace/releasebld/32;
+      config ${test32} ${ALPHA_DEBUG_INFO}
+      if [ -z "$NOMAKE" ]; then
+        $MAKE
+        $MAKE install
+      fi
+      popd
     fi
-    popd
   if [ -z "$NOMAKE" ]; then
     BUILDROOT=/workspace/releasebld/buildroot
     echo "Building rpms";

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 # based on v7proto-134.pdf
 import os
 import sys

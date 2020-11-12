@@ -148,7 +148,7 @@ class NI6259AI(Device):
     enableDict = {'ENABLED':True , 'DISABLED':False}
     gainDict = {'10V':c_byte(1), '5V':c_byte(2),'2V':c_byte(3), '1V':c_byte(4),'500mV':c_byte(5),'200mV':c_byte(6),'100mV':c_byte(7)}
     gainValueDict = {'10V':10., '5V':5.,'2V':2., '1V':1.,'500mV':0.5,'200mV':0.2,'100mV':0.1}
-    gainDividerDict = {'10V':1., '5V':1.,'2V':5., '1V':10.,'500mV':20.,'200mV':50.,'100mV':100.}
+    gainDividerDict = {'10V':1., '5V':2.,'2V':5., '1V':10.,'500mV':20.,'200mV':50.,'100mV':100.}
 
     polarityDict = {'UNIPOLAR':AI_POLARITY_UNIPOLAR, 'BIPOLAR':AI_POLARITY_BIPOLAR}
     diffChanMap = [0,1,2,3,4,5,6,7,16,17,18,19,20,21,22,23]
@@ -378,7 +378,7 @@ class NI6259AI(Device):
 
             while not self.stopReq:
                 try :
-                    status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(bufSize), c_int(segmentSize), c_int(sampleToSkip), c_int(numSamples), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period), self.treePtr, saveList, self.stopAcq, c_int(self.device.getTree().shot), resNid_c)
+                    status = NI6259AI.niInterfaceLib.pxi6259_readAndSaveAllChannels(c_int(len(self.chanMap)), chanFd_c, c_int(int(round(bufSize))), c_int(int(round(segmentSize))), c_int(sampleToSkip), c_int(numSamples), chanNid_c, gainDividers_c, coeffsNid_c, self.device.clock_source.getNid(), c_float( timeAt0 ), c_float(period), self.treePtr, saveList, self.stopAcq, c_int(self.device.getTree().shot), resNid_c)
                 except Exception as ex :
                     self.device.debugPrint('Acquisition thread start error : %s'%(str(ex)))
                     self.error = self.ACQ_ERROR
@@ -402,11 +402,11 @@ class NI6259AI(Device):
 
             if( status < 0 ):
                 if( status == -1 ):
-                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 Module is not triggered')
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6259 Module is not triggered')
                 if( status == -2 ):
-                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 DMA overflow')
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6259 DMA overflow')
                 if( status == -3 ):
-                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6368 Exception on acquisition function')
+                    Data.execute('DevLogErr($1,$2)', self.device.getNid(), 'PXI 6259 Exception on acquisition function')
                 self.error = self.ACQ_ERROR;                    
 
 
@@ -827,9 +827,9 @@ class NI6259AI(Device):
         treePtr = c_void_p(0)
         NI6259AI.niInterfaceLib.openTree(c_char_p(self.getTree().name), c_int(self.getTree().shot), byref(treePtr))
         if(inputMode == self.AI_CHANNEL_TYPE_DIFFERENTIAL):
-            self.worker.configure(self, self.fd, chanMap, self.diffChanMap, treePtr, stopAcq)
+            self.worker.configure(self.copy(), self.fd, chanMap, self.diffChanMap, treePtr, stopAcq)
         else:
-            self.worker.configure(self, self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
+            self.worker.configure(self.copy(), self.fd, chanMap, self.nonDiffChanMap, treePtr, stopAcq)
         self.saveWorker()
         self.worker.start()
         

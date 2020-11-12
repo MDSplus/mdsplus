@@ -1,7 +1,7 @@
 ./usr/local/mdsplus/bin64/CompileTree
 ./usr/local/mdsplus/bin64/DecompileTree
-./usr/local/mdsplus/bin64/jDispatchMonitor
 ./usr/local/mdsplus/bin64/jDispatcherIp
+./usr/local/mdsplus/bin64/jDispatchMonitor
 ./usr/local/mdsplus/bin64/jScope
 ./usr/local/mdsplus/bin64/jServer
 ./usr/local/mdsplus/bin64/jTraverser

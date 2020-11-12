@@ -1,4 +1,4 @@
-#!/bin/env python
+#!/bin/env python2
 #
 # Copyright (c) 2017, Massachusetts Institute of Technology All rights reserved.
 #
@@ -70,6 +70,7 @@ def doRequire(info, out, root, require):
     if 'external' in require.attrib:
         pkg=externalPackage(info,root,require.attrib['package'])
         if pkg is not None:
+            print('***************** REQUIRES ***********',pkg,'*******************')
             doWrite(out,"Requires: %s\n" % pkg)
     else:
         info['reqpkg']=require.attrib['package']
@@ -86,7 +87,11 @@ def buildRpms():
     info['buildroot']=os.environ['BUILDROOT']
     info['bname']=os.environ['BNAME']
     info['platform']=os.environ['PLATFORM']
-    tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
+    print('******** DISTNAME is *************', info['distname'])
+    if info['distname'] != 'el8':
+      tree=ET.parse(srcdir+'/deploy/packaging/linux.xml')
+    else:
+      tree=ET.parse(srcdir+'/deploy/packaging/linux-rhel8.xml')
     root=tree.getroot()
     rpmspec=root.find('rpm').find('spec_start').text
     s=rpmspec.split('\n')
@@ -103,8 +108,11 @@ def buildRpms():
             noarch_packages.append(package)
         else:
             bin_packages.append(package)
-
-    for arch in ({"target":"x86_64-linux","bits":64,"arch_t":".x86_64"},{"target":"i686-linux","bits":32,"arch_t":".i686"}):
+    architectures = [{"target":"x86_64-linux","bits":64,"arch_t":".x86_64"}]
+    if os.environ['DISTNAME'] != 'el8':
+        architectures.append({"target":"i686-linux","bits":32,"arch_t":".i686"})
+      
+    for arch in architectures:
         info['target']=arch['target']
         info['bits']=arch['bits']
         info['arch']="bin"
