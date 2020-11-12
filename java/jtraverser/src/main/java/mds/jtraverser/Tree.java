@@ -284,7 +284,17 @@ public class Tree extends JScrollPane implements TreeSelectionListener, MouseLis
 					return;
 				try
 				{
-					currnode.rename(name);
+				     String path = currnode.getFullPath();
+				     int idx;
+				     for(idx = path.length() - 1; idx >= 0; idx--)
+				     {
+					char c = path.charAt(idx);
+					if(c == '.' || c == ':' || c == '\\')
+					    break;
+				     }
+				     path = path.substring(idx+1);
+				     path = path + name;
+				     currnode.rename(path);
 				}
 				catch (final Exception exc)
 				{
