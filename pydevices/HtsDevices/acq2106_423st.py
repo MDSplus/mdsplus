@@ -85,7 +85,6 @@ class _ACQ2106_423ST(MDSplus.Device):
 
         def __init__(self,dev):
             super(_ACQ2106_423ST.MDSWorker,self).__init__(name=dev.path)
-            threading.Thread.__init__(self)
 
             self.dev = dev.copy()
 
@@ -166,7 +165,7 @@ class _ACQ2106_423ST(MDSplus.Device):
             running = False
 
             def __init__(self,mds):
-                threading.Thread.__init__(self)
+                super(_ACQ2106_423ST.DeviceWorker, self).__init__()
                 self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()
