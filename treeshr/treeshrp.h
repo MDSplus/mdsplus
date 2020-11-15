@@ -714,7 +714,7 @@ to databases
 #define TREE_PATH_DELIM  "/"
 
 /************* Prototypes for internal functions *************/
-extern int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *);
+extern int ConnectTreeRemote(PINO_DATABASE * dblist, char const* tree, char *subtree_list, char *);
 extern int SetStackSizeRemote(PINO_DATABASE * dblist, int stack_size);
 
 extern int CloseTreeRemote(PINO_DATABASE * dblist, int call_hook);
@@ -759,7 +759,7 @@ extern int TreeIsChild(PINO_DATABASE * db, NODE * node);
 extern struct descriptor *TreeSectionName(TREE_INFO * info);
 /* extern int TreeFindTag(PINO_DATABASE *db, NODE *node, const char *treename, char **search_string, NODE **node_in_out); */
 extern int TreeFindTag(const char *tagnam, const char *treename, int *tagidx);
-int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, const char *tree,
+int _TreeFindTag(PINO_DATABASE * db, NODE * default_node, short treelen, char const* tree,
 		 short taglen, const char *tagnam, NODE ** nodeptr, int *tagidx);
 extern int TreeCallHook(TreeshrHookType operation, TREE_INFO * info, int nid);
 extern void _TreeDeleteNodesWrite(void *dbid);
@@ -817,6 +817,6 @@ extern int MDS_IO_EXISTS(char *filename);
 extern int MDS_IO_REMOVE(char *filename);
 extern int MDS_IO_RENAME(char *oldname, char *newname);
 extern ssize_t MDS_IO_READ_X(int fd, off_t offset, void *buff, size_t count, int *deleted);
-extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename,int shot, tree_type_t type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
+extern int MDS_IO_OPEN_ONE(char* filepath_in,char const* treename,int shot, tree_type_t type, int new, int edit_flag, char**fullpath, int*speclen, int *fd_out);
 
 #endif
