@@ -88,7 +88,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         # configuration of the experiment. For example, when using one WRTT timing highway, then we can use d0, which will be
         # the same used by the digitazer module. Otherwise, we can choose a different one, to be in an independent highway from
         # the digitazer, like d1.
-        uut.s0.SIG_EVENT_SRC_0 = 'GPG'
+        uut.s0.SIG_EVENT_SRC_0 = 'TRG' # or GPG
         uut.s0.GPG_ENABLE    ='enable'
         uut.s0.GPG_TRG       ='1'    #external=1, internal=0
         uut.s0.GPG_TRG_DX    = str(self.gpg_trg_dx.data())   #d1 for WRTT1. d0 for WRTT0 or EXT.
