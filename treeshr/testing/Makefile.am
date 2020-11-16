@@ -19,6 +19,8 @@ TESTS = \
  TreeDeleteNodeTest\
  TreeSegmentTest
 
+VALGRIND_TESTS = \
+ TreeDeleteNodeTest
 
 VALGRIND_SUPPRESSIONS_FILES =
 
