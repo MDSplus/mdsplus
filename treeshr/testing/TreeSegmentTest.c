@@ -1,3 +1,4 @@
+#include <mdsshr.h>
 #include <treeshr.h>
 #include <mdsdescrip.h>
 #include <unistd.h>
@@ -5,18 +6,19 @@
 #include <stdio.h>
 #include <pthread.h>
 
-#define NUM_THREADS 3
-#define NUM_SEGS 100
-#define SEG_SZE 10000
+static int NUM_THREADS = 3;
+static int NUM_SEGS = 100;
+static int SEG_SZE = 10000;
 #define NODEFMTSTR "S%02d"
-
-#define OK(m) ({int r = (m);if ((r & 1) == 0) fprintf(stdout, "%d: %d - %s\n", num, r, #m);})
 
 static pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
 static pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
 static int go = 0;
-static char const tree[] = "test";
+static char const tree[] = "tree_test";
 static int const shot = 1;
+static int result = 0;
+#define TEST_STATUS(m) ({int r = (m);if ((r & 1) == 0) {fprintf(stdout, "%d: %d - %s\n", num, r, #m); pthread_mutex_lock(&mutex); result = 1; pthread_mutex_unlock(&mutex);}})
+
 
 void *job(void* args)
 {
@@ -24,7 +26,7 @@ void *job(void* args)
     void *DBID = NULL;
     int nid;
     char name[13];
-    OK(_TreeOpen(&DBID, tree, shot, 0));
+    TEST_STATUS(_TreeOpen(&DBID, tree, shot, 0));
     sprintf(name, NODEFMTSTR, num);
     uint64_t start = 0, end = SEG_SZE - 1, *dim;
     dim = (__typeof__(dim))malloc(SEG_SZE*sizeof(*dim));
@@ -35,7 +37,7 @@ void *job(void* args)
     DESCRIPTOR_A(ddata, sizeof(*data), DTYPE_W, data, SEG_SZE*sizeof(*data));
     for ( int i = 0 ; i < SEG_SZE ; i++ )
         data[i] = i;
-    OK(_TreeFindNode(DBID, name, &nid));
+    TEST_STATUS(_TreeFindNode(DBID, name, &nid));
     pthread_mutex_lock(&mutex);
     while (go == 0)
         pthread_cond_wait(&cond, &mutex);
@@ -47,29 +49,32 @@ void *job(void* args)
             dim[j] = i * SEG_SZE + j;
         start = dim[0];
         end = dim[SEG_SZE-1];
-        //pthread_mutex_lock(&mutex);
-        OK(_TreeMakeSegment(DBID, nid, &dstart, &dend, (mdsdsc_t*)&ddim, (mdsdsc_a_t*)&ddata, -1, SEG_SZE));
-        //pthread_mutex_unlock(&mutex);
+        TEST_STATUS(_TreeMakeSegment(DBID, nid, &dstart, &dend, (mdsdsc_t*)&ddim, (mdsdsc_a_t*)&ddata, -1, SEG_SZE));
     }
-    OK(_TreeClose(&DBID, NULL, 0));
+    TEST_STATUS(_TreeClose(&DBID, NULL, 0));
     return NULL;
 }
 
 
-int main(int const arc, char const *const argv[])
+int main(int const argc, char const *const argv[])
 {
+    setenv("tree_test_path",".",1);
+    int a = 0;
+    if (argc > ++a) NUM_THREADS = atoi(argv[a]);
+    if (argc > ++a) NUM_SEGS = atoi(argv[a]);
+    if (argc > ++a) SEG_SZE = atoi(argv[a]);
     int num = -1;
     void *DBID = NULL;
-    OK(_TreeOpenNew(&DBID, tree, shot));
+    TEST_STATUS(_TreeOpenNew(&DBID, tree, shot));
     int nid;
     char name[13];
     for ( int i = 0 ; i < NUM_THREADS ; i++ )
     {
         sprintf(name, NODEFMTSTR, i);
-        OK(_TreeAddNode(DBID, name, &nid, 6));
+        TEST_STATUS(_TreeAddNode(DBID, name, &nid, 6));
     }
-    OK(_TreeWriteTree(&DBID, NULL, 0));
-    OK(_TreeCleanDatafile(&DBID, tree, shot)); // includes close
+    TEST_STATUS(_TreeWriteTree(&DBID, NULL, 0));
+    TEST_STATUS(_TreeCleanDatafile(&DBID, tree, shot)); // includes close
     pthread_t threads[NUM_THREADS];
     for ( int i = 0 ; i < NUM_THREADS ; i++ )
         pthread_create(&threads[i], NULL, job, (void*)(intptr_t)i);
@@ -79,13 +84,48 @@ int main(int const arc, char const *const argv[])
     pthread_mutex_unlock(&mutex);
     for ( int i = 0 ; i < NUM_THREADS ; i++ )
         pthread_join(threads[i], NULL);
-    OK(_TreeOpen(&DBID, tree, shot, 1));
+    TEST_STATUS(_TreeOpen(&DBID, tree, shot, 1));
     mdsdsc_xd_t xd = {0, DTYPE_DSC, CLASS_XD, NULL, 0};
     for ( int num = 0 ; num < NUM_THREADS ; num++ )
     {
         sprintf(name, NODEFMTSTR, num);
-        OK(_TreeFindNode(DBID, name, &nid));
-        OK(_TreeGetRecord(DBID, nid, &xd));
+        TEST_STATUS(_TreeFindNode(DBID, name, &nid));
+        TEST_STATUS(_TreeGetRecord(DBID, nid, &xd));
+        if (xd.l_length == 0 || xd.pointer == NULL || xd.pointer->class != CLASS_R)
+        {
+            fprintf(stderr, "%d: invalid record", num);
+            result = 1;
+            continue;
+        }
+        mdsdsc_r_t const *r = (mdsdsc_r_t const *)xd.pointer;
+        if (r->dscptrs[0]->class != CLASS_A || r->dscptrs[0]->dtype != DTYPE_W)
+        {
+            fprintf(stderr, "%d: invalid data type", num);
+            result = 1;
+            continue;
+        }
+        int16_t const *data = (int16_t const *)r->dscptrs[0]->pointer;
+        int arr_length = ((mdsdsc_a_t*)r->dscptrs[0])->arsize / 2;
+        if (arr_length != SEG_SZE*NUM_SEGS)
+        {
+                fprintf(stderr, "%d: invalid data length %d of %d", num, arr_length, SEG_SZE*NUM_SEGS);
+                result = 1;
+                continue;
+        }
+        for ( int j = 0 ; j < NUM_SEGS ; j++ )
+        {
+            for ( int i = 0 ; i < SEG_SZE ; i++ )
+            {
+                if (data[i+j*SEG_SZE] != (int16_t)i)
+                {
+                    fprintf(stderr, "%d: invalid data[i] is %d, but %d expected", num, data[i+j*SEG_SZE], i);
+                    result = 1;
+                    break;
+                }
+            }
+        }
     }
-    OK(_TreeClose(&DBID, NULL, 0));
+    TEST_STATUS(MdsFree1Dx(&xd, NULL));
+    TEST_STATUS(_TreeClose(&DBID, NULL, 0));
+    return result;
 }
