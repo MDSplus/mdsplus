@@ -51,7 +51,10 @@ void *job(void* args)
         end = dim[SEG_SZE-1];
         TEST_STATUS(_TreeMakeSegment(DBID, nid, &dstart, &dend, (mdsdsc_t*)&ddim, (mdsdsc_a_t*)&ddata, -1, SEG_SZE));
     }
+    free(data);
+    free(dim);
     TEST_STATUS(_TreeClose(&DBID, NULL, 0));
+    TreeFreeDbid(DBID);
     return NULL;
 }
 
@@ -128,5 +131,6 @@ int main(int const argc, char const *const argv[])
     }
     TEST_STATUS(MdsFree1Dx(&xd, NULL));
     TEST_STATUS(_TreeClose(&DBID, NULL, 0));
+    TreeFreeDbid(DBID);
     return result;
 }
