@@ -4,7 +4,7 @@ include @top_builddir@/Makefile.inc
 
 AM_CFLAGS = -I${top_srcdir}/include $(TARGET_ARCH) $(WARNFLAGS)
 AM_CXXFLAGS = -I${top_srcdir}/include @CXXFLAGS@ $(TARGET_ARCH) $(WARNFLAGS)
-           
+
 #
 # Static Base library
 #
@@ -47,7 +47,7 @@ JAVA_TEST_DIRS = \
 	java/mdsplus-api/tests \
 	java/mdsobjects/tests
 else
-JAVA_TEST_DIRS = 
+JAVA_TEST_DIRS =
 endif
 
 PYTHON_TEST_DIRS = \
@@ -55,6 +55,7 @@ PYTHON_TEST_DIRS = \
 
 C_TEST_DIRS = \
 	mdsshr/testing \
+	treeshr/testing \
 	mdslib/testing \
 	mdsobjects/cpp/testing \
 	tditest/testing
@@ -86,7 +87,7 @@ $(rebuild_tests_DIRS):
 $(clean_DIRS):
 	@-$(MAKE) $(AM_MAKEFLAGS) -C $(@:clean__%=%) clean
 
-$(tests_valgrind_DIRS):	
+$(tests_valgrind_DIRS):
 	@ $(MAKE) $(AM_MAKEFLAGS) -C $(@:tests_valgrind__%=%) tests-valgrind
 
 $(tests_valgrind_suppressions_DIRS):
