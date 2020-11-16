@@ -29,6 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <requires package="kernel"/>
     <requires package="java"/>
     <requires package="python"/>
+    <requires external="true" package="numpy"/>
     <requires package="motif"/>
   </package>
 
@@ -42,6 +43,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     <include file="/usr/local/mdsplus/pixmaps/jscope.png"/>
     <include file="/usr/local/mdsplus/pixmaps/jtraverser.png"/>
     <include file="/usr/local/mdsplus/pixmaps/jtraverser2.png"/>
+    <requires external="true" package="numpy"/>
+    <requires package="python"/>
+
 
     <!-- rpm scripts -->
     <post>
