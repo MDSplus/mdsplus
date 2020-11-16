@@ -76,7 +76,7 @@ int main(int argc __attribute__ ((unused)), char *argv[] __attribute__ ((unused)
     int status;
     const char *tree_name = "tree_test";
     const char *node_name = "test_node";
-    setenv("tree_test_path",".",1);
+    MdsPutEnv("tree_test_path=.");
 
     // open tree //
     status = _TreeOpenNew(&ctx, tree_name, shot);

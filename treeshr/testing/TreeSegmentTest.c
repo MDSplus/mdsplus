@@ -58,12 +58,12 @@ void *job(void* args)
 
 int main(int const argc, char const *const argv[])
 {
-    setenv("tree_test_path",".",1);
     int a = 0;
     if (argc > ++a) NUM_THREADS = atoi(argv[a]);
     if (argc > ++a) NUM_SEGS = atoi(argv[a]);
     if (argc > ++a) SEG_SZE = atoi(argv[a]);
     int num = -1;
+    TEST_STATUS(MdsPutEnv("tree_test_path=."));
     void *DBID = NULL;
     TEST_STATUS(_TreeOpenNew(&DBID, tree, shot));
     int nid;
