@@ -22,7 +22,7 @@ static int result = 0;
 
 void *job(void* args)
 {
-    int num = (int)(intptr_t)args;
+    int i, j, num = (int)(intptr_t)args;
     void *DBID = NULL;
     int nid;
     char name[13];
@@ -35,7 +35,7 @@ void *job(void* args)
     mdsdsc_t dend = { 8, DTYPE_QU, CLASS_S, (char*)&end };
     DESCRIPTOR_A(ddim, sizeof(*dim), DTYPE_QU, dim, SEG_SZE*sizeof(*dim));
     DESCRIPTOR_A(ddata, sizeof(*data), DTYPE_W, data, SEG_SZE*sizeof(*data));
-    for ( int i = 0 ; i < SEG_SZE ; i++ )
+    for ( i = 0 ; i < SEG_SZE ; i++ )
         data[i] = i;
     TEST_STATUS(_TreeFindNode(DBID, name, &nid));
     pthread_mutex_lock(&mutex);
@@ -43,9 +43,9 @@ void *job(void* args)
         pthread_cond_wait(&cond, &mutex);
     pthread_mutex_unlock(&mutex);
     fprintf(stderr, "%d: nid = %d\n", num, nid);
-    for ( int i = 0 ; i < NUM_SEGS ; i++ )
+    for ( i = 0 ; i < NUM_SEGS ; i++ )
     {
-        for ( int j = 0 ; j < SEG_SZE ; j++ )
+        for ( j = 0 ; j < SEG_SZE ; j++ )
             dim[j] = i * SEG_SZE + j;
         start = dim[0];
         end = dim[SEG_SZE-1];
@@ -68,7 +68,8 @@ int main(int const argc, char const *const argv[])
     TEST_STATUS(_TreeOpenNew(&DBID, tree, shot));
     int nid;
     char name[13];
-    for ( int i = 0 ; i < NUM_THREADS ; i++ )
+    int i, j;
+    for ( i = 0 ; i < NUM_THREADS ; i++ )
     {
         sprintf(name, NODEFMTSTR, i);
         TEST_STATUS(_TreeAddNode(DBID, name, &nid, 6));
@@ -76,17 +77,17 @@ int main(int const argc, char const *const argv[])
     TEST_STATUS(_TreeWriteTree(&DBID, NULL, 0));
     TEST_STATUS(_TreeCleanDatafile(&DBID, tree, shot)); // includes close
     pthread_t threads[NUM_THREADS];
-    for ( int i = 0 ; i < NUM_THREADS ; i++ )
+    for ( i = 0 ; i < NUM_THREADS ; i++ )
         pthread_create(&threads[i], NULL, job, (void*)(intptr_t)i);
     pthread_mutex_lock(&mutex);
     go = 1;
     pthread_cond_broadcast(&cond);
     pthread_mutex_unlock(&mutex);
-    for ( int i = 0 ; i < NUM_THREADS ; i++ )
+    for ( i = 0 ; i < NUM_THREADS ; i++ )
         pthread_join(threads[i], NULL);
     TEST_STATUS(_TreeOpen(&DBID, tree, shot, 1));
     mdsdsc_xd_t xd = {0, DTYPE_DSC, CLASS_XD, NULL, 0};
-    for ( int num = 0 ; num < NUM_THREADS ; num++ )
+    for ( num = 0 ; num < NUM_THREADS ; num++ )
     {
         sprintf(name, NODEFMTSTR, num);
         TEST_STATUS(_TreeFindNode(DBID, name, &nid));
@@ -112,9 +113,9 @@ int main(int const argc, char const *const argv[])
                 result = 1;
                 continue;
         }
-        for ( int j = 0 ; j < NUM_SEGS ; j++ )
+        for ( j = 0 ; j < NUM_SEGS ; j++ )
         {
-            for ( int i = 0 ; i < SEG_SZE ; i++ )
+            for ( i = 0 ; i < SEG_SZE ; i++ )
             {
                 if (data[i+j*SEG_SZE] != (int16_t)i)
                 {
