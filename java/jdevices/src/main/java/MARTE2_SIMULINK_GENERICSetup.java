@@ -854,10 +854,11 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         });
         jPanel3.add(jButton1);
 
-        deviceChoice17.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice17.setChoiceItems(new String[] {"0", "1", "2"});
         deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Logger:");
-        deviceChoice17.setOffsetNid(167);
+        deviceChoice17.setLabelString("Verbosity:");
+        deviceChoice17.setOffsetNid(7);
         deviceChoice17.setUpdateIdentifier("");
         jPanel3.add(deviceChoice17);
 
