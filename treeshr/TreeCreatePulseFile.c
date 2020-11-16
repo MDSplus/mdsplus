@@ -78,7 +78,7 @@ int TreeCreatePulseFile(int shotid, int numnids_in, int *nids_in)
   return _TreeCreatePulseFile(*TreeCtx(), shotid, numnids_in, nids_in);
 }
 
-static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath);
+static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,char* treepath);
 int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in) {
   PINO_DATABASE *dblist = (PINO_DATABASE *) dbid;
 /* Make sure tree is open */
@@ -152,7 +152,7 @@ int _TreeCreatePulseFile(void *dbid, int shotid, int numnids_in, int *nids_in) {
   return status;
 }
 
-static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* treepath) {
+static int TreeCreateTreeFilesOne(char const *tree, int shot, int source_shot,char* treepath) {
   if (!source_shot || (source_shot < -1)) return TreeINVSHOT;
   if (!shot        || (shot        < -1)) return TreeINVSHOT;
   int status,i;
@@ -188,7 +188,7 @@ static int TreeCreateTreeFilesOne(char *tree, int shot, int source_shot,char* tr
   return status;
 }
 
-int TreeCreateTreeFiles(char *tree, int shot, int source_shot) {
+int TreeCreateTreeFiles(char const*tree, int shot, int source_shot) {
   return TreeCreateTreeFilesOne(tree,shot,source_shot,NULL);
 }
 

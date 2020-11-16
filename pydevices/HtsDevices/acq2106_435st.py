@@ -93,7 +93,6 @@ class _ACQ2106_435ST(MDSplus.Device):
 
         def __init__(self,dev):
             super(_ACQ2106_435ST.MDSWorker,self).__init__(name=dev.path)
-            threading.Thread.__init__(self)
 
             self.dev = dev.copy()
 
@@ -148,7 +147,7 @@ class _ACQ2106_435ST(MDSplus.Device):
                 else:
                     nacc_tuple  = ast.literal_eval(nacc_str)
                     nacc_sample = nacc_tuple[0]
-                
+
             if self.dev.debug:
                 print("The ACQ NACC sample value is {}".format(nacc_sample))
 
@@ -198,7 +197,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             running = False
 
             def __init__(self,mds):
-                threading.Thread.__init__(self)
+                super(_ACQ2106_435ST.DeviceWorker, self).__init__()
                 self.debug = mds.dev.debug
                 self.node_addr = mds.dev.node.data()
                 self.seg_length = mds.dev.seg_length.data()

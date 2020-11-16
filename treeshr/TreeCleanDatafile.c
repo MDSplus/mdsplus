@@ -49,7 +49,7 @@ static void treeclose(void* dbid_p) {
   _TreeClose(dbid_p, 0, 0);
   free(*(void**)dbid_p);
 }
-STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
+STATIC_ROUTINE int RewriteDatafile(char const* tree, int shot, int compress)
 {
   int status, stat1;
   void *dbid1 = 0, *dbid2 = 0;
@@ -152,14 +152,14 @@ STATIC_ROUTINE int RewriteDatafile(char *tree, int shot, int compress)
   return status;
 }
 
-int _TreeCleanDatafile(void **dbid, char *tree, int shot){
+int _TreeCleanDatafile(void **dbid, char const* tree, int shot){
   int status = TreeSUCCESS;
   if (dbid) status = _TreeClose(dbid, tree, shot);
   if (STATUS_NOT_OK && status != TreeNOT_OPEN) return status;
   return RewriteDatafile(tree, shot, 0);
 }
 
-int _TreeCompressDatafile(void **dbid, char *tree, int shot){
+int _TreeCompressDatafile(void **dbid, char const* tree, int shot){
   int status = TreeSUCCESS;
   if (dbid) status = _TreeClose(dbid, tree, shot);
   if (STATUS_NOT_OK && status != TreeNOT_OPEN)
@@ -167,10 +167,10 @@ int _TreeCompressDatafile(void **dbid, char *tree, int shot){
   return RewriteDatafile(tree, shot, 1);
 }
 
-int TreeCleanDatafile(char *tree, int shot){
+int TreeCleanDatafile(char const* tree, int shot){
   return _TreeCleanDatafile(TreeCtx(), tree, shot);
 }
 
-int TreeCompressDatafile(char *tree, int shot){
+int TreeCompressDatafile(char const* tree, int shot){
   return _TreeCompressDatafile(TreeCtx(), tree, shot);
 }
