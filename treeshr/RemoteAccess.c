@@ -27,6 +27,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # include <ws2tcpip.h>
 # include <wspiapi.h>
 # include <windows.h>
+#else
+/* Debian Bug report logs - #639078
+ * pommed: FTBFS: fcntl.h:172:8: error: redefinition of 'struct flock'
+ */
+// #include <linux/fcntl.h>
+# define F_OFD_GETLK	36
+# define F_OFD_SETLK	37
+# define F_OFD_SETLKW	38
 #endif
 #include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
@@ -1315,6 +1323,7 @@ inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size, int
   return ret;
 }
 
+
 static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in, int *deleted) {
   int fd = fdinfo.fd;
   int err;
@@ -1345,13 +1354,14 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
     DBG("LOCK_OK %d mode=%d\n", fd, mode);
   if (deleted) *deleted = 0;
 #else
-  struct flock flock_info;
+  struct flock flock;
   struct stat stat;
-  flock_info.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
-  flock_info.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
-  flock_info.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
-  flock_info.l_len = (mode == 0) ? 0 : size;
-  err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock_info) == -1;
+  flock.l_type = (mode == 0) ? F_UNLCK : ((mode == 1) ? F_RDLCK : F_WRLCK);
+  flock.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
+  flock.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
+  flock.l_len = (mode == 0) ? 0 : size;
+  flock.l_pid = 0;
+  err = fcntl(fd, nowait ? F_OFD_SETLK : F_OFD_SETLKW, &flock) == -1;
   fstat(fd, &stat);
   if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
