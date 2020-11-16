@@ -328,6 +328,25 @@ class MARTE2_COMPONENT(Device):
               inputDict['name'] = input.getNode('name').data()  #Name is optional
             except:
               pass
+#Handle possibly structured data. In thos case node 'fields' will contain a list of fields
+            fields = []
+            try:
+              fieldsNode = input.getNode('fields')
+              fieldNids = np.sort(fieldsNode.getDescendants())
+              for fieldNid in fieldsNid:
+                field = TreeNode(fieldNid, self.getTree())
+                fieldDict = {}
+                fieldDict['type'] = field.getNode('type').data()
+                fieldDict['dimensions'] = field.getNode('dimensions').data()
+                fieldDict['value'] = field.getNode('value').getData() #NOT data()
+                fieldDict['value_nid'] = field.getNode('value')
+                fieldDict['col_order'] = field.getNode('col_order').data().upper()=='YES'
+                fieldDict['name'] = field.getNode('name').data()  #Name is optional
+                fields.append(fieldDict)
+            except:
+              pass
+            inputDict['fields'] = fields    
+          
             inputDicts.append(inputDict)
           except:
             pass
@@ -349,6 +368,25 @@ class MARTE2_COMPONENT(Device):
             if outputDict['seg_len'] > 0:
               storeSignals = True
             outputDict['samples'] = output.getNode(':samples').data()
+            
+#Handle possibly structured data. In thos case node 'fields' will contain a list of fields
+            fields = []
+            try:
+              fieldsNode = output.getNode('fields')
+              fieldNids = np.sort(fieldsNode.getDescendants())
+              for fieldNid in fieldsNid:
+                field = TreeNode(fieldNid, self.getTree())
+                fieldDict = {}
+                fieldDict['name'] = field.getNode('name').data()  
+                fieldDict['type'] = field.getNode('type').data()
+                fieldDict['dimensions'] = field.getNode('dimensions').data()
+                fieldDict['value_nid'] = field.getNode('value')
+                fieldDict['seg_len'] = output.getNode(':seg_len').data()
+                fields.append(fieldDict)
+            except:
+              pass
+            outputDict['fields'] = fields    
+            
             outputDicts.append(outputDict)
           except:
             pass
@@ -474,6 +512,31 @@ class MARTE2_COMPONENT(Device):
 
 
       return False
+
+#Add a new type to the current type list. If a type with the same name is not found, the dictionary (name, fields) is added, 
+# otherwise its fields are checked for consistency. Return false mismatch deteched, true otherwise
+    def addType(name, fieldDicts, typeDicts):
+      for typeDict in typesDicts:
+        if typeDict['name'] == name:
+          if len(typeDict['fields']) != len(fieldsDicts):
+            print('Number of fields mismatch for type '+name)
+            return False
+          for typeIdx in range(len(typeDict['fields'])): 
+            if typeDict['fields'][typeIdx]['name'] != fieldDicts[typeIdx]['name']:
+              print('Field name mismatch for Type '+name+'  ' + fieldDicts[typeIdx]['name'] + '  ' + typeDict['fields'][typeIdx]['name'])
+              return False
+            if typeDict['fields'][typeIdx]['type'] != fieldDicts[typeIdx]['type']:
+              print('Field type mismatch for Type '+name+'  ' + fieldDicts[typeIdx]['type'] + '  ' + typeDict['fields'][typeIdx]['type'])
+              return False
+            if typeDict['fields'][typeIdx]['dimensions'] != fieldDicts[typeIdx]['dimensions']:
+              print('Field dimensions mismatch for Type '+name+'  ' + fieldDicts[typeIdx]['dimensions'] + '  ' + typeDict['fields'][typeIdx]['dimensions'])
+              return False
+          return True  
+ #If we arrive here, the type is new
+      typeDicts.append({'name':name, 'fields': fieldDicts})
+      return True
+  
+  
 
 
 #######################GAM
@@ -664,6 +727,7 @@ class MARTE2_COMPONENT(Device):
               if 'name' in inputDict:
                   signalGamName = inputDict['name']
                   aliasName = inputDict['value'].getParent().getNode(':name').data()
+                  signalDict['alias'] = aliasName
               else:
                   signalGamName = inputDict['value'].getParent().getNode(':name').data()
           except:
@@ -672,6 +736,7 @@ class MARTE2_COMPONENT(Device):
             if 'name' in inputDict:
               signalName = inputDict['name']
               aliasName = self.convertPath(inputDict['value_nid'].getPath())
+              signalDict['alias'] = aliasName
               nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':aliasName, 'col_order':inputDict['col_order']})
             else:
               signalName = self.convertPath(inputDict['value_nid'].getPath())
@@ -1076,6 +1141,10 @@ class MARTE2_COMPONENT(Device):
           gamText += '        Type = '+signalDict['type']+'\n'
           gamText += '        NumberOfDimensions = '+str(signalDict['dimensions'])+'\n'
           gamText += '        NumberOfElements = '+str(signalDict['elements'])+'\n'
+          try:
+            gamText += '        Alias = "'+signalDict['alias']+'"\n'
+          except:
+            pass  #Time signal shall not have value_nid key
           gamText += '      }\n'
         for signalDict in outputSignals:
           gamText += '      '+signalDict['name']+' = {\n'
