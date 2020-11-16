@@ -211,6 +211,8 @@ inline static int read_property_safe(TREE_INFO *tinfo, const int64_t offset, cha
   return TreeFAILURE;
 }
 
+
+static pthread_mutex_t write_lock = PTHREAD_MUTEX_INITIALIZER;
 typedef struct {
   TREE_INFO *tinfo;
   int64_t offset;
@@ -218,10 +220,12 @@ typedef struct {
 static void unlock_datafile(void *c) {
   const write_cleanup_t *s = (write_cleanup_t *)c;
   if (s->offset != -1) TreeUnLockDatafile(s->tinfo, 0, s->offset);
+  pthread_mutex_unlock(&write_lock);
 }
 static int write_property(TREE_INFO *tinfo, int64_t *offset, const char *buffer, const int length) {
   if (!tinfo->data_file) return MDSplusFATAL;
   int status;
+  pthread_mutex_lock(&write_lock);
   write_cleanup_t c = {tinfo, -1};
   pthread_cleanup_push(unlock_datafile, &c);
   if (*offset == -1) {

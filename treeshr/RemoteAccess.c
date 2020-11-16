@@ -306,7 +306,7 @@ inline static int tree_open(PINO_DATABASE * dblist, int conid, const char* treea
   return status;
 }
 
-int ConnectTreeRemote(PINO_DATABASE * dblist, char *tree, char *subtree_list, char *logname){
+int ConnectTreeRemote(PINO_DATABASE * dblist, char const* tree, char *subtree_list, char *logname){
   int conid;
   logname[strlen(logname) - 2] = '\0';
   int status = TreeSUCCESS;
@@ -938,7 +938,7 @@ int TreeSetCurrentShotIdRemote(const char *treearg, char *path, int shot)
 # include <unistd.h>
 #endif
 #include "../mdstcpip/mdsIo.h"
-extern char *TreePath(char *tree, char *tree_lower_out);
+extern char *TreePath(char const* tree, char *tree_lower_out);
 extern void TreePerfWrite(int);
 extern void TreePerfRead(int);
 
@@ -1478,7 +1478,7 @@ EXPORT int MDS_IO_RENAME(char *filename_old, char *filename_new){
 ///////////////////////////////////////////////////////////////////
 
 
-inline static char* generate_fullpath(char* filepath,char* treename,int shot, tree_type_t type) {
+inline static char* generate_fullpath(char* filepath,char const* treename,int shot, tree_type_t type) {
   const char treeext[] = TREE_TREEFILE_EXT;
   const char nciext[]  = TREE_NCIFILE_EXT;
   const char dataext[] = TREE_DATAFILE_EXT;
@@ -1540,7 +1540,7 @@ static void getOptionsMode(int new,int edit,int*options,int*mode) {
   }
 }
 
-inline static int io_open_one_remote(char *host,char *filepath,char* treename,int shot,tree_type_t type,int new,int edit,char**fullpath,int*conid,int*fd,int*enhanced){
+inline static int io_open_one_remote(char *host,char *filepath,char const* treename,int shot,tree_type_t type,int new,int edit,char**fullpath,int*conid,int*fd,int*enhanced){
   int status;
   static int (*GetConnectionVersion)(int) = NULL;
   status = LibFindImageSymbol_C("MdsIpShr","GetConnectionVersion",&GetConnectionVersion);
@@ -1591,7 +1591,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
-EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_type_t type, int new, int edit, char**filespec, int*speclen, int *idx){
+EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char const* treename_in,int shot, tree_type_t type, int new, int edit, char**filespec, int*speclen, int *idx){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,fullpath);
   status = TreeSUCCESS;
