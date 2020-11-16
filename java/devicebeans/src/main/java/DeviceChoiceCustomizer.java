@@ -94,7 +94,7 @@ public class DeviceChoiceCustomizer extends DeviceCustomizer implements Customiz
 			for (int i = 0; i < names.length; i++)
 				nids.add(names[i]);
 		final int idx = bean.getOffsetNid();
-		if (idx > 0 && idx < names.length)
+		if (idx > 0 && idx <= names.length)
 			nids.select(idx - 1);
 		jp.add(jp1, "North");
 		jp1 = new Panel();

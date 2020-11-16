@@ -161,6 +161,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel2 = new javax.swing.JPanel();
         deviceField1 = new DeviceField();
         deviceField2 = new DeviceField();
+        deviceChoice18 = new DeviceChoice();
         jPanel3 = new javax.swing.JPanel();
         deviceField3 = new DeviceField();
         deviceField4 = new DeviceField();
@@ -827,10 +828,17 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         jPanel2.add(deviceField1);
 
         deviceField2.setIdentifier("");
-        deviceField2.setLabelString("Timebase div. (if from another thread):");
+        deviceField2.setLabelString("Timebase div.:");
         deviceField2.setNumCols(4);
         deviceField2.setOffsetNid(166);
         jPanel2.add(deviceField2);
+
+        deviceChoice18.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice18.setIdentifier("");
+        deviceChoice18.setLabelString("Logging:");
+        deviceChoice18.setOffsetNid(167);
+        deviceChoice18.setUpdateIdentifier("");
+        jPanel2.add(deviceChoice18);
 
         jPanel1.add(jPanel2);
 
@@ -854,10 +862,11 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
         });
         jPanel3.add(jButton1);
 
-        deviceChoice17.setChoiceItems(new String[] {"ENABLED", "DISABLED"});
+        deviceChoice17.setChoiceIntValues(new int[] {0, 1, 2});
+        deviceChoice17.setChoiceItems(new String[] {"0", "1", "2"});
         deviceChoice17.setIdentifier("");
-        deviceChoice17.setLabelString("Logger:");
-        deviceChoice17.setOffsetNid(167);
+        deviceChoice17.setLabelString("Verbosity:");
+        deviceChoice17.setOffsetNid(7);
         deviceChoice17.setUpdateIdentifier("");
         jPanel3.add(deviceChoice17);
 
@@ -894,6 +903,7 @@ public class MARTE2_SIMULINK_GENERICSetup extends DeviceSetup {
     private DeviceChoice deviceChoice15;
     private DeviceChoice deviceChoice16;
     private DeviceChoice deviceChoice17;
+    private DeviceChoice deviceChoice18;
     private DeviceChoice deviceChoice2;
     private DeviceChoice deviceChoice3;
     private DeviceChoice deviceChoice4;
