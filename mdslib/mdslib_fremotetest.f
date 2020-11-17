@@ -1,10 +1,13 @@
-c23456789012345678901234567890123456789012345678901234567890123456789012
-
       program mdslib_test
 
       implicit none 
 
-      include 'mdslib.inc'
+      integer descr, MdsValue, MdsOpen, MdsPut
+
+      integer IDTYPE_LONG, IDTYPE_FLOAT, IDTYPE_CSTRING
+
+      parameter (IDTYPE_LONG=8, IDTYPE_FLOAT=10, IDTYPE_CSTRING=14)
+
       integer dsc
       integer status
       integer i,j
@@ -64,8 +67,4 @@ c23456789012345678901234567890123456789012345678901234567890123456789012
       dsc = descr(IDTYPE_FLOAT,array2d,nx,ny,0)
       status = MdsPut("ONE_NUMBER"//CHAR(0),"$",dsc,0)
       write (6,*) "MdsPut('ONE_NUMBER',$,array2d) : ",status
-
-      
-      
-c23456789012345678901234567890123456789012345678901234567890123456789012
       end

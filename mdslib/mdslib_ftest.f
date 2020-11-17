@@ -1,5 +1,3 @@
-c23456789012345678901234567890123456789012345678901234567890123456789012
-c
 c
 c  Note on VMS this must be compiled with /ASSUME=NOBACKSLASH
 c
@@ -8,7 +6,12 @@ c
 
       implicit none 
 
-      include 'mdslib.inc'
+      integer descr, MdsValue, MdsOpen, MdsPut
+      integer MdsSetDefault, MdsDisconnect
+
+      integer IDTYPE_LONG, IDTYPE_FLOAT, IDTYPE_CSTRING
+      parameter (IDTYPE_LONG=8, IDTYPE_FLOAT=10, IDTYPE_CSTRING=14)
+
       integer dsc
       integer status
       integer i,j
@@ -123,5 +126,4 @@ c      status = MdsConnect('gemini.gat.com')
 
 c   COMMENT OUT THE NEXT LINE TO TEST LOCAL ACCESS
       status = MdsDisconnect()
-c23456789012345678901234567890123456789012345678901234567890123456789012
       end
