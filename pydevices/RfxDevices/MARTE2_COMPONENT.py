@@ -96,9 +96,33 @@ class MARTE2_COMPONENT(Device):
                parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'text', 'value':par['value']})
             else:
                parts.append({'path':'.OUTPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
-
+          
             idx = idx + 1
+        #structured outputs
+        try:
+          fields = output['fields']
+        except:
+          fields = []
+        if len(fields)>0:
+          parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS', 'type':'structure'})
+          for field in fields:
+            fieldName = cls.convertName(output['name'], nameList) 
+            parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName, 'type':'structure'})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':NAME', 'type':'text', 'value':field['name']})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':TYPE', 'type':'text', 'value':field['type']})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':SAMPLES', 'type':'numeric', 'value': 1})
+            parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(field['dimensions']))})
+            if 'seg_len' in field:
+              parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':SEG_LEN', 'type':'numeric', 'value':field['seg_len']})
+            else:
+              parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':SEG_LEN', 'type':'numeric', 'value':0})
 
+            if(field['type'] == 'string'):
+              parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':VALUE', 'type':'text'})
+            else:
+              parts.append({'path':'.OUTPUTS.'+sigName+'.FIELDS.'+fieldName+':VALUE', 'type':'signal'})
+             
+            
     @classmethod
     def buildInputs(cls, parts):
       parts.append({'path':'.INPUTS', 'type': 'structure'})
@@ -129,6 +153,24 @@ class MARTE2_COMPONENT(Device):
             else:
                parts.append({'path':'.INPUTS.'+sigName+'.PARAMETERS.PAR_'+str(idx)+':VALUE', 'type':'numeric', 'value':par['value']})
             idx = idx + 1
+
+        try:
+          fields = input['fields']
+        except:
+          fields = []
+        if len(fields)>0:
+          parts.append({'path':'.INPUTS.'+sigName+'.FIELDS', 'type':'structure'})
+          for field in fields:
+            fieldName = cls.convertName(input['name'], nameList) 
+            parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName, 'type':'structure'})
+            parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName+':TYPE', 'type':'text', 'value':field['type']})
+            parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName+':DIMENSIONS', 'type':'numeric', 'value':Data.compile(str(field['dimensions']))})
+            parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName+':COL_ORDER', 'type':'text', 'value':'NO'})
+            if 'name' in field:
+              parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName+':NAME', 'type':'text', 'value': field['name']})
+            else:
+              parts.append({'path':'.INPUTS.'+sigName+'.FIELDS.'+fieldName+':NAME', 'type':'text'})
+
 
     @classmethod
     def buildGam(cls, parts, clazz, mode, timebaseExpr=None):
@@ -320,33 +362,44 @@ class MARTE2_COMPONENT(Device):
             input = TreeNode(inputNid, self.getTree())
             inputDict = {}
             inputDict['type'] = input.getNode('type').data()
-            inputDict['dimensions'] = input.getNode('dimensions').data()
-            inputDict['value'] = input.getNode('value').getData() #NOT data()
-            inputDict['value_nid'] = input.getNode('value')
-            inputDict['col_order'] = input.getNode('col_order').data().upper()=='YES'
             try:
-              inputDict['name'] = input.getNode('name').data()  #Name is optional
+              isStruct = ((input.getNode('fields').getDescendants()) == 0)
             except:
-              pass
+              isStruct = False
+            if not isStruct:
+              inputDict['dimensions'] = input.getNode('dimensions').data()
+              inputDict['value'] = input.getNode('value').getData() #NOT data()
+              inputDict['value_nid'] = input.getNode('value')
+              inputDict['col_order'] = input.getNode('col_order').data().upper()=='YES'
+              try:
+                inputDict['name'] = input.getNode('name').data()  #Name is optional
+              except:
+                pass
+              inputDict['fields'] = []
+            else: #structured input
+              inputDict['dimensions'] = 0
+              inputDict['value_nid'] = input.getNode('value')
+              fields = []
+              try:
+                inputDict['value'] = input.getNode('value').getData()
+              except: #node not directly connected, but its fields may
+                
 #Handle possibly structured data. In thos case node 'fields' will contain a list of fields
-            fields = []
-            try:
-              fieldsNode = input.getNode('fields')
-              fieldNids = np.sort(fieldsNode.getDescendants())
-              for fieldNid in fieldsNid:
-                field = TreeNode(fieldNid, self.getTree())
-                fieldDict = {}
-                fieldDict['type'] = field.getNode('type').data()
-                fieldDict['dimensions'] = field.getNode('dimensions').data()
-                fieldDict['value'] = field.getNode('value').getData() #NOT data()
-                fieldDict['value_nid'] = field.getNode('value')
-                fieldDict['col_order'] = field.getNode('col_order').data().upper()=='YES'
-                fieldDict['name'] = field.getNode('name').data()  #Name is optional
-                fields.append(fieldDict)
-            except:
-              pass
-            inputDict['fields'] = fields    
-          
+                fieldsNode = input.getNode('fields')
+                fieldNids = np.sort(fieldsNode.getDescendants())
+                for fieldNid in fieldsNid:
+                  field = TreeNode(fieldNid, self.getTree())
+                  fieldDict = {}
+                  fieldDict['type'] = field.getNode('type').data()
+                  fieldDict['dimensions'] = field.getNode('dimensions').data()
+                  fieldDict['value'] = field.getNode('value').getData() #NOT data()
+                  fieldDict['value_nid'] = field.getNode('value')
+                  fieldDict['col_order'] = field.getNode('col_order').data().upper()=='YES'
+                  fieldDict['name'] = field.getNode('name').data()  #Name is mandatory here
+                  fields.append(fieldDict)
+              #end except 
+              inputDict['fields'] = fields    
+            #end if len(inputDict['fields'] == 0)
             inputDicts.append(inputDict)
           except:
             pass
@@ -369,7 +422,7 @@ class MARTE2_COMPONENT(Device):
               storeSignals = True
             outputDict['samples'] = output.getNode(':samples').data()
             
-#Handle possibly structured data. In thos case node 'fields' will contain a list of fields
+#Handle possibly structured data. In this case node 'fields' will contain a list of fields
             fields = []
             try:
               fieldsNode = output.getNode('fields')
@@ -382,6 +435,8 @@ class MARTE2_COMPONENT(Device):
                 fieldDict['dimensions'] = field.getNode('dimensions').data()
                 fieldDict['value_nid'] = field.getNode('value')
                 fieldDict['seg_len'] = output.getNode(':seg_len').data()
+                if fieldDict['seg_len'] > 0:
+                  storeSignals = True
                 fields.append(fieldDict)
             except:
               pass
@@ -541,7 +596,7 @@ class MARTE2_COMPONENT(Device):
 
 #######################GAM
 
-    def getMarteGamInfo(self, threadMap, gams, dataSources, gamList):
+    def getMarteGamInfo(self, threadMap, gams, dataSources, gamList, typeDicts):
       configDict = self.getGamInfo()
       gamName = configDict['gamName']
       gamClass = configDict['gamClass']
@@ -690,8 +745,19 @@ class MARTE2_COMPONENT(Device):
         print('ERROR: Invalid timebase definition')
         return 0
 
+ 
+ #check for inpu bus conversions (defined later)
+      needInputBusConversion = False
+      for inputDict in inputDicts:
+        if len(inputDict['fields']) > 0 and inputDict['value'] == None:
+          needInputBusConversion = True
+      if needInputBusConversion:
+        gamList.append(gamName+'_Input_Bus_IOGAM')  #Will be defined later, but must execute before this GAM
+
+
+
  #Head and parameters
-      gamList.append(gamName)
+      gamList.append(gamName) 
       gamText = '  +'+gamName+' = {\n'
       gamText += '    Class = '+gamClass+'\n'
       gamText = self.reportParameters(paramDicts, gamText, 1)
@@ -715,78 +781,124 @@ class MARTE2_COMPONENT(Device):
           gamText += '      DataSource = '+ timerDDB+'\n'
         else:  #Normal reference
           isTreeRef = False
-
           forceUsingSamples = False
-
-          try:
-            sourceNode = inputDict['value'].getParent().getParent().getParent()
-            if sourceNode.getUsage() != 'DEVICE':
-              isTreeRef = True
+          if len(inputDict['fields']) > 0: #--------------------------------------------If this is a structured input
+            if not addType(inputDict['type'], inputDict['fields'], typeDicts):
+              raise Exception('Incompatible Type definition: '+inputDict['type'])
+            if inputDict['value'] == None :  #it shall be specified in its fields
+               gamText += '      '+inputDict['name']+' = {\n'
+               gamText += '        DataSource = '+gamName+'_Input_Bus_DDB\n'
+               gamText += '        Type = '+inputDict['type']+'\n'
+               gamText += '        NumberOfDimensions = 0\n'
+               gamText += '        NumberOfElements = 1\n'   #Arrays of structures are not suppprted
             else:
+              sourceNode = inputDict['value'].getParent().getParent().getParent()
+              if sourceNode.getUsage() != 'DEVICE':
+                raise Exception('Invalid value for struct input '+ inputDict['name'])
               sourceGamName = self.convertPath(sourceNode.getFullPath())
               if 'name' in inputDict:
+                signalGamName = inputDict['name']
+                aliasName = inputDict['value'].getParent().getNode(':name').data()
+                signalDict['alias'] = aliasName
+              else:
+                signalGamName = inputDict['value'].getParent().getNode(':name').data()
+                  
+              gamText += '      '+signalGamName+' = {\n'
+              if self.onSameThread(threadMap, sourceNode):
+                gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+                signalDict['name'] = signalGamName
+                signalDict['datasource'] = sourceGamName+'_Output_DDB'
+              elif self.sameSynchSource(sourceNode):
+                gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+                signalDict['name'] = signalGamName
+                signalDict['datasource'] = sourceGamName+'_Output_Synch'
+                try:
+                  syncDiv = self.timebase_div.data()
+                  gamText += '        Samples = '+str(syncDiv)+'\n'
+                  forceUsingSamples = True
+                except:
+                  pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
+              else:
+                gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
+              if 'name' in inputDict:
+                gamText += '        Alias = "'+aliasName+'"\n'
+              gamText += '        Type = '+inputDict['type']+'\n'
+              gamText += '        NumberOfDimensions = 0\n'
+              gamText += '        NumberOfElements = 1\n'   #Arrays of structures are not suppprted
+            #endif direct structured link
+          #endif structured input
+          else: #Non structured input
+            try:
+              sourceNode = inputDict['value'].getParent().getParent().getParent()
+              if sourceNode.getUsage() != 'DEVICE':
+                isTreeRef = True
+              else:
+                sourceGamName = self.convertPath(sourceNode.getFullPath())
+                if 'name' in inputDict:
                   signalGamName = inputDict['name']
                   aliasName = inputDict['value'].getParent().getNode(':name').data()
                   signalDict['alias'] = aliasName
-              else:
+                else:
                   signalGamName = inputDict['value'].getParent().getNode(':name').data()
-          except:
-            isTreeRef = True
-          if isTreeRef:
+            except:
+              isTreeRef = True
+            if isTreeRef:
+              if 'name' in inputDict:
+                signalName = inputDict['name']
+                aliasName = self.convertPath(inputDict['value_nid'].getPath())
+                signalDict['alias'] = aliasName
+                nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':aliasName, 'col_order':inputDict['col_order']})
+              else:
+                signalName = self.convertPath(inputDict['value_nid'].getPath())
+                nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
+              gamText += '      '+signalName+' = {\n'
+              gamText += '        DataSource = '+gamName+'_TreeInput\n'
+              signalDict['name'] = signalName
+              signalDict['datasource'] = gamName+'_TreeInput_Debug'
+            else:
+              gamText += '      '+signalGamName+' = {\n'
+              if self.onSameThread(threadMap, sourceNode):
+                gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+                signalDict['name'] = signalGamName
+                signalDict['datasource'] = sourceGamName+'_Output_DDB'
+              elif self.sameSynchSource(sourceNode):
+                gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+                signalDict['name'] = signalGamName
+                signalDict['datasource'] = sourceGamName+'_Output_Synch'
+
+                try:
+                  syncDiv = self.timebase_div.data()
+                  gamText += '        Samples = '+str(syncDiv)+'\n'
+                  forceUsingSamples = True
+                except:
+                  pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
+
+              else:
+                gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
             if 'name' in inputDict:
-              signalName = inputDict['name']
-              aliasName = self.convertPath(inputDict['value_nid'].getPath())
-              signalDict['alias'] = aliasName
-              nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':aliasName, 'col_order':inputDict['col_order']})
-            else:
-              signalName = self.convertPath(inputDict['value_nid'].getPath())
-              nonGamInputNodes.append({'expr':inputDict['value'], 'dimensions': inputDict['dimensions'], 'name':signalName, 'col_order':inputDict['col_order']})
-            gamText += '      '+signalName+' = {\n'
-            gamText += '        DataSource = '+gamName+'_TreeInput\n'
-            signalDict['name'] = signalName
-            signalDict['datasource'] = gamName+'_TreeInput_Debug'
-          else:
-            gamText += '      '+signalGamName+' = {\n'
-            if self.onSameThread(threadMap, sourceNode):
-              gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
-              signalDict['name'] = signalGamName
-              signalDict['datasource'] = sourceGamName+'_Output_DDB'
-            elif self.sameSynchSource(sourceNode):
-              gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
-              signalDict['name'] = signalGamName
-              signalDict['datasource'] = sourceGamName+'_Output_Synch'
-
-              try:
-                syncDiv = self.timebase_div.data()
-                gamText += '        Samples = '+str(syncDiv)+'\n'
-                forceUsingSamples = True
-              except:
-                pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
-
-            else:
-              gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
-          if 'name' in inputDict:
               gamText += '        Alias = "'+aliasName+'"\n'
 
-        if 'type' in inputDict:
-          gamText += '        Type = '+inputDict['type']+'\n'
+          if 'type' in inputDict:
+            gamText += '        Type = '+inputDict['type']+'\n'
 
-        signalDict['type'] = inputDict['type']
-        if 'dimensions' in inputDict and not forceUsingSamples:
-          dimensions = inputDict['dimensions']
-          if dimensions == 0:
-            numberOfElements = 1
-            numberOfDimensions = 0
-          else:
-            numberOfDimensions = len(inputDict['dimensions'])
-            numberOfElements = 1
-            for currDim in inputDict['dimensions']:
-              numberOfElements *= currDim
-          gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
-          gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
-          gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
-          signalDict['dimensions'] = numberOfDimensions
-          signalDict['elements'] = numberOfElements
+          signalDict['type'] = inputDict['type']
+          if 'dimensions' in inputDict and not forceUsingSamples:
+            dimensions = inputDict['dimensions']
+            if dimensions == 0:
+              numberOfElements = 1
+              numberOfDimensions = 0
+            else:
+              numberOfDimensions = len(inputDict['dimensions'])
+              numberOfElements = 1
+              for currDim in inputDict['dimensions']:
+                numberOfElements *= currDim
+            gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+            gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+            gamText = self.addSignalParameters(inputDict['value_nid'].getParent().getNode('parameters'), gamText)
+            signalDict['dimensions'] = numberOfDimensions
+            signalDict['elements'] = numberOfElements
+#endif len(inputDict['fields']) > 0 
+#endif Normal Reference
         gamText += '      }\n'
         
         inputSignals.append(signalDict)
@@ -909,6 +1021,18 @@ class MARTE2_COMPONENT(Device):
             if startTime != 0:
               dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
             dataSourceText += '      }\n'
+          #Chech if the output is a struct and seglen is > 0 for one o more fields
+          for fieldDict in outputDict['fields']:
+            if fieldDict['seg_len'] > 0:
+              dataSourceText += '      '+outputDict['name']+'_'+fieldDict['name']+' = {\n'
+              dataSourceText += '        NodeName = "'+fieldDict['value_nid'].getFullPath()+'"\n'
+              dataSourceText += '        Period = '+str(period/currSamples)+'\n'
+              dataSourceText += '        MakeSegmentAfterNWrites = '+str(outputDict['seg_len'])+'\n'
+              dataSourceText += '        AutomaticSegmentation = 0\n'
+              if startTime != 0:
+                dataSourceText += '        SamplePhase = '+str(int(round(startTime/period)))+'\n'
+              dataSourceText += '      }\n'
+           #end for fieldDict in outputDict['fields']:
         dataSourceText += '    }\n'
         dataSourceText += '  }\n'
         dataSources.append(dataSourceText)
@@ -966,11 +1090,26 @@ class MARTE2_COMPONENT(Device):
         gamText += '        Type = uint32\n'
         gamText += '      }\n'
 #Other output signals
+#first non struct outputs
         for outputDict in outputDicts:
-          if outputDict['seg_len'] > 0:
+          if outputDict['seg_len'] > 0 and len(outputDict['fields']) == 0:
             gamText += '      '+outputDict['name'] + ' = {\n'
             gamText += '        DataSource = '+gamName+'_Output_DDB\n'
             gamText += '      }\n'
+#then struct outputs for which at least one field has seg_len > 0
+        for outputDict in outputDicts:
+          fieldsToStore = False
+          for fieldDict in outputDict['fields']:
+            if fieldDict['seg_len'] > 0:
+              fieldsToStore = True
+          if fieldsToStore:
+            gamText += '      '+outputDict['name'] + ' = {\n'
+            gamText += '        DataSource = '+gamName+'_Output_DDB\n'
+            gamText += '        Type = '+ outputDict['type']+'\n'
+            gamText += '      }\n'
+       #end for outputDict in outputDicts:
+            
+
 
         gamText += '    }\n'
         gamText += '    OutputSignals = {\n'
@@ -986,7 +1125,7 @@ class MARTE2_COMPONENT(Device):
         gamText += '      }\n'
 #Other signals
         for outputDict in outputDicts:
-          if outputDict['seg_len'] > 0:
+          if outputDict['seg_len'] > 0 and len(outputDict['fields']) == 0: #first non struct outputs
             gamText += '      '+outputDict['name'] + ' = {\n'
             gamText += '        DataSource = '+gamName+'_TreeOutput\n'
             gamText += '        Type = '+outputDict['type']+'\n'
@@ -1017,12 +1156,132 @@ class MARTE2_COMPONENT(Device):
               gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
 
             gamText += '      }\n'
+            
+        needsOutput_Bus_DDB = False
+        for outputDict in outputDicts: #split fileds of structured outputs for which at least one field has seg_len > 0
+          fieldsToStore = False
+          for fieldDict in outputDict['fields']:
+            if fieldDict['seg_len'] > 0:
+              fieldsToStore = True
+          if fieldsToStore:
+            for fieldDict in outputDict['fields']:
+              gamText += '      '+outputDict['name']+'_'+fieldDict['name']+' = {\n'
+              gamText += '        Type = '+ fieldDict['type']+'\n'
+              if fieldDict['dimensions'] == 0:
+                numberOfElements = 1
+                numberOfDimensions = 0
+              else:
+                numberOfDimensions = len(fieldDict['dimensions'])
+                numberOfElements = 1
+                for currDim in fieldDict['dimensions']:
+                  numberOfElements *= currDim
+              gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+              gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+              if fieldDict['seg_len'] > 0:
+                gamText += '        DataSource = '+gamName+'_TreeOutput\n'
+              else:
+                needsOutput_Bus_DDB = True
+                gamText += '        DataSource = '+gamName+'_Output_Bus_DDB\n'
+              gamText += '      }\n'
+          #end if fieldsToStore
+        #end for outputDict in outputDicts:
+        gamText += '    }\n'
+        gamText += '  }\n'
+        gams.append(gamText)
+        
+        if needsOutput_Bus_DDB:
+          dataSourceText = '  +'+gamName+'_Output_Bus_DDB = {\n'
+          dataSourceText += '    Class = GAMDataSource\n'
+          dataSourceText += '  }\n'
+          dataSources.append(dataSourceText)
+ 
+#endif configDict['storeSignals']
 
+#Check now if there are structured input signals not directly linked. For these signals, all their fields must be linked. In thic case a new 
+#IOGAM and DDB DDB will be created 
+      if needInputBusConversion:
+        gamText = '  +'+gamName+'_Input_Bus_IOGAM = {\n'
+        gamText += '    Class = IOGAM\n'
+        gamText += '    InputSignals = {\n'
+        for inputDict in inputDicts:
+          if len(inputDict['fields']) > 0 and inputDict['value'] == None:
+            for fieldDict in inputDict['fields']:
+              try:
+                sourceNode = fieldDict['value'].getParent().getParent().getParent()
+                if sourceNode.getUsage() != 'DEVICE':
+                  isTreeRef = True
+                else:
+                  sourceGamName = self.convertPath(sourceNode.getFullPath())
+                  if 'name' in fieldDict:
+                    signalGamName = fieldDict['name']
+                    aliasName = fieldDict['value'].getParent().getNode(':name').data()
+                  else:
+                    signalGamName = fieldDict['value'].getParent().getNode(':name').data()
+              except:
+                isTreeRef = True
+              if isTreeRef:
+                if 'name' in fieldDict:
+                  signalName = inputDict['name']+'_'+fieldDict['name']
+                  aliasName = inputDict['name']+'_'+self.convertPath(fieldDict['value_nid'].getPath())
+                  nonGamInputNodes.append({'expr':fieldDict['value'], 'dimensions': fieldDict['dimensions'], 'name':aliasName, 'col_order':fieldDict['col_order']})
+                else:
+                  signalName = inputDict['name']+'_'+self.convertPath(fieldDict['value_nid'].getPath())
+                  nonGamInputNodes.append({'expr':fieldDict['value'], 'dimensions': fieldDict['dimensions'], 'name':signalName, 'col_order':fieldDict['col_order']})
+                gamText += '      '+signalName+' = {\n'
+                gamText += '        DataSource = '+gamName+'_TreeInput\n'
+              else:
+                gamText += '      '+signalGamName+' = {\n'
+                if self.onSameThread(threadMap, sourceNode):
+                  gamText += '        DataSource = '+sourceGamName+'_Output_DDB\n'
+                elif self.sameSynchSource(sourceNode):
+                  gamText += '        DataSource = '+sourceGamName+'_Output_Synch\n'
+                  try:
+                    syncDiv = self.timebase_div.data()
+                    gamText += '        Samples = '+str(syncDiv)+'\n'
+                    forceUsingSamples = True
+                  except:
+                    pass #Consider RealTimeSynchronization downsampling only if timebase_div is defined
+                else:
+                  gamText += '        DataSource = '+sourceGamName+'_Output_Asynch\n'
+              if 'name' in fieldDict:
+                gamText += '        Alias = "'+aliasName+'"\n'
+              if 'type' in fieldDict:
+                 gamText += '        Type = '+fieldDict['type']+'\n'
+
+              if 'dimensions' in fieldDict and not forceUsingSamples:
+                dimensions = fieldDict['dimensions']
+                if dimensions == 0:
+                  numberOfElements = 1
+                  numberOfDimensions = 0
+                else:
+                  numberOfDimensions = len(fieldDict['dimensions'])
+                  numberOfElements = 1
+                  for currDim in fieldDict['dimensions']:
+                    numberOfElements *= currDim
+                gamText += '        NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+                gamText += '        NumberOfElements = '+str(numberOfElements)+'\n'
+              #endif 'dimensions' in fieldDict and not forceUsingSamples:
+            #endif for fieldDict in inputDict['fields']:
+          #endif len(fieldDict['fields']) > 0 
+        #end for inputDict in inputDicts:
+
+        gamText += '      }\n'
+        gamText += '    OutputSignals = {\n'
+        for inputDict in inputDicts:
+          if len(inputDict['fields']) > 0 and inputDict['value'] == None:
+            gamText += '      '+inputDict['name']+' = {\n'
+            gamText += '        DataSource = '+gamName+'_Input_Bus_DDB\n'
+            gamText += '        Type = '+inputDict['type']+'\n'
+            gamText += '      }\n'
         gamText += '    }\n'
         gamText += '  }\n'
         gams.append(gamText)
 
-#endif configDict['storeSignals']
+        dataSourceText = '  +'+gamName+'_Input_Bus_DDB = {\n'
+        dataSourceText += '    Class = GAMDataSource\n'
+        dataSourceText += '  }\n'
+        dataSources.append(dataSourceText)
+      #endif needInputBusConversion
 
 
 
@@ -2012,11 +2271,11 @@ class MARTE2_COMPONENT(Device):
       return outPeriod
 
 
-    def getMarteInfo(self, threadMap, gams, dataSources, gamList):
+    def getMarteInfo(self, threadMap, gams, dataSources, gamList, typeDicts):
       self.prepareMarteInfo()
       mode = self.mode.data()
       if mode == MARTE2_COMPONENT.MODE_GAM:
-        return self.getMarteGamInfo(threadMap, gams, dataSources, gamList)
+        return self.getMarteGamInfo(threadMap, gams, dataSources, gamList, typeDicts)
       elif mode == MARTE2_COMPONENT.MODE_SYNCH_INPUT:
 
         return self.getMarteInputInfo(threadMap, gams, dataSources, gamList, True)

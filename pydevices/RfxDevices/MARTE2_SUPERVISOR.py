@@ -82,7 +82,8 @@ class MARTE2_SUPERVISOR(Device):
         retData = []
         retGams = []
         threadMap = {}
-
+        typeDicts = []
+ 
       #first iteration to get threadMap
         for state in range(numStates):
           numThreads = getattr(self, 'state_%d_num_threads'%(state+1)).data()
@@ -131,7 +132,7 @@ class MARTE2_SUPERVISOR(Device):
                 if not (currGamNode.getNid() in gamNids):
                   #try:
                   gamInstance.prepareMarteInfo()
-                  currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList)
+                  currPeriod = gamInstance.getMarteInfo(threadMap, retGams, retData, gamList, typeDicts)
                   #except:
                     #return 'Cannot get timebase for ' + gam, {},{}
                   gamNids.append(currGamNode.getNid())
@@ -143,7 +144,7 @@ class MARTE2_SUPERVISOR(Device):
                 else:
                   dummyGams = []
                   dummyData = []
-                  gamInstance.getMarteInfo(threadMap, dummyGams, dummyData, gamList)
+                  gamInstance.getMarteInfo(threadMap, dummyGams, dummyData, gamList, typeDicts)
                 gamNames += gamList
 #######################TIMINGS
             if threadPeriod == 0:
@@ -162,11 +163,11 @@ class MARTE2_SUPERVISOR(Device):
         info['gams'] = retGams
         info['data_sources'] = retData
         info['name'] = self.getNode('name').data()
-        return error, info, threadMap
+        return error, info, threadMap, typeDicts
       except Exception as inst:
         print(traceback.format_exc())
  #       return inst.args[0], None, None
-        return str(inst), None, None
+        return str(inst), None, None, None
 
 
 #Enrich GAMs and Data Sources with what is required to store timing information (IOGAM + TreeWriter) is seg_len > 0
@@ -257,14 +258,41 @@ class MARTE2_SUPERVISOR(Device):
       dataSource += '  }\n'
       dataSources.append(dataSource)
 
-
+    def declareTypes(self, typeDicts):
+      if len(typeDicts) == 0:
+        return ''
+      typeDecl = '+Types = {\n'
+      typeDecl = '  Class = ReferenceContainer\n'
+      for typeDict in typeDicts:
+        typeDecl += '  +'+typeDict['name'] + ' = {\n'
+        typeDecl = '    Class = IntrospectionStructure\n'
+        for fieldDict in typeDict['fields']:
+          typeDecl += '    '+fieldDict['name'] + ' = {\n'
+          typeDecl += '      Type = '+fieldDict['type']+'\n'
+          dimensions = fieldDict['dimensions']
+          if dimensions == 0:
+            numberOfElements = 1
+            numberOfDimensions = 0
+          else:
+            numberOfDimensions = len(fieldDict['dimensions'])
+            numberOfElements = 1
+            for currDim in inputDict['dimensions']:
+              numberOfElements *= currDim
+          typeDecl += '      NumberOfDimensions = '+str(numberOfDimensions)+'\n'
+          typeDecl += '      NumberOfElements = '+str(numberOfElements)+'\n'
+          typeDecl += '    }\n'
+        typeDecl += '  }\n'
+      typeDecl  += '}\n'
+      return typeDecl
+       
 
     def buildConfiguration(self):
       print('START BUILD')
-      error, info, threadMap = self.getInfo()
+      error, info, threadMap, typeDicts = self.getInfo()
       if error != '':
         return 0
-      confText = '+MDS_EVENTS = {\n'
+      confText = self.declareTypes(typeDicts)
+      confText += '+MDS_EVENTS = {\n'
       confText += '  Class = MDSEventManager\n'
       confText += '  StackSize = 1048576\n'
       confText += '  CPUs = 0x1\n'
@@ -456,7 +484,7 @@ class MARTE2_SUPERVISOR(Device):
         except:
           return 'Device ' + gamInstance.getPath() + ' is not a MARTe2 device'
 
-      error, info, threadMap = self.getInfo()
+      error, info, threadMap, typeDicts = self.getInfo()
       if error != '':
         return error
       for gamInstance in gamInstances:
