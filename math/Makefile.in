@@ -1,10 +1,9 @@
 include @top_builddir@/Makefile.inc
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-FCFLAGS += -Wno-compare-reals
 
 # WARNING: gfortran rises a huge amount of Warning that are converted to errors in deploy script
 #          we had to add -Wno-error to suppress errors in fortran here ...
@@ -12,46 +11,51 @@ FFLAGS += $(FCFLAGS) -Wno-error
 
 LIBPREFIX=MdsMath
 
-FFLAGS += $(FCFLAGS) -Wno-maybe-uninitialized
+FFLAGS += $(FCFLAGS) -Wno-maybe-uninitialized -Wno-compare-reals
 
-BLAS = 
+BLAS = \
+ caxpy.f\
+ daxpy.f\
+ saxpy.f\
+ zaxpy.f\
+ cgeco.f\
+ dgeco.f\
+ sgeco.f\
+ zgeco.f\
 
-SOURCES = \
-	caxpy.f \
-	cgeco.f \
-	cmul.f  \
-	csint.f  \
-	csval.f  \
-	daxpy.f  \
-	dcsint.f  \
-	dcsval.f  \
-	dgeco.f  \
-	dmul.f  \
-	dpermu.f  \
-	dppval.f  \
-	dsrch.f  \
-	dsvrgn.f  \
-	gn.f  \
-	isrch.f  \
-	msceez.f \
-	mskrv2.f \
-	mstrms.f \
-	mskrv1.f \
-	msshch.f \
-	permu.f  \
-	ppval.f  \
-	saxpy.f  \
-	sgeco.f  \
-	smul.f  \
-	srch.f  \
-	ssrch.f  \
-	svign.f  \
-	svrgn.f  \
-	toms510.f \
-	umach.f  \
-	zaxpy.f  \
-	zgeco.f  \
-	zmul.f
+@HAVE_BLAS_TRUE@SRCBLAS =
+@HAVE_BLAS_TRUE@LIBBLAS = -lblas
+@HAVE_BLAS_FALSE@SRCBLAS = $(BLAS)
+@HAVE_BLAS_FALSE@LIBBLAS =
+
+SOURCES = $(SRCBLAS)\
+ cmul.f\
+ csint.f\
+ csval.f\
+ dcsint.f\
+ dcsval.f\
+ dmul.f\
+ dpermu.f\
+ dppval.f\
+ dsrch.f\
+ dsvrgn.f\
+ gn.f\
+ isrch.f\
+ msceez.f\
+ mskrv2.f\
+ mstrms.f\
+ mskrv1.f\
+ msshch.f\
+ permu.f\
+ ppval.f\
+ smul.f\
+ srch.f\
+ ssrch.f\
+ svign.f\
+ svrgn.f\
+ toms510.f\
+ umach.f\
+ zmul.f\
 
 @LIBPRE@MdsMath = @MAKESHLIBDIR@@LIBPRE@MdsMath@SHARETYPE@
 all: @MAKESHLIBDIR@ $(@LIBPRE@MdsMath)
@@ -60,11 +64,12 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 
 ## suppressing conversion error warning ##
 umach.o : umach.f
-	$(COMPILE.f) $< $(OUTPUT_OPTION) $(FFLAGS)
+	$(COMPILE.f) $< $(OUTPUT_OPTION) $(FFLAGS) -Wno-conversion
+
+$(BLAS:.f=.o) : %.o : blas/%.f
+	$(COMPILE.f) -Wno-error $(OUTPUT_OPTION) $<
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
-
-LIBBLAS = -lblas
 
 ifeq "@MACOSX@" ""
 LIBRARIES = $(@LIBPRE@MdsMath)

@@ -242,7 +242,7 @@ AS_CASE([$enable_java],
                 AC_MSG_RESULT([$with_jdk])
                 AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
@@ -486,7 +486,7 @@ case "$host" in
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
-       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
+       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
@@ -546,7 +546,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -746,6 +746,12 @@ else
 fi
 AC_SUBST(LIBLZMA)
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBBLAS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+AC_CHECK_LIB([blas], [cdotu_, caxpy_], [have_blas="yes"], [have_blas=no])
+AM_CONDITIONAL(HAVE_BLAS, test x"$have_blas" = x"yes")
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
