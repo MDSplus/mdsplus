@@ -142,7 +142,7 @@ AC_DEFUN([TS_CHECK_JAVA],[
   # AS_VAR_SET([JDK_VERSION],["$(java -d64 -version 2>&1 )"])
   # AC_PATH_PROG([JAVAC_PATH_NAME], [javac])
   AC_PATH_PROG([JAVA_PATH_NAME], [java])
-  AS_IF([${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1> /dev/null],
+  AS_IF([${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} -version 2>&1 > /dev/null],
     [$2],
     [$3])
 ])
