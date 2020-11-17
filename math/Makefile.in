@@ -4,7 +4,7 @@ srcdir=@srcdir@
 builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-FCFLAGS += -Wno-maybe-uninitialized -Wno-compare-reals
+FFLAGS += $(FCFLAGS) -Wno-maybe-uninitialized -Wno-compare-reals
 
 LIBPREFIX=MdsMath
 
@@ -50,7 +50,7 @@ SOURCES = $(SRCBLAS)\
  svrgn.f\
  toms510.f\
  umach.f\
- zmul.f\
+ zmul.f
 
 @LIBPRE@MdsMath = @MAKESHLIBDIR@@LIBPRE@MdsMath@SHARETYPE@
 all: @MAKESHLIBDIR@ $(@LIBPRE@MdsMath)
@@ -59,10 +59,10 @@ OBJECTS = $(SOURCES:.f=.o) boxsmooth.o
 
 ## suppressing conversion error warning ##
 umach.o : umach.f
-	$(COMPILE.f) $< $(OUTPUT_OPTION) $(FCFLAGS) -Wno-conversion
+	$(COMPILE.f) $< $(OUTPUT_OPTION) $(FFLAGS) -Wno-error
 
 $(BLAS:.f=.o) : %.o : blas/%.f
-	$(COMPILE.f) -Wno-error $(OUTPUT_OPTION) $<
+	$(COMPILE.f) $< $(OUTPUT_OPTION) $(FFLAGS) -Wno-error
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 
