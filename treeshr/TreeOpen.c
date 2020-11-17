@@ -795,37 +795,27 @@ EXPORT char *MaskReplace(char *path_in, char *tree, int shot)
       break;
     case 'n':
       fname = GetFname(tree, shot);
+      const size_t fname_len = strlen(fname);
       if ((strlen(tilde + 2) > 1) || ((strlen(tilde + 2) == 1) && (tilde[2] != '\\'))) {
 	tmp = strcpy(malloc(strlen(tilde + 2) + 1), tilde + 2);
-	tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(fname)), path);
-	strcpy(tmp2 + (tilde - path) + strlen(fname), tmp);
+	tmp2 = strcpy(malloc(strlen(path) + 1 + fname_len), path);
+	strcpy(tmp2 + (tilde - path) + fname_len, tmp);
 	free(tmp);
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
-#endif
-	strncpy(tmp2 + (tilde - path), fname, strlen(fname));
-#pragma GCC diagnostic pop
+	memcpy(tmp2 + (tilde - path), fname, fname_len);
       } else {
-	tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(fname)), path);
-	strcpy(tmp2 + (tilde - path), fname);
+	tmp2 = strcpy(malloc(strlen(path) + 1 + fname_len), path);
+	memcpy(tmp2 + (tilde - path), fname, fname_len+1);
       }
       free(path);
       path = tmp2;
       break;
     case 't':
       tmp = strcpy(malloc(strlen(tilde + 2) + 1), tilde + 2);
-      tmp2 = strcpy(malloc(strlen(path) + 1 + strlen(tree)), path);
-      strcpy(tmp2 + (tilde - path) + strlen(tree), tmp);
+      const size_t tree_len = strlen(tree);
+      tmp2 = strcpy(malloc(strlen(path) + 1 + tree_len), path);
+      strcpy(tmp2 + (tilde - path) + tree_len, tmp);
       free(tmp);
-#pragma GCC diagnostic push
-#if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-overflow\"")
-    _Pragma ("GCC diagnostic ignored \"-Wstringop-truncation\"")
-#endif
-      strncpy(tmp2 + (tilde - path), tree, strlen(tree));
-#pragma GCC diagnostic pop
+      memcpy(tmp2 + (tilde - path), tree, tree_len);
       free(path);
       path = tmp2;
       break;

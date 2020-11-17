@@ -1584,7 +1584,7 @@ inline static int io_open_one_remote(char *host,char *filepath,char* treename,in
 
 extern char* MaskReplace(char*,char*,int);
 #include <ctype.h>
-EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_type_t type, int new, int edit, char**filespec, int*speclen, int *idx){
+extern int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_type_t type, int new, int edit, char**filespec, int*speclen, int *idx){
   int status;
   INIT_AND_FREE_ON_EXIT(char*,fullpath);
   status = TreeSUCCESS;
@@ -1622,7 +1622,8 @@ EXPORT int MDS_IO_OPEN_ONE(char* filepath_in,char* treename_in,int shot, tree_ty
 	fullpath = NULL;
 	status = io_open_one_remote(hostpart, filepart, treename, shot, type, new, edit, &fullpath, &conid, &fd, &enhanced);
 	if (fd < 0) {
-	  status = TreeSUCCESS;
+	  if (status != TreeUNSUPTHICKOP)
+	    status = TreeSUCCESS;
 	  conid = -1;
 	  enhanced = 0;
 	}
