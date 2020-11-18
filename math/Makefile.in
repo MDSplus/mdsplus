@@ -12,7 +12,7 @@ FFLAGS += $(FCFLAGS) -Wno-error
 
 LIBPREFIX=MdsMath
 
-FFLAGS += $(FCFLAGS)
+FFLAGS += $(FCFLAGS) -Wno-maybe-uninitialized
 
 BLAS = 
 
