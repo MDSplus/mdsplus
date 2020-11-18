@@ -808,7 +808,7 @@ extern int MDS_IO_FD(int fd);
 typedef int mode_t;
 #endif
 #endif
-extern int MDS_IO_OPEN(char *filename, int options, mode_t mode);
+EXPORT int MDS_IO_OPEN(char *filename, int options, mode_t mode);
 extern int MDS_IO_CLOSE(int fd);
 extern off_t MDS_IO_LSEEK(int fd, off_t offset, int whence);
 extern ssize_t MDS_IO_WRITE(int fd, void *buff, size_t count);
