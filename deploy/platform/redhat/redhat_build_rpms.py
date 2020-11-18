@@ -62,7 +62,7 @@ def fixFilename(info,filename):
             if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
                 filename=filename+"%(bits)d"
         ans=filename % info
-    except Exception as e:
+    except Exception,e:
         raise Exception("Error fixing filename %s: %s" % (filename,e))
     return ans
 
@@ -243,7 +243,7 @@ Buildarch: noarch
             if child.status != 0:
                 sys.stdout.flush()
                 raise Exception("Error signing rpms. status=%d" % child.status)
-        except Exception as e:
+        except Exception, e:
             print("Got exception in rpm signing: %s" % str(e))
     except:
         print("Sign keys unavailable. Not signing packages.")
