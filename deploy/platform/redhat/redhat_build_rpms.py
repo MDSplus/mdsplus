@@ -23,7 +23,14 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import subprocess,os,sys,pexpect,xml.etree.ElementTree as ET,fnmatch,tempfile
+import traceback
+import subprocess
+import os
+import sys
+import pexpect
+import xml.etree.ElementTree as ET
+import fnmatch
+import tempfile
 
 srcdir=os.path.realpath(os.path.dirname(os.path.realpath(__file__))+'/../../..')
 
@@ -62,8 +69,9 @@ def fixFilename(info,filename):
             if filename[len(filename)-4:] in ('/lib','/bin','/uid'):
                 filename=filename+"%(bits)d"
         ans=filename % info
-    except Exception as e:
-        raise Exception("Error fixing filename %s: %s" % (filename,e))
+    except Exception:
+        traceback.print_exc()
+        raise Exception("Error fixing filename %s:" % (filename,))
     return ans
 
 def doRequire(info, out, root, require):
@@ -243,8 +251,9 @@ Buildarch: noarch
             if child.status != 0:
                 sys.stdout.flush()
                 raise Exception("Error signing rpms. status=%d" % child.status)
-        except Exception as e:
-            print("Got exception in rpm signing: %s" % str(e))
+        except:
+            print("Got exception in rpm signing:")
+            traceback.print_exc()
     except:
         print("Sign keys unavailable. Not signing packages.")
 
