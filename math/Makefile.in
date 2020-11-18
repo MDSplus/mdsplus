@@ -4,14 +4,17 @@ srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
-#### Remove following line after code causing warnings is fixed ####
-FCFLAGS+=-Wno-compare-reals -Wno-uninitialized
+FCFLAGS += -Wno-compare-reals
 
 # WARNING: gfortran rises a huge amount of Warning that are converted to errors in deploy script
 #          we had to add -Wno-error to suppress errors in fortran here ...
 FFLAGS += $(FCFLAGS) -Wno-error
 
 LIBPREFIX=MdsMath
+
+FFLAGS += $(FCFLAGS)
+
+BLAS = 
 
 SOURCES = \
 	caxpy.f \
@@ -61,6 +64,8 @@ umach.o : umach.f
 
 local@LIBPRE@MdsMath = @LIBPRE@MdsMath@SHARETYPE@
 
+LIBBLAS = -lblas
+
 ifeq "@MACOSX@" ""
 LIBRARIES = $(@LIBPRE@MdsMath)
 else
@@ -69,8 +74,8 @@ $(@LIBPRE@MdsMath): @LIBPRE@MdsMath@SHARETYPE@
 	lipo -create -o $@ $^
 endif
 
-$(LIBRARIES): $(OBJECTS)
-	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr @FOR_LDFLAGS@ $(LIBM)
+$(LIBRARIES) : $(OBJECTS)
+	$(LINK.f) $(OUTPUT_OPTION) @FOR_LINKSHARED@ $^ -L@MAKESHLIBDIR@ -lMdsShr $(LIBBLAS) @FOR_LDFLAGS@ $(LIBM)
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)

@@ -144,6 +144,7 @@ java/mdsplus/Makefile.in
 java/tests/Makefile.in
 macosx/Makefile.in
 manpages/Makefile.in
+math/testing/Makefile.in
 mdsdcl/cmdParse.c
 mdsdcl/cmdParseLex.c
 mdsdcl/dcllex.h
