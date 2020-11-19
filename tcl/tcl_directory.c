@@ -130,7 +130,7 @@ void tclAppend(char **output, char *str)
 EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   char *tagnam;
-  char msg[128];
+  char msg[1024];
   char *nodnam = 0;
   char *pathnam;
 
