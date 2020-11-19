@@ -532,19 +532,17 @@ int Tdi1Allocated(opcode_t opcode __attribute__ ((unused)), int narg __attribute
   mdsdsc_t key_dsc = EMPTDY_S;
   node_type *node_ptr;
   block_type *block_ptr;
-  int found;
+  unsigned char found;
   UNLOCK_PUBLIC_PUSH;
   status = find_ident(3, (mdsdsc_r_t *)list[0], &key_dsc, 0, &block_ptr,TDITHREADSTATIC_VAR);
   if STATUS_OK
     status = LibLookupTree((void **)&block_ptr->head, (void *)&key_dsc, compare, (void **)&node_ptr);
+  found = STATUS_OK && (node_ptr->xd.class != 0);
   UNLOCK_IF_PUBLIC(block_ptr);
-  found = STATUS_OK;
-  if (found)
-    found = node_ptr->xd.class != 0;
-  else if (status == LibKEYNOTFOU || status == TdiUNKNOWN_VAR)
+  if ((status == LibKEYNOTFOU) || (status == TdiUNKNOWN_VAR))
     status = MDSplusSUCCESS;
   if STATUS_OK
-    status = tdi_put_logical((unsigned char)found, out_ptr);
+    status = tdi_put_logical(found, out_ptr);
   return status;
 }
 
