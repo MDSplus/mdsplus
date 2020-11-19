@@ -43,7 +43,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifdef _WIN32
 #include <windows.h>
 #include <io.h>
-inline static char *strndup(char *src, size_t n) {
+inline static char *strndup(const char *src, size_t n) {
   size_t len = strnlen(src, n);
   char *dst = memcpy(malloc(len + 1), src, len);
   dst[len] = '\0';
