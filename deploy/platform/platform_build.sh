@@ -62,8 +62,9 @@ rundocker(){
         echo "Building installers for ${arch} using ${image}"
         if [ -n "$INTERACTIVE" ]
         then
-            echo "run ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
-            echo "or  NOMAKE=1 ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "env: source ${DOCKER_SRCDIR}/deploy/os/${OS}.env"
+            echo "run: ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
+            echo "or:  NOMAKE=1 ${DOCKER_SRCDIR}/deploy/platform/platform_docker_build.sh"
         fi
         #
         # If there are both 32-bit and 64-bit packages for the platform
