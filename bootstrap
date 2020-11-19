@@ -13,6 +13,8 @@ echo 'WARNING:'
 trap warning EXIT
 fi
 
+conf/update_submodules
+
 aclocal -I ./m4
 
 autoheader
