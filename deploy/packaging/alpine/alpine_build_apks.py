@@ -27,6 +27,7 @@ import subprocess,os,sys,xml.etree.ElementTree as ET,fnmatch,tempfile,shutil
 
 linux_xml      = "%s/linux.xml"%(os.path.dirname(os.path.dirname(os.path.realpath(__file__))),)
 pkg_exclusions = ('repo','gsi','gsi_bin','idl','idl_bin','labview','labview_bin','php','d3d','matlab')
+noarch_builder = "x86_64"
 
 
 def signkeys():
@@ -118,6 +119,7 @@ def getInfo():
         'release'   : int(version[2]),
         'buildroot' : os.environ['BUILDROOT'],
         'dist'      : os.environ['DISTNAME'],
+        'arch'      : os.environ['ARCH'],
         'flavor'    : branch,
         'rflavor'   : "-%s"%branch if not branch=="stable" else "",
     }
@@ -187,25 +189,38 @@ def buildApks():
     tree = ET.parse(linux_xml)
     root = tree.getroot()
     apks=[]
+    noarch = "noarch"
+    noarchdir = "/release/%(flavor)s/noarch"%info
+    archdir = "/release/%(flavor)s/%(arch)s"%info
+    os.system("rm -Rf %s/*"%archdir)
+    if info['arch'] == noarch_builder:
+        os.system("rm -Rf %s"%noarchdir)
+        os.system("mkdir -p %s"%noarchdir)
     for package in root.getiterator('package'):
         pkg = package.attrib['name']
         if pkg in pkg_exclusions: continue
         info['packagename'] = "-%s"%pkg if not pkg=='MDSplus' else ""
         info['description'] = package.attrib['description']
-        info['pkg_arch']    = package.attrib['arch']
-        if info['pkg_arch']=='bin': info['pkg_arch']=os.environ['ARCH']
-        collectFiles(info,package)
         info['depends'] = getDependencies(info, root, package)
         info['name']    = info['packagename'].replace('_','-')
+        # decide whether to build noarch package or skip
+        info['pkg_arch'] = package.attrib['arch']
+        if info['pkg_arch'] == noarch:
+            if info['arch'] != noarch_builder:
+                continue
+        elif info['pkg_arch'] == "bin":
+            info['pkg_arch'] = info['arch']
+        print(info['pkg_arch'])
+        collectFiles(info,package)
         scripts = getScripts(info, package)
         with open("/workspace/APKBUILD","w+") as f:
             f.write("# Contributor: MDSplus Developer Team\n")
             f.write("#Maintainer: Tom Fredian <twf@mdsplus.org>\n")
             f.write("pkgname=mdsplus%(rflavor)s%(name)s\n"%info)
-            f.write("pkgver=%(major)d.%(minor)d.%(release)d\n"%info)
-            f.write("pkgrel=0\n")
+            f.write("pkgver=%(major)d.%(minor)d\n"%info)
+            f.write("pkgrel=%(release)d\n"%info)
             f.write('pkgdesc="%(description)s"\n'%info)
-            f.write('url="http://www.mdsplus.org/%(dist)s/%(flavor)s"\n'%info)
+            f.write('url="http://www.mdsplus.org/%(dist)s/%(flavor)s/"\n'%info)
             f.write('arch="%(pkg_arch)s"\n'%info)
             f.write('license="MIT"\n')
             f.write('depends="%(depends)s"\n'%info)
@@ -227,7 +242,9 @@ mkdir -p "$pkgdir"
             f.write(scripts)
         if not run_cmd("abuild checksum && abuild -cqdP /release/%(flavor)s" % info):
             raise Exception("Problem building package")
+        if info['pkg_arch'] == noarch:
+            fnm = "mdsplus%(rflavor)s%(name)s-%(major)d.%(minor)d-r%(release)d.apk"%info
+            os.rename("%s/%s"%(archdir,fnm),"%s/%s"%(noarchdir,fnm))
     clean_ws()
-
 
 buildApks()
