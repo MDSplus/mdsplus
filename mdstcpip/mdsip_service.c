@@ -83,7 +83,7 @@ static int SpawnWorker(SOCKET sock)
 }
 
 static SERVICE_STATUS_HANDLE hService;
-static int ServiceMain(int, char **);
+static void ServiceMain(DWORD,  CHAR **);
 static SERVICE_STATUS serviceStatus;
 
 static void SetThisServiceStatus(int state, int hint)
@@ -237,7 +237,7 @@ static void RedirectOutput()
   free(file);
 }
 
-static int ServiceMain(int argc, char **argv)
+static void ServiceMain(DWORD argc, CHAR **argv)
 {
   SOCKET s;
   int status;
@@ -257,9 +257,9 @@ static int ServiceMain(int argc, char **argv)
       io->listen(argc, argv);
     else {
       fprintf(stderr, "Protocol %s does not support servers\n", GetProtocol());
-      return 1;
+      exit(1);
     }
-    return 0;
+    exit(0);
   } else {
     s = socket(AF_INET, SOCK_STREAM, 0);
     if (s == INVALID_SOCKET) {
@@ -302,7 +302,7 @@ static int ServiceMain(int argc, char **argv)
       }
     }
     shutdown(s, 2);
-    return 1;
+    exit(1);
   }
 }
 
