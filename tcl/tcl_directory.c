@@ -62,10 +62,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ************************************************************************/
 
 static int doFull(char **output, int nid, unsigned char nodeUsage, int version);
-	/****************************************************************
-	 * MdsOwner:
-	 ****************************************************************/
-static char *MdsOwner(		/* Return: ptr to "user" string         */
+static char *mds_owner(		/* Return: ptr to "user" string         */
 		       unsigned int owner	/* <r> owner id                         */
     )
 {
@@ -96,10 +93,7 @@ static char *MdsOwner(		/* Return: ptr to "user" string         */
   return (ownerString);
 }
 
-	/***************************************************************
-	 * MdsDatime:
-	 ***************************************************************/
-static char *MdsDatime(		/* Return: ptr to date+time string      */
+static char *mds_datetime(		/* Return: ptr to date+time string      */
 			int time[]	/* <r> date/time to display: quadword       */
     )
 {
@@ -130,7 +124,7 @@ void tclAppend(char **output, char *str)
 EXPORT int TclDirectory(void *ctx, char **error __attribute__ ((unused)), char **output)
 {
   char *tagnam;
-  char msg[1024];
+  char msg[128];
   char *nodnam = 0;
   char *pathnam;
 
@@ -368,8 +362,11 @@ static int doFull(char **output, int nid, unsigned char nodeUsage, int version)
 	tclAppend(output, reference);
       }
     }
-    sprintf(msg, "      Data inserted: %s    Owner: %s\n", MdsDatime(time), MdsOwner(owner));
-    tclAppend(output, msg);
+    tclAppend(output, "      Data inserted: ");
+    tclAppend(output, mds_datetime(time));
+    tclAppend(output, "    Owner: ");
+    tclAppend(output, mds_owner(owner));
+    tclAppend(output, "\n");
     if (dataLen) {
       sprintf(msg, "      Dtype: %-20s  Class: %-18s  Length: %u bytes\n",
 	      MdsDtypeString((int)dtype), MdsClassString((int)class), dataLen);
