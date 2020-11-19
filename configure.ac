@@ -298,7 +298,7 @@ AS_CASE([$with_labview],
         [yes],
         [AS_VAR_SET_IF([LABVIEW_DIR],
             [with_labview=$LABVIEW_DIR],
-            [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
+            [AS_IF([test -d ${srcdir}/3rd-party-apis/labview],
                    [with_labview=\${top_srcdir}/3rd-party-apis/labview],
                    [with_labview=no])])])
 
@@ -319,10 +319,10 @@ AC_ARG_WITH([idl],
 AS_CASE([$with_idl],
         [yes], [AS_VAR_SET_IF([IDL_DIR],
                               [AS_VAR_SET([with_idl], [$IDL_DIR])],
-                              [AS_IF([test -r /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
-                                     [test -r /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
-                                     [test -r /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
-                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
+                              [AS_IF([test -d /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
+                                     [test -d /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
+                                     [test -d /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
+                                     [test -d ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
                                      [AS_VAR_SET([with_idl], [no])])])])
 AS_CASE([$with_idl],
         [no], [AS_UNSET([IDL_DIR])
@@ -679,7 +679,7 @@ AC_ARG_ENABLE(d3d,
 	if test "$enableval" = yes; then
           AC_MSG_CHECKING(...D3DLIB_PATH...)
           : ${D3DLIB_PATH:?"You must define D3DLIB_PATH to be the directory containing the libd3 library"}
-          if test -r "$D3DLIB_PATH/libd3.a" -o -r "$D3DLIB_PATH/libd3$SHARETYPE"
+          if test -f "$D3DLIB_PATH/libd3.a" -o -f "$D3DLIB_PATH/libd3$SHARETYPE"
           then
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
@@ -807,7 +807,7 @@ fi
 AC_CHECK_HEADERS([stdint.h])
 
 dnl Check for user specified  hdf5 header and library
-if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
+if test -n "$HDF5_DIR" -a -d "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
@@ -924,7 +924,7 @@ then
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)
-      if test -r "/usr/lib${SYB64}/libsybdb.so"
+      if test -f "/usr/lib${SYB64}/libsybdb.so"
       then
           SYBASE_INC="-DSYBASE"
           SYBASE_LIB="-lsybdb"
@@ -932,14 +932,14 @@ then
           AC_MSG_RESULT(have freetds)
       else
         : ${SYBASE=/usr/local/sybase}
-        if test -r "$SYBASE/lib"
+        if test -d "$SYBASE/lib"
 	then SYBASE_LIBDIR="$SYBASE/lib"
-	elif test -r "$SYBASE/lib${SYB64}"
+	elif test -d "$SYBASE/lib${SYB64}"
 	then SYBASE_LIBDIR="$SYBASE/lib${SYB64}"
 	fi
 	if test "$SYBASE_LIBDIR" != ""
 	then
-	  if test -r "$SYBASE_LIBDIR/libsybdb.a"
+	  if test -f "$SYBASE_LIBDIR/libsybdb.a"
 	  then
 	    SYBASE_LIB="-L$SYBASE_LIBDIR $LD_LDARC -lsybdb $LD_LDSHARE"
 	  else
