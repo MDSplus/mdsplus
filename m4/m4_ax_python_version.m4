@@ -219,4 +219,4 @@ minver = tuple(map(int, '$2'.split('.')))
 verok = minver<=sys.version_info
 # xrange is not present in Python 3.0 and range returns an iterator
 sys.exit(not (verok and archok))"
-  AS_IF([AM_RUN_LOG([$1 -c "$prog"])], [$4], [$5])])
+  AS_IF([AM_RUN_LOG([$1 -c "$prog" 2>/dev/nul])], [$4], [$5])])
