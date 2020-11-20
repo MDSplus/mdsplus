@@ -191,7 +191,6 @@ parsecmd() {
                 ;;
             --testrelease)
                 opts="${opts} ${i}"
-                BUILD_OPTS="${BUILD_OPTS} ${i}"
                 ;;
             --test=skip)
                 opts="${opts} ${i}"
