@@ -440,7 +440,7 @@ case "$host" in
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
        then
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D64="64"
          else
@@ -452,10 +452,10 @@ case "$host" in
          uiddir="${uiddir}${D64}"
          MAKELIBDIR="\$(top_builddir)/lib${D64}/"
          MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
 	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
        else
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D32="32"
          else
