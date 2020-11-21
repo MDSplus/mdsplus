@@ -368,7 +368,7 @@ static inline struct descriptor *fixDtypes(struct descriptor *dsc) {
 }
 #endif
 
-static inline int MdsValueVargs(va_list incrmtr, int connection, char *expression, ...)
+static inline int mds_value_vargs(va_list incrmtr, int connection, char *expression, ...)
 {
   int a_count;
   int i;
@@ -585,13 +585,13 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 EXPORT int MdsValueR(int *connection, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValueVargs(incrmtr, *connection, expression);
+  return mds_value_vargs(incrmtr, *connection, expression);
 }
 
 EXPORT int MdsValue(char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValueVargs(incrmtr, MdsCONNECTION, expression);
+  return mds_value_vargs(incrmtr, MdsCONNECTION, expression);
 }
 
 
@@ -821,7 +821,7 @@ EXPORT int MdsValue2(char *expression, ...) {
 }
 
 
-static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
+static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
 {
   va_list initial_incrmtr;
   int a_count;
@@ -934,13 +934,13 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
 EXPORT int MdsPutR(int *connection, char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPutVargs(incrmtr, *connection, node, expression);
+  return mds_put_vargs(incrmtr, *connection, node, expression);
 }
 
 EXPORT int MdsPut(char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPutVargs(incrmtr, MdsCONNECTION, node, expression);
+  return mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
 }
 
 EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
