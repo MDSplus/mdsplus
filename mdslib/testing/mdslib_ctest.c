@@ -62,8 +62,9 @@ int testClose(char* tree, int shot) { return MdsClose(tree, &shot); }
 int testScalarString(char *expression, char *expected)
 {
   int length = strlen(expected);
-  char *string = malloc(length + 32);
-  int dsc = descr(&dtype_cstring, string, &null, &length);
+  int lenalloc = length + 32;
+  char *string = malloc(lenalloc);
+  int dsc = descr(&dtype_cstring, string, &null, &lenalloc);
   status = MdsValue(expression, &dsc, &null, &returnlength);
   if (status & 1)
     status = (returnlength == length) && (strncmp(string, expected, length) == 0);

@@ -130,7 +130,6 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
   dsc->dtype = *dtype;
   dsc->pointer = (char *)data;
   dsc->length = 0;
-  dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
@@ -144,7 +143,8 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
     }
-
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
   } else {
 
     va_list incrmtr;
@@ -164,9 +164,11 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/*  && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
       dsc->length = *va_arg(incrmtr, int *);
-    }
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
+
 
     if (ndim > 1) {
       int i;
@@ -258,7 +260,6 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 
   dsc->pointer = 0;
   dsc->length = 0;
-  dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
@@ -267,12 +268,14 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
   if (*dim1 == 0) {
     dsc->class = CLASS_S;
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/* && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
+    {
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
     }
-
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
   } else {
 
     va_list incrmtr;
@@ -292,9 +295,10 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/*  && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
       dsc->length = *va_arg(incrmtr, int *);
-    }
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
     if (ndim > 1) {
       int i;
