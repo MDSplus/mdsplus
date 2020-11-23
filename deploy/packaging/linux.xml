@@ -25,7 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 -->
 <deploy>
  <packages>
-  <package name="MDSplus" arch="bin" summary="MDSplus Data Acquisition System" description="MDSplus Data Acquisition System">
+  <package name="MDSplus" arch="noarch" summary="MDSplus Data Acquisition System" description="MDSplus Data Acquisition System">
     <requires package="kernel"/>
     <requires package="java"/>
     <requires package="python"/>

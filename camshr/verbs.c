@@ -290,7 +290,7 @@ EXPORT int Autoconfig(void *ctx __attribute__ ((unused)), char **error, char **o
 //-------------------------------------------------------------------------
 EXPORT int Deassign(void *ctx, char **error, char **output __attribute__ ((unused)))
 {
-  char db_tmp[64];
+  char db_tmp[128];
   int i, modulesToDeassign, modulesDeassigned, numOfEntries, physical_name;
   int status = SUCCESS;
   struct Module_ Mod, *pMod;
@@ -531,7 +531,7 @@ EXPORT int ShowCrate(void *ctx, char **error, char **output)
 //-------------------------------------------------------------------------
 EXPORT int ShowModule(void *ctx, char **error, char **output)
 {
-  char db_tmp[64];		// enough space for a logical name and a cstring terminator     [2002.02.20]
+  char db_tmp[128];		// enough space for a logical name and a cstring terminator     [2002.02.20]
   int i, numOfEntries, status = SUCCESS;
 
 

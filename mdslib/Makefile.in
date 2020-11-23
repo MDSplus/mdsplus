@@ -1,5 +1,7 @@
 include @top_builddir@/Makefile.inc
 
+LIBPREFIX=MdsLib
+
 srcdir=@srcdir@
 builddir=@builddir@ 
 VPATH=@srcdir@
@@ -11,6 +13,10 @@ MKDIR_P=@MKDIR_P@
 
 LIBS = @LIBS@ @GLOBUS_LIBS@ $(LIBSOCKET) @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
+
+# WARNING: gfortran rises a huge amount of Warning that are converted to errors in deploy script
+#          we had to add -Wno-error to suppress errors in fortran here ...
+FFLAGS += $(FCFLAGS) -Wno-error
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
