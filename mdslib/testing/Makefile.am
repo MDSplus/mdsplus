@@ -27,7 +27,7 @@ VALGRIND_SUPPRESSIONS_FILES = \
 #
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = *.out
+MOSTLYCLEANFILES = *.out test_*.tree test_*.characteristics test_*.datafile
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
