@@ -28,8 +28,6 @@ LIBM = @LIBM@
 LIBSOCKET = @LIBSOCKET@
 MKDIR_P = @MKDIR_P@
 RANLIB = @RANLIB@
-#FIXME: why need this?
-#RM = @abs_top_srcdir@/devscripts/rm_if
 SED = @SED@
 TARGET_ARCH = @TARGET_ARCH@
 THREAD = @THREAD@
@@ -93,7 +91,7 @@ $(sort @MAKEBINDIR@ @MAKELIBDIR@ @MAKESHLIBDIR@ @MAKEETCDIR@ @MAKEUIDDIR@ @uiddi
 
 .DEFAULT_GOAL := all
 
-## enable help command 
+## enable help command
 @TARGET_SELFHELP@
 HELP_DESCRIPTION = This is MDSplus build system, documented targets follow:
 
@@ -113,5 +111,3 @@ reconfigure: ##@miscellaneous rerun configure script again using last arguments 
 	echo ; \
 	cd '$(top_builddir)' && \
 	$(top_srcdir)/configure $(shell $(abs_top_builddir)/config.status --config);
-
-

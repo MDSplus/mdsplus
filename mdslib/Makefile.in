@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 LIBPREFIX=MdsLib
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 MKDIR_P=@MKDIR_P@
 @AX_RECONFIGURE_TARGET@
@@ -14,31 +14,30 @@ MKDIR_P=@MKDIR_P@
 LIBS = @LIBS@ @GLOBUS_LIBS@ $(LIBSOCKET) @LIBRESOLV@ @LIBM@
 MDSLIB_LIBS=-lTdiShr -lTreeShr -lMdsShr
 
-# WARNING: gfortran rises a huge amount of Warning that are converted to errors in deploy script
-#          we had to add -Wno-error to suppress errors in fortran here ...
-FFLAGS += $(FCFLAGS) -Wno-error
+FFLAGS += $(FCFLAGS)
 
 SOURCES = MdsLib.c
 OBJECTS = $(SOURCES:.c=.o)
 
 OBJECTS_CLIENT = MdsLib_client.o
 
-all: @MAKEBINDIR@ @MAKELIBDIR@ \
-         @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
-         @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
-         @MAKELIBDIR@@LIBPRE@MdsLib_client.a \
-         @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKEBINDIR@mdslib_ctest  \
-         @MAKEBINDIR@mdslib_ftest  @MAKEBINDIR@mdslib_fremotetest \
-	 @MAKEBINDIR@dtype_test
+all: \
+ @MAKEBINDIR@ @MAKELIBDIR@\
+ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib_Client)\
+ @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ $(IMPLIB_MdsLib)\
+ @MAKELIBDIR@@LIBPRE@MdsLib_client.a\
+ @MAKELIBDIR@@LIBPRE@MdsLib.a
 
 depend:
 	@makedepend -- $(CFLAGS) -- $(SOURCES)
 
 clean:
-	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT) mdslib_ftest.o
-	@ $(RM) @MAKELIBDIR@@LIBPRE@MdsLib.a @MAKELIBDIR@@LIBPRE@MdsLib_client.a
-	@ $(RM) @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@ @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
-	@ $(RM) @MAKEBINDIR@dtype_test @MAKEBINDIR@mdslib_*test
+	@ $(RM) $(OBJECTS) $(OBJECTS_CLIENT)\
+	 @MAKELIBDIR@@LIBPRE@MdsLib.a\
+	 @MAKELIBDIR@@LIBPRE@MdsLib_client.a\
+	 @MAKESHLIBDIR@@LIBPRE@MdsLib@SHARETYPE@\
+	 @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@\
+	 $(IMPLIB_MdsLib) $(IMPLIB_MdsLib_client)
 
 install: $(libdir)
 	$(MKDIR_P) $(libdir)
@@ -59,25 +58,12 @@ $(MdsLib): $(OBJECTS)
 @MAKESHLIBDIR@@LIBPRE@MdsLib_client@SHARETYPE@ : $(OBJECTS_CLIENT)
 	$(LINK.c) $(OUTPUT_OPTION) @LINKSHARED@ $^ -L@MAKELIBDIR@ -lMdsShr -lMdsIpShr $(LIBS) $(GLOBUS_LDFLAGS) $(MAKE_IMPLIB_MdsLib_client)
 
-@MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT) 
+@MAKELIBDIR@@LIBPRE@MdsLib_client.a : $(OBJECTS_CLIENT)
 	$(AR) -cr $@ $^
 	@RANLIB@ $@
 
-MdsLib.o: MdsLib.c 
+MdsLib.o: MdsLib.c
 	$(COMPILE.c) $< $(OUTPUT_OPTION) -DFILENAME=MdsLib.c
 
 MdsLib_client.o : MdsLib.c
 	$(COMPILE.c) $< $(OUTPUT_OPTION) -DFILENAME=MdsLib.c -D_CLIENT_ONLY
-
-@MAKEBINDIR@dtype_test : dtype_test.c $(MdsLib)
-	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-	
-@MAKEBINDIR@mdslib_ctest : mdslib_ctest.c $(MdsLib)
-	$(LINK.c) $(OUTPUT_OPTION) $< -L@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) @LIBM@ $(GLOBUS_LDFLAGS)
-
-@MAKEBINDIR@mdslib_ftest : mdslib_ftest.f $(MdsLib)
-	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-
-@MAKEBINDIR@mdslib_fremotetest : mdslib_fremotetest.f $(MdsLib)
-	$(LINK.F) $(OUTPUT_OPTION) $< @FEXECLIBDIR@@MAKESHLIBDIR@ -lMdsLib -lMdsShr -lMdsIpShr $(MDSLIB_LIBS) $(LIBS) $(GLOBUS_LDFLAGS)
-

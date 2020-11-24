@@ -242,7 +242,7 @@ AS_CASE([$enable_java],
                 AC_MSG_RESULT([$with_jdk])
                 AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
@@ -486,7 +486,7 @@ case "$host" in
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
-       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
+       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
@@ -546,7 +546,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -746,6 +746,12 @@ else
 fi
 AC_SUBST(LIBLZMA)
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBBLAS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+AC_CHECK_LIB([blas], [cdotu_, caxpy_], [have_blas="yes"], [have_blas=no])
+AM_CONDITIONAL(HAVE_BLAS, test x"$have_blas" = x"yes")
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
@@ -1395,90 +1401,92 @@ AC_SUBST(JAVA_TARGET_ARCH)
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
-AC_OUTPUT(Makefile.inc
-          Makefile
-          docs/Makefile
-          envsyms
-          actions/Makefile
-          camshr/Makefile
-          ccl/Makefile
-          d3dshr/Makefile
-          dwscope/Makefile
-          hdf5/Makefile
-          idlmdsevent/Makefile
-          idlmdswidgets/Makefile
-          javamds/Makefile
-          java/Makefile
-          java/tests/Makefile
-          java/mdsplus/Makefile
-          java/mdsplus-api/Makefile
-          java/mdsplus-api/tests/Makefile
-          java/mdsobjects/Makefile
-          java/mdsobjects/docs/Makefile
-          java/mdsobjects/tests/Makefile
-          java/jdispatcher/Makefile
-          java/jscope/Makefile
-          java/jtraverser/Makefile
-          java/jtraverser2/Makefile
-          java/jdevices/Makefile
-          java/devicebeans/Makefile
-          LabView/Makefile
-          manpages/Makefile
-          macosx/Makefile
-          math/Makefile
-          mdsdcl/Makefile
-	  mdsdcl/mdsdclVersionInfo.c
-          mdslib/Makefile
-          mdslib/docs/Makefile
-          mdslib/testing/Makefile
-          mdslibidl/Makefile
-          mdsobjects/cpp/Makefile
-          mdsobjects/cpp/docs/Makefile
-          mdsobjects/cpp/testing/Makefile
-          mdsobjects/cpp/testing/testutils/Makefile
-          python/MDSplus/docs/Makefile
-          python/MDSplus/tests/Makefile
-          python/MDSplus/_version.py
-          pydevices/HtsDevices/_version.py
-          pydevices/MitDevices/_version.py
-          pydevices/RfxDevices/_version.py
-          pydevices/W7xDevices/_version.py
-          mdsobjects/labview/Makefile
-          mdsmisc/Makefile
-          mdsshr/Makefile
-	  mdsshr/version.h
-          mdsshr/testing/Makefile
-	  mdsshr/docs/Makefile
-          mdssql/Makefile
-          mdstcpip/Makefile
-          mdstcpip/zlib/Makefile
-          mdstcpip/docs/Makefile
-          mdstcpip/docs/img/Makefile
-          mdsvme/Makefile
-          mitdevices/Makefile
-          remcam/Makefile
-          roam/Makefile
-          rpm/Makefile
-          rpm/envsyms
-          rpm/post_install_script
-          scripts/Makefile
-          servershr/Makefile
-          setevent/Makefile
-          tcl/Makefile
-          tdishr/Makefile
-          tdishr/testing/Makefile
-          tdic/Makefile
-          tditest/Makefile
-          tditest/testing/Makefile
-          testing/Makefile
-          testing/backends/check/Makefile
-          testing/selftest/Makefile
-          traverser/Makefile
-          treeshr/Makefile
-          treeshr/testing/Makefile
-          wfevent/Makefile
-          xmdsshr/Makefile
-          xtreeshr/Makefile
+AC_OUTPUT(
+  Makefile.inc
+  Makefile
+  docs/Makefile
+  envsyms
+  actions/Makefile
+  camshr/Makefile
+  ccl/Makefile
+  d3dshr/Makefile
+  dwscope/Makefile
+  hdf5/Makefile
+  idlmdsevent/Makefile
+  idlmdswidgets/Makefile
+  javamds/Makefile
+  java/Makefile
+  java/tests/Makefile
+  java/mdsplus/Makefile
+  java/mdsplus-api/Makefile
+  java/mdsplus-api/tests/Makefile
+  java/mdsobjects/Makefile
+  java/mdsobjects/docs/Makefile
+  java/mdsobjects/tests/Makefile
+  java/jdispatcher/Makefile
+  java/jscope/Makefile
+  java/jtraverser/Makefile
+  java/jtraverser2/Makefile
+  java/jdevices/Makefile
+  java/devicebeans/Makefile
+  LabView/Makefile
+  manpages/Makefile
+  macosx/Makefile
+  math/Makefile
+  math/testing/Makefile
+  mdsdcl/Makefile
+  mdsdcl/mdsdclVersionInfo.c
+  mdslib/Makefile
+  mdslib/docs/Makefile
+  mdslib/testing/Makefile
+  mdslibidl/Makefile
+  mdsobjects/cpp/Makefile
+  mdsobjects/cpp/docs/Makefile
+  mdsobjects/cpp/testing/Makefile
+  mdsobjects/cpp/testing/testutils/Makefile
+  python/MDSplus/docs/Makefile
+  python/MDSplus/tests/Makefile
+  python/MDSplus/_version.py
+  pydevices/HtsDevices/_version.py
+  pydevices/MitDevices/_version.py
+  pydevices/RfxDevices/_version.py
+  pydevices/W7xDevices/_version.py
+  mdsobjects/labview/Makefile
+  mdsmisc/Makefile
+  mdsshr/Makefile
+  mdsshr/version.h
+  mdsshr/testing/Makefile
+  mdsshr/docs/Makefile
+  mdssql/Makefile
+  mdstcpip/Makefile
+  mdstcpip/zlib/Makefile
+  mdstcpip/docs/Makefile
+  mdstcpip/docs/img/Makefile
+  mdsvme/Makefile
+  mitdevices/Makefile
+  remcam/Makefile
+  roam/Makefile
+  rpm/Makefile
+  rpm/envsyms
+  rpm/post_install_script
+  scripts/Makefile
+  servershr/Makefile
+  setevent/Makefile
+  tcl/Makefile
+  tdishr/Makefile
+  tdishr/testing/Makefile
+  tdic/Makefile
+  tditest/Makefile
+  tditest/testing/Makefile
+  testing/Makefile
+  testing/backends/check/Makefile
+  testing/selftest/Makefile
+  traverser/Makefile
+  treeshr/Makefile
+  treeshr/testing/Makefile
+  wfevent/Makefile
+  xmdsshr/Makefile
+  xtreeshr/Makefile
 )
 
 

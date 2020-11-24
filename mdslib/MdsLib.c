@@ -56,10 +56,10 @@ static int next = 0;
 
 #include <pthread.h>
 
-static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc);
-static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc);
+static char *mds_value_remote_expression(char *expression, struct descriptor *dsc);
+static struct descrip *make_mdsip_descrip(struct descrip *arg, struct descriptor *dsc);
 static int dtype_length(struct descriptor *d);
-static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length);
+static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc, int *length);
 
 /* Key for the thread-specific buffer */
 static pthread_key_t buffer_key;
@@ -130,7 +130,6 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
   dsc->dtype = *dtype;
   dsc->pointer = (char *)data;
   dsc->length = 0;
-  dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
@@ -144,7 +143,8 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
     }
-
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
   } else {
 
     va_list incrmtr;
@@ -164,9 +164,11 @@ extern EXPORT int descr(int *dtype, void *data, int *dim1, ...)
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/*  && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
       dsc->length = *va_arg(incrmtr, int *);
-    }
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
+
 
     if (ndim > 1) {
       int i;
@@ -258,7 +260,6 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
 
   dsc->pointer = 0;
   dsc->length = 0;
-  dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
   /*  Convert DTYPE for native access if required.  Do AFTER the call to dtype_length() to
    *  save having to support DTYPE_NATIVE_FLOAT etc. in dtype_length().
@@ -267,12 +268,14 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
   if (*dim1 == 0) {
     dsc->class = CLASS_S;
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/* && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
+    {
       va_list incrmtr;
       va_start(incrmtr, dim1);
       dsc->length = *va_arg(incrmtr, int *);
     }
-
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
   } else {
 
     va_list incrmtr;
@@ -292,9 +295,10 @@ EXPORT int descr2(int *dtype, int *dim1, ...)
      * list of dimensions there will be an int * to the length of each string in the array
      */
 
-    if (dsc->dtype == DTYPE_CSTRING) {	/*  && dsc->length == 0)  */
+    if (dsc->dtype == DTYPE_CSTRING)
       dsc->length = *va_arg(incrmtr, int *);
-    }
+    else
+      dsc->length = dtype_length(dsc);	/* must set length after dtype and data pointers are set */
 
     if (ndim > 1) {
       int i;
@@ -368,7 +372,7 @@ static inline struct descriptor *fixDtypes(struct descriptor *dsc) {
 }
 #endif
 
-static inline int MdsValueVargs(va_list incrmtr, int connection, char *expression, ...)
+static inline int mds_value_vargs(va_list incrmtr, int connection, char *expression, ...)
 {
   int a_count;
   int i;
@@ -410,10 +414,10 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 
     /*
      * Send expression descriptor first.
-     * MdsValueRemoteExpression wraps expression with type conversion function.
+     * mds_value_remote_expression wraps expression with type conversion function.
      * It malloc's space for newexpression that needs to be freed after
      */
-    newexpression = MdsValueRemoteExpression(expression, dscAnswer);
+    newexpression = mds_value_remote_expression(expression, dscAnswer);
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, newexpression);
     status =
 	SendArg(connection, (char)0, arg->dtype, (unsigned char)(nargs + 1), ArgLen(arg), arg->ndims,
@@ -426,7 +430,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0) {
 	dsc = GetDescriptorCache()[*descnum - 1];
-	arg = MakeIpDescrip(arg, dsc);
+	arg = make_mdsip_descrip(arg, dsc);
 	status =
 	    SendArg(connection, (unsigned char)i, arg->dtype, (char)(nargs + 1), ArgLen(arg),
 		    arg->ndims, arg->dims, arg->ptr);
@@ -443,7 +447,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
       struct descrip exparg;
       struct descrip *arg = &exparg;
 
-      arg = MakeIpDescrip(arg, dscAnswer);
+      arg = make_mdsip_descrip(arg, dscAnswer);
       status =
 	  GetAnswerInfo(connection, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
 
@@ -513,7 +517,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 	  break;
 	}
 	if (status & 1)
-	  MdsValueSet(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
+	  mds_value_set(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
       free(dnew);
     }
@@ -567,7 +571,7 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
       }
 
       if (status & 1) {
-	MdsValueSet(dsc, xd3.pointer, length);
+	mds_value_set(dsc, xd3.pointer, length);
 
 	MdsFree1Dx(&xd1, NULL);
 	MdsFree1Dx(&xd2, NULL);
@@ -585,17 +589,17 @@ static inline int MdsValueVargs(va_list incrmtr, int connection, char *expressio
 EXPORT int MdsValueR(int *connection, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValueVargs(incrmtr, *connection, expression);
+  return mds_value_vargs(incrmtr, *connection, expression);
 }
 
 EXPORT int MdsValue(char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValueVargs(incrmtr, MdsCONNECTION, expression);
+  return mds_value_vargs(incrmtr, MdsCONNECTION, expression);
 }
 
 
-static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expression, ...)
+static inline int mds_value2_vargs(va_list incrmtr, int connection, char *expression, ...)
 {
   va_list initial_incrmtr;
   int a_count;
@@ -634,10 +638,10 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
     dscAnswer->pointer = va_arg(incrmtr, void *);
     /*
      * Send expression descriptor first.
-     * MdsValueRemoteExpression wraps expression with type conversion function.
+     * mds_value_remote_expression wraps expression with type conversion function.
      * It malloc's space for newexpression that needs to be freed after
      */
-    newexpression = MdsValueRemoteExpression(expression, dscAnswer);
+    newexpression = mds_value_remote_expression(expression, dscAnswer);
     arg = MakeDescrip(&exparg, DTYPE_CSTRING, 0, 0, newexpression);
     status =
 	SendArg(connection, (char)0, arg->dtype, (unsigned char)(nargs + 1), ArgLen(arg), arg->ndims,
@@ -652,7 +656,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
       if (*descnum > 0) {
 	dsc = GetDescriptorCache()[*descnum - 1];
 	dsc->pointer = va_arg(incrmtr, void *);
-	arg = MakeIpDescrip(arg, dsc);
+	arg = make_mdsip_descrip(arg, dsc);
 	status =
 	    SendArg(connection, (unsigned char)i, arg->dtype, (char)(nargs + 1), ArgLen(arg),
 		    arg->ndims, arg->dims, arg->ptr);
@@ -669,7 +673,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
       struct descrip exparg;
       struct descrip *arg = &exparg;
 
-      arg = MakeIpDescrip(arg, dscAnswer);
+      arg = make_mdsip_descrip(arg, dscAnswer);
       status =
 	  GetAnswerInfo(connection, &arg->dtype, &len, &arg->ndims, arg->dims, &numbytes, &dptr);
 
@@ -739,7 +743,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 	  break;
 	}
 	if (status & 1)
-	  MdsValueSet(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
+	  mds_value_set(dscAnswer, GetDescriptorCache()[ansdescr - 1], length);
       }
       free(dnew);
     }
@@ -795,7 +799,7 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
       }
 
       if (status & 1) {
-	MdsValueSet(dsc, xd3.pointer, length);
+	mds_value_set(dsc, xd3.pointer, length);
 
 	MdsFree1Dx(&xd1, NULL);
 	MdsFree1Dx(&xd2, NULL);
@@ -811,17 +815,17 @@ static inline int MdsValue2Vargs(va_list incrmtr, int connection, char *expressi
 EXPORT int MdsValue2R(int *connection, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValue2Vargs(incrmtr, *connection, expression);
+  return mds_value2_vargs(incrmtr, *connection, expression);
 }
 
 EXPORT int MdsValue2(char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsValue2Vargs(incrmtr, MdsCONNECTION, expression);
+  return mds_value2_vargs(incrmtr, MdsCONNECTION, expression);
 }
 
 
-static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
+static inline int mds_put_vargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
 {
   va_list initial_incrmtr;
   int a_count;
@@ -870,7 +874,7 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
       descnum = va_arg(incrmtr, int *);
       if (*descnum > 0) {
 	dsc = GetDescriptorCache()[*descnum - 1];
-	arg = MakeIpDescrip(arg, dsc);
+	arg = make_mdsip_descrip(arg, dsc);
       }
     }
 
@@ -934,16 +938,16 @@ static inline int MdsPutVargs(va_list incrmtr, int connection, char *pathname, c
 EXPORT int MdsPutR(int *connection, char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPutVargs(incrmtr, *connection, node, expression);
+  return mds_put_vargs(incrmtr, *connection, node, expression);
 }
 
 EXPORT int MdsPut(char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPutVargs(incrmtr, MdsCONNECTION, node, expression);
+  return mds_put_vargs(incrmtr, MdsCONNECTION, node, expression);
 }
 
-EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
+static int mds_put2_vargs(va_list incrmtr, int connection, char *pathname, char *expression, ...)
 {
   va_list initial_incrmtr;
   int a_count;
@@ -995,7 +999,7 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
       if (*descnum > 0) {
 	dsc = GetDescriptorCache()[*descnum - 1];
 	dsc->pointer = va_arg(incrmtr, void *);
-	arg = MakeIpDescrip(arg, dsc);
+	arg = make_mdsip_descrip(arg, dsc);
       }
     }
 
@@ -1060,13 +1064,13 @@ EXPORT int MdsPut2Vargs(va_list incrmtr, int connection, char *pathname, char *e
 EXPORT int MdsPut2R(int *connection, char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPut2Vargs(incrmtr, *connection, node, expression);
+  return mds_put2_vargs(incrmtr, *connection, node, expression);
 }
 
 EXPORT int MdsPut2(char *node, char *expression, ...) {
   va_list incrmtr;
   va_start(incrmtr, expression);
-  return MdsPut2Vargs(incrmtr, MdsCONNECTION, node, expression);
+  return mds_put2_vargs(incrmtr, MdsCONNECTION, node, expression);
 }
 
 static int dtype_length(struct descriptor *d)
@@ -1162,7 +1166,7 @@ extern EXPORT int *cdescr(int dtype, void *data, ...) {
 }
 #endif
 
-static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc)
+static struct descrip *make_mdsip_descrip(struct descrip *arg, struct descriptor *dsc)
 {
 
   char dtype;
@@ -1213,7 +1217,7 @@ static struct descrip *MakeIpDescrip(struct descrip *arg, struct descriptor *dsc
   return arg;
 }
 
-static int MdsValueLength(struct descriptor *dsc)
+static int mds_value_length(struct descriptor *dsc)
 {
   int length;
   switch (dsc->class) {
@@ -1231,7 +1235,7 @@ static int MdsValueLength(struct descriptor *dsc)
   return (length);
 }
 
-static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
+static char *mds_value_remote_expression(char *expression, struct descriptor *dsc)
 {
 
   /* This function will wrap expression in the appropriate type
@@ -1329,7 +1333,7 @@ static char *MdsValueRemoteExpression(char *expression, struct descriptor *dsc)
 
 }
 
-static void MdsValueMove(int source_length, char *source_array, char fill, int dest_length,
+static void mds_value_move(int source_length, char *source_array, char fill, int dest_length,
 			 char *dest_array)
 {
   int i;
@@ -1340,13 +1344,13 @@ static void MdsValueMove(int source_length, char *source_array, char fill, int d
   }
 }
 
-static void MdsValueCopy(int dim, int length, char fill, char *in, unsigned int *in_m, char *out,
+static void mds_value_copy(int dim, int length, char fill, char *in, unsigned int *in_m, char *out,
 			 unsigned int *out_m)
 {
   unsigned int i;
   int j;
   if (dim == 1)
-    MdsValueMove(length * in_m[0], in, fill, length * out_m[0], out);
+    mds_value_move(length * in_m[0], in, fill, length * out_m[0], out);
   else {
     int in_increment = length;
     int out_increment = length;
@@ -1355,12 +1359,12 @@ static void MdsValueCopy(int dim, int length, char fill, char *in, unsigned int 
       out_increment *= out_m[j];
     }
     for (i = 0; i < in_m[dim - 1] && i < out_m[dim - 1]; i++)
-      MdsValueCopy(dim - 1, length, fill, in + in_increment * i, in_m, out + out_increment * i,
+      mds_value_copy(dim - 1, length, fill, in + in_increment * i, in_m, out + out_increment * i,
 		   out_m);
   }
 }
 
-static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int *length)
+static void mds_value_set(struct descriptor *outdsc, struct descriptor *indsc, int *length)
 {
   char fill;
   if (indsc == 0) {
@@ -1375,11 +1379,11 @@ static void MdsValueSet(struct descriptor *outdsc, struct descriptor *indsc, int
       (((struct descriptor_a *)outdsc)->dimct == ((struct descriptor_a *)indsc)->dimct)) {
     array_coeff *in_a = (array_coeff *) indsc;
     array_coeff *out_a = (array_coeff *) outdsc;
-    MdsValueMove(0, 0, fill, MdsValueLength(outdsc), out_a->pointer);
-    MdsValueCopy(out_a->dimct, in_a->length, fill, in_a->pointer, in_a->m, out_a->pointer,
+    mds_value_move(0, 0, fill, mds_value_length(outdsc), out_a->pointer);
+    mds_value_copy(out_a->dimct, in_a->length, fill, in_a->pointer, in_a->m, out_a->pointer,
 		 out_a->m);
   } else {
-    MdsValueMove(MdsValueLength(indsc), indsc->pointer, fill, MdsValueLength(outdsc),
+    mds_value_move(mds_value_length(indsc), indsc->pointer, fill, mds_value_length(outdsc),
 		 outdsc->pointer);
   }
 
