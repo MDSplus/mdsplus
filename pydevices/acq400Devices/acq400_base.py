@@ -283,7 +283,8 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                 self.empty_buffers = mds.empty_buffers
                 self.full_buffers = mds.full_buffers
                 self.trig_time = 0
-                self.io_buffer_size = 4096
+                #self.io_buffer_size = 4096
+                self.io_buffer_size = self.segment_bytes # Improves streaming when run from each box
 
             def stop(self):
                 self.running = False
