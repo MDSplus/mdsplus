@@ -154,7 +154,7 @@ static int Store(struct descriptor *niddsc_ptr __attribute__ ((unused)), InStore
   file = fopen(rpt_name.pointer, "r");
   if (file != NULL) {
     while (fgets(line, 255, file)) {
-      TIME time;
+      TIME time = {0, 0};
       float value;
       if (strlen(line) >= 70) {
 	if (ParseHistorian(line, (struct descriptor *)&name, &value, &time)) {

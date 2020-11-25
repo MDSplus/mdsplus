@@ -242,7 +242,7 @@ AS_CASE([$enable_java],
                 AC_MSG_RESULT([$with_jdk])
                 AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
                 AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])]) 
+                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
 
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
@@ -298,7 +298,7 @@ AS_CASE([$with_labview],
         [yes],
         [AS_VAR_SET_IF([LABVIEW_DIR],
             [with_labview=$LABVIEW_DIR],
-            [AS_IF([${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/labview],
+            [AS_IF([test -d ${srcdir}/3rd-party-apis/labview],
                    [with_labview=\${top_srcdir}/3rd-party-apis/labview],
                    [with_labview=no])])])
 
@@ -319,10 +319,10 @@ AC_ARG_WITH([idl],
 AS_CASE([$with_idl],
         [yes], [AS_VAR_SET_IF([IDL_DIR],
                               [AS_VAR_SET([with_idl], [$IDL_DIR])],
-                              [AS_IF([test -r /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
-                                     [test -r /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
-                                     [test -r /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
-                                     [${srcdir}/conf/update_submodules && test -r ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
+                              [AS_IF([test -d /usr/local/itt/idl], [AS_VAR_SET([with_idl], [/usr/local/itt/idl])],
+                                     [test -d /usr/local/rsi/idl], [AS_VAR_SET([with_idl], [/usr/local/rsi/idl])],
+                                     [test -d /usr/local/exelis/idl], [AS_VAR_SET([with_idl], [/usr/local/exelis/idl])],
+                                     [test -d ${srcdir}/3rd-party-apis/idl], [AS_VAR_SET([with_idl], [\${top_srcdir}/3rd-party-apis/idl])],
                                      [AS_VAR_SET([with_idl], [no])])])])
 AS_CASE([$with_idl],
         [no], [AS_UNSET([IDL_DIR])
@@ -440,7 +440,7 @@ case "$host" in
        LD="gcc"
        if ( echo $host| grep 64 > /dev/null )
        then
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D64="64"
          else
@@ -452,10 +452,10 @@ case "$host" in
          uiddir="${uiddir}${D64}"
          MAKELIBDIR="\$(top_builddir)/lib${D64}/"
          MAKESHLIBDIR="\$(top_builddir)/lib${D64}/"
-         MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
+	 MAKEUIDDIR="\$(top_builddir)/uid${D64}/"
 	 MAKEBINDIR="\$(top_builddir)/bin${D64}/"
        else
-         if [[ -d /usr/lib64 ]]
+         if [[ -d /usr/lib64 -a "${PLATFORM}" = "redhat" ]]
          then
            D32="32"
          else
@@ -486,7 +486,7 @@ case "$host" in
        FOR_LDFLAGS="";
        FEXECLIBDIR="-L";
        TAR_EXCLUDE="--exclude";
-       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server"; 
+       MITDEVICESIO_TARGETS="${MAKESHLIBDIR}libMitDevicesIO${SHARETYPE} ${MAKELIBDIR}libMitDevicesIO.a ${MAKEBINDIR}daq_server";
        jni_inc_dir="$with_jdk/include";
        jni_md_inc_dir="$with_jdk/include/linux";
        HUP_TO_XINETD="/etc/rc.d/init.d/xinetd restart";
@@ -546,7 +546,7 @@ case "$host" in
 *apple-darwin*) echo "Configuring for MacOS X";
        THREAD=""
        MACOSX="macosx"
-       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-error=unused-command-line-argument -Wno-missing-field-initializers -Wno-parentheses-equality";
+       CFLAGS="$CFLAGS -arch x86_64 -dynamic -Wno-missing-field-initializers -Wno-parentheses-equality";
        FCFLAGS="$FCFLAGS -fno-range-check"
        FORLD="gfortran"
        FOR_LDFLAGS="-shared"
@@ -679,7 +679,7 @@ AC_ARG_ENABLE(d3d,
 	if test "$enableval" = yes; then
           AC_MSG_CHECKING(...D3DLIB_PATH...)
           : ${D3DLIB_PATH:?"You must define D3DLIB_PATH to be the directory containing the libd3 library"}
-          if test -r "$D3DLIB_PATH/libd3.a" -o -r "$D3DLIB_PATH/libd3$SHARETYPE"
+          if test -f "$D3DLIB_PATH/libd3.a" -o -f "$D3DLIB_PATH/libd3$SHARETYPE"
           then
 		 D3D_PACKAGE="\$(D3D_PACKAGE)";
 		 D3DLIB="-L$D3DLIB_PATH";
@@ -746,6 +746,12 @@ else
 fi
 AC_SUBST(LIBLZMA)
 
+## ////////////////////////////////////////////////////////////////////////// ##
+## //  LIBBLAS  ///////////////////////////////////////////////////////////// ##
+## ////////////////////////////////////////////////////////////////////////// ##
+
+AC_CHECK_LIB([blas], [cdotu_, caxpy_], [have_blas="yes"], [have_blas=no])
+AM_CONDITIONAL(HAVE_BLAS, test x"$have_blas" = x"yes")
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## //  LIBXML  ////////////////////////////////////////////////////////////// ##
@@ -807,7 +813,7 @@ fi
 AC_CHECK_HEADERS([stdint.h])
 
 dnl Check for user specified  hdf5 header and library
-if test -n "$HDF5_DIR" -a -r "$HDF5_DIR"
+if test -n "$HDF5_DIR" -a -d "$HDF5_DIR"
 then
       HDF5_APS="\$(HDF5_APS)"
       HDF5_INCS="-I$HDF5_DIR/include"
@@ -924,7 +930,7 @@ then
     if test "$SYBASE_LIB" = ""
     then
       AC_MSG_CHECKING(for SYBASE open/client or freetds)
-      if test -r "/usr/lib${SYB64}/libsybdb.so"
+      if test -f "/usr/lib${SYB64}/libsybdb.so"
       then
           SYBASE_INC="-DSYBASE"
           SYBASE_LIB="-lsybdb"
@@ -932,14 +938,14 @@ then
           AC_MSG_RESULT(have freetds)
       else
         : ${SYBASE=/usr/local/sybase}
-        if test -r "$SYBASE/lib"
+        if test -d "$SYBASE/lib"
 	then SYBASE_LIBDIR="$SYBASE/lib"
-	elif test -r "$SYBASE/lib${SYB64}"
+	elif test -d "$SYBASE/lib${SYB64}"
 	then SYBASE_LIBDIR="$SYBASE/lib${SYB64}"
 	fi
 	if test "$SYBASE_LIBDIR" != ""
 	then
-	  if test -r "$SYBASE_LIBDIR/libsybdb.a"
+	  if test -f "$SYBASE_LIBDIR/libsybdb.a"
 	  then
 	    SYBASE_LIB="-L$SYBASE_LIBDIR $LD_LDARC -lsybdb $LD_LDSHARE"
 	  else
@@ -1395,90 +1401,92 @@ AC_SUBST(JAVA_TARGET_ARCH)
 AC_CONFIG_HEADER(include/mdsplus/mdsconfig.h)
 
 
-AC_OUTPUT(Makefile.inc
-          Makefile
-          docs/Makefile
-          envsyms
-          actions/Makefile
-          camshr/Makefile
-          ccl/Makefile
-          d3dshr/Makefile
-          dwscope/Makefile
-          hdf5/Makefile
-          idlmdsevent/Makefile
-          idlmdswidgets/Makefile
-          javamds/Makefile
-          java/Makefile
-          java/tests/Makefile
-          java/mdsplus/Makefile
-          java/mdsplus-api/Makefile
-          java/mdsplus-api/tests/Makefile
-          java/mdsobjects/Makefile
-          java/mdsobjects/docs/Makefile
-          java/mdsobjects/tests/Makefile
-          java/jdispatcher/Makefile
-          java/jscope/Makefile
-          java/jtraverser/Makefile
-          java/jtraverser2/Makefile
-          java/jdevices/Makefile
-          java/devicebeans/Makefile
-          LabView/Makefile
-          manpages/Makefile
-          macosx/Makefile
-          math/Makefile
-          mdsdcl/Makefile
-	  mdsdcl/mdsdclVersionInfo.c
-          mdslib/Makefile
-          mdslib/docs/Makefile
-          mdslib/testing/Makefile
-          mdslibidl/Makefile
-          mdsobjects/cpp/Makefile
-          mdsobjects/cpp/docs/Makefile
-          mdsobjects/cpp/testing/Makefile
-          mdsobjects/cpp/testing/testutils/Makefile
-          python/MDSplus/docs/Makefile
-          python/MDSplus/tests/Makefile
-          python/MDSplus/_version.py
-          pydevices/HtsDevices/_version.py
-          pydevices/MitDevices/_version.py
-          pydevices/RfxDevices/_version.py
-          pydevices/W7xDevices/_version.py
-          mdsobjects/labview/Makefile
-          mdsmisc/Makefile
-          mdsshr/Makefile
-	  mdsshr/version.h
-          mdsshr/testing/Makefile
-	  mdsshr/docs/Makefile
-          mdssql/Makefile
-          mdstcpip/Makefile
-          mdstcpip/zlib/Makefile
-          mdstcpip/docs/Makefile
-          mdstcpip/docs/img/Makefile
-          mdsvme/Makefile
-          mitdevices/Makefile
-          remcam/Makefile
-          roam/Makefile
-          rpm/Makefile
-          rpm/envsyms
-          rpm/post_install_script
-          scripts/Makefile
-          servershr/Makefile
-          setevent/Makefile
-          tcl/Makefile
-          tdishr/Makefile
-          tdishr/testing/Makefile
-          tdic/Makefile
-          tditest/Makefile
-          tditest/testing/Makefile
-          testing/Makefile
-          testing/backends/check/Makefile
-          testing/selftest/Makefile
-          traverser/Makefile
-          treeshr/Makefile
-          treeshr/testing/Makefile
-          wfevent/Makefile
-          xmdsshr/Makefile
-          xtreeshr/Makefile
+AC_OUTPUT(
+  Makefile.inc
+  Makefile
+  docs/Makefile
+  envsyms
+  actions/Makefile
+  camshr/Makefile
+  ccl/Makefile
+  d3dshr/Makefile
+  dwscope/Makefile
+  hdf5/Makefile
+  idlmdsevent/Makefile
+  idlmdswidgets/Makefile
+  javamds/Makefile
+  java/Makefile
+  java/tests/Makefile
+  java/mdsplus/Makefile
+  java/mdsplus-api/Makefile
+  java/mdsplus-api/tests/Makefile
+  java/mdsobjects/Makefile
+  java/mdsobjects/docs/Makefile
+  java/mdsobjects/tests/Makefile
+  java/jdispatcher/Makefile
+  java/jscope/Makefile
+  java/jtraverser/Makefile
+  java/jtraverser2/Makefile
+  java/jdevices/Makefile
+  java/devicebeans/Makefile
+  LabView/Makefile
+  manpages/Makefile
+  macosx/Makefile
+  math/Makefile
+  math/testing/Makefile
+  mdsdcl/Makefile
+  mdsdcl/mdsdclVersionInfo.c
+  mdslib/Makefile
+  mdslib/docs/Makefile
+  mdslib/testing/Makefile
+  mdslibidl/Makefile
+  mdsobjects/cpp/Makefile
+  mdsobjects/cpp/docs/Makefile
+  mdsobjects/cpp/testing/Makefile
+  mdsobjects/cpp/testing/testutils/Makefile
+  python/MDSplus/docs/Makefile
+  python/MDSplus/tests/Makefile
+  python/MDSplus/_version.py
+  pydevices/HtsDevices/_version.py
+  pydevices/MitDevices/_version.py
+  pydevices/RfxDevices/_version.py
+  pydevices/W7xDevices/_version.py
+  mdsobjects/labview/Makefile
+  mdsmisc/Makefile
+  mdsshr/Makefile
+  mdsshr/version.h
+  mdsshr/testing/Makefile
+  mdsshr/docs/Makefile
+  mdssql/Makefile
+  mdstcpip/Makefile
+  mdstcpip/zlib/Makefile
+  mdstcpip/docs/Makefile
+  mdstcpip/docs/img/Makefile
+  mdsvme/Makefile
+  mitdevices/Makefile
+  remcam/Makefile
+  roam/Makefile
+  rpm/Makefile
+  rpm/envsyms
+  rpm/post_install_script
+  scripts/Makefile
+  servershr/Makefile
+  setevent/Makefile
+  tcl/Makefile
+  tdishr/Makefile
+  tdishr/testing/Makefile
+  tdic/Makefile
+  tditest/Makefile
+  tditest/testing/Makefile
+  testing/Makefile
+  testing/backends/check/Makefile
+  testing/selftest/Makefile
+  traverser/Makefile
+  treeshr/Makefile
+  treeshr/testing/Makefile
+  wfevent/Makefile
+  xmdsshr/Makefile
+  xtreeshr/Makefile
 )
 
 

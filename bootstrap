@@ -28,6 +28,8 @@ then
 	exit $abort
 fi
 
+conf/update_submodules
+
 aclocal -I ./m4
 
 autoheader
