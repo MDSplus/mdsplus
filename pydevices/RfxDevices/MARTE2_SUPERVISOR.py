@@ -262,10 +262,10 @@ class MARTE2_SUPERVISOR(Device):
       if len(typeDicts) == 0:
         return ''
       typeDecl = '+Types = {\n'
-      typeDecl = '  Class = ReferenceContainer\n'
+      typeDecl += '  Class = ReferenceContainer\n'
       for typeDict in typeDicts:
         typeDecl += '  +'+typeDict['name'] + ' = {\n'
-        typeDecl = '    Class = IntrospectionStructure\n'
+        typeDecl += '    Class = IntrospectionStructure\n'
         for fieldDict in typeDict['fields']:
           typeDecl += '    '+fieldDict['name'] + ' = {\n'
           typeDecl += '      Type = '+fieldDict['type']+'\n'
