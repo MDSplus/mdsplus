@@ -44,8 +44,11 @@ class BUILDER:
     }
 
     def __init__(self, module, pygam=None):
+      try:
         self.module = module
         self.pygam = pygam or module.pygam
+      except:
+        pass
 
     @classmethod
     def convert_io(cls, name, dim, dtype):
@@ -80,7 +83,10 @@ class BUILDER:
         }
 
     def __call__(self, cls):
-        self.pygam.initialize(self.module.__name__)
+        try:
+            self.pygam.initialize(self.module.__name__)
+        except:
+            return cls
         cls.inputs = [
             self.convert_io(
                 self.pygam.getInputName(self.module.__name__, i),
