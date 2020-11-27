@@ -211,7 +211,7 @@ class InfoServer implements Server
 		{
 			try
 			{
-				action_d = action_table.get(new Integer(data.getInt()));
+				action_d = action_table.get(new Integer(((MDSplus.TreeNode)data).getNid()));
 			}
 			catch (final Exception exc)
 			{
@@ -228,7 +228,7 @@ class InfoServer implements Server
 			try
 			{
 				nid = model_database.getNode((MDSplus.TreePath) data);
-				action_d = action_table.get(new Integer(nid.getInt()));
+				action_d = action_table.get(new Integer(nid.getNid()));
 			}
 			catch (final Exception exc)
 			{
