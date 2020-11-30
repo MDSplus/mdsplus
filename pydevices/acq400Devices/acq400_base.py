@@ -305,6 +305,7 @@ class _ACQ400_ST_BASE(_ACQ400_BASE):
                     try:
                         buf = self.empty_buffers.get(block=False)
                     except Empty:
+                        print("NO BUFFERS AVAILABLE. MAKING NEW ONE")
                         buf = bytearray(self.segment_bytes)
 
                     toread =self.segment_bytes
