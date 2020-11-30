@@ -292,7 +292,11 @@ class _ACQ2106_435ST(MDSplus.Device):
         if  freq < MIN_FREQUENCY:
             raise MDSplus.DevBAD_PARAMETER("Sample rate should be greater or equal than 10kHz")
 
-        trg = self.trig_mode.data()
+        mode = self.trig_mode.data()
+        role = mode.split(":")[0]
+        trg  = mode.split(":")[1]
+
+        print("Role is {} and {} trigger".format(role, trg))
 
         if trg == 'hard':
             trg_dx = 'd0'
@@ -305,11 +309,27 @@ class _ACQ2106_435ST(MDSplus.Device):
         # modifiers [CLK|TRG:SENSE=falling|rising] [CLK|TRG:DX=d0|d1]
         # modifiers [TRG=int|ext]
         # modifiers [CLKDIV=div]  
-        uut.s0.sync_role = '%s %s TRG:DX=%s' % ('master', self.freq.data(), trg_dx)
+        uut.s0.sync_role = '%s %s TRG:DX=%s' % (role, self.freq.data(), trg_dx)
 
+        #Fetching all calibration information from every channel.
+        uut.fetch_all_calibration()
+        coeffs = uut.cal_eslo[1:]
+        eoff   = uut.cal_eoff[1:]
+
+        self.chans = []
+        nchans = uut.nchan()
+        for ii in range(nchans):
+            self.chans.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
+
+        for ic, ch in enumerate(self.chans):
+            if ch.on:
+                ch.OFFSET.putData(float(eoff[ic]))
+                ch.COEFFICIENT.putData(float(coeffs[ic]))
+
+        # Hardware decimation:
         if self.debug:
             print("Hardware Filter (NACC) from tree node is {}".format(int(self.hw_filter.data())))
-        
+
         # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
         nacc_samp = int(self.hw_filter.data())
         print("Number of sites in use {}".format(self.sites))
@@ -320,14 +340,6 @@ class _ACQ2106_435ST(MDSplus.Device):
             else:
                 print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
                 self.slots[card].nacc = '1'
-
-            coeffs  =  map(float, self.slots[card].AI_CAL_ESLO.split(" ")[3:] )
-            offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
-            for i in range(32):
-                coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
-                coeff.record = coeffs[i]
-                offset = self.__getattr__('input_%3.3d_offset'%(card*32+i+1))
-                offset.record = offsets[i]
 
         self.running.on=True
         thread = self.MDSWorker(self)
