@@ -256,7 +256,7 @@ class _ACQ2106_423ST(MDSplus.Device):
             trg  = 'hard'
         elif mode == 'soft':
             role = 'master'
-            trg  = 'hard'
+            trg  = 'soft'
         else: 
             role = mode.split(":")[0]
             trg  = mode.split(":")[1]
