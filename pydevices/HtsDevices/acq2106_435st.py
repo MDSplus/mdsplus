@@ -61,7 +61,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         {'path':':SITE','type':'numeric', 'value': 1, 'options':('no_write_shot',)},
         {'path':':COMMENT','type':'text', 'options':('no_write_shot',)},
         {'path':':TRIGGER','type':'numeric', 'value': 0.0, 'options':('no_write_shot',)},
-        {'path':':TRIG_MODE','type':'text', 'value': 'hard', 'options':('no_write_shot',)},
+        {'path':':TRIG_MODE','type':'text', 'value': 'master:hard', 'options':('no_write_shot',)},
         {'path':':EXT_CLOCK','type':'axis', 'options':('no_write_shot',)},
         {'path':':FREQ','type':'numeric', 'value': 16000, 'options':('no_write_shot',)},
         {'path':':HW_FILTER','type':'numeric', 'value':0, 'options':('no_write_shot',)},
@@ -298,7 +298,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             trg  = 'hard'
         elif mode == 'soft':
             role = 'master'
-            trg  = 'hard'
+            trg  = 'soft'
         else: 
             role = mode.split(":")[0]
             trg  = mode.split(":")[1]
