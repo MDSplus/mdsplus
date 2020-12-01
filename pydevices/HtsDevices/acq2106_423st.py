@@ -251,8 +251,15 @@ class _ACQ2106_423ST(MDSplus.Device):
             raise MDSplus.DevBAD_PARAMETER(" Sample rate should be greater or equal than 10kHz")
 
         mode = self.trig_mode.data()
-        role = mode.split(":")[0]
-        trg  = mode.split(":")[1]
+        if mode == 'hard':
+            role = 'master'
+            trg  = 'hard'
+        elif mode == 'soft':
+            role = 'master'
+            trg  = 'soft'
+        else: 
+            role = mode.split(":")[0]
+            trg  = mode.split(":")[1]
 
         print("Role is {} and {} trigger".format(role, trg))
 
