@@ -321,8 +321,8 @@ class _ACQ2106_435ST(MDSplus.Device):
                 print("WARNING: Hardware Filter samples must be in the range [0,32]. 0 => Disabled == 1")
                 self.slots[card].nacc = '1'
 
-            coeffs  =  map(float, self.slots[card].AI_CAL_ESLO.split(" ")[3:] )
-            offsets =  map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] )
+            coeffs  =  list(map(float, self.slots[card].AI_CAL_ESLO.split(" ")[3:] ))
+            offsets =  list(map(float, uut.s1.AI_CAL_EOFF.split(" ")[3:] ))
             for i in range(32):
                 coeff = self.__getattr__('input_%3.3d_coefficient'%(card*32+i+1))
                 coeff.record = coeffs[i]
