@@ -111,7 +111,6 @@ public class TREE_Test
 	{
 		try (TREE tree = new TREE(TREE_Test.mds, TREE_Test.expt, TREE_Test.shot, TREE.NEW))
 		{
-			tree.open();
 			tree.setVersioning(false, true);
 			System.out.println(tree.api.tdiExecute(tree, "TCL('SHOW VERSIONS')"));
 			// TODO: test verisoning ala

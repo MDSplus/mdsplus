@@ -142,28 +142,28 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	private String lastName;
 	private DefaultMutableTreeNode top;
 
-	public TreeView(final Mds mds, final String expt, final int shot, final int mode) throws MdsException
+	public TreeView(final Mds mds, final String expt, final int shot, final TREE.MODE mode) throws MdsException
 	{
-		this(new TREE(mds, expt, shot, mode));
+		this(new TREE(mds, expt, shot), mode);
 	}
 
-	public TreeView(final MdsView mdsview, final String expt, final int shot, final int mode) throws MdsException
+	public TreeView(final MdsView mdsview, final String expt, final int shot, final TREE.MODE mode) throws MdsException
 	{
 		this(mdsview.getMds(), expt, shot, mode);
 		this.addMouseListener(mdsview.treeman.getContextMenu());
 	}
 
-	public TreeView(final TREE tree) throws MdsException
+	public TreeView(final TREE tree, TREE.MODE mode) throws MdsException
 	{
 		super();
 		this.tree = tree;
 		try
 		{
-			this.tree.open();
+			this.tree.open(mode);
 		}
 		catch (final MdsException me)
 		{
-			if (tree.getMode() != TREE.EDITABLE || me.getStatus() != MdsException.TreeFOPENW)
+			if (mode != TREE.EDITABLE || me.getStatus() != MdsException.TreeFOPENW)
 				throw me;
 			final int n = JOptionPane.showConfirmDialog(JOptionPane.getRootFrame(), //
 					String.format("Tree %s cannot be opened in edit mode. Create new instead?", tree.expt), //
@@ -488,7 +488,7 @@ public final class TreeView extends JTree implements TreeSelectionListener, Data
 	public final Mds getMds()
 	{ return this.tree.getMds(); }
 
-	public final int getMode()
+	public final TREE.MODE getMode()
 	{ return this.tree.getMode(); }
 
 	public final int getShot()

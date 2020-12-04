@@ -253,7 +253,7 @@ public class MdsView extends JTabbedPane implements TransferEventListener
 		}
 	}
 
-	public final void openTree(final String expt, int shot, final int mode)
+	public final void openTree(final String expt, int shot, final TREE.MODE mode)
 	{
 		// first we need to check if the tree is already open
 		if (shot == 0)

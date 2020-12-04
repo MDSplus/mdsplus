@@ -26,9 +26,8 @@ public class Device implements Interface
 	public static void showDeviceSetup(String experiment, int shot, String path) throws Exception
 	{
 		final MdsIp mds = new MdsIp();
-		try (final TREE tree = new TREE(mds, experiment, shot))
+		try (final TREE tree = new TREE(mds, experiment, shot, TREE.NORMAL))
 		{
-			tree.open(TREE.NORMAL);
 			final Nid nid = tree.getNode(path);
 			final JDialog dialog = showDialog(null, nid, !tree.is_readonly());
 			if (dialog != null)
