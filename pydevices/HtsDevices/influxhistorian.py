@@ -24,7 +24,7 @@ class INFLUXHISTORIAN(MDSplus.Device):
     ]
 
     for i in range(DATA_COUNT):
-        name = ":DATA:D{:03d}".format(i + 1)
+        name = ":DATA:D%03d" % (i + 1,)
         parts.append({ 'path': name,                'type': 'signal',                       'options':('no_write_model', 'write_shot',) })
         parts.append({ 'path': name + ":WHERE",     'type': 'text',                         'options':('no_write_shot',) })
         parts.append({ 'path': name + ":SELECT",    'type': 'text',                         'options':('no_write_shot',) })
@@ -40,7 +40,7 @@ class INFLUXHISTORIAN(MDSplus.Device):
             return
 
         new_last_read = int(round(time.time() * 1000))
-        self.store(self.last_read.data(), new_last_read)            
+        self.store(self.last_read.data(), new_last_read)
         self.last_read.record = new_last_read
     TREND=trend
 
@@ -64,13 +64,13 @@ class INFLUXHISTORIAN(MDSplus.Device):
                 lines = cred_file.readlines()
                 
                 if len(lines) < 2:
-                    print("Failed to read credentials from file {}".format(self.credentials.data()))
+                    print("Failed to read credentials from file %s" % (self.credentials.data(),))
                 
                 username = lines[0].strip('\n')
                 password = lines[1].strip('\n')
 
         except IOError as e:
-            print("Failed to open credentials file {}".format(self.credentials.data()))
+            print("Failed to open credentials file %s" % (self.credentials.data(),))
 
         client = InfluxDBClient(address, port, username, password, self.database.data())
 
@@ -79,16 +79,16 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
         if start > 0:
             # Convert to nanosecond UNIX timestamp
-            startTimeQuery = 'time > {}'.format(start * 1000000)
+            startTimeQuery = 'time > %d' % (start * 1000000,)
 
         if end > 0:
             # Convert to nanosecond UNIX timestamp
-            endTimeQuery = 'time < {}'.format(end * 1000000)
+            endTimeQuery = 'time < %d' % (end * 1000000,)
 
         for i in range(self.DATA_COUNT):
             try:
-                node  = self.__getattr__("data_d{:03d}".format(i + 1))
-                where = self.__getattr__("data_d{:03d}_where".format(i + 1)).data()
+                node  = self.__getattr__("data_d%03d" % (i + 1,))
+                where = self.__getattr__("data_d%03d_where" % (i + 1,)).data()
                 if not node.on:
                     continue
 
@@ -105,9 +105,9 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
                 where = ''
                 if len(whereList) > 0:
-                    where = 'WHERE {}'.format(' AND '.join(whereList))
+                    where = 'WHERE %s' % (' AND '.join(whereList),)
                 
-                query = 'SELECT {} AS value FROM "{}" {}'.format(
+                query = 'SELECT %s AS value FROM "%s" %s' % (
                     node.SELECT.data(), 
                     self.series.data(), 
                     where
