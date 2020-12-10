@@ -54,7 +54,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <math.h>
 #include "filter.h"
 
-EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size, float *cut_off,
+EXPORT struct descriptor_xd *MdsFilter(float *in_data, double *in_dim, int *size, float *cut_off,
 				int *num_in_poles)
 {
   static struct descriptor_xd out_xd = { 0, DTYPE_DSC, CLASS_XD, 0, 0 };
@@ -65,17 +65,18 @@ EXPORT struct descriptor_xd *MdsFilter(float *in_data, float *in_dim, int *size,
   DESCRIPTOR_WINDOW(window_d, 0, 0, 0);
   DESCRIPTOR_RANGE(range_d, 0, 0, 0);
 
-  struct descriptor start_d = { sizeof(float), DTYPE_FLOAT, CLASS_S, 0 }, end_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0}, delta_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0}, start_idx_d = {
+  struct descriptor start_d = { sizeof(double), DTYPE_DOUBLE, CLASS_S, 0 }, end_d = {
+  sizeof(double), DTYPE_DOUBLE, CLASS_S, 0}, delta_d = {
+  sizeof(double), DTYPE_DOUBLE, CLASS_S, 0}, start_idx_d = {
   sizeof(int), DTYPE_L, CLASS_S, 0}, end_idx_d = {
   sizeof(int), DTYPE_L, CLASS_S, 0}, time_at_0_d = {
-  sizeof(float), DTYPE_FLOAT, CLASS_S, 0};
+  sizeof(double), DTYPE_DOUBLE, CLASS_S, 0};
 
   int num_samples, num_poles, start_idx, end_idx, i;
-  float fc, delta, dummy, *filtered_data, start, end, time_at_0;
-  float phs_steep;
-  float delay = 0.0f;
+  float fc, dummy, *filtered_data;
+  double delta, start, end, time_at_0;
+  double phs_steep;
+  double delay = 0.0;
   static Filter *filter;
 
   if (*num_in_poles > 0)
