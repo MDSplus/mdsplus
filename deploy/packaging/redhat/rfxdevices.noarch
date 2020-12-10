@@ -769,12 +769,14 @@
 ./usr/local/mdsplus/tdi/RfxDevices/bRadCheck.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadField2D.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bRadMax.fun
+./usr/local/mdsplus/tdi/RfxDevices/baseline_segmented.fun
 ./usr/local/mdsplus/tdi/RfxDevices/bfm_ftheta.fun
 ./usr/local/mdsplus/tdi/RfxDevices/calcrms.fun
 ./usr/local/mdsplus/tdi/RfxDevices/calibTCN_0_600.fun
 ./usr/local/mdsplus/tdi/RfxDevices/check_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/computeTF_i2t.fun
 ./usr/local/mdsplus/tdi/RfxDevices/currDate2ShotNum.fun
+./usr/local/mdsplus/tdi/RfxDevices/dateToEpicsQW.fun
 ./usr/local/mdsplus/tdi/RfxDevices/diag_img_finish_pulse.fun
 ./usr/local/mdsplus/tdi/RfxDevices/diag_img_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/diag_img_nsb.fun
@@ -822,6 +824,8 @@
 ./usr/local/mdsplus/tdi/RfxDevices/shotsDate.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigBit.fun
 ./usr/local/mdsplus/tdi/RfxDevices/sigMean.fun
+./usr/local/mdsplus/tdi/RfxDevices/spiderBurstClock.fun
+./usr/local/mdsplus/tdi/RfxDevices/spiderClockSegment.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spider_finish_pulse.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spider_init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/spider_pon.fun
