@@ -6,11 +6,17 @@ public fun spider_init()
 /* Pulse file creation in ready state */
 
     _shotid = _shotid + 1; 
+
+/*************************************
     tcl('set tree spider');
     tcl('create pulse '//_shotid);
     tcl('set current spider ' //_shotid);
 
-/**************************************/
+**************************************/
+
+    tcl('dispatch/command/server=soserver.nbtf:8001 set tree spider ');
+    tcl('dispatch/command/server=soserver.nbtf:8001 create pulse ' // _shotid);
+    tcl('dispatch/command/server=soserver.nbtf:8001 set current ' // _shotid);
 
     tcl('dispatch/command/server=soserver.nbtf:8001 set tree spider ' // _shotid);
     tcl('dispatch/command/server=soserver.nbtf:8001 dispatch/build');

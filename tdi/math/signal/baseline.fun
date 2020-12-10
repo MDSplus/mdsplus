@@ -1,6 +1,6 @@
 public fun baseline(in _sig, optional in _start, optional in _end)
 {
-
+        SetTimeContext(*,*,*);
 	_x = data(dim_of(_sig));
  	_y = data(_sig);
 
@@ -26,7 +26,7 @@ public fun baseline(in _sig, optional in _start, optional in _end)
 			_sum = _sum + _y[_i];
 		*/
 		
-		_sum = sum(_y[0.._points-1]);
+		_sum = sum(_y[ 0 .. _points-1]);
 		_offset = _sum / _points;
 			
 		_offset = _sum / _points;
