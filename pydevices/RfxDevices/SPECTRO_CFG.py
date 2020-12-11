@@ -358,7 +358,7 @@ class SPECTRO_CFG(Device):
                 if label_arr[i] == 'None' :
                     continue
 
-	        if len(spec_arr[i].strip()) == 0 :
+                if len(spec_arr[i].strip()) == 0 :
                     print(self.bcolors.OKBLUE + 'Info LoS %d (%s) acquisition not configured '%(i+1, label_arr[i]) + self.bcolors.ENDC)
                     continue
 
@@ -424,6 +424,6 @@ class SPECTRO_CFG(Device):
                 else:
                     Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid definition of spectrometer/front-end device (%s) for LoS %d (%s)'%(spec_arr[i], i+1, label_arr[i]))
             except Exception as e:
-                print str(e)
+                print (str(e))
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error definition of spectrometer/front-end device (%s) for LoS %d (%s) : %s'%(spec_arr[i], i+1, label_arr[i], str(e))) 
         return 1
