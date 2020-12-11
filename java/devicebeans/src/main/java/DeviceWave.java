@@ -821,7 +821,7 @@ public class DeviceWave extends DeviceComponent
 			else
 				retExpr += vals[i];
 		}
-		return retExpr + "]";
+		return "[" + retExpr + "]";
 	}
 
 	@Override

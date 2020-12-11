@@ -54,6 +54,7 @@ struct rpadc_configuration
 
 
 static bool stopped = false;
+static bool isStream = false;
 
 static int deviceFd = 0;
 
@@ -363,6 +364,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
     {
 	blockSamples = segmentSamples = inSegmentSamples;
 	blocksInSegment = 1;
+        isStream = true;
     }
     else if(single)
     {
@@ -417,7 +419,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
 		if(stopped) //May happen when block readout has terminated or in the middle of readout
 		{
 std::cout << "STOPPED!!!!!!!" << std::endl;
-		    if (!(currBlock == 0 && currSample == 0))//if any data has been acquired
+		    if (!(currBlock == 0 && currSample == 0)&&!isStream)//if any data has been acquired
 		    {
 			if(rb > 0)
 			{

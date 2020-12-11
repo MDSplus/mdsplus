@@ -42,9 +42,38 @@ class SPECTRO_CFG(Device):
         parts.append({'path':'.LOS_%03d:CALIB_FLAG'%(i+1), 'type':'text'})
         parts.append({'path':'.LOS_%03d:SPECTRA_REF'%(i+1), 'type':'signal'})
 
+    for i in range(0,180):
+        parts.append({'path':'.LOS_%03d:PHOTODIODE'%(i+1), 'type':'signal'})
+
+
     del(i)
 
+    class bcolors:
+        HEADER = '\033[95m'
+        OKBLUE = '\033[94m'
+        OKCYAN = '\033[96m'
+        OKGREEN = '\033[92m'
+        WARNING = '\033[93m'
+        FAIL = '\033[91m'
+        ENDC = '\033[0m'
+        BOLD = '\033[1m'
+        UNDERLINE = '\033[4m'
+
     LOS_NUM = 180
+
+    def getDevice(self, n):
+        out = None
+        if n.getUsage() == 'DEVICE':
+            return n
+        if n.getUsage() == 'SUBTREE' :
+            return None
+        return self.getDevice(n.getParent())
+
+    def getDeviceName(self, n):
+        return self.getDevice(n).getData().getDescs()[1]
+
+
+      
 
     def write_los_tag(self):
 
@@ -323,25 +352,78 @@ class SPECTRO_CFG(Device):
             except Exception as e :
                 Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error writing calib flag field on LoS %s '%(i+1) + str(e) )
                 raise mdsExceptions.TclFAILED_ESSENTIAL
+ 
 
-            #Set link LOS_xxx spectra to ROI_xx spectrometer
             try:
-               #Reset current link
-       
-               getattr(self, 'los_%03d_spectra_ref'%(i+1)).deleteData()
-               if len(spec_arr[i]) > 0 and not (spec_arr[i] in spectrometer_list) :
-                   for r in range(1,25):
-                       self.__getattr__('\\%s.ROIS.ROI_%02d:LOS_PATH'%(spec_arr[i],r)).deleteData()
-                   spectrometer_list.append(spec_arr[i])
+                if label_arr[i] == 'None' :
+                    continue
+
+                if len(spec_arr[i].strip()) == 0 :
+                    print(self.bcolors.OKBLUE + 'Info LoS %d (%s) acquisition not configured '%(i+1, label_arr[i]) + self.bcolors.ENDC)
+                    continue
+
+
+                if self.getDeviceName(self.__getattr__('\\%s'%(spec_arr[i]))) == 'PI_SCT320':
+                    #Set link LOS_xxx spectra to ROI_xx spectrometer
+                    try:
+                       #Reset current link
+                       getattr(self, 'los_%03d_spectra_ref'%(i+1)).deleteData()
+                       if len(spec_arr[i]) > 0 and not (spec_arr[i] in spectrometer_list) :
+                           for r in range(1,25):
+                               self.__getattr__('\\%s.ROIS.ROI_%02d:LOS_PATH'%(spec_arr[i],r)).deleteData()
+                           spectrometer_list.append(spec_arr[i])#Register spectrometer already reset
                       
-               if roi_arr[i] == -1 :
-                   continue
+                       if roi_arr[i] == -1 :
+                           continue
 
-               spectraRoiNode = self.__getattr__('\\%s.ROIS.ROI_%02d:SPECTRA'%(spec_arr[i], roi_arr[i]))
-               getattr(self, 'los_%03d_spectra_ref'%(i+1)).putData(spectraRoiNode)
-               self.__getattr__('\\%s.ROIS.ROI_%02d:LOS_PATH'%(spec_arr[i],roi_arr[i])).putData(label_arr[i])
+                       spectraRoiNode = self.__getattr__('\\%s.ROIS.ROI_%02d:SPECTRA'%(spec_arr[i], roi_arr[i]))
+                       getattr(self, 'los_%03d_spectra_ref'%(i+1)).putData(spectraRoiNode)
+                       self.__getattr__('\\%s.ROIS.ROI_%02d:LOS_PATH'%(spec_arr[i],roi_arr[i])).putData(label_arr[i])
+
+                       print(self.bcolors.OKGREEN + 'Info LoS %d (%s) SPECTRO acquisition configured on Spectrometer %s Roi %d'%(i+1, label_arr[i], spec_arr[i],roi_arr[i]) + self.bcolors.ENDC)
+
+                    except Exception as e:
+                       Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting link from LoS %d (%s) to ROI %d on spectrometer %s : %s'%(i+1, label_arr[i],roi_arr[i],spec_arr[i],str(e)))
+
+                elif  self.getDeviceName(self.__getattr__('\\%s'%(spec_arr[i]))) == 'PLFE': #spec_arr for photodiode is the Front End device BOARD
+                    #Set link LOS_xxx photodiode to Front End
+                    try:
+                       #Reset photodiode acquisitio channel link
+                       getattr(self, 'los_%03d_photodiode'%(i+1)).deleteData()
+                      
+                       #ROI for phothodiode is the Front End Board channel and adc channel coded as NXX 
+                       #where N is the BOARD channel 1 or 2 and XX is adc channel from 1 to 32 
+                       if roi_arr[i] == -1 :
+                           continue
+
+                       feBoardIdx = int(spec_arr[i][-1:]) #From FE board path retrives FE BOARD index form 1 to 6
+                       if feBoardIdx < 1 or feBoardIdx > 6:
+                           raise Exception('Invalid board index, valid values from 1 to 6')
+                       code = int(roi_arr[i]) 
+
+                       feBoardCh = code/100 #ROI for front end identify the FE board channl 1 or 2
+                       if feBoardCh != 1 and feBoardCh != 2:
+                           raise Exception('Invalid board channel, valid values 1 or 2')
+
+                       adcChan = code - feBoardCh*100
+                       if adcChan < 1 or adcChan > 32:
+                           raise Exception('Invalid adc channel number %d for adc device define in front end device, valid values are from 1 to 32'%(adcChan))
+
+                       fePath = self.getDevice(self.__getattr__('\\%s'%(spec_arr[i]))).getMinPath()
+                       adcPath = (self.__getattr__('%s:ADC'%(fePath))).getData().getMinPath()
+
+
+                       expr = Data.compile('%s.CHANNEL_%d:DATA / (%s.BOARD_%02d.SETUP.CHANNEL_%02d.WR:GAIN * (%s.BOARD_%02d.SETUP.CHANNEL_%02d.WR:TRANS == 0 ? 1 : 100))'%(adcPath, adcChan, fePath, feBoardIdx , feBoardCh , fePath, feBoardIdx, feBoardCh))
+
+                       getattr(self, 'los_%03d_photodiode'%(i+1)).putData(expr)
+
+                       print(self.bcolors.OKGREEN + 'Info LoS %d (%s) PHOTODIODE acquisition configured on Adc %s ch %d Front End %s Board %d Ch %d'%(i+1, label_arr[i], adcPath, adcChan, fePath, feBoardIdx, feBoardCh ) + self.bcolors.ENDC)
+                   
+                    except Exception as e:
+                        Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting link from LoS %d (%s) to front end board %s : %s'%(i+1, label_arr[i],spec_arr[i],str(e)))
+                else:
+                    Data.execute('DevLogErr($1,$2)', self.getNid(), 'Invalid definition of spectrometer/front-end device (%s) for LoS %d (%s)'%(spec_arr[i], i+1, label_arr[i]))
             except Exception as e:
-                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error setting link from LoS %d (%s) to ROI %d on spectrometer %s : %s'%(i+1, label_arr[i],roi_arr[i],spec_arr[i],str(e)))
-
-
+                print (str(e))
+                Data.execute('DevLogErr($1,$2)', self.getNid(), 'Error definition of spectrometer/front-end device (%s) for LoS %d (%s) : %s'%(spec_arr[i], i+1, label_arr[i], str(e))) 
         return 1
