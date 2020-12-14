@@ -172,7 +172,7 @@ depend:
 	  cd $${dir}; $${MAKE:=make} depend > /dev/null 2> /dev/null; cd $$cdir;\
 	done
 
-MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh include desktop pixmaps matlab php epics xml nodejs python/MDSplus
+MISC_PARTS = tdi pydevices idl trees setup.sh setup.csh include desktop pixmaps matlab php epics xml nodejs python
 
 install_DIRS = $(addprefix install_, $(PARTS))
 $(install_DIRS):
@@ -184,7 +184,6 @@ install: $(install_DIRS)
 	$(INSTALL) ChangeLog $(prefix)/
 	$(MKDIR_P) $(prefix)/local/tdi
 	$(MKDIR_P) $(prefix)/java
-	$(MKDIR_P) $(prefix)/python/MDSplus
 	- find $(prefix)/java -name '*.class' -delete #### No need to include class files
 	tar -C ${top_srcdir} \
 		--exclude='.gitignore' \

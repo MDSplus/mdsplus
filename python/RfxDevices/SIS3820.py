@@ -1,0 +1,1 @@
+../../pydevices/struck_innovative_systeme/SIS3820.py

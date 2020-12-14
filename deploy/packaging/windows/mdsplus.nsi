@@ -294,52 +294,19 @@ SectionGroup "!core" core
 SectionGroupEnd ; core
 
 SectionGroup devices devices
- SectionGroup tdi tdidevices
-  Section KBSI
+ Section tdi tdidevices
 	SectionIn 2
 	SetOutPath "$INSTDIR\tdi"
 	File /r tdi/KbsiDevices
-  SectionEnd ; KBSI
-  Section MIT
-	SectionIn 2
-	SetOutPath "$INSTDIR\tdi"
 	File /r tdi/MitDevices
-  SectionEnd ; MIT
-  Section RFX
-	SectionIn 2
-	SetOutPath "$INSTDIR\tdi"
 	File /r tdi/RfxDevices
-  SectionEnd ; RFX
- SectionGroupEnd ; tdi
- SectionGroup pydevices pydevices
-  Section HTS pydevices_hts
+ SectionEnd ; tdi
+ Section python pydevices
 	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\HtsDevices"
-	File /r pydevices/HtsDevices/*
-  SectionEnd ; HTS
-  Section MIT pydevices_mit
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\MitDevices"
-	File /r pydevices/MitDevices/*
-	File /workspace/releasebld/64/pydevices/MitDevices/_version.py
-  SectionEnd ; MIT
-  Section RFX pydevices_rfx
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\RfxDevices"
-	File /r pydevices/RfxDevices/*
-	File /workspace/releasebld/64/pydevices/RfxDevices/_version.py
-  SectionEnd ; RFX
-  Section W7X pydevices_w7x
-	SectionIn 2
-	SetOutPath "$INSTDIR\pydevices\W7xDevices"
-	File /r pydevices/W7xDevices/*
-	File /workspace/releasebld/64/pydevices/W7xDevices/_version.py
-  SectionEnd ; W7X
-  Section "setup MDS_PYDEVICE_PATH" pydevpath
-	SectionIn 2 RO
+	SetOutPath "$INSTDIR\pydevices"
+	File /r pydevices/*
 	${AddToEnv} "MDS_PYDEVICE_PATH" "${MDS_PYDEVICE_PATH}"
-  SectionEnd ; pydevpath
- SectionGroupEnd ; pydevices
+ SectionEnd ; python
 SectionGroupEnd ; devices
 
 SectionGroup "site specifics"
@@ -502,8 +469,7 @@ SectionEnd
 	!insertmacro MUI_DESCRIPTION_TEXT ${appendpath}	"Add '.\bin*' to user's PATH env."
 	!insertmacro MUI_DESCRIPTION_TEXT ${devices}	"Copy device classes implemented in tdi or as pydevices"
 	!insertmacro MUI_DESCRIPTION_TEXT ${tdidevices}	"Copy device classes implemented in tdi to '.\tdi'"
-	!insertmacro MUI_DESCRIPTION_TEXT ${pydevices}	"Copy python device classes to '.\pydevices'"
-	!insertmacro MUI_DESCRIPTION_TEXT ${pydevpath}	"Add '.\pydevices' to MDS_PYDEVICE_PATH env."
+	!insertmacro MUI_DESCRIPTION_TEXT ${pydevices}	"Copy python device classes to '.\pydevices' and add to MDS_PYDEVICE_PATH env."
 	!insertmacro MUI_DESCRIPTION_TEXT ${d3d}	"Copy site-specific tdi routines to '.\tdi\d3d'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${java}	"Copy jTraverser, jTraverser2, jScope, etc. to '.\java\classes'"
 	!insertmacro MUI_DESCRIPTION_TEXT ${epics}	"Copy EPICS Plugin to './epics'"
@@ -554,26 +520,6 @@ Function .onSelChange
 	${OrIf}	  $0 == ${pydevices}
 		${If}   $0 is ${SF_SELECTED}
 		${OrIf} $0 is ${SF_PSELECTED}
-			${ClearSectionFlag} ${pydevpath} ${SF_RO}
-			${SelectSection}    ${pydevpath}
-			${SelectSection}    ${python_cp}
-		${Else}
-			Goto lock_pydevpath
-		${EndIf}
-	${ElseIf} $0 == ${pydevices_hts}
-	${OrIf}   $0 == ${pydevices_mit}
-	${OrIf}   $0 == ${pydevices_rfx}
-	${OrIf}   $0 == ${pydevices_w7x}
-		${IfNot}    $R0 is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_hts} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_mit} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_rfx} is ${SF_SELECTED}
-		${AndIfNot} ${pydevices_w7x} is ${SF_SELECTED}
-			lock_pydevpath:
-			${UnselectSection}  ${pydevpath}
-			${SetSectionFlag}   ${pydevpath} ${SF_RO}
-		${Else} ;unlock_pydevpath:
-			${ClearSectionFlag} ${pydevpath} ${SF_RO}
 			${SelectSection}    ${python_cp}
 		${EndIf}
 	${ElseIf} $0 == ${python_mod}

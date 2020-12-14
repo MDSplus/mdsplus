@@ -98,17 +98,13 @@ class PhantomExcNotTriggered(PhantomExc):
     pass
 
 
-class phantom(object):
-    """
-    Core n-etwork c-onnection to the phantom appliance.
+class phantom:
+    """Core n-etwork c-onnection to the phantom appliance.
+
     This class provides the methods for sending and receiving information/data
     through a network socket. All communication with the D-TACQ devices will
     require this communication layer
     """
-
-    i1e9 = int(1e9)
-    i1e6 = int(1e6)
-    i1e3 = int(1e3)
     _host = None
     flags_list = (
         ('PRE', 'P'),
@@ -130,7 +126,7 @@ class phantom(object):
 
     @staticmethod
     def find_cameras(bc='<broadcast>', src="", timeout=3):
-        """phantom.find_cameras("192.168.44.255")"""
+        """phantom.find_cameras("<broadcast>")"""
         def gen(server):
             while True:
                 try:
@@ -340,6 +336,35 @@ class phantom(object):
             raise PhantomExcConnect
         return sock
 
+    @cached_property
+    def sock(self): return self.new_socket()
+    @property
+    def _flushed_socked(self):
+        sock = self.sock
+        sock.settimeout(0)
+        try:
+            while sock.recv(0x400):
+                continue
+            else:
+                del(self.sock)
+        except Exception:
+            sock.settimeout(10)
+            return sock
+        else:
+            return self.sock
+
+    def _send_command(self, *cmds):
+        sock = self._flushed_socked
+        try:
+            sock.sendall(cmds[0])  # sends the command
+        except Exception:
+            del(self.sock)
+            sock = self.sock
+            sock.sendall(cmds[0])
+        for cmd in cmds[1:]:
+            sock.sendall(cmd)
+        return sock
+
     def __call__(self, cmd):
         def recvstr(sock):
             sock.settimeout(5)
@@ -354,13 +379,9 @@ class phantom(object):
                 pass
             finally:
                 sock.settimeout(5)
-        if select.select([self.sock], [], [], 0)[0]:
-            raise PhantomExc("Error: RecvBuffer not empty")
-        sock = self.sock
         if debug & 8:
             dprint('cmd: %s' % s(cmd))
-        sock.sendall(b(cmd))  # sends the command
-        sock.sendall(b'\n')
+        sock = self._send_command(b(cmd), b'\n')
         try:
             res = b''.join(recvstr(sock))
         except socket.timeout:
@@ -374,8 +395,7 @@ class phantom(object):
             cmd = b("get %s\n" % name)
             if debug & 8:
                 dprint("send: %s", cmd)
-            self.sock.send(cmd)
-            ans = self.Parser(self.sock).get_unit()
+            ans = self.Parser(self._send_command(cmd)).get_unit()
             if len(ans) == 1:
                 for value in ans.values():
                     return value
@@ -484,8 +504,6 @@ class phantom(object):
     # def get_focus(self): return self('focus')  # 5.36
     # def lens_cmd(self, cmd): self('lens "%s"' % cmd)  # 5.37
 
-    @cached_property
-    def sock(self): return self.new_socket()
     def get_info(self): return self.get('info')  # 4.2
     def get_cam(self): return self.get('cam')  # 4.4
     def get_auto(self): return self.get('auto')  # 4.5
@@ -918,8 +936,7 @@ else:
 
     def init(self):
         """Run the INIT action."""
-        if self.debug:
-            dprint("started init")
+        self.dprint(1, "started init")
         w, h = self._resolution
         try:
             self.lib.init(
@@ -933,8 +950,7 @@ else:
 
     def arm(self):
         """Run the ARM action."""
-        if self.debug:
-            print("started arm")
+        self.dprint(1, "started arm")
         pers = self.persistent
         if pers is not None:
             stream = pers.get('stream', None)
@@ -953,8 +969,7 @@ else:
 
     def soft_trigger(self):
         """Run the SOFT_TRIGGER action."""
-        if self.debug:
-            dprint("started soft_trigger")
+        self.dprint(1, "started soft_trigger")
         try:
             self.lib.soft_trigger()
         except PhantomExcConnect:
@@ -966,6 +981,7 @@ else:
 
     def store(self):
         """Run the STORE action."""
+        self.dprint(1, "started store")
         pers = self.persistent
         if pers is None:
             raise MDSplus.DevINV_SETUP
@@ -991,6 +1007,7 @@ else:
 
     def deinit(self):
         """Run the DEINIT action."""
+        self.dprint(1, "started deinit")
         pers = self.persistent
         if pers is not None:
             try:
@@ -1003,10 +1020,10 @@ else:
                 self.persistent = None
 
 
-def test_single_cine():
+def test_single_cine(host):
     """Test basic functions and single cine capture."""
-    # print(phantom.find_cameras("192.168.44.255"))
-    p = phantom("192.168.44.255")
+    # print(phantom.find_cameras(<broadcast>))
+    p = phantom(host)
     p.init(100, 1000, 100000, 128, 80)
     rate = p.defc_rate
     assert rate == 1000, rate
@@ -1029,9 +1046,9 @@ def test_single_cine():
         imshow(img[0][::-1], cmap='gray', vmax=1 << 12)
 
 
-def test_multi_cine():
+def test_multi_cine(host):
     """Test multi cine capture."""
-    p = phantom("192.168.44.255")
+    p = phantom(host)
     p.init(1000, 100000, 100000, 1280, 800)
     num_cine = p.arm()
     trg = p.sync_time() * p.i1e9
@@ -1048,7 +1065,7 @@ def test_multi_cine():
 
 
 if MDSplus is not None:
-    def testmds(expt='test', shot=1):
+    def testmds(host, expt='test', shot=1):
         """Test MDSplus device with multi cine, i.e. multiple trigger."""
         import gc
         gc.collect(2)
@@ -1056,7 +1073,7 @@ if MDSplus is not None:
         # MDSplus.setenv("MDS_PYDEVICE_PATH", os.path.dirname(__file__))
         with MDSplus.Tree(expt, -1, 'NEW') as tree:
             dev = PHANTOM.Add(tree, 'PHANTOM')
-            dev.host.record = "192.168.44.255"
+            dev.host.record = host
             tree.write()
         tree.open()
         try:
@@ -1081,8 +1098,14 @@ if MDSplus is not None:
             MDSplus.Device.debug = old
             dprint("testmds done")
 
-if __name__ == "__main__":
-    test_single_cine()
-    test_multi_cine()
+
+def main(*args):
+    args = args or sys.argv[1:] or ("PHANTOM",)
+    test_single_cine(args[0])
+    test_multi_cine(args[0])
     if MDSplus is not None:
-        testmds(expt='test', shot=1)
+        testmds(*args)
+
+
+if __name__ == "__main__":
+    main()

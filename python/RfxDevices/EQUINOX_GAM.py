@@ -1,0 +1,1 @@
+../../pydevices/marte2/EQUINOX_GAM.py
