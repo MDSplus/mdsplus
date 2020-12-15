@@ -7,24 +7,26 @@ class INFLUXHISTORIAN(MDSplus.Device):
     DATA_COUNT = 500
 
     parts = [
-        { 'path': ':ADDRESS',       'type': 'text',                                      'options': ('no_write_shot',) },
-        { 'path': ':DATABASE',      'type': 'text',                                      'options': ('no_write_shot',) },
-        { 'path': ':SERIES',        'type': 'text',                                      'options': ('no_write_shot',) },
-        { 'path': ':CREDENTIALS',   'type': 'text',     'value': '/path/to/credentials', 'options': ('write_model',) },
-        { 'path': ':DATA_EVENT',    'type': 'text',     'value': 'INFLUXDB_TREND',       'options': ('no_write_shot',) },
-        { 'path': ':START_TIME',    'type': 'numeric',                                   'options': ('write_model', 'write_shot',) },
-        { 'path': ':LAST_READ',     'type': 'numeric',  'valueExpr': 'head.start_time',  'options': ('write_model', 'write_shot',) },
+        { 'path': ':ADDRESS',       'type': 'text',                                                 'options': ('no_write_shot',) },
+        { 'path': ':DATABASE',      'type': 'text',                                                 'options': ('no_write_shot',) },
+        { 'path': ':SERIES',        'type': 'text',                                                 'options': ('no_write_shot',) },
+        { 'path': ':CREDENTIALS',   'type': 'text',     'value': '/path/to/credentials',            'options': ('write_model',) },
+        { 'path': ':DATA_EVENT',    'type': 'text',     'value': 'INFLUXDB_TREND',                  'options': ('no_write_shot',) },
+        { 'path': ':START_TIME',    'type': 'numeric',                                              'options': ('write_model', 'write_shot',) },
+        { 'path': ':LAST_READ',     'type': 'numeric',  'valueExpr': 'head.start_time',             'options': ('write_model', 'write_shot',) },
         { 'path': ':DATA',          'type': 'text' },
     ]
 
     for i in range(DATA_COUNT):
-        name = ":DATA:D%03d" % (i+1,)
-        parts.extend([
-            {'path': name,             'type': 'signal', 'options':('no_write_model', 'write_shot',) },
-            {'path': name + ":WHERE",  'type': 'text',   'options':('no_write_shot',) },
-            {'path': name + ":SELECT", 'type': 'text',   'options':('no_write_shot',) },
-        ])
+        name = ":DATA:D%03d" % (i + 1,)
+        parts.append({ 'path': name,                'type': 'signal',                       'options':('no_write_model', 'write_shot',) })
+        parts.append({ 'path': name + ":WHERE",     'type': 'text',                         'options':('no_write_shot',) })
+        parts.append({ 'path': name + ":SELECT",    'type': 'text',                         'options':('no_write_shot',) })
+
     def debugging(self):
+        import os
+        if self.debug == None:
+            self.debug = os.getenv("DEBUG_DEVICES")
         return self.debug
 
     def trend(self):
@@ -43,8 +45,9 @@ class INFLUXHISTORIAN(MDSplus.Device):
         try:
             from influxdb import InfluxDBClient
         except:
-            raise Exception("You must install the `influxdb` python package to use the `influxhistorian` device class")
-
+            print("You must install the `influxdb` python package to use the `influxhistorian` device class")
+            exit(1)
+        
         address = self.address.data()
         parts = address.split(":", 2)
 
@@ -59,10 +62,10 @@ class INFLUXHISTORIAN(MDSplus.Device):
         try:
             with open(self.credentials.data()) as cred_file:
                 lines = cred_file.readlines()
-
+                
                 if len(lines) < 2:
                     print("Failed to read credentials from file %s" % (self.credentials.data(),))
-
+                
                 username = lines[0].strip('\n')
                 password = lines[1].strip('\n')
 
@@ -84,8 +87,8 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
         for i in range(self.DATA_COUNT):
             try:
-                node  = self.__getattr__("data_d%03d" % (i+1,))
-                where = self.__getattr__("data_d%03d_where" % (i+1,)).data()
+                node  = self.__getattr__("data_d%03d" % (i + 1,))
+                where = self.__getattr__("data_d%03d_where" % (i + 1,)).data()
                 if not node.on:
                     continue
 
@@ -102,11 +105,11 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
                 where = ''
                 if len(whereList) > 0:
-                    where = 'WHERE %s'.format(' AND '.join(whereList))
-
-                query = 'SELECT %s AS value FROM "%s" %s'.format(
-                    node.SELECT.data(),
-                    self.series.data(),
+                    where = 'WHERE %s' % (' AND '.join(whereList),)
+                
+                query = 'SELECT %s AS value FROM "%s" %s' % (
+                    node.SELECT.data(), 
+                    self.series.data(), 
                     where
                 )
 
@@ -115,9 +118,28 @@ class INFLUXHISTORIAN(MDSplus.Device):
 
                 result = client.query(query, params={'epoch': 'ms'})
 
-                for row in result.get_points():
-                    node.putRow(1000, MDSplus.Float32(float(row['value'])), MDSplus.Uint64(row['time']))
+                if self.debugging():
+                    print("Query returned")
 
+                data = list(result.get_points())
+
+                valueData = [None] * len(data)
+                timeData = [None] * len(data)
+
+                i = 0
+                for row in data:
+                    valueData[i] = float(row['value'])
+                    timeData[i] = row['time']
+                    i += 1
+
+                values = MDSplus.Float32Array(valueData)
+                times = MDSplus.Uint64Array(timeData)
+
+                node.makeTimestampedSegment(times, values)
+
+                if self.debugging():
+                    print("MDSplus I/O complete")
+                
             except MDSplus.TreeNODATA:
                 pass
             except Exception as e:
