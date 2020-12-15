@@ -69,9 +69,12 @@ class ACQ2106_WRTD(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
 
-        msgs  = str(newmsg)
-        wrmgs = msgs.split(":")
-        print("Messages are {} and {}".format(str(wrmgs[0]), str(wrmgs[1])))
+        if ":" in newmsg:
+            msgs  = str(newmsg)
+            wrmgs = msgs.split(":")
+            print("Messages are {} and {}".format(str(wrmgs[0]), str(wrmgs[1])))
+        else:
+            raise Exception("Argument needs to be of the following format: [d0msg1, d0msg2,]:[d1msg1, d1msg2,]")
 
         #Record the state of the WRTD environment:
         self.wr_init_wrtd_rx_m.record   = str(wrmgs[0]) # Matches for WRTT0
