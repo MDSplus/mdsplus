@@ -89,6 +89,9 @@ class ACQ2106_WRTD(MDSplus.Device):
         print("WRTD_ID {}".format(str(self.wr_init_wrtd_id.data())))
         uut.cC.WRTD_ID = str(self.wr_init_wrtd_id.data())
 
+        # Sets WR "safe time for broadcasts" the message
+        uut.cC.WRTD_DELTA_NS=self.wr_init_wrtd_dns.data()
+
         # Receiver:
         # Turn on RX
         uut.cC.WRTD_RX = int(self.wr_init_wrtd_rx.data())
