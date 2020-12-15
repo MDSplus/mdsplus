@@ -23,7 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-import time
 import threading
 
 class ACQ2106_WRTD(MDSplus.Device):
@@ -47,10 +46,9 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},       # uut.cC.WRTD_TICKNS: For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
+            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},       # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
             {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
             {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},        # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
-            {'path':':WR_INIT:WRTD_RTP',    'type':'numeric', 'value': 15, 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX_DTP', 'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
@@ -62,7 +60,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':RUNNING',     'type':'numeric', 'options':('no_write_model',)},
         {'path':':LOG_OUTPUT',  'type':'text',    'options':('no_write_model', 'write_once', 'write_shot',)},
         {'path':':INIT_ACTION', 'type':'action',  'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 'options':('no_write_shot',)},
-        {'path':':STOP_ACTION', 'type':'action',  'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",'options':('no_write_shot',)},
         ]
 
     def init(self, newmsg=''):
@@ -137,7 +134,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             print('Message does not match either of the WRTTs available')
             self.running.on = False
 
-        uut.s0.wrtd_tx_immediate = message
+        uut.cC.wrtd_txi = message
 
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
 
