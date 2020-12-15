@@ -46,8 +46,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_SRC',    'type':'text',    'value': 'FPTRG', 'options':('write_shot',)},
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
-        {'path':':WRTT0_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
-        {'path':':WRTT1_MSG',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},       # uut.cC.WRTD_TICKNS: For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
             {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
@@ -74,9 +72,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         msgs  = str(newmsg)
         wrmgs = msgs.split(":")
         print("Messages are {} and {}".format(str(wrmgs[0]), str(wrmgs[1])))
-
-        self.wrtt0_msg.record = str(wrmgs[0])
-        self.wrtt1_msg.record = str(wrmgs[1])
 
         #Record the state of the WRTD environment:
         self.wr_init_wrtd_rx_m.record   = str(wrmgs[0]) # Matches for WRTT0
