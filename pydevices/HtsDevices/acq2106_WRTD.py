@@ -75,15 +75,6 @@ class ACQ2106_WRTD(MDSplus.Device):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
 
-        # WR TRIGGER SOURCE:
-        print("WR TRG Source {}".format(str(self.trig_src.data())))
-        uut.s0.WR_TRG_DX = str(self.trig_src.data())
-
-        # Global WR settings:
-        # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI triggered.
-        print("WRTD_ID {}".format(str(self.wr_init_wrtd_id.data())))
-        uut.s11.WRTD_ID = str(self.wr_init_wrtd_id.data())
-
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.s11.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
 
@@ -128,8 +119,10 @@ class ACQ2106_WRTD(MDSplus.Device):
             self.running.on = False
 
         if not message.strip():
-            # Set trigger input:
-            print('Trigger has no message. Setting external trigger source. Waiting for trigger...')
+            # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI is used to trigger.
+            print("WRTD_ID {} will be used. Waiting for trigger...".format(str(self.wr_init_wrtd_id.data())))
+            uut.s11.WRTD_ID = str(self.wr_init_wrtd_id.data())
+            # Set trigger input (FTTRG or HDMI)
             uut.s0.WR_TRG_DX = str(self.trig_src.data())
         else:
             # send immediate WRTD message
