@@ -46,17 +46,17 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
-            # ns per tick. (tick size in ns). uut.11.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
+            # ns per tick. (tick size in ns). uut.s11.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
             {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)}, 
-            # 50msec - our "safe time for broadcast". From uut.11.WRTD_DELTA_NS
+            # 50msec - our "safe time for broadcast". From uut.s11.WRTD_DELTA_NS
             {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, 
-            # uut.11.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
+            # uut.s11.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
             {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},        
-            # uut.11.WRTD_RX_MATCHES: match any of these triggers to initiate WRTT0
+            # uut.s11.WRTD_RX_MATCHES: match any of these triggers to initiate WRTT0
             {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
-            # uut.11.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
+            # uut.s11.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
             {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
-            # From uut.11.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
+            # From uut.s11.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
             # “Double Tap, which is:
             # 1. WRTT0
             # 2. Delay WRTD_DELAY01 nsec.
@@ -83,30 +83,30 @@ class ACQ2106_WRTD(MDSplus.Device):
         # Global WR settings:
         # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI triggered.
         print("WRTD_ID {}".format(str(self.wr_init_wrtd_id.data())))
-        uut.11.WRTD_ID = str(self.wr_init_wrtd_id.data())
+        uut.s11.WRTD_ID = str(self.wr_init_wrtd_id.data())
 
         # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
-        uut.11.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
+        uut.s11.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
 
         # Receiver:
         # Turn on RX
-        uut.11.WRTD_RX = int(self.wr_init_wrtd_rx.data())
+        uut.s11.WRTD_RX = int(self.wr_init_wrtd_rx.data())
         # Define RX matches
         matches  = str(self.wr_init_wrtd_rx_m.data())
         matches1 = str(self.wr_init_wrtd_rx_m1.data())
         print("Messages are {} and {}".format(matches, matches1))
 
-        uut.11.WRTD_RX_MATCHES  = matches
-        uut.11.WRTD_RX_MATCHES1 = matches1
+        uut.s11.WRTD_RX_MATCHES  = matches
+        uut.s11.WRTD_RX_MATCHES1 = matches1
         
         #Commit the changes for WRTD RX
-        uut.11.wrtd_commit_rx = 1
+        uut.s11.wrtd_commit_rx = 1
 
         # Transmiter:
         # Turn on TX
-        uut.11.WRTD_TX = int(self.wr_init_wrtd_tx.data())
+        uut.s11.WRTD_TX = int(self.wr_init_wrtd_tx.data())
         #Commit the changes for WRTD TX
-        uut.11.wrtd_commit_tx = 1
+        uut.s11.wrtd_commit_tx = 1
 
     INIT=init
 
@@ -118,10 +118,10 @@ class ACQ2106_WRTD(MDSplus.Device):
         
         self.TRIG_MSG.record = message
 
-        if message in uut.11.WRTD_RX_MATCHES:
+        if message in uut.s11.WRTD_RX_MATCHES:
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
-        elif message in uut.11.WRTD_RX_MATCHES1:
+        elif message in uut.s11.WRTD_RX_MATCHES1:
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_1 = 'TRG'      
         else:
@@ -137,7 +137,7 @@ class ACQ2106_WRTD(MDSplus.Device):
             # The timestamp in the packet is:
             # WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
             print("Message to be sent is {}".format(message))
-            uut.11.wrtd_txi = message
+            uut.s11.wrtd_txi = message
 
 
         # WR TAI Trigger time:
@@ -146,6 +146,6 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         # Reseting the RX matches to its orignal default values found in the acq2106:
         # /mnt/local/sysconfig/wr.sh
-        # uut.11.wrtd_reset_tx = 1
+        # uut.s11.wrtd_reset_tx = 1
 
     TRIG=trig
