@@ -72,39 +72,33 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':INIT_ACTION', 'type':'action',  'valueExpr':"Action(Dispatch('CAMAC_SERVER','INIT',50,None),Method(None,'INIT',head))", 'options':('no_write_shot',)},
         ]
 
-    def init(self, newmsg=''):
+    def init(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
-
-        if ":" in newmsg:
-            msgs  = str(newmsg)
-            wrmgs = msgs.split(":")
-            print("Messages are {} and {}".format(str(wrmgs[0]), str(wrmgs[1])))
-        else:
-            raise Exception("Argument needs to be of the following format: [d0msg1, d0msg2,]:[d1msg1, d1msg2,]")
-
-        #Record the state of the WRTD environment:
-        self.wr_init_wrtd_rx_m.record   = str(wrmgs[0]) # Matches for WRTT0
-        self.wr_init_wrtd_rx_m1.record  = str(wrmgs[1]) # Matches for WRTT1
 
         # WR TRIGGER SOURCE:
         print("WR TRG Source {}".format(str(self.trig_src.data())))
         uut.s0.WR_TRG_DX = str(self.trig_src.data())
 
         # Global WR settings:
-        # Set WRTD_ID
+        # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI triggered.
         print("WRTD_ID {}".format(str(self.wr_init_wrtd_id.data())))
         uut.cC.WRTD_ID = str(self.wr_init_wrtd_id.data())
 
-        # Sets WR "safe time for broadcasts" the message
-        uut.cC.WRTD_DELTA_NS=self.wr_init_wrtd_dns.data()
+        # Sets WR "safe time for broadcasts" the message, i.e. WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
+        uut.cC.WRTD_DELTA_NS = self.wr_init_wrtd_dns.data()
 
         # Receiver:
         # Turn on RX
         uut.cC.WRTD_RX = int(self.wr_init_wrtd_rx.data())
         # Define RX matches
-        uut.cC.WRTD_RX_MATCHES  = str(wrmgs[0])
-        uut.cC.WRTD_RX_MATCHES1 = str(wrmgs[1])
+        matches  = str(self.wr_init_wrtd_rx_m.data())
+        matches1 = str(self.wr_init_wrtd_rx_m1.data())
+        print("Messages are {} and {}".format(matches, matches1))
+
+        uut.cC.WRTD_RX_MATCHES  = matches
+        uut.cC.WRTD_RX_MATCHES1 = matches1
+        
         #Commit the changes for WRTD RX
         uut.cC.wrtd_commit_rx = 1
 
@@ -117,42 +111,41 @@ class ACQ2106_WRTD(MDSplus.Device):
     INIT=init
 
     def trig(self, msg=''):
-        thread = threading.Thread(target = self._trig, args=(msg))
-        thread.start()
-        return None
-    TRIG=trig
-
-
-    def _trig(self, msg=''):
         import acq400_hapi
         uut = acq400_hapi.Acq2106(self.node.data(), has_wr=True)
 
         message = str(msg)
-
+        
         self.TRIG_MSG.record = message
 
-        # Choose the source (eg. WRTT0 or WRTT1) that use go through the bus (TRG, EVENT) and the signal (d0, d1)
         if message in uut.cC.WRTD_RX_MATCHES:
             # To be sure that the EVENT bus is set to TRG
             uut.s0.SIG_EVENT_SRC_0 = 'TRG'
-
         elif message in uut.cC.WRTD_RX_MATCHES1:
             # To be sure that the EVENT bus is set to TRG
-            uut.s0.SIG_EVENT_SRC_1 = 'TRG'
-        
+            uut.s0.SIG_EVENT_SRC_1 = 'TRG'      
         else:
             print('Message does not match either of the WRTTs available')
             self.running.on = False
-            
-        # send immediate WRTD message
-        # The timestamp in the packet is:
-        # WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
-        uut.cC.wrtd_txi = message
 
-        self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
+        if not message.strip():
+            # Set trigger input:
+            print('Trigger has no message. Setting external trigger source. Waiting for trigger...')
+            uut.s0.WR_TRG_DX = str(self.trig_src.data())
+        else:
+            # send immediate WRTD message
+            # The timestamp in the packet is:
+            # WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
+            print("Message to be sent is {}".format(message))
+            uut.cC.wrtd_txi = message
+
+
+        # WR TAI Trigger time:
+        # TODO: convert wr_tai_trg (or wr_tai_stamp) to tai time in seconds
+        # self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_trg))
 
         # Reseting the RX matches to its orignal default values found in the acq2106:
         # /mnt/local/sysconfig/wr.sh
         # uut.cC.wrtd_reset_tx = 1
 
-    _TRIG=_trig
+    TRIG=trig
