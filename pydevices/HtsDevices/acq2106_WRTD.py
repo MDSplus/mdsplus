@@ -23,7 +23,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 import MDSplus
-import threading
 
 class ACQ2106_WRTD(MDSplus.Device):
     """
