@@ -46,13 +46,23 @@ class ACQ2106_WRTD(MDSplus.Device):
         {'path':':TRIG_TIME',   'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':T0',          'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)},       # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz, for ACQ423, this number will be much bigger. It's the Si5326 tick at 20MHz ..
-            {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
-            {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},        # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
+            # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
+            {'path':':WR_INIT:WRTD_TICKNS', 'type':'numeric', 'value': 50, 'options':('write_shot',)}, 
+            # 50msec - our "safe time for broadcast". From uut.cC.WRTD_DELTA_NS
+            {'path':':WR_INIT:WRTD_DNS',    'type':'numeric', 'value': 50000000, 'options':('write_shot',)}, 
+            # uut.cC.WRTD_VERBOSE: use for debugging - eg logread -f or nc localhost 4280
+            {'path':':WR_INIT:WRTD_VBOSE',  'type':'numeric', 'value': 2, 'options':('write_shot',)},        
+            # uut.cC.WRTD_RX_MATCHES: match any of these triggers to initiate WRTT0
             {'path':':WR_INIT:WRTD_RX_M',   'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            # uut.cC.WRTD_RX_MATCHES1: match any of these triggers to initiate WRTT1
             {'path':':WR_INIT:WRTD_RX_M1',  'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
+            # From uut.cC.WRTD_DELAY01: WRTD_RX_DOUBLETAP: match any of these triggers to initiate a
+            # “Double Tap, which is:
+            # 1. WRTT0
+            # 2. Delay WRTD_DELAY01 nsec.
+            # 3. WRTT1
             {'path':':WR_INIT:WRTD_RX_DTP', 'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
-            {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},   # From uut.cC.WRTD_DELAY01
+            {'path':':WR_INIT:WRTD_DELAY',  'type':'numeric', 'value': 5000000, 'options':('write_shot',)},   
             {'path':':WR_INIT:WRTD_ID',     'type':'text', 'value': "acq2106_999", 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_TX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
             {'path':':WR_INIT:WRTD_RX',     'type':'numeric', 'value': 0, 'options':('write_shot',)},
@@ -133,7 +143,10 @@ class ACQ2106_WRTD(MDSplus.Device):
         else:
             print('Message does not match either of the WRTTs available')
             self.running.on = False
-
+            
+        # send immediate WRTD message
+        # The timestamp in the packet is:
+        # WRTT_TAI = TAI_TIME_NOW + WRTD_DELTA_NS
         uut.cC.wrtd_txi = message
 
         self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
