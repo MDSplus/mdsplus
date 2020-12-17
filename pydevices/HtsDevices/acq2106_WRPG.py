@@ -128,9 +128,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         slot = self.getSlot()
         message = str(self.wrtd_id.data())
 
-        # Choose the source (eg. WRTT0 or WRTT1) that use go through the bus (TRG, EVENT) and the signal (d0, d1)
         if message in uut.cC.WRTD_RX_MATCHES:
-
             if slot != uut.s0:
                 # Define the WRTD_MASK:
                 slot.WRTD_TX_MASK = (1<<(int(self.dio_site.data())+1))
