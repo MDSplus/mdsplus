@@ -1,5 +1,5 @@
 
-from MDSplus import mdsExceptions, Device, Data
+from MDSplus import mdsExceptions, Device, Data, Event
 from threading import Thread
 from ctypes import CDLL, c_int, c_double, c_char_p
 
@@ -32,6 +32,7 @@ class RFX_RPADC(Device):
         {'path':':RAW_B', 'type':'signal', 'options':('no_write_model', 'no_compress_on_put')  },
         {'path':':CHAN_A', 'type':'signal'},
         {'path':':CHAN_B', 'type':'signal'},
+        {'path':':MDS_TRIG_EV', 'type':'text'},
         {'path':':INIT_ACTION','type':'action',
          'valueExpr':"Action(Dispatch('CPCI_SERVER','PULSE_PREPARATION',50,None),Method(None,'init',head))",
          'options':('no_write_shot',)},
@@ -44,6 +45,14 @@ class RFX_RPADC(Device):
         {'path':':START_TIME', 'type':'numeric', 'value':0}]
 
 
+    class TriggerEvent(Event):
+      def __init__(self, evName, device):
+        Event.__init__(self, evName)
+        self.device = device
+      def run(self):
+        self.device.do_trigger()
+    
+    
     class Configuration:
       def configure(self, lib, fd, name, shot, chanANid, chanBNid, triggerNid, startTimeNid, preSamples,
             postSamples, segmentSamples, frequency, frequency1, single):
@@ -182,19 +191,31 @@ class RFX_RPADC(Device):
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1
 
+
     def start_store(self):
         try:
             worker = self.AsynchStore()
             worker.configure(self.conf)
             worker.daemon = True
             worker.start()
+            #if MDSplus event defined, connect it to SW trigger
+            try:
+              evName = self.mds_trig_ev.data()
+              RFX_RPADC.triggerEv = RFX_RPADC.TriggerEvent(evName, self)
+            except:
+              pass
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
+
         return -1
 
     def stop_store(self):
         try:
             self.conf.lib.rpadcStop(self.conf.fd)
+            try:
+              RFX_RPADC.triggerEv.cancel()
+            except:
+              pass
         except:
             raise mdsExceptions.TclFAILED_ESSENTIAL
         return -1

@@ -5,7 +5,7 @@
 #include <errno.h>
 #include <unistd.h>
 #include <mdsobjects.h>
-#include <rpadc_fifo_auto.h>
+#include <rfx_stream.h>
 #include <signal.h>
 
 
@@ -60,7 +60,7 @@ static int deviceFd = 0;
 
 static void writeConfig(int fd, struct rpadc_configuration *config)
 {
-    struct rpadc_fifo_auto_registers regs;
+    struct rfx_stream_registers regs;
     memset(&regs, 0, sizeof(regs));
     unsigned int currVal = 0;
     unsigned int dmaBufSize = 0;
@@ -101,12 +101,12 @@ static void writeConfig(int fd, struct rpadc_configuration *config)
 
 //Decimator IP seems not to work properly is decimation set the firsttime to 1
     regs.decimator_register = 10;
-    ioctl(fd, RPADC_FIFO_AUTO_SET_REGISTERS, &regs);
+    ioctl(fd, RFX_STREAM_SET_REGISTERS, &regs);
     usleep(10000);
 
     regs.decimator_register = config->decimation - 1;
 printf("MODE REGISTER:%x\n", regs.mode_register);
-    ioctl(fd, RPADC_FIFO_AUTO_SET_REGISTERS, &regs);
+    ioctl(fd, RFX_STREAM_SET_REGISTERS, &regs);
 printf("REGISTRI SCRITTI:%x\n", regs.mode_register);
 
 /*
@@ -118,11 +118,11 @@ printf("REGISTRI SCRITTI:%x\n", regs.mode_register);
     ioctl(fd, RPADC_DMA_AUTO_ARM_DMA, &dmaBufSize);
 */    
     currVal = 1;
-    ioctl(fd, RPADC_FIFO_AUTO_SET_PACKETIZER, &currVal);
+    ioctl(fd, RFX_STREAM_SET_PACKETIZER, &currVal);
 
-    ioctl(fd, RPADC_FIFO_AUTO_CLEAR_DATA_FIFO, NULL);
-    //ioctl(fd, RPADC_FIFO_AUTO_FIFO_INT_HALF_SIZE, NULL);
-    ioctl(fd, RPADC_FIFO_AUTO_FIFO_INT_FIRST_SAMPLE, NULL);
+    ioctl(fd, RFX_STREAM_CLEAR_DATA_FIFO, NULL);
+    //ioctl(fd, RFX_STREAM_FIFO_INT_HALF_SIZE, NULL);
+    ioctl(fd, RFX_STREAM_FIFO_INT_FIRST_SAMPLE, NULL);
 
 
     
@@ -133,8 +133,8 @@ printf("REGISTRI SCRITTI:%x\n", regs.mode_register);
 static void readConfig(int fd, struct rpadc_configuration *config)
 {
     unsigned int currVal;
-    struct rpadc_fifo_auto_registers regs; 
-    ioctl(fd,  RPADC_FIFO_AUTO_GET_REGISTERS, &regs);
+    struct rfx_stream_registers regs; 
+    ioctl(fd,  RFX_STREAM_GET_REGISTERS, &regs);
     currVal = regs.mode_register;
     if(currVal & 0x00000001)
 	config->mode = STREAMING;
@@ -186,25 +186,25 @@ static void readConfig(int fd, struct rpadc_configuration *config)
 
 static void fifoFlush(int fd)
 {
-    ioctl(fd, RPADC_FIFO_AUTO_FIFO_FLUSH, NULL);
+    ioctl(fd, RFX_STREAM_FIFO_FLUSH, NULL);
 }
 
 
 static void stopRead(int fd)
 {
-    ioctl(fd, RPADC_FIFO_AUTO_STOP_READ, NULL);
+    ioctl(fd, RFX_STREAM_STOP_READ, NULL);
 }
 
 static void adcStop(int fd)
 {
     unsigned int val = 0x00000002;
-    ioctl(fd, RPADC_FIFO_AUTO_SET_COMMAND_REGISTER, &val);
+    ioctl(fd, RFX_STREAM_SET_COMMAND_REGISTER, &val);
 }
 /*
 static void dmaStop(int fd)
 {
     std::cout << "DMA STOP" << fd << std::endl;
-    ioctl(fd, RPADC_FIFO_AUTO_STOP_DMA, 0);
+    ioctl(fd, RFX_STREAM_STOP_DMA, 0);
 }
 */
 
@@ -214,38 +214,38 @@ static void adcArm(int fd)
     std::cout << "ARM  " << fd << std::endl;
     
     
-    ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_LEN, &command);
+    ioctl(fd, RFX_STREAM_GET_TIME_FIFO_LEN, &command);
     std::cout << "TIME FIFO LEN: " << command << std::endl;
-    ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &command);
+    ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &command);
      
     
     command = 0x00000001;  //Arm
-    ioctl(fd, RPADC_FIFO_AUTO_SET_COMMAND_REGISTER, &command);
+    ioctl(fd, RFX_STREAM_SET_COMMAND_REGISTER, &command);
 }
 static void adcTrigger(int fd)
 {
     unsigned int command = 0x00000004;
-    ioctl(fd, RPADC_FIFO_AUTO_SET_COMMAND_REGISTER, &command);
+    ioctl(fd, RFX_STREAM_SET_COMMAND_REGISTER, &command);
     usleep(1000);
     command = 0;
-    ioctl(fd, RPADC_FIFO_AUTO_SET_COMMAND_REGISTER, &command);
+    ioctl(fd, RFX_STREAM_SET_COMMAND_REGISTER, &command);
 
-//    ioctl(fd, RPADC_FIFO_AUTO_GET_DATA_FIFO_LEN, &command);
+//    ioctl(fd, RFX_STREAM_GET_DATA_FIFO_LEN, &command);
 
-//    ioctl(fd, RPADC_FIFO_AUTO_GET_DATA_FIFO_VAL, &command);
- //   ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_LEN, &command);
- //   ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &command);
+//    ioctl(fd, RFX_STREAM_GET_DATA_FIFO_VAL, &command);
+ //   ioctl(fd, RFX_STREAM_GET_TIME_FIFO_LEN, &command);
+ //   ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &command);
  
 }
 
 static void adcClearFifo(int fd)
 {
-    ioctl(fd, RPADC_FIFO_AUTO_CLEAR_TIME_FIFO, 0);
+    ioctl(fd, RFX_STREAM_CLEAR_TIME_FIFO, 0);
 }
 /*
 static void dmaStart(int fd, int cyclic)
 {
-    ioctl(fd, RPADC_FIFO_AUTO_START_DMA, &cyclic);
+    ioctl(fd, RFX_STREAM_START_DMA, &cyclic);
 }
 */
 static void sigHandler(int signo)
@@ -400,7 +400,7 @@ void rpadcStream(int fd, char *treeName, int shot, int chan1Nid, int chan2Nid, i
     memset(dataSamples, 0, segmentSamples*sizeof(int));
     startTimes = new double[blocksInSegment];
     endTimes = new double[blocksInSegment];
-    ioctl(fd, RPADC_FIFO_AUTO_START_READ, NULL);
+    ioctl(fd, RFX_STREAM_START_READ, NULL);
     adcArm(fd);
     usleep(1000); 
     int segmentIdx = 0;
@@ -443,8 +443,8 @@ std::cout << "STOPPED!!!!!!!" << std::endl;
 			    {
 				unsigned long long currTime;
 				unsigned int time1, time2;
-				ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &time1);
-				ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &time2);
+				ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
+				ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
 				currTime = (unsigned long long)time1 | (((unsigned long long) time2) << 32);
 				startTimes[currBlock] = (currTime - preSamples)/freq;
 				endTimes[currBlock] =  (currTime + postSamples - 1)/freq;  //include last sample
@@ -488,8 +488,8 @@ std::cout << "STOPPED!!!!!!!" << std::endl;
                 }
                 else //If referring to a new window, the time must be read
                 {
-		    ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &time1);
-		    ioctl(fd, RPADC_FIFO_AUTO_GET_TIME_FIFO_VAL, &time2);
+		    ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time1);
+		    ioctl(fd, RFX_STREAM_GET_TIME_FIFO_VAL, &time2);
 		    currTime = (unsigned long long)time1 | (((unsigned long long) time2) << 32);
 //std::cout << "TIME1: " << time1 << "  TIME2:  " << time2 << "   PREV TIME: " << prevTime << std::endl;
 //std::cout << "TIME COUNTER: " << currTime <<  "DELTA:  " << currTime - prevTime << "   " << (currTime - prevTime)/freq << std::endl;
@@ -577,7 +577,7 @@ int rpadcInit(int mode, int clock_mode, int preSamples, int postSamples, int tri
 	       int thresholdSamples, int decimation, int event_code)
 {
     struct rpadc_configuration inConfig, outConfig;
-    int fd = open("/dev/rpadc_fifo_auto", O_RDWR | O_SYNC);
+    int fd = open("/dev/rfx_stream", O_RDWR | O_SYNC);
  
      if(fd < 0) 
         return -1;
