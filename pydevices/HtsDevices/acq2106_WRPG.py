@@ -116,43 +116,6 @@ class ACQ2106_WRPG(MDSplus.Device):
         self.running.on = False
     STOP=stop
 
-    def trig(self):
-        thread = threading.Thread(target = self._trig)
-        thread.start()
-        return None
-    TRIG=trig
-
-
-    def _trig(self):
-        uut  = self.getUUT()
-        slot = self.getSlot()
-        message = str(self.wrtd_id.data())
-
-        if message in uut.cC.WRTD_RX_MATCHES:
-            if slot != uut.s0:
-                # Define the WRTD_MASK:
-                slot.WRTD_TX_MASK = (1<<(int(self.dio_site.data())+1))
-                
-        elif message in uut.cC.WRTD_RX_MATCHES1:
-            if slot != uut.s0:
-                # Define the WRTD_MASK:
-                slot.WRTD_TX_MASK = (1<<(int(self.dio_site.data())+1))
-        
-        else:
-            print('Message does not match either of the WRTTs messages available')
-            self.running.on = False
-
-        slot.wrtd_txi = message
-
-        self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_cur))
-
-        # Reseting the RX matches to its orignal default values found in the acq2106:
-        # /mnt/local/sysconfig/wr.sh
-        # uut.cC.wrtd_reset_tx = 1
-
-    _TRIG=_trig
-    #TRIG=trig
-
     def getUUT(self):
         import acq400_hapi
         uut = acq400_hapi.Acq2106_TIGA(self.node.data())
