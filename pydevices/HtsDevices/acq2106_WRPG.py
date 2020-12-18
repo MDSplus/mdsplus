@@ -51,7 +51,7 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':STOP_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",'options':('no_write_shot',)},
         {'path':':STL_LISTS',   'type':'text',     'options':('write_shot',)},
         {'path':':GPG_TRG_DX',  'type':'text',     'value': 'dx', 'options':('write_shot',)},
-        {'path':':WRTD_ID',     'type':'text',     'value': 'site_wr_message', 'options':('write_shot',)},
+        #{'path':':WRTD_ID',     'type':'text',     'value': 'site_wr_message', 'options':('write_shot',)},
     ]
 
 
@@ -91,13 +91,13 @@ class ACQ2106_WRPG(MDSplus.Device):
             nchans = 4            
             if self.debug >= 2:
                 self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
-            slot.WRTD_ID = str(self.wrtd_id.data())   # TIGA sites
+            #slot.WRTD_ID = str(self.wrtd_id.data())   # TIGA sites, see we are using slot. object here.
 
         elif dio_module in nontiga:
             nchans = 32
             if self.debug >= 2:
                 self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
-            uut.cC.WRTD_ID = str(self.wrtd_id.data()) # Global
+            #uut.cC.WRTD_ID = str(self.wrtd_id.data()) # Global
             
         # Create the STL table:
         self.set_stl(nchans)
