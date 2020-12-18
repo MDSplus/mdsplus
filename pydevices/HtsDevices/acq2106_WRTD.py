@@ -47,7 +47,7 @@ class ACQ2106_WRTD(MDSplus.Device):
         # If DIO-PG is present:
         {'path':':DIO_SITE',    'type':'numeric', 'value': 0.,       'options':('write_shot',)},
         # A DIO-PG source can be one of [d0...d5, TRGIN, WRTT]
-        {'path':':DIO_TRIG_SRC','type':'text',    'value': 'dx', 'options':('write_shot',)},
+        {'path':':PG_TRIG_SRC','type':'text',    'value': 'dx', 'options':('write_shot',)},
         
         {'path':':WR_INIT',     'type':'text',   'options':('write_shot',)},
             # ns per tick. (tick size in ns). uut.cC.WRTD_TICKNS: For SR=20MHz. It's the Si5326 tick at 20MHz ..
@@ -145,7 +145,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         if not message.strip():
             # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI is used to trigger.
-            print("WRTD_ID={} will be used. Waiting for external trigger ({})...".format(str(self.wr_init_wrtd_id.data()), str(self.trig_src.data())))
+            print("WRTD_ID={} will be used. Waiting for external trigger ({})...".format(str(self.wr_init_wrtd_id_glb.data()), str(self.trig_src.data())))
             uut.cC.WRTD_ID = str(self.wr_init_wrtd_id_glb.data())
             # Set trigger input on (FTTRG or HDMI)
             uut.s0.WR_TRG    = 1
