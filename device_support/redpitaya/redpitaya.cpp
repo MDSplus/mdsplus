@@ -300,7 +300,7 @@ std::cout << "WRITE SEGMENT SAMPLES: " << segmentSamples << std::endl;
 	startTimeData = new MDSplus::Float64Array(startTimes, blocksInSegment);
 	endTimeData = new MDSplus::Float64Array(endTimes, blocksInSegment);
     }
-    timebase = MDSplus::compileWithArgs("make_range($1+$2, $3+$4, $5)", t, 5, startTimeData, triggerTime, endTimeData, triggerTime, deltaData);
+    timebase = MDSplus::compileWithArgs("make_range($1+$2, $3+$4-$5/2., $6)", t, 6, startTimeData, triggerTime, endTimeData, triggerTime, deltaData, deltaData);
     deleteData(startTimeData);
     deleteData(endTimeData);
     deleteData(deltaData);
