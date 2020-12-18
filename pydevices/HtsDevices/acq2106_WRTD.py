@@ -112,7 +112,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
     def trig(self, msg=''):
         uut = self.getUUT()
-        dio_slot = self.getDioSlot()
+        pg_slot = self.getDioSlot()
 
         # Is the System a TIGA system?
         # In embedded software there is also a command:
@@ -154,12 +154,12 @@ class ACQ2106_WRTD(MDSplus.Device):
             if is_tiga:
                 # Define the WRTD_ID for a particular DIO site in a TIGA system.
                 # A DIO-PG can be triggered by TRGIN, and a WR message could be sent with the following ID:
-                dio_slot.WRTD_ID = str(self.wr_init_wrtd_id_tiga.data())
+                pg_slot.WRTD_ID = str(self.wr_init_wrtd_id_tiga.data())
                 # Define the WRTD_MASK:
                 # WRTD_TX_MASK selects the DIO units that respond
-                dio_slot.WRTD_TX_MASK = (1<<(int(self.dio_site.data())+1))
-                dio_slot.TRG    = 1
-                dio_slot.TRG_DX = str(self.dio_trig_src.data())
+                pg_slot.WRTD_TX_MASK = (1<<(int(self.dio_site.data())+1))
+                pg_slot.TRG    = 1
+                pg_slot.TRG_DX = str(self.pg_trig_src.data())
         else:
             # send immediate WRTD message
             # The timestamp in the packet is:
