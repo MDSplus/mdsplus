@@ -67,14 +67,16 @@ class ACQ2106_WRPG(MDSplus.Device):
         uut.s0.SIG_EVENT_SRC_0 = 'TRG' # or GPG
 
         slot.GPG_ENABLE = 1
-        slot.TRG_DX     = str(self.gpg_trg_dx.data())
-        slot.TRG_SENSE  = 'rising'
         slot.GPG_MODE   = 'LOOP'
 
         if self.isPG():
-            slot.TRG     = 'enable'
+            slot.TRG        = 'enable'
+            slot.TRG_DX     = str(self.gpg_trg_dx.data())
+            slot.TRG_SENSE  = 'rising'
         else:
-            slot.GPG_TRG = 'enable'
+            slot.GPG_TRG        = 'enable'
+            slot.GPG_TRG_DX     = str(self.gpg_trg_dx.data())
+            slot.GPG_TRG_SENSE  = 'rising'
 
         if self.debug >= 2:
             start_time = time.time()
