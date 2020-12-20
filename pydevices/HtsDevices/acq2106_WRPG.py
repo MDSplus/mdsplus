@@ -22,11 +22,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-import threading
 import MDSplus
 import time
 import numpy
-import os
 
 class ACQ2106_WRPG(MDSplus.Device):
     """
@@ -90,11 +88,11 @@ class ACQ2106_WRPG(MDSplus.Device):
         if site == 0 or slot.MTYPE in nontiga:
             nchans = 32
             if self.debug >= 2:
-                self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
+                self.dprint(2, 'DIO site and Number of Channels: {} {}'.format(self.dio_site.data(), nchans))
         elif slot.MTYPE in tiga:
             nchans = 4            
             if self.debug >= 2:
-                self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
+                self.dprint(2, 'DIO site and Number of Channels: {} {}'.format(self.dio_site.data(), nchans))
             
         # Create the STL table:
         self.set_stl(nchans)
