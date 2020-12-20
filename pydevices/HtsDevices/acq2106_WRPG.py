@@ -51,7 +51,6 @@ class ACQ2106_WRPG(MDSplus.Device):
         {'path':':STOP_ACTION', 'type':'action',   'valueExpr':"Action(Dispatch('CAMAC_SERVER','STORE',50,None),Method(None,'STOP',head))",'options':('no_write_shot',)},
         {'path':':STL_LISTS',   'type':'text',     'options':('write_shot',)},
         {'path':':GPG_TRG_DX',  'type':'text',     'value': 'dx', 'options':('write_shot',)},
-        #{'path':':WRTD_ID',     'type':'text',     'value': 'site_wr_message', 'options':('write_shot',)},
     ]
 
 
@@ -84,26 +83,18 @@ class ACQ2106_WRPG(MDSplus.Device):
 
         #Create the STL table from a series of transition times and states given in OUTPUT.
         #TIGA: PG nchans = 4, or non-TIGA PG nchans = 32
-
         tiga    = '7B'
         nontiga = '6B'
 
-        if slot == uut.s0:
-            dio_module = nontiga
-        else:
-            dio_module = slot.MTYPE
-
-        if dio_module in tiga:
-            nchans = 4            
-            if self.debug >= 2:
-                self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
-            #slot.WRTD_ID = str(self.wrtd_id.data())   # TIGA sites, see we are using slot. object here.
-
-        elif dio_module in nontiga:
+        site = self.dio_site.data()
+        if site == 0 or slot.MTYPE in nontiga:
             nchans = 32
             if self.debug >= 2:
                 self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
-            #uut.cC.WRTD_ID = str(self.wrtd_id.data()) # Global
+        elif slot.MTYPE in tiga:
+            nchans = 4            
+            if self.debug >= 2:
+                self.dprint(2, 'DIO site and number of channels: {} {}'.format(self.dio_site.data(), nchans))
             
         # Create the STL table:
         self.set_stl(nchans)
@@ -111,8 +102,9 @@ class ACQ2106_WRPG(MDSplus.Device):
         #Load the STL into the WRPG hardware: GPG
         traces = False  # True: shows debug information during loading
         self.load_stl_data(traces)
-
-        self.dprint(1,'WRPG has loaded the STL')
+        
+        if self.debug >= 1:
+            self.dprint(1,'WRPG has loaded the STL')
       
     INIT=init
 
@@ -156,16 +148,23 @@ class ACQ2106_WRPG(MDSplus.Device):
         return slot
 
     def isPG(self):
+        uut  = self.getUUT()
         slot = self.getSlot()
+
+        site = self.dio_site.data()
+        
         try:
-            is_pg = slot.GPG_ENABLE is not None
+            if site == 0:
+                is_pg = False
+            else:
+                is_pg = slot.GPG_ENABLE is not None
         except:
             is_pg = False
 
         return is_pg
 
 
-    def load_stl_data_gpg(self,traces):
+    def load_stl_data(self,traces):
         uut = self.getUUT()
         # Pair of (transition time, 32 bit channel states):
         stl_pairs = self.stl_lists.data()
