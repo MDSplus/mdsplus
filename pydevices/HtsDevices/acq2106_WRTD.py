@@ -145,7 +145,7 @@ class ACQ2106_WRTD(MDSplus.Device):
 
         if not message.strip():
             # Set WRTD_ID: message to be transmitted from this device if FTTRG or HDMI is used to trigger.
-            print("WRTD_ID={} will be used. Waiting for external trigger ({})...".format(str(self.wr_init_wrtd_id_glb.data()), str(self.trig_src.data())))
+            print("Waiting for external trigger ({})...".format(str(self.wr_init_wrtd_id_glb.data()), str(self.trig_src.data())))
             uut.cC.WRTD_ID = str(self.wr_init_wrtd_id_glb.data())
             # Set trigger input on (FTTRG or HDMI)
             uut.s0.WR_TRG    = 1
@@ -171,6 +171,24 @@ class ACQ2106_WRTD(MDSplus.Device):
         # WR TAI Trigger time:
         # TODO: convert wr_tai_trg (or wr_tai_stamp) to tai time in seconds
         # self.trig_time.putData(MDSplus.Int64(uut.s0.wr_tai_trg))
+
+        # wr_tai_current = float(uut.s0.wr_tai_cur)       # in secs
+
+        # latched_time_stamp = uut.s0.wr_tai_stamp # in secs + nsecs
+        # trigger_time       = uut.s0.wr_tai_trg   # in secs + nsecs. This is: latch time stamp + WRTD_DELTA_NS (in our case 50 msec)
+
+        # time_stamp_secs  = float(latched_time_stamp.split()[1])
+        # time_stamp_nsecs = float(latched_time_stamp.split()[2])
+        # time_stamp       = time_stamp_secs + time_stamp_nsecs / 1E+9
+        # tt = wr_tai_current + time_stamp + self.wr_init_wrtd_dns.data() / 1E+9
+
+        # # Trigger times already has the delta time in the future in it.
+        # trigger_time_secs  = float(trigger_time.split()[1])
+        # trigger_time_nsecs = float(trigger_time.split()[2])
+        # trigger_time       = wr_tai_current + trigger_time_secs + trigger_time_nsecs / 1E+9
+
+        # print("TS {} and TT {}".format(time_stamp, tt))
+        # print("Trigger time {}".format(trigger_time))
 
         # Reseting the RX matches to its orignal default values found in the acq2106:
         # /mnt/local/sysconfig/wr.sh
