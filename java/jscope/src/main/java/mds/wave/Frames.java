@@ -134,13 +134,15 @@ public class Frames extends Canvas
 			Image img;
 			if (pixelSize > 0)
 			{
-				final ColorModel colorModel = colorMap.getIndexColorModel((pixelSize < 32 ? pixelSize : 16));
+                            try {
+                         	//final ColorModel colorModel = colorMap.getIndexColorModel((pixelSize < 32 ? pixelSize : 16));
+				final ColorModel colorModel = colorMap.getIndexColorModel(16);
 				img = new BufferedImage(colorModel, ((BufferedImage) fDesc.image).getRaster(), false, null);
 				final BufferedImage bi = (BufferedImage) img;
 				final ByteArrayInputStream b = new ByteArrayInputStream(fDesc.buffer);
 				final DataInputStream din = new DataInputStream(b);
 				final WritableRaster wr = bi.getRaster();
-				final DataBuffer db = wr.getDataBuffer();
+                        	final DataBuffer db = wr.getDataBuffer();
 				// int nPixels = db.getSize()/bytesPerPixel; ??? ces
 				final int nPixels = db.getSize();
 				if (nPixels != frameDim.width * frameDim.height)
@@ -149,13 +151,19 @@ public class Frames extends Canvas
 					System.out.println("INTERNAL ERRROR: Inconsistend frame dimension when getting frame");
 					return null;
 				}
-				float val;
-				for (int j = 0; j < nPixels; j++)
+ 				float val;
+                        	for (int j = 0; j < nPixels; j++)
 				{
-					if (frameType == FrameData.BITMAP_IMAGE_8)
-						val = din.readByte();
-					else if (frameType == FrameData.BITMAP_IMAGE_U8)
-						val = 0xFF & din.readByte();
+					if (frameType == FrameData.BITMAP_IMAGE_8 ||frameType == FrameData.BITMAP_IMAGE_U8)
+                                        {
+                                            byte bval = din.readByte();
+                                            if(bval < 0)
+                                                val = 256 + (bval & 0x7F);
+                                            else
+                                                val = bval;
+                                        }
+          				//else if (frameType == FrameData.BITMAP_IMAGE_U8)
+					//	val = 0xFF & din.readByte();
 					else if (frameType == FrameData.BITMAP_IMAGE_16)
 						val = din.readShort();
 					else if (frameType == FrameData.BITMAP_IMAGE_U16)
@@ -171,12 +179,14 @@ public class Frames extends Canvas
 					else
 						db.setElem(j, (int) ((val - min) * 255 / (max - min)));
 				}
+                           }catch(Exception exc){System.out.println(exc); img=null;}
 			}
 			else // Non bitmap image (j[pg, gif...)
 				img = fDesc.image;
-			tracker = new MediaTracker(Frames.this);
+                        
+                      	tracker = new MediaTracker(Frames.this);
 			tracker.addImage(img, idx);
-			try
+                    	try
 			{
 				tracker.waitForID(idx);
 			}
@@ -228,7 +238,14 @@ public class Frames extends Canvas
 				try
 				{
 					for (int j = 0; j < n_pix; j++)
-						values[j] = din.readByte();
+                                        {
+                                            byte bval = din.readByte();
+                                             if(bval < 0)
+                                                values[j] = 256 + (bval & 0x7F);
+                                            else
+                                                values[j] = bval;
+
+                                        }
 				}
 				catch (final IOException exc)
 				{
@@ -318,30 +335,32 @@ public class Frames extends Canvas
 			{
 				pixelSize = 8;
 				bytesPerPixel = 1;
-				colorModel = colorMap.getIndexColorModel(8);
+				//colorModel = colorMap.getIndexColorModel(8);
+				colorModel = colorMap.getIndexColorModel(16);
 				final int n_pix = frameDim.width * frameDim.height;
-				db = new DataBufferByte(n_pix);
+				db = new DataBufferUShort(n_pix);
 				short val;
 				for (int j = 0; j < n_pix; j++)
 				{
-					if (frameType == FrameData.BITMAP_IMAGE_8)
-						val = (buf[j]);
-					else
-						val = (short) (0xFF & buf[j]);
-					if (val < min)
+                                        if(buf[j] < 0) //Signed/Unsigned issue
+                                            val = (short)(256+(buf[j] & (byte)0x7F));
+                                        else
+                                            val = buf[j];
+                                        if (val < min)
 						db.setElem(j, (byte) 0);
 					else if (val > max)
 						db.setElem(j, (byte) 255);
 					else
-						db.setElem(j, (byte) ((val - min) * 255 / (max - min)));
-					// System.out.println(""+j+" val "+val+" db " + ( db.getElem(j) ) );
+						db.setElem(j, (byte) ((val - min) * 512 / (max - min)));
+					 //System.out.println(""+j+" val "+val+" db " + ( db.getElem(j) ) );
 					db.setElem(j, val);
 				}
-				raster = Raster.createInterleavedRaster(db, frameDim.width, frameDim.height, frameDim.width, 1,
+
+                                raster = Raster.createInterleavedRaster(db, frameDim.width, frameDim.height, frameDim.width, 1,
 						new int[]
 						{ 0 }, null);
-				img = new BufferedImage(colorModel, raster, false, null);
-				break;
+                 		img = new BufferedImage(colorModel, raster, false, null);
+                                break;
 			}
 			case FrameData.BITMAP_IMAGE_U16:
 			case FrameData.BITMAP_IMAGE_16:
