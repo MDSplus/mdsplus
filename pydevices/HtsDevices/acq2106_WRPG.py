@@ -254,8 +254,6 @@ class _ACQ2106_WRPG(MDSplus.Device):
         # MDSplus wants a numpy array
         self.stl_lists.putData(numpy.array(stl_list))
 
-OUTFMT3 = ':OUTPUT_%3.3d'
-
 def assemble(cls):
     cls.parts = list(_ACQ2106_WRPG.base_parts)
     for i in range(cls.nchan):
