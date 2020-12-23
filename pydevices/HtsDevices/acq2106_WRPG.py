@@ -26,7 +26,7 @@ import MDSplus
 import time
 import numpy
 
-class ACQ2106_WRPG(MDSplus.Device):
+class _ACQ2106_WRPG(MDSplus.Device):
     """
     D-Tacq ACQ2106 with ACQ423 Digitizers (up to 6)  real time streaming support.
 
@@ -259,17 +259,31 @@ OUTFMT3 = ':OUTPUT_%3.3d'
 ACQ2106_CHANNEL_CHOICES = [4, 32]
 
 def assemble(cls):
-    outfmt = OUTFMT3
-    for ch in range(1, cls.nchan+1):
-        cls.parts.append({'path':outfmt%(ch,), 'type':'NUMERIC', 'options':('no_write_shot',)})
-    return cls
+    cls.parts = list(_ACQ2106_WRPG.base_parts)
+    for i in range(cls.nchan):
+        cls.parts += [
+            {'path':':OUTPUT_%3.3d'%(i+1,), 'type':'NUMERIC', 'options':('no_write_shot',)},
+        ]
+
+# def assemble(cls):
+#     outfmt = OUTFMT3
+#     for ch in range(1, cls.nchan+1):
+#         cls.parts.append({'path':outfmt%(ch,), 'type':'NUMERIC', 'options':('no_write_shot',)})
+#     return cls
 
 
-def create_classes(base_class, root_name, parts, channel_choices):
-    my_classes = {}
-    for nchan in channel_choices:
-        class_name = "%s_%s" % (root_name, nchan)
-        my_parts = list(parts)
-        my_classes[class_name] = assemble(type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
-        my_classes[class_name].__module__ = base_class.__module__
-    return my_classes
+# def create_classes(base_class, root_name, parts, channel_choices):
+#     my_classes = {}
+#     for nchan in channel_choices:
+#         class_name = "%s_%s" % (root_name, nchan)
+#         my_parts = list(parts)
+#         my_classes[class_name] = assemble(type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
+#         my_classes[class_name].__module__ = base_class.__module__
+#     return my_classes
+
+class ACQ2106_WRPG_04(_ACQ2106_WRPG): nchan=4
+assemble(ACQ2106_WRPG_04)
+class ACQ2106_WRPG_32(_ACQ2106_WRPG): nchan=32
+assemble(ACQ2106_WRPG_32)
+
+del(assemble)
