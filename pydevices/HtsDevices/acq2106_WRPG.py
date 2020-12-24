@@ -254,16 +254,34 @@ class _ACQ2106_WRPG(MDSplus.Device):
         # MDSplus wants a numpy array
         self.stl_lists.putData(numpy.array(stl_list))
 
+OUTFMT3 = ':OUTPUT_%3.3d'
+ACQ2106_CHANNEL_CHOICES = [4, 32]
+
+def create_classes(base_class, root_name, parts, channel_choices):
+    my_classes = {}
+    for nchan in channel_choices:
+        class_name = "%s_%sCH" % (root_name, nchan)
+        my_parts = list(parts)
+        my_classes[class_name] = assemble(type(class_name, (base_class,), {"nchan": nchan, "parts": my_parts}))
+        my_classes[class_name].__module__ = base_class.__module__
+    return my_classes
+
 def assemble(cls):
-    cls.parts = list(_ACQ2106_WRPG.base_parts)
-    for i in range(cls.nchan):
-        cls.parts += [
-            {'path':':OUTPUT_%3.3d'%(i+1,), 'type':'NUMERIC', 'options':('no_write_shot',)},
-        ]
+    outfmt = OUTFMT3
+    for ch in range(1, cls.nchan+1):
+        cls.parts.append({'path':outfmt%(ch,), 'type':'NUMERIC', 'options':('no_write_shot',)})
+    return cls
 
-class ACQ2106_WRPG_04CH(_ACQ2106_WRPG): nchan=4
-assemble(ACQ2106_WRPG_04CH)
-class ACQ2106_WRPG_32CH(_ACQ2106_WRPG): nchan=32
-assemble(ACQ2106_WRPG_32CH)
+class_ch_dict = create_classes(
+    _ACQ2106_WRPG, "ACQ2106_WRPG",
+    list(_ACQ2106_WRPG.base_parts),
+    ACQ2106_CHANNEL_CHOICES
+)
 
-del(assemble)
+globals().update(class_ch_dict)
+
+del(class_ch_dict)
+
+# public classes created in this module
+# ACQ2106_WRPG_4CH
+# ACQ2106_WRPG_32CH
