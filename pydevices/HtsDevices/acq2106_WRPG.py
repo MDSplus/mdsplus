@@ -261,9 +261,9 @@ def assemble(cls):
             {'path':':OUTPUT_%3.3d'%(i+1,), 'type':'NUMERIC', 'options':('no_write_shot',)},
         ]
 
-class ACQ2106_WRPG_04(_ACQ2106_WRPG): nchan=4
-assemble(ACQ2106_WRPG_04)
-class ACQ2106_WRPG_32(_ACQ2106_WRPG): nchan=32
-assemble(ACQ2106_WRPG_32)
+class ACQ2106_WRPG_04CH(_ACQ2106_WRPG): nchan=4
+assemble(ACQ2106_WRPG_04CH)
+class ACQ2106_WRPG_32CH(_ACQ2106_WRPG): nchan=32
+assemble(ACQ2106_WRPG_32CH)
 
 del(assemble)
