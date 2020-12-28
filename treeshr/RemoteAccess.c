@@ -38,6 +38,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 # define flock lx_flock
 # include <linux/fcntl.h>
 # undef flock
+# ifndef F_OFD_SETLK
+#  define F_OFD_GETLK   36
+#  define F_OFD_SETLK   37
+#  define F_OFD_SETLKW  38
+# endif
 #endif
 #include <mdstypes.h>
 #include <pthread.h>
@@ -1361,14 +1366,27 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   flock.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
   flock.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock.l_len = (mode == 0) ? 0 : size;
-# ifdef F_OFD_SETLK
-  flock.l_pid = 0;
-  err = fcntl(fd, nowait ? F_OFD_SETLK : F_OFD_SETLKW, &flock) == -1;
-# else
-# pragma message("FILE LOCKS WONT BE THREADSAFE!")
-  flock.l_pid = getpid();
-  err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock) == -1;
-# endif
+  static int use_ofd_locks = 1; // atomic?
+  if (use_ofd_locks == 1)
+  {
+    flock.l_pid = 0;
+    err = fcntl(fd, nowait ? F_OFD_SETLK : F_OFD_SETLKW, &flock);
+    if (err != 0 && errno == EINVAL)
+    {
+      flock.l_pid = getpid();
+      err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock);
+      if (err == 0)
+      {
+        fprintf(stderr, "OS does not support OFD locks, file access is not threadsafe\n");
+        use_ofd_locks = 0;
+      }
+    }
+  }
+  else
+  {
+    flock.l_pid = getpid();
+    err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock);
+  }
   fstat(fd, &stat);
   if (deleted) *deleted = stat.st_nlink <= 0;
 #endif
