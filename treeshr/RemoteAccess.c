@@ -35,9 +35,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
  * workaround: define flock so linux/fcntl.h will define lx_flock instead
  */
-# define flock lx_flock
-# include <linux/fcntl.h>
-# undef flock
+//// alpine does not linux/fcntl.h
+// # define flock lx_flock
+// # include <linux/fcntl.h>
+// # undef flock
 # ifndef F_OFD_SETLK
 #  define F_OFD_GETLK   36
 #  define F_OFD_SETLK   37
