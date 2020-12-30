@@ -2541,3 +2541,129 @@ int _TreeGetTimeContext(void *dbid, mdsdsc_xd_t *start, mdsdsc_xd_t *end,
 int TreeGetTimeContext(mdsdsc_xd_t *start, mdsdsc_xd_t *end, mdsdsc_xd_t *delta) {
   return _TreeGetTimeContext(*TreeCtx(), start, end, delta);
 }
+
+
+////////////RESAMPLED STUFF
+
+inline static float toFloat(char dtype, void * ptr, int  idx)
+{
+     switch (dtype) {
+      case DTYPE_B:
+      case DTYPE_BU:
+        return ((int8_t *)ptr)[idx];
+        break;
+      case DTYPE_W:
+      case DTYPE_WU:
+        return ((int16_t *)ptr)[idx];
+        break;
+      case DTYPE_L:
+      case DTYPE_LU:
+        return ((int32_t *)ptr)[idx];
+        break;
+      case DTYPE_Q:
+      case DTYPE_QU:
+        return ((int64_t *)ptr)[idx];
+        break;
+      case DTYPE_FS:
+        return ((float *)ptr)[idx];
+        break;
+      case DTYPE_FT:
+        return ((double *)ptr)[idx];
+        break;
+      default:
+        return 0;
+    }
+}
+
+
+inline static void resampleRow(char dtype, int rowSize, int resFact, void *ptr, float *resampled, int rowIdx) 
+{
+    int currResIdx, currRowIdx;
+    float avgVal;
+    for(currRowIdx = 0; currRowIdx < rowSize; currRowIdx++)
+    {
+        avgVal = 0;
+        for(currResIdx = 0; currResIdx < resFact; currResIdx++)
+        {
+            avgVal += toFloat(dtype, ptr, (rowIdx*resFact + currResIdx)*rowSize+currRowIdx);
+        }
+        resampled[rowIdx*rowSize + currRowIdx] = avgVal;
+    }
+}
+
+  
+
+int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int id, int rows_filled,
+  int resampledNid, int resFactor)
+{
+        //Resampled array always converted to float, Assumed 1D array
+        int dims[MAX_DIMS];
+        int idx, status;
+        int nRows, nResRows, rowSize;
+        int nDims = initialValue->dimct;
+        float *resSamples; //Resampled version always float
+        DESCRIPTOR_LONG(resFactorD, &resFactor);
+        DESCRIPTOR_LONG(nRowsD, &nRows);
+        DESCRIPTOR_NID(resNidD, &resampledNid);
+        DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
+        STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2,%d*($3-$4)/%d)");    
+        EMPTYXD(dimXd);
+        
+        if (nDims > 1) {
+          memcpy(dims, ((A_COEFF_TYPE *)initialValue)->m, nDims * sizeof(int));
+          nRows = dims[nDims - 1];
+          rowSize = 1;
+          for(idx = 0; idx < nDims - 1; idx++)
+          {
+            rowSize *= dims[idx];
+          }
+          resD.dimct = initialValue->dimct;
+          memcpy(resD.m, ((A_COEFF_TYPE *)initialValue)->m, initialValue->dimct * sizeof(int));
+        }
+        else
+        {
+          nRows = initialValue->arsize/ initialValue->length;
+          rowSize = 1;
+          resD.dimct = 1;
+        }
+        nResRows = nRows / resFactor;
+        if(nResRows < 1)  
+        {
+            return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+        }
+        resD.m[resD.dimct - 1] = nResRows;
+        
+        resSamples = (float *)malloc(nRows * rowSize * sizeof(float));
+        resD.pointer = (char *)resSamples;
+        for(idx = 0; idx < nResRows; idx++)
+        {
+            resampleRow(initialValue->dtype, rowSize, resFactor, initialValue->pointer, resSamples, idx);
+        }            
+
+        status = _TdiCompile(&dbid, &expression, &resFactorD, &nRowsD, &dimXd MDS_END_ARG);
+        if (!STATUS_OK)
+        {
+            free(resSamples);
+            return status;
+        }
+        status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, 1);
+        if (!STATUS_OK)
+        {
+            free(resSamples);
+            return status;
+        }
+        free(resSamples);
+        
+        status =  _TreeSetXNci(dbid, nid, "ResampleFactor", &resFactorD) ;
+        if (!STATUS_OK)
+        { 
+          return status;
+        }
+        status =  _TreeSetXNci(dbid, nid, "ResampleNid", &resNidD);
+        if (!STATUS_OK)
+        {
+            return status;
+        }
+       
+        return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+}
