@@ -61,8 +61,6 @@ class _ACQ2106_WRPG(MDSplus.Device):
         # the same used by the digitazer module. Otherwise, we can choose a different one, to be in an independent highway from
         # the digitazer, like d1.
 
-        uut.s0.SIG_EVENT_SRC_0 = 'TRG' # or GPG
-
         slot.GPG_ENABLE = 1
         slot.GPG_MODE   = 'LOOP'
 
