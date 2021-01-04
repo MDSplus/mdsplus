@@ -3,7 +3,7 @@ include @top_builddir@/Makefile.inc
 LIBPREFIX=Tdi
 
 srcdir=@srcdir@
-builddir=@builddir@ 
+builddir=@builddir@
 VPATH=@srcdir@
 @AX_RECONFIGURE_TARGET@
 
@@ -72,6 +72,7 @@ TdiMinMax.c \
 TdiOpcDef.c \
 TdiPack.c \
 TdiPower.c \
+TdiReshape.c \
 TdiSame.c \
 TdiScalar.c \
 TdiSetRange.c \
@@ -131,4 +132,3 @@ TdiYacc.o :
 
 TdiLex.o :
 	$(COMPILE.c) $(OUTPUT_OPTION) $(srcdir)/TdiLex.c -Wno-sign-compare -Wno-unused-parameter
-
