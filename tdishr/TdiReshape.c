@@ -86,7 +86,8 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[], struct des
             arr->dimct = arr->dimct-j;
             if (bounds)
             {   // move bounds
-                for (i = arr->dimct ; i < arr->dimct*3 ; i++)
+                const int end = arr->dimct * (1 + sizeof(bound_t)/sizeof(int32_t));
+                for (i = arr->dimct ; i < end ; i++)
                 {
                     arr->m[i] = arr->m[i + j];
                 }
