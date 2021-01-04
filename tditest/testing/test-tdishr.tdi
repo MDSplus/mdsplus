@@ -3157,3 +3157,5 @@ _=*;switch(5,statement(default(statement(_=$FALSE,break())),case((0:2,4:6,8:10),
 <syntax error at '<'
 _d=2W;zero(shape(_d),_d[0])
 _d=[[2LU]];zero(shape(_d),_d[0])
+[[[[[1],[2]]],[[[3],[4]]]]][:]
+[[[[[1],[2]]],[[[3],[4]]]]][::]
