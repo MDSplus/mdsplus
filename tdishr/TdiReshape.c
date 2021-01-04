@@ -48,12 +48,16 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[], struct des
             return TdiNO_OPC;
         case OPC_FLATTEN:
         {
-            for (i = 1 ; i < arr->dimct ; i++)
+            if (arr->dimct > 1)
             {
-                arr->m[0] *= arr->m[i];
-                arr->m[i] = 0;
+                for (i = 1 ; i < arr->dimct ; i++)
+                {
+                    arr->m[0] *= arr->m[i];
+                    arr->m[i] = 0;
+                }
+                arr->dimct = arr->m[0] > 0 ? 1 : 0;
+                arr->aflags.bounds = 0;
             }
-            arr->dimct = arr->m[0] > 0 ? 1 : 0;
             break;
         }
         case OPC_SQUEEZE:
