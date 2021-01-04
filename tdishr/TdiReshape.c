@@ -27,17 +27,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <tdishr.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
+#include <mds_stdarg.h>
+
+#include <string.h>
 
 int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[], struct descriptor_xd *out_ptr)
 {
     if (narg < 1)
         return TdiMISS_ARG;
-    if (list[0]->class != CLASS_A
-     && list[0]->class != CLASS_CA
-     && list[0]->class != CLASS_APD)
+    int status;
+    RETURN_IF_NOT_OK(TdiData(list[0], out_ptr MDS_END_ARG));
+    if (out_ptr->pointer->class != CLASS_A
+     && out_ptr->pointer->class != CLASS_CA
+     && out_ptr->pointer->class != CLASS_APD)
         return TdiINVCLADSC;
-    int status = MdsCopyDxXd(list[0], out_ptr);
     array_coeff *arr = (array_coeff *)out_ptr->pointer;
     int i;
     switch (opcode)
