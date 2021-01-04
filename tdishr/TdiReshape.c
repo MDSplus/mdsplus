@@ -59,13 +59,19 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[], struct des
                     arr->m[i] = 0;
                 }
                 arr->dimct = arr->m[0] > 0 ? 1 : 0;
-                arr->aflags.bounds = 0;
+                arr->aflags.bounds = 0; // discard bounds
             }
             break;
         }
         case OPC_SQUEEZE:
         {
             int j = 0;
+            bound_t *bounds;
+            // calculate old bounds location
+            if (arr->aflags.bounds)
+            {
+                bounds = (bound_t*)&arr->m[arr->dimct];
+            }
             for (i = 0 ; i < arr->dimct ; i++)
             {
                 if (arr->m[i] == 1)
@@ -75,11 +81,21 @@ int Tdi1Reshape(opcode_t opcode, int narg, struct descriptor *list[], struct des
                 else
                 {
                     arr->m[i-j] = arr->m[i];
+                    if (arr->aflags.bounds)
+                    {
+                        bounds[i-j].l = bounds[i].l;
+                        bounds[i-j].u = bounds[i].u;
+                    }
                 }
             }
-            for (i = arr->dimct-j ; i < arr->dimct ; i++)
-                arr->m[i] = 0;
             arr->dimct = arr->dimct-j;
+            if (arr->aflags.bounds)
+            {   // move bounds
+                for (i = arr->dimct ; i < arr->dimct*3 ; i++)
+                {
+                    arr->m[i] = arr->m[i + j];
+                }
+            }
             break;
         }
     }
