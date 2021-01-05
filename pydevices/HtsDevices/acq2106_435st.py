@@ -275,12 +275,49 @@ class _ACQ2106_435ST(MDSplus.Device):
         uut.s0.set_knob('set_abort', '1')
 
         try:
-            self.slots = [uut.s1]
-            self.slots.append(uut.s2)
-            self.slots.append(uut.s3)
-            self.slots.append(uut.s4)
-            self.slots.append(uut.s5)
-            self.slots.append(uut.s6)
+            is_s1 = uut.s1 is not None
+        except:
+            is_s1 = False
+
+        try:
+            is_s2 = uut.s2 is not None
+        except:
+            is_s2 = False
+
+        try:
+            is_s3 = uut.s3 is not None
+        except:
+            is_s3 = False
+
+        try:
+            is_s4 = uut.s4 is not None
+        except:
+            is_s4 = False
+
+        try:
+            is_s5 = uut.s5 is not None
+        except:
+            is_s5 = False
+
+        try:
+            is_s6 = uut.s6 is not None
+        except:
+            is_s6 = False
+
+        self.slots = []
+        try:
+            if is_s1:
+                self.slots.append(uut.s1)
+            if is_s2:
+                self.slots.append(uut.s2)
+            if is_s3:
+                self.slots.append(uut.s3)
+            if is_s4:
+                self.slots.append(uut.s4)
+            if is_s5:
+                self.slots.append(uut.s5)
+            if is_s6:
+                self.slots.append(uut.s6)
         except:
             pass
 
