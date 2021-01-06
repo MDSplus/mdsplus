@@ -167,7 +167,7 @@ VALGRIND_SUPPRESSIONS_FILES += $(wildcard $(top_srcdir)/conf/valgrind.supp/$(DIS
 
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --gen-suppressions=all \
-                            --num-callers=30 \
+                            --num-callers=64 \
                             --trace-children=yes \
                             --child-silent-after-fork=yes \
                             --trace-children-skip-by-arg=*SetMdsplusFileProtection*
