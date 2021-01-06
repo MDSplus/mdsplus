@@ -274,6 +274,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
+        # The following checks if a site has a ELF card in it:
         try:
             is_s1 = uut.s1 is not None
         except:
@@ -303,6 +304,7 @@ class _ACQ2106_435ST(MDSplus.Device):
             is_s6 = uut.s6 is not None
         except:
             is_s6 = False
+
 
         self.slots = []
         try:
