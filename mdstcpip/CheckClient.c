@@ -113,7 +113,10 @@ static int become_user(const char *remote_user, const char *local_user)
 }
 #endif
 
-
+static inline size_t bytes_added( ssize_t result_of_sprintf )
+{
+    return (result_of_sprintf > 0) ? (size_t)result_of_sprintf : 0;
+}
 
 int CheckClient(const char *const username, int num, char *const *const matchString)
 {
@@ -194,16 +197,17 @@ int CheckClient(const char *const username, int num, char *const *const matchStr
     int i;
     for (i = 0; i < num; i++)
       cmdlen += strlen(matchString[i]) + 3;
-    char *cmd_end, *const cmd = (char *)malloc(cmdlen);
-    cmd_end = cmd + sprintf(cmd, "%s(", hostfile + 3);
+    char *const cmd = (char *)malloc(cmdlen);
+    if (cmd == NULL) return ACCESS_DENIED;
+    size_t len = bytes_added(sprintf(cmd, "%s(", hostfile + 3));
     if (username)
-      cmd_end += sprintf(cmd_end, "\"%s\",", username);
+      len += bytes_added(sprintf(cmd + len, "\"%s\",", username));
     else
-      cmd_end += sprintf(cmd_end, "*,");
+      len += bytes_added(sprintf(cmd + len, "*,"));
     for (i = 0; i < num; i++)
-      cmd_end += sprintf(cmd_end, "\"%s\",", matchString[i]);
-    cmd_end[-1] = ')'; // replace trailing , with closing )
-    mdsdsc_t cmd_d = { (length_t)(cmd_end-cmd), DTYPE_T, CLASS_S, cmd };
+      len += bytes_added(sprintf(cmd + len, "\"%s\",", matchString[i]));
+    cmd[len-1] = ')'; // replace trailing , with closing )
+    mdsdsc_t cmd_d = { (length_t)len, DTYPE_T, CLASS_S, cmd };
     mdsdsc_t ans_d = { 0, DTYPE_T, CLASS_D, 0 };
     int status = TdiExecute(&cmd_d, &ans_d MDS_END_ARG);
     free(cmd);
