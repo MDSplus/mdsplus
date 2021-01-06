@@ -165,7 +165,7 @@ VALGRIND_CHECK_RULES='
 # Optional variables
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --gen-suppressions=all \
-                            --num-callers=30 \
+                            --num-callers=64 \
                             --trace-children=yes \
                             --child-silent-after-fork=yes \
                             --trace-children-skip-by-arg=*SetMdsplusFileProtection*
