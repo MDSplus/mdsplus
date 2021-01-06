@@ -172,78 +172,60 @@ AS_CASE([$enable_perf],
         [yes], [AC_DEFINE([USE_PERF], [], [Define if you want to collect performance statistics -- linux only])])
 AC_MSG_RESULT([$enable_perf])
 
-dnl AC_ARG_ENABLE([universal],
-dnl              [AS_HELP_STRING([--enable-universal],
-dnl                              [Build MacOSX Universal Binary])],
-dnl              [],
-dnl              [AS_VAR_SET([enable_universal], [no])])
-dnl
+# //////////////////////////////////////////////////////////////////////////// #
+# ///  JAVA  ///////////////////////////////////////////////////////////////// #
+# //////////////////////////////////////////////////////////////////////////// #
 
 AC_MSG_CHECKING([whether to build the java components])
 AC_ARG_ENABLE([java],
-              [AS_HELP_STRING([--disable-java],
-                              [Do not build java libraries and applications])],
+              [AS_HELP_STRING([--disable-java], [Do not build java libraries and applications])],
               [],
-              [AS_VAR_SET([enable_java], [yes])])
+              [AS_VAR_SET([enable_java], [yes])]
+)
 AM_CONDITIONAL([ENABLE_JAVA],[AS_VAR_TEST_SET([enable_java])])
+AC_MSG_RESULT([$enable_java])
 
-dnl this new java section hoses macos x... why not use the autoconf java macros?
-dnl I'm faking a disable so I can enable by hand later...
-dnl AS_CASE([$host_vendor],
-dnl        [apple], dnl the java section breaks with macos x due to different structure
-dnl                 dnl this disables it for now..  is there a AC_PROG_JAVA?
-dnl                 [AS_VAR_SET([enable_java], [no])]
-dnl                 [AS_VAR_IF([enable_universal], [yes], [CFLAGS="-O3 -g -isysroot /Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-dnl                                                       [LDFLAGS="-Wl,-syslibroot,/Developer/SDKs/MacOSX10.4u.sdk -arch i386 -arch ppc"]
-dnl                                                       [F77=fort77])])
-dnl AC_MSG_RESULT([$enable_java])
-
-# //////////////////////////////////////////////////////////////////////////// #
-# ///  JDK   ///////////////////////////////////////////////////////////////// #
-# //////////////////////////////////////////////////////////////////////////// #
-
-dnl This is a workaround to maintain both JAVA_HOME and JDK_DIR env
-AS_VAR_SET_IF([JDK_DIR],
-              [AS_VAR_SET([JAVA_HOME],[${JDK_DIR}])])
-AC_CHECK_JAVA_HOME
-AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])
-
-AC_ARG_WITH([jdk],
-            [AS_HELP_STRING([--with-jdk=JDKDIR],
-                            [specify location of java jdk])],
-            [],
-            [AS_VAR_SET_IF([JDK_DIR],
-                           [AS_VAR_SET([with_jdk], [$JDK_DIR])],
-                           [AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])])])
-
-AC_ARG_WITH([java_target],
-	    [AS_HELP_STRING([--with-java_target=version],
-                            [specify version of compiled mdsobjects classes (i.e. 6)])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
-
-AC_ARG_WITH([java_bootclasspath],
-	    [AS_HELP_STRING([--with-java_bootclasspath=bootclasspath],
-                            [specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
-            [AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])])
-
-AS_CASE([$enable_java],
-        [yes], [AC_MSG_CHECKING([for presence of Java Development Kit])
-                ## AS_IF([test ! -d $with_jdk/jre], ##
-		## AS_IF([test ! -d $with_jdk], ##
-		AS_IF([test ! -d $with_jdk ${JRE}],
-                      [AC_MSG_RESULT([not found])
-                       AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
-                       AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
-                       AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
-                       AC_MSG_WARN([You can disable java by using the --disable-java option.])
-                       AS_EXIT])
-                AC_MSG_RESULT([$with_jdk])
-                AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])
-                AC_PATH_PROG([RMIC], [rmic], [], [$with_jdk/bin$PATH_SEPARATOR$PATH])])
-
+AS_CASE([$enable_java], [yes], [
+	dnl This is a workaround to maintain both JAVA_HOME and JDK_DIR env
+	AS_VAR_SET_IF([JDK_DIR], [AS_VAR_SET([JAVA_HOME],[${JDK_DIR}])])
+	AC_CHECK_JAVA_HOME
+	AS_VAR_SET([JDK_DIR],[${JAVA_HOME}])
+	AC_ARG_WITH([jdk],
+		[AS_HELP_STRING([--with-jdk=JDKDIR],
+		[specify location of java jdk])],
+		[],
+		[
+			AS_VAR_SET_IF([JDK_DIR],
+				[AS_VAR_SET([with_jdk], [$JDK_DIR])],
+				[AS_VAR_SET([with_jdk], [/etc/alternatives/java_sdk])
+		])
+	])
+	AC_ARG_WITH([java_target],
+		[AS_HELP_STRING([--with-java_target=version],
+		[specify version of compiled mdsobjects classes (i.e. 6)])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -target $withval"])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -target \$(JAVASOURCE)"])])
+	AC_ARG_WITH([java_bootclasspath], [
+			AS_HELP_STRING(
+				[--with-java_bootclasspath=bootclasspath],
+				[specify the bootclasspath option for use with --with-java_target (i.e. /usr/lib/jvm/java-1.6.0-openjdk-1.6.0.0/jre/lib/rt.jar)]
+			)
+		],
+		[AS_VAR_APPEND([JAVACFLAGS], [" -bootclasspath $withval"])],
+		[AS_VAR_APPEND([JAVACFLAGS], [" \$(JAVABOOTCLASSPATH)"])]
+	)
+	AC_MSG_CHECKING([for presence of Java Development Kit])
+	AS_IF([test ! -d $with_jdk ${JRE}], [
+		AC_MSG_RESULT([not found])
+		AC_MSG_WARN([YOU NEED TO SPECIFY THE JAVA JDK DIRECTORY OR DISABLE JAVA])
+		AC_MSG_WARN([The jdk directory can be specified by either defining a JDK_DIR environment])
+		AC_MSG_WARN([variable or by using the --with-jdk=DIR option.])
+		AC_MSG_WARN([You can disable java by using the --disable-java option.])
+		AS_EXIT
+	])
+	AC_PATH_PROG([JAVAC], [javac], [], [$with_jdk/bin:$PATH])
+	AC_PATH_PROG([JAR], [jar], [], [$with_jdk/bin:$PATH])
+])
 
 AM_CONDITIONAL([GLOBUSLICENSE], [test -r $exec_prefix/GLOBUS_LICENSE])
 
@@ -1093,7 +1075,7 @@ AM_CONDITIONAL([HAVE_PL_TAP_PARSER],[test x"${have_pl_tap_parser}" = x"yes"])
 TS_SELECT
 
 ## SKIP JAVA TESTS ##
-AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
+# AS_VAR_IF([ENABLE_SANITIZE],[no],[],[AS_ECHO(["skipping junit: in sanitize"]); skip_junit=yes])
 AX_CHECK_JAVA_VERSION([1.8],[],[AS_ECHO(["skipping junit: not JDK 1.8"]); skip_junit=yes])
 TS_CHECK_JAVA([],[],[AS_ECHO(["skipping junit: java not found"]); skip_junit=yes])
 AM_CONDITIONAL([SKIP_JUNIT],[test x${skip_junit} = xyes])
@@ -1312,6 +1294,7 @@ AC_SUBST(JARS_DIR)
 AC_SUBST(JAVA_ONLY)
 AC_SUBST(JAVA_APS)
 AC_SUBST(JAVA_JAR)
+AC_SUBST(JAVAC)
 AC_SUBST(JAVACFLAGS)
 AC_SUBST(JDK_CFLAGS)
 AC_SUBST(JDK_DIR)
