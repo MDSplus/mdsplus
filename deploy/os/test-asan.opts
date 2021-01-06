@@ -1,1 +1,1 @@
---platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --test --sanitize --sanitize=address
+--platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --test=skip --sanitize --sanitize=address

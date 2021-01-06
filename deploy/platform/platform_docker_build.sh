@@ -135,7 +135,7 @@ checktests() {
 
 sanitize() {
     ### Build with sanitizers and run tests with each sanitizer
-    if [ ! -z "$SANITIZE" ]
+    if [ -n "$SANITIZE" ]
     then
         for test in ${SANITIZE}; do
             echo Doing sanitize ${test}
@@ -172,6 +172,8 @@ make_jars() {
 }
 
 normaltest() {
+  if [ "$TEST" = "yes" -o -n "$VALGRIND_TOOLS" ]
+  then
     gettimeout() {
         declare -i n=1800*$#
         echo $n
@@ -179,15 +181,18 @@ normaltest() {
     ### Build with debug to run regular and valgrind tests
     MDSPLUS_DIR=/workspace/tests/$1/buildroot;
     config_test $@
-    if [ -z "$NOMAKE" ]; then
+   if [ -z "$NOMAKE" ]; then
     $MAKE
     checkstatus abort "Failure compiling $1-bit." $?
     $MAKE install
     checkstatus abort "Failure installing $1-bit." $?
-    ### Run standard tests
-    :&& tio 600 $MAKE -k tests 2>&1
-    checkstatus tests_$1 "Failure testing $1-bit." $?
-    if [ ! -z "$VALGRIND_TOOLS" ]
+    if [ "$TEST" = "yes" ]
+    then
+         ### Run standard tests
+        :&& tio 600 $MAKE -k tests 2>&1
+        checkstatus tests_$1 "Failure testing $1-bit." $?
+    fi
+    if [ -n "$VALGRIND_TOOLS" ]
     then
         ### Test with valgrind
         to=$( gettimeout $VALGRIND_TOOLS )
@@ -197,7 +202,8 @@ normaltest() {
         checkstatus tests_${1}_val "Failure testing $1-bit with valgrind." $?
     fi
    fi
-    popd
+   popd
+  fi
 }
 
 main(){
@@ -206,11 +212,8 @@ main(){
     then
         source ${srcdir}/deploy/os/${OS}.env
     fi
-    if [ "$TEST" = "yes" ]
-    then
-        set +e
-        runtests
-    fi
+    set +e
+    runtests
     if [ "$MAKE_JARS" = "yes" ]
     then
       set +e
