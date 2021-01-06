@@ -39,7 +39,7 @@ SYNOPSIS
                [--distname=dir] [--dockerpull]
                [--valgrind=test-list] [--sanitize=test-list]
                [--distname=name] [--updatepkg] [--eventport=number]
-               [--arch=name] [--color] 
+               [--arch=name] [--color]
                [--jars] [--jars-dir=dir] [--make-jars] [--docker-srcdir=dir]
 
 DESCRIPTION
@@ -478,9 +478,11 @@ echo "${SANITIZE}"
 if [ "${TEST}"            != "yes"  \
  -a  "${MAKE_JARS}"       != "yes"  \
  -a  "${RELEASE}"         != "yes"  \
- -a  "${PUBLISH}"         != "yes"  ]
+ -a  "${PUBLISH}"         != "yes"  \
+ -a  "${SANITIZE}"         = ""     \
+ -a  "${VALGRIND_TOOLS}"   = ""     ]
 then
-    >&2 echo "None of --test --make-jars --release=version --publish=version options specified on the command or skipped. Nothing to do!"
+    >&2 echo "None of --test --make-jars --release=version --publish=version --sanitize --valgrind options specified on the command or skipped. Nothing to do!"
     exit 0
 fi
 #

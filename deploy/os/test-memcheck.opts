@@ -1,1 +1,1 @@
---platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --test --valgrind --valgrind=memcheck
+--platform=redhat --dockerimage=mdsplus/builder:fc32 --distname=fc32 --test=skip --valgrind --valgrind=memcheck
