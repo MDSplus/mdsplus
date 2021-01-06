@@ -56,17 +56,9 @@ TESTS = \
 #
 # VALGRIND_TESTS = 
 
-# Valgrind suppressions:
-#
-# NOTE: all Suppression suffixed test are not propely tests but programs that
-# may rise false positives in valgrind memory check so they may be usefull to
-# generate suppressions codes.
-#
-
 VALGRIND_SUPPRESSIONS_FILES = \
-			      $(top_srcdir)/conf/valgrind-mdsplus.supp \
-                              $(top_srcdir)/mdsshr/testing/valgrind-mdsshr.supp \
-                              $(srcdir)/valgrind-mdsobjects-cpp.supp
+	$(srcdir)/valgrind.supp \
+	$(top_srcdir)/mdsshr/testing/valgrind.supp
 
 #
 # Files produced by tests that must be purged

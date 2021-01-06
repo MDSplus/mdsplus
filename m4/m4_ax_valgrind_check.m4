@@ -161,8 +161,10 @@ VALGRIND_CHECK_RULES='
 #  - VALGRIND_$toolname_FLAGS: Flags to pass to Valgrind $toolname (one of:
 #    memcheck, helgrind, drd, sgcheck). (Default: various)
 
-
 # Optional variables
+VALGRIND_SUPPRESSIONS_FILES += $(top_srcdir)/conf/valgrind.supp/mdsplus.supp
+VALGRIND_SUPPRESSIONS_FILES += $(wildcard $(top_srcdir)/conf/valgrind.supp/$(DISTNAME).supp)
+
 VALGRIND_FLAGS           ?=
 VALGRIND_FLAGS           += --gen-suppressions=all \
                             --num-callers=64 \
@@ -184,11 +186,6 @@ VALGRIND_sgcheck_FLAGS   +=
 
 VALGRIND_SUPPRESSIONS    ?=
 VALGRIND_SUPPRESSIONS    += $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES))
-
-VALGRIND_SUPPRESSIONS_PY ?=
-VALGRIND_SUPPRESSIONS_PY += --suppressions=$(top_srcdir)/conf/valgrind-python.supp \
-                            $(addprefix --suppressions=,$(VALGRIND_SUPPRESSIONS_FILES_PY))
-
 
 VALGRIND_TOOLS ?= memcheck helgrind drd sgcheck
 
@@ -237,7 +234,7 @@ VALGRIND_TESTS_ENVIRONMENT += \
 VALGRIND_LOG_COMPILER = \
 	$(valgrind_lt) \
 	$(VALGRIND) --error-exitcode=7 \
-	$(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY) \
+	$(VALGRIND_SUPPRESSIONS) \
 	$(valgrind_$(VALGRIND_TOOL)_flags) \
 	$(VALGRIND_FLAGS)
 
@@ -254,7 +251,7 @@ _print_valgrind_hello = \
   echo " active tool options   :  $(valgrind_$(VALGRIND_TOOL)_flags) "; \
   echo " active valgrind flags : $(VALGRIND_FLAGS) "; \
   echo " active suppressions   : "; \
-  for supp in $(VALGRIND_SUPPRESSIONS)  $(VALGRIND_SUPPRESSIONS_PY); do \
+  for supp in $(VALGRIND_SUPPRESSIONS); do \
     echo "        $${supp}"; \
   done
 
@@ -303,7 +300,7 @@ tests-valgrind-suppressions-tool:
 	TESTS_ENVIRONMENT="$(VALGRIND_TESTS_ENVIRONMENT) $(TESTS_ENVIRONMENT)" \
 	LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(subst ",\",$(LOG_COMPILER))" \
 	PY_LOG_COMPILER="$(VALGRIND_LOG_COMPILER) --gen-suppressions=all --log-fd=11 $(subst ",\",$(PY_LOG_COMPILER))" \
-	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/conf/valgrind-parse-suppressions.awk > \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
+	AM_TESTS_FD_REDIRECT=" 11>&1 | $(AWK) -f $(top_srcdir)/testing/parse_valgrind_suppressions.sh > \$$\$$b-valgrind-$(VALGRIND_TOOL).supp" \
 	TEST_SUITE_LOG=valgrind-suite-$(VALGRIND_TOOL).log
 
 else

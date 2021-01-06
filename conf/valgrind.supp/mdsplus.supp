@@ -1,0 +1,8 @@
+{
+   xmlInitParser_supp
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:xmlInitParser_supp
+}

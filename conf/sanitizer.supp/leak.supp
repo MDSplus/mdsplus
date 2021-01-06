@@ -1,0 +1,3 @@
+leak:*libpython*
+leak:*numpy*
+leak:python*/lib-dynload

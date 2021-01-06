@@ -16,13 +16,12 @@ TEST_EXTENSIONS = .out
 AM_DEFAULT_SOURCE_EXT = .c
 
 TESTS = \
- dtype_test\
- mdslib_ctest\
- mdslib_ftest\
- mdslib_fremotetest
+	dtype_test\
+	mdslib_ctest\
+	mdslib_ftest\
+	mdslib_fremotetest
 
-VALGRIND_SUPPRESSIONS_FILES = \
- $(top_srcdir)/conf/valgrind-mdsplus.supp
+VALGRIND_SUPPRESSIONS_FILES = 
 
 #
 # Files produced by tests that must be purged
