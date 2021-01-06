@@ -1,0 +1,363 @@
+# glibc
+
+{
+   dlopen
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:dl_open_worker
+   fun:_dl_catch_exception
+   fun:_dl_open
+   fun:dlopen_doit
+   fun:_dl_catch_exception
+   fun:_dl_catch_error
+   fun:_dlerror_run
+}
+{
+   getaddrinfo
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:gethostbyname2_r@@GLIBC_2.2.5
+   fun:gaih_inet.constprop.0
+   fun:getaddrinfo
+}
+{
+   getnameinfo
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:gethostbyaddr_r@@GLIBC_2.2.5
+   fun:getnameinfo
+}
+{
+   pthread_create
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:_dl_allocate_tls
+}
+
+
+# python
+{
+   libpython race
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
+   PyEval_SaveThread
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyEval_SaveThread
+}
+{
+   PyGILState_Ensure
+   Helgrind:Race
+   fun:PyGILState_Ensure
+}
+{
+   _PyThreadState_Swap
+   Helgrind:Race
+   fun:_PyThreadState_Swap
+}
+{
+   PyBytes_FromStringAndSize
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyBytes_FromStringAndSize
+}
+{
+   PyObject_Malloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyObject_Malloc
+}
+{
+   PyObject_Malloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:PyObject_Malloc
+}
+{
+   PyMem_Calloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   fun:PyMem_Calloc
+}
+{
+   PyMem_Malloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyMem_Malloc
+}
+{
+   PyType_GenericAlloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyType_GenericAlloc
+}
+{
+   PyUnicode_New
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:PyUnicode_New
+}
+{
+   PyUnicode_Append
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyUnicode_Append
+}
+{
+   _PyUnicodeWriter_Finish
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyUnicodeWriter_Finish
+}
+{
+   _PyBytes_Resize
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   fun:_PyBytes_Resize
+}
+{
+   _PyLong_New
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_PyLong_New
+}
+{
+   _PyObject_GC_New
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObject_GC_New
+}
+{
+   _PyObject_GC_NewVar
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObject_GC_NewVar
+}
+{
+   _PyObject_GC_NewVar
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObject_GC_NewVar
+}
+{
+   _PyObjectDict_SetItem
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyObjectDict_SetItem
+}
+{
+   _PyObject_GC_Resize
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   fun:_PyObject_GC_Resize
+}
+{
+   PyInit__multiarray_umath
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:*alloc
+   obj:*.so
+   fun:PyInit__multiarray_umath
+   fun:_PyImport_LoadDynamicModuleWithSpec
+}
+{
+   _PyUnicodeWriter_PrepareInternal
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyUnicodeWriter_PrepareInternal
+}
+{
+   malloc in _multiarray_umath
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   obj:/usr/lib64/python3.8/site-packages/numpy/core/_multiarray_umath.cpython-38-x86_64-linux-gnu.so
+}
+{
+   malloc in _multiarray_umath
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:/usr/lib64/python3.8/site-packages/numpy/core/_multiarray_umath.cpython-38-x86_64-linux-gnu.so
+}
+{
+   realloc in _multiarray_umath
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:realloc
+   obj:/usr/lib64/python3.8/site-packages/numpy/core/_multiarray_umath.cpython-38-x86_64-linux-gnu.so
+}
+{
+   _PyEval_EvalFrameDefault
+   Helgrind:Race
+   fun:_PyEval_EvalFrameDefault
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+{
+   libpython3.8.so.1.0
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:_PyEval_EvalFrameDefault
+}
+{
+   PyEval_AcquireThread
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyEval_AcquireThread
+}
+{
+   PyEval_RestoreThread
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyEval_RestoreThread
+}
+{
+   pthread_cond_timedwait
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:pthread_cond_timedwait@@GLIBC_2.3.2
+   fun:pthread_cond_timedwait_WRK
+   fun:pthread_cond_timedwait@*
+   obj:/usr/lib64/libpython3.8.so.1.0
+}
+
+# java
+
+{
+   JLI_MemAlloc
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:JLI_MemAlloc
+}
+{
+   JLI_MemAlloc
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:JLI_MemAlloc
+}
+{
+   JNI_CreateJavaVM
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   ...
+   fun:JNI_CreateJavaVM
+}
+{
+   os::PlatformEvent::park()
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:pthread_cond_timedwait@@GLIBC_2.3.2
+   fun:pthread_cond_timedwait_WRK
+   fun:pthread_cond_timedwait@*
+   fun:_ZN2os13PlatformEvent4parkEl
+}
+{
+   CTimer::waitForEvent()
+   Helgrind:Misc
+   fun:pthread_cond_signal_WRK
+   fun:pthread_cond_signal@*
+   fun:pthread_cond_timedwait@@GLIBC_2.3.2
+   fun:pthread_cond_timedwait_WRK
+   fun:pthread_cond_timedwait@*
+   fun:_ZN6CTimer12waitForEventEv
+}
+{
+   os::malloc::MemoryType::NativeCallStack()
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:malloc
+   fun:_ZN2os6mallocEm10MemoryTypeRK15NativeCallStack
+}
+{
+   os::malloc::MemoryType::NativeCallStack()
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   fun:_ZN2os6mallocEm10MemoryTypeRK15NativeCallStack
+}
+{
+   GlobalValueNumbering()
+   Memcheck:Cond
+   fun:_ZN20GlobalValueNumberingC1EP2IR
+}
+{
+   Monitor::TrySpin::Thread()
+   Memcheck:Cond
+   fun:_ZN7Monitor7TrySpinEP6Thread
+}
+{
+   JVMState::clone_shallow::Compile()
+   Memcheck:Cond
+   fun:_ZNK8JVMState13clone_shallowEP7Compile
+}
+{
+   JVMState::clone_deep::Compile()
+   Memcheck:Cond
+   fun:_ZNK8JVMState10clone_deepEP7Compile
+}
+{
+   GraphKit::add_safepoint_edges::SafePointNode()
+   Memcheck:Cond
+   fun:_ZN8GraphKit19add_safepoint_edgesEP13SafePointNodeb
+}
+{
+   GraphKit::sync_jvms()
+   Memcheck:Cond
+   fun:_ZNK8GraphKit9sync_jvmsEv
+}
+{
+   GraphKit::shared_lock::Node()
+   Memcheck:Cond
+   fun:_ZN8GraphKit11shared_lockEP4Node
+}
+{
+   GraphKit::transfer_exceptions_into_jvms()
+   Memcheck:Cond
+   fun:_ZN8GraphKit29transfer_exceptions_into_jvmsEv
+}
+{
+   InlineTree::Compile::ciMethod::JVMState()
+   Memcheck:Cond
+   fun:_ZN10InlineTreeC1EP7CompilePKS_P8ciMethodP8JVMStateifi
+}

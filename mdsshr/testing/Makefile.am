@@ -21,10 +21,8 @@ TESTS = \
 
 
 VALGRIND_SUPPRESSIONS_FILES = \
-			      $(top_srcdir)/conf/valgrind-mdsplus.supp \
-                              $(srcdir)/valgrind-mdsshr.supp
+	$(srcdir)/valgrind.supp
                               
-
 
 #
 # Files produced by tests that must be purged
