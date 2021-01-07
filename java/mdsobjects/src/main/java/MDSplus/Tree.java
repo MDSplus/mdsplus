@@ -105,15 +105,12 @@ public class Tree {
 	}
 
 	@Override
-	protected void finalize() throws Throwable {
-		try{
-			if (edit)
-				this.quit();
-			else
-				this.close();
-		}finally{
-			super.finalize();
-		}
+	protected void finalize() throws Throwable
+	{
+		if (edit)
+			this.quit();
+		else
+			this.close();
 	}
 
 	public boolean isOpen() { return open;}
