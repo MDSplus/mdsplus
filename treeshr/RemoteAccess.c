@@ -22,6 +22,8 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+
+#include <mdsplus/mdsconfig.h>
 #ifdef _WIN32
 # include <winsock2.h>
 # include <ws2tcpip.h>
@@ -30,13 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 /* Debian Bug report logs - #639078
  * pommed: FTBFS: fcntl.h:172:8: error: redefinition of 'struct flock'
+ *
+ * workaround: define flock so linux/fcntl.h will define lx_flock instead
  */
-// #include <linux/fcntl.h>
-# define F_OFD_GETLK	36
-# define F_OFD_SETLK	37
-# define F_OFD_SETLKW	38
+//// alpine does not linux/fcntl.h
+// # define flock lx_flock
+// # include <linux/fcntl.h>
+// # undef flock
+# ifndef F_OFD_SETLK
+#  define F_OFD_GETLK   36
+#  define F_OFD_SETLK   37
+#  define F_OFD_SETLKW  38
+# endif
 #endif
-#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
 #include <pthread.h>
 #include <mds_stdarg.h>
@@ -1323,7 +1331,6 @@ inline static int io_lock_remote(fdinfo_t fdinfo, off_t offset, size_t size, int
   return ret;
 }
 
-
 static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in, int *deleted) {
   int fd = fdinfo.fd;
   int err;
@@ -1360,8 +1367,27 @@ static int io_lock_local(fdinfo_t fdinfo, off_t offset, size_t size, int mode_in
   flock.l_whence = (mode == 0) ? SEEK_SET : ((offset >= 0) ? SEEK_SET : SEEK_END);
   flock.l_start = (mode == 0) ? 0 : ((offset >= 0) ? offset : 0);
   flock.l_len = (mode == 0) ? 0 : size;
-  flock.l_pid = 0;
-  err = fcntl(fd, nowait ? F_OFD_SETLK : F_OFD_SETLKW, &flock) == -1;
+  static int use_ofd_locks = 1; // atomic?
+  if (use_ofd_locks == 1)
+  {
+    flock.l_pid = 0;
+    err = fcntl(fd, nowait ? F_OFD_SETLK : F_OFD_SETLKW, &flock);
+    if (err != 0 && errno == EINVAL)
+    {
+      flock.l_pid = getpid();
+      err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock);
+      if (err == 0)
+      {
+        fprintf(stderr, "OS does not support OFD locks, file access is not threadsafe\n");
+        use_ofd_locks = 0;
+      }
+    }
+  }
+  else
+  {
+    flock.l_pid = getpid();
+    err = fcntl(fd, nowait ? F_SETLK : F_SETLKW, &flock);
+  }
   fstat(fd, &stat);
   if (deleted) *deleted = stat.st_nlink <= 0;
 #endif

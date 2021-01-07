@@ -2244,7 +2244,9 @@ class MARTE2_COMPONENT(Device):
               sourceNode = inputDict['value'].getParent().getParent().getParent()
               aliasName = inputDict['value'].getParent().getNode(':name').data()
               
-            signalGamName = inputDict['value'].getParent().getNode(':name').data()
+         #   signalGamName = inputDict['value'].getParent().getNode(':name').data()
+            signalGamName = inputDict['name']
+            aliasName = inputDict['value'].getParent().getNode(':name').data()
             sourceGamName = self.convertPath(sourceNode.getFullPath())
           except:
             isTreeRef = True

@@ -249,7 +249,7 @@ public class MdsConnection
 			address = provider.substring(idx + 1, idx_1);
 		else
 			address = provider.substring(0, idx_1);
-		return address;
+		return address.trim();
 	}
 
 	public synchronized int getProviderPort() throws NumberFormatException
@@ -259,7 +259,7 @@ public class MdsConnection
 		int port = DEFAULT_PORT;
 		final int idx = provider.indexOf(":");
 		if (idx != -1)
-			port = Integer.parseInt(provider.substring(idx + 1, provider.length()));
+			port = Integer.parseInt(provider.substring(idx + 1, provider.length()).trim());
 		return port;
 	}
 

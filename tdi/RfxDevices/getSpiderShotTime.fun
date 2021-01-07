@@ -22,7 +22,7 @@ lapse time 3754944000 37
   {
        if( _tai_ns == -1 )
        { 
-           _tai_ns  = data(build_path("\\BON_ABS_TMSP.PULSE_TIME:TAI_NS"));
+           _tai_ns  = if_error(data(build_path("\\BON_ABS_TMSP.PULSE_TIME:TAI_NS")),[(37Q * 1000Q + 631152000000Q ) * 1000000]);
        } 
        _tai_ns  = _tai_ns[0];
   }  
