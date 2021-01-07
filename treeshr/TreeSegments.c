@@ -1205,7 +1205,6 @@ int _TreeXNciMakeTimestampedSegment(void *dbid, int nid, const char *xnci,
   status = begin_finish(vars);
 end:;
   CLEANUP_NCI_POP;
-  unlock_nci(vars);
   return status;
 }
 
