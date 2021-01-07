@@ -689,7 +689,7 @@ class FLIRSC65X(Device):
         Data.execute('DevLogErr($1,$2)', self.nid, 'Cannot Start Camera Acquisition : '+self.error.raw)
         raise mdsExceptions.TclFAILED_ESSENTIAL
       print("flirLib acquisition started")
-      self.worker.configure(self)
+      self.worker.configure(self.copy())
       self.saveWorker()
       self.worker.start()
       return 1
