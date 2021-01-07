@@ -2320,17 +2320,17 @@ JNIEXPORT jstring JNICALL Java_MDSplus_TreeNode_getNciString
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jlong jctx, jint nciType) {
   int status;
   char path[1024];
-  int pathLen = 1024;
-  struct nci_itm nciList[] = { {1023, 0, path, &pathLen},
+  int pathLen = 0;
+  struct nci_itm nciList[] = { {sizeof(path)-1, 0, path, &pathLen},
   {NciEND_OF_LIST, 0, 0, 0}
   };
   void *ctx = JLONG2PTR(jctx);
 
   nciList[0].code = (short)nciType;
   status = CTXCALLN(TreeGetNci, nid, nciList);
-  path[pathLen] = 0;
   if STATUS_NOT_OK
     throwMdsException(env, status);
+  path[pathLen] = 0;
   return (*env)->NewStringUTF(env, path);
 }
 
