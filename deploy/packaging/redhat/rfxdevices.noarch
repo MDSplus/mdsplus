@@ -469,6 +469,8 @@
 ./usr/local/mdsplus/tdi/RfxDevices/NI6071E__init.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NI6071E__store.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NI6259AIGetStartEnd.fun
+./usr/local/mdsplus/tdi/RfxDevices/NIADCBurstClock.fun
+./usr/local/mdsplus/tdi/RfxDevices/NIADCClockSegment.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NIanalogInputScaled.fun
 ./usr/local/mdsplus/tdi/RfxDevices/NIpxi6259AnalogInputScaled.fun
 ./usr/local/mdsplus/tdi/RfxDevices/OAM01__add.fun
