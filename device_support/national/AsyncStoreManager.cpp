@@ -204,28 +204,33 @@ void SaveItem::save()
 	    {
 		//printf("Configuration for gclock\n");
 		//printf("---------------- time at idx 0 NAN\n");
-		//startTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode, clockNode,startIdx);
+                /*
                 startTime = tree->tdiCompile("begin_of($)+slope_of($)*$", clockNode, clockNode,startIdx);
-	    	//endTime = compileWithArgs("begin_of($)+slope_of($)*$",(Tree *)treePtr, 3, clockNode,  clockNode,endIdx);
                 endTime = tree->tdiCompile("begin_of($)+slope_of($)*$", clockNode, clockNode, endIdx);
-
-	    	//dim = compileWithArgs("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*($), slope_of($))", 
-	       	//			(Tree *)treePtr, 7, clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
 	    	dim = tree->tdiCompile("build_range(begin_of($)+slope_of($)*$, begin_of($)+slope_of($)*($), slope_of($))", 
 	       				clockNode, clockNode, startIdx, clockNode, clockNode, endIdx, clockNode);
+                */
+		startTime = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'start_time')",(Tree *)treePtr, 3, clockNode, startIdx, endIdx);
+	    	endTime   = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'end_time')",  (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
+	    	dim       = compileWithArgs("NIADCClockSegment($1, $2, $3, 0, 'dim')",       (Tree *)treePtr, 3, clockNode, startIdx, endIdx);
+
+
 
 	    }
 	    else
 	    {    
 	    	Data *timeAtIdx0 = new Float32(timeIdx0);
-	    	//startTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3, timeAtIdx0, clockNode, startIdx);
+                /*
 	    	startTime = tree->tdiCompile("$+slope_of($)*$", timeAtIdx0, clockNode, startIdx);
-	    	//endTime = compileWithArgs("$+slope_of($)*$",(Tree *)treePtr, 3,timeAtIdx0,  clockNode, endIdx);
 	    	endTime = tree->tdiCompile("$+slope_of($)*$",timeAtIdx0,  clockNode, endIdx);
-	    	//dim = compileWithArgs("build_range($+slope_of($)*$, $+slope_of($)*($), slope_of($))", (Tree *)treePtr, 
-		//                     7, timeAtIdx0, clockNode, startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
 	    	dim = tree->tdiCompile("build_range($+slope_of($)*$, $+slope_of($)*($), slope_of($))", timeAtIdx0, clockNode,
                                         startIdx, timeAtIdx0, clockNode, endIdx, clockNode);
+                */
+		startTime = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'start_time')",(Tree *)treePtr, 4, clockNode, startIdx, endIdx, timeAtIdx0);
+	    	endTime   = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'end_time')",  (Tree *)treePtr, 4, clockNode, startIdx, endIdx, timeAtIdx0);
+	    	dim       = compileWithArgs("NIADCClockSegment($1, $2, $3, $4, 'dim')",       (Tree *)treePtr, 4, clockNode, startIdx, endIdx, timeAtIdx0);
+
+
 	    }
 	    switch( dataType )
 	    {
@@ -237,8 +242,8 @@ void SaveItem::save()
 		    pthread_mutex_lock(&segmentMutex);
 		    try {
 		    	if(resampledNode)
-			    //dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
-			    dataNode->beginSegment(startTime, endTime, dim, fData);
+			    dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
+			    //dataNode->beginSegment(startTime, endTime, dim, fData);
 		    	else
 			    dataNode->beginSegment(startTime, endTime, dim, fData);
 		    }  catch(MdsException &exc) {
@@ -257,8 +262,8 @@ void SaveItem::save()
 		    pthread_mutex_lock(&segmentMutex);
 		    try {
 		    	if(resampledNode)
-			    //dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
-			    dataNode->beginSegment(startTime, endTime, dim, fData);
+			    dataNode->beginSegmentMinMax(startTime, endTime, dim, fData, resampledNode, 100);
+			    //dataNode->beginSegment(startTime, endTime, dim, fData);
 		        else
 			    dataNode->beginSegment(startTime, endTime, dim, fData);
 		    }  catch(MdsException &exc) {
@@ -290,8 +295,8 @@ void SaveItem::save()
 			pthread_mutex_lock(&segmentMutex);
 			try  {
 			    if(resampledNode)
-//			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-			        dataNode->putSegment(data, -1);
+			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+			        //dataNode->putSegment(data, -1);
 			    else
 			        dataNode->putSegment(data, -1);
 			} catch(MdsException &exc)
@@ -310,8 +315,8 @@ void SaveItem::save()
 			pthread_mutex_lock(&segmentMutex);
 			try  {
 			    if(resampledNode)
-//			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
-			        dataNode->putSegment(data, -1);
+			        dataNode->putSegmentMinMax(data, -1, resampledNode, 100);
+			        //dataNode->putSegment(data, -1);
 			    else
 			        dataNode->putSegment(data, -1);
 			} catch(MdsException &exc)
@@ -398,8 +403,9 @@ void SaveList::addItem(void *buffer, int bufSize, int sampleToRead, char dataTyp
 		pthread_cond_signal(&itemAvailable);
 		pthread_mutex_unlock(&mutex);
 
+#ifdef DEBUG_QUEUE
 		reportQueueLen(dataNid, treePtr, getQueueLen(), shot);
-
+#endif
 
     }
 void SaveList::executeItems()
