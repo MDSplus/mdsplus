@@ -79,8 +79,10 @@ extern "C" {
 	int doTreeMethod(void *dbid, int nid, char *method);
 	int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
 									void *timeDsc);
-	int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
-									void *timeDsc, int rowsFilled);
+        int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
+                                                                        void *timeDsc, int rowsFilled);
+        int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
+                                                                        void *timeDsc, int rowsFilled, int resNid, int resFactor);
 	int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
 	int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc,
 									void *timeDsc);
@@ -1188,6 +1190,20 @@ void TreeNode::makeSegmentMinMax(Data *start, Data *end, Data *time, Array *init
 
 void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
 {
+        resolveNid();
+        int numDims;
+        int *shape = initialData->getShape(&numDims);
+        //if(tree) tree->lock();
+        int status = makeTreeSegmentResampled(tree->getCtx(), getNid(), initialData->convertToDsc(), start->convertToDsc(),
+                end->convertToDsc(), time->convertToDsc(), shape[0], resampledNode->getNid(), resFactor);
+        deleteNativeArray(shape);
+        //if(tree) tree->unlock();
+        if(!(status & 1))
+                throw MdsException(status);
+}
+/*
+void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *initialData, TreeNode*resampledNode, int resFactor)
+{
 	const int RES_FACTOR = resFactor;
 	//Resampled array always converted to float, Assumed 1D array
 	int numRows;
@@ -1222,7 +1238,7 @@ void TreeNode::makeSegmentResampled(Data *start, Data *end, Data *time, Array *i
 	}
 	makeSegment(start, end, time, initialData);
 }
-
+*/
 void TreeNode::beginSegment(Data *start, Data *end, Data *time, Array *initialData)
 {
 	resolveNid();

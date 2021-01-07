@@ -59,7 +59,9 @@ int doTreeMethod(void *dbid, int nid, char *method);
 int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
 		     void *timeDsc);
 int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
-		    void *timeDsc, int rowsFilled);
+                    void *timeDsc, int rowsFilled);
+int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc,
+                    void *timeDsc, int rowsFilled, int resNid, int resFactor);
 
 int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs);
 int updateTreeSegment(void *dbid, int nid, int segIdx, void *startDsc, void *endDsc, void *timeDsc);
@@ -146,7 +148,7 @@ int beginTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *e
 }
 
 int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc,
-		    int rowsFilled)
+                    int rowsFilled)
 {
   struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
   struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
@@ -155,7 +157,27 @@ int makeTreeSegment(void *dbid, int nid, void *dataDsc, void *startDsc, void *en
   int status;
 
   status = _TreeMakeSegment(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer,
-			    (struct descriptor_a *)dataXd->pointer, -1, rowsFilled);
+                            (struct descriptor_a *)dataXd->pointer, -1, rowsFilled);
+
+  freeDsc(dataXd);
+  freeDsc(startXd);
+  freeDsc(endXd);
+  freeDsc(dimXd);
+
+  return status;
+}
+
+int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc,
+                    int rowsFilled, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
+  struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
+  struct descriptor_xd *dimXd = (struct descriptor_xd *)dimDsc;
+  int status;
+
+  status = _TreeMakeSegmentResampled(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer,
+                            (struct descriptor_a *)dataXd->pointer, -1, rowsFilled, resNid, resFactor);
 
   freeDsc(dataXd);
   freeDsc(startXd);

@@ -2587,7 +2587,7 @@ inline static void resampleRow(char dtype, int rowSize, int resFact, void *ptr, 
         {
             avgVal += toFloat(dtype, ptr, (rowIdx*resFact + currResIdx)*rowSize+currRowIdx);
         }
-        resampled[rowIdx*rowSize + currRowIdx] = avgVal;
+        resampled[rowIdx*rowSize + currRowIdx] = avgVal/resFact;
     }
 }
 
@@ -2606,7 +2606,7 @@ int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *e
         DESCRIPTOR_LONG(nRowsD, &nRows);
         DESCRIPTOR_NID(resNidD, &resampledNid);
         DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
-        STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2,%d*($3-$4)/%d)");    
+        STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2-$3*($4-$5)/$6, $7*($8-$9)/$10)");    
         EMPTYXD(dimXd);
         
         if (nDims > 1) {
@@ -2627,6 +2627,7 @@ int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *e
           resD.dimct = 1;
         }
         nResRows = nRows / resFactor;
+        resD.arsize = nResRows * rowSize * sizeof(float);
         if(nResRows < 1)  
         {
             return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
@@ -2639,20 +2640,23 @@ int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *e
         {
             resampleRow(initialValue->dtype, rowSize, resFactor, initialValue->pointer, resSamples, idx);
         }            
-
-        status = _TdiCompile(&dbid, &expression, &resFactorD, &nRowsD, &dimXd MDS_END_ARG);
+        status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
+        if(STATUS_OK)
+            status = _TdiCompile(&dbid, &expression, start, end, &resFactorD, end, start, &nRowsD, &resFactorD, end, start, &nRowsD, &dimXd MDS_END_ARG);
         if (!STATUS_OK)
         {
             free(resSamples);
             return status;
         }
-        status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, 1);
+        status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, nResRows);
         if (!STATUS_OK)
         {
             free(resSamples);
+            MdsFree1Dx(&dimXd, NULL);
             return status;
         }
         free(resSamples);
+        MdsFree1Dx(&dimXd, NULL);
         
         status =  _TreeSetXNci(dbid, nid, "ResampleFactor", &resFactorD) ;
         if (!STATUS_OK)
@@ -2666,4 +2670,10 @@ int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *e
         }
        
         return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+}
+
+int TreeMakeSegmentResampled(int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int idx, int rows_filled, 
+    int resNid, int resFactor) 
+{
+  return _TreeMakeSegmentResampled(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled, resNid, resFactor);
 }
