@@ -5,4 +5,8 @@ elif [ "$VALGRIND_TOOL" = "helgrind" ]
 then JVM_OPTIONS="-Xint"
 else JVM_OPTIONS=
 fi
-exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} ${JVM_OPTIONS} ${JUNITTEST:-org.junit.runner.JUnitCore} ${2/"$1/"/}
+if [ -n "$2" ]
+then test=${2/"$1/"/}
+else test=$1
+fi
+exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} ${JVM_OPTIONS} ${JUNITTEST:-org.junit.runner.JUnitCore} ${test}
