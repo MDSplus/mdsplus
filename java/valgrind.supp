@@ -1,0 +1,20 @@
+{
+   Addr4
+   Memcheck:Addr4
+   obj:*
+}
+{
+   Addr8
+   Memcheck:Addr8
+   obj:*
+}
+{
+   Value4
+   Memcheck:Value4
+   obj:*
+}
+{
+   Value8
+   Memcheck:Value8
+   obj:*
+}
