@@ -331,6 +331,7 @@ class _ACQ2106_435ST(MDSplus.Device):
         nacc_samp = int(self.hw_filter.data())
         print("Number of sites in use {}".format(self.sites))
 
+        # Ask UUT what are the sites that are actually being populatee with a 435ELF
         sites_in_use = []
         for (site,module) in sorted(uut.modules.items()):
             sites_in_use.append(int(site))
