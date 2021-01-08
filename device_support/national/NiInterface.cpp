@@ -60,7 +60,7 @@ extern "C" void xseries_free_ai_conf_ptr(void *conf);
 extern "C" int  _xseries_get_device_info(int fd, void *cardInfo);
 extern "C" int getErrno();
 extern "C" int xseries_set_ai_conf_ptr(int fd,  void *conf_ptr);
-extern "C" int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, 
+extern "C" int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, 
 	void *gainsPtr, void *coeffsNidPtr, int clockNid, float timeIdx0, float period, void *treePtr, void *saveListPtr, void *stopAcq, int shot, void *resNitPtr);
 extern "C" int xseries_AI_scale(int16_t *raw, float *scaled, uint32_t num_samples, float * coeff);
 
@@ -807,7 +807,7 @@ void pxi6259_ai_polynomial_scaler(int16_t *raw, float *scaled, uint32_t num_samp
 
 
 
-#define XSERIES_MAX_BUFSIZE 100000
+#define XSERIES_MAX_BUFSIZE 100000 
 extern "C" int  getCalibrationParams(int chanfd, int range, float *coeff);
 
 
@@ -919,7 +919,7 @@ Nuova versione 5.0 codac ma sembra non funzionare
 
 
 
-int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, 
+int xseriesReadAndSaveAllChannels(int aiFd, int nChan, void *chanFdPtr, int bufSize, int segmentSize, int sampleToSkip, int numSamples, void *dataNidPtr, 
 	void *gainsPtr, void *coeffsNidPtr,  int clockNid, 
 	float timeIdx0, float period, void *treePtr, void *saveListPtr, void *stopAcq, int shot, void *resampledNidPtr)
 { 
@@ -951,9 +951,6 @@ int xseriesReadAndSaveAllChannels(int nChan, void *chanFdPtr, int bufSize, int s
     int triggered = 0;           // Module triggered flag
     bool transientRec  = false;	// transient recorder flag	
     char *streamNames[nChan];
-
-
-
 
     if (bufSize > XSERIES_MAX_BUFSIZE)  // Buffer size sets in mdsplus device is limited to module limit
         bufSize = XSERIES_MAX_BUFSIZE;
@@ -1018,6 +1015,8 @@ printf("prima TreeNode %p\n",treePtr);
     }
 printf("dopo TreeNode\n");
     //////////////////
+
+    xseries_start_ai(aiFd);
 
     // Start main acquisition loop
     while( !(*(int*)stopAcq) )
