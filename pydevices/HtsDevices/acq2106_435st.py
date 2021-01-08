@@ -274,55 +274,6 @@ class _ACQ2106_435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
-        # The following checks if a site has a ELF card in it:
-        try:
-            is_s1 = uut.s1 is not None
-        except:
-            is_s1 = False
-
-        try:
-            is_s2 = uut.s2 is not None
-        except:
-            is_s2 = False
-
-        try:
-            is_s3 = uut.s3 is not None
-        except:
-            is_s3 = False
-
-        try:
-            is_s4 = uut.s4 is not None
-        except:
-            is_s4 = False
-
-        try:
-            is_s5 = uut.s5 is not None
-        except:
-            is_s5 = False
-
-        try:
-            is_s6 = uut.s6 is not None
-        except:
-            is_s6 = False
-
-
-        self.slots = []
-        try:
-            if is_s1:
-                self.slots.append(uut.s1)
-            if is_s2:
-                self.slots.append(uut.s2)
-            if is_s3:
-                self.slots.append(uut.s3)
-            if is_s4:
-                self.slots.append(uut.s4)
-            if is_s5:
-                self.slots.append(uut.s5)
-            if is_s6:
-                self.slots.append(uut.s6)
-        except:
-            pass
-
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
 
@@ -380,7 +331,11 @@ class _ACQ2106_435ST(MDSplus.Device):
         nacc_samp = int(self.hw_filter.data())
         print("Number of sites in use {}".format(self.sites))
 
-        for card in range(self.sites):
+        sites_in_use = []
+        for (site,module) in sorted(uut.modules.items()):
+            sites_in_use.append(int(site))
+
+        for card in sites_in_use:
             if 1 <= nacc_samp <= 32:
                 self.slots[card].nacc = ('%d'%nacc_samp).strip()
             else:
