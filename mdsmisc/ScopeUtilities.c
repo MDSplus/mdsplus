@@ -311,6 +311,10 @@ static inline void trimData(float *const y, mdsdsc_a_t *const x, const int nSamp
 	y[outIdx++] = y[curIdx++];
       }
     }
+    else //but in this case the number of points must be reported!!!
+    {
+        outIdx = endIdx - startIdx;
+    }
   } else {
     *retResolution = reqPoints/(to_doublex(&x->pointer[endIdx * x->length], x->dtype,INFINITY,TRUE) - to_doublex(&x->pointer[startIdx * x->length], x->dtype,-INFINITY,TRUE));
     const double deltaTime = (deltaIdx == 1) ? 0 : (xMax - xMin)/(double)reqPoints;

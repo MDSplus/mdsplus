@@ -179,11 +179,23 @@ extern int TREE_BLOCKID;
 
 //Segments
   extern EXPORT int TreeBeginSegment(int nid, mdsdsc_t *start, mdsdsc_t *end,
-				     mdsdsc_t *dim, mdsdsc_a_t *initialData,
-				     int idx);
+                                     mdsdsc_t *dim, mdsdsc_a_t *initialData,
+                                     int idx);
   extern EXPORT int _TreeBeginSegment(void *dbid, int nid, mdsdsc_t *start,
-				      mdsdsc_t *end, mdsdsc_t *dim,
-				      mdsdsc_a_t *initialData, int idx);
+                                      mdsdsc_t *end, mdsdsc_t *dim,
+                                      mdsdsc_a_t *initialData, int idx);
+  extern EXPORT int TreeBeginSegmentResampled(int nid, mdsdsc_t *start, mdsdsc_t *end,
+                                     mdsdsc_t *dim, mdsdsc_a_t *initialData,
+                                     int idx, int resNid, int resFactor);
+  extern EXPORT int _TreeBeginSegmentResampled(void *dbid, int nid, mdsdsc_t *start,
+                                      mdsdsc_t *end, mdsdsc_t *dim,
+                                      mdsdsc_a_t *initialData, int idx, int resNid, int resFactor);
+  extern EXPORT int TreeBeginSegmentMinMax(int nid, mdsdsc_t *start, mdsdsc_t *end,
+                                     mdsdsc_t *dim, mdsdsc_a_t *initialData,
+                                     int idx, int resNid, int resFactor);
+  extern EXPORT int _TreeBeginSegmentMinMax(void *dbid, int nid, mdsdsc_t *start,
+                                      mdsdsc_t *end, mdsdsc_t *dim,
+                                      mdsdsc_a_t *initialData, int idx, int resNid, int resFactor);
   extern EXPORT int TreeMakeSegment(int nid, mdsdsc_t *start, mdsdsc_t *end,
                                     mdsdsc_t *dim, mdsdsc_a_t *initialData,
                                     int idx, int filled);
@@ -196,8 +208,18 @@ extern int TREE_BLOCKID;
   extern EXPORT int _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start,
                                      mdsdsc_t *end, mdsdsc_t *dim,
                                      mdsdsc_a_t *initialData, int idx, int filled, int resNid, int resFactor);
+  extern EXPORT int TreeMakeSegmentMinMax(int nid, mdsdsc_t *start, mdsdsc_t *end,
+                                    mdsdsc_t *dim, mdsdsc_a_t *initialData,
+                                    int idx, int filled, int resNid, int resFactor);
+  extern EXPORT int _TreeMakeSegmentMinMax(void *dbid, int nid, mdsdsc_t *start,
+                                     mdsdsc_t *end, mdsdsc_t *dim,
+                                     mdsdsc_a_t *initialData, int idx, int filled, int resNid, int resFactor);
   extern EXPORT int TreePutSegment(int nid, const int rowidx, mdsdsc_a_t *data);
   extern EXPORT int _TreePutSegment(void *dbid, int nid, const int rowidx, mdsdsc_a_t *data);
+  extern EXPORT int TreePutSegmentResampled(int nid, const int rowidx, mdsdsc_a_t *data, int resNid, int resFactor);
+  extern EXPORT int _TreePutSegmentResampled(void *dbid, int nid, const int rowidx, mdsdsc_a_t *data, int resNid, int resFactor);
+  extern EXPORT int TreePutSegmentMinMax(int nid, const int rowidx, mdsdsc_a_t *data, int resNid, int resFactor);
+  extern EXPORT int _TreePutSegmentMinMax(void *dbid, int nid, const int rowidx, mdsdsc_a_t *data, int resNid, int resFactor);
   extern EXPORT int TreeSetRowsFilled(int nid, int rows_filled);
   extern EXPORT int _TreeSetRowsFilled(void *dbid, int nid, int rows_filled);
   extern EXPORT int TreeUpdateSegment(int nid, mdsdsc_t *start, mdsdsc_t *end,
@@ -293,3 +315,4 @@ extern int TREE_BLOCKID;
 #ifdef __cplusplus
 }
 #endif
+

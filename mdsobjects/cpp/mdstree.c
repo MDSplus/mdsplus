@@ -186,6 +186,63 @@ int makeTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc,
 
   return status;
 }
+int makeTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc,
+                    int rowsFilled, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
+  struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
+  struct descriptor_xd *dimXd = (struct descriptor_xd *)dimDsc;
+  int status;
+
+  status = _TreeMakeSegmentMinMax(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer,
+                            (struct descriptor_a *)dataXd->pointer, -1, rowsFilled, resNid, resFactor);
+
+  freeDsc(dataXd);
+  freeDsc(startXd);
+  freeDsc(endXd);
+  freeDsc(dimXd);
+
+  return status;
+}
+
+int beginTreeSegmentResampled(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
+  struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
+  struct descriptor_xd *dimXd = (struct descriptor_xd *)dimDsc;
+  int status;
+
+  status = _TreeBeginSegmentResampled(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer,
+                            (struct descriptor_a *)dataXd->pointer, -1, resNid, resFactor);
+
+  freeDsc(dataXd);
+  freeDsc(startXd);
+  freeDsc(endXd);
+  freeDsc(dimXd);
+
+  return status;
+}
+
+int beginTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, void *startDsc, void *endDsc, void *dimDsc, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  struct descriptor_xd *startXd = (struct descriptor_xd *)startDsc;
+  struct descriptor_xd *endXd = (struct descriptor_xd *)endDsc;
+  struct descriptor_xd *dimXd = (struct descriptor_xd *)dimDsc;
+  int status;
+
+  status = _TreeBeginSegmentMinMax(dbid, nid, startXd->pointer, endXd->pointer, dimXd->pointer,
+                            (struct descriptor_a *)dataXd->pointer, -1, resNid, resFactor);
+
+  freeDsc(dataXd);
+  freeDsc(startXd);
+  freeDsc(endXd);
+  freeDsc(dimXd);
+
+  return status;
+}
 
 #define PUTROW_BUFSIZE 1000
 int putTreeRow(void *dbid, int nid, void *dataDsc, int64_t * time, int size)
@@ -204,6 +261,26 @@ int putTreeSegment(void *dbid, int nid, void *dataDsc, int ofs)
   int status;
 
   status = _TreePutSegment(dbid, nid, ofs, (struct descriptor_a *)dataXd->pointer);
+  freeDsc(dataXd);
+  return status;
+}
+
+int putTreeSegmentResampled(void *dbid, int nid, void *dataDsc, int ofs, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  int status;
+
+  status = _TreePutSegmentResampled(dbid, nid, ofs, (struct descriptor_a *)dataXd->pointer, resNid, resFactor);
+  freeDsc(dataXd);
+  return status;
+}
+
+int putTreeSegmentMinMax(void *dbid, int nid, void *dataDsc, int ofs, int resNid, int resFactor)
+{
+  struct descriptor_xd *dataXd = (struct descriptor_xd *)dataDsc;
+  int status;
+
+  status = _TreePutSegmentMinMax(dbid, nid, ofs, (struct descriptor_a *)dataXd->pointer, resNid, resFactor);
   freeDsc(dataXd);
   return status;
 }

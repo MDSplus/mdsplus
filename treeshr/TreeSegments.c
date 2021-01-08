@@ -2590,74 +2590,116 @@ inline static void resampleRow(char dtype, int rowSize, int resFact, void *ptr, 
         resampled[rowIdx*rowSize + currRowIdx] = avgVal/resFact;
     }
 }
+inline static void resampleRowMinMax(char dtype, int rowSize, int resFact, void *ptr, float *resampled, int rowIdx) 
+{
+    int currResIdx, currRowIdx;
+    float minVal, maxVal, currVal;
+    for(currRowIdx = 0; currRowIdx < rowSize; currRowIdx++)
+    {
+        minVal = maxVal = toFloat(dtype, ptr, rowIdx*resFact*rowSize+currRowIdx);
+        for(currResIdx = 1; currResIdx < resFact; currResIdx++)
+        {
+            currVal = toFloat(dtype, ptr, (rowIdx*resFact + currResIdx)*rowSize+currRowIdx);
+            if(currVal < minVal)
+                minVal = currVal;
+            if(currVal > maxVal)
+                maxVal = currVal;
+        }
+        resampled[2 * rowIdx*rowSize + currRowIdx] = minVal;
+        resampled[(2 * rowIdx + 1)*rowSize + currRowIdx] = maxVal;
+    }
+}
 
-  
+
+inline static void resampleArrayDsc(mdsdsc_a_t *inArray, void *outArray, int resFactor, int *retRowSize, int *retNRows, int *retNResRows, int isMinMax)
+{
+    int dims[MAX_DIMS];
+    int nRows, nResRows, rowSize;
+    int nDims = inArray->dimct;
+    int idx;
+    ARRAY_COEFF(char *, 8) *resArray;
+    
+    resArray = outArray;
+    if (nDims > 1) {
+      memcpy(dims, ((A_COEFF_TYPE *)inArray)->m, nDims * sizeof(int));
+      nRows = dims[nDims - 1];
+      rowSize = 1;
+      for(idx = 0; idx < nDims - 1; idx++)
+      {
+        rowSize *= dims[idx];
+      }
+      resArray->dimct = inArray->dimct;
+      memcpy(resArray->m, ((A_COEFF_TYPE *)inArray)->m, inArray->dimct * sizeof(int));
+    }
+    else
+    {
+      nRows = inArray->arsize/ inArray->length;
+      rowSize = 1;
+      resArray->dimct = 1;
+    }
+    if(isMinMax)
+        nResRows = 2 * nRows / resFactor;
+    else
+         nResRows = nRows / resFactor;
+    resArray->arsize = nResRows * rowSize * sizeof(float);
+    resArray->m[resArray->dimct - 1] = nResRows;
+
+    *retRowSize = rowSize;
+    *retNRows = nRows;
+    *retNResRows = nResRows;
+}
+    
 
 int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int id, int rows_filled,
   int resampledNid, int resFactor)
 {
-        //Resampled array always converted to float, Assumed 1D array
-        int dims[MAX_DIMS];
-        int idx, status;
-        int nRows, nResRows, rowSize;
-        int nDims = initialValue->dimct;
-        float *resSamples; //Resampled version always float
-        DESCRIPTOR_LONG(resFactorD, &resFactor);
-        DESCRIPTOR_LONG(nRowsD, &nRows);
-        DESCRIPTOR_NID(resNidD, &resampledNid);
-        DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
-        STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2-$3*($4-$5)/$6, $7*($8-$9)/$10)");    
-        EMPTYXD(dimXd);
-        
-        if (nDims > 1) {
-          memcpy(dims, ((A_COEFF_TYPE *)initialValue)->m, nDims * sizeof(int));
-          nRows = dims[nDims - 1];
-          rowSize = 1;
-          for(idx = 0; idx < nDims - 1; idx++)
-          {
-            rowSize *= dims[idx];
-          }
-          resD.dimct = initialValue->dimct;
-          memcpy(resD.m, ((A_COEFF_TYPE *)initialValue)->m, initialValue->dimct * sizeof(int));
-        }
-        else
-        {
-          nRows = initialValue->arsize/ initialValue->length;
-          rowSize = 1;
-          resD.dimct = 1;
-        }
-        nResRows = nRows / resFactor;
-        resD.arsize = nResRows * rowSize * sizeof(float);
-        if(nResRows < 1)  
-        {
-            return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
-        }
-        resD.m[resD.dimct - 1] = nResRows;
-        
-        resSamples = (float *)malloc(nRows * rowSize * sizeof(float));
-        resD.pointer = (char *)resSamples;
-        for(idx = 0; idx < nResRows; idx++)
-        {
-            resampleRow(initialValue->dtype, rowSize, resFactor, initialValue->pointer, resSamples, idx);
-        }            
-        status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
-        if(STATUS_OK)
-            status = _TdiCompile(&dbid, &expression, start, end, &resFactorD, end, start, &nRowsD, &resFactorD, end, start, &nRowsD, &dimXd MDS_END_ARG);
-        if (!STATUS_OK)
-        {
-            free(resSamples);
-            return status;
-        }
-        status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, nResRows);
-        if (!STATUS_OK)
-        {
-            free(resSamples);
-            MdsFree1Dx(&dimXd, NULL);
-            return status;
-        }
+    //Resampled array always converted to float, Assumed 1D array
+    int idx, status;
+    int nRows, nResRows, rowSize, nSegs;
+    float *resSamples; //Resampled version always float
+    DESCRIPTOR_LONG(resFactorD, &resFactor);
+    DESCRIPTOR_LONG(nRowsD, &nRows);
+    DESCRIPTOR_NID(resNidD, &resampledNid);
+    DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
+    STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2-$3*($4-$5)/$6, $7*($8-$9)/$10)");    
+    EMPTYXD(dimXd);
+    
+    resampleArrayDsc(initialValue, &resD, resFactor, &rowSize, &nRows, &nResRows, 0);  
+    if(nResRows < 1)  
+    {
+        return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+    }
+    resSamples = (float *)malloc(nResRows * rowSize * sizeof(float));
+    resD.pointer = (char *)resSamples;
+    for(idx = 0; idx < nResRows; idx++)
+    {
+        resampleRow(initialValue->dtype, rowSize, resFactor, initialValue->pointer, resSamples, idx);
+    }            
+    status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
+    if(STATUS_OK)
+        status = _TdiCompile(&dbid, &expression, start, end, &resFactorD, end, start, &nRowsD, &resFactorD, end, start, &nRowsD, &dimXd MDS_END_ARG);
+    if (!STATUS_OK)
+    {
+        free(resSamples);
+        return status;
+    }
+    status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, rows_filled/resFactor);
+    if (!STATUS_OK)
+    {
         free(resSamples);
         MdsFree1Dx(&dimXd, NULL);
-        
+        return status;
+    }
+    free(resSamples);
+    MdsFree1Dx(&dimXd, NULL);
+    
+    status = _TreeGetNumSegments(dbid, nid, &nSegs); 
+    if (!STATUS_OK)
+    { 
+      return status;
+    }
+    if(nSegs == 1)
+    {
         status =  _TreeSetXNci(dbid, nid, "ResampleFactor", &resFactorD) ;
         if (!STATUS_OK)
         { 
@@ -2668,12 +2710,171 @@ int  _TreeMakeSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *e
         {
             return status;
         }
-       
-        return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+    }
+    return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
 }
 
 int TreeMakeSegmentResampled(int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int idx, int rows_filled, 
     int resNid, int resFactor) 
 {
-  return _TreeMakeSegmentResampled(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled, resNid, resFactor);
+    return _TreeMakeSegmentResampled(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled, resNid, resFactor);
+}
+
+int  _TreeBeginSegmentResampled(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int id,
+  int resampledNid, int resFactor)
+{
+    return  _TreeMakeSegmentResampled(dbid, nid,start, end, dimension, initialValue, id, 0, resampledNid, resFactor);
+}
+
+int TreeBeginSegmentResampled(int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int idx, int resNid, int resFactor) 
+{
+    return _TreeBeginSegmentResampled(*TreeCtx(), nid, start, end, dimension, initialValue, idx, resNid, resFactor);
+}
+
+
+int _TreePutSegmentResampled(void *dbid, int nid, int startIdx, mdsdsc_a_t *data, int resampledNid, int resFactor) 
+{
+    int idx, status;
+    int nRows, nResRows, rowSize;
+    float *resSamples; //Resampled version always float
+    DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
+    
+    resampleArrayDsc(data, &resD, resFactor, &rowSize, &nRows, &nResRows, 0);  
+    if(nResRows < 1)  
+    {
+        return _TreePutSegment(dbid, nid, startIdx, data);
+    }
+    resSamples = (float *)malloc(nResRows * rowSize * sizeof(float));
+    resD.pointer = (char *)resSamples;
+    for(idx = 0; idx < nResRows; idx++)
+    {
+        resampleRow(data->dtype, rowSize, resFactor, data->pointer, resSamples, idx);
+    }  
+    status =  _TreePutSegment(dbid, resampledNid, startIdx, (struct descriptor_a *)&resD);
+    free(resSamples);
+    if(STATUS_OK)
+        status = _TreePutSegment(dbid, nid, startIdx, data);
+    return status;
+}
+
+int TreePutSegmentResampled(const int nid, const int startIdx, mdsdsc_a_t *data, int resNid, int resFactor) {
+  return _TreePutSegmentResampled(*TreeCtx(), nid, startIdx, data, resNid, resFactor);
+}
+
+int  _TreeMakeSegmentMinMax(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int id, int rows_filled,
+  int resampledNid, int resFactor)
+{
+    //Resampled array always converted to float, Assumed 1D array
+    int idx, status;
+    int nRows, nResRows, rowSize, nSegs;
+    float *resSamples; //Resampled version always float
+    DESCRIPTOR_LONG(resFactorD, &resFactor);
+    DESCRIPTOR_LONG(nRowsD, &nRows);
+    DESCRIPTOR_NID(resNidD, &resampledNid);
+    DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
+    STATIC_CONSTANT DESCRIPTOR(expression, "BUILD_RANGE($1,$2-$3/2.*($4-$5)/$6, ($7/2.)*($8-$9)/$10)");    
+    STATIC_CONSTANT DESCRIPTOR(minMaxD, "MinMax");    
+    EMPTYXD(dimXd);
+
+    resampleArrayDsc(initialValue, &resD, resFactor, &rowSize, &nRows, &nResRows, 1);  
+    if(nResRows < 1)  
+    {
+        return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+    }
+    resSamples = (float *)malloc(nResRows * rowSize * sizeof(float));
+    resD.pointer = (char *)resSamples;
+    for(idx = 0; idx < nResRows/2; idx++)
+    {
+        resampleRowMinMax(initialValue->dtype, rowSize, resFactor, initialValue->pointer, resSamples, idx);
+    }            
+    status = LibFindImageSymbol_C("TdiShr", "_TdiCompile", &_TdiCompile);
+    if(STATUS_OK)
+        status = _TdiCompile(&dbid, &expression, start, end, &resFactorD, end, start, &nRowsD, &resFactorD, end, start, &nRowsD, &dimXd MDS_END_ARG);
+    if (!STATUS_OK)
+    {
+        free(resSamples);
+        return status;
+    }
+    status =  _TreeMakeSegment(dbid, resampledNid, start, end, dimXd.pointer, (struct descriptor_a *)&resD, -1, 2*rows_filled/resFactor);
+    if (!STATUS_OK)
+    {
+        free(resSamples);
+        MdsFree1Dx(&dimXd, NULL);
+        return status;
+    }
+    free(resSamples);
+    MdsFree1Dx(&dimXd, NULL);
+    
+    status = _TreeGetNumSegments(dbid, nid, &nSegs); 
+    if (!STATUS_OK)
+    { 
+      return status;
+    }
+    if(nSegs == 1)
+    {
+        status =  _TreeSetXNci(dbid, nid, "ResampleMode", &minMaxD) ;
+        if (!STATUS_OK)
+        { 
+          return status;
+        } 
+        status =  _TreeSetXNci(dbid, nid, "ResampleFactor", &resFactorD) ;
+        if (!STATUS_OK)
+        { 
+          return status;
+        }
+        status =  _TreeSetXNci(dbid, nid, "ResampleNid", &resNidD);
+        if (!STATUS_OK)
+        {
+            return status;
+        }
+    }
+    
+    return _TreeMakeSegment(dbid, nid, start, end, dimension, initialValue, id, rows_filled);
+}
+
+int TreeMakeSegmentMinMax(int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int idx, int rows_filled, 
+    int resNid, int resFactor) 
+{
+    return _TreeMakeSegmentMinMax(*TreeCtx(), nid, start, end, dimension, initialValue, idx, rows_filled, resNid, resFactor);
+}
+
+
+int  _TreeBeginSegmentMinMax(void *dbid, int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int id,
+  int resampledNid, int resFactor)
+{
+    return  _TreeMakeSegmentMinMax(dbid, nid,start, end, dimension, initialValue, id, 0, resampledNid, resFactor);
+}
+
+int TreeBeginSegmentMinMax(int nid, mdsdsc_t *start, mdsdsc_t *end, mdsdsc_t *dimension, mdsdsc_a_t *initialValue, int idx, int resNid, int resFactor) 
+{
+    return _TreeBeginSegmentMinMax(*TreeCtx(), nid, start, end, dimension, initialValue, idx, resNid, resFactor);
+}
+
+int _TreePutSegmentMinMax(void *dbid, int nid, int startIdx, mdsdsc_a_t *data, int resampledNid, int resFactor) 
+{
+    int idx, status;
+    int nRows, nResRows, rowSize;
+    float *resSamples; //Resampled version always float
+    DESCRIPTOR_A_COEFF(resD, sizeof(float), DTYPE_FS, NULL, 8, 0);
+    
+    resampleArrayDsc(data, &resD, resFactor, &rowSize, &nRows, &nResRows, 1);  
+    if(nResRows < 1)  
+    {
+        return _TreePutSegment(dbid, nid, startIdx, data);
+    }
+    resSamples = (float *)malloc(nResRows * rowSize * sizeof(float));
+    resD.pointer = (char *)resSamples;
+    for(idx = 0; idx < nResRows/2; idx++)
+    {
+        resampleRowMinMax(data->dtype, rowSize, resFactor, data->pointer, resSamples, idx);
+    }  
+    status =  _TreePutSegment(dbid, resampledNid, startIdx, (struct descriptor_a *)&resD);
+    free(resSamples);
+    if(STATUS_OK)
+        status = _TreePutSegment(dbid, nid, startIdx, data);
+    return status;
+}
+
+int TreePutSegmentMinMax(const int nid, const int startIdx, mdsdsc_a_t *data, int resNid, int resFactor) {
+  return _TreePutSegmentMinMax(*TreeCtx(), nid, startIdx, data, resNid, resFactor);
 }
