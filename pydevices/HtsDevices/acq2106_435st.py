@@ -332,11 +332,23 @@ class _ACQ2106_435ST(MDSplus.Device):
         print("Number of sites in use {}".format(self.sites))
 
         # Ask UUT what are the sites that are actually being populatee with a 435ELF
-        sites_in_use = []
+        self.slots = []
         for (site,module) in sorted(uut.modules.items()):
-            sites_in_use.append(int(site))
+            site_number = int(site)
+            if site_number == 1:
+                self.slots.append(uut.s1)
+            elif site_number == 2:
+                self.slots.append(uut.s2)
+            elif site_number == 3:
+                self.slots.append(uut.s3)
+            elif site_number == 4:
+                self.slots.append(uut.s4)
+            elif site_number == 5:
+                self.slots.append(uut.s5)
+            elif site_number == 6:
+                self.slots.append(uut.s6)
 
-        for card in sites_in_use:
+        for card in range(self.sites):
             if 1 <= nacc_samp <= 32:
                 self.slots[card].nacc = ('%d'%nacc_samp).strip()
             else:
