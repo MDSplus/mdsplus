@@ -65,6 +65,12 @@
    fun:_PyThreadState_Swap
 }
 {
+   PyEval_SaveThread
+   Helgrind:Race
+   obj:/usr/lib64/libpython3.8.so.1.0
+   fun:PyEval_SaveThread
+}
+{
    PyBytes_FromStringAndSize
    Memcheck:Leak
    match-leak-kinds: possible
