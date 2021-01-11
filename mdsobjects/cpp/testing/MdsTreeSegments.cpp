@@ -125,12 +125,27 @@ void BlockAndRows(){
 #define SEG_SAMPLES 1000000
 void makeSegment()  
 {
+  
     MDSplus::Tree *t = new MDSplus::Tree("t_treeseg", -1, "NEW");
     MDSplus::TreeNode *na = t->addNode("SEG", "SIGNAL");
     delete na;
     na = t->addNode("SEG_RES", "SIGNAL");
     delete na;
     na = t->addNode("SEG1", "SIGNAL");
+    delete na;
+    na = t->addNode("PSEG", "SIGNAL");
+    delete na;
+    na = t->addNode("PSEG_RES", "SIGNAL");
+    delete na;
+    na = t->addNode("PSEG1", "SIGNAL");
+    delete na;
+    na = t->addNode("MMSEG", "SIGNAL");
+    delete na;
+    na = t->addNode("MMSEG_RES", "SIGNAL");
+    delete na;
+    na = t->addNode("MMPSEG", "SIGNAL");
+    delete na;
+    na = t->addNode("MMPSEG_RES", "SIGNAL");
     delete na;
     t->write();
     delete(t);
@@ -139,8 +154,15 @@ void makeSegment()
     delete(t);
     t = new MDSplus::Tree("t_treeseg", 1);
     MDSplus::TreeNode *n = t->getNode("SEG");
+    MDSplus::TreeNode *n1 = t->getNode("SEG1");
     MDSplus::TreeNode *nRes = t->getNode("SEG_RES");
-    MDSplus::TreeNode*n1 = t->getNode("SEG1");
+    MDSplus::TreeNode *pn = t->getNode("PSEG");
+    MDSplus::TreeNode *pnRes = t->getNode("PSEG_RES");
+    MDSplus::TreeNode* pn1 = t->getNode("PSEG1");
+    MDSplus::TreeNode *mmn = t->getNode("MMSEG");
+    MDSplus::TreeNode *mmnRes = t->getNode("MMSEG_RES");
+    MDSplus::TreeNode *mmpn = t->getNode("MMPSEG");
+    MDSplus::TreeNode *mmpnRes = t->getNode("MMPSEG_RES");
     for(int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
     {
         float *segData = new float[SEG_SAMPLES];
@@ -148,16 +170,91 @@ void makeSegment()
           segData[i] = i;
         MDSplus::Float64 *start = new MDSplus::Float64(segIdx);
         MDSplus::Float64 *end = new MDSplus::Float64(segIdx+1-1./SEG_SAMPLES);
-        MDSplus::Data *dim = new MDSplus::Range(start, end, new MDSplus::Float64(1./SEG_SAMPLES));
+        MDSplus::Float64 *delta = new MDSplus::Float64(1./SEG_SAMPLES);
+        MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
         MDSplus::Float32Array *data = new MDSplus::Float32Array(segData, SEG_SAMPLES);
         n->makeSegmentResampled(start, end, dim, data, nRes, 1000);
         n1->makeSegment(start, end, dim, data);
         deleteData(start);
         deleteData(end);
+        deleteData(delta);
         deleteData(dim);
         deleteData(data);
         delete [] segData; 
     }
+    for(int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+    {
+        float *segData = new float[SEG_SAMPLES];
+        for(int i = 0; i < SEG_SAMPLES; i++)
+          segData[i] = 0;
+        MDSplus::Float64 *start = new MDSplus::Float64(segIdx);
+        MDSplus::Float64 *end = new MDSplus::Float64(segIdx+1-1./SEG_SAMPLES);
+        MDSplus::Float64 *delta = new MDSplus::Float64(1./SEG_SAMPLES);
+        MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
+        MDSplus::Float32Array *data = new MDSplus::Float32Array(segData, SEG_SAMPLES);
+        pn->beginSegmentResampled(start, end, dim, data, pnRes, 1000);
+        pn1->beginSegment(start, end, dim, data);
+        for(int i = 0; i < SEG_SAMPLES; i++)
+            segData[i] = i;
+        for(int i = 0; i < 10; i++)
+        {
+            MDSplus::Float32Array *putData = new MDSplus::Float32Array(&segData[i*SEG_SAMPLES/10], SEG_SAMPLES/10);
+            pn1->putSegment(putData, -1);
+            pn->putSegmentResampled(putData, -1, pnRes, 1000);
+            MDSplus::deleteData(putData);
+        }
+        deleteData(start);
+        deleteData(end);
+        deleteData(delta);
+        deleteData(dim);
+        deleteData(data);
+        delete [] segData; 
+    }        
+    for(int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+    {
+        float *segData = new float[SEG_SAMPLES];
+        for(int i = 0; i < SEG_SAMPLES; i++)
+          segData[i] = i;
+        MDSplus::Float64 *start = new MDSplus::Float64(segIdx);
+        MDSplus::Float64 *end = new MDSplus::Float64(segIdx+1-1./SEG_SAMPLES);
+        MDSplus::Float64 *delta = new MDSplus::Float64(1./SEG_SAMPLES);
+        MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
+        MDSplus::Float32Array *data = new MDSplus::Float32Array(segData, SEG_SAMPLES);
+        mmn->makeSegmentMinMax(start, end, dim, data, mmnRes, 1000);
+        deleteData(start);
+        deleteData(end);
+        deleteData(delta);
+        deleteData(dim);
+        deleteData(data);
+        delete [] segData; 
+    }
+    for(int segIdx = 0; segIdx < NUM_SEGMENTS; segIdx++)
+    {
+        float *segData = new float[SEG_SAMPLES];
+        for(int i = 0; i < SEG_SAMPLES; i++)
+          segData[i] = 0;
+        MDSplus::Float64 *start = new MDSplus::Float64(segIdx);
+        MDSplus::Float64 *end = new MDSplus::Float64(segIdx+1-1./SEG_SAMPLES);
+        MDSplus::Float64 *delta = new MDSplus::Float64(1./SEG_SAMPLES);
+        MDSplus::Data *dim = new MDSplus::Range(start, end, delta);
+        MDSplus::Float32Array *data = new MDSplus::Float32Array(segData, SEG_SAMPLES);
+        mmpn->beginSegmentMinMax(start, end, dim, data, mmpnRes, 1000);
+        for(int i = 0; i < SEG_SAMPLES; i++)
+            segData[i] = i;
+        for(int i = 0; i < 10; i++)
+        {
+            MDSplus::Float32Array *putData = new MDSplus::Float32Array(&segData[i*SEG_SAMPLES/10], SEG_SAMPLES/10);
+            mmpn->putSegmentMinMax(putData, -1, mmpnRes, 1000);
+            MDSplus::deleteData(putData);
+        }
+        deleteData(start);
+        deleteData(end);
+        deleteData(delta);
+        deleteData(dim);
+        deleteData(data);
+        delete [] segData; 
+    }        
+    
     int dataLen;
     int resDataLen;
     MDSplus::Data *retData = n->data();
@@ -168,11 +265,49 @@ void makeSegment()
     segData = retData->getFloatArray(&resDataLen);
     delete[] segData;
     deleteData(retData);
+    TEST1(dataLen/1000 == resDataLen);
+
+    retData = pn->data();
+    segData = retData->getFloatArray(&dataLen);
+    delete[] segData;
+    deleteData(retData);
+    retData = pnRes->data();
+    segData = retData->getFloatArray(&resDataLen);
+    delete[] segData;
+    deleteData(retData);
+    TEST1(dataLen/1000 == resDataLen);
+
+    retData = mmn->data();
+    segData = retData->getFloatArray(&dataLen);
+    delete[] segData;
+    deleteData(retData);
+    retData = mmnRes->data();
+    segData = retData->getFloatArray(&resDataLen);
+    delete[] segData;
+    deleteData(retData);
+    TEST1(dataLen/1000 == resDataLen/2);
+
+    retData = mmpn->data();
+    segData = retData->getFloatArray(&dataLen);
+    delete[] segData;
+    deleteData(retData);
+    retData = mmpnRes->data();
+    segData = retData->getFloatArray(&resDataLen);
+    delete[] segData;
+    deleteData(retData);
+    TEST1(dataLen/1000 == resDataLen/2);
+
     delete n;
     delete nRes;
     delete n1;
+    delete pn;
+    delete pnRes;
+    delete pn1;
+    delete mmn;
+    delete mmnRes;
+    delete mmpn;
+    delete mmpnRes;
     delete t;
-    TEST1(dataLen/1000 == resDataLen);
 }
 
 #define TEST(prcedure) do{BEGIN_TESTING(prcedure); prcedure(); END_TESTING;}while(0)
