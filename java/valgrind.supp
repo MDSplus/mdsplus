@@ -13,14 +13,8 @@
 {
    Addr4
    Memcheck:Addr4
-   ...
-   obj:*/libjava.so*
-}
-{
-   Addr4
-   Memcheck:Addr4
-   ...
-   obj:*/libjvm.so*
+   obj:*
+   obj:*
 }
 {
    Addr8
