@@ -26,11 +26,11 @@ VALGRIND_SUPPRESSIONS_FILES =
 # Skipping child programs that are launched inside python classes
 #
 VALGRIND_FLAGS = --trace-children-skip=*/ld,*/collect2,*/ldconfig,*/sh
-                 
+
 
 # Files produced by tests that must be purged
 #
-MOSTLYCLEANFILES = mdsip.log
+MOSTLYCLEANFILES = *.log
 
 ## ////////////////////////////////////////////////////////////////////////// ##
 ## // TARGETS  ////////////////////////////////////////////////////////////// ##
@@ -39,5 +39,5 @@ MOSTLYCLEANFILES = mdsip.log
 
 clean-local: clean-local-tests
 
-check_PROGRAMS = 
+check_PROGRAMS =
 check_SCRIPTS  = $(TESTS)
