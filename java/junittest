@@ -3,15 +3,16 @@ if [ -n "$2" ]
 then test=${2/"$1/"/}
 else test=$1
 fi
-echo $test
-if [[ "$LD_PRELOAD" == *"libtsan.so"* ]] && [[ "$test" == "MDSplus.MdsConnectionTest" ]]
+
+if [[ "$LD_PRELOAD" = *"libtsan.so"* ]] && [ "$test" = "MDSplus.MdsConnectionTest" ]
 then echo "MDSplus.MdsConnectionTest sometimes hangs @ tsan" ;exit 77
 fi
 
-if [ -z $VALGRIND_TOOL ] # sanitizer
+if [[ "$LD_PRELOAD" = *"lib"*"san.so"* ]] # sanitizer
 then JVM_OPTIONS="-XX:UseSSE=0 -Djava.compiler=NONE"
 elif [ "$VALGRIND_TOOL" = "helgrind" ]
 then JVM_OPTIONS="-Xint"
 else JVM_OPTIONS=
 fi
+
 exec ${JAVA_PATH_NAME} ${JAVA_TARGET_ARCH} ${JVM_OPTIONS} ${JUNITTEST:-org.junit.runner.JUnitCore} ${test}
