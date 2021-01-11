@@ -274,16 +274,6 @@ class _ACQ2106_435ST(MDSplus.Device):
         uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
         uut.s0.set_knob('set_abort', '1')
 
-        try:
-            self.slots = [uut.s1]
-            self.slots.append(uut.s2)
-            self.slots.append(uut.s3)
-            self.slots.append(uut.s4)
-            self.slots.append(uut.s5)
-            self.slots.append(uut.s6)
-        except:
-            pass
-
         if self.ext_clock.length > 0:
             raise Exception('External Clock is not supported')
 
@@ -340,6 +330,23 @@ class _ACQ2106_435ST(MDSplus.Device):
         # Hardware Filter: Accumulate/Decimate filter. Accumulate nacc_samp samples, then output one value.
         nacc_samp = int(self.hw_filter.data())
         print("Number of sites in use {}".format(self.sites))
+
+        # Ask UUT what are the sites that are actually being populatee with a 435ELF
+        self.slots = []
+        for (site,module) in sorted(uut.modules.items()):
+            site_number = int(site)
+            if site_number == 1:
+                self.slots.append(uut.s1)
+            elif site_number == 2:
+                self.slots.append(uut.s2)
+            elif site_number == 3:
+                self.slots.append(uut.s3)
+            elif site_number == 4:
+                self.slots.append(uut.s4)
+            elif site_number == 5:
+                self.slots.append(uut.s5)
+            elif site_number == 6:
+                self.slots.append(uut.s6)
 
         for card in range(self.sites):
             if 1 <= nacc_samp <= 32:
