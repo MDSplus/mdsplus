@@ -241,13 +241,13 @@ write(*, "------> Event time ", _event_time);
 				DevNodeCvt(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) +  _N_CHAN_INIT_LEVEL_2,
 					['LOW', 'HIGH'], [0,1], _init_level_2 = 0);
 
-				_delay =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY)), _INVALID);
+				_delay =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY))), _INVALID);
 				if(_delay == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid delay for pulse channel " // (_c + 1));
  					abort();
 				}
-				_duration =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION)), _INVALID);
+				_duration =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION))), _INVALID);
 				if(_duration == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid duration for pulse channel " // (_c + 1));
@@ -330,13 +330,13 @@ write(*, "  Should be all done setting up this chan for pulse");
     				DevLogErr(_nid, "Invalid gclock frequency for channel " // (_c + 1));
  					abort();
 				}
-				_delay =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY)), _INVALID);
+				_delay =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY))), _INVALID);
 				if(_delay == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid delay for pulse channel " // (_c + 1));
  					abort();
 				}
-				_duration =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION)), _INVALID);
+				_duration =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION))), _INVALID);
 				if(_duration == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid duration for pulse channel " // (_c + 1));
@@ -419,13 +419,13 @@ write(*, "  Should be all done setting up this chan for pulse");
     				DevLogErr(_nid, "Invalid dclock frequency 2 for channel " // (_c + 1));
  					abort();
 				}
-				_delay =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY)), _INVALID);
+				_delay =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DELAY))), _INVALID);
 				if(_delay == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid delay for pulse channel " // (_c + 1));
  					abort();
 				}
-				_duration =if_error(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION)), _INVALID);
+				_duration =if_error(f_float(data(DevNodeRef(_nid,  _N_CHANNEL_0  +(_c *  _K_NODES_PER_CHANNEL) + _N_CHAN_DURATION))), _INVALID);
 				if(_duration == _INVALID)
 				{
     				DevLogErr(_nid, "Invalid duration for pulse channel " // (_c + 1));
