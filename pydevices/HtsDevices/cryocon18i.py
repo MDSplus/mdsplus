@@ -85,12 +85,12 @@ class CRYOCON18I_TREND(CRYOCON18I):
     ]
 
     def sendCommand(self,s,cmd):
-        s.send(cmd + "\r\n")
+        s.send((cmd + "\r\n").encode())
 
     def recvResponse(self,s):
         msg = ""
         while True:
-            c = s.recv(1)
+            c = s.recv(1).decode(encoding='UTF-8')
             if c == "\r":
                 continue
             if c == "\n":
