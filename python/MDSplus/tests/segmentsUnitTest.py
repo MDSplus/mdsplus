@@ -102,6 +102,10 @@ class Tests(_UnitTest.TreeTests):
             ptree.addNode('PS')
             ptree.addNode('PR')
             ptree.addNode('PTS')
+            ptree.addNode('MSR')
+            ptree.addNode('MSR_RES')
+            ptree.addNode('MSMM')
+            ptree.addNode('MSMM_RES')
             ptree.write()
         ptree.normal()
         # # # write Segments using different methods # # #
@@ -122,11 +126,26 @@ class Tests(_UnitTest.TreeTests):
         ### makeSegment multidim ###
         node = ptree.MS_MD
         seglen = 4
-        for i in range(0, length, seglen):
-            node.makeSegment(dim[i]-1, dim[i+seglen-1]+1,
-                             ndim[i:i+seglen], ndat[i:i+seglen])
-        self.assertEqual(node.getSegmentLimits(1), (9, 17))
-        check_signal(node, dim, dat)
+        for i in range(0,length,seglen):
+            node.makeSegment(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen])
+        self.assertEqual(node.getSegmentLimits(1),(9,17))
+        check_signal(node,dim,dat)
+        ### makeSegmentResampled ###
+        node = ptree.MSR
+        resNode = ptree.MSR_RES
+        seglen = 1
+        for i in range(0,length,seglen):
+            node.makeSegmentResampled(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen],resNode,4)
+        self.assertEqual(node.getSegmentLimits(1),(3,5))
+        #self.assertEqual(resNode.getSegmentLimits(1),(3,5))
+        ### makeSegmentMinMax ###
+        node = ptree.MSMM
+        resNode = ptree.MSMM_RES
+        seglen = 1
+        for i in range(0,length,seglen):
+            node.makeSegmentMinMax(dim[i]-1,dim[i+seglen-1]+1,ndim[i:i+seglen],ndat[i:i+seglen],resNode,4)
+        self.assertEqual(node.getSegmentLimits(1),(3,5))
+        #self.assertEqual(resNode.getSegmentLimits(1),(3,5))
         ### makeTimestampedSegment ###
         node = ptree.MTS
         seglen = 1
