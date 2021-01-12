@@ -6,5 +6,5 @@ valgrind --quiet --trace-children=yes --error-exitcode=1  \
          --dsymutil=yes --leak-check=yes           \
          --gen-suppressions=all   \
          $1 \
-         2>&1 | ./parse_valgrind_suppressions.sh 
+         2>&1 | ./parse_valgrind_suppressions.sh
 

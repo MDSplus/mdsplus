@@ -48,6 +48,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef _WIN32
 #include <windows.h>
+#define setenv(name,value,overwrite) _putenv_s(name,value)
 #endif
 
 #define PTR2JLONG(ctx) (jlong)(int64_t)(intptr_t)(ctx)
@@ -1325,7 +1326,7 @@ JNIEXPORT jstring JNICALL Java_MDSplus_Data_decompile(JNIEnv * env, jobject jobj
     status = _TdiDecompile(&ctx, dataD, &outXd MDS_END_ARG);
   else
     status = TdiDecompile(dataD, &outXd MDS_END_ARG);
- 
+
   //status = CTXCALLR(TdiDecompile, dataD, &outXd MDS_END_ARG);
 
   if STATUS_NOT_OK {
@@ -2180,17 +2181,17 @@ JNIEXPORT jstring JNICALL Java_MDSplus_TreeNode_getNciString
     (JNIEnv * env, jclass cls __attribute__ ((unused)), jint nid, jlong jctx, jint nciType) {
   int status;
   char path[1024];
-  int pathLen = 1024;
-  struct nci_itm nciList[] = { {1023, 0, path, &pathLen},
+  int pathLen = 0;
+  struct nci_itm nciList[] = { {sizeof(path)-1, 0, path, &pathLen},
   {NciEND_OF_LIST, 0, 0, 0}
   };
   void *ctx = JLONG2PTR(jctx);
 
   nciList[0].code = (short)nciType;
   status = CTXCALLN(TreeGetNci, nid, nciList);
-  path[pathLen] = 0;
   if STATUS_NOT_OK
     throwMdsException(env, status);
+  path[pathLen] = 0;
   return (*env)->NewStringUTF(env, path);
 }
 
@@ -3602,20 +3603,17 @@ EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
   int status, nid, curr_nid, i;
   char *names, *path;
   static int conglomerate_nids, conglomerate_nids_len;
-  struct nci_itm nci_list[] = { {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len},
-  {NciEND_OF_LIST, 0, 0, 0}
+  struct nci_itm nci_list[] = {
+    {4, NciNUMBER_OF_ELTS, &conglomerate_nids, &conglomerate_nids_len},
+    {NciEND_OF_LIST, 0, 0, 0}
   };
   static EMPTYXD(xd);
   DESCRIPTOR_A(dsc, 1, DTYPE_B, 0, 0);
-  //struct descriptor dsc = {0, DTYPE_T, CLASS_S, 0};
-  char *log_string = malloc(4096);  
-  //It feeds putenv, eeeds to be alive even when the routine exits
-
-   conglomerate_nids = 0;
-   path = getenv("device_beans_path");
-   if (!path || !*path) {
-     sprintf(log_string, "device_beans_path=%s", getenv("HOME"));
-     putenv(log_string);
+  conglomerate_nids = 0;
+  path = getenv("device_beans_path");
+  if (!path || !*path)
+  {
+    setenv("device_beans_path", getenv("HOME"), 0);
   }
   status = TreeOpenNew("device_beans", -1);
   printf("%s\n", MdsGetMsg(status));
@@ -3646,7 +3644,3 @@ EXPORT struct descriptor_xd *getDeviceFields(char *deviceName)
   status = TreeQuitTree("device_beans", -1);
   return &xd;
 }
-
-
-
-

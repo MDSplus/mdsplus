@@ -92,17 +92,10 @@ public class Tree
 	@Override
 	protected void finalize() throws Throwable
 	{
-		try
-		{
-			if (edit)
-				this.quit();
-			else
-				this.close();
-		}
-		finally
-		{
-			super.finalize();
-		}
+		if (edit)
+			this.quit();
+		else
+			this.close();
 	}
 
 	public boolean isOpen()

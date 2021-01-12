@@ -36,7 +36,7 @@ public class TREE_Test
 			Assert.assertEquals(TREE_Test.shot, tree.setCurrentShot().getCurrentShot());
 			Assert.assertTrue(tree.open(TREE.NEW).is_open());
 			Assert.assertEquals("Tree(\"TEST\", 7633, edit)", tree.toString());
-			Assert.assertTrue(tree.getCtx().decompile().matches("Pointer\\(0x[a-f0-9]+\\)"));
+			Assert.assertTrue(tree.getDbid().decompile().matches("Pointer\\(0x[a-f0-9]+\\)"));
 			Assert.assertEquals("\\TEST::TOP.STRUCT",
 					(node = tree.addNode("STRUCT", NODE.USAGE_STRUCTURE)).decompile());
 			Assert.assertEquals(0, tree.getNode("\\TEST::TOP").getNidNumber());

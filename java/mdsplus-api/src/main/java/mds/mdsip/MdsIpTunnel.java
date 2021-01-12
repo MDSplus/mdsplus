@@ -1,6 +1,7 @@
 package mds.mdsip;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 import mds.mdsip.MdsIp.MdsIpIOStream;
 
@@ -19,7 +20,19 @@ public class MdsIpTunnel extends MdsIpIOStream
 	public void close() throws IOException
 	{
 		if (this.isOpen())
-			this.process.destroy();
+		{
+			this.dis.close();
+			this.dos.close();
+			try
+			{
+				if (!this.process.waitFor(1000, TimeUnit.MILLISECONDS))
+					this.process.destroy();
+			}
+			catch (InterruptedException e)
+			{
+				this.process.destroy();
+			}
+		}
 	}
 
 	@Override

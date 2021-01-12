@@ -110,14 +110,14 @@
       end if
 
       dsc = descr(IDTYPE_FLOAT,resultarr,20,0)
+      do i=1,20
+         resultarr(i) = 0.
+      enddo
       sts= MdsPutR(con,"A"//CHAR(0),"$"//CHAR(0),dsc,0)
       if (and(sts, 1) .ne. 1) then
         write (6,*) "MdsPut('A','$',array) : ",sts
         stop 1
       end if
-      do i=1,20
-         resultarr(i) = 0.
-      enddo
 
       sts= MdsValueR(con,"A"//CHAR(0),dsc,0,size)
       if (and(sts, 1) .ne. 1) then
