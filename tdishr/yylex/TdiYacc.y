@@ -93,7 +93,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 extern char *stpcpy(char *dest, const char *src);
 #endif
 
-extern unsigned short OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
+extern unsigned short OpcShape, OpcSize, OpcSubscript, OpcExtFunction, OpcFun, OpcUsing;
 
 extern int tdilex();
 extern int tdi_lex_path();
@@ -364,6 +364,8 @@ using:
 ;
 postX:
   primaX
+| postX '[' RANGE ']'	{_JUST1(OPC_FLATTEN,$1,$$);}
+| postX '[' RANGE RANGE ']' {_JUST1(OPC_SQUEEZE,$1,$$);}
 | postX '[' sub ']'	{int j;
 			$$=$3;
 			$$.rptr->pointer= (uint8_t *)&OpcSubscript;
