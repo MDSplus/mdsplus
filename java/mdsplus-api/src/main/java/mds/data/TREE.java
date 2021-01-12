@@ -382,9 +382,16 @@ public final class TREE implements ContextEventListener, CTX, AutoCloseable
 		try
 		{
 			if (this.is_editable())
-				this.api.treeQuitTree(ctx, null, 0);
-			else
-				this.api.treeClose(ctx, null, 0);
+			{
+				this.api.treeQuitTree(this.ctx, null, 0);
+				this.api.treeFreeDbid(this.ctx);
+			}
+			else if (this.ctx != null && !this.ctx.isNull())
+			{
+				this.api.treeClose(this.ctx, null, 0);
+				this.api.treeFreeDbid(this.ctx);
+			}
+
 		}
 		catch (final MdsException e)
 		{}
