@@ -27,20 +27,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #ifdef USE_PERF
 
-#include <treeioperf.h>
-#include <sys/mman.h>
-#include <treeshr.h>
-#include <stdlib.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
 #include <semaphore.h>
-#include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <treeioperf.h>
+#include <treeshr.h>
 #include <unistd.h>
 
-EXPORT int TreeGetPerf(TREE_IO_PERF * perf)
-{
+EXPORT int TreeGetPerf(TREE_IO_PERF *perf) {
   static int initialized = 0;
   static TREE_IO_PERF *p = 0;
   static sem_t *semaphore = 0;
@@ -50,13 +49,13 @@ EXPORT int TreeGetPerf(TREE_IO_PERF * perf)
     if (filename != 0) {
       int pf = open(filename, O_RDONLY);
       if (pf != -1) {
-	p = mmap(0, sizeof(TREE_IO_PERF), PROT_READ, MAP_SHARED, pf, 0);
-	if (p == 0)
-	  perror("Error mapping performance file");
-	else
-	  semaphore = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
+        p = mmap(0, sizeof(TREE_IO_PERF), PROT_READ, MAP_SHARED, pf, 0);
+        if (p == 0)
+          perror("Error mapping performance file");
+        else
+          semaphore = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
       } else
-	perror("Error opening performance file");
+        perror("Error opening performance file");
     }
   }
   if (p != 0 && semaphore != 0) {
@@ -72,8 +71,7 @@ static TREE_IO_PERF *PERF = 0;
 static int INITIALIZED = 0;
 static sem_t *SEMAPHORE = 0;
 
-static void Initialize()
-{
+static void Initialize() {
   INITIALIZED = 1;
   char *filename = getenv("mds_perf_filename");
   if (filename != 0) {
@@ -82,16 +80,16 @@ static void Initialize()
     if (pf == -1) {
       pf = open(filename, O_RDWR | O_CREAT, 0664);
       if (pf != -1) {
-	static TREE_IO_PERF init;
-	write(pf, &init, sizeof(init));
+        static TREE_IO_PERF init;
+        write(pf, &init, sizeof(init));
       }
     }
     if (pf != -1) {
       PERF = mmap(0, sizeof(TREE_IO_PERF), PROT_WRITE, MAP_SHARED, pf, 0);
       if (PERF == 0)
-	perror("Error mapping performance file");
+        perror("Error mapping performance file");
       else {
-	SEMAPHORE = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
+        SEMAPHORE = sem_open("mds_perf_lock", O_CREAT, 0664, 1);
       }
     } else
       perror("Error opening performance file");
@@ -99,8 +97,7 @@ static void Initialize()
   }
 }
 
-EXPORT int TreePerfZero()
-{
+EXPORT int TreePerfZero() {
   if (!INITIALIZED)
     Initialize();
   if (PERF != 0 && SEMAPHORE != 0) {
@@ -112,8 +109,7 @@ EXPORT int TreePerfZero()
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfWrite(int bytes)
-{
+EXPORT int TreePerfWrite(int bytes) {
   if (!INITIALIZED)
     Initialize();
   if (PERF != 0 && SEMAPHORE != 0) {
@@ -143,8 +139,7 @@ EXPORT int TreePerfWrite(int bytes)
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfRead(int bytes)
-{
+EXPORT int TreePerfRead(int bytes) {
   if (!INITIALIZED)
     Initialize();
   if (PERF != 0 && SEMAPHORE != 0) {
@@ -174,23 +169,15 @@ EXPORT int TreePerfRead(int bytes)
   return TreeFAILURE;
 }
 #else
-EXPORT int TreeGetPerf()
-{
+EXPORT int TreeGetPerf() { return TreeFAILURE; }
+
+EXPORT int TreePerfRead(int bytes __attribute__((unused))) {
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfRead(int bytes __attribute__ ((unused)))
-{
+EXPORT int TreePerfWrite(int bytes __attribute__((unused))) {
   return TreeFAILURE;
 }
 
-EXPORT int TreePerfWrite(int bytes __attribute__ ((unused)))
-{
-  return TreeFAILURE;
-}
-
-EXPORT int TreePerfZero()
-{
-  return TreeFAILURE;
-}
+EXPORT int TreePerfZero() { return TreeFAILURE; }
 #endif

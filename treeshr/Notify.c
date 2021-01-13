@@ -25,8 +25,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 #include <treeshr_hooks.h>
 extern char *TreeGetPath(int);
-int Notify(TreeshrHookType htype, char *tree, int shot, int nid)
-{
+int Notify(TreeshrHookType htype, char *tree, int shot, int nid) {
   char *name;
   char def_name[50];
   char *na = "N/A";
@@ -69,7 +68,8 @@ int Notify(TreeshrHookType htype, char *tree, int shot, int nid)
     path = TreeGetPath(nid);
     break;
   }
-  printf("%s hook called for tree=%s, shot=%d, node=%s\n", name, tree, shot, path);
+  printf("%s hook called for tree=%s, shot=%d, node=%s\n", name, tree, shot,
+         path);
   if (path != na && path != (char *)0)
     free(path);
   return 1;
