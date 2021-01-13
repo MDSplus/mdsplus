@@ -4,7 +4,6 @@ from ctypes import CDLL, byref, c_int, c_void_p, c_byte, c_float, c_char_p, c_ui
 import os
 from time import sleep
 import sys, traceback
-#import exceptions
 
 class CRIO_FAU(Device):
     """NI Compact RIO SPIDER Interlock Fast Acquisition Units"""
@@ -222,18 +221,18 @@ class CRIO_FAU(Device):
 
         if status < 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'FAU acquisition device initialization error.')
-            return 0
+            raise mdsExceptions.DevCANNOT_LOAD_SETTINGS
 
         status = CRIO_FAU.niInterfaceLib.startFauFpga(self.session)
         if status < 0 :
             Data.execute('DevLogErr($1,$2)', self.getNid(), 'FAU start FPGA error.')
-            return 0
+            raise mdsExceptions.DevCOMM_ERROR
 
         acqState = c_short();
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
         print ("Acquisition State ", acqState.value)
 
-        return 1
+        return 
 
 
 
@@ -285,7 +284,7 @@ class CRIO_FAU(Device):
         self.worker.start()
  
 
-        return 1
+        return 
 
     def trigger(self):
         try:
@@ -310,7 +309,7 @@ class CRIO_FAU(Device):
         CRIO_FAU.niInterfaceLib.getFauAcqState(self.session, byref(acqState))
         print ("Acquisition State ", acqState.value)
 
-        return 1
+        return 
 
 
     def stop_store(self):
@@ -331,5 +330,5 @@ class CRIO_FAU(Device):
            print ("Worker isn't running")
 
         self.closeInfo()
-        return 1
+        return 
     
