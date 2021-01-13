@@ -29,6 +29,17 @@ import time
 import datetime
 import numpy as np
 
+if MDSplus.version.ispy2:
+    def tostr(x):
+        return x
+    def tobytes(x):
+        return x
+else:
+    def tostr(x):
+        return b if isinstance(b, str) else b.decode('utf-8')
+    def tobytes(x):
+        return s if isinstance(s, bytes) else s.encode('utf-8')
+
 class CRYOCON18I(MDSplus.Device):
     """
     8 channel Cryocon temperature monitor
@@ -85,14 +96,13 @@ class CRYOCON18I_TREND(CRYOCON18I):
     ]
 
     def sendCommand(self,s,cmd):
-        from MDSplus.version import tobytes
         s.send(tobytes(cmd + "\r\n"))
 
     def recvResponse(self,s):
         from MDSlus.version import tounicode
         msg = ""
         while True:
-            c = tounicode(s.recv(1))
+            c = tostr(s.recv(1))
             if c == "\r":
                 continue
             if c == "\n":
