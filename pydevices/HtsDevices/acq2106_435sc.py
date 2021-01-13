@@ -57,31 +57,41 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
         uut.s1.SC32_GAIN_COMMIT = 1
         print("GAIN Committed")
 
-    def setCalibration(self,num):
-        chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan.setSegmentScale(MDSplus.ADD(MDSplus.MULTIPLY(chan.COEFFICIENT,MDSplus.dVALUE()),chan.OFFSET))
+    def store(self):
+        uut = acq400_hapi.Acq400(self.node.data(), monitor=False)
 
-    def noConditioning(self,num):
-        chan_raw = self.__getattr__('INPUT_%3.3d:RAW' % num)
+        chans_sc  = []
+        nchannels = uut.nchan()
+        for ii in range(nchannels):
+            chans_sc.append(getattr(self, 'INPUT_%3.3d'%(ii+1)))
+
+        for ic, ch in enumerate(chans_sc):
+            chan_unsc = self.__getattr__('INPUT_%3.3d:NON_SC' %(ic+1))
+            if ch.on:
+                chan_unsc.record = MDSplus.BUILD_SIGNAL(ch.data() * (1.0/ch.SC_GAIN1 * ch.SC_GAIN2) - ch.SC_OFFSET, MDSplus.RAW_OF(ch), MDSplus.DIM_OF(ch))
+
+    STORE=store
+
+
+    def unConditioning(self,num):
         chan     = self.__getattr__('INPUT_%3.3d' % num)
-        # chan_raw.setSegmentScale(MDSplus.SUBTRACT(MDSplus.DIVIDE(MDSplus.dVALUE(), MDSplus.MULTIPLY(chan_raw.GAIN1, chan_raw.GAIN2)), chan_raw.OFFSET))
-        expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan_raw.GAIN1, chan_raw.GAIN2)), chan_raw.OFFSET)
-        expr = "%s / (%f * %f) - %f" % (chan, chan_raw.GAIN1, chan_raw.GAIN2, chan_raw.OFFSET)
-        return expr
+        chan_raw = self.__getattr__('INPUT_%3.3d:NON_SC' % num)
+        expr = MDSplus.SUBTRACT(MDSplus.DIVIDE(chan, MDSplus.MULTIPLY(chan.SC_GAIN1, chan.SC_GAIN2)), chan.SC_OFFSET)
 
 def assemble(cls):
     cls.parts = list(_ACQ2106_435SC.carrier_parts + _ACQ2106_435SC.sc_parts)
     for i in range(cls.sites*32):
         cls.parts += [
-            {'path':':INPUT_%3.3d'%(i+1,),             'type':'SIGNAL',  'valueExpr':'head.setCalibration(%d)' %(i+1,),'options':('no_write_model','write_once',)}, 
+            {'path':':INPUT_%3.3d'%(i+1,),             'type':'SIGNAL',  'valueExpr':'head.setChanScale(%d)' %(i+1,),'options':('no_write_model','write_once',)}, 
             {'path':':INPUT_%3.3d:DECIMATE'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_dcim',                'options':('no_write_shot',)},           
             {'path':':INPUT_%3.3d:COEFFICIENT'%(i+1,), 'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
             {'path':':INPUT_%3.3d:OFFSET'%(i+1,),      'type':'NUMERIC',                                             'options':('no_write_model', 'write_once',)},
-
-            {'path':':INPUT_%3.3d:RAW'%(i+1,),          'type':'SIGNAL',  'valueExpr':'head.noConditioning(%d)' %(i+1,), 'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:RAW:GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',                 'options':('no_write_shot', 'write_once',)},
-            {'path':':INPUT_%3.3d:RAW:GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',                 'options':('no_write_shot', 'write_once',)},
-            {'path':':INPUT_%3.3d:RAW:OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',                'options':('no_write_shot', 'write_once',)},    
+            {'path':':INPUT_%3.3d:SC_GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',               'options':('no_write_shot', 'write_once',)},
+            {'path':':INPUT_%3.3d:SC_GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',               'options':('no_write_shot', 'write_once',)},
+            {'path':':INPUT_%3.3d:SC_OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',              'options':('no_write_shot', 'write_once',)},   
+            #{'path':':INPUT_%3.3d:NON_SC'%(i+1,),          'type':'SIGNAL',  'valueExpr':'SUBTRACT(DIVIDE(INPUT_%3.3d, MULTIPLY(INPUT_%3.3d_SC_GAIN1, INPUT_%3.3d_SC_GAIN2)), INPUT_%3.3d_SC_OFFSET)' %(i+1,i+1,i+1,i+1,), 'options':('no_write_model','write_once',)},
+            {'path':':INPUT_%3.3d:NON_SC'%(i+1,),      'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
+            {'path':':INPUT_%3.3d:LOW_RES'%(i+1,),     'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): sites=1
