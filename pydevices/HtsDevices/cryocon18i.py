@@ -99,7 +99,6 @@ class CRYOCON18I_TREND(CRYOCON18I):
         s.send(tobytes(cmd + "\r\n"))
 
     def recvResponse(self,s):
-        from MDSlus.version import tounicode
         msg = ""
         while True:
             c = tostr(s.recv(1))
