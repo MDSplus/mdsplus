@@ -86,12 +86,14 @@ class CRYOCON24C_TREND(CRYOCON24C):
     ])
 
     def sendCommand(self,s,cmd):
-        s.send(cmd + "\r\n")
+        from MDSplus.version import tobytes
+        s.send(tobytes(cmd + "\r\n"))
 
     def recvResponse(self,s):
+        from MDSplus.version import tounicode
         msg = ""
         while True:
-            c = s.recv(1)
+            c = tounicode(s.recv(1))
             if c == "\r":
                 continue
             if c == "\n":
