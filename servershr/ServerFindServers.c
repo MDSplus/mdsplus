@@ -51,14 +51,14 @@ int SERVER$FIND_SERVERS(int *ctx, struct dsc$descriptor *server )
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <dirent.h>
 #include <mdsdescrip.h>
-#include <mdsplus/mdsconfig.h>
-#include <status.h>
-#include <stdlib.h>
-#include <string.h>
-#include <strroutines.h>
 #include <sys/types.h>
+#include <dirent.h>
+#include <status.h>
+#include <string.h>
+#include <stdlib.h>
+#include <mdsplus/mdsconfig.h>
+#include <strroutines.h>
 
 EXPORT char *ServerFindServers(void **ctx, char *wild_match) {
   char *ans = NULL;

@@ -142,20 +142,20 @@ XmdsExprPut(Widget w); Boolean XmdsExprApply(Widget w); void XmdsExprRegister();
 
 ------------------------------------------------------------------------------*/
 
-#include <Mrm/MrmPublic.h>
+#include <strroutines.h>
+#include <mdsdescrip.h>
+#include <treeshr.h>
+#include <ncidef.h>
+#include <mds_stdarg.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
-#include <Xm/PushB.h>
+#include <Xmds/XmdsExprP.h>
+#include <Xmds/XmdsExprField.h>
+#include <Xmds/XmdsSupport.h>
+#include <Mrm/MrmPublic.h>
 #include <Xm/Text.h>
 #include <Xm/TextF.h>
-#include <Xmds/XmdsExprField.h>
-#include <Xmds/XmdsExprP.h>
-#include <Xmds/XmdsSupport.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <ncidef.h>
-#include <strroutines.h>
-#include <treeshr.h>
+#include <Xm/PushB.h>
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */

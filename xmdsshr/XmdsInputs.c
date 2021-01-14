@@ -70,15 +70,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
  Macros:                                                                      */
 
-#include <Xm/ToggleB.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsExpr.h>
-#include <Xmds/XmdsInputs.h>
 #include <mdsdescrip.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <Xm/Xm.h>
+#include <Xm/ToggleB.h>
+#include <Xmds/XmdsInputs.h>
+#include <Xmds/XmdsExpr.h>
 
 /*------------------------------------------------------------------------------
 

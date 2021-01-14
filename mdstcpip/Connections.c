@@ -26,9 +26,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include "mdsIo.h"
-#include "mdsip_connections.h"
 #include <mdsshr.h>
+#include "mdsip_connections.h"
+#include "mdsIo.h"
+
 #include <pthread_port.h>
 #include <treeshr.h>
 

@@ -51,36 +51,36 @@ $ dwcope [-default setup]
         Description:
 
 ------------------------------------------------------------------------------*/
-#include "dwscope.h"
-#include "dwscope_icon.xbm"
-#include <Mrm/MrmPublic.h>
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Xatom.h>
-#include <X11/cursorfont.h>
-#include <Xm/FileSB.h>
-#include <Xm/MessageB.h>
-#include <Xm/PushBG.h>
-#include <Xm/SashP.h>
-#include <Xm/Scale.h>
-#include <Xm/Text.h>
-#include <Xm/TextF.h>
-#include <Xm/ToggleB.h>
-#include <Xm/ToggleBG.h>
-#include <Xm/XmP.h>
-#include <Xmds/XmdsWaveform.h>
-#include <mdsplus/mdsconfig.h>
 #include <mdstypes.h>
-#include <pthread.h>
-#include <signal.h>
+#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <signal.h>
 #include <unistd.h>
+#include <X11/cursorfont.h>
+#include <X11/Xatom.h>
+#include <X11/Intrinsic.h>
+#include <X11/StringDefs.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/XmP.h>
+#include <Xm/Text.h>
+#include <Xm/TextF.h>
+#include <Xm/Scale.h>
+#include <Xm/MessageB.h>
+#include <Xm/SashP.h>
+#include <Xm/ToggleB.h>
+#include <Xm/PushBG.h>
+#include <Xm/FileSB.h>
+#include <Xm/ToggleBG.h>
+#include <pthread.h>
+#include <Xmds/XmdsWaveform.h>
+#include "dwscope.h"
+#include "dwscope_icon.xbm"
 
 #ifndef _NO_DXm
-#include <DXm/DECspecific.h>
 #include <DXm/DXmPrint.h>
+#include <DXm/DECspecific.h>
 #endif
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__

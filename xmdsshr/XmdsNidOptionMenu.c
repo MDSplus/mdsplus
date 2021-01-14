@@ -86,20 +86,20 @@ XmdsNidOptionMenuApply(Widget w); struct dsc$descriptor_xd
 
 ------------------------------------------------------------------------------*/
 
-#include <Mrm/MrmPublic.h>
+#include <mdsdescrip.h>
+#include <treeshr.h>
+#include <mdsshr.h>
 #include <X11/StringDefs.h>
-#include <Xm/PushBG.h>
 #include <Xm/RowColumn.h>
-#include <Xm/Xm.h>
+#include <Xm/PushBG.h>
 #include <Xmds/XmdsCallbacks.h>
-#include <Xmds/XmdsNidOptionMenu.h>
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <treeshr.h>
+#include <Xmds/XmdsNidOptionMenu.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
 #include <xmdsshr.h>
+#include <mds_stdarg.h>
 
 typedef struct _Resources {
   int nid;

@@ -1,7 +1,7 @@
 #ifndef SERVERSHRP_H
 #define SERVERSHRP_H
-#include <mdsdescrip.h>
 #include <mdsplus/mdsconfig.h>
+#include <mdsdescrip.h>
 #ifdef _WIN32
 #include <time.h>
 #else

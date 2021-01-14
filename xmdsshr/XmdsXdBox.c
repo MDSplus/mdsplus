@@ -134,18 +134,19 @@ XmdsXdBoxGetState(Widget w); void XmdsXdBoxSetXd(Widget w, struct dsc$descriptor
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <Xm/TextF.h>
-#include <Xm/ToggleBG.h>
-#include <Xmds/XmdsSupport.h>
-#include <Xmds/XmdsXdBoxP.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <ncidef.h>
 #include <strroutines.h>
+#include <mdsshr.h>
 #include <treeshr.h>
+#include <ncidef.h>
+#include <X11/Intrinsic.h>
+#include <X11/StringDefs.h>
+#include <Xm/ToggleBG.h>
+#include <Xm/TextF.h>
+#include <Xmds/XmdsXdBoxP.h>
+#include <Xmds/XmdsSupport.h>
+#include <mds_stdarg.h>
 extern char *DescToNull(struct descriptor_s *desc);
 /*------------------------------------------------------------------------------
 

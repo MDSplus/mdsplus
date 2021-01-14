@@ -22,10 +22,10 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
+#include <stdio.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
 #include <Xmds/XmdsWaveform.h>
-#include <stdio.h>
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")
 #endif

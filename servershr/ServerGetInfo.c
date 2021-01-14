@@ -56,9 +56,9 @@ doing.
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 #include <stdlib.h>
 #include <string.h>
 

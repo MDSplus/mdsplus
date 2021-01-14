@@ -65,9 +65,9 @@ String ident, MrmRegisterArglist reglist, MrmCount regnum [,widget_return])
 
 ------------------------------------------------------------------------------*/
 
+#include <ncidef.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/Xm.h>
-#include <ncidef.h>
 #include <treeshr.h>
 #include <xmdsshr.h>
 

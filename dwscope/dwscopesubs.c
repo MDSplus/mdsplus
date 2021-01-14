@@ -81,21 +81,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*  *2    25-NOV-1991 10:32:11 TWF "add show mode" */
 /*  *1    12-NOV-1991 14:33:00 TWF "Routines used by DWPAD and DWSCOPE" */
 /*  CMS REPLACEMENT HISTORY, Element DWSCOPESUBS.C */
-#include "dwscope.h"
-#include <X11/Intrinsic.h>
-#include <X11/StringDefs.h>
-#include <X11/Xatom.h>
-#include <Xm/MessageB.h>
-#include <Xm/RowColumnP.h>
-#include <Xm/Scale.h>
-#include <Xm/Text.h>
-#include <Xm/ToggleB.h>
-#include <Xm/ToggleBG.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsWaveform.h>
-#include <mdsplus/mdsplus.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <X11/Intrinsic.h>
+#include <X11/Xatom.h>
+#include <X11/StringDefs.h>
+#include <Xm/Xm.h>
+#include <Xm/MessageB.h>
+#include <Xm/Text.h>
+#include <Xm/Scale.h>
+#include <Xm/ToggleB.h>
+#include <Xm/ToggleBG.h>
+#include <Xm/RowColumnP.h>
+#include <Xmds/XmdsWaveform.h>
+#include "dwscope.h"
+#include <mdsplus/mdsplus.h>
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__
 _Pragma("GCC diagnostic ignored \"-Wcast-function-type\"")

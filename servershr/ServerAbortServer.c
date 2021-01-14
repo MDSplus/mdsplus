@@ -52,9 +52,9 @@ int SERVER$ABORT_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerAbortServer(char *server, int flush) {
   struct descrip p1;

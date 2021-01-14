@@ -24,8 +24,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <stdio.h>
 
-#include "check_msg.h"
 #include <check.h>
+#include "check_msg.h"
 
 void eprintf(const char *fmt, const char *file, int line,
              ...) CK_ATTRIBUTE_NORETURN;

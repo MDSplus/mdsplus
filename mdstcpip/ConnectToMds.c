@@ -23,21 +23,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <mdsplus/mdsconfig.h>
-#include <status.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+#include <status.h>
 
-#include "mdsIo.h"
-#include "mdsip_connections.h"
-#include <getusername.h>
 #include <socket_port.h>
+#include <getusername.h>
+#include "mdsip_connections.h"
+#include "mdsIo.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Parse Host  ////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-static void parseHost(char *hostin, char **protocol, char **host) {
+static void parseHost(char *hostin, char **protocol, char **host)
+{
   size_t i;
   *protocol = strcpy((char *)malloc(strlen(hostin) + 10), "");
   *host = strcpy((char *)malloc(strlen(hostin) + 10), "");
@@ -66,10 +67,11 @@ static void parseHost(char *hostin, char **protocol, char **host) {
 /// Execute login inside server using given connection
 ///
 /// \param id of connection (on client) to be used
-/// \return status o login into server 1 if success, MDSplusERROR if not
-/// authorized or error occurred
+/// \return status o login into server 1 if success, MDSplusERROR if not authorized or error
+/// occurred
 ///
-static int doLogin(Connection *c) {
+static int doLogin(Connection* c)
+{
   INIT_STATUS;
   Message *m;
   static char *user_p;
@@ -86,34 +88,32 @@ static int doLogin(Connection *c) {
   memcpy(m->bytes, user_p, length);
   status = SendMdsMsgC(c, m, 0);
   free(m);
-  if
-    STATUS_OK {
-      m = GetMdsMsgTOC(c, &status, 10000);
-      if (!m || STATUS_NOT_OK) {
-        printf("Error in connect\n");
-        return MDSplusERROR;
-      } else {
-        if
-          IS_NOT_OK(m->h.status) {
-            printf("Error in connect: Access denied\n");
-            free(m);
-            return MDSplusERROR;
-          }
-        // SET CLIENT COMPRESSION FROM SERVER //
-        c->compression_level = (m->h.status & 0x1e) >> 1;
-        c->client_type = m->h.client_type;
-        if (m->h.ndims > 0)
-          c->version = m->h.dims[0];
+  if STATUS_OK {
+    m = GetMdsMsgTOC(c, &status, 10000);
+    if (!m || STATUS_NOT_OK) {
+      printf("Error in connect\n");
+      return MDSplusERROR;
+    } else {
+      if IS_NOT_OK(m->h.status) {
+	printf("Error in connect: Access denied\n");
+	free(m);
+	return MDSplusERROR;
       }
-      free(m);
+      // SET CLIENT COMPRESSION FROM SERVER //
+      c->compression_level= (m->h.status & 0x1e) >> 1;
+      c->client_type = m->h.client_type;
+      if (m->h.ndims>0) c->version = m->h.dims[0];
     }
-  else {
-    fprintf(stderr, "Error connecting to server (DoLogin)\n");
+    free(m);
+  } else {
+    fprintf(stderr,"Error connecting to server (DoLogin)\n");
     fflush(stderr);
     return MDSplusERROR;
   }
   return status;
 }
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 //  Reuse Check  ///////////////////////////////////////////////////////////////
@@ -122,12 +122,13 @@ static int doLogin(Connection *c) {
 ///
 /// Trigger reuse check funcion for IoRoutines on host.
 ///
-int ReuseCheck(char *hostin, char *unique, size_t buflen) {
+int ReuseCheck(char *hostin, char *unique, size_t buflen)
+{
   int ok = -1;
   char *host = 0;
   char *protocol = 0;
   parseHost(hostin, &protocol, &host);
-  IoRoutines *io = LoadIo(protocol);
+  IoRoutines* io = LoadIo(protocol);
   if (io) {
     if (io->reuseCheck)
       ok = io->reuseCheck(host, unique, buflen);
@@ -142,25 +143,28 @@ int ReuseCheck(char *hostin, char *unique, size_t buflen) {
   return ok;
 }
 
+
 ////////////////////////////////////////////////////////////////////////////////
 //  ConnectToMds  //////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
-int ConnectToMds(char *hostin) {
+
+int ConnectToMds(char *hostin)
+{
   int id = -1;
   char *host = 0;
   char *protocol = 0;
   if (hostin == 0)
     return id;
   parseHost(hostin, &protocol, &host);
-  Connection *c = NewConnectionC(protocol);
+  Connection* c = NewConnectionC(protocol);
   if (c) {
     if (c->io && c->io->connect) {
       c->compression_level = GetCompressionLevel();
-      if (c->io->connect(c, protocol, host) < 0 || IS_NOT_OK(doLogin(c))) {
-        DisconnectConnectionC(c);
+      if (c->io->connect(c, protocol, host)<0 || IS_NOT_OK(doLogin(c))) {
+	DisconnectConnectionC(c);
       } else {
-        id = AddConnection(c);
+	id = AddConnection(c);
       }
     }
   }

@@ -22,20 +22,20 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "servershrp.h"
-#include <condition.h>
-#include <errno.h>
-#include <mds_stdarg.h>
-#include <mdsdescrip.h>
 #include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
-#include <servershr.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <strroutines.h>
+#include <stdio.h>
 #include <time.h>
+#include <errno.h>
+#include <servershr.h>
+#include "servershrp.h"
+#include <mds_stdarg.h>
+#include <mdsdescrip.h>
+#include <mdsshr.h>
+#include <strroutines.h>
 #include <treeshr.h>
+#include <condition.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
@@ -45,9 +45,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #else
 typedef int SOCKET;
 #define INVALID_SOCKET -1
+#include <sys/socket.h>
 #include <netinet/in.h>
 #include <signal.h>
-#include <sys/socket.h>
 #endif
 #include <sys/time.h>
 

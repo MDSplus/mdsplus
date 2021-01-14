@@ -58,9 +58,9 @@ int SERVER$SET_LOGGING( struct dsc$descriptor *server, char *logging_mode)
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerSetLogging(char *server, char logging_mode) {
   struct descrip p1;

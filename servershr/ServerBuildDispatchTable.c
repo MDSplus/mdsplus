@@ -52,20 +52,20 @@ int ServerBuildDispatchTable( )
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
-#include <dbidef.h>
-#include <ipdesc.h>
-#include <libroutines.h>
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <servershr.h>
+#include <ipdesc.h>
+#include <usagedef.h>
+#include <dbidef.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <strroutines.h>
+#include <string.h>
 #include <treeshr.h>
-#include <usagedef.h>
+#include <mdsshr.h>
+#include <libroutines.h>
+#include <servershr.h>
+#include <mds_stdarg.h>
+#include "servershrp.h"
 extern int TdiDeallocate();
 extern int TdiDispatchOf();
 extern int TdiExecute();

@@ -89,23 +89,23 @@ nid) int XmdsResetAllXds(Widget w) int XmdsXdsAreValid(Widget w)
         Description:
 
 ------------------------------------------------------------------------------*/
+#include <mdsplus/mdsconfig.h>
+#include <mdsdescrip.h>
+#include <treeshr.h>
+#include <mdsshr.h>
+#include <xmdsshr.h>
+#include <Xm/XmP.h>
 #include <X11/Composite.h>
+#include <Xm/ToggleB.h>
 #include <Xm/Scale.h>
 #include <Xm/Text.h>
-#include <Xm/ToggleB.h>
-#include <Xm/XmP.h>
-#include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsExpr.h>
 #include <Xmds/XmdsExprField.h>
+#include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
 #include <Xmds/XmdsXdBox.h>
 #include <Xmds/XmdsXdBoxOnOffButton.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsconfig.h>
-#include <mdsshr.h>
-#include <treeshr.h>
-#include <xmdsshr.h>
 
 int XmdsGetNidLongValue(int nid, int minVal, int maxVal, int defaultVal);
 int XmdsGetNidFloatOption(int nid, float *options, int numOptions);

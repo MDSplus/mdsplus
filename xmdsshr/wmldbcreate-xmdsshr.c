@@ -83,25 +83,34 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
  * MrmWidget.h directly into it at this point so that customers can
  * compile it without problems.
  */
-#include <Mrm/MrmAppl.h>
+#include <X11/IntrinsicP.h>
+#include <X11/CoreP.h>
 #include <X11/CompositeP.h>
 #include <X11/ConstrainP.h>
-#include <X11/CoreP.h>
-#include <X11/IntrinsicP.h>
-#include <X11/RectObjP.h>
 #include <X11/ShellP.h>
 #include <X11/VendorP.h>
+#include <X11/RectObjP.h>
+#include <Mrm/MrmAppl.h>
+#include <Xm/XmP.h>
+#include <Xm/Label.h>
+#include <Xm/LabelG.h>
+#include <Xm/LabelGP.h>
+#include <Xm/LabelP.h>
+#include <Xm/BulletinB.h>
+#include <Xm/BulletinBP.h>
+#include <Xm/RowColumn.h>
+#include <Xm/RowColumnP.h>
 #include <Xm/ArrowB.h>
 #include <Xm/ArrowBG.h>
 #include <Xm/ArrowBGP.h>
 #include <Xm/ArrowBP.h>
 #include <Xm/AtomMgr.h>
-#include <Xm/BulletinB.h>
-#include <Xm/BulletinBP.h>
 #include <Xm/CascadeB.h>
 #include <Xm/CascadeBG.h>
 #include <Xm/CascadeBGP.h>
 #include <Xm/CascadeBP.h>
+#include <Xm/SelectioBP.h>
+#include <Xm/SelectioB.h>
 #include <Xm/Command.h>
 #include <Xm/CommandP.h>
 #include <Xm/CutPaste.h>
@@ -118,10 +127,6 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
 #include <Xm/FormP.h>
 #include <Xm/Frame.h>
 #include <Xm/FrameP.h>
-#include <Xm/Label.h>
-#include <Xm/LabelG.h>
-#include <Xm/LabelGP.h>
-#include <Xm/LabelP.h>
 #include <Xm/List.h>
 #include <Xm/ListP.h>
 #include <Xm/MainW.h>
@@ -136,8 +141,6 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
 #include <Xm/PushBG.h>
 #include <Xm/PushBGP.h>
 #include <Xm/PushBP.h>
-#include <Xm/RowColumn.h>
-#include <Xm/RowColumnP.h>
 #include <Xm/SashP.h>
 #include <Xm/Scale.h>
 #include <Xm/ScaleP.h>
@@ -145,32 +148,29 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
 #include <Xm/ScrollBarP.h>
 #include <Xm/ScrolledW.h>
 #include <Xm/ScrolledWP.h>
-#include <Xm/SelectioB.h>
-#include <Xm/SelectioBP.h>
 #include <Xm/SeparatoG.h>
 #include <Xm/SeparatoGP.h>
 #include <Xm/Separator.h>
 #include <Xm/SeparatorP.h>
 #include <Xm/Text.h>
+#include <Xm/TextP.h>
 #include <Xm/TextInP.h>
 #include <Xm/TextOutP.h>
-#include <Xm/TextP.h>
 #include <Xm/TextStrSoP.h>
 #include <Xm/ToggleB.h>
 #include <Xm/ToggleBG.h>
 #include <Xm/ToggleBGP.h>
 #include <Xm/ToggleBP.h>
-#include <Xm/XmP.h>
 #else
 #include <Mrm/MrmWidget.h>
 #endif /* DEC_MOTIF_BUG_FIX */
-#include <Xm/MwmUtil.h>
 #include <Xm/Xm.h>
+#include <Xm/MwmUtil.h>
 #ifdef DEC_MOTIF_EXTENSION
-#include <DXm/DXmCSText.h>
-#include <DXm/DXmColor.h>
 #include <DXm/DXmHelpB.h>
+#include <DXm/DXmColor.h>
 #include <DXm/DXmPrint.h>
+#include <DXm/DXmCSText.h>
 #include <DXm/DXmSvn.h>
 #endif
 /*
@@ -182,37 +182,37 @@ static char rcsid[] = "$RCSfile$ $Revision$ $Date$"
 #include "DGITNeted.h"
 #endif
 #ifdef MDS_EXTENSION
+#include <usagedef.h>
 #include <Xmds/XmdsDigChans.h>
-#include <Xmds/XmdsDisplay.h>
 #include <Xmds/XmdsExpr.h>
 #include <Xmds/XmdsExprField.h>
 #include <Xmds/XmdsNidOptionMenu.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
-#include <Xmds/XmdsPath.h>
 #include <Xmds/XmdsWavedraw.h>
 #include <Xmds/XmdsWaveform.h>
 #include <Xmds/XmdsXdBox.h>
-#include <usagedef.h>
+#include <Xmds/XmdsPath.h>
+#include <Xmds/XmdsDisplay.h>
 #endif
 /*
  * End of User supplied widget files
  */
-#include "UilConst.h" /* from WML */
 #include "UilDBDef.h"
-#include "UilKeyTab.h" /* from WML */
 #include "UilLexPars.h"
-#include "UilSymArTa.h" /* from WML */
+#include "UilSymGen.h"  /* from WML */
 #include "UilSymArTy.h" /* from WML */
+#include "UilSymRArg.h" /* from WML */
+#include "UilSymArTa.h" /* from WML */
+#include "UilSymReas.h" /* from WML */
+#include "UilSymCtl.h"  /* from WML */
+#include "UilConst.h"   /* from WML */
+#include "UilSymNam.h"  /* from WML */
+#include "UilSymEnum.h" /* from WML */
 #include "UilSymCSet.h" /* from WML */
+#include "UilUrmClas.h" /* from WML */
+#include "UilKeyTab.h"  /* from WML */
 #include "UilSymChCl.h" /* from WML */
 #include "UilSymChTa.h" /* from WML */
-#include "UilSymCtl.h"  /* from WML */
-#include "UilSymEnum.h" /* from WML */
-#include "UilSymGen.h"  /* from WML */
-#include "UilSymNam.h"  /* from WML */
-#include "UilSymRArg.h" /* from WML */
-#include "UilSymReas.h" /* from WML */
-#include "UilUrmClas.h" /* from WML */
                       FILE *
                       bfile,
             *afile;

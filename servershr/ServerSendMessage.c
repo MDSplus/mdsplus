@@ -55,20 +55,20 @@ int ServerSendMessage();
 
 #include <errno.h>
 #include <signal.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
+#include <socket_port.h>
 #include <condition.h>
 #include <ipdesc.h>
-#include <libroutines.h>
+#include <servershr.h>
 #include <mds_stdarg.h>
 #include <mdsshr.h>
-#include <servershr.h>
-#include <socket_port.h>
+#include <libroutines.h>
 #define _NO_SERVER_SEND_MESSAGE_PROTO
 #include "servershrp.h"
 #ifdef _WIN32

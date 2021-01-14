@@ -54,9 +54,9 @@ int *netid, void (*link_down)(), void (*before_ast)())
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerDispatchCommand(int *id, char *server, char *cli,
                                  char *command, void (*ast)(), void *astprm,

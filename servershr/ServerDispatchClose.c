@@ -53,8 +53,8 @@ int SERVER$DISPATCH_CLOSE(DispatchTable *table)
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <servershr.h>
+#include "servershrp.h"
 static char *Server(char *out, char *srv) {
   int i;
   for (i = 0; i < 32; i++)

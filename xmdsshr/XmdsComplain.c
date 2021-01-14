@@ -54,10 +54,10 @@ char *string;
         Description:
 
 ------------------------------------------------------------------------------*/
+#include <stdio.h>
 #include <X11/Intrinsic.h>
 #include <X11/StringDefs.h>
 #include <Xm/MessageB.h>
-#include <stdio.h>
 #include <xmdsshr.h>
 
 #if defined __GNUC__ && 800 <= __GNUC__ * 100 + __GNUC_MINOR__

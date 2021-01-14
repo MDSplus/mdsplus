@@ -28,8 +28,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "testing.h"
 
-#include <pthread.h>
 #include <stdlib.h>
+#include <pthread.h>
 
 void __assert_fail(const char *__assertion, const char *__file,
                    ASSERT_LINE_TYPE __line, const char *__function) {

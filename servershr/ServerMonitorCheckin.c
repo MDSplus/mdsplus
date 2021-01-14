@@ -53,13 +53,13 @@ astparam, void (*link_down)())
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
-#include <ipdesc.h>
-#include <mdsshr.h>
-#include <servershr.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include <string.h>
+#include <mdsshr.h>
+#include <ipdesc.h>
+#include <servershr.h>
+#include "servershrp.h"
 
 static void (*appAst)() = 0;
 

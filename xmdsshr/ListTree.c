@@ -51,10 +51,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <X11/IntrinsicP.h>
 #include <X11/StringDefs.h>
 
-#include <Xmds/ListTreeP.h>
-#include <mdsplus/mdsconfig.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <mdsplus/mdsconfig.h>
+#include <Xmds/ListTreeP.h>
 /* #define DEBUG */
 
 #ifndef __GNUC__

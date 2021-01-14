@@ -139,13 +139,13 @@ Widget XmdsCreateWaveform( parent, name, args, argcount )
 
  Global variables:                                                            */
 
-#include <X11/Xatom.h>
-#include <X11/cursorfont.h>
-#include <Xmds/XmdsWaveformP.h>
-#include <math.h>
-#include <stdio.h>
 #include <stdlib.h>
+#include <stdio.h>
+#include <math.h>
+#include <X11/cursorfont.h>
+#include <X11/Xatom.h>
 #include <xmdsshr.h>
+#include <Xmds/XmdsWaveformP.h>
 
 /*------------------------------------------------------------------------------
 
@@ -2817,9 +2817,9 @@ static void Paste(XmdsWaveformWidget w, XButtonEvent *event) {
 
 #ifdef __VAX
 
-#include <descrip.h>
-#include <ssdef.h>
 #include <starlet.h>
+#include <ssdef.h>
+#include <descrip.h>
 
 int FixupMissing(unsigned sig_args[], unsigned mech_args[]) {
   unsigned code;

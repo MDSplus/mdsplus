@@ -66,15 +66,15 @@ argcount); Boolean XmdsIsPath(Widget w);
 
 ------------------------------------------------------------------------------*/
 
-#include <Mrm/MrmPublic.h>
-#include <Xm/Label.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsPath.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <ncidef.h>
 #include <strroutines.h>
+#include <ncidef.h>
 #include <treeshr.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
+#include <Xm/Label.h>
+#include <Xmds/XmdsPath.h>
 #include <xmdsshr.h>
 #define PathUserData 0xAAAAAAA
 

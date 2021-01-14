@@ -101,14 +101,14 @@ Boolean EvaluateText(String text, String error_prefix, String *text_ret, String
 
 ------------------------------------------------------------------------------*/
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <X11/Intrinsic.h>
 #include <Xm/Xm.h>
 #include <Xmds/XmdsWaveform.h>
 #include <ctype.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 #ifndef _toupper
 #define _toupper(c) (((c) >= 'a' && (c) <= 'z') ? (c)&0xDF : (c))
 #endif
@@ -118,11 +118,11 @@ extern void EventUpdate(XtPointer client_data, int *source, XtInputId *id);
 extern pthread_mutex_t event_mutex;
 
 #if defined(_LOCAL_ACCESS)
-#include <mds_stdarg.h>
 #include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <strroutines.h>
+#include <mds_stdarg.h>
 #include <treeshr.h>
+#include <strroutines.h>
+#include <mdsshr.h>
 
 extern int TdiAdjustl();
 extern int TdiExecute();
@@ -401,9 +401,9 @@ void SetupEventInput(XtAppContext app_context,
 #endif
 #elif defined(_RPC)
 
+#include <rpc/rpc.h>
 #include <MdsRpc/mds_rpc.h>
 #include <Xmds/XmdsWaveform.h>
-#include <rpc/rpc.h>
 static void Destroy_xy(Widget w, float *ptr) { free(ptr); }
 
 Boolean EvaluateData(Boolean brief, int row, int col, int idx, Boolean *event,

@@ -31,30 +31,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "zlib.h"
 
-#define BASE 65521L /* largest prime smaller than 65536 */
+#define BASE 65521L		/* largest prime smaller than 65536 */
 #define NMAX 5552
 /* NMAX is the largest n such that 255n(n+1)/2 + (n+1)(BASE-1) <= 2^32-1 */
 
-#define DO1(buf, i)                                                            \
-  {                                                                            \
-    s1 += buf[i];                                                              \
-    s2 += s1;                                                                  \
-  }
-#define DO2(buf, i)                                                            \
-  DO1(buf, i);                                                                 \
-  DO1(buf, i + 1);
-#define DO4(buf, i)                                                            \
-  DO2(buf, i);                                                                 \
-  DO2(buf, i + 2);
-#define DO8(buf, i)                                                            \
-  DO4(buf, i);                                                                 \
-  DO4(buf, i + 4);
-#define DO16(buf)                                                              \
-  DO8(buf, 0);                                                                 \
-  DO8(buf, 8);
+#define DO1(buf,i)  {s1 += buf[i]; s2 += s1;}
+#define DO2(buf,i)  DO1(buf,i); DO1(buf,i+1);
+#define DO4(buf,i)  DO2(buf,i); DO2(buf,i+2);
+#define DO8(buf,i)  DO4(buf,i); DO4(buf,i+4);
+#define DO16(buf)   DO8(buf,0); DO8(buf,8);
 
 /* ========================================================================= */
-uLong ZEXPORT adler32(adler, buf, len) uLong adler;
+uLong ZEXPORT adler32(adler, buf, len)
+uLong adler;
 const Bytef *buf;
 uInt len;
 {
@@ -75,8 +64,8 @@ uInt len;
     }
     if (k != 0)
       do {
-        s1 += *buf++;
-        s2 += s1;
+	s1 += *buf++;
+	s2 += s1;
       } while (--k);
     s1 %= BASE;
     s2 %= BASE;

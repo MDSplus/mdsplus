@@ -86,15 +86,16 @@ int XmdsInitialize( )
 
 ------------------------------------------------------------------------------*/
 
+#include <stdio.h>
 #include <Mrm/MrmPublic.h>
 #include <Xm/BulletinB.h>
 #include <Xm/Form.h>
 #include <Xm/Label.h>
 #include <Xm/PushB.h>
-#include <Xm/RowColumn.h>
 #include <Xm/ToggleB.h>
-#include <stdio.h>
+#include <Xm/RowColumn.h>
 #ifndef _NO_XDS
+#include <xmdsshr.h>
 #include <Xmds/XmdsCallbacks.h>
 #include <Xmds/XmdsDigChans.h>
 #include <Xmds/XmdsDisplay.h>
@@ -112,7 +113,6 @@ int XmdsInitialize( )
 #include <Xmds/XmdsXdBoxDialog.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
 #include <Xmds/XmdsXdBoxOnOffButton.h>
-#include <xmdsshr.h>
 #endif
 
 #include <Xmds/XmdsWaveform.h>

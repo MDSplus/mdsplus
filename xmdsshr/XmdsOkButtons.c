@@ -83,10 +83,10 @@ ArgList args, Cardinal numargs);
 ------------------------------------------------------------------------------*/
 
 #include <Mrm/MrmPublic.h>
-#include <Xm/PushB.h>
 #include <Xm/Xm.h>
-#include <Xmds/XmdsCallbacks.h>
+#include <Xm/PushB.h>
 #include <Xmds/XmdsOkButtons.h>
+#include <Xmds/XmdsCallbacks.h>
 #include <xmdsshr.h>
 
 static Widget CreateButton(Widget parent, String name, ArgList args,

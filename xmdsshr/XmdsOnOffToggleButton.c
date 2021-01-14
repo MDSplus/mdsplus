@@ -69,14 +69,14 @@ int XmdsOnOffToggleButtonApply(Widget w);
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <Mrm/MrmPublic.h>
+#include <mdsplus/mdsconfig.h>
+#include <mdsdescrip.h>
+#include <strroutines.h>
+#include <ncidef.h>
+#include <treeshr.h>
 #include <Xm/ToggleB.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
-#include <mdsdescrip.h>
-#include <mdsplus/mdsconfig.h>
-#include <ncidef.h>
-#include <strroutines.h>
-#include <treeshr.h>
+#include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 Widget XmdsCreateOnOffToggleButton(Widget parent, String name, ArgList args,
                                    Cardinal argcount);

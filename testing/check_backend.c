@@ -23,12 +23,12 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <setjmp.h>
-#include <signal.h>
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
+#include <stdarg.h>
+#include <setjmp.h>
 #include <time.h>
+#include <signal.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #include <string.h>
@@ -40,10 +40,10 @@ extern char *strsignal(int);
 #endif
 
 #include <check.h>
-#include <check_impl.h>
 #include <check_list.h>
-#include <check_log.h>
+#include <check_impl.h>
 #include <check_msg.h>
+#include <check_log.h>
 #include <check_print.h>
 
 // Check for HAVE_CHECK and HAVE_FORK //

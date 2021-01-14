@@ -44,16 +44,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "lib/libcompat.h"
 
+#include <sys/types.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/types.h>
 
-#include "check.h"
 #include "check_error.h"
+#include "check.h"
 
-#include "check_impl.h"
 #include "check_list.h"
+#include "check_impl.h"
 #include "check_msg.h"
 #include "check_pack.h"
 #include "check_str.h"

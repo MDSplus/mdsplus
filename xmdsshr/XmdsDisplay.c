@@ -65,19 +65,19 @@ argcount); Boolean XmdsIsDisplay(Widget w);
 
 ------------------------------------------------------------------------------*/
 
-#include <Mrm/MrmPublic.h>
-#include <Xm/Label.h>
-#include <Xmds/XmdsDisplay.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
+#include <Mrm/MrmPublic.h>
+#include <Xmds/XmdsDisplay.h>
+#include <Xm/Label.h>
 #define DisplayUserData 0xABCDEFA
 
 /*------------------------------------------------------------------------------
 
  External functions or symbols referenced:                                    */
 
-#include <strroutines.h>
 #include <xmdsshr.h>
+#include <strroutines.h>
 extern int TdiEvaluate();
 extern int TdiDecompile();
 /*------------------------------------------------------------------------------

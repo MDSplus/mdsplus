@@ -52,8 +52,8 @@ int SERVER$START_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerStartServer(char *server) { return ServerConnect(server); }

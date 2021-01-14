@@ -86,20 +86,20 @@ $ Run SYS$SYSTEM:DWPad
 
  External functions or symbols referenced:                                    */
 
-#include "dwscope.h"
-#include <Mrm/MrmPublic.h>
-#include <X11/StringDefs.h>
-#include <X11/Xatom.h>
 #include <X11/cursorfont.h>
-#include <Xm/FileSB.h>
-#include <Xm/PushB.h>
-#include <Xm/Scale.h>
+#include <X11/Xatom.h>
+#include <X11/StringDefs.h>
+#include <Xm/Xm.h>
 #include <Xm/Text.h>
 #include <Xm/ToggleB.h>
-#include <Xm/Xm.h>
-#include <Xm/XmP.h>
+#include <Xm/PushB.h>
+#include <Xm/Scale.h>
+#include <Xm/FileSB.h>
+#include "dwscope.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/XmP.h>
 #ifndef _NO_DXm
 #include <DXm/DECspecific.h>
 #endif

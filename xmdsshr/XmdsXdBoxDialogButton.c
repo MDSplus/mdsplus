@@ -70,11 +70,11 @@ Widget XmdsXdBoxDialogButtonGetXdBox(Widget w);
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <Mrm/MrmPublic.h>
 #include <Xm/PushB.h>
-#include <Xmds/XmdsXdBox.h>
-#include <Xmds/XmdsXdBoxDialog.h>
 #include <Xmds/XmdsXdBoxDialogButton.h>
+#include <Xmds/XmdsXdBoxDialog.h>
+#include <Xmds/XmdsXdBox.h>
+#include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
 typedef struct _Resources {

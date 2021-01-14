@@ -47,8 +47,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
-#include "check_error.h"
 #include "check_list.h"
+#include "check_error.h"
 
 enum { LINIT = 1, LGROW = 2 };
 

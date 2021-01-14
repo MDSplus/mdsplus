@@ -72,13 +72,13 @@ XmdsXdBoxOnOffButtonApply(Widget w);
         Description:
 
 ------------------------------------------------------------------------------*/
-#include <Mrm/MrmPublic.h>
-#include <Xm/RowColumn.h>
 #include <Xm/ToggleB.h>
+#include <Xm/RowColumn.h>
 #include <Xmds/XmdsOnOffToggleButton.h>
-#include <Xmds/XmdsXdBox.h>
-#include <Xmds/XmdsXdBoxDialogButton.h>
 #include <Xmds/XmdsXdBoxOnOffButton.h>
+#include <Xmds/XmdsXdBoxDialogButton.h>
+#include <Xmds/XmdsXdBox.h>
+#include <Mrm/MrmPublic.h>
 #include <xmdsshr.h>
 
 typedef struct _Resources {

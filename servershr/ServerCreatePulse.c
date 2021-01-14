@@ -54,9 +54,9 @@ dsc$descriptor *tree, int *shot, void (*ast)(), int astprm, int *netid, void
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerCreatePulse(int *id, char *server, char *tree, int shot,
                              void (*ast)(), void *astprm, int *retstatus,

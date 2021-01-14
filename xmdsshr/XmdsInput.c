@@ -104,13 +104,13 @@ A good place to call Reset initially is in the map callback for the top level
 widget of the device.
 
 ------------------------------------------------------------------------------*/
-#include <Mrm/MrmPublic.h>
-#include <Xm/ToggleB.h>
-#include <Xm/Xm.h>
-#include <Xmds/XmdsExpr.h>
 #include <mdsdescrip.h>
 #include <strroutines.h>
 #include <treeshr.h>
+#include <Mrm/MrmPublic.h>
+#include <Xm/Xm.h>
+#include <Xm/ToggleB.h>
+#include <Xmds/XmdsExpr.h>
 #include <xmdsshr.h>
 /*------------------------------------------------------------------------------
 

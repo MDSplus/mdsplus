@@ -67,13 +67,13 @@ extern Boolean PutIfChanged(int nid, struct dsc$descriptor_xd *xd);
 
 ------------------------------------------------------------------------------*/
 
+#include <mdsdescrip.h>
+#include <ncidef.h>
+#include <mdsshr.h>
+#include <treeshr.h>
+#include <strroutines.h>
 #include <Xmds/XmdsSupport.h>
 #include <mds_stdarg.h>
-#include <mdsdescrip.h>
-#include <mdsshr.h>
-#include <ncidef.h>
-#include <strroutines.h>
-#include <treeshr.h>
 
 /*------------------------------------------------------------------------------
 

@@ -73,14 +73,14 @@ XmdsDigChansApply(Widget w) Boolean XmdsIsDigChans(Widget w)
 
  External functions or symbols referenced:                                    */
 
-#include <Mrm/MrmPublic.h>
-#include <Xm/ToggleBG.h>
-#include <Xmds/XmdsDigChans.h>
+#include <stdio.h>
 #include <mds_stdarg.h>
 #include <mdsdescrip.h>
 #include <ncidef.h>
-#include <stdio.h>
 #include <treeshr.h>
+#include <Mrm/MrmPublic.h>
+#include <Xmds/XmdsDigChans.h>
+#include <Xm/ToggleBG.h>
 
 #include <Xmds/XmdsExpr.h>
 #include <xmdsshr.h>

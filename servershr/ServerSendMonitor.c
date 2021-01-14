@@ -22,12 +22,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-#include "servershrp.h"
-#include <ipdesc.h>
 #include <mdsshr.h>
+#include <ipdesc.h>
 #include <servershr.h>
-#include <stdlib.h>
+#include "servershrp.h"
 #include <string.h>
+#include <stdlib.h>
 #include <treeshr.h>
 
 int ServerSendMonitor(char *monitor, char *tree, int shot, int phase, int nid,

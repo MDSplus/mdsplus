@@ -52,9 +52,9 @@ int SERVER$STOP_SERVER( struct dsc$descriptor *server )
 
 ------------------------------------------------------------------------------*/
 
-#include "servershrp.h"
 #include <ipdesc.h>
 #include <servershr.h>
+#include "servershrp.h"
 
 EXPORT int ServerStopServer(char *server) {
   return ServerSendMessage(0, server, SrvStop, NULL, NULL, NULL, NULL, NULL,

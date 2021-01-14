@@ -212,11 +212,11 @@ int XmdsCreateWavedraw( parent, name, args, argcount )
 
  Global variables:                                                            */
 
-#include <X11/cursorfont.h>
-#include <Xmds/XmdsWavedrawP.h>
-#include <libroutines.h>
-#include <math.h>
 #include <stdio.h>
+#include <Xmds/XmdsWavedrawP.h>
+#include <X11/cursorfont.h>
+#include <math.h>
+#include <libroutines.h>
 
 /*------------------------------------------------------------------------------
 
