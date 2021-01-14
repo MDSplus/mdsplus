@@ -25,8 +25,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <mdsplus/mdsconfig.h>
 #ifdef _WIN32
-#include <windows.h>
 #include <winsock2.h>
+#include <windows.h>
 #include <ws2tcpip.h>
 #include <wspiapi.h>
 #else
@@ -45,7 +45,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define F_OFD_SETLKW 38
 #endif
 #endif
-#include "treeshrp.h"
 #include <STATICdef.h>
 #include <ctype.h>
 #include <dbidef.h>
@@ -64,6 +63,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sys/stat.h>
 #include <time.h>
 #include <treeshr.h>
+#include "treeshrp.h"
 
 //#define DEBUG
 #ifdef DEBUG
