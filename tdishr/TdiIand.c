@@ -369,7 +369,7 @@ extern void DoubleToWideInt();
     return 1;                                                                  \
   }
 
-#define not~
+#define not ~
 common(Inand, &) common(InandNot, &~) common(Inor, |) common(InorNot, | ~)
 #undef not
 #define not
