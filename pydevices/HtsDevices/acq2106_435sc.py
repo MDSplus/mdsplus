@@ -25,8 +25,6 @@
 
 import MDSplus
 import importlib
-import os
-import numbers
 
 acq2106_435st = importlib.import_module('acq2106_435st')
 
@@ -53,10 +51,10 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                 print("Site {} OFFSET ALL {}".format(site, self.def_offset.data()))
 
                 slot.SC32_G1_ALL     = self.def_gain1.data()
-                print("Site {} GAIN 1 ALL {}".format(self.def_gain1.data()))
+                print("Site {} GAIN 1 ALL {}".format(site, self.def_gain1.data()))
 
                 slot.SC32_G2_ALL     = self.def_gain2.data()
-                print("Site {} GAIN 2 ALL {}".format(self.def_gain2.data()))
+                print("Site {} GAIN 2 ALL {}".format(site, self.def_gain2.data()))
             else:
                 for ic in range(32):
                     exec("uut.s%d.SC32_OFFSET_%2.2d = self.__getattr__('INPUT_%3.3d:SC_OFFSET').data()"%(site, ic+1, ic+1))
@@ -64,7 +62,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
                     exec("uut.s%d.SC32_G2_%2.2d     = self.__getattr__('INPUT_%3.3d:SC_GAIN2' ).data()"%(site, ic+1, ic+1))
 
             # uut.s1.SC32_GAIN_COMMIT = 1
-            exec("uut.s%d.SC32_GAIN_COMMIT = 1" %(site))
+            slot.SC32_GAIN_COMMIT = 1
             print("GAIN Committed for site {}".format(site))
 
         super(_ACQ2106_435SC, self).init()
@@ -90,7 +88,7 @@ class _ACQ2106_435SC(acq2106_435st._ACQ2106_435ST):
 
     def setSmooth(self,num):
         chan = self.__getattr__('INPUT_%3.3d' % num)
-        chan_nonsc =self.__getattr__('INPUT_%3.3d:LOW_RES' % num)
+        chan_nonsc =self.__getattr__('INPUT_%3.3d:LR_INPUT' % num)
         chan_nonsc.setSegmentScale(MDSplus.SMOOTH(MDSplus.dVALUE(),100))
     
     def getSlot(self, site_number):
@@ -134,9 +132,8 @@ def assemble(cls):
             {'path':':INPUT_%3.3d:SC_GAIN1'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain1',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_GAIN2'%(i+1,),    'type':'NUMERIC', 'valueExpr':'head.def_gain2',               'options':('no_write_shot',)},
             {'path':':INPUT_%3.3d:SC_OFFSET'%(i+1,),   'type':'NUMERIC', 'valueExpr':'head.def_offset',              'options':('no_write_shot',)},   
-            #{'path':':INPUT_%3.3d:NON_SC'%(i+1,),          'type':'SIGNAL',  'valueExpr':'SUBTRACT(DIVIDE(INPUT_%3.3d, MULTIPLY(INPUT_%3.3d_SC_GAIN1, INPUT_%3.3d_SC_GAIN2)), INPUT_%3.3d_SC_OFFSET)' %(i+1,i+1,i+1,i+1,), 'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:NON_SC'%(i+1,),      'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
-            {'path':':INPUT_%3.3d:LOW_RES'%(i+1,),     'type':'SIGNAL', 'valueExpr':'head.setSmooth(%d)' %(i+1,)},
+            {'path':':INPUT_%3.3d:NO_COND'%(i+1,),      'type':'SIGNAL',                                              'options':('no_write_model','write_once',)},
+            {'path':':INPUT_%3.3d:LR_INPUT'%(i+1,),     'type':'SIGNAL', 'valueExpr':'head.setSmooth(%d)' %(i+1,)},
         ]
 
 class ACQ2106_435SC_1ST(_ACQ2106_435SC): sites=1
